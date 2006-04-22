@@ -16,10 +16,12 @@ DockTest::DockTest( QWidget* parent )
   K3DockWidgetHeader *header = new K3DockWidgetHeader( m_blueDock, "Blue Header" );
   header->forceCloseButtonHidden();
   m_blueDock->setHeader( header );
-  m_blueDock->setCaption( "Blue" );
+  m_blueDock->setWindowTitle( "Blue" );
   m_blueDock->setGeometry( 50, 50, 100, 100 );
   QWidget *l = new QWidget( m_blueDock );
-  l->setBackgroundColor( Qt::blue );
+  QPalette p1 = l->palette();
+  p1.setColor( l->backgroundRole(), Qt::blue );
+  l->setPalette( p1 );
   l->setMinimumSize( 100,100 );
   m_blueDock->setWidget( l );
 
@@ -30,10 +32,12 @@ DockTest::DockTest( QWidget* parent )
   //m_redDock->setDetachable( false );
   header = new K3DockWidgetHeader( m_redDock, "Red kHeader" );
   m_redDock->setHeader( header );
-  m_redDock->setCaption( "Red" );
+  m_redDock->setWindowTitle( "Red" );
   m_redDock->setGeometry( 50, 50, 100, 100 );
   l = new QWidget( m_redDock );
-  l->setBackgroundColor( Qt::red );
+  QPalette p2 = l->palette();
+  p2.setColor( l->backgroundRole(), Qt::red );
+  l->setPalette( p2 );
   l->setMinimumSize( 100,100 );
   m_redDock->setWidget( l );
   m_redDock->manualDock( m_blueDock, K3DockWidget::DockLeft, 3000 );
@@ -43,10 +47,12 @@ DockTest::DockTest( QWidget* parent )
   //m_yellowDock->setDetachable( false );
 //  header = new K3DockWidgetHeader( m_yellowDock, "Yellow Header" );
  // m_yellowDock->setHeader( header );
-  m_yellowDock->setCaption( "Yellow" );
+  m_yellowDock->setWindowTitle( "Yellow" );
   m_yellowDock->setGeometry( 50, 50, 100, 100 );
   l = new QWidget( m_yellowDock );
-  l->setBackgroundColor( Qt::yellow );
+  QPalette p3 = l->palette();
+  p3.setColor( l->backgroundRole(), Qt::yellow );
+  l->setPalette( p3 );
   l->setMinimumSize( 100,100 );
   m_yellowDock->setWidget( l );
   m_yellowDock->manualDock( m_blueDock, K3DockWidget::DockTop, 5000 );
@@ -58,8 +64,7 @@ main( int argc, char** argv )
   KCmdLineArgs::init( argc, argv, "docktest", "DockTest", "docktest", "1.0" );
   KApplication a;
   DockTest* ap = new DockTest();
-  ap->setCaption("DockWidget demo");
-  a.setMainWidget( ap );
+  ap->setWindowTitle("DockWidget demo");
   ap->show();
   return a.exec();
 }

@@ -85,12 +85,14 @@ static const char *preview_xpm[] = {
 };
 
 SFileDialog::SFileDialog( QString initially, const QStringList& filter, const char* name )
-:QDialog(0L,name,true)
+:QDialog(0L)
 {
+  setObjectName(name);
+  setModal(true);
   KConfig* config = kapp->config();
   config->setGroup( QLatin1String("SFileDialogData:") + name );
   if ( initially.isNull() ){
-    initially = config->readPathEntry( "InitiallyDir", QDir::currentDirPath() );
+    initially = config->readPathEntry( "InitiallyDir", QDir::currentPath() );
   }
 
   QStringList bookmark;
@@ -99,7 +101,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   dockManager = new K3DockManager(this);
 
   d_dirView = new K3DockWidget( dockManager, "Dock_DirView", QPixmap(dir_tree_xpm) );
-  d_dirView->setCaption("Tree");
+  d_dirView->setWindowTitle("Tree");
 
   dirView = new DirectoryView( d_dirView, 0 );
   dirView->addColumn( "" );
@@ -110,7 +112,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   root->setOpen(true);
 
   d_preview = new K3DockWidget( dockManager, "Dock_Preview", QPixmap(preview_xpm) );
-  d_preview->setCaption("Preview");
+  d_preview->setWindowTitle("Preview");
   preview = new Preview( d_preview );
   d_preview->setWidget( preview );
 
@@ -119,7 +121,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   fd->setDir( initially );
   fd->setFilters( filter );
   fd->setBookmark( bookmark );
-  fd->reparent(d_fd, QPoint(0,0));
+  fd->setParent( d_fd );
   d_fd->setWidget( fd );
 
   connect( dirView, SIGNAL( folderSelected( const QString & ) ), fd, SLOT( setDir2( const QString & ) ) );
@@ -141,24 +143,24 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   connect(dirView, SIGNAL(folderSelected(const QString&)), this, SLOT(changeDir(const QString&)));
 
   b_tree = new QToolButton( fd );
-  QToolTip::add( b_tree, "Show/Hide Tree" );
-  b_tree->setPixmap( QPixmap( dir_tree_xpm ) );
+  b_tree->setToolTip( "Show/Hide Tree" );
+  b_tree->setIcon( QIcon( QPixmap( dir_tree_xpm ) ) );
   connect( b_tree, SIGNAL(clicked()), d_dirView, SLOT(changeHideShowState()) );
-  b_tree->setToggleButton(true);
-  b_tree->setOn(true);
+  b_tree->setCheckable(true);
+  b_tree->setChecked(true);
   fd->addToolButton( b_tree, true );
 
   b_preview = new QToolButton( fd );
-  QToolTip::add( b_preview, "Show/Hide Preview" );
-  b_preview->setPixmap( QPixmap( preview_xpm ) );
+  b_preview->setToolTip( "Show/Hide Preview" );
+  b_preview->setIcon( QIcon( QPixmap( preview_xpm ) ) );
   connect( b_preview, SIGNAL(clicked()), d_preview, SLOT(changeHideShowState()) );
-  b_preview->setToggleButton(true);
-  b_preview->setOn(true);
+  b_preview->setCheckable(true);
+  b_preview->setChecked(true);
   fd->addToolButton( b_preview );
 
   connect( dockManager, SIGNAL(change()), this, SLOT(dockChange()));
   connect( dockManager, SIGNAL(setDockDefaultPos(K3DockWidget*)), this, SLOT(setDockDefaultPos(K3DockWidget*)));
-  setCaption("Open File");
+  setWindowTitle("Open File");
   resize(550,450);
   qDebug("read config");
   dockManager->readConfig( 0L , name );
@@ -166,18 +168,18 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
 
 void SFileDialog::dockChange()
 {
-  b_preview->setOn( d_preview->isVisibleToTLW() );
-  b_tree->setOn( d_dirView->isVisibleToTLW() );
+  b_preview->setChecked( d_preview->isVisible() );
+  b_tree->setChecked( d_dirView->isVisible() );
 }
 
 SFileDialog::~SFileDialog()
 {
   KConfig* config = kapp->config();
-  config->setGroup( QString("SFileDialogData:") + name() );
+  config->setGroup( QString("SFileDialogData:") + objectName() );
   config->writeEntry( "Bookmarks", fd->getBookmark() );
 
   qDebug("write config");
-  dockManager->writeConfig( 0L , name() );
+  dockManager->writeConfig( 0L , objectName() );
 }
 
 void SFileDialog::setDockDefaultPos( K3DockWidget* d )
@@ -195,7 +197,7 @@ void SFileDialog::changeDir( const QString& f )
 {
   if ( !f.isEmpty() ){
     KConfig* config = kapp->config();
-    config->setGroup( QString("SFileDialogData:") + name() );
+    config->setGroup( QString("SFileDialogData:") + objectName() );
     config->writePathEntry( "InitiallyDir", f );
   }
 }
@@ -205,7 +207,7 @@ QString SFileDialog::getOpenFileName( QString initially,
                                       const QString caption, const char* name )
 {
   SFileDialog* fd = new SFileDialog( initially, filter, name );
-  if ( !caption.isNull() ) fd->setCaption( caption );
+  if ( !caption.isNull() ) fd->setWindowTitle( caption );
   QString result = ( fd->exec() == QDialog::Accepted ) ? fd->fd->selectedFile():QString();
   delete fd;
 
@@ -217,7 +219,7 @@ QStringList SFileDialog::getOpenFileNames( QString initially,
                                       const QString caption, const char* name )
 {
   SFileDialog* fd = new SFileDialog( initially, filter, name );
-  if ( !caption.isNull() ) fd->setCaption( caption );
+  if ( !caption.isNull() ) fd->setWindowTitle( caption );
 
   fd->fd->setMode( Q3FileDialog::ExistingFiles );
   fd->d_preview->undock();
@@ -241,14 +243,13 @@ PixmapView::PixmapView( QWidget *parent )
 :Q3ScrollView( parent )
 {
 //  kimgioRegister();
-  viewport()->setBackgroundMode( Qt::PaletteBase );
 }
 
 void PixmapView::setPixmap( const QPixmap &pix )
 {
     pixmap = pix;
     resizeContents( pixmap.size().width(), pixmap.size().height() );
-    viewport()->repaint( true );
+    viewport()->repaint();
 }
 
 void PixmapView::drawContents( QPainter *p, int, int, int, int )
@@ -284,9 +285,9 @@ void Preview::showPreview( const QString &str )
 		QFile f( path );
 		if ( f.open( QIODevice::ReadOnly ) ) {
 		    QTextStream ts( &f );
-		    QString text = ts.read();
+		    QString text = ts.readAll();
 		    f.close();
-		    if ( fi.extension().lower().contains( "htm" ) ) {
+		    if ( fi.suffix().toLower().contains( "htm" ) ) {
 			QString url = html->mimeSourceFactory()->makeAbsolute( path, html->context() );
 			html->setText( text, url ); 	
 			raiseWidget( html );
@@ -405,23 +406,23 @@ CustomFileDialog::CustomFileDialog( QWidget* parent )
 {
   QToolButton *p = new QToolButton( this );
 
-  p->setPixmap( QPixmap( globalbookmark_xpm ) );
-  QToolTip::add( p, tr( "Bookmarks" ) );
+  p->setIcon( QIcon( QPixmap( globalbookmark_xpm ) ) );
+  p->setToolTip( tr("Bookmarks") );
 
   bookmarkMenu = new Q3PopupMenu( this );
   connect( bookmarkMenu, SIGNAL( activated( int ) ), this, SLOT( bookmarkChosen( int ) ) );
   addId = bookmarkMenu->insertItem( "Add bookmark" );
   clearId = bookmarkMenu->insertItem( QPixmap(folder_trash), "Clear bookmarks" );
-  bookmarkMenu->insertSeparator();
+  bookmarkMenu->addSeparator();
 
-  p->setPopup( bookmarkMenu );
+  p->setMenu( bookmarkMenu );
   p->setPopupDelay(0);
   addToolButton( p, true );
 
   QToolButton *b = new QToolButton( this );
-  QToolTip::add( b, tr( "Go Home!" ) );
+  b->setToolTip( tr("Go Home!") );
 
-  b->setPixmap( QPixmap( homepage_xpm ) );
+  b->setIcon( QIcon( QPixmap( homepage_xpm ) ) );
   connect( b, SIGNAL( clicked() ), this, SLOT( goHome() ) );
 
   addToolButton( b );
@@ -477,7 +478,7 @@ void CustomFileDialog::bookmarkChosen( int i )
     bookmarkMenu->clear();
     addId = bookmarkMenu->insertItem( "Add bookmark" );
     clearId = bookmarkMenu->insertItem( "Clear bookmarks" );
-    bookmarkMenu->insertSeparator();
+    bookmarkMenu->addSeparator();
     return;
   }
 
@@ -673,10 +674,10 @@ QString Directory::fullName()
   QString s;
   if ( p ) {
     s = p->fullName();
-    s.append( f.name() );
+    s.append( f.fileName() );
     s.append( "/" );
   } else {
-    s = f.name();
+    s = f.fileName();
   }
   return s;
 }
@@ -685,7 +686,7 @@ QString Directory::fullName()
 QString Directory::text( int column ) const
 {
   if ( column == 0 )
-    return f.name();
+    return f.fileName();
   else
     if ( readable )
       return "Directory";
@@ -791,7 +792,7 @@ int main(int argc, char* argv[]) {
           QLatin1String("DockWidget Demo"), "dialog1" );
   QStringList::Iterator it = s.begin();
   for ( ; it != s.end(); ++it ){
-    qDebug( "%s", (*it).local8Bit().data() );
+    qDebug( "%s", (*it).toLocal8Bit().data() );
   }
 #endif
   return 0;

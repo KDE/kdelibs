@@ -59,10 +59,10 @@ class CTW:public QTabWidget,public K3DockContainer
 {
         Q_OBJECT
 public:
-        CTW(QWidget *parent):QTabWidget(parent,"MyDockContainer"),K3DockContainer(){insertTab(new QLabel("BLAH",this),"BLUP");}
+        CTW(QWidget *parent):QTabWidget(parent),K3DockContainer(){insertTab(-1,new QLabel("BLAH",this),"BLUP");}
         virtual ~CTW(){;}
         K3DockWidget *parentDockWidget(){return ((K3DockWidget*)parent());}
-        void insertWidget (K3DockWidget *w, QPixmap, const QString &, int &){qDebug("widget inserted"); insertTab(w,"NO");}
+        void insertWidget (K3DockWidget *w, QPixmap, const QString &, int &){qDebug("widget inserted"); insertTab(-1,w,"NO");}
         void setToolTip (K3DockWidget *, QString &){qDebug("Tooltip set");}
 };
 

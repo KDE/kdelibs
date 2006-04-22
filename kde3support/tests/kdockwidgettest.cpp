@@ -66,28 +66,33 @@ DockApplication::DockApplication( const char* name )
 
   /*****************************************************/
   dock = createDockWidget( "Green Widget", p );
-  dock->setCaption("Green");
+  dock->setWindowTitle("Green");
   dock->setGeometry(50, 50, 100, 100);
   l = new QWidget(dock);
-  l->setBackgroundColor(Qt::green);
+  QPalette p1 = l->palette();
+  p1.setColor(l->backgroundRole(), Qt::green);
+  l->setPalette(p1);
   l->setMinimumSize(100,100);
   dock->setWidget(l);
   /*****************************************************/
   dock1 = createDockWidget( "Blue Widget", p );
-  dock1->setCaption("Blue");
+  dock1->setWindowTitle("Blue");
   dock1->setGeometry( 150, 150, 100, 100);
   setView( dock1 );
   setMainDockWidget( dock1 );
 
-  mainW = new QWidget( dock1, "createdOnBlueDock" );
-  mainW->setBackgroundColor(Qt::blue);
+  mainW = new QWidget( dock1 );
+  mainW->setObjectName( "createdOnBlueDock" );
+  QPalette p2 = mainW->palette();
+  p2.setColor(mainW->backgroundRole(), Qt::blue);
+  mainW->setPalette(p2);
   mainW->setMinimumSize(300,150);
   dock1->setWidget( mainW );
   /*****************************************************/
 
   K3DockWidget* dock2 = createDockWidget( "Yellow Widget", p );
   dock2->setGeometry(300, 300, 100, 100);
-  dock2->setCaption("Yellow");
+  dock2->setWindowTitle("Yellow");
 
   /* test set new header widget...*/
 //  dock2->setHeader( new K3DockWidgetHeader(dock2) );
@@ -99,10 +104,12 @@ DockApplication::DockApplication( const char* name )
 
   /*****************************************************/
   dock5 = createDockWidget( "Container Widget", p );
-  dock5->setCaption("Container");
+  dock5->setWindowTitle("Container");
   dock5->setGeometry(50, 50, 100, 100);
   l = new CTW(dock5);
-  l->setBackgroundColor(Qt::white);
+  QPalette p3 = l->palette();
+  p3.setColor(l->backgroundRole(), Qt::white);
+  l->setPalette(p3);
   l->setMinimumSize(100,100);
   dock5->setWidget(l);
   if (dynamic_cast<K3DockContainer*>(l)) qDebug("K3DockContainer created for dock 5");
@@ -110,10 +117,12 @@ DockApplication::DockApplication( const char* name )
 
   /*****************************************************/
   dock6 = createDockWidget( "Container Widget2", p );
-  dock6->setCaption("Container2");
+  dock6->setWindowTitle("Container2");
   dock6->setGeometry(50, 50, 100, 100);
   l = new CTW(dock6);
-  l->setBackgroundColor(Qt::white);
+  QPalette p4 = l->palette();
+  p4.setColor(l->backgroundRole(), Qt::white);
+  l->setPalette(p4);
   l->setMinimumSize(100,100);
   dock6->setWidget(l);
   if (dynamic_cast<K3DockContainer*>(l)) qDebug("K3DockContainer created for dock 6");
@@ -175,7 +184,7 @@ void DockApplication::initMenuBar()
   Q3PopupMenu *file_menu = new Q3PopupMenu();
 
   file_menu->insertItem(p, "Change Green Widget Caption", this, SLOT(cap()) );
-  file_menu->insertSeparator();
+  file_menu->addSeparator();
   file_menu->insertItem(p, "Set Green Widget as MainDockWidget", this, SLOT(greenMain()) );
   file_menu->insertItem(p, "Set Blue Widget as MainDockWidget", this, SLOT(blueMain()) );
   file_menu->insertItem(p, "Set NULL as MainDockWidget", this, SLOT(nullMain()) );
@@ -203,10 +212,10 @@ void DockApplication::initStatusBar()
 
 void DockApplication::cap()
 {
-  if ( dock->caption() != "Test Caption1" )
-    dock->setCaption("Test Caption1");
+  if ( dock->windowTitle() != "Test Caption1" )
+    dock->setWindowTitle("Test Caption1");
   else
-    dock->setCaption("Another Caption");
+    dock->setWindowTitle("Another Caption");
 }
 
 void DockApplication::greenMain()
@@ -230,7 +239,7 @@ void DockApplication::nullMain()
 void DockApplication::updateButton()
 {
   if ( getMainDockWidget() )
-    m_bname->setText(QString("MainDockWidget is %1").arg(getMainDockWidget()->name()));
+    m_bname->setText(QString("MainDockWidget is %1").arg(getMainDockWidget()->objectName()));
   else
     m_bname->setText("MainDockWidget is NULL");
 }
@@ -253,7 +262,6 @@ int main(int argc, char* argv[]) {
 
   DockApplication* ap = new DockApplication("DockWidget demo");
   ap->setCaption("DockWidget demo");
-  a.setMainWidget(ap);
   ap->show();
   return a.exec();
 }
