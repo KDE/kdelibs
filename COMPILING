@@ -1,18 +1,16 @@
 THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING SVN
 
-(If you use source tarballs, you can skip "make -f Makefile.cvs" and should use
-"make distclean" instead of "make cvs-clean")
+(A HOWTO for setting up a KDE4 development environment can be found here:
+http://edu.kde.org/development/port2kde4.php )
 
 What you need
 
 Make sure you get the following stuff from SVN:
 
   * qt-copy (currently a snapshot of qt-4.x)
-  * arts (not necessary for kde4.0 (for the moment))
   * kdelibs
   * kdebase (strongly recommended but not strictly necessary)
-  * any other package you are interested in (as of 07Jun2005, only kdegraphics,
-    kdenetwork, kdegames, kdeedu and playground available)
+  * any other package you are interested in
 
 It is important that you compile AND INSTALL the above packages in the above
 order.
