@@ -899,6 +899,47 @@ static bool matchNth(int count, const QString& nth)
     return false;
 }
 
+
+// Recursively work the combinator to compute static attribute dependency, similar to 
+//structure of checkSubSelectors
+static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSSelector* sel, bool isAncestor, bool isSubject)
+{
+    if(sel->attr)
+    {
+        // Sets up global dependencies of attributes
+        if (isSubject)
+            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
+        else if (isAncestor)
+            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
+        else
+            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
+    }
+
+    CSSSelector::Relation relation = sel->relation;
+    sel = sel->tagHistory;
+    if (!sel) return;
+
+    switch(relation)
+    {
+    case CSSSelector::Descendant:
+    case CSSSelector::Child:
+        precomputeAttributeDependenciesAux(doc, sel, true, false);
+        break;
+    case CSSSelector::IndirectAdjacent:
+    case CSSSelector::DirectAdjacent:
+        precomputeAttributeDependenciesAux(doc, sel, false, false);
+        break;
+    case CSSSelector::SubSelector:
+        precomputeAttributeDependenciesAux(doc, sel, isAncestor, isSubject);
+        break;
+    }
+}
+
+void CSSStyleSelector::precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel)
+{
+    precomputeAttributeDependenciesAux(doc, sel, false, true);
+}
+
 // Recursive check of combinators to support nondeterministic matching
 DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::NodeImpl * n, bool isAncestor)
 {
@@ -1042,15 +1083,6 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
     if(sel->attr)
     {
-        // Sets up global dependencies of attributes
-        // ### could be done in the parser
-        if (e == element)
-            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
-        else if (isAncestor)
-            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
-        else
-            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
-
         DOMString value = e->getAttribute(sel->attr);
         if(value.isNull()) return false; // attribute is not set
 

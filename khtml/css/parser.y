@@ -30,6 +30,7 @@
 
 #include <dom/dom_string.h>
 #include <xml/dom_docimpl.h>
+#include <css/cssstyleselector.h>
 #include <css/css_ruleimpl.h>
 #include <css/css_stylesheetimpl.h>
 #include <css/css_valueimpl.h>
@@ -76,7 +77,7 @@ static inline int getValueID(const char *tagStr, int len)
 
 
 #define YYDEBUG 0
-#define YYMAXDEPTH 0
+#undef YYMAXDEPTH
 #define YYPARSE_PARAM parser
 %}
 
@@ -530,6 +531,7 @@ selector_list:
 	    $1->print();
 #endif
 	    $$->append( $1 );
+	    khtml::CSSStyleSelector::precomputeAttributeDependencies(static_cast<CSSParser *>(parser)->document(), $1);
 	} else {
 	    $$ = 0;
 	}
@@ -538,6 +540,7 @@ selector_list:
 	if ( $1 && $4 ) {
 	    $$ = $1;
 	    $$->append( $4 );
+	    khtml::CSSStyleSelector::precomputeAttributeDependencies(static_cast<CSSParser *>(parser)->document(), $4);
 #ifdef CSS_DEBUG
 	    kdDebug( 6080 ) << "   got simple selector:" << endl;
 	    $4->print();

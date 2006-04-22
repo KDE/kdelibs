@@ -159,8 +159,8 @@ void Dummy::doBenchmark()
         nextRun();
 }
 
-const int COLD_RUNS = 3;
-const int HOT_RUNS  = 10;
+const int COLD_RUNS = 2;
+const int HOT_RUNS  = 5;
 
 void Dummy::nextRun()
 {

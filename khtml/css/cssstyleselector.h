@@ -143,6 +143,7 @@ namespace khtml
         void computeFontSizes(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
 	void computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QValueVector<int>& fontSizes, bool isFixed);
 
+	static void precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel);
     protected:
 
 	DOM::NodeImpl* checkSubSelectors(DOM::CSSSelector *sel, DOM::NodeImpl *n, bool isAncestor);
