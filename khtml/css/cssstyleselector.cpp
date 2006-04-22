@@ -579,6 +579,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
                 pseudoStyle = style->getPseudoStyle(pseudoProps[i]->pseudoId);
                 if (!pseudoStyle)
                 {
+                    style->setHasPseudoStyle(pseudoProps[i]->pseudoId);
                     pseudoStyle = style->addPseudoStyle(pseudoProps[i]->pseudoId);
                     if (pseudoStyle)
                         pseudoStyle->inheritFrom( style );
@@ -981,12 +982,6 @@ DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::N
         //kdDebug() << "CSSOrderedRule::checkSelector" << endl;
         ElementImpl *elem = static_cast<ElementImpl *>(n);
 
-        // a selector is invalid if something follows a pseudo-element
-        // if elem !=element the subselector however precedes the pseudo-element
-        if ( n == element && dynamicPseudo != RenderStyle::NOPSEUDO ) {
-            return 0;
-        }
-
         if(!checkOneSelector(sel, elem, isAncestor)) return 0;
         //kdDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
         break;
@@ -1052,9 +1047,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         if (e == element)
             doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
         else if (isAncestor)
-            doc->dynamicDomRestyler().addDependency(sel->attr, AscendentDependency);
+            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
         else
-            doc->dynamicDomRestyler().addDependency(sel->attr, PrecedentDependency);
+            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
 
         DOMString value = e->getAttribute(sel->attr);
         if(value.isNull()) return false; // attribute is not set
@@ -1401,21 +1396,27 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             if (e == doc->getCSSTarget())
                 return true;
             break;
+        case CSSSelector::PseudoRoot:
+            if (e == doc->documentElement())
+                return true;
+            break;
 	case CSSSelector::PseudoLink:
 	    if (e == element) {
+	       // cache pseudoState
 	       if ( pseudoState == PseudoUnknown )
                     pseudoState = checkPseudoState( encodedurl, e );
-	       if ( pseudoState == PseudoLink )
-		  return true;
+               if ( pseudoState == PseudoLink )
+                    return true;
             } else
                 return checkPseudoState( encodedurl, e ) == PseudoLink;
 	    break;
 	case CSSSelector::PseudoVisited:
 	    if (e == element) {
+                // cache pseudoState
                 if ( pseudoState == PseudoUnknown )
                     pseudoState = checkPseudoState( encodedurl, e );
-	       if ( pseudoState == PseudoVisited )
-		  return true;
+                if ( pseudoState == PseudoVisited )
+                    return true;
             } else
                 return checkPseudoState( encodedurl, e ) == PseudoVisited;
 	    break;
@@ -1429,13 +1430,6 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
-	case CSSSelector::PseudoFocus:
-	    if (e != element && e->isFocusable()) {
-                // *:focus is a default style, no need to track it.
-                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
-            }
-            if (e->focused()) return true;
-            break;
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then *:active should only match focusable elements
 	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
@@ -1445,20 +1439,23 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    return true;
 	    }
 	    break;
-        case CSSSelector::PseudoRoot:
-            if (e == doc->documentElement())
-                return true;
+	case CSSSelector::PseudoFocus:
+	    if (e != element && e->isFocusable()) {
+                // *:focus is a default style, no need to track it.
+                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
+            }
+            if (e->focused()) return true;
             break;
         case CSSSelector::PseudoLang: {
             // Set dynamic attribute dependency
             if (e == element) {
                 doc->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
-                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AscendentDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             }
             else if (isAncestor)
-                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AscendentDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             else
-                doc->dynamicDomRestyler().addDependency(ATTR_LANG, PrecedentDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
             // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
@@ -1559,8 +1556,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoAfter:
 	    // Pseudo-elements can only apply to subject
 	    if ( e == element ) {
-                // The can be only one pseudo-element
-                if (dynamicPseudo != RenderStyle::NOPSEUDO) return false;
+                // Pseudo-elements has to be the last sub-selector on subject
+                if (sel->tagHistory && sel->relation == CSSSelector::SubSelector) return false;
+
+                assert(dynamicPseudo == RenderStyle::NOPSEUDO);
 
                 switch (sel->pseudoType()) {
                 case CSSSelector::PseudoFirstLine:

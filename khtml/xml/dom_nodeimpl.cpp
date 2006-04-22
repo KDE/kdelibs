@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003-2006 Apple Computer, Inc.
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -777,9 +777,17 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     if ( !s1 || !s2 )
 	ch = Inherit;
     else if ( *s1 == *s2 )
- 	ch = NoChange;
+	ch = NoChange;
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
+
+    // If the pseudoStyles have changed, we want any StyleChange that is not NoChange
+    // because setStyle will do the right thing with anything else.
+    if (ch == NoChange && s1->hasPseudoStyle(RenderStyle::BEFORE))
+        ch = diff(s1->getPseudoStyle(RenderStyle::BEFORE), s2->getPseudoStyle(RenderStyle::BEFORE));
+    if (ch == NoChange && s1->hasPseudoStyle(RenderStyle::AFTER))
+        ch = diff(s1->getPseudoStyle(RenderStyle::AFTER), s2->getPseudoStyle(RenderStyle::AFTER));
+
     return ch;
 }
 
@@ -1472,8 +1480,8 @@ void NodeBaseImpl::setFocus(bool received)
     NodeImpl::setFocus(received);
 
     // note that we need to recalc the style
+    setChanged(); // *:focus is a default style, so we just assume personal dependency
     if (isElementNode()) {
-        setChanged(); // *:focus is a default style, so we just assume personal dependency
         getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), OtherStateDependency);
     }
 }

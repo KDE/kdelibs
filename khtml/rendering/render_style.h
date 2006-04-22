@@ -824,9 +824,10 @@ protected:
 
                 PseudoId _styleType : 4;
                 bool _hasClip : 1;
+                unsigned _pseudoBits : 6;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 24;
+                unsigned int unused : 18;
             } f;
             Q_UINT64 _niflags;
         };
@@ -895,6 +896,7 @@ protected:
         noninherited_flags.f._page_break_after = initialPageBreak();
 	noninherited_flags.f._styleType = NOPSEUDO;
 	noninherited_flags.f._hasClip = false;
+        noninherited_flags.f._pseudoBits = 0;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
         noninherited_flags.f.unused = 0;
     }
@@ -912,6 +914,8 @@ public:
 
     PseudoId styleType() { return  noninherited_flags.f._styleType; }
 
+    bool hasPseudoStyle(PseudoId pi) const;
+    void setHasPseudoStyle(PseudoId pi);
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
     void removePseudoStyle(PseudoId pi);

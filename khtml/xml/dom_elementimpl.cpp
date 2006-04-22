@@ -564,10 +564,10 @@ void ElementImpl::attributeChanged(NodeImpl::Id id)
 #endif
     if (getDocument()->dynamicDomRestyler().checkDependency(id, PersonalDependency))
         setChanged(true);
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, AscendentDependency))
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, AncestorDependency))
         setChangedAscendentAttribute(true);
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, PrecedentDependency) && parent())
-        // Any element that dependt on a precedent attribute, also depend structurally on parent
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, PredecessorDependency) && parent())
+        // Any element that dependt on a predecessors attribute, also depend structurally on parent
         parent()->structureChanged();
 }
 

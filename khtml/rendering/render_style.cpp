@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Antti Koivisto (koivisto@kde.org)
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2002-2004 Apple Computer, Inc.
+ * Copyright (C) 2002-2005 Apple Computer, Inc.
  * Copyright (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -482,6 +482,37 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             css3NonInheritedData == o.css3NonInheritedData &&
             css3InheritedData == o.css3InheritedData &&
             inherited == o.inherited);
+}
+
+enum EPseudoBit { NO_BIT = 0x0, BEFORE_BIT = 0x1, AFTER_BIT = 0x2, FIRST_LINE_BIT = 0x4,
+                  FIRST_LETTER_BIT = 0x8, SELECTION_BIT = 0x10 };
+
+static int pseudoBit(RenderStyle::PseudoId pseudo)
+{
+    switch (pseudo) {
+        case RenderStyle::BEFORE:
+            return BEFORE_BIT;
+        case RenderStyle::AFTER:
+            return AFTER_BIT;
+        case RenderStyle::FIRST_LINE:
+            return FIRST_LINE_BIT;
+        case RenderStyle::FIRST_LETTER:
+            return FIRST_LETTER_BIT;
+        case RenderStyle::SELECTION:
+            return SELECTION_BIT;
+        default:
+            return NO_BIT;
+    }
+}
+
+bool RenderStyle::hasPseudoStyle(PseudoId pseudo) const
+{
+    return (pseudoBit(pseudo) & noninherited_flags.f._pseudoBits) != 0;
+}
+
+void RenderStyle::setHasPseudoStyle(PseudoId pseudo)
+{
+    noninherited_flags.f._pseudoBits |= pseudoBit(pseudo);
 }
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
