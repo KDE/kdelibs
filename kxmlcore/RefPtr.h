@@ -55,9 +55,16 @@ namespace KXMLCore {
         typedef T * (RefPtr::*UnspecifiedBoolType)() const;
         operator UnspecifiedBoolType() const { return m_ptr ? &RefPtr::get : 0; }
         
+	/**
+	   Standard copy (assignment) operator
+	*/
         RefPtr& operator=(const RefPtr&);
         RefPtr& operator=(T *);
         RefPtr& operator=(const PassRefPtr<T>&);
+
+	/**
+	   Template version of copy (assignment) operator
+	*/
         template <typename U> RefPtr& operator=(const RefPtr<U>&);
         template <typename U> RefPtr& operator=(const PassRefPtr<U>&);
 

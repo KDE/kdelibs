@@ -324,6 +324,9 @@ namespace KXMLCore {
         template<size_t otherCapacity> 
         Vector(const Vector<T, otherCapacity>&);
 
+	/** 
+	    Standard copy (assignment) operator
+	*/
         Vector& operator=(const Vector&);
         template<size_t otherCapacity> 
         Vector& operator=(const Vector<T, otherCapacity>&);
