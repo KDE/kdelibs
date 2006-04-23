@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <kdirnotify_stub.h>
 #include <ksimpleconfig.h>
 #include <kuser.h>
 
