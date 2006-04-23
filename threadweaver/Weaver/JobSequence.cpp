@@ -28,3 +28,5 @@ namespace ThreadWeaver {
         JobCollection::aboutToBeQueued( weaver );
     }
 }
+
+#include "JobSequence.moc"
