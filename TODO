@@ -99,6 +99,9 @@ that we would like to make for the next binary incompatible release.
   the other way around. E.g.: ReaderPart? ViewerPart?
   (David)
 
+- KParts: Remove "const char* name"-arguments from the api, for example in
+  kparts/componentfactory.h
+
 - Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
   (Contributors to that thread, please add specific items here.)
   (Waldo)
