@@ -24,6 +24,7 @@ set(ThreadWeaver_LIB_SRCS
     Thread.cpp
     SuspendingState.cpp
     IncludeMocs.cpp
+    JobCollection.cpp
 )
 
 kde4_automoc(${ThreadWeaver_LIB_SRCS})
