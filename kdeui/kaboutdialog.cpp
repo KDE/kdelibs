@@ -242,7 +242,7 @@ void KAboutContributor::updateLayout( void )
 	  mLabel[i]->hide();
 	  if( !i )
 	  {
-	    gbox->addWidget( mText[i], r, 0, 0, 1, Qt::AlignLeft );
+	    gbox->addWidget( mText[i], r, 0, 1, 2, Qt::AlignLeft );
 	  }
 	  else
 	  {
