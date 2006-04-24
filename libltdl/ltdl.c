@@ -3105,10 +3105,11 @@ lt_dlloader_remove (loader_name)
 	}
 
       place = prev->next;
-      prev->next = prev->next->next;
+      if (prev->next) 
+        prev->next = prev->next->next;
     }
 
-  if (place->dlloader_exit)
+  if (place && place->dlloader_exit)
     {
       errors = place->dlloader_exit (place->dlloader_data);
     }
