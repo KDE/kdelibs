@@ -307,7 +307,6 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     namedAttrMap = 0;
     m_styleDecls = 0;
     m_prefix = 0;
-    m_hasClassList = false;
 }
 
 ElementImpl::~ElementImpl()
@@ -520,10 +519,6 @@ void ElementImpl::attach()
 #endif
 
     NodeBaseImpl::attach();
-
-    // Trigger all the addChild changes as one large dynamic appendChildren change
-    if (closed())
-        backwardsStructureChanged();
 }
 
 void ElementImpl::close()

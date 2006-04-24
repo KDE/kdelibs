@@ -74,6 +74,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_implicit( false ),
       m_rendererNeedsClose( false ),
       m_htmlCompat( false ),
+      m_hasClassList( false ),
       m_hasClass( false )
 {
     if (document)
