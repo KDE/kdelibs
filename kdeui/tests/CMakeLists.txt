@@ -708,7 +708,6 @@ kde4_add_executable(kdialogtest RUN_UNINSTALLED ${kdialogtest_SRCS})
 target_link_libraries(kdialogtest ${KDE4_KDEUI_LIBS})
 
 
-
 ########### next target ###############
 
 set(kglobalacceltest_SRCS
@@ -720,6 +719,19 @@ kde4_automoc(${kglobalacceltest_SRCS})
 kde4_add_executable(kglobalacceltest RUN_UNINSTALLED ${kglobalacceltest_SRCS})
 
 target_link_libraries(kglobalacceltest ${KDE4_KDEUI_LIBS})
+
+
+########### next target ###############
+
+set(kactivelabeltest_SRCS
+kactivelabeltest.cpp
+)
+
+kde4_automoc(${kactivelabeltest_SRCS})
+
+kde4_add_executable(kactivelabeltest RUN_UNINSTALLED ${kactivelabeltest_SRCS})
+
+target_link_libraries(kactivelabeltest ${KDE4_KDEUI_LIBS})
 
 endif(KDE4_BUILD_TESTS)
 
