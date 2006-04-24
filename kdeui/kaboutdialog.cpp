@@ -334,7 +334,6 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent )
       QHBoxLayout* const hbox = new QHBoxLayout( productArea );
       hbox->setMargin(0);
       hbox->setSpacing( KDialog::spacingHint() );
-      if( !hbox ) { return; }
 
       mIconLabel = new QLabel( productArea );
       hbox->addWidget( mIconLabel, 0, Qt::AlignLeft|Qt::AlignHCenter );
