@@ -772,7 +772,7 @@ bool NodeImpl::childAllowed( NodeImpl *newChild )
     return childTypeAllowed(newChild->nodeType());
 }
 
-NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const
+NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 )
 {
     // This method won't work when a style contains noninherited properties with "inherit" value.
     StyleChange ch = NoInherit;
@@ -784,19 +784,31 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
 	ch = Inherit;
 
     // If the pseudoStyles have changed, we want to return NoInherit
-    if (ch == NoChange) {
-        if (s1->hasPseudoStyle(RenderStyle::BEFORE) || s2->hasPseudoStyle(RenderStyle::BEFORE))
-            ch = diff(s1->getPseudoStyle(RenderStyle::BEFORE), s2->getPseudoStyle(RenderStyle::BEFORE));
-        if (ch != NoChange) return NoInherit;
-        if (s1->hasPseudoStyle(RenderStyle::AFTER) || s2->hasPseudoStyle(RenderStyle::AFTER))
-            ch = diff(s1->getPseudoStyle(RenderStyle::AFTER), s2->getPseudoStyle(RenderStyle::AFTER));
-        if (ch != NoChange) return NoInherit;
-        if (s1->hasPseudoStyle(RenderStyle::SELECTION) || s2->hasPseudoStyle(RenderStyle::SELECTION))
-            ch = diff(s1->getPseudoStyle(RenderStyle::SELECTION), s2->getPseudoStyle(RenderStyle::SELECTION));
-        if (ch != NoChange) return NoInherit;
-    }
+    if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::BEFORE);
+    if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::AFTER);
+    if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::SELECTION);
+//     if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LETTER);
+//     if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LINE);
 
     return ch;
+}
+
+NodeImpl::StyleChange NodeImpl::pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid)
+{
+    khtml::RenderStyle *ps1 = s1->getPseudoStyle((khtml::RenderStyle::PseudoId)pid);
+    khtml::RenderStyle *ps2 = s2->getPseudoStyle((khtml::RenderStyle::PseudoId)pid);
+
+    if (ps1 == ps2)
+        return NoChange;
+    else
+    if (ps1 && ps2) {
+        if (*ps1 == *ps2)
+            return NoChange;
+        else
+            return NoInherit;
+    }
+    else
+        return NoInherit;
 }
 
 void NodeImpl::close()
@@ -1601,7 +1613,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
         //Compute distance from the requested index to the cache node
         long cacheDist = QABS(long(index) - long(m_cache->position));
 
-        if (cacheDist < index) { //Closer to the cached position
+        if (cacheDist < (long)index) { //Closer to the cached position
             usedCache = true;
             if (index >= m_cache->position) { //Go ahead
                 unsigned long relIndex = index - m_cache->position;

@@ -262,7 +262,8 @@ public:
 
     enum StyleChange { NoChange, NoInherit, Inherit, Force };
     virtual void recalcStyle( StyleChange = NoChange ) {}
-    StyleChange diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const;
+    static StyleChange diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 );
+    static StyleChange pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid);
 
     unsigned long nodeIndex() const;
     // Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
