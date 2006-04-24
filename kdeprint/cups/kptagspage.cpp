@@ -132,6 +132,8 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 	{
 		if (it.key().startsWith("KDEPrint-"))
 		{
+			if (!m_tags->itemAt( 0, r))  m_tags->setItem( 0, r, new QTableWidgetItem());
+			if (!m_tags->itemAt( 1, r))  m_tags->setItem( 1, r, new QTableWidgetItem());
 			m_tags->itemAt( 0, r)->setText(it.key().mid(9));
 			QString	data = it.value();
 			m_tags->itemAt(1, r )-> setText(data.replace(re, ""));
@@ -140,6 +142,8 @@ void KPTagsPage::setOptions(const QMap<QString,QString>& opts)
 	}
 	for (; r<m_tags->rowCount(); r++)
 	{
+		if (!m_tags->itemAt( 0, r))  m_tags->setItem( 0, r, new QTableWidgetItem());
+		if (!m_tags->itemAt( 1, r))  m_tags->setItem( 0, r, new QTableWidgetItem());
 		m_tags->itemAt(0,r)->setText(QString());
 		m_tags->itemAt(1,r)->setText(QString());
 	}
