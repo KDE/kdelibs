@@ -455,6 +455,7 @@ void KSelectAction::setMaxComboViewCount( int n )
 void KSelectAction::addAction(QAction* action)
 {
   action->setActionGroup(selectableActionGroup());
+  action->setCheckable( true );
 
   int index = selectableActionGroup()->actions().indexOf(action);
 
