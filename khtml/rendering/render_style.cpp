@@ -510,13 +510,18 @@ bool RenderStyle::hasPseudoStyle(PseudoId pseudo) const
     return (pseudoBit(pseudo) & noninherited_flags.f._pseudoBits) != 0;
 }
 
-void RenderStyle::setHasPseudoStyle(PseudoId pseudo)
+void RenderStyle::setHasPseudoStyle(PseudoId pseudo, bool b)
 {
-    noninherited_flags.f._pseudoBits |= pseudoBit(pseudo);
+    if (b)
+        noninherited_flags.f._pseudoBits |= pseudoBit(pseudo);
+    else
+        noninherited_flags.f._pseudoBits &= ~(pseudoBit(pseudo));
 }
 
-RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
+RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid) const
 {
+    if (!hasPseudoStyle(pid)) return 0;
+
     RenderStyle *ps = 0;
     if (noninherited_flags.f._styleType==NOPSEUDO)
         for (ps = pseudoStyle; ps; ps = ps->pseudoStyle)
@@ -527,25 +532,27 @@ RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 
 RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
 {
-    RenderStyle *ps = getPseudoStyle(pid);
+    if (hasPseudoStyle(pid)) return getPseudoStyle(pid);
 
-    if (!ps)
-    {
-        switch (pid) {
-          case FIRST_LETTER:             // pseudo-elements (FIRST_LINE has a special handling)
-          case BEFORE:
-          case AFTER:
+    RenderStyle *ps = 0;
+
+    switch (pid) {
+        case FIRST_LETTER:             // pseudo-elements (FIRST_LINE has a special handling)
+        case SELECTION:
+        case BEFORE:
+        case AFTER:
             ps = new RenderStyle();
             break;
-          default:
+        default:
             ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
-        }
-        ps->ref();
-        ps->noninherited_flags.f._styleType = pid;
-        ps->pseudoStyle = pseudoStyle;
-
-        pseudoStyle = ps;
     }
+    ps->ref();
+    ps->noninherited_flags.f._styleType = pid;
+    ps->pseudoStyle = pseudoStyle;
+
+    pseudoStyle = ps;
+
+    setHasPseudoStyle(pid, true);
 
     return ps;
 }
@@ -564,6 +571,8 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
         prev = ps;
         ps = ps->pseudoStyle;
     }
+
+    setHasPseudoStyle(pid, false);
 }
 
 
@@ -693,7 +702,15 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
        )
         return Visible;
 
-    return Equal;
+    RenderStyle::Diff ch = Equal;
+    // Check for visible pseudo-changes:
+    if (hasPseudoStyle(SELECTION) != other->hasPseudoStyle(SELECTION))
+        ch = Visible;
+    else
+    if (hasPseudoStyle(SELECTION) && other->hasPseudoStyle(SELECTION))
+        ch = getPseudoStyle(SELECTION)->diff(other->getPseudoStyle(SELECTION));
+
+    return ch;
 }
 
 

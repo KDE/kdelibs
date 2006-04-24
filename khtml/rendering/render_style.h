@@ -915,8 +915,8 @@ public:
     PseudoId styleType() { return  noninherited_flags.f._styleType; }
 
     bool hasPseudoStyle(PseudoId pi) const;
-    void setHasPseudoStyle(PseudoId pi);
-    RenderStyle* getPseudoStyle(PseudoId pi);
+    void setHasPseudoStyle(PseudoId pi, bool b=true);
+    RenderStyle* getPseudoStyle(PseudoId pi) const;
     RenderStyle* addPseudoStyle(PseudoId pi);
     void removePseudoStyle(PseudoId pi);
 

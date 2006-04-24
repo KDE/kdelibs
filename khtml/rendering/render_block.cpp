@@ -136,8 +136,9 @@ void RenderBlock::setStyle(RenderStyle* _style)
     updatePseudoChildren();
 
     // handled by close() during parsing
-    if (!document()->parsing())
+    if (!document()->parsing()) {
         updateFirstLetter();
+    }
 }
 
 void RenderBlock::updateFirstLetter()

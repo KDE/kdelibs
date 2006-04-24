@@ -620,7 +620,7 @@ void ElementImpl::recalcStyle( StyleChange change )
         if ( change != Force)
             change = ch;
     }
-    // If a changed attribute has ascendent dependencies, restyle all children
+    // If a changed attribute has ancestor dependencies, restyle all children
     if (changedAscendentAttribute()) {
         change = Force;
         setChangedAscendentAttribute(false);

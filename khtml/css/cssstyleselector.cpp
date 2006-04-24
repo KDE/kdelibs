@@ -579,7 +579,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
                 pseudoStyle = style->getPseudoStyle(pseudoProps[i]->pseudoId);
                 if (!pseudoStyle)
                 {
-                    style->setHasPseudoStyle(pseudoProps[i]->pseudoId);
                     pseudoStyle = style->addPseudoStyle(pseudoProps[i]->pseudoId);
                     if (pseudoStyle)
                         pseudoStyle->inheritFrom( style );

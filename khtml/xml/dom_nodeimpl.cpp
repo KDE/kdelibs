@@ -774,6 +774,7 @@ bool NodeImpl::childAllowed( NodeImpl *newChild )
 
 NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const
 {
+    // This method won't work when a style contains noninherited properties with "inherit" value.
     StyleChange ch = NoInherit;
     if ( !s1 || !s2 )
 	ch = Inherit;
@@ -782,12 +783,18 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
 
-    // If the pseudoStyles have changed, we want any StyleChange that is not NoChange
-    // because setStyle will do the right thing with anything else.
-    if (ch == NoChange && s1->hasPseudoStyle(RenderStyle::BEFORE))
-        ch = diff(s1->getPseudoStyle(RenderStyle::BEFORE), s2->getPseudoStyle(RenderStyle::BEFORE));
-    if (ch == NoChange && s1->hasPseudoStyle(RenderStyle::AFTER))
-        ch = diff(s1->getPseudoStyle(RenderStyle::AFTER), s2->getPseudoStyle(RenderStyle::AFTER));
+    // If the pseudoStyles have changed, we want to return NoInherit
+    if (ch == NoChange) {
+        if (s1->hasPseudoStyle(RenderStyle::BEFORE) || s2->hasPseudoStyle(RenderStyle::BEFORE))
+            ch = diff(s1->getPseudoStyle(RenderStyle::BEFORE), s2->getPseudoStyle(RenderStyle::BEFORE))
+        if (ch != NoChange) return NoInherit;
+        if (s1->hasPseudoStyle(RenderStyle::AFTER) || s2->hasPseudoStyle(RenderStyle::AFTER)))
+            ch = diff(s1->getPseudoStyle(RenderStyle::AFTER), s2->getPseudoStyle(RenderStyle::AFTER));
+        if (ch != NoChange) return NoInherit;
+        if (s1->hasPseudoStyle(RenderStyle::SELECTION) || s2->hasPseudoStyle(RenderStyle::SELECTION)))
+            ch = diff(s1->getPseudoStyle(RenderStyle::SELECTION), s2->getPseudoStyle(RenderStyle::SELECTION));
+        if (ch != NoChange) return NoInherit;
+    }
 
     return ch;
 }
