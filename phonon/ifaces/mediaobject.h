@@ -37,9 +37,7 @@ namespace Ifaces
 		public:
 			// Attributes Getters:
 			/**
-			 * Set the URL the MediaObject should use as media data source.
-			 *
-			 * @param url The URL to the media data.
+			 * Get the URL that the MediaObject should use as media data source.
 			 */
 			virtual KUrl url() const = 0;
 			/**
