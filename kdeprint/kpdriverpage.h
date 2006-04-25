@@ -30,7 +30,7 @@ public:
 	KPDriverPage(KMPrinter *p, DrMain *d = 0, QWidget *parent = 0);
 	~KPDriverPage();
 
-	bool isValid(QString&);
+	bool isValid(QString &msg);
 	void setOptions(const QMap<QString,QString>& opts);
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 
