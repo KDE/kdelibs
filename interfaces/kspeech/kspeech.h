@@ -367,11 +367,11 @@
  *
  * A Talker Code consists of a series of XML tags and attributes.
  * An example of a full Talker Code with all attributes specified is
- *
+ *   \code
  *   <voice lang="en" name="kal" gender="male"/>
  *   <prosody volume="soft" rate="fast"/>
  *   <kttsd synthesizer="Festival" />
- *
+ *   \endcode
  * (The @e voice and @e prosody tags are adapted from the W3C Speech Synthesis
  * Markup Language (SSML) and Java Speech Markup Language (JSML).
  * The @e kttsd tag is an extension to the SMML and JSML languages to support
