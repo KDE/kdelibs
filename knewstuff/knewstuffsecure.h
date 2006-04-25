@@ -18,6 +18,7 @@
 
 //qt includes
 #include <qobject.h>
+#include <qmap.h>
 
 //kde includes
 #include "knewstuff.h"
