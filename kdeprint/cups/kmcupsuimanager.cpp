@@ -148,7 +148,7 @@ void KMCupsUiManager::setupWizard(KMWizard *wizard)
 	QString		uri;
 
 	req.setOperation(CUPS_GET_DEVICES);
-	uri = QString::fromLocal8Bit("ipp://%1/printers/").arg(CupsInfos::self()->hostaddr());
+	uri = QString::fromLocal8Bit("ipp://%1/printers/").arg(CupsInfos::self()->ippaddr());
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 
 	if (req.doRequest("/"))

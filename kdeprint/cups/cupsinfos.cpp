@@ -168,3 +168,13 @@ const QString CupsInfos::hostaddr() const
 		return QString("%1")
 			.arg(host_);
 }
+
+const QString CupsInfos::ippaddr() const
+{
+	if(host_[0] != '/')
+		return QString("%1:%2")
+			.arg(host_)
+			.arg(port_);
+	else
+		return QString("localhost");
+}

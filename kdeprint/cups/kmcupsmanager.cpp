@@ -136,7 +136,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	{
 		req.setOperation(CUPS_ADD_CLASS);
 		QStringList	members = p->members(), uris;
-		QString		s = QString::fromLocal8Bit("ipp://%1/printers/").arg(CupsInfos::self()->hostaddr());
+		QString		s = QString::fromLocal8Bit("ipp://%1/printers/").arg(CupsInfos::self()->ippaddr());
 		for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
 			uris.append(s+(*it));
 		req.addURI(IPP_TAG_PRINTER,"member-uris",uris);
@@ -974,7 +974,7 @@ QString printerURI(KMPrinter *p, bool use)
 		uri = p->uri().prettyURL();
 	else
 		uri = QString("ipp://%1/%3/%2")
-			.arg(CupsInfos::self()->hostaddr())
+			.arg(CupsInfos::self()->ippaddr())
 			.arg(p->printerName())
 			.arg((p->isClass(false) ? "classes" : "printers"));
 	return uri;
