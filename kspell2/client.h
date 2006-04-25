@@ -44,12 +44,31 @@ namespace KSpell2
     public:
         Client( QObject *parent = 0 );
 
+        /**
+         * @returns how reliable the answer is (higher is better).
+         */
         virtual int reliability() const = 0;
 
+        /**
+         * Returns a dictionary for the given language.
+         *
+         * @param language specifies the language of the dictionary. If an
+         *        empty string is passed the default language will be 
+         *        used. Has to be one of the values returned by
+         *        languages()
+         * 
+         * @returns a dictionary for the language or 0 if there was an error.
+         */
         virtual Dictionary* dictionary( const QString& language ) =0;
 
+        /**
+         * @returns a list of supported languages.
+         */
         virtual QStringList languages() const =0;
 
+        /**
+         * @returns the name of the implementating class.
+         */
         virtual QString name() const =0;
     };
 }

@@ -79,7 +79,12 @@ namespace KSpell2
 	
     
     Q_SIGNALS:
-	void activeChanged(const QString &);
+	/**
+	 * Emitted when as-you-type spell checking is enabled or disabled.
+	 *
+	 * @param description is a i18n description of the new state, with an optional reason
+	 */
+	void activeChanged(const QString &description);
 
     protected:
         virtual void setMisspelled( int start, int count );

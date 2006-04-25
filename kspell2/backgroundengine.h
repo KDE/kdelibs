@@ -58,8 +58,17 @@ namespace KSpell2
         QStringList suggest( const QString& word );
         bool        addWord( const QString& word );
     Q_SIGNALS:
+
+        /**
+         * Emitted when a misspelling is found.
+         */
         void misspelling( const QString&, int );
+	
+        /**
+         * Emitted when all words have been checked.
+         */
         void done();
+
     protected Q_SLOTS:
         void checkNext();
     private:
