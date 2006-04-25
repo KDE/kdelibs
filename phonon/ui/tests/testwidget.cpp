@@ -191,7 +191,7 @@ void TestWidget::loadFile( const QString & file )
 	m_media->addAudioPath( path );
 	if( m_media->hasVideo() && BackendCapabilities::self()->supportsVideo() )
 	{
-		vpath = new VideoPath( vout );
+		vpath = new VideoPath( this );
 		m_media->addVideoPath( vpath );
 		vout = new Ui::VideoWidget( this );
 		vpath->addOutput( vout );
