@@ -32,7 +32,7 @@ class QStringList;
 /**
  * @internal
  * class that communique with the KNotify server.
- * don't use this class dirrectly,  use KNotification instead
+ * don't use this class directly,  use KNotification instead
  * @author Olivier Goffart
  */
 class KNotificationManager :  public DCOPObject

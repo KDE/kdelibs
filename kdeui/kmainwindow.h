@@ -610,7 +610,7 @@ public Q_SLOTS:
     /**
      * Show a standard configure toolbar dialog.
      *
-     * This slot can be connected dirrectly to the action to configure shortcuts.
+     * This slot can be connected directly to the action to configure shortcuts.
      * This is very simple to do that by adding a single line
      * \code
      * KStdAction::configureToolbars( guiFactory(), SLOT( configureToolbars() ),

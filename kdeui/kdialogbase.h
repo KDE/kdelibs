@@ -163,7 +163,7 @@ class KDEUI_EXPORT KDialogBase : public KDialog
   public:
 
     /**
-     * @deprecated  you should use KDialog dirrectly instead of this
+     * @deprecated  you should use KDialog directly instead of this
      * Constructor for the standard mode where you must specify the main
      * widget with setMainWidget() .
      *

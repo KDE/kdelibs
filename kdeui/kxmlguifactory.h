@@ -179,7 +179,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   /**
    * Show a standard configure shortcut for every action in this factory.
    *
-   * This slot can be connected dirrectly to the action to configure shortcuts. This is very simple to
+   * This slot can be connected directly to the action to configure shortcuts. This is very simple to
    * do that by adding a single line
    * \code
    * KStdAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
