@@ -83,7 +83,7 @@ void KHashWidget::paintEvent(QPaintEvent * /*ev*/)
     KImageEffect::hash(image, KImageEffect::WestLite, 2);
     ft = time.elapsed();
     pix = QPixmap(image.width(), image.height());
-    pix.convertFromImage(image);
+    pix = QPixmap::fromImage(image);
     pix = QPixmap(width()/cols, height()/rows);
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
