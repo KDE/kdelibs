@@ -188,6 +188,7 @@ public:
 
     virtual void attach();
     virtual void close();
+    virtual void detach();
     virtual void structureChanged();
     virtual void backwardsStructureChanged();
     virtual void attributeChanged(NodeImpl::Id attrId);
