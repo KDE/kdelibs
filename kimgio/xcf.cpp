@@ -284,19 +284,20 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 		// The USER UNIT property size is not correct. I'm not sure why, though.
 		float factor;
 		qint32 digits;
-		char* unit_strings;
 
 		xcf_io >> size >> factor >> digits;
 
 		for (int i = 0; i < 5; i++) {
+			char* unit_strings;
+
 			xcf_io >> unit_strings;
+
+			delete[] unit_strings;
 
 			if (xcf_io.device()->atEnd()) {
 				kDebug(399) << "XCF: read failure on property " << type << endl;
 				return false;
 			}
-
-			delete[] unit_strings;
 		}
 
 		size = 0;
