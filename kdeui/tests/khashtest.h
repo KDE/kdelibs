@@ -8,7 +8,7 @@
 #define KHASH_TEST_H
 
 #include <qwidget.h>
-#include <kpixmap.h>
+#include <qpixmap.h>
 
 class KHashWidget : public QWidget
 {
@@ -20,7 +20,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *ev);
 private:
-    KPixmap pix;
+    QPixmap pix;
 };
 
 #endif

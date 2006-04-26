@@ -3,7 +3,7 @@
 
 #include <qwidget.h>
 #include <qimage.h>
-#include <kpixmap.h>
+#include <qpixmap.h>
 
 class KColorWidget : public QWidget
 {
@@ -14,7 +14,7 @@ protected:
     void paintEvent(QPaintEvent *ev);
 private:
     QImage image, original;
-    KPixmap pixmap;
+    QPixmap pixmap;
     bool m_bFirst;
 
 };

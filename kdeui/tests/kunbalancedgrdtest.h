@@ -8,7 +8,7 @@
 #define KGRADIENT_TEST_H
 
 #include <qwidget.h>
-#include <kpixmap.h>
+#include <qpixmap.h>
 #include <qslider.h>
 #include <qlabel.h>
 #include <qdatetime.h>
@@ -22,7 +22,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *ev);
 private:
-    KPixmap pix;
+    QPixmap pix;
     int xbalance, ybalance;
     QTime time;
  
