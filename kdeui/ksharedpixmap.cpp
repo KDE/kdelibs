@@ -20,10 +20,11 @@
 #include <qwindowdefs.h>
 #include <qwidget.h>
 
+#include <ksharedpixmap.h>
+
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 
-#include <ksharedpixmap.h>
 #include <kdebug.h>
 #include <stdlib.h> // for abs
 #include <stdio.h>
@@ -236,5 +237,30 @@ bool KSharedPixmap::x11Event(XEvent *event)
 }
 
 
-#include "ksharedpixmap.moc"
+#else
+KSharedPixmap::KSharedPixmap()
+    : QWidget( 0 )
+{
+}
+
+KSharedPixmap::~KSharedPixmap()
+{
+}
+
+QPixmap KSharedPixmap::pixmap() const
+{
+    return QPixmap();
+}
+
+bool KSharedPixmap::isAvailable(const QString & name) const
+{
+    return false;
+}
+
+bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
+{
+    return false;
+}
 #endif
+
+#include "ksharedpixmap.moc"
