@@ -81,10 +81,10 @@ void KSharedPixmap::init()
 {
     char pixmapName[] = "PIXMAP";
     char targetName[50];
-    snprintf(targetName, 49, "target prop for window %lx", 
+    snprintf(targetName, 49, "target prop for window %lx",
              static_cast<unsigned long>(winId()));
     char *names[2] = { pixmapName, targetName };
-    
+
     Atom atoms[2];
     XInternAtoms(QX11Info::display(), names, 2, False, atoms);
     d->pixmap = atoms[0];
@@ -153,14 +153,14 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     int dummy, format;
     unsigned long nitems, ldummy;
-    Drawable *pixmap_id;
+    unsigned char *pixmap_id = 0;
     Atom type;
 
     XGetWindowProperty(QX11Info::display(), winId(), ev->property, 0, 1, false,
 	    d->pixmap, &type, &format, &nitems, &ldummy,
-	    (unsigned char **) &pixmap_id);
+	    &pixmap_id);
 
-    if (nitems != 1)
+    if (nitems != 1 || !pixmap_id)
     {
 	kWarning(270) << k_funcinfo << "could not read property, nitems = " << nitems << "\n";
 	emit done(false);
@@ -169,15 +169,18 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     Window root;
     unsigned int width, height, udummy;
-    XGetGeometry(QX11Info::display(), *pixmap_id, &root, &dummy, &dummy, &width,
+    void *drawable_id = (void *) pixmap_id;
+    Drawable pixmap = *(Drawable*) drawable_id;
+
+    XGetGeometry(QX11Info::display(), pixmap, &root, &dummy, &dummy, &width,
 	    &height, &udummy, &udummy);
 
     QX11Info inf;
 
     if (d->rect.isEmpty())
     {
-	d->pixmap_data = KPixmap(width, height);
-	XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
+	d->pixmap_data = QPixmap(width, height);
+	XCopyArea(QX11Info::display(), pixmap, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 		0, 0, width, height, 0, 0);
 
         XFree(pixmap_id);
@@ -215,13 +218,13 @@ bool KSharedPixmap::x11Event(XEvent *event)
 
     d->pixmap_data = KPixmap( tw+origin.x(), th+origin.y() );
 
-    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), pixmap, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
             xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );
-    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), pixmap, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), pixmap, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(QX11Info::display(), *pixmap_id, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
+    XCopyArea(QX11Info::display(), pixmap, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
 
     XFree(pixmap_id);
