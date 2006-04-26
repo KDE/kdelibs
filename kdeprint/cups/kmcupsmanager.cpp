@@ -881,6 +881,11 @@ QString KMCupsManager::stateInformation()
 		.arg(CupsInfos::self()->hostaddr());
 }
 
+QString KMCupsManager::testPage()
+{
+	return QString("/usr/share/cups/data/testprint.ps");
+}
+
 void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kDebug(500) << "Checking for update possible" << endl;

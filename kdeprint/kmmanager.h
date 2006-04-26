@@ -165,7 +165,8 @@ protected:
 	void setHasManagement(bool on)		{ m_hasmanagement = on; }
 	void setPrinterOperationMask(int m)	{ m_printeroperationmask = m; }
 	void setServerOperationMask(int m)	{ m_serveroperationmask = m; }
-	QString testPage();
+	virtual QString testPage();
+	QString getTestPage();
 	void discardAllPrinters(bool);
 	void setUpdatePossible( bool );
 	virtual void checkUpdatePossibleInternal();

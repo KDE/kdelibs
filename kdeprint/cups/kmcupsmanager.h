@@ -89,6 +89,7 @@ protected:
 	void unloadCupsdConf();
 	QString cupsInstallDir();
 	void ippReport(IppRequest&, int, const QString&);
+	QString testPage();
 	void checkUpdatePossibleInternal();
 
 private:

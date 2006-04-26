@@ -168,7 +168,7 @@ bool KMManager::setDefaultPrinter(const QString& name)
 bool KMManager::testPrinter(KMPrinter *prt)
 {
 	// standard Test mechanism
-	QString	testpage = testPage();
+	QString	testpage = getTestPage();
 	if (testpage.isEmpty())
 	{
 		setErrorMsg(i18n("Unable to locate test page."));
@@ -430,9 +430,20 @@ bool KMManager::configureServer(QWidget*)
 
 QString KMManager::testPage()
 {
+	return QString();
+}
+
+QString KMManager::getTestPage()
+{
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("General");
 	QString	tpage = conf->readPathEntry("TestPage");
+
+	if (tpage.isEmpty())
+		tpage = testPage();
+	if(!tpage.isEmpty() && !QFile::exists(tpage))
+		tpage.clear();
+
 	if (tpage.isEmpty())
 		tpage = locate("data","kdeprint/testprint.ps");
 	return tpage;
@@ -442,10 +453,10 @@ void KMManager::discardAllPrinters(bool on)
 {
 	QListIterator<KMPrinter*>	it(m_printers);
 	while (it.hasNext()) {
-    KMPrinter *printer(it.next());
+		KMPrinter *printer(it.next());
 		if (!on || !printer->isSpecial())
 			printer->setDiscarded(on);
-  }
+	}
 }
 
 bool KMManager::validateDbDriver(KMDBEntry*)

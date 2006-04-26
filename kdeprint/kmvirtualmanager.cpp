@@ -345,7 +345,7 @@ void KMVirtualManager::saveFile(const QString& filename)
 
 bool KMVirtualManager::testInstance(KMPrinter *p)
 {
-	QString	testpage = KMManager::self()->testPage();
+	QString	testpage = KMManager::self()->getTestPage();
 	if (testpage.isEmpty())
 		return false;
 	else
