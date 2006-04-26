@@ -28,8 +28,7 @@
 #ifndef _KDE_MACROS_H_
 #define _KDE_MACROS_H_
 
-/* Set by configure */
-#undef __KDE_HAVE_GCC_VISIBILITY
+#cmakedefine __KDE_HAVE_GCC_VISIBILITY
 
 /**
  * @def KDE_NO_EXPORT

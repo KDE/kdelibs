@@ -38,7 +38,7 @@
 #pragma warning(disable: 4355)
 #endif
 
-#undef __KDE_HAVE_GCC_VISIBILITY
+#cmakedefine __KDE_HAVE_GCC_VISIBILITY
 
 #ifndef KJS_EXPORT
 # ifdef __KDE_HAVE_GCC_VISIBILITY
