@@ -530,6 +530,13 @@ void ElementImpl::close()
         backwardsStructureChanged();
 }
 
+void ElementImpl::detach()
+{
+    getDocument()->dynamicDomRestyler().resetDependencies(this);
+
+    NodeBaseImpl::detach();
+}
+
 void ElementImpl::structureChanged()
 {
     NodeBaseImpl::structureChanged();
