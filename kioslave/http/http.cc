@@ -55,7 +55,6 @@
 #include <kmimemagic.h>
 #include <dcopclient.h>
 #include <kdatastream.h>
-#include <kapplication.h>
 #include <krandom.h>
 #include <ktoolinvocation.h>
 #include <kstreamsocket.h>
