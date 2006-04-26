@@ -9,7 +9,6 @@
 #include <qpainter.h>
 
 #include "kpixmapeffect.h"
-#include "kpixmap.h"
 #include "kimageeffect.h"
 
 //======================================================================
@@ -19,7 +18,7 @@
 //======================================================================
 
 
-KPixmap& KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
+QPixmap& KPixmapEffect::gradient(QPixmap &pixmap, const QColor &ca,
 	const QColor &cb, GradientType eff, int ncols)
 {
     if(pixmap.depth() > 8 &&
@@ -83,7 +82,7 @@ KPixmap& KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 
 // -----------------------------------------------------------------------------
 
-KPixmap& KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
+QPixmap& KPixmapEffect::unbalancedGradient(QPixmap &pixmap, const QColor &ca,
          const QColor &cb, GradientType eff, int xfactor, int yfactor,
          int ncols)
 {
@@ -104,7 +103,7 @@ KPixmap& KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 
 
 
-KPixmap& KPixmapEffect::intensity(KPixmap &pixmap, float percent)
+QPixmap& KPixmapEffect::intensity(QPixmap &pixmap, float percent)
 {
     QImage image = pixmap.toImage();
     KImageEffect::intensity(image, percent);
@@ -116,7 +115,7 @@ KPixmap& KPixmapEffect::intensity(KPixmap &pixmap, float percent)
 
 // -----------------------------------------------------------------------------
 
-KPixmap& KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
+QPixmap& KPixmapEffect::channelIntensity(QPixmap &pixmap, float percent,
                                      RGBComponent channel)
 {
     QImage image = pixmap.toImage();
@@ -135,7 +134,7 @@ KPixmap& KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
 //======================================================================
 
 
-KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
+QPixmap& KPixmapEffect::blend(QPixmap &pixmap, float initial_intensity,
 			  const QColor &bgnd, GradientType eff,
 			  bool anti_dir, int ncols)
 {
@@ -174,7 +173,7 @@ KPixmap& KPixmapEffect::blend(KPixmap &pixmap, float initial_intensity,
 //
 //======================================================================
 
-KPixmap& KPixmapEffect::hash(KPixmap &pixmap, Lighting lite,
+QPixmap& KPixmapEffect::hash(QPixmap &pixmap, Lighting lite,
 			 unsigned int spacing, int ncols)
 {
     QImage image = pixmap.toImage();
@@ -208,7 +207,7 @@ KPixmap& KPixmapEffect::hash(KPixmap &pixmap, Lighting lite,
 //======================================================================
 
 #if 0
-void KPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca,
+void KPixmapEffect::pattern(QPixmap &pixmap, const QColor &ca,
 	const QColor &cb, unsigned pat[8])
 {
     QImage img = pattern(pixmap.size(), ca, cb, pat);
@@ -218,7 +217,7 @@ void KPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca,
 
 // -----------------------------------------------------------------------------
 
-KPixmap KPixmapEffect::pattern(const KPixmap& pmtile, QSize size,
+QPixmap KPixmapEffect::pattern(const QPixmap& pmtile, QSize size,
                        const QColor &ca, const QColor &cb, int ncols)
 {
     if (pmtile.depth() > 8)
@@ -226,7 +225,7 @@ KPixmap KPixmapEffect::pattern(const KPixmap& pmtile, QSize size,
 
     QImage img = pmtile.toImage();
     KImageEffect::flatten(img, ca, cb, ncols);
-    KPixmap pixmap;
+    QPixmap pixmap;
     pixmap = QPixmap::fromImage(img);
 
     return KPixmapEffect::createTiled(pixmap, size);
@@ -235,9 +234,9 @@ KPixmap KPixmapEffect::pattern(const KPixmap& pmtile, QSize size,
 
 // -----------------------------------------------------------------------------
 
-KPixmap KPixmapEffect::createTiled(const KPixmap& pixmap, QSize size)
+QPixmap KPixmapEffect::createTiled(const QPixmap& pixmap, QSize size)
 {
-    KPixmap pix(size);
+    QPixmap pix(size);
 
     QPainter p(&pix);
     p.drawTiledPixmap(0, 0, size.width(), size.height(), pixmap);
@@ -252,7 +251,7 @@ KPixmap KPixmapEffect::createTiled(const KPixmap& pixmap, QSize size)
 //
 //======================================================================
 
-KPixmap& KPixmapEffect::fade(KPixmap &pixmap, double val, const QColor &color)
+QPixmap& KPixmapEffect::fade(QPixmap &pixmap, double val, const QColor &color)
 {
     QImage img = pixmap.toImage();
     KImageEffect::fade(img, val, color);
@@ -263,7 +262,7 @@ KPixmap& KPixmapEffect::fade(KPixmap &pixmap, double val, const QColor &color)
 
 
 // -----------------------------------------------------------------------------
-KPixmap& KPixmapEffect::toGray(KPixmap &pixmap, bool fast)
+QPixmap& KPixmapEffect::toGray(QPixmap &pixmap, bool fast)
 {
     QImage img = pixmap.toImage();
     KImageEffect::toGray(img, fast);
@@ -273,7 +272,7 @@ KPixmap& KPixmapEffect::toGray(KPixmap &pixmap, bool fast)
 }
 
 // -----------------------------------------------------------------------------
-KPixmap& KPixmapEffect::desaturate(KPixmap &pixmap, float desat)
+QPixmap& KPixmapEffect::desaturate(QPixmap &pixmap, float desat)
 {
     QImage img = pixmap.toImage();
     KImageEffect::desaturate(img, desat);
@@ -282,7 +281,7 @@ KPixmap& KPixmapEffect::desaturate(KPixmap &pixmap, float desat)
     return pixmap;
 }
 // -----------------------------------------------------------------------------
-KPixmap& KPixmapEffect::contrast(KPixmap &pixmap, int c)
+QPixmap& KPixmapEffect::contrast(QPixmap &pixmap, int c)
 {
     QImage img = pixmap.toImage();
     KImageEffect::contrast(img, c);
@@ -298,7 +297,7 @@ KPixmap& KPixmapEffect::contrast(KPixmap &pixmap, int c)
 //======================================================================
 
 // -----------------------------------------------------------------------------
-KPixmap& KPixmapEffect::dither(KPixmap &pixmap, const QColor *palette, int size)
+QPixmap& KPixmapEffect::dither(QPixmap &pixmap, const QColor *palette, int size)
 {
     QImage img = pixmap.toImage();
     KImageEffect::dither(img, palette, size);
@@ -313,11 +312,11 @@ KPixmap& KPixmapEffect::dither(KPixmap &pixmap, const QColor *palette, int size)
 //
 //======================================================================
 
-KPixmap KPixmapEffect::selectedPixmap( const KPixmap &pix, const QColor &col )
+QPixmap KPixmapEffect::selectedPixmap( const QPixmap &pix, const QColor &col )
 {
     QImage img = pix.toImage();
     KImageEffect::selectedImage(img, col);
-    KPixmap outPix;
+    QPixmap outPix;
     outPix = QPixmap::fromImage(img);
     return outPix;
 }

@@ -37,7 +37,6 @@
 #include <kipc.h>
 
 #include <kcursor.h>
-#include <kpixmap.h>
 #include <kpixmapeffect.h>
 
 class K3IconView::K3IconViewPrivate
@@ -427,7 +426,7 @@ QPixmap K3IconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
     QPixmap m;
     if ( d->maskCache.find( QString::number( pix->serialNumber() ), m ) )
 	return m;
-    m = KPixmapEffect::selectedPixmap( KPixmap(*pix), col );
+    m = KPixmapEffect::selectedPixmap( *pix, col );
     d->maskCache.insert( QString::number( pix->serialNumber() ), m );
     return m;
 }

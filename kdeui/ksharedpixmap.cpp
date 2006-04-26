@@ -58,7 +58,7 @@ public:
   Atom target;
   Atom selection;
   QRect rect;
-  KPixmap pixmap_data;
+  QPixmap pixmap_data;
 };
 
 KSharedPixmap::KSharedPixmap()
@@ -102,7 +102,7 @@ bool KSharedPixmap::isAvailable(const QString & name) const
     return XGetSelectionOwner(QX11Info::display(), sel) != None;
 }
 
-KPixmap KSharedPixmap::pixmap() const
+QPixmap KSharedPixmap::pixmap() const
 {
     return d->pixmap_data;
 }
@@ -114,7 +114,7 @@ bool KSharedPixmap::loadFromShared(const QString & name, const QRect & rect)
 	// already active
 	return false;
 
-    d->pixmap_data = KPixmap(); // invalidate
+    d->pixmap_data = QPixmap(); // invalidate
 
     QString str = QString("KDESHPIXMAP:%1").arg(name);
     d->selection = XInternAtom(QX11Info::display(), str.toLatin1(), true);
@@ -216,7 +216,7 @@ bool KSharedPixmap::x11Event(XEvent *event)
     unsigned xa = d->rect.x() % width, ya = d->rect.y() % height;
     unsigned t1w = qMin(width-xa,tw), t1h = qMin(height-ya,th);
 
-    d->pixmap_data = KPixmap( tw+origin.x(), th+origin.y() );
+    d->pixmap_data = QPixmap( tw+origin.x(), th+origin.y() );
 
     XCopyArea(QX11Info::display(), pixmap, d->pixmap_data.handle(), kde_xget_temp_gc(inf.screen(), false),
             xa, ya, t1w+origin.x(), t1h+origin.y(), origin.x(), origin.y() );

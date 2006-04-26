@@ -12,13 +12,11 @@
 #ifndef KSHAREDPIXMAP_H
 #define KSHAREDPIXMAP_H
 
-#include <kpixmap.h>
-
-#ifdef Q_WS_X11
-
 #include <qstring.h>
 #include <qpixmap.h>
 #include <qwidget.h>
+
+#include <kdelibs_export.h>
 
 /**
  * Shared pixmap client.
@@ -28,7 +26,7 @@
  *
  * This class is a client class to shared pixmaps in KDE. You can use it
  * to copy (a part of) a shared pixmap into. KSharedPixmap provides a
- * member of type KPixmap (@see pixmap()) for that purpose.
+ * member of type QPixmap (@see pixmap()) for that purpose.
  *
  * The server part of shared pixmaps is not implemented here. 
  * That part is provided by KPixmapServer, in the source file:
@@ -46,7 +44,7 @@
  *
  * @author Geert Jansen <jansen@kde.org>
  */
-class KDEUI_EXPORT KSharedPixmap: 
+class KDEUI_EXPORT KSharedPixmap : 
     public QWidget
 {
     Q_OBJECT
@@ -89,7 +87,7 @@ public:
     /**
      * Gives access to the shared pixmap data.
      */
-    KPixmap pixmap() const;
+    QPixmap pixmap() const;
 
 Q_SIGNALS:
     /** 
@@ -99,9 +97,11 @@ Q_SIGNALS:
      */
     void done(bool success);
 
+#ifdef Q_WS_X11
 protected:
     bool x11Event(XEvent *);
-    
+#endif    
+
 private:
     bool copy(const QString & id, const QRect & rect);
     void init();
@@ -109,28 +109,6 @@ private:
     class KSharedPixmapPrivate;
     KSharedPixmapPrivate *d;
 };
-#else // WIN32, Qt Embedded
-// Let's simply assume KPixmap will do for now. Yes, I know that's broken.
-class KDEUI_EXPORT KSharedPixmap:
-	public KPixmap
-{
-public:
-    /**
-     * Construct an empty pixmap.
-     */
-    KSharedPixmap() {};
-
-    /**
-     * Destroys the pixmap.
-     */
-    ~KSharedPixmap() {};
-
-    /**
-     * Gives access to the shared pixmap data.
-     */
-    KPixmap pixmap() const { return *this; }
-};
-#endif
 
 #endif
 

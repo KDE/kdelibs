@@ -12,7 +12,6 @@ endif(WIN32)
 ########### next target ###############
 
 set(kdefx_LIB_SRCS
-kpixmap.cpp
 kpixmapsplitter.cpp
 kpixmapeffect.cpp
 kimageeffect.cpp
@@ -34,7 +33,7 @@ install_targets(${LIB_INSTALL_DIR} kdefx )
 
 
 ########### install files ###############
-install_files( /include FILES kpixmap.h kpixmapsplitter.h   kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h )
+install_files( /include FILES kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h )
 
 
 kde4_footer()

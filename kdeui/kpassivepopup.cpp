@@ -20,7 +20,6 @@
 #include <Q3PointArray>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kpixmap.h>
 #include <kpixmapeffect.h>
 #include <kglobalsettings.h>
 #include <QPolygon>
@@ -58,7 +57,7 @@ public:
     QPolygon surround;
     QPoint                    anchor;
     QPoint                    fixedPosition;
-    
+
     WId window;
     QWidget *msgView;
     QBoxLayout *topLayout;
@@ -343,7 +342,7 @@ void KPassivePopup::positionSelf()
                 if ( target.isNull() ) { // bogus value, use the exact position
                     NETRect dummy;
                     ni.kdeGeometry( dummy, r );
-                    target.setRect( r.pos.x, r.pos.y, 
+                    target.setRect( r.pos.x, r.pos.y,
                                     r.size.width, r.size.height);
                 }
         }
@@ -459,7 +458,7 @@ void KPassivePopup::updateMask()
         for (int s = 0; s < corner.count() - 1; s++) {
             d->surround.setPoint( z++, corner[s] );
         }
-		
+
         if (bottom && i == 2) {
             if (right) {
                 d->surround.resize( z + 3 );

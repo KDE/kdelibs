@@ -261,7 +261,7 @@ static const QPixmap& qembed_findImage( const QString& name )
 			    QImage::BigEndian );
 		if ( embed_image_vec[i].alpha )
 		    img->setAlphaBuffer( true );
-                pixmap = new QPixmap( *img );
+                pixmap = new QPixmap( QPixmap::fromImage(*img) );
                 delete img;
 		dict.insert( name, pixmap );
 		break;

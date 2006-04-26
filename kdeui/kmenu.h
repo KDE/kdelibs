@@ -23,8 +23,6 @@
 #include <QPointer>
 #include <QAction>
 
-#include <kpixmapeffect.h>
-#include <kpixmap.h>
 #include <kdelibs_export.h>
 
 /**
