@@ -248,11 +248,7 @@ void KRootPixmap::repaint(bool force)
 
 bool KRootPixmap::isAvailable() const
 {
-#ifdef Q_WS_X11
     return m_pPixmap->isAvailable(pixmapName(m_Desk));
-#else
-    return m_pPixmap->isNull();
-#endif
 }
 
 QString KRootPixmap::pixmapName(int desk) {
