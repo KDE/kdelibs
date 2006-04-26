@@ -28,7 +28,7 @@ class KTempDir;
 Makes possible downloading and installing signed resource files from a server.
 You must subclass it and implement the @ref installResource() pure
 virtual method to install a resource. For uploading you must create a resource
-tarball (which is installabale by @ref installResource()) and call the 
+tarball (which is installable using @ref installResource()) and call the 
 @ref uploadResource() method with this tarball as the argument.
 Signing and verification is done by the gpg application, so the user must
 have it installed, otherwise this class does not give any extra security compared
@@ -60,17 +60,17 @@ public:
     bool createUploadFile(const QString &fileName);
     
     /** Initiates a download. This is the method that must be called in
-    * order to download a signed resource. */
+        order to download a signed resource. */
     void downloadResource();
     
     /** Signs the file and uploads to the central server.
-    * @param fileName The file to be signed and uploaded
+        @param fileName The file to be signed and uploaded
     */
     void uploadResource(const QString &fileName);
     
 
 private Q_SLOTS:
-    /** Checks the validity of the downloaded tarball and installs it*/
+    /** Checks the validity of the downloaded tarball and installs it.*/
     void slotValidated(int result);
     /** The file is signed, so it can be uploaded.*/
     void slotFileSigned(int result);
@@ -83,6 +83,7 @@ private Q_SLOTS:
     void slotUploadFinished(bool result);  
 
 Q_SIGNALS:
+    /** Emitted when the downloaded content is successfully installed.*/
     void installFinished();
     
 protected:
