@@ -646,7 +646,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
-	if (w && rw && !rw->isKHTMLWidget()) { 
+	if (w && rw && !rw->isKHTMLWidget()) {
             QRect g = w->geometry();
             if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
                                     (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
@@ -678,7 +678,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
         if ( d->vertPaintBuffer->height() < visibleHeight() )
-            d->vertPaintBuffer->resize(10, visibleHeight());
+        {
+            QPixmap newp( 10, visibleHeight() );
+            QPainter p(&newp);
+            p.drawPixmap(0, 0, *d->vertPaintBuffer, 0, 0, 10, d->vertPaintBuffer->height());
+            *d->vertPaintBuffer = newp;
+        }
         d->tp->begin(d->vertPaintBuffer);
         d->tp->translate(-ex, -ey);
         d->tp->fillRect(ex, ey, ew, eh, palette().brush(QPalette::Active, QPalette::Base));
@@ -688,7 +693,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     }
     else {
         if ( d->paintBuffer->width() < visibleWidth() )
-            d->paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
+        {
+            QPixmap newp( visibleWidth(), PAINT_BUFFER_HEIGHT);
+            QPainter p(&newp);
+            p.drawPixmap(0, 0, *d->vertPaintBuffer, 0, 0, d->paintBuffer->width(), qMin( PAINT_BUFFER_HEIGHT, d->vertPaintBuffer->height() ) );
+            *d->vertPaintBuffer = newp;
+        }
 
         int py=0;
         while (py < eh) {
@@ -765,7 +775,7 @@ void KHTMLView::layout()
 
         d->layoutSchedulingEnabled=false;
 
-        // the reference object for the overflow property on canvas 
+        // the reference object for the overflow property on canvas
         RenderObject * ref = 0;
         RenderObject* root = document->documentElement() ? document->documentElement()->renderer() : 0;
 
@@ -785,7 +795,7 @@ void KHTMLView::layout()
         } else {
             ref = root;
         }
-        
+
         if (ref) {
             if( ref->style()->overflow() == OHIDDEN ) {
                 if (d->vmode == Auto) Q3ScrollView::setVScrollBarMode(AlwaysOff);
@@ -793,7 +803,7 @@ void KHTMLView::layout()
             } else {
                 if (Q3ScrollView::vScrollBarMode() == AlwaysOff) Q3ScrollView::setVScrollBarMode(d->vmode);
                 if (Q3ScrollView::hScrollBarMode() == AlwaysOff) Q3ScrollView::setHScrollBarMode(d->hmode);
-            }            
+            }
         }
         d->needsFullRepaint = d->firstRelayout;
         if (_height !=  visibleHeight() || _width != visibleWidth()) {;
@@ -917,8 +927,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
         connect( d->m_mouseScrollTimer, SIGNAL(timeout()), this, SLOT(slotMouseScrollTimer()) );
 
         if ( !d->m_mouseScrollIndicator ) {
-            QPixmap pixmap, icon;
-            pixmap.resize( 48, 48 );
+            QPixmap pixmap( 48, 48 ), icon;
             pixmap.fill( QColor( qRgba( 127, 127, 127, 127 ) ) );
 
             QPainter p( &pixmap );
@@ -1715,11 +1724,11 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
         if (d->scrollTimerId)
                 d->scrollSuspended = !d->scrollSuspended;
 
-    if (d->accessKeysEnabled) 
+    if (d->accessKeysEnabled)
     {
-        if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control) 
+        if (d->accessKeysPreActivate && _ke->key() != Qt::Key_Control)
             d->accessKeysPreActivate=false;
-        if (d->accessKeysPreActivate && _ke->modifiers() == Qt::ControlModifier && 
+        if (d->accessKeysPreActivate && _ke->modifiers() == Qt::ControlModifier &&
             !(QApplication::keyboardModifiers() & Qt::ControlModifier))
         {
 	    displayAccessKeys();
@@ -1729,7 +1738,7 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
             _ke->accept();
             return;
         }
-	else if (d->accessKeysActivated) 
+	else if (d->accessKeysActivated)
         {
             accessKeysTimeout();
             _ke->accept();
@@ -2275,7 +2284,7 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
     }
     if( use_fallbacks )
         return;
-    
+
     QList<KParts::ReadOnlyPart*> frames = m_part->frames();
     foreach( KParts::ReadOnlyPart* cur, frames ) {
         if( !qobject_cast<KHTMLPart*>(cur) )
@@ -2284,7 +2293,7 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
         if( part->view() && part->view() != caller )
             part->view()->displayAccessKeys( this, origview, taken, use_fallbacks );
     }
-    
+
     // pass up to the parent
     if (m_part->parentPart() && m_part->parentPart()->view()
         && m_part->parentPart()->view() != caller)
@@ -3517,7 +3526,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
                 !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())))
                 toRemove.append(rw);
         }
-        
+
         foreach (RenderWidget* r, toRemove)
             if ( (w = d->visibleWidgets.take(r) ) )
                 addChild(w, 0, -500000);

@@ -75,7 +75,7 @@ void RenderReplaced::calcMinMaxWidth()
     m_width = calcReplacedWidth();
     m_width = calcBoxWidth( m_width );
 
-    if ( style()->width().isPercent() || style()->height().isPercent() || 
+    if ( style()->width().isPercent() || style()->height().isPercent() ||
 		    style()->maxWidth().isPercent() || style()->maxHeight().isPercent() ||
 		    style()->minWidth().isPercent() || style()->minHeight().isPercent() ) {
         m_minWidth = 0;
@@ -253,7 +253,7 @@ void RenderWidget::layout( )
                     break;
                 }
                 el = el->parent();
-            }                                                                                                                                      
+            }
             if (m_needsMask) {
                 rl->setHasOverlaidWidgets();
                 canvas()->setNeedsWidgetMasks();
@@ -384,8 +384,8 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
     _tx += m_x;
     _ty += m_y;
- 
-    if (shouldPaintBackgroundOrBorder() && 
+
+    if (shouldPaintBackgroundOrBorder() &&
           (paintInfo.phase == PaintActionChildBackground || paintInfo.phase == PaintActionChildBackgrounds))
         paintBoxDecorations(paintInfo, _tx, _ty);
 
@@ -471,7 +471,7 @@ protected:
         assert( m_timer == e->timerId() );
         if (m_grabbed)
             return;
-        m_buf.resize(m_resetWidth, m_resetHeight);
+        m_buf = QPixmap(m_resetWidth, m_resetHeight);
         m_resetWidth = m_resetHeight = 0;
         killTimer( m_timer );
         m_timer = 0;
@@ -492,7 +492,7 @@ protected:
             cur_overflow = true;
 
         if (nw != m_buf.width() || nh != m_buf.height())
-            m_buf.resize(nw, nh);
+            m_buf = QPixmap(nw, nh);
 
         if (cur_overflow) {
             m_overflow = true;
