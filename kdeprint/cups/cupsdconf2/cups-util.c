@@ -261,6 +261,7 @@ cupsPutFd(http_t *http, const char *resource, int fd)
         status = HTTP_ERROR;
         break;
       }
+      status = HTTP_CONTINUE;
       continue;
     }
 
