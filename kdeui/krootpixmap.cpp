@@ -238,20 +238,12 @@ void KRootPixmap::repaint(bool force)
     m_Desk = KWin::windowInfo(m_pWidget->topLevelWidget()->winId()).desktop();
     if (m_Desk == NET::OnAllDesktops)
 	m_Desk = currentDesktop();
+#else
+    m_Desk = currentDesktop();
+#endif
 
     // KSharedPixmap will correctly generate a tile for us.
     m_pPixmap->loadFromShared(pixmapName(m_Desk), m_Rect);
-#else
-	m_Desk = currentDesktop();
-    // !x11 note: tile is not generated!
-    // TODO: pixmapName() is a nonsense now!
-    m_pPixmap->load( pixmapName(m_Desk) );
-    if (!m_pPixmap->isNull()) {
-	// ###### TODO Qt4 porting
-        //m_pPixmap->resize( m_Rect.size() );
-        slotDone(true);
-    }
-#endif
 }
 
 bool KRootPixmap::isAvailable() const
