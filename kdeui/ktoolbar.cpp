@@ -174,13 +174,14 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     if ( readConfig )
         slotReadConfig();
 
-    // Get notified when settings change
-    connect( this, SIGNAL( allowedAreasChanged(Qt::ToolBarAreas) ), mainWindow(), SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( iconSizeChanged(const QSize&) ), mainWindow(), SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), mainWindow(), SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( movableChanged(bool) ), mainWindow(), SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( orientationChanged(Qt::Orientation) ), mainWindow(), SLOT( setSettingsDirty() ) );
-
+    if ( mainWindow() ) {
+        // Get notified when settings change
+        connect( this, SIGNAL( allowedAreasChanged(Qt::ToolBarAreas) ), mainWindow(), SLOT( setSettingsDirty() ) );
+        connect( this, SIGNAL( iconSizeChanged(const QSize&) ), mainWindow(), SLOT( setSettingsDirty() ) );
+        connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), mainWindow(), SLOT( setSettingsDirty() ) );
+        connect( this, SIGNAL( movableChanged(bool) ), mainWindow(), SLOT( setSettingsDirty() ) );
+        connect( this, SIGNAL( orientationChanged(Qt::Orientation) ), mainWindow(), SLOT( setSettingsDirty() ) );
+    }
     if (!KAuthorized::authorize("movable_toolbars"))
         setMovable(false);
 
