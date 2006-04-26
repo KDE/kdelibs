@@ -113,6 +113,8 @@ bool KMWSocket::isValid(QString& msg)
 			msg = i18n("Wrong port number.");
 			return false;
 		}
+	} else {
+		m_port->setText("9100");
 	}
 
 	if (!m_scanner->checkPrinter(m_printer->text(),p))
