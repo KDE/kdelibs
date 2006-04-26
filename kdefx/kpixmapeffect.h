@@ -11,7 +11,7 @@
 #include <kdelibs_export.h>
 
 #include <qsize.h>
-class QPixmap;
+#include <qpixmap.h>
 class QColor;
 
 /**
