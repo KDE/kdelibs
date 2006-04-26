@@ -22,7 +22,6 @@
 #include <Q3PopupMenu>
 #include <QMenuItem>
 #include <kpixmapeffect.h>
-#include <kpixmap.h>
 #include <kdelibs_export.h>
 
 /**
