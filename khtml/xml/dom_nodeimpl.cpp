@@ -864,7 +864,8 @@ void NodeImpl::detach()
         m_render->detach();
 
     m_render = 0;
-    m_rendererNeedsClose = true;
+    if (closed())
+        m_rendererNeedsClose = true;
     getDocument()->incDOMTreeVersion();
     m_attached = false;
 }
