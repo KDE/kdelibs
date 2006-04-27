@@ -17,9 +17,10 @@ HEADERS += WeaverInterface.h \
         ShuttingDownState.h DestructedState.h \
         WeaverObserver.h \
 	JobCollection.h \
-	JobSequence.h
+	JobSequence.h \
+        JobCollection_p.h
 
-CONFIG += dll warn_on thread release
+CONFIG += dll warn_on thread release debug
 VERSION = 0.4.0
 TARGET = ThreadWeaver
 
