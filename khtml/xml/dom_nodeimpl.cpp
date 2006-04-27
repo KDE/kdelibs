@@ -776,39 +776,52 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
 {
     // This method won't work when a style contains noninherited properties with "inherit" value.
     StyleChange ch = NoInherit;
-    if ( !s1 || !s2 )
+
+    EDisplay display1 = s1 ? s1->display() : NONE;
+    EDisplay display2 = s2 ? s2->display() : NONE;
+
+    if (display1 != display2)
+        ch = Detach;
+    else if ( !s1 || !s2 )
 	ch = Inherit;
     else if ( *s1 == *s2 )
 	ch = NoChange;
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
 
-    // If the pseudoStyles have changed, we want to return NoInherit
-    if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::BEFORE);
-    if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::AFTER);
-    if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::SELECTION);
-//     if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LETTER);
-//     if (ch == NoChange) ch = pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LINE);
+    // Because the first-letter implementation is so f..ked up, the easiest way
+    // to update first-letter is to remove the entire node and readd it.
+    if (ch < Detach && pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LETTER))
+        ch = Detach;
+    // If the other pseudoStyles have changed, we want to return NoInherit
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::BEFORE))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::AFTER))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::SELECTION))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LINE))
+        ch = NoInherit;
 
     return ch;
 }
 
-NodeImpl::StyleChange NodeImpl::pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid)
+bool NodeImpl::pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid)
 {
-    khtml::RenderStyle *ps1 = s1->getPseudoStyle((khtml::RenderStyle::PseudoId)pid);
-    khtml::RenderStyle *ps2 = s2->getPseudoStyle((khtml::RenderStyle::PseudoId)pid);
+    khtml::RenderStyle *ps1 = s1 ? s1->getPseudoStyle((khtml::RenderStyle::PseudoId)pid) : 0;
+    khtml::RenderStyle *ps2 = s2 ? s2->getPseudoStyle((khtml::RenderStyle::PseudoId)pid) : 0;
 
     if (ps1 == ps2)
-        return NoChange;
+        return false;
     else
     if (ps1 && ps2) {
         if (*ps1 == *ps2)
-            return NoChange;
+            return false;
         else
-            return NoInherit;
+            return true;
     }
     else
-        return NoInherit;
+        return true;
 }
 
 void NodeImpl::close()
@@ -851,6 +864,7 @@ void NodeImpl::detach()
         m_render->detach();
 
     m_render = 0;
+    m_rendererNeedsClose = true;
     getDocument()->incDOMTreeVersion();
     m_attached = false;
 }

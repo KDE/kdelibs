@@ -704,6 +704,15 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     RenderStyle::Diff ch = Equal;
     // Check for visible pseudo-changes:
+    if (hasPseudoStyle(FIRST_LINE) != other->hasPseudoStyle(FIRST_LINE))
+        ch = Visible;
+    else
+    if (hasPseudoStyle(FIRST_LINE) && other->hasPseudoStyle(FIRST_LINE))
+        ch = getPseudoStyle(FIRST_LINE)->diff(other->getPseudoStyle(FIRST_LINE));
+
+    if (ch != Equal) return ch;
+
+    // Check for visible pseudo-changes:
     if (hasPseudoStyle(SELECTION) != other->hasPseudoStyle(SELECTION))
         ch = Visible;
     else

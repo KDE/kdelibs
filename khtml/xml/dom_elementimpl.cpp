@@ -605,20 +605,18 @@ void ElementImpl::recalcStyle( StyleChange change )
         RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this);
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
-        if ( ch != NoChange ) {
-            if (oldDisplay != newStyle->display()
-                || oldPosition != newStyle->position()) {
-                if (attached()) detach();
-                // ### uuhm, suboptimal. style gets calculated again
-                attach();
-		// attach recalulates the style for all children. No need to do it twice.
-		setChanged( false );
-		setHasChangedChild( false );
-		newStyle->deref();
-		return;
-            }
+        if (ch == Detach) {
+            if (attached()) detach();
+            // ### Suboptimal. Style gets calculated again.
+            attach();
+            // attach recalulates the style for all children. No need to do it twice.
+            setChanged( false );
+            setHasChangedChild( false );
+            newStyle->deref();
+            return;
+        }
+        else if (ch != NoChange) {
             if( m_render && newStyle ) {
-                //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().latin1());
                 m_render->setStyle(newStyle);
             }
         }

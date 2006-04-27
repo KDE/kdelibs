@@ -260,10 +260,10 @@ public:
     virtual void getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height);
     virtual QRect getRect() const;
 
-    enum StyleChange { NoChange, NoInherit, Inherit, Force };
+    enum StyleChange { NoChange, NoInherit, Inherit, Detach, Force };
     virtual void recalcStyle( StyleChange = NoChange ) {}
     static StyleChange diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 );
-    static StyleChange pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid);
+    static bool pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid);
 
     unsigned long nodeIndex() const;
     // Returns the document that this node is associated with. This is guaranteed to always be non-null, as opposed to
