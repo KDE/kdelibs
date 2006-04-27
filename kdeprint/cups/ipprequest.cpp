@@ -511,7 +511,11 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 	cupsFreeOptions(n, options);
 
 	// find an remove that annoying "document-format" attribute
-	// (can't use IppDeleteAttribute as cups 1.0.9 doesn't have that)
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
+    ipp_attribute_t *attr = ippFindAttribute(request_, "document-format", IPP_TAG_NAME);
+    ippDeleteAttribute(request_, attr);
+#else
+	// (can't use IppDeleteAttribute as older cups doesn't have that)
 	ipp_attribute_t	*attr = request_->attrs;
 	while (attr)
 	{
@@ -524,4 +528,5 @@ void IppRequest::setMap(const QMap<QString,QString>& opts)
 		}
 		attr = attr->next;
 	}
+#endif
 }
