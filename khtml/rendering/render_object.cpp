@@ -512,7 +512,7 @@ void RenderObject::setNeedsLayout(bool b, bool markParents)
     bool alreadyNeededLayout = m_needsLayout;
     m_needsLayout = b;
     if (b) {
-        if (!alreadyNeededLayout && markParents) {
+        if (!alreadyNeededLayout && markParents && m_parent) {
             dirtyFormattingContext( false );
             markContainingBlocksForLayout();
         }
