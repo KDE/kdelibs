@@ -729,19 +729,19 @@ attrib:
 	$$->match = $4;
 	$$->value = domString($6);
     }
-    | '[' maybe_space namespace_selector '|' attrib_id ']' {
+    | '[' maybe_space namespace_selector attrib_id ']' {
         $$ = new CSSSelector();
-        $$->attr = $5;
+        $$->attr = $4;
         $$->match = CSSSelector::Set;
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->attr, domString($3));
     }
-    | '[' maybe_space namespace_selector '|' attrib_id match maybe_space ident_or_string maybe_space ']' {
+    | '[' maybe_space namespace_selector attrib_id match maybe_space ident_or_string maybe_space ']' {
         $$ = new CSSSelector();
-        $$->attr = $5;
-        $$->match = (CSSSelector::Match)$6;
-        $$->value = domString($8);
+        $$->attr = $4;
+        $$->match = (CSSSelector::Match)$5;
+        $$->value = domString($7);
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->attr, domString($3));
