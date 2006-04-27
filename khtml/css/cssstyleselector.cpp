@@ -1435,7 +1435,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    // unfocusable anchors.
 	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
                 doc->dynamicDomRestyler().addDependency(element, e, HoverDependency);
-                if (e->renderer() && e->renderer()->mouseInside())
+
+                if (e->hovered())
                     return true;
             }
             break;

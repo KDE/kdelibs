@@ -69,10 +69,10 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_inDocument( false ),
       m_hasAnchor( false ),
       m_specified( false ),
+      m_hovered( false ),
       m_focused( false ),
       m_active( false ),
       m_implicit( false ),
-      m_rendererNeedsClose( false ),
       m_htmlCompat( false ),
       m_hasClassList( false ),
       m_hasClass( false )
@@ -779,8 +779,10 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
 
     EDisplay display1 = s1 ? s1->display() : NONE;
     EDisplay display2 = s2 ? s2->display() : NONE;
+    EPosition position1 = s1 ? s1->position() : STATIC;
+    EPosition position2 = s2 ? s2->position() : STATIC;
 
-    if (display1 != display2)
+    if (display1 != display2 || position1 != position2)
         ch = Detach;
     else if ( !s1 || !s2 )
 	ch = Inherit;
@@ -826,31 +828,18 @@ bool NodeImpl::pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsig
 
 void NodeImpl::close()
 {
-    closeRenderer();
+    if (m_render) m_render->close();
     m_closed = true;
-}
-
-void NodeImpl::closeRenderer()
-{
-    // It's important that we close the renderer, even if it hasn't been
-    // created yet. This happens even more because of the FOUC fixes we did
-    // at Apple, which prevent renderers from being created until the stylesheets
-    // are all loaded. If the renderer is not here to be closed, we set a flag,
-    // then close it later when it's attached.
-    assert(!m_rendererNeedsClose);
-    if (m_render)
-        m_render->close();
-    else
-        m_rendererNeedsClose = true;
 }
 
 void NodeImpl::attach()
 {
     assert(!attached());
     assert(!m_render || (m_render->style() && m_render->parent()));
-    if (m_render && m_rendererNeedsClose) {
-        m_render->close();
-        m_rendererNeedsClose = false;
+    if (m_render) // set states to match node
+    {
+        if (closed()) m_render->close();
+        if (hovered()) m_render->setMouseInside();
     }
     getDocument()->incDOMTreeVersion();
     m_attached = true;
@@ -864,8 +853,6 @@ void NodeImpl::detach()
         m_render->detach();
 
     m_render = 0;
-    if (closed())
-        m_rendererNeedsClose = true;
     getDocument()->incDOMTreeVersion();
     m_attached = false;
 }
@@ -1530,6 +1517,17 @@ void NodeBaseImpl::setActive(bool down)
     // note that we need to recalc the style
     if (isElementNode())
         getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), ActiveDependency);
+}
+
+void NodeBaseImpl::setHovered(bool hover)
+{
+    if (hover == hovered()) return;
+
+    NodeImpl::setHovered(hover);
+
+    // note that we need to recalc the style
+    if (isElementNode())
+        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), HoverDependency);
 }
 
 unsigned long NodeBaseImpl::childNodeCount()

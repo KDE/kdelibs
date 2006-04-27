@@ -1191,18 +1191,16 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
         curr->setMouseInside(false);
         if (curr->element()) {
             curr->element()->setActive(false);
-            doc->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(curr->element()), HoverDependency);
+            curr->element()->setHovered(false);
         }
     }
 
     // Now set the hover state for our new object up to the root.
     for (RenderObject* curr = newHoverObj; curr; curr = hoverAncestor(curr)) {
-        bool oldInside = curr->mouseInside();
         curr->setMouseInside(true);
         if (curr->element()) {
             curr->element()->setActive(info.active());
-            if (!oldInside)
-                doc->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(curr->element()), HoverDependency);
+            curr->element()->setHovered(true);
         }
     }
 }
