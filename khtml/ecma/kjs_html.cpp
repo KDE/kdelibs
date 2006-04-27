@@ -287,14 +287,14 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier&
 
   //Return named items under document (e.g. images, applets, etc.)
   ElementMappingCache::ItemInfo* info = docImpl->underDocNamedCache().get(propertyName.qstring());
-  if (info->nd)
+  if (info && info->nd)
     return getDOMNode(exec, info->nd);
   else {
     //No cached mapping, do it the hard way..
     DOM::HTMLMappedNameCollectionImpl* coll = new DOM::HTMLMappedNameCollectionImpl(docImpl,
                                         HTMLCollectionImpl::DOCUMENT_NAMED_ITEMS, propertyName.domString());
 
-    if (coll->length() == 1) {
+    if (info && coll->length() == 1) {
         info->nd = static_cast<DOM::ElementImpl*>(coll->firstItem());
         delete coll;
         return getDOMNode(exec, info->nd);
