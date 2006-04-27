@@ -42,7 +42,7 @@ class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
 {
   Q_OBJECT
 public:
-   Kded(bool checkUpdates);
+   Kded(bool checkUpdates, bool new_startup);
    virtual ~Kded();
 
    static Kded *self() { return _self;}
@@ -72,6 +72,7 @@ public:
    void registerWindowId(long windowId);
    void unregisterWindowId(long windowId);
    void recreate(bool initial);
+   void loadSecondPhase();
 
 public slots:
    /**
@@ -164,6 +165,10 @@ protected:
    QIntDict<long> m_globalWindowIdList;
    QStringList m_allResourceDirs;
    bool m_needDelayedCheck;
+   bool m_newStartup;
+public:
+   bool newStartup() const { return m_newStartup; }
+private:
      
    static Kded *_self;
 };

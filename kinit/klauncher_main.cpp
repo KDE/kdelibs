@@ -44,6 +44,12 @@ fprintf(stderr, "klauncher: Exiting on signal %d\n", sig_num);
    KLauncher::destruct(255);
 }
 
+static KCmdLineOptions options[] =
+{
+  { "new-startup", "Internal", 0 },
+  KCmdLineLastOption
+};
+
 extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 {
    // Started via kdeinit.
@@ -60,12 +66,15 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
                        "v1.0");
 
    KLauncher::addCmdLineOptions();
+   KCmdLineArgs::addCmdLineOptions( options );
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
 
    // Allow the locale to initialize properly
    KLocale::setMainCatalogue("kdelibs");
+
+   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
    int maxTry = 3;
    while(true)
@@ -92,7 +101,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       // Try again...
    }
    
-   KLauncher *launcher = new KLauncher(LAUNCHER_FD);
+   KLauncher *launcher = new KLauncher(LAUNCHER_FD, args->isSet("new-startup"));
    launcher->dcopClient()->setDefaultObject( name );
    launcher->dcopClient()->setDaemonMode( true );
 

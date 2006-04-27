@@ -27,7 +27,7 @@ class AutoStartList;
 class AutoStart
 {
 public:
-  AutoStart();
+  AutoStart( bool new_startup );
   ~AutoStart();
     
   void loadAutoStartList();
@@ -38,6 +38,7 @@ public:
   bool    phaseDone() const { return m_phasedone; }
 
 private:
+  bool m_newStartup;
   AutoStartList *m_startList;  
   QStringList m_started;
   int m_phase;

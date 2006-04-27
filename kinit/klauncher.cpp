@@ -162,10 +162,11 @@ IdleSlave::age(time_t now)
    return (int) difftime(now, mBirthDate);
 }
 
-KLauncher::KLauncher(int _kdeinitSocket)
+KLauncher::KLauncher(int _kdeinitSocket, bool new_startup)
   : KApplication( false, false ), // No Styles, No GUI
     DCOPObject("klauncher"),
-    kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
+    kdeinitSocket(_kdeinitSocket), mAutoStart( new_startup ),
+    dontBlockReading(false), newStartup( new_startup )
 {
 #ifdef Q_WS_X11
    mCached_dpy = NULL;
@@ -674,8 +675,16 @@ KLauncher::autoStart(int phase)
    if( mAutoStart.phase() >= phase )
        return;
    mAutoStart.setPhase(phase);
-   if (phase == 1)
-      mAutoStart.loadAutoStartList();
+   if( newStartup )
+   {
+      if (phase == 0)
+         mAutoStart.loadAutoStartList();
+   }
+   else
+   {
+      if (phase == 1)
+         mAutoStart.loadAutoStartList();
+   }
    mAutoTimer.start(0, true);
 }
 
@@ -693,11 +702,20 @@ KLauncher::slotAutoStart()
 	 {
 	    mAutoStart.setPhaseDone();
 	    // Emit signal
-	    QCString autoStartSignal( "autoStartDone()" );
-	    int phase = mAutoStart.phase();
-	    if ( phase > 1 )
-	        autoStartSignal.sprintf( "autoStart%dDone()", phase );
-            emitDCOPSignal(autoStartSignal, QByteArray());
+            if( newStartup )
+            {
+	       QCString autoStartSignal;
+               autoStartSignal.sprintf( "autoStart%dDone()", mAutoStart.phase());
+               emitDCOPSignal(autoStartSignal, QByteArray());
+            }
+            else
+            {
+	       QCString autoStartSignal( "autoStartDone()" );
+	       int phase = mAutoStart.phase();
+	       if ( phase > 1 )
+	           autoStartSignal.sprintf( "autoStart%dDone()", phase );
+               emitDCOPSignal(autoStartSignal, QByteArray());
+            }
 	 }
          return;
       }

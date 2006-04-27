@@ -110,7 +110,7 @@ class KLauncher : public KApplication, public DCOPObject
    Q_OBJECT
 
 public:
-   KLauncher(int _kdeinitSocket);
+   KLauncher(int _kdeinitSocket, bool new_startup);
 
    ~KLauncher();
 
@@ -192,6 +192,7 @@ protected:
    QCString mSlaveValgrind;
    QCString mSlaveValgrindSkin;
    bool dontBlockReading;
+   bool newStartup;
 #ifdef Q_WS_X11
    Display *mCached_dpy;
 #endif

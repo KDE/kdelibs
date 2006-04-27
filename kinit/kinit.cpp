@@ -1652,6 +1652,7 @@ int main(int argc, char **argv, char **envp)
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
+   int new_startup = 0;
    d.suicide = false;
 
    /** Save arguments first... **/
@@ -1669,6 +1670,8 @@ int main(int argc, char **argv, char **envp)
          d.suicide = true;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
+      if (strcmp(safe_argv[i], "--new-startup") == 0)
+         new_startup = 1;
       if (strcmp(safe_argv[i], "--help") == 0)
       {
         printf("Usage: kdeinit [options]\n");
@@ -1769,7 +1772,10 @@ int main(int argc, char **argv, char **envp)
 #endif 
    if (launch_klauncher)
    {
-      pid = launch( 1, "klauncher", 0 );
+      if( new_startup )
+         pid = launch( 2, "klauncher", "--new-startup" );
+      else
+         pid = launch( 1, "klauncher", 0 );
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
@@ -1804,7 +1810,10 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_kded)
    {
-      pid = launch( 1, "kded", 0 );
+      if( new_startup )
+         pid = launch( 2, "kded", "--new-startup" );
+      else
+         pid = launch( 1, "kded", 0 );
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
 #endif

@@ -42,8 +42,8 @@ public:
    AutoStartList() { }
 };
 
-AutoStart::AutoStart()
-  : m_phase(0), m_phasedone(false)
+AutoStart::AutoStart( bool new_startup )
+  : m_newStartup( new_startup ), m_phase( new_startup ? -1 : 0), m_phasedone(false)
 {
   m_startList = new AutoStartList;
   m_startList->setAutoDelete(true);
@@ -133,9 +133,18 @@ AutoStart::loadAutoStartList()
        item->name = extractName(*it);
        item->service = *it;
        item->startAfter = config.readEntry("X-KDE-autostart-after");
-       item->phase = config.readNumEntry("X-KDE-autostart-phase", 1);
-       if (item->phase < 1)
-          item->phase = 1;
+       if( m_newStartup )
+       {
+          item->phase = config.readNumEntry("X-KDE-autostart-phase", 2);
+          if (item->phase < 0)
+             item->phase = 0;
+       }
+       else
+       {
+          item->phase = config.readNumEntry("X-KDE-autostart-phase", 1);
+          if (item->phase < 1)
+             item->phase = 1;
+       }
        m_startList->append(item);
    }
 } 

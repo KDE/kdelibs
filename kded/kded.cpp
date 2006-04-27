@@ -96,10 +96,11 @@ static void runDontChangeHostname(const QCString &oldName, const QCString &newNa
    KApplication::kdeinitExecWait( "kdontchangethehostname", args );
 }
 
-Kded::Kded(bool checkUpdates)
+Kded::Kded(bool checkUpdates, bool new_startup)
   : DCOPObject("kbuildsycoca"), DCOPObjectProxy(),
     b_checkUpdates(checkUpdates),
-    m_needDelayedCheck(false)
+    m_needDelayedCheck(false),
+    m_newStartup( new_startup )
 {
   _self = this;
   QCString cPath;
@@ -162,9 +163,33 @@ void Kded::initModules()
          bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
          config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
          autoload = config->readBoolEntry("autoload", autoload);
-         if (autoload && kde_running)
-            loadModule(service, false);
-
+         if( m_newStartup )
+         {
+            // see ksmserver's README for description of the phases
+            QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
+            int phase = phasev.isValid() ? phasev.toInt() : 2;
+            bool prevent_autoload = false;
+            switch( phase )
+            {
+                case 0: // always autoload
+                    break;
+                case 1: // autoload only in KDE
+                    if( !kde_running )
+                        prevent_autoload = true;
+                    break;
+                case 2: // autoload delayed, only in KDE
+                default:
+                    prevent_autoload = true;
+                    break;   
+            }
+            if (autoload && !prevent_autoload)
+               loadModule(service, false);
+         }
+         else
+         {
+            if (autoload && kde_running)
+               loadModule(service, false);
+         }
          bool dontLoad = false;
          QVariant p = service->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
          if (p.isValid() && (p.toBool() == false))
@@ -177,6 +202,23 @@ void Kded::initModules()
      }
 }
 
+void Kded::loadSecondPhase()
+{
+     kdDebug(7020) << "Loading second phase autoload" << endl;
+     KConfig *config = kapp->config();
+     KService::List kdedModules = KServiceType::offers("KDEDModule");
+     for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
+     {
+         KService::Ptr service = *it;
+         bool autoload = service->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
+         config->setGroup(QString("Module-%1").arg(service->desktopEntryName()));
+         autoload = config->readBoolEntry("autoload", autoload);
+         QVariant phasev = service->property("X-KDE-Kded-phase", QVariant::Int );
+         int phase = phasev.isValid() ? phasev.toInt() : 2;
+         if( phase == 2 && autoload )
+            loadModule(service, false);
+     }
+}
 
 void Kded::noDemandLoad(const QString &obj)
 {
@@ -671,6 +713,7 @@ void KHostnameD::checkHostname()
 static KCmdLineOptions options[] =
 {
   { "check", I18N_NOOP("Check Sycoca database only once"), 0 },
+  { "new-startup", "Internal", 0 },
   KCmdLineLastOption
 };
 
@@ -713,7 +756,10 @@ public:
     {
        if (startup) {
           startup = false;
-	  QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
+          if( Kded::self()->newStartup())
+             Kded::self()->initModules();
+          else
+	     QTimer::singleShot(500, Kded::self(), SLOT(initModules()));
        } else 
           runBuildSycoca();
 
@@ -729,6 +775,7 @@ public:
        res += "void unregisterWindowId(long int)";
        res += "QCStringList loadedModules()";
        res += "void reconfigure()";
+       res += "void loadSecondPhase()";
        res += "void quit()";
        return res;
     }
@@ -783,6 +830,11 @@ public:
     else if (fun == "reconfigure()") {
       config()->reparseConfiguration();
       Kded::self()->initModules();
+      replyType = "void";
+      return true;
+    }
+    else if (fun == "loadSecondPhase()") {
+      Kded::self()->loadSecondPhase();
       replyType = "void";
       return true;
     }
@@ -860,7 +912,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      checkStamps = config->readBoolEntry("CheckFileStamps", true);
      delayedCheck = config->readBoolEntry("DelayedCheck", false);
 
-     Kded *kded = new Kded(bCheckSycoca); // Build data base
+     Kded *kded = new Kded(bCheckSycoca, args->isSet("new-startup")); // Build data base
 
      signal(SIGTERM, sighandler);
      signal(SIGHUP, sighandler);
