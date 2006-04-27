@@ -1236,9 +1236,6 @@ bool DCOPClient::isApplicationRegistered( const DCOPCString& remApp)
         QDataStream reply( &replyData, QIODevice::ReadOnly );
         reply.setVersion(QDataStream::Qt_3_1);
         reply >> result;
-        qDebug("Call to isApplicationRegistered returned:%d", result);
-    } else {
-        qDebug("Call to isApplicationRegistered failed");
     }
     return result;
 }
