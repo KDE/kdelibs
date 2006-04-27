@@ -142,7 +142,7 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string().left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
 
     const bool needClipping = startPos != 0 || endPos != m_len;
-    
+
     if (needClipping) {
         p->save();
 
@@ -894,7 +894,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
         // Now calculate startPos and endPos, for painting selection.
         // We paint selection while endPos > 0
-        int endPos, startPos;
+        int endPos = 0, startPos = 0;
         if (!isStatic && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
                 //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
@@ -1026,7 +1026,7 @@ void RenderText::calcMinMaxWidth()
             m_hasBeginWS = true;
         if ((isSpace || isNewline) && i == len-1)
             m_hasEndWS = true;
-        
+
         if (i && c == SOFT_HYPHEN)
             continue;
 
