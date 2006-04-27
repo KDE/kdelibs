@@ -34,7 +34,7 @@ using namespace KWallet;
 
 
 const QString Wallet::LocalWallet() {
-	KConfig cfg("kwalletrc");
+	KConfig cfg("kwalletrc", true);
 	cfg.setGroup("Wallet");
 	if (!cfg.readBoolEntry("Use One Wallet", true)) {
 		QString tmp = cfg.readEntry("Local Wallet", "localwallet");
@@ -52,7 +52,7 @@ const QString Wallet::LocalWallet() {
 }
 
 const QString Wallet::NetworkWallet() {
-	KConfig cfg("kwalletrc");
+	KConfig cfg("kwalletrc", true);
 	cfg.setGroup("Wallet");
 
 	QString tmp = cfg.readEntry("Default Wallet", "kdewallet");
