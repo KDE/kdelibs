@@ -308,13 +308,6 @@ protected:
   virtual void setDOMDocument( const QDomDocument &document, bool merge = false );
 
   /**
-   * This function will attempt to give up some memory after the GUI
-   * is built.  It should never be used in apps where the GUI may be
-   * rebuilt at some later time (components, for instance).
-   */
-  virtual void conserveMemory();
-
-  /**
    * Actions can collectively be assigned a "State". To accomplish this
    * the respective actions are tagged as \<enable\> or \<disable\> in
    * a \<State\> \</State\> group of the XMLfile. During program execution the

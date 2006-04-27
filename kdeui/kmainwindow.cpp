@@ -447,7 +447,7 @@ void KMainWindow::setupGUI( QSize defaultSize, int options, const QString & xmlf
     }
 
     if( options & Create ){
-        createGUI(xmlfile,false);
+        createGUI(xmlfile);
     }
 
     if( options & Save ){
@@ -472,7 +472,7 @@ void KMainWindow::setupGUI( QSize defaultSize, int options, const QString & xmlf
 
 }
 
-void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
+void KMainWindow::createGUI( const QString &xmlfile )
 {
     // disabling the updates prevents unnecessary redraws
     setUpdatesEnabled( false );
@@ -512,38 +512,6 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
 
     // do the actual GUI building
     guiFactory()->addClient( this );
-
-    // try and get back *some* of our memory
-    if ( _conserveMemory )
-    {
-      // before freeing the memory allocated by the DOM document we also
-      // free all memory allocated internally in the KXMLGUIFactory for
-      // the menubar and the toolbars . This however implies that we
-      // have to take care of deleting those widgets ourselves. For
-      // destruction this is no problem, but when rebuilding we have
-      // to take care of that (and we want to rebuild the GUI when
-      // using stuff like the toolbar editor ).
-      // In addition we have to take care of not removing containers
-      // like popupmenus, defined in the XML document.
-      // this code should probably go into a separate method in KMainWindow.
-      // there's just one problem: I'm bad in finding names ;-) , so
-      // I skipped this ;-)
-
-      QDomDocument doc = domDocument();
-
-      for( QDomNode n = doc.documentElement().firstChild();
-           !n.isNull(); n = n.nextSibling())
-      {
-          QDomElement e = n.toElement();
-
-          if ( e.tagName().toLower() == "toolbar" )
-              factory_->resetContainer( e.attribute( "name" ) );
-          else if ( e.tagName().toLower() == "menubar" )
-              factory_->resetContainer( e.tagName(), true );
-      }
-
-      conserveMemory();
-    }
 
     setUpdatesEnabled( true );
     updateGeometry();

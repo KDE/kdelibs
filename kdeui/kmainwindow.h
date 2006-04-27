@@ -318,17 +318,9 @@ public:
      * does not exist, then the XML UI code will only use the global
      * (standard) XML file for the layout purposes.
      *
-     * Note that when passing true for the conserveMemory argument subsequent
-     * calls to guiFactory()->addClient/removeClient may not work as expected.
-     * Also retrieving references to containers like popup menus or toolbars using
-     * the container method will not work.
-     *
      * @param xmlfile The local xmlfile (relative or absolute)
-     * @param _conserveMemory Specify whether createGUI() should call
-     * KXMLGUIClient::conserveMemory() to free all memory
-     *     allocated by the QDomDocument and by the KXMLGUIFactory.
      */
-    void createGUI( const QString &xmlfile = QString(), bool _conserveMemory = true );
+    void createGUI( const QString &xmlfile = QString() );
 
     /**
      * Enables the build of a standard help menu when calling createGUI().
@@ -482,7 +474,6 @@ public:
      * line to the settings menu section of your resource file ( usually appname.rc ).
      *
      * Note that you should enable this feature before calling createGUI() ( or similar ) .
-     * You enable/disable it anytime if you pass false to the conserveMemory argument of createGUI.
      */
     void setStandardToolBarMenuEnabled( bool enable );
     bool isStandardToolBarMenuEnabled() const;

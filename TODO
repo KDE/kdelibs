@@ -183,10 +183,6 @@ that we would like to make for the next binary incompatible release.
 - Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
   (André Wöbbeking)
 
-- Get rid of KXMLClient::conserveMemory() and the conserveMemory argument in createGUI. It created
-  too many problems in the past. Not worth the trouble.
-  (Simon)
-
 - Split KProtocolInfo into KProtocolInfoBase in kdecore (with almost everything) 
   and KProtocolInfo in kio (with the methods taking a KURL, which need KProtocolManager)
   (David)

@@ -527,12 +527,6 @@ QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const Q
   return QDomElement();
 }
 
-void KXMLGUIClient::conserveMemory()
-{
-  d->m_doc = QDomDocument();
-  d->m_buildDocument = QDomDocument();
-}
-
 void KXMLGUIClient::setXMLGUIBuildDocument( const QDomDocument &doc )
 {
   d->m_buildDocument = doc;
