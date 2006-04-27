@@ -61,12 +61,12 @@ class KUTILS_EXPORT KReplaceDialog:
 
 public:
 
-    // Options.
-
+    /**
+     * Options.
+     */
     enum Options
     {
-        // Should the user be prompted before the replace operation?
-        PromptOnReplace = 256,
+        PromptOnReplace = 256,  ///< Should the user be prompted before the replace operation?
         BackReference = 512
     };
 
@@ -105,6 +105,7 @@ public:
     /**
      * Returns the list of history items.
      *
+     * @return The replacement history.
      * @see setReplacementHistory
      */
     QStringList replacementHistory() const;
@@ -113,6 +114,7 @@ public:
      * Set the options which are enabled.
      *
      * @param options The setting of the Options.
+     * @see Options, KFindDialog::Options
      */
     void setOptions( long options );
 
@@ -120,12 +122,14 @@ public:
      * Returns the state of the options. Disabled options may be returned in
      * an indeterminate state.
      *
-     * @see setOptions
+     * @return The options.
+     * @see setOptions, Options, KFindDialog::Options
      */
     long options() const;
 
     /**
      * Returns the replacement string.
+     * @return The replacement string.
      */
     QString replacement() const;
 
@@ -134,6 +138,7 @@ public:
      * elements as required. The widget occupies the width of the dialog,
      * and is positioned immediately the regular expression support widgets
      * for the replacement string.
+     * @return An extensible QWidget.
      */
     QWidget *replaceExtension();
 

@@ -102,6 +102,10 @@ public:
     /**
      * Only use this constructor if you don't use KFindDialog, or if
      * you use it as a modal dialog.
+     * @param pattern The pattern to look for.
+     * @param replacement The replacement string.
+     * @param options Options for the find dialog. @see KFindDialog and KReplaceDialog.
+     * @param parent The parent widget.
      */
     KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent = 0);
     /**
@@ -109,9 +113,17 @@ public:
      * You should pass the pointer to it here, so that when a message box
      * appears it has the right parent. Don't worry about deletion, KReplace
      * will notice if the find dialog is closed.
+     * @param pattern The pattern to look for.
+     * @param replacement The replacement string.
+     * @param options Options for the find dialog. @see KFindDialog and KReplaceDialog.
+     * @param parent The parent widget.
+     * @param replaceDialog A pointer to the KReplaceDialog object.
      */
     KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent, QWidget* replaceDialog);
 
+    /**
+     * Destructor.
+     */
     virtual ~KReplace();
 
     /**
@@ -119,6 +131,7 @@ public:
      * the replace signal was emitted).
      * Can be used in a dialog box to tell the user how many replacements were made.
      * The final dialog does so already, unless you used setDisplayFinalDialog(false).
+     * @return The number of replacements.
      */
     int numReplacements() const { return m_replacements; }
 
@@ -133,6 +146,7 @@ public:
      * Walk the text fragment (e.g. kwrite line, kspread cell) looking for matches.
      * For each match, if prompt-on-replace is specified, emits the highlight() signal
      * and displays the prompt-for-replace dialog before doing the replace.
+     * @return Whether or not there has been a match.
      */
     Result replace();
 
@@ -142,6 +156,7 @@ public:
      * One case where it can be useful, is when the user selects the "Find"
      * menu item while a find operation is under way. In that case, the
      * program may want to call setActiveWindow() on that dialog.
+     * @return The replace next dialog.
      */
     KDialogBase* replaceNextDialog( bool create = false );
 
@@ -153,7 +168,7 @@ public:
     void closeReplaceNextDialog();
 
     /**
-     * Search the given string, replaces with the given replacement string,
+     * Searches the given string, replaces with the given replacement string,
      * and returns whether a match was found. If one is,
      * the replacement string length is also returned.
      *
@@ -170,21 +185,40 @@ public:
      * @return The index at which a match was found, or -1 if no match was found.
      */
     static int replace( QString &text, const QString &pattern, const QString &replacement, int index, long options, int *replacedLength );
+
+    /**
+     * Searches the given regular expression, replaces with the given replacement string,
+     * and returns whether a match was found. If one is,
+     * the replacement string length is also returned.
+     *
+     * Another version of the function is provided for use with strings.
+     *
+     * @param text The string to search.
+     * @param pattern The regular expression pattern to look for.
+     * @param replacement The replacement string to insert into the text.
+     * @param index The starting index into the string.
+     * @param options The options to use.
+     * @param replacedLength Output parameter, contains the length of the replaced string.
+     * Not always the same as replacement.length(), when backreferences are used.
+     * @return The index at which a match was found, or -1 if no match was found.
+     */
     static int replace( QString &text, const QRegExp &pattern, const QString &replacement, int index, long options, int *replacedLength );
 
     /**
-     * Returns true if we should restart the search from scratch.
-     * Can ask the user, or return false (if we already searched/replaced the
+     * Returns @c true if we should restart the search from scratch.
+     * Can ask the user, or return @c false (if we already searched/replaced the
      * whole document without the PromptOnReplace option).
      *
-     * @param forceAsking set to true if the user modified the document during the
+     * @param forceAsking set to @c true if the user modified the document during the
      * search. In that case it makes sense to restart the search again.
      *
-     * @param showNumMatches set to true if the dialog should show the number of
-     * matches. Set to false if the application provides a "find previous" action,
+     * @param showNumMatches set to @c true if the dialog should show the number of
+     * matches. Set to @c false if the application provides a "find previous" action,
      * in which case the match count will be erroneous when hitting the end,
      * and we could even be hitting the beginning of the document (so not all
      * matches have even been seen).
+     *
+     * @return @c true, if the search should be restarted.
      */
     virtual bool shouldRestart( bool forceAsking = false, bool showNumMatches = true ) const;
 

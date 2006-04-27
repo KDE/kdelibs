@@ -79,18 +79,21 @@ public:
     // Options.
 
     // KDE4: move to KFind
+    /**
+     * Options for the search
+     */
     enum Options
     {
-        WholeWordsOnly = 1,     // Match whole words only.
-        FromCursor = 2,         // Start from current cursor position.
-        SelectedText = 4,       // Only search selected area.
-        CaseSensitive = 8,      // Consider case when matching.
-        FindBackwards = 16,     // Go backwards.
-        RegularExpression = 32, // Interpret the pattern as a regular expression.
-        FindIncremental = 64,   // Find incremental.
+        WholeWordsOnly = 1,     ///< Match whole words only.
+        FromCursor = 2,         ///< Start from current cursor position.
+        SelectedText = 4,       ///< Only search selected area.
+        CaseSensitive = 8,      ///< Consider case when matching.
+        FindBackwards = 16,     ///< Go backwards.
+        RegularExpression = 32, ///< Interpret the pattern as a regular expression.
+        FindIncremental = 64,   ///< Find incremental.
         // Note that KReplaceDialog uses 256 and 512
         // User extensions can use boolean options above this value.
-        MinimumUserOption = 65536
+        MinimumUserOption = 65536 ///< The first flag which can be used by extensions.
     };
 
     /**
@@ -110,7 +113,7 @@ public:
     /**
      * Construct a non-modal find dialog
      *
-     * @param modal set to false to get a non-modal dialog
+     * @param modal set to @c false to get a non-modal dialog
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
      * @param options A bitfield of the Options to be checked.
@@ -139,6 +142,7 @@ public:
     /**
      * Returns the list of history items.
      *
+     * @return The find history.
      * @see setFindHistory
      */
     QStringList findHistory() const;
@@ -147,7 +151,7 @@ public:
      * Enable/disable the 'search in selection' option, depending
      * on whether there actually is a selection.
      *
-     * @param hasSelection true if a selection exists
+     * @param hasSelection @c true if a selection exists
      */
     void setHasSelection( bool hasSelection );
 
@@ -155,7 +159,7 @@ public:
      * Hide/show the 'from cursor' option, depending
      * on whether the application implements a cursor.
      *
-     * @param hasCursor true if the application features a cursor
+     * @param hasCursor @c true if the application features a cursor
      * This is assumed to be the case by default.
      */
     void setHasCursor( bool hasCursor );
@@ -164,7 +168,7 @@ public:
      * Enable/disable the 'Find backwards' option, depending
      * on whether the application supports it.
      *
-     * @param supports true if the application supports backwards find
+     * @param supports @c true if the application supports backwards find
      * This is assumed to be the case by default.
      * @since 3.4
      */
@@ -174,7 +178,7 @@ public:
      * Enable/disable the 'Case sensitive' option, depending
      * on whether the application supports it.
      *
-     * @param supports true if the application supports case sensitive find
+     * @param supports @c true if the application supports case sensitive find
      * This is assumed to be the case by default.
      * @since 3.4
      */
@@ -184,7 +188,7 @@ public:
      * Enable/disable the 'Whole words only' option, depending
      * on whether the application supports it.
      *
-     * @param supports true if the application supports whole words only find
+     * @param supports @c true if the application supports whole words only find
      * This is assumed to be the case by default.
      * @since 3.4
      */
@@ -194,7 +198,7 @@ public:
      * Enable/disable the 'Regular expression' option, depending
      * on whether the application supports it.
      *
-     * @param supports true if the application supports regular expression find
+     * @param supports @c true if the application supports regular expression find
      * This is assumed to be the case by default.
      * @since 3.4
      */
@@ -204,6 +208,7 @@ public:
      * Set the options which are checked.
      *
      * @param options The setting of the Options.
+     * @see Options
      */
     void setOptions( long options );
 
@@ -211,17 +216,20 @@ public:
      * Returns the state of the options. Disabled options may be returned in
      * an indeterminate state.
      *
-     * @see setOptions
+     * @return The options.
+     * @see Options, setOptions
      */
     long options() const;
 
     /**
      * Returns the pattern to find.
+     * @return The search text.
      */
     QString pattern() const;
 
     /**
-     * Sets the pattern to find
+     * Sets the pattern to find.
+     * @param pattern The new search pattern.
      */
     void setPattern ( const QString &pattern );
 
@@ -230,6 +238,7 @@ public:
      * elements as required. The widget occupies the width of the dialog,
      * and is positioned immediately below the regular expression support
      * widgets for the pattern string.
+     * @return An extensible QWidget.
      */
     QWidget *findExtension();
 

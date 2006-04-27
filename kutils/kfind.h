@@ -108,6 +108,9 @@ public:
     /**
      * Only use this constructor if you don't use KFindDialog, or if
      * you use it as a modal dialog.
+     * @param pattern The pattern to look for.
+     * @param options Options for the find dialog. @see KFindDialog.
+     * @param parent The parent widget.
      */
     KFind(const QString &pattern, long options, QWidget *parent);
 
@@ -116,14 +119,28 @@ public:
      * You should pass the pointer to it here, so that when a message box
      * appears it has the right parent. Don't worry about deletion, KFind
      * will notice if the find dialog is closed.
+     * @param pattern The pattern to look for.
+     * @param options Options for the find dialog. @see KFindDialog.
+     * @param parent The parent widget.
+     * @param findDialog A pointer to the KFindDialog object.
      */
     KFind(const QString &pattern, long options, QWidget *parent, QWidget* findDialog);
-    virtual ~KFind();
-
-    enum Result { NoMatch, Match };
 
     /**
-     * @return true if the application must supply a new text fragment
+     * Destructor.
+     */
+    virtual ~KFind();
+
+    /**
+     * Result enum. Holds information if the find was successful.
+     */
+    enum Result {
+        NoMatch,  ///< No match was found.
+        Match     ///< A match was found.
+    };
+
+    /**
+     * @return @c true if the application must supply a new text fragment
      * It also means the last call returned "NoMatch". But by storing this here
      * the application doesn't have to store it in a member variable (between
      * calls to slotFindNext()).
@@ -131,7 +148,7 @@ public:
     bool needData() const;
 
     /**
-     * Call this when needData returns true, before calling find().
+     * Call this when needData returns @c true, before calling find().
      * @param data the text fragment (line)
      * @param startPos if set, the index at which the search should start.
      * This is only necessary for the very first call to setData usually,
@@ -142,7 +159,7 @@ public:
     void setData( const QString& data, int startPos = -1 );
 
     /**
-     * Call this when needData returns true, before calling find(). The use of
+     * Call this when needData returns @c true, before calling find(). The use of
      * ID's is especially useful if you're using the FindIncremental option.
      * @param id the id of the text fragment
      * @param data the text fragment (line)
@@ -160,6 +177,7 @@ public:
      * Walk the text fragment (e.g. text-processor line, kspread cell) looking for matches.
      * For each match, emits the highlight() signal and displays the find-again dialog
      * proceeding.
+     * @return Whether or not there has been a match.
      */
     Result find();
 
@@ -170,12 +188,15 @@ public:
      * but options might change _during_ the replace operation:
      * e.g. the "All" button resets the PromptOnReplace flag.
      *
+     * @return The current options. @see KFindDialog.
      */
     long options() const { return m_options; }
 
     /**
      * Set new options. Usually this is used for setting or clearing the
      * FindBackwards options.
+     *
+     * @see KFindDialog.
      */
     virtual void setOptions( long options );
 
@@ -186,6 +207,7 @@ public:
 
     /**
      * Change the pattern we're looking for
+     * @param pattern The new pattern.
      */
     void setPattern( const QString& pattern );
 
@@ -194,6 +216,7 @@ public:
      * the highlight signal was emitted).
      * If 0, can be used in a dialog box to tell the user "no match was found".
      * The final dialog does so already, unless you used setDisplayFinalDialog(false).
+     * @return The number of matches.
      */
     int numMatches() const { return m_matches; }
 
@@ -219,17 +242,19 @@ public:
         Q_UNUSED(text); Q_UNUSED(index); Q_UNUSED(matchedlength); return true; }
 
     /**
-     * Returns true if we should restart the search from scratch.
-     * Can ask the user, or return false (if we already searched the whole document).
+     * Returns @c true if we should restart the search from scratch.
+     * Can ask the user, or return @c false (if we already searched the whole document).
      *
-     * @param forceAsking set to true if the user modified the document during the
+     * @param forceAsking set to @c true if the user modified the document during the
      * search. In that case it makes sense to restart the search again.
      *
-     * @param showNumMatches set to true if the dialog should show the number of
-     * matches. Set to false if the application provides a "find previous" action,
+     * @param showNumMatches set to @c true if the dialog should show the number of
+     * matches. Set to @c false if the application provides a "find previous" action,
      * in which case the match count will be erroneous when hitting the end,
      * and we could even be hitting the beginning of the document (so not all
      * matches have even been seen).
+     *
+     * @return @c true, if the search should be restarted.
      */
     virtual bool shouldRestart( bool forceAsking = false, bool showNumMatches = true ) const;
 
@@ -249,6 +274,19 @@ public:
      */
     static int find( const QString &text, const QString &pattern, int index, long options, int *matchedlength );
 
+    /**
+     * Search the given regular expression, and returns whether a match was found. If one is,
+     * the length of the matched string is also returned.
+     *
+     * Another version of the function is provided for use with strings.
+     *
+     * @param text The string to search.
+     * @param pattern The regular expression pattern to look for.
+     * @param index The starting index into the string.
+     * @param options The options to use.
+     * @param matchedlength The length of the string that was matched
+     * @return The index at which a match was found, or -1 if no match was found.
+     */
     static int find( const QString &text, const QRegExp &pattern, int index, long options, int *matchedlength );
 
     /**
@@ -263,6 +301,7 @@ public:
      * One case where it can be useful, is when the user selects the "Find"
      * menu item while a find operation is under way. In that case, the
      * program may want to call setActiveWindow() on that dialog.
+     * @return The find next dialog.
      */
     KDialogBase* findNextDialog( bool create = false );
 
@@ -294,10 +333,13 @@ signals:
      * If you've set data with setData(id, text), use the signal highlight(id,
      * matchingIndex, matchedLength)
      *
-     * WARNING: If you're using the FindIncremental option, the text argument
+     * @warning If you're using the FindIncremental option, the text argument
      * passed by this signal is not necessarily the data last set through
      * setData(), but can also be an earlier set data block.
      *
+     * @param text The found text.
+     * @param matchingIndex The index of the found text's occurrence.
+     * @param matchedLength The length of the matched text.
      * @see setData()
      */
     void highlight(const QString &text, int matchingIndex, int matchedLength);
@@ -309,10 +351,13 @@ signals:
      * Use this signal if you've set your data with setData(id, text), otherwise
      * use the signal with highlight(text, matchingIndex, matchedLength).
      *
-     * WARNING: If you're using the FindIncremental option, the id argument
+     * @warning If you're using the FindIncremental option, the id argument
      * passed by this signal is not necessarily the id of the data last set
      * through setData(), but can also be of an earlier set data block.
      *
+     * @param id The ID of the text fragment, as used in setData().
+     * @param matchingIndex The index of the found text's occurrence.
+     * @param matchedLength The length of the matched text.
      * @see setData()
      *
      * @since 3.3
