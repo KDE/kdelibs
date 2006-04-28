@@ -31,6 +31,7 @@ class QString;
 class QStringList;
 
 /**
+ * @ingroup kcmodule
  * A class that provides information about a KCModule
  *
  * KCModuleInfo provides various technical information, such as icon, library

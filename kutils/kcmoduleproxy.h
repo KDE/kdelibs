@@ -34,6 +34,7 @@ class KInstance;
 class KProcess;
 
 /**
+ * @ingroup kcmodule
  *
  * @brief Encapsulates a KCModule for embedding.
  *

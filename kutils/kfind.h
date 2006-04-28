@@ -25,6 +25,8 @@
 #include <qrect.h>
 
 /**
+ * @ingroup main
+ * @ingroup findreplace
  * @brief A generic implementation of the "find" function.
  *
  * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>,

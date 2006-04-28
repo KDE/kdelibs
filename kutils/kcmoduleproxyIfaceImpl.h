@@ -24,6 +24,8 @@
 class KCModuleProxy;
 
 /***************************************************************/
+/** @internal
+    @ingroup internal */
 class KCModuleProxyIfaceImpl: public QObject, virtual public KCModuleProxyIface
 {
 	/* KDE4 Merge KCModuleProxyIfaceImpl with KCModuleProxy(MI)
@@ -72,6 +74,8 @@ private:
 
 
 /***************************************************************/
+/** @internal
+    @ingroup internal */
 class KCModuleProxyRootCommunicatorImpl: public QObject, 
 	virtual public KCModuleProxyRootDispatcher
 {

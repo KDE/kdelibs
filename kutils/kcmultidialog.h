@@ -33,6 +33,7 @@ class KCModuleProxy;
 class KCModuleInfo;
 
 /**
+ * @ingroup kcmodule
  * @short A method that offers a KDialogBase containing arbitrary
  *        KControl Modules.
  *

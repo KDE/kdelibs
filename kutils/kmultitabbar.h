@@ -45,6 +45,8 @@ class KMultiTabBarButtonPrivate;
 class KMultiTabBarInternal;
 
 /**
+ * @ingroup main
+ * @ingroup multitabbar
  * A Widget for horizontal and vertical tabs.
  * It is possible to add normal buttons to the top/left
  * The handling if only one tab at a time or multiple tabs
@@ -55,18 +57,46 @@ class KUTILS_EXPORT KMultiTabBar: public QWidget
 {
 	Q_OBJECT
 public:
-	enum KMultiTabBarMode{Horizontal, Vertical};
-	enum KMultiTabBarPosition{Left, Right, Top, Bottom};
+	/**
+	 * The tab bar's orientation. Also constraints the bar's position.
+	 */
+	enum KMultiTabBarMode {
+		Horizontal,  ///< Horizontal orientation (i.e. on top or bottom)
+		Vertical     ///< Vertical orientation (i.e. on the left or right hand side)
+	};
+	
+	/**
+	 * The tab bar's position
+	 */
+	enum KMultiTabBarPosition {
+		Left,   ///< Left hand side
+		Right,  ///< Right hand side
+		Top,    ///< On top
+		Bottom  ///< On bottom
+	};
 
 	/**
 	 * The list of available styles for KMultiTabBar
-	 *   - VSNET - Visual Studio .Net like (only show the text of active tabs
-	 *   - KDEV3 - Kdevelop 3 like (always show the text)
-	 *   - KONQSBC - konqy's classic sidebar style (unthemed) (currently disabled)
 	 */
-	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2, KDEV3ICON=3,STYLELAST=0xffff};
+	enum KMultiTabBarStyle {
+		VSNET=0,          ///< Visual Studio .Net like (only show the text of active tabs)
+		KDEV3=1,          ///< KDevelop 3 like (always show the text)
+		KONQSBC=2,        ///< Konqueror's classic sidebar style (unthemed) (currently disabled)
+		KDEV3ICON=3,      ///< KDevelop 3 like with icons
+		STYLELAST=0xffff  ///< Last style
+	};
 
+	/**
+	 * Constructor.
+	 * @param bm The tab bar's orientation
+	 * @param parent The parent widget
+	 * @param name The widget's name
+	 */
 	KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0,const char *name=0);
+	
+	/**
+	 * Destructor.
+	 */
 	virtual ~KMultiTabBar();
 
 	/**
@@ -88,10 +118,12 @@ public:
 	 * @param pic a bitmap for the tab
 	 * @param id an arbitrary ID which can be used later on to identify the tab
 	 * @param text if a mode with text is used it will be the tab text, otherwise a mouse over hint
+	 * @return Always zero. Can be safely ignored.
 	 */
 	int appendTab(const QPixmap &pic,int id=-1,const QString& text=QString::null);
 	/**
 	 * remove a tab with a given ID
+	 * @param id The ID of the tab to remove
 	 */
 	void removeTab(int id);
 	/**
@@ -102,15 +134,17 @@ public:
 	void setTab(int id ,bool state);
 	/**
 	 * return the state of a tab, identified by it's ID
+	 * @param id The ID of the tab to raise
 	 */
 	bool isTabRaised(int id) const;
 	/**
 	 * get a pointer to a button within the button area identified by its ID
+	 * @param id The id of the tab
 	 */
 	class KMultiTabBarButton *button(int id) const;
 
 	/**
-	 * get a pointer to a tab within the tab area, identiifed by its ID
+	 * get a pointer to a tab within the tab area, identified by its ID
 	 */
 	class KMultiTabBarTab *tab(int id) const;
 	/**
@@ -120,11 +154,12 @@ public:
 	void setPosition(KMultiTabBarPosition pos);
 	/**
 	 * get the tabbar position.
-	 * @return position
+	 * @return The tab bar's position
 	 */
 	KMultiTabBarPosition position() const;
 	/**
 	 * set the display style of the tabs
+	 * @param style The new display style
 	 */
 	void setStyle(KMultiTabBarStyle style);
 	/**
@@ -133,11 +168,15 @@ public:
 	 */
 	KMultiTabBarStyle tabStyle() const;
 	/**
-	 * be carefull, don't delete tabs yourself and don't delete the list itself
+	 * Returns the list of pointers to the tabs of type KMultiTabBarTab.
+	 * @return The list of tabs.
+	 * @warning be careful, don't delete tabs yourself and don't delete the list itself
 	 */
         QPtrList<KMultiTabBarTab>* tabs();
 	/**
-	 * be carefull, don't delete buttons yourself and don't delete the list itself
+	 * Returns the list of pointers to the tab buttons of type KMultiTabBarButton.
+	 * @return The list of tab buttons.
+	 * @warning be careful, don't delete buttons yourself and don't delete the list itself
 	 */
 	QPtrList<KMultiTabBarButton>* buttons();
 
@@ -159,17 +198,28 @@ private:
 };
 
 /**
+ * @ingroup multitabbar
+ * This class represents a tab bar button in a KMultiTabBarWidget.
  * This class should never be created except with the appendButton call of KMultiTabBar
  */
 class KUTILS_EXPORT KMultiTabBarButton: public QPushButton
 {
 	Q_OBJECT
 public:
+	/** @internal */
 	KMultiTabBarButton(const QPixmap& pic,const QString&, QPopupMenu *popup,
 		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos, KMultiTabBar::KMultiTabBarStyle style);
+	/** @internal */
 	KMultiTabBarButton(const QString&, QPopupMenu *popup,
 		int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos, KMultiTabBar::KMultiTabBarStyle style);
+	/**
+	 * Destructor
+	 */
 	virtual  ~KMultiTabBarButton();
+	/**
+	 * Returns the tab's ID
+	 * @return The tab's ID
+	 */
 	int id() const;
 
 public slots:
@@ -211,25 +261,35 @@ protected slots:
 };
 
 /**
+ * @ingroup multitabbar
+ * This class represents a tab bar's tab in a KMultiTabBarWidget.
  * This class should never be created except with the appendTab call of KMultiTabBar
  */
 class KUTILS_EXPORT KMultiTabBarTab: public KMultiTabBarButton
 {
 	Q_OBJECT
 public:
+  /** @internal */
 	KMultiTabBarTab(const QPixmap& pic,const QString&,int id,QWidget *parent,
 		KMultiTabBar::KMultiTabBarPosition pos,KMultiTabBar::KMultiTabBarStyle style);
+	/**
+	 * Destructor.
+	 */
 	virtual ~KMultiTabBarTab();
 	/**
 	 * set the active state of the tab
-	 * @param  state true==active false==not active
+	 * @param  state @c true if the tab should become active, @c false otherwise
 	 */
 	void setState(bool state);
 	/**
 	 * choose if the text should always be displayed
 	 * this is only used in classic mode if at all
+	 * @param show Whether or not to show the text
 	 */
 	void showActiveTabText(bool show);
+	/**
+	 * Resized the tab to the needed size.
+	 */
 	void resize(){ setSize( neededSize() ); }
 private:
 	bool m_showActiveTabText;

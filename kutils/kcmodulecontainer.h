@@ -34,6 +34,7 @@ class QVBoxLayout;
 class KCModuleProxy;
 
 /**
+ * @ingroup kcmodule
  * @brief KCModuleContainer is a convenience class encapsulating several KCModules.
  *
  * The KCModuleContainer class is a convenience class for organizing a multiple set
@@ -169,6 +170,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 };
 
 /**
+ * @ingroup kcmodule
  * This macro creates an factory declaration which when run creates an KCModule with specified
  * modules. For example:
  * \code

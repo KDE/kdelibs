@@ -32,6 +32,8 @@ class QPushButton;
 class QRect;
 
 /**
+ * @ingroup main
+ * @ingroup findreplace
  * @short A generic "replace" dialog.
  *
  * @author S.R.Haque <srhaque@iee.org>

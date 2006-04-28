@@ -29,6 +29,8 @@ namespace KSettings
 {
 
 /**
+  @ingroup plugin
+  @ingroup settings
   Dialog for selecting which plugins should be active for an application. Set
   the list of available plugins with \ref setPluginInfos. The dialog will save the
   configuration on clicking ok or apply to the applications config file. Connect

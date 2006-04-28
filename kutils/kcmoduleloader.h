@@ -28,7 +28,8 @@ class QWidget;
 class KLibLoader;
 
 /**
- * @class Loads a KControl Module.
+ * @ingroup kcmodule
+ * @brief Loads a KControl Module.
  *
  * KCModuleLoader tries in several ways 
  * to locate and load a KCModule. If loading fails a 
@@ -50,6 +51,9 @@ class KUTILS_EXPORT KCModuleLoader
      * @param module what module to load
      * @param withFallback if true and loading failed a separate window
      * with the module may appear and a zero pointer is a returned
+     * @param parent The parent widget
+     * @param name The widget's name
+     * @param args A list of arguments for the module to load
      *
      * @return a pointer to the loaded @ref KCModule
      *
@@ -64,6 +68,9 @@ class KUTILS_EXPORT KCModuleLoader
      * Loads a @ref KCModule. If loading fails a zero pointer is returned.
      * @param module what module to load
      * with the module may appear and a zero pointer is a returned
+     * @param parent The parent widget
+     * @param name The widget's name
+     * @param args A list of arguments for the module to load
      *
      * @deprecated use the function which explicitly states the error reporting
      * method
@@ -100,6 +107,9 @@ class KUTILS_EXPORT KCModuleLoader
      * @param report see ErrorReporting
      * @param withFallback if true and loading failed a separate window
      * with the module may appear and a zero pointer is a returned
+     * @param parent The parent widget
+     * @param name The widget's name
+     * @param args A list of arguments for the module to load
      *
      * @return a pointer to the loaded @ref KCModule
      * @since 3.4
@@ -113,6 +123,9 @@ class KUTILS_EXPORT KCModuleLoader
      * @param module what module to load
      * @param report see ErrorReporting
      * with the module may appear and a zero pointer is a returned
+     * @param parent The parent widget
+     * @param name The widget's name
+     * @param args A list of arguments for the module to load
      *
      * @return a pointer to the loaded @ref KCModule
      * @since 3.4
@@ -182,6 +195,7 @@ class KUTILS_EXPORT KCModuleLoader
      * @param report the type of error reporting, see ErrorReporting
      * @param text the main message
      * @param details any additional details
+     * @param parent The parent widget
      *
      * @since 3.4
      * @internal

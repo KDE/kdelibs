@@ -32,6 +32,8 @@ namespace KSettings
 {
 
 /**
+ * @ingroup main
+ * @ingroup settings
  * @short Generic configuration dialog that even works over component boundaries
  *
  * For more information see \ref KSettings.

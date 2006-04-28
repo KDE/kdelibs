@@ -32,6 +32,8 @@ class KConfig;
 class KConfigGroup;
 
 /**
+ * @ingroup main
+ * @ingroup plugin
  * @short A widget to select what plugins to load and configure the plugins.
  *
  * It shows the list of available plugins on top (if there's more than one

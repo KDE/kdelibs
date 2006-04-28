@@ -31,6 +31,8 @@ class QGroupBox;
 class QCheckBox;
 
 /**
+ * @ingroup main
+ * @ingroup findreplace
  * @brief A generic "find" dialog.
  *
  * @author S.R.Haque <srhaque@iee.org>

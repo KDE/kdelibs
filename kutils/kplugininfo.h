@@ -29,6 +29,8 @@
 class KConfigGroup;
 
 /**
+ * @ingroup main
+ * @ingroup plugin
  * Information about a plugin.
  *
  * This holds all the information about a plugin there is. It's used for the

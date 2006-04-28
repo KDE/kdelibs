@@ -23,7 +23,8 @@
 #include <dcopobject.h>
 
 /**
- * @class DCOP Interface for KCModule.
+ * @ingroup kcmodule
+ * @brief DCOP Interface for KCModule.
  * 
  * A module (which is loaded via KCModuleProxy) does always have 
  * this DCOP interface, whether it's in root mode or not.
@@ -89,9 +90,10 @@ k_dcop_signals:
 };
 
 /**
- * @class DCOP interface for communicating with the real module running in root mode.
+ * @ingroup kcmodule
+ * @brief DCOP interface for communicating with the real module running in root mode.
  * 
- * @description When a KCModuleProxy tells kcmshell to load "itself" and embed into the 
+ * When a KCModuleProxy tells kcmshell to load "itself" and embed into the 
  * KCModuleProxy, this DCOP interface is used to communicate to the real KCModuleProxy, since 
  * the KCModuleProxy which told kcmshell to load itself, is nothing but a shell.
  *

@@ -35,6 +35,7 @@ namespace KSettings
 {
 
 /**
+ * @ingroup settings
  * @short Dispatch change notifications from the KCMs to the program.
  *
  * Since your program does not have direct control over the KCMs that get loaded

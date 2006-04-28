@@ -29,6 +29,8 @@ namespace KSettings
 {
 
 /**
+ * @ingroup settings
+ * @ingroup plugin
  * @short Convenience KCModule for creating a plugins config page.
  *
  * This class makes it very easy to create a plugins configuration page to your
