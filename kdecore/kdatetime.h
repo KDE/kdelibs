@@ -31,6 +31,7 @@
 
 class QDataStream;
 class KDateTimePrivate;
+class KDateTimeSpecPrivate;
 
 /**
  * @short A class representing a date and time with an associated time zone
@@ -66,7 +67,7 @@ class KDateTimePrivate;
  *   vary depending on system. As a result, calculations involving local clock
  *   times do not necessarily produce reliable results.
  * These characteristics are more fully described in the description of the
- * TimeSpec enumeration. Also see
+ * SpecType enumeration. Also see
  * <a href="http://www.w3.org/TR/timezone/">W3C: Working with Time Zones</a>
  * for a good overview of the different ways of representing times.
  *
@@ -141,14 +142,16 @@ class KDECORE_EXPORT KDateTime
 {
   public:
     /**
-     * The time specification of a KDateTime instance.
+     * The time specification type of a KDateTime instance.
      * This specifies how the date/time component of the KDateTime instance
-     * should be interpreted, i.e. what time zone (if any) the date/time is
-     * expressed in.
+     * should be interpreted, i.e. what type of time zone (if any) the date/time
+     * is expressed in. For the full time specification (including time zone
+     * details), see KDateTime::Spec.
      */
-    enum TimeSpec
+    enum SpecType
     {
-        UTC,        /**< a UTC time */
+        Invalid,    /**< an invalid time specification. */
+        UTC,        /**< a UTC time. */
         OffsetFromUTC, /**< a local time which has a fixed offset from UTC. */
         TimeZone,   /**< a time in a specified time zone. If the time zone is
                      *   the current system time zone (i.e. that returned by
@@ -156,13 +159,13 @@ class KDECORE_EXPORT KDateTime
                      *   instead.
                      */
         LocalZone,  /**< a time in the current system time zone.
-                     *   When used to initialise a KDateTime instance, this is
-                     *   simply a shorthand for calling the setting method with
-                     *   a time zone parameter KSystemTimeZones::local(). Note
-                     *   that if the system is changed to a different time zone
-                     *   afterwards, the KDateTime instance will still use the
-                     *   original system time zone rather than adopting the new
-                     *   zone.
+                     *   When used to initialise a KDateTime or KDateTime::Spec
+                     *   instance, this is simply a shorthand for calling the
+                     *   setting method with a time zone parameter
+                     *   KSystemTimeZones::local(). Note that if the system is
+                     *   changed to a different time zone afterwards, the
+                     *   KDateTime instance will still use the original system
+                     *   time zone rather than adopting the new zone.
                      *   When returned by a method, it indicates that the time
                      *   zone stored in the instance is that currently returned
                      *   by KSystemTimeZones::local().
@@ -179,6 +182,202 @@ class KDECORE_EXPORT KDateTime
                      *   definition they contain no information about time
                      *   zones or daylight savings changes.
                      */
+    };
+
+    /**
+     * The full time specification of a KDateTime instance.
+     * This specifies how the date/time component of the KDateTime instance
+     * should be interpreted, i.e. which time zone (if any) the date/time is
+     * expressed in.
+     */
+    class Spec
+    {
+      public:
+        /**
+         * Constructs an invalid time specification.
+         */
+        Spec();
+
+        /**
+         * Constructs a time specification for a given time zone.
+         * If @p tz is KTimeZones::utc(), the time specification type is set to @c UTC.
+         *
+         * @param tz  time zone
+         */
+        Spec(const KTimeZone *tz);
+
+        /**
+         * Constructs a time specification.
+         *
+         * @param type      time specification type, which should not be @c TimeZone
+         * @param utcOffset number of seconds to add to UTC to get the local
+         *                  time. Ignored if @p type is not @c OffsetFromUTC.
+         */
+        Spec(SpecType type, int utcOffset = 0);
+
+        /**
+         * Copy constructor.
+         */
+        Spec(const Spec& spec);
+
+        /**
+         * Assignment operator.
+         */
+        Spec& operator=(const Spec& spec);
+
+        /**
+         * Returns whether the time specification is valid.
+         *
+         * @return @c true if valid, else @c false
+         */
+        bool isValid() const;
+
+        /**
+         * Returns the time zone for the date/time, according to the time
+         * specification type as follows:
+         * - @c TimeZone  : the specified time zone is returned.
+         * - @c UTC       : a UTC time zone is returned.
+         * - @c LocalZone : the current local time zone is returned.
+         *
+         * @return time zone as defined above, or null in all other cases
+         * @see isUTC(), isLocal()
+         */
+        const KTimeZone *timeZone() const;
+
+        /**
+         * Returns the time specification type, i.e. whether it is
+         * UTC, has a time zone, etc. If the type is the local time zone,
+         * @c TimeZone is returned; use isLocalZone() to check for the
+         * local time zone.
+         *
+         * @return specification type
+         * @see isLocalZone(), isClockTime(), isUTC(), timeZone()
+         */
+        SpecType type() const;
+
+        /**
+         * Returns whether the time specification is the current local
+         * system time zone.
+         *
+         * @return @c true if local system time zone
+         * @see isUTC(), isOffsetFromUTC(), timeZone()
+         */
+        bool isLocalZone() const;
+
+        /**
+         * Returns whether the time specification is a local clock time.
+         *
+         * @return @c true if local clock time
+         * @see isUTC(), timeZone()
+         */
+        bool isClockTime() const;
+
+        /**
+         * Returns whether the time specification is a UTC time.
+         * It is considered to be a UTC time if it is either type @c UTC,
+         * or is type @c OffsetFromUTC with a zero UTC offset.
+         *
+         * @return @c true if UTC
+         * @see isLocal(), isOffsetFromUTC(), timeZone()
+         */
+        bool isUTC() const;
+
+        /**
+         * Returns whether the time specification is a local time at a fixed
+         * offset from UTC.
+         *
+         * @return @c true if local time at fixed offset from UTC
+         * @see isLocal(), isUTC(), utcOffset()
+         */
+        bool isOffsetFromUTC() const;
+
+        /**
+         * Returns the UTC offset associated with the time specification. The
+         * UTC offset is the number of seconds to add to UTC to get the local time.
+         *
+         * @return UTC offset in seconds if type is @c OffsetFromUTC, else 0
+         * @see isOffsetFromUTC()
+         */
+        int utcOffset() const;
+
+        /**
+         * Initialises the time specification.
+         *
+         * @param type      the time specification type. Note that @c TimeZone
+         *                  is invalid here.
+         * @param utcOffset number of seconds to add to UTC to get the local
+         *                  time. Ignored if @p spec is not @c OffsetFromUTC.
+         * @see type(), setType(const KTimeZone*)
+         */
+        void setType(SpecType type, int utcOffset = 0);
+
+        /**
+         * Sets the time zone for the time specification.
+         *
+         * To set the time zone to the current local system time zone,
+         * setType(LocalZone) may optionally be used instead.
+         *
+         * @param tz new time zone
+         * @see timeZone(), setType(SpecType)
+         */
+        void setType(const KTimeZone *tz);
+
+        /**
+         * Comparison operator.
+         *
+         * @return @c true if the two instances are identical, @c false otherwise
+         * @see equivalentTo()
+         */
+        bool operator==(const Spec &other) const;
+
+        bool operator!=(const Spec &other) const { return !operator==(other); }
+
+        /**
+         * Checks whether this instance is equivalent to another.
+         * The two instances are considered to be equivalent if any of the following
+         * conditions apply:
+         * - both instances are type @c ClockTime.
+         * - both instances are type @c OffsetFromUTC and their offsets from UTC are equal.
+         * - both instances are type @c TimeZone and their time zones are equal.
+         * - both instances are UTC. An instance is considered to be UTC if it is
+         *   either type @c UTC, or is type @c OffsetFromUTC with a zero UTC offset.
+         *
+         * @return @c true if the two instances are equivalent, @c false otherwise
+         * @see operator==()
+         */
+        bool equivalentTo(const Spec &other) const;
+
+        /**
+         * The UTC time specification.
+         * Provided as a shorthand for KDateTime::Spec(KDateTime::UTC).
+         */
+        static const Spec UTC;
+
+        /**
+         * The ClockTime time specification.
+         * Provided as a shorthand for KDateTime::Spec(KDateTime::ClockTime).
+         */
+        static const Spec ClockTime;
+
+        /**
+         * Returns a UTC offset time specification.
+         * Provided as a shorthand for KDateTime::Spec(KDateTime::OffsetFromUTC, utcOffset).
+         *
+         * @param utcOffset number of seconds to add to UTC to get the local time
+         * @return UTC offset time specification
+         */
+        static Spec OffsetFromUTC(int utcOffset);
+
+        /**
+         * Returns a local time zone time specification.
+         * Provided as a shorthand for KDateTime::Spec(KDateTime::LocalZone).
+         *
+         * @return Local zone time specification
+         */
+        static Spec LocalZone();
+
+    private:
+        KDateTimeSpecPrivate* const d;
     };
 
     /** Format for strings representing date/time values. */
@@ -264,107 +463,73 @@ class KDECORE_EXPORT KDateTime
     KDateTime();
 
     /**
-     * Constructs a date-only value with associated time zone. The time is
-     * set to 00:00:00.
+     * Constructs a date-only value expressed in a given time specification. The
+     * time is set to 00:00:00.
      *
-     * @param date date in the time zone @p tz
-     * @param tz   time zone
-     */
-    KDateTime(const QDate &date, const KTimeZone *tz);
-
-    /**
-     * Constructs a date/time with associated time zone.
-     *
-     * @param date date in the time zone @p tz
-     * @param time time in the time zone @p tz
-     * @param tz   time zone
-     */
-    KDateTime(const QDate &date, const QTime &time, const KTimeZone *tz);
-
-    /**
-     * Constructs a date/time with associated time zone.
-     * If @p dt is specified as a UTC time (i.e. @c dt.timeSpec() is @c Qt::UTC),
-     * it is first converted to local time in time zone @p tz before being stored.
-     *
-     * @param dt date and time
-     * @param tz time zone
-     */
-    KDateTime(const QDateTime &dt, const KTimeZone *tz);
-
-    /**
-     * Constructs a date-only value expressed as specified by @p spec. The time
-     * component is set to 00:00:00.
-     *
-     * The instance is initialised according to the value of @p spec as follows:
-     * - @c UTC       : date is stored as UTC.
+     * The instance is initialised according to the time specification type of
+     * @p spec as follows:
+     * - @c UTC           : date is stored as UTC.
      * - @c OffsetFromUTC : date is a local time at the specified offset
      *                      from UTC.
-     * - @c LocalZone : date is a local date in the current system time
-     *                  zone.
-     * - @c ClockTime : time zones are ignored.
-     * - Note that @c TimeZone is invalid here, and will construct an invalid
-     *   date.
+     * - @c TimeZone      : date is a local time in the specified time zone.
+     * - @c LocalZone     : date is a local date in the current system time
+     *                      zone.
+     * - @c ClockTime     : time zones are ignored.
      *
-     * @param date      date in the time zone indicated by @p spec
-     * @param spec      how the date is stored
-     * @param utcOffset number of seconds to add to UTC to get the local
-     *                  time. Ignored if @p spec is not @c OffsetFromUTC.
+     * @param date date in the time zone indicated by @p spec
+     * @param spec time specification
      */
-    explicit KDateTime(const QDate &date, TimeSpec spec = LocalZone, int utcOffset = 0);
+    KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
 
     /**
      * Constructs a date/time expressed as specified by @p spec.
      *
      * @p date and @p time are interpreted and stored according to the value of
      * @p spec as follows:
-     * - @c UTC       : @p date and @p time are in UTC.
+     * - @c UTC           : @p date and @p time are in UTC.
      * - @c OffsetFromUTC : date/time is a local time at the specified offset
      *                      from UTC.
-     * - @c LocalZone : @p date and @p time are local times in the current system
-     *                  time zone.
-     * - @c ClockTime : time zones are ignored.
-     * - Note that @c TimeZone is invalid here, and will construct an invalid
-     *   date/time.
+     * - @c TimeZone      : date/time is a local time in the specified time zone.
+     * - @c LocalZone     : @p date and @p time are local times in the current
+     *                      system time zone.
+     * - @c ClockTime     : time zones are ignored.
      *
-     * @param date      date in the time zone indicated by @p spec
-     * @param time      time in the time zone indicated by @p spec
-     * @param spec      how the date and time are stored
-     * @param utcOffset number of seconds to add to UTC to get the local
-     *                  time. Ignored if @p spec is not @c OffsetFromUTC.
+     * @param date date in the time zone indicated by @p spec
+     * @param time time in the time zone indicated by @p spec
+     * @param spec time specification
      */
-    KDateTime(const QDate &date, const QTime &time, TimeSpec spec = LocalZone, int utcOffset = 0);
+    KDateTime(const QDate &date, const QTime &time, const Spec &spec = Spec(LocalZone));
 
     /**
-     * Constructs a date/time expressed as specified by @p spec.
-     *
-     * @p dt is interpreted and stored according to the value of @p spec as
-     * follows:
-     * - @c UTC       : @p dt is stored as a UTC value. If
-     *                  @c dt.timeSpec() is @c Qt::LocalTime, @p dt is first
-     *                  converted from the current system time zone to UTC
-     *                  before storage.
+     * Constructs a date/time expressed in a given time specification.
+      *
+     * @p dt is interpreted and stored according to the time specification type
+     * of @p spec as follows:
+     * - @c UTC           : @p dt is stored as a UTC value. If
+     *                      @c dt.timeSpec() is @c Qt::LocalTime, @p dt is first
+     *                      converted from the current system time zone to UTC
+     *                      before storage.
      * - @c OffsetFromUTC : date/time is stored as a local time at the specified
-     *                  offset from UTC. If @c dt.timeSpec() is @c Qt::UTC,
-     *                  the time is adjusted by the UTC offset before
-     *                  storage. If @c dt.timeSpec() is @c Qt::LocalTime,
-     *                  it is assumed to be a local time at the specified
-     *                  offset from UTC, and is stored without adjustment.
-     * - @c LocalZone : @p dt is stored as a local time in the current system
-     *                  time zone. If @c dt.timeSpec() is @c Qt::UTC, @p dt is
-     *                  first converted to local time before storage.
-     * - @c ClockTime : If @c dt.timeSpec() is @c Qt::UTC, @p dt is first
-     *                  converted to local time in the current system time zone
-     *                  before storage. After storage, the time is treated as a
-     *                  simple clock time, ignoring time zones.
-     * - Note that @c TimeZone is invalid here, and will construct an invalid
-     *   date/time.
+     *                      offset from UTC. If @c dt.timeSpec() is @c Qt::UTC,
+     *                      the time is adjusted by the UTC offset before
+     *                      storage. If @c dt.timeSpec() is @c Qt::LocalTime,
+     *                      it is assumed to be a local time at the specified
+     *                      offset from UTC, and is stored without adjustment.
+     * - @c TimeZone      : if @p dt is specified as a UTC time (i.e. @c dt.timeSpec()
+     *                      is @c Qt::UTC), it is first converted to local time in
+     *                      specified time zone before being stored.
+     * - @c LocalZone     : @p dt is stored as a local time in the current system
+     *                      time zone. If @c dt.timeSpec() is @c Qt::UTC, @p dt is
+     *                      first converted to local time before storage.
+     * - @c ClockTime     : If @c dt.timeSpec() is @c Qt::UTC, @p dt is first
+     *                      converted to local time in the current system time zone
+     *                      before storage. After storage, the time is treated as a
+     *                      simple clock time, ignoring time zones.
      *
-     * @param dt        date and time
-     * @param spec      how the date and time are stored
-     * @param utcOffset number of seconds to add to UTC to get the local
-     *                  time. Ignored if @p spec is not @c OffsetFromUTC.
+     * @param dt date and time
+     * @param spec time specification
      */
-    KDateTime(const QDateTime &dt, TimeSpec spec, int utcOffset = 0);
+    KDateTime(const QDateTime &dt, const Spec &spec);
 
     /**
      * Constructs a date/time from a QDateTime.
@@ -447,12 +612,23 @@ class KDECORE_EXPORT KDateTime
 
     /**
      * Returns the time specification of the date/time, i.e. whether it is
-     * UTC, has a time zone, or is a local clock time.
+     * UTC, what time zone it is, etc.
      *
-     * @return specification type
+     * @return time specification
      * @see isLocalZone(), isClockTime(), isUTC(), timeZone()
      */
-    TimeSpec timeSpec() const;
+    Spec timeSpec() const;
+
+    /**
+     * Returns the time specification type of the date/time, i.e. whether it is
+     * UTC, has a time zone, etc. If the type is the local time zone,
+     * @c TimeZone is returned; use isLocalZone() to check for the local time
+     * zone.
+     *
+     * @return specification type
+     * @see timeSpec(), isLocalZone(), isClockTime(), isUTC(), timeZone()
+     */
+    SpecType timeType() const;
 
     /**
      * Returns whether the time zone for the date/time is the current local
@@ -474,7 +650,8 @@ class KDECORE_EXPORT KDateTime
     /**
      * Returns whether the date/time is a UTC time.
      * It is considered to be a UTC time if it either has a UTC time
-     * specification (TimeSpec == UTC) or has the time zone KTimeZones::utc().
+     * specification (SpecType == UTC), or has a zero offset from UTC
+     * (SpecType == OffsetFromUTC with zero UTC offset).
      *
      * @return @c true if UTC
      * @see isLocal(), isOffsetFromUTC(), timeZone()
@@ -486,7 +663,7 @@ class KDECORE_EXPORT KDateTime
      * UTC.
      *
      * @return @c true if local time at fixed offset from UTC
-     * @see isLocal(), isUTC(), UTCOffset()
+     * @see isLocal(), isUTC(), utcOffset()
      */
     bool isOffsetFromUTC() const;
 
@@ -497,19 +674,7 @@ class KDECORE_EXPORT KDateTime
      * @return UTC offset in seconds, or 0 if local clock time
      * @see isClockTime()
      */
-    int UTCOffset() const;
-
-    /**
-     * Compares the time specifications of this instance and another. The time
-     * specifications are considered to be the same if they are either both in
-     * the same time zone (UTC, local time zone or another time zone), both
-     * type OffsetFromUTC with the same UTC offset, or both local clock times.
-     *
-     * @param other other KDateTime
-     * @return @c true if the time specifications are the same
-     * @see toTimeSpec()
-     */
-    bool compareTimeSpec(const KDateTime &other) const;
+    int utcOffset() const;
 
     /**
      * Returns the time converted to UTC. The converted time has a UTC offset
@@ -591,16 +756,17 @@ class KDECORE_EXPORT KDateTime
     KDateTime toZone(const KTimeZone *zone) const;
 
     /**
-     * Returns the time converted to the same time specification as @p other.
+     * Returns the time converted to a new time specification.
      * If the instance is a local clock time, it is first set to the local time
-     * zone, and then converted to the @p other time specification.
+     * zone, and then converted to the @p spec time specification.
      * If the instance is a date-only value, a date-only value is returned,
      * with the date unchanged.
      *
+     * @param spec new time specification
      * @return converted time
      * @see toLocal(), toUTC(), toOffsetFromUTC(), toZone(), compareTimeSpec(), KTimeZone::convert()
      */
-    KDateTime toTimeSpec(const KDateTime &other) const;
+    KDateTime toTimeSpec(const Spec &spec) const;
 
     /**
      * Converts the time to a UTC time, measured in seconds since 00:00:00 UTC
@@ -658,49 +824,17 @@ class KDECORE_EXPORT KDateTime
     void setDateTime(const QDateTime &dt);
 
     /**
-     * Changes the time specification of the instance to UTC, the local time
-     * zone or to local clock time.
+     * Changes the time specification of the instance.
      *
      * Any previous time zone is forgotten. The stored date/time component of
-     * the instance is left unchanged. Usually this method will change the
+     * the instance is left unchanged (except that its UTC/local time setting
+     * is set to correspond with @spec). Usually this method will change the
      * absolute time which this instance represents.
      *
-     * @param spec @c UTC to use UTC time zone, @c LocalZone to use the current
-     *             local system time zone, or @c ClockTime to use local clock
-     *             time. Note that @c TimeZone cannot be used here.
-     * @param utcOffset number of seconds to add to UTC to get the local
-     *                  time. Ignored if @p spec is not @c OffsetFromUTC.
-     * @see timeSpec(), timeZone(), setTimeSpec(const KTimeZone*)
+     * @param spec new time specification
+     * @see timeSpec(), timeZone()
      */
-    void setTimeSpec(TimeSpec spec, int utcOffset = 0);
-
-    /**
-     * Sets the time zone in which the date/time is expressed.
-     *
-     * The stored date/time component of the instance is left unchanged. Usually
-     * this method will change the absolute time which this instance represents.
-     *
-     * To set the time zone to UTC or to local clock time, use
-     * setTimeSpec(TimeSpec). To set the time zone to the current local system
-     * time zone, setTimeSpec(TimeSpec) may optionally be used.
-     *
-     * @param tz new time zone
-     * @see timeZone(), setTimeSpec()
-     */
-    void setTimeSpec(const KTimeZone *tz);
-
-    /**
-     * Changes the time specification of the instance to be the same as that
-     * of another KDateTime instance.
-     *
-     * Any previous time zone is forgotten. The stored date/time component of
-     * the instance is left unchanged. Usually this method will change the
-     * absolute time which this instance represents.
-     *
-     * @param other KDateTime instance whose time specification is to be copied
-     * @see timeSpec(), timeZone(), setTimeSpec()
-     */
-    void setTimeSpec(const KDateTime &other);
+    void setTimeSpec(const Spec &spec);
 
     /**
      * Returns a date/time @p msecs milliseconds later than the stored date/time.
@@ -720,7 +854,7 @@ class KDECORE_EXPORT KDateTime
      * @return resultant date/time
      * @see addSecs(), addDays(), addMonths(), addYears(), secsTo()
      */
-    KDateTime addMSecs(int msecs) const;
+    KDateTime addMSecs(qint64 msecs) const;
 
     /**
      * Returns a date/time @p secs seconds later than the stored date/time.
@@ -740,7 +874,7 @@ class KDECORE_EXPORT KDateTime
      * @return resultant date/time
      * @see addMSecs(), addDays(), addMonths(), addYears(), secsTo()
      */
-    KDateTime addSecs(int secs) const;
+    KDateTime addSecs(qint64 secs) const;
 
     /**
      * Returns a date/time @p days days later than the stored date/time.
@@ -807,9 +941,36 @@ class KDECORE_EXPORT KDateTime
      *
      * @param other other date/time
      * @return number of seconds difference
-     * @see addSecs(), daysTo()
+     * @see secsTo_long(), addSecs(), daysTo()
      */
     int secsTo(const KDateTime &other) const;
+
+    /**
+     * Returns the number of seconds from this date/time to the @p other date/time.
+     *
+     * Before performing the comparison, the two date/times are converted to UTC
+     * to ensure that the result is correct if one of the two date/times has
+     * daylight saving time (DST) and the other doesn't. The exception is when
+     * both instances are local clock time, in which case no conversion to UTC
+     * is done.
+     *
+     * Note that if either instance is a local clock time (type @c ClockTime),
+     * the result cannot be guaranteed to be accurate, since by definition they
+     * contain no information about time zones or daylight savings changes.
+     *
+     * If one instance is date-only and the other is date-time, the date-time
+     * value is first converted to the same time specification as the date-only
+     * value, and the result is the difference in days between the resultant
+     * date and the date-only date.
+     *
+     * If both instances are date-only, the result is the difference in days
+     * between the two dates, ignoring time zones.
+     *
+     * @param other other date/time
+     * @return number of seconds difference
+     * @see secsTo(), addSecs(), daysTo()
+     */
+    qint64 secsTo_long(const KDateTime &other) const;
 
     /**
      * Calculates the number of days from this date/time to the @p other date/time.
@@ -1121,51 +1282,37 @@ class KDECORE_EXPORT KDateTime
      *
      * By default, fromString() returns a local clock time (type @c ClockTime)
      * when no definite zone or UTC offset is found. You can use this method
-     * or setFromStringDefault(const KTimeZone*) to make it return the local
-     * time zone, UTC, or whatever you wish.
+     * to make it return the local time zone, UTC, or whatever you wish.
      *
-     * @param spec the new default time specification. Note that @c TimeZone
-     *             cannot be used here.
-     * @param utcOffset number of seconds to add to UTC to get the local
-     *                  time. Ignored if @p spec is not @c OffsetFromUTC.
-     * @see setFromStringDefault(const KTimeZone*), fromString()
+     * @param spec the new default time specification
+     * @see fromString()
      */
-    static void setFromStringDefault(TimeSpec spec, int utcOffset = 0);
+    static void setFromStringDefault(const Spec &spec);
+
 
     /**
-     * Sets the default time zone for use by fromString() when no time zone or
-     * UTC offset is found in the string being parsed, or when "-0000" is found
-     * in an RFC 2822 string.
-     *
-     * By default, fromString() returns a local clock time (type @c ClockTime)
-     * when no definite zone or UTC offset is found. You can use this method
-     * or setFromStringDefault(TimeSpec) to make it return the local time zone,
-     * UTC, or whatever you wish.
-     *
-     * @param tz the new default time zone
-     * @see setFromStringDefault(TimeSpec), fromString()
-     */
-    static void setFromStringDefault(const KTimeZone *tz);
-
-    /**
-     * Returns whether the date/time is invalid because an otherwise valid date
-     * is too early to be represented by QDate. This status only occurs when
-     * fromString() has read a valid string containing a date earlier than
-     * 1752. If isTooEarly() returns @c true, isValid() will return @c false.
+     * Checks whether the date/time returned by the last call to fromString()
+     * was invalid because an otherwise valid date was too early to be
+     * represented by QDate. This status only occurs when fromString() read a
+     * valid string containing a date earlier than 1752. On exit from
+     * fromString(), if isTooEarly() returns @c true, isValid() will return
+     * @c false.
      *
      * @return @c true if date was earlier than 1752, else @c false
-     * @see isValid(), fromString()
+     * @see isValid(), isTooLate(), fromString()
      */
     bool isTooEarly() const;
 
     /**
-     * Returns whether the date/time is invalid because an otherwise valid date
-     * is too late to be represented by QDate. This status only occurs when
-     * fromString() has read a valid string containing a date later than
-     * 7999. If isTooLate() returns @c true, isValid() will return @c false.
+     * Checks whether the date/time returned by the last call to fromString()
+     * was invalid because an otherwise valid date was too late to be
+     * represented by QDate. This status only occurs when fromString() read a
+     * valid string containing a date later than 7999. On exit from
+     * fromString(), if isTooLate() returns @c true, isValid() will return
+     * @c false.
      *
      * @return @c true if date was later than 7999, else @c false
-     * @see isValid(), fromString()
+     * @see isValid(), isTooEarly(), fromString()
      */
     bool isTooLate() const;
 
@@ -1174,7 +1321,7 @@ class KDECORE_EXPORT KDateTime
      * simultaneous, earlier or later, and in the case of date-only values,
      * whether they overlap (i.e. partly coincide but are not wholly
      * simultaneous).
-     * The comparison takes time zones into account; if the two instances have
+     * The comparison takes time zones into account: if the two instances have
      * different time zones, they are first converted to UTC before comparing.
      *
      * If both instances are date/time values, this instance is considered to
@@ -1200,7 +1347,7 @@ class KDECORE_EXPORT KDateTime
 
     /**
      * Check whether this date/time is simultaneous with another.
-     * The comparison takes time zones into account; if the two instances have
+     * The comparison takes time zones into account: if the two instances have
      * different time zones, they are first converted to UTC before comparing.
      *
      * Note that if either instance is a local clock time (type @c ClockTime),
@@ -1224,7 +1371,7 @@ class KDECORE_EXPORT KDateTime
 
     /**
      * Check whether this date/time is earlier than another.
-     * The comparison takes time zones into account; if the two instances have
+     * The comparison takes time zones into account: if the two instances have
      * different time zones, they are first converted to UTC before comparing.
      *
      * Note that if either instance is a local clock time (type @c ClockTime),
@@ -1263,6 +1410,11 @@ class KDECORE_EXPORT KDateTime
   private:
     KDateTimePrivate* const d;
 };
+
+/** @copydoc  KDateTime::Spec::operator<< */
+QDataStream &operator<<(QDataStream &out, const KDateTime::Spec &spec);
+/** @copydoc  KDateTime::Spec::operator>> */
+QDataStream &operator>>(QDataStream &in, KDateTime::Spec &spec);
 
 /** @copydoc  KDateTime::operator<< */
 QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);

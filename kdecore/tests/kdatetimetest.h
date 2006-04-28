@@ -25,6 +25,8 @@ class KDateTimeTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void specConstructors();
+    void specSet();
     void constructors();
     void toUTC();
     void toOffsetFromUTC();
