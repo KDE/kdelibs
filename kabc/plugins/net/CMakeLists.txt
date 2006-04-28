@@ -16,7 +16,7 @@ kde4_add_library(kabc_net SHARED ${kabc_net_LIB_SRCS})
 
 target_link_libraries(kabc_net ${KDE4_KDECORE_LIBS} kabc kio )
 
-set_target_properties(kabc_net PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+set_target_properties(kabc_net PROPERTIES VERSION 4.0.0 SOVERSION 4 )
 
 install_targets(${LIB_INSTALL_DIR} kabc_net )
 

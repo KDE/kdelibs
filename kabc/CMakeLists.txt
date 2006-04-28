@@ -103,7 +103,7 @@ kde4_add_library(kabc SHARED ${kabc_LIB_SRCS})
 
 target_link_libraries(kabc  ${KDE4_KDECORE_LIBS} kio kresources )
 
-set_target_properties(kabc PROPERTIES VERSION 1.2.0 SOVERSION 1 )
+set_target_properties(kabc PROPERTIES VERSION 4.0.0 SOVERSION 4 )
 install_targets(${LIB_INSTALL_DIR} kabc )
 
 ########### install files ###############
