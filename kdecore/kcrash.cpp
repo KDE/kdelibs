@@ -230,6 +230,7 @@ KCrash::defaultCrashHandler (int sig)
 
           const KInstance *instance = KGlobal::instance();
           const KAboutData *about = instance ? instance->aboutData() : 0;
+          char sidtxt[256];
           if (about) {
             if (about->internalVersion()) {
               argv[i++] = "--appversion";
@@ -249,7 +250,8 @@ KCrash::defaultCrashHandler (int sig)
 
           if ( kapp && !kapp->startupId().isNull()) {
             argv[i++] = "--startupid";
-            argv[i++] = kapp->startupId().data();
+            strncpy(sidtxt, kapp->startupId().data(), sizeof(sidtxt));
+            argv[i++] = sidtxt;
           }
 
           if ( s_safer )
@@ -307,7 +309,7 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
        ++i )
   {
     int len = strlen( argv[ i ] ) + 1; // include terminating \0
-    if( pos + len > BUFSIZE )
+    if( pos + len >= BUFSIZE )
     {
       fprintf( stderr, "BUFSIZE in KCrash not big enough!\n" );
       startDirectly( argv, argc );
