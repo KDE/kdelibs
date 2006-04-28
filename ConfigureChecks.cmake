@@ -94,61 +94,44 @@ check_include_files(dirent.h HAVE_DIRENT_H)
 check_include_files(dld.h HAVE_DLD_H)
 check_include_files(dl.h HAVE_DL_H)
 
-check_include_files(alloca.h      HAVE_ALLOCA_H)
-check_include_files(fstab.h       HAVE_FSTAB_H)
-check_include_files(ieeefp.h      HAVE_IEEEFP_H)
-check_include_files(limits.h      HAVE_LIMITS_H)
-check_include_files("sys/types.h;libutil.h" HAVE_LIBUTIL_H)
-check_include_files(util.h        HAVE_UTIL_H)
-check_include_files(mntent.h      HAVE_MNTENT_H)
-check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)
-check_include_files(pty.h         HAVE_PTY_H)
-check_include_files(sysent.h      HAVE_SYSENT_H)
-check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)
-check_include_files(sys/dir.h     HAVE_SYS_DIR_H)
-check_include_files(sys/filio.h   HAVE_SYS_FILIO_H)
-check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)
-check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
-check_include_files(sys/ucred.h   HAVE_SYS_UCRED_H)
-check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
-check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
-check_include_files(sys/stropts.h HAVE_SYS_STROPTS_H)
-check_include_files(sys/param.h   HAVE_SYS_PARAM_H)
-check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)
-check_include_files(sys/ndir.h    HAVE_SYS_NDIR_H)
-check_include_files(sys/mnttab.h  HAVE_SYS_MNTTAB_H)
-check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)
-check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)
-check_include_files(termios.h     HAVE_TERMIOS_H)
-check_include_files(termio.h      HAVE_TERMIO_H)
-check_include_files(unistd.h      HAVE_UNISTD_H)
-check_include_files(stdint.h      HAVE_STDINT_H)
-check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)
-check_include_files(idna.h        HAVE_IDNA_H)
-check_include_files(inttypes.h    HAVE_INTTYPES_H)
-check_include_files(linux/awe_voice.h   HAVE_LINUX_AWE_VOICE_H)
-check_include_files(locale.h      HAVE_LOCALE_H)
-check_include_files(machine/soundcard.h HAVE_MACHINE_SOUNDCARD_H)
-check_include_files(sys/soundcard.h HAVE_SYS_SOUNDCARD_H)
-check_include_files(ndir.h        HAVE_NDIR_H)
-check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
-check_include_files(nl_types.h    HAVE_NL_TYPES_H)
-check_include_files(paths.h       HAVE_PATHS_H)
-check_include_files(punycode.h    HAVE_PUNYCODE_H)
-check_include_files(stringprep.h  HAVE_STRINGPREP_H)
-check_include_files(values.h      HAVE_VALUES_H)
+check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
+check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
+check_include_files(ieeefp.h      HAVE_IEEEFP_H)                       # kjs
+check_include_files(limits.h      HAVE_LIMITS_H)                       # various
+check_include_files("sys/types.h;libutil.h" HAVE_LIBUTIL_H)            # kdesu, kdecore
+check_include_files(util.h        HAVE_UTIL_H)                         # kdesu, kdecore
+check_include_files(mntent.h      HAVE_MNTENT_H)                       # kio, kdecore
+check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)        # kjs
+check_include_files(pty.h         HAVE_PTY_H)                          # kdecore
+check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
+check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)                  # kwallet
+check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)          # kdecore
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H)                     # various
+check_include_files(sys/ucred.h   HAVE_SYS_UCRED_H)                    # kio
+check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
+check_include_files(sys/select.h  HAVE_SYS_SELECT_H)                   # various
+check_include_files(sys/stropts.h HAVE_SYS_STROPTS_H)                  # kdecore
+check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
+check_include_files(sys/mnttab.h  HAVE_SYS_MNTTAB_H)                   # kio, kdecore
+check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # kio, kdecore
+check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
+check_include_files(termios.h     HAVE_TERMIOS_H)                      # kdecore 
+check_include_files(termio.h      HAVE_TERMIO_H)                       # kdecore
+check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
+check_include_files(stdint.h      HAVE_STDINT_H)                       # various  
+check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)     # kio
+check_include_files(idna.h        HAVE_IDNA_H)                         # kdecore
+check_include_files(sys/soundcard.h HAVE_SYS_SOUNDCARD_H)              # phonon
+check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H) # kdecore
+check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore, kio  
 
-check_include_files(errno.h       HAVE_ERRNO_H)
-check_include_files(sys/time.h    HAVE_SYS_TIME_H)
-check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
+check_include_files(errno.h       HAVE_ERRNO_H)                        # kjs, errno.h is used in many places, but only guarded in kjs/
+check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
+check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
 
-check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H)
+check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 
-check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
-check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)
-check_include_files( X11/ICE/ICElib.h       HAVE_X11_ICE_ICELIB_H)
-check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
-if (X11_XTest_FOUND)
+if (X11_XTest_FOUND)                                                   # kdecore
   set(HAVE_XTEST 1)
 else (X11_XTest_FOUND)
   set(HAVE_XTEST 0)
@@ -162,28 +145,22 @@ endif (X11_XTest_FOUND)
 # macro.  Note that some symbols require multiple includes in a
 # specific order.  Refer to the man page for each symbol for which a
 # check is to be added to get the proper set of headers.
-check_symbol_exists(stpcpy          "string.h"                 HAVE_STPCPY)
-check_symbol_exists(strcasecmp      "strings.h"                HAVE_STRCASECMP)
-check_symbol_exists(strncasecmp     "strings.h"                HAVE_STRNCASECMP)
-check_symbol_exists(strchr          "string.h"                 HAVE_STRCHR)
-check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)
-check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)
-check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)
-check_symbol_exists(snprintf        "stdio.h"                  HAVE_SNPRINTF)
-check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)
-check_symbol_exists(strfmon         "monetary.h"               HAVE_STRFMON)
-check_symbol_exists(LC_MESSAGES     "locale.h"                 HAVE_LC_MESSAGES)
-check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)
-check_symbol_exists(res_init        "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT)
-check_symbol_exists(gethostname     "unistd.h"                 HAVE_GETHOSTNAME)
-check_symbol_exists(getnameinfo     "sys/socket.h;netdb.h"     HAVE_GETNAMEINFO)
-check_symbol_exists(freeaddrinfo    "sys/socket.h;netdb.h"     HAVE_FREEADDRINFO)
-check_symbol_exists(getaddrinfo     "sys/socket.h;netdb.h"     HAVE_GETADDRINFO)
-check_symbol_exists(gai_strerror    "netdb.h"                  HAVE_GAI_STRERROR)
+check_symbol_exists(strncasecmp     "strings.h"                HAVE_STRNCASECMP) # kjs
+check_symbol_exists(strchr          "string.h"                 HAVE_STRCHR)      # libltdl (kdecore ?)
+check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)      # libltdl
+check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)     # libltdl
+check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)     # kioslave
+check_symbol_exists(snprintf        "stdio.h"                  HAVE_SNPRINTF)    # kjs
+check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
+check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
+check_symbol_exists(res_init        "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT) # kdecore
+check_symbol_exists(gethostname     "unistd.h"                 HAVE_GETHOSTNAME)  # config.h
+check_symbol_exists(getnameinfo     "sys/socket.h;netdb.h"     HAVE_GETNAMEINFO)  # kdecore
+check_symbol_exists(getaddrinfo     "sys/socket.h;netdb.h"     HAVE_GETADDRINFO)  # kdecore
 
 
-check_function_exists(posix_fadvise  HAVE_FADVISE)
-check_function_exists(index     HAVE_INDEX)
+check_function_exists(posix_fadvise  HAVE_FADVISE)             # kioslave
+check_function_exists(index     HAVE_INDEX)                    # libltdl
 check_function_exists(rindex    HAVE_RINDEX)
 check_function_exists(memcpy    HAVE_MEMCPY)
 check_function_exists(bcopy     HAVE_BCOPY)
@@ -334,7 +311,7 @@ check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)
 
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
-SET(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
+set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
 set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
 set(CONFIG_KDELIBS_DOXYDIR "\"/tmp/\"")
@@ -349,3 +326,32 @@ check_cxx_source_compiles("
   }
 " GETMNTINFO_USES_STATVFS )
 
+
+
+# unused tests ?
+
+check_include_files(sys/filio.h   HAVE_SYS_FILIO_H)
+check_include_files(sys/ndir.h    HAVE_SYS_NDIR_H)
+check_include_files(inttypes.h    HAVE_INTTYPES_H)               
+check_include_files(linux/awe_voice.h   HAVE_LINUX_AWE_VOICE_H)
+check_include_files(locale.h      HAVE_LOCALE_H)
+check_include_files(machine/soundcard.h HAVE_MACHINE_SOUNDCARD_H)
+check_include_files(ndir.h        HAVE_NDIR_H)
+check_include_files(nl_types.h    HAVE_NL_TYPES_H)
+check_include_files(punycode.h    HAVE_PUNYCODE_H)
+check_include_files(stringprep.h  HAVE_STRINGPREP_H)
+check_include_files(values.h      HAVE_VALUES_H)
+check_include_files(sys/dir.h     HAVE_SYS_DIR_H)
+
+check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
+check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)
+check_include_files( X11/ICE/ICElib.h       HAVE_X11_ICE_ICELIB_H)
+check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
+
+
+check_symbol_exists(stpcpy          "string.h"                 HAVE_STPCPY)
+check_symbol_exists(strcasecmp      "strings.h"                HAVE_STRCASECMP)
+check_symbol_exists(strfmon         "monetary.h"               HAVE_STRFMON)
+check_symbol_exists(LC_MESSAGES     "locale.h"                 HAVE_LC_MESSAGES)
+check_symbol_exists(freeaddrinfo    "sys/socket.h;netdb.h"     HAVE_FREEADDRINFO)
+check_symbol_exists(gai_strerror    "netdb.h"                  HAVE_GAI_STRERROR)
