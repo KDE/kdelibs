@@ -40,21 +40,6 @@
 #include <qtextstream.h>
 #include <kstaticdeleter.h>
 
-#include "dptrtemplate.h"
-
-class KBookmarkManagerPrivate : public dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate> {
-public:
-    QString m_editorCaption;
-    bool m_browserEditor;
-};
-template<> QHash<const KBookmarkManager*, KBookmarkManagerPrivate*>* dPtrTemplate<KBookmarkManager, KBookmarkManagerPrivate>::d_ptr = 0;
-
-KBookmarkManagerPrivate* KBookmarkManager::dptr() const {
-    return KBookmarkManagerPrivate::d( this );
-}
-
-// TODO - clean this stuff up by just using the above dptrtemplate?
-
 class KBookmarkManagerList : public QList<KBookmarkManager *>
 {
 public:
@@ -607,17 +592,17 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
 
 void KBookmarkManager::setEditorOptions( const QString& caption, bool browser )
 {
-    dptr()->m_editorCaption = caption;
-    dptr()->m_browserEditor = browser;
+    m_editorCaption = caption;
+    m_browserEditor = browser;
 }
 
 void KBookmarkManager::slotEditBookmarks()
 {
     KProcess proc;
     proc << QLatin1String("keditbookmarks");
-    if (!dptr()->m_editorCaption.isNull())
-       proc << QLatin1String("--customcaption") << dptr()->m_editorCaption;
-    if (!dptr()->m_browserEditor)
+    if (!m_editorCaption.isNull())
+       proc << QLatin1String("--customcaption") << m_editorCaption;
+    if (!m_browserEditor)
        proc << QLatin1String("--nobrowser");
     proc << m_bookmarksFile;
     proc.start(KProcess::DontCare);

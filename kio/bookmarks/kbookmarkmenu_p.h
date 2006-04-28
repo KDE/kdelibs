@@ -190,12 +190,15 @@ public:
   static KBookmarkSettings *self();
 };
 
+/* Right mouse button */
 class RMB
 {
 public:
-  // ##### DF: How about two normal constructors instead??
-  static void begin_rmb_action(KBookmarkMenu *);
-  static void begin_rmb_action(KBookmarkBar *);
+  RMB(QString parentAddress, QString highlightedAddress, 
+      KBookmarkManager *pManager, KBookmarkOwner *pOwner);
+  RMB(KBookmarkMenu *target, QString parentAddress, QString highlightedAddress,
+      KBookmarkManager *pManager, KBookmarkOwner *pOwner, QWidget *parentMenu);
+
   bool invalid( int val );
   KBookmark atAddress(const QString & address);
   void fillContextMenu( QMenu* contextMenu, const QString & address, int val );
@@ -209,7 +212,7 @@ public:
 public:
   QObject *recv;
   KBookmarkManager *m_pManager;
-  QString s_highlightedAddress;
+  QString m_highlightedAddress;
   QString m_parentAddress;
   KBookmarkOwner *m_pOwner;
   QWidget *m_parentMenu;

@@ -1,3 +1,5 @@
+/* DELETEME!!! I am a massive binary compatibility hack from KDE3 */
+
 //  -*- c-basic-offset:4; indent-tabs-mode:nil -*-
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE project
@@ -24,9 +26,11 @@
 
 #include <qhash.h>
 
+/* A lazily-created hash from Instance to PrivateData */
 template<class Instance, class PrivateData>
 class dPtrTemplate {
 public:
+    /* get hash[instance] */
     static PrivateData* d( const Instance* instance )
     {
         if ( !d_ptr ) {
@@ -40,10 +44,11 @@ public:
         }
         return ret;
     }
+    /* remove hash[instance] */
     static void delete_d( const Instance* instance )
     {
 		if ( d_ptr )
-            delete d_ptr->take( instance );
+            delete d_ptr->remove( instance );
     }
 private:
     static void cleanup_d_ptr()

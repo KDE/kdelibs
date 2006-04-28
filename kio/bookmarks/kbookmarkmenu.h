@@ -33,6 +33,7 @@
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
+#include "kbookmarkmenu_p.h"
 
 class QString;
 class QMenu;
@@ -77,7 +78,6 @@ class KIO_EXPORT KBookmarkMenu : public QObject
 {
   Q_OBJECT
   friend class KBookmarkMenuNSImporter;
-  friend class RMB;
 public:
   /**
    * Fills a bookmark menu
@@ -215,12 +215,12 @@ protected:
    */
   QString m_parentAddress;
 
-  class KBookmarkMenuPrivate* d;
-
   // TODO make non static!
-  static QString s_highlightedAddress;
+  static QString m_highlightedAddress;
   static QString s_highlightedImportLocation;
   static QString s_highlightedImportType;
+
+  RMB *m_rmb;
 };
 
 /**

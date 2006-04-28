@@ -230,9 +230,6 @@ that we would like to make for the next binary incompatible release.
   to merge that code.
   (David)
 
-- Refactor the kio/bookmarks code so we don't need to use the static d-pointer trick anymore.
-  (Matt Rogers)
-
 - Rename the parameters to KDEDesktopMimeType::pixmap so that they use meaningful names rather than
   just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
   to have here for later doing.

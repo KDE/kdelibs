@@ -43,7 +43,6 @@ class KBookmarkBarPrivate;
 class KIO_EXPORT KBookmarkBar : public QObject
 {
     Q_OBJECT
-    friend class RMB;
 public:
     /**
      * Fills a bookmark toolbar

@@ -276,8 +276,8 @@ private:
     static KBookmarkManagerList* s_pSelf;
     bool m_showNSBookmarks;
 
-private:
-    class KBookmarkManagerPrivate* dptr() const;
+    QString m_editorCaption;
+    bool m_browserEditor;
 };
 
 /**

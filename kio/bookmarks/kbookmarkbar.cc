@@ -263,6 +263,7 @@ void KBookmarkBar::removeTempSep(KBookmarkBarPrivate* p)
     }
 }
 
+//TODO: kill me
 static KAction* findPluggedAction(const QList<KAction *>& actions, KToolBar *tb, int id)
 {
     /*for ( QList<KAction *>::const_iterator it = actions.begin(), end = actions.end() ; it != end ; ++it ) {
@@ -403,34 +404,48 @@ static QAction* handleToolbarMouseButton(const QPoint& pos, const QList<KAction 
 // TODO    *** generic rmb improvements ***
 // don't *ever* show the rmb on press, always relase, possible???
 
-
-void RMB::begin_rmb_action(KBookmarkBar *self)
+RMB::RMB(QString parentAddress, QString highlightedAddress,
+         KBookmarkManager *pManager, KBookmarkOwner *pOwner)
+: m_parentAddress(parentAddress), m_highlightedAddress(highlightedAddress),
+  m_pManager(pManager), m_pOwner(pOwner), m_parentMenu(0)
 {
-    if ( !self->d->m_rmb )
-        self->d->m_rmb = new RMB;
-    RMB *s = self->d->m_rmb;
-    s->recv = self;
-    s->m_parentAddress = self->parentAddress();
-    s->s_highlightedAddress = self->d->m_highlightedAddress; // rename in RMB
-    s->m_pManager = self->m_pManager;
-    s->m_pOwner = self->m_pOwner;
-    s->m_parentMenu = 0;
 }
 
 void KBookmarkBar::slotRMBActionEditAt( int val )
-{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionEditAt( val ); }
+{
+    delete d->m_rmb; 
+    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
+    d->m_rmb->slotRMBActionEditAt( val ); 
+}
 
 void KBookmarkBar::slotRMBActionProperties( int val )
-{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionProperties( val ); }
+{ 
+    delete d->m_rmb; 
+    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
+    d->m_rmb->slotRMBActionProperties( val ); 
+}
 
 void KBookmarkBar::slotRMBActionInsert( int val )
-{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionInsert( val ); }
+{ 
+    delete d->m_rmb; 
+    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
+    d->m_rmb->slotRMBActionInsert( val ); 
+}
+
 
 void KBookmarkBar::slotRMBActionRemove( int val )
-{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionRemove( val ); }
+{ 
+    delete d->m_rmb; 
+    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
+    d->m_rmb->slotRMBActionRemove( val ); 
+}
 
 void KBookmarkBar::slotRMBActionCopyLocation( int val )
-{ RMB::begin_rmb_action(this); d->m_rmb->slotRMBActionCopyLocation( val ); }
+{ 
+    delete d->m_rmb; 
+    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
+    d->m_rmb->slotRMBActionCopyLocation( val ); 
+}
 
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
@@ -451,7 +466,8 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
         {
             d->m_highlightedAddress = _a->property("address").toString();
             KBookmark bookmark = m_pManager->findByAddress( d->m_highlightedAddress );
-            RMB::begin_rmb_action(this);
+            delete d->m_rmb; 
+            d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
             KMenu *pm = new KMenu;
             d->m_rmb->fillContextMenu( pm, d->m_highlightedAddress, 0 );
             emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), pm );
