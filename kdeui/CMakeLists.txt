@@ -2,8 +2,8 @@ kde4_header()
 
 project(kdeui)
 
-include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces )
+include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
