@@ -104,7 +104,7 @@ static QByteArray getDescrFromNum(unsigned int _num)
 
   QFile file(filename);
   if (!file.open(QIODevice::ReadOnly)) {
-    qWarning("Couldn't open %s", filename.toLocal8Bit().data());
+    qWarning("Couldn't open %s", filename.toLocal8Bit().constData());
     file.close();
     return QByteArray();
   }
@@ -403,7 +403,7 @@ kdbgstream::kdbgstream(const kdbgstream &str)
 void kdbgstream::flush() {
     if (d->output.isEmpty() || !d->print)
 	return;
-    kDebugBackend( d->level, d->area, d->output.toLocal8Bit().data() );
+    kDebugBackend( d->level, d->area, d->output.toLocal8Bit().constData() );
     d->output.clear();
 }
 
