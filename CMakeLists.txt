@@ -5,10 +5,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 # search packages used by KDE
 if (WIN32)
-	find_package(GNUWIN32)
-ENDIF (WIN32)
+   find_package(GNUWIN32)
+endif (WIN32)
 find_package(KDE4Internal REQUIRED)
-find_package(Perl REQUIRED)
 find_package(ZLIB REQUIRED)
 
 if (APPLE)
