@@ -1,0 +1,41 @@
+/**
+@defgroup main Main classes
+*/
+
+/**
+@defgroup internal Internal classes
+*/
+
+/**
+@defgroup findreplace Find and Replace classes
+
+These classes implement a generic find/replace function, along with
+extensible dialogs.
+*/
+
+/**
+@defgroup plugin Plugin handling classes
+
+These classes provide an easy and generic way for handling plugins.
+*/
+
+/**
+@defgroup settings Settings UI classes
+
+These classes provide widgets to build settings dialogs. See KSettings
+namespace description for an overview.
+*/
+
+/**
+@defgroup kcmodule KControl module classes
+
+Thwse classes provide the KControl module API.
+*/
+
+/**
+@defgroup multitabbar KMultiTabBar related classes
+
+These classes implement the tab bar often found on the border of KDE
+applications' main windows (such as Kate or KDevelop).
+*/
+
