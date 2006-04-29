@@ -6,3 +6,22 @@
        says yes, backend is loaded, backend says no (decoder not installed).
      o KFileAudioPreview asks application/pdf supported? Backend desktop file
        says no -> no backend loaded
+
+- add a way to request a specific version (>=) from the Backend, so that known to be buggy Backends aren't used
+
+- chapter support in AbstractMediaProducer
+
+- menu support? DVD media and Matroska files can come with a menu/control track.
+  Is any special API needed for that or does clicking on the video suffice?
+
+- DVD, TV Tuner, more? need to be supported? What API is needed?
+
+- Subtitles
+
+- Video Overlays (OSD) like: show a rectangle as a play symbol, show the position in
+  the file as something like [IIIIIIIII------], and so on
+
+- audio stream selection (some container formats can come with different audio
+  streams, the stream selection should be put into the Producer class and
+  optionally specify the Path so that different Paths connected to the same
+  Producer can use different audio streams)
