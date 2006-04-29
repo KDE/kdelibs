@@ -60,9 +60,6 @@
 /* Define to 1 if you have memory.h */
 #cmakedefine   HAVE_MEMORY_H 1
 
-/* Define to 1 if you have dlfcn.h */
-#cmakedefine   HAVE_MEMORY_H 1
-
 #cmakedefine   HAVE_FLOAT_H 1
 
 /* define if message translations are enabled */
@@ -125,7 +122,6 @@
 #cmakedefine HAVE_SYS_FILIO_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_SYS_NDIR_H 1
-#cmakedefine HAVE_SYS_SOUNDCARD_H 1
 #cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_SYS_XATTR_H 1
 #cmakedefine HAVE_UNISTD_H 1

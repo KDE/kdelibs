@@ -4,6 +4,19 @@ kde4_header()
 include_directories( ${KDE4_KIO_INCLUDES} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
+
+# phonon specific configure checks
+# maybe they could be moved into a separate file which is then included here, Alex
+
+include(CheckIncludeFiles)
+
+check_include_files(sys/soundcard.h HAVE_SYS_SOUNDCARD_H)
+
+configure_file(config-phonon.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-phonon.h )
+
+
+# and now on to the rest
+
 add_subdirectory( ifaces )
 add_subdirectory( ui )
 add_subdirectory( tests )

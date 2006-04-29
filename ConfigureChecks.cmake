@@ -12,13 +12,13 @@ include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
 #check for libz using the cmake supplied FindZLIB.cmake
-if(ZLIB_FOUND)
+if(ZLIB_FOUND)                  # zlib is required
    set(HAVE_LIBZ 1)
 else(ZLIB_FOUND)
    set(HAVE_LIBZ 0)
 endif(ZLIB_FOUND)
 
-if(BZIP2_FOUND)
+if(BZIP2_FOUND)                 # kdecore  
    set(HAVE_BZIP2_SUPPORT 1)
    if(BZIP2_NEED_PREFIX)
       set(NEED_BZ2_PREFIX 1)
@@ -27,45 +27,45 @@ else(BZIP2_FOUND)
    set(HAVE_BZIP2_SUPPORT 0)
 endif(BZIP2_FOUND)
 
-if(CUPS_FOUND)
+if(CUPS_FOUND)                  # kdeprint
    set(HAVE_CUPS 1)
 else(CUPS_FOUND)
    set(HAVE_CUPS 0)
 endif(CUPS_FOUND)
 
-if(FAM_FOUND)
+if(FAM_FOUND)                   # kio
    set(HAVE_FAM 1)
 else(FAM_FOUND)
    set(HAVE_FAM 0)
 endif(FAM_FOUND)
 
-if(CARBON_FOUND)
-	set(HAVE_CARBON 1)
+if(CARBON_FOUND)                # kdecore
+   set(HAVE_CARBON 1)
 else(CARBON_FOUND)
-	set(HAVE_CARBON 0)
+   set(HAVE_CARBON 0)
 endif(CARBON_FOUND)
 
-if(AGG_FOUND)
-	set(HAVE_LIBAGG 1)
+if(AGG_FOUND)                   # kdecore, kio
+   set(HAVE_LIBAGG 1)
 else(AGG_FOUND)
-	set(HAVE_LIBAGG 0)
+   set(HAVE_LIBAGG 0)
 endif(AGG_FOUND)
 
-if(AKODE_FOUND)
-	set(HAVE_AKODE 1)
+if(AKODE_FOUND)                 # knotify
+   set(HAVE_AKODE 1)
 else(AKODE_FOUND)
-	set(HAVE_AKODE 0)
+   set(HAVE_AKODE 0)
 endif(AKODE_FOUND)
 
-if(GETTEXT_FOUND)
-	set(ENABLE_NLS 1)
+if(GETTEXT_FOUND)               # kdecore, khtml, kjs
+   set(ENABLE_NLS 1)
 else(GETTEXT_FOUND)
-	set(ENABLE_NLS 0)
+   set(ENABLE_NLS 0)
 endif(GETTEXT_FOUND)
 
 # FIXME: Make this changeable!
 # khtml svg support
-set(SVG_SUPPORT 1)
+set(SVG_SUPPORT 1)              # unused ?
 
 #now check for dlfcn.h using the cmake supplied CHECK_include_FILE() macro
 # If definitions like -D_GNU_SOURCE are needed for these checks they
@@ -79,20 +79,19 @@ if (WIN32)
    set(CMAKE_REQUIRED_INCLUDES  ${KDEWIN32_INCLUDES} )
 endif (WIN32)
 
-check_include_files(stdio.h HAVE_STDIO_H)
-check_include_files(stdlib.h HAVE_STDLIB_H)
-check_include_files(string.h HAVE_STRING_H)
-check_include_files(strings.h HAVE_STRINGS_H)
-check_include_files(ctype.h HAVE_CTYPE_H)
-check_include_files(malloc.h HAVE_MALLOC_H)
-check_include_files(memory.h HAVE_MEMORY_H)
-check_include_files(dlfcn.h HAVE_DLFCN_H)
-check_include_files(sys/time.h TIME_WITH_SYS_TIME)
-check_include_files(float.h       HAVE_FLOAT_H)
-check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)
-check_include_files(dirent.h HAVE_DIRENT_H)
-check_include_files(dld.h HAVE_DLD_H)
-check_include_files(dl.h HAVE_DL_H)
+check_include_files(stdio.h       HAVE_STDIO_H)                        # various
+check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
+check_include_files(string.h      HAVE_STRING_H)                       # various
+check_include_files(strings.h     HAVE_STRINGS_H)                      # various
+check_include_files(ctype.h       HAVE_CTYPE_H)                        # libltdl
+check_include_files(malloc.h      HAVE_MALLOC_H)                       # libltdl, khtml
+check_include_files(memory.h      HAVE_MEMORY_H)                       # libltdl
+check_include_files(dlfcn.h       HAVE_DLFCN_H)                        # various
+check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
+check_include_files(float.h       HAVE_FLOAT_H)                        # kjs
+check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
+check_include_files(dld.h         HAVE_DLD_H)                          # libltdl
+check_include_files(dl.h          HAVE_DL_H)                           # libltdl
 
 check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
 check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
@@ -121,7 +120,6 @@ check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
 check_include_files(stdint.h      HAVE_STDINT_H)                       # various  
 check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)     # kio
 check_include_files(idna.h        HAVE_IDNA_H)                         # kdecore
-check_include_files(sys/soundcard.h HAVE_SYS_SOUNDCARD_H)              # phonon
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H) # kdecore
 check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore, kio  
 
@@ -159,59 +157,41 @@ check_symbol_exists(getnameinfo     "sys/socket.h;netdb.h"     HAVE_GETNAMEINFO)
 check_symbol_exists(getaddrinfo     "sys/socket.h;netdb.h"     HAVE_GETADDRINFO)  # kdecore
 
 
-check_function_exists(posix_fadvise  HAVE_FADVISE)             # kioslave
-check_function_exists(index     HAVE_INDEX)                    # libltdl
-check_function_exists(rindex    HAVE_RINDEX)
-check_function_exists(memcpy    HAVE_MEMCPY)
-check_function_exists(bcopy     HAVE_BCOPY)
-check_function_exists(backtrace HAVE_BACKTRACE)
-check_function_exists(getservbyname_r HAVE_GETSERVBYNAME_R)
-check_function_exists(getcwd    HAVE_GETCWD)
-check_function_exists(getgroups HAVE_GETGROUPS)
-check_function_exists(getcwd    HAVE_GETCWD)
-check_function_exists(gethostbyname2 HAVE_GETHOSTBYNAME2)
-check_function_exists(gethostbyname2_r HAVE_GETHOSTBYNAME2_R)
-check_function_exists(gethostbyname HAVE_GETHOSTBYNAME)
-check_function_exists(gethostbyname_r HAVE_GETHOSTBYNAME_R)
-check_function_exists(getpagesize HAVE_GETPAGESIZE)
-check_function_exists(getpeereid  HAVE_GETPEEREID)
-check_function_exists(getpeername HAVE_GETPEERNAME)
-check_function_exists(getprotobyname_r HAVE_GETPROTOBYNAME_R)
-check_function_exists(getpt       HAVE_GETPT)
-check_function_exists(getservbyport_r HAVE_GETSERVBYPORT_R)
-check_function_exists(getsockname     HAVE_GETSOCKNAME)
-check_function_exists(getsockopt      HAVE_GETSOCKOPT)
-check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)
-check_function_exists(grantpt         HAVE_GRANTPT)
-check_function_exists(if_nametoindex  HAVE_IF_NAMETOINDEX)
-check_function_exists(madvise         HAVE_MADVISE)
-check_function_exists(mmap            HAVE_MMAP)
-check_function_exists(munmap          HAVE_MUNMAP)
-check_function_exists(poll            HAVE_POLL)
-check_function_exists(putenv          HAVE_PUTENV)
-check_function_exists(readdir_r       HAVE_READDIR_R)
-check_function_exists(res_init        HAVE_RES_INIT)
-check_function_exists(sendfile        HAVE_SENDFILE)
-check_function_exists(setegid         HAVE_SETEGID)
-check_function_exists(setfsent        HAVE_SETFSENT)
-check_function_exists(setgroups       HAVE_SETGROUPS)
-check_function_exists(setlocale       HAVE_SETLOCALE)
-check_function_exists(setlocale       HAVE_SETPRIORITY)
-check_function_exists(socket          HAVE_SOCKET)
-check_function_exists(srandom         HAVE_SRANDOM)
-check_function_exists(unlockpt        HAVE_UNLOCKPT)
-check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)
-check_function_exists(__argz_count    HAVE___ARGZ_COUNT)
-check_function_exists(__argz_next     HAVE___ARGZ_NEXT)
-check_function_exists(__argz_stringify HAVE___ARGZ_STRINGIFY)
+check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
+check_function_exists(index            HAVE_INDEX)                    # libltdl
+check_function_exists(rindex           HAVE_RINDEX)                   # libltdl
+check_function_exists(memcpy           HAVE_MEMCPY)                   # libltdl, kdecore/malloc
+check_function_exists(bcopy            HAVE_BCOPY)                    # libltdl
+check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
+check_function_exists(getservbyname_r  HAVE_GETSERVBYNAME_R)          # kdecore
+check_function_exists(gethostbyname2   HAVE_GETHOSTBYNAME2)           # kdecore
+check_function_exists(gethostbyname2_r HAVE_GETHOSTBYNAME2_R)         # kdecore
+check_function_exists(gethostbyname    HAVE_GETHOSTBYNAME)            # kdecore
+check_function_exists(gethostbyname_r  HAVE_GETHOSTBYNAME_R)          # kdecore
+check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # kdecore/malloc, khtml
+check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
+check_function_exists(getprotobyname_r HAVE_GETPROTOBYNAME_R)         # kdecore
+check_function_exists(getpt           HAVE_GETPT)                     # kdesu
+check_function_exists(getservbyport_r HAVE_GETSERVBYPORT_R)           # kdecore
+check_function_exists(grantpt         HAVE_GRANTPT)                   # kdecore, kdesu
+check_function_exists(if_nametoindex  HAVE_IF_NAMETOINDEX)            # kdecore
+check_function_exists(madvise         HAVE_MADVISE)                   # kdecore
+check_function_exists(mmap            HAVE_MMAP)                      # kdecore, kdecore/malloc, khtml
+check_function_exists(poll            HAVE_POLL)                      # kdecore
+check_function_exists(readdir_r       HAVE_READDIR_R)                 # kio
+check_function_exists(res_init        HAVE_RES_INIT)                  # config.h, kdecore
+check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
+check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
+check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
+check_function_exists(unlockpt        HAVE_UNLOCKPT)                  # kdecore, kdesu
+check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 
 
-check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)
-check_library_exists(crypt crypt "" HAVE_CRYPT)
-check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
+check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)             # kdecore
+check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
 
 # e.g. on slackware 9.1 res_init() is only a define for __res_init, so we check both, Alex
-set(HAVE_RESOLV_LIBRARY FALSE)
+set(HAVE_RESOLV_LIBRARY FALSE)                                        # kdecore, kio 
 check_library_exists(resolv res_init "" HAVE_RES_INIT_IN_RESOLV_LIBRARY)
 check_library_exists(resolv __res_init "" HAVE___RES_INIT_IN_RESOLV_LIBRARY)
 if (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
@@ -236,10 +216,10 @@ endif (HAVE_OPENPTY)
 
 #dlopen stuff
 set(LIBDL)
-set(HAVE_LIBDL)
+set(HAVE_LIBDL)                                         # kdecore
 # on FreeBSD dlopen is in libc, on Linux it's in libdl
 check_library_exists(dl dlopen ""  DLOPEN_IN_LIBDL)
-check_function_exists(dlopen DLOPEN_IN_LIBC)
+check_function_exists(dlopen       DLOPEN_IN_LIBC)
 
 if (DLOPEN_IN_LIBC)
    set(LIBDL c)
@@ -250,67 +230,65 @@ endif (DLOPEN_IN_LIBC)
 if (DLOPEN_IN_LIBDL)
    set(LIBDL dl)
    set(HAVE_LIBDL TRUE)
-   check_library_exists(dl dlerror ""  HAVE_DLERROR)
+   check_library_exists(dl dlerror ""  HAVE_DLERROR)     # libltdl
 endif (DLOPEN_IN_LIBDL)
 
-check_function_exists(shl_load HAVE_SHL_LOAD)
-check_function_exists(dld_init HAVE_DLD)
+check_function_exists(shl_load   HAVE_SHL_LOAD)          # libltdl
+check_function_exists(dld_init   HAVE_DLD)               # libltdl
 
-check_function_exists(getmntinfo HAVE_GETMNTINFO)
-check_function_exists(inet_pton  HAVE_INET_PTON)
-check_function_exists(inet_ntop  HAVE_INET_NTOP)
-check_function_exists(initgroups HAVE_INITGROUPS)
-check_function_exists(mkstemps   HAVE_MPSTEMPS)
-check_function_exists(mkstemp    HAVE_MPSTEMP)
-check_function_exists(mkstemps   HAVE_MKSTEMPS)
-check_function_exists(mkstemp    HAVE_MKSTEMP)
-check_function_exists(mkdtemp    HAVE_MKDTEMP)
-check_function_exists(ptsname    HAVE_PTSNAME)
-check_function_exists(random     HAVE_RANDOM)
-check_function_exists(revoke     HAVE_REVOKE)
-check_function_exists(strlcpy    HAVE_STRLCPY)
-check_function_exists(strlcat    HAVE_STRLCAT)
-check_function_exists(setenv     HAVE_SETENV)
-check_function_exists(seteuid    HAVE_SETEUID)
-check_function_exists(setmntent  HAVE_SETMNTENT)
-check_function_exists(unsetenv   HAVE_UNSETENV)
-check_function_exists(usleep     HAVE_USLEEP)
-check_function_exists(_getpty    HAVE__GETPTY)
+check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
+check_function_exists(inet_pton  HAVE_INET_PTON)         # kdecore
+check_function_exists(inet_ntop  HAVE_INET_NTOP)         # kdecore
+check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu
+check_function_exists(mkstemps   HAVE_MKSTEMPS)          # various
+check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore
+check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore
+check_function_exists(ptsname    HAVE_PTSNAME)           # kdecore, kdesu
+check_function_exists(random     HAVE_RANDOM)            # kdecore
+check_function_exists(revoke     HAVE_REVOKE)            # kdecore
+check_function_exists(strlcpy    HAVE_STRLCPY)           # config.h, kdecore
+check_function_exists(strlcat    HAVE_STRLCAT)           # config.h, kdecore
+check_function_exists(setenv     HAVE_SETENV)            # config.h, kdecore
+check_function_exists(seteuid    HAVE_SETEUID)           # kdecore
+check_function_exists(setmntent  HAVE_SETMNTENT)         # kio, kdecore
+check_function_exists(unsetenv   HAVE_UNSETENV)          # config.h, kdecore
+check_function_exists(usleep     HAVE_USLEEP)            # config.h, kdecore
+check_function_exists(_getpty    HAVE__GETPTY)           # kdesu
 
-check_function_exists(_finite    HAVE_FUNC__FINITE)
-check_function_exists(finite     HAVE_FUNC_FINITE)
-check_function_exists(isinf      HAVE_FUNC_ISINF)
-check_function_exists(isnan      HAVE_FUNC_ISNAN)
+check_function_exists(_finite    HAVE_FUNC__FINITE)      # kjs
+check_function_exists(finite     HAVE_FUNC_FINITE)       # kjs
+check_function_exists(isinf      HAVE_FUNC_ISINF)        # kjs
+check_function_exists(isnan      HAVE_FUNC_ISNAN)        # kjs
 
 # check for prototypes
 
 check_prototype_exists(mkstemps "stdlib.h;unistd.h" HAVE_MKSTEMPS_PROTO)
-check_prototype_exists(mkdtemp "stdlib.h;unistd.h" HAVE_MKDTEMP_PROTO)
-check_prototype_exists(mkstemp "stdlib.h;unistd.h" HAVE_MKSTEMP_PROTO)
-check_prototype_exists(strlcat string.h HAVE_STRLCAT_PROTO)
-check_prototype_exists(strlcpy string.h HAVE_STRLCPY_PROTO)
-check_prototype_exists(random stdlib.h HAVE_RANDOM_PROTO)
+check_prototype_exists(mkdtemp "stdlib.h;unistd.h"  HAVE_MKDTEMP_PROTO)
+check_prototype_exists(mkstemp "stdlib.h;unistd.h"  HAVE_MKSTEMP_PROTO)
+check_prototype_exists(strlcat string.h             HAVE_STRLCAT_PROTO)
+check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
+check_prototype_exists(random stdlib.h              HAVE_RANDOM_PROTO)
 check_prototype_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT_PROTO)
-check_prototype_exists(setenv stdlib.h HAVE_SETENV_PROTO)
-check_prototype_exists(srandom stdlib.h HAVE_SRANDOM_PROTO)
-check_prototype_exists(unsetenv stdlib.h HAVE_UNSETENV_PROTO)
-check_prototype_exists(usleep unistd.h HAVE_USLEEP_PROTO)
+check_prototype_exists(setenv stdlib.h              HAVE_SETENV_PROTO)
+check_prototype_exists(srandom stdlib.h             HAVE_SRANDOM_PROTO)
+check_prototype_exists(unsetenv stdlib.h            HAVE_UNSETENV_PROTO)
+check_prototype_exists(usleep unistd.h              HAVE_USLEEP_PROTO)
 check_prototype_exists(gethostname "stdlib.h;unistd.h" HAVE_GETHOSTNAME_PROTO)
 check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
-check_prototype_exists(setreuid unistd.h HAVE_SETREUID_PROTO)
-check_prototype_exists(seteuid unistd.h HAVE_SETEUID_PROTO)
-check_prototype_exists(getservbyname_r netdb.h HAVE_GETSERVBYNAME_R_PROTO)
+check_prototype_exists(setreuid unistd.h            HAVE_SETREUID_PROTO)
+check_prototype_exists(seteuid unistd.h             HAVE_SETEUID_PROTO)
+check_prototype_exists(getservbyname_r netdb.h      HAVE_GETSERVBYNAME_R_PROTO)
 
 # check for existing datatypes
 
 set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
-check_type_size("struct ucred" HAVE_STRUCT_UCRED)
+check_type_size("struct ucred" HAVE_STRUCT_UCRED)                # kdesu
 
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
-check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)
+check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)          # kdecore
 
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
-check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
+check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)  # kdecore
 set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
 set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
@@ -342,12 +320,12 @@ check_include_files(punycode.h    HAVE_PUNYCODE_H)
 check_include_files(stringprep.h  HAVE_STRINGPREP_H)
 check_include_files(values.h      HAVE_VALUES_H)
 check_include_files(sys/dir.h     HAVE_SYS_DIR_H)
+check_include_files(dirent.h      HAVE_DIRENT_H)
 
 check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
 check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)
 check_include_files( X11/ICE/ICElib.h       HAVE_X11_ICE_ICELIB_H)
 check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
-
 
 check_symbol_exists(stpcpy          "string.h"                 HAVE_STPCPY)
 check_symbol_exists(strcasecmp      "strings.h"                HAVE_STRCASECMP)
@@ -355,3 +333,24 @@ check_symbol_exists(strfmon         "monetary.h"               HAVE_STRFMON)
 check_symbol_exists(LC_MESSAGES     "locale.h"                 HAVE_LC_MESSAGES)
 check_symbol_exists(freeaddrinfo    "sys/socket.h;netdb.h"     HAVE_FREEADDRINFO)
 check_symbol_exists(gai_strerror    "netdb.h"                  HAVE_GAI_STRERROR)
+
+check_function_exists(getcwd          HAVE_GETCWD)
+check_function_exists(getgroups       HAVE_GETGROUPS)
+check_function_exists(getpeername     HAVE_GETPEERNAME)
+check_function_exists(getsockname     HAVE_GETSOCKNAME)
+check_function_exists(getsockopt      HAVE_GETSOCKOPT)
+check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)
+check_function_exists(munmap          HAVE_MUNMAP)
+check_function_exists(putenv          HAVE_PUTENV)
+check_function_exists(setegid         HAVE_SETEGID)
+check_function_exists(setfsent        HAVE_SETFSENT)
+check_function_exists(setgroups       HAVE_SETGROUPS)
+check_function_exists(setlocale       HAVE_SETLOCALE)
+check_function_exists(socket          HAVE_SOCKET)
+check_function_exists(__argz_count    HAVE___ARGZ_COUNT)
+check_function_exists(__argz_next     HAVE___ARGZ_NEXT)
+check_function_exists(__argz_stringify HAVE___ARGZ_STRINGIFY)
+check_function_exists(mkstemps        HAVE_MPSTEMPS)
+check_function_exists(mkstemp         HAVE_MPSTEMP)
+
+check_library_exists(crypt crypt "" HAVE_CRYPT)
