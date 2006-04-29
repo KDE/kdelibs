@@ -190,7 +190,7 @@ class KDECORE_EXPORT KDateTime
      * should be interpreted, i.e. which time zone (if any) the date/time is
      * expressed in.
      */
-    class Spec
+    class KDECORE_EXPORT Spec
     {
       public:
         /**
