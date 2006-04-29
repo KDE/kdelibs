@@ -433,7 +433,11 @@ KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
     dialog->setButtonText( KDialog::Yes, buttonYes.text() );
+    dialog->setButtonTip( KDialog::Yes, buttonYes.toolTip() );
+    dialog->setButtonWhatsThis( KDialog::Yes, buttonYes.whatsThis() );
     dialog->setButtonText( KDialog::No, buttonNo.text() );
+    dialog->setButtonTip( KDialog::No, buttonNo.toolTip() );
+    dialog->setButtonWhatsThis( KDialog::No, buttonNo.whatsThis() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::No );
     if( options & PlainCaption )
