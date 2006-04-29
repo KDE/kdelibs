@@ -35,6 +35,8 @@
 #include <qcolor.h>
 #include <QHash>
 #include <QTextCursor>
+#include <QEvent>
+#include <QKeyEvent>
 
 namespace KSpell2 {
 

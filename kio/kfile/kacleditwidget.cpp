@@ -290,7 +290,7 @@ void KACLListViewItem::calcEffectiveRights()
     if ( m_pACLListView->hasMaskEntry()
             && ( type == KACLListView::NamedUser
               || type == KACLListView::Group
-              || type == KACLListView::NamedGroup ) 
+              || type == KACLListView::NamedGroup )
             && !isDefault )
     {
 
@@ -393,7 +393,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
                                         bool allowDefaults )
       : KDialogBase( listView, "edit_entry_dialog", true,
               i18n( "Edit ACL Entry" ), KDialogBase::Ok|KDialogBase::Cancel,
-              KDialogBase::Ok, false ), 
+              KDialogBase::Ok, false ),
         m_listView( listView ), m_item( item ), m_users( users ), m_groups( groups ),
         m_defaultUsers( defaultUsers ), m_defaultGroups( defaultGroups ),
         m_allowedTypes( allowedTypes ), m_allowedDefaultTypes( allowedDefaultTypes ),
@@ -520,17 +520,17 @@ void EditACLEntryDialog::slotUpdateAllowedUsersAndGroups()
     m_groupsCombo->clear();
     if ( m_defaultCB && m_defaultCB->isChecked() ) {
         m_usersCombo->insertStringList( m_defaultUsers );
-        if ( m_defaultUsers.find( oldUser ) != m_defaultUsers.end() )
+        if ( m_defaultUsers.contains( oldUser ) )
             m_usersCombo->setCurrentText( oldUser );
         m_groupsCombo->insertStringList( m_defaultGroups );
-        if ( m_defaultGroups.find( oldGroup ) != m_defaultGroups.end() )
+        if ( m_defaultGroups.contains( oldGroup ) )
             m_groupsCombo->setCurrentText( oldGroup );
     } else {
         m_usersCombo->insertStringList( m_users );
-        if ( m_users.find( oldUser ) != m_users.end() )
+        if ( m_users.contains( oldUser ) )
             m_usersCombo->setCurrentText( oldUser );
         m_groupsCombo->insertStringList( m_groups );
-        if ( m_groups.find( oldGroup ) != m_groups.end() )
+        if ( m_groups.contains( oldGroup ) )
             m_groupsCombo->setCurrentText( oldGroup );
     }
 }
@@ -989,9 +989,9 @@ void KACLListView::slotAddEntry()
     calculateEffectiveRights();
     sort();
     setCurrentItem( item );
-    // Q3ListView doesn't seem to emit, in this case, and we need to update 
+    // Q3ListView doesn't seem to emit, in this case, and we need to update
     // the buttons...
-    if ( childCount() == 1 ) 
+    if ( childCount() == 1 )
         emit currentChanged( item );
 }
 
@@ -1034,7 +1034,7 @@ void KACLListView::slotRemoveEntry()
         KACLListViewItem *item = static_cast<KACLListViewItem*>( it.current() );
         ++it;
         /* First check if it's a mask entry and if so, make sure that there is
-         * either no name user or group entry, which means the mask can be 
+         * either no name user or group entry, which means the mask can be
          * removed, or don't remove it, but reset it. That is allowed. */
         if ( item->type == Mask ) {
             bool itemWasDefault = item->isDefault;
