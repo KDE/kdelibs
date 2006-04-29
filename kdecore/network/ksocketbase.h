@@ -632,6 +632,15 @@ public:
   inline qint64 write(const char *data, qint64 len)
   { return QIODevice::write(data, len); }
 
+  /**
+   * Writes the given data to the socket.
+   *
+   * Reimplemented from QIODevice. See QIODevice::write for
+   * more information.
+   */
+  inline qint64 write(const QByteArray& data)
+  { return QIODevice::write(data); }
+
   /** @overload
    * Writes the given data to the destination address.
    *
