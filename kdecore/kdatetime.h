@@ -828,7 +828,7 @@ class KDECORE_EXPORT KDateTime
      *
      * Any previous time zone is forgotten. The stored date/time component of
      * the instance is left unchanged (except that its UTC/local time setting
-     * is set to correspond with @spec). Usually this method will change the
+     * is set to correspond with @p spec). Usually this method will change the
      * absolute time which this instance represents.
      *
      * @param spec new time specification
