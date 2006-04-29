@@ -925,7 +925,6 @@ void NodeImpl::createRendererIfNeeded()
         return;
 #endif
 
-    assert(!attached());
     assert(!m_render);
 
     NodeImpl *parent = parentNode();

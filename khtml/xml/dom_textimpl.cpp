@@ -384,17 +384,17 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
     if (!onlyWS) {
         return true;
     }
-    
+
     RenderObject *par = parentNode()->renderer();
-    
+
     if (par->isTable() || par->isTableRow() || par->isTableSection()) {
         return false;
     }
-    
+
     if (style->preserveWS() || style->preserveLF()) {
         return true;
     }
-    
+
     if (par->isInline()) {
         // <span><div/> <div/></span>
         RenderObject *prev = previousRenderer();
@@ -406,7 +406,7 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
         if (par->isRenderBlock() && !par->childrenInline() && (!prev || !prev->isInline())) {
             return false;
         }
-        
+
         RenderObject *first = par->firstChild();
         RenderObject *next = nextRenderer();
         if (!first || next == first) {
@@ -415,7 +415,7 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
             return false;
         }
     }
-    
+
     return true;
 }
 
@@ -438,6 +438,10 @@ NodeImpl::Id TextImpl::id() const
 void TextImpl::recalcStyle( StyleChange change )
 {
 //      qDebug("textImpl::recalcStyle");
+    // Create renderer if now needed
+    if ( changed() && !m_render) {
+        createRendererIfNeeded();
+    }
     if (change != NoChange && parentNode()) {
 // 	qDebug("DomText::recalcStyle");
 	if(m_render)
@@ -461,9 +465,9 @@ TextImpl *TextImpl::createNew(DOMStringImpl *_str)
 
 DOMStringImpl* TextImpl::renderString() const
 {
-    if (renderer()) 
+    if (renderer())
         return static_cast<RenderText*>(renderer())->string();
-    else 
+    else
         return string();
 }
 
@@ -481,7 +485,7 @@ DOMString TextImpl::toString(long long startOffset, long long endOffset) const
     if(endOffset >=0 || startOffset >0)
 	str = str.copy(); //we are going to modify this, so make a copy.  I hope I'm doing this right.
     if(endOffset >= 0)
-        str.truncate(endOffset); 
+        str.truncate(endOffset);
     if(startOffset > 0)    //note the order of these 2 'if' statements so that it works right when n==m_startContainer==m_endContainer
         str.remove(0, startOffset);
     return escapeHTML( str );
