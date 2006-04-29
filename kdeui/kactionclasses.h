@@ -400,16 +400,16 @@ public:
     QAction* currentAction() const;
 
     /**
-     * \overload currentAction()
-     *
      * Returns the index of the current item.
+     *
+     * @sa currentItem and currentAction
      */
     int currentItem() const;
 
     /**
-     * \overload currentAction()
-     *
      * Returns the text of the currently selected item.
+     *
+     * @sa currentItem and currentAction
      */
     QString currentText() const;
 
@@ -570,13 +570,13 @@ public:
 
 Q_SIGNALS:
     /**
-     * This signal is emitted when an item is selected; @param index indicated
-     * the item selected.
+     * This signal is emitted when an item is selected; @param action 
+     * indicates the item selected.
      */
     void triggered( QAction* action );
 
     /**
-     * This signal is emitted when an item is selected; @param index indicated
+     * This signal is emitted when an item is selected; @param index indicates
      * the item selected.
      */
     void triggered( int index );
