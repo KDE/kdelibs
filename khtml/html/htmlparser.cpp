@@ -269,7 +269,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // if this tag is forbidden inside the current context, pop
     // blocks until we are allowed to add it...
-    while(forbiddenTag[t->tid]) {
+    while(blockStack && forbiddenTag[t->tid]) {
 #ifdef PARSER_DEBUG
         kDebug( 6035 ) << "t->id: " << t->tid << " is forbidden :-( " << endl;
 #endif
