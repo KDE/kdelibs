@@ -22,10 +22,9 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QSet>
 
 #include <dcopobject.h>
-
-#include <set>
 
 namespace KABC {
 
@@ -110,10 +109,10 @@ class KABC_EXPORT AddresseeHelper : public QObject, public DCOPObject
     AddresseeHelper();
 
     static void addToSet( const QStringList& list,
-                          std::set<QString>& container );
-    std::set<QString> mTitles;
-    std::set<QString> mPrefixes;
-    std::set<QString> mSuffixes;
+                          QSet<QString>& container );
+    QSet<QString> mTitles;
+    QSet<QString> mPrefixes;
+    QSet<QString> mSuffixes;
     bool mTradeAsFamilyName;
 
     static AddresseeHelper *s_self;

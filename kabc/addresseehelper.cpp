@@ -49,7 +49,7 @@ AddresseeHelper::AddresseeHelper()
 
 // static
 void AddresseeHelper::addToSet( const QStringList& list,
-                                std::set<QString>& container )
+                                QSet<QString>& container )
 {
   QStringList::ConstIterator it;
   for ( it = list.begin(); it != list.end(); ++it ) {
@@ -92,17 +92,17 @@ void AddresseeHelper::initSettings()
 
 bool AddresseeHelper::containsTitle( const QString& title ) const
 {
-  return mTitles.find( title ) != mTitles.end();
+  return mTitles.contains( title);
 }
 
 bool AddresseeHelper::containsPrefix( const QString& prefix ) const
 {
-  return mPrefixes.find( prefix ) != mPrefixes.end();
+  return mPrefixes.contains( prefix );
 }
 
 bool AddresseeHelper::containsSuffix( const QString& suffix ) const
 {
-  return mSuffixes.find( suffix ) != mSuffixes.end();
+  return mSuffixes.contains( suffix );
 }
 
 bool AddresseeHelper::tradeAsFamilyName() const
