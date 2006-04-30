@@ -33,12 +33,6 @@ else(CUPS_FOUND)
    set(HAVE_CUPS 0)
 endif(CUPS_FOUND)
 
-if(FAM_FOUND)                   # kio
-   set(HAVE_FAM 1)
-else(FAM_FOUND)
-   set(HAVE_FAM 0)
-endif(FAM_FOUND)
-
 if(CARBON_FOUND)                # kdecore
    set(HAVE_CARBON 1)
 else(CARBON_FOUND)

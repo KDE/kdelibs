@@ -1,5 +1,11 @@
 kde4_header()
 
+if(FAM_FOUND)
+   set(HAVE_FAM 1)
+else(FAM_FOUND)
+   set(HAVE_FAM 0)
+endif(FAM_FOUND)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdirwatch.h )
 
 ########### install files ###############

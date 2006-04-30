@@ -2,6 +2,8 @@ kde4_header()
 
 project(kio)
 
+macro_optional_find_package(FAM)
+
 add_definitions(-D_LARGEFILE64_SOURCE)
 
 if(OPENSSL_FOUND)

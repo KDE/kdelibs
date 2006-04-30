@@ -36,7 +36,6 @@ endif(${generatedFileInSourceDir})
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(BZip2)
-macro_optional_find_package(FAM)
 macro_optional_find_package(AGG)
 macro_optional_find_package(OpenSSL)
 macro_optional_find_package(Akode)
