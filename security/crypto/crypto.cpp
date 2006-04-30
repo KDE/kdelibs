@@ -1365,17 +1365,17 @@ QString iss = QString();
          iss = cert->getIssuer();
          cspl = validFrom->palette();
          if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
-            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+            cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
-            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+            cspl.setColor(QPalette::Foreground, QColor(42,153,59));
          }
          validFrom->setPalette(cspl);
 
          cspl = validUntil->palette();
          if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
-            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+            cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
-            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+            cspl.setColor(QPalette::Foreground, QColor(42,153,59));
          }
          validUntil->setPalette(cspl);
 
@@ -1602,17 +1602,17 @@ QString iss;
    KSSLCertificate *cert = pkcs->getCertificate();
    cspl = yValidFrom->palette();
    if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
-	   cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+	   cspl.setColor(QPalette::Foreground, QColor(196,33,21));
    } else {
-	   cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+	   cspl.setColor(QPalette::Foreground, QColor(42,153,59));
    }
    yValidFrom->setPalette(cspl);
 
    cspl = yValidUntil->palette();
    if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
-	   cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+	   cspl.setColor(QPalette::Foreground, QColor(196,33,21));
    } else {
-	   cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+	   cspl.setColor(QPalette::Foreground, QColor(42,153,59));
    }
    yValidUntil->setPalette(cspl);
 
@@ -1642,17 +1642,17 @@ QString iss;
          iss = cert->getIssuer();
          cspl = yValidFrom->palette();
          if (QDateTime::currentDateTime(Qt::UTC) < cert->getQDTNotBefore()) {
-            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+            cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
-            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+            cspl.setColor(QPalette::Foreground, QColor(42,153,59));
          }
          yValidFrom->setPalette(cspl);
 
          cspl = yValidUntil->palette();
          if (QDateTime::currentDateTime(Qt::UTC) > cert->getQDTNotAfter()) {
-            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+            cspl.setColor(QPalette::Foreground, QColor(196,33,21));
          } else {
-            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+            cspl.setColor(QPalette::Foreground, QColor(42,153,59));
          }
          yValidUntil->setPalette(cspl);
 
