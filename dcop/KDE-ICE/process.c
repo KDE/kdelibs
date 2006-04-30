@@ -2373,7 +2373,7 @@ Bool		*connectionClosedRet;
 	 */
 
 	_IceConnectionClosed (iceConn);		/* invoke watch procs */
-	_IceFreeConnection (iceConn);
+	/*_IceFreeConnection (iceConn);*/
 	*connectionClosedRet = True;
     }
     else if (iceConn->proto_ref_count > 0)
