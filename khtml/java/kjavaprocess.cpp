@@ -130,7 +130,7 @@ QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
 {
     //the buffer to store stuff, etc.
     QByteArray* buff = new QByteArray();
-    QTextOStream output( buff );
+    QTextStream output( buff, QIODevice::ReadWrite );
     const char sep = 0;
 
     //make space for the command size: 8 characters...
@@ -300,7 +300,7 @@ bool KJavaProcess::invokeJVM()
 
     kDebug(6100) << "Invoking JVM now...with arguments = " << endl;
     QString argStr;
-    QTextOStream stream( &argStr );
+    QTextStream stream( &argStr, QIODevice::ReadWrite );
     const QList<QByteArray> args = javaProcess->args();
     QListIterator<QByteArray> bit(args);
     while (bit.hasNext())
