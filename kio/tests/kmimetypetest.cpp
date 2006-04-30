@@ -63,6 +63,9 @@ void KMimeTypeTest::testIcons()
 
 void KMimeTypeTest::testFindByPath()
 {
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
     KMimeType::Ptr mf;
 
     QString exePath = KStandardDirs::findExe( "kioexec" );

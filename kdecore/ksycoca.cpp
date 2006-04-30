@@ -222,7 +222,9 @@ KSycoca::~KSycoca()
 
 bool KSycoca::isAvailable()
 {
-   return !self()->bNoDatabase;
+   if ( !self()->bNoDatabase )
+       return false;
+   return self()->checkVersion(false);
 }
 
 void KSycoca::closeDatabase()
