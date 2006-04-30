@@ -379,8 +379,7 @@ int main(int argc, char** argv)
 	cout<<"{\n";
 	cout<<"\t\tKeramikImageDb::release();\n";
 	cout<<"}\n";
-
-
+	cout.flush();
 
 
 	QFile file("keramikrc.h");
@@ -400,6 +399,7 @@ int main(int argc, char** argv)
 	ts<<"};\n";
 
 	ts<<"#endif\n";
+	file.close();
 
 	return 0;
 }
