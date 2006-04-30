@@ -111,11 +111,11 @@ EscpWidget::EscpWidget(QWidget *parent)
 	QLabel	*inklab = new QLabel(i18n("&Ink level"), this);
 	QLabel	*identlab = new QLabel(i18n("P&rinter identification"), this);
 
-	cleanlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
-	nozzlelab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
-	alignlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
-	inklab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
-	identlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter|Qt::TextShowMnemonic);
+	cleanlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+	nozzlelab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+	alignlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+	inklab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+	identlab->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
 
 	cleanbtn->setShortcut(Q3Accel::shortcutKey(cleanlab->text()));
 	nozzlebtn->setShortcut(Q3Accel::shortcutKey(nozzlelab->text()));
