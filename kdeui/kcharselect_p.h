@@ -32,13 +32,13 @@
 
 class KCharSelectItemModel: public QAbstractTableModel {
 	Q_OBJECT
-public: 
+public:
 	KCharSelectItemModel(int tableNum,const QString& fontName, QObject *parent):QAbstractTableModel(parent),m_tableNum(tableNum),m_fontName(fontName){}
 
-	enum internalRoles {CharacterRole=Qt::UserRole};	
+	enum internalRoles {CharacterRole=Qt::UserRole};
 	int rowCount(const QModelIndex&) const { return 8;}
 	int columnCount(const QModelIndex&) const { return 32;}
-	
+
 	void setFont(const QString& fontName) {m_fontName=fontName;m_font=QFont(fontName); reset();}
 	Qt::ItemFlags flags(const QModelIndex &) const {
 		return (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
@@ -59,9 +59,9 @@ public:
 		else if (role == Qt::BackgroundColorRole) {
 			QFontMetrics fm = QFontMetrics( m_font );
 			if( fm.inFont(QChar((const ushort)(m_tableNum * 256 + columnCount(QModelIndex())*index.row() + index.column()))))
-				return QVariant(qApp->palette().base().color());
+                            return QVariant(qApp->palette().color( QPalette::Base ) );
 			else
-				return QVariant(qApp->palette().button().color());
+                            return QVariant(qApp->palette().color( QPalette::Button ) );
 		} else if (role == Qt::FontRole) return QVariant(m_font);
 		else if (role==CharacterRole) return QVariant(QChar((const ushort)(m_tableNum * 256 + columnCount(QModelIndex())*index.row() + index.column())));
 		return QVariant();

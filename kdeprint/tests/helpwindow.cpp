@@ -276,7 +276,7 @@ void HelpWindow::print()
 	QRect view( body );
 	int page = 1;
 	do {
-	    richText.draw( &p, body.left(), body.top(), view, colorGroup() );
+	    richText.draw( &p, body.left(), body.top(), view, palette() );
 	    view.moveBy( 0, body.height() );
 	    p.translate( 0 , -body.height() );
 	    p.setFont( font );

@@ -44,7 +44,7 @@ static const int keramik_up_arrow[] =
 		-2, 3, 2, 3,
 		-2, 4, 2, 4
 	};
-	
+
 static const int keramik_down_arrow[] =
 	{
 		0, 4, 0, 4,
@@ -71,7 +71,7 @@ static const int keramik_down_arrow[] =
 		-3, -2, -3, 2,
 		-4, -2, -4, 2
 	};
-	
+
 	static const int keramik_left_arrow[] =
 	{
 		-4, 0, -4, 0,
@@ -85,8 +85,8 @@ static const int keramik_down_arrow[] =
 		4, -2, 4, 2
 	};
 
-	
-		
+
+
 #define POLY_LEN(x) sizeof(x)/(sizeof(int)*2)
 
 
@@ -117,7 +117,7 @@ public:
 
 		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor,
 							ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
-		
+
 		//### HACK,for now.
 		//setWidgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin, 8);
 
@@ -129,11 +129,11 @@ public:
 		setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 12);
 		setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, loader.size(keramik_slider).height());
 	}
-	
-	void drawKStylePrimitive(WidgetType widgetType, int primitive, 
+
+	void drawKStylePrimitive(WidgetType widgetType, int primitive,
 				 const QStyleOption* opt,
 				 QRect r, QPalette pal, State flags,
-				 QPainter* p, 
+				 QPainter* p,
 				 const QWidget* widget,
 				 KStyle::Option* kOpt) const
 	{
@@ -150,7 +150,7 @@ public:
 						if (bOpt &&  //### helper function in KStyle?
 							(bOpt->features & QStyleOptionButton::DefaultButton))
 							return; //The default indicator does the job for us.
-						
+
 						bool sunken   = (flags & State_On) || (flags & State_Sunken);
 						bool disabled = !(flags & State_Enabled);
 
@@ -164,12 +164,12 @@ public:
 						if (flags & State_MouseOver && name == keramik_pushbutton )
 							name = keramik_pushbutton_hov;
 
-						Keramik::RectTilePainter( name, false ).draw(p, r, pal.button().color(), pal.background().color(), disabled);
+						Keramik::RectTilePainter( name, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						//, pmode() );
 
 						return;
 					}
-					
+
 					case PushButton::DefaultButtonBevel:
 					{
 						bool sunken = (flags & State_On) || (flags & State_Sunken);
@@ -182,7 +182,7 @@ public:
 							id = keramik_pushbutton_default_hov;
 
 
-						Keramik::RectTilePainter( id, false ).draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
+						Keramik::RectTilePainter( id, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
 						//,  pmode() );
 						break;
 
@@ -191,7 +191,7 @@ public:
 				}
 			}
 			break;
-			
+
 			case WT_Splitter:
 			{
 				if (primitive == Generic::Bevel)
@@ -200,7 +200,7 @@ public:
 					r.getRect(&x, &y, &w, &h);
 					int x2 = x+w-1;
 					int y2 = y+h-1;
-			
+
 					//### should probably use color() directly to avoid creating a brush
 					p->setPen(pal.dark().color());
 					p->drawRect( r );
@@ -209,7 +209,7 @@ public:
 					p->drawPoint(x2, y);
 					p->drawPoint(x, y2);
 					p->drawPoint(x2, y2);
-					p->setPen(pal.light().color());
+					p->setPen(pal.color(QPalette::Light));
 					p->drawLine(x+1, y+1, x+1, y2-1);
 					p->drawLine(x+1, y+1, x2-1, y+1);
 					p->setPen(pal.midlight().color());
@@ -219,42 +219,42 @@ public:
 					p->drawLine(x2-1, y+1, x2-1, y2-1);
 					p->drawLine(x+1, y2-1, x2-1, y2-1);
 					p->fillRect(x+3, y+3, w-5, h-5, pal.brush(QPalette::Background));
-					
+
 					return;
 				}
 				break;
 			}
-			
+
 			case WT_CheckBox:
 			{
 				switch (primitive)
 				{
 					case CheckBox::CheckOn:
-						Keramik::CenteredPainter(keramik_checkbox_on).draw(p, r, pal.button().color(), 
+						Keramik::CenteredPainter(keramik_checkbox_on).draw(p, r, pal.color(QPalette::Button),
 										pal.background().color(), disabled);//, pmode() );
 						return;
 					case CheckBox::CheckOff:
-						Keramik::CenteredPainter(keramik_checkbox_off).draw(p, r, pal.button().color(), 
+						Keramik::CenteredPainter(keramik_checkbox_off).draw(p, r, pal.color(QPalette::Button),
 										pal.background().color(), disabled);//, pmode() );
 						return;
 					case CheckBox::CheckTriState:
-						Keramik::CenteredPainter(keramik_checkbox_tri).draw(p, r, pal.button().color(), 
+						Keramik::CenteredPainter(keramik_checkbox_tri).draw(p, r, pal.color(QPalette::Button),
 						pal.background().color(), disabled);//, pmode() );
 						return;
 				}
 				break;
 			}
-			
+
 			case WT_RadioButton:
 			{
 				switch (primitive)
 				{
 					case RadioButton::RadioOn:
-						Keramik::CenteredPainter(keramik_radiobutton_on).draw(p, r, pal.button().color(), 
+						Keramik::CenteredPainter(keramik_radiobutton_on).draw(p, r, pal.color(QPalette::Button),
 												pal.background().color(), disabled);//, pmode() );
 						return;
 					case RadioButton::RadioOff:
-						Keramik::CenteredPainter(keramik_radiobutton_off).draw(p, r, pal.button().color(), 
+						Keramik::CenteredPainter(keramik_radiobutton_off).draw(p, r, pal.color(QPalette::Button),
 						pal.background().color(), disabled);//, pmode() );
 						return;
 				}
@@ -266,12 +266,12 @@ public:
 				switch (primitive)
 				{
 					case ProgressBar::BusyIndicator:
-						Keramik::RowPainter(keramik_progressbar).draw(p, r, 
-										 pal.highlight().color(), pal.background().color());
+						Keramik::RowPainter(keramik_progressbar).draw(p, r,
+										 pal.color(QPalette::Highlight), pal.background().color());
 						return;
 					case ProgressBar::Indicator:
 						Keramik::ProgressBarPainter(keramik_progressbar, opt->direction == Qt::RightToLeft).draw(p, r,
-							pal.highlight().color(), pal.background().color());
+							pal.color(QPalette::Highlight), pal.background().color());
 						return;
 				}
 			}
@@ -282,7 +282,7 @@ public:
 				switch (primitive)
 				{
 					case Generic::Bevel:
-						Keramik::GradientPainter::renderGradient( p, r, pal.button().color(), true, true);
+						Keramik::GradientPainter::renderGradient( p, r, pal.color(QPalette::Button), true, true);
 						return;
 				}
 			}
@@ -302,7 +302,7 @@ public:
 							qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(),
 											pal, true, 1, &pal.brush(QPalette::Midlight));
 						else
-							Keramik::GradientPainter::renderGradient( p, miOpt->menuRect, pal.button().color(), true, true);
+							Keramik::GradientPainter::renderGradient( p, miOpt->menuRect, pal.color(QPalette::Button), true, true);
 						return;
 					}
 				}
@@ -346,7 +346,7 @@ public:
 						r = centerRect(r, r.width(), 2); //Center...
 						p->setPen( pal.mid().color() );
 						p->drawLine(r.x()+5, r.y(), r.right()-4, r.y());
-						p->setPen( pal.light().color() );
+						p->setPen( pal.color(QPalette::Light) );
 						p->drawLine(r.x()+5, r.y() + 1, r.right()-4, r.y() + 1);
 						return;
 					}
@@ -354,7 +354,7 @@ public:
 					case MenuItem::ItemIndicator:
 					{
 						if (flags & State_Enabled)
-							Keramik::RowPainter( keramik_menuitem ).draw(p, r, pal.highlight().color(), pal.background().color());
+							Keramik::RowPainter( keramik_menuitem ).draw(p, r, pal.color(QPalette::Highlight), pal.background().color());
 						else
 							drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
 						return;
@@ -372,14 +372,14 @@ public:
 					case ScrollBar::SliderHor:
 					{
 						bool horizontal = (primitive == ScrollBar::SliderHor);
-						
+
 						bool active     = (flags & State_Sunken);
 						int name = KeramikSlider1;
 						unsigned int count = 3;
 
 						int w = r.width();
 						int h = r.height();
-						
+
 						if ( horizontal )
 						{
 							if ( w > ( loader.size( keramik_scrollbar_hbar+KeramikSlider1 ).width() +
@@ -391,14 +391,14 @@ public:
 										loader.size( keramik_scrollbar_vbar+KeramikSlider4 ).height() +
 										loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
 								count = 5;
-			
-						QColor col = pal.highlight().color();
+
+						QColor col = pal.color(QPalette::Highlight);
 
 						//### what to do with the customScrollMode stuff?
 						//I suppose KStyle can take care of it, somehow?
 						//if (customScrollMode || !highlightScrollBar)
 						//	col = pal.button();
-			
+
 						if (!active)
 							Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, pal.background().color(), false);
 						else
@@ -413,7 +413,7 @@ public:
 
 						//Draw the entire, unselected bevel.
 						Keramik::CenteredPainter painter(keramik_scrollbar_hbar_arrow2);
-						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
+						painter.draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
 
 						p->setPen(pal.buttonText().color());
 						p->drawLine(r.x()+r.width()/2 - 1, r.y() + r.height()/2 - 3,
@@ -447,7 +447,7 @@ public:
 
 						//Draw the entire, unselected bevel.
 						Keramik::CenteredPainter painter(keramik_scrollbar_vbar_arrow2);
-						painter.draw(p, r, pal.button().color(), pal.background().color(), !(flags & State_Enabled));
+						painter.draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
 
 						p->setPen(pal.buttonText().color());
 						p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2,
@@ -479,7 +479,7 @@ public:
 					case ScrollBar::SingleButtonHor:
 					{
 						Keramik::CenteredPainter painter(keramik_scrollbar_hbar_arrow1 );
-						painter.draw( p, r, down? pal.buttonText().color() : pal.button().color(),
+						painter.draw( p, r, down? pal.buttonText().color() : pal.color(QPalette::Button),
 												pal.background().color(), disabled);
 						return;
 					}
@@ -487,52 +487,52 @@ public:
 					case ScrollBar::SingleButtonVert:
 					{
 						Keramik::CenteredPainter painter(keramik_scrollbar_vbar_arrow1 );
-						painter.draw( p, r, down? pal.buttonText().color() : pal.button().color(),
+						painter.draw( p, r, down? pal.buttonText().color() : pal.color(QPalette::Button),
 												pal.background().color(), disabled);
 						return;
 					}
 
 					case ScrollBar::GrooveAreaVert:
 						Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
-									p, r, pal.button().color(), pal.background().color(), disabled);
+									p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
 
 					case ScrollBar::GrooveAreaHor:
 						Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
-									p, r, pal.button().color(), pal.background().color(), disabled);
+									p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
 				}
-				
+
 				if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft)
 				{
 					KStyle::ColorOption* colorOpt   = extractOption<KStyle::ColorOption*>(kOpt);
 					QColor               arrowColor = colorOpt->color.color(pal);
-					
+
 					QPolygon poly;
 					switch (primitive)
 					{
 						case Generic::ArrowUp:
 							poly.setPoints(POLY_LEN(keramik_up_arrow), keramik_up_arrow);
 							break;
-		
+
 						case Generic::ArrowDown:
 							poly.setPoints(POLY_LEN(keramik_down_arrow), keramik_down_arrow);
 							break;
-		
+
 						case Generic::ArrowLeft:
 							poly.setPoints(POLY_LEN(keramik_left_arrow), keramik_left_arrow);
 							break;
-		
+
 						default:
 							poly.setPoints(POLY_LEN(keramik_right_arrow), keramik_right_arrow);
 					}
-		
-		
+
+
 					if ( flags & State_Enabled )
 					{
 						//CHECKME: Why is the -1 needed?
 						poly.translate(r.x() + r.width()/2 - 1, r.y() + r.height()/2);
-		
+
 						p->setPen(arrowColor);
 						p->drawPolygon(poly);
 					}
@@ -540,14 +540,14 @@ public:
 					{
 						//Disabled ones ignore color parameter
 						poly.translate(r.x() + r.width()/2, r.y() + r.height()/2 + 1);
-						p->setPen(pal.light().color());
+						p->setPen(pal.color(QPalette::Light));
 						p->drawPolygon(poly);
-						
+
 						poly.translate(-1,-1);
 						p->setPen(pal.mid().color());
 						p->drawPolygon(poly);
 					}
-		
+
 					return;
 				}
 
@@ -570,7 +570,7 @@ public:
 							else if (pos == QStyleOptionTab::Beginning)
 								pos = QStyleOptionTab::End;
 						}
-					
+
 						if ( flags & State_Selected )
 						{
 							QRect tabRect = r;
@@ -578,9 +578,9 @@ public:
 							//to avoid a doubled line
 							if (pos != QStyleOptionTab::End)
 									tabRect.setWidth( tabRect.width() + 1);
-	
+
 							Keramik::ActiveTabPainter(primitive == TabBar::SouthTab).draw(p, tabRect,
-									pal.button().color().light(110), pal.background().color(),
+									pal.color(QPalette::Button).light(110), pal.background().color(),
 									disabled);
 						}
 						else
@@ -590,7 +590,7 @@ public:
 							if (primitive == TabBar::SouthTab)
 							{
 								Keramik::InactiveTabPainter(pos, true).draw(
-									p, x, y, w, h - 3, pal.button().color(), pal.background().color(),
+									p, x, y, w, h - 3, pal.color(QPalette::Button), pal.background().color(),
 									disabled);
 								p->setPen  (pal.dark().color());
 								p->drawLine(x, y, x + w, y);
@@ -598,8 +598,8 @@ public:
 							else
 							{
 								Keramik::InactiveTabPainter(pos, false).draw(
-									p, x, y + 3, w, h - 3, pal.button().color(), pal.background().color(), disabled);
-								p->setPen  (pal.light().color());
+									p, x, y + 3, w, h - 3, pal.color(QPalette::Button), pal.background().color(), disabled);
+								p->setPen  (pal.color(QPalette::Light));
 								p->drawLine(x, y + h - 1, x + w, y + h - 1);
 							}
 						}
@@ -616,11 +616,11 @@ public:
 				{
 					case Slider::GrooveVert:
 						Keramik::RectTilePainter(keramik_slider_vgroove, true, false).draw(
-							p, r, pal.button().color(), pal.background().color(), disabled);
+							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
 					case Slider::GrooveHor:
 						Keramik::RectTilePainter(keramik_slider_hgroove, false).draw(
-							p, r, pal.button().color(), pal.background().color(), disabled);
+							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
 					case Slider::HandleVert:
 					case Slider::HandleHor:
@@ -630,15 +630,15 @@ public:
 						else
 							r.setX(r.x() + 2);
 
-						QColor hl = pal.highlight().color();
+						QColor hl = pal.color(QPalette::Highlight);
 						if (!disabled && flags & State_Active)
-							hl = Keramik::ColorUtil::lighten(pal.highlight().color() ,110);
+							hl = Keramik::ColorUtil::lighten(pal.color(QPalette::Highlight) ,110);
 
 						int primCode = (primitive == Slider::HandleVert) ?
 											keramik_vslider : keramik_slider;
-						
+
 						Keramik::ScaledPainter(primCode).draw(
-							p, r, disabled ? pal.button().color() : hl, Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend);
+							p, r, disabled ? pal.color(QPalette::Button) : hl, Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend);
 						return;
 					}
 				}
@@ -649,7 +649,7 @@ public:
 		}
 
 		//Handle default fallbacks
-		
+
 		KStyle::drawKStylePrimitive(widgetType, primitive, opt,
 					    r, pal, flags, p, widget, kOpt);
 	}
