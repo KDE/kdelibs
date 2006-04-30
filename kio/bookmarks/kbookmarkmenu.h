@@ -33,7 +33,6 @@
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
-#include "kbookmarkmenu_p.h"
 
 class QString;
 class QMenu;
@@ -47,6 +46,7 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 class KMenu;
+class RMB;
 
 namespace KIO { class Job; }
 
