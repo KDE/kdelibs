@@ -291,14 +291,14 @@ class KDECORE_EXPORT KGlobalSettings
     /**
      * Returns the default base (background) color.
      * @return the default base (background) color
-     * @see QColorGroup::base()
+     * @see QPalette::base()
      */
     static QColor baseColor();
 
     /**
      * Returns the default text color.
      * @return the default text color
-     * @see QColorGroup::text()
+     * @see QPalette::text()
      */
     static QColor textColor();
 
@@ -317,14 +317,14 @@ class KDECORE_EXPORT KGlobalSettings
     /**
      * Returns the default color for highlighted text.
      * @return the default color for highlighted text
-     * @see QColorGroup::hightlightedText()
+     * @see QPalette::hightlightedText()
      */
     static QColor highlightedTextColor();
 
     /**
      * Returns the default color for text highlights.
      * @return the default color for text highlights
-     * @see QColorGroup::hightlight()
+     * @see QPalette::hightlight()
      */
     static QColor highlightColor();
 

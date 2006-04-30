@@ -1311,7 +1311,7 @@ public:
    * If an application computes a default value at runtime for
    * a certain entry, e.g. like:
    * \code
-   * QColor computedDefault = kapp->palette().color(QPalette::Active, QColorGroup::Text)
+   * QColor computedDefault = kapp->palette().color(QPalette::Active, QPalette::Text)
    * QColor color = config->readEntry(key, computedDefault);
    * \encode
    *

@@ -306,7 +306,7 @@ public:
     const QColorGroup* colorGroup( const QColorGroup &defaultGroup,
                                    WidgetType widget ) const;
 
-    QBrush pixmapBrush( const QColorGroup &group, QColorGroup::ColorRole role,
+    QBrush pixmapBrush( const QColorGroup &group, QPalette::ColorRole role,
                         int w, int h, WidgetType widget );
     /**
      * True if the widget has a pixmap or gradient specified.
@@ -720,7 +720,7 @@ inline KThemePixmap* KThemeBase::uncached( WidgetType widget ) const
 }
 
 inline QBrush KThemeBase::pixmapBrush( const QColorGroup &group,
-                                       QColorGroup::ColorRole role,
+                                       QPalette::ColorRole role,
                                        int w, int h, WidgetType widget )
 {
     if ( pixmaps[ widget ] || images[ widget ] )

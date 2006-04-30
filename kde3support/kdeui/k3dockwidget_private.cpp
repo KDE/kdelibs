@@ -635,7 +635,7 @@ K3DockButton_Private::~K3DockButton_Private()
 
 void K3DockButton_Private::drawButton( QPainter* p )
 {
-  p->fillRect( 0,0, width(), height(), QBrush(QColorGroup(palette()).brush(QColorGroup::Background)) );
+  p->fillRect( 0,0, width(), height(), QBrush(QColorGroup(palette()).brush(QPalette::Background)) );
 #if 1
   // ### TODO: is the centering done automatically or do we need some codelike for KDE3 (see below the #else part)
   icon().paint( p, rect() );

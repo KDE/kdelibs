@@ -438,11 +438,11 @@ void KThemeStyle::polish( QPalette &p )
     if ( isPixmap( Background ) )
     {
         QBrush bgBrush( p.color( QPalette::Normal,
-                                QColorGroup::Background ),
+                                QPalette::Background ),
                                 *uncached( Background ) );
         brushHandle = uncached( Background )->handle();
         brushHandleSet = true;
-        p.setBrush( QColorGroup::Background, bgBrush );
+        p.setBrush( QPalette::Background, bgBrush );
     }
 
 }
@@ -481,9 +481,9 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
             p.end();
             QPalette pal(w->palette());
             QBrush brush( pal.color( QPalette::Normal,
-                                                    QColorGroup::Background),
+                                                    QPalette::Background),
                                 pix );
-            pal.setBrush(QColorGroup::Base, brush);
+            pal.setBrush(QPalette::Base, brush);
             w->setPalette(pal);
         }
     }
@@ -501,7 +501,7 @@ bool KThemeStyle::eventFilter( QObject* object, QEvent* event )
 void KThemeStyle::polish( QWidget *w )
 {
     if (qobject_cast<QStatusBar>(w))
-         w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QColorGroup::Background));
+         w->setPaletteBackgroundColor(QApplication::palette().color(QPalette::Normal, QPalette::Background));
          
     if (qobject_cast<QLabel>(w) && !qstrcmp(w->name(), "kde toolbar widget"))
          w->installEventFilter(this);
@@ -665,7 +665,7 @@ void KThemeStyle::drawBaseButton( QPainter *p, int x, int y, int w, int h,
                                               type ) );
         else
             p->fillRect( x + 4, y + 4, w - 6, h - offset * 6,
-                         g.brush( QColorGroup::Button ) );
+                         g.brush( QPalette::Button ) );
 
     }
     else
@@ -684,7 +684,7 @@ void KThemeStyle::drawBaseButton( QPainter *p, int x, int y, int w, int h,
                 //Sometimes border covers the whole thing - in that case, avoid drawing the base.
             {
                 p->fillRect( x + offset, y + offset, w - offset * 2, h - offset * 2,
-                             g.brush( QColorGroup::Button ) );
+                             g.brush( QPalette::Button ) );
             }
         }
         if ( borderPixmap( type ) )
@@ -828,7 +828,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                     }
                     QBrush oldBrush = p->brush();
                     QPen oldPen = p->pen();
-                    p->setBrush( cg->brush( QColorGroup::Shadow ) );
+                    p->setBrush( cg->brush( QPalette::Shadow ) );
                     p->setPen( cg->shadow() );
                     p->drawPolygon( a );
                     p->setBrush( oldBrush );
@@ -875,7 +875,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 }
                 else //Small hack to ensure the checkmark gets painter proper color..
                 {
-                    g.setColor( QColorGroup::Text, g.buttonText() );
+                    g.setColor( QPalette::Text, g.buttonText() );
                 }
                 break;
             }
@@ -976,7 +976,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
 
                 if ( !isPixmap( widget ) )
                 {
-                    p->fillRect( r, colorGroup( g, widget ) ->brush( QColorGroup::Background ) );
+                    p->fillRect( r, colorGroup( g, widget ) ->brush( QPalette::Background ) );
                     // Do the borders and frame
                     drawShade( p, r.x(), r.y(), r.width(),
                                r.height(), *colorGroup( g, widget ), true, false,
@@ -1251,7 +1251,7 @@ void KThemeStyle::drawControl( ControlElement element,
                     if ( !selected )
                     {
                         p->fillRect( x, y, x2 - x + 1, 2,
-                                     tb->palette().active().brush( QColorGroup::Background ) );
+                                     tb->palette().active().brush( QPalette::Background ) );
                         y += 2;
                     }
                     p->setPen( cg->text() );
@@ -1324,7 +1324,7 @@ void KThemeStyle::drawControl( ControlElement element,
                     if ( !selected )
                     {
                         p->fillRect( x, y2 - 2, x2 - x + 1, 2,
-                                     tb->palette().active().brush( QColorGroup::Background ) );
+                                     tb->palette().active().brush( QPalette::Background ) );
                         y2 -= 2;
                     }
                     p->setPen( cg->text() );
@@ -1471,9 +1471,9 @@ void KThemeStyle::drawControl( ControlElement element,
                     {
                         p->fillRect(
                             x + dw, y + dw, w - dw * 2, h - dw * 2,
-                            cg_ours.brush( QColorGroup::Background ) );
-                        //cg.brush( QColorGroup::Background ));
-                        //colorGroup( cg_ours, MenuItem ) ->brush( QColorGroup::Background ) );
+                            cg_ours.brush( QPalette::Background ) );
+                        //cg.brush( QPalette::Background ));
+                        //colorGroup( cg_ours, MenuItem ) ->brush( QPalette::Background ) );
                     }
                     else
                     {
@@ -1523,7 +1523,7 @@ void KThemeStyle::drawControl( ControlElement element,
                     // if it's active the "pressed" background is already drawn
                     //if ( ! active )
                     // qDrawShadePanel( p, cx, y, checkcol, h, cg_ours, true, 1,
-                    //     &cg_ours.brush(QColorGroup::Midlight) );
+                    //     &cg_ours.brush(QPalette::Midlight) );
 
                     // Draw the checkmark
                     SFlags cflags = Style_Default;
@@ -1668,7 +1668,7 @@ void KThemeStyle::drawControl( ControlElement element,
                 QBrush bg;
                 const QColorGroup * cg2 = colorGroup( cg, ProgressBg );
                 qDrawWinPanel( p, r, *cg2, true );
-                bg.setColor( cg2->color( QColorGroup::Background ) );
+                bg.setColor( cg2->color( QPalette::Background ) );
                 if ( isPixmap( ProgressBg ) )
                     bg.setPixmap( *uncached( ProgressBg ) );
                 p->fillRect( x + 2, y + 2, w - 4, h - 4, bg );

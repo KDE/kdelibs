@@ -374,7 +374,7 @@ WebStyle::drawPushButton(QPushButton * b, QPainter * p)
   QColor bg(b->colorGroup().button());
 
   p->save();
-  p->fillRect(b->rect(), b->colorGroup().brush(QColorGroup::Background));
+  p->fillRect(b->rect(), b->colorGroup().brush(QPalette::Background));
 
   if (b->isDefault())
   {
@@ -391,7 +391,7 @@ WebStyle::drawPushButton(QPushButton * b, QPainter * p)
      4,
      b->width() - 8,
      b->height() - 8,
-     b->colorGroup().brush(QColorGroup::Button)
+     b->colorGroup().brush(QPalette::Button)
     );
 
   if (b->isEnabled())
@@ -752,7 +752,7 @@ WebStyle::drawExclusiveIndicator
     p->setPen(g.mid());
   }
 
-  p->setBrush(g.brush(QColorGroup::Background));
+  p->setBrush(g.brush(QPalette::Background));
 
   // Avoid misshapen ellipses. Qt or X bug ? Who knows...
 
@@ -828,7 +828,7 @@ WebStyle::drawComboButton
   p->save();
 
   p->setPen(Qt::NoPen);
-  p->setBrush(0 == fill ? g.brush(QColorGroup::Background) : *fill);
+  p->setBrush(0 == fill ? g.brush(QPalette::Background) : *fill);
   p->drawRect(x, y, w, h);
 
   if (enabled)
@@ -1455,7 +1455,7 @@ WebStyle::drawTab
   p->save();
 
   p->setPen(selected ? g.dark() : g.mid());
-  p->fillRect(r, g.brush(QColorGroup::Background));
+  p->fillRect(r, g.brush(QPalette::Background));
 
   switch (tabBar->shape())
   {

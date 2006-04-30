@@ -647,18 +647,18 @@ void KCertPart::displayCACert(KSSLCertificate *c) {
 	// Set the valid period
 	QPalette cspl = _ca_validFrom->palette();
 	if (QDateTime::currentDateTime() < c->getQDTNotBefore()) {
-		cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+		cspl.setColor(QPalette::Foreground, QColor(196,33,21));
 	} else {
-		cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+		cspl.setColor(QPalette::Foreground, QColor(42,153,59));
 	}
 	_ca_validFrom->setPalette(cspl);
 	_ca_validFrom->setText(c->getNotBefore());
 
 	cspl = _ca_validUntil->palette();
 	if (QDateTime::currentDateTime() > c->getQDTNotAfter()) {
-		cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+		cspl.setColor(QPalette::Foreground, QColor(196,33,21));
 	} else {
-		cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+		cspl.setColor(QPalette::Foreground, QColor(42,153,59));
 	}
 	_ca_validUntil->setPalette(cspl);
 	_ca_validUntil->setText(c->getNotAfter());
@@ -666,9 +666,9 @@ void KCertPart::displayCACert(KSSLCertificate *c) {
 	_ca_serialNum->setText(c->getSerialNumber());
 	cspl = _ca_certState->palette();
 	if (!c->isValid()) {
-		cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+		cspl.setColor(QPalette::Foreground, QColor(196,33,21));
 	} else {
-		cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+		cspl.setColor(QPalette::Foreground, QColor(42,153,59));
 	}
 	_ca_certState->setPalette(cspl);
 	_ca_certState->setText(KSSLCertificate::verifyText(c->validate()));
@@ -688,18 +688,18 @@ void KCertPart::displayPKCS12Cert(KSSLCertificate *c) {
 	// Set the valid period
 	QPalette cspl = _p12_validFrom->palette();
 	if (QDateTime::currentDateTime() < c->getQDTNotBefore()) {
-		cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+		cspl.setColor(QPalette::Foreground, QColor(196,33,21));
 	} else {
-		cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+		cspl.setColor(QPalette::Foreground, QColor(42,153,59));
 	}
 	_p12_validFrom->setPalette(cspl);
 	_p12_validFrom->setText(c->getNotBefore());
 
 	cspl = _p12_validUntil->palette();
 	if (QDateTime::currentDateTime() > c->getQDTNotAfter()) {
-		cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+		cspl.setColor(QPalette::Foreground, QColor(196,33,21));
 	} else {
-		cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+		cspl.setColor(QPalette::Foreground, QColor(42,153,59));
 	}
 	_p12_validUntil->setPalette(cspl);
 	_p12_validUntil->setText(c->getNotAfter());
@@ -707,9 +707,9 @@ void KCertPart::displayPKCS12Cert(KSSLCertificate *c) {
 	_p12_serialNum->setText(c->getSerialNumber());
 	cspl = _p12_certState->palette();
 	if (!c->isValid()) {
-		cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+		cspl.setColor(QPalette::Foreground, QColor(196,33,21));
 	} else {
-		cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+		cspl.setColor(QPalette::Foreground, QColor(42,153,59));
 	}
 	_p12_certState->setPalette(cspl);
 	_p12_certState->setText(KSSLCertificate::verifyText(c->validate()));

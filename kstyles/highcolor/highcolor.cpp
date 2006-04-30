@@ -312,7 +312,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 
 			if ( sunken )
 				kDrawBeButton( p, x, y, w, h, cg, true,
-						&cg.brush(QColorGroup::Mid) );
+						&cg.brush(QPalette::Mid) );
 
 			else if ( flags & Style_MouseOver && !flat ) {
 				QBrush brush(cg.button().light(110));
@@ -362,7 +362,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 								cg.button(), false);
 			} else
 				kDrawBeButton(p, x, y, w, h, cg, false,
-							  &cg.brush(QColorGroup::Button));
+							  &cg.brush(QPalette::Button));
 			break;
 		}
 
@@ -746,7 +746,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->setPen(cg.mid());
 			p->drawLine(x2-1, y+1, x2-1, y2-1);
 			p->drawLine(x+1, y2-1, x2-1, y2-1);
-			p->fillRect(x+3, y+3, w-5, h-5, cg.brush(QColorGroup::Background));
+			p->fillRect(x+3, y+3, w-5, h-5, cg.brush(QPalette::Background));
 			break;
 		}
 
@@ -1259,7 +1259,7 @@ void HighColorStyle::drawControl( ControlElement element,
 
 			if ( active && focused )
 				qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(),
-								cg, true, 1, &cg.brush(QColorGroup::Midlight));
+								cg, true, 1, &cg.brush(QPalette::Midlight));
 			else
 				renderGradient( p, r, cg.button(), false,
 								r.x(), r.y()-1, pr.width()-2, pr.height()-2);
@@ -1282,7 +1282,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				// Don't leave blank holes if we set NoBackground for the QPopupMenu.
 				// This only happens when the popupMenu spans more than one column.
 				if (! (widget->erasePixmap() && !widget->erasePixmap()->isNull()) )
-					p->fillRect(r, cg.brush(QColorGroup::Button) );
+					p->fillRect(r, cg.brush(QPalette::Button) );
 				break;
 			}
 
@@ -1311,7 +1311,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			// Draw the menu item background
 			if ( active )
 				qDrawShadePanel( p, x, y, w, h, cg, true, 1,
-				                 &cg.brush(QColorGroup::Midlight) );
+				                 &cg.brush(QPalette::Midlight) );
 			// Draw the transparency pixmap
 			else if ( widget->erasePixmap() && !widget->erasePixmap()->isNull() )
 				p->drawPixmap( x, y, *widget->erasePixmap(), x, y, w, h );
@@ -1334,7 +1334,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				// Then draw a "pressed" background behind the icon
 				if ( checkable && !active && mi->isChecked() )
 					qDrawShadePanel( p, cr.x(), cr.y(), cr.width(), cr.height(),
-									 cg, true, 1, &cg.brush(QColorGroup::Midlight) );
+									 cg, true, 1, &cg.brush(QPalette::Midlight) );
 				// Draw the icon
 				QPixmap pixmap = mi->iconSet()->pixmap( QIcon::Small, mode );
 				QRect pmr( 0, 0, pixmap.width(), pixmap.height() );
@@ -1350,7 +1350,7 @@ void HighColorStyle::drawControl( ControlElement element,
 				// if it's active the "pressed" background is already drawn
 				if ( ! active )
 					qDrawShadePanel( p, cx, y, checkcol, h, cg, true, 1,
-					                 &cg.brush(QColorGroup::Midlight) );
+					                 &cg.brush(QPalette::Midlight) );
 
 				// Draw the checkmark
 				SFlags cflags = Style_Default;
@@ -1601,7 +1601,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 				if ( cb->hasFocus() && !cb->editable() ) {
 					// Draw the contents
 					p->fillRect( re.x(), re.y(), re.width(), re.height(),
-								 cg.brush( QColorGroup::Highlight ) );
+								 cg.brush( QPalette::Highlight ) );
 
 					QRect re = QStyle::visualRect( 
 								subRect(SR_ComboBoxFocusRect, cb), widget);

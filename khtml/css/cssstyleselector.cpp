@@ -1874,7 +1874,7 @@ struct uiColors {
     const char * configGroup;
     const char * configEntry;
 QPalette::ColorGroup group;
-QColorGroup::ColorRole role;
+QPalette::ColorRole role;
 };
 
 const char * const wmgroup = "WM";
@@ -1885,63 +1885,63 @@ const char * const generalgroup = "General";
 */
 static const uiColors uimap[] = {
 	// Active window border.
-    { CSS_VAL_ACTIVEBORDER, wmgroup, "background", QPalette::Active, QColorGroup::Light },
+    { CSS_VAL_ACTIVEBORDER, wmgroup, "background", QPalette::Active, QPalette::Light },
 	// Active window caption.
-    { CSS_VAL_ACTIVECAPTION, wmgroup, "background", QPalette::Active, QColorGroup::Text },
+    { CSS_VAL_ACTIVECAPTION, wmgroup, "background", QPalette::Active, QPalette::Text },
         // Text in caption, size box, and scrollbar arrow box.
-    { CSS_VAL_CAPTIONTEXT, wmgroup, "activeForeground", QPalette::Active, QColorGroup::Text },
+    { CSS_VAL_CAPTIONTEXT, wmgroup, "activeForeground", QPalette::Active, QPalette::Text },
 	// Face color for three-dimensional display elements.
-    { CSS_VAL_BUTTONFACE, wmgroup, 0, QPalette::Inactive, QColorGroup::Button },
+    { CSS_VAL_BUTTONFACE, wmgroup, 0, QPalette::Inactive, QPalette::Button },
 	// Dark shadow for three-dimensional display elements (for edges facing away from the light source).
-    { CSS_VAL_BUTTONHIGHLIGHT, wmgroup, 0, QPalette::Inactive, QColorGroup::Light },
+    { CSS_VAL_BUTTONHIGHLIGHT, wmgroup, 0, QPalette::Inactive, QPalette::Light },
 	// Shadow color for three-dimensional display elements.
-    { CSS_VAL_BUTTONSHADOW, wmgroup, 0, QPalette::Inactive, QColorGroup::Shadow },
+    { CSS_VAL_BUTTONSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Shadow },
 	// Text on push buttons.
-    { CSS_VAL_BUTTONTEXT, wmgroup, "buttonForeground", QPalette::Inactive, QColorGroup::ButtonText },
+    { CSS_VAL_BUTTONTEXT, wmgroup, "buttonForeground", QPalette::Inactive, QPalette::ButtonText },
 	// Dark shadow for three-dimensional display elements.
-    { CSS_VAL_THREEDDARKSHADOW, wmgroup, 0, QPalette::Inactive, QColorGroup::Dark },
+    { CSS_VAL_THREEDDARKSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Dark },
 	// Face color for three-dimensional display elements.
-    { CSS_VAL_THREEDFACE, wmgroup, 0, QPalette::Inactive, QColorGroup::Button },
+    { CSS_VAL_THREEDFACE, wmgroup, 0, QPalette::Inactive, QPalette::Button },
 	// Highlight color for three-dimensional display elements.
-    { CSS_VAL_THREEDHIGHLIGHT, wmgroup, 0, QPalette::Inactive, QColorGroup::Light },
+    { CSS_VAL_THREEDHIGHLIGHT, wmgroup, 0, QPalette::Inactive, QPalette::Light },
 	// Light color for three-dimensional display elements (for edges facing the light source).
-    { CSS_VAL_THREEDLIGHTSHADOW, wmgroup, 0, QPalette::Inactive, QColorGroup::Midlight },
+    { CSS_VAL_THREEDLIGHTSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Midlight },
 	// Dark shadow for three-dimensional display elements.
-    { CSS_VAL_THREEDSHADOW, wmgroup, 0, QPalette::Inactive, QColorGroup::Shadow },
+    { CSS_VAL_THREEDSHADOW, wmgroup, 0, QPalette::Inactive, QPalette::Shadow },
 
     // Inactive window border.
-    { CSS_VAL_INACTIVEBORDER, wmgroup, "background", QPalette::Disabled, QColorGroup::Background },
+    { CSS_VAL_INACTIVEBORDER, wmgroup, "background", QPalette::Disabled, QPalette::Background },
     // Inactive window caption.
-    { CSS_VAL_INACTIVECAPTION, wmgroup, "inactiveBackground", QPalette::Disabled, QColorGroup::Background },
+    { CSS_VAL_INACTIVECAPTION, wmgroup, "inactiveBackground", QPalette::Disabled, QPalette::Background },
     // Color of text in an inactive caption.
-    { CSS_VAL_INACTIVECAPTIONTEXT, wmgroup, "inactiveForeground", QPalette::Disabled, QColorGroup::Text },
-    { CSS_VAL_GRAYTEXT, wmgroup, 0, QPalette::Disabled, QColorGroup::Text },
+    { CSS_VAL_INACTIVECAPTIONTEXT, wmgroup, "inactiveForeground", QPalette::Disabled, QPalette::Text },
+    { CSS_VAL_GRAYTEXT, wmgroup, 0, QPalette::Disabled, QPalette::Text },
 
 	// Menu background
-    { CSS_VAL_MENU, generalgroup, "background", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_MENU, generalgroup, "background", QPalette::Inactive, QPalette::Background },
 	// Text in menus
-    { CSS_VAL_MENUTEXT, generalgroup, "foreground", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_MENUTEXT, generalgroup, "foreground", QPalette::Inactive, QPalette::Background },
 
         // Text of item(s) selected in a control.
-    { CSS_VAL_HIGHLIGHT, generalgroup, "selectBackground", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_HIGHLIGHT, generalgroup, "selectBackground", QPalette::Inactive, QPalette::Background },
 
     // Text of item(s) selected in a control.
-    { CSS_VAL_HIGHLIGHTTEXT, generalgroup, "selectForeground", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_HIGHLIGHTTEXT, generalgroup, "selectForeground", QPalette::Inactive, QPalette::Background },
 
 	// Background color of multiple document interface.
-    { CSS_VAL_APPWORKSPACE, generalgroup, "background", QPalette::Inactive, QColorGroup::Text },
+    { CSS_VAL_APPWORKSPACE, generalgroup, "background", QPalette::Inactive, QPalette::Text },
 
 	// Scroll bar gray area.
-    { CSS_VAL_SCROLLBAR, generalgroup, "background", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_SCROLLBAR, generalgroup, "background", QPalette::Inactive, QPalette::Background },
 
 	// Window background.
-    { CSS_VAL_WINDOW, generalgroup, "windowBackground", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_WINDOW, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Background },
 	// Window frame.
-    { CSS_VAL_WINDOWFRAME, generalgroup, "windowBackground", QPalette::Inactive, QColorGroup::Background },
+    { CSS_VAL_WINDOWFRAME, generalgroup, "windowBackground", QPalette::Inactive, QPalette::Background },
         // WindowText
-    { CSS_VAL_WINDOWTEXT, generalgroup, "windowForeground", QPalette::Inactive, QColorGroup::Text },
-    { CSS_VAL_TEXT, generalgroup, 0, QPalette::Inactive, QColorGroup::Text },
-    { 0, 0, 0, QPalette::NColorGroups, QColorGroup::NColorRoles }
+    { CSS_VAL_WINDOWTEXT, generalgroup, "windowForeground", QPalette::Inactive, QPalette::Text },
+    { CSS_VAL_TEXT, generalgroup, 0, QPalette::Inactive, QPalette::Text },
+    { 0, 0, 0, QPalette::NColorGroups, QPalette::NColorRoles }
 };
 
 static QColor colorForCSSValue( int css_value )
@@ -2623,36 +2623,36 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setOutlineColor(col); break;
 #ifndef APPLE_CHANGES
         case CSS_PROP_SCROLLBAR_FACE_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Button, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Button, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Button, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Button, col);
             break;
         case CSS_PROP_SCROLLBAR_SHADOW_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Shadow, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Shadow, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Shadow, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Shadow, col);
             break;
         case CSS_PROP_SCROLLBAR_HIGHLIGHT_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Light, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Light, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Light, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Light, col);
             break;
         case CSS_PROP_SCROLLBAR_3DLIGHT_COLOR:
             break;
         case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Dark, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Dark, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Dark, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Dark, col);
             break;
         case CSS_PROP_SCROLLBAR_TRACK_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Mid, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Mid, col);
-            style->setPaletteColor(QPalette::Active, QColorGroup::Background, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Background, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Mid, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Mid, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Background, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Background, col);
             // fall through
         case CSS_PROP_SCROLLBAR_BASE_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Base, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Base, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Base, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Base, col);
             break;
         case CSS_PROP_SCROLLBAR_ARROW_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::ButtonText, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::ButtonText, col);
+            style->setPaletteColor(QPalette::Active, QPalette::ButtonText, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::ButtonText, col);
             break;
 #endif
         default:

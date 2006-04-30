@@ -316,9 +316,9 @@ void K3TextEdit::setReadOnly(bool readOnly)
     {
         bool custom = ownPalette();
         QPalette p = palette();
-        QColor color = p.color(QPalette::Disabled, QColorGroup::Background);
-        p.setColor(QColorGroup::Base, color);
-        p.setColor(QColorGroup::Background, color);
+        QColor color = p.color(QPalette::Disabled, QPalette::Background);
+        p.setColor(QPalette::Base, color);
+        p.setColor(QPalette::Background, color);
         setPalette(p);
         d->customPalette = custom;
     }
@@ -327,9 +327,9 @@ void K3TextEdit::setReadOnly(bool readOnly)
         if ( d->customPalette )
         {
             QPalette p = palette();
-            QColor color = p.color(QPalette::Normal, QColorGroup::Base);
-            p.setColor(QColorGroup::Base, color);
-            p.setColor(QColorGroup::Background, color);
+            QColor color = p.color(QPalette::Normal, QPalette::Base);
+            p.setColor(QPalette::Base, color);
+            p.setColor(QPalette::Background, color);
             setPalette( p );
         }
         else

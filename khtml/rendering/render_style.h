@@ -1263,7 +1263,7 @@ public:
     // End CSS3 Setters
 
     QPalette palette() const { return visual->palette; }
-    void setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c);
+    void setPaletteColor(QPalette::ColorGroup g, QPalette::ColorRole r, const QColor& c);
     void resetPalette() // Called when the desktop color scheme changes.
     {
         const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();

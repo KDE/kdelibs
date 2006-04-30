@@ -674,7 +674,7 @@ void RenderStyle::cleanup()
     _default = 0;
 }
 
-void RenderStyle::setPaletteColor(QPalette::ColorGroup g, QColorGroup::ColorRole r, const QColor& c)
+void RenderStyle::setPaletteColor(QPalette::ColorGroup g, QPalette::ColorRole r, const QColor& c)
 {
     visual.access()->palette.setColor(g,r,c);
 }

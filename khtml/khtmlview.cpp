@@ -721,7 +721,7 @@ static int cnt=0;
 	kDebug() << "[" << ++cnt << "]" << " clip region: " << pr << endl;
 //	p->setClipRegion(QRect(0,0,ew,eh));
 //        p->translate(-ex, -ey);
-        p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
+        p->fillRect(ex, ey, ew, eh, palette().active().brush(QPalette::Base));
         m_part->xmlDocImpl()->renderer()->layer()->paint(p, pr);
 #endif // DEBUG_NO_PAINT_BUFFER
 

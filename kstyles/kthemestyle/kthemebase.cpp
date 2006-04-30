@@ -1648,16 +1648,16 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
 
 
 
-    colgrp.setColor( QColorGroup::Highlight, highlight );
-    colgrp.setColor( QColorGroup::HighlightedText, highlightedText );
-    colgrp.setColor( QColorGroup::ButtonText, buttonText );
-    colgrp.setColor( QColorGroup::Midlight, button.light( 110 ) );
+    colgrp.setColor( QPalette::Highlight, highlight );
+    colgrp.setColor( QPalette::HighlightedText, highlightedText );
+    colgrp.setColor( QPalette::ButtonText, buttonText );
+    colgrp.setColor( QPalette::Midlight, button.light( 110 ) );
 
 
-    disabledgrp.setColor( QColorGroup::Base, base );
-    disabledgrp.setColor( QColorGroup::Button, button );
-    disabledgrp.setColor( QColorGroup::ButtonText, buttonText );
-    disabledgrp.setColor( QColorGroup::Midlight, button.light( 110 ) );
+    disabledgrp.setColor( QPalette::Base, base );
+    disabledgrp.setColor( QPalette::Button, button );
+    disabledgrp.setColor( QPalette::ButtonText, buttonText );
+    disabledgrp.setColor( QPalette::Midlight, button.light( 110 ) );
 
     QPalette newPal( colgrp, disabledgrp, colgrp );
 

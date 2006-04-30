@@ -193,12 +193,12 @@ void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
 {
     QColorGroup mycg = cg;
     if ( isDefault ) {
-        mycg.setColor( QColorGroup::Text, QColor( 0, 0, 255 ) );
+        mycg.setColor( QPalette::Text, QColor( 0, 0, 255 ) );
     }
     if ( isPartial ) {
         QFont font = p->font();
         font.setItalic( true );
-        mycg.setColor( QColorGroup::Text, QColor( 100, 100, 100 ) );
+        mycg.setColor( QPalette::Text, QColor( 100, 100, 100 ) );
         p->setFont( font );
     }
     K3ListViewItem::paintCell( p, mycg, column, width, alignment );

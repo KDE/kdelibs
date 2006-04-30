@@ -236,7 +236,7 @@ public:
      * Calculate a 'selected' pixmap, for instance a selected icon
      * on the desktop.
      * @param pixmap the pixmap to select
-     * @param col the selected color, usually from QColorGroup::highlight().
+     * @param col the selected color, usually from QPalette::highlight().
      */
     static QPixmap selectedPixmap( const QPixmap &pixmap, const QColor &col );
 };

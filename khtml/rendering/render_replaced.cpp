@@ -285,29 +285,29 @@ void RenderWidget::updateFromElement()
                     widget()->setPalette(palette);
                 }
                 for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Dark, backgroundColor.dark(lowlightVal) );
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Mid, backgroundColor.dark(120) );
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Midlight, backgroundColor.light(110) );
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Button, backgroundColor );
-                    pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Base, backgroundColor );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Background, backgroundColor );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Light, backgroundColor.light(highlightVal) );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, backgroundColor );
+                    pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, backgroundColor );
             }
             }
             if ( color.isValid() ) {
                 struct ColorSet {
                     QPalette::ColorGroup cg;
-                    QColorGroup::ColorRole cr;
+                    QPalette::ColorRole cr;
                 };
                 const struct ColorSet toSet [] = {
-                    { QPalette::Active, QColorGroup::Foreground },
-                    { QPalette::Active, QColorGroup::ButtonText },
-                    { QPalette::Active, QColorGroup::Text },
-                    { QPalette::Inactive, QColorGroup::Foreground },
-                    { QPalette::Inactive, QColorGroup::ButtonText },
-                    { QPalette::Inactive, QColorGroup::Text },
-                    { QPalette::Disabled,QColorGroup::ButtonText },
-                    { QPalette::NColorGroups, QColorGroup::NColorRoles },
+                    { QPalette::Active, QPalette::Foreground },
+                    { QPalette::Active, QPalette::ButtonText },
+                    { QPalette::Active, QPalette::Text },
+                    { QPalette::Inactive, QPalette::Foreground },
+                    { QPalette::Inactive, QPalette::ButtonText },
+                    { QPalette::Inactive, QPalette::Text },
+                    { QPalette::Disabled,QPalette::ButtonText },
+                    { QPalette::NColorGroups, QPalette::NColorRoles },
                 };
                 const ColorSet *set = toSet;
                 while( set->cg != QPalette::NColorGroups ) {
@@ -327,7 +327,7 @@ void RenderWidget::updateFromElement()
                 else
                     // black fg - use darkgray disabled fg
                     disfg = Qt::darkGray;
-                pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
+                pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
             }
 
             m_widget->setPalette(pal);

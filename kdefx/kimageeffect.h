@@ -476,7 +476,7 @@ public:
      * Calculate the image for a selected image, for instance a selected icon
      * on the desktop.
      * @param img the QImage to select
-     * @param col the selected color, usually from QColorGroup::highlight().
+     * @param col the selected color, usually from QPalette::highlight().
      */
     static QImage& selectedImage( QImage &img, const QColor &col );
 

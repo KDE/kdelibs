@@ -288,7 +288,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 //                         (bOpt->features & QStyleOptionButton::DefaultButton)) {
 //             QColorGroup g2 = cg;
 //             if (isDefault)
-//                 g2.setColor(QColorGroup::Background, cg.background().dark(120) );
+//                 g2.setColor(QPalette::Background, cg.background().dark(120) );
 //                     }
 
                     renderButton(p, r, pal, sunken,
@@ -2832,7 +2832,7 @@ void PlastikStyle::renderTab(QPainter *p,
 //             QWidget* w = dynamic_cast<QWidget*>(p->device());
 //             if(w && w->backgroundMode() == Qt::PaletteButton)
 //                 w->setBackgroundMode(Qt::PaletteBackground);
-//             p->fillRect(r, cg.brush(QColorGroup::Background));
+//             p->fillRect(r, cg.brush(QPalette::Background));
 //
 //             if ( _drawToolBarSeparator ) {
 //                 if ( r.width() > r.height() ) {

@@ -100,22 +100,22 @@ PalInfo palInfo[] =
 
 PalInfo disPalInfo[] =
 {
-    {QColorGroup::Foreground, 0xff808080},
-    {QColorGroup::Button, 0xffc0c0c0},
-    {QColorGroup::Light, 0xffffffff},
-    {QColorGroup::Midlight, 0xffdfdfdf},
-    {QColorGroup::Dark, 0xff808080},
-    {QColorGroup::Mid, 0xffa0a0a4},
-    {QColorGroup::Text, 0xff808080},
-    {QColorGroup::BrightText, 0xffffffff},
-    {QColorGroup::ButtonText, 0xff808080},
-    {QColorGroup::Base, 0xffc0c0c0},
-    {QColorGroup::Background, 0xffc0c0c0},
-    {QColorGroup::Shadow, 0xff000000},
-    {QColorGroup::Highlight, 0xff000080},
-    {QColorGroup::HighlightedText, 0xffffffff},
-    {QColorGroup::Link, 0xff0000ff},
-    {QColorGroup::LinkVisited, 0xffff00ff},
+    {QPalette::Foreground, 0xff808080},
+    {QPalette::Button, 0xffc0c0c0},
+    {QPalette::Light, 0xffffffff},
+    {QPalette::Midlight, 0xffdfdfdf},
+    {QPalette::Dark, 0xff808080},
+    {QPalette::Mid, 0xffa0a0a4},
+    {QPalette::Text, 0xff808080},
+    {QPalette::BrightText, 0xffffffff},
+    {QPalette::ButtonText, 0xff808080},
+    {QPalette::Base, 0xffc0c0c0},
+    {QPalette::Background, 0xffc0c0c0},
+    {QPalette::Shadow, 0xff000000},
+    {QPalette::Highlight, 0xff000080},
+    {QPalette::HighlightedText, 0xffffffff},
+    {QPalette::Link, 0xff0000ff},
+    {QPalette::LinkVisited, 0xffff00ff},
     {QPalette::LinkVisited, 0}
 };
 

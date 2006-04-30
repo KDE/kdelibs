@@ -284,15 +284,15 @@ void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
 
     cspl = d->_validFrom->palette();
     if (x->getQDTNotBefore() > QDateTime::currentDateTime().toUTC())
-        cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-    else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+        cspl.setColor(QPalette::Foreground, QColor(196,33,21));
+    else cspl.setColor(QPalette::Foreground, QColor(42,153,59));
     d->_validFrom->setPalette(cspl);
     d->_validFrom->setText(x->getNotBefore());
 
     cspl = d->_validUntil->palette();
     if (x->getQDTNotAfter() < QDateTime::currentDateTime().toUTC())
-        cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
-    else cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+        cspl.setColor(QPalette::Foreground, QColor(196,33,21));
+    else cspl.setColor(QPalette::Foreground, QColor(42,153,59));
     d->_validUntil->setPalette(cspl);
     d->_validUntil->setText(x->getNotAfter());
 
@@ -326,9 +326,9 @@ void KSSLInfoDlg::displayCert(KSSLCertificate *x) {
     }
 
     if (ksv == KSSLCertificate::Ok) {
-        cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+        cspl.setColor(QPalette::Foreground, QColor(42,153,59));
     } else if (ksv != KSSLCertificate::Irrelevant) {
-        cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+        cspl.setColor(QPalette::Foreground, QColor(196,33,21));
     }
     d->_csl->setPalette(cspl);
 

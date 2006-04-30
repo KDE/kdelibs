@@ -131,21 +131,21 @@ void HighContrastStyle::polish( QPalette& pal )
 	//as that may be hard indeed (and since we use crossed-out text instead),
 	//so we make disabled colors be the same as active foreground and
 	//background colour
-	for (int c = 0; c < QColorGroup::NColorRoles; ++c)
+	for (int c = 0; c < QPalette::NColorRoles; ++c)
 		switch (c)
 		{
-			case QColorGroup::Button:
-			case QColorGroup::Base:
-			case QColorGroup::Highlight:
-				pal.setColor(QPalette::Disabled, QColorGroup::ColorRole(c), pal.color(QPalette::Active, QColorGroup::Background));
+			case QPalette::Button:
+			case QPalette::Base:
+			case QPalette::Highlight:
+				pal.setColor(QPalette::Disabled, QPalette::ColorRole(c), pal.color(QPalette::Active, QPalette::Background));
 				break;
-			case QColorGroup::ButtonText:
-			case QColorGroup::Text:
-			case QColorGroup::HighlightedText:
-				pal.setColor(QPalette::Disabled, QColorGroup::ColorRole(c), pal.color(QPalette::Active, QColorGroup::Foreground));
+			case QPalette::ButtonText:
+			case QPalette::Text:
+			case QPalette::HighlightedText:
+				pal.setColor(QPalette::Disabled, QPalette::ColorRole(c), pal.color(QPalette::Active, QPalette::Foreground));
 				break;
 			default:
-				pal.setColor(QPalette::Disabled, QColorGroup::ColorRole(c), pal.color(QPalette::Active, QColorGroup::ColorRole(c)));
+				pal.setColor(QPalette::Disabled, QPalette::ColorRole(c), pal.color(QPalette::Active, QPalette::ColorRole(c)));
 		}
 }
 
