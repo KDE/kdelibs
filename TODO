@@ -262,8 +262,6 @@ that we would like to make for the next binary incompatible release.
 
 - Many instances of creating containers on the heap instead of stack, can be replaced? (Caleb Tennis) [where?]
 
-- Places where things like "foo = new QString" seem like prime candidates for refactoring. (Caleb Tennis) [yes; where?]
-
 - Remove all of the (const char *name) arguments to QObject derived classes. (Caleb Tennis)
 
 - Remove kdecore/kde_file.h -> Qt now has largefile support and defines similar macros in
