@@ -36,7 +36,7 @@ if(JASPER_FOUND)
     kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
     target_link_libraries(kimg_jp2  ${KDE4_KDECORE_LIBS} ${JASPER_LIBRARIES} )
     
-    kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
+    #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
     install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
     install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES jp2.desktop)
 
@@ -48,7 +48,7 @@ set(kimg_ico_LIB_SRCS ico.cpp)
 kde4_add_plugin(kimg_ico ${kimg_ico_LIB_SRCS})
 target_link_libraries(kimg_ico  ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_ico )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_ico )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_ico )
 
 ##################################
@@ -57,7 +57,7 @@ set(kimg_eps_LIB_SRCS eps.cpp)
 kde4_add_plugin(kimg_eps ${kimg_eps_LIB_SRCS})
 target_link_libraries(kimg_eps  ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_eps )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_eps )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_eps )
 
 ##################################
@@ -66,7 +66,7 @@ set(kimg_pcx_LIB_SRCS pcx.cpp)
 kde4_add_plugin(kimg_pcx ${kimg_pcx_LIB_SRCS})
 target_link_libraries(kimg_pcx  ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_pcx )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_pcx )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_pcx )
 
 ##################################
@@ -75,7 +75,7 @@ set(kimg_tga_LIB_SRCS tga.cpp)
 kde4_add_plugin(kimg_tga ${kimg_tga_LIB_SRCS})
 target_link_libraries(kimg_tga  ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tga )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tga )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tga )
 
 ##################################
@@ -84,7 +84,7 @@ set(kimg_rgb_LIB_SRCS rgb.cpp)
 kde4_add_plugin(kimg_rgb ${kimg_rgb_LIB_SRCS})
 target_link_libraries(kimg_rgb  ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_rgb )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_rgb )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_rgb )
 
 ##################################
@@ -93,7 +93,7 @@ set(kimg_xcf_LIB_SRCS xcf.cpp)
 kde4_add_plugin(kimg_xcf ${kimg_xcf_LIB_SRCS})
 target_link_libraries(kimg_xcf ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xcf )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xcf )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xcf )
 
 
@@ -103,7 +103,7 @@ set(kimg_dds_LIB_SRCS dds.cpp)
 kde4_add_plugin(kimg_dds ${kimg_dds_LIB_SRCS})
 target_link_libraries(kimg_dds ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_dds )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_dds )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_dds )
 
 
@@ -113,7 +113,7 @@ set(kimg_psd_LIB_SRCS psd.cpp)
 kde4_add_plugin(kimg_psd ${kimg_psd_LIB_SRCS})
 target_link_libraries(kimg_psd ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_psd )
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_psd )
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_psd )
 
 ##################################
@@ -122,7 +122,7 @@ set(kimg_xview_LIB_SRCS xview.cpp)
 kde4_add_plugin(kimg_xview ${kimg_xview_LIB_SRCS})
 target_link_libraries(kimg_xview ${KDE4_KDECORE_LIBS})
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )  
+#kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )  
 install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )
 
 ##################################
@@ -133,7 +133,7 @@ if(OPENEXR_FOUND)
     kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})
     target_link_libraries(kimg_exr ${KDE4_KDECORE_LIBS} ${OPENEXR_LIBRARIES} )
 
-    kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
+    #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
     install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
     install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES exr.desktop)
 endif(OPENEXR_FOUND)
@@ -145,7 +145,7 @@ if(TIFF_FOUND)
     kde4_add_plugin(kimg_tiff ${kimg_tiff_LIB_SRCS})
     target_link_libraries(kimg_tiff ${KDE4_KDECORE_LIBS} ${TIFF_LIBRARY})
 
-    kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tiff )
+    #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tiff )
     install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tiff )
     install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES tiff.desktop)
 endif(TIFF_FOUND)
