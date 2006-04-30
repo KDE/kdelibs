@@ -619,6 +619,18 @@ target_link_libraries(kautostarttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kautostarttest ${EXECUTABLE_OUTPUT_PATH}/kautostarttest)
 
+########### next target ###############
+
+set(kjobtest_SRCS kjobtest.cpp )
+
+kde4_automoc(${kjobtest_SRCS})
+
+kde4_add_executable(kjobtest RUN_UNINSTALLED ${kjobtest_SRCS})
+
+target_link_libraries(kjobtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kjobtest ${EXECUTABLE_OUTPUT_PATH}/kjobtest)
+
 
 #######################################
 
