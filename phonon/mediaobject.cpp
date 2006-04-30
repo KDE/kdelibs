@@ -56,6 +56,8 @@ void MediaObject::setUrl( const KUrl& url )
 	K_D( MediaObject );
 	if( iface() )
 	{
+		d->iface()->stop(); // first call stop as that often is the expected state
+		                    // for setting a new URL
 		d->iface()->setUrl( url );
 		if( state() == Phonon::ErrorState )
 		{
