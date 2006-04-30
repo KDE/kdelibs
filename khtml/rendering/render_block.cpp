@@ -2671,15 +2671,15 @@ void RenderBlock::calcInlineMinMaxWidth()
 
     RenderObject* trailingSpaceChild = 0;
 
-    bool normal, oldnormal;
-    normal = oldnormal = style()->whiteSpace() == NORMAL;
+    bool autoWrap, oldAutoWrap;
+    autoWrap = oldAutoWrap = style()->autoWrap();
 
     InlineMinMaxIterator childIterator(this, this);
     bool addedTextIndent = false; // Only gets added in once.
     RenderObject* prevFloat = 0;
     while (RenderObject* child = childIterator.next())
     {
-        normal = child->style()->whiteSpace() == NORMAL;
+        autoWrap = child->style()->autoWrap();
 
         if( !child->isBR() )
         {
@@ -2757,7 +2757,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                 childMin += child->minWidth();
                 childMax += child->maxWidth();
 
-                if (!qBreak && (normal || oldnormal)) {
+                if (!qBreak && (autoWrap || oldAutoWrap)) {
                     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                     inlineMin = 0;
                 }
@@ -2786,7 +2786,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // Add our width to the max.
                 inlineMax += childMax;
 
-                if (!normal||qBreak)
+                if (!autoWrap||qBreak)
                     inlineMin += childMin;
                 else {
                     // Now check our line.
@@ -2892,7 +2892,7 @@ void RenderBlock::calcInlineMinMaxWidth()
             trailingSpaceChild = 0;
         }
 
-        oldnormal = normal;
+        oldAutoWrap = autoWrap;
     }
 
     stripTrailingSpace(m_pre, inlineMax, inlineMin, trailingSpaceChild);
