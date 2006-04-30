@@ -52,6 +52,8 @@ QGenericArgument ValueBinding::arg(const char *type) const
 
 KJS::JSValue *callName( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
+    Q_UNUSED( args );
+
     KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
     if( imp )
     {
@@ -77,6 +79,8 @@ KJS::JSValue *callCast( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 
 KJS::JSValue *callToString( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
+    Q_UNUSED( args );
+
     KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
     if( imp )
     {
@@ -105,10 +109,10 @@ JavaScriptArrayType checkArray( KJS::ExecState *exec, KJS::JSValue *val )
     if ( obj->className().qstring() == "Array" )
     {
         KJS::JSValue *len = obj->get(exec, KJS::Identifier("length"));
-        char buff[4];
+        char buff[21];
         if( !obj->hasProperty(exec, KJS::Identifier("length")) )
             return Map;
-        else if( !obj->hasProperty(exec, KJS::Identifier( itoa((len->toNumber(exec) - 1), buff, 10 ) ) ) )
+        else if( !obj->hasProperty(exec, KJS::Identifier( itoa(int(len->toNumber(exec) - 1), buff, 10 ) ) ) )
             return Map;
         else
             return List;
