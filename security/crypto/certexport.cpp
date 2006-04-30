@@ -4,7 +4,7 @@
  * Copyright (c) 2001 George Staikos <staikos@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published 
+ *  it under the terms of the GNU Lesser General Public License as published
  *  by the Free Software Foundation; either version 2.1 of the License, or
  *  (at your option) any later version.
  *
@@ -39,9 +39,12 @@
 #include <ksslall.h>
 
 
-KCertExport::KCertExport(QWidget *parent, const char *name) 
-                             : KDialog(parent) {
-QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
+KCertExport::KCertExport(QWidget *parent, const char *name)
+                             : KDialog(parent)
+{
+    QGridLayout *grid = new QGridLayout(this );
+    grid->setMargin( marginHint() );
+    grid->setSpacing( spacingHint() );
 
    setCaption(i18n("X509 Certificate Export"));
 
@@ -64,7 +67,7 @@ QGridLayout *grid = new QGridLayout(this, 9, 6, marginHint(), spacingHint());
    _choose = new QPushButton("...", this);
    grid->addWidget(_choose, 6, 5);
    connect(_choose, SIGNAL(clicked()), this, SLOT(slotChoose()));
-   
+
    _export = new QPushButton(i18n("&Export"), this);
    grid->addWidget(_export, 8, 4);
    connect(_export, SIGNAL(clicked()), this, SLOT(slotExport()));
@@ -145,7 +148,7 @@ void KCertExport::slotChoose() {
 void KCertExport::slotTextChanged(const QString& x) {
   _export->setEnabled(!x.isEmpty());
 }
-  
+
 
 #include "certexport.moc"
 
