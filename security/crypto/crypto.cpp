@@ -262,8 +262,9 @@ QString whatstr;
   // FIRST TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSL = new QFrame(this);
-  grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
-                                       KDialog::spacingHint() );
+  grid = new QGridLayout( tabSSL );
+  grid->setMargin( KDialog::marginHint() );
+  grid->setSpacing( KDialog::spacingHint() );
   // no need to parse kdeglobals.
   config = new KConfig("cryptodefaults", false, false);
   policies = new KSimpleConfig("ksslpolicies", false);
@@ -401,7 +402,9 @@ QString whatstr;
   tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert, 16, 6, KDialog::marginHint(), KDialog::spacingHint() );
+  grid = new QGridLayout(tabYourSSLCert);
+  grid->setSpacing(KDialog::spacingHint());
+  grid->setMargin(KDialog::marginHint());
 
   yourSSLBox = new Q3ListView(tabYourSSLCert);
   yourSSLBox->setAllColumnsShowFocus(true);
@@ -489,14 +492,16 @@ QString whatstr;
   tabAuth = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabAuth, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
+  grid = new QGridLayout(tabAuth);
+  grid->setSpacing(KDialog::spacingHint());
+  grid->setMargin(KDialog::marginHint());
 
   grid->addWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 3 );
   defCertBG = new Q3VButtonGroup(i18n("Default Action"), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
   defDont = new QRadioButton(i18n("Do &not send"), defCertBG);
-  
+
   grid->addWidget(defCertBG, 1, 0, 3, 3 );
   grid->addWidget(new QLabel(i18n("Default certificate:"), tabAuth), 1, 3, 1, 3 );
   defCertBox = new KComboBox(false, tabAuth);
@@ -560,7 +565,9 @@ QString whatstr;
   tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  oGrid = grid = new QGridLayout(tabOtherSSLCert, 21, 6, KDialog::marginHint(), KDialog::spacingHint());
+  oGrid = grid = new QGridLayout(tabOtherSSLCert);
+  grid->setSpacing(KDialog::spacingHint());
+  grid->setMargin(KDialog::marginHint());
 
   otherSSLBox = new Q3ListView(tabOtherSSLCert);
   otherSSLBox->setAllColumnsShowFocus(true);
@@ -675,7 +682,9 @@ QString whatstr;
   tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCA, 11, 8, KDialog::marginHint(), KDialog::spacingHint());
+  grid = new QGridLayout(tabSSLCA);
+  grid->setSpacing(KDialog::spacingHint());
+  grid->setMargin(KDialog::marginHint());
 
   caList = new Q3ListView(tabSSLCA);
   caList->setAllColumnsShowFocus(true);
@@ -740,7 +749,9 @@ QString whatstr;
   tabSSLCOpts = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCOpts, 9, 4, KDialog::marginHint(), KDialog::spacingHint());
+  grid = new QGridLayout(tabSSLCOpts);
+  grid->setSpacing(KDialog::spacingHint());
+  grid->setMargin(KDialog::marginHint());
   mWarnSelfSigned = new QCheckBox(i18n("Warn on &self-signed certificates or unknown CA's"), tabSSLCOpts);
   connect(mWarnSelfSigned, SIGNAL(clicked()), SLOT(configChanged()));
   mWarnExpired = new QCheckBox(i18n("Warn on &expired certificates"), tabSSLCOpts);
