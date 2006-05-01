@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ),
 		      dummy, SLOT( slotOpenURL( const KUrl&, const KParts::URLArgs & ) ) );
 
-    if (args->url(0).url().right(4).find(".xml", 0, false) == 0) {
+    if (args->url(0).url().right(4).lower() == ".xml") {
         KParts::URLArgs ags(doc->browserExtension()->urlArgs());
         ags.serviceType = "text/xml";
         doc->browserExtension()->setURLArgs(ags);

@@ -53,7 +53,7 @@ static void FAIL(const QString &msg)
 
 static void popArg(QString &command, QString & line)
 {
-   int i = line.find(' ');
+   int i = line.indexOf(' ');
    if (i != -1)
    {
       command = line.left(i);
