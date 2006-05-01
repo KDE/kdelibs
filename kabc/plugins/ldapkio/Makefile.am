@@ -17,8 +17,6 @@ kabc_ldapkio_la_LIBADD	= libkabc_ldapkio.la
 
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/kabc_ldapkio.pot
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = resourceldapkio.h

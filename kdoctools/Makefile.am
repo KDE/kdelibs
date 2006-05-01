@@ -44,8 +44,6 @@ update_DATA = kio_help.upd
 update_SCRIPTS = move_kio_help_cache.sh
 updatedir = $(kde_datadir)/kconf_update
 
-messages:
-	$(XGETTEXT) *.cpp -o $(podir)/kio_help.pot
 
 install-data-local: kde-standard-accels.entities
 	@(for subdir in customization docbook; do \

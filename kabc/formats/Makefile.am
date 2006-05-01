@@ -15,8 +15,6 @@ noinst_HEADERS = binaryformat.h
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/kabcformat_binary.pot
 
 linkdir = $(kde_datadir)/kabc/formats
 link_DATA = binary.desktop

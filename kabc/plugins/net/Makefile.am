@@ -17,8 +17,6 @@ kabc_net_la_LIBADD	= libkabc_net.la
 
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/kabc_net.pot
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = resourcenet.h

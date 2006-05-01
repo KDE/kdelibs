@@ -19,8 +19,6 @@ kabc_file_la_COMPILE_FIRST = $(top_builddir)/kabc/addressee.h
 
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/kabc_file.pot
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = resourcefile.h

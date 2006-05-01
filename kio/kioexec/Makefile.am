@@ -11,7 +11,5 @@ noinst_HEADERS = main.h
 METASOURCES = AUTO
 
 ### TODO: this is already in kio.pot
-messages:
-	$(XGETTEXT) rc.cpp main.cpp -o $(podir)/kioexec.pot
 
 include $(top_srcdir)/admin/Doxyfile.am

@@ -18,6 +18,5 @@
 
 SUBDIRS = file http ftp metainfo
 
-messages: # they get into kio.pot
 
 include $(top_srcdir)/admin/Doxyfile.am

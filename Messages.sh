@@ -1,9 +1,8 @@
 #! /usr/bin/env bash
 ( cd kabc/scripts && perl ./makeaddressee )
 find . -type d | fgrep -v '.svn' | sed -e 's,$,/,' > dirs
-mfs=`find . -name Makefile.am | xargs egrep -l '^messages:'`
 msh=`find . -name Messages.sh`
-for dir in $mfs $msh; do
+for dir in $msh; do
   dir=`dirname $dir`
   if test "$dir" != "."; then
     egrep -v "^$dir" dirs > dirs.new && mv dirs.new dirs
@@ -19,5 +18,4 @@ $EXTRACTRC `find $dirs -maxdepth 1 \( -name \*.rc -o -name \*.ui -o -name \*.ui3
 : > kde.pot
 ### TODO: would it not be easier to use -j for xgettext from a copy of qt-messages.pot ?
 $XGETTEXT -ktranslate:1,1t -ktranslate:1c,2,2t -x qt-messages.pot --files-from=files && cat messages.po qt-messages.pot > $podir/kdelibs.pot
-$XGETTEXT common_texts.cpp -o kde.pot
 rm -f dirs

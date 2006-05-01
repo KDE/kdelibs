@@ -57,9 +57,6 @@ dataprotocoldir = $(kde_servicesdir)
 dummy.cpp:
 	echo >dummy.cpp
 
-messages:
-	$(EXTRACTRC) `find . ../kioslave -name \*.rc -o -name \*.ui -o -name \*.ui3 -o -name \*.ui4` >> rc.cpp
-	$(XGETTEXT) `find . ../kioslave -name "*.cpp" -o -name "*.cc" -o -name "*.h"` -o $(podir)/kio.pot
 
 DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui kio/kio kio/kfile
 DOXYGEN_EXCLUDE = kssl/kssl

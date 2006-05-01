@@ -14,6 +14,4 @@ METASOURCES =	AUTO
 rcdir = $(kde_datadir)/knotifytest
 rc_DATA = knotifytestui.rc knotifytest.notifyrc
 
-messages: rc.cpp
-	$(XGETTEXT) rc.cpp *.cpp -o $(podir)/knotifytest.pot
 

@@ -24,5 +24,3 @@ METASOURCES = AUTO
 CLEANFILES = exampleprefs_base.h exampleprefs_base.cpp
 
 ## The example's messages should not go into kdelibs.po
-messages:
-	true

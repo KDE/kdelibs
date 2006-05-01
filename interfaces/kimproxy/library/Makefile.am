@@ -8,8 +8,6 @@ METASOURCES = AUTO
 
 AM_CPPFLAGS = $(all_includes)
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/kimproxy.pot
 
 kimproxyincludedir = $(includedir)
 kimproxyinclude_HEADERS = kimproxy.h kimproxyiface.h

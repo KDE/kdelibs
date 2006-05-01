@@ -23,6 +23,4 @@ kdedatadir = $(kde_datadir)/kde
 kdedata_DATA = kde.notifyrc
 
 
-messages:
-	$(XGETTEXT) rc.cpp knotify.cpp -o $(podir)/knotify.pot
 

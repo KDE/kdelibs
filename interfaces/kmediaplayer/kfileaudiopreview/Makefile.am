@@ -9,5 +9,3 @@ kfileaudiopreview_la_LIBADD = $(top_builddir)/phonon/ui/libphononui.la $(LIB_KIO
 
 noinst_HEADERS = kfileaudiopreview.h
 
-messages:
-	$(XGETTEXT) *.cpp -o $(podir)/kfileaudiopreview.pot

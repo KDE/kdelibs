@@ -8,5 +8,3 @@ kstyle_highcontrast_config_la_SOURCES = highcontrastconfig.cpp
 kstyle_highcontrast_config_la_METASOURCES = AUTO
 
 
-messages:
-	$(XGETTEXT) *.cpp *.h -o $(podir)/kstyle_highcontrast_config.pot
