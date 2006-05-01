@@ -12,50 +12,22 @@ include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
 #check for libz using the cmake supplied FindZLIB.cmake
-if(ZLIB_FOUND)                  # zlib is required
-   set(HAVE_LIBZ 1)
-else(ZLIB_FOUND)
-   set(HAVE_LIBZ 0)
-endif(ZLIB_FOUND)
+macro_bool_to_01(ZLIB_FOUND HAVE_LIBZ)                  # zlib is required
 
-if(BZIP2_FOUND)                 # kdecore  
-   set(HAVE_BZIP2_SUPPORT 1)
-   if(BZIP2_NEED_PREFIX)
-      set(NEED_BZ2_PREFIX 1)
-   endif(BZIP2_NEED_PREFIX)
-else(BZIP2_FOUND)
-   set(HAVE_BZIP2_SUPPORT 0)
-endif(BZIP2_FOUND)
+macro_bool_to_01(BZIP2_FOUND HAVE_BZIP2_SUPPORT)        # kdecore  
+if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
+   set(NEED_BZ2_PREFIX 1)
+endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
 
-if(CUPS_FOUND)                  # kdeprint
-   set(HAVE_CUPS 1)
-else(CUPS_FOUND)
-   set(HAVE_CUPS 0)
-endif(CUPS_FOUND)
+macro_bool_to_01(CUPS_FOUND HAVE_CUPS)                  # kdeprint
 
-if(CARBON_FOUND)                # kdecore
-   set(HAVE_CARBON 1)
-else(CARBON_FOUND)
-   set(HAVE_CARBON 0)
-endif(CARBON_FOUND)
+macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
-if(AGG_FOUND)                   # kdecore, kio
-   set(HAVE_LIBAGG 1)
-else(AGG_FOUND)
-   set(HAVE_LIBAGG 0)
-endif(AGG_FOUND)
+macro_bool_to_01(AGG_FOUND HAVE_LIBAGG)                 # kdecore, kio
 
-if(AKODE_FOUND)                 # knotify
-   set(HAVE_AKODE 1)
-else(AKODE_FOUND)
-   set(HAVE_AKODE 0)
-endif(AKODE_FOUND)
+macro_bool_to_01(AKODE_FOUND HAVE_AKODE)                # knotify
 
-if(GETTEXT_FOUND)               # kdecore, khtml, kjs
-   set(ENABLE_NLS 1)
-else(GETTEXT_FOUND)
-   set(ENABLE_NLS 0)
-endif(GETTEXT_FOUND)
+macro_bool_to_01(GETTEXT_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
 # FIXME: Make this changeable!
 # khtml svg support
