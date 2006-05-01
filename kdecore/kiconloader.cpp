@@ -39,10 +39,11 @@
 #include <stdlib.h>	//for abs
 #include <unistd.h>     //for readlink
 #include <dirent.h>
-#include <config.h>
 #include <assert.h>
 
-#ifdef HAVE_LIBAGG
+#include <config-svgicons.h>
+
+#ifdef HAVE_SVGICONS
 #include "svgicons/ksvgiconengine.h"
 #include "svgicons/ksvgiconpainter.h"
 #endif
@@ -418,7 +419,7 @@ QString KIconLoader::removeIconExtension(const QString &name) const
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     if (ext == png_ext || ext == xpm_ext)
       extensionLength=4;
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
     else
     {
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
@@ -452,7 +453,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
     int count=0;
     static const QString &png_ext = KGlobal::staticQString(".png");
     ext[count++]=&png_ext;
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
     static const QString &svgz_ext = KGlobal::staticQString(".svgz");
     ext[count++]=&svgz_ext;
     static const QString &svg_ext = KGlobal::staticQString(".svg");
@@ -534,7 +535,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	static const QString &xpm_ext = KGlobal::staticQString(".xpm");
 	path = d->mpDirs->findResource("appicon", name + png_ext);
 
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
 	static const QString &svg_ext = KGlobal::staticQString(".svg");
 	if (path.isEmpty())
@@ -759,7 +760,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString ext = icon.path.right(3).toUpper();
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
 	if(ext != "SVG" && ext != "VGZ")
 	{
 #endif
@@ -768,7 +769,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
                 delete img;
 		return pix;
             }
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
 	}
 	else
 	{

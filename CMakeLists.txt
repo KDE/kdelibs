@@ -38,7 +38,6 @@ endif(${generatedFileInSourceDir})
 macro_optional_find_package(BZip2)
 macro_optional_find_package(AGG)
 macro_optional_find_package(OpenSSL)
-macro_optional_find_package(Akode)
 macro_optional_find_package(Gettext)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
@@ -80,6 +79,7 @@ include(ConfigureChecks.cmake)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
+configure_file(config-svgicons.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-svgicons.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 

@@ -65,13 +65,6 @@
 /* define if message translations are enabled */
 #cmakedefine ENABLE_NLS 1
 
-/* define if you have aKodelib installed */
-#cmakedefine HAVE_AKODE 1
-
-/* Defined if the libagg graphics library is present
-   Used by kiconloader and kicondialog */
-#cmakedefine HAVE_LIBAGG 1
-
 #cmakedefine HAVE_VOLMGT 1
 
 #cmakedefine HAVE_LC_MESSAGES 1

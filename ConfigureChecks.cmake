@@ -23,9 +23,7 @@ macro_bool_to_01(CUPS_FOUND HAVE_CUPS)                  # kdeprint
 
 macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
-macro_bool_to_01(AGG_FOUND HAVE_LIBAGG)                 # kdecore, kio
-
-macro_bool_to_01(AKODE_FOUND HAVE_AKODE)                # knotify
+macro_bool_to_01(AGG_FOUND HAVE_SVGICONS)               # kdecore, kio, see config-svgicons.h
 
 macro_bool_to_01(GETTEXT_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 

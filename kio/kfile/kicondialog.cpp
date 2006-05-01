@@ -13,7 +13,7 @@
 
 #include "kicondialog.h"
 
-#include <config.h>
+#include <config-svgicons.h>
 
 #include <k3iconviewsearchline.h>
 
@@ -41,7 +41,7 @@
 #include <qtoolbutton.h>
 #include <qprogressbar.h>
 
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
 #include <svgicons/ksvgiconengine.h>
 #include <svgicons/ksvgiconpainter.h>
 #endif
@@ -122,7 +122,7 @@ void KIconCanvas::slotLoadFiles()
     // disable updates to not trigger paint events when adding child items
     setUpdatesEnabled( false );
 
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
     KSVGIconEngine *svgEngine = new KSVGIconEngine();
 #endif
 
@@ -155,7 +155,7 @@ void KIconCanvas::slotLoadFiles()
 
 	if (ext != "SVG" && ext != "VGZ")
 	    img.load(*it);
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
 	else
 	    if (svgEngine->load(60, 60, *it))
 		img = *svgEngine->painter()->image();
@@ -184,7 +184,7 @@ void KIconCanvas::slotLoadFiles()
 	item->setDropEnabled(false);
     }
 
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
     delete svgEngine;
 #endif
 

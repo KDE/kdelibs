@@ -11,10 +11,11 @@
  * kicontheme.cpp: Lowlevel icon theme handling.
  */
 
+#include <config-svgicons.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <config.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -342,7 +343,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType mat
     KIconThemeDir *dir;
 
     dw = 1000; // shut up, gcc
-    
+
     for(int i=0;i<mDirs.size();++i)
     {
         dir = mDirs.at(i);
@@ -551,7 +552,7 @@ QStringList KIconThemeDir::iconList() const
     QDir dir(mDir);
 
     QStringList formats;
-#ifdef HAVE_LIBAGG
+#ifdef HAVE_SVGICONS
     formats << "*.png" << "*.svg" << "*.svgz" << "*.xpm";
 #else
     formats << "*.png" << "*.xpm";
