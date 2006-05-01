@@ -57,6 +57,8 @@ class NotifyBySound::Private
 		QHash<int, KProcess *> processes;
 		QHash<int, Phonon::MediaObject*> mediaobjects;
 		QSignalMapper *signalmapper;
+		Phonon::AudioPath *audiopath;
+		Phonon::AudioOutput *audiooutput;
 		
 		int volume;
 
@@ -68,10 +70,10 @@ NotifyBySound::NotifyBySound(QObject *parent) : KNotifyPlugin(parent),d(new Priv
 	d->signalmapper = new QSignalMapper(this);
 	connect(d->signalmapper, SIGNAL(mapped(int)), this, SLOT(slotSoundFinished(int)));
 	
-	Phonon::AudioPath* ap = new Phonon::AudioPath( this );
-	Phonon::AudioOutput * ao = new Phonon::AudioOutput( this );
-	ao->setCategory( Phonon::NotificationCategory  );
-	ap->addOutput( ao );
+	d->audiopath = new Phonon::AudioPath( this );
+	d->audiooutput = new Phonon::AudioOutput( this );
+	d->audiooutput->setCategory( Phonon::NotificationCategory  );
+	d->audiopath->addOutput( d->audiooutput );
 
 	loadConfig();
 }
@@ -102,7 +104,7 @@ void NotifyBySound::loadConfig()
 		}
 	}
 	// load default volume
-	d->volume = kc->readEntry( "Volume", 100 );
+	setVolume( kc->readEntry( "Volume", 100 ) );
 }
 
 
@@ -144,6 +146,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		connect( media, SIGNAL( finished() ), d->signalmapper, SLOT(map()));
 		d->signalmapper->setMapping( media , eventId );
 		
+		media->addAudioPath(d->audiopath);
 		media->setUrl( KUrl::fromPath(soundFile) );
 		media->play();
 		d->mediaobjects.insert(eventId , media);
@@ -168,6 +171,7 @@ void NotifyBySound::setVolume( int volume )
 	if ( volume<0 ) volume=0;
 	if ( volume>=100 ) volume=100;
 	d->volume = volume;
+	d->audiooutput->setVolume(  d->volume / 100.0 );
 }
 
 
