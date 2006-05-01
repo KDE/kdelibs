@@ -26,8 +26,6 @@
 class KActiveLabelPrivate;
  /**
   * Label with support for selection and clickable links.
-  * openLink() the actions that will be taken when the user
-  * clicks on a link.
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
@@ -57,19 +55,6 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-
-public Q_SLOTS:
-    /**
-     * Opens @p link in the default browser.
-     *
-     * If @p link starts with the text "whatsthis:" a QWhatsThis
-     * box will appear and then display the rest of the text. The WhatsThis
-     * functionality is available since KDE 3.2.
-     */
-    virtual void openLink(const QUrl & link);
-
-private Q_SLOTS:
-    void setSource( const QUrl &) { }
 
 protected:
     virtual void virtual_hook( int id, void* data );

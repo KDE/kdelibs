@@ -872,6 +872,8 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 <h4>KActiveLabel</h4>
 <ul>
 <li>Inherits from KTextBrowser instead of Q3TextBrowser</li>
+<li>You don't need anymore to disconnect the linkClicked signal to handle manually link,  use KTextBrowser::setNotifyClick(true)</li>
+<li>linkClicked -&gt; KTextBrowser::urlClick</li>
 </ul>
 
 <h4>KWizard</h4>

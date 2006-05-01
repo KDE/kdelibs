@@ -34,6 +34,9 @@
  * invoke the system mailer or the system browser when a link is
  * activated, or it can emit the signal urlClick() or mailClick()
  * when a link is activated.
+ * 
+ * If the link starts with the text "whatsthis:" a QWhatsThis
+ * box will appear and then display the rest of the text.
  *
  * \image html ktextbrowser.png "KDE Text Browser"
  *

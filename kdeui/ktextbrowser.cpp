@@ -19,6 +19,7 @@
  */
 
 #include <QTextBrowser>
+#include <QWhatsThis>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
@@ -72,7 +73,12 @@ void KTextBrowser::setSource( const QUrl& name )
     return;
   }
 
-  if( strName.indexOf('@') > -1 )
+  QRegExp whatsthis("whatsthis:/*([^/].*)");
+  if ( !d->mNotifyClick && whatsthis.exactMatch(strName) )
+  {
+     QWhatsThis::showText(QCursor::pos(),whatsthis.cap(1));
+  }
+  else if( strName.indexOf('@') > -1 )
   {
     if( !d->mNotifyClick )
     {

@@ -21,7 +21,6 @@
 #define QT3_SUPPORT
 #define QT3_SUPPORT_WARNINGS
 
-#include <QWhatsThis>
 #include <Q3SimpleRichText>
 #include <QFocusEvent>
 
@@ -47,9 +46,6 @@ KActiveLabelPrivate::KActiveLabelPrivate(KActiveLabel *qq)
    q->setFrameStyle(QFrame::NoFrame);
    q->setFocusPolicy(Qt::TabFocus);
    updatePalette();
-
-   QObject::connect(q, SIGNAL(anchorClicked (const QUrl &)),
-                    q, SLOT(openLink(const QUrl &)));
 }
 
 void KActiveLabelPrivate::updatePalette()
@@ -76,18 +72,6 @@ KActiveLabel::~KActiveLabel()
     delete d;
 }
 
-void KActiveLabel::openLink(const QUrl & link)
-{
-   QRegExp whatsthis("whatsthis:/*([^/].*)");
-   if (whatsthis.exactMatch(link.toString())) {
-      QWhatsThis::showText(QCursor::pos(),whatsthis.cap(1));
-      return;
-   }
-
-   QStringList args;
-   args << "exec" << link.toString();
-   KToolInvocation::kdeinitExec("kfmclient", args);
-}
 
 void KActiveLabel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
