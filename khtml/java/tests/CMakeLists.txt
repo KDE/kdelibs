@@ -2,6 +2,9 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
+   # Tests don't need to go into toplevel/bin, they are fine in the current dir.
+   set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
    include_directories( ${CMAKE_SOURCE_DIR}/khtml/java ${CMAKE_SOURCE_DIR}/khtml )
    
    
@@ -13,25 +16,9 @@ if(KDE4_BUILD_TESTS)
    
    kde4_add_executable(testserver ${testserver_SRCS})
    
-   target_link_libraries(testserver  ${KDE4_KDECORE_LIBS} kjava khtml)
+   target_link_libraries(testserver  ${KDE4_KDECORE_LIBS} khtml)
 
 endif(KDE4_BUILD_TESTS)
 
-########### install files ###############
-
-
 kde4_footer()
 
-
-
-#original Makefile.am contents follow:
-
-#INCLUDES = -I$(top_srcdir)/khtml/java -I$(top_srcdir)/khtml \
-#           -I$(top_srcdir) $(all_includes)
-#
-#check_PROGRAMS = testserver 
-#
-#testserver_SOURCES = testkjavaappletserver.cpp
-#testserver_LDADD = ../libkjava.la 
-#
-#METASOURCES = AUTO
