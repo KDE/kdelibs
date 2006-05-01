@@ -323,3 +323,11 @@ that we would like to make for the next binary incompatible release.
   for instance using a modified version of $QTDIR/bin/syncqt
 
 - Merge kdecore classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
+
+- Deprecate KStringHandler::(l|c|r)sequeeze. It is fairly slow since it reshapes the string with
+  each iteration (by calling QFontMetrics::width) and most important it does not work with complex
+  languages because it cuts off the string at any cposition, not only at valid cursor positions,
+  easily creating nonsense text. Use Qt 4.2's QFontMetrics::elidedText instead, which
+  gets that part right, shapes only once and also uses the unicode ellipsis character (0x2026)
+  if present in the font. (Simon)
+
