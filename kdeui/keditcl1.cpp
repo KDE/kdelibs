@@ -29,6 +29,7 @@
 #include <kmessagebox.h>
 #include <kstdaccel.h>
 #include <QKeyEvent>
+#include <QMenu>
 
 #include "keditcl.h"
 #include "keditcl.moc"
