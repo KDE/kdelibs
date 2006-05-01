@@ -87,14 +87,14 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 		foreach ( const QString & it , config->actions ) 
 		{
 			i++;
-			linkCode+=QString::fromLatin1("&nbsp;<a href=\"%1:%2\">%3</a> ").arg( id ).arg( i ).arg( Qt::escape(it) );
+			linkCode+=QString::fromLatin1("&nbsp;<a href=\"%1/%2\">%3</a> ").arg( id ).arg( i ).arg( Qt::escape(it) );
 		}
 		linkCode+=QString::fromLatin1("</p>");
 		KActiveLabel *link = new KActiveLabel(linkCode , vb );
 		//link->setAlignment( AlignRight );
-		QObject::disconnect(link, SIGNAL(linkClicked(const QString &)), link, SLOT(openLink(const QString &)));
-		QObject::connect(link, SIGNAL(linkClicked(const QString &)), this, SLOT(slotLinkClicked(const QString& ) ) );
-		QObject::connect(link, SIGNAL(linkClicked(const QString &)), pop, SLOT(hide()));
+		link->setNotifyClick(true);
+		QObject::connect(link, SIGNAL(urlClick(const QString &)), this, SLOT(slotLinkClicked(const QString& ) ) );
+		QObject::connect(link, SIGNAL(urlClick(const QString &)), pop, SLOT(hide()));
 	}
 
 	pop->setAutoDelete( true );
@@ -127,8 +127,8 @@ void NotifyByPopup::slotPopupDestroyed( )
 
 void NotifyByPopup::slotLinkClicked( const QString &adr )
 {
-	unsigned int id=adr.section(":" , 0 , 0).toUInt();
-	unsigned int action=adr.section(":" , 1 , 1).toUInt();
+	unsigned int id=adr.section("/" , 0 , 0).toUInt();
+	unsigned int action=adr.section("/" , 1 , 1).toUInt();
 
 //	kDebug() << k_funcinfo << id << " " << action << endl;
         
