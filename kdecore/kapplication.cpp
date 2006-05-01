@@ -402,6 +402,9 @@ static QList<KSessionManaged *>* sessionClients()
  */
 QString KApplication::sessionConfigName() const
 {
+#ifdef QT_NO_SESSIONMANAGER
+#error QT_NO_SESSIONMANAGER was set, this will not compile. Reconfigure Qt with Session management support.
+#endif
     QString sessKey = sessionKey();
     if ( sessKey.isEmpty() && !d->sessionKey.isEmpty() )
         sessKey = d->sessionKey;
