@@ -890,6 +890,22 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 <li>Call updateIcons() whenever you change the iconSize() (the setter is non virtual :(</li>
 </ul>
 
+<h4>KContextMenuManager</h4>
+<ul>
+<li>KContextMenuManager::insert() :
+<p>Old code:</p>
+<pre>
+KContextMenuManager::insert(widget, menu);
+</pre>
+<p>New code:</p>
+<pre>
+widget->setContextMenuPolicy(Qt::ActionsContextMenu);
+widget->addActions(menu->actions());
+</pre>
+<li>Otherwise consider handling the context menu in a contextMenuEvent() handler, which Qt
+calls automatically on a right-mouse-button click or on activation by the context menu key.
+There's no need to do anything in mousePressEvent/mouseReleaseEvent/keyPressEvent.
+</ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
 

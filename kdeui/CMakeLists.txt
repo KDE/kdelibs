@@ -68,7 +68,6 @@ set(kdeui_LIB_SRCS
  kdualcolorbutton.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
- kcmenumngr.cpp
  k3iconview.cpp
  klistbox.cpp
  kwordwrap.cpp
@@ -221,7 +220,6 @@ install_files( /include FILES
  kactionclasses.h
  khelpmenu.h
  kcmodule.h
- kcmenumngr.h
  kstdaction.h
  kcombobox.h
  k3iconview.h
