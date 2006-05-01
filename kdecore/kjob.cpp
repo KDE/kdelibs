@@ -22,6 +22,7 @@
 #include "kjob.h"
 
 #include <kapplication.h>
+#include <QEventLoop>
 
 class KJob::Private
 {
@@ -51,6 +52,18 @@ KJob::~KJob()
 
     if (kapp)
         kapp->deref();
+}
+
+bool KJob::exec()
+{
+    QEventLoop loop( this );
+
+    connect( this, SIGNAL( result( KJob* ) ),
+             &loop, SLOT( quit() ) );
+    start();
+    loop.exec();
+
+    return ( d->error == 0 );
 }
 
 int KJob::error() const

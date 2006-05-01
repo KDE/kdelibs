@@ -183,6 +183,42 @@ void KJobTest::testProgressTracking()
     delete job;
 }
 
+void KJobTest::testExec_data()
+{
+    QTest::addColumn<int>("errorCode");
+    QTest::addColumn<QString>("errorText");
+
+    QTest::newRow("no error") << 0 << QString();
+    QTest::newRow("error no text") << 2 << QString();
+    QTest::newRow("error with text") << 6 << "oops! an error? naaah, really?";
+}
+
+void KJobTest::testExec()
+{
+    TestJob *job = new TestJob;
+
+    QFETCH(int, errorCode);
+    QFETCH(QString, errorText);
+
+    job->setError( errorCode );
+    job->setErrorText( errorText );
+
+    QSignalSpy destroyed_spy( job, SIGNAL( destroyed( QObject* ) ) );
+
+    bool status = job->exec();
+
+    QCOMPARE( status, ( errorCode == 0 ) );
+    QCOMPARE( job->error(),  errorCode );
+    QCOMPARE( job->errorText(),  errorText );
+
+    // Verify that the job is not deleted immediately...
+    QCOMPARE( destroyed_spy.size(), 0 );
+    QTimer::singleShot( 0, &loop, SLOT( quit() ) );
+    // ... but when we enter the event loop again.
+    loop.exec();
+    QCOMPARE( destroyed_spy.size(), 1 );
+}
+
 void KJobTest::slotResult( KJob *job )
 {
     if ( job->error() )

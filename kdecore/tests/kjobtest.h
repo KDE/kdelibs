@@ -52,6 +52,8 @@ private Q_SLOTS:
     void testEmitResult_data();
     void testEmitResult();
     void testProgressTracking();
+    void testExec_data();
+    void testExec();
 
     void slotResult( KJob *job );
 

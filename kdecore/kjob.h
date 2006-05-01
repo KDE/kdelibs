@@ -43,6 +43,21 @@
  *  if ( job->error() )
  *      doSomething();
  * \endcode
+ *
+ * With the synchronous interface the code looks like
+ *
+ * \code
+ *  KJob *job = someoperation( some parameters );
+ *  if ( !job->exec() )
+ *  {
+ *      // An error occured
+ *  }
+ *  else
+ *  {
+ *      // Do something
+ *  }
+ * \endcode
+ *
  */
 class KDECORE_EXPORT KJob : public QObject
 {
@@ -79,6 +94,13 @@ public:
      * on result being emitted or not.
      */
     virtual void kill( bool quietly = true ) = 0;
+
+    /**
+     * Executes the job synchronously.
+     *
+     * @return true if the job has been executed without error, false otherwise
+     */
+    bool exec();
 
 
     /**
