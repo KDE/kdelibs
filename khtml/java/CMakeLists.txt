@@ -2,7 +2,7 @@ kde4_header()
 
 add_subdirectory( tests ) 
 
-include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/kssl )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 
 
@@ -12,13 +12,13 @@ include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 ########### next target ###############
 
 set(kjavaappletviewer_PART_SRCS
-kjavaapplet.cpp
-kjavaappletcontext.cpp
-kjavaappletserver.cpp
-kjavaappletwidget.cpp
-kjavaprocess.cpp
-kjavadownloader.cpp
-kjavaappletviewer.cpp
+   kjavaapplet.cpp
+   kjavaappletcontext.cpp
+   kjavaappletserver.cpp
+   kjavaappletwidget.cpp
+   kjavaprocess.cpp
+   kjavadownloader.cpp
+   kjavaappletviewer.cpp
 )
 
 kde4_automoc(${kjavaappletviewer_PART_SRCS})

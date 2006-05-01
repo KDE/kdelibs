@@ -26,7 +26,7 @@ include_directories(
 )
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl )
@@ -41,86 +41,84 @@ add_subdirectory( pics )
 add_subdirectory( tests ) 
 add_subdirectory( kioexec ) 
 
-# for kio/http.h
-include_directories( ${CMAKE_SOURCE_DIR}/interfaces )
 # for the kfile usage in bookmarks
 include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
 
 # kio/kio/Makefile.am: kiocore
 
 set(kiocore_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdirwatch.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kfileshare.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/ksambashare.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/knfsshare.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/ktrader.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/ktraderparse.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/ktraderparsetree.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kservicetypefactory.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kservicetype.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kmimetype.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdedesktopmimetype.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kservicegroup.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kservice.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kservicefactory.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kuserprofile.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kservicegroupfactory.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kurifilter.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kshellcompletion.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kurlcompletion.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/krun.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kfileitem.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdirlister.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kimageio.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/yacc.c
-  ${CMAKE_SOURCE_DIR}/kio/kio/lex.c
-  ${CMAKE_SOURCE_DIR}/kio/kio/chmodjob.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kscan.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kar.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/ktar.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kzip.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/previewjob.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/metainfojob.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/davjob.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdatatool.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/karchive.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kfilefilter.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kfilemetainfo.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdcopservicestarter.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/dataslave.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/dataprotocol.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kacl.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/authinfo.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kprotocolmanager.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/slave.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/slaveinterface.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/sessiondata.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/scheduler.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/connection.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/job.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/global.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/slaveconfig.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kurlpixmapprovider.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/netaccess.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/paste.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/pastedialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kmimemagic.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/tcpslavebase.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/slavebase.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/passdlg.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/forwardingslavebase.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/progressbase.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/defaultprogress.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/statusbarprogress.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdirnotify.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kdirnotify_stub.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/observer.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kemailsettings.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kprotocolinfo.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/renamedlg.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/skipdlg.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kremoteencoding.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kio/kmimetypechooser.cpp
+  kio/kdirwatch.cpp
+  kio/kfileshare.cpp
+  kio/ksambashare.cpp
+  kio/knfsshare.cpp
+  kio/ktrader.cpp
+  kio/ktraderparse.cpp
+  kio/ktraderparsetree.cpp
+  kio/kservicetypefactory.cpp
+  kio/kservicetype.cpp
+  kio/kmimetype.cpp
+  kio/kdedesktopmimetype.cpp
+  kio/kservicegroup.cpp
+  kio/kservice.cpp
+  kio/kservicefactory.cpp
+  kio/kuserprofile.cpp
+  kio/kservicegroupfactory.cpp
+  kio/kurifilter.cpp
+  kio/kshellcompletion.cpp
+  kio/kurlcompletion.cpp
+  kio/krun.cpp
+  kio/kfileitem.cpp
+  kio/kdirlister.cpp
+  kio/kimageio.cpp
+  kio/yacc.c
+  kio/lex.c
+  kio/chmodjob.cpp
+  kio/kscan.cpp
+  kio/kar.cpp
+  kio/ktar.cpp
+  kio/kzip.cpp
+  kio/previewjob.cpp
+  kio/metainfojob.cpp
+  kio/davjob.cpp
+  kio/kdatatool.cpp
+  kio/karchive.cpp
+  kio/kfilefilter.cpp
+  kio/kfilemetainfo.cpp
+  kio/kdcopservicestarter.cpp
+  kio/dataslave.cpp
+  kio/dataprotocol.cpp
+  kio/kacl.cpp
+  kio/authinfo.cpp
+  kio/kprotocolmanager.cpp
+  kio/slave.cpp
+  kio/slaveinterface.cpp
+  kio/sessiondata.cpp
+  kio/scheduler.cpp
+  kio/connection.cpp
+  kio/job.cpp
+  kio/global.cpp
+  kio/slaveconfig.cpp
+  kio/kurlpixmapprovider.cpp
+  kio/netaccess.cpp
+  kio/paste.cpp
+  kio/pastedialog.cpp
+  kio/kmimemagic.cpp
+  kio/tcpslavebase.cpp
+  kio/slavebase.cpp
+  kio/passdlg.cpp
+  kio/forwardingslavebase.cpp
+  kio/progressbase.cpp
+  kio/defaultprogress.cpp
+  kio/statusbarprogress.cpp
+  kio/kdirnotify.cpp
+  kio/kdirnotify_stub.cpp
+  kio/observer.cpp
+  kio/kemailsettings.cpp
+  kio/kprotocolinfo.cpp
+  kio/renamedlg.cpp
+  kio/skipdlg.cpp
+  kio/kremoteencoding.cpp
+  kio/kmimetypechooser.cpp
 )
 
 if(UNIX)
@@ -131,86 +129,86 @@ endif(UNIX)
 # kio/bookmarks/Makefile.am: kbookmarks
 
 set(kbookmarks_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmark.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkbar.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkimporter.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkmanager.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkmenu.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkimporter_crash.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkimporter_opera.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkimporter_ie.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkimporter_ns.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkimporter_kde1.cc
-  ${CMAKE_SOURCE_DIR}/kio/bookmarks/kbookmarkdombuilder.cc
+  bookmarks/kbookmark.cc
+  bookmarks/kbookmarkbar.cc
+  bookmarks/kbookmarkimporter.cc
+  bookmarks/kbookmarkmanager.cc
+  bookmarks/kbookmarkmenu.cc
+  bookmarks/kbookmarkimporter_crash.cc
+  bookmarks/kbookmarkimporter_opera.cc
+  bookmarks/kbookmarkimporter_ie.cc
+  bookmarks/kbookmarkimporter_ns.cc
+  bookmarks/kbookmarkimporter_kde1.cc
+  bookmarks/kbookmarkdombuilder.cc
 )
 
 # kio/kfile/Makefile.am: kfile
 
 set(kfile_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilefiltercombo.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfileview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfileiconview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/krecentdocument.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfiledialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kdiroperator.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfiledetailview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kcombiview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kurlrequester.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilepreview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kurlcombobox.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kurlrequesterdlg.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kopenwith.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kpropertiesdialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kicondialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kdirsize.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/krecentdirs.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kdiskfreesp.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kimagefilepreview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilesharedlg.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kurlbar.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kmetaprops.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kpreviewprops.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfiletreeview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfiletreeviewitem.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfiletreebranch.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kdirselectdialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilebookmarkhandler.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilemetainfowidget.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kcustommenueditor.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/knotifydialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilespeedbar.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kpreviewwidgetbase.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kfilemetapreview.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kencodingfiledialog.cpp
-  ${CMAKE_SOURCE_DIR}/kio/kfile/kacleditwidget.cpp
+  kfile/kfilefiltercombo.cpp
+  kfile/kfileview.cpp
+  kfile/kfileiconview.cpp
+  kfile/krecentdocument.cpp
+  kfile/kfiledialog.cpp
+  kfile/kdiroperator.cpp
+  kfile/kfiledetailview.cpp
+  kfile/kcombiview.cpp
+  kfile/kurlrequester.cpp
+  kfile/kfilepreview.cpp
+  kfile/kurlcombobox.cpp
+  kfile/kurlrequesterdlg.cpp
+  kfile/kopenwith.cpp
+  kfile/kpropertiesdialog.cpp
+  kfile/kicondialog.cpp
+  kfile/kdirsize.cpp
+  kfile/krecentdirs.cpp
+  kfile/kdiskfreesp.cpp
+  kfile/kimagefilepreview.cpp
+  kfile/kfilesharedlg.cpp
+  kfile/kurlbar.cpp
+  kfile/kmetaprops.cpp
+  kfile/kpreviewprops.cpp
+  kfile/kfiletreeview.cpp
+  kfile/kfiletreeviewitem.cpp
+  kfile/kfiletreebranch.cpp
+  kfile/kdirselectdialog.cpp
+  kfile/kfilebookmarkhandler.cpp
+  kfile/kfilemetainfowidget.cpp
+  kfile/kcustommenueditor.cpp
+  kfile/knotifydialog.cpp
+  kfile/kfilespeedbar.cpp
+  kfile/kpreviewwidgetbase.cpp
+  kfile/kfilemetapreview.cpp
+  kfile/kencodingfiledialog.cpp
+  kfile/kacleditwidget.cpp
 )
 
 # kio/kssl/Makefile.am: kssl
 
 set(kssl_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kio/kssl/kssl.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcertificatehome.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslsettings.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcertificate.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslconnectioninfo.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcertificatefactory.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcertificatecache.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslpeerinfo.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslinfodlg.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcertdlg.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslutils.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/kopenssl.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslpkcs12.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcertchain.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslkeygen.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslx509v3.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslsigners.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslpkcs7.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslpemcallback.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslx509map.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslsession.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksmimecrypto.cc
-  ${CMAKE_SOURCE_DIR}/kio/kssl/ksslcsessioncache.cc
+  kssl/kssl.cc
+  kssl/ksslcertificatehome.cc
+  kssl/ksslsettings.cc
+  kssl/ksslcertificate.cc
+  kssl/ksslconnectioninfo.cc
+  kssl/ksslcertificatefactory.cc
+  kssl/ksslcertificatecache.cc
+  kssl/ksslpeerinfo.cc
+  kssl/ksslinfodlg.cc
+  kssl/ksslcertdlg.cc
+  kssl/ksslutils.cc
+  kssl/kopenssl.cc
+  kssl/ksslpkcs12.cc
+  kssl/ksslcertchain.cc
+  kssl/ksslkeygen.cc
+  kssl/ksslx509v3.cc
+  kssl/ksslsigners.cc
+  kssl/ksslpkcs7.cc
+  kssl/ksslpemcallback.cc
+  kssl/ksslx509map.cc
+  kssl/ksslsession.cc
+  kssl/ksmimecrypto.cc
+  kssl/ksslcsessioncache.cc
 )
 
 
@@ -224,29 +222,29 @@ set(kio_LIB_SRCS
 )
 
 set(kio_STUB_HEADERS
-   ${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
+   misc/uiserver.h
+   kio/observer.h
 )
 
 kde4_add_dcop_stubs(kio_LIB_SRCS ${kio_STUB_HEADERS} )
 
 set(kio_SKEL_HEADERS
-   #${CMAKE_CURRENT_SOURCE_DIR}/misc/uiserver.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/kio/observer.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/kio/kdirnotify.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarkmanager.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks/kbookmarknotifier.h
+   #misc/uiserver.h
+   kio/observer.h
+   kio/kdirnotify.h
+   bookmarks/kbookmarkmanager.h
+   bookmarks/kbookmarknotifier.h
 )
 
 kde4_add_dcop_skels(kio_LIB_SRCS ${kio_SKEL_HEADERS} )
 
 kde4_add_ui_files(kio_LIB_SRCS
-   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopadvbase.ui
-   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesdesktopbase.ui
-   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/kpropertiesmimetypebase.ui
-   ${CMAKE_CURRENT_SOURCE_DIR}/kfile/knotifywidgetbase.ui
-   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard.ui
-   ${CMAKE_CURRENT_SOURCE_DIR}/kssl/keygenwizard2.ui
+   kfile/kpropertiesdesktopadvbase.ui
+   kfile/kpropertiesdesktopbase.ui
+   kfile/kpropertiesmimetypebase.ui
+   kfile/knotifywidgetbase.ui
+   kssl/keygenwizard.ui
+   kssl/keygenwizard2.ui
 )
 
 kde4_automoc(${kio_LIB_SRCS})

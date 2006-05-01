@@ -1,14 +1,11 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
 
 ########### next target ###############
 
-set(kabc_net_LIB_SRCS
-   resourcenet.cpp
-   resourcenetconfig.cpp
-)
+set(kabc_net_LIB_SRCS resourcenet.cpp resourcenetconfig.cpp )
 
 kde4_automoc(${kabc_net_LIB_SRCS})
 

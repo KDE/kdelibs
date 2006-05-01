@@ -28,8 +28,7 @@ install_targets(/bin makekdewidgets )
 get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets WRAPPER_SCRIPT)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-  COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}"
-  ARGS -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
+  COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
   MAIN_DEPENDENCY kde.widgets DEPENDS makekdewidgets)
 
 set(kdewidgets_PART_SRCS

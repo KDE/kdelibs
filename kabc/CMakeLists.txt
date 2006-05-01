@@ -4,8 +4,9 @@ project(kabc)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
+# these apply also for all subdirs
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
+ ${CMAKE_CURRENT_SOURCE_DIR}
  ${CMAKE_CURRENT_BINARY_DIR}
  ${CMAKE_CURRENT_SOURCE_DIR}/kab
  ${CMAKE_CURRENT_BINARY_DIR}/kab
@@ -15,9 +16,9 @@ include_directories(
 # kabc/vcardparser/Makefile.am: vcards
 
 set(vcards_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kabc/vcardparser/vcard.cpp
-  ${CMAKE_SOURCE_DIR}/kabc/vcardparser/vcardline.cpp
-  ${CMAKE_SOURCE_DIR}/kabc/vcardparser/vcardparser.cpp
+  vcardparser/vcard.cpp
+  vcardparser/vcardline.cpp
+  vcardparser/vcardparser.cpp
 )
 
 add_subdirectory( kab )
@@ -29,31 +30,17 @@ add_subdirectory( tests )
 
 
 
-add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
+add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp ${CMAKE_CURRENT_BINARY_DIR}/addressee.h ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
-   COMMAND ${PERL_EXECUTABLE}
-   ARGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
-   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/entrylist
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
+   COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
+   DEPENDS  
+   scripts/makeaddressee
+   scripts/addressee.src.cpp
+   scripts/addressee.src.h
+   scripts/entrylist
+   scripts/field.src.cpp
    )
 
-add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/addressee.h
-   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/addressee.cpp
-   )
-
-add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/field.cpp
-   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
-   COMMAND  ${PERL_EXECUTABLE}
-   ARGS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
-   DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/makeaddressee
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/addressee.src.h
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/entrylist
-   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/field.src.cpp
-   )
 
 ########### next target ###############
 

@@ -4,7 +4,7 @@ project(kstyle-keramik)
 
 add_definitions(-DQT_PLUGIN)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kdefx )
 
 ########### next target ###############
 
@@ -30,8 +30,7 @@ endforeach(pics ${keramikPics})
 get_target_property(GENEMBED_EXECUTABLE genembed WRAPPER_SCRIPT)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
-  COMMAND ${GENEMBED_EXECUTABLE}
-  ARGS --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
+  COMMAND ${GENEMBED_EXECUTABLE} --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
   DEPENDS genembed ${keramikPics}
 )
 

@@ -3,27 +3,15 @@ kde4_header()
 project(kimgio)
 
 macro_optional_find_package(Jasper)
-if(JASPER_FOUND)
-   set(HAVE_JASPER 1)
-else(JASPER_FOUND)
-   set(HAVE_JASPER 0)
-endif(JASPER_FOUND)
+macro_bool_to_01(JASPER_FOUND HAVE_JASPER 1)
 
 macro_optional_find_package(TIFF)
-if(TIFF_FOUND)
-   set(HAVE_LIBTIFF 1)
-else(TIFF_FOUND)
-   set(HAVE_LIBTIFF 0)
-endif(TIFF_FOUND)
+macro_bool_to_01(TIFF_FOUND HAVE_LIBTIFF 1)
 
 macro_optional_find_package(OpenEXR)
-if(OPENEXR_FOUND)
-   set(HAVE_EXR 1)
-else(OPENEXR_FOUND)
-   set(HAVE_EXR 0)
-endif(OPENEXR_FOUND)
+macro_bool_to_01(OPENEXR_FOUND HAVE_EXR 1)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kimgio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kimgio.h )
+configure_file(config-kimgio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kimgio.h )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
@@ -128,7 +116,7 @@ install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )
 ##################################
 
 if(OPENEXR_FOUND)
-    include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  ${OPENEXR_INCLUDE_DIR} )
+    include_directories( ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/dcop ${CMAKE_SOURCE_DIR}/libltdl ${OPENEXR_INCLUDE_DIR} )
     set(kimg_exr_LIB_SRCS exr.cpp)
     kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})
     target_link_libraries(kimg_exr ${KDE4_KDECORE_LIBS} ${OPENEXR_LIBRARIES} )

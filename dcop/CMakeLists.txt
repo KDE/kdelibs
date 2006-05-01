@@ -2,7 +2,7 @@ kde4_header()
 
 project(dcop)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
+configure_file(dcop-path.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dcop-path.h )
 
 include_directories( ${KDE4_DCOP_INCLUDES} )

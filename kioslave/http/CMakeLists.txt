@@ -19,7 +19,7 @@ else(GSSAPI_FOUND)
     set(GSSAPI_MIT 0)
 endif(GSSAPI_FOUND)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
+configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
 
 
 include_directories( ${KDE4_KIO_INCLUDES} )

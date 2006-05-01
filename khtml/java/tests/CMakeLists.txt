@@ -2,20 +2,18 @@ kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
-include_directories( ${CMAKE_SOURCE_DIR}/khtml/java ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
-
-
-########### next target ###############
-
-set(testserver_SRCS
-testkjavaappletserver.cpp
-)
-
-kde4_automoc(${testserver_SRCS})
-
-kde4_add_executable(testserver ${testserver_SRCS})
-
-target_link_libraries(testserver  ${KDE4_KDECORE_LIBS} kjava khtml)
+   include_directories( ${CMAKE_SOURCE_DIR}/khtml/java ${CMAKE_SOURCE_DIR}/khtml )
+   
+   
+   ########### next target ###############
+   
+   set(testserver_SRCS testkjavaappletserver.cpp )
+   
+   kde4_automoc(${testserver_SRCS})
+   
+   kde4_add_executable(testserver ${testserver_SRCS})
+   
+   target_link_libraries(testserver  ${KDE4_KDECORE_LIBS} kjava khtml)
 
 endif(KDE4_BUILD_TESTS)
 

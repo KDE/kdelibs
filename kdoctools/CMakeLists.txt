@@ -8,7 +8,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
+configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
 

@@ -199,7 +199,6 @@ add_subdirectory( pics )
 add_subdirectory( ecma )
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kwallet/client ${CMAKE_SOURCE_DIR}/kutils )
 
@@ -229,17 +228,16 @@ include_directories(
 include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
 add_subdirectory( kmultipart )
-if(NOT KDE4_USE_QT_EMB)
-	add_subdirectory( java )
-endif(NOT KDE4_USE_QT_EMB )
+if (NOT KDE4_USE_QT_EMB)
+   add_subdirectory( java )
+endif (NOT KDE4_USE_QT_EMB )
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
 
 macro(CREATE_LUT _in_FILE _out_FILE)
 
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-      COMMAND ${PERL_EXECUTABLE}
-      ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
    )
    macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
@@ -265,42 +263,35 @@ create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
 ########### next target ###############
 
 set(khtml_LIB_SRCS
-khtmlview.cpp
-khtml_part.cpp
-khtml_run.cpp
-khtml_factory.cpp
-khtml_settings.cc
-khtml_events.cpp
-khtml_ext.cpp
-khtml_pagecache.cpp
-khtml_iface.cc
-khtml_printsettings.cpp
-khtmlimage.cpp
-kjserrordlg.cpp
-${khtmlxml_STAT_SRCS}
-${khtmlhtml_STAT_SRCS}
-${khtmlrender_STAT_SRCS}
-${khtmlcss_STAT_SRCS}
-${khtmlmisc_STAT_SRCS}
-${kjs_html_STAT_SRCS}
-${khtmldom_STAT_SRCS}
-${khtmlimload_STAT_SRCS}
-${decoders_STAT_SRCS}
-${kjava_STAT_SRCS}
-)
+   khtmlview.cpp
+   khtml_part.cpp
+   khtml_run.cpp
+   khtml_factory.cpp
+   khtml_settings.cc
+   khtml_events.cpp
+   khtml_ext.cpp
+   khtml_pagecache.cpp
+   khtml_iface.cc
+   khtml_printsettings.cpp
+   khtmlimage.cpp
+   kjserrordlg.cpp
+   ${khtmlxml_STAT_SRCS}
+   ${khtmlhtml_STAT_SRCS}
+   ${khtmlrender_STAT_SRCS}
+   ${khtmlcss_STAT_SRCS}
+   ${khtmlmisc_STAT_SRCS}
+   ${kjs_html_STAT_SRCS}
+   ${khtmldom_STAT_SRCS}
+   ${khtmlimload_STAT_SRCS}
+   ${decoders_STAT_SRCS}
+   ${kjava_STAT_SRCS}
+   )
 
 kde4_automoc(${khtml_LIB_SRCS})
 
-kde4_add_ui_files(khtml_LIB_SRCS
- kjserrordlgbase.ui
- htmlpageinfo.ui
-)
+kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
-set( khtml_DCOP_SKEL_SRCS
-khtml_iface.h
-)
-
-kde4_add_dcop_skels(khtml_LIB_SRCS ${khtml_DCOP_SKEL_SRCS})
+kde4_add_dcop_skels(khtml_LIB_SRCS khtml_iface.h )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 

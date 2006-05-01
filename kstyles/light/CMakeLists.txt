@@ -1,8 +1,7 @@
 kde4_header()
 
 project(kstyle-light)
-ADD_DEFINITIONS(-DQT_PLUGIN)
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+add_definitions(-DQT_PLUGIN)
 
 
 ########### next target ###############

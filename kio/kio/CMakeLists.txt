@@ -1,12 +1,8 @@
 kde4_header()
 
-if(FAM_FOUND)
-   set(HAVE_FAM 1)
-else(FAM_FOUND)
-   set(HAVE_FAM 0)
-endif(FAM_FOUND)
+macro_bool_to_01(FAM_FOUND HAVE_FAM)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdirwatch.h )
+configure_file(config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdirwatch.h )
 
 ########### install files ###############
 install_files( /include/kio FILES connection.h          slaveinterface.h slave.h slaveconfig.h   ../uiserver_stub.h        sessiondata.h global.h passdlg.h     netaccess.h job.h scheduler.h          jobclasses.h paste.h slavebase.h    progressbase.h defaultprogress.h    statusbarprogress.h tcpslavebase.h     forwardingslavebase.h   observer.h chmodjob.h          authinfo.h   ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h    metainfojob.h davjob.h renamedlg.h skipdlg.h)

@@ -1,14 +1,11 @@
 kde4_header()
 
-include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}  )
+include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
 
 ########### next target ###############
 
-set(kabc_ldapkio_LIB_SRCS
-resourceldapkio.cpp
-resourceldapkioconfig.cpp
-)
+set(kabc_ldapkio_LIB_SRCS resourceldapkio.cpp resourceldapkioconfig.cpp )
 
 kde4_automoc(${kabc_ldapkio_LIB_SRCS})
 

@@ -2,7 +2,7 @@ kde4_header()
 
 project(kdefx)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-processor.h )
+configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-processor.h )
 
 include_directories( ${QT_INCLUDES} )
 if(WIN32)

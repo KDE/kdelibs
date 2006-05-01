@@ -7,14 +7,10 @@ check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
 check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
 
 macro_optional_find_package(PCRE)
-if(PCRE_FOUND)
-   set(HAVE_PCREPOSIX 1)
-else(PCRE_FOUND)
-   set(HAVE_PCREPOSIX 0)
-endif(PCRE_FOUND)
+macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
 # Generate global.h
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
+configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
@@ -42,21 +38,21 @@ endif(PCRE_FOUND)
 
 set(CREATE_HASH_TABLE ${CMAKE_CURRENT_SOURCE_DIR}/create_hash_table )
 
-macro(CREATE_LUT _in_FILE _out_FILE _dep_FILE)
+macro(CREATE_LUT _srcs_LIST _in_FILE _out_FILE _dep_FILE)
 
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-      COMMAND ${PERL_EXECUTABLE}
-      ARGS ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} -i > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} -i > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} )
+   set( ${_srcs_LIST}  ${${_srcs_LIST}} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE})
 endmacro(CREATE_LUT)
 
-create_lut(date_object.cpp date_object.lut.h date_object.cpp)
-create_lut(number_object.cpp number_object.lut.h number_object.cpp)
-create_lut(string_object.cpp string_object.lut.h string_object.cpp)
-create_lut(array_object.cpp array_object.lut.h array_object.cpp)
-create_lut(math_object.cpp math_object.lut.h math_object.cpp)
-create_lut(regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
-create_lut(keywords.table lexer.lut.h lexer.cpp)
+create_lut(kjs_LIB_SRCS date_object.cpp date_object.lut.h date_object.cpp)
+create_lut(kjs_LIB_SRCS number_object.cpp number_object.lut.h number_object.cpp)
+create_lut(kjs_LIB_SRCS string_object.cpp string_object.lut.h string_object.cpp)
+create_lut(kjs_LIB_SRCS array_object.cpp array_object.lut.h array_object.cpp)
+create_lut(kjs_LIB_SRCS math_object.cpp math_object.lut.h math_object.cpp)
+create_lut(kjs_LIB_SRCS regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
+create_lut(kjs_LIB_SRCS keywords.table lexer.lut.h lexer.cpp)
 
 set(kjs_LIB_SRCS
    ustring.cpp
@@ -118,23 +114,23 @@ install_targets(${LIB_INSTALL_DIR} kjs )
 if(KDE4_BUILD_TESTS)
 
    ########### testkjs_static ###############
-   
+
    set(testkjs_static_SRCS testkjs.cpp )
-   
+
    kde4_automoc(${testkjs_static_SRCS})
-   
+
    kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
-   
+
    target_link_libraries(testkjs_static  ${KDE4_KDECORE_LIBS} kjs)
-   
+
    ########### testkjs ###############
-   
+
    set(testkjs_SRCS testkjs.cpp )
-   
+
    kde4_automoc(${testkjs_SRCS})
-   
+
    kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
-   
+
    target_link_libraries(testkjs  ${KDE4_KDECORE_LIBS} kjs )
 
 endif(KDE4_BUILD_TESTS)

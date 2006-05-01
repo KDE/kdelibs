@@ -44,7 +44,7 @@ add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 link_directories(${KDE4_LIB_DIR})
 
 # for including config.h and for includes like <kparts/foo.h>
-include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
+include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdefx)
 
 # Those variables for include_directories() are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
@@ -64,20 +64,14 @@ set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts ${KDE4_KIO_INCLUDES})
 
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
-if(ACL_FOUND)
-        set(HAVE_LIBACL 1)
-        set(HAVE_POSIX_ACL 1)
-else(ACL_FOUND)
-        set(HAVE_LIBACL 0)
-        set(HAVE_POSIX_ACL 0)
-endif(ACL_FOUND)
+macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 
 # create config.h
 include(ConfigureChecks.cmake)
-
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-svgicons.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-svgicons.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )

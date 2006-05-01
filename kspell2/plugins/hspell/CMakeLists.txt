@@ -1,14 +1,11 @@
 kde4_header()
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${HSPELL_INCLUDE_DIR}  )
+include_directories( ${HSPELL_INCLUDE_DIR}  )
 
 
 ########### next target ###############
 
-set(kspell_hspell_PART_SRCS
-   kspell_hspellclient.cpp
-   kspell_hspelldict.cpp
-)
+set(kspell_hspell_PART_SRCS kspell_hspellclient.cpp kspell_hspelldict.cpp )
 
 kde4_automoc(${kspell_hspell_PART_SRCS})
 
