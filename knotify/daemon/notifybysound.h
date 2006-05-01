@@ -35,6 +35,7 @@ class NotifyBySound : public KNotifyPlugin
 		
 		virtual QString optionName() { return "Sound"; };
 		virtual void notify(int id , KNotifyConfig *config);
+		virtual void close(int id);
 		
 	private:
 		class Private;
@@ -43,11 +44,10 @@ class NotifyBySound : public KNotifyPlugin
 		
 	public:
 		void setVolume( int v );
-		bool event( QEvent *e );
 
 		
 	private Q_SLOTS:
-		void slotPlayerProcessExited( KProcess *proc );
+		void slotSoundFinished(int id);
 };
 
 #endif

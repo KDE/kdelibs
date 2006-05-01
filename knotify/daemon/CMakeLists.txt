@@ -1,10 +1,5 @@
 kde4_header()
 
-if(AKODE_FOUND)
-  include_directories( ${AKODE_INCLUDE_DIR} )
-endif(AKODE_FOUND)
-
-
 ########### next target ###############
 
 set(knotify_KDEINIT_SRCS
@@ -29,10 +24,8 @@ kde4_add_dcop_skels(knotify_KDEINIT_SRCS ${knotify_DCOP_SKEL_SRCS})
 
 kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_knotify  ${KDE4_KDECORE_LIBS} kdeui )
-if (AKODE_FOUND)
-  target_link_libraries(kdeinit_knotify  ${AKODE_LIBRARIES} )
-endif (AKODE_FOUND)
+target_link_libraries(kdeinit_knotify  ${KDE4_KDECORE_LIBS} kdeui phononcore )
+
 
 install_targets(${LIB_INSTALL_DIR} kdeinit_knotify )
 

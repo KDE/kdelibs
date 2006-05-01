@@ -27,108 +27,58 @@
 #include "notifybysound.h"
 #include "knotifyconfig.h"
 
-#include <kdebug.h>
-
-
-
-// C headers
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 // QT headers
-#include <qdatetime.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qpixmap.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
-#include <qhash.h>
+#include <QHash>
+#include <QSignalMapper>
+#include <QFileInfo>
 
 // KDE headers
-#include <dcopclient.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocale.h>
-#include <kmessagebox.h>
-#include <kpassivepopup.h>
-#include <kiconloader.h>
-#include <kmacroexpander.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
-#include <kuniqueapplication.h>
-#include <kwin.h>
 #include <kurl.h>
-
 #include <config.h>
+#include <kinstance.h>
 
-// #include <kdemm/factory.h>
-#if defined(HAVE_AKODE)
-#include <string>
-#include <akode/player.h>
-#endif
+// Phonon headers
+#include <phonon/mediaobject.h>
+#include <phonon/audiopath.h>
+#include <phonon/audiooutput.h>
 
-class SoundManager;
 
 class NotifyBySound::Private 
 {
 	public:
-		QString externalPlayer;
-		KProcess *externalPlayerProc;
-
-		int externalPlayerEventId;
-
-#if defined(HAVE_AKODE)
-		aKode::Player player;
-		QString sink;
-		SoundManager *manager;
-		int akodePlayerEventId;
-#endif
 		bool useExternal;
-		bool useKDEMM;
+		QString externalPlayer;
+		
+		QHash<int, KProcess *> processes;
+		QHash<int, Phonon::MediaObject*> mediaobjects;
+		QSignalMapper *signalmapper;
+		
 		int volume;
-		QTimer *playTimer;
-		QString startupEvents;
-};
 
-#if defined(HAVE_AKODE)
-class SoundManager : public aKode::Player::Manager {
-	NotifyBySound *d;
-	public:
-		SoundManager(NotifyBySound* p) : d(p) {};
-		virtual ~SoundManager(){}
-		void eofEvent() {
-			QApplication::postEvent( d, new QCustomEvent( 3001 ) );
-		}
-		void errorEvent() {
-			QApplication::postEvent( d, new QCustomEvent( 3002 ) );
-		}
 };
-#endif
 
 
 NotifyBySound::NotifyBySound(QObject *parent) : KNotifyPlugin(parent),d(new Private)
 {
-	d->externalPlayerProc = 0;
-#if defined(HAVE_AKODE)
-	d->manager = 0;
-#endif
-	d->useKDEMM = true;
-	d->playTimer = 0;
+	d->signalmapper = new QSignalMapper(this);
+	connect(d->signalmapper, SIGNAL(mapped(int)), this, SLOT(slotSoundFinished(int)));
+	
+	Phonon::AudioPath* ap = new Phonon::AudioPath( this );
+	Phonon::AudioOutput * ao = new Phonon::AudioOutput( this );
+	ao->setCategory( Phonon::NotificationCategory  );
+	ap->addOutput( ao );
+
 	loadConfig();
 }
 
 
 NotifyBySound::~NotifyBySound()
 {
-#if defined(HAVE_AKODE)
-    d->player.close();
-    delete d->manager;
-#endif
-	delete d->externalPlayerProc;
 	delete d;
 }
 
@@ -142,7 +92,7 @@ void NotifyBySound::loadConfig()
 	d->externalPlayer = kc->readPathEntry("External player");
 
 	// try to locate a suitable player if none is configured
-	if ( d->externalPlayer.isEmpty() ) {
+	if ( d->useExternal && d->externalPlayer.isEmpty() ) {
 		QStringList players;
 		players << "wavplay" << "aplay" << "auplay" << "artsplay" << "akodeplay";
 		QStringList::Iterator it = players.begin();
@@ -151,16 +101,6 @@ void NotifyBySound::loadConfig()
 			++it;
 		}
 	}
-#if defined(HAVE_AKODE)
-    else
-	{
-		d->manager = new SoundManager(this);
-		d->player.setManager(d->manager);
-		// try to open suitable sink
-		d->sink = kc->readPathEntry("aKode sink", "auto");
-		d->useKDEMM = d->player.open(d->sink.toAscii().data());
-	}
-#endif
 	// load default volume
 	d->volume = kc->readEntry( "Volume", 100 );
 }
@@ -179,7 +119,6 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		return;
 	}
 
-	bool external = d->useExternal && !d->externalPlayer.isEmpty();
     // get file name
 	if ( QFileInfo(soundFile).isRelative() )
 	{
@@ -195,59 +134,32 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		finish( eventId );
 		return;
 	}
+	
+	kDebug() << k_funcinfo << " going to play " << soundFile << endl;
 
-//     kDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
-
-	if (!external)
+	if(!d->useExternal || d->externalPlayer.isEmpty())
 	{
-        //If we disabled audio, just return,
-		if (!d->useKDEMM)
-		{
-			finish( eventId );
-			return;
-		}
-
-		KUrl soundURL;
-		soundURL.setPath(soundFile);
-#if defined(HAVE_AKODE)
-		if (d->player.state() != aKode::Player::Open) 
-		{
-			finish( eventId );
-			return;
-		}
-
-		if (d->player.load(soundFile.toLocal8Bit().data())) {
-			d->player.play();
-			d->akodePlayerEventId = eventId;
-			return;
-		}
-#endif
-        finish( eventId );
-        return;
-//	return KDE::Multimedia::Factory::self()->playSoundEvent(soundFile);
-
-	} else if(!d->externalPlayer.isEmpty()) {
+		
+		Phonon::MediaObject *media = new Phonon::MediaObject( this );
+		connect( media, SIGNAL( finished() ), d->signalmapper, SLOT(map()));
+		d->signalmapper->setMapping( media , eventId );
+		
+		media->setUrl( KUrl::fromPath(soundFile) );
+		media->play();
+		d->mediaobjects.insert(eventId , media);
+	}
+	else
+	{		
         // use an external player to play the sound
-		KProcess *proc = d->externalPlayerProc;
-		if (!proc)
-		{
-			proc = d->externalPlayerProc = new KProcess;
-			connect( proc, SIGNAL( processExited( KProcess * )),
-					 SLOT( slotPlayerProcessExited( KProcess * )));
-		}
-		if (proc->isRunning())
-		{
-			finish( eventId );
-			return ; // Skip
-		}
+		KProcess *proc = new KProcess( this );
+		connect( proc, SIGNAL(processExited(KProcess*)), d->signalmapper,  SLOT(map()));
+		d->signalmapper->setMapping( proc , eventId );
+		
 		proc->clearArguments();
 		(*proc) << d->externalPlayer << QFile::encodeName( soundFile );
-		d->externalPlayerEventId = eventId;
 		proc->start(KProcess::NotifyOnExit);
 		return;
 	}
-
-	finish( eventId );
 }
 
 
@@ -258,47 +170,38 @@ void NotifyBySound::setVolume( int volume )
 	d->volume = volume;
 }
 
-void NotifyBySound::slotPlayerProcessExited( KProcess * )
-{
-	finish(  d->externalPlayerEventId );
-}
 
-bool NotifyBySound::event( QEvent *e )
+void NotifyBySound::slotSoundFinished(int id)
 {
-#if defined(HAVE_AKODE)
-	switch( e->type() )
+	kDebug() << k_funcinfo << id << endl;
+	if(d->mediaobjects.contains(id))
 	{
-		case 3001: // eof
-		case 3002: // error
-			d->player.stop();
-			d->player.unload();
-			finish( d->akodePlayerEventId );
-			return true;
-		default:
-			break;
+		d->mediaobjects[id]->deleteLater();
+		d->mediaobjects.remove(id);
 	}
-#endif
-	return QObject::event(e);
+	if(d->processes.contains(id))
+	{
+		d->processes[id]->deleteLater();
+		d->processes.remove(id);
+	}
+	finish(id);
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void NotifyBySound::close(int id)
+{
+	if(d->mediaobjects.contains(id))
+	{
+		d->mediaobjects[id]->stop();
+		d->mediaobjects[id]->deleteLater();
+		d->mediaobjects.remove(id);
+	}
+	if(d->processes.contains(id))
+	{
+		d->processes[id]->kill();
+		d->processes[id]->deleteLater();
+		d->processes.remove(id);
+	}
+}
 
 #include "notifybysound.moc"
