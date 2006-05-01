@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,24 +16,28 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
-#define Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
 
-#include "base.h"
+#ifndef PHONON_FRAME_H
+#define PHONON_FRAME_H
 
-class QObject;
-class QString;
+#include "videodataoutput.h"
+#include <QByteArray>
 
 namespace Phonon
 {
-namespace Ifaces
-{
-	class AbstractVideoOutput : public Base
+	class VideoFrame
 	{
 		public:
-			virtual void* internal1( void* = 0 ) { return 0; }
+			Phonon::VideoDataOutput::Format format;
+			QByteArray data;
+			int width;
+			int height;
+			//zrusin: both format, depth and bpp are necessary. eg format could be rgb32, depth
+			//        32 and bpp 8 ir format rgb32, depth 24 and bpp 8...
+			int depth;
+			int bpp;
 	};
-}} //namespace Phonon::Ifaces
+} // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
+#endif // PHONON_FRAME_H

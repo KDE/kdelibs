@@ -55,6 +55,7 @@ namespace Ifaces
 
 	class VideoPath;
 	class VideoEffect;
+	class VideoDataOutput;
 
 	/**
 	 * \brief Central class for all Phonon backends.
@@ -134,6 +135,11 @@ namespace Ifaces
 			 * Creates an instance of VideoEffect
 			 */
 			virtual VideoEffect*      createVideoEffect( int effectId, QObject* parent ) = 0;
+
+			/**
+			 * Creates an instance of VideoDataOutput
+			 */
+			virtual VideoDataOutput*  createVideoDataOutput( QObject* parent ) = 0;
 
 			/**
 			 * Tells whether the backend is audio only or can handle video files
@@ -267,6 +273,36 @@ namespace Ifaces
 			 * \return The index of the associated VideoCaptureSource object.
 			 */
 			virtual int audioCaptureDeviceVideoIndex( int index ) const = 0;
+
+			/**
+			 * Returns the indexes of the available video output devices. An associated
+			 * name and description can be found using videoOutputDeviceName
+			 * and videoOutputDeviceDescription.
+			 *
+			 * \return The indexes of the available output devices.
+			 *
+			 * \see videoOutputDeviceName
+			 * \see videoOutputDeviceDescription
+			 */
+			virtual QSet<int> videoOutputDeviceIndexes() const = 0;
+
+			/**
+			 * Returns the name of the output device.
+			 *
+			 * \param index A value out of videoOutputDeviceIndexes()
+			 *
+			 * \return The name of this output device.
+			 */
+			virtual QString videoOutputDeviceName( int index ) const = 0;
+
+			/**
+			 * Returns a description for the output device.
+			 *
+			 * \param index A value out of videoOutputDeviceIndexes()
+			 *
+			 * \return The description for this output device.
+			 */
+			virtual QString videoOutputDeviceDescription( int index ) const = 0;
 
 			/**
 			 * Returns the indexes of the available capture sources. An associated

@@ -56,8 +56,12 @@ void VideoEffectPrivate::createIface()
 	if( iface_ptr )
 		return;
 	K_Q( VideoEffect );
-	setIface( Factory::self()->createVideoEffect( type, q ) );
-	q->setupIface();
+	Ifaces::VideoEffect* iface = Factory::self()->createVideoEffect( type, q );
+	if( iface )
+	{
+		setIface( iface );
+		q->setupIface();
+	}
 }
 
 VideoEffectDescription VideoEffect::type() const
@@ -70,8 +74,10 @@ QList<EffectParameter> VideoEffect::parameterList() const
 {
 	K_D( const VideoEffect );
 	QList<EffectParameter> ret;
-	// create an iface object if possible
-	if( const_cast<VideoEffect*>( this )->iface() )
+	// there should be an iface object, but better be safe for those backend
+	// switching corner-cases: when the backend switches the new backend might
+	// not support this effect -> no iface object
+	if( d->iface() )
 	{
 		ret = d->iface()->parameterList();
 		for( int i = 0; i < ret.size(); ++i )

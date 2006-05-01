@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,24 +16,25 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
-#define Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
 
-#include "base.h"
+#ifndef PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
+#define PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
 
-class QObject;
-class QString;
+#include <phonon/videoframe.h>
 
 namespace Phonon
 {
-namespace Ifaces
+namespace Fake
 {
-	class AbstractVideoOutput : public Base
-	{
-		public:
-			virtual void* internal1( void* = 0 ) { return 0; }
-	};
-}} //namespace Phonon::Ifaces
 
-// vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
+class AbstractVideoOutput
+{
+	public:
+		virtual ~AbstractVideoOutput() {}
+		virtual void processFrame( Phonon::VideoFrame& frame ) = 0;
+};
+
+}} //namespace Phonon::Fake
+
+#endif // PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
+// vim: sw=4 ts=4 noet

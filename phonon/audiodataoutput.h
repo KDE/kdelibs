@@ -55,6 +55,9 @@ namespace Phonon
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioDataOutput )
+		Q_ENUMS( Channel Format )
+		Q_PROPERTY( Format format READ format WRITE setFormat )
+		Q_PROPERTY( int dataSize READ dataSize WRITE setDataSize )
 		PHONON_HEIR( AudioDataOutput )
 		public:
 			/**
@@ -116,8 +119,8 @@ namespace Phonon
 			 * is often enough to do simple interpolation or even drop/duplicate
 			 * samples.
 			 *
-			 * \return The sample rate as reported by the backend. If an error
-			 * occurs -1 is returned.
+			 * \return The sample rate as reported by the backend. If the
+			 * backend is unavailable -1 is returned.
 			 */
 			int sampleRate() const;
 
@@ -148,7 +151,7 @@ namespace Phonon
 			 *
 			 * If format is set to FloatFormat the signal is not emitted at all.
 			 *
-			 * \param data The vector holding the data.
+			 * \param data A mapping of Channel to a vector holding the audio data.
 			 */
 			void dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<qint16> >& data );
 
@@ -158,7 +161,7 @@ namespace Phonon
 			 *
 			 * If format is set to IntegerFormat the signal is not emitted at all.
 			 *
-			 * \param data The vector holding the data.
+			 * \param data A mapping of Channel to a vector holding the audio data.
 			 */
 			void dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<float> >& data );
 
@@ -166,7 +169,7 @@ namespace Phonon
 			 * This signal is emitted before the last dataReady signal of a
 			 * media is emitted.
 			 * 
-			 * If, for example, a playback of a media file has finished and the
+			 * If, for example, the playback of a media file has finished and the
 			 * last audio data of that file is going to be passed with the next
 			 * dataReady signal, and only the 28 first samples of the data
 			 * vector are from that media file endOfMedia will be emitted right

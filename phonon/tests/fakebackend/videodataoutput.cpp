@@ -16,36 +16,48 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_FAKE_VIDEOEFFECT_H
-#define Phonon_FAKE_VIDEOEFFECT_H
 
-#include <QObject>
-#include <phonon/ifaces/videoeffect.h>
-#include <phonon/videoframe.h>
+#include "videodataoutput.h"
+#include <kdebug.h>
 
 namespace Phonon
 {
 namespace Fake
 {
-	class VideoEffect : public QObject, virtual public Ifaces::VideoEffect
-	{
-		Q_OBJECT
-		public:
-			VideoEffect( int effectId, QObject* parent );
-			virtual ~VideoEffect();
-			virtual float value( int parameterId ) const;
-			virtual void setValue( int parameterId, float newValue );
+VideoDataOutput::VideoDataOutput( QObject* parent )
+	: QObject( parent )
+{
+}
 
-			// fake specific:
-			virtual void processFrame( Phonon::VideoFrame& frame );
+VideoDataOutput::~VideoDataOutput()
+{
+}
 
-		public:
-			virtual QObject* qobject() { return this; }
-			virtual const QObject* qobject() const { return this; }
+Phonon::VideoDataOutput::Format VideoDataOutput::format() const
+{
+	return m_format;
+}
 
-		private:
-	};
+int VideoDataOutput::frameRate() const
+{
+	return 25;
+}
+
+void VideoDataOutput::setFormat( Phonon::VideoDataOutput::Format format )
+{
+	m_format = format;
+}
+
+void VideoDataOutput::processFrame( Phonon::VideoFrame& frame )
+{
+	if( frame.format == m_format )
+		emit frameReady( frame );
+	else
+		kError( 604 ) << "format conversion not implemented" << endl;
+	// TODO emit endOfMedia
+}
+
 }} //namespace Phonon::Fake
 
-// vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_FAKE_VIDEOEFFECT_H
+#include "videodataoutput.moc"
+// vim: sw=4 ts=4 noet

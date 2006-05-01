@@ -137,7 +137,7 @@ class PHONONCORE_EXPORT EffectParameter
 		float defaultValue() const;
 
 		float value() const;
-		void setValue( float ) const;
+		void setValue( float );
 
 		/**
 		 * Equality operator

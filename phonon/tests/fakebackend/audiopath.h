@@ -47,6 +47,7 @@ namespace Fake
 			virtual bool insertEffect( Ifaces::AudioEffect* newEffect, Ifaces::AudioEffect* insertBefore = 0 );
 			virtual bool removeEffect( Ifaces::AudioEffect* effect );
 
+			// fake specific
 			void processBuffer( const QVector<float>& buffer );
 
 		public:

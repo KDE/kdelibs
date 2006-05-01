@@ -43,6 +43,7 @@ namespace Ifaces
 
 	class VideoPath;
 	class VideoEffect;
+	class VideoDataOutput;
 }
 namespace Fake
 {
@@ -67,6 +68,7 @@ namespace Fake
 
 			virtual Ifaces::VideoPath*        createVideoPath( QObject* parent );
 			virtual Ifaces::VideoEffect*      createVideoEffect( int effectId, QObject* parent );
+			virtual Ifaces::VideoDataOutput*  createVideoDataOutput( QObject* parent );
 
 			virtual bool supportsVideo() const;
 			virtual bool supportsOSD() const;
@@ -83,6 +85,10 @@ namespace Fake
 			virtual QString audioCaptureDeviceName( int index ) const;
 			virtual QString audioCaptureDeviceDescription( int index ) const;
 			virtual int audioCaptureDeviceVideoIndex( int index ) const;
+
+			virtual QSet<int> videoOutputDeviceIndexes() const;
+			virtual QString videoOutputDeviceName( int index ) const;
+			virtual QString videoOutputDeviceDescription( int index ) const;
 
 			virtual QSet<int> videoCaptureDeviceIndexes() const;
 			virtual QString videoCaptureDeviceName( int index ) const;

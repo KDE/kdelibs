@@ -25,3 +25,10 @@
   streams, the stream selection should be put into the Producer class and
   optionally specify the Path so that different Paths connected to the same
   Producer can use different audio streams)
+
+- investigate datatypes: long could get problematic in some cases: quint64 or
+  qint64 could be better for some cases
+
+- don't crash:
+  - when no backend is available
+  - when an iface object isn't available

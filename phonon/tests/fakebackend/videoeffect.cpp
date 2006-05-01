@@ -41,6 +41,11 @@ void VideoEffect::setValue( int parameterId, float newValue )
 {
 }
 
+void VideoEffect::processFrame( Phonon::VideoFrame& frame )
+{
+	// do nothing
+}
+
 }} //namespace Phonon::Fake
 
 #include "videoeffect.moc"

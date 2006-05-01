@@ -16,46 +16,52 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_FAKE_VIDEOPATH_H
-#define Phonon_FAKE_VIDEOPATH_H
+#ifndef Phonon_FAKE_VIDEODATAOUTPUT_H
+#define Phonon_FAKE_VIDEODATAOUTPUT_H
 
-#include <QObject>
-#include <phonon/ifaces/videopath.h>
+#include "abstractvideooutput.h"
+#include <phonon/ifaces/videodataoutput.h>
 #include <phonon/videoframe.h>
-#include <QList>
+#include <QVector>
+#include <QByteArray>
+#include <QObject>
 
 namespace Phonon
 {
 namespace Fake
 {
-	class VideoEffect;
-	class AbstractVideoOutput;
-
-	class VideoPath : public QObject, virtual public Ifaces::VideoPath
+	/**
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
+	class VideoDataOutput : public QObject, virtual public Ifaces::VideoDataOutput, public Phonon::Fake::AbstractVideoOutput
 	{
 		Q_OBJECT
 		public:
-			VideoPath( QObject* parent );
-			virtual ~VideoPath();
+			VideoDataOutput( QObject* parent );
+			~VideoDataOutput();
 
-			// Operations:
-			virtual bool addOutput( Ifaces::AbstractVideoOutput* videoOutput );
-			virtual bool removeOutput( Ifaces::AbstractVideoOutput* videoOutput );
-			virtual bool insertEffect( Ifaces::VideoEffect* newEffect, Ifaces::VideoEffect* insertBefore = 0 );
-			virtual bool removeEffect( Ifaces::VideoEffect* effect );
+			virtual Phonon::VideoDataOutput::Format format() const;
+			virtual int frameRate() const;
+			virtual void setFormat( Phonon::VideoDataOutput::Format format );
 
-			// fake specific
-			void processFrame( Phonon::VideoFrame& frame );
+			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
+
+			// Fake specific:
+			virtual void processFrame( Phonon::VideoFrame& frame );
+
+		signals:
+			void frameReady( const Phonon::VideoFrame& frame );
+			void endOfMedia();
 
 		public:
 			virtual QObject* qobject() { return this; }
 			virtual const QObject* qobject() const { return this; }
 
 		private:
-			QList<VideoEffect*> m_effects;
-			QList<AbstractVideoOutput*> m_outputs;
+			Phonon::VideoDataOutput::Format m_format;
+			QByteArray m_pendingData;
 	};
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_FAKE_VIDEOPATH_H
+#endif // Phonon_FAKE_VIDEODATAOUTPUT_H

@@ -30,6 +30,7 @@
 #include <QStringList>
 #include <ktrader.h>
 #include <kservice.h>
+#include "videooutputdevice.h"
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -108,44 +109,23 @@ bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
 	}
 }
 
-QList<AudioOutputDevice> BackendCapabilities::availableAudioOutputDevices()
-{
-	const Ifaces::Backend* backend = Factory::self()->backend();
-	QList<AudioOutputDevice> ret;
-	if( backend )
-	{
-		QSet<int> deviceIndexes = backend->audioOutputDeviceIndexes();
-		foreach( int i, deviceIndexes )
-			ret.append( AudioOutputDevice::fromIndex( i ) );
-	}
-	return ret;
+#define availableDevicesImpl( classname ) \
+QList<classname> BackendCapabilities::available ## classname ## s() \
+{ \
+	const Ifaces::Backend* backend = Factory::self()->backend(); \
+	QList<classname> ret; \
+	if( backend ) \
+	{ \
+		QSet<int> deviceIndexes = backend->audioOutputDeviceIndexes(); \
+		foreach( int i, deviceIndexes ) \
+			ret.append( classname::fromIndex( i ) ); \
+	} \
+	return ret; \
 }
-
-QList<AudioCaptureDevice> BackendCapabilities::availableAudioCaptureDevices()
-{
-	const Ifaces::Backend* backend = Factory::self()->backend();
-	QList<AudioCaptureDevice> ret;
-	if( backend )
-	{
-		QSet<int> deviceIndexes = backend->audioCaptureDeviceIndexes();
-		foreach( int i, deviceIndexes )
-			ret.append( AudioCaptureDevice::fromIndex( i ) );
-	}
-	return ret;
-}
-
-QList<VideoCaptureDevice> BackendCapabilities::availableVideoCaptureDevices()
-{
-	const Ifaces::Backend* backend = Factory::self()->backend();
-	QList<VideoCaptureDevice> ret;
-	if( backend )
-	{
-		QSet<int> deviceIndexes = backend->videoCaptureDeviceIndexes();
-		foreach( int i, deviceIndexes )
-			ret.append( VideoCaptureDevice::fromIndex( i ) );
-	}
-	return ret;
-}
+availableDevicesImpl( AudioOutputDevice )
+availableDevicesImpl( AudioCaptureDevice )
+availableDevicesImpl( VideoOutputDevice )
+availableDevicesImpl( VideoCaptureDevice )
 
 QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
 {

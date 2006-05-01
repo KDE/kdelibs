@@ -129,7 +129,7 @@ float EffectParameter::value() const
 	return d->effect->value( d->parameterId );
 }
 
-void EffectParameter::setValue( float newValue ) const
+void EffectParameter::setValue( float newValue )
 {
 	Q_ASSERT( d->effect );
 	d->effect->setValue( d->parameterId, newValue );

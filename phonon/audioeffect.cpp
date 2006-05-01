@@ -55,8 +55,12 @@ void AudioEffectPrivate::createIface()
 	if( iface_ptr )
 		return;
 	K_Q( AudioEffect );
-	setIface( Factory::self()->createAudioEffect( type, q ) );
-	q->setupIface();
+	Ifaces::AudioEffect* iface = Factory::self()->createAudioEffect( type, q );
+	if( iface )
+	{
+		setIface( iface );
+		q->setupIface();
+	}
 }
 
 AudioEffectDescription AudioEffect::type() const
@@ -69,8 +73,10 @@ QList<EffectParameter> AudioEffect::parameterList() const
 {
 	K_D( const AudioEffect );
 	QList<EffectParameter> ret;
-	// create an iface object if possible
-	if( const_cast<AudioEffect*>( this )->iface() )
+	// there should be an iface object, but better be safe for those backend
+	// switching corner-cases: when the backend switches the new backend might
+	// not support this effect -> no iface object
+	if( d->iface() )
 	{
 		ret = d->iface()->parameterList();
 		for( int i = 0; i < ret.size(); ++i )

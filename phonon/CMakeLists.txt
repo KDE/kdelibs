@@ -34,6 +34,7 @@ set(phononcore_LIB_SRCS
 	namedescriptiontuplemodel.cpp
 	audiooutputdevice.cpp
 	audiocapturedevice.cpp
+	videooutputdevice.cpp
 	videocapturedevice.cpp
 	audioeffectdescription.cpp
 	videoeffectdescription.cpp
@@ -54,6 +55,7 @@ set(phononcore_LIB_SRCS
 	audiooutput.cpp
 	audiodataoutput.cpp
 	abstractvideooutput.cpp
+	videodataoutput.cpp
 	simpleplayer.cpp
 	backendcapabilities.cpp
 	factory.cpp
@@ -78,6 +80,7 @@ install_files( /include/phonon FILES
 	namedescriptiontuplemodel.h
 	audiooutputdevice.h
 	audiocapturedevice.h
+	videooutputdevice.h
 	videocapturedevice.h
 	audioeffectdescription.h
 	videoeffectdescription.h
@@ -99,6 +102,8 @@ install_files( /include/phonon FILES
 	audiooutput.h
 	audiodataoutput.h
 	abstractvideooutput.h
+	videoframe.h
+	videodataoutput.h
 	simpleplayer.h
 	backendcapabilities.h
 	phonondefs.h

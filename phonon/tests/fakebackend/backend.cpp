@@ -31,6 +31,7 @@
 #include <kgenericfactory.h>
 #include "volumefadereffect.h"
 #include <QSet>
+#include "videodataoutput.h"
 
 typedef KGenericFactory<Phonon::Fake::Backend, Phonon::Ifaces::Backend> FakeBackendFactory;
 K_EXPORT_COMPONENT_FACTORY( phonon_fake, FakeBackendFactory( "fakebackend" ) )
@@ -99,6 +100,11 @@ Ifaces::VideoPath*        Backend::createVideoPath( QObject* parent )
 Ifaces::VideoEffect*      Backend::createVideoEffect( int effectId, QObject* parent )
 {
 	return new VideoEffect( effectId, parent );
+}
+
+Ifaces::VideoDataOutput*  Backend::createVideoDataOutput( QObject* parent )
+{
+	return new VideoDataOutput( parent );
 }
 
 bool Backend::supportsVideo() const
@@ -194,6 +200,35 @@ int Backend::audioCaptureDeviceVideoIndex( int index ) const
 		default:
 			return -1;
 	}
+}
+
+QSet<int> Backend::videoOutputDeviceIndexes() const
+{
+	QSet<int> set;
+	set << 40000 << 40001 << 40002 << 40003;
+	return set;
+}
+
+QString Backend::videoOutputDeviceName( int index ) const
+{
+	switch( index )
+	{
+		case 40000:
+			return "XVideo";
+		case 40001:
+			return "XShm";
+		case 40002:
+			return "X11";
+		case 40003:
+			return "SDL";
+	}
+	return QString();
+}
+
+QString Backend::videoOutputDeviceDescription( int index ) const
+{
+	Q_UNUSED( index );
+	return QString(); // no description
 }
 
 QSet<int> Backend::videoCaptureDeviceIndexes() const

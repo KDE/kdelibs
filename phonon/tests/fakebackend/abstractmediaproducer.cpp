@@ -33,12 +33,14 @@ namespace Fake
 {
 static const int SAMPLE_RATE = 44100;
 static const float SAMPLE_RATE_FLOAT = 44100.0f;
+static const int FRAME_RATE = 25;
+static const int SAMPLES_PER_FRAME = SAMPLE_RATE / FRAME_RATE;
 
 AbstractMediaProducer::AbstractMediaProducer( QObject* parent )
 	: QObject( parent )
 	, m_state( Phonon::LoadingState )
 	, m_tickTimer( new QTimer( this ) )
-	, m_bufferSize( 512 )
+	, m_bufferSize( SAMPLES_PER_FRAME )//512 )
 	, m_lastSamplesMissing( 0 )
 	, m_position( 0.0f )
 	, m_frequency( 440.0f )
@@ -54,7 +56,7 @@ AbstractMediaProducer::~AbstractMediaProducer()
 
 void AbstractMediaProducer::setBufferSize( int size )
 {
-	m_bufferSize = size;
+	//m_bufferSize = size;
 }
 
 bool AbstractMediaProducer::addVideoPath( Ifaces::VideoPath* videoPath )
@@ -63,6 +65,8 @@ bool AbstractMediaProducer::addVideoPath( Ifaces::VideoPath* videoPath )
 	Q_ASSERT( videoPath );
 	VideoPath* vp = qobject_cast<VideoPath*>( videoPath->qobject() );
 	Q_ASSERT( vp );
+	Q_ASSERT( !m_videoPathList.contains( vp ) );
+	m_videoPathList.append( vp );
 	return true;
 }
 
@@ -82,6 +86,8 @@ void AbstractMediaProducer::removeVideoPath( Ifaces::VideoPath* videoPath )
 	Q_ASSERT( videoPath );
 	VideoPath* vp = qobject_cast<VideoPath*>( videoPath->qobject() );
 	Q_ASSERT( vp );
+	Q_ASSERT( m_videoPathList.contains( vp ) );
+	m_videoPathList.removeAll( vp );
 }
 
 void AbstractMediaProducer::removeAudioPath( Ifaces::AudioPath* audioPath )
@@ -230,6 +236,13 @@ void AbstractMediaProducer::emitTick()
 		tickInterval = m_tickInterval;
 	}
 	QVector<float> buffer( m_bufferSize );
+	VideoFrame frame;
+	frame.format = VideoDataOutput::Format_RGB32;
+	frame.width = 320;
+	frame.height = 240;
+	frame.depth = 24;
+	frame.bpp = 8;
+	frame.data.resize( frame.width * frame.height * 4 );
 
 	const int availableSamples = tickInterval * SAMPLE_RATE / 1000 + m_lastSamplesMissing;
 	const int bufferCount = availableSamples / m_bufferSize;
@@ -239,6 +252,9 @@ void AbstractMediaProducer::emitTick()
 		fillBuffer( &buffer );
 		foreach( AudioPath* ap, m_audioPathList )
 			ap->processBuffer( buffer );
+		fillFrameData( &frame );
+		foreach( VideoPath* vp, m_videoPathList )
+			vp->processFrame( frame );
 	}
 }
 
@@ -270,6 +286,21 @@ void AbstractMediaProducer::fillBuffer( QVector<float>* buffer )
 		if( m_position > TWOPI )
 			m_position -= TWOPI;
 	}
+}
+
+void AbstractMediaProducer::fillFrameData( Phonon::VideoFrame* frame )
+{
+	static quint32 frameCount = 0;
+	quint8* dataPtr = reinterpret_cast<quint8*>( frame->data.data() );
+	for( int y = 0; y < frame->height; ++y )
+		for( int x = 0; x < frame->width; ++x )
+		{
+			*dataPtr++ = static_cast<quint8>( 0xff );
+			*dataPtr++ = static_cast<quint8>( ( x + frameCount ) * 2 / 3 ); //red
+			*dataPtr++ = static_cast<quint8>( y + frameCount ); //green
+			*dataPtr++ = static_cast<quint8>( frameCount / 2 ); //blue
+		}
+	++frameCount;
 }
 
 }}

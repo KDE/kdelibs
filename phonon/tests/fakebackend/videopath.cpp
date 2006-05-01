@@ -19,6 +19,8 @@
 
 #include "videopath.h"
 #include "videoeffect.h"
+#include "abstractvideooutput.h"
+#include <phonon/ifaces/abstractvideooutput.h>
 
 namespace Phonon
 {
@@ -34,18 +36,24 @@ VideoPath::~VideoPath()
 {
 }
 
-bool VideoPath::addOutput( Ifaces::AbstractVideoOutput* videoOutput )
+bool VideoPath::addOutput( Ifaces::AbstractVideoOutput* videoOutputIface )
 {
-	Q_ASSERT( videoOutput );
-	Q_ASSERT( !m_outputs.contains( videoOutput ) );
-	m_outputs.append( videoOutput );
+	Q_ASSERT( videoOutputIface );
+	AbstractVideoOutput* vo = reinterpret_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface->internal1() );
+	// this should be changed to an "if( vo ) { ..." for production backends
+	Q_ASSERT( vo );
+	Q_ASSERT( !m_outputs.contains( vo ) );
+	m_outputs.append( vo );
 	return true;
 }
 
-bool VideoPath::removeOutput( Ifaces::AbstractVideoOutput* videoOutput )
+bool VideoPath::removeOutput( Ifaces::AbstractVideoOutput* videoOutputIface )
 {
-	Q_ASSERT( videoOutput );
-	Q_ASSERT( m_outputs.removeAll( videoOutput ) == 1 );
+	Q_ASSERT( videoOutputIface );
+	AbstractVideoOutput* vo = reinterpret_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface->internal1() );
+	// this should be changed to an "if( vo ) { ..." for production backends
+	Q_ASSERT( vo );
+	Q_ASSERT( m_outputs.removeAll( vo ) == 1 );
 	return true;
 }
 
@@ -78,6 +86,15 @@ bool VideoPath::removeEffect( Ifaces::VideoEffect* effect )
 		return true;
 	return false;
 }
+
+void VideoPath::processFrame( Phonon::VideoFrame& frame )
+{
+	foreach( VideoEffect* effect, m_effects )
+		effect->processFrame( frame ); //modifies the frame
+	foreach( AbstractVideoOutput* output, m_outputs )
+		output->processFrame( frame );
+}
+
 }}
 
 #include "videopath.moc"

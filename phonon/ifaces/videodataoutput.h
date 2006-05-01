@@ -16,24 +16,35 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
-#define Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
+#ifndef PHONON_IFACES_VIDEODATAOUTPUT_H
+#define PHONON_IFACES_VIDEODATAOUTPUT_H
 
-#include "base.h"
+#include "abstractvideooutput.h"
+#include "../videodataoutput.h"
 
-class QObject;
-class QString;
+template<class T> class QVector;
 
 namespace Phonon
 {
+	class IntDataConsumer;
+	class FloatDataConsumer;
 namespace Ifaces
 {
-	class AbstractVideoOutput : public Base
+	/**
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
+	class VideoDataOutput : virtual public AbstractVideoOutput
 	{
 		public:
-			virtual void* internal1( void* = 0 ) { return 0; }
+			virtual Phonon::VideoDataOutput::Format format() const = 0;
+			virtual int frameRate() const = 0;
+			virtual void setFormat( Phonon::VideoDataOutput::Format format ) = 0;
+
+		protected: //signals
+			virtual void frameReady( const Phonon::VideoFrame& frame ) = 0;
+			virtual void endOfMedia() = 0;
 	};
 }} //namespace Phonon::Ifaces
 
 // vim: sw=4 ts=4 tw=80 noet
-#endif // Phonon_IFACES_ABSTRACTVIDEOOUTPUTBASE_H
+#endif // PHONON_IFACES_VIDEODATAOUTPUT_H

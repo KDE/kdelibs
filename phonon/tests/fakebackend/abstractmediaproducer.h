@@ -24,11 +24,14 @@
 #include <QTime>
 #include <QList>
 #include "audiopath.h"
+#include "videopath.h"
 
 class QTimer;
 
 namespace Phonon
 {
+	class VideoFrame;
+
 namespace Fake
 {
 	class KDE_EXPORT AbstractMediaProducer : public QObject, virtual public Ifaces::AbstractMediaProducer
@@ -64,6 +67,7 @@ namespace Fake
 
 		protected:
 			void fillBuffer( QVector<float>* buffer );
+			void fillFrameData( Phonon::VideoFrame* frame );
 			void setState( State );
 
 		protected Q_SLOTS:
@@ -76,6 +80,7 @@ namespace Fake
 			QTime m_startTime, m_pauseTime;
 			int m_bufferSize;
 			QList<AudioPath*> m_audioPathList;
+			QList<VideoPath*> m_videoPathList;
 			int m_lastSamplesMissing;
 
 			// for sound synthesis

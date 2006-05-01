@@ -42,6 +42,7 @@ namespace Phonon
 
 		class VideoEffect;
 		class VideoPath;
+		class VideoDataOutput;
 
 		class Backend;
 	}
@@ -137,6 +138,12 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * \return a pointer to the Ifaces::VideoEffect the backend provides
 		 */
 		Ifaces::VideoEffect* createVideoEffect( int effectId, QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::VideoDataOutput.
+		 *
+		 * \return a pointer to the Ifaces::VideoDataOutput the backend provides
+		 */
+		Ifaces::VideoDataOutput* createVideoDataOutput( QObject* parent = 0 );
 
 		/**
 		 * \return a pointer to the backend interface.

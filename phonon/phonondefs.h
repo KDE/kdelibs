@@ -273,8 +273,12 @@ void classname ## Private::createIface() \
 	if( iface_ptr ) \
 		return; \
 	K_Q( classname ); \
-	setIface( Factory::self()->create ## classname( q ) ); \
-	q->setupIface(); \
+	Ifaces::classname* iface = Factory::self()->create ## classname( q ); \
+	if( iface ) \
+	{ \
+		setIface( iface ); \
+		q->setupIface(); \
+	} \
 } \
 
 #define PHONON_HEIR_IMPL( classname, parentclass ) \
@@ -300,8 +304,12 @@ void classname ## Private::createIface() \
 	if( iface_ptr ) \
 		return; \
 	K_Q( classname ); \
-	setIface( Factory::self()->create ## classname( q ) ); \
-	q->setupIface(); \
+	Ifaces::classname* iface = Factory::self()->create ## classname( q ); \
+	if( iface ) \
+	{ \
+		setIface( iface ); \
+		q->setupIface(); \
+	} \
 }
 
 #endif // PHONONDEFS_H

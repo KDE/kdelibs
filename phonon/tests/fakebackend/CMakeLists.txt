@@ -1,23 +1,24 @@
 kde4_header()
 
-add_subdirectory( ui ) 
+add_subdirectory( ui )
 
 ########### next target ###############
 
-set(phonon_fake_PART_SRCS 
-   abstractmediaproducer.cpp 
-   abstractaudiooutput.cpp 
-   audiodataoutput.cpp 
+set(phonon_fake_PART_SRCS
+   abstractmediaproducer.cpp
+   abstractaudiooutput.cpp
+   audiodataoutput.cpp
    delayaudioeffect.cpp
-   audioeffect.cpp 
-   audiooutput.cpp 
-   audiopath.cpp 
-   bytestream.cpp 
-   mediaobject.cpp 
-   avcapture.cpp 
-   videoeffect.cpp 
-   videopath.cpp 
-   backend.cpp 
+   audioeffect.cpp
+   audiooutput.cpp
+   audiopath.cpp
+   bytestream.cpp
+   mediaobject.cpp
+   avcapture.cpp
+   videoeffect.cpp
+   videopath.cpp
+   videodataoutput.cpp
+   backend.cpp
    volumefadereffect.cpp )
 
 kde4_automoc(${phonon_fake_PART_SRCS})

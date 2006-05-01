@@ -25,6 +25,7 @@
 #include "ifaces/audiodataoutput.h"
 #include "ifaces/videopath.h"
 #include "ifaces/videoeffect.h"
+#include "ifaces/videodataoutput.h"
 #include "ifaces/backend.h"
 #include "ifaces/mediaobject.h"
 #include "ifaces/avcapture.h"
@@ -238,6 +239,7 @@ FACTORY_IMPL( AudioOutput )
 FACTORY_IMPL( AudioDataOutput )
 FACTORY_IMPL( VideoPath )
 FACTORY_IMPL_1ARG( int, VideoEffect )
+FACTORY_IMPL( VideoDataOutput )
 
 #undef FACTORY_IMPL
 

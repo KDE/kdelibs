@@ -19,6 +19,9 @@
 
 #include "videowidget.h"
 #include <QPalette>
+#include <QImage>
+#include <QPainter>
+#include <kdebug.h>
 
 namespace Phonon
 {
@@ -36,6 +39,29 @@ VideoWidget::VideoWidget( QWidget* parent )
 	setBackgroundRole( QPalette::Window );
 	setAutoFillBackground( true );
 	setMinimumSize( 100, 100 );
+}
+
+void VideoWidget::processFrame( Phonon::VideoFrame& frame )
+{
+	switch( frame.format )
+	{
+		case Phonon::VideoDataOutput::Format_RGB32:
+			{
+				QImage image( reinterpret_cast<uchar*>( frame.data.data() ), frame.width, frame.height, QImage::Format_RGB32 );
+				image = image.scaled( size(), Qt::KeepAspectRatio, Qt::FastTransformation );
+				m_pixmap = QPixmap::fromImage( image );
+				repaint();
+			}
+			break;
+		default:
+			kError( 604 ) << "video frame format not implemented" << endl;
+	}
+}
+
+void VideoWidget::paintEvent( QPaintEvent* ev )
+{
+	QPainter p( this );
+	p.drawPixmap( 0, 0, m_pixmap );
 }
 
 }}} //namespace Phonon::Ui::Fake

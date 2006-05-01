@@ -71,8 +71,12 @@ void VideoWidgetPrivate::createIface()
 	if( iface_ptr )
 		return;
 	K_Q( VideoWidget );
-	setIface( Factory::self()->createVideoWidget( q ) );
-	q->setupIface();
+	Ifaces::VideoWidget* iface = Factory::self()->createVideoWidget( q );
+	if( iface )
+	{
+		setIface( iface );
+		q->setupIface();
+	}
 }
 
 void VideoWidget::setFullScreen( bool newFullScreen )
