@@ -12,7 +12,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-dnssd.h.cmake ${CMAKE_CURRENT_
 
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
-include_directories( ${DNSSD_INCLUDE_DIR} )
+if (HAVE_DNSSD)
+  include_directories( ${DNSSD_INCLUDE_DIR} )
+endif (HAVE_DNSSD)
 
 
 ########### next target ###############
@@ -35,7 +37,11 @@ kde4_add_kcfg_files(kdnssd_LIB_SRCS ${kdnssd_KCFG_SRCS})
 
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 
-target_link_libraries(kdnssd ${KDE4_KDECORE_LIBS} ${DNSSD_LIBRARIES} )
+if (HAVE_DNSSD)
+  target_link_libraries(kdnssd ${KDE4_KDECORE_LIBS} ${DNSSD_LIBRARIES} )
+else (HAVE_DNSSD)
+  target_link_libraries(kdnssd ${KDE4_KDECORE_LIBS})
+endif (HAVE_DNSSD)
 
 set_target_properties(kdnssd PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install_targets(${LIB_INSTALL_DIR} kdnssd )
