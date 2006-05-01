@@ -24,7 +24,6 @@
 
 #include <kcursor.h>
 #include <kdebug.h>
-#include <kcmenumngr.h>
 #include <kfontdialog.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -539,7 +538,8 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
 }
 
 void KEdit::installRBPopup(QMenu *p) {
-  KContextMenuManager::insert( this, p );
+  setContextMenuPolicy(Qt::ActionsContextMenu);
+  addActions(p->actions());
 }
 
 void KEdit::selectFont(){
