@@ -2,8 +2,12 @@ kde4_header()
 
 project(kcert)
 
+include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_BINARY_DIR}/kio/kssl )
 include_directories( ${KDE4_KIO_INCLUDES} )
-include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_BINARY_DIR}/kio/kssl ${OPENSSL_INCLUDE_DIR} )
+
+if(OPENSSL_FOUND)
+include_directories( ${OPENSSL_INCLUDE_DIR} )
+endif(OPENSSL_FOUND)
 
 ########### next target ###############
 
