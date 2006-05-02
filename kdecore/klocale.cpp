@@ -1505,16 +1505,16 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   return QDate(); // invalid date
 }
 
-  QTime KLocale::readTime(const QString &intstr, bool *ok) const
-  {
-    QTime _time;
-    _time = readTime(intstr, WithSeconds, ok);
-    if (_time.isValid()) return _time;
-    return readTime(intstr, WithoutSeconds, ok);
-  }
+QTime KLocale::readTime(const QString &intstr, bool *ok) const
+{
+  QTime _time;
+  _time = readTime(intstr, WithSeconds, ok);
+  if (_time.isValid()) return _time;
+  return readTime(intstr, WithoutSeconds, ok);
+}
 
-  QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
-  {
+QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) const
+{
     QString str = intstr.simplified().toLower();
     QString Format = timeFormat().simplified();
     if (flags & WithoutSeconds)
@@ -1616,8 +1616,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 
  error:
   if (ok) *ok = false;
-  // ######## KDE4: remove this
-  return QTime(-1, -1, -1); // return invalid date if it didn't work
+  return QTime(); // return invalid date if it didn't work
 }
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuration) const
