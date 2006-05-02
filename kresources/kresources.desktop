@@ -172,4 +172,5 @@ Keywords[vi]=tài nguyên,tài nguyên konnector,tài nguyên liên lạc,tài n
 Keywords[zh_CN]=resources,konnector resource,contact resource,calendar resource,notes resource,imap资源,konnector 资源,联系人资源,日历资源,备忘资源
 
 Categories=Qt;KDE;X-KDE-settings-components;
+OnlyShowIn=KDE;
 
