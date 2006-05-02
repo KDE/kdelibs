@@ -467,7 +467,7 @@ void DefaultProgress::slotKeepOpenToggled(bool keepopen)
 void DefaultProgress::checkDestination(const KUrl& dest) {
   bool ok = true;
   if ( dest.isLocalFile() ) {
-      QString path = dest.path( -1 );
+      QString path = dest.path( KUrl::RemoveTrailingSlash );
       QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
       for ( QStringList::Iterator it = tmpDirs.begin() ; ok && it != tmpDirs.end() ; ++it )
           if ( path.contains( *it ) )

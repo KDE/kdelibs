@@ -305,21 +305,40 @@ public:
    * @return true if the URL has a host
    **/
   bool hasHost() const { return !host().isEmpty(); }
+  
+  /**
+   * Options to be used in adjustPath
+   */
+  enum AdjustPathOption
+  {
+    /**
+     * strips any trailing '/'
+     */
+    RemoveTrailingSlash,
+ 
+    /**
+     * Do not change the path.
+     */
+    LeaveTrailingSlash,
+    
+    /**
+     * adds a trailing '/' if there is none yet
+     */
+    AddTrailingSlash
+  };
+
 
   /**
-   * @param _trailing May be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
-   *                  a trailing '/' if there is none yet and 0 returns the
-   *                  path unchanged. If the URL has no path, then no '/' is added
-   *                  anyway. And on the other side: If the path is "/", then this
-   *                  character won't be stripped. Reason: "ftp://weis\@host" means something
-   *                  completely different than "ftp://weis\@host/". So adding or stripping
-   *                  the '/' would really alter the URL, while "ftp://host/path" and
-   *                  "ftp://host/path/" mean the same directory.
-   *
+   * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath
+
    * @return The current decoded path. This does not include the query. Can
    *         be QString() if no path is set.
    */
-  QString path( int _trailing ) const;
+  QString path( AdjustPathOption trailing ) const;
+  
+  /**
+   * same as QURL::path()
+   */
   QString path() const { return QUrl::path(); }
 
   /// \reimp so that KUrl u; u.setPath(path); implies "file" protocol.
@@ -332,27 +351,49 @@ public:
   bool hasPath() const { return !path().isEmpty(); }
 
   /**
+   * Options to be used in cleanPath
+   */
+  enum CleanPathOption
+  {
+    /**
+     * if set, occurences of consecutive directory separators
+     * (e.g. /foo//bar) are cleaned up as well.  (set by default)
+     */
+    SimplifyDirSeparators = 0x00,
+    
+    /**
+     * The opposite of SimplifyDirSeparators.
+     */
+    KeepDirSeparators = 0x01
+  };
+  
+  Q_DECLARE_FLAGS(CleanPathOptions,CleanPathOption)
+
+  /**
    * Resolves "." and ".." components in path.
    * Some servers seem not to like the removal of extra '/'
    * even though it is against the specification in RFC 2396.
    *
-   * @param cleanDirSeparator if true, occurrences of consecutive
-   * directory separators (e.g. /foo//bar) are cleaned up as well.
+   * @param options use KeepDirSeparators if you don't want to remove consecutive 
+   *                occurences of directory separator
    */
-  void cleanPath(bool cleanDirSeparator = true);
+  void cleanPath(const CleanPathOption& options = SimplifyDirSeparators);
 
+  
   /**
    * Add or remove a trailing slash to/from the path.
-   * @param _trailing May be -1, 0, or +1. -1 strips any trailing '/', +1 adds
-   *                  a trailing '/' if there is none yet and 0 returns the
-   *                  path unchanged. If the URL has no path, then no '/' is added
-   *                  anyway. And on the other side: If the path is "/", then this
-   *                  character won't be stripped. Reason: "ftp://weis\@host" means something
-   *                  completely different than "ftp://weis\@host/". So adding or stripping
-   *                  the '/' would really alter the URL, while "ftp://host/path" and
-   *                  "ftp://host/path/" mean the same directory.
+   * 
+   * If the URL has no path, then no '/' is added
+   * anyway. And on the other side: If the path is "/", then this
+   * character won't be stripped. Reason: "ftp://weis\@host" means something
+   * completely different than "ftp://weis\@host/". So adding or stripping
+   * the '/' would really alter the URL, while "ftp://host/path" and
+   * "ftp://host/path/" mean the same directory.
+   * 
+   * @param trailing  RemoveTrailingSlash strips any trailing '/' and 
+   *                  AddTrailingSlash adds  a trailing '/' if there is none yet 
    */
-  void adjustPath(int _trailing);
+  void adjustPath(AdjustPathOption trailing);
 
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
@@ -371,21 +412,31 @@ public:
 #endif
 
   /**
+   * Option to be used in encodedPathAndQuery 
+   **/
+  enum EncodedPathAndQueryOption
+  {
+    /**
+     * Permit empty path (default)
+     */
+    PermitEmptyPath=0x00,
+    /**
+     * If set to true then an empty path is substituted by "/"
+     * (this is the opposite of PermitEmptyPath)
+     */
+    AvoidEmptyPath=0x01
+  };
+  Q_DECLARE_FLAGS( EncodedPathAndQueryOptions, EncodedPathAndQueryOption)
+
+  /**
    * Returns the encoded path and the query.
    *
-   * @param _trailing May be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
-   *                  a trailing '/' if there is none yet and 0 returns the
-   *                  path unchanged. If the URL has no path, then no '/' is added
-   *                  anyway. And on the other side: If the path is "/", then this
-   *                  character won't be stripped. Reason: "ftp://weis\@host" means something
-   *                  completely different than "ftp://weis\@host/". So adding or stripping
-   *                  the '/' would really alter the URL, while "ftp://host/path" and
-   *                  "ftp://host/path/" mean the same directory.
-   * @param _no_empty_path If set to true then an empty path is substituted by "/".
+   * @param trailing  add or remove a trailing '/', see adjustPath
+   * @param options a set of flags from EncodedPathAndQueryOption
    * @return The concatenation of the encoded path , '?' and the encoded query.
    *
    */
-  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false ) const;
+  QString encodedPathAndQuery( AdjustPathOption trailing = LeaveTrailingSlash, const EncodedPathAndQueryOptions &options = PermitEmptyPath ) const;
 
   /**
    * @param query This is considered to be encoded. This has a good reason:
@@ -507,7 +558,8 @@ public:
    *
    * @param CaseInsensitiveKeys normalize query keys to lowercase.
    **/
-  enum QueryItemsOptions { CaseInsensitiveKeys = 1 };
+  enum QueryItemsOption { CaseInsensitiveKeys = 1 };
+  Q_DECLARE_FLAGS(QueryItemsOptions,QueryItemsOption)
 
   /**
    * Returns the list of query items as a map mapping keys to values.
@@ -516,12 +568,12 @@ public:
    * decodes "+" into " " in the value, supports CaseInsensitiveKeys,
    * and returns a different data type.
    *
-   * @param options any of QueryItemsOptions <em>or</em>ed together.
+   * @param options any of QueryItemsOption <em>or</em>ed together.
    *
    * @return the map of query items or the empty map if the url has no
    * query items.
    */
-  QMap< QString, QString > queryItems( int options = 0 ) const;
+  QMap< QString, QString > queryItems( const QueryItemsOptions& options = 0 ) const;
   // #### TODO port the above queryItems to look more like QUrl's
   //using QUrl::queryItems; // temporary
 
@@ -563,32 +615,57 @@ public:
    *             with '/' or not.
    */
   void setFileName( const QString&_txt );
+  
+  /**
+   * option to be used in fileName and directory
+   */
+  enum DirectoryOption
+  {
+    /**
+     * This tells whether a trailing '/' should be ignored. 
+     * 
+     * If the flag is not set, for both <tt>file:///hallo/torben/</tt> and <tt>file:///hallo/torben</tt>
+     * the fileName is "torben" and the path is "hallo"
+     *
+     * If the flag is set, then everything behind the last '/'is considered to be the filename. 
+     * So "hallo/torben" will be the path and the filename will be empty.
+     */
+    ObeyTrailingSlash = 0x01,
+    /**
+     * tells whether the returned result should end with '/' or not.
+     * If the flag is set, '/' is added to the end of the path
+     * 
+     * If the path is empty or just "/" then this flag has no effect.
+     * 
+     * This option should only be used in directory(), it has no effect in fileName()
+     */
+    AppendTrailingSlash = 0x02,
+    /**
+     * Opposite of ObeyTailingSlash  (default)
+     */
+    IgnoreTrailingSlash = 0x00
+
+  };
+  Q_DECLARE_FLAGS(DirectoryOptions,DirectoryOption)
+  
 
   /**
    * Returns the filename of the path.
-   * @param _ignore_trailing_slash_in_path This tells whether a trailing '/' should
-   *        be ignored. This means that the function would return "torben" for
-   *        <tt>file:///hallo/torben/</tt> and <tt>file:///hallo/torben</tt>.
-   *        If the flag is set to false, then everything behind the last '/'
-   *        is considered to be the filename.
+   * @param options a set of DirectoryOption flags.  (StripTrailingSlashFromResult has no effect)
    * @return The filename of the current path. The returned string is decoded. Null
    *         if there is no file (and thus no path).
    */
-  QString fileName( bool _ignore_trailing_slash_in_path = true ) const;
+  QString fileName( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 
   /**
    * Returns the directory of the path.
-   * @param _strip_trailing_slash_from_result tells whether the returned result should end with '/' or not.
-   *                                          If the path is empty or just "/" then this flag has no effect.
-   * @param _ignore_trailing_slash_in_path means that <tt>file:///hallo/torben</tt> and
-   *                                       <tt>file:///hallo/torben/"</tt> would both return <tt>/hallo/</tt>
-   *                                       or <tt>/hallo</tt> depending on the other flag
+   * @param options a set of DirectoryOption flags
    * @return The directory part of the current path. Everything between the last and the second last '/'
    *         is returned. For example <tt>file:///hallo/torben/</tt> would return "/hallo/torben/" while
-   *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded. QString() is returned when there is no path.
+   *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded.
+   *         QString() is returned when there is no path.
    */
-  QString directory( bool _strip_trailing_slash_from_result = true,
-		     bool _ignore_trailing_slash_in_path = true ) const;
+  QString directory( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 
   /**
    * Set the directory to @p dir, leaving the filename empty.
@@ -619,14 +696,12 @@ public:
    * the password of the URL. If you want to show the URL to the
    * user, use prettyURL().
    *
-   * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
-   *                  a trailing '/' if there is none yet and 0 returns the
-   *                  path unchanged.
+   * @param trailing use to add or remove a trailing slash to/from the path. See adjustPath
    * @return The complete URL, with all escape sequences intact, encoded
    * in a given charset.
    * @see prettyURL()
    */
-  QString url( int _trailing = 0 ) const;
+  QString url( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
   /**
    * Returns the URL as string in human-friendly format.
@@ -634,16 +709,13 @@ public:
    * \code
    * http://localhost:8080/test.cgi?test=hello world&name=fred
    * \endcode
-   * @param _trailing -1 to strip a trailing '/' from the path, +1 adds
-   *                  a trailing '/' if there is none yet and 0 returns the
-   *                  path unchanged.
-   * KDE4: +1 is not supported anymore
+   * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath.
    *
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters. Password will not be shown.
    * @see url()
    */
-  QString prettyURL( int _trailing = 0 ) const;
+  QString prettyURL( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
   /**
    * Return the URL as a string, which will be either the URL (as prettyURL
@@ -699,15 +771,32 @@ public:
    */
   KDE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
 
+  
+  /**
+   * flags to be used in url compartators function like equal, or urlcmp
+   **/
+  enum EqualsOption
+  {
+    /**
+     * ignore trailing '/' characters
+     */
+    CompareWithoutTrailingSlash = 0x01,
+    /**
+     * disables comparison of HTML-style references.
+     */    
+    CompareWithoutFragment = 0x02
+  };
+  Q_DECLARE_FLAGS(EqualsOptions,EqualsOption)
+  
   /**
    * Compares this url with @p u.
    * @param u the URL to compare this one with.
-   * @param ignore_trailing set to true to ignore trailing '/' characters.
+   * @param options a set of EqualsOption flags
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
    */
-  bool equals( const KUrl &u, bool ignore_trailing = false ) const; // TODO KDE4: use QUrl::FormattingOptions to add support for ignore_ref too
+  bool equals( const KUrl &u, const EqualsOptions& options=0 ) const;
 
   /**
    * Checks whether the given URL is parent of this URL.
@@ -715,7 +804,7 @@ public:
    * @return true if this url is a parent of @p u (or the same URL as @p u)
    *
    */
-  bool isParentOf( const KUrl& u ) const { return QUrl::isParentOf( u ) || equals( u, true ); }
+  bool isParentOf( const KUrl& u ) const { return QUrl::isParentOf( u ) || equals( u, CompareWithoutTrailingSlash ); }
     // (this overload of the QUrl method allows to use the implicit KUrl constructors)
     // but also the equality test
 
@@ -904,6 +993,12 @@ private:
   KUrlPrivate* d;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EncodedPathAndQueryOptions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::CleanPathOptions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::QueryItemsOptions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EqualsOptions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::DirectoryOptions);
+
 /**
  * \relates KUrl
  * Compares URLs. They are parsed, split and compared.
@@ -922,9 +1017,8 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  *
  * @param _url1 A reference URL
  * @param _url2 A URL that will be compared with the reference URL
- * @param _ignore_trailing Described in KUrl::cmp
- * @param _ignore_ref If true, disables comparison of HTML-style references.
+ * @param options a set of KUrl::EqualsOption flags
  */
-KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref ); // KDE4 TODO: new method with QUrl::FormattingOptions instead of two bools
+KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); 
 
 #endif

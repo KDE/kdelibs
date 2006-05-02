@@ -200,7 +200,7 @@ void KHTMLPartIface::saveDocument(const QString &destination)
 {
     KUrl srcURL( part->url() );
 
-    if ( srcURL.fileName(false).isEmpty() )
+	if ( srcURL.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
         srcURL.setFileName( "index.html" );
 
     KIO::MetaData metaData;

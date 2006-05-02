@@ -660,7 +660,7 @@ bool KHTMLPart::openURL( const KUrl &url )
   if ( url.hasRef() && !isFrameSet )
   {
     bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
-    if (noReloadForced && urlcmp( url.url(), m_url.url(), true, true ))
+    if (noReloadForced && urlcmp( url.url(), m_url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ))
     {
         kDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url() << endl;
         m_url = url;
@@ -2407,7 +2407,7 @@ void KHTMLPart::slotRedirect()
     return;
   }
 
-  if ( urlcmp( u, m_url.url(), true, true ) )
+  if ( urlcmp( u, m_url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment) )
   {
     args.metaData().insert("referrer", d->m_pageReferrer);
   }
@@ -3962,9 +3962,8 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   if (cURL.hasRef() && (!hasTarget || target == "_self"))
   {
     KUrl curUrl = this->url();
-    if (urlcmp(cURL.url(), curUrl.url(),
-              false,  // ignore trailing / diff, IE does, even if FFox doesn't
-              true))  // don't care if the ref changes!
+    if (urlcmp(cURL.url(), curUrl.url(), KUrl::CompareWithoutFragment) )
+               // don't ignore trailing '/' diff, IE does, even if FFox doesn't
     {
       m_url = cURL;
       emit d->m_extension->openURLNotify();
@@ -4109,7 +4108,7 @@ void KHTMLPart::slotSaveDocument()
 {
   KUrl srcURL( m_url );
 
-  if ( srcURL.fileName(false).isEmpty() )
+  if ( srcURL.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
     srcURL.setFileName( "index" + defaultExtension() );
 
   KIO::MetaData metaData;
@@ -4181,7 +4180,7 @@ void KHTMLPart::slotSaveFrame()
 
     KUrl srcURL( frame->url() );
 
-    if ( srcURL.fileName(false).isEmpty() )
+	if ( srcURL.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
         srcURL.setFileName( "index" + defaultExtension() );
 
     KIO::MetaData metaData;
@@ -4353,7 +4352,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   if ( child->m_run )
     child->m_run->abort();
 
-  if ( child->m_part && !args.reload && urlcmp( child->m_part->url().url(), url.url(), true, true ) )
+  if ( child->m_part && !args.reload && urlcmp( child->m_part->url().url(), url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ) )
     args.serviceType = child->m_serviceType;
 
   child->m_args = args;
@@ -4953,7 +4952,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
     else						// look at "extension" of link
     {
-      const QString fname(popupURL.fileName(false));
+		const QString fname(popupURL.fileName(KUrl::ObeyTrailingSlash));
       if (!fname.isEmpty() && !popupURL.hasRef() && popupURL.query().isEmpty())
       {
         KMimeType::Ptr pmt = KMimeType::findByPath(fname,0,true);

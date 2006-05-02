@@ -192,7 +192,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         if( dirOnlyMode() && !m_recurseChildren && currItem->isLocalFile( ) && currItem->isDir() )
         {
             KUrl url = currItem->url();
-            QString filename = url.directory( false, true ) + url.fileName();
+            QString filename = url.directory( KUrl::ObeyTrailingSlash ) + url.fileName();
             /* do the stat trick of Carsten. The problem is, that the hardlink
              *  count only contains directory links. Thus, this method only seem
              * to work in dir-only mode */
@@ -295,7 +295,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
         }
 
         kDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
-        if( m_lastFoundURL.equals(it->url(), true ))
+        if( m_lastFoundURL.equals(it->url(), KUrl::CompareWithoutTrailingSlash ))
         {
           m_lastFoundURL = KUrl();
           m_lastFoundItem = 0L;
@@ -354,7 +354,7 @@ void KFileTreeBranch::deleteChildrenOf( Q3ListViewItem *parent )
 
 void KFileTreeBranch::slotRedirect( const KUrl& oldUrl, const KUrl&newUrl )
 {
-    if( oldUrl.equals( m_startURL, true ))
+  if( oldUrl.equals( m_startURL, KUrl::CompareWithoutTrailingSlash ))
     {
         m_startURL = newUrl;
     }
@@ -364,12 +364,12 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
 {
     KFileTreeViewItem *resultItem = 0;
 
-    if( m_startURL.equals(url, true) )
+    if( m_startURL.equals(url, KUrl::CompareWithoutTrailingSlash) )
     {
         kDebug(250) << "findByURL: Returning root as a parent !" << endl;
         resultItem = m_root;
     }
-    else if( m_lastFoundURL.equals( url, true ))
+    else if( m_lastFoundURL.equals( url, KUrl::CompareWithoutTrailingSlash ))
     {
         kDebug(250) << "findByURL: Returning from lastFoundURL!" << endl;
         resultItem = m_lastFoundItem;
@@ -427,7 +427,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
               it != m_openChildrenURLs.end(); ++it )
         {
             /* it is only interesting that the url _is_in_ the list. */
-            if( (*it).equals( url, true ) )
+          if( (*it).equals( url, KUrl::CompareWithoutTrailingSlash ) )
                 wantRecurseUrl = true;
         }
 

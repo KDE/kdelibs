@@ -353,8 +353,8 @@ void KAuthorized::allowURLAction(const QString &action, const KUrl &_baseURL, co
      return;
 
   d->urlActionRestrictions.append( URLActionRule
-        ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(-1),
-                  _destURL.protocol(), _destURL.host(), _destURL.path(-1), true));
+      ( action, _baseURL.protocol(), _baseURL.host(), _baseURL.path(KUrl::RemoveTrailingSlash),
+        _destURL.protocol(), _destURL.host(), _destURL.path(KUrl::RemoveTrailingSlash), true));
 }
 
 bool KAuthorized::authorizeURLAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)

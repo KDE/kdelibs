@@ -316,8 +316,8 @@ public:
 
 	QString protocol() const { return m_kurl->protocol(); }
 	// The directory with a trailing '/'
-	QString dir() const { return m_kurl->directory(false, false); }
-	QString file() const { return m_kurl->fileName(false); }
+        QString dir() const { return m_kurl->directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash); }
+	QString file() const { return m_kurl->fileName(KUrl::ObeyTrailingSlash); }
 
 	// The initial, unparsed, url, as a string.
 	QString url() const { return m_url; }
@@ -389,7 +389,7 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 		else
 		{
 			KUrl base = KUrl::fromPathOrURL( cwd );
-			base.adjustPath(+1);
+                        base.adjustPath(KUrl::AddTrailingSlash);
 
 			if ( !QDir::isRelativePath(url_copy) ||
 			     url_copy.at(0) == QLatin1Char('~') ||
@@ -976,7 +976,7 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 	if ( !url_dir.isValid()
 	     || !KProtocolInfo::supportsListing( url_dir )
 	     || ( !man_or_info
-	          && ( url_dir.directory(false,false).isEmpty()
+                     && ( url_dir.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash).isEmpty()
 	               || ( isAutoCompletion()
 	                    && !d->url_auto_completion ) ) ) ) {
 		return false;
@@ -985,7 +985,7 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 	url_dir.setFileName(QString()); // not really nesseccary, but clear the filename anyway...
 
 	// Remove escapes
-	QString directory = unescape( url_dir.directory( false, false ) );
+        QString directory = unescape( url_dir.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash) );
 
 	url_dir.setPath( directory );
 

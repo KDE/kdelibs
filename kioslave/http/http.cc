@@ -669,7 +669,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   m_request.doProxy = m_bUseProxy;
   m_request.davData.depth = stat ? 0 : 1;
   if (!stat)
-     m_request.url.adjustPath(+1);
+     m_request.url.adjustPath(KUrl::AddTrailingSlash);
 
   retrieveContent( true );
 
@@ -711,7 +711,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
       if ( thisURL.isValid() ) {
         // don't list the base dir of a listDir()
-        if ( !stat && thisURL.path(+1).length() == url.path(+1).length() )
+        if ( !stat && thisURL.path(KUrl::AddTrailingSlash).length() == url.path(KUrl::AddTrailingSlash).length() )
           continue;
 
         entry.insert( KIO::UDS_NAME, thisURL.fileName() );
@@ -2303,12 +2303,12 @@ bool HTTPProtocol::httpOpen()
       u.setHost( m_state.hostname );
       if (m_state.port != m_iDefaultPort)
          u.setPort( m_state.port );
-      u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(0,true) );
+      u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash,KUrl::AvoidEmptyPath) );
       header += u.url();
     }
     else
     {
-      header += m_request.url.encodedPathAndQuery(0, true);
+      header += m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash,KUrl::AvoidEmptyPath);
     }
 
     header += " HTTP/1.1\r\n"; /* start header */
@@ -5556,7 +5556,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response
   // Calcualte H(A2)
   authStr = info.method;
   authStr += ':';
-  authStr += m_request.url.encodedPathAndQuery(0, true).toLatin1();
+  authStr += m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash,KUrl::AvoidEmptyPath).toLatin1();
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
@@ -5784,7 +5784,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     bool send = true;
 
     // Determine the path of the request url...
-    QString requestPath = m_request.url.directory(false, false);
+    QString requestPath = m_request.url.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash);
     if (requestPath.isEmpty())
       requestPath = "/";
 
@@ -5800,7 +5800,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       if (m_request.port > 0 && u.port() > 0)
         send &= (m_request.port == u.port());
 
-      QString digestPath = u.directory (false, false);
+      QString digestPath = u.directory (0);
       if (digestPath.isEmpty())
         digestPath = "/";
 
@@ -5838,7 +5838,7 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
   auth += info.nonce;
 
   auth += "\", uri=\"";
-  auth += m_request.url.encodedPathAndQuery(0, true);
+  auth += m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash,KUrl::AvoidEmptyPath);
 
   auth += "\", algorithm=\"";
   auth += info.algorithm;

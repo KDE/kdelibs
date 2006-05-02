@@ -748,7 +748,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       else
         path = properties->kurl().prettyURL();
     } else {
-      path = properties->currentDir().path(1) + properties->defaultName();
+      path = properties->currentDir().path(KUrl::AddTrailingSlash) + properties->defaultName();
       directory = properties->currentDir().prettyURL();
     }
 
@@ -1390,7 +1390,7 @@ void KFilePropsPlugin::applyIconChanges()
 
     if (S_ISDIR(properties->item()->mode()))
     {
-      path = properties->kurl().path(1) + QString::fromLatin1(".directory");
+      path = properties->kurl().path(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
       // don't call updateUrl because the other tabs (i.e. permissions)
       // apply to the directory, not the .directory file.
     }
@@ -1508,7 +1508,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   d->cbRecursive = 0L;
   grpCombo = 0L; grpEdit = 0;
   usrEdit = 0L;
-  QString path = properties->kurl().path(-1);
+  QString path = properties->kurl().path(KUrl::RemoveTrailingSlash);
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
   bool isTrash = ( properties->kurl().protocol().toLower() == "trash" );

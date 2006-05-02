@@ -213,7 +213,7 @@ QByteArray K3URLDrag::encodedData( const char* mime ) const
     {
         QStringList uris;
         for (Q3StrListIterator it(m_urls); *it; ++it)
-           uris.append(stringToUrl(*it).url(0)); // was using ",4" - the mib for latin1
+           uris.append(stringToUrl(*it).url()); // was using ",4" - the mib for latin1
 
         QByteArray s = uris.join( "\n" ).toLatin1();
         if( uris.count() > 1 )
@@ -266,7 +266,7 @@ QString K3URLDrag::urlToString(const KUrl &url)
     if (url.isLocalFile())
     {
 #if 1
-        return url.url(0 /*, KGlobal::locale()->fileEncodingMib()*/);
+        return url.url(/*0 , KGlobal::locale()->fileEncodingMib()*/);
 #else
         // According to the XDND spec, file:/ URLs for DND must have
         // the hostname part. But in really it just breaks many apps,
@@ -288,7 +288,7 @@ QString K3URLDrag::urlToString(const KUrl &url)
         return url.path();
     }
 
-    return url.url(0 /*, 106*/); // 106 is mib enum for utf8 codec
+    return url.url(/*0 , 106*/); // 106 is mib enum for utf8 codec
 }
 
 // deprecated ctor

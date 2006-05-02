@@ -489,7 +489,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     else
       domain = host;
 
-    path = reqUrl->path(1);
+    path = reqUrl->path(KUrl::AddTrailingSlash);
     filename = reqUrl->fileName();
     dir =  path + filename;
 

@@ -455,7 +455,7 @@ void KUrlTest::testPathAndQuery()
 
   KUrl kde( "http://www.kde.org" );
   QCOMPARE( kde.encodedPathAndQuery(), QString( "" ) );
-  QCOMPARE( kde.encodedPathAndQuery(0, true/*no empty path*/), QString( "/" ) );
+  QCOMPARE( kde.encodedPathAndQuery( KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath ), QString( "/" ) );
 
   KUrl theKow( "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25" );
   QCOMPARE( theKow.encodedPathAndQuery(), QString( "/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25" ) );
@@ -531,7 +531,7 @@ void KUrlTest::testSetFileName() // and addPath
 
   // cdUp code
   KUrl lastUrl = lst.last();
-  QString dir = lastUrl.directory( true, true );
+  QString dir = lastUrl.directory();
   QCOMPARE(  dir, QString("/dir1/dir2") );
 }
 
@@ -542,25 +542,25 @@ void KUrlTest::testDirectory()
   qDebug( "URL is %s", qPrintable( udir.url() ) );
   QCOMPARE( udir.path(), QString("/home/dfaure/file.txt") );
   QCOMPARE( udir.url(), QString("file:///home/dfaure/file.txt") );
-  QCOMPARE( udir.directory(false,false), QString("/home/dfaure/") );
-  QCOMPARE( udir.directory(true,false), QString("/home/dfaure") );
+  QCOMPARE( udir.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash), QString("/home/dfaure/") );
+  QCOMPARE( udir.directory(KUrl::ObeyTrailingSlash), QString("/home/dfaure") );
 
   KUrl u2( QByteArray("file:///home/dfaure/") );
   // not ignoring trailing slash
-  QCOMPARE( u2.directory(false,false), QString("/home/dfaure/") );
-  QCOMPARE( u2.directory(true,false), QString("/home/dfaure") );
+  QCOMPARE( u2.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash), QString("/home/dfaure/") );
+  QCOMPARE( u2.directory(KUrl::ObeyTrailingSlash), QString("/home/dfaure") );
   // ignoring trailing slash
-  QCOMPARE( u2.directory(false,true), QString("/home/") );
-  QCOMPARE( u2.directory(true,true), QString("/home") );
+  QCOMPARE( u2.directory(KUrl::AppendTrailingSlash), QString("/home/") );
+  QCOMPARE( u2.directory(), QString("/home") );
 
   // cleanPath() tests (before cd() since cd uses that)
   u2.cleanPath();
   QCOMPARE( u2.url(), QString("file:///home/dfaure/") );
   u2.addPath( "/..//foo" );
   QCOMPARE( u2.url(), QString("file:///home/dfaure/..//foo") );
-  u2.cleanPath(false);
+  u2.cleanPath(KUrl::KeepDirSeparators);
   QCOMPARE( u2.url(), QString("file:///home//foo") );
-  u2.cleanPath(true);
+  u2.cleanPath(KUrl::SimplifyDirSeparators);
   QCOMPARE( u2.url(), QString("file:///home/foo") );
 
   // cd() tests
@@ -654,51 +654,51 @@ void KUrlTest::testRelativeURL()
 void KUrlTest::testAdjustPath()
 {
     KUrl url1("file:///home/kde/");
-    url1.adjustPath(0);
+    url1.adjustPath( KUrl::LeaveTrailingSlash );
     QCOMPARE(  url1.path(), QString("/home/kde/" ) );
-    url1.adjustPath(-1);
+    url1.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE(  url1.path(), QString("/home/kde" ) );
-    url1.adjustPath(-1);
+    url1.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE(  url1.path(), QString("/home/kde" ) );
-    url1.adjustPath(1);
+    url1.adjustPath(KUrl::AddTrailingSlash);
     QCOMPARE(  url1.path(), QString("/home/kde/" ) );
 
     KUrl url2("file:///home/kde//");
-    url2.adjustPath(0);
+    url2.adjustPath(KUrl::LeaveTrailingSlash);
     QCOMPARE(  url2.path(), QString("/home/kde//" ) );
-    url2.adjustPath(-1);
+    url2.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE(  url2.path(), QString("/home/kde" ) );
-    url2.adjustPath(1);
+    url2.adjustPath(KUrl::AddTrailingSlash);
     QCOMPARE(  url2.path(), QString("/home/kde/" ) );
 
     KUrl ftpurl1("ftp://ftp.kde.org/");
-    ftpurl1.adjustPath(0);
+    ftpurl1.adjustPath(KUrl::LeaveTrailingSlash);
     QCOMPARE(  ftpurl1.path(), QString("/" ) );
-    ftpurl1.adjustPath(-1);
+    ftpurl1.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE(  ftpurl1.path(), QString("/" ) );
 
     KUrl ftpurl2("ftp://ftp.kde.org///");
-    ftpurl2.adjustPath(0);
+    ftpurl2.adjustPath(KUrl::LeaveTrailingSlash);
     QCOMPARE(  ftpurl2.path(), QString("///" ) );
-    ftpurl2.adjustPath(-1); // should remove all but trailing slash
+    ftpurl2.adjustPath(KUrl::RemoveTrailingSlash); // should remove all but trailing slash
     QCOMPARE(  ftpurl2.path(), QString("/" ) );
-    ftpurl2.adjustPath(1);
+    ftpurl2.adjustPath(KUrl::AddTrailingSlash);
     QCOMPARE(  ftpurl2.path(), QString("/" ) );
 
     // Equivalent tests written by the KDirLister maintainer :)
 
     KUrl u3( QByteArray("ftp://brade@ftp.kde.org///") );
-    u3.adjustPath(-1);
+    u3.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE( u3.url(), QString("ftp://brade@ftp.kde.org/") );
 
     KUrl u4( QByteArray("ftp://brade@ftp.kde.org/kde///") );
-    u4.adjustPath(-1);
+    u4.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE( u4.url(), QString("ftp://brade@ftp.kde.org/kde") );
 
-    // applying adjustPath(-1) twice should not yield two different urls
+    // applying adjustPath(KUrl::RemoveTrailingSlash) twice should not yield two different urls
     // (follows from the above test)
     KUrl u5 = u4;
-    u5.adjustPath(-1);
+    u5.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE( u5.url(), u4.url() );
 }
 
@@ -1047,18 +1047,18 @@ void KUrlTest::testComparisons()
   bool same = str1 == str2;
   QVERIFY( same );
 
-  QVERIFY( urlcmp(ucmp1,ucmp2,true,false) ); //only slash difference, ignore_trailing
+  QVERIFY( urlcmp(ucmp1,ucmp2,KUrl::CompareWithoutTrailingSlash) ); //only slash difference, ignore_trailing
 
   QString ucmp3 = "ftp://ftp.de.kde.org/dir/#";
   QVERIFY( !urlcmp(ucmp2,ucmp3) ); // (only hash difference)
-  QVERIFY( urlcmp(ucmp2,ucmp3,false,true) ); // (only hash difference, ignore_ref)
-  QVERIFY( urlcmp(ucmp2,ucmp3,true,true) ); // (slash and hash difference, ignore_trailing, ignore_ref)
-  QVERIFY( urlcmp("","",false,true) ); // (empty, empty)
+  QVERIFY( urlcmp(ucmp2,ucmp3,KUrl::CompareWithoutFragment) ); // (only hash difference, ignore_ref)
+  QVERIFY( urlcmp(ucmp2,ucmp3,KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment) ); // (slash and hash difference, ignore_trailing, ignore_ref)
+  QVERIFY( urlcmp("","",KUrl::CompareWithoutFragment) ); // (empty, empty)
   QVERIFY( urlcmp("","") ); // (empty, empty)
   QVERIFY( !urlcmp("",ucmp1) ); // (empty, not empty)
-  QVERIFY( !urlcmp("",ucmp1,false,true) ); // (empty, not empty)
+  QVERIFY( !urlcmp("",ucmp1,KUrl::CompareWithoutFragment) ); // (empty, not empty)
   QVERIFY( !urlcmp("file",ucmp1) ); // (malformed, not empty)
-  QVERIFY( !urlcmp("file",ucmp1,false,true) ); // (malformed, not empty)
+  QVERIFY( !urlcmp("file",ucmp1,KUrl::CompareWithoutFragment) ); // (malformed, not empty)
 
   KUrl ftpUrl ( "ftp://ftp.de.kde.org" );
   QCOMPARE( ftpUrl.path(), QString());
@@ -1115,29 +1115,29 @@ void KUrlTest::testBrokenStuff()
   // Broken stuff
   KUrl waba1( "file:a" );
   QCOMPARE( waba1.path(), QString("a") );
-  QCOMPARE( waba1.fileName(false), QString("a") );
-  QCOMPARE( waba1.fileName(true), QString("a") );
-  QCOMPARE( waba1.directory(false, false), QString("") );
-  QCOMPARE( waba1.directory(true, false), QString("") );
-  QCOMPARE( waba1.directory(true, true), QString("") );
+  QCOMPARE( waba1.fileName(KUrl::ObeyTrailingSlash), QString("a") );
+  QCOMPARE( waba1.fileName(), QString("a") );
+  QCOMPARE( waba1.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash), QString("") );
+  QCOMPARE( waba1.directory(KUrl::ObeyTrailingSlash), QString("") );
+  QCOMPARE( waba1.directory(), QString("") );
 
   waba1 = "file:a/";
   QCOMPARE( waba1.path(), QString("a/") );
-  QCOMPARE( waba1.fileName(false), QString("") );
-  QCOMPARE( waba1.fileName(true), QString("a") );
-  QCOMPARE( waba1.directory(false, false), QString("a/") );
-  QCOMPARE( waba1.directory(true, false), QString("a") );
-  QCOMPARE( waba1.directory(true, true), QString("") );
+  QCOMPARE( waba1.fileName(KUrl::ObeyTrailingSlash), QString("") );
+  QCOMPARE( waba1.fileName(), QString("a") );
+  QCOMPARE( waba1.directory(KUrl::ObeyTrailingSlash | KUrl::AppendTrailingSlash), QString("a/") );
+  QCOMPARE( waba1.directory(KUrl::ObeyTrailingSlash), QString("a") );
+  QCOMPARE( waba1.directory(), QString("") );
 
   waba1 = "file:";
   QVERIFY( !waba1.isEmpty() );
   QVERIFY( waba1.isValid() ); // KDE3: was invalid. Now it's qurl with scheme="file".
   QCOMPARE( waba1.path(), QString("") );
-  QCOMPARE( waba1.fileName(false), QString("") );
-  QCOMPARE( waba1.fileName(true), QString("") );
-  QCOMPARE( waba1.directory(false, false), QString("") );
-  QCOMPARE( waba1.directory(true, false), QString("") );
-  QCOMPARE( waba1.directory(true, true), QString("") );
+  QCOMPARE( waba1.fileName(KUrl::ObeyTrailingSlash), QString("") );
+  QCOMPARE( waba1.fileName(), QString("") );
+  QCOMPARE( waba1.directory(KUrl::ObeyTrailingSlash | KUrl::AppendTrailingSlash), QString("") );
+  QCOMPARE( waba1.directory(KUrl::AppendTrailingSlash), QString("") );
+  QCOMPARE( waba1.directory(), QString("") );
   KUrl broken;
   broken.setPath( QString() );
   QVERIFY( !broken.isEmpty() );
@@ -1250,7 +1250,7 @@ void KUrlTest::testMailto()
 
   KUrl url1( "mailto:user@host.com" );
   QCOMPARE( url1.url(), QString("mailto:user@host.com") );
-  QCOMPARE( url1.url(0), QString("mailto:user@host.com") );
+  QCOMPARE( url1.url(KUrl::LeaveTrailingSlash), QString("mailto:user@host.com") );
 
 #if 0
   // I wrote this test in the very first kurltest, but there's no proof that it's actually valid.
@@ -1340,7 +1340,7 @@ void KUrlTest::testOtherEncodings()
   kDebug() << k_funcinfo << endl;
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "koi8-r" ) );
   KUrl baseURL( "file:/home/coolo" );
-  KUrl russian = KUrl::fromPath( baseURL.directory(false, true) + QString::fromUtf8( "фгн7" ) );
+  KUrl russian = KUrl::fromPath( baseURL.directory(KUrl::AppendTrailingSlash) + QString::fromUtf8( "фгн7" ) );
   //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
   QCOMPARE( russian.url(), QString("file:///home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
 

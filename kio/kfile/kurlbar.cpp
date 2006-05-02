@@ -549,15 +549,15 @@ void KUrlBar::setCurrentItem( const KUrl& url )
 {
     d->currentURL = url;
 
-    QString u = url.url(-1);
+    QString u = url.url(KUrl::RemoveTrailingSlash);
 
-    if ( m_activeItem && m_activeItem->url().url(-1) == u )
+    if ( m_activeItem && m_activeItem->url().url(KUrl::RemoveTrailingSlash) == u )
         return;
 
     bool hasURL = false;
     Q3ListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
-        if ( static_cast<KUrlBarItem*>( item )->url().url(-1) == u ) {
+      if ( static_cast<KUrlBarItem*>( item )->url().url(KUrl::RemoveTrailingSlash) == u ) {
             m_activeItem = static_cast<KUrlBarItem*>( item );
             m_listBox->setCurrentItem( item );
             m_listBox->setSelected( item, true );

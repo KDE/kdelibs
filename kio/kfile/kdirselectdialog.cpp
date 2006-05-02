@@ -211,7 +211,7 @@ void KDirSelectDialog::setCurrentURL( const KUrl& url )
 
     KUrl dirToList = root;
     d->dirsToList.clear();
-    QString path = url.path(+1);
+    QString path = url.path(KUrl::AddTrailingSlash);
     int pos = path.length();
 
     if ( path.isEmpty() ) // e.g. ftp://host.com/ -> just list the root dir
@@ -415,7 +415,7 @@ void KDirSelectDialog::slotMkdir()
     bool ok;
     QString where = url().pathOrURL();
     QString name = i18n( "New Folder" );
-    if ( url().isLocalFile() && QFileInfo( url().path(+1) + name ).exists() )
+    if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
         name = KIO::RenameDlg::suggestName( url(), name );
 
     QString directory = KIO::encodeFileName( KInputDialog::getText( i18n( "New Folder" ),

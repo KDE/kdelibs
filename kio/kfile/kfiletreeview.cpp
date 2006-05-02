@@ -463,7 +463,7 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
       {
 	 KUrl url = (*it)->url();
 
-	 if( m_nextUrlToSelect.equals(url, true ))   // ignore trailing / on dirs
+         if( m_nextUrlToSelect.equals(url, KUrl::CompareWithoutTrailingSlash ))   // ignore trailing / on dirs
 	 {
 	    setCurrentItem( static_cast<Q3ListViewItem*>(*it) );
 	    m_nextUrlToSelect = KUrl();

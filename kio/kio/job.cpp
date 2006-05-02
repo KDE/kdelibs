@@ -2706,7 +2706,7 @@ void CopyJob::slotResultCreatingDirs( KJob * job )
             // Should we skip automatically ?
             if ( m_bAutoSkip ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
-                m_skipList.append( oldURL.path( 1 ) );
+              m_skipList.append( oldURL.path( KUrl::AddTrailingSlash ) );
                 skip( oldURL );
                 dirs.erase( it ); // Move on to next dir
             } else {
@@ -2784,7 +2784,7 @@ void CopyJob::slotResultConflictCreatingDirs( KJob * job )
     {
         if( (*it).uSource == (*it).uDest ||
             ((*it).uSource.protocol() == (*it).uDest.protocol() &&
-            (*it).uSource.path(-1) == linkDest) )
+              (*it).uSource.path( KUrl::RemoveTrailingSlash ) == linkDest) )
           mode = (RenameDlg_Mode)( mode | M_OVERWRITE_ITSELF);
         else
           mode = (RenameDlg_Mode)( mode | M_OVERWRITE );
@@ -2810,14 +2810,14 @@ void CopyJob::slotResultConflictCreatingDirs( KJob * job )
             return;
         case R_RENAME:
         {
-            QString oldPath = (*it).uDest.path( 1 );
+          QString oldPath = (*it).uDest.path( KUrl::AddTrailingSlash );
             KUrl newUrl( (*it).uDest );
             newUrl.setPath( newPath );
             emit renamed( this, (*it).uDest, newUrl ); // for e.g. kpropsdlg
 
             // Change the current one and strip the trailing '/'
-            (*it).uDest.setPath( newUrl.path( -1 ) );
-            newPath = newUrl.path( 1 ); // With trailing slash
+            (*it).uDest.setPath( newUrl.path( KUrl::RemoveTrailingSlash ) );
+            newPath = newUrl.path( KUrl::AddTrailingSlash ); // With trailing slash
             QList<CopyInfo>::Iterator renamedirit = it;
             ++renamedirit;
             // Change the name of subdirectories inside the directory
@@ -3055,7 +3055,7 @@ void CopyJob::slotResultConflictCopyingFiles( KJob * job )
         {
             if ( (*it).uSource == (*it).uDest  ||
                  ((*it).uSource.protocol() == (*it).uDest.protocol() &&
-                 (*it).uSource.path(-1) == linkDest) )
+                   (*it).uSource.path( KUrl::RemoveTrailingSlash ) == linkDest) )
                 mode = M_OVERWRITE_ITSELF;
             else
                 mode = M_OVERWRITE;
@@ -3460,8 +3460,8 @@ void CopyJob::slotResultRenaming( KJob* job )
         // Direct renaming didn't work. Try renaming to a temp name,
         // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
         // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
-        if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(-1) != dest.url(-1) &&
-             m_currentSrcURL.url(-1).toLower() == dest.url(-1).toLower() &&
+      if ( m_currentSrcURL.isLocalFile() && m_currentSrcURL.url(KUrl::RemoveTrailingSlash) != dest.url(KUrl::RemoveTrailingSlash) &&
+           m_currentSrcURL.url(KUrl::RemoveTrailingSlash).toLower() == dest.url(KUrl::RemoveTrailingSlash).toLower() &&
              ( err == ERR_FILE_ALREADY_EXIST ||
                err == ERR_DIR_ALREADY_EXIST ||
                err == ERR_IDENTICAL_FILES ) )
@@ -3469,7 +3469,7 @@ void CopyJob::slotResultRenaming( KJob* job )
             kDebug(7007) << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls" << endl;
             QByteArray _src( QFile::encodeName(m_currentSrcURL.path()) );
             QByteArray _dest( QFile::encodeName(dest.path()) );
-            KTempFile tmpFile( m_currentSrcURL.directory(false) );
+            KTempFile tmpFile( m_currentSrcURL.directory(KUrl::ObeyTrailingSlash) );
             QByteArray _tmp( QFile::encodeName(tmpFile.name()) );
             kDebug(7007) << "CopyJob::slotResult KTempFile status:" << tmpFile.status() << " using " << _tmp << " as intermediary" << endl;
             tmpFile.unlink();
@@ -4071,8 +4071,8 @@ void DeleteJob::slotResult( KJob *job )
         {
             // Add toplevel dir in list of dirs
             dirs.append( url );
-            if ( url.isLocalFile() && !m_parentDirs.contains( url.path(-1) ) )
-                m_parentDirs.append( url.path(-1) );
+            if ( url.isLocalFile() && !m_parentDirs.contains( url.path(KUrl::RemoveTrailingSlash) ) )
+              m_parentDirs.append( url.path(KUrl::RemoveTrailingSlash) );
 
             if ( !KProtocolInfo::canDeleteRecursive( url ) ) {
                 //kDebug(7007) << " Target is a directory " << endl;
@@ -4100,8 +4100,8 @@ void DeleteJob::slotResult( KJob *job )
                 //kDebug(7007) << " Target is a file" << endl;
                 files.append( url );
             }
-            if ( url.isLocalFile() && !m_parentDirs.contains( url.directory(false) ) )
-                m_parentDirs.append( url.directory(false) );
+            if ( url.isLocalFile() && !m_parentDirs.contains( url.directory(KUrl::ObeyTrailingSlash) ) )
+                m_parentDirs.append( url.directory(KUrl::ObeyTrailingSlash) );
             ++m_currentStat;
             statNextSrc();
         }

@@ -63,7 +63,7 @@ namespace KPAC
         }
 
         // Never use a proxy for the script itself
-        if ( m_downloader && url.equals( m_downloader->scriptURL(), true ) ) return "DIRECT";
+        if ( m_downloader && url.equals( m_downloader->scriptURL(), KUrl::CompareWithoutTrailingSlash ) ) return "DIRECT";
 
         if ( m_script ) return handleRequest( url );
 

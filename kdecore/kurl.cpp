@@ -422,7 +422,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
     KUrl tmp( url() + rUrl);
     //kDebug(126) << "assigning tmp=" << tmp.url() << endl;
     *this = tmp;
-    cleanPath(false);
+    cleanPath(KeepDirSeparators);
   }
   else
   {
@@ -435,7 +435,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
     {
        setUserInfo( _u.userInfo() );
     }
-    cleanPath(false);
+    cleanPath(KeepDirSeparators);
   }
 }
 
@@ -454,25 +454,25 @@ bool KUrl::operator==( const QString& _u ) const
 
 bool KUrl::cmp( const KUrl &u, bool ignore_trailing ) const
 {
-  return equals( u, ignore_trailing );
+  return equals( u, ignore_trailing ? CompareWithoutTrailingSlash : EqualsOptions(0) );
 }
 
-bool KUrl::equals( const KUrl &_u, bool ignore_trailing ) const
+bool KUrl::equals( const KUrl &_u, const EqualsOptions& options ) const
 {
   if ( !isValid() || !_u.isValid() )
     return false;
 
-  if ( ignore_trailing )
+  if ( options & CompareWithoutTrailingSlash || options & CompareWithoutFragment )
   {
-    QString path1 = path(1);
-    QString path2 = _u.path(1);
+    QString path1 = path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
+    QString path2 = _u.path((options & CompareWithoutTrailingSlash) ? RemoveTrailingSlash : LeaveTrailingSlash);
     if ( path1 != path2 )
       return false;
 
     if ( scheme() == _u.scheme() &&
          authority() == _u.authority() && // user+pass+host+port
          encodedQuery() == _u.encodedQuery() &&
-         fragment() == _u.fragment() )
+         (fragment() == _u.fragment() || options & CompareWithoutFragment )    )
       return true;
 
     return false;
@@ -522,30 +522,30 @@ void KUrl::setFileName( const QString& _txt )
   cleanPath();
 }
 
-void KUrl::cleanPath( bool cleanDirSeparator )
+void KUrl::cleanPath( const CleanPathOption& options )
 {
   //if (m_iUriMode != URL) return;
-  const QString newPath = cleanpath(path(), cleanDirSeparator, false);
+  const QString newPath = cleanpath(path(), !(options & KeepDirSeparators), false);
   if ( path() != newPath )
       setPath( newPath );
   // WABA: Is this safe when "/../" is encoded with %?
   //m_strPath_encoded = cleanpath(m_strPath_encoded, cleanDirSeparator, true);
 }
 
-static QString trailingSlash( int _trailing, const QString &path )
+static QString trailingSlash( KUrl::AdjustPathOption trailing, const QString &path )
 {
   QString result = path;
 
-  if ( _trailing == 0 )
+  if ( trailing == KUrl::LeaveTrailingSlash )
     return result;
-  else if ( _trailing == 1 )
+  else if ( trailing == KUrl::AddTrailingSlash )
   {
     int len = result.length();
     if ( (len == 0) || (result[ len - 1 ] != QLatin1Char('/')) )
       result += QLatin1Char('/');
     return result;
   }
-  else if ( _trailing == -1 )
+  else if ( trailing == KUrl::RemoveTrailingSlash )
   {
     if ( result == "/" )
       return result;
@@ -559,11 +559,11 @@ static QString trailingSlash( int _trailing, const QString &path )
   }
   else {
     assert( 0 );
-    return QString();
+    return result;
   }
 }
 
-void KUrl::adjustPath( int _trailing )
+void KUrl::adjustPath( AdjustPathOption trailing )
 {
 #if 0
   if (!m_strPath_encoded.isEmpty())
@@ -571,13 +571,13 @@ void KUrl::adjustPath( int _trailing )
      m_strPath_encoded = trailingSlash( _trailing, m_strPath_encoded );
   }
 #endif
-  const QString newPath = trailingSlash( _trailing, path() );
+  const QString newPath = trailingSlash( trailing, path() );
   if ( path() != newPath )
       setPath( newPath );
 }
 
 
-QString KUrl::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
+QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPathAndQueryOptions &options) const
 {
   QString tmp;
 #if 0
@@ -588,8 +588,8 @@ QString KUrl::encodedPathAndQuery( int _trailing, bool _no_empty_path ) const
   else
 #endif
   {
-     tmp = path( _trailing );
-     if ( _no_empty_path && tmp.isEmpty() )
+     tmp = path( trailing );
+     if ( (options & AvoidEmptyPath) && tmp.isEmpty() )
         tmp = "/";
 #if 0
      if (m_iUriMode == Mailto)
@@ -646,9 +646,9 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
   }
 }
 
-QString KUrl::path( int _trailing ) const
+QString KUrl::path( AdjustPathOption trailing ) const
 {
-  return trailingSlash( _trailing, path() );
+  return trailingSlash( trailing, path() );
 }
 
 bool KUrl::isLocalFile() const
@@ -748,9 +748,9 @@ bool KUrl::hasSubURL() const
   return false;
 }
 
-QString KUrl::url( int _trailing ) const
+QString KUrl::url( AdjustPathOption trailing ) const
 {
-  if ( _trailing == +1 && !path().endsWith( QLatin1Char('/') ) ) {
+  if ( trailing == AddTrailingSlash && !path().endsWith( QLatin1Char('/') ) ) {
       // -1 and 0 are provided by QUrl, but not +1, so that one is a bit tricky.
       // To avoid reimplementing toString() all over again, I just use another QUrl
       // Let's hope this is fast, or not called often...
@@ -758,25 +758,25 @@ QString KUrl::url( int _trailing ) const
       newUrl.setPath( path() + QLatin1Char('/') );
       return QLatin1String( newUrl.toEncoded() ); // ### check
   }
-  return QLatin1String( toEncoded( _trailing == -1 ? StripTrailingSlash : None ) ); // ## check encoding
+  return QLatin1String( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
-QString KUrl::prettyURL( int _trailing ) const
+QString KUrl::prettyURL( AdjustPathOption trailing ) const
 {
   // Can't use toString(), it breaks urls with %23 in them (becomes '#', which is parsed back as a fragment)
   // So prettyURL is just url, with the password removed.
   // We could replace some chars, like "%20" -> ' ', though?
   if ( password().isEmpty() )
-    return url( _trailing );
+    return url( trailing );
 
   QUrl newUrl( *this );
   newUrl.setPassword( QString() );
-  if ( _trailing == +1 && !path().endsWith( QLatin1Char('/') ) ) {
+  if ( trailing == AddTrailingSlash && !path().endsWith( QLatin1Char('/') ) ) {
       // -1 and 0 are provided by QUrl, but not +1.
       newUrl.setPath( path() + QLatin1Char('/') );
       return QLatin1String( newUrl.toEncoded() );
   }
-  return QLatin1String( newUrl.toEncoded(  _trailing == -1 ? StripTrailingSlash : None ) ); // ## check encoding
+  return QLatin1String( newUrl.toEncoded(  trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
 #if 0
@@ -832,7 +832,7 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
       return path();
   }
 
-  return url(0 /*, 106*/); // 106 is mib enum for utf8 codec
+  return url(/*0 , 106*/); // 106 is mib enum for utf8 codec
 }
 
 KUrl KUrl::fromMimeDataByteArray( const QByteArray& str )
@@ -915,12 +915,12 @@ KUrl KUrl::join( const KUrl::List & lst )
   return tmp;
 }
 
-QString KUrl::fileName( bool _strip_trailing_slash ) const
+QString KUrl::fileName( const DirectoryOptions& options ) const
 {
   QString fname;
   if (hasSubURL()) { // If we have a suburl, then return the filename from there
     KUrl::List list = KUrl::split(*this);
-    return list.last().fileName(_strip_trailing_slash);
+    return list.last().fileName(options);
   }
   const QString path = this->path();
 
@@ -928,7 +928,7 @@ QString KUrl::fileName( bool _strip_trailing_slash ) const
   if ( len == 0 )
     return fname;
 
-  if ( _strip_trailing_slash )
+  if (!(options & ObeyTrailingSlash) )
   {
     while ( len >= 1 && path[ len - 1 ] == QLatin1Char('/') )
       len--;
@@ -1011,12 +1011,11 @@ void KUrl::addPath( const QString& _txt )
   //kDebug(126)<<"addPath: resultpath="<<path()<<endl;
 }
 
-QString KUrl::directory( bool _strip_trailing_slash_from_result,
-                         bool _ignore_trailing_slash_in_path ) const
+QString KUrl::directory( const DirectoryOptions& options ) const
 {
   QString result = path(); //m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
-  if ( _ignore_trailing_slash_in_path )
-    result = trailingSlash( -1, result );
+  if ( !(options & ObeyTrailingSlash) )
+    result = trailingSlash( RemoveTrailingSlash, result );
 
   if ( result.isEmpty() || result == "/" )
     return result;
@@ -1033,10 +1032,10 @@ QString KUrl::directory( bool _strip_trailing_slash_from_result,
     return result;
   }
 
-  if ( _strip_trailing_slash_from_result )
-    result = result.left( i );
-  else
+  if ( options & AppendTrailingSlash )
     result = result.left( i + 1 );
+  else
+    result = result.left( i );
 
   //if (!m_strPath_encoded.isEmpty())
   //  result = decode(result);
@@ -1087,7 +1086,7 @@ bool KUrl::cd( const QString& _dir )
   // Sub URLs are not touched.
 
   // append '/' if necessary
-  QString p = path(1);
+  QString p = path(AddTrailingSlash);
   p += _dir;
   p = cleanpath( p, true, false );
   setPath( p );
@@ -1239,14 +1238,14 @@ bool urlcmp( const QString& _url1, const QString& _url2 )
 #endif
 }
 
-bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref )
+bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& _options )
 {
     QUrl u1( _url1 );
     QUrl u2( _url2 );
     QUrl::FormattingOptions options = QUrl::None;
-    if ( _ignore_trailing )
+    if ( _options & KUrl::CompareWithoutTrailingSlash )
         options |= QUrl::StripTrailingSlash;
-    if ( _ignore_ref )
+    if ( _options & KUrl::CompareWithoutFragment )
         options |= QUrl::RemoveFragment;
     return u1.toString( options ) == u2.toString( options );
 
@@ -1357,7 +1356,7 @@ QString KUrl::relativeURL(const KUrl &base_url, const KUrl &url)
        (url.hasUser() && url.user() != base_url.user()) ||
        (url.hasPass() && url.pass() != base_url.pass()))
    {
-      return url.url(0);
+      return url.url();
    }
 
    QString relURL;
@@ -1365,7 +1364,7 @@ QString KUrl::relativeURL(const KUrl &base_url, const KUrl &url)
    if ((base_url.path() != url.path()) || (base_url.query() != url.query()))
    {
       bool dummy;
-      QString basePath = base_url.directory(false, false);
+      QString basePath = base_url.directory(KUrl::ObeyTrailingSlash);
       relURL = _relativePath(basePath, url.path(), dummy); // was QUrl::toPercentEncoding() but why?
       relURL += url.query();
    }
@@ -1406,7 +1405,7 @@ QMap< QString, QString > KUrl::queryItems( int options ) const {
 }
 #endif
 
-QMap< QString, QString > KUrl::queryItems( int options ) const {
+QMap< QString, QString > KUrl::queryItems( const QueryItemsOptions &options ) const {
   const QString strQueryEncoded = encodedQuery();
   if ( strQueryEncoded.isEmpty() )
     return QMap<QString,QString>();

@@ -89,7 +89,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
     d->m_info  = fileitem->metaInfo();
     if (!d->m_info.isValid())
     {
-        d->m_info = KFileMetaInfo(properties->kurl().path(-1));
+      d->m_info = KFileMetaInfo(properties->kurl().path(KUrl::RemoveTrailingSlash));
         fileitem->setMetaInfo(d->m_info);
     }
 

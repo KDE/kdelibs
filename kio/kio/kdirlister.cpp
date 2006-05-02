@@ -92,7 +92,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   // like this we don't have to worry about trailing slashes any further
   KUrl _url = _u;
   _url.cleanPath(); // kill consecutive slashes
-  _url.adjustPath(-1);
+  _url.adjustPath(KUrl::RemoveTrailingSlash);
   QString urlStr = _url.url();
 
   if ( !validURL( lister, _url ) )
@@ -370,7 +370,7 @@ void KDirListerCache::stop( KDirLister *lister )
 
 void KDirListerCache::stop( KDirLister *lister, const KUrl& _u )
 {
-  QString urlStr( _u.url(-1) );
+  QString urlStr( _u.url(KUrl::RemoveTrailingSlash) );
   KUrl _url( urlStr );
 
   // TODO: consider to stop all the "child jobs" of _url as well
@@ -453,7 +453,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
   kDebug(7004) << k_funcinfo << lister << " _url: " << _url << endl;
 
   KUrl url( _url );
-  url.adjustPath( -1 );
+  url.adjustPath( KUrl::RemoveTrailingSlash );
   QString urlStr = url.url();
   Q3PtrList<KDirLister> *holders = urlsCurrentlyHeld[urlStr];
   Q_ASSERT( holders );
@@ -541,7 +541,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
 {
   kDebug(7004) << k_funcinfo << _dir << endl;
 
-  QString urlStr = _dir.url(-1);
+  QString urlStr = _dir.url(KUrl::RemoveTrailingSlash);
   if ( !checkUpdate( urlStr ) )
     return;
 
@@ -648,7 +648,7 @@ KFileItem *KDirListerCache::itemForURL( const KUrl& url ) const
 
 KFileItemList *KDirListerCache::itemsForDir( const KUrl& _dir ) const
 {
-  QString urlStr = _dir.url(-1);
+  QString urlStr = _dir.url(KUrl::RemoveTrailingSlash);
   DirItem *item = itemsInUse[ urlStr ];
   if ( !item )
     item = itemsCached[ urlStr ];
@@ -673,7 +673,7 @@ KFileItem *KDirListerCache::findByName( const KDirLister *lister, const QString&
 KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KUrl& _u ) const
 {
   KUrl _url = _u;
-  _url.adjustPath(-1);
+  _url.adjustPath(KUrl::RemoveTrailingSlash);
 
   KUrl parentDir( _url );
   parentDir.setPath( parentDir.directory() );
@@ -763,7 +763,7 @@ void KDirListerCache::FilesChanged( const KUrl::List &fileList )
       // For remote files, refresh() won't be able to figure out the new information.
       // Let's update the dir.
       KUrl dir( *it );
-      dir.setPath( dir.directory( true ) );
+      dir.setPath( dir.directory() );
       if ( !dirsToUpdate.contains( dir ) )
         dirsToUpdate.prepend( dir );
     }
@@ -789,7 +789,7 @@ void KDirListerCache::FileRenamed( const KUrl &src, const KUrl &dst )
 
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   KUrl oldurl( src );
-  oldurl.adjustPath( -1 );
+  oldurl.adjustPath( KUrl::RemoveTrailingSlash );
   KFileItem *fileitem = findByURL( 0, oldurl );
   if ( fileitem )
   {
@@ -869,7 +869,7 @@ void KDirListerCache::slotFileDirty( const QString& _file )
   {
     KUrl dir;
     dir.setPath( _file );
-    if ( checkUpdate( dir.url(-1) ) )
+    if ( checkUpdate( dir.url(KUrl::RemoveTrailingSlash) ) )
       updateDirectory( dir );
 
     // the parent directory of _file
@@ -931,7 +931,7 @@ void KDirListerCache::slotFileDeleted( const QString& _file )
 void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )
 {
   KUrl url = joburl( static_cast<KIO::ListJob *>(job) );
-  url.adjustPath(-1);
+  url.adjustPath(KUrl::RemoveTrailingSlash);
   QString urlStr = url.url();
 
   kDebug(7004) << k_funcinfo << "new entries for " << url << endl;
@@ -996,7 +996,7 @@ void KDirListerCache::slotResult( KJob *j )
   jobs.remove( job );
 
   KUrl jobUrl = joburl( job );
-  jobUrl.adjustPath(-1);  // need remove trailing slashes again, in case of redirections
+  jobUrl.adjustPath(KUrl::RemoveTrailingSlash);  // need remove trailing slashes again, in case of redirections
   QString jobUrlStr = jobUrl.url();
 
   kDebug(7004) << k_funcinfo << "finished listing " << jobUrl << endl;
@@ -1065,8 +1065,8 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
   KUrl newUrl = url;
 
   // strip trailing slashes
-  oldUrl.adjustPath(-1);
-  newUrl.adjustPath(-1);
+  oldUrl.adjustPath(KUrl::RemoveTrailingSlash);
+  newUrl.adjustPath(KUrl::RemoveTrailingSlash);
 
   if ( oldUrl == newUrl )
   {
@@ -1095,7 +1095,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
   for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
   {
     // TODO: put in own method?
-    if ( kdl->d->url.equals( oldUrl, true ) )
+    if ( kdl->d->url.equals( oldUrl, KUrl::CompareWithoutTrailingSlash ) )
     {
       kdl->d->rootFileItem = 0;
       kdl->d->url = newUrl;
@@ -1133,7 +1133,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
       // TODO: maybe don't emit started if there's an update running for newUrl already?
 
-      if ( kdl->d->url.equals( oldUrl, true ) )
+      if ( kdl->d->url.equals( oldUrl, KUrl::CompareWithoutTrailingSlash ) )
       {
         kdl->d->rootFileItem = 0;
         kdl->d->url = newUrl;
@@ -1312,8 +1312,8 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
 {
   kDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << newUrl.prettyURL() << endl;
-  QString oldUrlStr = oldUrl.url(-1);
-  QString newUrlStr = newUrl.url(-1);
+  QString oldUrlStr = oldUrl.url(KUrl::RemoveTrailingSlash);
+  QString newUrlStr = newUrl.url(KUrl::RemoveTrailingSlash);
 
   // Not enough. Also need to look at any child dir, even sub-sub-sub-dir.
   //DirItem *dir = itemsInUse.take( oldUrlStr );
@@ -1344,14 +1344,14 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
       itemsInUse.remove( itu.currentKey() ); // implies ++itu
       // TODO when porting to a Qt4 collection class: itu = itemsInUse.erase( itu );
       // but double check the iteration over all...
-      itemsInUse.insert( newDirUrl.url(-1), dir );
+      itemsInUse.insert( newDirUrl.url(KUrl::RemoveTrailingSlash), dir );
       goNext = false; // because of the implied ++itu above
       // Rename all items under that dir
 
       for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end() ; kit != kend ; ++kit )
       {
         KUrl oldItemUrl = (*kit)->url();
-        QString oldItemUrlStr( oldItemUrl.url(-1) );
+        QString oldItemUrlStr( oldItemUrl.url(KUrl::RemoveTrailingSlash) );
         KUrl newItemUrl( oldItemUrl );
         newItemUrl.setPath( newDirUrl.path() );
         newItemUrl.addPath( oldItemUrl.fileName() );
@@ -1373,8 +1373,8 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
 void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &url )
 {
   kDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << url.prettyURL() << endl;
-  QString oldUrlStr = oldUrl.url(-1);
-  QString urlStr = url.url(-1);
+  QString oldUrlStr = oldUrl.url(KUrl::RemoveTrailingSlash);
+  QString urlStr = url.url(KUrl::RemoveTrailingSlash);
 
   KIO::ListJob *job = jobForUrl( oldUrlStr );
   if ( job )
@@ -1457,7 +1457,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
   KUrl jobUrl = joburl( job );
-  jobUrl.adjustPath(-1);  // need remove trailing slashes again, in case of redirections
+  jobUrl.adjustPath(KUrl::RemoveTrailingSlash);  // need remove trailing slashes again, in case of redirections
   QString jobUrlStr = jobUrl.url();
 
   kDebug(7004) << k_funcinfo << "finished update " << jobUrl << endl;
@@ -1638,7 +1638,7 @@ KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_
   while ( it != jobs.end() )
   {
     job = it.key();
-    if ( joburl( job ).url(-1) == url && job != not_job )
+    if ( joburl( job ).url(KUrl::RemoveTrailingSlash) == url && job != not_job )
        return job;
     ++it;
   }

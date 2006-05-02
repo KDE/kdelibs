@@ -1072,7 +1072,7 @@ void FileProtocol::stat( const KUrl & url )
      * stat("/is/unaccessible/") -> EPERM            H.Z.
      * This is the reason for the -1
      */
-    QByteArray _path( QFile::encodeName(url.path(-1)));
+    QByteArray _path( QFile::encodeName(url.path(KUrl::RemoveTrailingSlash)));
 
     QString sDetails = metaData(QLatin1String("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
@@ -1081,7 +1081,7 @@ void FileProtocol::stat( const KUrl & url )
     UDSEntry entry;
     if ( !createUDSEntry( url.fileName(), _path, entry, details, true /*with acls*/ ) )
     {
-        error( KIO::ERR_DOES_NOT_EXIST, url.path(-1) );
+        error( KIO::ERR_DOES_NOT_EXIST, url.path(KUrl::RemoveTrailingSlash) );
         return;
     }
 #if 0

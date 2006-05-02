@@ -152,7 +152,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * This is the reason for the -1
        */
       KDE_struct_stat buf;
-      QByteArray path = QFile::encodeName(m_url.path( -1 ));
+      QByteArray path = QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash ));
       if ( KDE_lstat( path.data(), &buf ) == 0 )
       {
         mode = buf.st_mode;
@@ -275,7 +275,7 @@ QString KFileItem::linkDest() const
   if ( m_bIsLocalURL )
   {
     char buf[1000];
-    int n = readlink( QFile::encodeName(m_url.path( -1 )), buf, sizeof(buf)-1 );
+    int n = readlink( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), buf, sizeof(buf)-1 );
     if ( n != -1 )
     {
       buf[ n ] = 0;
@@ -312,7 +312,7 @@ KIO::filesize_t KFileItem::size() const
   if ( m_bIsLocalURL )
   {
     KDE_struct_stat buf;
-    if ( KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf ) == 0 )
+    if ( KDE_stat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buf ) == 0 )
         return buf.st_size;
   }
   return 0L;
@@ -377,7 +377,7 @@ time_t KFileItem::time( unsigned int which ) const
   if ( m_bIsLocalURL )
   {
     KDE_struct_stat buf;
-    if ( KDE_stat( QFile::encodeName(m_url.path(-1)), &buf ) == 0 )
+    if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
     {
         m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
                                buf.st_mtime :
@@ -395,7 +395,7 @@ QString KFileItem::user() const
   if ( m_user.isEmpty() && m_bIsLocalURL )
   {
     KDE_struct_stat buff;
-    if ( KDE_lstat( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
+    if ( KDE_lstat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
     {
       struct passwd *user = getpwuid( buff.st_uid );
       if ( user != 0L )
@@ -411,7 +411,7 @@ QString KFileItem::group() const
   if (m_group.isEmpty() && m_bIsLocalURL )
   {
     KDE_struct_stat buff;
-    if ( KDE_lstat( QFile::encodeName(m_url.path( -1 )), &buff ) == 0) // get uid/gid of the link, if it's a link
+    if ( KDE_lstat( QFile::encodeName(m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
     {
       struct group *ge = getgrgid( buff.st_gid );
       if ( ge != 0L ) {

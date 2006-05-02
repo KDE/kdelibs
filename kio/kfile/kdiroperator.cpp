@@ -386,7 +386,7 @@ void KDirOperator::mkdir()
     bool ok;
     QString where = url().pathOrURL();
     QString name = i18n( "New Folder" );
-    if ( url().isLocalFile() && QFileInfo( url().path(+1) + name ).exists() )
+    if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
          name = KIO::RenameDlg::suggestName( url(), name );
 
     QString dir = KInputDialog::getText( i18n( "New Folder" ),
@@ -625,11 +625,11 @@ void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
     else
 	newurl = _newurl;
 
-    QString pathstr = newurl.path(+1);
+    QString pathstr = newurl.path(KUrl::AddTrailingSlash);
     newurl.setPath(pathstr);
 
     // already set
-    if ( newurl.equals( currUrl, true ) )
+    if ( newurl.equals( currUrl, KUrl::CompareWithoutTrailingSlash ) )
         return;
 
     if ( !isReadable( newurl ) ) {
@@ -650,7 +650,7 @@ void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
         forwardStack.clear();
     }
 
-    d->lastURL = currUrl.url(-1);
+    d->lastURL = currUrl.url(KUrl::RemoveTrailingSlash);
     currUrl = newurl;
 
     pathChanged();
@@ -1131,7 +1131,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
         const KFileItem* item = *kit;
 	// highlight the dir we come from, if possible
 	if ( d->dirHighlighting && item->isDir() &&
-	     item->url().url(-1) == d->lastURL ) {
+                    item->url().url(KUrl::RemoveTrailingSlash) == d->lastURL ) {
 	    m_fileView->setCurrentItem( item );
 	    m_fileView->ensureItemVisible( item );
 	}
@@ -1648,7 +1648,7 @@ bool KDirOperator::isReadable( const KUrl& url )
 	return true; // what else can we say?
 
     KDE_struct_stat buf;
-    QString ts = url.path(+1);
+    QString ts = url.path(KUrl::AddTrailingSlash);
     bool readable = ( KDE_stat( QFile::encodeName( ts ), &buf) == 0 );
     if (readable) { // further checks
 	DIR *test;

@@ -605,7 +605,7 @@ void KFileDialog::accept()
         // we strip the last slash (-1) because KUrlComboBox does that as well
         // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
         // work.
-        QString file = url.isLocalFile() ? url.path(-1) : url.prettyURL(-1);
+        QString file = url.isLocalFile() ? url.path(KUrl::RemoveTrailingSlash) : url.prettyURL(KUrl::RemoveTrailingSlash);
 
         // remove dupes
         for ( int i = 1; i < locationEdit->count(); i++ ) {
@@ -799,23 +799,23 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                                  text );
 
     u.setPath( QDir::homePath() );
-    text = i18n("Home Folder: %1",  u.path( +1 ) );
+    text = i18n("Home Folder: %1",  u.path( KUrl::AddTrailingSlash ) );
     d->pathCombo->addDefaultURL( u, KIO::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
 
     KUrl docPath;
     docPath.setPath( KGlobalSettings::documentPath() );
-    if ( (u.path(+1) != docPath.path(+1)) &&
-         QDir(docPath.path(+1)).exists() )
+    if ( (u.path(KUrl::AddTrailingSlash) != docPath.path(KUrl::AddTrailingSlash)) &&
+          QDir(docPath.path(KUrl::AddTrailingSlash)).exists() )
     {
-        text = i18n("Documents: %1",  docPath.path( +1 ) );
+      text = i18n("Documents: %1",  docPath.path( KUrl::AddTrailingSlash ) );
         d->pathCombo->addDefaultURL( docPath,
                                      KIO::pixmapForURL( docPath, 0, K3Icon::Small ),
                                      text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
-    text = i18n("Desktop: %1",  u.path( +1 ) );
+    text = i18n("Desktop: %1",  u.path( KUrl::AddTrailingSlash ) );
     d->pathCombo->addDefaultURL( u,
                                  KIO::pixmapForURL( u, 0, K3Icon::Small ),
                                  text );
@@ -946,7 +946,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     locationEdit->setFocus();
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
-    QString dir = d->url.url(+1);
+    QString dir = d->url.url(KUrl::AddTrailingSlash);
     pathCompletionObj->setDir( dir );
     fileCompletionObj->setDir( dir );
     locationEdit->setCompletionObject( fileCompletionObj );
@@ -1123,7 +1123,7 @@ void KFileDialog::urlEntered(const KUrl& url)
 
     locationEdit->blockSignals( false );
 
-    QString dir = url.url(+1);
+    QString dir = url.url(KUrl::AddTrailingSlash);
     static_cast<KUrlCompletion*>( d->pathCombo->completionObject() )->setDir( dir );
     static_cast<KUrlCompletion*>( locationEdit->completionObject() )->setDir( dir );
 
@@ -2145,7 +2145,7 @@ void KFileDialog::toggleSpeedbar( bool show )
         homeURL.setPath( QDir::homePath() );
         while ( urlItem )
         {
-            if ( homeURL.equals( urlItem->url(), true ) )
+          if ( homeURL.equals( urlItem->url(), KUrl::CompareWithoutTrailingSlash ) )
             {
                 ops->actionCollection()->action( "home" )->unplug( toolbar );
                 break;
@@ -2250,9 +2250,9 @@ KUrl KFileDialog::getStartURL( const QString& startDir,
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory or when the document dir
             // does not exist
-            if ( lastDirectory->path(+1) == home.path(+1) ||
+            if ( lastDirectory->path(KUrl::AddTrailingSlash) == home.path(KUrl::AddTrailingSlash) ||
                  QDir::currentPath() != QDir::homePath() ||
-                 !QDir(lastDirectory->path(+1)).exists() )
+                 !QDir(lastDirectory->path(KUrl::AddTrailingSlash)).exists() )
                 lastDirectory->setPath(QDir::currentPath());
         }
         ret = *lastDirectory;

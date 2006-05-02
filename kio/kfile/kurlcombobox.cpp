@@ -110,9 +110,9 @@ void KUrlComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
     item->icon = icon;
     if ( text.isEmpty() )
         if ( url.isLocalFile() )
-          item->text = url.path( myMode );
+        item->text = url.path( (KUrl::AdjustPathOption)myMode );
         else
-          item->text = url.prettyURL( myMode );
+          item->text = url.prettyURL( (KUrl::AdjustPathOption)myMode );
     else
         item->text = text;
 
@@ -190,7 +190,7 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
         item->icon = getIcon( u );
 
         if ( u.isLocalFile() )
-            item->text = u.path( myMode ); // don't show file:/
+          item->text = u.path( (KUrl::AdjustPathOption)myMode ); // don't show file:/
         else
             item->text = *it;
 
@@ -210,9 +210,9 @@ void KUrlComboBox::setURL( const KUrl& url )
 
     // check for duplicates
     QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
-    QString urlToInsert = url.url(-1);
+    QString urlToInsert = url.url(KUrl::RemoveTrailingSlash);
     while ( mit != itemMapper.end() ) {
-        if ( urlToInsert == mit.value()->url.url(-1) ) {
+      if ( urlToInsert == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
             setCurrentIndex( mit.key() );
 
             if ( myMode == Directories )
@@ -242,13 +242,13 @@ void KUrlComboBox::setURL( const KUrl& url )
     item->url = url;
     item->icon = getIcon( url );
     if ( url.isLocalFile() )
-        item->text = url.path( myMode );
+      item->text = url.path( (KUrl::AdjustPathOption)myMode );
     else
-        item->text = url.prettyURL( myMode );
+      item->text = url.prettyURL( (KUrl::AdjustPathOption)myMode );
      kDebug(250) << "setURL: text=" << item->text << endl;
 
     int id = count();
-    QString text = /*isEditable() ? item->url.prettyURL( myMode ) : */ item->text;
+    QString text = /*isEditable() ? item->url.prettyURL( (KUrl::AdjustPathOption)myMode ) : */ item->text;
 
     if ( myMode == Directories )
         KComboBox::insertItem( id,opendirIcon, text);
@@ -313,7 +313,7 @@ void KUrlComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
 {
     QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
     while ( mit != itemMapper.end() ) {
-        if ( url.url(-1) == mit.value()->url.url(-1) ) {
+      if ( url.url(KUrl::RemoveTrailingSlash) == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
             if ( !itemList.removeAll( mit.value() ) && checkDefaultURLs )
                 defaultList.removeAll( mit.value() );
         }
@@ -350,8 +350,8 @@ void KUrlComboBox::updateItem( const KUrlComboItem *item,
 	removeItem( index );
 	insertItem( index,
                     icon,
-		    item->url.isLocalFile() ? item->url.path( myMode ) :
-		                              item->url.prettyURL( myMode ));
+		    item->url.isLocalFile() ? item->url.path( (KUrl::AdjustPathOption)myMode ) :
+                        item->url.prettyURL( (KUrl::AdjustPathOption)myMode ));
     }
     else {
         setItemIcon(index,icon);
