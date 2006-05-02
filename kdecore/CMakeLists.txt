@@ -168,7 +168,6 @@ set(kdecore_LIB_SRCS
    kaboutdata.cpp
    kcompletionbase.cpp
    knotifyclient.cpp
-   kaudioplayer.cpp
    kdcoppropertyproxy.cpp
    kprocio.cpp
    krandom.cpp
@@ -349,7 +348,6 @@ install_files( /include FILES
    krandomsequence.h
    knotifyclient.h
    kiconeffect.h
-   kaudioplayer.h
    kdcoppropertyproxy.h
    netwm.h
    kacceleratormanager.h

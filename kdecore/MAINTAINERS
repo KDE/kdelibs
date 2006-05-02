@@ -13,7 +13,6 @@ kaccelbase.cpp		Ellis Whitehead <ellis@kde.org>
 kallocator.cpp		Waldo Bastian <bastian@kde.org>
 kappdcopiface.cpp
 kapplication.cpp	Waldo Bastian <bastian@kde.org>
-kaudioplayer.cpp
 kcatalog.cpp		Hans Petter Bieker <bieker@kde.org>
 kcharsets.cpp		Lars Knoll <knoll@kde.org>
 kckey.cpp

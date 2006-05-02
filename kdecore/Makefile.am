@@ -48,7 +48,7 @@ include_HEADERS = kconfig.h kconfigskeleton.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdcoppropertyproxy.h netwm.h kacceleratormanager.h \
+	kdcoppropertyproxy.h netwm.h kacceleratormanager.h \
 	netwm_def.h kpixmapprovider.h kstaticdeleter.h \
 	kprocio.h kasyncio.h krandom.h\
 	kbufferedio.h kmimesourcefactory.h kcodecs.h ksocks.h \
@@ -94,7 +94,7 @@ libkdecore_la_SOURCES = kapplication.cpp kauthorized.cpp ktoolinvocation_x11.cpp
 	kuniqueapplication.cpp kacceleratormanager.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
-	kaudioplayer.cpp kdcoppropertyproxy.cpp \
+	kdcoppropertyproxy.cpp \
 	netsupp.cpp kprocio.cpp krandom.cpp \
 	kpixmapprovider.cpp ktoolinvocation.cpp \
 	kcodecs.cpp ksocks.cpp fakes.c \

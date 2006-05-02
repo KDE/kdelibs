@@ -20,7 +20,6 @@
 
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include <kaudioplayer.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kcursor.h>
@@ -940,7 +939,9 @@ void KNotifyWidget::playSound()
             return;
         }
     }
+#if 0
     KAudioPlayer::play( m_soundPath->url() );
+#endif
 }
 
 void KNotifyWidget::enableAll()
