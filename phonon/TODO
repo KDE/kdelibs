@@ -7,6 +7,8 @@
      o KFileAudioPreview asks application/pdf supported? Backend desktop file
        says no -> no backend loaded
 
+- audio visualization API that sits between an AudioPath and an AbstractVideoOutput
+
 - add a way to request a specific version (>=) from the Backend, so that known to be buggy Backends aren't used
 
 - chapter support in AbstractMediaProducer
