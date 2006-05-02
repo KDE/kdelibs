@@ -25,6 +25,7 @@
 #include <QList>
 #include "audiopath.h"
 #include "videopath.h"
+#include <QHash>
 
 class QTimer;
 
@@ -32,6 +33,11 @@ namespace Phonon
 {
 	class VideoFrame;
 
+namespace Ifaces
+{
+	class VideoPath;
+	class AudioPath;
+}
 namespace Fake
 {
 	class KDE_EXPORT AbstractMediaProducer : public QObject, virtual public Ifaces::AbstractMediaProducer
@@ -49,6 +55,19 @@ namespace Fake
 			virtual bool seekable() const;
 			virtual long currentTime() const;
 			virtual long tickInterval() const;
+
+			virtual QStringList availableAudioStreams() const;
+			virtual QStringList availableVideoStreams() const;
+			virtual QStringList availableSubtitleStreams() const;
+
+			virtual QString selectedAudioStream( const Ifaces::AudioPath* audioPath ) const;
+			virtual QString selectedVideoStream( const Ifaces::VideoPath* videoPath ) const;
+			virtual QString selectedSubtitleStream( const Ifaces::VideoPath* videoPath ) const;
+
+			virtual void selectAudioStream( const QString& streamName, const Ifaces::AudioPath* audioPath );
+			virtual void selectVideoStream( const QString& streamName, const Ifaces::VideoPath* videoPath );
+			virtual void selectSubtitleStream( const QString& streamName, const Ifaces::VideoPath* videoPath );
+
 			virtual long setTickInterval( long newTickInterval );
 			virtual void play();
 			virtual void pause();
@@ -85,6 +104,10 @@ namespace Fake
 
 			// for sound synthesis
 			float m_position, m_frequency;
+
+			QHash<const Ifaces::AudioPath*, QString> m_selectedAudioStream;
+			QHash<const Ifaces::VideoPath*, QString> m_selectedVideoStream;
+			QHash<const Ifaces::VideoPath*, QString> m_selectedSubtitleStream;
 	};
 }} //namespace Phonon::Fake
 

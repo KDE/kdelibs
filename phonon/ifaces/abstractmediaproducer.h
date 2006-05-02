@@ -32,16 +32,30 @@ namespace Ifaces
 	class VideoPath;
 	class AudioPath;
 
+	/**
+	 * \brief Base class for media sources.
+	 *
+	 * This class holds common methods for all "media producing" classes.
+	 *
+	 * \see Phonon::AbstractMediaProducer
+	 *
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
 	class AbstractMediaProducer : public Base
 	{
 		public:
 			/**
+			 * Adds a VideoPath object to tell where to send the video data (and
+			 * render the subtitle if one is selected).
+			 *
 			 * The frontend class ensures that the \p videoPath is unique,
 			 * meaning the VideoPath object has not been added to this object.
 			 */
 			virtual bool addVideoPath( VideoPath* videoPath ) = 0;
 
 			/**
+			 * Adds an AudioPath object to tell where to send the audio data.
+			 *
 			 * The frontend class ensures that the \p audioPath is unique,
 			 * meaning the AudioPath object has not been added to this object.
 			 */
@@ -54,22 +68,26 @@ namespace Ifaces
 			 * Get the current state.
 			 */
 			virtual State state() const = 0;
+
 			/**
 			 * Check whether the media data includes a video stream.
 			 *
 			 * @return returns \p true if the media contains video data
 			 */
 			virtual bool hasVideo() const = 0;
+
 			/**
 			 * If the current media may be seeked returns true.
 			 *
 			 * @returns whether the current media may be seeked.
 			 */
 			virtual bool seekable() const = 0;
+
 			/**
 			 * Get the current time (in milliseconds) of the file currently being played.
 			 */
 			virtual long currentTime() const = 0;
+
 			/**
 			 * Return the time interval in milliseconds between two ticks.
 			 *
@@ -77,6 +95,18 @@ namespace Ifaces
 			 * be the same as you asked for).
 			 */
 			virtual long tickInterval() const = 0;
+
+			virtual QStringList availableAudioStreams() const = 0;
+			virtual QStringList availableVideoStreams() const = 0;
+			virtual QStringList availableSubtitleStreams() const = 0;
+
+			virtual QString selectedAudioStream( const AudioPath* audioPath ) const = 0;
+			virtual QString selectedVideoStream( const VideoPath* videoPath ) const = 0;
+			virtual QString selectedSubtitleStream( const VideoPath* videoPath ) const = 0;
+
+			virtual void selectAudioStream( const QString& streamName, const AudioPath* audioPath ) = 0;
+			virtual void selectVideoStream( const QString& streamName, const VideoPath* videoPath ) = 0;
+			virtual void selectSubtitleStream( const QString& streamName, const VideoPath* videoPath ) = 0;
 
 			/**
 			 * Change the interval the tick signal is emitted. If you set \p
@@ -93,14 +123,17 @@ namespace Ifaces
 			 * Play the media data.
 			 */
 			virtual void play() = 0;
+
 			/**
 			 * Pause a playing media. If it was paused before nothing changes.
 			 */
 			virtual void pause() = 0;
+
 			/**
 			 * Stop a playback.
 			 */
 			virtual void stop() = 0;
+
 			/**
 			 * Seek to the time indicated.
 			 *
@@ -118,6 +151,7 @@ namespace Ifaces
 			 * @param oldstate The state the Player was in before.
 			 */
 			virtual void stateChanged( Phonon::State newstate, Phonon::State oldstate ) = 0;
+
 			/**
 			 * This signal gets emitted every tickInterval milliseconds.
 			 *

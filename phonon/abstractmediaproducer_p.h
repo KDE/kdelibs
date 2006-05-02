@@ -23,9 +23,16 @@
 #include "abstractmediaproducer.h"
 #include "ifaces/abstractmediaproducer.h"
 #include "base_p.h"
+#include <QHash>
+#include <QString>
 
 namespace Phonon
 {
+	namespace Ifaces
+	{
+		class AudioPath;
+		class VideoPath;
+	}
 class AbstractMediaProducerPrivate : public BasePrivate
 {
 	K_DECLARE_PUBLIC( AbstractMediaProducer )
@@ -42,6 +49,9 @@ class AbstractMediaProducerPrivate : public BasePrivate
 		long tickInterval;
 		QList<VideoPath*> videoPaths;
 		QList<AudioPath*> audioPaths;
+		QHash<Ifaces::AudioPath*, QString> selectedAudioStream;
+		QHash<Ifaces::VideoPath*, QString> selectedVideoStream;
+		QHash<Ifaces::VideoPath*, QString> selectedSubtitleStream;
 };
 } //namespace Phonon
 

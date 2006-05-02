@@ -26,6 +26,9 @@
 #include <cmath>
 #include <QFile>
 #include <QByteArray>
+#include <QStringList>
+#include <phonon/ifaces/audiopath.h>
+#include <phonon/ifaces/videopath.h>
 
 namespace Phonon
 {
@@ -151,6 +154,60 @@ long AbstractMediaProducer::setTickInterval( long newTickInterval )
 	else
 		m_tickTimer->setInterval( newTickInterval );
 	return m_tickInterval;
+}
+
+QStringList AbstractMediaProducer::availableAudioStreams() const
+{
+	QStringList ret;
+	ret << QLatin1String( "en" ) << QLatin1String( "de" );
+	return ret;
+}
+
+QStringList AbstractMediaProducer::availableVideoStreams() const
+{
+	QStringList ret;
+	ret << QLatin1String( "en" ) << QLatin1String( "de" );
+	return ret;
+}
+
+QStringList AbstractMediaProducer::availableSubtitleStreams() const
+{
+	QStringList ret;
+	ret << QLatin1String( "en" ) << QLatin1String( "de" );
+	return ret;
+}
+
+QString AbstractMediaProducer::selectedAudioStream( const Ifaces::AudioPath* audioPath ) const
+{
+	return m_selectedAudioStream[ audioPath ];
+}
+
+QString AbstractMediaProducer::selectedVideoStream( const Ifaces::VideoPath* videoPath ) const
+{
+	return m_selectedVideoStream[ videoPath ];
+}
+
+QString AbstractMediaProducer::selectedSubtitleStream( const Ifaces::VideoPath* videoPath ) const
+{
+	return m_selectedSubtitleStream[ videoPath ];
+}
+
+void AbstractMediaProducer::selectAudioStream( const QString& streamName, const Ifaces::AudioPath* audioPath )
+{
+	if( availableAudioStreams().contains( streamName ) )
+		m_selectedAudioStream[ audioPath ] = streamName;
+}
+
+void AbstractMediaProducer::selectVideoStream( const QString& streamName, const Ifaces::VideoPath* videoPath )
+{
+	if( availableVideoStreams().contains( streamName ) )
+		m_selectedVideoStream[ videoPath ] = streamName;
+}
+
+void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, const Ifaces::VideoPath* videoPath )
+{
+	if( availableSubtitleStreams().contains( streamName ) )
+		m_selectedSubtitleStream[ videoPath ] = streamName;
 }
 
 void AbstractMediaProducer::play()

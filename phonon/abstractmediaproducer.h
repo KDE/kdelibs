@@ -172,7 +172,7 @@ namespace Phonon
 			 * \see availableAudioStreams
 			 * \see selectAudioStream
 			 */
-			QString selectedAudioStream( const AudioPath* audioPath = 0 ) const;
+			QString selectedAudioStream( AudioPath* audioPath = 0 ) const;
 
 			/**
 			 * Returns the selected video stream for the given VideoPath object.
@@ -183,7 +183,7 @@ namespace Phonon
 			 * \see availableVideoStreams
 			 * \see selectVideoStream
 			 */
-			QString selectedVideoStream( const VideoPath* videoPath = 0 ) const;
+			QString selectedVideoStream( VideoPath* videoPath = 0 ) const;
 
 			/**
 			 * Returns the selected subtitle stream for the given VideoPath object.
@@ -194,7 +194,7 @@ namespace Phonon
 			 * \see availableSubtitleStreams
 			 * \see selectSubtitleStream
 			 */
-			QString selectedSubtitleStream( const VideoPath* videoPath = 0 ) const;
+			QString selectedSubtitleStream( VideoPath* videoPath = 0 ) const;
 
 			/**
 			 * Returns the audio streams that can be selected by the user. The
@@ -240,7 +240,7 @@ namespace Phonon
 			 * \see availableAudioStreams()
 			 * \see selectedAudioStream()
 			 */
-			void selectAudioStream( const QString& streamName, const AudioPath* audioPath = 0 );
+			void selectAudioStream( const QString& streamName, AudioPath* audioPath = 0 );
 
 			/**
 			 * Selects a video stream from the media.
@@ -258,7 +258,7 @@ namespace Phonon
 			 * \see availableVideoStreams()
 			 * \see selectedVideoStream()
 			 */
-			void selectVideoStream( const QString& streamName, const VideoPath* videoPath = 0 );
+			void selectVideoStream( const QString& streamName, VideoPath* videoPath = 0 );
 
 			/**
 			 * Selects a subtitle stream from the media.
@@ -278,7 +278,7 @@ namespace Phonon
 			 * \see availableSubtitleStreams()
 			 * \see selectedSubtitleStream()
 			 */
-			void selectSubtitleStream( const QString& streamName, const VideoPath* videoPath = 0 );
+			void selectSubtitleStream( const QString& streamName, VideoPath* videoPath = 0 );
 
 			/**
 			 * Change the interval the tick signal is emitted. If you set

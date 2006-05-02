@@ -20,6 +20,8 @@
 #include "abstractmediaproducer.h"
 #include "abstractmediaproducer_p.h"
 #include "ifaces/abstractmediaproducer.h"
+#include "ifaces/audiopath.h"
+#include "ifaces/videopath.h"
 #include "factory.h"
 
 #include "videopath.h"
@@ -103,40 +105,73 @@ long AbstractMediaProducer::tickInterval() const
 	return d->iface() ? d->iface()->tickInterval() : d->tickInterval;
 }
 
-QString AbstractMediaProducer::selectedAudioStream( const AudioPath* audioPath ) const
+QString AbstractMediaProducer::selectedAudioStream( AudioPath* audioPath ) const
 {
+	K_D( const AbstractMediaProducer );
+	return d->iface() ? d->iface()->selectedAudioStream( audioPath->iface() ) : d->selectedAudioStream[ audioPath->iface() ];
 }
 
-QString AbstractMediaProducer::selectedVideoStream( const VideoPath* videoPath ) const
+QString AbstractMediaProducer::selectedVideoStream( VideoPath* videoPath ) const
 {
+	K_D( const AbstractMediaProducer );
+	return d->iface() ? d->iface()->selectedVideoStream( videoPath->iface() ) : d->selectedVideoStream[ videoPath->iface() ];
 }
 
-QString AbstractMediaProducer::selectedSubtitleStream( const VideoPath* videoPath ) const
+QString AbstractMediaProducer::selectedSubtitleStream( VideoPath* videoPath ) const
 {
+	K_D( const AbstractMediaProducer );
+	return d->iface() ? d->iface()->selectedSubtitleStream( videoPath->iface() ) : d->selectedSubtitleStream[ videoPath->iface() ];
 }
 
 QStringList AbstractMediaProducer::availableAudioStreams() const
 {
+	K_D( const AbstractMediaProducer );
+	if( d->iface() )
+		return d->iface()->availableAudioStreams();
+	return QStringList();
 }
 
 QStringList AbstractMediaProducer::availableVideoStreams() const
 {
+	K_D( const AbstractMediaProducer );
+	if( d->iface() )
+		return d->iface()->availableVideoStreams();
+	return QStringList();
 }
 
 QStringList AbstractMediaProducer::availableSubtitleStreams() const
 {
+	K_D( const AbstractMediaProducer );
+	if( d->iface() )
+		return d->iface()->availableSubtitleStreams();
+	return QStringList();
 }
 
-void AbstractMediaProducer::selectAudioStream( const QString& streamName, const AudioPath* audioPath )
+void AbstractMediaProducer::selectAudioStream( const QString& streamName, AudioPath* audioPath )
 {
+	K_D( AbstractMediaProducer );
+	if( iface() )
+		d->iface()->selectAudioStream( streamName, audioPath->iface() );
+	else
+		d->selectedAudioStream[ audioPath->iface() ] = streamName;
 }
 
-void AbstractMediaProducer::selectVideoStream( const QString& streamName, const VideoPath* videoPath )
+void AbstractMediaProducer::selectVideoStream( const QString& streamName, VideoPath* videoPath )
 {
+	K_D( AbstractMediaProducer );
+	if( iface() )
+		d->iface()->selectVideoStream( streamName, videoPath->iface() );
+	else
+		d->selectedVideoStream[ videoPath->iface() ] = streamName;
 }
 
-void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, const VideoPath* videoPath )
+void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, VideoPath* videoPath )
 {
+	K_D( AbstractMediaProducer );
+	if( iface() )
+		d->iface()->selectSubtitleStream( streamName, videoPath->iface() );
+	else
+		d->selectedSubtitleStream[ videoPath->iface() ] = streamName;
 }
 
 void AbstractMediaProducer::setTickInterval( long newTickInterval )
