@@ -993,11 +993,11 @@ private:
   KUrlPrivate* d;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EncodedPathAndQueryOptions);
-Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::CleanPathOptions);
-Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::QueryItemsOptions);
-Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EqualsOptions);
-Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::DirectoryOptions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EncodedPathAndQueryOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::CleanPathOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::QueryItemsOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EqualsOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::DirectoryOptions)
 
 /**
  * \relates KUrl
