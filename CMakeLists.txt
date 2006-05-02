@@ -136,7 +136,6 @@ set(KDE4_DATA_INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
 # ...and append all library dependencies
 export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 
-install_files( /include FILES kde.pot )
 install_files( /include FILES kdelibs_export.h kdemacros.h )
 install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
 
