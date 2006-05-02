@@ -163,7 +163,123 @@ namespace Phonon
 			 */
 			const QList<AudioPath*>& audioPaths() const;
 
+			/**
+			 * Returns the selected audio stream for the given AudioPath object.
+			 *
+			 * \param audioPath If 0 the default audio stream is returned. Else
+			 * the audio stream for the given AudioPath object is returned.
+			 *
+			 * \see availableAudioStreams
+			 * \see selectAudioStream
+			 */
+			QString selectedAudioStream( const AudioPath* audioPath = 0 ) const;
+
+			/**
+			 * Returns the selected video stream for the given VideoPath object.
+			 *
+			 * \param videoPath If 0 the default video stream is returned. Else
+			 * the video stream for the given VideoPath object is returned.
+			 *
+			 * \see availableVideoStreams
+			 * \see selectVideoStream
+			 */
+			QString selectedVideoStream( const VideoPath* videoPath = 0 ) const;
+
+			/**
+			 * Returns the selected subtitle stream for the given VideoPath object.
+			 *
+			 * \param videoPath If 0 the default subtitle stream is returned. Else
+			 * the subtitle stream for the given VideoPath object is returned.
+			 *
+			 * \see availableSubtitleStreams
+			 * \see selectSubtitleStream
+			 */
+			QString selectedSubtitleStream( const VideoPath* videoPath = 0 ) const;
+
+			/**
+			 * Returns the audio streams that can be selected by the user. The
+			 * strings can directly be used in the user interface.
+			 *
+			 * \see selectedAudioStream
+			 * \see selectAudioStream
+			 */
+			QStringList availableAudioStreams() const;
+
+			/**
+			 * Returns the video streams that can be selected by the user. The
+			 * strings can directly be used in the user interface.
+			 *
+			 * \see selectedVideoStream
+			 * \see selectVideoStream
+			 */
+			QStringList availableVideoStreams() const;
+
+			/**
+			 * Returns the subtitle streams that can be selected by the user. The
+			 * strings can directly be used in the user interface.
+			 *
+			 * \see selectedSubtitleStream
+			 * \see selectSubtitleStream
+			 */
+			QStringList availableSubtitleStreams() const;
+
 		public Q_SLOTS:
+			/**
+			 * Selects an audio stream from the media.
+			 *
+			 * Some media formats allow multiple audio streams to be stored in
+			 * the same file. Normally only one should be played back. You can
+			 * select the stream for all connected AudioPath objects or per
+			 * AudioPath object. The latter allows to play, two or more
+			 * different audio streams simultaneously.
+			 *
+			 * \param streamName one string out of the list returned by availableAudioStreams()
+			 * \param audioPath the AudioPath object for which the audio stream
+			 * selection should be used
+			 *
+			 * \see availableAudioStreams()
+			 * \see selectedAudioStream()
+			 */
+			void selectAudioStream( const QString& streamName, const AudioPath* audioPath = 0 );
+
+			/**
+			 * Selects a video stream from the media.
+			 *
+			 * Some media formats allow multiple video streams to be stored in
+			 * the same file. Normally only one should be played back. You can
+			 * select the stream for all connected VideoPath objects or per
+			 * VideoPath object. The latter allows to play, two or more
+			 * different video streams simultaneously.
+			 *
+			 * \param streamName one string out of the list returned by availableVideoStreams()
+			 * \param videoPath the VideoPath object for which the video stream
+			 * selection should be used
+			 *
+			 * \see availableVideoStreams()
+			 * \see selectedVideoStream()
+			 */
+			void selectVideoStream( const QString& streamName, const VideoPath* videoPath = 0 );
+
+			/**
+			 * Selects a subtitle stream from the media.
+			 *
+			 * Some media formats allow multiple subtitle streams to be stored in
+			 * the same file. Normally only one should be displayed. You can
+			 * select the stream for all connected VideoPath objects or per
+			 * VideoPath object. The latter allows to display, two or more
+			 * different subtitle streams simultaneously.
+			 *
+			 * \param streamName One string out of the list returned by
+			 * availableSubtitleStreams(); if a \c null QString is passed no
+			 * subtitles will be displayed.
+			 * \param videoPath the VideoPath object for which the subtitle stream
+			 * selection should be used
+			 *
+			 * \see availableSubtitleStreams()
+			 * \see selectedSubtitleStream()
+			 */
+			void selectSubtitleStream( const QString& streamName, const VideoPath* videoPath = 0 );
+
 			/**
 			 * Change the interval the tick signal is emitted. If you set
 			 * @p newTickInterval to @c 0 the signal gets disabled. The tick
@@ -176,7 +292,6 @@ namespace Phonon
 			 */
 			void setTickInterval( long newTickInterval );
 
-		public Q_SLOTS:
 			/**
 			 * Start playback of the media data.
 			 */

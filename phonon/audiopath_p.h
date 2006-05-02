@@ -33,14 +33,12 @@ class AudioPathPrivate : public BasePrivate
 	PHONON_PRIVATECLASS( AudioPath, Base )
 	protected:
 		AudioPathPrivate()
-			: channel( -1 )
 		{
 		}
 
 		void effectDestroyed( Base* );
 		void outputDestroyed( Base* );
 
-		int channel;
 		QList<AbstractAudioOutput*> outputs;
 		QList<AudioEffect*> effects;
 };

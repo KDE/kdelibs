@@ -28,6 +28,7 @@
 #include <QTimer>
 
 #include <kdebug.h>
+#include <QStringList>
 
 namespace Phonon
 {
@@ -100,6 +101,42 @@ long AbstractMediaProducer::tickInterval() const
 {
 	K_D( const AbstractMediaProducer );
 	return d->iface() ? d->iface()->tickInterval() : d->tickInterval;
+}
+
+QString AbstractMediaProducer::selectedAudioStream( const AudioPath* audioPath ) const
+{
+}
+
+QString AbstractMediaProducer::selectedVideoStream( const VideoPath* videoPath ) const
+{
+}
+
+QString AbstractMediaProducer::selectedSubtitleStream( const VideoPath* videoPath ) const
+{
+}
+
+QStringList AbstractMediaProducer::availableAudioStreams() const
+{
+}
+
+QStringList AbstractMediaProducer::availableVideoStreams() const
+{
+}
+
+QStringList AbstractMediaProducer::availableSubtitleStreams() const
+{
+}
+
+void AbstractMediaProducer::selectAudioStream( const QString& streamName, const AudioPath* audioPath )
+{
+}
+
+void AbstractMediaProducer::selectVideoStream( const QString& streamName, const VideoPath* videoPath )
+{
+}
+
+void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, const VideoPath* videoPath )
+{
 }
 
 void AbstractMediaProducer::setTickInterval( long newTickInterval )

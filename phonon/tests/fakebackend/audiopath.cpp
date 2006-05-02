@@ -36,30 +36,6 @@ AudioPath::~AudioPath()
 {
 }
 
-int AudioPath::availableChannels() const
-{
-	return 1;
-}
-
-QString AudioPath::channelName( int idx ) const
-{
-	if( idx == 1 )
-		return "default";
-	return QString();
-}
-
-bool AudioPath::selectChannel( int idx )
-{
-	if( idx == 1 )
-		return true;
-	return false;
-}
-
-int AudioPath::selectedChannel() const
-{
-	return 1;
-}
-
 bool AudioPath::addOutput( Ifaces::AbstractAudioOutput* audioOutput )
 {
 	Q_ASSERT( audioOutput );

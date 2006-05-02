@@ -62,68 +62,10 @@ namespace Phonon
 		friend class AbstractMediaProducerPrivate;
 		K_DECLARE_PRIVATE( AudioPath )
 		Q_OBJECT
-		Q_PROPERTY( int channel READ selectedChannel WRITE selectChannel )
 		PHONON_OBJECT( AudioPath )
 
 		public:
 			~AudioPath();
-
-			/**
-			 * Returns the number of available audio channels. Audio files
-			 * normally only have one channel. Channels are interesting for
-			 * media like DVDs where you can have different spoken languages in
-			 * different audio channels.
-			 *
-			 * You have to insert the AudioPath object into a AbstractMediaProducer
-			 * before this method can give a usefull answer. This is obvious if
-			 * you recall that, of course, the audio information is in the media
-			 * data (which is represented by the AbstractMediaProducer object).
-			 *
-			 * \return The number of channels. \c 0 means no audio channels at
-			 * all. \c -1 means it is not known yet, your program should ask
-			 * again at a later point.
-			 *
-			 * \see channelName
-			 * \see selectChannel
-			 */
-			int availableChannels() const;
-
-			/**
-			 * Returns the name of the given channel number.
-			 *
-			 * \param channel A number greater than \c 0 but less than or equal to
-			 * availableChannels (0 < \p channel <= availableChannels)
-			 *
-			 * \return The user visible name for the audio channel. This string
-			 * should be used by the end user to select the channel.
-			 *
-			 * \see availableChannels
-			 */
-			QString channelName( int channel ) const;
-
-			/**
-			 * Selects the given channel.
-			 *
-			 * \param channel A number greater than \c 0 but less than or equal to
-			 * availableChannels (0 < \p channel <= availableChannels)
-			 *
-			 * \return \c true if the call succeeded.
-			 * \return \c false if the call failed. This should only happen if
-			 * \p channel is out of range.
-			 *
-			 * \see availableChannels
-			 * \see selectedChannel
-			 */
-			bool selectChannel( int channel );
-
-			/**
-			 * Returns the index of the currently selected channel.
-			 *
-			 * \return The index of the currently selected channel.
-			 *
-			 * \see selectChannel
-			 */
-			int selectedChannel() const;
 
 			/**
 			 * Adds an audio output at the "end" of the audio path. This sends

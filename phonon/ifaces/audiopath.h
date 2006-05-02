@@ -31,16 +31,13 @@ namespace Ifaces
 	class AbstractAudioOutput;
 
 	/**
-	 * @author Matthias Kretz <kretz@kde.org>
+	 * \brief Class to determine audio flow graph connections.
+	 *
+	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class AudioPath : public Base
 	{
 		public:
-			virtual int availableChannels() const = 0;
-			virtual QString channelName( int ) const = 0;
-			virtual bool selectChannel( int ) = 0;
-			virtual int selectedChannel() const = 0;
-
 			virtual bool addOutput( AbstractAudioOutput* audioOutput ) = 0;
 			virtual bool removeOutput( AbstractAudioOutput* audioOutput ) = 0;
 			virtual bool insertEffect( AudioEffect* newEffect, AudioEffect* insertBefore = 0 ) = 0;

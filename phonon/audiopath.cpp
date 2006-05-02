@@ -37,33 +37,6 @@ AudioPath::~AudioPath()
 		ae->removeDestructionHandler( this );
 }
 
-int AudioPath::availableChannels() const
-{
-	K_D( const AudioPath );
-	return d->iface() ? d->iface()->availableChannels() : -1;
-}
-
-QString AudioPath::channelName( int channel ) const
-{
-	K_D( const AudioPath );
-	return d->iface() ? d->iface()->channelName( channel ) : QString();
-}
-
-bool AudioPath::selectChannel( int channel )
-{
-	K_D( AudioPath );
-	if( d->iface() )
-		return d->iface()->selectChannel( channel );
-	d->channel = channel;
-	return false;
-}
-
-int AudioPath::selectedChannel() const
-{
-	K_D( const AudioPath );
-	return d->iface() ? d->iface()->selectedChannel() : d->channel;
-}
-
 bool AudioPath::addOutput( AbstractAudioOutput* audioOutput )
 {
 	K_D( AudioPath );
@@ -141,7 +114,6 @@ const QList<AudioEffect*>& AudioPath::effects() const
 
 bool AudioPathPrivate::aboutToDeleteIface()
 {
-	channel = iface()->selectedChannel();
 	return true;
 }
 
@@ -151,8 +123,6 @@ void AudioPath::setupIface()
 	Q_ASSERT( d->iface() );
 
 	// set up attributes
-	d->iface()->selectChannel( d->channel );
-
 	QList<AbstractAudioOutput*> outputList = d->outputs;
 	foreach( AbstractAudioOutput* output, outputList )
 		if( !d->iface()->addOutput( output->iface() ) )

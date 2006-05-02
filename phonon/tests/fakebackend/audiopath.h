@@ -37,11 +37,6 @@ namespace Fake
 			AudioPath( QObject* parent );
 			virtual ~AudioPath();
 
-			virtual int availableChannels() const;
-			virtual QString channelName( int ) const;
-			virtual bool selectChannel( int );
-			virtual int selectedChannel() const;
-
 			virtual bool addOutput( Ifaces::AbstractAudioOutput* audioOutput );
 			virtual bool removeOutput( Ifaces::AbstractAudioOutput* audioOutput );
 			virtual bool insertEffect( Ifaces::AudioEffect* newEffect, Ifaces::AudioEffect* insertBefore = 0 );
