@@ -205,6 +205,8 @@ static QIODevice *getBZip2device(const QString &fileName )
 bool saveToCache( const QString &contents, const QString &filename )
 {
     QIODevice *fd = ::getBZip2device(filename);
+    if ( !fd )
+        return false;
 
     if (!fd->open(QIODevice::WriteOnly))
     {
@@ -229,6 +231,8 @@ static bool readCache( const QString &filename,
 
     kDebug( 7119 ) << "create filter" << endl;
     QIODevice *fd = ::getBZip2device(cache);
+    if ( !fd )
+        return false;
 
     if (!fd->open(QIODevice::ReadOnly))
     {

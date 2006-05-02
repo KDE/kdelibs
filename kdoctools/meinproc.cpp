@@ -146,7 +146,6 @@ int main(int argc, char **argv) {
 	   kError() << "getcwd() failed" << endl;
 	   return 2;
         }
-        chdir( QFile::encodeName( file.absolutePath() ) );
 
         QString catalogs;
         catalogs += locate( "dtd", "customization/catalog" );
@@ -164,6 +163,7 @@ int main(int argc, char **argv) {
                 exe = locate( "exe", "xmllint" );
         }
         if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
+            chdir( QFile::encodeName( file.absolutePath() ) );
             QString cmd = exe;
             cmd += " --catalogs --valid --noout ";
             cmd += KProcess::quote(file.fileName());
