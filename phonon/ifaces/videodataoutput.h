@@ -37,8 +37,10 @@ namespace Ifaces
 	{
 		public:
 			virtual Phonon::VideoDataOutput::Format format() const = 0;
+			virtual int displayLatency() const = 0;
 			virtual int frameRate() const = 0;
 			virtual void setFormat( Phonon::VideoDataOutput::Format format ) = 0;
+			virtual void setDisplayLatency( int milliseconds ) = 0;
 
 		protected: //signals
 			virtual void frameReady( const Phonon::VideoFrame& frame ) = 0;

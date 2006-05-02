@@ -65,6 +65,12 @@ VideoDataOutput::Format VideoDataOutput::format() const
 	return d->iface() ? d->iface()->format() : d->format;
 }
 
+int VideoDataOutput::displayLatency() const
+{
+	K_D( const VideoDataOutput );
+	return d->iface() ? d->iface()->displayLatency() : d->displayLatency;
+}
+
 int VideoDataOutput::frameRate() const
 {
 	K_D( const VideoDataOutput );
@@ -80,10 +86,20 @@ void VideoDataOutput::setFormat( Format newformat )
 		d->format = newformat;
 }
 
+void VideoDataOutput::setDisplayLatency( int milliseconds )
+{
+	K_D( VideoDataOutput );
+	if( iface() )
+		d->iface()->setDisplayLatency( milliseconds );
+	else
+		d->displayLatency = milliseconds;
+}
+
 bool VideoDataOutputPrivate::aboutToDeleteIface()
 {
 	Q_ASSERT( iface() );
 	format = iface()->format();
+	displayLatency = iface()->displayLatency();
 
 	return AbstractVideoOutputPrivate::aboutToDeleteIface();
 }
@@ -96,6 +112,7 @@ void VideoDataOutput::setupIface()
 
 	// set up attributes
 	d->iface()->setFormat( d->format );
+	d->iface()->setDisplayLatency( d->displayLatency );
 	connect( d->iface()->qobject(), SIGNAL( frameReady( const Phonon::VideoFrame& ) ),
 			SIGNAL( frameReady( const Phonon::VideoFrame& ) ) );
 	connect( d->iface()->qobject(), SIGNAL( endOfMedia() ), SIGNAL( endOfMedia() ) );

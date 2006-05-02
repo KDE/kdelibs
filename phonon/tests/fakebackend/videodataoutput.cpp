@@ -38,6 +38,11 @@ Phonon::VideoDataOutput::Format VideoDataOutput::format() const
 	return m_format;
 }
 
+int VideoDataOutput::displayLatency() const
+{
+	return m_latency;
+}
+
 int VideoDataOutput::frameRate() const
 {
 	return 25;
@@ -46,6 +51,11 @@ int VideoDataOutput::frameRate() const
 void VideoDataOutput::setFormat( Phonon::VideoDataOutput::Format format )
 {
 	m_format = format;
+}
+
+void VideoDataOutput::setDisplayLatency( int milliseconds )
+{
+	m_latency = milliseconds;
 }
 
 void VideoDataOutput::processFrame( Phonon::VideoFrame& frame )

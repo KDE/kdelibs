@@ -34,10 +34,13 @@ class VideoDataOutputPrivate : public AbstractVideoOutputPrivate
 	protected:
 		VideoDataOutputPrivate()
 			: format( VideoDataOutput::Format_ARGB32 ) //TODO: what should be the default?
+			// after changing the default -> change the dox accordingly
+			, displayLatency( 0 )
 		{
 		}
 
 		VideoDataOutput::Format format;
+		int displayLatency;
 };
 } //namespace Phonon
 

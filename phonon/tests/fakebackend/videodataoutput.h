@@ -41,8 +41,10 @@ namespace Fake
 			~VideoDataOutput();
 
 			virtual Phonon::VideoDataOutput::Format format() const;
+			virtual int displayLatency() const;
 			virtual int frameRate() const;
 			virtual void setFormat( Phonon::VideoDataOutput::Format format );
+			virtual void setDisplayLatency( int milliseconds );
 
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
 
@@ -60,6 +62,7 @@ namespace Fake
 		private:
 			Phonon::VideoDataOutput::Format m_format;
 			QByteArray m_pendingData;
+			int m_latency;
 	};
 }} //namespace Phonon::Fake
 

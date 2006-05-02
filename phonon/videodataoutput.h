@@ -40,17 +40,18 @@ namespace Phonon
 	}
 
 	/**
-	 * \short This class gives you the video data (for visualizations).
+	 * \short This class gives you the video data.
 	 *
 	 * This class implements a special AbstractVideoOutput that gives your
-	 * application the video data. Don't expect realtime performance. But
-	 * the latencies should be low enough to use the video data for
-	 * visualizations. You can also use the video data for further processing
-	 * (e.g. encoding and saving to a file).
+	 * application the video data. If you introduce latencies between receiving
+	 * the frameReady signal and displaying the video frame you should call
+	 * setDisplayLatency.
 	 *
-	 * The class supports different data formats. One of the most common formats
-	 * is to read vectors of integers (which will only use 16 Bit), but you can
-	 * also request floats which some backends use internally.
+	 * You can also use the video data for further processing (e.g. encoding and
+	 * saving to a file).
+	 *
+	 * The class supports different data formats. See the Format enum for what
+	 * is available.
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
@@ -59,7 +60,33 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( VideoDataOutput )
 		Q_ENUMS( Format )
+		/**
+		 * This property sets the dataformat you'd like to receive.
+		 *
+		 * The default format is Format_ARGB32.
+		 *
+		 * \see Format
+		 */
 		Q_PROPERTY( Format format READ format WRITE setFormat )
+
+		/**
+		 * This property tells the backend how many milliseconds it
+		 * takes for the video frame to be displayed after frameReady was
+		 * emitted.
+		 *
+		 * In order to give the backend a chance to perfectly synchronize
+		 * audio and video it needs to know how much time you need in order
+		 * to display the video frame after it emitted the frameReady
+		 * signal. If you render the video to screen immediatly, setting the
+		 * latency to 0 ms should be good enough.
+		 *
+		 * If set to -1 the backend may disregard this
+		 * object when considering synchronization. Use -1 for cases where
+		 * you don't use the video data for displaying it on the screen.
+		 *
+		 * The latency defaults to 0 ms.
+		 */
+		Q_PROPERTY( int displayLatency READ displayLatency WRITE setDisplayLatency )
 		PHONON_HEIR( VideoDataOutput )
 		public:
 			/**
@@ -67,18 +94,36 @@ namespace Phonon
 			 */
 			enum Format
 			{
+				/**
+				 * The frame is stored using a 32-bit ARGB format (0xAARRGGBB).
+				 */
 				Format_ARGB32,
+				/**
+				 * The frame is stored using a 32-bit RGB format (0xffRRGGBB).
+				 */
 				Format_RGB32,
+				/**
+				 * The frame is stored using a 24-bit RGB format. Pixels are not
+				 * padded to 32 bit.
+				 */
 				Format_RGB24,
+				/**
+				 * The frame is stored as 4:2:0 YUV: a width x height Y plane
+				 * followed by a width/2 x height/2 V plane and a width/2 x
+				 * height/2 U plane.
+				 *
+				 * \see Format_I420
+				 */
 				Format_YV12,
+				/**
+				 * I420 is a 4:2:0 YUV format like Format_YV12 but with the U
+				 * and V planes reversed.
+				 *
+				 * \see Format_YV12
+				 */
 				Format_I420
 			};
 
-			/**
-			 * Returns the currently used format.
-			 *
-			 * \see setFormat
-			 */
 			Format format() const;
 
 			/**
@@ -91,17 +136,12 @@ namespace Phonon
 			 */
 			int frameRate() const;
 
+			int displayLatency() const;
+
 		public Q_SLOTS:
-			/**
-			 * Requests the dataformat you'd like to receive. Only one of the
-			 * signals of this class will be emitted when new data is ready.
-			 *
-			 * The default format is .
-			 *
-			 * \see format()
-			 */
-			//TODO document default
 			void setFormat( Phonon::VideoDataOutput::Format format );
+
+			void setDisplayLatency( int milliseconds );
 
 		Q_SIGNALS:
 			/**
