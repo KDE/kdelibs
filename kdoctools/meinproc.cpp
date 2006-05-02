@@ -143,8 +143,6 @@ int main(int argc, char **argv) {
              return 2;
 	}
 
-        chdir( QFile::encodeName( file.dirPath( true ) ) );
-
         QString catalogs;
         catalogs += locate( "dtd", "customization/catalog" );
         catalogs += " ";
@@ -161,6 +159,7 @@ int main(int argc, char **argv) {
                 exe = locate( "exe", "xmllint" );
         }
         if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
+            chdir( QFile::encodeName( file.dirPath( true ) ) );
             QString cmd = exe;
             cmd += " --catalogs --valid --noout ";
             cmd += KProcess::quote(file.fileName());
@@ -242,7 +241,7 @@ int main(int argc, char **argv) {
                 for ( PairList::ConstIterator it = list.begin(); it != list.end();
                       ++it, ++wi )
                     fprintf( stdout, "w\t%s\t%d\t%d\n", ( *it ).word.utf8().data(),
-                             1000*wi/list.count(), ( *it ).base );
+                             1000*wi/(int)list.count(), ( *it ).base );
 
                 xmlFreeDoc(res);
             } else {
