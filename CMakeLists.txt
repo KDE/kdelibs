@@ -7,6 +7,17 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 if (WIN32)
    find_package(GNUWIN32)
 endif (WIN32)
+
+# for visual studio IDE set the path correctly for custom commands
+if(MSVC_IDE)
+  find_program(PERL_PATH perl)
+  get_filename_component(PERL_LOCATION "${PERL_PATH}" PATH)
+  file(TO_NATIVE_PATH "${PERL_LOCATION}" PERL_PATH_WINDOWS)
+  file(TO_NATIVE_PATH "${QT_BINARY_DIR}" QT_BIN_DIR_WINDOWS)
+  set(CMAKE_MSVCIDE_RUN_PATH "${PERL_PATH_WINDOWS}\;${QT_BIN_DIR_WINDOWS}"
+    CACHE STATIC "MSVC IDE Run path" FORCE)
+endif(MSVC_IDE)
+
 find_package(KDE4Internal REQUIRED)
 find_package(ZLIB REQUIRED)
 
