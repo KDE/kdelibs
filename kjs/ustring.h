@@ -90,7 +90,7 @@ namespace KJS {
     /**
      * @return The lower byte of the character.
      */
-    unsigned char low() const { return uc; }
+    unsigned char low() const { return (unsigned char)uc; }
     /**
      * @return the 16 bit Unicode value of the character
      */

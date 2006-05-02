@@ -55,6 +55,7 @@ create_lut(kjs_LIB_SRCS regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
 create_lut(kjs_LIB_SRCS keywords.table lexer.lut.h lexer.cpp)
 
 set(kjs_LIB_SRCS
+   ${kjs_LIB_SRCS}
    ustring.cpp
    date_object.cpp
    collector.cpp

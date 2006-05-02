@@ -576,7 +576,7 @@ bool PropertyMap::containsGettersOrSetters() const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
-        return _singleEntry.attributes & GetterSetter;
+        return ((_singleEntry.attributes & GetterSetter) != 0);
 #endif
         return false;
     }

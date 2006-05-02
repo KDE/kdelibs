@@ -467,7 +467,7 @@ namespace KJS {
     void setException(JSValue* e) { _exception = e; }
     void clearException() { _exception = 0; }
     JSValue* exception() const { return _exception; }
-    bool hadException() const { return _exception; }
+    bool hadException() const { return _exception != 0; }
   private:
     ExecState(Interpreter* interp, ContextImp* con)
         : _interpreter(interp), _context(con), _exception(0) { }

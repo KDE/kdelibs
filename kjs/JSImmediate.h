@@ -84,7 +84,7 @@ public:
     {
         if (is32bit()) {
             FloatUnion floatUnion;
-            floatUnion.asFloat = d;
+            floatUnion.asFloat = (float)d;
             
             // check for data loss from tagging
             if ((floatUnion.asBits & TagMask) != 0)
@@ -223,9 +223,9 @@ private:
         const uint64_t One64AsBits = 0x3ff00000ULL << 32;
 
         if (JSImmediate::is32bit())
-            return One32AsBits;
+            return (uintptr_t)One32AsBits;
         else if (JSImmediate::is64bit())
-            return One64AsBits;
+            return (uintptr_t)One64AsBits;
         else {
             abort();
             return 0;
