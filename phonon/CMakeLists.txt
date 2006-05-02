@@ -85,6 +85,7 @@ install_files( /include/phonon FILES
 	videoeffectdescription.h
 	phononnamespace.h
 	base.h
+	basedestructionhandler.h
 	abstractmediaproducer.h
 	mediaobject.h
 	avcapture.h
