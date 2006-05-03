@@ -1,8 +1,7 @@
 To (try to) compile kdelibs with CMake, you will need:
 
-kdelibs trunk
-CMake version 2.3.4 or later 
-
+kdelibs, either trunk or from the kdelibs4_snapshot.
+CMake version 2.4.1 or later 
 
 
 WHERE TO GET CMAKE
@@ -10,14 +9,15 @@ WHERE TO GET CMAKE
 
 Sources are at:
 
-http://www.cmake.org/files/v2.4/cmake-2.4.0.tar.gz
+http://www.cmake.org/files/v2.4/cmake-2.4.1.tar.gz
 
 unpack, run "./configure && make && make install" will install into /usr/local.
 
 Ensure cmake is in your $PATH.
 
 (I don't think you even need to do this, but it makes some sense:
-Ensure you run 'unsermake clean' first in all your KDE source directories.)
+Ensure you run 'unsermake clean' first in all your KDE source directories.
+Better yet, use the svn-clean script from kdesdk/scripts --mpyne)
 
 Use a separate builddir to build KDE modules, not the sourcedir (example below).
 

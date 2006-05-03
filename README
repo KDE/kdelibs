@@ -17,14 +17,13 @@ execution of a KDE program, as well as internationalization files for these
 libraries, misc HTML documentation, theme modules, and regression tests. 
 Here is an alphabetical list:
 
-* arts
-    ARTS (analog realtime synthesizer) is a environment of small modules
-    that one can plug together to process multimedia data. This directory
-    contains KDE wrapper and KDE user interface elements for ARTS.
-
 * dcop
     The desktop communication program allows even shell scripts to
     communicate with KDE applications. It's also the base for KParts.
+    -- This is soon to be replaced by the D-BUS bindings.
+
+* dnssd
+    Interface to the DNS-SD (Zeroconf) support.
 
 * interfaces
     kparts interface for text editors, mediaplayer and scripting.
@@ -37,6 +36,9 @@ Here is an alphabetical list:
 
 * kcert
     Personal certification manager.
+
+* kcmshell
+    KControl Module interface
 
 * kconf_update
     Auto-Updater for config files.
@@ -94,8 +96,24 @@ Here is an alphabetical list:
 * kjs
     Implementation of ECMAScript (aka JavaScript).
 
+* kjsembed
+    A binding of the ECMAScript language to interface with KDE code.
+
+* knewstuff
+    Allows applications to easily download data from the Internet to add
+    new information to the program. e.g. wallpapers, translation packs, etc.
+
+* knotify
+    Handles user notifications, including sounds, logging to files, etc.
+
 * kparts
     KDE component model.
+
+* kresources
+    KDE Resource management framework.  Used for Address Book for example.
+
+* kspell2
+    KDE Spellchecking framework.
 
 * kstyles
     The theme engine lies within. It handles nearly anything relating to
@@ -104,15 +122,8 @@ Here is an alphabetical list:
 * kwallet
     Client and backend to store values in encrypted files.
 
-* libkmid
-    MIDI file handling and midi mapper (manages output of midi files to
-    various devices).
-
-* libkscreensaver
-    Library for making KDE screensavers.
-
 * libltdl
-    System independed dlopen() handler.
+    System independent dlopen() handler.
 
 * licenses
     Contains texts of all used licenses.
@@ -120,11 +131,14 @@ Here is an alphabetical list:
 * mimetypes
     Database of mime types.
 
+* phonon
+    KDE 4 Multimedia Framework.
+
 * pics
     Database of icons.
 
-* qttestlib
-    The Trolltech Qt test library (http://www.trolltech.com/products/solutions/catalog/4/Tools/qttestlib/)
+* win
+    Support code for KDE on Win32.
 
 Licensing
 ---------
@@ -144,78 +158,49 @@ headings and other identifying marks.
 
 Common Mistakes
 ---------------
-If configure claims Qt cannot be found, look at http://www.trolltech.com
+If cmake claims Qt cannot be found, look at http://www.trolltech.com/
 to get a copy of Qt, version 4.1 or newer. If you have peeked there
 already, grab the SVN module qt-copy from anonsvn.kde.org, or a snapshot
 thereof.  Alternatively the svn module qt-copy from svn.kde.org can also be
 used.
 
-If you know you have the latest Qt 4, another reason it may not be able to 'find'
-QT is because it's finding an older version of QT 4.  Make sure that
-QTDIR is set, and LD_LIBRARY_PATH is set to $QTDIR/lib
+If you know you have the latest Qt 4,  another reason it may not be able to
+'find' QT is because it's finding an older version of QT 4.  Make sure that
+your PATH is set appropriately  to find the qmake from the latest Qt 4, and
+LD_LIBRARY_PATH is set to include $QTDIR/lib.
 
 Debugging
 ---------
-You can use --enable-debug with the configure script, if you want to have
+You can set the CMAKE_BUILD_TYPE option with the cmake, if you want to have
 debug code in your KDE libs. If you have the space and can stand code that's
 somewhat slower, this is worth it. The extra information really
 helps debugging and thus bugfixing.
 
-On the other hand, --disable-debug removes all debug messages, leading
-to a faster and cleaner desktop.
+Available options as of CMake 2.4.2:
+ Release:        Compile with no debugging information, optimization enabled.
+ Debug:          Minimal optimization, with debugging information.
+ RelWithDebInfo: Normal optimization, with debugging information.
+ MinSizeRel:     No debugging information, with optimization for smallest size.
+
+e.g.: "cmake -DCMAKE_BUILD_TYPE=Debug" when running cmake.
 
 See also the file DEBUG.
 
 
 Upgrading
 ---------
-If you have an kdebase older than 3.0 installed, just copy all your .k*rc
-files from $HOME to $HOME/.kde/share/config. In the other case, default
-values are used for most apps.
+KDE 4 applications will try to migrate settings from your KDE 3 installation
+where possible.
 
 
 Compile Problems
 ----------------
-Often, KDE compile failures are not KDE's faults but the one of the
+Often, KDE compile failures are not KDE's fault, but the fault of the
 compiler or the distribution used. For that reason, please have a look at
-http://developer.kde.org/build/compilationfaq.html for known issues in certain OS
-environments before reporting bugs or going mad :). 
+http://developer.kde.org/build/compilationfaq.html for known issues in certain
+OS environments before reporting bugs or going mad :). 
 
-gcc 3.0/3.0.1 is not yet able to compile all of KDE without errors, mostly 
-due to bugs in this version of the compiler. Some older version of gcc 2.96
-also have problems compiling KDE due to compiler bugs. Even though 
-compilation may not report errors with these compiler, the usage of these
-compilers may cause crashes when using the resulting executables.
-
-If you are running a FreeBSD system, you will need to make sure that LIBS
-is set to "-Wl,-export-dynamic". The easiest way to do this is to prefix
-configure with it, i.e.: LIBS="-Wl,-export-dynamic" ./configure. Thanks to
-Will Andrews <will@FreeBSD.org> and Arun Sharma <adsharma@sharmas.dhs.org>
-for identifying what needed to be done, and how to do it, and such.
-
-If you get odd error such as:
-
-as: Error: /var/tmp/ccK1Cfxa.s, line 2827: Truncating token:
-__t4pair2Zt18__rb_tree_iterator3Zt4pair2ZCt12basic_string3ZcZt18string_char_trai
-ts1ZcZt24__default_alloc_template2b0i0Zt12basic_string3ZcZt18string_char_traits1
-ZcZt24__default_alloc_template2b0i0ZRt4pair2ZCt12basic_string3ZcZt18string_char_
-traits1ZcZt24__default_alloc_template2b0i0Zt12basic_string3ZcZt18string_char_tra
-its1ZcZt24__default_alloc_template2b0i0ZPt4pair2ZCt12basic_string3ZcZt18string_c
-har_traits1ZcZt24__default_alloc_template2b0i0Zt12basic_string3ZcZt18string_char
-_traits1ZcZt24__default_alloc_template2b0i0ZbRCt18__rb_tree_iterator3Zt4pair2ZCt
-12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0Zt12b
-asic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0ZRt4pair
-2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0Z
-t12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b0i0ZPt4
-pair2ZCt12basic_string3ZcZt18string_char_traits1ZcZt24__default_alloc_template2b
-0i0Zt12basic_string3ZcZt18strin!
-g_char_traits1ZcZt24__default_al
-
-and you're using egcs, try re-compiling all your C++ libs with -fsquangle,
-and then recompiling whatever you were working on with -fsquangle. It
-should help, and more information about this is available on the egcs FAQ
-available at http://egcs.cygnus.com
-
+KDE 4 requires gcc 3.3 or better as the compiler.
 
 How to report
 -------------
@@ -230,18 +215,22 @@ they normally don't have access (e.g. KDE on AIX) to.
 
 So, here are some tips on bug reporting:
 
-* make sure your bug is due to KDE ... and not due to a packaging problem of
-  your Linux distributor. For example, most "I can not install the XYZ.rpm"
+* Make sure your bug is due to KDE ... and not due to a packaging problem of
+  your OS distributor. For example, most "I can not install the XYZ.rpm"
   problem are due to packaging issues. Refer with such questions to your
-  Linux Distributor and his appropriate mailing list or bug reporting tool.
+  OS Distributor and his appropriate mailing list or bug reporting tool.
 
 * The chance is high that your bug has already been dealt with ... so look
   if there is a newer version of kdelibs available. Reporting bugs for
   older, deprecated versions usually don't get that much attention :-)
 
 * Also the chance is high that another one experienced your problem. The
-  bug report wizard at http://bugs.kde.org will help you to find out if your
+  bug report wizard at http://bugs.kde.org/ will help you to find out if your
   problem has already been reported.
+
+* KDE Applications come with a Report Bug option in the Help menu that will
+  fill out many of the forms on the bug reporter tool at http://bugs.kde.org/
+  for you.
 
 * The best bug report for a project based on voluntary work is of course one
   that comes with a patch that solves the problem. :-)
@@ -249,7 +238,7 @@ So, here are some tips on bug reporting:
 
 More info
 ---------
-http://www.kde.org is a good starting point for info on KDE. If you are a
-developer, you may also point your browser to http://developer.kde.org.
+http://www.kde.org/ is a good starting point for info on KDE. If you are a
+developer, you may also point your browser to http://developer.kde.org/.
 There is a plethora of mailing lists available, you can gain an overview
-quickly by looking at http://lists.kde.org.
+quickly by looking at http://lists.kde.org/.
