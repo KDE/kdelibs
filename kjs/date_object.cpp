@@ -927,11 +927,11 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if (!*dateString)
      	return invalidDate;
 
-     if (day < 1)
+     if (day < 0)
        return invalidDate;
      if (day > 31) {
        // ### where is the boundary and what happens below?
-       if (*dateString == '/' && day >= 1000) {
+       if (*dateString == '/') {
          // looks like a YYYY/MM/DD date
          if (!*++dateString)
            return invalidDate;
@@ -949,7 +949,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        } else {
          return invalidDate;
        }
-     } else if (*dateString == '/' && day <= 12 && month == -1)
+     } else if (*dateString == '/' && month == -1)
      {
      	dateString++;
         // This looks like a MM/DD/YYYY date, not an RFC date.....
