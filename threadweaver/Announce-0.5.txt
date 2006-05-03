@@ -4,8 +4,9 @@ For those who are not familiar with it: ThreadWeaver is like a
 multi-threaded make tool for application developers. It provides means to chop
 operations into jobs and declare the way they depend on each other. When
 started, the jobs will be executed by a pool of threads, which will
-automagically try to find the most efficient order of execution. Now it has
-job collections, job sequences, and qtestlib based unit tests. 
+automagically try to find the most efficient order of execution. With the
+lately released version 0.5, it now has job collections, job sequences, and
+qtestlib based unit tests.
 
 When ThreadWeaver was introduced at last year's KDE conference, a number of
 concepts have been suggested for addition to it. One of the concepts where
@@ -37,5 +38,6 @@ progress property to the Job base class. Let us see if the future brings a
 nice idea of composition ...
 
 ThreadWeaver is in KDE SVN (kdenonbeta/threadweaver). 
+Release 0.5 has been tagged in tags/others/threadweaver/0.5.
 
 
