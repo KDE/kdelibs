@@ -447,7 +447,6 @@ apidox_toplevel()
 	echo "*"
 	rm -f "Doxyfile"
 	for i in "$top_srcdir/doc/api/Doxyfile.global" \
-		"$top_srcdir/admin/Doxyfile.global" \
 		"$DOXDATA/Doxyfile.global"
 	do
 		if test -f "$i" ; then
@@ -529,7 +528,6 @@ apidox_subdir()
 		return
 	fi
 	for i in "$top_srcdir/doc/api/Doxyfile.global" \
-		"$top_srcdir/admin/Doxyfile.global" \
 		"$DOXDATA/Doxyfile.global"
 	do
 		if test -f "$i" ; then
