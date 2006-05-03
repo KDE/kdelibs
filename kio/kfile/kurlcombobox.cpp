@@ -108,11 +108,17 @@ void KUrlComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
     KUrlComboItem *item = new KUrlComboItem;
     item->url = url;
     item->icon = icon;
-    if ( text.isEmpty() )
-        if ( url.isLocalFile() )
-        item->text = url.path( (KUrl::AdjustPathOption)myMode );
+    if ( text.isEmpty() ) {
+        KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
+        if (myMode == Directories)
+          mode = KUrl::AddTrailingSlash;
         else
-          item->text = url.prettyURL( (KUrl::AdjustPathOption)myMode );
+          mode = KUrl::RemoveTrailingSlash;        
+        if ( url.isLocalFile() )
+          item->text = url.path( mode );
+        else
+          item->text = url.prettyURL( mode );
+    }
     else
         item->text = text;
 
@@ -190,7 +196,14 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
         item->icon = getIcon( u );
 
         if ( u.isLocalFile() )
-          item->text = u.path( (KUrl::AdjustPathOption)myMode ); // don't show file:/
+        {
+          KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
+          if (myMode == Directories)
+              mode = KUrl::AddTrailingSlash;
+          else
+              mode = KUrl::RemoveTrailingSlash;
+          item->text = u.path( mode ); // don't show file:/
+        }
         else
             item->text = *it;
 
@@ -238,13 +251,18 @@ void KUrlComboBox::setURL( const KUrl& url )
     while ( it.hasNext() )
         insertURLItem( it.next() );
 
+    KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
+    if (myMode == Directories)
+      mode = KUrl::AddTrailingSlash;
+    else
+      mode = KUrl::RemoveTrailingSlash;    
     KUrlComboItem *item = new KUrlComboItem;
     item->url = url;
     item->icon = getIcon( url );
     if ( url.isLocalFile() )
-      item->text = url.path( (KUrl::AdjustPathOption)myMode );
+      item->text = url.path( mode );
     else
-      item->text = url.prettyURL( (KUrl::AdjustPathOption)myMode );
+      item->text = url.prettyURL( mode );
      kDebug(250) << "setURL: text=" << item->text << endl;
 
     int id = count();
@@ -347,11 +365,17 @@ void KUrlComboBox::updateItem( const KUrlComboItem *item,
     // QComboBox::changeItem() doesn't honor the pixmap when
     // using an editable combobox, so we just remove and insert
     if ( isEditable() ) {
+      KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
+      if (myMode == Directories)
+        mode = KUrl::AddTrailingSlash;
+      else
+        mode = KUrl::RemoveTrailingSlash;
+
 	removeItem( index );
 	insertItem( index,
                     icon,
-		    item->url.isLocalFile() ? item->url.path( (KUrl::AdjustPathOption)myMode ) :
-                        item->url.prettyURL( (KUrl::AdjustPathOption)myMode ));
+		    item->url.isLocalFile() ? item->url.path( mode ) :
+                        item->url.prettyURL( mode ));
     }
     else {
         setItemIcon(index,icon);
