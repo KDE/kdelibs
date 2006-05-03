@@ -2294,7 +2294,7 @@ void CopyJob::slotResultStating( KJob *job )
 
     if ( isDir
          // treat symlinks as files (no recursion)
-         && entry.find( KIO::UDS_STRING ) == entry.end() // i.e ."not a link"
+         && !entry.isLink()
          && m_mode != Link ) // No recursion in Link mode either.
     {
         //kDebug(7007) << " Source is a directory " << endl;
