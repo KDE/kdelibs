@@ -1,0 +1,7 @@
+- add test for enqueue-and-stop
+- announce latest changes on k-c-d
+- make roadmap for 0.5 (done), 0.6 (resource pools?), 0.7 (queue
+  visualizations?), 0.8 (??), ....
+
+- (DONE) remove enqueue(QList<Job*>)
+- (DONE) add more complicated test for recursive job collections
