@@ -55,7 +55,8 @@ GhnsWidget::GhnsWidget()
 
   topLayout->addSpacing( 5 );
 
-  QBoxLayout *buttonLayout = new QHBoxLayout( topLayout );
+  QBoxLayout *buttonLayout = new QHBoxLayout();
+  topLayout->addItem( buttonLayout );
 
   buttonLayout->addStretch();
 
