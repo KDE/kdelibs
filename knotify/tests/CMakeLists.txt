@@ -2,33 +2,15 @@ kde4_header()
 
 project(knotifytest)
 
-find_package(KDE4 REQUIRED)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../config )
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-
-link_directories(${KDE4_LIB_DIR})
-
-include(ConvenienceLibs.cmake)
-
-#include(ManualStuff.cmake)
-
-#include(ConfigureChecks.cmake)
-
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES}  )
-
-
-########### next target ###############
-
-
-set( knotifytest_UI knotifytestview.ui )
+########### knotifytest ###############
 
 set(knotifytest_SRCS main.cpp knotifytestwindow.cpp )
 
-kde4_add_ui_files(knotifytest_SRCS ${knotifytest_UI} )
+kde4_add_ui_files(knotifytest_SRCS knotifytestview.ui)
 
 kde4_automoc(${knotifytest_SRCS})
 

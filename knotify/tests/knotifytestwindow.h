@@ -6,7 +6,7 @@
 #define __KNotifyTestWINDOW_H__
 
 #include <kmainwindow.h>
-#include "knotifytestview.h"
+#include "ui_knotifytestview.h"
 
 class KNotifyTestWindow : public KMainWindow
 {
