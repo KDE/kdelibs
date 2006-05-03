@@ -885,7 +885,7 @@ void KApplication::commitData( QSessionManager& sm )
         QWidgetList list = QApplication::topLevelWidgets();
         bool canceled = false;
         QWidget* w = list.first();
-		int count = 0;
+        int count = 0;
         while ( !canceled && w ) {
             if ( !( w->testAttribute( Qt::WA_WState_Hidden )) && !w->inherits("KMainWindow") ) {
                 QCloseEvent e;
@@ -893,26 +893,29 @@ void KApplication::commitData( QSessionManager& sm )
                 canceled = !e.isAccepted();
                 if ( !canceled )
                     done.append( w );
-				//grab the new list that was just modified by our closeevent
+
+                //grab the new list that was just modified by our closeevent
                 list = QApplication::topLevelWidgets();
                 w = list.first();
-				count = 0;
+                count = 0;
             } else {
-				//loop over the widgets
-				count++;
+                //loop over the widgets
+                count++;
                 w = list[ count ];
             }
-            while ( w && done.contains( w ) )
-				//loop over the widgets
-				count++;
+
+            while ( w && done.contains( w ) ) {
+                //loop over the widgets
+                count++;
                 w = list[ count ];
+            }
         }
     }
 
     if ( !bSessionManagement )
         sm.setRestartHint( QSessionManager::RestartNever );
     else
-	sm.setRestartHint( QSessionManager::RestartIfRunning );
+        sm.setRestartHint( QSessionManager::RestartIfRunning );
     d->session_save = false;
 }
 
