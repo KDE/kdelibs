@@ -100,6 +100,11 @@ private:
     QList<KBookmarkMenu *> m_lstSubMenus;
     QAction* m_toolBarSeparator;
 
+    /**
+     * If you want to extend KBookmarkBar without breaking binary compatibility, 
+     * put additional members into this class. When you can break compatibility, move 
+     * members into KBookmarBar and empty this private class.
+     */
     KBookmarkBarPrivate * const d;
 };
 

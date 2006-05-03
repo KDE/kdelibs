@@ -278,6 +278,13 @@ private:
 
     QString m_editorCaption;
     bool m_browserEditor;
+
+    /**
+     * If you want to extend KBookmarkManager without breaking binary compatibility, 
+     * put additional members into this class. When you can break compatibility, move 
+     * members into KBookmarkManager and empty this private class.
+     */
+    class KBookmarkManagerPrivate* d;
 };
 
 /**
