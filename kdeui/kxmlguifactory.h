@@ -138,7 +138,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * This function is particularly useful for getting hold of a popupmenu defined in an XMLUI file.
    * For instance:
    * \code
-   * QPopupMenu *popup = static_cast<QPopupMenu*>(factory()->container("my_popup",this));
+   * QMenu *popup = static_cast<QMenu*>(factory()->container("my_popup",this));
    * \endcode
    * where @p "my_popup" is the name of the menu in the XMLUI file, and
    * @p "this" is XMLGUIClient which owns the popupmenu (e.g. the mainwindow, or the part, or the plugin...)
