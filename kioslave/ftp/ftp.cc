@@ -1,6 +1,6 @@
 // -*- Mode: c++; c-basic-offset: 2; indent-tabs-mode: nil; tab-width: 2; c-file-style: "stroustrup" -*-
 /*  This file is part of the KDE libraries
-    Copyright (C) 2000 David Faure <faure@kde.org>
+    Copyright (C) 2000-2006 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -315,7 +315,7 @@ void Ftp::closeConnection()
 void Ftp::setHost( const QString& _host, int _port, const QString& _user,
                    const QString& _pass )
 {
-  kDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << endl;
+  kDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << " port=" << _port << endl;
 
   m_proxyURL = metaData("UseProxy");
   m_bUseProxy = (m_proxyURL.isValid() && m_proxyURL.protocol() == "ftp");
@@ -361,7 +361,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   m_currentPath.clear();
 
   QString host = m_bUseProxy ? m_proxyURL.host() : m_host;
-  unsigned short int port = m_bUseProxy ? m_proxyURL.port() : m_port;
+  int port = m_bUseProxy ? m_proxyURL.port() : m_port;
 
   if (!ftpOpenControlConnection(host, port) )
     return false;          // error emitted by ftpOpenControlConnection
@@ -385,10 +385,10 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
  *
  * @return true on success.
  */
-bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port )
+bool Ftp::ftpOpenControlConnection( const QString &host, int port )
 {
   QString serv;
-  if ( port != 0 )
+  if ( port > 0 )
     serv = QString::number( port );
   else
     serv = QLatin1String( "ftp" );
@@ -403,8 +403,7 @@ bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port
 #endif
   // now connect to the server and read the login message ...
   m_control->setTimeout(connectTimeout() * 1000);
-  int iErrorCode = m_control->connect(host, serv) ? ERR_COULD_NOT_CONNECT : 0;
-  sErrorMsg = QString("%1: %2").arg(host).arg(m_control->errorString());
+  int iErrorCode = m_control->connect(host, serv) ? 0 : ERR_COULD_NOT_CONNECT;
 
   // on connect success try to read the server message...
   if(iErrorCode == 0)
@@ -416,6 +415,10 @@ bool Ftp::ftpOpenControlConnection( const QString &host, unsigned short int port
         sErrorMsg = i18n("%1.\n\nReason: %2", host, psz);
       iErrorCode = ERR_COULD_NOT_CONNECT;
     }
+  }
+  else
+  {
+      sErrorMsg = QString("%1: %2").arg(host).arg(m_control->errorString());
   }
 
   // if there was a problem - report it ...
@@ -1852,7 +1855,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   {
     if( !ftpOpenConnection(loginImplicit) )
           return;
-  
+
     if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
       kWarning(7102) << "Can't open for reading" << endl;
       return;
@@ -1865,15 +1868,15 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     array.setRawData(buffer, n);
     data( array );
     array.resetRawData(buffer, n);
-  
+
     kDebug(7102) << "aborting" << endl;
     ftpAbortTransfer();
-  
+
     kDebug(7102) << "finished" << endl;
     finished();
     kDebug(7102) << "after finished" << endl;
   }
-  
+
   void Ftp::ftpAbortTransfer()
   {
     // RFC 959, page 34-35
@@ -1890,7 +1893,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
      msg[1] = (char) 242; //DM
      if (send(sControl, msg, 2, MSG_OOB) != 2)
        ; // error...
-  
+
      // Send ABOR
      kDebug(7102) << "send ABOR" << endl;
      QCString buf = "ABOR\r\n";
@@ -1898,7 +1901,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
        error( ERR_COULD_NOT_WRITE, QString() );
        return;
      }
-  
+
      //
      kDebug(7102) << "read resp" << endl;
      if ( readresp() != '2' )
@@ -1906,7 +1909,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
        error( ERR_COULD_NOT_READ, QString() );
        return;
      }
-  
+
     kDebug(7102) << "close sockets" << endl;
     closeSockets();
   }
@@ -2068,7 +2071,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
     {
       // Remove if smaller than minimum size
       if ( ftpSize( dest, 'I' ) &&
-           ( processed_size < (unsigned long) config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ) )
+           ( processed_size < config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE) ) )
       {
         QByteArray cmd = "DELE ";
         cmd += remoteEncoding()->encode(dest);

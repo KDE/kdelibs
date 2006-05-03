@@ -266,7 +266,7 @@ private:
    *
    * @return true on success.
    */
-  bool ftpOpenControlConnection( const QString & host, unsigned short int port );
+  bool ftpOpenControlConnection( const QString & host, int port );
 
   /**
    * closes the socket holding the control connection (see ftpOpenControlConnection)
@@ -331,7 +331,7 @@ private:
 private: // data members
 
   QString m_host;
-  unsigned short int m_port;
+  int m_port;
   QString m_user;
   QString m_pass;
   /**
