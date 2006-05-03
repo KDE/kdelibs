@@ -29,4 +29,3 @@ namespace ThreadWeaver {
     }
 }
 
-#include "JobSequence.moc"

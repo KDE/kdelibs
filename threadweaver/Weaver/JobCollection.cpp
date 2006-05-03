@@ -6,62 +6,79 @@
 #include <QPointer>
 
 #include "JobCollection.h"
-#include "JobCollection_p.h"
 
 namespace ThreadWeaver {
 
-    JobCollectionJobRunner::JobCollectionJobRunner ( Job* guard, Job* payload, QObject* parent )
-        : Job( parent )
-        , m_guard ( guard )
-        , m_payload( payload )
+    class JobCollectionNullJob : public Job
     {
-        Q_ASSERT ( payload ); // will not accept zero jobs
-        Q_ASSERT ( guard );
-        if ( ! m_payload->objectName().isEmpty() )
-        {   // this is most usefull for debugging...
-            setObjectName ( tr( "JobRunner executing " ) + m_payload->objectName() );
-        }
-    }
+        Q_OBJECT
+    public:
+        JobCollectionNullJob( QObject* parent )
+            : Job ( parent )
+        {}
 
-    bool JobCollectionJobRunner::hasUnresolvedDependencies()
-    {   // the JobCollectionJobRunner object never have any dependencies:
-        return m_payload->hasUnresolvedDependencies()
-            || m_guard->hasUnresolvedDependencies();
-    }
+    private:
+        void run()
+        {}
+    };
 
-    Job* JobCollectionJobRunner::payload ()
+    /* QPointers are used internally to be able to dequeue jobs at destruction
+       time. The owner of the jobs could have deleted them in the meantime.
+       We use a class instead of a typedef to be able to forward-declare the
+       class in the declaration.
+    */
+    class JobCollectionJobRunner : public Job
     {
-        return m_payload;
-    }
+        Q_OBJECT
 
-    void JobCollectionJobRunner::aboutToBeQueued ( WeaverInterface *weaver )
-    {
-        m_payload->aboutToBeQueued( weaver );
-    }
-
-    void JobCollectionJobRunner::execute ( Thread *t )
-    {
-        if ( m_payload )
+    public:
+        JobCollectionJobRunner ( Job* guard, Job* payload, QObject* parent )
+            : Job( parent )
+            , m_guard ( guard )
+            , m_payload( payload )
         {
-            m_payload->execute ( t );
-        } else {
-            debug ( 1, "JobCollection: job in collection has been deleted." );
+            Q_ASSERT ( payload ); // will not accept zero jobs
+            Q_ASSERT ( guard );
+            if ( ! m_payload->objectName().isEmpty() )
+            {   // this is most usefull for debugging...
+                setObjectName ( tr( "JobRunner executing " ) + m_payload->objectName() );
+            }
         }
-        Job::execute ( t );
-    }
 
-    void JobCollectionJobRunner::run ()
-    {
-    }
 
-    JobCollectionNullJob::JobCollectionNullJob( QObject* parent )
-        : Job( parent )
-    {
-    }
+        bool hasUnresolvedDependencies()
+        {   // the JobCollectionJobRunner object never have any dependencies:
+            return m_payload->hasUnresolvedDependencies()
+                || m_guard->hasUnresolvedDependencies();
+        }
 
-    void JobCollectionNullJob::run()
-    {
-    }
+        Job* payload ()
+        {
+            return m_payload;
+        }
+
+        void aboutToBeQueued ( WeaverInterface *weaver )
+        {
+            m_payload->aboutToBeQueued( weaver );
+        }
+
+        void execute ( Thread *t )
+        {
+            if ( m_payload )
+            {
+                m_payload->execute ( t );
+            } else {
+                debug ( 1, "JobCollection: job in collection has been deleted." );
+            }
+            Job::execute ( t );
+        }
+
+    private:
+        void run () {}
+
+        Job* m_guard;
+        QPointer<Job> m_payload;
+    };
 
     class JobCollection::JobList : public QList <JobCollectionJobRunner*> {};
 
@@ -190,4 +207,3 @@ namespace ThreadWeaver {
 }
 
 #include "JobCollection.moc"
-#include "JobCollection_p.moc"

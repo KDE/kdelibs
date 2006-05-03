@@ -1,4 +1,5 @@
 TEMPLATE = lib
+
 SOURCES += WeaverInterface.cpp \
 	ThreadWeaver.cpp WeaverImpl.cpp \
 	DebuggingAids.cpp Thread.cpp Job.cpp State.cpp \
@@ -17,8 +18,7 @@ HEADERS += WeaverInterface.h \
         ShuttingDownState.h DestructedState.h \
         WeaverObserver.h \
 	JobCollection.h \
-	JobSequence.h \
-        JobCollection_p.h
+	JobSequence.h 
 
 CONFIG += dll warn_on thread release debug
 VERSION = 0.4.0
