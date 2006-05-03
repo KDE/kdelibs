@@ -21,7 +21,7 @@
 
 DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * name) : K3ListView(parent)
 {
-    setCaption(name);
+    setWindowTitle(name);
     setRootIsDecorated(true);
     addColumn("Name");
     addColumn("Value");

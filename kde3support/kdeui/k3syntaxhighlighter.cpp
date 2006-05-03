@@ -186,7 +186,7 @@ int K3SpellingHighlighter::highlightParagraph( const QString &text,
     // leave #includes, diffs, and quoted replies alone
     QString diffAndCo( ">|" );
 
-    bool isCode = diffAndCo.find(text[0]) != -1;
+    bool isCode = diffAndCo.contains(text[0]);
 
     if ( !text.endsWith(" ") )
 	d->alwaysEndsWithSpace = false;

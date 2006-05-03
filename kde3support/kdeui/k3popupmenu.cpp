@@ -268,7 +268,7 @@ void K3PopupMenu::keyPressEvent(QKeyEvent* e)
         thisText = thisText.left(seqLen);
 
         // do the search
-        if (!thisText.find(d->keySeq, 0, false)) {
+        if (!thisText.contains(d->keySeq, Qt::CaseInsensitive)) {
 
             if (firstpass) {
                 // match

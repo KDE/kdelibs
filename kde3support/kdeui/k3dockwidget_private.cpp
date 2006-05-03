@@ -514,7 +514,7 @@ bool K3DockSplitter::eventFilter(QObject *o, QEvent *e)
           if (tmp_xpos != xpos) {
             xpos = tmp_xpos;
             resizeEvent(0);
-            divider->repaint(true);
+            divider->repaint();
           }
         }
       } else {
@@ -530,7 +530,7 @@ bool K3DockSplitter::eventFilter(QObject *o, QEvent *e)
           if (tmp_xpos != xpos) {
             xpos = tmp_xpos;
             resizeEvent(0);
-            divider->repaint(true);
+            divider->repaint();
           }
         }
       }
@@ -547,7 +547,7 @@ bool K3DockSplitter::eventFilter(QObject *o, QEvent *e)
         }
         xpos = factor* checkValue( mapFromGlobal(mev->globalPos()).y() ) / height();
         resizeEvent(0);
-        divider->repaint(true);
+        divider->repaint();
       } else {
         if ((fixedWidth0!=-1) || (fixedWidth1!=-1))
         {
@@ -555,7 +555,7 @@ bool K3DockSplitter::eventFilter(QObject *o, QEvent *e)
         }
         xpos = factor* checkValue( mapFromGlobal(mev->globalPos()).x() ) / width();
         resizeEvent(0);
-        divider->repaint(true);
+        divider->repaint();
       }
       handled= true;
       break;
@@ -587,8 +587,8 @@ void K3DockSplitter::updateName()
 
   QString new_name = QString( child0->name() ) + "," + child1->name();
   parentWidget()->setName( new_name.toLatin1().constData() );
-  parentWidget()->setCaption( child0->windowTitle() + "," + child1->windowTitle() );
-  parentWidget()->repaint( false );
+  parentWidget()->setWindowTitle( child0->windowTitle() + "," + child1->windowTitle() );
+  parentWidget()->repaint( );
 
   ((K3DockWidget*)parentWidget())->firstName = child0->name();
   ((K3DockWidget*)parentWidget())->lastName = child1->name();

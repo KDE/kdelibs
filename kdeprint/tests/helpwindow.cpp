@@ -163,7 +163,7 @@ void HelpWindow::textChanged()
     else
 	setCaption( browser->documentTitle() ) ;
 
-    selectedURL = caption();
+    selectedURL = windowTitle();
     if ( !selectedURL.isEmpty() && pathCombo ) {
 	bool exists = false;
 	int i;
@@ -343,7 +343,7 @@ void HelpWindow::bookmChosen( int i )
 
 void HelpWindow::addBookmark()
 {
-    mBookmarks[ bookm->insertItem( caption() ) ] = caption();
+    mBookmarks[ bookm->insertItem( windowTitle() ) ] = windowTitle();
 }
 
 #include "helpwindow.moc"

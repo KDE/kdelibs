@@ -339,7 +339,8 @@ void K3DockWidgetHeader::setDragPanel( K3DockWidgetHeaderDrag* nd )
   delete drag;
   drag = nd;
   if (drag->parentWidget()!=this) {
-	drag->reparent(this,QPoint(0,0));
+	drag->setParent(this);
+        drag->move(0,0);
   }
 
 
@@ -367,7 +368,7 @@ void K3DockWidgetHeader::addButton(K3DockButton_Private* btn) {
 	if (!btn) return;
 
 	if (btn->parentWidget()!=this) {
-		btn->reparent(this,QPoint(0,0));
+		btn->setParent(this);
 	}
 	btn->setFixedSize( closeButton->size() );
 	if (!d->btns.containsRef(btn)) d->btns.append(btn);
@@ -523,9 +524,9 @@ K3DockWidget::K3DockWidget( K3DockManager* dockManager, const char* name, const 
   setHeader( new K3DockWidgetHeader( this, "AutoCreatedDockHeader" ) );
 
   if( strCaption.isNull() )
-    setCaption( name );
+    setWindowTitle( name );
   else
-    setCaption( strCaption);
+    setWindowTitle( strCaption);
 
   if( strTabPageLabel == " ")
     setTabPageLabel( windowTitle());
@@ -820,7 +821,8 @@ void K3DockWidget::applyToWidget( QWidget* s, const QPoint& p )
   if ( parent() != s )
   {
     hide();
-    reparent(s, 0, QPoint(0,0), false);
+    setParent(s);
+    move(0,0);
   }
 
   if ( s && s->inherits("K3DockMainWindow") ){
@@ -1470,7 +1472,8 @@ void K3DockWidget::setWidget( QWidget* mw )
   if ( !mw ) return;
 
   if ( mw->parent() != this ){
-    mw->reparent(this, 0, QPoint(0,0), false);
+    mw->setParent(this);
+    mw->move(0,0);
   }
 
 #ifdef BORDERLESS_WINDOWS
@@ -1521,9 +1524,9 @@ void K3DockWidget::setDockTabName( K3DockTabGroup* tab )
   listOfName.remove( listOfName.length()-1, 1 );
 
   tab->parentWidget()->setName( listOfName.toUtf8() );
-  tab->parentWidget()->setCaption( listOfCaption );
+  tab->parentWidget()->setWindowTitle( listOfCaption );
 
-  tab->parentWidget()->repaint( false ); // K3DockWidget->repaint
+  tab->parentWidget()->repaint(); // K3DockWidget->repaint
   if ( tab->parentWidget()->parent() )
     if ( tab->parentWidget()->parent()->inherits("K3DockSplitter") )
       ((K3DockSplitter*)(tab->parentWidget()->parent()))->updateName();
