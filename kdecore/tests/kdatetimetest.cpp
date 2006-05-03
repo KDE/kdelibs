@@ -185,7 +185,7 @@ void KDateTimeTest::specConstructors()
 
 
     // Offset from UTC
-    KDateTime::Spec offset0(KDateTime::Spec(KDateTime::OffsetFromUTC));
+	KDateTime::Spec offset0(KDateTime::OffsetFromUTC);
     QVERIFY(offset0.isValid());
     QCOMPARE(offset0.type(), KDateTime::OffsetFromUTC);
     QVERIFY(offset0.isUTC());
