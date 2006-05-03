@@ -30,9 +30,9 @@ RichPage::RichPage(QWidget *parent)
 	QLabel	*l2 = new QLabel("Font name:",this);
 	QLabel	*l3 = new QLabel("Font size:",this);
 
-	QHBoxLayout	*s1 = new QHBoxLayout(0, 0, 10);
-	QHBoxLayout	*s2 = new QHBoxLayout(0, 0, 10);
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 10);
+	QHBoxLayout	*s1 = new QHBoxLayout();
+	QHBoxLayout	*s2 = new QHBoxLayout();
+	QVBoxLayout	*main_ = new QVBoxLayout(this);
 
 	main_->addLayout(s1,0);
 	main_->addSpacing(20);
@@ -42,6 +42,7 @@ RichPage::RichPage(QWidget *parent)
 	s1->addWidget(l1,0);
 	s1->addWidget(margin_,0);
 	s1->addStretch(1);
+        s1->setSpacing(10);
 
 	s2->addWidget(l2,0);
 	s2->addWidget(fontname_,0);

@@ -44,7 +44,8 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
 
   QFrame *main = makeMainWidget();
 
-  QVBoxLayout *mainLayout = new QVBoxLayout( main, 0, spacingHint() );
+  QVBoxLayout *mainLayout = new QVBoxLayout( main );
+  mainLayout->setSpacing( spacingHint() );
 
   QGroupBox *generalGroupBox = new QGroupBox( main );
   QGridLayout *gbLayout = new QGridLayout;
