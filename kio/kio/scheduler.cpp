@@ -279,6 +279,8 @@ void Scheduler::setupSlave(KIO::Slave *slave, const KUrl &url, const QString &pr
 {
     QString host = url.host();
     int port = url.port();
+    if ( port == -1 ) // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
+        port = 0;
     QString user = url.user();
     QString passwd = url.pass();
 
@@ -441,6 +443,8 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KUrl &url, const QStri
 {
     QString host = url.host();
     int port = url.port();
+    if ( port == -1 ) // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
+        port = 0;
     QString user = url.user();
     exact = true;
 
@@ -715,6 +719,8 @@ Scheduler::slotScheduleCoSlave()
            KUrl url =job->url();
            QString host = url.host();
            int port = url.port();
+           if ( port == -1 ) // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
+               port = 0;
 
            if (slave->host() == "<reset>")
            {
