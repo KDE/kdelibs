@@ -287,7 +287,8 @@ QString whatstr;
   //
   Q3GroupBox *cwbg = new Q3GroupBox(i18n("Cipher Wizard"), tabSSL);
   cwbg->setOrientation(Qt::Horizontal);
-  QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg->layout(), KDialog::spacingHint() );
+  QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg->layout());
+  laygroup2->setSpacing(KDialog::spacingHint());
   QComboBox *cwcb = new QComboBox(cwbg);
     laygroup2->addWidget( cwcb );
   grid->addWidget(cwbg, 3, 0, 1, 2 );
@@ -343,11 +344,14 @@ QString whatstr;
 
 #ifdef HAVE_SSL
   tabOSSL = new QFrame(this);
-  QBoxLayout *vbox = new QVBoxLayout(tabOSSL, KDialog::marginHint(), KDialog::spacingHint());
+  QBoxLayout *vbox = new QVBoxLayout(tabOSSL);
+  vbox->setSpacing(KDialog::spacingHint());
+  vbox->setMargin(KDialog::marginHint());
 
   oInfo = new Q3GroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
   oInfo->setOrientation(Qt::Vertical);
-  QVBoxLayout *laygroup1 = new QVBoxLayout(oInfo->layout(), KDialog::spacingHint() );
+  QVBoxLayout *laygroup1 = new QVBoxLayout(oInfo->layout());
+  laygroup1->setSpacing(KDialog::spacingHint());
   vbox->addWidget(oInfo);
   oPath = new KUrlRequester(oInfo);
   laygroup1->addWidget( oPath );
