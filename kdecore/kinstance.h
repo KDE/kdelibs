@@ -25,7 +25,7 @@ class QString;
 class KAboutData;
 class KConfig;
 class KIconLoader;
-class KMimeSourceFactory;
+class K3MimeSourceFactory;
 class KSharedConfig;
 class KStandardDirs;
 
@@ -165,11 +165,11 @@ class KDECORE_EXPORT KInstance
                                    CaptionFlags flags = HIGCompliantCaption );
 
     /**
-     * Returns the KMimeSourceFactory of the instance.
-     * Mainly added for API completeness and future extensibility.
-     * @return the KMimeSourceFactory set as default for this application.
+     * Returns the K3MimeSourceFactory of the instance.
+     * @deprecated since Q3MimeSourceFactory is deprecated
+     * @return the K3MimeSourceFactory set as default for this application.
      */
-    KMimeSourceFactory* mimeSourceFactory () const;
+    KDE_DEPRECATED K3MimeSourceFactory* mimeSourceFactory () const;
 
 protected:
     /**

@@ -26,7 +26,7 @@
 #include <kglobal.h>
 #include <Q3MimeSourceFactory>
 
-class KMimeSourceFactoryPrivate;
+class K3MimeSourceFactoryPrivate;
 /**
  * An extension to QMimeSourceFactory that uses KIconLoader to
  * find images.
@@ -36,7 +36,7 @@ class KMimeSourceFactoryPrivate;
  *
  * @author Peter Putzer <putzer@kde.org>
  */
-class KDECORE_EXPORT KMimeSourceFactory : public Q3MimeSourceFactory
+class KDECORE_EXPORT K3MimeSourceFactory : public Q3MimeSourceFactory
 {
 public:
 
@@ -45,12 +45,12 @@ public:
    *
    * @param loader is the iconloader used to find images.
    */
-  KMimeSourceFactory (KIconLoader* loader = KGlobal::iconLoader());
+  K3MimeSourceFactory (KIconLoader* loader = KGlobal::iconLoader());
 
   /**
    * Destructor.
    */
-  virtual ~KMimeSourceFactory();
+  virtual ~K3MimeSourceFactory();
 
   /**
    * This function is maps an absolute or relative name for a resource to 
@@ -74,7 +74,7 @@ protected:
   */
   virtual void virtual_hook( int id, void* data );
 private:
-  KMimeSourceFactoryPrivate* const d;
+  K3MimeSourceFactoryPrivate* const d;
 };
 
 #endif // KMIMESOURCEFACTORY_H

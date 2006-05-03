@@ -101,7 +101,7 @@ public:
 #define _name d->name
     const KAboutData*   aboutData;
 #define _aboutData d->aboutData
-    KMimeSourceFactory* mimeSourceFactory;
+    K3MimeSourceFactory* mimeSourceFactory;
     QString             configName;
     bool                ownAboutdata;
     KSharedConfig::Ptr  sharedConfig;
@@ -322,12 +322,12 @@ QString KInstance::makeStdCaption( const QString &userCaption,
   return captionString;
 }
 
-KMimeSourceFactory* KInstance::mimeSourceFactory () const
+K3MimeSourceFactory* KInstance::mimeSourceFactory () const
 {
   DEBUG_CHECK_ALIVE
   if (!d->mimeSourceFactory)
   {
-    d->mimeSourceFactory = new KMimeSourceFactory(iconLoader());
+    d->mimeSourceFactory = new K3MimeSourceFactory(iconLoader());
   }
 
   return d->mimeSourceFactory;

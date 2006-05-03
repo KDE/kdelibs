@@ -24,28 +24,28 @@
 
 #include "kmimesourcefactory.h"
 
-class KMimeSourceFactoryPrivate
+class K3MimeSourceFactoryPrivate
 {
 public:
-  inline KMimeSourceFactoryPrivate (KIconLoader* loader)
+  inline K3MimeSourceFactoryPrivate (KIconLoader* loader)
 	: kil (loader)
   {}
   
   KIconLoader* kil;
 };
 
-KMimeSourceFactory::KMimeSourceFactory (KIconLoader* loader)
+K3MimeSourceFactory::K3MimeSourceFactory (KIconLoader* loader)
   : Q3MimeSourceFactory (),
-	d (new KMimeSourceFactoryPrivate (loader))
+	d (new K3MimeSourceFactoryPrivate (loader))
 {
 }
 
-KMimeSourceFactory::~KMimeSourceFactory()
+K3MimeSourceFactory::~K3MimeSourceFactory()
 {
   delete d;
 }
 
-QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QString& context) const
+QString K3MimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QString& context) const
 {
   QString myName;
   QString myContext;
@@ -86,6 +86,6 @@ QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QSt
   return result;
 }
 
-void KMimeSourceFactory::virtual_hook( int, void* )
+void K3MimeSourceFactory::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
