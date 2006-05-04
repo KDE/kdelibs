@@ -415,15 +415,15 @@ target_link_libraries(startserviceby  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(kglobaltest_SRCS kglobaltest.cpp )
+set(kasciitest_SRCS kasciitest.cpp )
 
-kde4_automoc(${kglobaltest_SRCS})
+kde4_automoc(${kasciitest_SRCS})
 
-kde4_add_executable(kglobaltest RUN_UNINSTALLED ${kglobaltest_SRCS})
+kde4_add_executable(kasciitest RUN_UNINSTALLED ${kasciitest_SRCS})
 
-target_link_libraries(kglobaltest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kasciitest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kglobaltest ${EXECUTABLE_OUTPUT_PATH}/kglobaltest)
+add_test(kdecore-kasciitest ${EXECUTABLE_OUTPUT_PATH}/kasciitest)
 
 ########### next target ###############
 
