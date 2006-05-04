@@ -15,10 +15,11 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+
 #ifndef KTOOLBARLABELACTION_H
 #define KTOOLBARLABELACTION_H
 
-#include <kactionclasses.h>
+#include <kaction.h>
 
 class QLabel;
 
@@ -110,6 +111,5 @@ private:
   class KToolBarLabelActionPrivate;
   KToolBarLabelActionPrivate *d;
 };
-
 
 #endif

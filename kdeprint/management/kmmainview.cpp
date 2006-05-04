@@ -53,6 +53,9 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
+#include <kactioncollection.h>
+#include <ktoggleaction.h>
+#include <kactionmenu.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->manager()

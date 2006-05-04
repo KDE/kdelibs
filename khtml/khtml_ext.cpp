@@ -58,6 +58,9 @@
 #include <kinputdialog.h>
 #include <ktempfile.h>
 #include "khtml_factory.h"
+#include <kstdaction.h>
+#include <kactioncollection.h>
+#include <kactionmenu.h>
 
 #include "dom/dom_element.h"
 #include "misc/htmltags.h"

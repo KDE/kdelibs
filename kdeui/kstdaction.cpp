@@ -32,7 +32,9 @@
 #include <kstdaccel.h>
 #include <kmainwindow.h>
 
-#include "kicon.h"
+#include "krecentfilesaction.h"
+#include "ktogglefullscreenaction.h"
+#include "kpastetextaction.h"
 
 #include "kstdaction_p.h"
 #include "kstdaction_p.moc"

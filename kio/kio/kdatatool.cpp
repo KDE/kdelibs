@@ -24,6 +24,10 @@
 #include <klibloader.h>
 #include <kdebug.h>
 #include <kinstance.h>
+#include <kseparatoraction.h>
+#include <ktoggleaction.h>
+#include <kactioncollection.h>
+#include <kactionmenu.h>
 
 #include <ktrader.h>
 #include <kparts/componentfactory.h>
@@ -236,7 +240,7 @@ QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
     if ( tools.isEmpty() )
         return actionList;
 
-    actionList.append( new KActionSeparator() );
+    actionList.append( new KSeparatorAction() );
     QList<KDataToolInfo>::ConstIterator entry = tools.begin();
     for( ; entry != tools.end(); ++entry )
     {
@@ -277,9 +281,6 @@ KInstance* KDataTool::instance() const
 {
    return m_instance;
 }
-
-void KDataToolAction::virtual_hook( int id, void* data )
-{ KAction::virtual_hook( id, data ); }
 
 void KDataTool::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

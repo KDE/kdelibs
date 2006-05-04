@@ -47,6 +47,8 @@
 #include <kstaticdeleter.h>
 #include <kstdaccel.h>
 
+#include "kactioncollection.h"
+
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY

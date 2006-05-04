@@ -26,18 +26,11 @@
 
 #include "kaction.h"
 
-#include <assert.h>
-
 #include <kauthorized.h>
 #include <qapplication.h>
 #include <kdebug.h>
-#include <kguiitem.h>
 
-#include "kmainwindow.h"
-#include "kmenubar.h"
-#include "kmenu.h"
-#include "ktoolbar.h"
-#include "kicon.h"
+#include "kactioncollection.h"
 #include "kglobalaccel.h"
 
 //---------------------------------------------------------------------
@@ -179,9 +172,6 @@ KActionCollection *KAction::parentCollection() const
 {
     return qobject_cast<KActionCollection*>(const_cast<QObject*>(parent()));
 }
-
-void KAction::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 void KAction::setIconName( const QString & icon )
 {

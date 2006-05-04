@@ -34,6 +34,7 @@
 #include <kmimetype.h>
 #include <klocale.h>
 #include <kvbox.h>
+#include <kactioncollection.h>
 
 K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory /*NOT the part name, see Makefile.am*/, KHTMLImageFactory )
 

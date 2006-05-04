@@ -26,6 +26,9 @@
 #include <kxmlguifactory.h>
 #include <kmenu.h>
 
+#include "ktoggletoolbaraction.h"
+#include "kactionmenu.h"
+
 #include <assert.h>
 
 namespace

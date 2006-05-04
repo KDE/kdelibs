@@ -61,35 +61,35 @@ include_HEADERS = kprogressbar.h kprogressdialog.h kcolordialog.h kselector.h \
 # with --enable-final since they use X defines that get undefined
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = ksharedpixmap.cpp kmenu.cpp ktoolbar.cpp 	kaction.cpp \
-			kstdaction.cpp kactioncollection.cpp kactionclasses.cpp kurllabel.cpp 	kmenubar.cpp \
-			kinputdialog.cpp knuminput.cpp klineedit.cpp k3listview.cpp 	kprogressbar.cpp \
-			kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp kdatetable.cpp \
-				kfontrequester.cpp kfontdialog.cpp ktabctl.cpp kstatusbar.cpp kmainwindow.cpp \
-				keditlistbox.cpp kseparator.cpp krestrictedline.cpp kcolorbutton.cpp 	ksystemtray.cpp \
-			kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp 	kshortcutdialog_simple.ui \
-			kshortcutdialog_advanced.ui kshortcutdialog.cpp kkeybutton.cpp 	kkeydialog.cpp kruler.cpp \
-			kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp 	kdialog.cpp \
-			kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp 	kmessagebox.cpp \
-			kdualcolorbutton.cpp 	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp k3iconview.cpp \
-			klistbox.cpp kwordwrap.cpp 	kbugreport.cpp kcombobox.cpp kpassworddialog.cpp \
-			kxmlguiclient.cpp kxmlguifactory.cpp 	kxmlguifactory_p.cpp kxmlguibuilder.cpp \
-			kedittoolbar.cpp kanimwidget.cpp krootpixmap.cpp 	kaboutkde.cpp kaboutapplication.cpp \
-			kdcopactionproxy.cpp kcolorcombo.cpp 	kpushbutton.cpp kcompletionbox.cpp \
-			ksqueezedtextlabel.cpp kcmodule.cpp kcommand.cpp 	kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
-			kdatewidget.cpp karrowbutton.cpp 	kmainwindowiface.cpp kmainwindowiface.skel \
-			kguiitem.cpp kstdguiitem.cpp kstringvalidator.cpp 	kactivelabel.cpp ktextedit.cpp \
-			kpassivepopup.cpp 	ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp \
-			ksconfig.cpp kspelldlg.cpp 	kspell.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
-				kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
-				k3listviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
-				kwhatsthismanager.cpp k3iconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
-				kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel \
-			kiconengine.cpp kicon.cpp ktoolbarspaceraction.cpp kkeyserver_x11.cpp \
-			kglobalaccel_x11.cpp kglobalaccel.cpp
+				kstdaction.cpp kactioncollection.cpp kactionclasses.cpp kurllabel.cpp 	kmenubar.cpp \
+				kinputdialog.cpp knuminput.cpp klineedit.cpp k3listview.cpp 	kprogressbar.cpp \
+				kprogressdialog.cpp kcolordialog.cpp kselector.cpp kdatepicker.cpp kdatetable.cpp \
+					kfontrequester.cpp kfontdialog.cpp ktabctl.cpp kstatusbar.cpp kmainwindow.cpp \
+					keditlistbox.cpp kseparator.cpp krestrictedline.cpp kcolorbutton.cpp 	ksystemtray.cpp \
+				kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp 	kshortcutdialog_simple.ui \
+				kshortcutdialog_advanced.ui kshortcutdialog.cpp kkeybutton.cpp 	kkeydialog.cpp kruler.cpp \
+				kcursor.cpp kcharselect.cpp kcolormimedata.cpp knumvalidator.cpp 	kdialog.cpp \
+				kdialogbase.cpp kjanuswidget.cpp kaboutdialog.cpp kauthicon.cpp 	kmessagebox.cpp \
+				kdualcolorbutton.cpp 	ktextbrowser.cpp khelpmenu.cpp kcmenumngr.cpp k3iconview.cpp \
+				klistbox.cpp kwordwrap.cpp 	kbugreport.cpp kcombobox.cpp kpassworddialog.cpp \
+				kxmlguiclient.cpp kxmlguifactory.cpp 	kxmlguifactory_p.cpp kxmlguibuilder.cpp \
+				kedittoolbar.cpp kanimwidget.cpp krootpixmap.cpp 	kaboutkde.cpp kaboutapplication.cpp \
+				kdcopactionproxy.cpp kcolorcombo.cpp 	kpushbutton.cpp kcompletionbox.cpp \
+				ksqueezedtextlabel.cpp kcmodule.cpp kcommand.cpp 	kwindowlistmenu.cpp kfontcombo.cpp ktip.cpp \
+				kdatewidget.cpp karrowbutton.cpp 	kmainwindowiface.cpp kmainwindowiface.skel \
+				kguiitem.cpp kstdguiitem.cpp kstringvalidator.cpp 	kactivelabel.cpp ktextedit.cpp \
+				kpassivepopup.cpp 	ktoolbarhandler.cpp kdatetimewidget.cpp ktimezonewidget.cpp \
+				ksconfig.cpp kspelldlg.cpp 	kspell.cpp ktabbar.cpp ktabwidget.cpp ksplashscreen.cpp \
+					kspellui.ui kconfigdialog.cpp kactionselector.cpp klanguagebutton.cpp \
+					k3listviewsearchline.cpp kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
+					kwhatsthismanager.cpp k3iconviewsearchline.cpp ktoolbarlabelaction.cpp khbox.cpp kvbox.cpp \
+					kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel \
+				kiconengine.cpp kicon.cpp ktoolbarspaceraction.cpp kkeyserver_x11.cpp \
+				kglobalaccel_x11.cpp kglobalaccel.cpp kdebugproxylayout.cpp
 
 noinst_HEADERS = k3listviewlineedit.h kdialogbase_priv.h kaboutdialog_private.h \
-		kcursor_private.h kdepackages.h kxmlguifactory_p.h kstdaction_p.h kwhatsthismanager_p.h \
-		knotificationmanager.h kkeyserver_x11.h kkeyserver.h kglobalaccel_x11.h
+			kcursor_private.h kdepackages.h kxmlguifactory_p.h kstdaction_p.h kwhatsthismanager_p.h \
+			knotificationmanager.h kkeyserver_x11.h kkeyserver.h kglobalaccel_x11.h kdebugproxylayout.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)

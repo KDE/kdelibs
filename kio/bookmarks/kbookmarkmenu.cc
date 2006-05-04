@@ -38,6 +38,7 @@
 #include <kstdaccel.h>
 #include <kstdaction.h>
 #include <kstringhandler.h>
+#include <kactioncollection.h>
 
 #include <qclipboard.h>
 #include <qfile.h>

@@ -1,0 +1,423 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
+              (C) 1999 Simon Hausmann <hausmann@kde.org>
+              (C) 2000 Nicolas Hadacek <haadcek@kde.org>
+              (C) 2000 Kurt Granroth <granroth@kde.org>
+              (C) 2000 Michael Koch <koch@kde.org>
+              (C) 2001 Holger Freyther <freyther@kde.org>
+              (C) 2002 Ellis Whitehead <ellis@kde.org>
+              (C) 2003 Andras Mantia <amantia@kde.org>
+              (C) 2005-2006 Hamish Rodda <rodda@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#ifndef KSELECTACTION_H
+#define KSELECTACTION_H
+
+#include <QToolButton>
+
+#include <kaction.h>
+
+/**
+ *  @short Action for selecting one of several items
+ *
+ *  Action for selecting one of several items.
+ *
+ *  This action shows up a submenu with a list of items.
+ *  One of them can be checked. If the user clicks on an item
+ *  this item will automatically be checked,
+ *  the formerly checked item becomes unchecked.
+ *  There can be only one item checked at a time.
+ */
+class KDEUI_EXPORT KSelectAction : public KAction, public QActionWidgetFactory
+{
+    Q_OBJECT
+    Q_PROPERTY( QAction* currentAction READ currentAction WRITE setCurrentAction )
+    Q_PROPERTY( bool editable READ isEditable WRITE setEditable )
+    Q_PROPERTY( int comboWidth READ comboWidth WRITE setComboWidth )
+    Q_PROPERTY( QString currentText READ currentText )
+public:
+    /**
+     * Constructs an action in the specified KActionCollection.
+     *
+     * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     */
+    KSelectAction(KActionCollection* parent, const QString& name);
+
+    /**
+     * Constructs an action with text; a shortcut may be specified by
+     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     *
+     * This is the most common KAction used when you do not have a
+     * corresponding icon (note that it won't appear in the current version
+     * of the "Edit ToolBar" dialog, because an action needs an icon to be
+     * plugged in a toolbar...).
+     *
+     * @param text The text that will be displayed.
+     * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     */
+    KSelectAction(const QString& text, KActionCollection* parent, const QString& name);
+
+    /**
+     * Constructs an action with text and an icon; a shortcut may be specified by
+     * the ampersand character (e.g. "&amp;Option" creates a shortcut with key \e O )
+     *
+     * This is the other common KAction used.  Use it when you
+     * \e do have a corresponding icon.
+     *
+     * @param icon The icon to display.
+     * @param text The text that will be displayed.
+     * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     */
+    KSelectAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
+
+    /**
+     * \overload KSelectAction(const QIcon&, const QString&, KActionCollection*)
+     *
+     * This constructor differs from the above in that the icon is specified as
+     * a icon name which can be loaded by KIconLoader.
+     *
+     * @param icon The name of the icon to load via KIconLoader.
+     * @param text The text that will be displayed.
+     * @param parent The action collection to contain this action.
+     * @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name);
+
+    /**
+     * Constructs a select action with text and potential keyboard
+     * accelerator but nothing else. Use this only if you really
+     * know what you are doing.
+     *
+     * @param text The text that will be displayed.
+     * @param cut The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut = KShortcut(), KActionCollection* parent = 0, const QString& name = QString() );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param cut The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const KShortcut& cut,
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param cut The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut = KShortcut(),
+             KActionCollection* parent = 0, const QString& name = QString() );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param cut The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut = KShortcut(),
+                   KActionCollection* parent = 0, const QString& name = QString() );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param cut The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QIcon& pix, const KShortcut& cut,
+                   const QObject* receiver, const char* slot, KActionCollection* parent, const QString& name = QString() );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The dynamically loaded icon that goes with this action.
+     *  @param cut The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KDE_CONSTRUCTOR_DEPRECATED KSelectAction( const QString& text, const QString& pix, const KShortcut& cut,
+                   const QObject* receiver, const char* slot,
+                   KActionCollection* parent, const QString& name = QString() );
+
+    /**
+     * Destructor
+     */
+    virtual ~KSelectAction();
+
+    enum ToolBarMode {
+      /// Creates a button which pops up a menu when interacted with, as defined by toolButtonPopupMode().
+      MenuMode,
+      /// Creates a combo box which contains the actions.
+      /// This is the default.
+      ComboBoxMode
+    };
+
+    /**
+     * Returns which type of widget (combo box or button with drop-down menu) will be inserted
+     * in a toolbar.
+     */
+    ToolBarMode toolBarMode() const;
+
+    /**
+     * Set the type of widget to be inserted in a toolbar to \a mode.
+     */
+    void setToolBarMode(ToolBarMode mode);
+
+    /**
+     * Returns the style for the list of actions, when this action is plugged
+     * into a KToolBar.
+     *
+     * \sa QToolButton::setPopupMode()
+     */
+    QToolButton::ToolButtonPopupMode toolButtonPopupMode() const;
+
+    /**
+     * Set how this list of actions should behave when in popup mode and plugged into a toolbar.
+     */
+    void setToolButtonPopupMode(QToolButton::ToolButtonPopupMode mode);
+
+    /**
+     * The action group used to create exclusivity between the actions associated with this action.
+     */
+    QActionGroup* selectableActionGroup() const;
+
+    /**
+     * Returns the current QAction.
+     * @see setCurrentAction
+     */
+    QAction* currentAction() const;
+
+    /**
+     * Returns the index of the current item.
+     *
+     * @sa currentItem and currentAction
+     */
+    int currentItem() const;
+
+    /**
+     * Returns the text of the currently selected item.
+     *
+     * @sa currentItem and currentAction
+     */
+    QString currentText() const;
+
+    /**
+     * Returns the list of selectable actions
+     */
+    QList<QAction*> actions() const;
+
+    /**
+     * Returns the action at \a index, if one exists.
+     */
+    QAction* action(int index) const;
+
+    /**
+     * Searches for an action with the specified \a text, using a search whose
+     * case sensitivity is defined by \a cs.
+     */
+    QAction* action(const QString& text, Qt::CaseSensitivity cs = Qt::CaseSensitive) const;
+
+    /**
+     *  Sets the currently checked item.
+     *
+     *  @param item the QAction to become the currently checked item.
+     */
+    void setCurrentAction(QAction* action);
+
+    /**
+     * \overload setCurrentAction(QAction*)
+     *
+     * Convenience function to set the currently checked action to be the action
+     * at index \p index.
+     *
+     * If there is no action at that index, the currently checked action (if any) will
+     * be deselected.
+     *
+     * \return \e true if a corresponding action was found and thus set to the current action, otherwise \e false
+     */
+    bool setCurrentItem(int index);
+
+    /**
+     * \overload setCurrentAction(QAction*)
+     *
+     * Convenience function to set the currently checked action to be the action
+     * which has \p text as its text().
+     *
+     * If there is no action at that index, the currently checked action (if any) will
+     * be deselected.
+     *
+     * \return \e true if a corresponding action was found, otherwise \e false
+     */
+    bool setCurrentAction(const QString& text, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+
+    /**
+     * Add \a action to the list of selectable actions.
+     */
+    virtual void addAction(QAction* action);
+
+    /**
+     * \overload addAction(QAction* action)
+     *
+     * Convenience function which creates an action from \a text and inserts it into
+     * the list of selectable actions.
+     */
+    QAction* addAction(const QString& text);
+
+    /**
+     * \overload addAction(QAction* action)
+     *
+     * Convenience function which creates an action from \a text and \a icon and inserts it into
+     * the list of selectable actions.
+     */
+    QAction* addAction(const QIcon& icon, const QString& text);
+
+    /**
+     * Remove the specified \a action from this action selector.
+     *
+     * You take ownership here, so save or delete it in order to not leak the action.
+     */
+    virtual QAction* removeAction(QAction* action);
+
+    /**
+     * Convenience function to create the list of selectable items.
+     * Any previously existing items will be cleared.
+     */
+    void setItems( const QStringList &lst );
+
+    /**
+     * Convenience function which returns the items that can be selected with this action.
+     * It is the same as iterating selectableActionGroup()->actions() and looking at each
+     * action's text().
+     */
+    QStringList items() const;
+
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * @return true if the combo editable.
+     */
+    bool isEditable() const;
+
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * This makes the combo editable or read-only.
+     */
+    void setEditable( bool );
+
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * This returns the maximum width set by setComboWidth
+     */
+    int comboWidth() const;
+
+    /**
+     * When this action is plugged into a toolbar, it creates a combobox.
+     * This gives a _maximum_ size to the combobox.
+     * The minimum size is automatically given by the contents (the items).
+     */
+    void setComboWidth( int width );
+
+    /**
+     * Sets the maximum items that are visible at once if the action
+     * is a combobox, that is the number of items in the combobox's viewport
+     */
+    void setMaxComboViewCount( int n );
+
+    /**
+     * Clears up all the items in this action.
+     * \warning The actions will be deleted for backwards compatibility with KDE3.
+     *          If you just want to remove all actions, use removeAllActions()
+     */
+    void clear();
+
+    void removeAllActions();
+
+    /**
+     * Sets whether any occurrence of the ampersand character ( &amp; ) in items
+     * should be interpreted as keyboard accelerator for items displayed in a
+     * menu or not.  Only applies to (overloaded) methods dealing with QStrings,
+     * not those dealing with QActions.
+     *
+     * Defaults to true.
+     *
+     * \param b true if ampersands indicate a keyboard accelerator, otherwise false.
+     */
+    void setMenuAccelsEnabled( bool b );
+
+    /**
+     * Returns whether ampersands passed to methods using QStrings are interpreted
+     * as keyboard accelerator indicators or as literal ampersands.
+     */
+    bool menuAccelsEnabled() const;
+
+    /**
+     * Changes the text of item @param index to @param text .
+     */
+    void changeItem( int index, const QString& text );
+
+    virtual QWidget* createToolBarWidget(QToolBar* parent);
+
+Q_SIGNALS:
+    /**
+     * This signal is emitted when an item is selected; @param action 
+     * indicates the item selected.
+     */
+    void triggered( QAction* action );
+
+    /**
+     * This signal is emitted when an item is selected; @param index indicates
+     * the item selected.
+     */
+    void triggered( int index );
+
+    /**
+     * This signal is emitted when an item is selected; @param text indicates
+     * the item selected.
+     */
+    void triggered( const QString& text );
+
+protected Q_SLOTS:
+    /**
+     * This function is called whenever an action from the selections is triggered.
+     */
+    virtual void actionTriggered(QAction* action);
+
+private Q_SLOTS:
+    void comboBoxDeleted(QObject* object);
+
+private:
+    void init();
+
+    class KSelectActionPrivate;
+    KSelectActionPrivate* const d;
+};
+
+#endif

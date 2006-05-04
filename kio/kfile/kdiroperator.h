@@ -24,7 +24,7 @@
 #include <qwidget.h>
 #include <qstack.h>
 
-#include <kaction.h>
+#include <ktoggleaction.h>
 #include <kcompletion.h>
 #include <kdirlister.h>
 #include <kfileview.h>
@@ -38,7 +38,7 @@ class QProgressBar;
 class KAction;
 class KDirLister;
 class KToggleAction;
-class KActionSeparator;
+class KSeparatorAction;
 class KActionMenu;
 namespace KIO {
   class CopyJob;
@@ -124,13 +124,12 @@ class KIO_EXPORT KDirOperator : public QWidget
     /**
      * Enables/disables showing hidden files.
      */
-	// ### KDE4: make virtual
-    void setShowHiddenFiles ( bool s ) { showHiddenAction->setChecked( s ); }
+    virtual void setShowHiddenFiles ( bool s );
 
     /**
      * @returns true when hidden files are shown or false otherwise.
      */
-    bool showHiddenFiles () const { return showHiddenAction->isChecked(); }
+    bool showHiddenFiles () const;
 
     /**
      * Stops loading immediately. You don't need to call this, usually.
@@ -865,7 +864,7 @@ private:
     KAction 	*homeAction;
     KAction 	*upAction;
     KAction 	*reloadAction;
-    KActionSeparator *actionSeparator;
+    KSeparatorAction *actionSeparator;
     KAction 	*mkdirAction;
 
     KActionMenu *sortActionMenu;

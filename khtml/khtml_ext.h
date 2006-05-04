@@ -31,7 +31,7 @@
 
 #include <qpointer.h>
 
-#include <kaction.h>
+#include <kselectaction.h>
 #include <kio/global.h>
 
 /**

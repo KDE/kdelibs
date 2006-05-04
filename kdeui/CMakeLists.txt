@@ -24,7 +24,18 @@ set(kdeui_LIB_SRCS
  kaction.cpp
  kstdaction.cpp
  kactioncollection.cpp
- kactionclasses.cpp
+ ktoggleaction.cpp
+ kselectaction.cpp
+ krecentfilesaction.cpp
+ kfontaction.cpp
+ kfontsizeaction.cpp
+ kactionmenu.cpp
+ ktoolbarpopupaction.cpp
+ ktoggletoolbaraction.cpp
+ ktogglefullscreenaction.cpp
+ k3widgetaction.cpp
+ kpastetextaction.cpp
+ kseparatoraction.cpp
  kurllabel.cpp
  kmenubar.cpp
  kinputdialog.cpp
@@ -218,6 +229,18 @@ install_files( /include FILES
  kaction.h
  kactioncollection.h
  kactionclasses.h
+ kseparatoraction.h
+ ktoggleaction.h
+ kselectaction.h
+ krecentfilesaction.h
+ kfontaction.h
+ kfontsizeaction.h
+ kactionmenu.h
+ ktoolbarpopupaction.h
+ ktoggletoolbaraction.h
+ ktogglefullscreenaction.h
+ k3widgetaction.h
+ kpastetextaction.h
  khelpmenu.h
  kcmodule.h
  kstdaction.h

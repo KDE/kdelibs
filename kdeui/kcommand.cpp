@@ -26,6 +26,8 @@
 #include <klocale.h>
 #include <kmenu.h>
 
+#include "ktoolbarpopupaction.h"
+
 KCommand::~KCommand()
 {
 }

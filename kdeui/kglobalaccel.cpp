@@ -37,7 +37,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstaticdeleter.h>
-#include <kaction.h>
+#include "kaction.h"
+#include "kactioncollection.h"
 #include <kconfig.h>
 
 KGlobalAccel* KGlobalAccel::s_instance = 0L;

@@ -37,6 +37,7 @@
 #include <qcursor.h>
 #include <qapplication.h>
 #include <QMouseEvent>
+#include "kactioncollection.h"
 
 KPixmapRegionSelectorWidget::KPixmapRegionSelectorWidget( QWidget *parent)
     : QWidget( parent )

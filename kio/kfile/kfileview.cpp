@@ -22,7 +22,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include <QPointer>
+
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kglobal.h>

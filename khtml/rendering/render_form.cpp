@@ -37,6 +37,8 @@
 #include <kspell.h>
 #include <kurlcompletion.h>
 #include <kwin.h>
+#include <kstdaction.h>
+#include <kactioncollection.h>
 
 #include <QAbstractItemView>
 #include <qstyle.h>

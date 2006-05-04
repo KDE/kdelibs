@@ -42,6 +42,7 @@
 #include <kio/netaccess.h>
 #include <kio/renamedlg.h>
 #include <kmessagebox.h>
+#include <kactioncollection.h>
 
 #include "kfiletreeview.h"
 #include "kdirselectdialog.h"

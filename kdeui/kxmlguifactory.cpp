@@ -33,19 +33,17 @@
 #include <qvariant.h>
 #include <QTextCodec>
 
-#include <kaction.h>
 #include <kdebug.h>
 #include <kinstance.h>
 #include <kglobal.h>
 #include <kshortcut.h>
 #include <kstandarddirs.h>
-#include <kkeydialog.h>
+
+#include "kaction.h"
+#include "kkeydialog.h"
+#include "kactioncollection.h"
 
 using namespace KXMLGUI;
-
-/*
- * TODO:     - make more use of QValueList instead of QPtrList
- */
 
 class KXMLGUIFactoryPrivate : public BuildState
 {
@@ -299,6 +297,17 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     // build child clients
     foreach (KXMLGUIClient *child, client->childClients())
         addClient( child );
+
+#ifndef NDEBUG
+    QString unaddedActions;
+    foreach (KActionCollection* ac, KActionCollection::allCollections())
+      foreach (KAction* action, ac->actions())
+        if (action->associatedWidgets().isEmpty())
+          unaddedActions += action->objectName() + " ";
+
+    if (!unaddedActions.isEmpty())
+      kWarning() << k_funcinfo << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions << endl;
+#endif
 
 //    kDebug() << "addClient took " << dt.elapsed() << endl;
 }

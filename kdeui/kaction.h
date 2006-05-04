@@ -29,11 +29,9 @@
 #include <QAction>
 
 #include <kdelibs_export.h>
-#include <kdemacros.h>
 #include <kshortcut.h>
-#include <kicontheme.h>
-#include <kglobal.h>
 
+#include "kguiitem.h"
 #include "kicon.h"
 
 class KActionCollection;
@@ -626,9 +624,6 @@ signals:
      */
     void triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-
 protected Q_SLOTS:
     /**
      * This function is connected to the QAction's triggered(bool) signal, and allows
@@ -651,8 +646,5 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KAction::ShortcutTypes)
-
-#include <kactioncollection.h>
-#include <kactionclasses.h>
 
 #endif

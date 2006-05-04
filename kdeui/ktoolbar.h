@@ -83,13 +83,14 @@ public:
    * the settings will be honored only if @p honorStyle is set to
    * true.  All other toolbars will be IconOnly and use Medium icons.
    *
+   * @param objectName  The QObject name of this toolbar, required so that QMainWindow can save and load the toolbar position
    * @param parentWindow The window that should be the parent of this toolbar
    * @param area        The position of the toolbar. Usually Qt::TopToolBarArea.
    * @param newLine     If true, start a new line in the dock for this toolbar.
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QMainWindow* parentWindow, Qt::ToolBarArea area, bool newLine = false,
+    KToolBar( const QString& objectName, QMainWindow* parentWindow, Qt::ToolBarArea area, bool newLine = false,
               bool honorStyle = false, bool readConfig = true );
 
   /**

@@ -37,6 +37,7 @@
 #include <kaction.h>
 #include <kmessagebox.h>
 #include <klibloader.h>
+#include <kactioncollection.h>
 
 #include <stdlib.h>
 #include <unistd.h>

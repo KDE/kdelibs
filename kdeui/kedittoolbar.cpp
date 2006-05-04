@@ -31,7 +31,6 @@
 #include <QTreeWidget>
 #include <QMimeData>
 
-#include <kaction.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kicontheme.h>
@@ -44,6 +43,9 @@
 #include <kdebug.h>
 #include <kpushbutton.h>
 #include <kprocio.h>
+
+#include "kaction.h"
+#include "kactioncollection.h"
 
 static const char * const lineseparatorstring = I18N_NOOP("--- line separator ---");
 static const char * const separatorstring = I18N_NOOP("--- separator ---");

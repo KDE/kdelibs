@@ -544,6 +544,12 @@ cg.readXXX("entry name");
 <li>action(const char* name, const char* className) removed: action(const QString&amp; name), actions(const QString&amp; name), actionOfType&lt;Class&gt;(const QString&amp; name), actionsOfType&lt;Class&gt;(const QString&amp; name) are the replacements</li>
 </ul>
 
+<H4>KActionSeparator</H4>
+<ul>
+<li>Renamed to KSeparatorAction</li>
+<li>Note that you need to create multiple separator actions if you want to insert multiple separators into a widget, unlike with KDE3.</li>
+</ul>
+
 <H4>KToggleAction</H4>
 <ul>
 <li>setExclusiveGroup() / exclusiveGroup() removed, use setActionGroup() and QActionGroup::setExclusive() for exclusivity (imitates the deleted KRadioAction class)</li>
@@ -566,6 +572,7 @@ cg.readXXX("entry name");
 <H4>KWidgetAction</H4>
 <ul>
 <li>deprecated, instead assign a QActionWidgetFactory to a {K|Q}Action so the action can be plugged into mutiple toolbars.</li>
+<li>Renamed to K3WidgetAction</li>
 </ul>
 
 <H4>KToolBarButton</H4>

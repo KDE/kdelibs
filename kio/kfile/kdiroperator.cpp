@@ -50,6 +50,10 @@
 #include <kservicetypefactory.h>
 #include <kstdaccel.h>
 #include <kde_file.h>
+#include <kactioncollection.h>
+#include <ktoggleaction.h>
+#include <kseparatoraction.h>
+#include <kactionmenu.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -73,7 +77,7 @@ public:
         dirHighlighting = false;
         dropOptions = 0;
 	configGroup=0;
-        viewActionSeparator = new KActionSeparator();
+        viewActionSeparator = new KSeparatorAction();
     }
 
     ~KDirOperatorPrivate() {
@@ -85,7 +89,7 @@ public:
     QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
-    KActionSeparator *viewActionSeparator;
+    KSeparatorAction *viewActionSeparator;
     int dropOptions;
 
     KConfigGroup *configGroup;
@@ -1248,7 +1252,7 @@ void KDirOperator::setupActions()
     reloadAction->setText( i18n("Reload") );
     reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
-    actionSeparator = new KActionSeparator( myActionCollection, "separator" );
+    actionSeparator = new KSeparatorAction( myActionCollection, "separator" );
 
     mkdirAction = new KAction( i18n("New Folder..."), myActionCollection, "mkdir" );
     mkdirAction->setIconName( QLatin1String("folder_new") );
@@ -1689,7 +1693,15 @@ KConfigGroup *KDirOperator::viewConfigGroup() const
     return d->configGroup;
 }
 
+void KDirOperator::setShowHiddenFiles( bool s )
+{
+  showHiddenAction->setChecked( s );
+}
 
+bool KDirOperator::showHiddenFiles( ) const
+{
+  return showHiddenAction->isChecked();
+}
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

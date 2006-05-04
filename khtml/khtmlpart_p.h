@@ -57,6 +57,8 @@ class KSelectAction;
 class KUrlLabel;
 class KJavaAppletContext;
 class KJSErrorDlg;
+class KActionMenu;
+class KToggleAction;
 
 namespace KIO
 {

@@ -31,8 +31,10 @@
 #include <kinstance.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <kaction.h>
 #include <kauthorized.h>
+
+#include "kaction.h"
+#include "kactioncollection.h"
 
 #include <assert.h>
 

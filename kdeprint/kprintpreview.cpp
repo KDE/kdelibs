@@ -38,6 +38,8 @@
 #include <kconfig.h>
 #include <ktoolbar.h>
 #include <kmimetype.h>
+#include <kactioncollection.h>
+#include <kstdaction.h>
 
 KPreviewProc::KPreviewProc()
 : KProcess()

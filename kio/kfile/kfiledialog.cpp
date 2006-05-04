@@ -66,6 +66,8 @@
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
 #include <kuser.h>
+#include <kactioncollection.h>
+#include <kactionmenu.h>
 
 #include "config-kfile.h"
 #include "kpreviewwidgetbase.h"

@@ -62,6 +62,7 @@
 #include <kxmlguifactory.h>
 #include <kwin.h>
 #include <kauthorized.h>
+#include <kactioncollection.h>
 
 class KToolBarPrivate
 {
@@ -146,10 +147,11 @@ KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
       mw->addToolBar(this);
 }
 
-KToolBar::KToolBar( QMainWindow* parent, Qt::ToolBarArea area, bool newLine, bool honorStyle, bool readConfig )
+KToolBar::KToolBar( const QString& objectName, QMainWindow* parent, Qt::ToolBarArea area, bool newLine, bool honorStyle, bool readConfig )
     : QToolBar(parent)
     , d(new KToolBarPrivate)
 {
+    setObjectName(objectName);
     init( readConfig, honorStyle );
 
     if (newLine)

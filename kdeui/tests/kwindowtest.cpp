@@ -122,7 +122,7 @@ testWindow::testWindow (QWidget *parent)
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
     testComboBox = new KComboBox(tb);
-    KWidgetAction* comboAction = new KWidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox");
+    K3WidgetAction* comboAction = new K3WidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox");
     tb->addAction(comboAction);
     connect(testComboBox, SIGNAL(activated(const QString&)), this, SLOT(slotList(const QString&)));
 
@@ -131,7 +131,7 @@ testWindow::testWindow (QWidget *parent)
     // arguments: text, id, signal, object (this), slot, enabled, tooltiptext, size
     testLineEdit = new KLineEdit(tb);
     testLineEdit->setText("ftp://ftp.kde.org/pub/kde");
-    KWidgetAction* lineEditAction = new KWidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location");
+    K3WidgetAction* lineEditAction = new K3WidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location");
     tb->addAction(lineEditAction);
     connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 

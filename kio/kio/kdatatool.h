@@ -231,8 +231,6 @@ protected:
 private:
     QString m_command;
     KDataToolInfo m_info;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KDataToolActionPrivate* d;
 

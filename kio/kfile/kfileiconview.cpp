@@ -37,6 +37,10 @@
 #include <kiconeffect.h>
 #include <kglobalsettings.h>
 #include <kio/previewjob.h>
+#include <ktoggleaction.h>
+#include <kstdaction.h>
+#include <kactioncollection.h>
+#include <kactionmenu.h>
 
 #include "kfileiconview.h"
 #include "config-kfile.h"

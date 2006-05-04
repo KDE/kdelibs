@@ -21,9 +21,11 @@
 
 #include <dcopclient.h>
 #include <kapplication.h>
-#include <kaction.h>
 #include <kdebug.h>
 #include <kdcoppropertyproxy.h>
+
+#include "kaction.h"
+#include "kactioncollection.h"
 
 #include <ctype.h>
 #include <qmap.h>

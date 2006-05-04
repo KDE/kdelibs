@@ -27,6 +27,8 @@
 #include "kmessagebox.h"
 #include "kshortcut.h"
 #include "ksystemtray.h"
+#include "kactioncollection.h"
+#include "kstdaction.h"
 
 #ifdef Q_WS_X11
 #include <kwin.h>

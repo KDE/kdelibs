@@ -30,6 +30,8 @@
 #include "kwhatsthismanager_p.h"
 #include "kxmlguifactory.h"
 #include "kcmdlineargs.h"
+#include "ktoggleaction.h"
+#include "kstdaction.h"
 
 #include <QCloseEvent>
 #include <QDesktopWidget>
@@ -427,11 +429,11 @@ void KMainWindow::saveNewToolbarConfig()
     applyMainWindowSettings( KGlobal::config() );
 }
 
-void KMainWindow::setupGUI( int options, const QString & xmlfile ) {
+void KMainWindow::setupGUI( StandardWindowOptions options, const QString & xmlfile ) {
     setupGUI(QSize(), options, xmlfile);
 }
 
-void KMainWindow::setupGUI( QSize defaultSize, int options, const QString & xmlfile ) {
+void KMainWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
     if( options & Keys ){
         KStdAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());

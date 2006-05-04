@@ -98,6 +98,9 @@ using namespace DOM;
 #include <kde_file.h>
 #include "../kutils/kfinddialog.h"
 #include "../kutils/kfind.h"
+#include <kactionmenu.h>
+#include <ktoggleaction.h>
+#include <kseparatoraction.h>
 
 #include <ksslcertchain.h>
 #include <ksslinfodlg.h>
@@ -307,7 +310,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paSetEncoding->popupMenu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
 
-  d->m_paSetEncoding->insert( new KActionSeparator( actionCollection() ) );
+  d->m_paSetEncoding->insert( new KSeparatorAction( actionCollection() ) );
 
 
   d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), actionCollection(), "manualDetection" );

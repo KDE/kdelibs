@@ -144,22 +144,25 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
     if( d->face == TreeList )
     {
       d->splitter = new QSplitter( this );
-      topLayout->addWidget( d->splitter, 10 );
+      topLayout->addWidget( d->splitter );
       d->treeListResizeMode = KJanusWidgetPrivate::KeepSize;
 
       d->listFrame = new QWidget( d->splitter );
-      QVBoxLayout *dummy = new QVBoxLayout( d->listFrame );
-      dummy->setMargin( 0 );
-      dummy->setSpacing( 0 );
+      //d->listFrame->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
       d->treeList = new QTreeWidget( d->listFrame );
       d->treeList->setColumnCount(1);
       d->treeList->header()->hide();
       d->treeList->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+      kDebug() << k_funcinfo << d->treeList->sizeHint() << endl;
       d->treeList->setMinimumSize(d->treeList->sizeHint());
       d->treeList->setSelectionMode(QAbstractItemView::SingleSelection);
       connect( d->treeList, SIGNAL(itemSelectionChanged()), SLOT(slotShowPage()) );
       connect( d->treeList, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(slotItemClicked(QTreeWidgetItem*)));
+
+      QVBoxLayout *dummy = new QVBoxLayout(d->listFrame);
+      dummy->setMargin( 0 );
+      dummy->setSpacing( 0 );
       dummy->addWidget(d->treeList);
 
       //
@@ -167,7 +170,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       // all available space at bottom.
       //
       QFrame *p = new QFrame( d->splitter );
-      p->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+      //p->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
       QHBoxLayout *hbox = new QHBoxLayout( p );
       hbox->setMargin( 0 );
@@ -175,7 +178,10 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       hbox->addSpacing( KDialog::marginHint() );
 
       page = new QFrame( p );
-      hbox->addWidget( page, 10 );
+      hbox->addWidget( page );
+
+      d->splitter->addWidget(d->treeList);
+      d->splitter->addWidget(p);
     }
     else
     {
@@ -198,7 +204,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
       connect( d->iconList, SIGNAL(itemSelectionChanged()), SLOT(slotShowPage()));
       hbox->addSpacing( KDialog::marginHint() );
       page = new QFrame( this );
-      hbox->addWidget( page, 10 );
+      hbox->addWidget( page );
     }
 
     //
@@ -223,23 +229,23 @@ KJanusWidget::KJanusWidget( QWidget *parent, int face )
 
     d->pageStack = new QStackedWidget( page );
     connect(d->pageStack, SIGNAL(currentChanged(int)), SLOT(slotCurrentChanged(int)));
-    vbox->addWidget( d->pageStack, 10 );
+    vbox->addWidget( d->pageStack );
   }
   else if( d->face == Tabbed )
   {
     d->tabControl = new QTabWidget( this );
-    topLayout->addWidget( d->tabControl, 10 );
+    topLayout->addWidget( d->tabControl );
   }
   else if( d->face == Swallow )
   {
     d->swallowPage = new QWidget( this );
-    topLayout->addWidget( d->swallowPage, 10 );
+    topLayout->addWidget( d->swallowPage );
   }
   else
   {
     d->face = Plain;
     d->plainPage = new QFrame( this );
-    topLayout->addWidget( d->plainPage, 10 );
+    topLayout->addWidget( d->plainPage );
   }
 
   if ( kapp )
@@ -475,6 +481,7 @@ void KJanusWidget::insertTreeListItem(const QStringList &items, const QPixmap &p
     }
   }
 
+  kDebug() << k_funcinfo << d->treeList->sizeHint() << endl;
   layout()->activate();
 }
 

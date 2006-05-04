@@ -45,6 +45,7 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <klibloader.h>
+#include <kactioncollection.h>
 #include <kbufferedsocket.h>
 #include <kmessagebox.h>
 #include <kaction.h>

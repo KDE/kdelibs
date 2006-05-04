@@ -503,7 +503,7 @@ public:
     /**
      * @see setupGUI()
      */
-    enum StandardWindowOptions
+    enum StandardWindowOption
     {
         /**
          * adds action to show/hide the toolbar(s) and adds
@@ -541,6 +541,7 @@ public:
          */
         Create = 16
     };
+    Q_DECLARE_FLAGS(StandardWindowOptions, StandardWindowOption);
 
     /**
      * Configures the current windows and its actions in the typical KDE
@@ -552,7 +553,7 @@ public:
      * @see StandardWindowOptions
      *
      */
-    void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString() );
+    void setupGUI( StandardWindowOptions options = static_cast<StandardWindowOptions>(ToolBar | Keys | StatusBar | Save | Create), const QString& xmlfile = QString() );
 
     /**
      * Configures the current windows and its actions in the typical KDE
@@ -565,7 +566,7 @@ public:
      *
      * @see StandardWindowOptions
      */
-    void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString() );
+    void setupGUI( QSize defaultSize, StandardWindowOptions options = static_cast<StandardWindowOptions>(ToolBar | Keys | StatusBar | Save | Create), const QString& xmlfile = QString() );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu
@@ -920,6 +921,8 @@ private:
     KMainWindowPrivate *d;
     void initKMainWindow(const char *name, int cflags);
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KMainWindow::StandardWindowOptions);
 
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
