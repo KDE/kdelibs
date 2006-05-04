@@ -198,7 +198,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
                 action->setToolTip( bm.url().pathOrURL() );
 
-                action->plug(m_toolBar);
+                m_toolBar->addAction(action);
 
                 d->m_actions.append( action );
             }
@@ -217,7 +217,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             KGlobal::config()->setGroup( "Settings" );
             bool addEntriesBookmarkBar = KGlobal::config()->readEntry("AddEntriesBookmarkBar", true);
 
-            KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->popupMenu(),
+            KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->kMenu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,
                                                     bm.address());
             connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ),
@@ -225,7 +225,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             connect(menu, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers) ),
                     this, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers) ));
             menu->fillBookmarkMenu();
-            action->plug(m_toolBar);
+            m_toolBar->addAction(action);
             m_lstSubMenus.append( menu );
 
             d->m_actions.append( action );
