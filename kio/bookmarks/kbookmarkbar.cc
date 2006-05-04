@@ -411,42 +411,6 @@ RMB::RMB(QString parentAddress, QString highlightedAddress,
 {
 }
 
-void KBookmarkBar::slotRMBActionEditAt( int val )
-{
-    delete d->m_rmb; 
-    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-    d->m_rmb->slotRMBActionEditAt( val ); 
-}
-
-void KBookmarkBar::slotRMBActionProperties( int val )
-{ 
-    delete d->m_rmb; 
-    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-    d->m_rmb->slotRMBActionProperties( val ); 
-}
-
-void KBookmarkBar::slotRMBActionInsert( int val )
-{ 
-    delete d->m_rmb; 
-    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-    d->m_rmb->slotRMBActionInsert( val ); 
-}
-
-
-void KBookmarkBar::slotRMBActionRemove( int val )
-{ 
-    delete d->m_rmb; 
-    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-    d->m_rmb->slotRMBActionRemove( val ); 
-}
-
-void KBookmarkBar::slotRMBActionCopyLocation( int val )
-{ 
-    delete d->m_rmb; 
-    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-    d->m_rmb->slotRMBActionCopyLocation( val ); 
-}
-
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
     if (d->m_readOnly || d->m_filteredMgr) // note, we assume m_pManager in various places,
@@ -468,11 +432,10 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
             KBookmark bookmark = m_pManager->findByAddress( d->m_highlightedAddress );
             delete d->m_rmb; 
             d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-            KMenu *pm = new KMenu;
-            d->m_rmb->fillContextMenu( pm, d->m_highlightedAddress, 0 );
-            emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), pm );
-            d->m_rmb->fillContextMenu2( pm, d->m_highlightedAddress, 0 );
-            pm->popup( pt );
+            d->m_rmb->fillContextMenu( d->m_highlightedAddress);
+            emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), d->m_rmb->contextMenu() );
+            d->m_rmb->fillContextMenu2( d->m_highlightedAddress);
+            d->m_rmb->popup( pt );
             mev->accept();
         }
 

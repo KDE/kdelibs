@@ -48,6 +48,8 @@ class KBookmarkMenu;
 class KMenu;
 class RMB;
 
+class KBookmarkMenuPrivate; // Not implemented
+
 namespace KIO { class Job; }
 
 /**
@@ -159,16 +161,10 @@ public Q_SLOTS: // public for bookmark bar
 
 protected Q_SLOTS:
   void slotAboutToShow();
-  void slotAboutToShowContextMenu( KMenu *, QAction*, QMenu * );
+  void contextMenu( const QPoint & );
   void slotActionHighlighted( KAction * );
 
-  void slotRMBActionRemove( int );
-  void slotRMBActionInsert( int );
-  void slotRMBActionCopyLocation( int );
-  void slotRMBActionEditAt( int );
-  void slotRMBActionProperties( int );
-
-  void slotBookmarkSelected();
+  void slotBookmarkSelected(Qt::MouseButtons, Qt::KeyboardModifiers);
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
@@ -186,7 +182,7 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  void fillContextMenu( QMenu *, const QString &, int );
+  void showContextMenu( const QString &, const QPoint & pos);
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;
@@ -215,12 +211,15 @@ protected:
    */
   QString m_parentAddress;
 
+  QString m_highlightedAddress;
+
   // TODO make non static!
-  static QString m_highlightedAddress;
   static QString s_highlightedImportLocation;
   static QString s_highlightedImportType;
 
   RMB *m_rmb;
+private:
+  KBookmarkMenuPrivate* d;
 };
 
 /**

@@ -183,7 +183,6 @@ class KBookmarkSettings
 public:
   bool m_advancedaddbookmark;
   bool m_contextmenu;
-  bool m_quickactions;
   bool m_filteredtoolbar;
   static KBookmarkSettings *s_self;
   static void readSettings();
@@ -191,31 +190,38 @@ public:
 };
 
 /* Right mouse button */
-class RMB
+class RMB : public QObject
 {
+  Q_OBJECT
 public:
   RMB(QString parentAddress, QString highlightedAddress, 
       KBookmarkManager *pManager, KBookmarkOwner *pOwner);
   RMB(KBookmarkMenu *target, QString parentAddress, QString highlightedAddress,
       KBookmarkManager *pManager, KBookmarkOwner *pOwner, QWidget *parentMenu);
 
-  bool invalid( int val );
+  ~RMB();
+
   KBookmark atAddress(const QString & address);
-  void fillContextMenu( QMenu* contextMenu, const QString & address, int val );
-  void fillContextMenu2( QMenu* contextMenu, const QString & address, int val );
-  void slotRMBActionEditAt( int val );
-  void slotRMBActionProperties( int val );
-  void slotRMBActionInsert( int val );
-  void slotRMBActionRemove( int val );
-  void slotRMBActionCopyLocation( int val );
-  void hidePopup();
-public:
+  void fillContextMenu( const QString & address);
+  void fillContextMenu2( const QString & address);
+  QMenu * contextMenu();
+  void popup(const QPoint & pos);
+
+public Q_SLOTS:
+  void slotRMBActionEditAt();
+  void slotRMBActionProperties();
+  void slotRMBActionInsert();
+  void slotRMBActionRemove();
+  void slotRMBActionCopyLocation();
+
+private:
   QObject *recv;
-  KBookmarkManager *m_pManager;
-  QString m_highlightedAddress;
   QString m_parentAddress;
+  QString m_highlightedAddress;
+  KBookmarkManager *m_pManager;
   KBookmarkOwner *m_pOwner;
   QWidget *m_parentMenu;
+  QMenu * m_contextMenu;
 };
 
 #endif

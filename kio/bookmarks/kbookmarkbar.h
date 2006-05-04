@@ -78,12 +78,6 @@ public Q_SLOTS:
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();
 
-    void slotRMBActionRemove( int );
-    void slotRMBActionInsert( int );
-    void slotRMBActionCopyLocation( int );
-    void slotRMBActionEditAt( int );
-    void slotRMBActionProperties( int );
-
 protected:
     void fillBookmarkBar( KBookmarkGroup & parent );
     virtual bool eventFilter( QObject *o, QEvent *e );

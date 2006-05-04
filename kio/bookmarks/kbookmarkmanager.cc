@@ -691,7 +691,6 @@ void KBookmarkSettings::readSettings()
 
    // these three alter the menu, therefore all need a reparse
    s_self->m_contextmenu = config.readEntry("ContextMenuActions", true);
-   s_self->m_quickactions = config.readEntry("QuickActionSubmenu", false);
    s_self->m_filteredtoolbar = config.readEntry("FilteredToolbar", false);
 }
 
