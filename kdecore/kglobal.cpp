@@ -249,30 +249,6 @@ static void kglobal_init()
     KGlobal::_staticDeleters = new KStaticDeleterList;
 }
 
-int kasciistricmp( const char *str1, const char *str2 )
-{
-    const unsigned char *s1 = (const unsigned char *)str1;
-    const unsigned char *s2 = (const unsigned char *)str2;
-    int res;
-    unsigned char c1, c2;
-
-    if ( !s1 || !s2 )
-        return s1 ? 1 : (s2 ? -1 : 0);
-    if ( !*s1 || !*s2 )
-        return *s1 ? 1 : (*s2 ? -1 : 0);
-    for (;*s1; ++s1, ++s2) {
-        c1 = *s1; c2 = *s2;
-        if (c1 >= 'A' && c1 <= 'Z')
-            c1 += 'a' - 'A';
-        if (c2 >= 'A' && c2 <= 'Z')
-            c2 += 'a' - 'A';
-
-        if ((res = c1 - c2))
-            break;
-    }
-    return *s1 ? res : (*s2 ? -1 : 0);
-}
-
 #ifdef Q_WS_X11
 //static GC*	app_gc_ro	= 0;		// read-only GC
 static GC*	app_gc_tmp	= 0;		// temporary GC

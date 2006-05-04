@@ -1,6 +1,6 @@
 #include <config.h>
 
-#include <kglobal.h>
+#include <kascii.h>
 #include <stdio.h>
 #include <kapplication.h>
 #include <stdlib.h>

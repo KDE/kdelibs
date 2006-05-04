@@ -124,6 +124,7 @@ endif (UNIX)
 
 set(kdecore_LIB_SRCS
    kapplication.cpp
+   kascii.cpp
    kauthorized.cpp
    kautostart.cpp
    kdebug.cpp
