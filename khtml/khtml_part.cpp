@@ -3149,7 +3149,8 @@ bool KHTMLPart::findTextNext( bool reverse )
         else if ( renderLineText )
         {
           khtml::RenderLineEdit *parentLine= static_cast<khtml::RenderLineEdit *>(obj);
-          s = parentLine->widget()->text();
+          if (parentLine->widget()->echoMode() == QLineEdit::Normal)
+            s = parentLine->widget()->text();
           s = s.replace(0xa0, ' ');
         }
         else if ( obj->isText() )
@@ -3459,7 +3460,8 @@ QString KHTMLPart::selectedText() const
 	    text += static_cast<HTMLTextAreaElementImpl*>(n.handle())->value().string();
 	    break;
 	  case ID_INPUT:
-	    text += static_cast<HTMLInputElementImpl*>(n.handle())->value().string();
+            if (static_cast<HTMLInputElementImpl*>(n.handle())->inputType() != HTMLInputElementImpl::PASSWORD)
+  	      text += static_cast<HTMLInputElementImpl*>(n.handle())->value().string();
 	    break;
 	  case ID_SELECT:
 	    text += static_cast<HTMLSelectElementImpl*>(n.handle())->value().string();
@@ -4465,7 +4467,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     }
 
     child->m_serviceType = mimetype;
-    if ( child->m_frame )
+    if ( child->m_frame  && part->widget() )
       child->m_frame->setWidget( part->widget() );
 
     if ( child->m_type != khtml::ChildFrame::Object )
