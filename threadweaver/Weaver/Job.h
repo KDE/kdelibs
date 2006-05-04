@@ -144,7 +144,7 @@ namespace ThreadWeaver {
 	    Returns zero of the job is not currently executed.
 
 	    Do not confuse with QObject::thread() const !
-	    //  @TODO rename to executingThread()
+	    //  @todo rename to executingThread()
 	    */
 	inline Thread *thread() { return m_thread; }
 	/** Call with status = true to mark this job as done. */
