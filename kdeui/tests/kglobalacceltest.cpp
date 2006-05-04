@@ -2,6 +2,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 #include <kdebug.h>
 
 int main( int argc, char **argv )

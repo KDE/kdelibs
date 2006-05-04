@@ -3,6 +3,7 @@
 
 #include <kapplication.h>
 #include <kaction.h>
+#include <kactioncollection.h>
 
 #include <assert.h>
 #include <kaboutdata.h>
