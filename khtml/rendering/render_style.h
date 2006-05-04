@@ -5,7 +5,7 @@
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2004 Apple Computer, Inc.
- *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -503,6 +503,62 @@ public:
     OutlineValue m_outline;
 };
 
+enum EQuoteContent {
+    NO_QUOTE = 0, OPEN_QUOTE, CLOSE_QUOTE, NO_OPEN_QUOTE, NO_CLOSE_QUOTE
+};
+
+enum ContentType {
+    CONTENT_NONE = 0, CONTENT_NORMAL, CONTENT_OBJECT, 
+    CONTENT_TEXT, CONTENT_COUNTER, CONTENT_QUOTE
+};
+
+struct ContentData {
+    ContentData() : _contentType( CONTENT_NONE ), _nextContent(0) {}
+    ContentData(const ContentData& o);
+    ~ContentData();
+    void clearContent();
+
+    DOM::DOMStringImpl* contentText()
+    { if (_contentType == CONTENT_TEXT) return _content.text; return 0; }
+    CachedObject* contentObject()
+    { if (_contentType == CONTENT_OBJECT) return _content.object; return 0; }
+    DOM::CounterImpl* contentCounter()
+    { if (_contentType == CONTENT_COUNTER) return _content.counter; return 0; }
+    EQuoteContent contentQuote()
+    { if (_contentType == CONTENT_QUOTE) return _content.quote; return NO_QUOTE; }
+
+    ContentType _contentType;
+
+    union {
+        CachedObject* object;
+        DOM::DOMStringImpl* text;
+        DOM::CounterImpl* counter;
+        EQuoteContent quote;
+    } _content ;
+
+    ContentData* _nextContent;
+};
+
+class StyleGeneratedData : public Shared<StyleGeneratedData>
+{
+public:
+    StyleGeneratedData();
+    ~StyleGeneratedData();
+    StyleGeneratedData(const StyleGeneratedData& o );
+
+    bool operator==(const StyleGeneratedData& o) const;
+    bool operator!=(const StyleGeneratedData &o) const {
+	return !(*this == o);
+    }
+
+    bool contentDataEquivalent(const StyleGeneratedData* otherStyle) const;
+    bool counterDataEquivalent(const StyleGeneratedData* otherStyle) const;
+
+    ContentData *content;
+    DOM::CSSValueListImpl *counter_reset;
+    DOM::CSSValueListImpl *counter_increment;
+};
+
 //------------------------------------------------
 // CSS3 Marquee Properties
 
@@ -704,41 +760,6 @@ enum EUserInput {
     UI_ENABLED, UI_DISABLED, UI_NONE
 };
 
-enum EQuoteContent {
-    NO_QUOTE, OPEN_QUOTE, CLOSE_QUOTE, NO_OPEN_QUOTE, NO_CLOSE_QUOTE
-};
-
-enum ContentType {
-    CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT,
-    CONTENT_ATTR, CONTENT_COUNTER, CONTENT_QUOTE
-};
-
-struct ContentData {
-    ContentData() : _contentType( CONTENT_NONE ), _nextContent(0) {}
-    ~ContentData();
-    void clearContent();
-
-    ContentType _contentType;
-
-    DOM::DOMStringImpl* contentText()
-    { if (_contentType == CONTENT_TEXT) return _content.text; return 0; }
-    CachedObject* contentObject()
-    { if (_contentType == CONTENT_OBJECT) return _content.object; return 0; }
-    DOM::CounterImpl* contentCounter()
-    { if (_contentType == CONTENT_COUNTER) return _content.counter; return 0; }
-    EQuoteContent contentQuote()
-    { if (_contentType == CONTENT_QUOTE) return _content.quote; return NO_QUOTE; }
-
-    union {
-        CachedObject* object;
-        DOM::DOMStringImpl* text;
-        DOM::CounterImpl* counter;
-        EQuoteContent quote;
-    } _content ;
-
-    ContentData* _nextContent;
-};
-
 //------------------------------------------------
 
 enum EDisplay {
@@ -838,6 +859,7 @@ protected:
     DataRef<StyleVisualData> visual;
     DataRef<StyleBackgroundData> background;
     DataRef<StyleSurroundData> surround;
+    DataRef<StyleGeneratedData> generated;
     DataRef<StyleCSS3NonInheritedData> css3NonInheritedData;
 
 // inherited attributes
@@ -847,11 +869,6 @@ protected:
 // list of associated pseudo styles
     RenderStyle* pseudoStyle;
 
-    // added this here, so we can get rid of the vptr in this class.
-    // makes up for the same size.
-    ContentData *content;
-    DOM::CSSValueListImpl *counter_reset;
-    DOM::CSSValueListImpl *counter_increment;
 // !END SYNC!
 
 // static default style
@@ -1263,18 +1280,20 @@ public:
         const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();
     }
 
-    ContentData* contentData() const { return content; }
-    bool contentDataEquivalent(RenderStyle* otherStyle);
-    void setContent(DOM::DOMStringImpl* s, bool add);
-    void setContent(CachedObject* o, bool add);
-    void setContent(DOM::CounterImpl* c, bool add);
-    void setContent(EQuoteContent q, bool add);
+    ContentData* contentData() const { return generated->content; }
+    bool contentDataEquivalent(const RenderStyle* otherStyle) const 
+    { 
+        return generated->contentDataEquivalent(otherStyle->generated.get());
+    }
+    void addContent(DOM::DOMStringImpl* s);
+    void addContent(CachedObject* o);
+    void addContent(DOM::CounterImpl* c);
+    void addContent(EQuoteContent q);
     void setContentNone();
     void setContentNormal();
 
-    DOM::CSSValueListImpl* counterReset() const { return counter_reset; }
-    DOM::CSSValueListImpl* counterIncrement() const { return counter_increment; }
-    bool counterDataEquivalent(RenderStyle* otherStyle);
+    DOM::CSSValueListImpl* counterReset() const { return generated->counter_reset; }
+    DOM::CSSValueListImpl* counterIncrement() const { return generated->counter_increment; }
     void setCounterReset(DOM::CSSValueListImpl* v);
     void setCounterIncrement(DOM::CSSValueListImpl* v);
     bool hasCounterReset(const DOM::DOMString& c) const;

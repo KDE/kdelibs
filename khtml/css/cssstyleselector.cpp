@@ -1113,7 +1113,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             int val_len = value->length();
             // Be smart compare on length first
             if (sel_len > val_len) return false;
-            else
+            // Selector string may not contain spaces
+            if (sel->value.find(' ') != -1) return false;
             if (sel_len == val_len)
                 return (strictParsing && !strcmp(sel->value, value)) ||
 		       (!strictParsing && !strcasecmp(sel->value, value));
@@ -1131,7 +1132,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 pos = val_str.string().find(sel_str.string(), pos, strictParsing);
                 if ( pos == -1 ) return false;
                 if ( pos == 0 || val_uc[pos-1].isSpace() ) {
-                    uint endpos = pos + sel_len;
+                    int endpos = pos + sel_len;
                     if ( endpos >= val_len || val_uc[endpos].isSpace() )
                         break; // We have a match.
                 }
@@ -3298,32 +3299,33 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
 
+        style->setContentNormal(); // clear the content
+
         for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(val->primitiveType()==CSSPrimitiveValue::CSS_STRING)
             {
-                style->setContent(val->getStringValue(), i != 0);
+                style->addContent(val->getStringValue());
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
                 // TODO: setup dynamic attribute dependencies
                 int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
                 if (attrID)
-                    style->setContent(element->getAttribute(attrID).implementation(), i != 0);
-//                 else
-//                      #warning
-
+                    style->addContent(element->getAttribute(attrID).implementation());
+                else
+                    kdDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found" << endl;
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
                 CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(val);
-                style->setContent(image->image(), i != 0);
+                style->addContent(image->image());
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_COUNTER)
             {
-                style->setContent(val->getCounterValue(), i != 0);
+                style->addContent(val->getCounterValue());
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_IDENT)
             {
@@ -3344,8 +3346,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                     default:
                         assert(false);
                 }
-                style->setContent(quote, i != 0);
-            }
+                style->addContent(quote);
+            } else
+                kdDebug(6080) << "Unrecognized CSS content" << endl;
 
         }
         break;

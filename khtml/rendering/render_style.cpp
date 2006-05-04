@@ -247,6 +247,90 @@ bool StyleBackgroundData::operator==(const StyleBackgroundData& o) const
     return m_background == o.m_background && m_color == o.m_color && m_outline == o.m_outline;
 }
 
+StyleGeneratedData::StyleGeneratedData() : Shared<StyleGeneratedData>(), content(0), counter_reset(0), counter_increment(0) {}
+
+StyleGeneratedData::~StyleGeneratedData() 
+{
+    if (counter_reset) counter_reset->deref();
+    if (counter_increment) counter_increment->deref();
+    delete content;
+}
+
+StyleGeneratedData::StyleGeneratedData(const StyleGeneratedData& o)
+    : Shared<StyleGeneratedData>(), content(0),
+      counter_reset(o.counter_reset), counter_increment(o.counter_increment)
+{
+    if (o.content) content = new ContentData(*o.content);
+    if (counter_reset) counter_reset->ref();
+    if (counter_increment) counter_increment->ref();
+}
+
+bool StyleGeneratedData::contentDataEquivalent(const StyleGeneratedData* otherStyle) const
+{
+    ContentData* c1 = content;
+    ContentData* c2 = otherStyle->content;
+
+    while (c1 && c2) {
+        if (c1->_contentType != c2->_contentType)
+            return false;
+        if (c1->_contentType == CONTENT_TEXT) {
+            DOM::DOMString c1Str(c1->_content.text);
+            DOM::DOMString c2Str(c2->_content.text);
+            if (c1Str != c2Str)
+                return false;
+        }
+        else if (c1->_contentType == CONTENT_OBJECT) {
+            if (c1->_content.object != c2->_content.object)
+                return false;
+        }
+        else if (c1->_contentType == CONTENT_COUNTER) {
+            if (c1->_content.counter != c2->_content.counter)
+                return false;
+        }
+        else if (c1->_contentType == CONTENT_QUOTE) {
+            if (c1->_content.quote != c2->_content.quote)
+                return false;
+        }
+
+        c1 = c1->_nextContent;
+        c2 = c2->_nextContent;
+    }
+
+    return !c1 && !c2;
+}
+
+static bool compareCounterActList(const CSSValueListImpl* ca, const CSSValueListImpl* cb) {
+    // weeee....
+    CSSValueListImpl* a = const_cast<CSSValueListImpl*>(ca);
+    CSSValueListImpl* b = const_cast<CSSValueListImpl*>(cb);
+
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    if (a->length() != b->length()) return false;
+    for(uint i=0; i< a->length(); i++) {
+        CSSValueImpl *ai =  a->item(i);
+        CSSValueImpl *bi =  b->item(i);
+        assert(ai && ai->cssValueType() == CSSValue::CSS_CUSTOM);
+        assert(bi && bi->cssValueType() == CSSValue::CSS_CUSTOM);
+        CounterActImpl* caa = static_cast<CounterActImpl*>(ai);
+        CounterActImpl* cab = static_cast<CounterActImpl*>(bi);
+        if (caa->value() != cab->value()) return false;
+        if (caa->counter() != cab->counter()) return false;
+    }
+    return true;
+}
+
+bool StyleGeneratedData::counterDataEquivalent(const StyleGeneratedData* otherStyle) const
+{
+    return compareCounterActList(counter_reset, otherStyle->counter_reset) && 
+           compareCounterActList(counter_increment, otherStyle->counter_increment);
+}
+
+bool StyleGeneratedData::operator==(const StyleGeneratedData& o) const
+{
+    return contentDataEquivalent(&o) && counterDataEquivalent(&o);
+}
+
 StyleMarqueeData::StyleMarqueeData()
 {
     increment = RenderStyle::initialMarqueeIncrement();
@@ -393,6 +477,7 @@ RenderStyle::RenderStyle()
     visual = _default->visual;
     background = _default->background;
     surround = _default->surround;
+    generated = _default->generated;
     css3NonInheritedData = _default->css3NonInheritedData;
     css3InheritedData = _default->css3InheritedData;
 
@@ -401,9 +486,6 @@ RenderStyle::RenderStyle()
     setBitDefaults();
 
     pseudoStyle = 0;
-    content = 0;
-    counter_reset = 0;
-    counter_increment = 0;
 }
 
 RenderStyle::RenderStyle(bool)
@@ -414,6 +496,7 @@ RenderStyle::RenderStyle(bool)
     visual.init();
     background.init();
     surround.init();
+    generated.init();
     css3NonInheritedData.init();
 #ifdef APPLE_CHANGES	// ### yet to be merged
     css3NonInheritedData.access()->flexibleBox.init();
@@ -423,22 +506,15 @@ RenderStyle::RenderStyle(bool)
     inherited.init();
 
     pseudoStyle = 0;
-    content = 0;
-    counter_reset = 0;
-    counter_increment = 0;
 }
 
 RenderStyle::RenderStyle(const RenderStyle& o)
     : Shared<RenderStyle>(),
       inherited_flags( o.inherited_flags ), noninherited_flags( o.noninherited_flags ),
-      box( o.box ), visual( o.visual ), background( o.background ), surround( o.surround ),
+      box( o.box ), visual( o.visual ), background( o.background ), surround( o.surround ), generated(o.generated),
       css3NonInheritedData( o.css3NonInheritedData ), css3InheritedData( o.css3InheritedData ),
-      inherited( o.inherited ), pseudoStyle( 0 ), content( o.content ),
-      counter_reset(o.counter_reset), counter_increment(o.counter_increment)
-{
-    if (counter_reset) counter_reset->ref();
-    if (counter_increment) counter_increment->ref();
-}
+      inherited( o.inherited ), pseudoStyle( 0 )
+{}
 
 void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
 {
@@ -465,9 +541,6 @@ RenderStyle::~RenderStyle()
         prev->pseudoStyle = 0;
         prev->deref();
     }
-    delete content;
-    if (counter_reset) counter_reset->deref();
-    if (counter_increment) counter_increment->deref();
 }
 
 bool RenderStyle::operator==(const RenderStyle& o) const
@@ -479,6 +552,7 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             visual == o.visual &&
             background == o.background &&
             surround == o.surround &&
+            generated == o.generated &&
             css3NonInheritedData == o.css3NonInheritedData &&
             css3InheritedData == o.css3InheritedData &&
             inherited == o.inherited);
@@ -780,79 +854,41 @@ QString RenderStyle::closeQuote(int level) const
         return "\""; // 0 is default quotes
 }
 
-bool RenderStyle::contentDataEquivalent(RenderStyle* otherStyle)
-{
-    ContentData* c1 = content;
-    ContentData* c2 = otherStyle->content;
-
-    while (c1 && c2) {
-        if (c1->_contentType != c2->_contentType)
-            return false;
-        if (c1->_contentType == CONTENT_TEXT) {
-            DOM::DOMString c1Str(c1->_content.text);
-            DOM::DOMString c2Str(c2->_content.text);
-            if (c1Str != c2Str)
-                return false;
-        }
-        else if (c1->_contentType == CONTENT_OBJECT) {
-            if (c1->_content.object != c2->_content.object)
-                return false;
-        }
-        else if (c1->_contentType == CONTENT_COUNTER) {
-            if (c1->_content.counter != c2->_content.counter)
-                return false;
-        }
-        else if (c1->_contentType == CONTENT_QUOTE) {
-            if (c1->_content.quote != c2->_content.quote)
-                return false;
-        }
-
-        c1 = c1->_nextContent;
-        c2 = c2->_nextContent;
-    }
-
-    return !c1 && !c2;
-}
-
-void RenderStyle::setContent(CachedObject* o, bool add)
+void RenderStyle::addContent(CachedObject* o)
 {
     if (!o)
         return; // The object is null. Nothing to do. Just bail.
 
-    ContentData* lastContent = content;
+    StyleGeneratedData *t_generated = generated.access();
+
+    ContentData* lastContent = t_generated->content;
     while (lastContent && lastContent->_nextContent)
         lastContent = lastContent->_nextContent;
 
-    bool reuseContent = !add;
-    ContentData* newContentData = 0;
-    if (reuseContent && content) {
-        content->clearContent();
-        newContentData = content;
-    }
-    else
-        newContentData = new ContentData;
+    ContentData* newContentData = new ContentData;
 
-    if (lastContent && !reuseContent)
+    if (lastContent)
         lastContent->_nextContent = newContentData;
     else
-        content = newContentData;
+        t_generated->content = newContentData;
 
     //    o->ref();
     newContentData->_content.object = o;
     newContentData->_contentType = CONTENT_OBJECT;
 }
 
-void RenderStyle::setContent(DOM::DOMStringImpl* s, bool add)
+void RenderStyle::addContent(DOM::DOMStringImpl* s)
 {
     if (!s)
         return; // The string is null. Nothing to do. Just bail.
 
-    ContentData* lastContent = content;
+    StyleGeneratedData *t_generated = generated.access();
+
+    ContentData* lastContent = t_generated->content;
     while (lastContent && lastContent->_nextContent)
         lastContent = lastContent->_nextContent;
 
-    bool reuseContent = !add;
-    if (add && lastContent) {
+    if (lastContent) {
         if (lastContent->_contentType == CONTENT_TEXT) {
             // We can augment the existing string and share this ContentData node.
             DOMStringImpl* oldStr = lastContent->_content.text;
@@ -865,18 +901,12 @@ void RenderStyle::setContent(DOM::DOMStringImpl* s, bool add)
         }
     }
 
-    ContentData* newContentData = 0;
-    if (reuseContent && content) {
-        content->clearContent();
-        newContentData = content;
-    }
-    else
-        newContentData = new ContentData;
+    ContentData* newContentData = new ContentData;
 
-    if (lastContent && !reuseContent)
+    if (lastContent)
         lastContent->_nextContent = newContentData;
     else
-        content = newContentData;
+        t_generated->content = newContentData;
 
     newContentData->_content.text = s;
     newContentData->_content.text->ref();
@@ -884,69 +914,86 @@ void RenderStyle::setContent(DOM::DOMStringImpl* s, bool add)
 
 }
 
-void RenderStyle::setContent(DOM::CounterImpl* c, bool add)
+void RenderStyle::addContent(DOM::CounterImpl* c)
 {
     if (!c)
         return;
 
-    ContentData* lastContent = content;
+    StyleGeneratedData *t_generated = generated.access();
+
+    ContentData* lastContent = t_generated->content;
     while (lastContent && lastContent->_nextContent)
         lastContent = lastContent->_nextContent;
 
-    bool reuseContent = !add;
-    ContentData* newContentData = 0;
-    if (reuseContent && content) {
-        content->clearContent();
-        newContentData = content;
-    }
-    else
-        newContentData = new ContentData;
+    ContentData* newContentData = new ContentData;
 
-    if (lastContent && !reuseContent)
+    if (lastContent)
         lastContent->_nextContent = newContentData;
     else
-        content = newContentData;
+        t_generated->content = newContentData;
 
     c->ref();
     newContentData->_content.counter = c;
     newContentData->_contentType = CONTENT_COUNTER;
 }
 
-void RenderStyle::setContent(EQuoteContent q, bool add)
+void RenderStyle::addContent(EQuoteContent q)
 {
     if (q == NO_QUOTE)
         return;
 
-    ContentData* lastContent = content;
+    StyleGeneratedData *t_generated = generated.access();
+
+    ContentData* lastContent = t_generated->content;
     while (lastContent && lastContent->_nextContent)
         lastContent = lastContent->_nextContent;
 
-    bool reuseContent = !add;
-    ContentData* newContentData = 0;
-    if (reuseContent && content) {
-        content->clearContent();
-        newContentData = content;
-    }
-    else
-        newContentData = new ContentData;
+    ContentData* newContentData = new ContentData;
 
-    if (lastContent && !reuseContent)
+    if (lastContent)
         lastContent->_nextContent = newContentData;
     else
-        content = newContentData;
+        t_generated->content = newContentData;
 
     newContentData->_content.quote = q;
     newContentData->_contentType = CONTENT_QUOTE;
 }
 
+// content: normal is the same as having no content at all
 void RenderStyle::setContentNormal() {
-    delete content;
-    content = 0;
+    delete generated->content;
+    generated.access()->content = 0;
 }
 
+// content: none, add an empty content node
 void RenderStyle::setContentNone() {
     setContentNormal();
-    content = new ContentData;
+    generated.access()->content = new ContentData;
+}
+
+ContentData::ContentData(const ContentData& o) : _contentType(o._contentType)
+{
+    switch (_contentType) {
+        case CONTENT_OBJECT:
+            _content.object = o._content.object;
+            break;
+        case CONTENT_TEXT:
+            _content.text = o._content.text;
+            _content.text->ref();
+            break;
+        case CONTENT_COUNTER:
+            _content.counter = o._content.counter;
+            _content.counter->ref();
+            break;
+        case CONTENT_QUOTE:
+            _content.quote = o._content.quote;
+            break;
+        case CONTENT_NONE:
+        default:
+            break;
+    }
+
+    _nextContent = o._nextContent ? new ContentData(*o._nextContent) : 0;
 }
 
 ContentData::~ContentData()
@@ -1009,13 +1056,6 @@ bool ShadowData::operator==(const ShadowData& o) const
     return x == o.x && y == o.y && blur == o.blur && color == o.color;
 }
 
-bool RenderStyle::counterDataEquivalent(RenderStyle* otherStyle)
-{
-    // ### Should we compare content?
-    return counter_reset == otherStyle->counter_reset &&
-           counter_increment == otherStyle->counter_increment;
-}
-
 static bool hasCounter(const DOM::DOMString& c, CSSValueListImpl *l)
 {
     int len = l->length();
@@ -1029,16 +1069,16 @@ static bool hasCounter(const DOM::DOMString& c, CSSValueListImpl *l)
 
 bool RenderStyle::hasCounterReset(const DOM::DOMString& c) const
 {
-    if (counter_reset)
-        return hasCounter(c, counter_reset);
+    if (generated->counter_reset)
+        return hasCounter(c, generated->counter_reset);
     else
         return false;
 }
 
 bool RenderStyle::hasCounterIncrement(const DOM::DOMString& c) const
 {
-    if (counter_increment)
-        return hasCounter(c, counter_increment);
+    if (generated->counter_increment)
+        return hasCounter(c, generated->counter_increment);
     else
         return false;
 }
@@ -1056,32 +1096,32 @@ static short readCounter(const DOM::DOMString& c, CSSValueListImpl *l)
 
 short RenderStyle::counterReset(const DOM::DOMString& c) const
 {
-    if (counter_reset)
-        return readCounter(c, counter_reset);
+    if (generated->counter_reset)
+        return readCounter(c, generated->counter_reset);
     else
         return 0;
 }
 
 short RenderStyle::counterIncrement(const DOM::DOMString& c) const
 {
-    if (counter_increment)
-        return readCounter(c, counter_increment);
+    if (generated->counter_increment)
+        return readCounter(c, generated->counter_increment);
     else
         return 0;
 }
 
 void RenderStyle::setCounterReset(CSSValueListImpl *l)
 {
-    CSSValueListImpl *t = counter_reset;
-    counter_reset = l;
+    CSSValueListImpl *t = generated->counter_reset;
+    generated.access()->counter_reset = l;
     if (l) l->ref();
     if (t) t->deref();
 }
 
 void RenderStyle::setCounterIncrement(CSSValueListImpl *l)
 {
-    CSSValueListImpl *t = counter_increment;
-    counter_increment = l;
+    CSSValueListImpl *t = generated->counter_increment;
+    generated.access()->counter_increment = l;
     if (l) l->ref();
     if (t) t->deref();
 }

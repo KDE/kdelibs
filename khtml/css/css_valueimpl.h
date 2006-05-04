@@ -360,13 +360,13 @@ public:
 // Used for counter-reset and counter-increment
 class CounterActImpl : public CSSValueImpl {
     public:
-        CounterActImpl(DOM::DOMString &c, short v) : m_counter(c), m_value(v) { }
+        CounterActImpl(const DOMString &c, short v) : m_counter(c), m_value(v) { }
         virtual ~CounterActImpl() {};
 
         virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
         virtual DOM::DOMString cssText() const;
 
-        DOMString counter() const { return m_counter; }
+        const DOMString& counter() const { return m_counter; }
         short value() const { return m_value; }
         void setValue( const short v ) { m_value = v; }
 
