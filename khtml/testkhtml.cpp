@@ -27,7 +27,7 @@
 #include "rendering/render_style.h"
 #include <kmainwindow.h>
 #include <kcmdlineargs.h>
-#include <kaction.h>
+#include <ktoggleaction.h>
 #include "domtreeview.h"
 #include "kxmlguifactory.h"
 
