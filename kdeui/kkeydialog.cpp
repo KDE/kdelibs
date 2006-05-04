@@ -24,7 +24,7 @@
 #include "kkeydialog.h"
 #include "kkeybutton.h"
 
-#include "ui_kkeydialogui.h"
+#include "ui_kkeydialog.h"
 
 #include <string.h>
 
@@ -200,37 +200,44 @@ void KKeyChooser::save()
 
 void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcuts )
 {
-	  d->type = type;
-	  d->allowLetterShortcuts = allowLetterShortcuts;
+	d->type = type;
+	d->allowLetterShortcuts = allowLetterShortcuts;
+
+	d->ui->setupUi(this);
+
+	d->ui->searchFilter->searchLine()->setTreeWidget(d->ui->list); // Plug into search line
+
+	d->ui->list->header()->setStretchLastSection(false);
+	if (!(d->type & GlobalAction)) {
+		d->ui->list->header()->hideSection(3);
 	
-	  d->ui->setupUi(this);
-	
-	  d->ui->searchFilter->searchLine()->setTreeWidget(d->ui->list); // Plug into search line
-	
-	  d->ui->list->header()->setStretchLastSection(false);
-	
-	  connect( d->ui->list, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-				SLOT(slotListItemSelected(QTreeWidgetItem*)) );
-	
-	  // handle activation of an item
-	  connect( d->ui->list, SIGNAL ( itemActivated ( QTreeWidgetItem *, int ) ),
-				SLOT ( captureCurrentItem()) );
-	
-	  connect( d->ui->localNone, SIGNAL(clicked()), SLOT(slotLocalNoKey()) );
-	  connect( d->ui->localDefault, SIGNAL(clicked()), SLOT(slotLocalDefaultKey()) );
-	  connect( d->ui->localCustom, SIGNAL(clicked()), SLOT(slotLocalCustomKey()) );
-	  connect( d->ui->localCustomSelector, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(slotLocalCapturedShortcut(const KShortcut&)) );
-	
-	  connect( d->ui->globalNone, SIGNAL(clicked()), SLOT(slotGlobalNoKey()) );
-	  connect( d->ui->globalDefault, SIGNAL(clicked()), SLOT(slotGlobalDefaultKey()) );
-	  connect( d->ui->globalCustom, SIGNAL(clicked()), SLOT(slotGlobalCustomKey()) );
-	  connect( d->ui->globalCustomSelector, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(slotGlobalCapturedShortcut(const KShortcut&)) );
-	
-	  connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
-	
-	  if( allChoosers == NULL )
-			allChoosers = allChoosersDeleter.setObject( allChoosers, new QList< KKeyChooser* > );
-	  allChoosers->append( this );
+	} else if (d->type & ~GlobalAction) {
+		d->ui->list->header()->hideSection(1);
+		d->ui->list->header()->hideSection(2);
+	}
+
+	connect( d->ui->list, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+			SLOT(slotListItemSelected(QTreeWidgetItem*)) );
+
+	// handle activation of an item
+	connect( d->ui->list, SIGNAL ( itemActivated ( QTreeWidgetItem *, int ) ),
+			SLOT ( captureCurrentItem()) );
+
+	connect( d->ui->localNone, SIGNAL(clicked()), SLOT(slotLocalNoKey()) );
+	connect( d->ui->localDefault, SIGNAL(clicked()), SLOT(slotLocalDefaultKey()) );
+	connect( d->ui->localCustom, SIGNAL(clicked()), SLOT(slotLocalCustomKey()) );
+	connect( d->ui->localCustomSelector, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(slotLocalCapturedShortcut(const KShortcut&)) );
+
+	connect( d->ui->globalNone, SIGNAL(clicked()), SLOT(slotGlobalNoKey()) );
+	connect( d->ui->globalDefault, SIGNAL(clicked()), SLOT(slotGlobalDefaultKey()) );
+	connect( d->ui->globalCustom, SIGNAL(clicked()), SLOT(slotGlobalCustomKey()) );
+	connect( d->ui->globalCustomSelector, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(slotGlobalCapturedShortcut(const KShortcut&)) );
+
+	connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
+
+	if( allChoosers == NULL )
+		allChoosers = allChoosersDeleter.setObject( allChoosers, new QList< KKeyChooser* > );
+	allChoosers->append( this );
 }
 
 // Add all shortcuts to the list
@@ -238,16 +245,33 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 {
 	const QList<KAction*> pList = d->rgpLists[iList];
 
-	if( d->type & GlobalAction || d->type & ApplicationAction )
-	    d->ui->list->setEnabled(false);
-
 	QTreeWidgetItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
 	QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
 	pParentItem = pProgramItem = pItem = new QTreeWidgetItem( d->ui->list, QStringList() << str );
 	d->ui->list->expandItem(pParentItem);
 	//pParentItem->setFlags(pParentItem->flags() & !Qt::ItemIsSelectable);
+	
 	foreach (KAction* action, pList) {
+		ActionTypes thisType = 0;
+		switch (action->shortcutContext()) {
+			case Qt::ApplicationShortcut:
+				thisType = ApplicationAction;
+				break;
+			case Qt::WindowShortcut:
+				thisType = WindowAction;
+				break;
+			case Qt::WidgetShortcut:
+				thisType = WidgetAction;
+				break;
+		}
+
+		if (action->globalShortcutAllowed())
+			thisType &= GlobalAction;
+
+		if (!(thisType & d->type))
+			continue;
+
 		QString sName = action->text();
 		kDebug(125) << "Key: " << sName << endl;
 		if( sName.startsWith( "Program:" ) ) {
@@ -537,7 +561,7 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 		 it != allChoosers->end();
 		 ++it ) {
 		has_global_chooser |= ((*it)->d->type & GlobalAction);
-		has_standard_chooser |= ((*it)->d->type & StandardAction);
+		has_standard_chooser |= ((*it)->d->type & WidgetAction);
 	}
 
 	// If editing global shortcuts, check them for conflicts with the stdaccels.
@@ -616,7 +640,7 @@ bool KKeyChooser::checkStandardShortcutsConflict( const KShortcut& cut, bool bWa
 		if( id != KStdAccel::AccelNone
 			&& keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
 			if( bWarnUser ) {
-				if( !promptForReassign( seq, KStdAccel::label(id), StandardAction, parent ))
+				if( !promptForReassign( seq, KStdAccel::label(id), WidgetAction, parent ))
 					return true;
 				removeStandardShortcut( KStdAccel::label(id), dynamic_cast< KKeyChooser* > ( parent ), cut);
 			}
@@ -647,7 +671,7 @@ void KKeyChooser::removeStandardShortcut( const QString& name, KKeyChooser* choo
 	bool was_in_choosers = false;
 	if( allChoosers != NULL ) {
 		foreach (KKeyChooser* c, *allChoosers) {
-			if( c != chooser && c->d->type & StandardAction ) {
+			if( c != chooser && c->d->type & WidgetAction ) {
 				was_in_choosers |= ( c->removeShortcut( name, cut ));
 			}
 		}
@@ -708,7 +732,7 @@ bool KKeyChooser::promptForReassign( const QKeySequence& cut, const QString& sAc
 		return true;
 	QString sTitle;
 	QString s;
-	if( type == StandardAction ) {
+	if( type == WidgetAction ) {
 		sTitle = i18n("Conflict with Standard Application Shortcut");
 		s = i18n("The '%1' key combination has already been allocated "
 		"to the standard action \"%2\".\n"
@@ -807,6 +831,11 @@ QVariant KKeyChooserItem::data(int column, int role) const
 				case Qt::TextColorRole:
 					if (checkChanged(m_newGlobalShortcut, m_action->globalShortcut(), 0))
 						return QColor(Qt::blue);
+					break;
+				case Qt::BackgroundColorRole:
+					if (!m_action->globalShortcutAllowed())
+						return QColor(Qt::gray);
+					break;
 				default:
 					break;
 			}

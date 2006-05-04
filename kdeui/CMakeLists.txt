@@ -160,7 +160,7 @@ kde4_automoc(${kdeui_LIB_SRCS})
 
 set( kdeui_UI
    kspellui.ui
-   kkeydialogui.ui
+   kkeydialog.ui
    kshortcutdialog_simple.ui
    kshortcutdialog_advanced.ui
    )

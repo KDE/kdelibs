@@ -314,8 +314,6 @@ void KShortcutDialog::keyPressEvent( QKeyEvent * e )
 {
 	KDialog::keyPressEvent(e);
 
-	kDebug() << k_funcinfo << "'" << e->text() << "': " << e->key() << endl;
-
 	//if key is a letter, it must be stored as lowercase
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ?
 		(QChar( e->key() & 0xff ).toLower().toLatin1() | (e->key() & 0xffff00) )

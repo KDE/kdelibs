@@ -57,11 +57,16 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 
 public:
 	enum ActionType {
+		/// Actions which are triggered by any keypress in the application
 		ApplicationAction = 0x1,
+		/// Actions which are triggered by any keypress in a window which has the action added to it or its child widget(s)
 		WindowAction      = 0x2,
-		StandardAction    = 0x4,
+		/// Actions which are triggered by any keypress in a widget which has the action added to it
+		WidgetAction      = 0x4,
+		/// Actions which are triggered by any keypress in the windowing system
 		GlobalAction      = 0x8,
-		AllActions        = 0xff
+		/// All actions
+		AllActions        = 0xffffffff
 	};
 	Q_DECLARE_FLAGS(ActionTypes, ActionType)
 	
