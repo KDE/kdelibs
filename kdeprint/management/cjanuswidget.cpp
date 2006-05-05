@@ -237,7 +237,7 @@ CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 		if (item->m_widget == w)
 			return item;
 	}
-	return 0;
+	return NULL;
 }
 
 CJanusWidget::CPage* CJanusWidget::findPage(Q3ListBoxItem *i)
@@ -249,23 +249,23 @@ CJanusWidget::CPage* CJanusWidget::findPage(Q3ListBoxItem *i)
 		if (item->m_item == i)
 			return item;
 	}
-	return 0;
+	return NULL;
 }
 
 Q3ListBoxItem* CJanusWidget::findPrevItem(CPage *p)
 {
 	QListIterator<CPage*>   it(m_pages);
-	if (m_pages.indexOf(p) == -1)
-		it.toBack();
-	else
-		it.previous();
+
+        if(it.findNext(p))
+            it.previous();
+
 	while(it.hasPrevious())
 	{
 		CPage *item = it.previous();
 		if (item->m_item)
 			return item->m_item;
 	}
-	return 0;
+	return NULL;
 }
 
 void CJanusWidget::clearPages()
