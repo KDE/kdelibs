@@ -25,6 +25,7 @@
 #include <kglobal.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
+#include <cmath>
 
 namespace Phonon
 {
