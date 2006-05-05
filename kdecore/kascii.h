@@ -27,7 +27,7 @@
  * in a case-insensitive way.
  * qstricmp fails with e.g. the Turkish locale where 'I'.toLower() != 'i'
  */
-int KDECORE_EXPORT kasciistricmp( const char *str1, const char *str2 );
+KDECORE_EXPORT int kasciistricmp( const char *str1, const char *str2 );
 
 /**
   Locale-independent function to convert ASCII strings to lower case ASCII
@@ -36,7 +36,7 @@ int KDECORE_EXPORT kasciistricmp( const char *str1, const char *str2 );
   @param str  pointer to the string which should be converted to lower case
   @return     pointer to the converted string (same as @a str)
 */
-char * KDECORE_EXPORT kAsciiToLower( char *str );
+KDECORE_EXPORT char * kAsciiToLower( char *str );
 
 /**
   Locale-independent function to convert ASCII strings to upper case ASCII
@@ -45,6 +45,6 @@ char * KDECORE_EXPORT kAsciiToLower( char *str );
   @param str  pointer to the string which should be converted to upper case
   @return     pointer to the converted string (same as @a str)
 */
-char * KDECORE_EXPORT kAsciiToUpper( char *str );
+KDECORE_EXPORT char * kAsciiToUpper( char *str );
 
 #endif
