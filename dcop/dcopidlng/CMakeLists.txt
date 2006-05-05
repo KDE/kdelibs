@@ -4,11 +4,7 @@ kde4_header()
 
 ########### install files ###############
 
-if(WIN32)
-   install_programs(/bin FILES dcopidl.bat)
-else(WIN32)
-   install_programs(/bin FILES dcopidl)
-endif(WIN32)
+install_programs(/bin FILES ${KDE4_DCOPIDL_EXECUTABLE})
 
 install_files( ${DATA_INSTALL_DIR}/dcopidl FILES Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm kalyptus )
 
