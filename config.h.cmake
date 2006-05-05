@@ -116,7 +116,6 @@
 #cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_SYS_NDIR_H 1
 #cmakedefine HAVE_SYS_UCRED_H 1
-#cmakedefine HAVE_SYS_XATTR_H 1
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine HAVE_UTIL_H 1
 #cmakedefine HAVE_VALUES_H 1
