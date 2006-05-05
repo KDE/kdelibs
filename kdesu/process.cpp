@@ -294,7 +294,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         putenv(const_cast<char *>(d->env.at(i).constData()));
     }
     unsetenv("KDE_FULL_SESSION");
-    
+
     // set temporarily LC_ALL to C, for su (to be able to parse "Password:")
     const char* old_lc_all = getenv( "LC_ALL" );
     if( old_lc_all != NULL )
@@ -323,10 +323,10 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
     i = 0;
     argp[i++] = path;
-    for (QList<QByteArray>::ConstIterator it=args.begin(); it!=args.end(); ++it)
-        argp[i++] = *it;
+    for (QList<QByteArray>::ConstIterator it=args.begin(); it!=args.end(); ++it, ++i)
+        argp[i] = *it;
 
-    argp[i + 2] = 0;
+    argp[i] = NULL;
 
     execv(path, const_cast<char **>(argp));
     kError(900) << k_lineinfo << "execv(\"" << path << "\"): " << perror << "\n";
