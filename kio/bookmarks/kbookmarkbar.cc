@@ -30,6 +30,7 @@
 
 #include <ktoolbar.h>
 
+#include <kactionmenu.h>
 #include <kconfig.h>
 #include <kmenu.h>
 

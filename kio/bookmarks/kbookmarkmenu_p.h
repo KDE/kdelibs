@@ -30,6 +30,7 @@
 #include <kdialogbase.h>
 #include <klocale.h>
 #include <kaction.h>
+#include <kactionmenu.h>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"
