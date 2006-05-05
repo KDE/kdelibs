@@ -139,7 +139,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 
 	setCurrentPage(m_start,false);
 	setWindowTitle(i18n("Add Printer Wizard"));
-	resize(400,350);
+	resize(400,320);
 }
 
 KMWizard::~KMWizard()
