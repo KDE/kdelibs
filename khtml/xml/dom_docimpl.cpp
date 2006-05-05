@@ -330,7 +330,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_textColor = "#000000";
     m_attrMap = new IdNameMapping(ATTR_LAST_ATTR+1);
     m_elementMap = new IdNameMapping(ID_LAST_TAG+1);
-    m_namespaceMap = new IdNameMapping(2);
+    m_namespaceMap = new IdNameMapping(1);
     QString xhtml(XHTML_NAMESPACE);
     m_namespaceMap->names.insert(emptyNamespace, new DOMStringImpl(""));
     m_namespaceMap->names.insert(xhtmlNamespace, new DOMStringImpl(xhtml.unicode(), xhtml.length()));
