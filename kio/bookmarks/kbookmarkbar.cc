@@ -401,16 +401,6 @@ static QAction* handleToolbarMouseButton(const QPoint& pos, const QList<KAction 
 // TODO    *** drop improvements ***
 // open submenus on drop interactions
 
-// TODO    *** generic rmb improvements ***
-// don't *ever* show the rmb on press, always relase, possible???
-
-RMB::RMB(QString parentAddress, QString highlightedAddress,
-         KBookmarkManager *pManager, KBookmarkOwner *pOwner)
-: m_parentAddress(parentAddress), m_highlightedAddress(highlightedAddress),
-  m_pManager(pManager), m_pOwner(pOwner), m_parentMenu(0)
-{
-}
-
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
     if (d->m_readOnly || d->m_filteredMgr) // note, we assume m_pManager in various places,

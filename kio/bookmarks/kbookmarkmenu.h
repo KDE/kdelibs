@@ -162,7 +162,7 @@ public Q_SLOTS: // public for bookmark bar
 protected Q_SLOTS:
   void slotAboutToShow();
   void contextMenu( const QPoint & );
-  void slotActionHighlighted( KAction * );
+  void slotActionHoovered( QAction * );
 
   void slotBookmarkSelected(Qt::MouseButtons, Qt::KeyboardModifiers);
   void slotAddBookmarksList();

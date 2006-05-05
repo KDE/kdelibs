@@ -29,7 +29,7 @@
 
 #include <kdialogbase.h>
 #include <klocale.h>
-#include <kactionmenu.h>
+#include <kaction.h>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"
@@ -194,10 +194,8 @@ class RMB : public QObject
 {
   Q_OBJECT
 public:
-  RMB(QString parentAddress, QString highlightedAddress, 
-      KBookmarkManager *pManager, KBookmarkOwner *pOwner);
-  RMB(KBookmarkMenu *target, QString parentAddress, QString highlightedAddress,
-      KBookmarkManager *pManager, KBookmarkOwner *pOwner, QWidget *parentMenu);
+  RMB(QString parentAddress, QString highlightedAddress,
+      KBookmarkManager *pManager, KBookmarkOwner *pOwner, QWidget *parentMenu = 0);
 
   ~RMB();
 
@@ -208,14 +206,13 @@ public:
   void popup(const QPoint & pos);
 
 public Q_SLOTS:
-  void slotRMBActionEditAt();
-  void slotRMBActionProperties();
-  void slotRMBActionInsert();
-  void slotRMBActionRemove();
-  void slotRMBActionCopyLocation();
+  void slotEditAt();
+  void slotProperties();
+  void slotInsert();
+  void slotRemove();
+  void slotCopyLocation();
 
 private:
-  QObject *recv;
   QString m_parentAddress;
   QString m_highlightedAddress;
   KBookmarkManager *m_pManager;
