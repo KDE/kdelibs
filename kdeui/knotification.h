@@ -134,18 +134,21 @@ class KInstance;
  * This portion of code will fire the event for the "contactOnline" event
  * 
  * @code
-	KNotification::ContextList contexts;
+	KNotification *notification= new KNotification ( "contactOnline" );
+	notification->setText( i18n("The contact <i>%1</i> has gone online").arg( contact->name() ) );
+	notification->setPixmap( contact->pixmap() );
+	notification->setActions( QStringList( i18n( "Open chat" ) ) );
+	
 	foreach( QString group , contact->groups() ) {
-		contexts.append( qMakePair( QString("group") , group ) );
+		notification->addContext( qMakePair( QString("group") , group ) );
 	}
-    
-	KNotification *notification=KNotification::event( "contactOnline",
-			i18n("The contact <i>%1</i> has gone online").arg( contact->name() ),
-			contact->pixmap() , 0l , QStringList( i18n( "Open chat" ) ) , contexts );
-	connect(notify, SIGNAL(activated(unsigned int )), contact , SLOT(slotOpenChat()) );
+	
+	connect(notification, SIGNAL(activated(unsigned int )), contact , SLOT(slotOpenChat()) );
+	
+	notification->sendEvent();
  * @endcode
  * 
- * @author Olivier Goffart  \<ogoffart\@kde.org\>
+ * @author Olivier Goffart  \<ogoffart at kde.org\>
  */
 class KDEUI_EXPORT KNotification : public QObject
 {
@@ -170,7 +173,8 @@ public:
 	 *
 	 * @see event
 	 */
-	typedef QList< QPair<QString,QString> > ContextList;
+	typedef QPair<QString,QString> Context;
+	typedef QList< Context > ContextList;
 
 	enum NotificationFlag
 	{
@@ -219,8 +223,22 @@ public:
 	 * default events you can use in the event function
 	 */
 	enum StandardEvent { Notification , Warning , Error , Catastrophe };
-
-	~KNotification();
+	/**
+	 * Create a new notification.
+	 * 
+	 * you need to use sendEvent to show the notification.
+	 * 
+	 * The pointer is automatically deleted when the event is closed.
+	 *
+	 * Make sure you use one of the CloseOnTimeOut or CloseWhenWidgetActivated, if not,
+	 * you have to close yourself the notification.
+	 *
+	 * @param eventId is the name of the event
+	 * @param widget is a widget where the notification reports to
+	 * @param flags is a bitmask of NotificationFlag
+	 */
+	KNotification(const QString & eventId , QWidget *widget=0L, const NotificationFlags &flags=CloseOnTimeout);
+    ~KNotification();
 
     /**
 	 * @brief the widget associated to the notification
@@ -232,6 +250,87 @@ public:
 	 * Depending of the configuration, the taskbar entry of the window containing the widget may blink.
 	 */
 	QWidget *widget() const;
+	
+	/**
+	 * Set the widget associated to the notification.
+	 * The notification is reparented to the new widget.
+	 * \see widget()
+	 * @param widget the new widget
+	 */
+	void setWidget(QWidget *widget);
+	
+	
+	/**
+	 * @return the name of the event
+	 */
+	QString eventId() const;
+	
+	/**
+	 * @return the notification text
+	 * @see setText
+	 */
+	QString text() const ;
+	
+	/**
+	 * Set the notification text that will appears in the popup.
+	 * 
+	 * The text is shown in a QLabel, you should make sure to escape the html is needed.
+	 * You can use some of the qt basic html tags.
+	 * 
+	 * If the popup has already been displayed, you must call sendEvent() again to update the information
+	 * 
+	 * @param text the text
+	 */
+	void setText(const QString &text);
+	
+	/**
+	 * \return the pixmap shown in the popup
+	 * \see setPixmap
+	 */
+	QPixmap pixmap() const;
+	/**
+	 * set the pixmap that will be shown in the popup.
+	 * 
+	 * If the popup has already been displayed, you must call sendEvent() again to update the information
+	 * 
+	 * @param pix the pixmap
+	 */
+	void setPixmap(const QPixmap &pix);
+	
+	/**
+	 * @return the list of actions
+	 */
+	QStringList actions() const;
+	
+	/**
+	 * Set the list of actions link shown in the popup.
+	 * 
+	 * It is not possible to modify them if the notification has already been shown.
+	 * 
+	 * @param actions the list of actions
+	 */
+	void setActions(const QStringList& actions);
+	
+	/**
+	 * @return the list of contexts, see KNotification::Context
+	 */
+	ContextList contexts() const;
+	/**
+	 * set the list of context, see KNotification::Context
+	 * 
+	 * The list of context must be set before calling sendEvent;
+	 */
+	void setContexts( const ContextList &contexts);
+	/**
+	 * append a context at the list of contexts, see KNotificaiton::Context
+	 */
+	void addContext( const Context & context);
+	
+	/**
+	 * The instance is used to determine the location of the config file.  By default, kapp is used
+	 * @param instance the new instance
+	 */
+	void setInstance( const KInstance *instance);
 			  
    Q_SIGNALS:
 	/**
@@ -289,17 +388,21 @@ public Q_SLOTS:
 	 * @see ref
 	 */
 	void deref();
-
-private Q_SLOTS:
+	
 	/**
-	 * emit the event to the deamon
+	 * Emit the event.
+	 * 
+	 * This will send a syncronous dbus call to the notify deamon. 
+	 * If you are in a critical code path, you can do 
+	 * \code
+	 * QTimer::singleShot(0,notify,SLOT(sendEvent()));
+	 * \endcode
 	 */
 	void sendEvent();
 
 private:
 	struct Private;
 	Private *const d;
-	KNotification(QObject *parent=0L);
 	/**
 	 * recursive function that raise the widget. @p w
 	 *
@@ -311,6 +414,9 @@ private:
 public:
 	/**
 	 * @brief emit an event
+	 * 
+	 * This method crate the KNotification, assing every parametter, and fire the event.
+	 * You don't need to call sendEvent
 	 *
 	 * A popup may be showed, a sound may be played, depending the config.
 	 *
@@ -333,8 +439,8 @@ public:
 	 */
 	static KNotification *event( const QString& eventId , const QString& text=QString(),
 			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
-			const QStringList &actions=QStringList(), ContextList contexts=ContextList() ,
-			NotificationFlags flags=CloseOnTimeout , const KInstance *instance=0l );
+			const QStringList &actions=QStringList(), const ContextList &contexts=ContextList() ,
+			const NotificationFlags &flags=CloseOnTimeout , const KInstance *instance=0l );
 
 	/**
 	 * @brief emit standard an event
@@ -350,7 +456,7 @@ public:
 	 */
 	static KNotification *event( StandardEvent eventId , const QString& text=QString(),
 								 const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
-								 NotificationFlags flags=CloseOnTimeout);
+								 const NotificationFlags& flags=CloseOnTimeout);
 	
 	/**
 	 * This is a simple substitution for QApplication::beep()
@@ -360,15 +466,6 @@ public:
 	 */
 	static void beep( const QString& reason = QString() , QWidget *widget=0L);
 
-	/**
-	 * @return the name of the event
-	 */
-	QString eventId() const;
-	
-	/**
-	 * @return the notification text
-	 */
-	QString text() const ;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KNotification::NotificationFlags)

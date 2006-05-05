@@ -68,15 +68,18 @@ struct KNotification::Private
 	QStringList actions;
 	QPixmap pixmap;
 	ContextList contexts;
-	QString appname;
+	NotificationFlags flags;
+	const KInstance *instance;
 
-	
-	Private() :  id(0), ref(1) , widget(0l) {}
+	Private() :  id(0), ref(1) , widget(0l) , instance(0L) {}
 };
 
-KNotification::KNotification(QObject *parent) :
+KNotification::KNotification(const QString& eventId, QWidget *parent, const NotificationFlags& flags) :
 		QObject(parent) , d(new Private)
 {
+	d->eventId=eventId;
+	d->flags=flags;
+	setWidget(parent);
 }
 
 KNotification::~KNotification()
@@ -101,7 +104,58 @@ QWidget *KNotification::widget() const
 	return d->widget;
 }
 
+void KNotification::setWidget(QWidget *wid)
+{
+	d->widget = wid;
+	setParent(wid);
+}
 
+void KNotification::setText(const QString &text)
+{
+	d->text=text;
+	//TODO: modify the existing popup
+}
+	
+QPixmap KNotification::pixmap() const
+{
+	return d->pixmap;
+}
+	
+void KNotification::setPixmap(const QPixmap &pix)
+{
+	d->pixmap=pix;
+	//TODO: modify the existing popup
+}
+
+QStringList KNotification::actions() const
+{
+	return d->actions;
+}
+
+void KNotification::setActions(const QStringList& as )
+{
+	d->actions=as;
+}
+
+KNotification::ContextList KNotification::contexts() const
+{
+	return d->contexts;
+}
+	
+void KNotification::setContexts( const KNotification::ContextList &contexts)
+{
+	d->contexts=contexts;
+}
+
+void KNotification::addContext( const KNotification::Context & context)
+{
+	d->contexts << context;
+}
+
+void KNotification::setInstance( const KInstance * i)
+{
+	d->instance=i;
+}
 
 void KNotification::activate(unsigned int action)
 {
@@ -158,31 +212,14 @@ void KNotification::raiseWidget(QWidget *w)
 
 KNotification *KNotification::event( const QString& eventid , const QString& text,
 			const QPixmap& pixmap, QWidget *widget, const QStringList &actions,
-			ContextList contexts, NotificationFlags flags, const KInstance *instance)
+			const ContextList &contexts, const NotificationFlags &flags, const KInstance *instance)
 {
-	KNotification *notify=new KNotification(widget);
-	notify->d->widget=widget;
-	notify->d->text=text;
-	notify->d->actions=actions;
-	notify->d->eventId=eventid;
-	notify->d->contexts=contexts;
-	notify->d->pixmap=pixmap;
-
-	QString appname; 
-
-	if(flags & DefaultEvent)
-		appname = QLatin1String("kde");
-	else if(instance)
-		appname = QString::fromLatin1(instance->instanceName());
-	else
-		appname = QString::fromLatin1(kapp->instanceName());
-	
-	notify->d->appname=appname;
-
-	if(!(flags & NoTimeout))
-	{
-		QTimer::singleShot(6*1000, notify, SLOT(close()));
-	}
+	KNotification *notify=new KNotification(eventid, widget, flags);
+	notify->setText(text);
+	notify->setActions(actions);
+	notify->setContexts(contexts);
+	notify->setPixmap(pixmap);
+	notify->setInstance(instance);
 
 	QTimer::singleShot(0,notify,SLOT(sendEvent()));
 	
@@ -191,7 +228,7 @@ KNotification *KNotification::event( const QString& eventid , const QString& tex
 
 
 KNotification *KNotification::event( StandardEvent eventid , const QString& text,
-		const QPixmap& pixmap, QWidget *widget, NotificationFlags flags)
+		const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags)
 {
 	QString message;
 	switch ( eventid ) {
@@ -231,7 +268,23 @@ void KNotification::beep( const QString & reason, QWidget * widget )
 
 void KNotification::sendEvent()
 {
-	d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , d->appname );
+	
+	QString appname; 
+
+	if(d->flags & DefaultEvent)
+		appname = QLatin1String("kde");
+	else if(d->instance)
+		appname = QString::fromLatin1(d->instance->instanceName());
+	else
+		appname = QString::fromLatin1(kapp->instanceName());
+	
+	if(!(d->flags & NoTimeout))
+	{
+		QTimer::singleShot(6*1000, this, SLOT(close()));
+	}
+
+	
+	d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
 	if(d->id>0)
 		ref();
 //	kDebug() << k_funcinfo << d->id << endl;
