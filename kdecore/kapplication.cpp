@@ -873,41 +873,38 @@ void KApplication::commitData( QSessionManager& sm )
     bool canceled = false;
 
     foreach (KSessionManaged *it, *sessionClients()) {
-      if(canceled) break;
-      canceled = !it->commitData( sm );
+        if ( ( canceled = !it->commitData( sm ) ) )
+            break;
     }
 
     if ( canceled )
         sm.cancel();
 
     if ( sm.allowsInteraction() ) {
-        QWidgetList done;
-        QWidgetList list = QApplication::topLevelWidgets();
-        bool canceled = false;
-        QWidget* w = list.first();
-        int count = 0;
-        while ( !canceled && w ) {
-            if ( !( w->testAttribute( Qt::WA_WState_Hidden )) && !w->inherits("KMainWindow") ) {
+        QWidgetList donelist, todolist;
+        QWidget* w;
+
+commitDataRestart:
+        todolist = QApplication::topLevelWidgets();
+
+        for ( int i = 0; i < todolist.size(); ++i ) {
+            w = todolist.at( i );
+            if( !w )
+                break;
+
+            if ( donelist.contains( w ) )
+                continue;
+
+            if ( !w->isHidden() && !w->inherits( "KMainWindow" ) ) {
                 QCloseEvent e;
                 sendEvent( w, &e );
-                canceled = !e.isAccepted();
-                if ( !canceled )
-                    done.append( w );
+                if ( !e.isAccepted() )
+                    break; //canceled
+
+                donelist.append( w );
 
                 //grab the new list that was just modified by our closeevent
-                list = QApplication::topLevelWidgets();
-                w = list.first();
-                count = 0;
-            } else {
-                //loop over the widgets
-                count++;
-                w = list[ count ];
-            }
-
-            while ( w && done.contains( w ) ) {
-                //loop over the widgets
-                count++;
-                w = list[ count ];
+                goto commitDataRestart;
             }
         }
     }
