@@ -17,17 +17,15 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "kvisiblebuttongroup.h"
 #include "kmwpassword.h"
 #include "kmwizard.h"
 #include "kmprinter.h"
 
 #include <qlabel.h>
 #include <qlineedit.h>
-#include <Q3VButtonGroup>
-#include <qradiobutton.h>
 #include <qlayout.h>
 #include <klocale.h>
-#include <kcursor.h>
 
 #include <stdlib.h>
 
@@ -40,6 +38,7 @@ KMWPassword::KMWPassword(QWidget *parent)
 
 	// create widgets
 	QLabel	*infotext_ = new QLabel(this);
+	infotext_->setWordWrap(true);
 	infotext_->setText(i18n("<p>This backend may require a login/password to work properly. "
 				"Select the type of access to use and fill in the login and password entries if needed.</p>"));
 	m_login = new QLineEdit(this);
@@ -48,23 +47,20 @@ KMWPassword::KMWPassword(QWidget *parent)
 	m_password->setEchoMode(QLineEdit::Password);
 	QLabel	*loginlabel_ = new QLabel(i18n("&Login:"),this);
 	QLabel	*passwdlabel_ = new QLabel(i18n("&Password:"),this);
-	m_btngroup = new Q3VButtonGroup( this );
-//	m_btngroup->setFrameStyle( QFrame::NoFrame );
-	QRadioButton *btn1 = new QRadioButton( i18n( "&Anonymous (no login/password)" ), m_btngroup );
-	QRadioButton *btn2 = new QRadioButton( i18n( "&Guest account (login=\"guest\")" ), m_btngroup );
-	QRadioButton *btn3 = new QRadioButton( i18n( "Nor&mal account" ), m_btngroup );
-	btn1->setCursor( KCursor::handCursor() );
-	btn2->setCursor( KCursor::handCursor() );
-	btn3->setCursor( KCursor::handCursor() );
-	m_btngroup->setButton( 0 );
+
+	m_btngroup = new KVisibleButtonGroup( this );
+	m_btngroup->addButton(new KRadioButtonWithHandOver( i18n( "&Anonymous (no login/password)" )), 0);
+	m_btngroup->addButton(new KRadioButtonWithHandOver( i18n( "&Guest account (login=\"guest\")" )), 1);
+	m_btngroup->addButton(new KRadioButtonWithHandOver( i18n( "Nor&mal account" )), 2);
+	m_btngroup->button( 0 )->click();
 
 	loginlabel_->setBuddy(m_login);
 	passwdlabel_->setBuddy(m_password);
 
 	m_login->setEnabled(false);
 	m_password->setEnabled(false);
-	connect(btn3,SIGNAL(toggled(bool)),m_login,SLOT(setEnabled(bool)));
-	connect(btn3,SIGNAL(toggled(bool)),m_password,SLOT(setEnabled(bool)));
+	connect(m_btngroup->button( 2 ),SIGNAL(toggled(bool)),m_login,SLOT(setEnabled(bool)));
+	connect(m_btngroup->button( 2 ),SIGNAL(toggled(bool)),m_password,SLOT(setEnabled(bool)));
 
 	// layout
 	QVBoxLayout *main_ = new QVBoxLayout( this );
@@ -86,9 +82,9 @@ KMWPassword::KMWPassword(QWidget *parent)
 
 bool KMWPassword::isValid(QString& msg)
 {
-	if ( !m_btngroup->selected() )
+	if ( !m_btngroup->checkedButton() )
 		msg = i18n( "Select one option" );
-	else if (m_btngroup->selectedId() == 2 && m_login->text().isEmpty())
+	else if (m_btngroup->checkedId() == 2 && m_login->text().isEmpty())
 		msg = i18n("User name is empty.");
 	else
 		return true;
@@ -100,13 +96,13 @@ void KMWPassword::initPrinter( KMPrinter* p )
 	/* guest account only for SMB backend */
 	if ( p->option( "kde-backend" ).toInt() != KMWizard::SMB )
 	{
-		int ID = m_btngroup->selectedId();
-		m_btngroup->find( 1 )->hide();
+		int ID = m_btngroup->checkedId();
+		m_btngroup->button( 1 )->hide();
 		if ( ID == 1 )
-			m_btngroup->setButton( 0 );
+			m_btngroup->button( 0 )->click();
 	}
 	else
-		m_btngroup->find( 1 )->show();
+		m_btngroup->button( 1 )->show();
 }
 
 void KMWPassword::updatePrinter(KMPrinter *p)
@@ -116,7 +112,7 @@ void KMWPassword::updatePrinter(KMPrinter *p)
 		setNextPage(s.toInt());
 	else
 		setNextPage(KMWizard::Error);
-	switch ( m_btngroup->selectedId() )
+	switch ( m_btngroup->checkedId() )
 	{
 		case 0:
 			p->setOption( "kde-login", QString() );

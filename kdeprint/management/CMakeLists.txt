@@ -5,6 +5,7 @@ kde4_header()
 ########### next target ###############
 
 set(kdeprint_management_LIB_SRCS
+kvisiblebuttongroup.cpp
 kmdbcreator.cpp
 kmdriverdb.cpp
 kmdriverdbwidget.cpp

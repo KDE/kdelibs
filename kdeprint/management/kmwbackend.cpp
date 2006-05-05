@@ -17,33 +17,18 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "kvisiblebuttongroup.h"
 #include "kmwbackend.h"
 #include "kmwizard.h"
 #include "kmprinter.h"
 
 #include <qlayout.h>
 #include <qregexp.h>
-#include <q3buttongroup.h>
-#include <qradiobutton.h>
-#include <q3button.h>
 
-#include <kcursor.h>
 #include <klocale.h>
 #include <kseparator.h>
 #include <kdialog.h>
 #include <kdebug.h>
-
-class KRadioButton : public QRadioButton
-{
-public:
-	KRadioButton(const QString& txt, QWidget *parent = 0);
-};
-
-KRadioButton::KRadioButton(const QString& txt, QWidget *parent)
-: QRadioButton(txt,parent)
-{
-	setCursor(KCursor::handCursor());
-}
 
 //********************************************************************************************************
 
@@ -53,19 +38,13 @@ KMWBackend::KMWBackend(QWidget *parent)
 	m_ID = KMWizard::Backend;
 	m_title = i18n("Backend Selection");
 
-	m_buttons = new Q3ButtonGroup(this);
-	m_buttons->hide();
-
-	m_layout = new QVBoxLayout(this);
-	m_layout->setMargin(0);
-	m_layout->setSpacing(KDialog::spacingHint());
-	m_layout->addStretch(1);
-	m_count = 0;
+	m_buttons = new KVisibleButtonGroup(this);
+	m_buttons->setFlat(true);
 }
 
 bool KMWBackend::isValid(QString& msg)
 {
-	if (!m_buttons->selected())
+	if (!m_buttons->checkedButton())
 	{
 		msg = i18n("You must select a backend.");
 		return false;
@@ -93,17 +72,20 @@ void KMWBackend::initPrinter(KMPrinter *p)
 		else if (p->members().count() > 0) ID = KMWizard::Class;
 	}
 
-	if (m_buttons->find(ID))
-		m_buttons->setButton(ID);
+	QAbstractButton *btn = m_buttons->button(ID);
+	if (btn)
+		btn->setChecked(true);
 }
 
 void KMWBackend::updatePrinter(KMPrinter *p)
 {
-	int	ID = m_buttons->id(m_buttons->selected());
-	if (ID == KMWizard::Class) p->setType(KMPrinter::Class);
-	else p->setType(KMPrinter::Printer);
+	int	ID = m_buttons->checkedId();
+	if (ID == KMWizard::Class)
+		p->setType(KMPrinter::Class);
+	else
+		p->setType(KMPrinter::Printer);
 	p->setOption("kde-backend",QString::number(ID));
-	QString	s = m_buttons->selected()->text();
+	QString	s = m_buttons->checkedButton()->text();
 	s.replace(QRegExp("&(?=\\w)"), QLatin1String(""));
 	p->setOption("kde-backend-description",s);
 	setNextPage((m_map.contains(ID) ? m_map[ID] : KMWizard::Error));
@@ -153,27 +135,22 @@ void KMWBackend::addBackend( int ID, bool on, int nextpage )
 
 void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& whatsThis, int nextpage)
 {
-	if (ID == -1)
+	KRadioButtonWithHandOver *btn = NULL;
+
+	if (ID != -1)
 	{
-		KSeparator* sep = new KSeparator( Qt::Horizontal, this);
-		m_layout->insertWidget(m_count, sep);
-	}
-	else
-	{
-		KRadioButton	*btn = new KRadioButton(txt, this);
+		btn = new KRadioButtonWithHandOver(txt, this);
 		btn->setEnabled(on);
 		if ( !whatsThis.isEmpty() )
 			btn->setWhatsThis(whatsThis );
-		m_buttons->insert(btn, ID);
 		m_map[ID] = (nextpage == -1 ? ID : nextpage);	// use nextpage if specified, default to ID
-		m_layout->insertWidget(m_count, btn);
 	}
-	m_count++;
+	m_buttons->addButton(btn, ID);
 }
 
 void KMWBackend::enableBackend(int ID, bool on)
 {
-	QAbstractButton *btn = m_buttons->find(ID);
+	QAbstractButton *btn = m_buttons->button(ID);
 	if (btn)
 		btn->setEnabled(on);
 }

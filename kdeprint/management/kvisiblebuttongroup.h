@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
+ *  Copyright (c) 2006 Alexander Kern <alex.kern@gmx.de>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -17,27 +17,38 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef KMWPASSWORD_H
-#define KMWPASSWORD_H
+#ifndef KVISIBLEBUTTONGROUP_H
+#define KVISIBLEBUTTONGROUP_H
 
-#include "kmwizardpage.h"
 
-class QLineEdit;
-class KVisibleButtonGroup;
+#include <qgroupbox.h>
+#include <qbuttongroup.h>
+#include <qradiobutton.h>
+#include <qlayout.h>
 
-class KMWPassword : public KMWizardPage
+
+class KVisibleButtonGroup : public QGroupBox, public QButtonGroup
 {
 public:
-	KMWPassword(QWidget *parent = 0);
+	enum Index {
+		nextIndex = -1
+	};
 
-	bool isValid(QString&);
-	void initPrinter( KMPrinter* );
-	void updatePrinter(KMPrinter*);
+public:
+	KVisibleButtonGroup(QWidget *parent = 0);
+	~KVisibleButtonGroup();
+
+	int addButton(QAbstractButton *btn, int ID = KVisibleButtonGroup::nextIndex);
 
 private:
-	QLineEdit    *m_login;
-	QLineEdit    *m_password;
-	KVisibleButtonGroup *m_btngroup;
+	QVBoxLayout	*m_layout;
+	int 		m_count;
+};
+
+class KRadioButtonWithHandOver : public QRadioButton
+{
+public:
+	KRadioButtonWithHandOver(const QString& txt, QWidget *parent = 0);
 };
 
 #endif
