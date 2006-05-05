@@ -541,7 +541,7 @@ public:
          */
         Create = 16
     };
-    Q_DECLARE_FLAGS(StandardWindowOptions, StandardWindowOption);
+    Q_DECLARE_FLAGS(StandardWindowOptions, StandardWindowOption)
 
     /**
      * Configures the current windows and its actions in the typical KDE
@@ -922,7 +922,7 @@ private:
     void initKMainWindow(const char *name, int cflags);
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(KMainWindow::StandardWindowOptions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(KMainWindow::StandardWindowOptions)
 
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
