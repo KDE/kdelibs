@@ -69,7 +69,7 @@
 #include <kdialogbase.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kprinter.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
@@ -1672,7 +1672,7 @@ void KHTMLView::findAhead(bool increase)
 		}
 		else
 		{
-			if(increase) KNotifyClient::beep();
+			if(increase) KNotification::beep();
 			status = i18n("Link not found: \"%1\".", text);
 		}
 	}
@@ -1685,7 +1685,7 @@ void KHTMLView::findAhead(bool increase)
 		}
 		else
 		{
-			if(increase) KNotifyClient::beep();
+			if(increase) KNotification::beep();
 			status = i18n("Text not found: \"%1\".", text);
 		}
 	}

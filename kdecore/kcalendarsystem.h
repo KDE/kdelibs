@@ -43,6 +43,9 @@ class QString;
 class KDECORE_EXPORT KCalendarSystem
 {
 public:
+
+  enum DispalyForm {LongForm, ShortForm};
+
   /**
    * Constructor of abstract calendar class. This will be called by the derived classes.
    *
