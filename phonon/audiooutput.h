@@ -96,6 +96,7 @@ namespace Phonon
 		public:
 			QString name() const;
 			float volume() const;
+			float volumeDecibel() const;
 			Phonon::Category category() const;
 			AudioOutputDevice outputDevice() const;
 
@@ -105,6 +106,7 @@ namespace Phonon
 		public Q_SLOTS:
 			void setName( const QString& newName );
 			void setVolume( float newVolume );
+			void setVolumeDecibel( float newVolumeDecibel );
 			void setCategory( Phonon::Category category );
 			void setOutputDevice( const AudioOutputDevice& newAudioOutputDevice );
 
