@@ -300,6 +300,7 @@ install_files( ${DATA_INSTALL_DIR}/knotify FILES eventsrc )
 install_files( ${CONFIG_INSTALL_DIR} FILES kdebug.areas kdebugrc language.codes )
 install_files( ${CONFIG_INSTALL_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
 install_files( /include FILES
+   kascii.h
    kconfig.h
    kconfigskeleton.h
    kconfigdata.h
