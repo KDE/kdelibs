@@ -42,11 +42,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-KMLprManager::KMLprManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMLprManager::KMLprManager(QObject *parent, const QStringList & /*args*/)
 : KMManager(parent)
 {
-  setObjectName( name );
-
 	m_lpchelper = new LpcHelper(this);
 	m_currentprinter = 0;
 

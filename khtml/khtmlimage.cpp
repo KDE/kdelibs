@@ -50,28 +50,26 @@ KHTMLImageFactory::~KHTMLImageFactory()
     delete s_instance;
 }
 
-KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget, const char *widgetName,
-                                                   QObject *parent, const char *name,
+KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget,
+                                                   QObject *parent,
                                                    const char *className, const QStringList & )
 {
   KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
   if ( strcmp( className, "Browser/View" ) == 0 )
     prof = KHTMLPart::BrowserViewGUI;
-  return new KHTMLImage( parentWidget, widgetName, parent, name, prof );
+  return new KHTMLImage( parentWidget, parent, prof );
 }
 
-KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
-                        QObject *parent, const char *name, KHTMLPart::GUIProfile prof )
+KHTMLImage::KHTMLImage( QWidget *parentWidget,
+                        QObject *parent, KHTMLPart::GUIProfile prof )
     : KParts::ReadOnlyPart( parent ), m_image( 0 )
 {
-    setObjectName( name );
-
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setInstance( KHTMLImageFactory::instance(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
-    KVBox *box = new KVBox( parentWidget/*, widgetName*/ );
+    KVBox *box = new KVBox( parentWidget );
 
-    m_khtml = new KHTMLPart( box, widgetName, this, "htmlimagepart", prof );
+    m_khtml = new KHTMLPart( box, this, prof );
     m_khtml->setAutoloadImages( true );
     m_khtml->widget()->installEventFilter(this);
     connect( m_khtml->view(), SIGNAL( finishedLayout() ), this, SLOT( restoreScrollPosition() ) );

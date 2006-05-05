@@ -53,7 +53,7 @@ namespace Fake
 	{
 		Q_OBJECT
 		public:
-			Backend( QObject* parent, const char*, const QStringList& args );
+			Backend( QObject* parent, const QStringList& args );
 			virtual ~Backend();
 
 			virtual Ifaces::MediaObject*      createMediaObject( QObject* parent );

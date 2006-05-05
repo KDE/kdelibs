@@ -26,7 +26,6 @@ int main( int argc, char ** argv )
   KApplication a;
 
   KNotifyTestWindow* knotifytestwindow = new KNotifyTestWindow;
-  a.setMainWidget( knotifytestwindow );
   knotifytestwindow->show();
 
   return a.exec();

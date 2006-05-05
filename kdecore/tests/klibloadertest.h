@@ -25,7 +25,9 @@ class KLibLoaderTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void testNonWorking();
+    void testFindLibrary();
     void testWorking();
     void testWrongClass();
 };

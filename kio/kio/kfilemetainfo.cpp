@@ -937,9 +937,11 @@ KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const Q
         return 0;
 
     KFilePlugin* plugin = KParts::ComponentFactory::createInstanceFromService<KFilePlugin>
-                          ( service, this, mimeType.toLocal8Bit() );
+                          ( service, this );
     if (!plugin)
         kWarning(7033) << "error loading the plugin from " << service->desktopEntryPath() << endl;
+    else
+        plugin->setObjectName( mimeType );
 
     return plugin;
 }
@@ -1508,12 +1510,11 @@ QStringList KFileMimeTypeInfo::supportedKeys() const
 
 QValidator * KFileMimeTypeInfo::createValidator(const QString& group,
                                                 const QString& key,
-                                                QObject *parent,
-                                                const char *name) const
+                                                QObject *parent) const
 {
     KFilePlugin* plugin = KFileMetaInfoProvider::self()->plugin(m_mimeType);
     if (plugin) return plugin->createValidator(mimeType(), group, key,
-                                               parent, name);
+                                               parent);
     return 0;
 }
 

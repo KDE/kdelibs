@@ -98,18 +98,13 @@ KLibFactory::~KLibFactory()
 //    kDebug(150) << "Deleting KLibFactory " << this << endl;
 }
 
-QObject* KLibFactory::create( QObject* _parent, const char* _name, const char* classname, const QStringList &args )
+QObject* KLibFactory::create( QObject* _parent, const char* classname, const QStringList &args )
 {
-    QObject* obj = createObject( _parent, _name, classname, args );
+    kdDebug() << k_funcinfo << "classname=" << classname << endl;
+    QObject* obj = createObject( _parent, classname, args );
     if ( obj )
 	emit objectCreated( obj );
     return obj;
-}
-
-
-QObject* KLibFactory::createObject( QObject*, const char*, const char*, const QStringList &)
-{
-    return 0;
 }
 
 

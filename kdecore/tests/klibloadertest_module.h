@@ -23,7 +23,7 @@
 class KLibLoaderTestObject : public QObject
 {
 public:
-    KLibLoaderTestObject( QObject* parent, const char*, const QStringList& );
+    KLibLoaderTestObject( QObject* parent, const QStringList& );
 
 };
 

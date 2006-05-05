@@ -34,7 +34,7 @@ typedef KGenericFactory<KSpellCheckingConfig, QWidget > SpellFactory;
 K_EXPORT_COMPONENT_FACTORY (kcm_spellchecking, SpellFactory("kcmspellchecking") )
 
 
-KSpellCheckingConfig::KSpellCheckingConfig(QWidget *parent, const char *, const QStringList &):
+KSpellCheckingConfig::KSpellCheckingConfig(QWidget *parent, const QStringList &):
     KCModule(SpellFactory::instance(), parent)
 {
   QBoxLayout *layout = new QVBoxLayout(this);

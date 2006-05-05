@@ -23,10 +23,9 @@
 
 #include <klocale.h>
 
-KMLpdUnixUiManager::KMLpdUnixUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMLpdUnixUiManager::KMLpdUnixUiManager(QObject *parent, const QStringList & /*args*/)
 : KMUiManager(parent)
 {
-  setObjectName( name );
 	m_printdialogflags |= KMUiManager::PrintCommand;
 }
 

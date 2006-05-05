@@ -27,10 +27,15 @@ QTEST_KDEMAIN( KLibLoaderTest, NoGUI )
 #include <qdir.h>
 #include <kdebug.h>
 
+void KLibLoaderTest::initTestCase()
+{
+    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "/../../lib" );
+}
+
 void KLibLoaderTest::testNonWorking()
 {
     int error = 0;
-    QObject* obj = KLibLoader::createInstance<QObject>( "idontexist", this, 0, QStringList(), &error );
+    QObject* obj = KLibLoader::createInstance<QObject>( "idontexist", this, QStringList(), &error );
     QCOMPARE( obj, (QObject*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoLibrary );
 }
@@ -38,11 +43,19 @@ void KLibLoaderTest::testNonWorking()
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
 static const char* s_module = "libklibloadertestmodule";
 
+void KLibLoaderTest::testFindLibrary()
+{
+    const QString library = KLibLoader::findLibrary( s_module );
+    QVERIFY( !library.isEmpty() );
+    const QString libraryPath = QFileInfo( library ).canonicalFilePath();
+    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_module + ".la" ).canonicalFilePath();
+    QCOMPARE( library, expectedPath );
+}
+
 void KLibLoaderTest::testWorking()
 {
     int error = 0;
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "/../../lib" );
-    QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, 0, QStringList(), &error );
+    QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, QStringList(), &error );
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
     QVERIFY( obj != 0 );
@@ -50,10 +63,10 @@ void KLibLoaderTest::testWorking()
 
 void KLibLoaderTest::testWrongClass()
 {
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "/../../lib" );
     int error = 0;
 
-    KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, 0, QStringList(), &error );
+    KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, QStringList(), &error );
     QCOMPARE( obj, (KLibLoaderTest*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
 }
+

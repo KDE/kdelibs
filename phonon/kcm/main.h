@@ -27,7 +27,7 @@ class PhononKcm : public KCModule
 {
 	Q_OBJECT
 	public:
-		PhononKcm( QWidget* parent, const char* name, const QStringList& );
+		PhononKcm( QWidget* parent, const QStringList& );
 
 		void load();
 		void save();

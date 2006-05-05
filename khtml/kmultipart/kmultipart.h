@@ -40,8 +40,8 @@ class KMultiPart : public KParts::ReadOnlyPart
 {
     Q_OBJECT
 public:
-    KMultiPart( QWidget *parentWidget, const char *widgetName,
-                QObject *parent, const char *name, const QStringList& );
+    KMultiPart( QWidget *parentWidget,
+                QObject *parent, const QStringList& );
     virtual ~KMultiPart();
 
     virtual bool openFile() { return false; }

@@ -59,10 +59,9 @@
 #include <kaction.h>
 #include <kmessagebox.h>
 
-KMCupsUiManager::KMCupsUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMCupsUiManager::KMCupsUiManager(QObject *parent, const QStringList & /*args*/)
 : KMUiManager(parent)
 {
-  setObjectName( name );
 }
 
 KMCupsUiManager::~KMCupsUiManager()

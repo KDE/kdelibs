@@ -28,7 +28,7 @@
 #include <kconfig.h>
 #include <klocale.h>
 
-KRlprPrinterImpl::KRlprPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/)
+KRlprPrinterImpl::KRlprPrinterImpl(QObject *parent, const QStringList & /*args*/)
     : KPrinterImpl(parent)
 {
 }

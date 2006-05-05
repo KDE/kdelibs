@@ -673,7 +673,7 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 void TestRegressionWindow::initOutputBrowser()
 {
 	assert(m_browserPart == 0);
-	m_browserPart = new KHTMLPart(m_ui.secondTab, 0, m_ui.secondTab, 0, KHTMLPart::BrowserViewGUI);
+	m_browserPart = new KHTMLPart(m_ui.secondTab, m_ui.secondTab, KHTMLPart::BrowserViewGUI);
 
 	// Setup vertical layout for the browser widget...
 	QVBoxLayout *layout = new QVBoxLayout();

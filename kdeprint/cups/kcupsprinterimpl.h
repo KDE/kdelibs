@@ -25,7 +25,7 @@
 class KCupsPrinterImpl : public KPrinterImpl
 {
 public:
-	KCupsPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/ = QStringList());
+	KCupsPrinterImpl(QObject *parent, const QStringList & /*args*/ = QStringList());
 	~KCupsPrinterImpl();
 
 	bool setupCommand(QString&, KPrinter*);

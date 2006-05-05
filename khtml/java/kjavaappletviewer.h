@@ -82,9 +82,8 @@ private:
 
 class KHTML_EXPORT KJavaAppletViewer : public KParts::ReadOnlyPart {
     Q_OBJECT
-public: 
-    KJavaAppletViewer (QWidget * wparent, const char * wname,
-              QObject * parent, const char * name, const QStringList &args);
+public:
+    KJavaAppletViewer (QWidget * wparent, QObject * parent, const QStringList &args);
     ~KJavaAppletViewer ();
     CoverWidget * view () const;
     static KAboutData* createAboutData ();
@@ -123,9 +122,9 @@ class KHTML_EXPORT KJavaAppletViewerFactory : public KParts::Factory {
 public:
     KJavaAppletViewerFactory ();
     virtual ~KJavaAppletViewerFactory ();
-    virtual KParts::Part *createPartObject 
-        (QWidget *wparent, const char *wname,
-         QObject *parent, const char *name,
+    virtual KParts::Part *createPartObject
+        (QWidget *wparent,
+         QObject *parent,
          const char *className, const QStringList &args);
     static KInstance * instance () { return s_instance; }
 private:

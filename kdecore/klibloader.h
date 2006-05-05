@@ -195,7 +195,7 @@ public:
      * @param args a list of arguments
      */
 
-     QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
+     QObject* create( QObject* parent = 0, const char* classname = "QObject", const QStringList &args = QStringList() );
 
     /**
      * This template function allows to ask the given factory to create an
@@ -207,7 +207,6 @@ public:
      * \endcode
      *
      * @param pParent The parent object (see QObject constructor)
-     * @param pName The name of the object to create (see QObject constructor)
      * @param args A list of string arguments, passed to the factory and possibly
      *             to the component (see KLibFactory)
      * @return A pointer to the newly created object or a null pointer if the
@@ -215,10 +214,9 @@ public:
      */
     template<typename T>
     T *create( QObject *pParent = 0,
-               const char *pName = 0,
                const QStringList &args = QStringList() )
     {
-        QObject *object = this->create( pParent, pName,
+        QObject *object = this->create( pParent,
                                         T::staticMetaObject.className(),
                                         args );
 
@@ -250,11 +248,10 @@ protected:
      *
      * This function is called by #create()
      * @param parent the parent of the QObject, 0 for no parent
-     * @param name the name of the QObject, 0 for no name
      * @param className the name of the class
      * @param args a list of arguments
      */
-    virtual QObject* createObject( QObject* parent = 0, const char* name = 0,
+    virtual QObject* createObject( QObject* parent = 0,
                                    const char* className = "QObject",
                                    const QStringList &args = QStringList() ) = 0;
 
@@ -438,7 +435,6 @@ public:
      *
      * @param libraryName The library to open
      * @param parent The parent object (see QObject constructor)
-     * @param name The name of the object to create (see QObject constructor)
      * @param args A list of string arguments, passed to the factory and possibly
      *             to the component (see KLibFactory)
      * @param error
@@ -447,7 +443,6 @@ public:
      */
     template <typename T>
     static T *createInstance( const char *libraryName, QObject *parent = 0,
-                              const char *name = 0,
                               const QStringList &args = QStringList(),
                               int *error = 0 )
     {
@@ -466,7 +461,7 @@ public:
                 *error = ErrNoFactory;
             return 0;
         }
-        QObject *object = factory->create( parent, name, T::staticMetaObject.className(), args );
+        QObject *object = factory->create( parent, T::staticMetaObject.className(), args );
         T *res = dynamic_cast<T *>( object );
         if ( !res )
         {

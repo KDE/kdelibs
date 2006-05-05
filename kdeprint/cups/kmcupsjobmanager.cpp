@@ -37,10 +37,9 @@
 #include <kurl.h>
 #include <kactioncollection.h>
 
-KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMCupsJobManager::KMCupsJobManager(QObject *parent, const QStringList & /*args*/)
     : KMJobManager(parent)
 {
-  setObjectName( name );
 }
 
 KMCupsJobManager::~KMCupsJobManager()

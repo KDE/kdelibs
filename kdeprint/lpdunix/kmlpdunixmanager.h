@@ -25,7 +25,7 @@
 class KMLpdUnixManager : public KMManager
 {
 public:
-	KMLpdUnixManager(QObject *parent, const char *name, const QStringList & /*args*/);
+	KMLpdUnixManager(QObject *parent, const QStringList & /*args*/);
 
 protected:
 	void listPrinters();

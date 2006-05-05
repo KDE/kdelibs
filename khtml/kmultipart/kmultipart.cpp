@@ -95,15 +95,15 @@ Data for the second and last object.
 */
 
 
-KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
-                        QObject *parent, const char *name, const QStringList& )
+KMultiPart::KMultiPart( QWidget *parentWidget,
+                        QObject *parent, const QStringList& )
     : KParts::ReadOnlyPart( parent )
 {
     m_filter = 0L;
 
     setInstance( KMultiPartFactory::instance() );
 
-    KVBox *box = new KVBox( parentWidget/*, widgetName*/ );
+    KVBox *box = new KVBox( parentWidget );
     setWidget( box );
 
     m_extension = new KParts::BrowserExtension( this );
@@ -316,7 +316,7 @@ void KMultiPart::setPart( const QString& mimeType )
     delete m_part;
     // Try to find an appropriate viewer component
     m_part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>
-             ( m_mimeType, QString(), widget(), 0L, this, 0L );
+             ( m_mimeType, QString(), widget(), this );
     if ( !m_part ) {
         // TODO launch external app
         KMessageBox::error( widget(), i18n("No handler found for %1!", m_mimeType) );

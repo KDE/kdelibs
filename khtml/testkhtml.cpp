@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 #endif
 
     KMainWindow *toplevel = new KMainWindow();
-    KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
+    KHTMLPart *doc = new KHTMLPart( toplevel, toplevel, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ),

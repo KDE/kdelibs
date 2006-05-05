@@ -47,9 +47,7 @@ namespace KParts
          *
          * @param factory The factory to ask for the creation of the component
          * @param parentWidget the parent widget for the part
-         * @param widgetName the name of the part's widget
          * @param parent The parent object (see QObject constructor)
-         * @param name The name of the object to create (see QObject constructor)
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @return A pointer to the newly created object or a null pointer if the
@@ -58,13 +56,11 @@ namespace KParts
         template <class T>
         static T *createPartInstanceFromFactory( KParts::Factory *factory,
                                                  QWidget *parentWidget = 0,
-                                                 const char *widgetName = 0,
                                                  QObject *parent = 0,
-                                                 const char *name = 0,
                                                  const QStringList &args = QStringList() )
         {
-            KParts::Part *object = factory->createPart( parentWidget, widgetName,
-                                                        parent, name,
+            KParts::Part *object = factory->createPart( parentWidget,
+                                                        parent,
                                                         T::staticMetaObject.className(),
                                                         args );
 
@@ -77,9 +73,7 @@ namespace KParts
         template <class T>
         static T *createPartInstanceFromLibrary( const char *libraryName,
                                                  QWidget *parentWidget = 0,
-                                                 const char *widgetName = 0,
                                                  QObject *parent = 0,
-                                                 const char *name = 0,
                                                  const QStringList &args = QStringList(),
                                                  int *error = 0 )
         {
@@ -107,7 +101,7 @@ namespace KParts
                 return 0;
             }
             T *res = createPartInstanceFromFactory<T>( partFactory, parentWidget,
-                                                       widgetName, parent, name, args );
+                                                       parent, args );
             if ( !res )
             {
                 library->unload();
@@ -120,7 +114,6 @@ namespace KParts
         template <class T>
         static T *createInstanceFromService( const KService::Ptr &service,
                                              QObject *parent = 0,
-                                             const char *name = 0,
                                              const QStringList &args = QStringList(),
                                              int *error = 0 )
         {
@@ -133,15 +126,13 @@ namespace KParts
             }
 
             return KLibLoader::createInstance<T>( library.toLocal8Bit().data(), parent,
-	    					 name, args, error );
+	    					 args, error );
         }
 
         template <class T>
         static T *createPartInstanceFromService( const KService::Ptr &service,
                                                  QWidget *parentWidget = 0,
-                                                 const char *widgetName = 0,
                                                  QObject *parent = 0,
-                                                 const char *name = 0,
                                                  const QStringList &args = QStringList(),
                                                  int *error = 0 )
         {
@@ -154,13 +145,12 @@ namespace KParts
             }
 
             return createPartInstanceFromLibrary<T>( library.toLocal8Bit().data(), parentWidget,
-                                                     widgetName, parent, name, args, error );
+                                                     parent, args, error );
         }
 
         template <class T, class ServiceIterator>
         static T *createInstanceFromServices( ServiceIterator begin, ServiceIterator end,
                                               QObject *parent = 0,
-                                              const char *name = 0,
                                               const QStringList &args = QStringList(),
                                               int *error = 0 )
         {
@@ -171,7 +161,7 @@ namespace KParts
                 if ( error )
                     *error = 0;
 
-                T *component = createInstanceFromService<T>( service, parent, name,
+                T *component = createInstanceFromService<T>( service, parent,
                                                              args, error );
                 if ( component )
                     return component;
@@ -188,9 +178,7 @@ namespace KParts
         static T *createPartInstanceFromServices( ServiceIterator begin,
                                                   ServiceIterator end,
                                                   QWidget *parentWidget = 0,
-                                                  const char *widgetName = 0,
                                                   QObject *parent = 0,
-                                                  const char *name = 0,
                                                   const QStringList &args = QStringList(),
                                                   int *error = 0 )
          {
@@ -202,8 +190,7 @@ namespace KParts
                     *error = 0;
 
                 T *component = createPartInstanceFromService<T>( service, parentWidget,
-                                                                 widgetName, parent,
-                                                                 name, args, error );
+                                                                 parent, args, error );
                 if ( component )
                     return component;
             }
@@ -229,7 +216,6 @@ namespace KParts
          * @param serviceType the type of service for which to find a plugin
          * @param constraint an optionnal constraint to pass to the trader (see KTrader)
          * @param parent the parent object for the part itself
-         * @param name the name that will be given to the part
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @param error The int passed here will receive an error code in case of errors.
@@ -241,7 +227,6 @@ namespace KParts
         static T *createInstanceFromQuery( const QString &serviceType,
                                            const QString &constraint = QString(),
                                            QObject *parent = 0,
-                                           const char *name = 0,
                                            const QStringList &args = QStringList(),
                                            int *error = 0 )
         {
@@ -255,7 +240,7 @@ namespace KParts
 
             return createInstanceFromServices<T>( offers.begin(),
                                                   offers.end(),
-                                                  parent, name, args, error );
+                                                  parent, args, error );
         }
 
         /**
@@ -266,7 +251,7 @@ namespace KParts
          * \code
          * // Given the following: KUrl url, QWidget* parentWidget and QObject* parentObject.
          * QString mimetype = KMimeType::findByURL( url )->name();
-         * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, 0, parentObject, 0 );
+         * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, parentObject );
          * if ( part ) {
          *     part->openURL( url );
          *     part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
@@ -276,9 +261,7 @@ namespace KParts
          * @param serviceType the type of service for which to find a part, e.g. a mimetype
          * @param constraint an optionnal constraint to pass to the trader (see KTrader)
          * @param parentWidget the parent widget, will be set as the parent of the part's widget
-         * @param widgetName the name that will be given to the part's widget
          * @param parent the parent object for the part itself
-         * @param name the name that will be given to the part
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @param error The int passed here will receive an error code in case of errors.
@@ -290,9 +273,7 @@ namespace KParts
         static T *createPartInstanceFromQuery( const QString &serviceType,
                                                const QString &constraint,
                                                QWidget *parentWidget = 0,
-                                               const char *widgetName = 0,
                                                QObject *parent = 0,
-                                               const char *name = 0,
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
@@ -305,8 +286,8 @@ namespace KParts
             }
 
             return createPartInstanceFromServices<T>( offers.begin(), offers.end(),
-                                                      parentWidget, widgetName,
-                                                      parent, name, args, error );
+                                                      parentWidget,
+                                                      parent, args, error );
         }
 
     };

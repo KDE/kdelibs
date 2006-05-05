@@ -25,7 +25,7 @@
 class KMCupsUiManager : public KMUiManager
 {
 public:
-	KMCupsUiManager(QObject *parent, const char *name, const QStringList & /*args*/);
+	KMCupsUiManager(QObject *parent, const QStringList & /*args*/);
 	~KMCupsUiManager();
 
 	void setupPropertyPages(KMPropertyPage*);

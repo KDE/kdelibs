@@ -243,10 +243,10 @@ public:
    * @p parentWidget is used as parent for both objects, the part and
    * the view.
    */
-  KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0,
-             QObject *parent = 0, const char *name = 0, GUIProfile prof = DefaultGUI );
+  KHTMLPart( QWidget *parentWidget = 0,
+             QObject *parent = 0, GUIProfile prof = DefaultGUI );
 
-  KHTMLPart( KHTMLView *view, QObject *parent = 0, const char *name = 0, GUIProfile prof = DefaultGUI );
+  KHTMLPart( KHTMLView *view, QObject *parent = 0, GUIProfile prof = DefaultGUI );
 
   /**
    * Destructor.
@@ -1130,8 +1130,8 @@ protected:
    * to be a object of your derived type, in which case you should return a new instance for
    * the mimetype 'text/html' .
    */
-  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName,
-                                            QObject *parent, const char *name,
+  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget,
+                                            QObject *parent,
                                             const QString &mimetype, QString &serviceName,
                                             QStringList &serviceTypes, const QStringList &params);
 

@@ -186,7 +186,7 @@ public:
 			      const QString& relativename );
 
 	/**
-	 * Adds absolute path at the end of the search path for
+	 * Adds absolute path at the beginning of the search path for
 	 * particular types (for example in case of icons where
 	 * the user specifies extra paths).
 	 *

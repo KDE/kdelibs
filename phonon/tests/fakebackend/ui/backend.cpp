@@ -31,7 +31,7 @@ namespace Ui
 namespace Fake
 {
 
-Backend::Backend( QObject* parent, const char*, const QStringList& )
+Backend::Backend( QObject* parent, const QStringList& )
 	: Ui::Ifaces::Backend( parent )
 {
 }

@@ -66,7 +66,7 @@ namespace KParts
      *
      * The template argument has to inherit from KParts::Part and has to implement two methods:
      *  1) There needs to be a public constructor with the following signature:
-     *         MyPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QStringList& args )
+     *         MyPart( QWidget *parentWidget, QObject *parent, const QStringList& args )
      *
      *  2) It needs to provide one static method to create a KAboutData object per
      *     request, holding information about the component's name, its authors, license, etc.
@@ -97,15 +97,13 @@ namespace KParts
     public:
         GenericFactory() { }
 
-        virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
-                                                QObject *parent, const char *name,
+        virtual KParts::Part *createPartObject( QWidget *parentWidget,
+                                                QObject *parent,
                                                 const char *className,
                                                 const QStringList &args )
         {
             T *part = KDEPrivate::ConcreteFactory<T>::create( parentWidget,
-                                                              widgetName,
                                                               parent,
-                                                              name,
                                                               className,
                                                               args );
 
@@ -125,14 +123,13 @@ namespace KParts
     public:
         GenericFactory() { }
 
-        virtual KParts::Part *createPartObject( QWidget *parentWidget, const char *widgetName,
-                                                QObject *parent, const char *name,
+        virtual KParts::Part *createPartObject( QWidget *parentWidget,
+                                                QObject *parent,
                                                 const char *className,
                                                 const QStringList &args )
         {
             QObject *object = KDEPrivate::MultiFactory< KTypeList<T1, T2> >::create( parentWidget,
-                                                                                     widgetName,
-                                                                                     parent, name,
+                                                                                     parent,
                                                                                      className,
                                                                                      args );
 

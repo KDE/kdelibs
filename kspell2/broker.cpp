@@ -303,7 +303,7 @@ void Broker::loadPlugin( const QString& pluginId )
     Client *client = KParts::ComponentFactory::createInstanceFromQuery<Client>(
         QLatin1String( "KSpell/Client" ),
         QString::fromLatin1( "[X-KDE-PluginInfo-Name]=='%1'" ).arg( pluginId ),
-        this, 0, QStringList(), &error );
+        this, QStringList(), &error );
 
     if ( client )
     {

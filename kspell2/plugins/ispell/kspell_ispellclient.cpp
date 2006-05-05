@@ -31,10 +31,9 @@ K_EXPORT_COMPONENT_FACTORY( kspell_ispell, ISpellClientFactory( "kspell_ispell" 
 
 using namespace KSpell2;
 
-ISpellClient::ISpellClient( QObject *parent, const char *name, const QStringList& /* args */  )
+ISpellClient::ISpellClient( QObject *parent, const QStringList& /* args */  )
     : Client( parent )
 {
-  setObjectName( name );
 }
 
 ISpellClient::~ISpellClient()

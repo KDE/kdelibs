@@ -33,7 +33,7 @@ class KMCupsManager : public KMManager
 
 	Q_OBJECT
 public:
-	KMCupsManager(QObject *parent, const char *name, const QStringList & /*args*/);
+	KMCupsManager(QObject *parent, const QStringList & /*args*/);
 	virtual ~KMCupsManager();
 
 	// printer management functions

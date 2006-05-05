@@ -23,11 +23,9 @@
 
 #include <klocale.h>
 
-KMExtUiManager::KMExtUiManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMExtUiManager::KMExtUiManager(QObject *parent, const QStringList & /*args*/)
 : KMUiManager(parent)
 {
-  setObjectName( name );
-
 	m_printdialogflags |= KMUiManager::PrintCommand;
 }
 

@@ -171,42 +171,42 @@ KXmlCommandManager* KMFactory::commandManager()
 void KMFactory::createManager()
 {
 	loadFactory();
-	if (m_factory) m_manager = (KMManager*)m_factory->create(this,"Manager","KMManager");
+	if (m_factory) m_manager = (KMManager*)m_factory->create(this,"KMManager");
 	if (!m_manager) {
-            m_manager = new KMManager(this );
-            m_manager->setObjectName( "Manager" );
-        }
+		m_manager = new KMManager(this );
+	}
+	m_manager->setObjectName( "Manager" );
 }
 
 void KMFactory::createJobManager()
 {
 	loadFactory();
-	if (m_factory) m_jobmanager = (KMJobManager*)m_factory->create(this,"JobManager","KMJobManager");
+	if (m_factory) m_jobmanager = (KMJobManager*)m_factory->create(this,"KMJobManager");
 	if (!m_jobmanager) {
-            m_jobmanager = new KMJobManager( this );
-            m_jobmanager->setObjectName( "JobManager" );
-        }
+		m_jobmanager = new KMJobManager( this );
+	}
+	m_jobmanager->setObjectName( "JobManager" );
 
 }
 
 void KMFactory::createUiManager()
 {
 	loadFactory();
-	if (m_factory) m_uimanager = (KMUiManager*)m_factory->create(this,"UiManager","KMUiManager");
+	if (m_factory) m_uimanager = (KMUiManager*)m_factory->create(this,"KMUiManager");
 	if (!m_uimanager) {
-            m_uimanager = new KMUiManager(this );
-            m_uimanager->setObjectName( "UiManager" );
-}
+		m_uimanager = new KMUiManager(this );
+	}
+	m_uimanager->setObjectName( "UiManager" );
 }
 
 void KMFactory::createPrinterImpl()
 {
 	loadFactory();
-	if (m_factory) m_implementation = (KPrinterImpl*)m_factory->create(this,"PrinterImpl","KPrinterImpl");
+	if (m_factory) m_implementation = (KPrinterImpl*)m_factory->create(this,"KPrinterImpl");
 	if (!m_implementation) {
-            m_implementation = new KPrinterImpl( this );
-            m_implementation->setObjectName( "PrinterImpl" );
-        }
+		m_implementation = new KPrinterImpl( this );
+	}
+	m_implementation->setObjectName( "PrinterImpl" );
 }
 
 void KMFactory::loadFactory(const QString& syst)

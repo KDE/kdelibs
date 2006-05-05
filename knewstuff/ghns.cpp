@@ -85,7 +85,6 @@ int main(int argc,char **argv)
   KApplication app;
 
   GhnsWidget wid;
-  app.setMainWidget( &wid );
   wid.show();
 
   app.exec();

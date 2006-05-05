@@ -78,7 +78,7 @@ class Factory::Private
 #endif
 				if( factory )
 				{
-					backend = ( Ifaces::Backend* )factory->create( 0, "Multimedia Backend", "Phonon::Ifaces::Backend" );
+					backend = ( Ifaces::Backend* )factory->create( 0, "Phonon::Ifaces::Backend" );
 					if( 0 == backend )
 					{
 						QString e = i18n( "create method returned 0" );

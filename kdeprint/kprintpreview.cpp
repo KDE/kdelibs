@@ -82,8 +82,8 @@ class KPrintPreview::KPrintPreviewPrivate
 public:
 	KPrintPreviewPrivate(KPrintPreview *dlg) : gvpart_(0)
 	{
-                mainwidget_ = new QWidget( dlg );
-                mainwidget_->setObjectName( "MainWidget" );
+		mainwidget_ = new QWidget( dlg );
+		mainwidget_->setObjectName( "MainWidget" );
 		toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
 		actions_ = new KActionCollection(dlg);
 		previewonly_ = false;
@@ -181,7 +181,7 @@ KPrintPreview::~KPrintPreview()
 void KPrintPreview::initView(KLibFactory *factory)
 {
 	// load the component
-	d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "gvpart", "KParts::ReadOnlyPart");
+	d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "KParts::ReadOnlyPart");
 
 	// populate the toolbar
 	if (d->previewonly_)

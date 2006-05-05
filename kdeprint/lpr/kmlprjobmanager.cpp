@@ -26,11 +26,9 @@
 
 #include <klocale.h>
 
-KMLprJobManager::KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMLprJobManager::KMLprJobManager(QObject *parent, const QStringList & /*args*/)
     : KMJobManager(parent)
 {
-    setObjectName( name );
-
     m_lpqhelper = new LpqHelper(this );
     m_lpqhelper->setObjectName( "LpqHelper" );
 }

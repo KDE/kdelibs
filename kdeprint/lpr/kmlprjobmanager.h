@@ -28,8 +28,8 @@ class LpcHelper;
 class KMLprJobManager : public KMJobManager
 {
 public:
-	KMLprJobManager(QObject *parent, const char *name, const QStringList & /*args*/);
-	
+	KMLprJobManager(QObject *parent, const QStringList & /*args*/);
+
 	int actions();
 
 protected:

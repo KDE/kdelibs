@@ -28,11 +28,9 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 
-KMRlprManager::KMRlprManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMRlprManager::KMRlprManager(QObject *parent, const QStringList & /*args*/)
     : KMManager(parent)
 {
-  setObjectName( name );
-
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterCreation|KMManager::PrinterRemoval|KMManager::PrinterTesting);
 }

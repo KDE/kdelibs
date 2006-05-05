@@ -44,8 +44,8 @@
 class KFileAudioPreviewFactory : public KLibFactory
 {
 protected:
-    virtual QObject *createObject( QObject *parent, const char *,
-                           const char *, const QStringList & )
+    virtual QObject *createObject( QObject *parent,
+                                   const char * /*className*/, const QStringList & )
     {
         return new KFileAudioPreview( dynamic_cast<QWidget*>( parent ) );
     }
@@ -85,7 +85,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
     : KPreviewWidgetBase( parent )
     , d( new Private )
 {
-    KGlobal::locale()->insertCatalog("kfileaudiopreview");    
+    KGlobal::locale()->insertCatalog("kfileaudiopreview");
 
     QGroupBox *box = new QGroupBox( i18n("Media Player"), this );
     QVBoxLayout *layout = new QVBoxLayout( this );

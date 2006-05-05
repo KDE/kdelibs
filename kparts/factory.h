@@ -61,7 +61,7 @@ public:
      * \endcode
      * This could result in a call to
      * \code
-     *     createPart( parentWidget, name, parentObject, parentName, "Kparts::Part",
+     *     createPart( parentWidget, parentObject, "KParts::Part",
      *                 QStringList("name1="value1"", "name2="value2") );
      * \endcode
      *
@@ -72,7 +72,7 @@ public:
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.
      */
-     Part *createPart( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
+     Part *createPart( QWidget *parentWidget = 0, QObject *parent = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() );
 
      /**
       * If you have a part contained in a shared library you might want to query
@@ -109,18 +109,18 @@ protected:
      * \endcode
      * This could result in a call to
      * \code
-     *     createPart( parentWidget, name, parentObject, parentName, "Kparts::Part",
+     *     createPart( parentWidget, parentObject, "KParts::Part",
      *                 QStringList("name1="value1"", "name2="value2") );
      * \endcode
      *
      * @returns the newly created part.
      */
-    virtual Part *createPartObject( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() ) = 0;
+    virtual Part *createPartObject( QWidget *parentWidget = 0, QObject *parent = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() ) = 0;
 
     /**
      * Reimplemented from KLibFactory. Calls createPart()
      */
-    virtual QObject *createObject( QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
+    virtual QObject *createObject( QObject *parent = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
 
     /** This 'enum' along with the structure below is NOT part of the public API.
       * It's going to disappear in KDE 4.0 and is likely to change inbetween.

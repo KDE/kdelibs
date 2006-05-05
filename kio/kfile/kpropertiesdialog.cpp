@@ -522,10 +522,10 @@ void KPropertiesDialog::insertPages()
   {
     KPropsDlgPlugin *plugin = KLibLoader
         ::createInstance<KPropsDlgPlugin>( (*it)->library().toLocal8Bit().data(),
-                                           this,
-                                           (*it)->name().toLatin1() );
+                                           this );
     if ( !plugin )
         continue;
+    plugin->setObjectName( (*it)->name() );
 
     insertPlugin( plugin );
   }

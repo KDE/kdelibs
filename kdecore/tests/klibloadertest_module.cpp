@@ -22,7 +22,7 @@
 typedef KGenericFactory<KLibLoaderTestObject> KLibLoaderTestFactory;
 K_EXPORT_COMPONENT_FACTORY( libklibloadertestmodule, KLibLoaderTestFactory("klibloadertestfactory") )
 
-KLibLoaderTestObject::KLibLoaderTestObject( QObject* parent, const char*, const QStringList& )
+KLibLoaderTestObject::KLibLoaderTestObject( QObject* parent, const QStringList& )
     : QObject( parent )
 {
     qDebug( "KLibLoaderTestObject created" );

@@ -36,12 +36,12 @@ class ConfigWidget;
 
 /**
   \mainpage The KDE Resource library
- 
+
   The KDE Resource framework can be used to manage resources of
   different types, organized in families. The Resource framework
   is for example used for addressbook resources in libkabc and for
   calendar resources in libkcal.
- 
+
   When you want to use the framework for a new family, you need to
   <ul><li>Define a name for your resource family</li>
   <li>subclass Resource and add the fields and method that are needed
@@ -51,7 +51,7 @@ class ConfigWidget;
   of the resources in your family, and you can use ResourceSelectDialog
   to let the user select a single resource.</li>
   </ul>
- 
+
   When you want to add a new resource type to an existing resource family,
   you need to
   <ul><li>Further subclass the family-specific Resource to implement
@@ -61,9 +61,9 @@ class ConfigWidget;
   <li>Provide a .desktop file so that the new resource type can be found
   automatically by the ResourceManager</li>
   </ul>
- 
+
   Example:
- 
+
   <B>resourceexample.h</B>:
 \code
 #include <kconfig.h>
@@ -219,7 +219,7 @@ service_DATA = resourceexample.desktop
 
 /**
   This class provides a resource which is managed in a general way.
-  
+
   A Resource represents the concept of an object with the following attributes:
 
   - Applications operate on sets of one or more Resource objects.
@@ -244,7 +244,7 @@ service_DATA = resourceexample.desktop
   Concrete functionality of Resources is specified per family by a subclass of
   Resource. This classes in turn have subclasses which implement the different
   flavours of the functionality represented by the family.
- 
+
   A subclass should reimplement at least the constructor and the
   writeConfig method.
 
@@ -390,7 +390,7 @@ class KRESOURCES_EXPORT PluginFactoryBase : public KLibFactory
     virtual ConfigWidget *configWidget( QWidget *parent ) = 0;
 
   protected:
-    virtual QObject* createObject( QObject *, const char *, const char *,
+    virtual QObject* createObject( QObject *, const char *,
                                    const QStringList & )
     {
       return 0;

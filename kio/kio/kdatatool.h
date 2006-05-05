@@ -138,10 +138,9 @@ public:
     /**
      * Creates the data tool described by this KDataToolInfo.
      * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
-     * @param name the name of the QObject, can be 0
      * @return a pointer to the created data tool or 0 on error.
      */
-    KDataTool* createTool( QObject* parent = 0, const char* name = 0 ) const;
+    KDataTool* createTool( QObject* parent = 0 ) const;
 
     /**
      * The KDataToolInfo's service that is represented by this class.
@@ -201,9 +200,8 @@ public:
      * @param info the corresponding KDataToolInfo
      * @param command the command of the action
      * @param parent This action's parent.
-     * @param name An internal name for this action.
      */
-    KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, QObject * parent = 0, const char * name = 0);
+    KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, KActionCollection* parent, const QString& name );
 
     /**
      * Creates a list of actions from a list of information about data-tools.
@@ -213,9 +211,10 @@ public:
      * @param tools the list of data tool descriptions
      * @param receiver the receiver for toolActivated() signals
      * @param slot the slot that will receive the toolActivated() signals
+     * @param parent the parent action collection for the actions to be created
      * @return the KActions
      */
-    static QList<KAction*> dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );
+    static QList<KAction*> dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent );
 
 Q_SIGNALS:
     /**

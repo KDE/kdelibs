@@ -31,7 +31,7 @@ class KMCupsJobManager : public KMJobManager
 	Q_OBJECT
 
 public:
-	KMCupsJobManager(QObject *parent, const char *name, const QStringList &/*args*/);
+	KMCupsJobManager(QObject *parent, const QStringList &/*args*/);
 	virtual ~KMCupsJobManager();
 
 	int actions();

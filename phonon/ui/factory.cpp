@@ -76,7 +76,7 @@ class Factory::Private
 			}
 			if( factory )
 			{
-				backend = static_cast<Ui::Ifaces::Backend*>( factory->create( 0, "Multimedia Ui Backend", "Phonon::Ui::Ifaces::Backend" ) );
+				backend = static_cast<Ui::Ifaces::Backend*>( factory->create( 0, "Phonon::Ui::Ifaces::Backend" ) );
 				if( 0 == backend )
 				{
 					QString e = i18n( "create method returned 0" );

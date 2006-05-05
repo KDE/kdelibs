@@ -35,7 +35,7 @@ class ISpellClient : public KSpell2::Client
 {
     Q_OBJECT
 public:
-    ISpellClient( QObject *parent, const char *name, const QStringList & /* args */  );
+    ISpellClient( QObject *parent, const QStringList & /* args */  );
     ~ISpellClient();
 
     virtual int reliability() const {

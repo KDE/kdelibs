@@ -39,9 +39,9 @@ Factory::~Factory()
 {
 }
 
-Part *Factory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *classname, const QStringList &args )
+Part *Factory::createPart( QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args )
 {
-    Part* part = createPartObject( parentWidget, widgetName, parent, name, classname, args );
+    Part* part = createPartObject( parentWidget, parent, classname, args );
     if ( part )
 	emit objectCreated( part );
     return part;
@@ -69,14 +69,15 @@ const KInstance *Factory::partInstanceFromLibrary( const QByteArray &libraryName
     return pfactory->partInstance();
 }
 
-Part *Factory::createPartObject( QWidget *, const char *, QObject *, const char *, const char *, const QStringList & )
+Part *Factory::createPartObject( QWidget *, QObject *, const char *, const QStringList & )
 {
     return 0;
 }
 
-QObject *Factory::createObject( QObject *parent, const char *name, const char *classname, const QStringList &args )
+QObject *Factory::createObject( QObject *parent, const char *classname, const QStringList &args )
 {
   assert( !parent || parent->isWidgetType() );
-  return createPart( static_cast<QWidget *>( parent ), name, parent, name, classname, args );
+  return createPart( static_cast<QWidget *>( parent ), parent, classname, args );
 }
+
 #include "factory.moc"

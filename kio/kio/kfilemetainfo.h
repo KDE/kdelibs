@@ -398,7 +398,7 @@ public:
      *         creation failed
      */
     QValidator * createValidator(const QString& group, const QString& key,
-                                 QObject *parent = 0, const char *name = 0) const;
+                                 QObject *parent = 0) const;
 
     /**
      * Returns the list of all groups that the plugin for this mimetype
@@ -1269,9 +1269,9 @@ private:
  *
  * Example:
  *  @code
- *  FooPlugin::FooPlugin(QObject *parent, const char *name,
+ *  FooPlugin::FooPlugin(QObject *parent
  *                       const QStringList &args)
- *      : KFilePlugin(parent, name, args)
+ *      : KFilePlugin(parent, args)
  *  {
  *      KFileMimeTypeInfo* info = addMimeTypeInfo( "application/x-foo" );
  *
@@ -1453,11 +1453,10 @@ public:
     virtual QValidator* createValidator( const QString& mimeType,
                                          const QString& group,
                                          const QString& key,
-                                         QObject* parent,
-                                         const char* name) const
+                                         QObject* parent) const
     {
         Q_UNUSED(mimeType); Q_UNUSED(group);Q_UNUSED(key);
-        Q_UNUSED(parent);Q_UNUSED(name);
+        Q_UNUSED(parent);
         return 0;
     }
 

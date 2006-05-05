@@ -25,7 +25,7 @@
 class KMRlprUiManager : public KMUiManager
 {
 public:
-	KMRlprUiManager(QObject *parent, const char *name, const QStringList & /*args*/);
+	KMRlprUiManager(QObject *parent, const QStringList & /*args*/);
 	~KMRlprUiManager();
 
 	void setupPropertyPages(KMPropertyPage*);

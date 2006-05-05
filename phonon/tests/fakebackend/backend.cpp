@@ -41,7 +41,7 @@ namespace Phonon
 namespace Fake
 {
 
-Backend::Backend( QObject* parent, const char*, const QStringList& )
+Backend::Backend( QObject* parent, const QStringList& )
 	: Ifaces::Backend( parent )
 {
 }

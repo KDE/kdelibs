@@ -1,7 +1,7 @@
 /*
  * The Type2Type template and the Inheritance Detector are from
  * <http://www.cuj.com/experts/1810/alexandr.htm>
- * (c) Andrei Alexandrescu <andrei@metalanguage.com> and 
+ * (c) Andrei Alexandrescu <andrei@metalanguage.com> and
  * free for any use.
  *
  * The rest is:
@@ -39,6 +39,7 @@
 
 #include <qmetaobject.h>
 #include <ktypelist.h>
+#include "kdebug.h"
 
 namespace KParts
 {
@@ -56,7 +57,7 @@ namespace KDEPrivate
         static ConversionDoesNotExist test( ... );
     };
 
-    /* Simon: KCC doesn't eat the generic InheritanceDetector<Base>. 
+    /* Simon: KCC doesn't eat the generic InheritanceDetector<Base>.
        Instead we have to use concrete specializations :-(
 
     template <class Base, class Derived>
@@ -106,10 +107,10 @@ namespace KDEPrivate
     };
 
     // this template is called from the MultiFactory one. It instantiates
-    // the given class if the className matches. Instantiating is done by 
-    // calling the right constructor (a parentwidget/widgetname/parent/name 
-    // one for Parts, a parentwidget/widgetname one for widgets and last
-    // but not least the standard default constructor of parent/name .
+    // the given class if the className matches. Instantiating is done by
+    // calling the right constructor (a parentwidget/parent
+    // one for Parts, a parentwidget one for widgets and last
+    // but not least the standard default constructor with a parent .
     // the choice of the right constructor is done using an ordered inheritance
     // test.
     template <class Product, class ParentType = QObject>
@@ -120,51 +121,55 @@ namespace KDEPrivate
                              KParts::Part,
                              typename If< QWidgetInheritanceTest< Product >::Result,
                                           QWidget, QObject >::Result >::Result BaseType;
- 
-        static inline Product *create( QWidget *parentWidget, const char *widgetName,
-                                       QObject *parent, const char *name, 
+
+        static inline Product *create( QWidget *parentWidget,
+                                       QObject *parent,
                                        const char *className, const QStringList &args )
         {
             const QMetaObject* metaObject = &Product::staticMetaObject;
             while ( metaObject )
             {
+                kDebug() << "className=" << className << "metaObject->className()=" << metaObject->className() << endl;
                 if ( !qstrcmp( className, metaObject->className() ) )
-                    return create( parentWidget, widgetName,
-                                   parent, name, args, Type2Type<BaseType>() );
+                    return create( parentWidget,
+                                   parent, args, Type2Type<BaseType>() );
                 metaObject = metaObject->superClass();
             }
+            kDebug() << "error, returning 0" << endl;
             return 0;
         }
     private:
         typedef typename If< QWidgetInheritanceTest<ParentType>::Result,
                              ParentType, QWidget >::Result WidgetParentType;
 
-        static inline Product *create( QWidget *parentWidget, const char *widgetName,
-                                       QObject *parent, const char *name,
+        static inline Product *create( QWidget *parentWidget,
+                                       QObject *parent,
                                        const QStringList &args, Type2Type<KParts::Part> )
-        { 
-            return new Product( parentWidget, widgetName, parent, name, args ); 
+        {
+            kDebug() << "create - 1" << endl;
+            return new Product( parentWidget, parent, args );
         }
 
-        static inline Product *create( QWidget* /*parentWidget*/, const char* /*widgetName*/,
-                                       QObject *parent, const char *name,
+        static inline Product *create( QWidget* /*parentWidget*/,
+                                       QObject *parent,
                                        const QStringList &args, Type2Type<QWidget> )
         {
-
+            kDebug() << "create - 2" << endl;
             WidgetParentType *p = dynamic_cast<WidgetParentType *>( parent );
-            if ( parent && !p ) 
+            if ( parent && !p )
                 return 0;
-            return new Product( p, name, args );
+            return new Product( p, args );
         }
 
-        static inline Product *create( QWidget* /*parentWidget*/, const char* /*widgetName*/,
-                                       QObject *parent, const char *name,
+        static inline Product *create( QWidget* /*parentWidget*/,
+                                       QObject *parent,
                                        const QStringList &args, Type2Type<QObject> )
-        { 
+        {
+            kDebug() << "create - 3" << endl;
             ParentType *p = dynamic_cast<ParentType *>( parent );
             if ( parent && !p )
                 return 0;
-            return new Product( p, name, args ); 
+            return new Product( p, args );
         }
     };
 
@@ -175,16 +180,16 @@ namespace KDEPrivate
     class MultiFactory
     {
     public:
-        inline static QObject *create( QWidget *parentWidget, const char *widgetName,
-                                       QObject *parent, const char *name,
-                                       const char *className, 
+        inline static QObject *create( QWidget *parentWidget,
+                                       QObject *parent,
+                                       const char *className,
                                        const QStringList &args )
         {
-            return ConcreteFactory<Product, ParentType>::create( parentWidget, widgetName,
-                                                                 parent, name, className, 
+            return ConcreteFactory<Product, ParentType>::create( parentWidget,
+                                                                 parent, className,
                                                                  args );
         }
- 
+
     };
 
     // this specialized template we 'reach' at the end of a typelist
@@ -193,8 +198,8 @@ namespace KDEPrivate
     class MultiFactory<KDE::NullType>
     {
     public:
-        inline static QObject *create( QWidget *, const char *, QObject *, 
-                                       const char *, const char *, 
+        inline static QObject *create( QWidget *, QObject *,
+                                       const char *,
                                        const QStringList & )
         { return 0; }
     };
@@ -205,30 +210,30 @@ namespace KDEPrivate
     class MultiFactory<KDE::NullType, KDE::NullType>
     {
     public:
-        inline static QObject *create( QWidget *, const char *, QObject *, 
-                                       const char *, const char *, 
+        inline static QObject *create( QWidget *, QObject *,
+                                       const char *,
                                        const QStringList & )
         { return 0; }
     };
- 
+
     template <class Product, class ProductListTail>
     class MultiFactory< KTypeList<Product, ProductListTail>, QObject >
     {
     public:
-        inline static QObject *create( QWidget *parentWidget, const char *widgetName,
-                                       QObject *parent, const char *name,
-                                       const char *className, 
+        inline static QObject *create( QWidget *parentWidget,
+                                       QObject *parent,
+                                       const char *className,
                                        const QStringList &args )
         {
             // try with the head of the typelist first. the head is always
             // a concrete type.
-            QObject *object = MultiFactory<Product>::create( parentWidget, widgetName,
-                                                             parent, name, className, 
+            QObject *object = MultiFactory<Product>::create( parentWidget,
+                                                             parent, className,
                                                              args );
 
             if ( !object )
-                object = MultiFactory<ProductListTail>::create( parentWidget, widgetName,
-                                                                parent, name, className, 
+                object = MultiFactory<ProductListTail>::create( parentWidget,
+                                                                parent, className,
                                                                 args );
 
             return object;
@@ -241,24 +246,24 @@ namespace KDEPrivate
                         KTypeList<ParentType, ParentTypeListTail> >
     {
     public:
-        inline static QObject *create( QWidget *parentWidget, const char *widgetName,
-                                       QObject *parent, const char *name,
-                                       const char *className, 
+        inline static QObject *create( QWidget *parentWidget,
+                                       QObject *parent,
+                                       const char *className,
                                        const QStringList &args )
         {
             // try with the head of the typelist first. the head is always
             // a concrete type.
             QObject *object = MultiFactory<Product, ParentType>
-                                  ::create( parentWidget, widgetName,
-                                            parent, name, className, args );
+                                  ::create( parentWidget,
+                                            parent, className, args );
 
             // if that failed continue by advancing the typelist, calling this
             // template specialization recursively (with T2 being a typelist) .
             // at the end we reach the nulltype specialization.
             if ( !object )
                 object = MultiFactory<ProductListTail, ParentTypeListTail>
-                             ::create( parentWidget, widgetName,
-                                       parent, name, className, args );
+                             ::create( parentWidget,
+                                       parent, className, args );
 
             return object;
         }

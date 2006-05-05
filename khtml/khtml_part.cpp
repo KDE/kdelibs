@@ -205,22 +205,20 @@ KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
     return it;
 }
 
-KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name, GUIProfile prof )
+KHTMLPart::KHTMLPart( QWidget *parentWidget, QObject *parent, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
-    setObjectName( name );
     d = 0;
     KHTMLFactory::registerPart( this );
     setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
     // TODO KDE4 - don't load plugins yet
     //setInstance( KHTMLFactory::instance(), false );
-    init( new KHTMLView( this, parentWidget, widgetname ), prof );
+    init( new KHTMLView( this, parentWidget ), prof );
 }
 
-KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof )
+KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, GUIProfile prof )
 : KParts::ReadOnlyPart( parent )
 {
-    setObjectName( name );
     d = 0;
     KHTMLFactory::registerPart( this );
     setInstance(  KHTMLFactory::instance(), prof == BrowserViewGUI && !parentPart() );
@@ -4441,7 +4439,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     }
 
     QStringList dummy; // the list of servicetypes handled by the part is now unused.
-    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.toAscii().constData(), this, child->m_name.toAscii().constData(), mimetype, child->m_serviceName, dummy, child->m_params );
+    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), this, mimetype, child->m_serviceName, dummy, child->m_params );
 
     if ( !part )
     {
@@ -4452,6 +4450,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
         checkEmitLoadEvent();
         return false;
     }
+
+    part->setObjectName( child->m_name );
 
     //CRITICAL STUFF
     if ( child->m_part )
@@ -4613,8 +4613,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   }
 }
 
-KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName,
-                                             QObject *parent, const char *name, const QString &mimetype,
+KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
+                                             QObject *parent, const QString &mimetype,
                                              QString &serviceName, QStringList &serviceTypes,
                                              const QStringList &params )
 {
@@ -4649,9 +4649,9 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
         className = "Browser/View";
 
       if ( factory->inherits( "KParts::Factory" ) )
-        res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, className, params ));
+        res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, parent, className, params ));
       else
-        res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, className ));
+        res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, className ));
 
       if ( res ) {
         serviceTypes = service->serviceTypes();

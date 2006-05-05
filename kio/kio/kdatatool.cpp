@@ -147,12 +147,12 @@ QStringList KDataToolInfo::userCommands() const
     return m_service->comment().split( ',', QString::SkipEmptyParts );
 }
 
-KDataTool* KDataToolInfo::createTool( QObject* parent, const char* name ) const
+KDataTool* KDataToolInfo::createTool( QObject* parent ) const
 {
     if ( !m_service )
         return 0;
 
-    KDataTool* tool = KParts::ComponentFactory::createInstanceFromService<KDataTool>( m_service, parent, name );
+    KDataTool* tool = KParts::ComponentFactory::createInstanceFromService<KDataTool>( m_service, parent );
     if ( tool )
         tool->setInstance( m_instance );
     return tool;
@@ -220,13 +220,12 @@ bool KDataToolInfo::isValid() const
  *
  *************************************************/
 KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command,
-                                    QObject * parent, const char * name )
-    : KAction( text, 0/*parent*/, name ),
+                                  KActionCollection* parent, const QString& name )
+    : KAction( text, parent, name ),
       m_command( command ),
       m_info( info )
 {
     setIcon( KIcon( info.iconName() ) );
-    setParent(parent);
 }
 
 void KDataToolAction::slotActivated()
@@ -234,7 +233,7 @@ void KDataToolAction::slotActivated()
     emit toolActivated( m_info, m_command );
 }
 
-QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot )
+QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent )
 {
     QList<KAction*> actionList;
     if ( tools.isEmpty() )
@@ -244,8 +243,8 @@ QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
     QList<KDataToolInfo>::ConstIterator entry = tools.begin();
     for( ; entry != tools.end(); ++entry )
     {
-        QStringList userCommands = (*entry).userCommands();
-        QStringList commands = (*entry).commands();
+        const QStringList userCommands = (*entry).userCommands();
+        const QStringList commands = (*entry).commands();
         Q_ASSERT(!commands.isEmpty());
         if ( commands.count() != userCommands.count() )
             kWarning() << "KDataTool desktop file error (" << (*entry).service()->entryPath()
@@ -256,7 +255,8 @@ QList<KAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
         for (; uit != userCommands.end() && cit != commands.end(); ++uit, ++cit )
         {
             //kDebug() << "creating action " << *uit << " " << *cit << endl;
-            KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit );
+            const QString name = (*entry).service()->entryPath(); // something unique
+            KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit, parent, name );
             connect( action, SIGNAL( toolActivated( const KDataToolInfo &, const QString & ) ),
                      receiver, slot );
             actionList.append( action );

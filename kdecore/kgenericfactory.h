@@ -125,16 +125,16 @@ KInstance *KGenericFactoryBase<T>::instance()
  * <ul>
  *     <li>If the class is derived from QObject then it needs to have
  *         a constructor like:
- *         <code>MyClass( QObject *parent, const char *name,
+ *         <code>MyClass( QObject *parent,
  *                        const QStringList &args );</code>
  *     <li>If the class is derived from QWidget then it needs to have
  *         a constructor like:
- *         <code>MyWidget( QWidget *parent, const char *name,
+ *         <code>MyWidget( QWidget *parent,
  *                         const QStringList &args);</code>
  *     <li>If the class is derived from KParts::Part then it needs to have
  *         a constructor like:
- *         <code>MyPart( QWidget *parentWidget, const char *widgetName,
- *                       QObject *parent, const char *name,
+ *         <code>MyPart( QWidget *parentWidget,
+ *                       QObject *parent,
  *                       const QStringList &args );</code>
  * </ul>
  * The args QStringList passed to the constructor is the args string list
@@ -161,8 +161,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  *     {
  *         Q_ OBJECT
  *     public:
- *         MyPlugin( QObject *parent, const char *name,
- *                   const QStringList &args );
+ *         MyPlugin( QObject *parent, const QStringList &args );
  *         ...
  *     };
  *
@@ -183,12 +182,12 @@ public:
 
 
 protected:
-    virtual QObject *createObject( QObject *parent, const char *name,
+    virtual QObject *createObject( QObject *parent,
                                   const char *className, const QStringList &args )
     {
         KGenericFactoryBase<Product>::initializeMessageCatalog();
         return KDEPrivate::ConcreteFactory<Product, ParentType>
-            ::create( 0, 0, parent, name, className, args );
+            ::create( 0, parent, className, args );
     }
 };
 
@@ -205,16 +204,16 @@ protected:
  * <ul>
  *     <li>If the class is derived from QObject then it needs to have
  *         a constructor like:
- *         <code>MyClass( QObject *parent, const char *name,
+ *         <code>MyClass( QObject *parent,
  *                        const QStringList &args );</code>
  *     <li>If the class is derived from QWidget then it needs to have
  *         a constructor like:
- *         <code>MyWidget( QWidget *parent, const char *name,
+ *         <code>MyWidget( QWidget *parent,
  *                         const QStringList &args);</code>
  *     <li>If the class is derived from KParts::Part then it needs to have
  *         a constructor like:
- *         <code>MyPart( QWidget *parentWidget, const char *widgetName,
- *                       QObject *parent, const char *name,
+ *         <code>MyPart( QWidget *parentWidget,
+ *                       QObject *parent,
  *                       const QStringList &args );</code>
  * </ul>
  * The args QStringList passed to the constructor is the args string list
@@ -241,7 +240,7 @@ protected:
  *     {
  *         Q_ OBJECT
  *     public:
- *         MyPlugin( QObject *parent, const char *name,
+ *         MyPlugin( QObject *parent,
  *                   const QStringList &args );
  *         ...
  *     };
@@ -250,7 +249,7 @@ protected:
  *     {
  *         Q_ OBJECT
  *     public:
- *         MyDialogComponent( QWidget *parentWidget, const char *name,
+ *         MyDialogComponent( QWidget *parentWidget,
  *                            const QStringList &args );
  *         ...
  *     };
@@ -275,12 +274,12 @@ public:
 
 
 protected:
-    virtual QObject *createObject( QObject *parent, const char *name,
+    virtual QObject *createObject( QObject *parent,
                                    const char *className, const QStringList &args )
     {
         this->initializeMessageCatalog();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail > >
-            ::create( 0, 0, parent, name, className, args );
+            ::create( 0, parent, className, args );
     }
 };
 
@@ -297,16 +296,16 @@ protected:
  * <ul>
  *     <li>If the class is derived from QObject then it needs to have
  *         a constructor like:
- *         <code>MyClass( QObject *parent, const char *name,
+ *         <code>MyClass( QObject *parent,
  *                        const QStringList &args );</code>
  *     <li>If the class is derived from QWidget then it needs to have
  *         a constructor like:
- *         <code>MyWidget( QWidget *parent, const char *name,
+ *         <code>MyWidget( QWidget *parent,
  *                         const QStringList &args);</code>
  *     <li>If the class is derived from KParts::Part then it needs to have
  *         a constructor like:
- *         <code>MyPart( QWidget *parentWidget, const char *widgetName,
- *                       QObject *parent, const char *name,
+ *         <code>MyPart( QWidget *parentWidget,
+ *                       QObject *parent,
  *                       const QStringList &args );</code>
  * </ul>
  * The args QStringList passed to the constructor is the args string list
@@ -333,7 +332,7 @@ protected:
  *     {
  *         Q_ OBJECT
  *     public:
- *         MyPlugin( QObject *parent, const char *name,
+ *         MyPlugin( QObject *parent,
  *                   const QStringList &args );
  *         ...
  *     };
@@ -342,7 +341,7 @@ protected:
  *     {
  *         Q_ OBJECT
  *     public:
- *         MyDialogComponent( QWidget *parentWidget, const char *name,
+ *         MyDialogComponent( QWidget *parentWidget,
  *                            const QStringList &args );
  *         ...
  *     };
@@ -368,13 +367,13 @@ public:
 
 
 protected:
-    virtual QObject *createObject( QObject *parent, const char *name,
+    virtual QObject *createObject( QObject *parent,
                                    const char *className, const QStringList &args )
     {
         this->initializeMessageCatalogs();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail >,
                                          KTypeList< ParentType, ParentTypeListTail > >
-                                       ::create( 0, 0, parent, name,
+                                       ::create( 0, 0, parent,
                                                  className, args );
     }
 };

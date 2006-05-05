@@ -39,7 +39,7 @@ class HSpellClient : public KSpell2::Client
 {
     Q_OBJECT
 public:
-    HSpellClient( QObject *parent, const char *name, const QStringList & /* args */  );
+    HSpellClient( QObject *parent, const QStringList & /* args */  );
     ~HSpellClient();
 
     virtual int reliability() const {

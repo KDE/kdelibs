@@ -103,13 +103,13 @@ KHTMLFactory::~KHTMLFactory()
         deref();
 }
 
-KParts::Part *KHTMLFactory::createPartObject( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *className, const QStringList & )
+KParts::Part *KHTMLFactory::createPartObject( QWidget *parentWidget, QObject *parent, const char *className, const QStringList & )
 {
   KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
   if ( strcmp( className, "Browser/View" ) == 0 )
     prof = KHTMLPart::BrowserViewGUI;
 
-  return new KHTMLPart( parentWidget, widgetName, parent, name, prof );
+  return new KHTMLPart( parentWidget, parent, prof );
 }
 
 void KHTMLFactory::ref()

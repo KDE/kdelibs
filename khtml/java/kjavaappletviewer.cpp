@@ -60,9 +60,9 @@ KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {
 }
 
 KParts::Part *KJavaAppletViewerFactory::createPartObject
-  (QWidget *wparent, const char *wname,
-   QObject *parent, const char * name, const char *, const QStringList & args) {
-    return new KJavaAppletViewer (wparent, wname, parent, name, args);
+  (QWidget *wparent,
+   QObject *parent, const char *, const QStringList & args) {
+    return new KJavaAppletViewer (wparent, parent, args);
 }
 
 //-----------------------------------------------------------------------------
@@ -211,8 +211,8 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
-                 QObject * parent, const char * name, const QStringList & args)
+KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
+                 QObject * parent, const QStringList & args)
  : KParts::ReadOnlyPart (parent),
    m_browserextension (new KJavaAppletViewerBrowserExtension (this)),
    m_liveconnect (new KJavaAppletViewerLiveConnectExtension (this)),
@@ -220,8 +220,6 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
    m_statusbar_icon (0L),
    m_closed (true)
 {
-    setObjectName( name );
-
     if (!serverMaintainer) {
         serverMaintainerDeleter.setObject (serverMaintainer,
                                            new KJavaServerMaintainer);

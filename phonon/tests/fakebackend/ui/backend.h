@@ -38,7 +38,7 @@ namespace Fake
 	{
 		Q_OBJECT
 		public:
-			Backend( QObject* parent, const char*, const QStringList& args );
+			Backend( QObject* parent, const QStringList& args );
 			virtual ~Backend();
 
 			virtual Ifaces::VideoWidget*  createVideoWidget( QWidget* parent );

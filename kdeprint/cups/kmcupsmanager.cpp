@@ -68,11 +68,9 @@ static int trials = 5;
 
 //*****************************************************************************************************
 
-KMCupsManager::KMCupsManager(QObject *parent, const char *name, const QStringList & /*args*/)
+KMCupsManager::KMCupsManager(QObject *parent, const QStringList & /*args*/)
 : KMManager(parent)
 {
-  setObjectName( name );
-
 	// be sure to create the CupsInfos object -> password
 	// management is handled correctly.
 	CupsInfos::self();

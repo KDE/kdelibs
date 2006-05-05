@@ -74,9 +74,11 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
       KLibFactory *factory = lib->factory();
       if ( factory )
       {
-        KCModule *module = factory->create<KCModule>( parent, name ? name : mod.handle().toLatin1().data(), args );
-        if (module)
+        KCModule *module = factory->create<KCModule>( parent, args );
+        if (module) {
+          module->setObjectName( mod.handle() );
           return module;
+        }
       }
       // else do a fallback
       kDebug(1208) << "Unable to load module using ComponentFactory. Falling back to old loader." << endl;
