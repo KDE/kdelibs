@@ -43,6 +43,7 @@ KMWOther::KMWOther(QWidget *parent)
 
 	m_uri = new QLineEdit(this);
 	QLabel	*l1 = new QLabel(this);
+	l1->setWordWrap(true);
 	l1->setText(i18n("<p>Enter the URI corresponding to the printer to be installed. "
 	                 "Examples:</p><ul>"
 					 "<li>smb://[login[:passwd]@]server/printer</li>"

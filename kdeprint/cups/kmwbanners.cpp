@@ -99,6 +99,7 @@ KMWBanners::KMWBanners(QWidget *parent)
 	l2->setBuddy(m_end);
 
 	QLabel	*l0 = new QLabel(this);
+	l0->setWordWrap(true);
 	l0->setText(i18n("<p>Select the default banners associated with this printer. These "
 			 "banners will be inserted before and/or after each print job sent "
 			 "to the printer. If you don't want to use banners, select <b>No Banner</b>.</p>"));

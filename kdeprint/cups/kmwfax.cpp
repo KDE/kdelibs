@@ -38,6 +38,7 @@ KMWFax::KMWFax(QWidget *parent)
 	m_nextpage = KMWizard::Driver;
 
 	QLabel	*lab = new QLabel(this);
+	lab->setWordWrap(true);
 	lab->setText(i18n("<p>Select the device which your serial Fax/Modem is connected to.</p>"));
 	m_list = new KListBox(this);
 
