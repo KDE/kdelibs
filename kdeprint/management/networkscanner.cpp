@@ -118,9 +118,9 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	QGridLayout *l0 = new QGridLayout( this );
   l0->setMargin( 0 );
   l0->setSpacing( 10 );
-	l0->addWidget( label, 0, 0, 0, 1 );
-	l0->addWidget( d->bar, 1, 1, 0, 1 );
-	l0->addWidget( d->subnetlab, 2, 2, 0, 1 );
+	l0->addWidget( label, 0, 0, 1, 2 );
+	l0->addWidget( d->bar, 1, 0, 1, 2 );
+	l0->addWidget( d->subnetlab, 2, 0, 1, 2 );
 	l0->addWidget( d->settings, 3, 0 );
 	l0->addWidget( d->scan, 3, 1 );
 
@@ -128,7 +128,8 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	connect( d->settings, SIGNAL( clicked() ), SLOT( slotSettingsClicked() ) );
 	connect( d->scan, SIGNAL( clicked() ), SLOT( slotScanClicked() ) );
 
-	connect( d->socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ), SLOT( slotConnectionSuccess() ) );
+	connect( d->socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ),
+            SLOT( slotConnectionSuccess( const KNetwork::KResolverEntry& ) ) );
 	connect( d->socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
 }
 
