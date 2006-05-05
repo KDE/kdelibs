@@ -195,6 +195,8 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   job->putOnHold();
   m_job = 0;
 
+  KRun::setSuggestedFileName(m_suggestedFilename);
+
   foundMimeType( _type );
 }
 

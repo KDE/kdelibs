@@ -20,6 +20,7 @@ public slots:
 
 protected:
     bool tempfiles;
+    QString suggestedFileName;
     int counter;
     int expectedCounter;
     QString command;

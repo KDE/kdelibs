@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -187,6 +188,16 @@ public:
   void setEnableExternalBrowser(bool b);
 
   /**
+   * Sets the file name to use in the case of downloading the file to a tempfile
+   * in order to give to a non-url-aware application. Some apps rely on the extension
+   * to determine the mimetype of the file. Usually the file name comes from the URL,
+   * but in the case of the HTTP Content-Disposition header, we need to override the
+   * file name.
+   * @since 3.5.3
+   */
+  void setSuggestedFileName( const QString& fileName );
+
+  /**
    * Open a list of URLs with a certain service (application).
    *
    * @param _service the service to run
@@ -212,6 +223,9 @@ public:
   // BIC merge second overload with first one, using tempFiles=false
   static pid_t run( const KService& _service, const KURL::List& _urls, bool tempFiles );
   static pid_t run( const KService& _service, const KURL::List& _urls );
+  /// @since 3.5.3
+  /// @internal
+  static pid_t run( const KService& _service, const KURL::List& _urls, QWidget* window, bool tempFiles, const QString& suggestedFileName );
 
   /**
    * Open a list of URLs with.
@@ -253,6 +267,9 @@ public:
   static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile, bool runExecutables);
   static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile);
   static pid_t runURL( const KURL& _url, const QString& _mimetype );
+  /// @since 3.5.3
+  /// @internal
+  static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile, bool runExecutables, const QString& suggestedFileName );
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -293,6 +310,9 @@ public:
   // BIC merge second overload with first one, using tempFiles=false
   static bool displayOpenWithDialog( const KURL::List& lst, bool tempFiles );
   static bool displayOpenWithDialog( const KURL::List& lst );
+  /// @since 3.5.3
+  /// @internal
+  static bool displayOpenWithDialog( const KURL::List& lst, bool tempFiles, const QString& suggestedFileName );
 
   /**
    * Quotes a string for the shell.
@@ -314,9 +334,11 @@ public:
    *        when the application exits.
    * @return a list of arguments suitable for either system() or exec().
    */
-  // BIC merge second overload with first one, using tempFiles=false
   static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell, bool tempFiles);
   static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell);
+  /// @since 3.5.3
+  /// @internal
+  static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell, bool tempFiles, const QString& suggestedFileName);
 
   /**
    * Given a full command line (e.g. the Exec= line from a .desktop file),
