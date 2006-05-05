@@ -280,8 +280,7 @@ bool KStandardDirs::addResourceType( const char *type,
 bool KStandardDirs::addResourceDir( const char *type,
 				    const QString& absdir)
 {
-    // KDE4: change priority to bring in line with addResourceType
-    return addResourceDir(type, absdir, false);
+    return addResourceDir(type, absdir, true);
 }
 
 bool KStandardDirs::addResourceDir( const char *type,
@@ -769,7 +768,7 @@ void KStandardDirs::createSpecialResource(const char *type)
          dir = QDir::cleanPath(dir+QFile::decodeName(link));
    }
 #endif
-   addResourceDir(type, dir+'/');
+   addResourceDir(type, dir+'/', false);
 }
 
 QStringList KStandardDirs::resourceDirs(const char *type) const
@@ -1337,7 +1336,7 @@ void KStandardDirs::addResourcesFrom_krcdirs()
             continue;
 
         if(path.makeAbsolute())
-            addResourceDir(key.toAscii(), path.path());
+            addResourceDir(key.toAscii(), path.path(), false);
     }
 }
 
@@ -1504,7 +1503,7 @@ void KStandardDirs::addKDEDefaults()
 	index++;
     }
 
-    addResourceDir("home", QDir::homePath());
+    addResourceDir("home", QDir::homePath(), false);
 }
 
 void KStandardDirs::checkConfig() const
