@@ -599,9 +599,6 @@ void ElementImpl::recalcStyle( StyleChange change )
     qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().latin1());
 #endif
     if ( hasParentRenderer && (change >= Inherit || changed()) ) {
-        EDisplay oldDisplay = _style ? _style->display() : NONE;
-        EPosition oldPosition = _style ? _style->position() : STATIC;
-
         RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this);
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
