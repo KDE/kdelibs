@@ -32,9 +32,8 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 	m_title = i18n("Introduction");
 	m_nextpage = KMWizard::Backend;
 
-	//QLabel	*m_label = new QLabel(this);
-	KActiveLabel	*m_label = new KActiveLabel(this);
-	m_label->setHtml(i18n("<p>Welcome,</p><br>"
+	KActiveLabel	*label = new KActiveLabel(this);
+	label->setHtml(i18n("<p>Welcome,</p><br>"
 		"<p>This wizard will help to install a new printer on your computer. "
 		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
@@ -46,5 +45,5 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
 	main_->setMargin(0);
 	main_->setSpacing(0);
-	main_->addWidget(m_label);
+	main_->addWidget(label);
 }

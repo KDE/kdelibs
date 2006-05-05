@@ -34,6 +34,7 @@ KMWInfoBase::KMWInfoBase(int n, QWidget *parent)
 	lay1->setColumnStretch(1,1);
 
 	m_info = new QLabel(this);
+	m_info->setWordWrap(true);
 	m_info->setTextFormat(Qt::RichText);
 	lay1->addWidget(m_info,0,0,0,1);
 

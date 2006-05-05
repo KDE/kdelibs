@@ -60,7 +60,9 @@ KMWLocal::KMWLocal(QWidget *parent)
 	m_parents[3] = new Q3ListViewItem(root, m_parents[2], i18n("Others"));
 	for (int i=0;i<4;i++)
 		m_parents[i]->setPixmap(0, SmallIcon("input_devices_settings"));
-	QLabel	*l2 = new QLabel(i18n("<p>Select a valid detected port, or enter directly the corresponding URI in the bottom edit field.</p>"), this);
+	QLabel	*l2 = new QLabel(this);
+	l2->setWordWrap(true);
+	l2->setText(i18n("<p>Select a valid detected port, or enter directly the corresponding URI in the bottom edit field.</p>"));
 
 	QVBoxLayout	*lay0 = new QVBoxLayout(this);
 	lay0->setMargin(0);

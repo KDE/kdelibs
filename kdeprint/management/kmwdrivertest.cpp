@@ -57,6 +57,7 @@ KMWDriverTest::KMWDriverTest(QWidget *parent)
 	m_settings = new KPushButton(KGuiItem(i18n("&Settings"), "configure"), this);
 
 	QLabel	*l0 = new QLabel(this);
+	l0->setWordWrap(true);
 	l0->setText(i18n("<p>Now you can test the printer before finishing installation. "
 			 "Use the <b>Settings</b> button to configure the printer driver and "
 			 "the <b>Test</b> button to test your configuration. Use the <b>Back</b> "

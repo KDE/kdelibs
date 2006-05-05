@@ -40,6 +40,7 @@ KMWDriverSelect::KMWDriverSelect(QWidget *parent)
 
 	m_list = new KListBox(this);
 	QLabel	*l1 = new QLabel(this);
+	l1->setWordWrap(true);
 	l1->setText(i18n("<p>Several drivers have been detected for this model. Select the driver "
 			 "you want to use. You will have the opportunity to test it as well as to "
 			 "change it if necessary.</p>"));
