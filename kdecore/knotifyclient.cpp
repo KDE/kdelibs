@@ -77,7 +77,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
       return 0;
   }
 
-  QString appname = KNotifyClient::instance()->instanceName();
+  QString appname = KNotifyClient::Instance::current()->instanceName();
 
   if( canAvoidStartupEvent( message, appname, present ))
       return -1; // done "successfully" - there will be no event presentation
@@ -162,7 +162,7 @@ int KNotifyClient::getPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 
-	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
+	KConfig eventsfile( KNotifyClient::Instance::current()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
 
 	present=eventsfile.readEntry("presentation", -1);
@@ -174,7 +174,7 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 {
 	if (eventname.isEmpty()) return QString();
 
-	KConfig eventsfile( KNotifyClient::instance()->instanceName()+".eventsrc", true, false);
+	KConfig eventsfile( KNotifyClient::Instance::current()->instanceName()+".eventsrc", true, false);
 	eventsfile.setGroup(eventname);
 
 	switch (present)
@@ -193,7 +193,7 @@ int KNotifyClient::getDefaultPresentation(const QString &eventname)
 	int present;
 	if (eventname.isEmpty()) return Default;
 
-	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
+	KConfig eventsfile( KNotifyClient::Instance::current()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
 
 	present=eventsfile.readEntry("default_presentation", -1);
@@ -205,7 +205,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 {
 	if (eventname.isEmpty()) return QString();
 
-	KConfig eventsfile( KNotifyClient::instance()->instanceName()+"/eventsrc", true, false, "data");
+	KConfig eventsfile( KNotifyClient::Instance::current()->instanceName()+"/eventsrc", true, false, "data");
 	eventsfile.setGroup(eventname);
 
 	switch (present)
