@@ -489,9 +489,9 @@ void KHistoryCombo::addToHistory( const QString& item )
 
     // now add the item
     if ( myPixProvider )
-        addItem( myPixProvider->pixmapFor(item, K3Icon::SizeSmall), item);
+        insertItem( 0, myPixProvider->pixmapFor(item, K3Icon::SizeSmall), item);
     else
-        addItem( item );
+        insertItem( 0, item );
 
     if ( wasCurrent )
         setCurrentIndex( 0 );
