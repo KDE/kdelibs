@@ -188,7 +188,7 @@ public:
      *     \verbatim photo.jpg,v\endverbatim
      *
      * The new backup file will be in RCS format.
-     * Each existing backup file will be commited as a new revision.
+     * Each existing backup file will be committed as a new revision.
      *
      * @param filename the file to backup
      * @param backupDir optional directory where to save the backup file in.

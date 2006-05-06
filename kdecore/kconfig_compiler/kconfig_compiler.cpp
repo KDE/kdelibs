@@ -1690,7 +1690,8 @@ int main( int argc, char **argv )
   if ( singleton )
     cpp << "  mSelf = this;" << endl;
 
-  group = QString::null;
+  group.clear();
+
   for( itEntry = entries.begin(); itEntry != entries.end(); ++itEntry ) {
     if ( (*itEntry)->group() != group ) {
       if ( !group.isEmpty() ) cpp << endl;
