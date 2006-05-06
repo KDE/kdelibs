@@ -570,8 +570,8 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     dialog->setObjectName( "warningYesNoList" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, buttonYes.text() );
-    dialog->setButtonText( KDialog::No, buttonNo.text() );
+    dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
+    dialog->setButtonGuiItem( KDialog::No, buttonNo );
     dialog->setDefaultButton( KDialog::No );
     dialog->setEscapeButton( KDialog::No );
     if( options & PlainCaption )
@@ -645,7 +645,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
     dialog->setObjectName( "warningYesNo" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, buttonContinue.text() );
+    dialog->setButtonGuiItem( KDialog::Yes, buttonContinue );
     dialog->setButtonText( KDialog::No, KStdGuiItem::cancel().text() );
     dialog->setDefaultButton( KDialog::Yes );
     dialog->setEscapeButton( KDialog::No );
@@ -724,8 +724,8 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     dialog->setObjectName( "warningYesNoCancel" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, buttonYes.text() );
-    dialog->setButtonText( KDialog::No, buttonNo.text() );
+    dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
+    dialog->setButtonGuiItem( KDialog::No, buttonNo );
     dialog->setDefaultButton( KDialog::Yes );
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
