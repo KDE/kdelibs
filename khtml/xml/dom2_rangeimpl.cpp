@@ -830,7 +830,7 @@ DOMString RangeImpl::toString( int &exceptioncode )
      *
      * The other cases are different arrangements of the first two.
      *
-     * psuedo code:
+     * pseudo code:
      *
      * if start container is not text:
      *     count through the children to find where we start (m_startOffset children)

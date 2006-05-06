@@ -423,7 +423,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
 {
   QString name = _name.toLower().trimmed();
 
-  // Content-type needs to be set seperately from the other headers
+  // Content-type needs to be set separately from the other headers
   if(name == "content-type") {
     contentType = "Content-type: " + value;
     return;

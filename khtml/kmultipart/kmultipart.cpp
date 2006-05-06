@@ -167,7 +167,7 @@ bool KMultiPart::openURL( const KUrl &url )
 
     m_job = KIO::get( url, args.reload, false );
 
-    emit started( 0 /*m_job*/ ); // don't pass the job, it would interfer with our own infoMessage
+    emit started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
 
     connect( m_job, SIGNAL( result( KJob * ) ),
              this, SLOT( slotJobFinished( KJob * ) ) );
@@ -487,7 +487,7 @@ void KMultiPart::endOfData()
         if ( m_partIsLoading )
         {
             // The part is still loading the last data! Let it proceed then
-            // Otherwise we'd keep cancelling it, and nothing would ever show up...
+            // Otherwise we'd keep canceling it, and nothing would ever show up...
             kDebug() << "KMultiPart::endOfData part isn't ready, skipping frame" << endl;
             ++m_numberOfFramesSkipped;
             m_tempFile->setAutoDelete( true );

@@ -573,7 +573,7 @@ static KCmdLineOptions options[] =
     { "b", 0, 0 },
     { "base <base_dir>", "Directory containing tests, basedir and output directories.", 0},
     { "d", 0, 0 },
-    { "debug", "Do not supress debug output", 0},
+    { "debug", "Do not suppress debug output", 0},
     { "g", 0, 0 } ,
     { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
     { "s", 0, 0 } ,

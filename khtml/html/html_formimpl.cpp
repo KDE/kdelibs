@@ -685,7 +685,7 @@ void HTMLFormElementImpl::reset(  )
 #endif
 
     // ### DOM2 labels this event as not cancelable, however
-    // common browsers( sick! ) allow it be cancelled.
+    // common browsers( sick! ) allow it be canceled.
     if ( !dispatchHTMLEvent(EventImpl::RESET_EVENT,true, true) ) {
         m_inreset = false;
         return;

@@ -1268,7 +1268,7 @@ void RenderObject::setStyle(RenderStyle *style)
     m_relPositioned = false;
     m_paintBackground = false;
 
-    // only honour z-index for non-static objects
+    // only honor z-index for non-static objects
     // ### and objects with opacity
     if ( style->position() == STATIC ) {
         if ( isRoot() )

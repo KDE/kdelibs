@@ -681,7 +681,7 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     /**
-     * Flags which influence the appearence and position
+     * Flags which influence the appearance and position
      * @param CFOverride input overrides existing character, caret should be
      *		cover the whole character
      * @param CFOutside coordinates are to be interpreted outside of the

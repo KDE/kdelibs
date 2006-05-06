@@ -291,7 +291,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     if (codebase.isEmpty ())
         codebase = khtml_codebase;
     if (baseurl.isEmpty ()) {
-        // not embeded in khtml
+        // not embedded in khtml
         QString pwd = QDir().absolutePath ();
         if (!pwd.endsWith ( QString(QDir::separator ())))
             pwd += QDir::separator ();

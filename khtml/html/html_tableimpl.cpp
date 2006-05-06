@@ -207,7 +207,7 @@ void HTMLTableElementImpl::deleteCaption(  )
 /**
  Helper. This checks whether the section contains the desired index, and if so,
  returns the section. Otherwise, it adjust the index, and returns 0.
- indeces < 0 are considered to be infinite.
+ indices < 0 are considered to be infinite.
 
  lastSection is adjusted to reflect the parameter passed in.
 */

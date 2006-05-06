@@ -332,7 +332,7 @@ public:
    * method. If you want your objects to have a longer lifespan, then you must
    * retain a KJS::Object yourself to ensure that the reference count of your
    * custom objects never reaches 0. You will also need to re-add your
-   * bindings everytime this happens - one way to detect the need for this is
+   * bindings every time this happens - one way to detect the need for this is
    * to connect to the docCreated() signal, another is to reimplement the
    * begin() method.
    */
@@ -723,7 +723,7 @@ public:
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
 
   /**
-   * Finds the next occurence of a string set by @ref findText()
+   * Finds the next occurrence of a string set by @ref findText()
    * @param reverse if true, revert seach direction (only if no find dialog is used)
    * @return true if a new match was found.
    */

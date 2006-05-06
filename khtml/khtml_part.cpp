@@ -2424,7 +2424,7 @@ void KHTMLPart::slotRedirect()
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
 
-  d->m_urlSelectedOpenedURL = true; // In case overriden, default to success
+  d->m_urlSelectedOpenedURL = true; // In case overridden, default to success
   urlSelected( u, 0, 0, "_self", args );
 
   if ( !d->m_urlSelectedOpenedURL ) // urlSelected didn't open a url, so emit completed ourselves

@@ -414,7 +414,7 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 			if(failure)
 				testItem->setIcon(0, m_failKnownPixmap);
 
-			// Detect wheter the tests has no corresponding baseline items...
+			// Detect whether the tests has no corresponding baseline items...
 			if(!ignore && !failure)
 			{
 				if(!dom && !dump && !render && !cacheName.endsWith(".js") && !cacheName.startsWith("domts"))
@@ -438,7 +438,7 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 					availableRenderFiles++;
 			}
 
-			// Count DOM Testsuite files seperated... (these have no baseline items!)
+			// Count DOM Testsuite files separated... (these have no baseline items!)
 			if(cacheName.startsWith("domts"))
 			{
 				// See if parent directory is completely ignored...
