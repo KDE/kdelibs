@@ -795,7 +795,7 @@ private:
  * Each individual time zone is defined in a KSystemTimeZone instance. Additional
  * time zones (of any class derived from KTimeZone) may be added if desired.
  *
- * At initialisation, KSystemTimeZones reads the zone.tab file to obtain the list
+ * At initialization, KSystemTimeZones reads the zone.tab file to obtain the list
  * of system time zones, and creates a KSystemTimeZone instance for each one.
  *
  * Note that KSystemTimeZones is not derived from KTimeZones, but instead contains

@@ -454,7 +454,7 @@ class KDECORE_EXPORT KAboutData
     void setBugAddress( const char *bugAddress );
 
     /**
-     * Defines the product name wich will be used in the KBugReport dialog.
+     * Defines the product name which will be used in the KBugReport dialog.
      * By default it's the appName, but you can overwrite it here to provide
      * support for special components e.g. 'product/component' like
      * 'kontact/summary'.

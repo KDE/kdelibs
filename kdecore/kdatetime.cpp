@@ -1429,7 +1429,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                                 nonalpha = !isalpha(zone[i]);
                             if (nonalpha)
                                 break;
-                            // TODO: Attempt to recognise the time zone abbreviation?
+                            // TODO: Attempt to recognize the time zone abbreviation?
                             negOffset = true;    // unknown time zone: RFC 2822 treats as '-0000'
                         }
                     }

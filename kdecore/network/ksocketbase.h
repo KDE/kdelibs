@@ -831,7 +831,7 @@ public:
    * would block), it will return NULL.
    *
    * Also note that descended classes will override this function
-   * to return specialised socket classes.
+   * to return specialized socket classes.
    */
   virtual KActiveSocketBase* accept() = 0;
 

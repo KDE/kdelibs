@@ -156,8 +156,8 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     //kDebug() << args.size() << endl;
 
     QVector<int> plinks; // ordinal numbers per placeholder number
-    QVector<QString> tsegs; // text segments per placeholder occurence
-    QVector<int> plords; // ordinal numbers per placeholder occurence
+    QVector<QString> tsegs; // text segments per placeholder occurrence
+    QVector<int> plords; // ordinal numbers per placeholder occurrence
     QVector<QString> plnames; // placeholder names per ordinal
 
     QVector<int> ords; // indicates which placeholders are present
@@ -241,7 +241,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         else
             plinks.append(0); // dummy
 
-    // Convert placeholder numbers per occurence to ordinal numbers.
+    // Convert placeholder numbers per occurrence to ordinal numbers.
     for (int i = 0; i < plords.size(); i++)
         plords[i] = plinks.at(plords[i]);
 

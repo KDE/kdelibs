@@ -671,7 +671,7 @@ KStandardDirs::findAllResources( const char *type,
     return findAllResources(type, filter, recursive, unique, relList);
 }
 
-// ####### KDE4: should this be removed, in favour of QDir::canonicalPath()?
+// ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
 QString
 KStandardDirs::realPath(const QString &dirname)
 {
@@ -690,7 +690,7 @@ KStandardDirs::realPath(const QString &dirname)
     return dirname;
 }
 
-// ####### KDE4: should this be removed, in favour of QDir::canonicalPath()?
+// ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
 QString
 KStandardDirs::realFilePath(const QString &filename)
 {

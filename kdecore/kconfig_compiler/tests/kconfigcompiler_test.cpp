@@ -43,7 +43,7 @@ static CompilerTestSet testCases =
 
 static CompilerTestSet willFailCases =
 {
-	// where is that QDir comming from?
+	// where is that QDir coming from?
 	//"test9.cpp", NULL
 	NULL
 };

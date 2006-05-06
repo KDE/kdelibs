@@ -76,7 +76,7 @@ public:
   virtual bool connect(const KResolverEntry& address);
 
   /**
-   * Overrides accepting. The return type is specialised.
+   * Overrides accepting. The return type is specialized.
    */
   virtual KSocksSocketDevice* accept();
 

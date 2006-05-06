@@ -123,7 +123,7 @@ class KDateTimeSpecPrivate;
  *   Gregorian calendar was adopted. The numbering of dates - even to some
  *   extent year numbering - varied from place to place. So any date/time
  *   system which attempted to represent dates as actually used in history
- *   would be too specialised to belong to the core KDE libraries. Date/time
+ *   would be too specialized to belong to the core KDE libraries. Date/time
  *   systems for scientific applications can be much simpler, but may differ
  *   from historical records.
  *
@@ -159,7 +159,7 @@ class KDECORE_EXPORT KDateTime
                      *   instead.
                      */
         LocalZone,  /**< a time in the current system time zone.
-                     *   When used to initialise a KDateTime or KDateTime::Spec
+                     *   When used to initialize a KDateTime or KDateTime::Spec
                      *   instance, this is simply a shorthand for calling the
                      *   setting method with a time zone parameter
                      *   KSystemTimeZones::local(). Note that if the system is

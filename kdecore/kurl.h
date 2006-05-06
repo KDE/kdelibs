@@ -356,7 +356,7 @@ public:
   enum CleanPathOption
   {
     /**
-     * if set, occurences of consecutive directory separators
+     * if set, occurrences of consecutive directory separators
      * (e.g. /foo//bar) are cleaned up as well.  (set by default)
      */
     SimplifyDirSeparators = 0x00,
@@ -375,7 +375,7 @@ public:
    * even though it is against the specification in RFC 2396.
    *
    * @param options use KeepDirSeparators if you don't want to remove consecutive 
-   *                occurences of directory separator
+   *                occurrences of directory separator
    */
   void cleanPath(const CleanPathOption& options = SimplifyDirSeparators);
 

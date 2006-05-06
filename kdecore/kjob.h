@@ -50,7 +50,7 @@
  *  KJob *job = someoperation( some parameters );
  *  if ( !job->exec() )
  *  {
- *      // An error occured
+ *      // An error occurred
  *  }
  *  else
  *  {

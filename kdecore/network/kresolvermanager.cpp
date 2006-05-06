@@ -69,7 +69,7 @@ using namespace KNetwork::Internal;
    If no threads are available, it will then decide whether to launch a thread
    or to queue for the future.
 
-   (This process is achieved by always queueing the new request, starting a
+   (This process is achieved by always queuing the new request, starting a
    new thread if necessary and then notifying of the availability of data
    to all worker threads).
 
@@ -152,7 +152,7 @@ public:
     if (mTime != 0)
       {
 	// don't call it the first time
-	// let it be initialised naturally
+	// let it be initialized naturally
 	kDebug(179) << "callResInit: calling res_init()" << endl;
 	res_init();
       }
@@ -255,7 +255,7 @@ KResolverThread::KResolverThread()
 // remember! This function runs in a separate thread!
 void KResolverThread::run()
 {
-  // initialisation
+  // initialization
   // enter the loop already
 
   //qDebug("KResolverThread(thread %u/%p): started", pid, (void*)QThread::currentThread());
@@ -482,7 +482,7 @@ bool KResolverManager::handleFinishedItem(RequestData* curr)
 					  
 {
   // for all items that aren't currently running, remove from the list
-  // this includes all finished or cancelled requests
+  // this includes all finished or canceled requests
 
   if (curr->worker->m_finished && curr->nRequests == 0)
     {

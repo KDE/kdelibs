@@ -86,7 +86,7 @@ public Q_SLOTS:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
-               The default is false; do not honour requests for attachments.
+               The default is false; do not honor requests for attachments.
    */
   static void invokeMailer( const KUrl &mailtoURL, const QByteArray& startup_id = "" ,  bool allowAttachments = false );
 

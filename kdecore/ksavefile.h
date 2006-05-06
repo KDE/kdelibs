@@ -51,7 +51,7 @@ public:
 
    /**
     * The destructor closes the file.
-    * You might want to call close() explicitely though, to test whether it worked.
+    * You might want to call close() explicitly though, to test whether it worked.
     **/
    ~KSaveFile();
 

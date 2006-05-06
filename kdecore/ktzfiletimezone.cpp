@@ -467,7 +467,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
     char *abbrs = array.data();
     if (abbrs[abbrCharCount - 1] != 0)
     {
-        // These abbrevations are corrupt!
+        // These abbreviations are corrupt!
         kError() << "timezone abbreviations not null terminated: " << abbrs[abbrCharCount - 1] << endl;
         delete data;
         return 0;

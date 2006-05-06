@@ -150,7 +150,7 @@ protected:
     * @param directoryPrefix to use when creating temp directory
     *       (the rest is generated randomly)
     * @param mode directory permissions
-    * @return true upon sucess
+    * @return true upon success
     */
    bool create(const QString &directoryPrefix,  int mode);
 

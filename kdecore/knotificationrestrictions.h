@@ -56,7 +56,7 @@ class KDECORE_EXPORT KNotificationRestrictions : public QObject
          * @value MessagingPopups (NOT IMPLEMENTED YET) causes instant messaging
          *        and email notifications to not appear
          * @value Notificiations (NOT IMPLEMENTED YET) causes non-critical
-         *        desktop messages to be supressed
+         *        desktop messages to be suppressed
          * @value CriticalNotifications (NOT IMPLEMENTED YET) causes all desktop
          *        notifications, including critical ones such as battery low
          *        warnings to be surpressed

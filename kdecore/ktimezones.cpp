@@ -716,7 +716,7 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
 {
     const KTimeZone *local = 0;
 
-    instance();    // initialise data
+    instance();    // initialize data
 
     // SOLUTION 1: DEFINITIVE.
     // First try the simplest solution of checking for well-formed TZ setting.
@@ -1180,7 +1180,7 @@ KTimeZoneData* KSystemTimeZoneSource::parse(const KTimeZone *zone) const
     QByteArray tz = zone->name().toUtf8();
     KSystemTimeZoneSourcePrivate::setTZ(tz);   // make this time zone the current local time zone
 
-    tzset();    // initialise the tzname array
+    tzset();    // initialize the tzname array
     KSystemTimeZoneData* data = new KSystemTimeZoneData;
     data->d->TZ = tz;
     data->d->abbreviations.append(tzname[0]);

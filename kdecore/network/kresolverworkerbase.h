@@ -176,7 +176,7 @@ public:
 protected:
   // like a QThread
   /**
-   * This is the function that should be overriden in derived classes.
+   * This is the function that should be overridden in derived classes.
    * 
    * Derived classes will do their blocking job in this function and return
    * either success or failure to work (not the lookup). That is, whether the
@@ -239,7 +239,7 @@ protected:
    * \b Important: do use KResolver's own enqueueing functions (i.e., @ref KResolver::start). 
    * Instead, use this function.
    *
-   * @returns true on successful queueing or false if a problem ocurred
+   * @returns true on successful queuing or false if a problem ocurred
    */
   bool enqueue(KResolver* other);
 

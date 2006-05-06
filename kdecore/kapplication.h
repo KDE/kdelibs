@@ -117,7 +117,7 @@ public:
    * valid and already opened.
    *
    * @param visual A pointer to the X11 visual that should be used by the
-   * appliction. Note that only TrueColor visuals are supported on depths
+   * application. Note that only TrueColor visuals are supported on depths
    * greater than 8 bpp. If this parameter is NULL, the default visual will
    * be used instead.
    *

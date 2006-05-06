@@ -350,7 +350,7 @@ public:
    *
    * If this function cannot accept a new connection, it will return NULL.
    * The specific object class returned by this function may vary according
-   * to the implementation: derived classes may return specialised objects
+   * to the implementation: derived classes may return specialized objects
    * descended from KStreamSocket.
    *
    * @sa KBufferedSocket

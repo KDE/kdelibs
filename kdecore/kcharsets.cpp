@@ -555,9 +555,9 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
 
 #ifdef __GNUC__
-#warning is it still usefull with Qt4 ?
+#warning is it still useful with Qt4 ?
 #endif
-	//dont forget to remove the #if 0 on a few structs at the top also if you reenable that ;)  (search for 852 )
+	//don't forget to remove the #if 0 on a few structs at the top also if you reenable that ;)  (search for 852 )
 	//from what I understood, one needs to create a QTextCodecPlugin in order to be able to support a new Codec, but I do not 
 	//know how to convert a charmap to a QTextCodec and the real big question is whether we need that at all ...  (mikmak)
         // Yes, it is useful (for examples EBCDIC in Kate or codepages for KOffice filters from/to MS formats) (goutte)

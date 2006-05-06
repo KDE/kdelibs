@@ -450,7 +450,7 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
 {
   // This list might contain
   // 1) some empty strings that we have to eliminate
-  // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrance of a language in order
+  // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrence of a language in order
   //    to preserve the order of precenence of the user
   // 3) languages into which the application is not translated. For those languages we should not even load kdelibs.mo or kio.po.
   //    these langugage have to be dropped. Otherwise we get strange side effects, e.g. with Hebrew:
@@ -549,12 +549,12 @@ void KLocale::insertCatalog( const QString & catalog )
     d->catalogNames.insert( d->catalogNames.size() - d->numberOfSysCatalogs,
                             catalog );
   }
-  d->updateCatalogs( ); // evaluate the changed list and generate the neccessary KCatalog objects
+  d->updateCatalogs( ); // evaluate the changed list and generate the necessary KCatalog objects
 }
 
 void KLocalePrivate::updateCatalogs( )
 {
-  // some changes have occured. Maybe we have learned or forgotten some languages.
+  // some changes have occurred. Maybe we have learned or forgotten some languages.
   // Maybe the language precedence has changed.
   // Maybe we have learned or forgotten some catalog names.
 

@@ -389,7 +389,7 @@ public:
    * @li UnsupportedSocketType: The requested socket type is not supported.
    * @li UnknownError: An unknown, unexpected error occurred.
    * @li SystemError: A system error occurred. See @ref systemError.
-   * @li Canceled: This request was cancelled by the user.
+   * @li Canceled: This request was canceled by the user.
    */
   enum ErrorCodes
     {
@@ -421,7 +421,7 @@ public:
    * @li InProgress: resolution is in progress.
    * @li PostProcessing: resolution is in progress.
    * @li Success: resolution is done; you can retrieve the results.
-   * @li Canceled: request cancelled by the user.
+   * @li Canceled: request canceled by the user.
    * @li Failed: resolution is done, but failed.
    *
    * Note: the status Canceled and the error code Canceled are the same.
@@ -467,7 +467,7 @@ public:
    *
    * When this object is deleted, it'll destroy all associated
    * resources. If the resolution is still in progress, it will be
-   * cancelled and the signal will \b not be emitted.
+   * canceled and the signal will \b not be emitted.
    */
   virtual ~KResolver();
 

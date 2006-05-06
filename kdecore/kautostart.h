@@ -155,7 +155,7 @@ class KDECORE_EXPORT KAutostart : public QObject
          */
         QString commandToCheck() const;
         /**
-         * Sets the executable to check for existance when autostarting this
+         * Sets the executable to check for existence when autostarting this
          * service
          */
         void setCommandToCheck(const QString& exec);
@@ -204,7 +204,7 @@ class KDECORE_EXPORT KAutostart : public QObject
         void removeFromAllowedEnvironments(const QString& environment);
 
         /**
-         * Returns the list of environments this service is explicity not
+         * Returns the list of environments this service is explicitly not
          * allowed to start in. This does not take other autostart conditions
          * such as into account. If the same environment is also marked as
          * allowed, it will still be excluded.

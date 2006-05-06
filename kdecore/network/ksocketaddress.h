@@ -724,7 +724,7 @@ public:
   /**
    * Sets the IP address to the given raw address.
    *
-   * This call will preserve port numbers accross IP versions, but will lose
+   * This call will preserve port numbers across IP versions, but will lose
    * IPv6 specific data if the address is set to IPv4.
    *
    * @param addr	the address to set to
