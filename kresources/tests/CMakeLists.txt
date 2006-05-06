@@ -17,6 +17,18 @@ kde4_add_executable(testresources RUN_UNINSTALLED ${testresources_SRCS})
 
 target_link_libraries(testresources  ${KDE4_KDECORE_LIBS} kresources)
 
+########### next target ###############
+
+set(idmappertest_SRCS idmappertest.cpp )
+
+kde4_automoc(${idmappertest_SRCS})
+
+kde4_add_executable(idmappertest RUN_UNINSTALLED ${idmappertest_SRCS})
+
+target_link_libraries(idmappertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kresources)
+
+add_test(kresources-idmappertest ${EXECUTABLE_OUTPUT_PATH}/idmappertest)
+
 endif(KDE4_BUILD_TESTS)
 
 kde4_footer()
