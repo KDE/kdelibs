@@ -2,6 +2,8 @@ kde4_header()
 
 project(kresources)
 
+add_subdirectory( tests )
+
 include_directories( ${KDE4_KIO_INCLUDES} )
 
 
@@ -47,20 +49,6 @@ target_link_libraries(kcm_kresources  ${KDE4_KDECORE_LIBS} kresources )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kcm_kresources )
 install_targets(${PLUGIN_INSTALL_DIR} kcm_kresources )
-
-########### next target ###############
-
-if(KDE4_BUILD_TESTS)
-
-   set(testresources_SRCS testresources.cpp )
-   
-   kde4_automoc(${testresources_SRCS})
-   
-   kde4_add_executable(testresources ${testresources_SRCS})
-   
-   target_link_libraries(testresources  ${KDE4_KDECORE_LIBS} kresources)
-   
-endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 
