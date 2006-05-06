@@ -164,7 +164,7 @@ public:
    * autodetected from the challenge. Add_LM adds LMv1 or LMv2 responses additional to the 
    * NTLM response.
    *
-   * @return true if auth filled with the Type 3 message, false if an error occured 
+   * @return true if auth filled with the Type 3 message, false if an error occurred 
    * (challenge data invalid, NTLMv2 authentication forced, but the challenge data says
    * no NTLMv2 supported, or no NTLM supported at all, and Add_LM not specified).
    */

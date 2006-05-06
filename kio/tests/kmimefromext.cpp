@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   QString fileName = args->arg( 0 );
 
   // The "true" here means only the filename will be looked at.
-  // "Mime-magic" will not interfer. The file doesn't exist.
+  // "Mime-magic" will not interfere. The file doesn't exist.
   // TODO: a cmd line parameter for controlling this bool ;)
   KMimeType::Ptr mime = KMimeType::findByPath( fileName, 0, true );
   if ( mime && mime->name() != KMimeType::defaultMimeType() )

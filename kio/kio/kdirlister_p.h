@@ -210,7 +210,7 @@ private:
   bool checkUpdate( const QString& _url );
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
-  // and removed from the cache including all the childs.
+  // and removed from the cache including all the children.
   void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList & );
   void processPendingUpdates();
   // common for slotRedirection and FileRenamed

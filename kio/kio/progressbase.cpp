@@ -43,7 +43,7 @@ void ProgressBase::setJob( KIO::Job *job )
   connect( job, SIGNAL( result( KJob* ) ),
 	   SLOT( slotFinished( KJob* ) ) );
 
-  // After all cancelled() is supposed to be unused... remove?
+  // After all canceled() is supposed to be unused... remove?
   //connect( job, SIGNAL( canceled( KIO::Job* ) ),
   //	   SLOT( slotFinished( KIO::Job* ) ) );
 

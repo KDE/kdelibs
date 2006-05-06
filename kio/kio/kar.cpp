@@ -144,7 +144,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
 
         KArchiveEntry* entry;
         entry = new KArchiveFile(this, name, mode, date, /*uid*/ 0, /*gid*/ 0, 0, dev->pos(), size);
-        rootDir()->addEntry(entry); // Ar files don't support directorys, so everything in root
+        rootDir()->addEntry(entry); // Ar files don't support directories, so everything in root
 
         dev->seek( dev->pos() + size ); // Skip contents
     }

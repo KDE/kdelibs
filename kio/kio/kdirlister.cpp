@@ -1080,7 +1080,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
   printDebug();
 #endif
 
-  // I don't think there can be dirItems that are childs of oldUrl.
+  // I don't think there can be dirItems that are children of oldUrl.
   // Am I wrong here? And even if so, we don't need to delete them, right?
   // DF: redirection happens before listDir emits any item. Makes little sense otherwise.
 
@@ -1686,7 +1686,7 @@ void KDirListerCache::deleteUnmarkedItems( Q3PtrList<KDirLister> *listers, KFile
 void KDirListerCache::deleteDir( const KUrl& dirUrl )
 {
   //kDebug() << k_funcinfo << dirUrl.prettyURL() << endl;
-  // unregister and remove the childs of the deleted item.
+  // unregister and remove the children of the deleted item.
   // Idea: tell all the KDirListers that they should forget the dir
   //       and then remove it from the cache.
 

@@ -371,7 +371,7 @@ bool KACL::KACLPrivate::setNamedUserOrGroupPermissions( const QString& name, uns
     if ( allIsWell && createdNewEntry ) {
         // 23.1.1 of 1003.1e states that as soon as there is a named user or
         // named group entry, there needs to be a mask entry as well, so add
-        // one, if the user hasn't explicitely set one.
+        // one, if the user hasn't explicitly set one.
         if ( entryForTag( newACL, ACL_MASK ) == 0 ) {
             acl_calc_mask( &newACL );
         }
@@ -470,7 +470,7 @@ bool KACL::KACLPrivate::setAllUsersOrGroups( const QList< QPair<QString, unsigne
     if ( allIsWell && atLeastOneUserOrGroup ) {
         // 23.1.1 of 1003.1e states that as soon as there is a named user or
         // named group entry, there needs to be a mask entry as well, so add
-        // one, if the user hasn't explicitely set one.
+        // one, if the user hasn't explicitly set one.
         if ( entryForTag( newACL, ACL_MASK ) == 0 ) {
             acl_calc_mask( &newACL );
         }

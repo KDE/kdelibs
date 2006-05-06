@@ -1516,7 +1516,7 @@ namespace KIO {
          * @param from the source URL
          * @param to the destination URL
          * @param directory indicates whether a file or directory was successfully copied/moved.
-	 *                  true for a directoy, false for file
+	 *                  true for a directory, false for file
          * @param renamed indicates that the destination URL was created using a
          * rename operation (i.e. fast directory moving). true if is has been renamed
          */

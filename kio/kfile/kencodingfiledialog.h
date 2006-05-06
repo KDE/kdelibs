@@ -31,7 +31,7 @@ struct KEncodingFileDialogPrivate;
  * select files with support for choosing encoding
  *
  *
- * The dialog has been designed to allow applications to customise it
+ * The dialog has been designed to allow applications to customize it
  * by subclassing. It uses geometry management to ensure that subclasses
  * can easily add children that will be incorporated into the layout.
  */

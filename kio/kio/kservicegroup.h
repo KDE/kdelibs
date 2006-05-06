@@ -79,7 +79,7 @@ public:
   KServiceGroup( const QString & name );
 
   /**
-   * Construct a service and take all informations from a config file
+   * Construct a service and take all information from a config file
    * @param _fullpath full path to the config file
    * @param _relpath relative path to the config file
    */
@@ -178,7 +178,7 @@ public:
 
   /**
    * Returns a list of untranslated generic names that should be
-   * be supressed when showing this group.
+   * be suppressed when showing this group.
    * E.g. The group "Games/Arcade" might want to suppress the generic name
    * "Arcade Game" since it's redundant in this particular context.
    */

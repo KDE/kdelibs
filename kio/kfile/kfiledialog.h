@@ -62,7 +62,7 @@ struct KFileDialogPrivate;
  * getOpenFileName(), getSaveFileName(), getOpenURL()
  * or for multiple files getOpenFileNames() or getOpenURLs().
  *
- * The dialog has been designed to allow applications to customise it
+ * The dialog has been designed to allow applications to customize it
  * by subclassing. It uses geometry management to ensure that subclasses
  * can easily add children that will be incorporated into the layout.
  *
@@ -698,7 +698,7 @@ public:
 
     /**
      * This method implements the logic to determine the user's default directory
-     * to be listed. E.g. the documents direcory, home directory or a recently
+     * to be listed. E.g. the documents directory, home directory or a recently
      * used directory.
      * @param startDir A url/directory, to be used. May use the ':' and '::' syntax
      *        as documented in the KFileDialog() constructor.

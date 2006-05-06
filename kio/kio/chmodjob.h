@@ -105,7 +105,7 @@ namespace KIO {
      * @param newOwner If non-empty, the new owner for the files
      * @param newGroup If non-empty, the new group for the files
      * @param recursive whether to open directories recursively
-     * @param showProgressInfo true to show progess information
+     * @param showProgressInfo true to show progress information
      * @return The job handling the operation.
      */
     KIO_EXPORT ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,

@@ -75,7 +75,7 @@ protected:
      * well as handling data over SOCKSified connections.
      *
      * @param data storage for the info read from server
-     * @param len lenght of the info to read from the server
+     * @param len length of the info to read from the server
      *
      * @return the actual size of data that was obtained
      */

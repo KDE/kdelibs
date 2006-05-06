@@ -960,7 +960,7 @@ public:
      * You can test for it with the isEmpty() method.
      *
      *  @param path The file name. This must be the path to a local file.
-     *  @param mimeType The name of the file's mimetype. If ommited, the
+     *  @param mimeType The name of the file's mimetype. If omitted, the
      *         mimetype is autodetected
      *  @param what one or more of the What enum values. It gives some
      *              hint to the plugin what information is desired. The plugin

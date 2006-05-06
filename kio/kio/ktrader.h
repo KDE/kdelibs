@@ -180,7 +180,7 @@ public:
      *
      *  You will need
      * to use this to access the KTrader functionality since the
-     * constuctors are protected.
+     * constructors are protected.
      *
      * @return Static KTrader instance
      */

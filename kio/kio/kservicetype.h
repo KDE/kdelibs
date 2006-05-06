@@ -62,14 +62,14 @@ public:
                 const QString& _icon, const QString& _comment);
 
   /**
-   * Construct a service type and take all informations from a config file.
+   * Construct a service type and take all information from a config file.
    * @param _fullpath path of the desktop file, set to "" if calling from
    *                  a inherited constructor.
    */
   explicit KServiceType( const QString & _fullpath );
 
   /**
-   * Construct a service type and take all informations from a deskop file.
+   * Construct a service type and take all information from a desktop file.
    * @param config the configuration file
    */
   explicit KServiceType( KDesktopFile *config);

@@ -74,7 +74,7 @@ public:
      * Closes the archive.
      * Inherited classes might want to reimplement closeArchive instead.
      *
-     * @return true if close succeded without problems
+     * @return true if close succeeded without problems
      * @see open
      */
     virtual bool close();

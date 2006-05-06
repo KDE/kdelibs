@@ -467,7 +467,7 @@ public:
   static List allServices();
 
   /**
-   * Returns all services that require initialisation.
+   * Returns all services that require initialization.
    *
    * Only needed by "kcminit"
    * @return the list of all services that need to be initialized
