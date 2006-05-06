@@ -486,8 +486,8 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
     dialog->setObjectName( "questionYesNoCancel" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
-    dialog->setButtonText( KDialog::Yes, buttonYes.text() );
-    dialog->setButtonText( KDialog::No, buttonNo.text() );
+    dialog->setButtonGuiItem( KDialog::Yes, buttonYes );
+    dialog->setButtonGuiItem( KDialog::No, buttonNo );
     dialog->setDefaultButton( KDialog::Yes );
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
