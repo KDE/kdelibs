@@ -23,7 +23,7 @@ servicesdir = $(kde_servicesdir)/kded
 services_DATA = proxyscout.desktop
 
 proxyscoutdatadir = $(kde_datadir)/proxyscout
-proxyscoutdata_DATA = eventsrc
+proxyscoutdata_DATA = proxyscout.notifyrc
 
 install-exec-local:
 	@(chown root $(DESTDIR)$(bindir)/kpac_dhcp_helper && chmod 4755 $(DESTDIR)$(bindir)/kpac_dhcp_helper) || echo "Please make kpac_dhcp_helper setuid root"

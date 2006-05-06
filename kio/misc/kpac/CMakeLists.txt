@@ -48,7 +48,7 @@ install_targets(/bin kpac_dhcp_helper )
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/proxyscout FILES eventsrc )
+install_files( ${DATA_INSTALL_DIR}/proxyscout FILES proxyscout.notifyrc )
 install_files( ${SERVICES_INSTALL_DIR}/kded FILES proxyscout.desktop )
 
 kde4_footer()

@@ -24,7 +24,7 @@
 #include <dcopclient.h>
 #include <kapplication.h>
 #include <klocale.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kprotocolmanager.h>
 
 #include "proxyscout.moc"
@@ -112,7 +112,6 @@ namespace KPAC
 
     void ProxyScout::downloadResult( bool success )
     {
-        KNotifyClient::Instance notifyInstance( m_instance );
         if ( success )
             try
             {
@@ -120,12 +119,19 @@ namespace KPAC
             }
             catch ( const Script::Error& e )
             {
-                KNotifyClient::event( "script-error", i18n(
-                    "The proxy configuration script is invalid:\n%1" ,
-                      e.message() ) );
+                KNotification *notify= new KNotification ( "script-error" );
+                notify->setText( i18n("The proxy configuration script is invalid:\n%1" , e.message() ) );
+                notify->setInstance( m_instance );
+                notify->sendEvent();
                 success = false;
             }
-        else KNotifyClient::event( "download-error", m_downloader->error() );
+        else 
+        {
+		KNotification *notify = new KNotification ("download-error");
+		notify->setText( m_downloader->error() );
+		notify->setInstance( m_instance);
+		notify->sendEvent();
+        }
 
         for ( RequestQueue::ConstIterator it = m_requestQueue.begin();
               it != m_requestQueue.end(); ++it )
@@ -179,10 +185,10 @@ namespace KPAC
         }
         catch ( const Script::Error& e )
         {
-            KNotifyClient::Instance notifyInstance( m_instance );
-            KNotifyClient::event( "evaluation-error", i18n(
-                "The proxy configuration script returned an error:\n%1" ,
-                      e.message() ) );
+		KNotification *n=new KNotification( "evaluation-error" );
+		n->setText( i18n( "The proxy configuration script returned an error:\n%1" , e.message() ) );
+		n->setInstance(m_instance);
+		n->sendEvent();
         }
         return "DIRECT";
     }
