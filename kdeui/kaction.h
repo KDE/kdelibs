@@ -192,7 +192,7 @@ class KDEUI_EXPORT KAction : public QAction
 
 public:
     /**
-     * A simple enumeration to define the type of shortcut, whether default or customised.
+     * A simple enumeration to define the type of shortcut, whether default or customized.
      * Used primarily so setShortcut() and setGlobalShortcut() can be made to also set the
      * default shortcut by default.
      */
@@ -634,7 +634,7 @@ protected Q_SLOTS:
 private:
     // Core initialization, including Kiosk authorization checking
     void initPrivate(const QString& name);
-    // Compatability initialization functions here only
+    // Compatibility initialization functions here only
     void initPrivate( const KShortcut& cut, const QObject* receiver, const char* slot, const QString& name );
 
     // You're not supposed to change the action name throughout its life - these methods are here to discourage you

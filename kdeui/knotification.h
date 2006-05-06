@@ -65,7 +65,7 @@ class KInstance;
 		   IconName=Filename
 		   Comment=Freindly Name of app
  * </pre>
- *   The icon filename is just the name, without extention,  it's found with the KIconLoader
+ *   The icon filename is just the name, without extension,  it's found with the KIconLoader
  * 
  * \subsection context Context information
  * 
@@ -108,8 +108,8 @@ class KInstance;
  * 
  *  This is only an implementation detail, for your information.
  * 
- * On the config file, there is two parts:  the events configuration, and the context informations
- * \subsection context Context informations
+ * On the config file, there is two parts:  the events configuration, and the context information
+ * \subsection context Context information
  *  This is only hints for the configuration dialog. It contains both the internal id of the context, and the user visible string.
  *  <pre>
 		   [Context/group]
@@ -334,7 +334,7 @@ public:
 			  
    Q_SIGNALS:
 	/**
-	 * Emit only when the default activation has occured
+	 * Emit only when the default activation has occurred
 	 */
 	void activated();
 	/**

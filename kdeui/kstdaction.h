@@ -550,7 +550,7 @@ namespace KStdAction
 	/**
 	* Display the configure key bindings dialog.
 	*
-	*  Note that you might be able to use the pre-built KXMLGUIFactory's fuction:
+	*  Note that you might be able to use the pre-built KXMLGUIFactory's function:
 	*  KStdAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());
         */
 	KDEUI_EXPORT KAction *keyBindings(const QObject *recvr, const char *slot,

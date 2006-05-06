@@ -310,7 +310,7 @@ public:
     void setCompletionBox( KCompletionBox *box );
 
     /*
-     * This makes the line edit display a greyed-out hinting text as long as
+     * This makes the line edit display a grayed-out hinting text as long as
      * the user didn't enter any text. It is often used as indication about
      * the purpose of the line edit.
      */

@@ -30,7 +30,7 @@
  *
  * It works by watching for child creation events and if the new objects are
  * widgets, it attachs the whatsthis template to them (unless there already is
- * What's This defined). This template will be overriden by any custom What's
+ * What's This defined). This template will be overridden by any custom What's
  * This info.
  *
  * @see QWhatsThis

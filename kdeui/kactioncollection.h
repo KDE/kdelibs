@@ -72,7 +72,7 @@ public:
   virtual ~KActionCollection();
 
   /**
-   * Access the list of all action collections in existance for this app
+   * Access the list of all action collections in existence for this app
    */
   static const QList<KActionCollection*>& allCollections();
 

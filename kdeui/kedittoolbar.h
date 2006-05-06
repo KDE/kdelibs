@@ -218,7 +218,7 @@ protected Q_SLOTS:
 
 Q_SIGNALS:
   /**
-   * Signal emitted when 'apply' or 'ok' is clicked or toolbars were resetted.
+   * Signal emitted when 'apply' or 'ok' is clicked or toolbars were reset.
    * Connect to it, to plug action lists and to call applyMainWindowSettings
    * (see sample code in this class's documentation)
    */

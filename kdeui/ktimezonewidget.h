@@ -86,7 +86,7 @@ public:
     /**
      * Select/deselect the named timezone.
      *
-     * @param zone The timezone name to be selected. Ignored if not recognised!
+     * @param zone The timezone name to be selected. Ignored if not recognized!
      * @param selected The new selection state.
      */
     void setSelected(const QString &zone, bool selected);

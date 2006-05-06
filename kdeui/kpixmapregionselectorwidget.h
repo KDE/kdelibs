@@ -119,7 +119,7 @@ public:
     * Rotates the image as specified by the @p direction parameter, also tries
     * to rotate the selected region so that it doesn't change, as long as the
     * forced aspect ratio setting is respected, in other case, the selected region
-    * is resetted.
+    * is reset.
     */
    void rotate(KImageEffect::RotateDirection direction);
 

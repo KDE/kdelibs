@@ -178,7 +178,7 @@ public:
      * should turn into "Hide <foo>" when activated.
      *
      * If hasIcon(), the icon is kept for the 'checked state', unless
-     * @p checkedItem defines an icon explicitely. Same thing for tooltip and whatsthis.
+     * @p checkedItem defines an icon explicitly. Same thing for tooltip and whatsthis.
      */
     void setCheckedState( const KGuiItem& checkedItem );
 

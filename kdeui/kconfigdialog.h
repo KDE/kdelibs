@@ -101,7 +101,7 @@ public:
    *
    * @param dialogButtons - Buttons that should show up on the dialog.
    *
-   * @param defaultButton default button that is choosen by hitting the enter key.
+   * @param defaultButton default button that is chosen by hitting the enter key.
    *
    * @param modal - Whether the dialog should be modal. To prevent more than one
    * non-modal settings dialog from showing the static function showDialog() can be

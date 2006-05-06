@@ -166,7 +166,7 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
     popup->addAction(action);
 
 /*
-   I wonder if it would be appropiate to have here an "Open with..." option to
+   I wonder if it would be appropriate to have here an "Open with..." option to
    edit the image (antlarr)
 */
     return popup;

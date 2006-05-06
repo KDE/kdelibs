@@ -413,7 +413,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     *
 	* @note the group must be set before calling
 	*
-    * @param config The object to read from. That is recommanded to use a KConfigGroup
+    * @param config The object to read from. That is recommended to use a KConfigGroup
     * @param options passed to KConfigBase::writeEntry
     */
    void saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options=0 ) const;

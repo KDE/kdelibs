@@ -925,7 +925,7 @@ public:
      * @param buttonNo  The text for the second button.
      *                  The default is i18n("&No").
      * @param dontShowAskAgainName If provided, a checkbox is added with which
-     *                further questions/informations can be turned off. If turned off
+     *                further questions/information can be turned off. If turned off
      *                all questions will be automatically answered with the
      *                last answer (either Yes or No), if the message box needs an answer.
      *                The string is used to lookup and store the setting

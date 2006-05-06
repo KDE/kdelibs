@@ -93,7 +93,7 @@ public:
   void insertItem( const QString &text, const QString & id,
                    const QString &submenu = QString(), int index = -1 );
   /**
-   * Inserts a seperator item into the combo box. A negative index will append the item.
+   * Inserts a seperetor item into the combo box. A negative index will append the item.
    *
    * @param submenu The place where the item should be placed.
    * @param index The visual position in the submenu.

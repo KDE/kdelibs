@@ -351,7 +351,7 @@ bool initializeMods()
 
                 // This used to be only XKeycodeToKeysym( ... , 0 ), but that fails with XFree4.3.99
                 // and X.org R6.7 , where for some reason only ( ... , 1 ) works. I have absolutely no
-                // idea what the problem is, but searching all posibilities until something valid is
+                // idea what the problem is, but searching all possibilities until something valid is
                 // found fixes the problem.
                 for( int j = 0; j < xmk->max_keypermod && keySymX == NoSymbol; ++j )
                     for( int k = 0; k < keysyms_per_keycode && keySymX == NoSymbol; ++k )

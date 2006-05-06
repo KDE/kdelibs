@@ -279,7 +279,7 @@ static void sendFocusMessage(Window window, int type, int mode, int detail)
 //        application is active and has the Qt focus.  The Qt library in the
 //        embedded application is unaware of the focus status of the QXEmbed
 //        widget.  We must make sure it does the right thing regarding the
-//        sending of focus events and the visual appearance of the focussed 
+//        sending of focus events and the visual appearance of the focused 
 //        widgets.  When the QXEmbed widget looses the Qt focus, we clear the 
 //        focus in the embedded client (L1570, L0688). Conversely, when
 //        the QXEmbed widget gains the Qt focus, we restore the Qt focus 
@@ -1268,7 +1268,7 @@ QSize QXEmbed::minimumSizeHint() const
     return QSize( minw, minh );
 }
 
-// L2600: Tells what shoud be done with the embedded window when
+// L2600: Tells what should be done with the embedded window when
 //        the embedding window is destroyed. 
 void QXEmbed::setAutoDelete( bool b)
 {

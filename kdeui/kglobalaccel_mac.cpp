@@ -64,7 +64,7 @@ KGlobalAccelImpl::KGlobalAccelImpl(KGlobalAccel* owner)
 {
     m_eventType[0].eventClass = kEventClassKeyboard;
     m_eventType[0].eventKind = kEventHotKeyPressed; 
-    m_eventType[1].eventClass = kEventClassKeyboard; // only usefull for testing, is not used because count passed in call to InstallEventHandler is 1
+    m_eventType[1].eventClass = kEventClassKeyboard; // only useful for testing, is not used because count passed in call to InstallEventHandler is 1
     m_eventType[1].eventKind = kEventRawKeyDown;
     refs = new QMap<int, QList<EventHotKeyRef> >();
     

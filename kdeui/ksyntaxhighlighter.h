@@ -138,8 +138,8 @@ public:
      * @short En-/Disable automatic (de)activation in case of too many errors.
      *
      * If @p automatic is true then spell checking will be deactivated if
-     * too many words were mispelled and spell checking will be activated
-     * again if the amount of mispelled words drop below a certain threshold.
+     * too many words were misspelled and spell checking will be activated
+     * again if the amount of misspelled words drop below a certain threshold.
      *
      * @param automatic if true, then automatic (de)activation is enabled
      *

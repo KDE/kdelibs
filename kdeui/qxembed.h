@@ -164,7 +164,7 @@ public:
     void sendDelete( void );
     
     /**
-     * Selects what shoud be done with the embedded window when the embedding
+     * Selects what should be done with the embedded window when the embedding
      * window is destroyed.  When the argument is true, the embedded window is
      * kept alive, is hidden, and receives a WM_DELETE_WINDOW message using
      * sendDelete().  This is the default.  Otherwise, the destruction of the
@@ -175,7 +175,7 @@ public:
     void setAutoDelete( bool );
 
     /**
-     * Returns the value of flag indicating what shoud be done with the
+     * Returns the value of flag indicating what should be done with the
      * embedded window when the embedding window is destroyed.
      * 
      * @see setAutoDelete()
