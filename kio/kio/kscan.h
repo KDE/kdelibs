@@ -99,7 +99,6 @@ protected:
      * @param buttonMask a ORed mask of all buttons (see
      * KDialogBase::ButtonCode)
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
      * @see KDialogBase
      */
@@ -186,7 +185,6 @@ public:
      * Your library should reimplement this method to return your KScanDialog
      * derived dialog.
      * @param parent the QWidget's parent, or 0
-     * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
      */
     virtual KScanDialog * createDialog( QWidget *parent=0 ) = 0;

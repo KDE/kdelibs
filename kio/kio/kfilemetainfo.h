@@ -393,7 +393,6 @@ public:
      * @param group the group of the item
      * @param key the key of the item
      * @param parent the parent of the QObject, or 0 for a parent-less object
-     * @param name the name of the QObject, can be 0
      * @return the validator. You are responsible for deleting it. 0 if
      *         creation failed
      */
@@ -1448,7 +1447,6 @@ public:
      * @param group the group name of the validator item
      * @param key the key name of the validator item
      * @param parent the QObject parent, can be @c 0
-     * @param name the name of the QObject, can be @c 0
      **/
     virtual QValidator* createValidator( const QString& mimeType,
                                          const QString& group,
