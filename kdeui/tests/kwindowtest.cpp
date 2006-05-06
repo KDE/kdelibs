@@ -12,6 +12,7 @@
 #include <kactionclasses.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
+#include <kstdaction.h>
 
 /*
  Ok this is a constructor of our top widget. It inherits KMainWindow.
@@ -74,6 +75,10 @@ testWindow::testWindow (QWidget *parent)
     helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
     QAction* helpAction = menuBar->addAction( "&Help" );
     helpAction->setMenu(helpMenu->menu());
+
+    KAction* configtoolbars = KStdAction::configureToolbars( this, SLOT( configureToolbars() ),
+                                actionCollection() );
+    fileMenu->addAction(configtoolbars);
 
     /**************************************************/
     /*Now, we setup statusbar; order is not important. */
