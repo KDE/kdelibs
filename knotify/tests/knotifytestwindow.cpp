@@ -58,7 +58,7 @@ void KNotifyTestWindow::slotSendMessageEvent( )
         KNotification *n = new KNotification( "message", this );
         n->setText(i18n( "new message : %1" ,  view.c_text->text() ));
         n->setContexts(contexts);
-        n->setActions( i18n("Read") );
+        n->setActions( QStringList( i18n("Read") ) );
 	connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
         
         n->sendEvent();
