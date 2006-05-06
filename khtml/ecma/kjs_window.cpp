@@ -1336,7 +1336,9 @@ Value Window::openWindow(ExecState *exec, const List& args)
     return Undefined();
   KHTMLView *widget = part->view();
   Value v = args[0];
-  QString str = v.toString(exec).qstring();
+  QString str;
+  if (v.isValid() && !v.isA(UndefinedType))
+    str = v.toString(exec).qstring();
 
   // prepare arguments
   KURL url;
@@ -1557,8 +1559,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
   KHTMLView *widget = part->view();
   Value v = args[0];
-  UString s = v.toString(exec);
-  str = s.qstring();
+  UString s;
+  if (v.isValid() && !v.isA(UndefinedType)) {
+    s = v.toString(exec);
+    str = s.qstring();
+  }
 
   QString caption;
   if (part && !part->url().host().isEmpty())
