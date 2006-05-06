@@ -340,7 +340,7 @@ const char *KEditToolbar::s_defaultToolbar = 0L;
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
                            bool global, QWidget* parent)
-  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent),
+  : KDialog(parent),
     m_widget(new KEditToolbarWidget(QLatin1String(s_defaultToolbar), collection, file, global, this))
 {
     init();
@@ -352,7 +352,7 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
 KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *collection,
                            const QString& file, bool global,
                            QWidget* parent)
-  : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent ),
+  : KDialog(parent),
     m_widget(new KEditToolbarWidget(defaultToolbar, collection, file, global, this))
 {
     init();
@@ -362,7 +362,7 @@ KEditToolbar::KEditToolbar(const QString& defaultToolbar, KActionCollection *col
 }
 
 KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent),
+    : KDialog(parent),
       m_widget(new KEditToolbarWidget(QLatin1String(s_defaultToolbar), factory, this))
 {
     init();
@@ -371,7 +371,7 @@ KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent)
 
 KEditToolbar::KEditToolbar(const QString& defaultToolbar,KXMLGUIFactory* factory,
                            QWidget* parent)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Default|Ok|Apply|Cancel, Ok, parent),
+    : KDialog(parent),
       m_widget(new KEditToolbarWidget(defaultToolbar, factory, this))
 {
     init();
@@ -383,6 +383,10 @@ void KEditToolbar::init()
     d = new KEditToolbarPrivate();
     d->m_accept = false;
     d->m_factory = 0;
+
+    setCaption(i18n("Configure Toolbars"));
+    setButtonMask(Default|Ok|Apply|Cancel);
+    setDefaultButton(Ok);
 
     setMainWidget(m_widget);
 
@@ -1362,7 +1366,7 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
 }
 
 void KEditToolbar::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
+{ KDialog::virtual_hook( id, data ); }
 
 void KEditToolbarWidget::virtual_hook( int id, void* data )
 { KXMLGUIClient::virtual_hook( id, data ); }

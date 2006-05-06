@@ -20,7 +20,7 @@
 #define KEDITTOOLBAR_H
 
 #include <kxmlguiclient.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KProcess;
 class KActionCollection;
@@ -105,7 +105,7 @@ namespace
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KEditToolbar : public KDialogBase
+class KDEUI_EXPORT KEditToolbar : public KDialog
 {
     Q_OBJECT
 public:
