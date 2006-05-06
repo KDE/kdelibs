@@ -27,7 +27,7 @@ kde4_add_library(knewstuff SHARED ${knewstuff_LIB_SRCS})
 
 target_link_libraries(knewstuff  ${KDE4_KDECORE_LIBS} kio )
 
-set_target_properties(knewstuff PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+set_target_properties(knewstuff PROPERTIES VERSION 2.0.0 SOVERSION 2 )
 install_targets(${LIB_INSTALL_DIR} knewstuff )
 
 

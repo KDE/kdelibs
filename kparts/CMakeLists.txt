@@ -27,7 +27,7 @@ kde4_add_library(kparts SHARED ${kparts_LIB_SRCS})
 
 target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
 
-set_target_properties(kparts PROPERTIES VERSION 2.1.0 SOVERSION 2 )
+set_target_properties(kparts PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 install_targets(${LIB_INSTALL_DIR} kparts )
 
 

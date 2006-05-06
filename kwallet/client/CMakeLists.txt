@@ -19,7 +19,7 @@ kde4_add_library(kwalletclient SHARED ${kwalletclient_LIB_SRCS})
 
 target_link_libraries(kwalletclient  ${KDE4_KDECORE_LIBS} )
 
-set_target_properties(kwalletclient PROPERTIES VERSION 1.0.1 SOVERSION 1 )
+set_target_properties(kwalletclient PROPERTIES VERSION 2.0.0 SOVERSION 2 )
 install_targets(${LIB_INSTALL_DIR} kwalletclient )
 
 

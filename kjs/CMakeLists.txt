@@ -108,7 +108,7 @@ if(PCRE_FOUND)
    target_link_libraries(kjs ${PCRE_LIBRARIES})
 endif(PCRE_FOUND)
 
-set_target_properties(kjs PROPERTIES VERSION 1.2.0 SOVERSION 1 )
+set_target_properties(kjs PROPERTIES VERSION 2.0.0 SOVERSION 2 )
 install_targets(${LIB_INSTALL_DIR} kjs )
 
 

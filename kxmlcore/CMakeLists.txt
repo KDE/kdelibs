@@ -8,7 +8,7 @@ kde4_automoc(${kxmlcore_LIB_SRCS})
 
 kde4_add_library(kxmlcore SHARED ${kxmlcore_LIB_SRCS})
 
-set_target_properties(kxmlcore PROPERTIES VERSION 1.2.0 SOVERSION 1 )
+set_target_properties(kxmlcore PROPERTIES VERSION 2.0.0 SOVERSION 2 )
 install_targets(${LIB_INSTALL_DIR} kxmlcore )
 
 ########### install files ###############
