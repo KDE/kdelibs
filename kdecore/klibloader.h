@@ -190,7 +190,6 @@ public:
      * library automatically once all its objects have been destroyed.
      *
      * @param parent the parent of the QObject, 0 for no parent
-     * @param name the name of the QObject, 0 for no name
      * @param classname the name of the class
      * @param args a list of arguments
      */
