@@ -23,6 +23,7 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qtimer.h>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -238,7 +239,7 @@ KSpellConfig::sChangeClient( int i )
       dictcombo->clear();
       dictcombo->insertItem( i18n("Turkish") );
       sChangeEncoding( KS_E_UTF8 );
-    } 
+    }
     else
       getAvailDictsAspell();
   }
@@ -505,7 +506,7 @@ void KSpellConfig::getAvailDictsAspell () {
   dictcombo->insertItem (i18n("ASpell Default"));
 
   // Aspell now have /usr/lib/aspell as
-  // ASPELL_DATADIR default. 
+  // ASPELL_DATADIR default.
   QFileInfo dir ( ASPELL_DATADIR );
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/lib/aspell-0.60");
@@ -908,7 +909,7 @@ KSpellConfig::sSetDictionary (int i)
 {
   setDictionary (langfnames[i]);
   setDictFromList (true);
-  emit configChanged();
+  QTimer::singleShot( 0, this, SIGNAL( configChanged() ) );
 }
 
 void
