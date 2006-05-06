@@ -389,6 +389,8 @@ void KEditToolbar::init()
     setButtonMask(Default|Ok|Apply|Cancel);
     setDefaultButton(Ok);
 
+    setModal(false);
+
     setMainWidget(m_widget);
 
     connect(m_widget, SIGNAL(enableOk(bool)), SLOT(acceptOK(bool)));
@@ -1375,7 +1377,7 @@ void KEditToolbarWidget::virtual_hook( int id, void* data )
 void KEditToolbar::showEvent( QShowEvent * event )
 {
   // The dialog has been shown, enable toolbar editing
-  KToolBar::setToolbarsEditable(true);
+  KToolBar::setToolBarsEditable(true);
 
   KDialog::showEvent(event);
 }
@@ -1383,7 +1385,7 @@ void KEditToolbar::showEvent( QShowEvent * event )
 void KEditToolbar::hideEvent(QHideEvent* event)
 {
   // The dialog has been hidden, disable toolbar editing
-  KToolBar::setToolbarsEditable(false);
+  KToolBar::setToolBarsEditable(false);
 
   KDialog::hideEvent(event);
 }

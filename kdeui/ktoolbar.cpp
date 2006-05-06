@@ -63,6 +63,7 @@
 #include <kwin.h>
 #include <kauthorized.h>
 #include <kactioncollection.h>
+#include <ktoggleaction.h>
 
 class KToolBarPrivate
 {
@@ -72,6 +73,8 @@ public:
 
         enableContext  = true;
 
+        unlockedMovable = true;
+
         m_xmlguiClient   = 0;
 
         oldPos = Qt::TopToolBarArea;
@@ -80,6 +83,8 @@ public:
 
         IconSizeDefault = 22;
         ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
+
+        contextLockAction = 0L;
 
         NewLineDefault = false;
         OffsetDefault = 0;
@@ -96,7 +101,9 @@ public:
     bool honorStyle : 1;
     bool enableContext : 1;
     bool modified : 1;
+    bool unlockedMovable : 1;
     static bool s_editable;
+    static bool s_locked;
 
     Qt::ToolBarArea oldPos;
 
@@ -115,6 +122,10 @@ public:
     QList<int> iconSizes;
     QTimer repaintTimer;
 
+    QMenu* contextOrient;
+    QMenu* contextMode;
+    QMenu* contextSize;
+
     QAction* contextTop;
     QAction* contextLeft;
     QAction* contextRight;
@@ -123,6 +134,7 @@ public:
     QAction* contextTextRight;
     QAction* contextText;
     QAction* contextTextUnder;
+    KToggleAction* contextLockAction;
     QMap<QAction*,int> contextIconSizes;
 
   // Default Values.
@@ -142,6 +154,7 @@ public:
 };
 
 bool KToolBarPrivate::s_editable = false;
+bool KToolBarPrivate::s_locked = false;
 
 KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
     : QToolBar( parent )
@@ -172,6 +185,7 @@ KToolBar::KToolBar( const QString& objectName, QMainWindow* parent, Qt::ToolBarA
 
 KToolBar::~KToolBar()
 {
+    delete d->contextLockAction;
     delete d;
 }
 
@@ -383,7 +397,7 @@ void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
 
 void KToolBar::contextMenuEvent(QContextMenuEvent* event)
 {
-    if ( mainWindow() && isMovable() && d->enableContext ) {
+    if ( mainWindow() && d->enableContext ) {
         QPointer<KToolBar> guard( this );
         contextMenu()->exec( event->globalPos() );
         // "Configure Toolbars" recreates toolbars, so we might not exist anymore.
@@ -393,14 +407,6 @@ void KToolBar::contextMenuEvent(QContextMenuEvent* event)
     }
 
     return QToolBar::contextMenuEvent(event);
-}
-
-//static
-bool KToolBar::transparentSetting()
-{
-    QString grpToolbar(QLatin1String("Toolbar style"));
-    KConfigGroup cg(KGlobal::config(), grpToolbar);
-    return cg.readEntry(QLatin1String("TransparentMoving"), true);
 }
 
 //static
@@ -590,111 +596,122 @@ void KToolBar::saveState( QDomElement &current ) const
 
 KMenu *KToolBar::contextMenu()
 {
-  if (d->context)
-    return d->context;
+  if (!d->context) {
+    d->context = new KMenu( this );
+    d->context->addTitle(i18n("Toolbar Menu"));
+  
+    d->contextOrient = new KMenu( i18n("Orientation"), d->context );
+    d->context->addMenu( d->contextOrient );
+  
+    d->contextTop = d->contextOrient->addAction( i18nc("toolbar position string","Top"), this, SLOT(slotContextTop()) );
+    d->contextTop->setChecked(true);
+    d->contextLeft = d->contextOrient->addAction( i18nc("toolbar position string","Left"), this , SLOT(slotContextLeft()) );
+    d->contextRight = d->contextOrient->addAction( i18nc("toolbar position string","Right"), this, SLOT(slotContextRight()) );
+    d->contextBottom = d->contextOrient->addAction( i18nc("toolbar position string","Bottom"), this, SLOT(slotContextBottom()) );
+  
+    QActionGroup* positionGroup = new QActionGroup(d->contextOrient);
+    foreach (QAction* action, d->contextOrient->actions()) {
+      action->setActionGroup(positionGroup);
+      action->setCheckable(true);
+    }
+  
+    d->contextMode = new KMenu( i18n("Text Position"), d->context );
+    d->context->addMenu( d->contextMode );
+  
+    d->contextIcons = d->contextMode->addAction( i18n("Icons Only"), this, SLOT(slotContextIcons()) );
+    d->contextIcons->setChecked(true);
+    d->contextText = d->contextMode->addAction( i18n("Text Only"), this, SLOT(slotContextText()) );
+    d->contextTextRight = d->contextMode->addAction( i18n("Text Alongside Icons"), this, SLOT(slotContextTextRight()) );
+    d->contextTextUnder = d->contextMode->addAction( i18n("Text Under Icons"), this, SLOT(slotContextTextUnder()) );
+  
+    QActionGroup* textGroup = new QActionGroup(d->contextMode);
+    foreach (QAction* action, d->contextMode->actions()) {
+      action->setActionGroup(textGroup);
+      action->setCheckable(true);
+    }
+  
+    d->contextSize = new KMenu( i18n("Icon Size"), d->context );
+    d->context->addMenu( d->contextSize );
+  
+    d->contextIconSizes.insert(d->contextSize->addAction( i18n("Default"), this, SLOT(slotContextIconSize())), 0);
+  
+    // Query the current theme for available sizes
+    KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
+    QList<int> avSizes;
+    if (theme)
+    {
+        if (isMainToolBar())
+            avSizes = theme->querySizes( K3Icon::MainToolbar);
+        else
+            avSizes = theme->querySizes( K3Icon::Toolbar);
+    }
+  
+    d->iconSizes = avSizes;
+    qSort(avSizes);
+  
+    if (avSizes.count() < 10) {
+        // Fixed or threshold type icons
+        foreach ( int it, avSizes ) {
+            QString text;
+            if ( it < 19 )
+                text = i18n("Small (%1x%2)", it, it);
+            else if (it < 25)
+                text = i18n("Medium (%1x%2)", it, it);
+            else if (it < 35)
+                text = i18n("Large (%1x%2)", it, it);
+            else
+                text = i18n("Huge (%1x%2)", it, it);
+            // save the size in the contextIconSizes map
+            d->contextIconSizes.insert(d->contextSize->addAction( text, this, SLOT(slotContextIconSize())), it );
+        }
+    }
+    else {
+        // Scalable icons.
+        const int progression[] = {16, 22, 32, 48, 64, 96, 128, 192, 256};
+  
+        for (uint i = 0; i < 9; i++) {
+            foreach ( int it, avSizes ) {
+                if (it >= progression[i]) {
+                    QString text;
+                    if ( it < 19 )
+                        text = i18n("Small (%1x%2)", it, it);
+                    else if (it < 25)
+                        text = i18n("Medium (%1x%2)", it, it);
+                    else if (it < 35)
+                        text = i18n("Large (%1x%2)", it, it);
+                    else
+                        text = i18n("Huge (%1x%2)", it, it);
+                    // save the size in the contextIconSizes map
+                    d->contextIconSizes.insert(d->contextSize->addAction( text, this, SLOT(slotContextIconSize())), it );
+                    break;
+                }
+            }
+        }
+    }
+  
+    QActionGroup* sizeGroup = new QActionGroup(d->contextSize);
+    foreach (QAction* action, d->contextSize->actions()) {
+      action->setActionGroup(sizeGroup);
+      action->setCheckable(true);
+    }
+  
+    if (!toolBarsLocked() && !isMovable())
+      d->unlockedMovable = false;
 
-  d->context = new KMenu( this );
-  d->context->addTitle(i18n("Toolbar Menu"));
+    delete d->contextLockAction;
+    d->contextLockAction = new KToggleAction(KIcon("lock"), i18n("Lock Toolbars"), 0L, 0L);
+    d->context->addAction(d->contextLockAction);
+    d->contextLockAction->setChecked(toolBarsLocked());
+    d->contextLockAction->setCheckedState(KGuiItem(i18n("Unlock Toolbars"), KIcon("unlock")));
+    connect(d->contextLockAction, SIGNAL(toggled(bool)), SLOT(slotLockToolBars(bool)));
 
-  KMenu *orient = new KMenu( i18n("Orientation"), d->context );
-  orient->setObjectName( "orient" );
-  d->context->addMenu( orient );
-
-  d->contextTop = orient->addAction( i18nc("toolbar position string","Top"), this, SLOT(slotContextTop()) );
-  d->contextTop->setChecked(true);
-  d->contextLeft = orient->addAction( i18nc("toolbar position string","Left"), this , SLOT(slotContextLeft()) );
-  d->contextRight = orient->addAction( i18nc("toolbar position string","Right"), this, SLOT(slotContextRight()) );
-  d->contextBottom = orient->addAction( i18nc("toolbar position string","Bottom"), this, SLOT(slotContextBottom()) );
-
-  QActionGroup* positionGroup = new QActionGroup(orient);
-  foreach (QAction* action, orient->actions()) {
-    action->setActionGroup(positionGroup);
-    action->setCheckable(true);
+    connect( d->context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
   }
 
-  KMenu *mode = new KMenu( i18n("Text Position"), d->context );
-  mode->setObjectName( "mode" );
-  d->context->addMenu( mode );
+  d->contextOrient->menuAction()->setVisible(!toolBarsLocked());
+  d->contextMode->menuAction()->setVisible(!toolBarsLocked());
+  d->contextSize->menuAction()->setVisible(!toolBarsLocked());
 
-  d->contextIcons = mode->addAction( i18n("Icons Only"), this, SLOT(slotContextIcons()) );
-  d->contextIcons->setChecked(true);
-  d->contextText = mode->addAction( i18n("Text Only"), this, SLOT(slotContextText()) );
-  d->contextTextRight = mode->addAction( i18n("Text Alongside Icons"), this, SLOT(slotContextTextRight()) );
-  d->contextTextUnder = mode->addAction( i18n("Text Under Icons"), this, SLOT(slotContextTextUnder()) );
-
-  QActionGroup* textGroup = new QActionGroup(mode);
-  foreach (QAction* action, mode->actions()) {
-    action->setActionGroup(textGroup);
-    action->setCheckable(true);
-  }
-
-  KMenu *size = new KMenu( i18n("Icon Size"), d->context );
-  size->setObjectName( "size" );
-  d->context->addMenu( size );
-
-  d->contextIconSizes.insert(size->addAction( i18n("Default"), this, SLOT(slotContextIconSize())), 0);
-
-  // Query the current theme for available sizes
-  KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
-  QList<int> avSizes;
-  if (theme)
-  {
-      if (isMainToolBar())
-          avSizes = theme->querySizes( K3Icon::MainToolbar);
-      else
-          avSizes = theme->querySizes( K3Icon::Toolbar);
-  }
-
-  d->iconSizes = avSizes;
-  qSort(avSizes);
-
-  if (avSizes.count() < 10) {
-      // Fixed or threshold type icons
-      foreach ( int it, avSizes ) {
-          QString text;
-          if ( it < 19 )
-              text = i18n("Small (%1x%2)", it, it);
-          else if (it < 25)
-              text = i18n("Medium (%1x%2)", it, it);
-          else if (it < 35)
-              text = i18n("Large (%1x%2)", it, it);
-          else
-              text = i18n("Huge (%1x%2)", it, it);
-          // save the size in the contextIconSizes map
-          d->contextIconSizes.insert(size->addAction( text, this, SLOT(slotContextIconSize())), it );
-      }
-  }
-  else {
-      // Scalable icons.
-      const int progression[] = {16, 22, 32, 48, 64, 96, 128, 192, 256};
-
-      for (uint i = 0; i < 9; i++) {
-          foreach ( int it, avSizes ) {
-              if (it >= progression[i]) {
-                  QString text;
-                  if ( it < 19 )
-                      text = i18n("Small (%1x%2)", it, it);
-                  else if (it < 25)
-                      text = i18n("Medium (%1x%2)", it, it);
-                  else if (it < 35)
-                      text = i18n("Large (%1x%2)", it, it);
-                  else
-                      text = i18n("Huge (%1x%2)", it, it);
-                  // save the size in the contextIconSizes map
-                  d->contextIconSizes.insert(size->addAction( text, this, SLOT(slotContextIconSize())), it );
-                  break;
-              }
-          }
-      }
-  }
-
-  QActionGroup* sizeGroup = new QActionGroup(size);
-  foreach (QAction* action, size->actions()) {
-    action->setActionGroup(sizeGroup);
-    action->setCheckable(true);
-  }
-
-  connect( d->context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
   // Unplugging a submenu from abouttohide leads to the popupmenu floating around
   // So better simply call that code from after exec() returns (DF)
   //connect( context, SIGNAL( aboutToHide() ), this, SLOT( slotContextAboutToHide() ) );
@@ -713,7 +730,7 @@ void KToolBar::slotContextAboutToShow()
       kmw->setupToolbarMenuActions();
       // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
       KAction *tbAction = kmw->toolBarMenuAction();
-      if ( tbAction && tbAction->associatedWidgets().count() > 0 )
+      if ( !toolBarsLocked() && tbAction && tbAction->associatedWidgets().count() > 0 )
           contextMenu()->addAction(tbAction);
   }
 
@@ -1031,7 +1048,7 @@ bool KToolBar::isMainToolBar( ) const
 
 void KToolBar::dragEnterEvent( QDragEnterEvent * event )
 {
-  if (toolbarsEditable() && event->proposedAction() & (Qt::CopyAction | Qt::MoveAction) && event->mimeData()->hasFormat("application/x-kde-action-list")) {
+  if (toolBarsEditable() && event->proposedAction() & (Qt::CopyAction | Qt::MoveAction) && event->mimeData()->hasFormat("application/x-kde-action-list")) {
     QByteArray data = event->mimeData()->data("application/x-kde-action-list");
 
     QDataStream stream(data);
@@ -1072,20 +1089,32 @@ void KToolBar::dragEnterEvent( QDragEnterEvent * event )
 
 void KToolBar::dragMoveEvent( QDragMoveEvent * event )
 {
-  if (toolbarsEditable())
+  if (toolBarsEditable())
     forever {
       if (d->dropIndicatorAction) {
-        QAction* overAction = actionAt(event->pos());
-  
+        QAction* overAction = 0L;
+        foreach (QAction* action, actions()) {
+          // want to make it feel that half way across an action you're dropping on the other side of it
+          QWidget* widget = widgetForAction(action);
+          if (event->pos().x() < widget->pos().x() + (widget->width() / 2)) {
+            overAction = action;
+            break;
+          }
+        }
+
         if (overAction != d->dropIndicatorAction) {
+          // Check to see if the indicator is already in the right spot
           int dropIndicatorIndex = actions().indexOf(d->dropIndicatorAction);
-          if (dropIndicatorIndex + 1 < actions().count())
+          if (dropIndicatorIndex + 1 < actions().count()) {
             if (actions()[dropIndicatorIndex + 1] == overAction)
               break;
-  
+          } else if (!overAction) {
+            break;
+          }
+
           insertAction(overAction, d->dropIndicatorAction);
         }
-  
+
         event->accept();
         return;
       }
@@ -1097,12 +1126,12 @@ void KToolBar::dragMoveEvent( QDragMoveEvent * event )
 
 void KToolBar::dragLeaveEvent( QDragLeaveEvent * event )
 {
-  // Want to clear this even if toolbarsEditable was changed mid-drag (unlikey)
+  // Want to clear this even if toolBarsEditable was changed mid-drag (unlikey)
   delete d->dropIndicatorAction;
   d->dropIndicatorAction = 0L;
   d->actionsBeingDragged.clear();
 
-  if (toolbarsEditable()) {
+  if (toolBarsEditable()) {
     event->accept();
     return;
   }
@@ -1112,7 +1141,7 @@ void KToolBar::dragLeaveEvent( QDragLeaveEvent * event )
 
 void KToolBar::dropEvent( QDropEvent * event )
 {
-  if (toolbarsEditable()) {
+  if (toolBarsEditable()) {
     foreach (KAction* action, d->actionsBeingDragged) {
       if (actions().contains(action))
         removeAction(action);
@@ -1120,12 +1149,12 @@ void KToolBar::dropEvent( QDropEvent * event )
     }
   }
 
-  // Want to clear this even if toolbarsEditable was changed mid-drag (unlikey)
+  // Want to clear this even if toolBarsEditable was changed mid-drag (unlikey)
   delete d->dropIndicatorAction;
   d->dropIndicatorAction = 0L;
   d->actionsBeingDragged.clear();
 
-  if (toolbarsEditable()) {
+  if (toolBarsEditable()) {
     event->accept();
     return;
   }
@@ -1135,7 +1164,7 @@ void KToolBar::dropEvent( QDropEvent * event )
 
 void KToolBar::mousePressEvent( QMouseEvent * event )
 {
-  if (toolbarsEditable() && event->button() == Qt::LeftButton) {
+  if (toolBarsEditable() && event->button() == Qt::LeftButton) {
     if (KAction* action = qobject_cast<KAction*>(actionAt(event->pos()))) {
       d->dragAction = action;
       d->dragStartPosition = event->pos();
@@ -1149,7 +1178,7 @@ void KToolBar::mousePressEvent( QMouseEvent * event )
 
 void KToolBar::mouseMoveEvent( QMouseEvent * event )
 {
-  if (!toolbarsEditable() || !d->dragAction)
+  if (!toolBarsEditable() || !d->dragAction)
     return QToolBar::mouseMoveEvent(event);
 
   if ((event->pos() - d->dragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
@@ -1174,7 +1203,7 @@ void KToolBar::mouseMoveEvent( QMouseEvent * event )
 
   drag->setMimeData(mimeData);
 
-  Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
+  Qt::DropAction dropAction = drag->start(Qt::MoveAction);
 
   if (dropAction == Qt::MoveAction)
     // Only remove from this toolbar if it was moved to another toolbar
@@ -1188,7 +1217,7 @@ void KToolBar::mouseMoveEvent( QMouseEvent * event )
 
 void KToolBar::mouseReleaseEvent( QMouseEvent* event )
 {
-  // Want to clear this even if toolbarsEditable was changed mid-drag (unlikey)
+  // Want to clear this even if toolBarsEditable was changed mid-drag (unlikey)
   if (d->dragAction) {
     d->dragAction = 0L;
     event->accept();
@@ -1255,7 +1284,7 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
   found:
 
   // Redirect mouse events to the toolbar when drag + drop editing is enabled
-  if (toolbarsEditable()) {
+  if (toolBarsEditable()) {
     if (QWidget* ww = qobject_cast<QWidget*>(watched)) {
       switch (event->type()) {
         case QEvent::MouseButtonPress: {
@@ -1304,16 +1333,43 @@ void KToolBar::actionEvent( QActionEvent * event )
   }
 }
 
-bool KToolBar::toolbarsEditable( )
+bool KToolBar::toolBarsEditable( )
 {
   return KToolBarPrivate::s_editable;
 }
 
-void KToolBar::setToolbarsEditable( bool editable )
+void KToolBar::setToolBarsEditable( bool editable )
 {
   if (KToolBarPrivate::s_editable != editable) {
     KToolBarPrivate::s_editable = editable;
   }
+}
+
+void KToolBar::setLocked( bool locked )
+{
+  if (d->unlockedMovable)
+    setMovable(!locked);
+}
+
+void KToolBar::slotLockToolBars( bool lock )
+{
+  setToolBarsLocked(lock);
+}
+
+void KToolBar::setToolBarsLocked( bool locked )
+{
+  if (KToolBarPrivate::s_locked != locked) {
+    KToolBarPrivate::s_locked = locked;
+
+    foreach (KMainWindow* mw, KMainWindow::memberList())
+      foreach (KToolBar* toolbar, mw->findChildren<KToolBar*>())
+        toolbar->setLocked(locked);
+  }
+}
+
+bool KToolBar::toolBarsLocked( )
+{
+  return KToolBarPrivate::s_locked;
 }
 
 #include "ktoolbar.moc"

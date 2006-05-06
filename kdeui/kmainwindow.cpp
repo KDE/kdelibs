@@ -422,7 +422,6 @@ void KMainWindow::configureToolbars()
     saveMainWindowSettings(KGlobal::config());
     if (!d->toolBarEditor) {
       d->toolBarEditor = new KEditToolbar(actionCollection(), xmlFile(), true, this);
-      d->toolBarEditor->setModal(false);
       connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
     }
     d->toolBarEditor->show();

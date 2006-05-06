@@ -155,12 +155,6 @@ public:
 
 public:
     /**
-     * Returns the global setting for "Toolbars transparent when moving"
-     * @return global setting for "Toolbars transparent when moving"
-     */
-    static bool transparentSetting();
-
-    /**
      * Returns the global setting for "Icon Text"
      * @return global setting for "Icon Text"
      */
@@ -169,14 +163,24 @@ public:
     /**
      * Returns whether the toolbars are currently editable (drag & drop of actions).
      */
-    static bool toolbarsEditable();
+    static bool toolBarsEditable();
 
     /**
      * Enable or disable toolbar editing via drag & drop of actions.  This is
      * called by KEditToolbar and should generally be set to disabled whenever
      * KEditToolbar is not active.
      */
-    static void setToolbarsEditable(bool editable);
+    static void setToolBarsEditable(bool editable);
+
+    /**
+     * Returns whether the toolbars are locked (i.e., moving of the toobars disallowed).
+     */
+    static bool toolBarsLocked();
+
+    /**
+     * Allows you to lock and unlock all toolbars (i.e., disallow/allow moving of the toobars).
+     */
+    static void setToolBarsLocked(bool locked);
 
 protected Q_SLOTS:
     virtual void slotMovableChanged(bool movable);
@@ -212,13 +216,15 @@ private Q_SLOTS:
     void slotContextTextUnder();
     void slotContextIconSize();
 
+    void slotLockToolBars(bool lock);
+
 private:
     void init( bool readConfig = true, bool honorStyle = false );
     void getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index ) const;
     int dockWindowIndex() const;
     KMenu *contextMenu();
-    void doModeChange();
     bool isMainToolBar() const;
+    void setLocked(bool locked);
 
     static Qt::ToolButtonStyle toolButtonStyleFromString(const QString& style);
     static QString toolButtonStyleToString(Qt::ToolButtonStyle);
