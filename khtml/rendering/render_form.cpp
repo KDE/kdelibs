@@ -409,7 +409,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
         !isReadOnly()) {
         popup->addSeparator();
 
-        m_spellAction->plug(popup);
+        popup->addAction( m_spellAction );
         m_spellAction->setEnabled( !text().isEmpty() );
     }
 }
@@ -1345,13 +1345,13 @@ Q3PopupMenu *TextAreaWidget::createPopupMenu(const QPoint& pos)
     if (!isReadOnly()) {
         popup->addSeparator();
 
-        m_findAction->plug(popup);
+        popup->addAction( m_findAction );
         m_findAction->setEnabled( !text().isEmpty() );
 
-        m_findNextAction->plug(popup);
+        popup->addAction( m_findNextAction );
         m_findNextAction->setEnabled( m_find != 0 );
 
-        m_replaceAction->plug(popup);
+        popup->addAction( m_replaceAction );
         m_replaceAction->setEnabled( !text().isEmpty() );
     }
 

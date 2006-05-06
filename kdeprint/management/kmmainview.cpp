@@ -305,31 +305,31 @@ void KMMainView::initActions()
 	}
 
 	// add actions to the toolbar
-	m_actions->action("printer_add")->plug(m_toolbar);
-	m_actions->action("printer_add_special")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("printer_add") );
+	m_toolbar->addAction( m_actions->action("printer_add_special") );
 	m_toolbar->addSeparator();
-	m_actions->action("printer_state_change")->plug(m_toolbar);
-	m_actions->action("printer_spool_change")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("printer_state_change") );
+	m_toolbar->addAction( m_actions->action("printer_spool_change") );
 	m_toolbar->addSeparator();
-	m_actions->action("printer_hard_default")->plug(m_toolbar);
-	m_actions->action("printer_soft_default")->plug(m_toolbar);
-	m_actions->action("printer_remove")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("printer_hard_default") );
+	m_toolbar->addAction( m_actions->action("printer_soft_default") );
+	m_toolbar->addAction( m_actions->action("printer_remove") );
 	m_toolbar->addSeparator();
-	m_actions->action("printer_configure")->plug(m_toolbar);
-	m_actions->action("printer_test")->plug(m_toolbar);
-	m_actions->action("printer_tool")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("printer_configure") );
+	m_toolbar->addAction( m_actions->action("printer_test") );
+	m_toolbar->addAction( m_actions->action("printer_tool") );
 	m_pactionsindex = m_toolbar->addSeparator();
 	m_toolbar->addSeparator();
-	m_actions->action("server_restart")->plug(m_toolbar);
-	m_actions->action("server_configure")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("server_restart") );
+	m_toolbar->addAction( m_actions->action("server_configure") );
 	m_toolbar->addSeparator();
-	m_actions->action("manager_configure")->plug(m_toolbar);
-	m_actions->action("view_refresh")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("manager_configure") );
+	m_toolbar->addAction( m_actions->action("view_refresh") );
 	m_toolbar->addSeparator();
-	m_actions->action("view_printerinfos")->plug(m_toolbar);
-	m_actions->action("view_change")->plug(m_toolbar);
-	m_actions->action("orientation_change")->plug(m_toolbar);
-	m_actions->action("view_pfilter")->plug(m_toolbar);
+	m_toolbar->addAction( m_actions->action("view_printerinfos") );
+	m_toolbar->addAction( m_actions->action("view_change") );
+	m_toolbar->addAction( m_actions->action("orientation_change") );
+	m_toolbar->addAction( m_actions->action("view_pfilter") );
 
 	// add actions to the menu bar
 	QMenu *menu = new QMenu( this );
@@ -340,43 +340,43 @@ void KMMainView::initActions()
 	actionMenu->setMenu(menu);
 	m_menubar->addAction( actionMenu );
 	menu = new QMenu( this );
-	m_actions->action("printer_state_change")->plug( menu );
-	m_actions->action("printer_spool_change")->plug( menu );
+	menu->addAction( m_actions->action("printer_state_change") );
+	menu->addAction( m_actions->action("printer_spool_change") );
 	menu->addSeparator();
-	m_actions->action("printer_hard_default")->plug( menu );
-	m_actions->action("printer_soft_default")->plug( menu );
-	m_actions->action("printer_remove")->plug( menu );
+	menu->addAction( m_actions->action("printer_hard_default") );
+	menu->addAction( m_actions->action("printer_soft_default") );
+	menu->addAction( m_actions->action("printer_remove") );
 	menu->addSeparator();
-	m_actions->action("printer_configure")->plug( menu );
-	m_actions->action("printer_test")->plug( menu );
-	m_actions->action("printer_tool")->plug( menu );
+	menu->addAction( m_actions->action("printer_configure") );
+	menu->addAction( m_actions->action("printer_test") );
+	menu->addAction( m_actions->action("printer_tool") );
 	menu->addSeparator();
 	//m_menubar->insertItem( i18n( "Printer" ), menu );
 	actionMenu = new KActionMenu(i18n( "Printer" ), m_actions, "printer1");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
 	menu = new QMenu( this );
-	m_actions->action("server_restart")->plug( menu );
-	m_actions->action("server_configure")->plug( menu );
+	menu->addAction( m_actions->action("server_restart") );
+	menu->addAction( m_actions->action("server_configure") );
 	//m_menubar->insertItem( i18n( "Server" ), menu );
 	actionMenu = new KActionMenu(i18n( "Print Server" ), m_actions, "misc");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
 	menu = new QMenu( this );
-	m_actions->action("manager_configure")->plug( menu );
-	m_actions->action("view_refresh")->plug( menu );
+	menu->addAction( m_actions->action("manager_configure") );
+	menu->addAction( m_actions->action("view_refresh") );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
 	actionMenu = new KActionMenu(i18n( "Print Manager" ), m_actions, "kdeprint_configmgr");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
 	menu = new QMenu( this );
-	m_actions->action("view_printerinfos")->plug( menu );
-	m_actions->action("view_change")->plug( menu );
-	m_actions->action("orientation_change")->plug( menu );
+	menu->addAction( m_actions->action("view_printerinfos") );
+	menu->addAction( m_actions->action("view_change") );
+	menu->addAction( m_actions->action("orientation_change") );
 	m_actions->action( "view_toolbar" )->plug ( menu );
 	m_actions->action( "view_menubar" )->plug ( menu );
 	menu->addSeparator();
-	m_actions->action("view_pfilter")->plug( menu );
+	menu->addAction( m_actions->action("view_pfilter") );
 	//m_menubar->insertItem( i18n( "View" ), menu );
 	actionMenu = new KActionMenu(i18n( "View" ), m_actions, "view_remove");
 	actionMenu->setMenu(menu);
@@ -512,13 +512,13 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		if (printer->isLocal() && !printer->isImplicit())
 		{
 			if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
-			m_actions->action("printer_remove")->plug(m_pop);
+			m_pop->addAction( m_actions->action("printer_remove") );
 			m_pop->addSeparator();
 			if (!printer->isClass(true))
 			{
-				m_actions->action("printer_configure")->plug(m_pop);
-				m_actions->action("printer_test")->plug(m_pop);
-				m_actions->action("printer_tool")->plug(m_pop);
+				m_pop->addAction( m_actions->action("printer_configure") );
+				m_pop->addAction( m_actions->action("printer_test") );
+				m_pop->addAction( m_actions->action("printer_tool") );
 				m_pop->addSeparator();
 			}
 		}
@@ -526,8 +526,8 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		{
 			if (!printer->isClass(true))
 			{
-				m_actions->action("printer_configure")->plug(m_pop);
-				m_actions->action("printer_test")->plug(m_pop);
+				m_pop->addAction( m_actions->action("printer_configure") );
+				m_pop->addAction( m_actions->action("printer_test") );
 			}
 			m_pop->addSeparator();
 		}
@@ -542,23 +542,23 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 	}
 	else
 	{
-		m_actions->action("printer_add")->plug(m_pop);
-		m_actions->action("printer_add_special")->plug(m_pop);
+		m_pop->addAction( m_actions->action("printer_add") );
+		m_pop->addAction( m_actions->action("printer_add_special") );
 		m_pop->addSeparator();
-		m_actions->action("server_restart")->plug(m_pop);
-		m_actions->action("server_configure")->plug(m_pop);
+		m_pop->addAction( m_actions->action("server_restart") );
+		m_pop->addAction( m_actions->action("server_configure") );
 		m_pop->addSeparator();
-		m_actions->action("manager_configure")->plug(m_pop);
-		m_actions->action("view_refresh")->plug(m_pop);
+		m_pop->addAction( m_actions->action("manager_configure") );
+		m_pop->addAction( m_actions->action("view_refresh") );
 		m_pop->addSeparator();
 	}
-	m_actions->action("view_printerinfos")->plug(m_pop);
-	m_actions->action("view_change")->plug(m_pop);
-	m_actions->action("orientation_change")->plug(m_pop);
-	m_actions->action("view_toolbar")->plug(m_pop);
-	m_actions->action("view_menubar")->plug(m_pop);
+	m_pop->addAction( m_actions->action("view_printerinfos") );
+	m_pop->addAction( m_actions->action("view_change") );
+	m_pop->addAction( m_actions->action("orientation_change") );
+	m_pop->addAction( m_actions->action("view_toolbar") );
+	m_pop->addAction( m_actions->action("view_menubar") );
 	m_pop->addSeparator();
-	m_actions->action("view_pfilter")->plug(m_pop);
+	m_pop->addAction( m_actions->action("view_pfilter") );
 
 	// pop the menu
 	m_pop->popup(p);

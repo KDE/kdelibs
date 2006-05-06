@@ -303,13 +303,13 @@ void KMJobViewer::initActions()
 		m_pop = new QMenu(this);
 		connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 		connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
-		hact->plug(m_pop);
-		ract->plug(m_pop);
+		m_pop->addAction( hact );
+		m_pop->addAction( ract );
 		m_pop->addSeparator();
-		dact->plug(m_pop);
-		mact->plug(m_pop);
+		m_pop->addAction( dact );
+		m_pop->addAction( mact );
 		m_pop->addSeparator();
-		sact->plug(m_pop);
+		m_pop->addAction( sact );
 	}
 
 	// Filter actions
@@ -324,17 +324,17 @@ void KMJobViewer::initActions()
 	{
 		KToolBar	*toolbar = toolBar();
 		toolbar->setMovable(false);
-		hact->plug(toolbar);
-		ract->plug(toolbar);
+		toolbar->addAction( hact );
+		toolbar->addAction( ract );
 		toolbar->addSeparator();
-		dact->plug(toolbar);
-		mact->plug(toolbar);
+		toolbar->addAction( dact );
+		toolbar->addAction( mact );
 		toolbar->addSeparator();
-		sact->plug(toolbar);
+		toolbar->addAction( sact );
 		toolbar->addSeparator();
-		tact->plug(toolbar);
-		uact->plug(toolbar);
-		ufact->plug(toolbar);
+		toolbar->addAction( tact );
+		toolbar->addAction( uact );
+		toolbar->addAction( ufact );
 	}
 	else
 	{// stand-alone application

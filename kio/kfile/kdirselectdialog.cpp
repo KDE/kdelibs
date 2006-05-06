@@ -132,11 +132,11 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     KAction* newFolder = new KAction( i18n("New Folder..."), d->actions,0);
     newFolder->setIcon( KIcon( "folder_new" ) );
     connect( newFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotMkdir() ) );
-    newFolder->plug(m_contextMenu);
+    m_contextMenu->addAction( newFolder );
     m_contextMenu->addSeparator();
     m_showHiddenFolders = new KToggleAction( i18n( "Show Hidden Folders" ), d->actions, 0 );
     connect( m_showHiddenFolders, SIGNAL( triggered( bool ) ), this, SLOT( slotShowHiddenFoldersToggled() ) );
-    m_showHiddenFolders->plug(m_contextMenu);
+    m_contextMenu->addAction( m_showHiddenFolders );
 
     d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
     if ( localOnly && !d->startURL.isLocalFile() )

@@ -94,7 +94,7 @@ public:
 	}
 	void plugAction(KAction *act)
 	{
-		act->plug(toolbar_);
+		toolbar_->addAction( act );
 	}
 
 	KParts::ReadOnlyPart	*gvpart_;

@@ -479,17 +479,17 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_stopAction->setEnabled(false);
   m_breakAction->setEnabled(true);
 
-  m_nextAction->plug(debugMenu);
-  m_stepAction->plug(debugMenu);
-  m_continueAction->plug(debugMenu);
+  debugMenu->addAction( m_nextAction );
+  debugMenu->addAction( m_stepAction );
+  debugMenu->addAction( m_continueAction );
 //   m_stopAction->plug(debugMenu); ### disabled until DebuggerImp::stop() works reliably
-  m_breakAction->plug(debugMenu);
+  debugMenu->addAction( m_breakAction );
 
-  m_nextAction->plug(toolBar());
-  m_stepAction->plug(toolBar());
-  m_continueAction->plug(toolBar());
+  toolBar()->addAction( m_nextAction );
+  toolBar()->addAction( m_stepAction );
+  toolBar()->addAction( m_continueAction );
 //   m_stopAction->plug(toolBar()); ###
-  m_breakAction->plug(toolBar());
+  toolBar()->addAction( m_breakAction );
 
   toolBar()->addWidget(m_sourceSel);
 

@@ -913,7 +913,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     menu->setDelayed( false );
     connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
              ops, SLOT( updateSelectionDependentActions() ));
-    menu->plug( toolbar );
+    toolbar->addAction( menu );
 
     //Insert a separator.
     d->m_pathComboIndex = toolbar->addSeparator();
