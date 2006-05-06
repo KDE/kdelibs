@@ -1,4 +1,182 @@
-/** @mainpage ./kresources
- * 
- * Not much to say.
+/**
+  \mainpage The KDE Resource library
+
+  The KDE Resource framework can be used to manage resources of
+  different types, organized in families. The Resource framework
+  is for example used for addressbook resources in libkabc and for
+  calendar resources in libkcal.
+
+  When you want to use the framework for a new family, you need to
+  <ul><li>Define a name for your resource family</li>
+  <li>subclass Resource and add the fields and method that are needed
+  in your application</li>
+  <li>If needed, override the doOpen() and doClose() methods.
+  <li>In your application, you can use ResourceManager to keep track
+  of the resources in your family, and you can use ResourceSelectDialog
+  to let the user select a single resource.</li>
+  </ul>
+
+  When you want to add a new resource type to an existing resource family,
+  you need to
+  <ul><li>Further subclass the family-specific Resource to implement
+  resource type-specific operation</li>
+  <li>Subclass ResourceConfigWidget to provide a configuration widget
+  for your new resource type</li>
+  <li>Provide a .desktop file so that the new resource type can be found
+  automatically by the ResourceManager</li>
+  </ul>
+
+  Example:
+
+  <B>resourceexample.h</B>:
+\code
+#include <kconfig.h>
+#include <kresources/resource.h>
+
+class ResourceExample : public KRES::Resource
+{
+  public:
+    ResourceExample( const KConfig * );
+    ~ResourceExample();
+    void writeConfig( KConfig *config );
+
+  private:
+    QString mLocation;
+    QString mPassword;
+}
+\endcode
+
+  <B>resourceexample.cpp</B>:
+\code
+#include <kconfig.h>
+
+#include "resourceexample.h"
+
+ResourceExample::ResourceExample( const KConfig *config )
+    : Resource( config )
+{
+  if ( config ) {
+    mLocation = config->readPathEntry( "Location" );
+    mPassword = KStringHandler::obscure( config->readEntry( "Password" ) );
+  } else {
+    mLocation = ""; // Or some sensible default
+    mPassword = "";
+  }
+}
+
+void ResourceExample::writeConfig( KConfig *config )
+{
+  KRES::Resource::writeConfig( config );
+  config->writePathEntry( "Location", mLocation );
+  config->writeEntry( "Password", KStringHandler::obscure( mPassword ) );
+}
+
+extern "C"
+{
+  KRES::ResourceExample *config_widget( QWidget *parent ) {
+    return new ResourceExampleConfig( parent, "Configure Example Resource" );
+  }
+
+  KRES::Resource *resource( const KConfig *config ) {
+    return new ResourceExample( config );
+  }
+}
+\endcode
+
+  <B>resourceexampleconfig.h</B>:
+\code
+#include <klineedit.h>
+#include <kresources/resourceconfigwidget.h>
+
+#include "resourceexample.h"
+
+class ResourceExampleConfig : public KRES::ResourceConfigWidget
+{
+    Q_OBJECT
+  public:
+    ResourceExampleConfig( QWidget *parent = 0, const char *name = 0 );
+
+  public Q_SLOTS:
+    virtual void loadSettings( KRES::Resource *resource);
+    virtual void saveSettings( KRES::Resource *resource );
+
+  private:
+    KLineEdit *mLocationEdit;
+    KLineEdit *mPasswordEdit;
+};
+\endcode
+
+  <B>resourceexampleconfig.cpp</B>:
+\code
+#include <qlayout.h>
+#include <qlabel.h"
+#include <kresources/resourceconfigwidget.h>
+#include <QList>
+#include "resourceexample.h"
+#include "resourceexampleconfig.h"
+
+ResourceExampleConfig::ResourceExampleConfig( QWidget *parent,  const char *name )
+  : KRES::ResourceConfigWidget( parent, name )
+{
+  QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
+
+  QLabel *label = new QLabel( i18n( "Location:" ), this );
+  mHostEdit = new KLineEdit( this );
+  mainLayout->addWidget( label, 1, 0 );
+  mainLayout->addWidget( mHostEdit, 1, 1 );
+
+  label = new QLabel( i18n( "Password:" ), this );
+  mPasswordEdit = new KLineEdit( this );
+  mPasswordEdit->setEchoMode( QLineEdit::Password );
+  mainLayout->addWidget( label, 2, 0 );
+  mainLayout->addWidget( mPasswordEdit, 2, 1 );
+}
+
+void ResourceExampleConfig::loadSettings( KRES::Resource *resource )
+{
+  ResourceExample *res = dynamic_cast<ResourceExample *>( resource );
+  if ( res ) {
+    mHostEdit->setText( res->host() );
+    mPasswordEdit->setText( res->password() );
+  } else
+    kDebug() << "ERROR: ResourceExampleConfig::loadSettings(): no ResourceExample, cast failed" << endl;
+}
+
+void ResourceExampleConfig::saveSettings( KRES::Resource *resource )
+{
+  ResourceExample *res = dynamic_cast<ResourceExample *>( resource );
+  if ( res ) {
+    res->setHost( mHostEdit->text() );
+    res->setPassword( mPasswordEdit->text() );
+  } else
+    kDebug() << "ERROR: ResourceExampleConfig::saveSettings(): no ResourceExample, cast failed" << endl;
+}
+\endcode
+
+  <B>resourceexample.desktop</B>:
+\code
+[Desktop Entry]
+Type=Service
+
+[Misc]
+Encoding=UTF-8
+Name=Example Resource
+
+[Plugin]
+Type=exchange
+X-KDE-Library=resourceexample
+\endcode
+
+  <B>Makefile.am</B>
+\code
+kde_module_LTLIBRARIES = resourceexample.la
+
+resourceexample_la_SOURCES = resourceexample.cpp resourceexampleconfig.cpp
+resourceexample_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
+resourceexample_la_LIBADD = -lkresources
+
+servicedir = $(kde_datadir)/resources/example
+service_DATA = resourceexample.desktop
+\endcode
+
 */
