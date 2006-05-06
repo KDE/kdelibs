@@ -86,19 +86,19 @@ qulonglong KDEHW::Volume::size() const
     return d->iface->size();
 }
 
-KIO::Job *KDEHW::Volume::mount( bool showProgressInfo )
+KJob *KDEHW::Volume::mount()
 {
-    return d->iface->mount( showProgressInfo );
+    return d->iface->mount();
 }
 
-KIO::Job *KDEHW::Volume::unmount( bool showProgressInfo )
+KJob *KDEHW::Volume::unmount()
 {
-    return d->iface->unmount( showProgressInfo );
+    return d->iface->unmount();
 }
 
-KIO::Job *KDEHW::Volume::eject( bool showProgressInfo )
+KJob *KDEHW::Volume::eject()
 {
-    return d->iface->eject( showProgressInfo );
+    return d->iface->eject();
 }
 
 void KDEHW::Volume::slotMountStateChanged( bool newState )

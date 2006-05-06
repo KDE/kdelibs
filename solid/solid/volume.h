@@ -23,10 +23,7 @@
 #include <kdehw/block.h>
 #include <kdehw/ifaces/enums.h>
 
-namespace KIO
-{
-    class Job;
-}
+class KJob;
 
 namespace KDEHW
 {
@@ -145,26 +142,23 @@ namespace KDEHW
         /**
          * Mounts the volume.
          *
-         * @param showProgressInfo true to show progress information
          * @return the job handling the operation
          */
-        KIO::Job *mount( bool showProgressInfo = false );
+        KJob *mount();
 
         /**
          * Unmounts the volume.
          *
-         * @param showProgressInfo true to show progress information
          * @return the job handling the operation
          */
-        KIO::Job *unmount( bool showProgressInfo = false );
+        KJob *unmount();
 
         /**
          * Ejects the volume.
          *
-         * @param showProgressInfo true to show progress information
          * @return the job handling the operation
          */
-        KIO::Job *eject( bool showProgressInfo = false );
+        KJob *eject();
 
     signals:
         /**
