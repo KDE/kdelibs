@@ -18,7 +18,7 @@ kde4_add_executable(knotifytest ${knotifytest_SRCS})
 
 target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} knotifyconfig )
 
-install_targets(/bin knotifytest )
+install(TARGETS knotifytest DESTINATION bin)
 
 
 ########### install files ###############

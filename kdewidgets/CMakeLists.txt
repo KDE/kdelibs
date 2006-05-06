@@ -18,7 +18,7 @@ kde4_add_executable(makekdewidgets RUN_UNINSTALLED ${makekdewidgets_SRCS})
 
 target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} )
 
-install_targets(/bin makekdewidgets )
+install(TARGETS makekdewidgets DESTINATION bin)
 
 
 ########### next target ###############

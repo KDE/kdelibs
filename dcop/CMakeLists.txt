@@ -53,7 +53,7 @@ kde4_add_executable(dcopserver_shutdown NOGUI ${dcopserver_shutdown_SRCS})
 
 target_link_libraries(dcopserver_shutdown ${KDEWIN32_LIBRARIES})
 
-install_targets(/bin dcopserver_shutdown )
+install(TARGETS dcopserver_shutdown DESTINATION bin)
 
 
 ########### next target ###############
@@ -114,7 +114,7 @@ target_link_libraries(kdeinit_dcopserver  ${QT_QTCORE_LIBRARY} DCOP ${KDEWIN32_L
 install_targets(${LIB_INSTALL_DIR} kdeinit_dcopserver )
 
 target_link_libraries( dcopserver kdeinit_dcopserver )
-install_targets(/bin dcopserver )
+install(TARGETS dcopserver DESTINATION bin)
 
 ########### install files ###############
 install_files( /include FILES dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h )

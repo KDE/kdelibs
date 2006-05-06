@@ -39,7 +39,7 @@ target_link_libraries(kdeinit_cupsdconf  ${KDE4_KDECORE_LIBS} kio ${CUPS_LIBRARI
 install_targets(${LIB_INSTALL_DIR} kdeinit_cupsdconf )
 
 target_link_libraries( cupsdconf kdeinit_cupsdconf )
-install_targets(/bin cupsdconf )
+install(TARGETS cupsdconf DESTINATION bin)
 
 ########### install files ###############
 

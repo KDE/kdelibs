@@ -8,7 +8,7 @@ kde4_add_executable(kab2kabc NOGUI ${kab2kabc_SRCS})
 
 target_link_libraries(kab2kabc ${KDE4_KDECORE_LIBS} kabc)
 
-install_targets(/bin kab2kabc)
+install(TARGETS kab2kabc DESTINATION bin)
 
 kde4_footer()
 

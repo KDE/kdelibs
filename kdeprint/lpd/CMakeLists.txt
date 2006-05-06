@@ -40,7 +40,7 @@ kde4_add_executable(make_driver_db_lpd ${make_driver_db_lpd_SRCS})
 
 target_link_libraries(make_driver_db_lpd  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
-install_targets(/bin make_driver_db_lpd )
+install(TARGETS make_driver_db_lpd DESTINATION bin)
 
 
 ########### install files ###############

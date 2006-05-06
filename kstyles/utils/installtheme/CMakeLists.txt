@@ -12,7 +12,7 @@ kde4_add_executable(kinstalltheme NOGUI ${kinstalltheme_SRCS})
 
 target_link_libraries(kinstalltheme  ${KDE4_KDECORE_LIBS} kdeui )
 
-install_targets(/bin kinstalltheme )
+install(TARGETS kinstalltheme DESTINATION bin)
 
 
 ########### install files ###############

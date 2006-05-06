@@ -30,7 +30,7 @@ target_link_libraries(kdeinit_knotify  ${KDE4_KDECORE_LIBS} kdeui phononcore )
 install_targets(${LIB_INSTALL_DIR} kdeinit_knotify )
 
 target_link_libraries( knotify kdeinit_knotify )
-install_targets(/bin knotify )
+install(TARGETS knotify DESTINATION bin)
 
 ########### install files ###############
 

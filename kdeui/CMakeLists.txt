@@ -307,7 +307,7 @@ install_files( /include FILES
  kkeyserver.h
 )
 
-install_files( /bin preparetips )
+install(PROGRAMS preparetips DESTINATION bin)
 
 kde4_footer()
 

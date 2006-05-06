@@ -55,7 +55,7 @@ kde4_add_executable(meinproc NOGUI ${meinproc_SRCS})
 target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
-install_targets(/bin meinproc )
+install(TARGETS meinproc DESTINATION bin)
 
 
 ########### next target ###############

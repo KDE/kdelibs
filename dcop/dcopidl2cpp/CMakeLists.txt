@@ -17,7 +17,7 @@ kde4_add_executable(dcopidl2cpp NOGUI ${dcopidl2cpp_SRCS})
 
 target_link_libraries(dcopidl2cpp  ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} DCOP)
 
-install_targets(/bin dcopidl2cpp )
+install(TARGETS dcopidl2cpp DESTINATION bin)
 
 
 ########### install files ###############

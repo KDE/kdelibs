@@ -14,7 +14,7 @@ kde4_add_executable(designer ${designer_SRCS})
 
 target_link_libraries(designer  ${KDE4_KDECORE_LIBS} kjsembed QtDesignerComponents_debug )
 
-install_targets(/bin designer )
+install(TARGETS designer DESTINATION bin)
 
 
 ########### install files ###############

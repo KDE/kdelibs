@@ -21,7 +21,7 @@ target_link_libraries(kdeinit_kcookiejar  ${KDE4_KDECORE_LIBS} )
 install_targets(${LIB_INSTALL_DIR} kdeinit_kcookiejar )
 
 target_link_libraries( kcookiejar kdeinit_kcookiejar )
-install_targets(/bin kcookiejar )
+install(TARGETS kcookiejar DESTINATION bin)
 
 ########### next target ###############
 

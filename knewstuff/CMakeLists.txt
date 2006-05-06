@@ -41,7 +41,7 @@ kde4_add_executable(khotnewstuff ${khotnewstuff_SRCS})
 
 target_link_libraries(khotnewstuff  ${KDE4_KDECORE_LIBS} knewstuff)
 
-install_targets(/bin khotnewstuff )
+install(TARGETS khotnewstuff DESTINATION bin)
 
 
 ########### next target ###############

@@ -14,7 +14,7 @@ kde4_add_executable(kconfig_compiler RUN_UNINSTALLED ${kconfig_compiler_SRCS})
 
 target_link_libraries(kconfig_compiler  ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} )
 
-install_targets(/bin kconfig_compiler )
+install(TARGETS kconfig_compiler DESTINATION bin)
 
 
 ########### install files ###############

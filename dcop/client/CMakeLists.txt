@@ -17,7 +17,7 @@ set_target_properties(dcop_executable PROPERTIES OUTPUT_NAME dcop)
 
 target_link_libraries(dcop_executable  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
-install_targets(/bin dcop_executable )
+install(TARGETS dcop_executable DESTINATION bin)
 
 
 ########### next target ###############
@@ -30,7 +30,7 @@ kde4_add_executable(dcopfind NOGUI ${dcopfind_SRCS})
 
 target_link_libraries(dcopfind  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
-install_targets(/bin dcopfind )
+install(TARGETS dcopfind DESTINATION bin)
 
 
 ########### next target ###############
@@ -41,7 +41,7 @@ kde4_add_executable(dcopclient NOGUI ${dcopclient_SRCS} )
 
 target_link_libraries(dcopclient  ${QT_QTCORE_LIBRARY} DCOP)
 
-install_targets(/bin dcopclient )
+install(TARGETS dcopclient DESTINATION bin)
 
 
 ########### next target ###############
@@ -52,7 +52,7 @@ kde4_add_executable(dcopobject NOGUI ${dcopobject_SRCS})
 
 target_link_libraries(dcopobject  ${QT_QTCORE_LIBRARY} DCOP )
 
-install_targets(/bin dcopobject )
+install(TARGETS dcopobject DESTINATION bin)
 
 
 ########### next target ###############
@@ -63,7 +63,7 @@ kde4_add_executable(dcopref NOGUI ${dcopref_SRCS})
 
 target_link_libraries(dcopref  ${QT_QTCORE_LIBRARY} DCOP)
 
-install_targets(/bin dcopref )
+install(TARGETS dcopref DESTINATION bin)
 
 
 ########### next target ###############
@@ -76,7 +76,7 @@ kde4_add_executable(dcopstart NOGUI ${dcopstart_SRCS})
 
 target_link_libraries(dcopstart  ${QT_QTCORE_LIBRARY} DCOP)
 
-install_targets(/bin dcopstart )
+install(TARGETS dcopstart DESTINATION bin)
 
 
 ########### next target ###############
@@ -89,7 +89,7 @@ kde4_add_executable(dcopquit NOGUI ${dcopquit_SRCS})
 
 target_link_libraries(dcopquit  ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} DCOP)
 
-install_targets(/bin dcopquit )
+install(TARGETS dcopquit DESTINATION bin)
 
 
 ########### install files ###############

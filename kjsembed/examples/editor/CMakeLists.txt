@@ -32,7 +32,7 @@ kde4_add_executable(editor ${editor_SRCS})
 
 target_link_libraries(editor  ${KDE4_KDECORE_LIBS} kjsembed )
 
-install_targets(/bin editor )
+install(TARGETS editor DESTINATION bin)
 
 
 ########### install files ###############

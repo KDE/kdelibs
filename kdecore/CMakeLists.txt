@@ -114,7 +114,7 @@ if (UNIX)
    #no ttyname on windows
    kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
    target_link_libraries(kgrantpty  kdefakes )
-   install_targets(/bin kgrantpty )
+   install(TARGETS kgrantpty DESTINATION bin)
    
 endif (UNIX)
 
@@ -291,7 +291,7 @@ kde4_add_executable(kde-config NOGUI ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp 
 
 target_link_libraries(kde-config ${KDE4_KDECORE_LIBS} )
 
-install_targets(/bin kde-config)
+install(TARGETS kde-config DESTINATION bin)
 
 
 ########### install files ###############

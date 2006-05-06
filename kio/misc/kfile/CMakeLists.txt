@@ -10,7 +10,7 @@ kde4_add_executable(kfile NOGUI ${kfile_SRCS})
 
 target_link_libraries(kfile  ${KDE4_KDECORE_LIBS} kio )
 
-install_targets(/bin kfile )
+install(TARGETS kfile DESTINATION bin)
 
 
 ########### install files ###############

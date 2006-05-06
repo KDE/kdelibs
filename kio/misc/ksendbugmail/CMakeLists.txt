@@ -13,7 +13,7 @@ kde4_add_executable(ksendbugmail NOGUI ${ksendbugmail_SRCS})
 
 target_link_libraries(ksendbugmail  ${KDE4_KDECORE_LIBS} kio )
 
-install_targets(/bin ksendbugmail )
+install(TARGETS ksendbugmail DESTINATION bin)
 
 
 ########### install files ###############
