@@ -211,13 +211,10 @@ void KNotification::raiseWidget(QWidget *w)
 
 
 KNotification *KNotification::event( const QString& eventid , const QString& text,
-			const QPixmap& pixmap, QWidget *widget, const QStringList &actions,
-			const ContextList &contexts, const NotificationFlags &flags, const KInstance *instance)
+			const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KInstance *instance)
 {
 	KNotification *notify=new KNotification(eventid, widget, flags);
 	notify->setText(text);
-	notify->setActions(actions);
-	notify->setContexts(contexts);
 	notify->setPixmap(pixmap);
 	notify->setInstance(instance);
 
@@ -246,7 +243,7 @@ KNotification *KNotification::event( StandardEvent eventid , const QString& text
 			message = QLatin1String("notification");
 			break;
 	}
-	return event( message, text, pixmap, widget , QStringList() , ContextList() , flags | DefaultEvent );
+	return event( message, text, pixmap, widget , flags | DefaultEvent );
 }
 
 void KNotification::ref()
@@ -263,7 +260,7 @@ void KNotification::deref()
 
 void KNotification::beep( const QString & reason, QWidget * widget )
 {
-	event( QLatin1String("beep"), reason, QPixmap(), widget , QStringList() , ContextList() , CloseOnTimeout | DefaultEvent );
+	event( QLatin1String("beep"), reason, QPixmap(), widget , CloseOnTimeout | DefaultEvent );
 }
 
 void KNotification::sendEvent()

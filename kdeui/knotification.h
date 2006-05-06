@@ -439,7 +439,6 @@ public:
 	 */
 	static KNotification *event( const QString& eventId , const QString& text=QString(),
 			const QPixmap& pixmap=QPixmap(), QWidget *widget=0L,
-			const QStringList &actions=QStringList(), const ContextList &contexts=ContextList() ,
 			const NotificationFlags &flags=CloseOnTimeout , const KInstance *instance=0l );
 
 	/**
