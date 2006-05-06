@@ -43,6 +43,7 @@
 #include <kdebug.h>
 #include <kpushbutton.h>
 #include <kprocio.h>
+#include <ktoolbar.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -1370,5 +1371,21 @@ void KEditToolbar::virtual_hook( int id, void* data )
 
 void KEditToolbarWidget::virtual_hook( int id, void* data )
 { KXMLGUIClient::virtual_hook( id, data ); }
+
+void KEditToolbar::showEvent( QShowEvent * event )
+{
+  // The dialog has been shown, enable toolbar editing
+  KToolBar::setToolbarsEditable(true);
+
+  KDialog::showEvent(event);
+}
+
+void KEditToolbar::hideEvent(QHideEvent* event)
+{
+  // The dialog has been hidden, disable toolbar editing
+  KToolBar::setToolbarsEditable(false);
+
+  KDialog::hideEvent(event);
+}
 
 #include "kedittoolbar.moc"

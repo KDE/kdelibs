@@ -224,6 +224,10 @@ Q_SIGNALS:
    */
   void newToolbarConfig();
 
+protected:
+  virtual void showEvent(QShowEvent* event);
+  virtual void hideEvent(QHideEvent* event);
+
 private:
   void init();
   KEditToolbarWidget *m_widget;

@@ -144,10 +144,11 @@ public:
      * Load state from an XML element, called by KXMLGUIBuilder
      */
     void loadState( const QDomElement &e );
+
     /**
      * Save state into an XML element, called by KXMLGUIBuilder
      */
-    void saveState( QDomElement &e );
+    void saveState( QDomElement &e ) const;
 
     /// Reimplemented to support context menu activation on disabled tool buttons
     bool eventFilter(QObject* watched, QEvent* event);
@@ -165,6 +166,18 @@ public:
      */
     static Qt::ToolButtonStyle toolButtonStyleSetting();
 
+    /**
+     * Returns whether the toolbars are currently editable (drag & drop of actions).
+     */
+    static bool toolbarsEditable();
+
+    /**
+     * Enable or disable toolbar editing via drag & drop of actions.  This is
+     * called by KEditToolbar and should generally be set to disabled whenever
+     * KEditToolbar is not active.
+     */
+    static void setToolbarsEditable(bool editable);
+
 protected Q_SLOTS:
     virtual void slotMovableChanged(bool movable);
 
@@ -179,6 +192,9 @@ protected:
     virtual void dragMoveEvent(QDragMoveEvent* event);
     virtual void dragLeaveEvent(QDragLeaveEvent* event);
     virtual void dropEvent(QDropEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseMoveEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
 
 private Q_SLOTS:
     void slotReadConfig();
@@ -198,8 +214,8 @@ private Q_SLOTS:
 
 private:
     void init( bool readConfig = true, bool honorStyle = false );
-    void getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index );
-    int dockWindowIndex();
+    void getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index ) const;
+    int dockWindowIndex() const;
     KMenu *contextMenu();
     void doModeChange();
     bool isMainToolBar() const;

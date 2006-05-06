@@ -82,6 +82,7 @@ public:
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
+    KEditToolbar* toolBarEditor;
 };
 
 QList<KMainWindow*> KMainWindow::sMemberList;
@@ -243,6 +244,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     //d->kaccel = actionCollection()->kaccel();
     d->toolBarHandler = 0;
     d->settingsTimer = 0;
+    d->toolBarEditor = 0;
     d->showStatusBarAction = NULL;
     d->shuttingDown = false;
     if ((d->care_about_geometry = being_first)) {
@@ -415,12 +417,15 @@ KXMLGUIFactory *KMainWindow::guiFactory()
     return factory_;
 }
 
-int KMainWindow::configureToolbars()
+void KMainWindow::configureToolbars()
 {
     saveMainWindowSettings(KGlobal::config());
-    KEditToolbar dlg(actionCollection(), xmlFile(), true, this);
-    connect(&dlg, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
-    return dlg.exec();
+    if (!d->toolBarEditor) {
+      d->toolBarEditor = new KEditToolbar(actionCollection(), xmlFile(), true, this);
+      d->toolBarEditor->setModal(false);
+      connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
+    }
+    d->toolBarEditor->show();
 }
 
 void KMainWindow::saveNewToolbarConfig()

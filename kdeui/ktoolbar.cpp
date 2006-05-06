@@ -89,11 +89,14 @@ public:
         context = 0L;
 
         dropIndicatorAction = 0L;
+
+        dragAction = 0L;
     }
 
     bool honorStyle : 1;
     bool enableContext : 1;
     bool modified : 1;
+    static bool s_editable;
 
     Qt::ToolBarArea oldPos;
 
@@ -134,7 +137,11 @@ public:
   QAction* dropIndicatorAction;
 
   KMenu* context;
+  KAction* dragAction;
+  QPoint dragStartPosition;
 };
+
+bool KToolBarPrivate::s_editable = false;
 
 KToolBar::KToolBar( QWidget *parent, bool honorStyle, bool readConfig )
     : QToolBar( parent )
@@ -520,16 +527,16 @@ void KToolBar::loadState( const QDomElement &element )
     //kDebug(220) << name() << " loadState hidden=" << hidden << endl;
 }
 
-int KToolBar::dockWindowIndex()
+int KToolBar::dockWindowIndex() const
 {
     Q_ASSERT( mainWindow() );
-    return mainWindow()->layout()->indexOf(this);
+    return mainWindow()->layout()->indexOf(const_cast<KToolBar*>(this));
 }
 
-void KToolBar::getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index )
+void KToolBar::getAttributes( QString &position, Qt::ToolButtonStyle &toolButtonStyle, int &index ) const
 {
     // get all of the stuff to save
-    switch ( mainWindow()->toolBarArea(this) ) {
+    switch ( mainWindow()->toolBarArea(const_cast<KToolBar*>(this)) ) {
       case Qt::BottomToolBarArea:
           position = "Bottom";
           break;
@@ -550,7 +557,7 @@ void KToolBar::getAttributes( QString &position, Qt::ToolButtonStyle &toolButton
     index = dockWindowIndex();
 }
 
-void KToolBar::saveState( QDomElement &current )
+void KToolBar::saveState( QDomElement &current ) const
 {
     Q_ASSERT( !current.isNull() );
     QString position;
@@ -1024,7 +1031,7 @@ bool KToolBar::isMainToolBar( ) const
 
 void KToolBar::dragEnterEvent( QDragEnterEvent * event )
 {
-  if (event->proposedAction() == Qt::CopyAction && event->mimeData()->hasFormat("application/x-kde-action-list")) {
+  if (toolbarsEditable() && event->proposedAction() & (Qt::CopyAction | Qt::MoveAction) && event->mimeData()->hasFormat("application/x-kde-action-list")) {
     QByteArray data = event->mimeData()->data("application/x-kde-action-list");
 
     QDataStream stream(data);
@@ -1034,15 +1041,13 @@ void KToolBar::dragEnterEvent( QDragEnterEvent * event )
     stream >> actionNames;
 
     foreach (const QString& actionName, actionNames) {
-      foreach (QAction* action, actions())
-        if (action->objectName() == actionName)
-          continue;
-
-      KAction* newAction = mainWindow()->actionCollection()->action(actionName.toAscii().constData());
-      if (!newAction)
-        continue;
-
-      d->actionsBeingDragged.append(newAction);
+      foreach (KActionCollection* ac, KActionCollection::allCollections()) {
+        KAction* newAction = ac->action(actionName.toAscii().constData());
+        if (newAction) {
+          d->actionsBeingDragged.append(newAction);
+          break;
+        }
+      }
     }
 
     if (d->actionsBeingDragged.count()) {
@@ -1067,41 +1072,130 @@ void KToolBar::dragEnterEvent( QDragEnterEvent * event )
 
 void KToolBar::dragMoveEvent( QDragMoveEvent * event )
 {
-  forever {
-    if (d->dropIndicatorAction) {
-      QAction* overAction = actionAt(event->pos());
-
-      if (overAction != d->dropIndicatorAction) {
-        int dropIndicatorIndex = actions().indexOf(d->dropIndicatorAction);
-        if (dropIndicatorIndex + 1 < actions().count())
-          if (actions()[dropIndicatorIndex + 1] == overAction)
-            break;
-
-        insertAction(overAction, d->dropIndicatorAction);
+  if (toolbarsEditable())
+    forever {
+      if (d->dropIndicatorAction) {
+        QAction* overAction = actionAt(event->pos());
+  
+        if (overAction != d->dropIndicatorAction) {
+          int dropIndicatorIndex = actions().indexOf(d->dropIndicatorAction);
+          if (dropIndicatorIndex + 1 < actions().count())
+            if (actions()[dropIndicatorIndex + 1] == overAction)
+              break;
+  
+          insertAction(overAction, d->dropIndicatorAction);
+        }
+  
+        event->accept();
+        return;
       }
-
-      event->accept();
-      return;
+      break;
     }
-    break;
-  }
 
   QToolBar::dragMoveEvent(event);
 }
 
 void KToolBar::dragLeaveEvent( QDragLeaveEvent * event )
 {
+  // Want to clear this even if toolbarsEditable was changed mid-drag (unlikey)
   delete d->dropIndicatorAction;
-  event->accept();
+  d->dropIndicatorAction = 0L;
+  d->actionsBeingDragged.clear();
+
+  if (toolbarsEditable()) {
+    event->accept();
+    return;
+  }
+
+  QToolBar::dragLeaveEvent(event);
 }
 
 void KToolBar::dropEvent( QDropEvent * event )
 {
-  foreach (KAction* action, d->actionsBeingDragged)
-    insertAction(d->dropIndicatorAction, action);
+  if (toolbarsEditable()) {
+    foreach (KAction* action, d->actionsBeingDragged) {
+      if (actions().contains(action))
+        removeAction(action);
+      insertAction(d->dropIndicatorAction, action);
+    }
+  }
 
+  // Want to clear this even if toolbarsEditable was changed mid-drag (unlikey)
   delete d->dropIndicatorAction;
+  d->dropIndicatorAction = 0L;
+  d->actionsBeingDragged.clear();
+
+  if (toolbarsEditable()) {
+    event->accept();
+    return;
+  }
+
+  QToolBar::dropEvent(event);
+}
+
+void KToolBar::mousePressEvent( QMouseEvent * event )
+{
+  if (toolbarsEditable() && event->button() == Qt::LeftButton) {
+    if (KAction* action = qobject_cast<KAction*>(actionAt(event->pos()))) {
+      d->dragAction = action;
+      d->dragStartPosition = event->pos();
+      event->accept();
+      return;
+    }
+  }
+
+  QToolBar::mousePressEvent(event);
+}
+
+void KToolBar::mouseMoveEvent( QMouseEvent * event )
+{
+  if (!toolbarsEditable() || !d->dragAction)
+    return QToolBar::mouseMoveEvent(event);
+
+  if ((event->pos() - d->dragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
+    event->accept();
+    return;
+  }
+
+  QDrag *drag = new QDrag(this);
+  QMimeData *mimeData = new QMimeData;
+
+  QByteArray data;
+  {
+    QDataStream stream(&data, QIODevice::WriteOnly);
+
+    QStringList actionNames;
+    actionNames << d->dragAction->objectName();
+
+    stream << actionNames;
+  }
+
+  mimeData->setData("application/x-kde-action-list", data);
+
+  drag->setMimeData(mimeData);
+
+  Qt::DropAction dropAction = drag->start(Qt::CopyAction | Qt::MoveAction);
+
+  if (dropAction == Qt::MoveAction)
+    // Only remove from this toolbar if it was moved to another toolbar
+    // Otherwise the receiver moves it.
+    if (drag->target() != this)
+      removeAction(d->dragAction);
+
+  d->dragAction = 0L;
   event->accept();
+}
+
+void KToolBar::mouseReleaseEvent( QMouseEvent* event )
+{
+  // Want to clear this even if toolbarsEditable was changed mid-drag (unlikey)
+  if (d->dragAction) {
+    d->dragAction = 0L;
+    event->accept();
+    return;
+  }
+
+  QToolBar::mouseReleaseEvent(event);
 }
 
 Qt::ToolButtonStyle KToolBar::toolButtonStyleFromString( const QString & style )
@@ -1137,14 +1231,53 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
 {
   // Generate context menu events for disabled buttons too...
   if (event->type() == QEvent::MouseButtonPress) {
-    if (QWidget* ww = qobject_cast<QWidget*>(watched)) {
-      if (ww->parent() == this) {
-        if (!ww->isEnabled()) {
-          QMouseEvent* me = static_cast<QMouseEvent*>(event);
-          if (me->buttons() & Qt::RightButton) {
+    QMouseEvent* me = static_cast<QMouseEvent*>(event);
+    if (me->buttons() & Qt::RightButton)
+      if (QWidget* ww = qobject_cast<QWidget*>(watched))
+        if (ww->parent() == this)
+          if (!ww->isEnabled())
             QCoreApplication::postEvent(this, new QContextMenuEvent(QContextMenuEvent::Mouse, me->pos(), me->globalPos()));
-          }
+
+  } else if (event->type() == QEvent::ParentChange) {
+    // Make sure we're not leaving stale event filters around
+    if (QWidget* ww = qobject_cast<QWidget*>(watched)) {
+      while (ww) {
+        if (ww == this)
+          goto found;
+      }
+      // New parent is not a subwidget - remove event filter
+      ww->removeEventFilter(this);
+      foreach (QWidget* child, ww->findChildren<QWidget*>())
+        child->removeEventFilter(this);
+    }
+  }
+
+  found:
+
+  // Redirect mouse events to the toolbar when drag + drop editing is enabled
+  if (toolbarsEditable()) {
+    if (QWidget* ww = qobject_cast<QWidget*>(watched)) {
+      switch (event->type()) {
+        case QEvent::MouseButtonPress: {
+          QMouseEvent* me = static_cast<QMouseEvent*>(event);
+          QMouseEvent newEvent(me->type(), mapFromGlobal(ww->mapToGlobal(me->pos())), me->globalPos(), me->button(), me->buttons(), me->modifiers());
+          mousePressEvent(&newEvent);
+          return true;
         }
+        case QEvent::MouseMove: {
+          QMouseEvent* me = static_cast<QMouseEvent*>(event);
+          QMouseEvent newEvent(me->type(), mapFromGlobal(ww->mapToGlobal(me->pos())), me->globalPos(), me->button(), me->buttons(), me->modifiers());
+          mouseMoveEvent(&newEvent);
+          return true;
+        }
+        case QEvent::MouseButtonRelease: {
+          QMouseEvent* me = static_cast<QMouseEvent*>(event);
+          QMouseEvent newEvent(me->type(), mapFromGlobal(ww->mapToGlobal(me->pos())), me->globalPos(), me->button(), me->buttons(), me->modifiers());
+          mouseReleaseEvent(&newEvent);
+          return true;
+        }
+        default:
+          break;
       }
     }
   }
@@ -1154,13 +1287,33 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
 
 void KToolBar::actionEvent( QActionEvent * event )
 {
-  if (event->type() == QEvent::ActionRemoved)
-    widgetForAction(event->action())->removeEventFilter(this);
+  if (event->type() == QEvent::ActionRemoved) {
+    QWidget* widget = widgetForAction(event->action());
+    widget->removeEventFilter(this);
+    foreach (QWidget* child, widget->findChildren<QWidget*>())
+      child->removeEventFilter(this);
+  }
 
   QToolBar::actionEvent(event);
 
-  if (event->type() == QEvent::ActionAdded)
-    widgetForAction(event->action())->installEventFilter(this);
+  if (event->type() == QEvent::ActionAdded) {
+    QWidget* widget = widgetForAction(event->action());
+    widget->installEventFilter(this);
+    foreach (QWidget* child, widget->findChildren<QWidget*>())
+      child->installEventFilter(this);
+  }
+}
+
+bool KToolBar::toolbarsEditable( )
+{
+  return KToolBarPrivate::s_editable;
+}
+
+void KToolBar::setToolbarsEditable( bool editable )
+{
+  if (KToolBarPrivate::s_editable != editable) {
+    KToolBarPrivate::s_editable = editable;
+  }
 }
 
 #include "ktoolbar.moc"

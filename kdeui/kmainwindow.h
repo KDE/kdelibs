@@ -609,7 +609,7 @@ public Q_SLOTS:
      *                                actionCollection() );
      * \endcode
      */
-   int configureToolbars(); // TODO KDE4: make virtual and reimplement in KParts::MainWindow
+    virtual void configureToolbars(); // TODO KDE4: reimplement in KParts::MainWindow
 
     /**
      * Makes a KDE compliant caption.

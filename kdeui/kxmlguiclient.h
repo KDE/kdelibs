@@ -83,13 +83,7 @@ public:
   virtual KAction *action( const QDomElement &element ) const;
 
   /**
-   * Retrieves the entire action collection for the GUI client. If
-   * you subclass KXMLGUIClient you should call
-   * KActionCollection::setWidget( QWidget* ) with this object, or
-   * you will encounter subtle bugs with KAction keyboard shortcuts.
-   * This is not necessary if your KXMLGUIClient is a KMainWindow.
-   *
-   * @see KActionCollection::setWidget( QWidget* )
+   * Retrieves the entire action collection for the GUI client.
    */
   virtual KActionCollection* actionCollection() const;
 
