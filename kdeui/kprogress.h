@@ -124,7 +124,7 @@ public slots:
   void setFormat(const QString & format);
 
   /**
-    * Set the current total number of steps in the action tat the progress bar
+    * Set the current total number of steps in the action that the progress bar
     * is representing.
     */
   void setTotalSteps(int totalSteps);
