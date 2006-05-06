@@ -115,9 +115,12 @@ void KateSpell::spellcheck( const KateTextCursor &from, const KateTextCursor &to
 
   int enc = ksEncodings.findIndex( m_view->doc()->encoding() );
   if ( enc > -1 )
+  {
     ksc->setEncoding( enc );
-
-  kdDebug(13020)<<"KateSpell::spellCheck(): using encoding: "<<enc<<" ("<<ksEncodings[enc]<<") and KSpell::Type "<<type<<" (for '"<<mt<<"')"<<endl;
+    kdDebug(13020)<<"KateSpell::spellCheck(): using encoding: "<<enc<<" ("<<ksEncodings[enc]<<") and KSpell::Type "<<type<<" (for '"<<mt<<"')"<<endl;
+  }
+  else
+    kdDebug(13020)<<"KateSpell::spellCheck(): using encoding: "<<enc<<" and KSpell::Type "<<type<<" (for '"<<mt<<"')"<<endl;
 
   m_kspell = new KSpell( m_view, i18n("Spellcheck"),
                          this, SLOT(ready(KSpell *)), ksc, true, true, type );
