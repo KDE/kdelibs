@@ -49,7 +49,7 @@ private:
 	QList<KNotifyEventListItem*> m_elements;
 	
 private Q_SLOTS:
-	void slotSelectionChanged();
+	void slotSelectionChanged(QTreeWidgetItem *current , QTreeWidgetItem *previous);
 	
 Q_SIGNALS:
 	void eventSelected(KNotifyConfigElement *);
@@ -65,6 +65,8 @@ class KNotifyEventListItem : public QTreeWidgetItem
 		void save();
 		
 		KNotifyConfigElement *configElement() { return &m_config; }
+		
+		void update();
 		
 	private:
 		KNotifyConfigElement m_config;

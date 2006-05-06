@@ -61,7 +61,9 @@ void KNotifyConfigWidget::slotEventSelected( KNotifyConfigElement * e )
 {
 	emit changed( true ); //TODO
 	if(d->currentElement)
+	{
 		d->actionsconfig->save( d->currentElement );
+	}
 	d->currentElement=e;
 	if(e)
 	{

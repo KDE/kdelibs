@@ -19,15 +19,23 @@
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kiconloader.h>
+
 
 KNotifyEventList::KNotifyEventList(QWidget *parent)
  : QTreeWidget(parent)  , config(0l) , loconf(0l)
 {
   QStringList headerLabels;
-  headerLabels << i18n( "Title" ) << i18n( "Description" ) << i18n( "State" );
+  headerLabels << i18n( "Title" ) << i18n( "Description" ) << "" << "" << "" << "" << "" ; //<< i18n( "State" );
   setHeaderLabels( headerLabels );
+  
+  resizeColumnToContents(2);
+  resizeColumnToContents(3);
+  resizeColumnToContents(4);
+  resizeColumnToContents(5);
+  resizeColumnToContents(6);
 
-	connect(this, SIGNAL(itemSelectionChanged()) , this , SLOT(slotSelectionChanged()));
+  connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
 }
 
 
@@ -79,13 +87,17 @@ void KNotifyEventList::save( )
 	}
 }
 
-void KNotifyEventList::slotSelectionChanged( )
+void KNotifyEventList::slotSelectionChanged(  QTreeWidgetItem *current , QTreeWidgetItem *previous)
 {
 	KNotifyEventListItem *it=dynamic_cast<KNotifyEventListItem *>(currentItem());
 	if(it)
 		emit eventSelected( it->configElement() );
-/*	else
-		emit eventSelected( 0l );*/
+	else
+		emit eventSelected( 0l );
+	
+	it=dynamic_cast<KNotifyEventListItem *>(previous);
+	if(it)
+		it->update();
 }
 
 
@@ -97,6 +109,12 @@ KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString 
 {
   setText( 0, name );
   setText( 1, description );
+  /*setSizeHint ( 2 , QSize(22,22) );
+  setSizeHint ( 3 , QSize(22,22) );
+  setSizeHint ( 4 , QSize(22,22) );
+  setSizeHint ( 5 , QSize(22,22) );
+  setSizeHint ( 6 , QSize(22,22) );*/
+  update();
 }
 
 KNotifyEventListItem::~KNotifyEventListItem()
@@ -106,6 +124,25 @@ KNotifyEventListItem::~KNotifyEventListItem()
 void KNotifyEventListItem::save()
 {
 	m_config.save();
+}
+
+void KNotifyEventListItem::update()
+{
+	QString prstring=m_config.readEntry( "Action" );
+	QStringList actions=prstring.split ("|");
+	
+	QPixmap pexec = SmallIcon("exec");
+	QPixmap pstderr = SmallIcon("terminal");
+	QPixmap pmessage = SmallIcon("info");
+	QPixmap plogfile = SmallIcon("log");
+	QPixmap psound = SmallIcon("sound");
+	QPixmap ptaskbar = SmallIcon("kicker");
+
+	setIcon(2 , actions.contains("Sound") ? QIcon(psound) : QIcon() );
+	setIcon(3 , actions.contains("Popup") ? QIcon(pmessage) : QIcon() );
+	setIcon(4 , actions.contains("Execute") ? QIcon(pexec) : QIcon() );
+	setIcon(5 , actions.contains("Taskbar") ? QIcon(ptaskbar) : QIcon() );
+	setIcon(6 , actions.contains("Logfile") ? QIcon(plogfile) : QIcon() );
 }
 
 
