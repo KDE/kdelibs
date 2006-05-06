@@ -44,17 +44,24 @@ void KNotifyTestWindow::slotSendOnlineEvent()
 {
 	KNotification::ContextList contexts;
 	contexts.append( qMakePair( QString("group") , view.c_group->currentText() ) );
-	KNotification::event("online" , i18n( "the contact %1 is now online" ,  view.c_name->text() ) ,
-						 QPixmap() , this , QStringList() , contexts );
+        KNotification *n = new KNotification( "online", this );
+        n->setText(i18n("the contact %1 is now online",  view.c_name->text() ));
+        n->setContexts(contexts);
+        n->sendEvent();
 }
 
 void KNotifyTestWindow::slotSendMessageEvent( )
 {
 	KNotification::ContextList contexts;
 	contexts.append( qMakePair( QString("group") , view.c_group->currentText() ) );
-	KNotification *n = KNotification::event("message" , i18n( "new message : %1" ,  view.c_text->text() ) ,
-											QPixmap() , this , QStringList(i18n("Read")) , contexts );
+        
+        KNotification *n = new KNotification( "message", this );
+        n->setText(i18n( "new message : %1" ,  view.c_text->text() ));
+        n->setContexts(contexts);
+        n->setActions( i18n("Read") );
 	connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
+        
+        n->sendEvent();
 }
 
 void KNotifyTestWindow::slotMessageRead( )
