@@ -701,7 +701,7 @@ public:
 
 
 KEdFind::KEdFind( QWidget *parent, bool modal )
-  :KDialog( parent, i18n("Find"), modal ? User1|Cancel : User1|Close, 0 , KGuiItem( i18n("&Find"), "find") )
+  :KDialog( parent, i18n("Find"), modal ? User1|Cancel : User1|Close, 0 , KStdGuiItem::find() )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
@@ -836,7 +836,7 @@ public:
 KEdReplace::KEdReplace( QWidget *parent, bool modal )
   :KDialog( parent, i18n("Replace"),
 		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close, 0 ,
-		i18n("Replace &All"), i18n("&Replace"), KGuiItem( i18n("&Find"), "find") )
+		i18n("Replace &All"), i18n("&Replace"), KStdGuiItem::find() )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
