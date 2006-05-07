@@ -20,7 +20,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kglobal.h>
 #include <qvector.h>
 
@@ -643,7 +643,9 @@ void KCompletion::doBeep( BeepMode mode ) const
     }
 
     if ( !text.isEmpty() )
-        KNotifyClient::event( event, text );
+    {
+        KNotification::event( event, text , QPixmap() , 0L , KNotification::DefaultEvent  );
+    }
 }
 
 
