@@ -1248,7 +1248,7 @@ void Cache::init()
 
     if ( !brokenPixmap )
         brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::Desktop, 16, KIcon::DisabledState));
-        
+
     if ( !blockedPixmap ) {
         blockedPixmap = new QPixmap();
         blockedPixmap->loadFromData(blocked_icon_data, blocked_icon_len);
@@ -1275,8 +1275,9 @@ void Cache::clear()
 #ifndef NDEBUG
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
-    for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
-        assert(it.current()->canDelete());
+    if (!freeList->isEmpty())
+        for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
+            assert(it.current()->canDelete());
 #endif
 
     delete cache; cache = 0;
