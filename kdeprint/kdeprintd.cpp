@@ -22,7 +22,7 @@
 
 #include <qfile.h>
 #include <klocale.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <dcopclient.h>
@@ -160,7 +160,7 @@ void KDEPrintd::slotPrintTerminated( KPrintProcess *proc )
 
 void KDEPrintd::slotPrintError( KPrintProcess *proc, const QString& msg )
 {
-	KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", msg));
+	KNotification::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", msg));
 	m_processpool.removeAll( proc );
 }
 

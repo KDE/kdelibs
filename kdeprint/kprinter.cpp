@@ -37,7 +37,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <krun.h>
-#include <knotifyclient.h>
+#include <knotification.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kprocess.h>
@@ -709,7 +709,7 @@ bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
 
 void reportError(KPrinter *p)
 {
-	if (!KNotifyClient::event(0,"printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", p->errorMessage())))
+	if (!KNotification::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", p->errorMessage())))
 		kDebug(500) << "could not send notify event" << endl;
 }
 
