@@ -45,6 +45,7 @@ namespace KNotify
  * \code
  * (void) KNotifyDialog::configure( someParentWidget );
  * \endcode
+ * @deprecated use KNotifyConfigWidget,  or KNotifyConfigWidget::configure()  (which is in kdelibs/knotify/config)
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
 class KIO_EXPORT_DEPRECATED KNotifyDialog : public KDialogBase
