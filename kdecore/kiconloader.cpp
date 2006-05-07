@@ -435,16 +435,25 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 
     if ( extensionLength > 0 )
     {
-#ifndef NDEBUG
-	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
-                     << " loads icon " << name << " with extension." << endl;
-#endif
-
 	return name.left(name.length() - extensionLength);
     }
     return name;
 }
 
+QString KIconLoader::removeIconExtensionInternal(const QString &name) const
+{
+    QString name_noext = removeIconExtension(name);
+
+#ifndef NDEBUG
+    if (name != name_noext)
+    {
+	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
+		     << " loads icon " << name << " with extension." << endl;
+    }
+#endif
+
+    return name_noext;
+}
 
 KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
@@ -529,7 +538,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     if (!QDir::isRelativePath(_name))
 	return _name;
 
-    QString name = removeIconExtension( _name );
+    QString name = removeIconExtensionInternal( _name );
 
     QString path;
     if (group_or_size == KIcon::User)
@@ -673,7 +682,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         if (!canReturnNull && name.isEmpty())
             name = str_unknown;
         else
-	    name = removeIconExtension(name);
+	    name = removeIconExtensionInternal(name);
     }
 
     // If size == 0, use default size for the specified group.

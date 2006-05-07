@@ -401,9 +401,30 @@ public:
     /**
      * Checks if name ends in one of the supported icon formats (i.e. .png)
      * and returns the name without the extension if it does.
+     *
+     * Otherwise name is returned unchanged.
+     *
+     * Currently supported:
+     *   - png
+     *   - xpm
+     *   - svg  (if libart is being used)
+     *   - svgz (if libart is being used)
+     *
+     * TODO: KDE 4 make public & static
      * @since 3.1
      */
     QString removeIconExtension(const QString &name) const;
+
+    /**
+     * Same as removeIconExtension except it prints a debug message
+     * if an extension is removed to help catch programming errors.
+     *
+     * @see findMatchingIcon()
+     * @see iconPath()
+     *
+     * TODO: KDE 4 make static
+     */
+    QString removeIconExtensionInternal(const QString &name) const;
 
     /**
      * Loads all the different sizes for an iconset.
