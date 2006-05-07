@@ -1331,6 +1331,8 @@ void KToolBar::actionEvent( QActionEvent * event )
     foreach (QWidget* child, widget->findChildren<QWidget*>())
       child->installEventFilter(this);
   }
+
+  adjustSeparatorVisibility();
 }
 
 bool KToolBar::toolBarsEditable( )
@@ -1370,6 +1372,35 @@ void KToolBar::setToolBarsLocked( bool locked )
 bool KToolBar::toolBarsLocked( )
 {
   return KToolBarPrivate::s_locked;
+}
+
+void KToolBar::adjustSeparatorVisibility()
+{
+  bool visibleNonSeparator = false;
+  int separatorToShow = -1;
+  for (int index = 0; index < actions().count(); ++index) {
+    QAction* action = actions()[index];
+    if (action->isSeparator()) {
+      if (visibleNonSeparator) {
+        separatorToShow = index;
+        visibleNonSeparator = false;
+      } else {
+        action->setVisible(false);
+      }
+
+    } else if (!visibleNonSeparator) {
+      if (action->isVisible()) {
+        visibleNonSeparator = true;
+        if (separatorToShow != -1) {
+          actions()[separatorToShow]->setVisible(true);
+          separatorToShow = -1;
+        }
+      }
+    }
+  }
+
+  if (separatorToShow != -1)
+    actions()[separatorToShow]->setVisible(false);
 }
 
 #include "ktoolbar.moc"

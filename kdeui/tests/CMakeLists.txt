@@ -554,6 +554,19 @@ target_link_libraries(kactiontest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
+set(ktoolbartest_SRCS
+ktoolbartest.cpp
+)
+
+kde4_automoc(${ktoolbartest_SRCS})
+
+kde4_add_executable(ktoolbartest RUN_UNINSTALLED ${ktoolbartest_SRCS})
+
+target_link_libraries(ktoolbartest ${KDE4_KDEUI_LIBS})
+
+
+########### next target ###############
+
 set(kdatetimewidgettest_SRCS
 kdatetimewidgettest.cpp
 )

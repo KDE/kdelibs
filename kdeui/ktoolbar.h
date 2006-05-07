@@ -225,6 +225,7 @@ private:
     KMenu *contextMenu();
     bool isMainToolBar() const;
     void setLocked(bool locked);
+    void adjustSeparatorVisibility();
 
     static Qt::ToolButtonStyle toolButtonStyleFromString(const QString& style);
     static QString toolButtonStyleToString(Qt::ToolButtonStyle);
