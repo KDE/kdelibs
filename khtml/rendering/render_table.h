@@ -215,7 +215,7 @@ public:
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
-    void addCell( RenderTableCell *cell );
+    void addCell( RenderTableCell *cell, RenderTableRow *row );
 
     void setCellWidths();
     void calcRowHeight();
@@ -225,10 +225,11 @@ public:
 
     typedef QMemArray<RenderTableCell *> Row;
     struct RowStruct {
-	Row *row;
-	int baseLine;
-	Length height;
-	bool needFlex;
+        Row *row;
+        RenderTableRow* rowRenderer;
+        int baseLine;
+        Length height;
+        bool needFlex;
     };
 
     RenderTableCell *&cellAt( int row,  int col ) {
