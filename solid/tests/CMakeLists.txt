@@ -16,7 +16,7 @@ set(kdehwtest_SRCS
 
 kde4_automoc(${kdehwtest_SRCS})
 
-kde4_add_executable(kdehwtest ${kdehwtest_SRCS})
+kde4_add_executable(kdehwtest RUN_UNINSTALLED ${kdehwtest_SRCS})
 
 target_link_libraries(kdehwtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kdehw kdehwifaces)
 
