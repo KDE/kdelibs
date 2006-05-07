@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcompletiontest.h"
-#include "kcompletiontest.moc"
+#include "kcompletioncoretest.h"
+#include "kcompletioncoretest.moc"
 #include "QtTest/qsignalspy.h"
 
 #define clampet strings[0]

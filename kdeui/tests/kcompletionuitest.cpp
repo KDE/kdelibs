@@ -10,7 +10,7 @@
 #include <klineedit.h>
 #include <kcombobox.h>
 #include <klocale.h>
-#include "kcompletiontest.h"
+#include "kcompletionuitest.h"
 
 /*
  *  Constructs a Form1 which is a child of 'parent', with the
@@ -199,4 +199,4 @@ int main(int argc, char **argv )
 }
 
 
-#include "kcompletiontest.moc"
+#include "kcompletionuitest.moc"

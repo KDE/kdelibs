@@ -102,7 +102,7 @@ target_link_libraries(kcomboboxtest ${KDE4_KDEUI_LIBS})
 ########### next target ###############
 
 set(kcompletiontest_kdeui_SRCS
-kcompletiontest.cpp
+kcompletionuitest.cpp
 )
 
 kde4_automoc(${kcompletiontest_kdeui_SRCS})
@@ -110,6 +110,20 @@ kde4_automoc(${kcompletiontest_kdeui_SRCS})
 kde4_add_executable(kcompletiontest_kdeui RUN_UNINSTALLED ${kcompletiontest_kdeui_SRCS})
 
 target_link_libraries(kcompletiontest_kdeui ${KDE4_KDEUI_LIBS})
+
+
+
+
+set(kcompletiontest_SRCS kcompletioncoretest.cpp )
+
+kde4_automoc(${kcompletiontest_SRCS})
+
+kde4_add_executable(kcompletiontest RUN_UNINSTALLED ${kcompletiontest_SRCS})
+
+target_link_libraries(kcompletiontest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
+
 
 
 ########### next target ###############

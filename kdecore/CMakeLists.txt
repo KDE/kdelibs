@@ -164,10 +164,8 @@ set(kdecore_LIB_SRCS
    ksavefile.cpp
    krandomsequence.cpp
    kstringhandler.cpp
-   kcompletion.cpp
    kcmdlineargs.cpp
    kaboutdata.cpp
-   kcompletionbase.cpp
    knotifyclient.cpp
    kdcoppropertyproxy.cpp
    kprocio.cpp
@@ -331,7 +329,6 @@ install_files( /include FILES
    kshortcut.h
    kstdaccel.h
    kcatalog.h
-   kcompletion.h
    kstringhandler.h
    kstandarddirs.h
    kglobal.h

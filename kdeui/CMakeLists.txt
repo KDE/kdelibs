@@ -143,6 +143,8 @@ set(kdeui_LIB_SRCS
  kglobalaccel.cpp
  ktreewidgetsearchline.cpp
  kkeyserver.cpp
+ kcompletionbase.cpp
+ kcompletion.cpp
 )
 
 if (Q_WS_X11)
@@ -305,6 +307,7 @@ install_files( /include FILES
  ktreewidgetsearchline.h
  kkeyserver_x11.h
  kkeyserver.h
+ kcompletion.h
 )
 
 install(PROGRAMS preparetips DESTINATION bin)

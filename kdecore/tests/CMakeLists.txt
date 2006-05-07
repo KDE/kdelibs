@@ -499,17 +499,6 @@ add_test(kdecore-klibloadertest ${EXECUTABLE_OUTPUT_PATH}/klibloadertest)
 
 ########### next target ###############
 
-set(kcompletiontest_SRCS kcompletiontest.cpp )
-
-kde4_automoc(${kcompletiontest_SRCS})
-
-kde4_add_executable(kcompletiontest RUN_UNINSTALLED ${kcompletiontest_SRCS})
-
-target_link_libraries(kcompletiontest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kdecore-kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
-
-########### next target ###############
 
 set(klockfiletest_SRCS klockfiletest.cpp )
 
