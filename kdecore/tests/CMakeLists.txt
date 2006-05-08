@@ -597,18 +597,6 @@ set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUI
 
 ########### next target ###############
 
-set(knotificationrestrictionstest_SRCS knotificationrestrictionstest.cpp )
-
-kde4_automoc(${knotificationrestrictionstest_SRCS})
-
-kde4_add_executable(knotificationrestrictionstest RUN_UNINSTALLED ${knotificationrestrictionstest_SRCS})
-
-target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
-
-# add_test(kdecore-knotificationrestrictionstest ${EXECUTABLE_OUTPUT_PATH}/knotificationrestrictionstest)
-
-########### next target ###############
-
 set(kautostarttest_SRCS kautostarttest.cpp )
 
 kde4_automoc(${kautostarttest_SRCS})
