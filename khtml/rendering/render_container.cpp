@@ -285,7 +285,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     {
         // The child needs to be removed.
         oldContentPresent = false;
-        removeChild(child);
+        child->detach();
         child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
     }
 
