@@ -216,7 +216,7 @@ QString CAItem::configName() const
 
 
 
-KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name, const QStringList &)
+KCryptoConfig::KCryptoConfig(QWidget *parent, const QStringList &)
   : KCModule(KryptoFactory::instance(), parent)
 {
 QGridLayout *grid;
