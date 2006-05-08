@@ -77,6 +77,7 @@ bool XVHandler::read(QImage *retImage)
 
     if (iodev->read(block, blocksize) != blocksize )
     {
+	free(block);
         return false;
     }
 
