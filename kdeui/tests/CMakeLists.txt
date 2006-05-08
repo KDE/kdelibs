@@ -760,11 +760,12 @@ kde4_add_executable(kactivelabeltest RUN_UNINSTALLED ${kactivelabeltest_SRCS})
 
 target_link_libraries(kactivelabeltest ${KDE4_KDEUI_LIBS})
 
-endif(KDE4_BUILD_TESTS)
 
 ########### next target ###############
 
-set(knotificationrestrictionstest_SRCS knotificationrestrictionstest.cpp )
+set(knotificationrestrictionstest_SRCS
+knotificationrestrictionstest.cpp
+)
 
 kde4_automoc(${knotificationrestrictionstest_SRCS})
 
@@ -772,7 +773,8 @@ kde4_add_executable(knotificationrestrictionstest RUN_UNINSTALLED ${knotificatio
 
 target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
 
-# add_test(kdecore-knotificationrestrictionstest ${EXECUTABLE_OUTPUT_PATH}/knotificationrestrictionstest)
+
+endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 
