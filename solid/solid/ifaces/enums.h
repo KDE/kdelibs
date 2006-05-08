@@ -65,12 +65,14 @@ namespace Enums
          * - OpticalDisc : An optical disc
          * - Camera : A digital camera
          * - PortableMediaPlayer: A portable media player
+         * - NetworkIface: A network interface
          * - Display : A video display
          */
         enum Type { Unknown = 0, Processor = 1, Block = 2,
                     Storage = 4, Cdrom = 8,
                     Volume = 16, OpticalDisc = 32,
-                    Camera = 64, PortableMediaPlayer = 128, Display = 256 };
+                    Camera = 64, PortableMediaPlayer = 128,
+                    NetworkIface = 256, Display = 512 };
 
         /**
          * This type stores an OR combination of Type values.

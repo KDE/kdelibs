@@ -2,7 +2,7 @@ kde4_header()
 
 add_subdirectory( ifaces )
 
-include_directories( ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} ${CMAKE_SOURCE_DIR} )
+include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 
 
 ########### next target ###############
@@ -19,6 +19,7 @@ set(kdehw_LIB_SRCS
    opticaldisc.cpp 
    camera.cpp 
    portablemediaplayer.cpp 
+   networkiface.cpp 
    display.cpp 
    predicate.cpp 
    predicateparse.cpp 
@@ -38,7 +39,7 @@ install_targets(${LIB_INSTALL_DIR} kdehw )
 ########### install files ###############
 
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES  kdehwdevicemanager.desktop )
-install_files( /include/kdehw FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h display.h predicate.h )
+install_files( /include/kdehw FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h display.h predicate.h )
 
 kde4_footer()
 
