@@ -311,6 +311,7 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 
 	if (size != 0 && data) {
             bytes = QByteArray(data,size);
+            delete [] data;
 	}
 
 	return true;
