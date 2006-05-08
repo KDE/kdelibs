@@ -196,7 +196,6 @@ set(kdecore_LIB_SRCS
    kshell.cpp
    kmountpoint.cpp
    kcalendarsystemjalali.cpp
-   knotificationrestrictions.cpp
    kprotocolinfo_kdecore.cpp
    kprotocolinfofactory.cpp
    kxerrorhandler.cpp
@@ -391,7 +390,6 @@ install_files( /include FILES
    conversion_check.h
    kdedmodule.h
    kautostart.h
-   knotificationrestrictions.h
 )
 
 kde4_footer()

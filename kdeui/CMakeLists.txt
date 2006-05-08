@@ -42,6 +42,7 @@ set(kdeui_LIB_SRCS
  knuminput.cpp
  klineedit.cpp
  k3listview.cpp
+ knotificationrestrictions.cpp
  kprogressdialog.cpp
  kprogressbar.cpp
  kcolordialog.cpp
@@ -200,6 +201,7 @@ install_files( /include FILES
  ktoolbar.h
  kmenubar.h
  knuminput.h
+ knotificationrestrictions.h
  kseparator.h
  klineedit.h
  krestrictedline.h
