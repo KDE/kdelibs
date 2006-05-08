@@ -22,7 +22,7 @@
 #include <QHash>
 #include <QList>
 
-#include <kdemacros.h>
+#include <kdeedu_plot_export.h>
 
 class QPixmap;
 class KPlotAxis;
@@ -70,7 +70,7 @@ class KPlotObject;
  *@author Jason Harris
  *@version 1.1
  */
-class KDE_EXPORT KPlotWidget : public QFrame {
+class EDUPLOT_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
 	Q_PROPERTY(int leftPadding READ leftPadding)
 	Q_PROPERTY(int rightPadding READ rightPadding)

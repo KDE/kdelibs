@@ -22,7 +22,7 @@
 #include <QPointF>
 #include <QString>
 
-#include <kdemacros.h>
+#include <kdeedu_plot_export.h>
 
 /**
  * @class KPlotObject
@@ -39,7 +39,7 @@
  * @author Jason Harris
  * @version 1.1
  */
-class KDE_EXPORT KPlotObject{
+class EDUPLOT_EXPORT KPlotObject{
 public:
 	/**
 	 * @enum PTYPE

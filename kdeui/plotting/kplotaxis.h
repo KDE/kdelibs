@@ -20,7 +20,7 @@
 
 #include <QString>
 
-#include <kdemacros.h>
+#include <kdeedu_plot_export.h>
 
 /**
  * @short Axis for KPlotWidget
@@ -30,7 +30,7 @@
  * @author Andreas Nicolai
  * @version 1.0
  */
-class KDE_EXPORT KPlotAxis {
+class EDUPLOT_EXPORT KPlotAxis {
 public:
 
 	/**
