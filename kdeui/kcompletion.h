@@ -127,7 +127,7 @@ class KCompletionMatches;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDECORE_EXPORT KCompletion : public QObject
+class KDEUI_EXPORT KCompletion : public QObject
 {
     Q_ENUMS( CompOrder )
     Q_PROPERTY( CompOrder order READ order WRITE setOrder )
@@ -599,7 +599,7 @@ class KCompletionMatchesPrivate;
  *
  * @short List for keeping matches returned from KCompletion
  */
-class KDECORE_EXPORT KCompletionMatches : public KCompletionMatchesList
+class KDEUI_EXPORT KCompletionMatches : public KCompletionMatchesList
 {
 public:
     KCompletionMatches( bool sort );
@@ -647,7 +647,7 @@ private:
  * @short An abstract class for adding text completion support to widgets.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KDECORE_EXPORT KCompletionBase
+class KDEUI_EXPORT KCompletionBase
 {
 public:
     /**
