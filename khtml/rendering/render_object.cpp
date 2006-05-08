@@ -1553,6 +1553,10 @@ void RenderObject::detach()
     deleteInlineBoxes();
     remove();
 
+    // make sure our DOM-node don't think we exist
+    if ( node() && node()->renderer() == this)
+        node()->setRenderer(0);
+
     // by default no refcounting
     arenaDelete(renderArena(), this);
 }
