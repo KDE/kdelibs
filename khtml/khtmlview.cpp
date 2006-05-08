@@ -696,8 +696,8 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         {
             QPixmap newp( visibleWidth(), PAINT_BUFFER_HEIGHT);
             QPainter p(&newp);
-            p.drawPixmap(0, 0, *d->vertPaintBuffer, 0, 0, d->paintBuffer->width(), qMin( PAINT_BUFFER_HEIGHT, d->vertPaintBuffer->height() ) );
-            *d->vertPaintBuffer = newp;
+            p.drawPixmap(0, 0, *d->paintBuffer, 0, 0, d->paintBuffer->width(), qMin( PAINT_BUFFER_HEIGHT, d->paintBuffer->height() ) );
+            *d->paintBuffer = newp;
         }
 
         int py=0;
