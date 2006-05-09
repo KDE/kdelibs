@@ -771,7 +771,7 @@ kde4_automoc(${knotificationrestrictionstest_SRCS})
 
 kde4_add_executable(knotificationrestrictionstest RUN_UNINSTALLED ${knotificationrestrictionstest_SRCS})
 
-target_link_libraries(knotificationrestrictionstest  ${KDE4_KDECORE_LIBS})
+target_link_libraries(knotificationrestrictionstest  ${KDE4_KDEUI_LIBS})
 
 
 endif(KDE4_BUILD_TESTS)
