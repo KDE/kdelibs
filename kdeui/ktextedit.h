@@ -74,15 +74,20 @@ public:
     virtual void setPalette( const QPalette& palette );
 
     /**
-     * Turns spell checking for this text edit on or off.
+     * Turns spell checking for this text edit on or off. Note that spell
+     * checking is only available in read-writable KTextEdits.
      *
      * @see checkSpellingEnabled()
+     * @see isReadOnly()
+     * @see setReadOnly()
      * @since 3.2
      */
     void setCheckSpellingEnabled( bool check );
 
     /**
      * Returns true if spell checking is enabled for this text edit.
+     * Note that it even returns true if this is a read-only KTextEdit,
+     * where spell checking is actually disabled.
      *
      @ see setCheckSpellingEnabled()
      * @since 3.2

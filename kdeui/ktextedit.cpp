@@ -295,7 +295,7 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
 
 void KTextEdit::focusInEvent( QFocusEvent *e )
 {
-    if ( d->checkSpellingEnabled && !d->highlighter )
+    if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter )
         d->highlighter = new KDictSpellingHighlighter( this );
 
     QTextEdit::focusInEvent( e );
@@ -308,11 +308,17 @@ bool KTextEdit::checkSpellingEnabled() const
 
 void KTextEdit::setReadOnly(bool readOnly)
 {
+    if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->highlighter )
+        d->highlighter = new KDictSpellingHighlighter( this );
+	
     if ( readOnly == isReadOnly() )
         return;
 
     if (readOnly)
     {
+	delete d->highlighter;
+	d->highlighter = 0;
+	    
         bool custom = ownPalette();
         QPalette p = palette();
         QColor color = p.color(QPalette::Disabled, QColorGroup::Background);

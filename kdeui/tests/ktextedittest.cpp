@@ -26,6 +26,8 @@ int main( int argc, char **argv )
 {
     KApplication app( argc, argv, "ktextedittest" );
     KTextEdit *edit = new KTextEdit();
+    edit->setReadOnly( true );
+    edit->setCheckSpellingEnabled( true );
 
     QFile file( "ktextedittest.cpp" );
     if ( file.open( IO_ReadOnly ) )
@@ -36,5 +38,6 @@ int main( int argc, char **argv )
 
     edit->resize( 600, 600 );
     edit->show();
+    edit->setReadOnly( false ); // also enables spell checking
     return app.exec();
 }
