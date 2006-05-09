@@ -5,10 +5,8 @@
 #
 #Format : number<tab>description
 
-125        kdecore (KAccel)
 126        kdecore (KUrl)
 127        kio (KProtocolInfo)
-128        kdecore (KRegExp)
 129        kdecore (KAction)
 130        kio (KPasswdServer)
 150        kdecore (KLibLoader)
@@ -34,8 +32,7 @@
 270        kdeui (KRootPixmap)
 280        kdeui (KSharedPixmap)
 281        kdeui (KCModule)
-282        kdeui (KDockWidget)
-290        kdeui (KPixmapIO)
+282        kdeui (K3DockWidget)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
 293        kdeui (KLineEdit)
@@ -176,11 +173,11 @@
 5224        kitchensync Desktop
 5225        kitchensync (QtopiaKonnector)
 5226        kitchensync Categories
-5227 	    kitchensync Todo
-5228	    kitchensync AddressBook
-5229	    kitchensync Datebook
-5230	    kitchensync SyncEntry
-5231	    kitchensync SyncUI
+5227        kitchensync Todo
+5228        kitchensync AddressBook
+5229        kitchensync Datebook
+5230        kitchensync SyncEntry
+5231        kitchensync SyncUI
 5250        kitchensync (Syncing Algorithm)
 5300        libkdepim
 5310        kprefs
@@ -439,7 +436,7 @@
 20012        KDB (plugin)
 
 #kfilereplace
-23000 	     KFileReplace (kfilereplacepart)
+23000        KFileReplace (kfilereplacepart)
 
 #klinkstatus
 23100        KLinkStatus
@@ -458,12 +455,12 @@
 25005        Kafka (kafkadom)
 
 # KSVG
-26000	KSVG
-26001	KSVG - Parser
-26002	KSVG - Rendering
-26003	KSVG - KPart
-26004	KSVG - Ecma
-26005	KSVG - Canvas
+26000   KSVG
+26001   KSVG - Parser
+26002   KSVG - Rendering
+26003   KSVG - KPart
+26004   KSVG - Ecma
+26005   KSVG - Canvas
 
 26500  KDOM XInclude
 26550  KDOM XPointer
@@ -552,42 +549,42 @@
 44021        Kexi (plugins)
 
 # kdeextragear
-50001	kfortune
+50001   kfortune
 
 # KIPI - KDE Imaging Plugin Interface
 51000   KIPI (general)
 51001   KIPI (loading)
 
 # kdemultimedia
-60001	kreatecd
-60002	kaudiocreator
-60005	krec
+60001   kreatecd
+60002   kaudiocreator
+60005   krec
 60010   libkcddb
 65432   juk
-66666	noatun
-67000	kscd
-67100	kmix
-67200	kmid
+66666   noatun
+67000   kscd
+67100   kmix
+67200   kmid
 
 # kdebindings
 70001	dcoppython
 80001	kjsembed
 
 # kdeaddons
-90000	vimpart
-90010	noatun-plugins (dub)
-90020	noatun-plugins (lyrics)
-90100	konq-plugins (fsview)
-90110	konq-plugins (webarchiver)
-90120	konq-plugins (validators)
-90130	konq-plugins (uachanger)
-90140	konq-plugins (sidebar - newsticker)
-90150	konq-plugins (minitools)
-90160	konq-plugins (kuick)
-90170	konq-plugins (kimgalleryplugin)
-90180	konq-plugins (domtreeviewer)
-90190	konq-plugins (dirfilter)
-90200	kicker-applets (mediacontrol)
+90000   vimpart
+90010   noatun-plugins (dub)
+90020   noatun-plugins (lyrics)
+90100   konq-plugins (fsview)
+90110   konq-plugins (webarchiver)
+90120   konq-plugins (validators)
+90130   konq-plugins (uachanger)
+90140   konq-plugins (sidebar - newsticker)
+90150   konq-plugins (minitools)
+90160   konq-plugins (kuick)
+90170   konq-plugins (kimgalleryplugin)
+90180   konq-plugins (domtreeviewer)
+90190   konq-plugins (dirfilter)
+90200   kicker-applets (mediacontrol)
 90210   konq-plugins (rellinks)
 
 
