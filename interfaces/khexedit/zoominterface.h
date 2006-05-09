@@ -15,8 +15,8 @@
  ***************************************************************************/
 
 
-#ifndef ZOOMINTERFACE_H
-#define ZOOMINTERFACE_H
+#ifndef KHE_ZOOMINTERFACE_H
+#define KHE_ZOOMINTERFACE_H
 
 
 namespace KHE
@@ -25,7 +25,7 @@ namespace KHE
 /**
  * @short A simple interface for zooming
  *
- * This interface enables abstract linear zooming. 
+ * This interface enables abstract linear zooming.
  * It operates in sizes of font point size.
  *
  * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
@@ -34,7 +34,9 @@ namespace KHE
 class ZoomInterface
 {
   public:
-	virtual ~ZoomInterface(){}
+    virtual ~ZoomInterface() {}
+
+  public:
     /** enlarges the display
       * @param PointInc increment to the display size (in font point size)
       */
@@ -60,19 +62,18 @@ class ZoomInterface
 };
 
 
-/** tries to get the zoom interface of t   
+/** tries to get the zoom interface of t
   * @return a pointer to the interface, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
 */
 template<class T>
 ZoomInterface *zoomInterface( T *t )
 {
-  if( !t )
-    return 0;
-
-  return static_cast<ZoomInterface*>( t->qt_cast("KHE::ZoomInterface") );
+  return t ? qobject_cast<KHE::ZoomInterface *>( t ) : 0;
 }
 
 }
+
+Q_DECLARE_INTERFACE( KHE::ZoomInterface, "org.kde.khe.zoominterface/1.0" )
 
 #endif

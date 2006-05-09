@@ -15,8 +15,8 @@
  ***************************************************************************/
 
 
-#ifndef VALUECOLUMNINTERFACE_H
-#define VALUECOLUMNINTERFACE_H
+#ifndef KHE_VALUECOLUMNINTERFACE_H
+#define KHE_VALUECOLUMNINTERFACE_H
 
 namespace KHE
 {
@@ -31,7 +31,9 @@ namespace KHE
 class ValueColumnInterface
 {
   public:
-	virtual ~ValueColumnInterface(){}
+    virtual ~ValueColumnInterface() {}
+
+  public:
     /** collection of ids for the different numeric codings of a byte */
     enum KCoding
     {
@@ -158,12 +160,11 @@ class ValueColumnInterface
 template<class T>
 ValueColumnInterface *valueColumnInterface( T *t )
 {
-  if( !t )
-    return 0;
-
-  return static_cast<ValueColumnInterface*>( t->qt_cast("KHE::ValueColumnInterface") );
+  return t ? qobject_cast<KHE::ValueColumnInterface *>( t ) : 0;
 }
 
 }
+
+Q_DECLARE_INTERFACE( KHE::ValueColumnInterface, "org.kde.khe.valuecolumninterface/1.0" )
 
 #endif

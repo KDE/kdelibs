@@ -15,13 +15,13 @@
  ***************************************************************************/
 
 
-#ifndef BYTESEDITINTERFACE_H
-#define BYTESEDITINTERFACE_H
+#ifndef KHE_BYTESEDITINTERFACE_H
+#define KHE_BYTESEDITINTERFACE_H
 
 // kde specific
 #include <kparts/componentfactory.h>
 
-#include <qwidget.h>
+class QWidget;
 
 /**
  * @short KHE (short for KHexEdit) is KDE's namespace for all things related
@@ -73,8 +73,8 @@ namespace KHE
 class BytesEditInterface
 {
   public:
-    //static const char Name[] = "KHE::BytesEditInterface";
-	virtual ~BytesEditInterface(){}
+    virtual ~BytesEditInterface() {}
+
   public: // set methods
     /** hands over to the editor a new byte array.
       * If there exists an old one and autodelete is set the old one gets deleted.
@@ -152,10 +152,7 @@ class BytesEditInterface
 template<class T>
 inline BytesEditInterface *bytesEditInterface( T *t )
 {
-  if( !t )
-    return 0;
-
-  return static_cast<BytesEditInterface*>( t->qt_cast("KHE::BytesEditInterface") );
+  return t ? qobject_cast<KHE::BytesEditInterface *>( t ) : 0;
 }
 
 /** tries to create an instance of a hexedit widget for arrays of chars (char[])
@@ -208,17 +205,18 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   * \endcode
   *
   * @param Parent  parent widget
-  * @param Name    identifier
   * @return a pointer to the widget, otherwise 0
   * @author Friedrich W. H. Kossebau <Friedrich.W.H@Kossebau.de>
   * @see BytesEditInterface, ValueColumnInterface, CharColumnInterface, ZoomInterface, ClipboardInterface
   */
-inline QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
+inline QWidget *createBytesEditWidget( QWidget *Parent = 0 )
 {
   return KParts::ComponentFactory::createInstanceFromQuery<QWidget>
-      ( QLatin1String("KHexEdit/KBytesEdit"), QString(), Parent, Name );
+      ( QLatin1String("KHexEdit/KBytesEdit"), QString(), Parent );
 }
 
 }
+
+Q_DECLARE_INTERFACE( KHE::BytesEditInterface, "org.kde.khe.byteseditinterface/1.0" )
 
 #endif

@@ -15,10 +15,8 @@
  ***************************************************************************/
 
 
-#ifndef CHARCOLUMNINTERFACE_H
-#define CHARCOLUMNINTERFACE_H
-
-#include <qstring.h>
+#ifndef KHE_CHARCOLUMNINTERFACE_H
+#define KHE_CHARCOLUMNINTERFACE_H
 
 namespace KHE
 {
@@ -32,7 +30,9 @@ namespace KHE
 class CharColumnInterface
 {
   public:
-	virtual ~CharColumnInterface(){}
+    virtual ~CharColumnInterface(){}
+
+  public:
     /** encoding used to display the symbols in the text column */
     enum KEncoding
     {
@@ -93,12 +93,11 @@ class CharColumnInterface
 template<class T>
 CharColumnInterface *charColumnInterface( T *t )
 {
-  if( !t )
-    return 0;
-
-  return static_cast<CharColumnInterface*>( t->qt_cast("KHE::CharColumnInterface") );
+  return t ? qobject_cast<KHE::CharColumnInterface *>( t ) : 0;
 }
 
 }
+
+Q_DECLARE_INTERFACE( KHE::CharColumnInterface, "org.kde.khe.charcolumninterface/1.0" )
 
 #endif

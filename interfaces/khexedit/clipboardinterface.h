@@ -15,8 +15,8 @@
  ***************************************************************************/
 
 
-#ifndef CLIPBOARDINTERFACE_H
-#define CLIPBOARDINTERFACE_H
+#ifndef KHE_CLIPBOARDINTERFACE_H
+#define KHE_CLIPBOARDINTERFACE_H
 
 namespace KHE
 {
@@ -44,13 +44,15 @@ namespace KHE
  */
 class ClipboardInterface
 {
+  public:
+    virtual ~ClipboardInterface() {}
+
   public: // slots
-	virtual ~ClipboardInterface(){}
     /** tries to copy. If there is nothing to copy this call is a noop. */
     virtual void copy() = 0;
     /** tries to cut. If there is nothing to cut this call is a noop. */
     virtual void cut() = 0;
-    /** tries to paste. 
+    /** tries to paste.
       * If there is nothing to paste or paste is not possible this call is a noop.
       * Use BytesEditInterface::isReadOnly() to find out if you can paste at all.
       */
@@ -74,12 +76,11 @@ class ClipboardInterface
 template<class T>
 ClipboardInterface *clipboardInterface( T *t )
 {
-  if( !t )
-    return 0;
-
-  return static_cast<ClipboardInterface*>( t->qt_cast("KHE::ClipboardInterface") );
+  return t ? qobject_cast<KHE::ClipboardInterface *>( t ) : 0;
 }
 
 }
+
+Q_DECLARE_INTERFACE( KHE::ClipboardInterface, "org.kde.khe.clipboardinterface/1.0" )
 
 #endif
