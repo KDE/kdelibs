@@ -55,9 +55,9 @@ bool Lock::readLockFile( const QString &filename, int &pid, QString &app )
 {
   QFile file( filename );
   if ( !file.open( IO_ReadOnly ) ) return false;
-  
+
   QTextStream t( &file );
-  t >> pid >> ws >> app;
+  t >> pid >> endl >> app;
 
   return true;
 }
@@ -102,8 +102,8 @@ bool Lock::lock()
       QString identifier( mIdentifier );
       identifier.replace( '_', '/' );
 
-      mError = i18n("The resource '%1' is locked by application '%2'.")
-               .arg( identifier ).arg( app );
+      mError = i18n("The address book '%1' is locked by application '%2'.\nIf you believe this is incorrect, just remove the lock file from '%3'")
+               .arg( identifier ).arg( app ).arg( locateLocal( "data", "kabc/lock/*.lock" ) );
       return false;
     }
   }
