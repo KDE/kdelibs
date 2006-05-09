@@ -246,6 +246,8 @@ void KSystemTray::activateOrHide()
         while( it.hasPrevious() )
         {
             WId id = it.previous();
+            if( id == pw->winId() )
+                break;
             KWin::WindowInfo info2 = KWin::windowInfo( id,
                 NET::WMGeometry | NET::XAWMState | NET::WMState | NET::WMWindowType );
             if( info2.mappingState() != NET::Visible )
