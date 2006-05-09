@@ -817,13 +817,16 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 	if ((overlay & K3Icon::ShareOverlay) &&
 	    ((ovl = loadOverlay(theme->shareOverlay(), size)) != 0L))
 	  KIconEffect::overlay(*img, *ovl);
-        if (overlay & K3Icon::HiddenOverlay)
+        if (overlay & K3Icon::HiddenOverlay) 
+        {
+	    *img = img->convertToFormat(QImage::Format_ARGB32);
             for (int y = 0; y < img->height(); y++)
             {
-		quint32 *line = reinterpret_cast<quint32 *>(img->scanLine(y));
+		QRgb* line = reinterpret_cast<QRgb *>(img->scanLine(y));
                 for (int x = 0; x < img->width();  x++)
                     line[x] = (line[x] & 0x00ffffff) | (qMin(0x80, qAlpha(line[x])) << 24);
 	    }
+	}
     }
 
     // Scale the icon and apply effects if necessary
