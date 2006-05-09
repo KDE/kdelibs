@@ -137,11 +137,11 @@ add_subdirectory( dnssd )
 # write the installdirs into a cmake file which will be installed
 file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake 
 "# this file was generated during the kdelibs build process
-set(KDE4_INSTALL_DIR         ${CMAKE_INSTALL_PREFIX})
-set(KDE4_LIB_INSTALL_DIR     ${CMAKE_INSTALL_PREFIX}${LIB_INSTALL_DIR})
-set(KDE4_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include)
-set(KDE4_BIN_INSTALL_DIR     ${CMAKE_INSTALL_PREFIX}/bin)
-set(KDE4_DATA_INSTALL_DIR    ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
+set(KDE4_INSTALL_DIR         \"${CMAKE_INSTALL_PREFIX}\")
+set(KDE4_LIB_INSTALL_DIR     \"${CMAKE_INSTALL_PREFIX}${LIB_INSTALL_DIR}\")
+set(KDE4_INCLUDE_INSTALL_DIR \"${CMAKE_INSTALL_PREFIX}/include\")
+set(KDE4_BIN_INSTALL_DIR     \"${CMAKE_INSTALL_PREFIX}/bin\")
+set(KDE4_DATA_INSTALL_DIR    \"${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR}\")
 ")
 
 # ...and append all library dependencies
