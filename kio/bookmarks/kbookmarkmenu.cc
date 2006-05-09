@@ -406,8 +406,9 @@ void KBookmarkMenu::refill()
   m_lstSubMenus.clear();
 
   for ( QList<KAction *>::iterator it = m_actions.begin(), end = m_actions.end() ;
-        it != end ; ++it ) {
-    (*it)->unplug( m_parentMenu );
+        it != end ; ++it ) 
+  {
+        m_parentMenu->removeAction(*it);
   }
 
   m_parentMenu->clear();
@@ -429,7 +430,7 @@ void KBookmarkMenu::addAddBookmarksList()
   paAddBookmarksList->setToolTip( i18n( "Add a folder of bookmarks for all open tabs." ) );
   connect( paAddBookmarksList, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
 
-  paAddBookmarksList->plug( m_parentMenu );
+  m_parentMenu->addAction(paAddBookmarksList);
   m_actions.append( paAddBookmarksList );
 }
 
@@ -446,7 +447,7 @@ void KBookmarkMenu::addAddBookmark()
   paAddBookmarks->setToolTip( i18n( "Add a bookmark for the current document" ) );
   connect( paAddBookmarks, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmark() ) );
 
-  paAddBookmarks->plug( m_parentMenu );
+  m_parentMenu->addAction(paAddBookmarks);
   m_actions.append( paAddBookmarks );
 }
 
@@ -457,7 +458,7 @@ void KBookmarkMenu::addEditBookmarks()
 
   KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
                                                              m_actionCollection, "edit_bookmarks" );
-  m_paEditBookmarks->plug( m_parentMenu );
+  m_parentMenu->addAction(m_paEditBookmarks);
   m_paEditBookmarks->setToolTip( i18n( "Edit your bookmark collection in a separate window" ) );
   m_actions.append( m_paEditBookmarks );
 }
@@ -475,7 +476,7 @@ void KBookmarkMenu::addNewFolder()
   paNewFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
   connect( paNewFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
 
-  paNewFolder->plug( m_parentMenu );
+  m_parentMenu->addAction(paNewFolder);
   m_actions.append( paNewFolder );
 }
 
@@ -527,7 +528,7 @@ void KBookmarkMenu::fillBookmarkMenu()
        actionMenu->setProperty( "type", info.type );
        actionMenu->setProperty( "location", info.location );
 
-       actionMenu->plug( m_parentMenu );
+       m_parentMenu->addAction(actionMenu);
        m_actions.append( actionMenu );
 
        KBookmarkMenu *subMenu =
@@ -571,7 +572,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
         action->setToolTip( bm.url().pathOrURL() );
 
-        action->plug( m_parentMenu );
+        m_parentMenu->addAction(action);
         m_actions.append( action );
       }
     }
@@ -582,7 +583,7 @@ void KBookmarkMenu::fillBookmarkMenu()
                                                           m_actionCollection,
                                                           "kbookmarkmenu" );
       actionMenu->setProperty( "address", bm.address() );
-      actionMenu->plug( m_parentMenu );
+      m_parentMenu->addAction(actionMenu);
       m_actions.append( actionMenu );
 
       KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->kMenu(),
@@ -981,7 +982,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString &
           m_menu, SLOT( slotBookmarkSelected(Qt::MouseButtons, Qt::KeyboardModifiers) ));
   action->setProperty( "url", url );
   action->setToolTip( url );
-  action->plug( mstack.top()->m_parentMenu );
+  mstack.top()->m_parentMenu->addAction(action);
   mstack.top()->m_actions.append( action );
 }
 
@@ -990,7 +991,7 @@ void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QStri
   QString _text = KStringHandler::csqueeze(text);
   _text.replace( '&', "&&" );
   KActionMenu * actionMenu = new KActionMenu( KIcon("folder"), _text, m_actionCollection, 0L );
-  actionMenu->plug( mstack.top()->m_parentMenu );
+  mstack.top()->m_parentMenu->addAction(actionMenu);
   mstack.top()->m_actions.append( actionMenu );
   KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_menu->m_pOwner, actionMenu->kMenu(),
                                               m_actionCollection, false,

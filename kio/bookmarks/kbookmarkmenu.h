@@ -193,7 +193,7 @@ protected:
   KBookmarkManager * m_pManager;
   KBookmarkOwner *m_pOwner;
   /**
-   * The menu in which we plug our actions.
+   * The menu in which we insert our actions
    * Supplied in the constructor.
    */
   KMenu * m_parentMenu;
