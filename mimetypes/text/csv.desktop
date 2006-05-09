@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=txt
+Type=MimeType
+MimeType=text/csv
+Patterns=*.csv;*.CSV;
+X-KDE-IsAlso=text/x-csv
+Comment=Text File with Comma Separated Values
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
