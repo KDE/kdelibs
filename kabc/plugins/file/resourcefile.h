@@ -28,14 +28,6 @@
 
 #include <kabc/resource.h>
 
-class QFile;
-class QTimer;
-class KTempFile;
-
-namespace KIO {
-class Job;
-}
-
 namespace KABC {
 
 class FormatPlugin;
@@ -135,8 +127,10 @@ class KABC_EXPORT ResourceFile : public Resource
     virtual void removeAddressee( const Addressee& addr );
 
   private slots:
-    void downloadFinished( KIO::Job* );
-    void uploadFinished( KIO::Job* );
+    void emitLoadingFinished();
+    void emitLoadingError();
+    void emitSavingFinished();
+    void emitSavingError();
 
   protected slots:
     void fileChanged();
@@ -148,15 +142,6 @@ class KABC_EXPORT ResourceFile : public Resource
     void unlock( const QString &fileName );
 
   private:
-    bool clearAndLoad( QFile *file );
-    void saveToFile( QFile *file );
-    void abortAsyncLoading();
-    void abortAsyncSaving();
-    bool createLocalTempFile();
-    void deleteLocalTempFile();
-    void deleteStaleTempFile();
-    bool hasTempFile() const { return mTempFile != 0; }
-
     QString mFileName;
     QString mFormatName;
 
@@ -165,8 +150,6 @@ class KABC_EXPORT ResourceFile : public Resource
     Lock *mLock;
 
     KDirWatch mDirWatch;
-
-    KTempFile *mTempFile;
 
     bool mAsynchronous;
 
