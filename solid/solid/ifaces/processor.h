@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_PROCESSOR_H
 #define KDEHW_IFACES_PROCESSOR_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
@@ -29,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on processors.
      */
-    class Processor : virtual public Capability
+    class KDE_EXPORT Processor : virtual public Capability
     {
 //         Q_PROPERTY( int number READ number )
 //         Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )

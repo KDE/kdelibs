@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QList>
 
+#include <kdelibs_export.h>
+
 #include <kstaticdeleter.h>
 #include <kdehw/predicate.h>
 
@@ -46,7 +48,7 @@ namespace KDEHW
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class DeviceManager : public QObject
+    class KDE_EXPORT DeviceManager : public QObject
     {
         Q_OBJECT
 

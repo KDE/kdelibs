@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_VOLUME_H
 #define KDEHW_IFACES_VOLUME_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/block.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -35,7 +37,7 @@ namespace Ifaces
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class Volume : virtual public Block, public Enums::Volume
+    class KDE_EXPORT Volume : virtual public Block, public Enums::Volume
     {
 //         Q_PROPERTY( bool ignored READ isIgnored )
 //         Q_PROPERTY( bool mounted READ isMounted )

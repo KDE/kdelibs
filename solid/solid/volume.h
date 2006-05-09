@@ -20,6 +20,8 @@
 #ifndef KDEHW_VOLUME_H
 #define KDEHW_VOLUME_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/block.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -38,7 +40,7 @@ namespace KDEHW
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class Volume : public Block, public Ifaces::Enums::Volume
+    class KDE_EXPORT Volume : public Block, public Ifaces::Enums::Volume
     {
         Q_OBJECT
     public:

@@ -22,6 +22,8 @@
 
 #include <QStringList>
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -39,7 +41,7 @@ namespace KDEHW
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class PortableMediaPlayer : public Capability, public Ifaces::Enums::PortableMediaPlayer
+    class KDE_EXPORT PortableMediaPlayer : public Capability, public Ifaces::Enums::PortableMediaPlayer
     {
         Q_OBJECT
     public:

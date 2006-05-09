@@ -21,6 +21,9 @@
 #define KDEHW_CDROM_H
 
 #include <QList>
+
+#include <kdelibs_export.h>
+
 #include <kdehw/storage.h>
 
 namespace KDEHW
@@ -35,7 +38,7 @@ namespace KDEHW
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class Cdrom : public Storage, public Ifaces::Enums::Cdrom
+    class KDE_EXPORT Cdrom : public Storage, public Ifaces::Enums::Cdrom
     {
         Q_OBJECT
     public:

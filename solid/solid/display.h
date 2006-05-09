@@ -20,6 +20,8 @@
 #ifndef KDEHW_DISPLAY_H
 #define KDEHW_DISPLAY_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 
 namespace KDEHW
@@ -35,7 +37,7 @@ namespace KDEHW
      * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class Display : public Capability, public Ifaces::Enums::Display
+    class KDE_EXPORT Display : public Capability, public Ifaces::Enums::Display
     {
         Q_OBJECT
     public:

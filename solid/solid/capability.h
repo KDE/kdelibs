@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QFlags>
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/enums.h>
 
 namespace KDEHW
@@ -33,7 +35,7 @@ namespace KDEHW
      * A capability describes what a device can do. A device generally has
      * a set of capabilities.
      */
-    class Capability : public QObject, public Ifaces::Enums::Capability
+    class KDE_EXPORT Capability : public QObject, public Ifaces::Enums::Capability
     {
         Q_OBJECT
     public:

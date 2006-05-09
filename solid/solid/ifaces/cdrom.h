@@ -21,6 +21,9 @@
 #define KDEHW_IFACES_CDROM_H
 
 #include <QList>
+
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/storage.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -33,7 +36,7 @@ namespace Ifaces
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class Cdrom : virtual public Storage, public Enums::Cdrom
+    class KDE_EXPORT Cdrom : virtual public Storage, public Enums::Cdrom
     {
 //         Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
 //         Q_PROPERTY( int readSpeed READ readSpeed )

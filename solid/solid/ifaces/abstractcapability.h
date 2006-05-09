@@ -21,6 +21,9 @@
 #define KDEHW_IFACES_ABSTRACTCAPABILITY_H
 
 #include <QObject>
+
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
@@ -32,7 +35,7 @@ namespace Ifaces
      *
      * @see KDEHW::Ifaces::Capability
      */
-    class AbstractCapability : public QObject, virtual public Capability
+    class KDE_EXPORT AbstractCapability : public QObject, virtual public Capability
     {
         Q_OBJECT
     public:

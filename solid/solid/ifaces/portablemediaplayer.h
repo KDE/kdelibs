@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_PORTABLEMEDIAPLAYER_H
 #define KDEHW_IFACES_PORTABLEMEDIAPLAYER_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -34,7 +36,7 @@ namespace Ifaces
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
+    class KDE_EXPORT PortableMediaPlayer : virtual public Capability, public Enums::PortableMediaPlayer
     {
 //        Q_PROPERTY( AccessType accessMethod READ accessMethod )
 //        Q_PROPERTY( QStringList outputFormats READ outputFormats )

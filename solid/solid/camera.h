@@ -20,6 +20,8 @@
 #ifndef KDEHW_CAMERA_H
 #define KDEHW_CAMERA_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -40,7 +42,7 @@ namespace KDEHW
      * method can be different from the typical storage device, hence
      * why it's a separate capability.
      */
-    class Camera : public Capability, public Ifaces::Enums::Camera
+    class KDE_EXPORT Camera : public Capability, public Ifaces::Enums::Camera
     {
         Q_OBJECT
     public:

@@ -95,7 +95,7 @@ KDEHW::DeviceManager::DeviceManager()
 
         if ( factory )
         {
-            backend = (Ifaces::DeviceManager*)factory->create( 0, "Device Manager", "KDEHW::Ifaces::DeviceManager" );
+            backend = (Ifaces::DeviceManager*)factory->create( 0, "KDEHW::Ifaces::DeviceManager" );
 
             if( backend != 0 )
             {

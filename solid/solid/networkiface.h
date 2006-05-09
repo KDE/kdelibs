@@ -20,6 +20,8 @@
 #ifndef KDEHW_NETWORKIFACE_H
 #define KDEHW_NETWORKIFACE_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 
 namespace KDEHW
@@ -32,7 +34,7 @@ namespace KDEHW
     /**
      * This capability is available on network interfaces.
      */
-    class NetworkIface : public Capability
+    class KDE_EXPORT NetworkIface : public Capability
     {
         Q_OBJECT
     public:

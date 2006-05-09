@@ -25,6 +25,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
@@ -41,7 +43,7 @@ namespace Ifaces
      * available devices. It has also the responsibility to notify when a device
      * appear or disappear.
      */
-    class DeviceManager : public QObject
+    class KDE_EXPORT DeviceManager : public QObject
     {
         Q_OBJECT
 

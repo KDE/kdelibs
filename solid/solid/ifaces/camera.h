@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_CAMERA_H
 #define KDEHW_IFACES_CAMERA_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -37,7 +39,7 @@ namespace Ifaces
      * method can be different from the typical storage device, hence
      * why it's a separate capability.
      */
-    class Camera : virtual public Capability, public Enums::Camera
+    class KDE_EXPORT Camera : virtual public Capability, public Enums::Camera
     {
 //         Q_PROPERTY( AccessType accessMethod READ accessMethod )
 //         Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )

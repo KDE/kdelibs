@@ -20,6 +20,8 @@
 #ifndef KDEHW_STORAGE_H
 #define KDEHW_STORAGE_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/block.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -36,7 +38,7 @@ namespace KDEHW
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class Storage : public Block, public Ifaces::Enums::Storage
+    class KDE_EXPORT Storage : public Block, public Ifaces::Enums::Storage
     {
         Q_OBJECT
     public:

@@ -20,8 +20,11 @@
 #ifndef KDEHW_PREDICATE_H
 #define KDEHW_PREDICATE_H
 
-#include <kdehw/capability.h>
 #include <QVariant>
+
+#include <kdelibs_export.h>
+
+#include <kdehw/capability.h>
 
 namespace KDEHW
 {
@@ -40,7 +43,7 @@ namespace KDEHW
      *
      * FIXME: Add an example.
      */
-    class Predicate
+    class KDE_EXPORT Predicate
     {
     public:
         /**

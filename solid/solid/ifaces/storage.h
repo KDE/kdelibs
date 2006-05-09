@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_STORAGE_H
 #define KDEHW_IFACES_STORAGE_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/block.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -33,7 +35,7 @@ namespace Ifaces
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class Storage : virtual public Block, public Enums::Storage
+    class KDE_EXPORT Storage : virtual public Block, public Enums::Storage
     {
 //         Q_PROPERTY( Bus bus READ bus )
 //         Q_PROPERTY( DriveType driveType READ driveType )

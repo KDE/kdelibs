@@ -26,6 +26,8 @@
 #include <QMap>
 #include <QList>
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 #include <kdehw/ifaces/enums.h>
 
@@ -54,7 +56,7 @@ namespace KDEHW
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class Device : public QObject, public Ifaces::Enums::Device
+    class KDE_EXPORT Device : public QObject, public Ifaces::Enums::Device
     {
         Q_OBJECT
     public:

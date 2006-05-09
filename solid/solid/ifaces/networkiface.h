@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_NETWORKIFACE_H
 #define KDEHW_IFACES_NETWORKIFACE_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
@@ -29,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on network interfaces.
      */
-    class NetworkIface : virtual public Capability
+    class KDE_EXPORT NetworkIface : virtual public Capability
     {
 //         Q_PROPERTY( QString ifaceName READ ifaceName )
 //         Q_PROPERTY( bool wireless READ isWireless )

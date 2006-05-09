@@ -20,6 +20,8 @@
 #ifndef KDEHW_BLOCK_H
 #define KDEHW_BLOCK_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 
 namespace KDEHW
@@ -36,7 +38,7 @@ namespace KDEHW
      * It is possible to interact with such a device using a special file
      * in the system.
      */
-    class Block : public Capability
+    class KDE_EXPORT Block : public Capability
     {
         Q_OBJECT
     public:

@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QFlags>
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/enums.h>
 
 namespace KDEHW
@@ -37,7 +39,7 @@ namespace Ifaces
      *
      * @see KDEHW::Ifaces::AbstractCapability
      */
-    class Capability : public Enums::Capability
+    class KDE_EXPORT Capability : public Enums::Capability
     {
     public:
         /**

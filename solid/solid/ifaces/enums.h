@@ -239,6 +239,29 @@ namespace Enums
     };
 
     /**
+     * This struct holds the enumerations used by KDEHW::Battery
+     * and KDEHW::Ifaces::Battery. You shouldn't use it directly.
+     */
+    struct Battery
+    {
+        /**
+         * This enum type defines the type of the device holding the battery
+         *
+         * - PdaBattery : A battery in a Personal Digital Assistant
+         * - UpsBattery : A battery in an Uninterruptible Power Supply
+         * - PrimaryBattery : A primary battery for the system (for example laptop battery)
+         * - MouseBattery : A battery in a mouse
+         * - KeyboardBattery : A battery in a keyboard
+         * - KeyboardMouseBattery : A battery in a combined keyboard and mouse
+         * - CameraBattery : A battery in a camera
+         * - UnknownBattery : A battery in an unknown device
+         */
+         enum BatteryType { UnknownBattery, PdaBattery, UpsBattery,
+                            PrimaryBattery, MouseBattery, KeyboardBattery,
+                            KeyboardMouseBattery, CameraBattery };
+    };
+
+    /**
      * This struct holds the enumerations used by KDEHW::Display
      * and KDEHW::Ifaces::Display. You shouldn't use it directly.
      */

@@ -20,6 +20,8 @@
 #ifndef KDEHW_PROCESSOR_H
 #define KDEHW_PROCESSOR_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/capability.h>
 
 namespace KDEHW
@@ -32,7 +34,7 @@ namespace KDEHW
     /**
      * This capability is available on processors.
      */
-    class Processor : public Capability
+    class KDE_EXPORT Processor : public Capability
     {
         Q_OBJECT
     public:

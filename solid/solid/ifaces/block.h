@@ -20,6 +20,8 @@
 #ifndef KDEHW_IFACES_BLOCK_H
 #define KDEHW_IFACES_BLOCK_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/ifaces/capability.h>
 
 namespace KDEHW
@@ -33,7 +35,7 @@ namespace Ifaces
      * It is possible to interact with such a device using a special file
      * in the system.
      */
-    class Block : virtual public Capability
+    class KDE_EXPORT Block : virtual public Capability
     {
 //         Q_PROPERTY( int major READ major )
 //         Q_PROPERTY( int minor READ minor )

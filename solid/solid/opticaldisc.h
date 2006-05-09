@@ -20,6 +20,8 @@
 #ifndef KDEHW_OPTICALDISC_H
 #define KDEHW_OPTICALDISC_H
 
+#include <kdelibs_export.h>
+
 #include <kdehw/volume.h>
 
 namespace KDEHW
@@ -34,7 +36,7 @@ namespace KDEHW
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
+    class KDE_EXPORT OpticalDisc : public Volume, public Ifaces::Enums::OpticalDisc
     {
         Q_OBJECT
     public:
