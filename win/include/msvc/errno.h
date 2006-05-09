@@ -26,6 +26,8 @@
 #ifndef _CRT_ERRNO_DEFINED
 #define _CRT_ERRNO_DEFINED
 KDEWIN32_EXPORT int __cdecl _set_errno(int value);
+#else
+#define _KDEWIN_DONT_IMPLEMENT_SET_ERRNO
 #endif
 
 #endif

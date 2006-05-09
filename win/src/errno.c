@@ -19,8 +19,10 @@
 
 #include <errno.h>
 
+#ifndef _KDEWIN_DONT_IMPLEMENT_SET_ERRNO
 int _set_errno(int value)
 {
 	errno = value;
 	return 0;
 }
+#endif
