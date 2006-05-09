@@ -43,7 +43,7 @@ class KSelectionOwnerPrivate;
  is claimed by another owner.
  @short ICCCM manager selection owner
 */
-class KDECORE_EXPORT KSelectionOwner
+class KDEUI_EXPORT KSelectionOwner
     : public QObject
     {
     Q_OBJECT
@@ -168,7 +168,7 @@ class KSelectionWatcherPrivate;
  out current owner of the selection, owner() can be used.
  @short ICCCM manager selection watching
 */
-class KDECORE_EXPORT KSelectionWatcher
+class KDEUI_EXPORT KSelectionWatcher
     : public QObject
     {
     Q_OBJECT
