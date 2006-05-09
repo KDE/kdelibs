@@ -100,7 +100,6 @@ KLibFactory::~KLibFactory()
 
 QObject* KLibFactory::create( QObject* _parent, const char* classname, const QStringList &args )
 {
-    kDebug() << k_funcinfo << "classname=" << classname << endl;
     QObject* obj = createObject( _parent, classname, args );
     if ( obj )
 	emit objectCreated( obj );
