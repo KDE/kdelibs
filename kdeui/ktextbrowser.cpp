@@ -126,6 +126,8 @@ void KTextBrowser::mouseMoveEvent( QMouseEvent* e)
 
   if ( viewport()->cursor().shape() == Qt::PointingHandCursor )
     viewport()->setCursor( KCursor::handCursor() );
+  else
+    viewport()->setCursor( viewport()->cursor().shape() );
 }
 
 void KTextBrowser::wheelEvent( QWheelEvent *e )
