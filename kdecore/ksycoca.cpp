@@ -222,7 +222,7 @@ KSycoca::~KSycoca()
 
 bool KSycoca::isAvailable()
 {
-   if ( !self()->bNoDatabase )
+   if ( self()->bNoDatabase )
        return false;
    return self()->checkVersion(false);
 }
