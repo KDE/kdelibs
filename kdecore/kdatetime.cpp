@@ -112,6 +112,11 @@ KDateTime::Spec::Spec(const Spec& spec)
     operator=(spec);
 }
 
+KDateTime::Spec::~Spec()
+{
+    delete d;
+}
+
 KDateTime::Spec &KDateTime::Spec::operator=(const Spec& spec)
 {
     d->type = spec.d->type;

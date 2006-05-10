@@ -226,6 +226,11 @@ class KDECORE_EXPORT KDateTime
         Spec& operator=(const Spec& spec);
 
         /**
+         * Destructor
+         */
+        ~Spec();
+
+        /**
          * Returns whether the time specification is valid.
          *
          * @return @c true if valid, else @c false
