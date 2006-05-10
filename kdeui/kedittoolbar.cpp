@@ -1002,7 +1002,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
   // finally, add default separators to the inactive list
   ToolbarItem *act = new ToolbarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString());
   act->setText(1, SEPARATORSTRING);
-  m_inactiveList->insertTopLevelItem(1, act);
+  m_inactiveList->insertTopLevelItem(0, act);
 
   m_inactiveList->resizeColumnToContents(0);
   m_activeList->resizeColumnToContents(0);
