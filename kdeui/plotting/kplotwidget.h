@@ -22,7 +22,7 @@
 #include <QHash>
 #include <QList>
 
-#include <kdeedu_plot_export.h>
+#include <libkdeedu_plot_export.h>
 
 class QPixmap;
 class KPlotAxis;

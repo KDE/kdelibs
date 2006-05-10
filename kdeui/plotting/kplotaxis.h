@@ -20,7 +20,7 @@
 
 #include <QString>
 
-#include <kdeedu_plot_export.h>
+#include <libkdeedu_plot_export.h>
 
 /**
  * @short Axis for KPlotWidget

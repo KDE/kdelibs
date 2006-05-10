@@ -22,7 +22,7 @@
 #include <QPointF>
 #include <QString>
 
-#include <kdeedu_plot_export.h>
+#include <libkdeedu_plot_export.h>
 
 /**
  * @class KPlotObject
