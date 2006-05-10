@@ -215,12 +215,13 @@ void KPQtPage::init()
 	else
 	{
 		DrListOption	*lopt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
-                foreach (DrBase* choice, lopt->choices())
-		{
-			m_pagesize->addItem(choice->get("text"));
-			if (choice == lopt->currentChoice())
-				m_pagesize->setCurrentIndex(m_pagesize->count()-1);
-		}
+		if (lopt)
+			foreach (DrBase* choice, lopt->choices())
+			{
+				m_pagesize->addItem(choice->get("text"));
+				if (choice == lopt->currentChoice())
+					m_pagesize->setCurrentIndex(m_pagesize->count()-1);
+			}
 	}
 
 	// connections
