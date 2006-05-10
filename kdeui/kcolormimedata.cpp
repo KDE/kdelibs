@@ -66,7 +66,7 @@ KColorMimeData::createDrag(const QColor &color, QWidget *dragsource)
     colorpix.fill( color );
     QPainter p( &colorpix );
     p.setPen( Qt::black );
-    p.drawRect(0,0,25,20);
+    p.drawRect(0,0,24,19);
     p.end();
     drag->setPixmap(colorpix);
     drag->setHotSpot(QPoint(-5,-7));
