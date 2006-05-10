@@ -11,8 +11,6 @@
  * kicontheme.cpp: Lowlevel icon theme handling.
  */
 
-#include <config-svgicons.h>
-
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -552,11 +550,7 @@ QStringList KIconThemeDir::iconList() const
     QDir dir(mDir);
 
     QStringList formats;
-#ifdef HAVE_SVGICONS
     formats << "*.png" << "*.svg" << "*.svgz" << "*.xpm";
-#else
-    formats << "*.png" << "*.xpm";
-#endif
     QStringList lst = dir.entryList( formats, QDir::Files);
 
     QStringList result;

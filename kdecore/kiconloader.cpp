@@ -23,6 +23,7 @@
 #include <QHash>
 #include <QPainter>
 #include <QMovie>
+#include <QSvgRenderer>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -40,13 +41,6 @@
 #include <unistd.h>     //for readlink
 #include <dirent.h>
 #include <assert.h>
-
-#include <config-svgicons.h>
-
-#ifdef HAVE_SVGICONS
-#include "svgicons/ksvgiconengine.h"
-#include "svgicons/ksvgiconpainter.h"
-#endif
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -419,7 +413,6 @@ QString KIconLoader::removeIconExtension(const QString &name) const
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     if (ext == png_ext || ext == xpm_ext)
       extensionLength=4;
-#ifdef HAVE_SVGICONS
     else
     {
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
@@ -430,7 +423,6 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 	else if (ext == svg_ext)
 	    extensionLength=4;
     }
-#endif
 
     if ( extensionLength > 0 )
     {
@@ -453,12 +445,10 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
     int count=0;
     static const QString &png_ext = KGlobal::staticQString(".png");
     ext[count++]=&png_ext;
-#ifdef HAVE_SVGICONS
     static const QString &svgz_ext = KGlobal::staticQString(".svgz");
     ext[count++]=&svgz_ext;
     static const QString &svg_ext = KGlobal::staticQString(".svg");
     ext[count++]=&svg_ext;
-#endif
     static const QString &xpm_ext = KGlobal::staticQString(".xpm");
     ext[count++]=&xpm_ext;
 
@@ -535,14 +525,12 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 	static const QString &xpm_ext = KGlobal::staticQString(".xpm");
 	path = d->mpDirs->findResource("appicon", name + png_ext);
 
-#ifdef HAVE_SVGICONS
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
 	static const QString &svg_ext = KGlobal::staticQString(".svg");
 	if (path.isEmpty())
 	    path = d->mpDirs->findResource("appicon", name + svgz_ext);
 	if (path.isEmpty())
 	   path = d->mpDirs->findResource("appicon", name + svg_ext);
-#endif
 	if (path.isEmpty())
 	     path = d->mpDirs->findResource("appicon", name + xpm_ext);
 	return path;
@@ -760,30 +748,24 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
 	// Use the extension as the format. Works for XPM and PNG, but not for SVG
 	QString ext = icon.path.right(3).toUpper();
-#ifdef HAVE_SVGICONS
 	if(ext != "SVG" && ext != "VGZ")
 	{
-#endif
 	    img = new QImage(icon.path, ext.toLatin1());
 	    if (img->isNull()) {
                 delete img;
 		return pix;
             }
-#ifdef HAVE_SVGICONS
 	}
 	else
 	{
 	    // Special stuff for SVG icons
-	    KSVGIconEngine *svgEngine = new KSVGIconEngine();
-
-	    if(svgEngine->load(size, size, icon.path))
-		img = svgEngine->painter()->image();
-	    else
-		img = new QImage();
-
-	    delete svgEngine;
+            img = new QImage(size, size, QImage::Format_ARGB32_Premultiplied);
+            QPainter p(img);
+            QSvgRenderer renderer(icon.path);
+            if (renderer.isValid())
+                renderer.render(&p);
+            p.end();
 	}
-#endif
 
         iconType = icon.type;
         iconThreshold = icon.threshold;

@@ -24,17 +24,6 @@ set(kdecore_OPTIONAL_LIBS)
 remove_definitions(-DQT3_SUPPORT_WARNINGS)
 remove_definitions(-DQT3_SUPPORT)
 
-# you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
-# it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
-# so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
-macro_optional_find_package(AGG)
-if (AGG_FOUND)
-   include_directories(${AGG_INCLUDE_DIR})
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS} svgicons/ksvgiconengine.cpp svgicons/ksvgiconpainter.cpp )
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${QT_QTXML_LIBRARY} ${AGG_LIBRARIES})
-   install_files( /include FILES svgicons/ksvgiconengine.h )
-endif (AGG_FOUND)
-
 # compile bzip2 support if available
 if(BZIP2_FOUND)
    include_directories(${BZIP2_INCLUDE_DIR})
@@ -245,7 +234,7 @@ kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} kdecore )

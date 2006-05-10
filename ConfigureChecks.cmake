@@ -23,8 +23,6 @@ macro_bool_to_01(CUPS_FOUND HAVE_CUPS)                  # kdeprint
 
 macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
-macro_bool_to_01(AGG_FOUND HAVE_SVGICONS)               # kdecore, kio, see config-svgicons.h
-
 macro_bool_to_01(GETTEXT_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
 # FIXME: Make this changeable!

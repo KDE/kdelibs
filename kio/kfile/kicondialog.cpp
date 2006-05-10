@@ -13,8 +13,6 @@
 
 #include "kicondialog.h"
 
-#include <config-svgicons.h>
-
 #include <k3iconviewsearchline.h>
 
 #include <kapplication.h>
@@ -41,10 +39,9 @@
 #include <qtoolbutton.h>
 #include <qprogressbar.h>
 
-#ifdef HAVE_SVGICONS
-#include <svgicons/ksvgiconengine.h>
-#include <svgicons/ksvgiconpainter.h>
-#endif
+#include <QSvgRenderer>
+#include <QImage>
+#include <QPainter>
 
 class KIconCanvas::KIconCanvasPrivate
 {
@@ -122,10 +119,6 @@ void KIconCanvas::slotLoadFiles()
     // disable updates to not trigger paint events when adding child items
     setUpdatesEnabled( false );
 
-#ifdef HAVE_SVGICONS
-    KSVGIconEngine *svgEngine = new KSVGIconEngine();
-#endif
-
     d->m_bLoading = true;
     int i;
     QStringList::ConstIterator it;
@@ -155,11 +148,15 @@ void KIconCanvas::slotLoadFiles()
 
 	if (ext != "SVG" && ext != "VGZ")
 	    img.load(*it);
-#ifdef HAVE_SVGICONS
-	else
-	    if (svgEngine->load(60, 60, *it))
-		img = *svgEngine->painter()->image();
-#endif
+	else {
+            // Special stuff for SVG icons
+            img = QImage(60, 60, QImage::Format_ARGB32_Premultiplied);
+            QPainter p(&img);
+            QSvgRenderer renderer(*it);
+            if (renderer.isValid())
+                renderer.render(&p);
+            p.end();
+        }
 
 	if (img.isNull())
 	    continue;
@@ -183,10 +180,6 @@ void KIconCanvas::slotLoadFiles()
 	item->setDragEnabled(false);
 	item->setDropEnabled(false);
     }
-
-#ifdef HAVE_SVGICONS
-    delete svgEngine;
-#endif
 
     // enable updates since we have to draw the whole view now
     setUpdatesEnabled( true );
