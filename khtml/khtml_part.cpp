@@ -4195,7 +4195,7 @@ void KHTMLPart::slotSetEncoding()
 {
   d->m_automaticDetection->setItemChecked( int( d->m_autoDetectLanguage ), false );
   d->m_paSetEncoding->popupMenu()->setItemChecked( 0, false );
-  d->m_paSetEncoding->popupMenu()->setItemChecked( d->m_paSetEncoding->popupMenu()->idAt( 2 ), true );
+  d->m_paSetEncoding->popupMenu()->actions()[2]->setChecked(true);
 
   QString enc = KGlobal::charsets()->encodingForName( d->m_manualDetection->currentText() );
   setEncoding( enc, true );
@@ -7060,7 +7060,7 @@ void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
 
   if( d->m_manualDetection )
     d->m_manualDetection->setCurrentItem( -1 );
-  d->m_paSetEncoding->popupMenu()->setItemChecked( d->m_paSetEncoding->popupMenu()->idAt( 2 ), false );
+  d->m_paSetEncoding->popupMenu()->actions()[2]->setChecked(false);
 }
 
 khtml::Decoder *KHTMLPart::createDecoder()
