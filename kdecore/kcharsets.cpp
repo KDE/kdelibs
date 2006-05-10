@@ -620,7 +620,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
     
     if (gzipped && !charMapFileName.isEmpty()) {
-        KFilterDev gzip(dir + "/" + charMapFileName);
+        KFilterDev gzip(dir + '/' + charMapFileName);
         if (gzip.open(QIODevice::ReadOnly)) {
             kDebug() << "Loading gzipped charset..." << endl;
             codec = QTextCodec::loadCharmap(&gzip);
@@ -630,7 +630,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
             kWarning() << "Could not open gzipped charset!" << endl;
     }
     else if (!charMapFileName.isEmpty()) {
-        codec = QTextCodec::loadCharmapFile(dir + "/" + charMapFileName);
+        codec = QTextCodec::loadCharmapFile(dir + '/' + charMapFileName);
     }
 
     if(codec) {

@@ -236,7 +236,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
             if (i == 0)
                 plnames.append("%n"); // plural placeholder name
             else
-                plnames.append("%" + QString::number(i - 1)); // numbered
+                plnames.append('%' + QString::number(i - 1)); // numbered
         }
         else
             plinks.append(0); // dummy

@@ -259,7 +259,7 @@ bool KDesktopFile::tryExec() const
       QStringList::Iterator it(dirs.begin());
       bool match = false;
       for (; it != dirs.end(); ++it) {
-	QString fName = *it + "/" + te;
+	QString fName = *it + '/' + te;
 	if (::access(QFile::encodeName(fName), X_OK) == 0)
 	{
 	  match = true;

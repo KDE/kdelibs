@@ -655,7 +655,7 @@ KCmdLineArgs::parseAllArgs()
            for (QList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
              QString email;
              if ( !(*it).emailAddress().isEmpty() )
-               email = " <" + (*it).emailAddress() + ">";
+               email = " <" + (*it).emailAddress() + '>';
              authorlist += QString("    ") + (*it).name() + email + "\n";
            }
            printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(about->programName()) ,  authorlist ) );
@@ -849,7 +849,7 @@ KCmdLineArgs::usage(const char *id)
    {
       if ((*args)->name)
       {
-         usage = i18n("[%1-options]", (*args)->name)+" "+usage;
+         usage = i18n("[%1-options]", (*args)->name)+' '+usage;
       }
       --args;
    }
@@ -861,9 +861,9 @@ KCmdLineArgs::usage(const char *id)
      while(option && option->name)
      {
        if (option->name[0] == '+')
-          usage = usage + (option->name+1) + " ";
+          usage = usage + (option->name+1) + ' ';
        else if ( option->name[0] == '!' && option->name[1] == '+' )
-          usage = usage + (option->name+2) + " ";
+          usage = usage + (option->name+2) + ' ';
 
        option++;
      }
@@ -992,7 +992,7 @@ KCmdLineArgs::usage(const char *id)
             }
 
             if ((name.length() == 1) || (name[1] == ' '))
-               name = "-"+name;
+               name = '-'+name;
             else
                name = "--"+name;
             if (!option->description)
@@ -1320,7 +1320,7 @@ KUrl KCmdLineArgs::makeURL(const char *_urlArg)
      return KUrl(urlArg); // Argument is a URL
 
    KUrl result;
-   result.setPath( cwd()+"/"+urlArg );
+   result.setPath( cwd()+'/'+urlArg );
    result.cleanPath();
    return result;  // Relative path
 }

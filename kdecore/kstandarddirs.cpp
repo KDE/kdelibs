@@ -755,7 +755,7 @@ void KStandardDirs::createSpecialResource(const char *type)
          srv = findExe(QLatin1String("lnusertemp"));
       if (!srv.isEmpty())
       {
-         system(QFile::encodeName(srv)+" "+type);
+         system(QFile::encodeName(srv)+' '+type);
          result = readlink(QFile::encodeName(dir).data(), link, 1023);
       }
    }
@@ -979,7 +979,7 @@ QString KStandardDirs::findExe( const QString& appname,
     QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
-	p = (*it) + "/";
+	p = (*it) + '/';
 	p += real_appname;
 
 #ifdef Q_WS_MAC
@@ -1031,7 +1031,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
-	p = (*it) + "/";
+	p = (*it) + '/';
 	p += real_appname;
 
 	info.setFile( p );

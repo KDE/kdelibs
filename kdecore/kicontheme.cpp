@@ -98,7 +98,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	{
 	    cDir = *it + appName + "/icons/" + name;
 	    if (QFile::exists( cDir ))
-		themeDirs += cDir + "/";
+		themeDirs += cDir + '/';
 	}
     }
     // Find the theme description file. These are always global.
@@ -106,7 +106,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     icnlibs = KGlobal::dirs()->resourceDirs("icon");
     for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
-        cDir = *it + name + "/";
+        cDir = *it + name + '/';
         if (KStandardDirs::exists(cDir))
         {
             themeDirs += cDir;
@@ -159,7 +159,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	cfg.setGroup(*it);
 	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); ++itDir)
 	{
-	    if (KStandardDirs::exists(*itDir + *it + "/"))
+	    if (KStandardDirs::exists(*itDir + *it + '/'))
 	    {
 	        KIconThemeDir *dir = new KIconThemeDir(*itDir + *it, &cfg);
 	        if (!dir->isValid())
@@ -539,7 +539,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
 {
     if (!mbValid)
         return QString();
-    QString file = mDir + "/" + name;
+    QString file = mDir + '/' + name;
 
     if (access(QFile::encodeName(file), R_OK) == 0)
         return file;
@@ -562,6 +562,6 @@ QStringList KIconThemeDir::iconList() const
     QStringList result;
     QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); ++it)
-        result += mDir + "/" + *it;
+        result += mDir + '/' + *it;
     return result;
 }

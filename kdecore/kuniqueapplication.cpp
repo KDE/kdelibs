@@ -116,7 +116,7 @@ KUniqueApplication::start()
      {
         QByteArray pid;
         pid.setNum(getpid());
-        appName = appName + "-" + pid;
+        appName = appName + '-' + pid;
      }
 
      // Check to make sure that we're actually able to register with the DCOP

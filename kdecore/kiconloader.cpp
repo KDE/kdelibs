@@ -1070,7 +1070,7 @@ QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
   QStringList result;
   QStringList::ConstIterator it;
   for (it=lst.begin(); it!=lst.end(); ++it)
-    result += iconsDir + "/" + *it;
+    result += iconsDir + '/' + *it;
   return result;
 }
 

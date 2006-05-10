@@ -125,7 +125,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 
 #ifdef Q_WS_WIN // prepend drive letter if exists (js)
   if (orig_pos >= 2 && isalpha(path[0].toLatin1()) && path[1]==':') {
-    result.prepend(QString(path[0])+":");
+    result.prepend(QString(path[0])+':');
   }
 #endif
 
@@ -1186,7 +1186,7 @@ void KUrl::setDirectory( const QString &dir)
   if ( dir.endsWith("/"))
      setPath(dir);
   else
-     setPath(dir+"/");
+     setPath(dir+'/');
 }
 
 void KUrl::setQuery( const QString &_txt )
@@ -1301,7 +1301,7 @@ KUrl KUrl::fromPathOrURL( const QString& text )
 static QString _relativePath(const QString &base_dir, const QString &path, bool &isParent)
 {
    QString _base_dir(QDir::cleanPath(base_dir));
-   QString _path(QDir::cleanPath(path.isEmpty() || (path[0] != QLatin1Char('/')) ? _base_dir+"/"+path : path));
+   QString _path(QDir::cleanPath(path.isEmpty() || (path[0] != QLatin1Char('/')) ? _base_dir+'/'+path : path));
 
    if (_base_dir.isEmpty())
       return _path;
