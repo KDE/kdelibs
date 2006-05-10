@@ -687,16 +687,12 @@ void RenderBox::repaint(bool immediate)
         Q_ASSERT(p);
         while( p->isInline() && !p->isReplaced() )
             p = p->parent();
-        int off = 0;
-        if (!p->hasOverflowClip());
-            off = p->negativeOverflowWidth();
+        int off = p->hasOverflowClip() ? 0 : negativeOverflowWidth();
         p->repaintRectangle( -ow - off, -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
     }
     else
     {
-        int off = 0;
-        if (!hasOverflowClip());
-            off = negativeOverflowWidth();
+        int off = hasOverflowClip() ? 0 : negativeOverflowWidth();
         repaintRectangle( -ow - off, -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
     }
 }
