@@ -151,6 +151,20 @@ public:
      */
     static void deleteStaticDeleters();
 
+    /**
+     * Tells KGlobal about one more operation that should be finished
+     * before the application exits. The standard behavior is to exit on the
+     * "last window closed" event, but some events should outlive the last window closed
+     * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+     */
+    static void ref();
+
+    /**
+     * Tells Global that one operation such as those described in ref() just finished.
+     * This call makes the QApplication quit if the counter is back to 0.
+     */
+    static void deref();
+
     //private:
     /** Data which ought to be private but isn't. @internal */
     static  KStringDict         *_stringDict;

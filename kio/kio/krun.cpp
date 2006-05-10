@@ -46,7 +46,7 @@
 #include <kdatastream.h>
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
-#include <kapplication.h>
+#include <kglobal.h>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kdebug.h>
@@ -183,7 +183,7 @@ bool KRun::displayOpenWithDialog( const KUrl::List& lst )
 
 bool KRun::displayOpenWithDialog( const KUrl::List& lst, bool tempFiles )
 {
-    if (kapp && !KAuthorized::authorizeKAction("openwith"))
+    if (!KAuthorized::authorizeKAction("openwith"))
     {
        // TODO: Better message, i18n freeze :-(
        KMessageBox::sorry(0L, i18n("You are not authorized to open this file."));
@@ -787,7 +787,7 @@ void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFil
   m_timer.start( 0 );
   kDebug(7010) << " new KRun " << this << " " << url.prettyURL() << " timer=" << &m_timer << endl;
 
-  kapp->ref();
+  KGlobal::ref();
 }
 
 void KRun::init()
@@ -924,7 +924,7 @@ KRun::~KRun()
   kDebug(7010) << "KRun::~KRun() " << this << endl;
   m_timer.stop();
   killJob();
-  kapp->deref();
+  KGlobal::deref();
   kDebug(7010) << "KRun::~KRun() done " << this << endl;
   delete d;
 }
@@ -1317,9 +1317,9 @@ KProcessRunner::slotProcessExited(KProcess * p)
     // relatively to current directory,  and then in the PATH.
     if ( !QFile( binName ).exists() && KStandardDirs::findExe( binName ).isEmpty() )
     {
-      kapp->ref();
+      KGlobal::ref();
       KMessageBox::sorry( 0L, i18n("Could not find the program '%1'",  binName ) );
-      kapp->deref();
+      KGlobal::deref();
     }
   }
 #ifdef Q_WS_X11

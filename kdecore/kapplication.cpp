@@ -192,8 +192,7 @@ class KApplication::Private
 {
 public:
   Private()
-    :   refCount( 1 ),
-	oldIceIOErrorHandler( 0 ),
+    :   oldIceIOErrorHandler( 0 ),
 	checkAccelerators( 0 ),
 	overrideStyle( QString() ),
 	startup_id( "0" ),
@@ -212,13 +211,6 @@ public:
   }
 
 
-  /**
-   * This counter indicates when to exit the application.
-   * It starts at 1, is decremented in KMainWindow when the last window is closed, but
-   * is incremented by operations that should outlive the last window closed
-   * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
-   */
-  int refCount;
   IceIOErrorHandler oldIceIOErrorHandler;
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
@@ -802,20 +794,6 @@ KConfig* KApplication::sessionConfig()
     if (!pSessionConfig) // create an instance specific config object
         pSessionConfig = new KConfig( sessionConfigName(), false, false);
     return pSessionConfig;
-}
-
-void KApplication::ref()
-{
-    d->refCount++;
-    //kDebug() << "KApplication::ref() : refCount = " << d->refCount << endl;
-}
-
-void KApplication::deref()
-{
-    d->refCount--;
-    //kDebug() << "KApplication::deref() : refCount = " << d->refCount << endl;
-    if ( d->refCount <= 0 )
-        quit();
 }
 
 KSessionManaged::KSessionManaged()

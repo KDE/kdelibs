@@ -126,7 +126,7 @@ bool KCMShell::isRunning()
     if( dcopClient()->appId() == m_dcopName )
         return false; // We are the one and only.
 
-    kDebug(780) << "kcmshell with modules '" << 
+    kDebug(780) << "kcmshell with modules '" <<
         m_dcopName << "' is already running." << endl;
 
     dcopClient()->attach(); // Reregister as anonymous
@@ -137,7 +137,7 @@ bool KCMShell::isRunning()
     str << kapp->startupId();
     DCOPCString replyType;
     QByteArray replyData;
-    if (!dcopClient()->call(m_dcopName, "dialog", "activate(QCString)", 
+    if (!dcopClient()->call(m_dcopName, "dialog", "activate(QCString)",
                 data, replyType, replyData))
     {
         kDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
@@ -170,7 +170,7 @@ void KCMShell::setDCOPName(const DCOPCString &dcopName, bool rootMode )
         m_dcopName += "rootMode_";
 
     m_dcopName += dcopName;
-    
+
     dcopClient()->registerAs(m_dcopName, false);
 }
 
@@ -190,7 +190,7 @@ void KCMShell::appExit(const QByteArray &appId)
     if( appId == m_dcopName )
     {
         kDebug(780) << "'" << appId << "' closed, dereferencing." << endl;
-        deref();
+        KGlobal::deref();
     }
 }
 
@@ -208,7 +208,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     aboutData.addAuthor("Matthias Elter",0, "elter@kde.org");
     aboutData.addAuthor("Matthias Ettrich",0, "ettrich@kde.org");
     aboutData.addAuthor("Waldo Bastian",0, "bastian@kde.org");
-    
+
     KGlobal::locale()->setMainCatalog("kcmshell");
 
     KCmdLineArgs::init(_argc, _argv, &aboutData);
@@ -241,7 +241,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
             QString entry("%1 - %2");
 
             entry = entry.arg((*it)->desktopEntryName().leftJustified(maxLen, ' '))
-                         .arg(!(*it)->comment().isEmpty() ? (*it)->comment() 
+                         .arg(!(*it)->comment().isEmpty() ? (*it)->comment()
                                  : i18n("No description available"));
 
             cout << entry.toLocal8Bit().data() << endl;
@@ -270,9 +270,9 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         }
     }
 
-    /* Check if this particular module combination is already running, but 
+    /* Check if this particular module combination is already running, but
      * allow the same module to run when embedding(root mode) */
-    app.setDCOPName(dcopName, 
+    app.setDCOPName(dcopName,
             ( args->isSet( "embed-proxy" ) || args->isSet( "embed" )));
     if( app.isRunning() )
     {
@@ -293,7 +293,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 #ifdef Q_WS_X11
     if ( args->isSet( "embed-proxy" ))
     {
-        id = args->getOption( "embed-proxy" ).toInt(&idValid);    
+        id = args->getOption( "embed-proxy" ).toInt(&idValid);
         if( idValid )
         {
             KCModuleProxy *module = new KCModuleProxy( modules.first()->desktopEntryName() );
@@ -313,7 +313,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     }
 #endif
 
-    KCMShellMultiDialog *dlg = new KCMShellMultiDialog( dtype, 
+    KCMShellMultiDialog *dlg = new KCMShellMultiDialog( dtype,
             i18n("Configure - %1", kapp->caption()), 0, "", true );
 
     for (KService::List::ConstIterator it = modules.begin(); it != modules.end(); ++it)
@@ -322,7 +322,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 #ifdef Q_WS_X11
     if ( args->isSet( "embed" ))
     {
-        id = args->getOption( "embed" ).toInt(&idValid);    
+        id = args->getOption( "embed" ).toInt(&idValid);
         if( idValid )
         {
             QX11EmbedContainer *container = new QX11EmbedContainer(dlg);
@@ -345,7 +345,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
             QPixmap icon = DesktopIcon(iconName);
             dlg->setWindowIcon( QIcon(icon) );
         }
-        
+
         dlg->exec();
         delete dlg;
     }

@@ -202,6 +202,28 @@ KGlobal::deleteStaticDeleters()
     KGlobal::_staticDeleters = 0;
 }
 
+/**
+ * This counter indicates when to quit the application.
+ * It starts at 1, is decremented in KMainWindow when the last window is closed, but
+ * is incremented by operations that should outlive the last window closed
+ * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
+ */
+static int s_refCount = 1;
+
+void KGlobal::ref()
+{
+    ++s_refCount;
+    //kDebug() << "KGlobal::ref() : refCount = " << s_refCount << endl;
+}
+
+void KGlobal::deref()
+{
+    --s_refCount;
+    //kDebug() << "KGlobal::deref() : refCount = " << s_refCount << endl;
+    if ( s_refCount <= 0 )
+        qApp->quit();
+}
+
 // The Variables
 
 KStringDict     *KGlobal::_stringDict   = 0;

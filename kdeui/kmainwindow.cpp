@@ -322,7 +322,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
             y = KApplication::desktop()->height() + y - h;
         else if ( (m & YValue) )
             y = geometry().y();
- 
+
         move(x, y);
     }
 #endif
@@ -603,7 +603,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
                 // don't call queryExit() twice
                 disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
                 d->shuttingDown = true;
-                kapp->deref();             // ...and quit application.
+                KGlobal::deref();             // ...and quit application.
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
                 e->ignore();

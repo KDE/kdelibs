@@ -426,21 +426,6 @@ public:
   };
 #endif
 
-public Q_SLOTS:
-  /**
-   * Tells KApplication about one more operation that should be finished
-   * before the application exits. The standard behavior is to exit on the
-   * "last window closed" event, but some events should outlive the last window closed
-   * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
-   */
-  void ref();
-
-  /**
-   * Tells KApplication that one operation such as those described in ref() just finished.
-   * The application exits if the counter is back to 0.
-   */
-  void deref();
-
 protected:
   /**
    * @internal Used by KUniqueApplication

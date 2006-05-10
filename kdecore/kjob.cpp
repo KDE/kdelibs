@@ -21,7 +21,7 @@
 
 #include "kjob.h"
 
-#include <kapplication.h>
+#include <kglobal.h>
 #include <QEventLoop>
 
 class KJob::Private
@@ -42,16 +42,14 @@ KJob::KJob( QObject *parent )
     : QObject( parent ), d( new Private() )
 {
     // Don't exit while this job is running
-    if (kapp)
-        kapp->ref();
+    KGlobal::ref();
 }
 
 KJob::~KJob()
 {
     delete d;
 
-    if (kapp)
-        kapp->deref();
+    KGlobal::deref();
 }
 
 bool KJob::exec()
