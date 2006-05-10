@@ -19,7 +19,6 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#undef QT3_SUPPORT
 #include <kuser.h>
 
 #include <qstringlist.h>

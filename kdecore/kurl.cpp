@@ -21,8 +21,6 @@
 
 /// KDE4 TODO: maybe we should use QUrl::resolved()
 
-#undef QT3_SUPPORT
-
 /*
  * The currently active RFC for URL/URIs is RFC3986
  * Previous (and now deprecated) RFCs are RFC1738 and RFC2396
