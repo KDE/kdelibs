@@ -112,13 +112,14 @@ QModelIndex KJSObjectModel::index(int row, int column, const QModelIndex &parent
                 childItem->instance = parentInstance->get( exec,
                         childItem->name.constData() )->toObject(exec);
                 childItem->parent = static_cast<Node*>(parent.internalPointer());
+                break;
         }
         ++idx;
     }
     if (childItem)
         return createIndex(row, column, childItem);
-    else
-        return QModelIndex();
+
+    return QModelIndex();
 }
 
 QModelIndex KJSObjectModel::parent(const QModelIndex &index) const
