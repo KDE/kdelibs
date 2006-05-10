@@ -1179,8 +1179,6 @@ void FileProtocol::listDir( const KUrl& url)
                              *it /* we can use the filename as relative path*/,
                              entry, 2, true ) )
           listEntry( entry, false);
-        else
-          ;//Well, this should never happen... but with wrong encoding names
     }
 
     listEntry( entry, true ); // ready
