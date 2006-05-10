@@ -511,8 +511,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 			else if ((ch = (driver()->findOption("InputSlot"))) &&
                                  (ch = (static_cast<DrListOption*>(ch))->findChoice(value)))
 			{
-				if (m_inputslot)
-					setComboItem(m_inputslot, ch->get("text"));
+				setComboItem(m_inputslot, ch->get("text"));
 			}
 			else
 			{
