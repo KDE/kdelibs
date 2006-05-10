@@ -273,7 +273,7 @@ void KNotification::sendEvent()
 	else if(d->instance)
 		appname = QString::fromLatin1(d->instance->instanceName());
 	else
-		appname = QString::fromLatin1(kapp->instanceName());
+		appname = QString::fromLatin1(KGlobal::instance()->instanceName());
 	
 	if(!(d->flags & NoTimeout))
 	{
