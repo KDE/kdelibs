@@ -47,7 +47,6 @@ endif(${generatedFileInSourceDir})
 # macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(BZip2)
-macro_optional_find_package(AGG)
 macro_optional_find_package(OpenSSL)
 macro_optional_find_package(Gettext)
 
@@ -84,7 +83,6 @@ include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
-configure_file(config-svgicons.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-svgicons.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 
