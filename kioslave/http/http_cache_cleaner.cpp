@@ -174,10 +174,10 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
    foreach ( QFileInfo qFileInfo, newEntries ) {
        if (qFileInfo.isFile())
        {
-          FileInfo *fileInfo = readEntry( strDir + "/" + qFileInfo.fileName());
+          FileInfo *fileInfo = readEntry( strDir + '/' + qFileInfo.fileName());
           if (fileInfo)
           {
-             fileInfo->name = name + "/" + qFileInfo.fileName();
+             fileInfo->name = name + '/' + qFileInfo.fileName();
              fileInfo->size = (qFileInfo.size() + 1023) / 1024;
              fileEntries.append(fileInfo);
           }
@@ -237,7 +237,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if ((*it)[0] != '.')
       {
-         scanDirectory( cachedEntries, *it, strCacheDir + "/" + *it);
+         scanDirectory( cachedEntries, *it, strCacheDir + '/' + *it);
       }
    }
 
@@ -249,7 +249,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if (fileInfo->size > maxCachedSize)
       {
-         QByteArray filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         QByteArray filename = QFile::encodeName( strCacheDir + '/' + fileInfo->name);
          unlink(filename.data());
 //         kDebug () << appName << ": Object too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
@@ -261,7 +261,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
       if ((totalSize + fileInfo->size) > m_maxCacheSize)
       {
-         QByteArray filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
+         QByteArray filename = QFile::encodeName( strCacheDir + '/' + fileInfo->name);
          unlink(filename.data());
 //         kDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << fileInfo->size << ")" << endl;
       }

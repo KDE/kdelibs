@@ -987,7 +987,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   QString errormessage;
 
   if ( !_path.isEmpty() ) {
-    tmp += " ";
+    tmp += ' ';
     tmp += remoteEncoding()->encode(_path);
   }
 
@@ -1135,7 +1135,7 @@ bool Ftp::ftpChmod( const QString & path, int permissions )
 
   // we need to do bit AND 777 to get permissions, in case
   // we were sent a full mode (unlikely)
-  QString cmd = QString::fromLatin1("SITE CHMOD ") + QString::number( permissions & 511, 8 /*octal*/ ) + " ";
+  QString cmd = QString::fromLatin1("SITE CHMOD ") + QString::number( permissions & 511, 8 /*octal*/ ) + ' ';
   cmd += path;
 
   ftpSendCmd(remoteEncoding()->encode(cmd));

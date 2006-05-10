@@ -1040,10 +1040,10 @@ QString HTTPProtocol::davProcessLocks()
         {
           if ( bracketsOpen )
           {
-            response += ")";
+            response += ')';
             bracketsOpen = false;
           }
-          response += " <" + metaData( QString("davLockURL%1").arg(i) ) + ">";
+          response += " <" + metaData( QString("davLockURL%1").arg(i) ) + '>';
         }
 
         if ( !bracketsOpen )
@@ -1053,13 +1053,13 @@ QString HTTPProtocol::davProcessLocks()
         }
         else
         {
-          response += " ";
+          response += ' ';
         }
 
         if ( hasMetaData( QString("davLockNot%1").arg(i) ) )
           response += "Not ";
 
-        response += "<" + metaData( QString("davLockToken%1").arg(i) ) + ">";
+        response += '<' + metaData( QString("davLockToken%1").arg(i) ) + '>';
       }
     }
 
@@ -1630,7 +1630,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
   }
 
   // if ( kError != ERR_SLAVE_DEFINED )
-  //errorString += " (" + url + ")";
+  //errorString += " (" + url + ')';
 
   if ( callError )
     error( ERR_SLAVE_DEFINED, errorString );
@@ -1695,7 +1695,7 @@ void HTTPProtocol::httpError()
   }
 
   // if ( kError != ERR_SLAVE_DEFINED )
-  //errorString += " (" + url + ")";
+  //errorString += " (" + url + ')';
 
   error( ERR_SLAVE_DEFINED, errorString );
 }
@@ -4552,7 +4552,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    QString dir = m_strCacheDir;
    if (dir[dir.length()-1] != '/')
-      dir += "/";
+      dir += '/';
 
    int l = host.length();
    for(int i = 0; i < l; i++)
@@ -4564,7 +4564,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
       }
    }
    if (dir[dir.length()-1] == '/')
-      dir += "0";
+      dir += '0';
 
    unsigned long hash = 0x00000000;
    QByteArray u = m_request.url.url().toLatin1();
@@ -4578,7 +4578,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    CEF = CEF + hashString;
 
-   CEF = dir + "/" + CEF;
+   CEF = dir + '/' + CEF;
 
    m_request.cef = CEF;
 
@@ -4839,7 +4839,7 @@ void HTTPProtocol::cleanCache()
    bool doClean = false;
    QString cleanFile = m_strCacheDir;
    if (cleanFile[cleanFile.length()-1] != '/')
-      cleanFile += "/";
+      cleanFile += '/';
    cleanFile += "cleaned";
 
    struct stat stat_buf;
@@ -5321,10 +5321,10 @@ QByteArray HTTPProtocol::gssError( int major_status, int minor_status )
   do {
     ret = gss_display_status(&new_status, major_status, GSS_C_GSS_CODE, GSS_C_NULL_OID, &msg_ctx, &major_string);
     errorstr += (const char *)major_string.value;
-    errorstr += " ";
+    errorstr += ' ';
     ret = gss_display_status(&new_status, minor_status, GSS_C_MECH_CODE, GSS_C_NULL_OID, &msg_ctx, &minor_string);
     errorstr += (const char *)minor_string.value;
-    errorstr += " ";
+    errorstr += ' ';
   } while (!GSS_ERROR(ret) && msg_ctx != 0);
 
   return errorstr;

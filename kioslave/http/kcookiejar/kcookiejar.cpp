@@ -1003,7 +1003,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
        if (!valid)
        {
           // Maybe it points to a sub-domain
-          if (cookiePtr->domain().endsWith("."+cookiePtr->host()))
+          if (cookiePtr->domain().endsWith('.'+cookiePtr->host()))
              valid = true;
        }
 

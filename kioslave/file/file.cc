@@ -1329,7 +1329,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
       error( KIO::ERR_COULD_NOT_MOUNT, i18n("Could not find program \"mount\""));
       return;
     }
-    QByteArray buffer = mountProg + " ";
+    QByteArray buffer = mountProg + ' ';
 
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
@@ -1344,14 +1344,14 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
           else
             // mount giving device + mountpoint but no fstype
             if ( !_point.isEmpty() && !_dev.isEmpty() && fstype_empty )
-                buffer += readonly + " " + dev + " " + point;
+                buffer += readonly + ' ' + dev + ' ' + point;
             else
               // mount giving device + mountpoint + fstype
 #if defined(__svr4__) && defined(__sun__) // MARCO for Solaris 8 and I
                 // believe this is true for SVR4 in general
-                buffer += "-F " + fstype + " " + (_ro ? "-oro" : "") + " " + dev + " " + point;
+                buffer += "-F " + fstype + ' ' + (_ro ? "-oro" : "") + ' ' + dev + ' ' + point;
 #else
-                buffer += readonly + " -t " + fstype + " " + dev + " " + point;
+                buffer += readonly + " -t " + fstype + ' ' + dev + ' ' + point;
 #endif
         buffer += " 2>" + tmpFileName;
         kDebug(7101) << buffer << endl;
@@ -1499,7 +1499,7 @@ void FileProtocol::unmount( const QString& _point )
     QString epath = getenv("PATH");
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
-       path += ":" + epath;
+       path += ':' + epath;
     QByteArray umountProg = KGlobal::dirs()->findExe("umount", path).toLocal8Bit();
 
     if (umountProg.isEmpty()) {
@@ -1528,13 +1528,13 @@ bool FileProtocol::pmount(const QString &dev)
     QString epath = getenv("PATH");
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
-        path += ":" + epath;
+        path += ':' + epath;
     QString pmountProg = KGlobal::dirs()->findExe("pmount", path);
 
     if (pmountProg.isEmpty())
         return false;
 
-    QByteArray buffer = QFile::encodeName(pmountProg) + " " +
+    QByteArray buffer = QFile::encodeName(pmountProg) + ' ' +
                         QFile::encodeName(KProcess::quote(dev));
 
     int res = system( buffer.constData() );
@@ -1568,7 +1568,7 @@ bool FileProtocol::pumount(const QString &point)
     QString epath = getenv("PATH");
     QString path = QLatin1String("/sbin:/bin");
     if (!epath.isEmpty())
-        path += ":" + epath;
+        path += ':' + epath;
     QString pumountProg = KGlobal::dirs()->findExe("pumount", path);
 
     if (pumountProg.isEmpty())
