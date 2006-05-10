@@ -86,7 +86,7 @@ static QPixmap themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QPixmap ret = KApplication::kApplication()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
+   QPixmap ret = KGlobal::instance()->iconLoader()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
 
    if (ret.isNull())
        return QMessageBox::standardIcon(icon);
