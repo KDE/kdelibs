@@ -254,7 +254,7 @@ static QString findMostRecentLib(QString dir, QString name)
        if (best.isNull())
                return 0L;
        else
-               return dir+"/"+best;
+               return dir+'/'+best;
 }
 #endif
 
@@ -356,7 +356,7 @@ KConfig *cfg;
                                  ++shit) {
          QString alib = *it;
          if (!alib.isEmpty() && !alib.endsWith("/"))
-            alib += "/";
+            alib += '/';
          alib += *shit;
 	 // someone knows why this is needed?
 	 QString tmpStr(alib.toLatin1().constData());
@@ -509,7 +509,7 @@ KConfig *cfg;
                                  ++shit) {
          QString alib = *it;
          if (!alib.isEmpty() && !alib.endsWith("/"))
-            alib += "/";
+            alib += '/';
          alib += *shit;
 	 QString tmpStr(alib.toLatin1());
 	 tmpStr.replace(QRegExp("\\(.*\\)"), "");

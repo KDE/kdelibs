@@ -427,7 +427,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
 {
   foreach (VFolderMenu::SubMenu *subMenu, menu->subMenus)
   {
-     QString subName = name+subMenu->name+"/";
+     QString subName = name+subMenu->name+'/';
 
      QString directoryFile = subMenu->directoryFile;
      if (directoryFile.isEmpty())
@@ -459,12 +459,12 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      entry = g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
      entry->setLayoutInfo(subMenu->layoutList);
      if (! (bMenuTest && entry->noDisplay()) )
-        createMenu(caption + entry->caption() + "/", subName, subMenu);
+        createMenu(caption + entry->caption() + '/', subName, subMenu);
   }
   if (caption.isEmpty())
-     caption += "/";
+     caption += '/';
   if (name.isEmpty())
-     name += "/";
+     name += '/';
   foreach (KService::Ptr p, menu->items)
   {
      if (bMenuTest)

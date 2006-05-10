@@ -428,7 +428,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
     if (terminal == "konsole")
       terminal += " -caption=%c %i %m";
-    terminal += " ";
+    terminal += ' ';
     terminal += _service.terminalOptions();
     if( !mx1.expandMacrosShellQuote( terminal ) ) {
       kWarning() << "KRun: syntax error in command `" << terminal << "', service `" << _service.name() << "'" << endl;

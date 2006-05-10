@@ -32,7 +32,7 @@ KImageIO::pattern(Mode _mode)
 	        QString pattern = mime->patterns().join(" ");
 	        patterns.append( pattern + separator + mime->comment() );
 	        if (!allPatterns.isEmpty() )
-	            allPatterns += " ";
+	            allPatterns += ' ';
 	        allPatterns += pattern;
 	    
 	    }

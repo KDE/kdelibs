@@ -154,7 +154,7 @@ void KUrlCompletionTest::testLocalURL()
     assert( m_completion->allMatches().isEmpty() );
 
     // Completion from URL with a ref -> no match
-    url = KUrl::fromPathOrURL( m_dirURL.path() + "f" );
+    url = KUrl::fromPathOrURL( m_dirURL.path() + 'f' );
     url.setRef( "ref" );
     kDebug() << k_funcinfo << "makeCompletion(" << url << ")" << endl;
     m_completion->makeCompletion( url.prettyURL() );

@@ -164,22 +164,22 @@ QString KACLListViewItem::key( int, bool ) const
     switch ( type )
     {
         case KACLListView::User:
-            key += "A";
+            key += 'A';
             break;
         case KACLListView::Group:
-            key += "B";
+            key += 'B';
             break;
         case KACLListView::Others:
-            key += "C";
+            key += 'C';
             break;
         case KACLListView::Mask:
-            key += "D";
+            key += 'D';
             break;
         case KACLListView::NamedUser:
-            key += "E" + text( 1 );
+            key += 'E' + text( 1 );
             break;
         case KACLListView::NamedGroup:
-            key += "F" + text( 1 );
+            key += 'F' + text( 1 );
             break;
         default:
             key += text( 0 );

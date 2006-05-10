@@ -419,7 +419,7 @@ void KDirWatchPrivate::slotActivated()
           e->dirty = true;
 
           foreach(Entry *sub_entry, e->m_entries) {
-            if (sub_entry->path == e->path + "/" + QFile::decodeName( path )) {
+            if (sub_entry->path == e->path + '/' + QFile::decodeName( path )) {
               removeEntry(0,e->path, sub_entry);
               if (!useINotify(sub_entry))
                 useStat(sub_entry);
@@ -1172,10 +1172,10 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
       path = fileName;
     else
 #ifdef Q_OS_UNIX
-      path += "/" + fileName;
+      path += '/' + fileName;
 #elif defined(Q_WS_WIN)
       //current drive is passed instead of /
-      path += QDir::currentPath().left(2) + "/" + fileName;
+      path += QDir::currentPath().left(2) + '/' + fileName;
 #endif
   }
 
@@ -1449,7 +1449,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
       case FAMCreated: {
           // check for creation of a directory we have to watch
           foreach(Entry *sub_entry, e->m_entries) {
-            if (sub_entry->path == e->path + "/" + (const char *)fe->filename
+            if (sub_entry->path == e->path + '/' + (const char *)fe->filename
                 && sub_entry->isDir) {
               QString path = e->path;
               removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
@@ -1502,7 +1502,7 @@ void KDirWatchPrivate::statistics()
 	  if (c->pending & Deleted) pending += "deleted ";
 	  if (c->pending & Created) pending += "created ";
 	  if (c->pending & Changed) pending += "changed ";
-	  if (!pending.isEmpty()) pending = " (pending: " + pending + ")";
+	  if (!pending.isEmpty()) pending = " (pending: " + pending + ')';
 	  pending = ", stopped" + pending;
 	}
 	kDebug(7001) << "    by " << c->instance->objectName()

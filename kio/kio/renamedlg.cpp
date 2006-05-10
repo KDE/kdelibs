@@ -441,7 +441,7 @@ QString RenameDlg::suggestName(const KUrl& baseURL, const QString& oldName)
     bool ok;
     int number = tmp.toInt( &ok );
     if ( !ok ) {// ok there is no number
-      suggestedName = basename + "1" + dotSuffix;
+      suggestedName = basename + '1' + dotSuffix;
     }
     else {
      // yes there's already a number behind the _ so increment it by one

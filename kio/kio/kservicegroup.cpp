@@ -349,9 +349,9 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         if (p->isType(KST_KServiceGroup))
           name = static_cast<KServiceGroup *>(p.data())->caption();
         else if (sortByGenericName)
-          name = static_cast<KService *>(p.data())->genericName() + " " + p->name();
+          name = static_cast<KService *>(p.data())->genericName() + ' ' + p->name();
         else
-          name = p->name() + " " + static_cast<KService *>(p.data())->genericName();
+          name = p->name() + ' ' + static_cast<KService *>(p.data())->genericName();
 
         QByteArray key;
         // strxfrm() crashes on Solaris
@@ -397,7 +397,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         if (item.isEmpty()) continue;
         if (item[0] == '/')
         {
-          QString groupPath = rp + item.mid(1) + "/";
+          QString groupPath = rp + item.mid(1) + '/';
            // Remove entry from sorted list of services.
           for(KSortableValueList<SPtr,QByteArray>::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
           {
@@ -528,7 +528,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         }
         else if (item[0] == '/')
         {
-            QString groupPath = rp + item.mid(1) + "/";
+            QString groupPath = rp + item.mid(1) + '/';
 
             for (List::ConstIterator it2(group->m_serviceList.begin()); it2 != group->m_serviceList.end(); ++it2)
             {

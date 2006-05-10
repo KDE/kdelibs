@@ -164,12 +164,12 @@ QString FileProps::createKeyValue( const KFileMetaInfoGroup& g,
     KFileMetaInfoItem item = g.item( key );
 
     QString result("%1");
-    result = result.arg( (item.isValid() ? item.translatedKey() : key) + ":",
+    result = result.arg( (item.isValid() ? item.translatedKey() : key) + ':',
                          -MAX_SPACE );
     result.append( beatifyValue( item.string() ) );
 
     QString group("%1");
-    group = group.arg( g.translatedName() + ":", -MAX_SPACE );
+    group = group.arg( g.translatedName() + ':', -MAX_SPACE );
     result.prepend( group );
 
     return result;
@@ -328,7 +328,7 @@ static void processMetaDataOptions( const Q3PtrList<FileProps> propList,
     Q3PtrListIterator<FileProps> it( propList );
     for ( ; (props = it.current()); ++it )
     {
-        QString file = props->fileName() + " ";
+        QString file = props->fileName() + ' ';
         QString fileString = line.replace( 3, file.length(), file );
         kDebug() << QFile::encodeName( fileString ) << endl;
 

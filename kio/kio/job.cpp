@@ -1956,7 +1956,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                     ListJob *job = new ListJob(itemURL,
                                                false /*no progress info!*/,
                                                true /*recursive*/,
-                                               prefix + filename + "/",
+                                               prefix + filename + '/',
                                                includeHidden);
                     Scheduler::scheduleJob(job);
                     connect(job, SIGNAL(entries( KIO::Job *,
@@ -4370,7 +4370,7 @@ QString CacheInfo::cachedFileName()
 
    QString dir = KProtocolManager::cacheDir();
    if (dir[dir.length()-1] != '/')
-      dir += "/";
+      dir += '/';
 
    int l = m_url.host().length();
    for(int i = 0; i < l; i++)
@@ -4382,7 +4382,7 @@ QString CacheInfo::cachedFileName()
       }
    }
    if (dir[dir.length()-1] == '/')
-      dir += "0";
+      dir += '0';
 
    unsigned long hash = 0x00000000;
    QString u = m_url.url().toLatin1();
@@ -4396,7 +4396,7 @@ QString CacheInfo::cachedFileName()
 
    CEF = CEF + hashString;
 
-   CEF = dir + "/" + CEF;
+   CEF = dir + '/' + CEF;
 
    return CEF;
 }

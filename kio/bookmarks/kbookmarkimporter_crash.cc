@@ -155,7 +155,7 @@ void KCrashBookmarkImporterImpl::parse()
         views = parseCrashLog_noemit( *it, m_shouldDelete );
         QString signature;
         for ( ViewMap::Iterator vit = views.begin(); vit != views.end(); ++vit )
-            signature += "|"+vit.value();
+            signature += '|'+vit.value();
         if (signatureSet.contains(signature))
         {
             // Duplicate... throw away and skip

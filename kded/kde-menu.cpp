@@ -77,7 +77,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
       {
          KServiceGroup::Ptr g = KServiceGroup::Ptr::staticCast( e );
 
-         findMenuEntry(g, name.isEmpty() ? g->caption() : name+"/"+g->caption(), menuId);
+         findMenuEntry(g, name.isEmpty() ? g->caption() : name+'/'+g->caption(), menuId);
       }
       else if (e->isType(KST_KService))
       {
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
       {
          qWarning("Can't talk to klauncher!");
          command = KGlobal::dirs()->findExe(command);
-         command += " " + args.join(" ");
+         command += ' ' + args.join(" ");
          system(command.toLocal8Bit());
       }
    }

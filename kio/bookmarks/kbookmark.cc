@@ -343,7 +343,7 @@ QString KBookmark::address() const
         for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk), ++counter )
         {
             if ( bk.element == element )
-                return parentAddress + "/" + QString::number(counter);
+                return parentAddress + '/' + QString::number(counter);
         }
         kWarning() << "KBookmark::address : this can't happen!  " << parentAddress << endl;
         return "ERROR";
@@ -377,8 +377,8 @@ QString KBookmark::commonParent(QString A, QString B)
     if(A == error || B == error)
         return error;
 
-    A += "/";
-    B += "/";
+    A += '/';
+    B += '/';
 
     uint lastCommonSlash = 0;
     uint lastPos = A.length() < B.length() ? A.length() : B.length();

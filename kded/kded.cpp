@@ -544,7 +544,7 @@ void Kded::readDirectory( const QString& _path )
 {
   QString path( _path );
   if ( path.right(1) != "/" )
-    path += "/";
+    path += '/';
 
   if ( m_pDirWatch->contains( path ) ) // Already seen this one?
      return;
@@ -656,7 +656,7 @@ KUpdateD::KUpdateD()
     {
        QString path = *it;
        if (path[path.length()-1] != '/')
-          path += "/";
+          path += '/';
 
        if (!m_pDirWatch->contains(path))
           m_pDirWatch->addDir(path);

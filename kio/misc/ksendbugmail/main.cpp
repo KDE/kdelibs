@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
         struct passwd *p;
         p = getpwuid(getuid());
         fromaddr = QLatin1String(p->pw_name);
-        fromaddr += "@";
+        fromaddr += '@';
         char buffer[256];
 	buffer[0] = '\0';
         if(!gethostname(buffer, sizeof(buffer)))

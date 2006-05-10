@@ -206,7 +206,7 @@ int n, i;
 	n = d->m_cert->signature->length;
 	s = (char *)d->m_cert->signature->data;
 	for (i = 0; i < n; i++) {
-		if (i%20 != 0) rc += ":";
+		if (i%20 != 0) rc += ':';
 		else rc += "\n";
 		rc.append(QChar(hv[(s[i]&0xf0)>>4]));
 		rc.append(QChar(hv[s[i]&0x0f]));
@@ -236,7 +236,7 @@ void KSSLCertificate::getEmails(QStringList &to) const {
 
 
 QString KSSLCertificate::getKDEKey() const {
-	return getSubject() + " (" + getMD5DigestText() + ")";
+	return getSubject() + " (" + getMD5DigestText() + ')';
 }
 
 
@@ -266,7 +266,7 @@ QString rc = "";
 
 	for (unsigned int j = 0; j < n; j++) {
 		if (j > 0)
-			rc += ":";
+			rc += ':';
 		rc.append(QChar(hv[(md[j]&0xf0)>>4]));
 		rc.append(QChar(hv[md[j]&0x0f]));
 	}
@@ -343,7 +343,7 @@ char *x = NULL;
 				rc += i18n("Modulus: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
-						rc += ":";
+						rc += ':';
 					else if (i%40 == 0)
 						rc += "\n";
 					rc += x[i];
@@ -366,7 +366,7 @@ char *x = NULL;
 				rc += i18n("Prime: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
-						rc += ":";
+						rc += ':';
 					else if (i%40 == 0)
 						rc += "\n";
 					rc += x[i];
@@ -378,7 +378,7 @@ char *x = NULL;
 				rc += i18n("160 bit prime factor: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
-						rc += ":";
+						rc += ':';
 					else if (i%40 == 0)
 						rc += "\n";
 					rc += x[i];
@@ -390,7 +390,7 @@ char *x = NULL;
 				rc += QString("g: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
-						rc += ":";
+						rc += ':';
 					else if (i%40 == 0)
 						rc += "\n";
 					rc += x[i];
@@ -402,7 +402,7 @@ char *x = NULL;
 				rc += i18n("Public key: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
-						rc += ":";
+						rc += ':';
 					else if (i%40 == 0)
 						rc += "\n";
 					rc += x[i];

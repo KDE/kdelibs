@@ -98,7 +98,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     int index = mimeType.indexOf( '/' );
     if ( index > 0 )
     {
-        provider = m_previewProviders.find( mimeType.left( index + 1 ) + "*" ).value();
+        provider = m_previewProviders.find( mimeType.left( index + 1 ) + '*' ).value();
         if ( provider )
             return provider;
     }

@@ -123,7 +123,7 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
     text += files == 0 ? i18n( "No Files" ) : i18np( "One File", "%n Files", files );
     if ( showSize && files > 0 )
     {
-        text += " ";
+        text += ' ';
         text += i18n("(%1 Total)", KIO::convertSize( size ) );
     }
     text += " - ";

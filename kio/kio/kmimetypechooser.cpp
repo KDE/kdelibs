@@ -187,14 +187,14 @@ void KMimeTypeChooser::editMimeType()
 {
   if ( !(d->lvMimeTypes->currentItem() && (d->lvMimeTypes->currentItem())->parent()) )
     return;
-  QString mt = (d->lvMimeTypes->currentItem()->parent())->text( 0 ) + "/" + (d->lvMimeTypes->currentItem())->text( 0 );
+  QString mt = (d->lvMimeTypes->currentItem()->parent())->text( 0 ) + '/' + (d->lvMimeTypes->currentItem())->text( 0 );
   // thanks to libkonq/konq_operations.cc
   connect( KSycoca::self(), SIGNAL(databaseChanged()),
            this, SLOT(slotSycocaDatabaseChanged()) );
   QString keditfiletype = QLatin1String("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)topLevelWidget()->winId())
-                    + " " + KProcess::quote(mt),
+                    + ' ' + KProcess::quote(mt),
                     keditfiletype, keditfiletype /*unused*/);
 }
 
@@ -217,7 +217,7 @@ QStringList KMimeTypeChooser::mimeTypes() const
   for (; it.current(); ++it)
   {
     if ( it.current()->parent() && ((Q3CheckListItem*)it.current())->isOn() )
-      l << it.current()->parent()->text(0) + "/" + it.current()->text(0); // FIXME uncecked, should be Ok unless someone changes mimetypes during this!
+      l << it.current()->parent()->text(0) + '/' + it.current()->text(0); // FIXME uncecked, should be Ok unless someone changes mimetypes during this!
   }
   return l;
 }
@@ -232,7 +232,7 @@ QStringList KMimeTypeChooser::patterns() const
   {
     if ( it.current()->parent() && ((Q3CheckListItem*)it.current())->isOn() )
     {
-      p = KMimeType::mimeType( it.current()->parent()->text(0) + "/" + it.current()->text(0) );
+      p = KMimeType::mimeType( it.current()->parent()->text(0) + '/' + it.current()->text(0) );
       if ( p->name() != defMT )
         l += p->patterns();
     }

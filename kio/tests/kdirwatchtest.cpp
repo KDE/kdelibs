@@ -49,7 +49,7 @@ int main (int argc, char **argv)
     }
   }
 
-  QString home = QString(getenv ("HOME")) + "/";
+  QString home = QString(getenv ("HOME")) + '/';
   QString desk = home + "Desktop/";
   kDebug() << "Watching: " << home << endl;
   dirwatch1->addDir(home);

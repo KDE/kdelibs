@@ -731,7 +731,7 @@ int TCPSlaveBase::verifyCertificate()
         ourHost = d->realHost;
     else ourHost = d->host;
 
-    QString theurl = QString(m_sServiceName)+"://"+ourHost+":"+m_port;
+    QString theurl = QString(m_sServiceName)+"://"+ourHost+':'+m_port;
 
    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
      d->militantSSL = false;
@@ -791,7 +791,7 @@ int TCPSlaveBase::verifyCertificate()
     for(KSSLCertificate::KSSLValidationList::ConstIterator it = ksvl.begin();
         it != ksvl.end(); ++it)
     {
-       errorStr += QString::number(*it)+":";
+       errorStr += QString::number(*it)+':';
     }
     setMetaData("ssl_cert_errors", errorStr);
     setMetaData("ssl_peer_certificate", pc.toString());

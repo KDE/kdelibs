@@ -252,7 +252,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
     QVERIFY( QFile::exists( src ) ); // still there
 
     if ( flags & AlreadyExists ) {
-        dest += "/" + u.fileName();
+        dest += '/' + u.fileName();
         //kDebug() << "Expecting dest=" << dest << endl;
     }
 

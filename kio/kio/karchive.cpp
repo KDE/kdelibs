@@ -288,9 +288,9 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     {
         if ( *it != dot && *it != dotdot )
         {
-            QString fileName = path + "/" + *it;
+            QString fileName = path + '/' + *it;
 //            kDebug() << "storing " << fileName << endl;
-            QString dest = destName.isEmpty() ? *it : (destName + "/" + *it);
+            QString dest = destName.isEmpty() ? *it : (destName + '/' + *it);
             QFileInfo fileInfo( fileName );
 
             if ( fileInfo.isFile() || fileInfo.isSymLink() )
@@ -553,7 +553,7 @@ QIODevice * KArchiveFile::device() const
 
 void KArchiveFile::copyTo(const QString& dest) const
 {
-  QFile f( dest + "/"  + name() );
+  QFile f( dest + '/'  + name() );
   if ( f.open( QIODevice::ReadWrite | QIODevice::Truncate ) )
   {
       f.write( data() );
@@ -667,7 +667,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
         const KArchiveDirectory *ad = dynamic_cast<const KArchiveDirectory*>( curEntry );
         if (ad) {
           dirStack.push( ad );
-          dirNameStack.push( curDirName + "/" + curEntry->name() );
+          dirNameStack.push( curDirName + '/' + curEntry->name() );
         }
       }
     }

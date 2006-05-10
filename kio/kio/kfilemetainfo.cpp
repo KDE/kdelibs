@@ -1665,7 +1665,7 @@ QString KFileMimeTypeInfo::ItemInfo::string(const QVariant& value, bool mangle) 
     if (mangle && !s.isNull())
     {
         s.prepend(prefix());
-        s.append(" " + suffix());
+        s.append(' ' + suffix());
     }
     return s;
 }

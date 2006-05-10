@@ -41,7 +41,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");
     if (entry->isDirectory())
-      recursive_print( (KArchiveDirectory *)entry, path+(*it)+"/" );
+      recursive_print( (KArchiveDirectory *)entry, path+(*it)+'/' );
   }
 }
 
@@ -77,7 +77,7 @@ void recursive_transfer(const KArchiveDirectory * dir,
 	else if (e->isDirectory())
 	{
 	    recursive_transfer((KArchiveDirectory *)e ,
-			path+e->name()+"/", zip);
+			path+e->name()+'/', zip);
 	}
     }
 }

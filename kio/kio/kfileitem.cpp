@@ -743,7 +743,7 @@ QString KFileItem::getToolTipText(int maxcount)
         {
           count++;
           tip += start +
-                   Qt::escape( item.translatedKey() ) + ":" +
+                   Qt::escape( item.translatedKey() ) + ':' +
                  mid +
                    Qt::escape( s ) +
                  end;

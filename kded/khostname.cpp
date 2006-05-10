@@ -165,9 +165,9 @@ void KHostName::changeX()
       system(QFile::encodeName(cmd));
       cmd = "xauth -n add ";
       cmd += KProcess::quote(newNetId);
-      cmd += " ";
+      cmd += ' ';
       cmd += KProcess::quote(authName);
-      cmd += " ";
+      cmd += ' ';
       cmd += KProcess::quote(authKey);
       system(QFile::encodeName(cmd));
    }
@@ -264,9 +264,9 @@ void KHostName::changeDcop()
          cmd += KProcess::quote(protName);
          cmd += " '' ";
          cmd += KProcess::quote(newNetId);
-         cmd += " ";
+         cmd += ' ';
          cmd += KProcess::quote(authName);
-         cmd += " ";
+         cmd += ' ';
          cmd += KProcess::quote(authKey);
          system(QFile::encodeName(cmd));
       }

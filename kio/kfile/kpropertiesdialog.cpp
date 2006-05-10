@@ -1106,9 +1106,9 @@ void KFilePropsPlugin::slotEditFileType()
   if ( d->mimeType == KMimeType::defaultMimeType() ) {
     int pos = d->oldFileName.lastIndexOf( '.' );
     if ( pos != -1 )
-	mime = "*" + d->oldFileName.mid(pos);
+	mime = '*' + d->oldFileName.mid(pos);
     else
-	mime = "*";
+	mime = '*';
   }
   else
     mime = d->mimeType;
@@ -1116,7 +1116,7 @@ void KFilePropsPlugin::slotEditFileType()
   QString keditfiletype = QString::fromLatin1("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
-                    + " " + KProcess::quote(mime),
+                    + ' ' + KProcess::quote(mime),
                     keditfiletype, keditfiletype /*unused*/);
 #endif
 }
@@ -3249,7 +3249,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
         {
            if (minorItem->isSelected())
            {
-              QString mimetype = major + "/" + minorItem->text(0);
+              QString mimetype = major + '/' + minorItem->text(0);
               KMimeType::Ptr p = KMimeType::mimeType(mimetype);
               if (p && (p != defaultMimetype))
               {

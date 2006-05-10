@@ -31,7 +31,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
     const KArchiveEntry* entry = dir->entry( (*it) );
     printf("mode=%07o %s %s %s%s isdir=%d\n", entry->permissions(), entry->user().toLatin1().constData(), entry->group().toLatin1().constData(), path.toLatin1().constData(), (*it).toLatin1().constData(), entry->isDirectory());
     if (entry->isDirectory())
-      recursive_print( (KArchiveDirectory *)entry, path+(*it)+"/" );
+      recursive_print( (KArchiveDirectory *)entry, path+(*it)+'/' );
   }
 }
 

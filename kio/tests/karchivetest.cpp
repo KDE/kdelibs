@@ -97,7 +97,7 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
     ret.append( descr );
 
     if (entry->isDirectory())
-      ret += recursiveListEntries( (KArchiveDirectory *)entry, path+(*it)+"/", listingFlags );
+      ret += recursiveListEntries( (KArchiveDirectory *)entry, path+(*it)+'/', listingFlags );
   }
   return ret;
 }

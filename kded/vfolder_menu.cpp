@@ -1523,7 +1523,7 @@ static QStringList parseLayoutNode(const QDomElement &docElem)
       }
       else if (e.tagName() == "Menuname")
       {
-         layout.append("/"+e.text());
+         layout.append('/'+e.text());
          QString option = parseAttribute( e );
          if( !option.isEmpty())
              layout.append( option );

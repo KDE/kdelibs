@@ -148,7 +148,7 @@ IEExporter::IEExporter( const QString & dname ) {
 }
 
 void IEExporter::visit( const KBookmark &bk ) {
-    QString fname = m_currentDir.path() + "/" + ieStyleQuote( bk.fullText() ) + ".url";
+    QString fname = m_currentDir.path() + '/' + ieStyleQuote( bk.fullText() ) + ".url";
     // kDebug() << "visit(" << bk.text() << "), fname == " << fname << endl;
     QFile file( fname );
     file.open( QIODevice::WriteOnly );
@@ -158,7 +158,7 @@ void IEExporter::visit( const KBookmark &bk ) {
 }
 
 void IEExporter::visitEnter( const KBookmarkGroup &grp ) {
-    QString dname = m_currentDir.path() + "/" + ieStyleQuote( grp.fullText() );
+    QString dname = m_currentDir.path() + '/' + ieStyleQuote( grp.fullText() );
     // kDebug() << "visitEnter(" << grp.text() << "), dname == " << dname << endl;
     m_currentDir.mkdir( dname );
     m_currentDir.cd( dname );

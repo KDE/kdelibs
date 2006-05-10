@@ -57,7 +57,7 @@ static KStaticDeleter<KSSLCSessions> med;
 
 
 static QString URLtoKey(const KUrl &kurl) {
-    return kurl.host() + ":" + kurl.protocol() + ":" + QString::number(kurl.port());
+    return kurl.host() + ':' + kurl.protocol() + ':' + QString::number(kurl.port());
 }
 
 
