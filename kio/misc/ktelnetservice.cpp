@@ -27,6 +27,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kprocess.h>
+#include <ksimpleconfig.h>
 
 static const KCmdLineOptions options[] =
 {
@@ -47,10 +48,15 @@ int main(int argc, char **argv)
 	
 	if (args->count() != 1)
 		return 1;
+	
+	KConfig *config = new KConfig("kdeglobals", true);
+	config->setGroup("General");
+	QString terminal = config->readPathEntry("TerminalApplication", "konsole");
 
 	KUrl url(args->arg(0));
 	QStringList cmd;
-	cmd << "--noclose";
+	if (terminal == "konsole")
+	    cmd << "--noclose";
 
 	cmd << "-e";
         if ( url.protocol() == "telnet" )
@@ -98,7 +104,7 @@ int main(int argc, char **argv)
 		cmd << QString::number(url.port());
 	}
 
-	KToolInvocation::kdeinitExec("konsole", cmd);
+	KToolInvocation::kdeinitExec(terminal, cmd);
 
 	return 0;
 }
