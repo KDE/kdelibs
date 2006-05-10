@@ -37,6 +37,9 @@ extern "C" {
 #define EXIT_FAILURE 1
 #define EXIT_SUCCESS 0
 
+#define strtoll _strtoi64
+#define strtoull _strtoui64
+
 
 KDEWIN32_EXPORT long int random();
 
