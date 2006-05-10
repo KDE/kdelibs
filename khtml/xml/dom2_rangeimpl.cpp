@@ -1600,7 +1600,7 @@ void RangeImpl::checkDeleteExtract(int &exceptioncode) {
 	end = m_endContainer;
 
     NodeImpl *n;
-    for (n = start; n != end; n = n->traverseNextNode()) {
+    for (n = start; n && n != end; n = n->traverseNextNode()) {
 	if (n->isReadOnly()) {
 	    exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
 	    return;
