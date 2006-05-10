@@ -1,7 +1,0 @@
-KDE_CHECK_SSL
-
-if test "$have_ssl" = yes; then
-	AC_DEFINE(KSSL_HAVE_SSL, 1, [Define if we shall use KSSL])
-fi
-
-AM_CONFIG_HEADER([kio/kssl/ksslconfig.h])

@@ -1,5 +1,0 @@
-dnl For kio_ftp
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_CHECK_FUNCS( setfsent )
-AC_LANG_RESTORE  

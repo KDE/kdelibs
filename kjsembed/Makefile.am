@@ -1,1 +1,0 @@
-SUBDIRS = kjsembed kjscmd console 
