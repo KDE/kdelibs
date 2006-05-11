@@ -63,7 +63,7 @@ namespace KDEHW
          * @return the OpticalDisc capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::OpticalDisc; }
+        static Type capabilityType() { return Capability::OpticalDisc; }
 
 
         /**

@@ -61,7 +61,7 @@ namespace KDEHW
          * @return the Processor capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::Processor; }
+        static Type capabilityType() { return Capability::Processor; }
 
         /**
          * Retrieves the processor number in the system.

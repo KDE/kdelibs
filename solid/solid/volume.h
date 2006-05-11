@@ -67,7 +67,7 @@ namespace KDEHW
          * @return the Volume capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::Volume; }
+        static Type capabilityType() { return Capability::Volume; }
 
 
         /**

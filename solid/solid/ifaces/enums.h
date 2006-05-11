@@ -72,7 +72,8 @@ namespace Enums
                     Storage = 4, Cdrom = 8,
                     Volume = 16, OpticalDisc = 32,
                     Camera = 64, PortableMediaPlayer = 128,
-                    NetworkIface = 256, Display = 512 };
+                    NetworkIface = 256, AcAdapter = 512,
+                    Battery = 1024, Display = 2048 };
 
         /**
          * This type stores an OR combination of Type values.
@@ -256,9 +257,30 @@ namespace Enums
          * - CameraBattery : A battery in a camera
          * - UnknownBattery : A battery in an unknown device
          */
-         enum BatteryType { UnknownBattery, PdaBattery, UpsBattery,
-                            PrimaryBattery, MouseBattery, KeyboardBattery,
-                            KeyboardMouseBattery, CameraBattery };
+        enum BatteryType { UnknownBattery, PdaBattery, UpsBattery,
+                           PrimaryBattery, MouseBattery, KeyboardBattery,
+                           KeyboardMouseBattery, CameraBattery };
+
+        /**
+         * This enum type defines the kind of charge level a battery can expose
+         *
+         * - MaxLevel : The maximum charge level the battery got designed for
+         * - LastFullLevel : The last charge level the battery got when full
+         * - CurrentLevel : The current charge level
+         * - WarningLevel : The battery is in 'warning' state below this level
+         * - LowLevel : The battery is in 'low' state below this level
+         */
+        enum LevelType { MaxLevel, LastFullLevel, CurrentLevel,
+                         WarningLevel, LowLevel };
+
+        /**
+         * This enum type defines charge state of a battery
+         *
+         * - NoCharge : Battery charge is stable, not charging or discharging
+         * - Charging : Battery is charging
+         * - Discharging : Battery is discharging
+         */
+        enum ChargeState { NoCharge, Charging, Discharging };
     };
 
     /**

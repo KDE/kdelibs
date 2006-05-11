@@ -69,7 +69,7 @@ namespace KDEHW
          * @return the Camera capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::Camera; }
+        static Type capabilityType() { return Capability::Camera; }
 
 
         /**

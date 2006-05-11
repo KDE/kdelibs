@@ -1,0 +1,177 @@
+/*  This file is part of the KDE project
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License version 2 as published by the Free Software Foundation.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+
+*/
+
+#ifndef KDEHW_BATTERY_H
+#define KDEHW_BATTERY_H
+
+#include <kdelibs_export.h>
+
+#include <kdehw/capability.h>
+#include <kdehw/ifaces/enums.h>
+
+namespace KDEHW
+{
+    namespace Ifaces
+    {
+        class Battery;
+    }
+
+    /**
+     * This capability is available on batteries.
+     */
+    class KDE_EXPORT Battery : public Capability, public Ifaces::Enums::Battery
+    {
+        Q_OBJECT
+    public:
+        /**
+         * Creates a new Battery object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param iface the capability interface provided by the backend
+         * @param parent the parent QObject
+         * @see KDEHW::Device::as()
+         */
+        Battery( Ifaces::Battery *iface, QObject *parent = 0 );
+
+        /**
+         * Destroys a Battery object.
+         */
+        virtual ~Battery();
+
+
+        /**
+         * Get the KDEHW::Capability::Type of the Battery capability.
+         *
+         * @return the Battery capability type
+         * @see KDEHW::Ifaces::Enums::Capability::Type
+         */
+        static Type capabilityType() { return Capability::Battery; }
+
+        /**
+         * Indicates if this battery is plugged.
+         *
+         * @return true if the battery is plugged, false otherwise
+         */
+        bool isPlugged() const;
+
+        /**
+         * Retrieves the type of device holding this battery.
+         *
+         * @return the type of device holding this battery
+         * @see KDEHW::Ifaces::Enums::Battery::BatteryType
+         */
+        BatteryType type() const;
+
+
+
+        /**
+         * Retrieves the physical unit used by the charge level values
+         * (for example mWh).
+         *
+         * @return the charge level unit as a string
+         * @see charge()
+         */
+        QString chargeLevelUnit() const;
+
+        /**
+         * Retrieves one of the charge level of the battery as requested.
+         * By default the current charge level is returned.
+         *
+         * The unit of the returned value is determined by chargeLevelUnit()
+         *
+         * @return the requested charge level
+         * @see KDEHW::Ifaces::Enums::Battery::LevelType
+         */
+        int charge( LevelType type = CurrentLevel ) const;
+
+        /**
+         * Retrieves the current charge level of the battery normalised
+         * to percent.
+         *
+         * @return the current charge level normalised to percent
+         */
+        int chargePercent() const;
+
+
+
+        /**
+         * Retrieves the physical unit used by the voltage values
+         * (for example mV).
+         *
+         * @return the voltage level unit as a string
+         * @see voltage()
+         */
+        QString voltageUnit() const;
+
+        /**
+         * Retrieves the current voltage level of the battery.
+         *
+         * The unit of the returned value is determined by voltageUnit()
+         */
+        int voltage() const;
+
+
+
+        /**
+         * Indicates if the battery is rechargeable.
+         *
+         * @return true if the battery is rechargeable, false otherwise (one time usage)
+         */
+        bool isRechargeable() const;
+
+        /**
+         * Retrieves the current charge state of the battery. It can be in a stable
+         * state (no charge), charging or discharging.
+         *
+         * @return the current battery charge state
+         * @see KDEHW::Ifaces::Enums::Battery::ChargeState
+         */
+        ChargeState chargeState() const;
+
+    signals:
+        /**
+         * This signal is emitted when the charge percent value of this
+         * battery has changed.
+         *
+         * @param value the new charge percent value of the battery
+         */
+        void chargePercentChanged( int value );
+
+        /**
+         * This signal is emitted when the charge state of this battery
+         * has changed.
+         *
+         * @param newState the new charge state of the battery, it's one of
+         * the type KDEHW::Ifaces::Enums::ChargeState
+         * @see KDEHW::Ifaces::Enums::ChargeState
+         */
+        void chargeStateChanged( int newState );
+
+    private slots:
+        void slotChargePercentChanged( int value );
+        void slotChargeStateChanged( int newState );
+
+    private:
+        class Private;
+        Private *d;
+    };
+}
+
+#endif

@@ -55,7 +55,7 @@ namespace KDEHW
          * Get the capability type (Display).
          * @returns Capability::Display.
          */
-        static Type type() { return Capability::Display; }
+        static Type capabilityType() { return Capability::Display; }
 
         /**
          * Get the type of display device.

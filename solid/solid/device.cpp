@@ -40,6 +40,10 @@
 #include <kdehw/ifaces/portablemediaplayer.h>
 #include <kdehw/networkiface.h>
 #include <kdehw/ifaces/networkiface.h>
+#include <kdehw/acadapter.h>
+#include <kdehw/ifaces/acadapter.h>
+#include <kdehw/battery.h>
+#include <kdehw/ifaces/battery.h>
 #include <kdehw/display.h>
 #include <kdehw/ifaces/display.h>
 
@@ -279,6 +283,12 @@ KDEHW::Capability *KDEHW::Device::asCapability( const Capability::Type &capabili
                 break;
             case Capability::NetworkIface:
                 iface = capability_cast<Ifaces::NetworkIface, NetworkIface>( cap_iface );
+                break;
+            case Capability::AcAdapter:
+                iface = capability_cast<Ifaces::AcAdapter, AcAdapter>( cap_iface );
+                break;
+            case Capability::Battery:
+                iface = capability_cast<Ifaces::Battery, Battery>( cap_iface );
                 break;
             case Capability::Display:
                 iface = capability_cast<Ifaces::Display, Display>( cap_iface );

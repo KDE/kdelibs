@@ -61,7 +61,7 @@ namespace KDEHW
          * @return the NetworkIface capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::NetworkIface; }
+        static Type capabilityType() { return Capability::NetworkIface; }
 
 
         /**

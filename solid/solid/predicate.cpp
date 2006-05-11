@@ -80,6 +80,8 @@ KDEHW::Predicate::Predicate( const QString &capability,
     map["Camera"] = Capability::Camera;
     map["PortableMediaPlayer"] = Capability::PortableMediaPlayer;
     map["NetworkIface"] = Capability::NetworkIface;
+    map["AcAdapter"] = Capability::AcAdapter;
+    map["Battery"] = Capability::Battery;
     map["Display"] = Capability::Display;
 
     if ( map.contains( capability ) )
@@ -222,6 +224,12 @@ QString KDEHW::Predicate::toString() const
             break;
         case Capability::NetworkIface:
             capability = "NetworkIface";
+            break;
+        case Capability::AcAdapter:
+            capability = "AcAdapter";
+            break;
+        case Capability::Battery:
+            capability = "Battery";
             break;
         case Capability::Display:
             capability = "Display";

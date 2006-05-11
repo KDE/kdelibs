@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KDEHW_BLOCK_H
-#define KDEHW_BLOCK_H
+#ifndef KDEHW_ACADAPTER_H
+#define KDEHW_ACADAPTER_H
 
 #include <kdelibs_export.h>
 
@@ -28,22 +28,18 @@ namespace KDEHW
 {
     namespace Ifaces
     {
-        class Block;
+        class AcAdapter;
     }
 
     /**
-     * This capability is available on block devices.
-     *
-     * A block device is an adressable device such as drive or partition.
-     * It is possible to interact with such a device using a special file
-     * in the system.
+     * This capability is available on A/C adapters.
      */
-    class KDE_EXPORT Block : public Capability
+    class KDE_EXPORT AcAdapter : public Capability
     {
         Q_OBJECT
     public:
         /**
-         * Creates a new Block object.
+         * Creates a new AcAdapter object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
@@ -51,47 +47,39 @@ namespace KDEHW
          * @param parent the parent QObject
          * @see KDEHW::Device::as()
          */
-        Block( Ifaces::Block *iface, QObject *parent = 0 );
+        AcAdapter( Ifaces::AcAdapter *iface, QObject *parent = 0 );
 
         /**
-         * Destroys a Block object.
+         * Destroys an AcAdapter object.
          */
-        virtual ~Block();
+        virtual ~AcAdapter();
 
 
         /**
-         * Get the KDEHW::Capability::Type of the Block capability.
+         * Get the KDEHW::Capability::Type of the AcAdapter capability.
          *
-         * @return the Block capability type
+         * @return the AcAdapter capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type capabilityType() { return Capability::Block; }
-
-
-        /**
-         * Retrieves the major number of the node file to interact with
-         * the device.
-         *
-         * @return the device major number
-         */
-        int major() const;
+        static Type capabilityType() { return Capability::AcAdapter; }
 
         /**
-         * Retrieves the minor number of the node file to interact with
-         * the device.
+         * Indicates if this A/C adapter is plugged.
          *
-         * @return the device minor number
+         * @return true if the adapter is plugged, false otherwise
          */
-        int minor() const;
+        bool isPlugged() const;
 
+    signals:
         /**
-         * Retrieves the absolute path of the special file to interact
-         * with the device.
+         * This signal is emitted when the A/C adapter is plugged or unplugged.
          *
-         * @return the absolute path of the special file to interact with
-         * the device
+         * @param newState true if the A/C adapter is plugged is mounted, false otherwise
          */
-        QString device() const;
+        void plugStateChanged( bool newState );
+
+    private slots:
+        void slotPlugStateChanged( bool newState );
 
     private:
         class Private;

@@ -229,7 +229,7 @@ namespace KDEHW
          */
         template <class Cap> Cap *as()
         {
-            Capability::Type type = Cap::type();
+            Capability::Type type = Cap::capabilityType();
             Capability *iface = asCapability( type );
             return dynamic_cast<Cap*>( iface );
         }
@@ -241,7 +241,7 @@ namespace KDEHW
          */
         template <class Cap> bool is()
         {
-            return queryCapability( Cap::type() );
+            return queryCapability( Cap::capabilityType() );
         }
 
 

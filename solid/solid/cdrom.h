@@ -65,7 +65,7 @@ namespace KDEHW
          * @return the Cdrom capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::Cdrom; }
+        static Type capabilityType() { return Capability::Cdrom; }
 
 
         /**

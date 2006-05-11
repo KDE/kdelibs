@@ -65,7 +65,7 @@ namespace KDEHW
          * @return the Storage capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::Storage; }
+        static Type capabilityType() { return Capability::Storage; }
 
 
         /**

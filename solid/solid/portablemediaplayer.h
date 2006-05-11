@@ -67,7 +67,7 @@ namespace KDEHW
          * @return the PortableMediaPlayer capability type
          * @see KDEHW::Ifaces::Enums::Capability::Type
          */
-        static Type type() { return Capability::PortableMediaPlayer; };
+        static Type capabilityType() { return Capability::PortableMediaPlayer; };
 
         /**
          * Retrieves the type of method that should be used to access this
