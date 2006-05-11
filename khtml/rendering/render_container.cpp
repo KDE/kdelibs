@@ -52,9 +52,17 @@ void RenderContainer::detach()
     if (continuation())
         continuation()->detach();
 
+    // We simulate removeNode calls for all our children
+    // and set parent to 0 to avoid removeNode from being called.
+    // First call removeLayers and removeFromObjectLists since they assume
+    // a valid render-tree
+    for(RenderObject* n = m_first; n; n = n->nextSibling() ) {
+        n->removeLayers(enclosingLayer());
+        n->removeFromObjectLists();
+    }
+
     RenderObject* next;
     for(RenderObject* n = m_first; n; n = next ) {
-	n->removeFromObjectLists();
         n->setParent(0);
         next = n->nextSibling();
         n->detach();
@@ -159,6 +167,8 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
         // Keep our layer hierarchy updated.
         oldChild->removeLayers(enclosingLayer());
+        // remove the child from any special layout lists
+        oldChild->removeFromObjectLists();
 
         // if oldChild is the start or end of the selection, then clear
         // the selection to avoid problems of invalid pointers
@@ -179,10 +189,6 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
             }
         }
     }
-
-    // remove the child from any special layout lists
-    if ( oldChild->isFloating() || oldChild->isPositioned() )
-        oldChild->removeFromObjectLists();
 
     // remove the child from the render-tree
     if (oldChild->previousSibling())
@@ -279,7 +285,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     {
         // The child needs to be removed.
         oldContentPresent = false;
-        removeChild(child);
+        child->detach();
         child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
     }
 

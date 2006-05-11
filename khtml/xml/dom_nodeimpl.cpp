@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003-2006 Apple Computer, Inc.
  *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -74,11 +74,12 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_inDocument( false ),
       m_hasAnchor( false ),
       m_specified( false ),
+      m_hovered( false ),
       m_focused( false ),
       m_active( false ),
       m_implicit( false ),
-      m_rendererNeedsClose( false ),
       m_htmlCompat( false ),
+      m_hasClassList( false ),
       m_hasClass( false )
 {
     if (document)
@@ -776,45 +777,74 @@ bool NodeImpl::childAllowed( NodeImpl *newChild )
     return childTypeAllowed(newChild->nodeType());
 }
 
-NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const
+NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 )
 {
+    // This method won't work when a style contains noninherited properties with "inherit" value.
     StyleChange ch = NoInherit;
-    if ( !s1 || !s2 )
+
+    EDisplay display1 = s1 ? s1->display() : NONE;
+    EDisplay display2 = s2 ? s2->display() : NONE;
+    EPosition position1 = s1 ? s1->position() : STATIC;
+    EPosition position2 = s2 ? s2->position() : STATIC;
+
+    if (display1 != display2 || position1 != position2)
+        ch = Detach;
+    else if ( !s1 || !s2 )
 	ch = Inherit;
     else if ( *s1 == *s2 )
  	ch = NoChange;
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
+
+    // Because the first-letter implementation is so f..ked up, the easiest way
+    // to update first-letter is to remove the entire node and readd it.
+    if (ch < Detach && pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LETTER))
+        ch = Detach;
+    // If the other pseudoStyles have changed, we want to return NoInherit
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::BEFORE))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::AFTER))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::SELECTION))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::FIRST_LINE))
+        ch = NoInherit;
+
     return ch;
+}
+
+bool NodeImpl::pseudoDiff( khtml::RenderStyle *s1, khtml::RenderStyle *s2, unsigned int pid)
+{
+    khtml::RenderStyle *ps1 = s1 ? s1->getPseudoStyle((khtml::RenderStyle::PseudoId)pid) : 0;
+    khtml::RenderStyle *ps2 = s2 ? s2->getPseudoStyle((khtml::RenderStyle::PseudoId)pid) : 0;
+
+    if (ps1 == ps2)
+        return false;
+    else
+    if (ps1 && ps2) {
+        if (*ps1 == *ps2)
+            return false;
+        else
+            return true;
+    }
+    else
+        return true;
 }
 
 void NodeImpl::close()
 {
-    closeRenderer();
+    if (m_render) m_render->close();
     m_closed = true;
-}
-
-void NodeImpl::closeRenderer()
-{
-    // It's important that we close the renderer, even if it hasn't been
-    // created yet. This happens even more because of the FOUC fixes we did
-    // at Apple, which prevent renderers from being created until the stylesheets
-    // are all loaded. If the renderer is not here to be closed, we set a flag,
-    // then close it later when it's attached.
-    assert(!m_rendererNeedsClose);
-    if (m_render)
-        m_render->close();
-    else
-        m_rendererNeedsClose = true;
 }
 
 void NodeImpl::attach()
 {
     assert(!attached());
     assert(!m_render || (m_render->style() && m_render->parent()));
-    if (m_render && m_rendererNeedsClose) {
-        m_render->close();
-        m_rendererNeedsClose = false;
+    if (m_render) // set states to match node
+    {
+        if (closed()) m_render->close();
+        if (hovered()) m_render->setMouseInside();
     }
     getDocument()->incDOMTreeVersion();
     m_attached = true;
@@ -900,7 +930,6 @@ void NodeImpl::createRendererIfNeeded()
         return;
 #endif
 
-    assert(!attached());
     assert(!m_render);
 
     NodeImpl *parent = parentNode();
@@ -1517,8 +1546,8 @@ void NodeBaseImpl::setFocus(bool received)
     NodeImpl::setFocus(received);
 
     // note that we need to recalc the style
-    if (isElementNode()) {
         setChanged(); // *:focus is a default style, so we just assume personal dependency
+    if (isElementNode()) {
         getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), OtherStateDependency);
     }
 }
@@ -1532,6 +1561,17 @@ void NodeBaseImpl::setActive(bool down)
     // note that we need to recalc the style
     if (isElementNode())
         getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), ActiveDependency);
+}
+
+void NodeBaseImpl::setHovered(bool hover)
+{
+    if (hover == hovered()) return;
+
+    NodeImpl::setHovered(hover);
+
+    // note that we need to recalc the style
+    if (isElementNode())
+        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), HoverDependency);
 }
 
 unsigned long NodeBaseImpl::childNodeCount()
@@ -1630,7 +1670,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
         //Compute distance from the requested index to the cache node
         unsigned long cacheDist = QABS(long(index) - long(m_cache->position));
 
-        if (cacheDist < index) { //Closer to the cached position
+        if (cacheDist < (long)index) { //Closer to the cached position
             usedCache = true;
             if (index >= m_cache->position) { //Go ahead
                 unsigned long relIndex = index - m_cache->position;

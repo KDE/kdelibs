@@ -392,6 +392,11 @@ DOMStringImpl *DOMStringImpl::capitalize() const
     return c;
 }
 
+QString DOMStringImpl::string() const
+{
+    return QString(s, l);
+}
+
 int DOMStringImpl::toInt(bool* ok) const
 {
     // match \s*[+-]?\d*

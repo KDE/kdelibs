@@ -465,7 +465,7 @@ public:
     RegisteredEventListener() : id(EventImpl::EventId(0)), useCapture(false), listener(0) {}
 
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
-        : id(_id), useCapture(_useCapture), listener(_listener) { listener->ref(); }
+        : id(_id), useCapture(_useCapture), listener(_listener) { if (listener) listener->ref(); }
 
     ~RegisteredEventListener() { if (listener) listener->deref(); listener = 0; }
 

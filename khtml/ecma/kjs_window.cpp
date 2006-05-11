@@ -1353,7 +1353,9 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
     return Undefined();
   KHTMLView *widget = part->view();
   ValueImp *v = args[0];
-  QString str = v->toString(exec).qstring();
+  QString str;
+  if (!v->isUndefinedOrNull())
+    str = v->toString(exec).qstring();
 
   // prepare arguments
   KUrl url;
@@ -1573,8 +1575,11 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
 
   KHTMLView *widget = part->view();
   ValueImp *v = args[0];
-  UString s = v->toString(exec);
-  str = s.qstring();
+  UString s;
+  if (!v->isUndefinedOrNull()) {
+    s = v->toString(exec);
+    str = s.qstring();
+  }
 
   QString caption;
   if (part && !part->url().host().isEmpty())

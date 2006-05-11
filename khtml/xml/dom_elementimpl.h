@@ -160,6 +160,7 @@ public:
 
     //Lower-level implementation primitives
     DOMString getAttribute( NodeImpl::Id id, bool nsAware = 0, const DOMString& qName = DOMString() ) const;
+    DOMStringImpl* getAttributeImpl( NodeImpl::Id id, bool nsAware = 0, DOMStringImpl* qName = 0 ) const;
     void setAttribute( NodeImpl::Id id, const DOMString &value, const DOMString &qName,
                        int &exceptioncode );
     void setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,
@@ -204,6 +205,7 @@ public:
 
     virtual void attach();
     virtual void close();
+    virtual void detach();
     virtual void structureChanged();
     virtual void backwardsStructureChanged();
     virtual void attributeChanged(NodeImpl::Id attrId);

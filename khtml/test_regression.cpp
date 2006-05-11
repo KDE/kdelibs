@@ -635,14 +635,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (args->isSet("xvfb"))
+    {
     if ( ::access( "/usr/X11R6/bin/Xvfb", X_OK ) ) {
         fprintf( stderr, "ERROR: We need /usr/X11R6/bin/Xvfb to be installed for reliable results\n" );
         exit( 1 );
     }
 
-
-    if (args->isSet("xvfb"))
-    {
         xvfb = fork();
         if ( !xvfb ) {
             char buffer[1000];

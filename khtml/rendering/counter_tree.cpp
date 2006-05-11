@@ -50,8 +50,10 @@ void CounterNode::remove ()
     if (m_parent) m_parent->removeChild(this);
     else {
         Q_ASSERT(isReset());
-        Q_ASSERT(!firstChild());
-        Q_ASSERT(!lastChild());
+        // abandon our children
+        CounterNode *n = firstChild();
+        for(; n; n = n->m_next)
+            n->m_parent = 0;
     }
 }
 

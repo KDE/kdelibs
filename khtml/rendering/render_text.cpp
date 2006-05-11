@@ -248,7 +248,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
             bmap[n] = f;
         }
 
-        float factor = 0.0; // maximal opacity-sum
+        float factor = 0.0; // maximal potential opacity-sum
         for(int n=-thickness; n<=thickness; n++)
             for(int m=-thickness; m<=thickness; m++) {
                 int d = n*n+m*m;
@@ -256,7 +256,8 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
                     factor += bmap[d];
             }
 
-        factor = 1.0/factor;
+        // arbitratry factor adjustment to make shadows solid.
+        factor = factor/1.333;
 
         // alpha map
         float* amap = (float*)alloca(sizeof(float)*(h*w));
@@ -286,9 +287,14 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         int g = qGreen(color);
         int b = qBlue(color);
 
+        // divide by factor
+        factor = 1.0/factor;
+
         for(int j=0; j<h; j++) {
             for(int i=0; i<w; i++) {
-                res.setPixel(i,j, qRgba(r,g,b,(int)(amap[i+j*w]*factor*255.0)));
+                int a = (int)(amap[i+j*w] * factor * 255.0);
+                if (a > 255) a = 255;
+                res.setPixel(i,j, qRgba(r,g,b,a));
             }
         }
 
@@ -897,7 +903,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 
         // Now calculate startPos and endPos, for painting selection.
         // We paint selection while endPos > 0
-        int endPos, startPos;
+        int endPos = 0, startPos = 0;
         if (!isStatic && (selectionState() != SelectionNone)) {
             if (selectionState() == SelectionInside) {
                 //kDebug(6040) << this << " SelectionInside -> 0 to end" << endl;

@@ -1018,6 +1018,7 @@ void RenderTableSection::ensureRows( int numRows )
 	for ( int r = nRows; r < numRows; r++ ) {
 	    grid[r].row = new Row( nCols );
 	    grid[r].row->fill( 0 );
+            grid[r].rowRenderer = 0;
 	    grid[r].baseLine = 0;
 	    grid[r].height = Length();
 	}
@@ -1025,7 +1026,7 @@ void RenderTableSection::ensureRows( int numRows )
 
 }
 
-void RenderTableSection::addCell( RenderTableCell *cell )
+void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 {
     int rSpan = cell->rowSpan();
     int cSpan = cell->colSpan();
@@ -1038,29 +1039,8 @@ void RenderTableSection::addCell( RenderTableCell *cell )
     // <TR><TD>1 <TD rowspan="2">2 <TD>3 <TD>4
     // <TR><TD colspan="2">5
     // </TABLE>
-#if 0
-    // find empty space for the cell
-    bool found = false;
-    while ( !found ) {
-	found = true;
 	while ( cCol < nCols && cellAt( cRow, cCol ) )
 	    cCol++;
-	int pos = cCol;
-	int span = 0;
-	while ( pos < nCols && span < cSpan ) {
-	    if ( cellAt( cRow, pos ) ) {
-		found = false;
-		cCol = pos;
-		break;
-	    }
-	    span += columns[pos].span;
-	    pos++;
-	}
-    }
-#else
-    while ( cCol < nCols && cellAt( cRow, cCol ) )
-	cCol++;
-#endif
 
 //       qDebug("adding cell at %d/%d span=(%d/%d)",  cRow, cCol, rSpan, cSpan );
 
@@ -1096,6 +1076,8 @@ void RenderTableSection::addCell( RenderTableCell *cell )
 
     // make sure we have enough rows
     ensureRows( cRow + rSpan );
+
+    grid[cRow].rowRenderer = row;
 
     int col = cCol;
     // tell the cell where it is
@@ -1546,6 +1528,61 @@ int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool incl
     return left;
 }
 
+// Search from first_row to last_row for the row containing y
+static unsigned int findRow(unsigned int first_row, unsigned int last_row,
+                            const QVector<int> &rowPos, int y)
+{
+    unsigned int under = first_row;
+    unsigned int over = last_row;
+    int offset = (over - under)/2;
+    while (over-under > 1) {
+        if (rowPos[under+offset] <= y)
+            under = under+offset;
+        else
+            over = under+offset;
+        offset = (over - under)/2;
+    }
+
+    assert(under == first_row || rowPos[under] <= y);
+    assert(over == last_row || rowPos[over] > y);
+
+    return under;
+}
+
+static void findRowCover(unsigned int &startrow, unsigned int &endrow,
+                         const QVector<int> &rowPos,
+                         int min_y, int max_y)
+{
+    assert(max_y >= min_y);
+    unsigned int totalRows = endrow;
+
+    unsigned int index = 0;
+    // Initial binary search boost:
+    if (totalRows >= 8) {
+        int offset = (endrow - startrow)/2;
+        while (endrow - startrow > 1) {
+            index = startrow+offset;
+            if (rowPos[index] <= min_y ) 
+                // index is below both min_y and max_y
+                startrow = index;
+            else
+            if (rowPos[index] > max_y) 
+                // index is above both min_y and max_y
+                endrow = index;
+            else
+                // index is within the selection
+                break;
+            offset = (endrow - startrow)/2;
+        }
+    }
+
+    // Binary search for startrow
+    startrow = findRow(startrow, endrow, rowPos, min_y);
+    // Binary search for endrow
+    endrow = findRow(startrow, endrow, rowPos, max_y) + 1;
+    if (endrow > totalRows) endrow = totalRows;
+}
+
 void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 {
     unsigned int totalRows = grid.size();
@@ -1561,22 +1598,14 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     int cbsw2 = cbs ? cbs->width()/2 : 0;
     int cbsw21 = cbs ? (cbs->width()+1)/2 : 0;
 
-    RenderTableRow *trow = firstTableRow(firstChild());
-
     int x = pI.r.x(), y = pI.r.y(), w = pI.r.width(), h = pI.r.height();
     // check which rows and cols are visible and only paint these
-    // ### fixme: could use a binary search here
     int os = 2*maximalOutlineSize(pI.phase);
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
-    for ( ; startrow < totalRows; startrow++, trow = nextTableRow(trow) ) {
-	if ( ty + rowPos[startrow+1] + qMax(cbsw21, os) > y - os )
-	    break;
-    }
-    for ( ; endrow > 0; endrow-- ) {
-	if ( ty + rowPos[endrow-1] - qMax(cbsw2, os) < y + h + os )
-	    break;
-    }
+    findRowCover(startrow, endrow, rowPos, y - os - ty - qMax(cbsw21, os), y + h + os - ty + qMax(cbsw2, os));
+
+    // A binary search is probably not worthwhile for coloumns
     unsigned int startcol = 0;
     unsigned int endcol = totalCols;
     if ( style()->direction() == LTR ) {
@@ -1591,22 +1620,24 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     }
     if ( startcol < endcol ) {
 	// draw the cells
-	for ( unsigned int r = startrow; r < endrow; r++, trow = nextTableRow(trow) ) {
+	for ( unsigned int r = startrow; r < endrow; r++ ) {
 	    // paint the row
-	    if (trow) {
+	    if (grid[r].rowRenderer) {
 	        int height = rowPos[r+1] - rowPos[r] - table()->borderVSpacing();
-	        trow->paintRow(pI, tx, ty + rowPos[r], width(), height);
+	        grid[r].rowRenderer->paintRow(pI, tx, ty + rowPos[r], width(), height);
 	    }
 
 	    unsigned int c = startcol;
+	    Row *row = grid[r].row;
+	    Row *nextrow = (r < endrow - 1) ? grid[r+1].row : 0;
 	    // since a cell can be -1 (indicating a colspan) we might have to search backwards to include it
-	    while ( c && cellAt( r, c ) == (RenderTableCell *)-1 )
+	    while ( c && (*row)[c] == (RenderTableCell *)-1 )
 		c--;
 	    for ( ; c < endcol; c++ ) {
-		RenderTableCell *cell = cellAt(r, c);
+		RenderTableCell *cell = (*row)[c];
 		if (!cell || cell == (RenderTableCell *)-1 )
 		    continue;
-		if ( (r < endrow - 1) && (cellAt(r+1, c) == cell) )
+		if ( nextrow && (*nextrow)[c] == cell )
 		    continue;
 
 #ifdef TABLE_PRINT
@@ -1625,18 +1656,15 @@ void RenderTableSection::recalcCells()
     clearGrid();
     grid.resize( 0 );
 
-    RenderObject *row = firstChild();
-    while ( row ) {
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        if (row->isTableRow())  {
 	cRow++;
 	cCol = 0;
 	ensureRows( cRow+1 );
-	RenderObject *cell = row->firstChild();
-	while ( cell ) {
-	    if ( cell->isTableCell() )
-		addCell( static_cast<RenderTableCell *>(cell) );
-	    cell = cell->nextSibling();
+            for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+                if (cell->isTableCell())
+                    addCell( static_cast<RenderTableCell *>(cell), static_cast<RenderTableRow *>(row) );
 	}
-	row = row->nextSibling();
     }
     needCellRecalc = false;
     setNeedsLayout(true);
@@ -1782,17 +1810,9 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
     if (needsLayout() || _y < _ty) return SelectionPointBefore;
 //    else if (_y >= _ty + height()) save_last = true;
 
-    // bluntly taken from paint (LS)
-    // check which rows and cols are visible and only paint these
-    // ### fixme: could use a binary search here
-    int row_idx = (int)totalRows - 1;
-    if ( row_idx > 0 ) {
-        for ( ; row_idx >= 0; row_idx-- ) {
-            if ( _ty + rowPos[row_idx] < _y )
-                break;
-        }
-        if (row_idx < 0) row_idx = 0;
-    }
+    // Find the row containing the pointer
+    int row_idx = findRow(0, totalRows, rowPos, _y - _ty);
+
     int col_idx;
     if ( style()->direction() == LTR ) {
 	for ( col_idx = (int)totalCols - 1; col_idx >= 0; col_idx-- ) {
@@ -1908,7 +1928,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     } else
         cell = static_cast<RenderTableCell *>(child);
 
-    static_cast<RenderTableSection *>(parent())->addCell( cell );
+    section()->addCell( cell, this );
 
     RenderContainer::addChild(cell,beforeChild);
 

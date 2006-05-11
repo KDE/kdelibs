@@ -514,7 +514,7 @@ void RenderObject::setNeedsLayout(bool b, bool markParents)
     bool alreadyNeededLayout = m_needsLayout;
     m_needsLayout = b;
     if (b) {
-        if (!alreadyNeededLayout && markParents) {
+        if (!alreadyNeededLayout && markParents && m_parent) {
             dirtyFormattingContext( false );
             markContainingBlocksForLayout();
         }
@@ -1566,6 +1566,10 @@ void RenderObject::detach()
 
     deleteInlineBoxes();
     remove();
+
+    // make sure our DOM-node don't think we exist
+    if ( node() && node()->renderer() == this)
+        node()->setRenderer(0);
 
     // by default no refcounting
     arenaDelete(renderArena(), this);

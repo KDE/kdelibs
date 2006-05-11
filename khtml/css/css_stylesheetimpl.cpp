@@ -246,7 +246,8 @@ void CSSStyleSheetImpl::determineNamespace(quint32& id, const DOM::DOMString& pr
             Q_ASSERT(m_doc != 0);
 
             // Look up the id for this namespace URI.
-            id = makeId(m_doc->getId(NodeImpl::NamespaceId, ns->uri().implementation(), false, false, &exceptioncode), localNamePart(id));
+            Q_UINT16 nsid = m_doc->getId(NodeImpl::NamespaceId, 0, 0, ns->uri().implementation(), false, false, &exceptioncode);
+            id = makeId(nsid, localNamePart(id));
         }
     }
 }

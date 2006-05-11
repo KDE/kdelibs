@@ -902,6 +902,47 @@ static bool matchNth(int count, const QString& nth)
     return false;
 }
 
+
+// Recursively work the combinator to compute static attribute dependency, similar to
+//structure of checkSubSelectors
+static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSSelector* sel, bool isAncestor, bool isSubject)
+{
+    if(sel->attr)
+    {
+        // Sets up global dependencies of attributes
+        if (isSubject)
+            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
+        else if (isAncestor)
+            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
+        else
+            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
+    }
+
+    CSSSelector::Relation relation = sel->relation;
+    sel = sel->tagHistory;
+    if (!sel) return;
+
+    switch(relation)
+    {
+    case CSSSelector::Descendant:
+    case CSSSelector::Child:
+        precomputeAttributeDependenciesAux(doc, sel, true, false);
+        break;
+    case CSSSelector::IndirectAdjacent:
+    case CSSSelector::DirectAdjacent:
+        precomputeAttributeDependenciesAux(doc, sel, false, false);
+        break;
+    case CSSSelector::SubSelector:
+        precomputeAttributeDependenciesAux(doc, sel, isAncestor, isSubject);
+        break;
+    }
+}
+
+void CSSStyleSelector::precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel)
+{
+    precomputeAttributeDependenciesAux(doc, sel, false, true);
+}
+
 // Recursive check of combinators to support nondeterministic matching
 DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::NodeImpl * n, bool isAncestor)
 {
@@ -985,11 +1026,6 @@ DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::N
         //kDebug() << "CSSOrderedRule::checkSelector" << endl;
         ElementImpl *elem = static_cast<ElementImpl *>(n);
 
-        // a selector is invalid if something follows a pseudo-element
-        // if elem !=element the subselector however precedes the pseudo-element
-        if ( n == element && dynamicPseudo != RenderStyle::NOPSEUDO ) {
-            return 0;
-        }
         if(!checkOneSelector(sel, elem, isAncestor)) return 0;
         //kDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
         break;
@@ -1050,17 +1086,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
     if(sel->attr)
     {
-        // Sets up global dependencies of attributes
-        // ### could be done in the parser
-        if (e == element)
-            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
-        else if (isAncestor)
-            doc->dynamicDomRestyler().addDependency(sel->attr, AscendentDependency);
-        else
-            doc->dynamicDomRestyler().addDependency(sel->attr, PrecedentDependency);
-
-        DOMString value = e->getAttribute(sel->attr);
-        if(value.isNull()) return false; // attribute is not set
+        DOMStringImpl* value = e->getAttributeImpl(sel->attr);
+        if(!value) return false; // attribute is not set
 
         switch(sel->match)
         {
@@ -1083,46 +1110,34 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Set:
             break;
         case CSSSelector::Class:
-            if (!e->hasClassList()) {
-                if( (strictParsing && strcmp(sel->value, value) ) ||
-                    (!strictParsing && strcasecmp(sel->value, value)))
-                    return false;
-               return true;
-            }
             // no break
         case CSSSelector::List:
         {
-            if (sel->match != CSSSelector::Class) {
-                const QChar* s = value.unicode();
-                int l = value.length();
-                while( l && !s->isSpace() )
-                    l--,s++;
-                if (!l) {
-		    // There is no list, just a single item.  We can avoid
-		    // allocing QStrings and just treat this as an exact
-		    // match check.
-		    if( (strictParsing && strcmp(sel->value, value) ) ||
-		        (!strictParsing && strcasecmp(sel->value, value)))
-		        return false;
-		    break;
-	        }
-            }
+            int sel_len = sel->value.length();
+            int val_len = value->length();
+            // Be smart compare on length first
+            if (sel_len > val_len) return false;
+            // Selector string may not contain spaces
+            if (sel->value.find(' ') != -1) return false;
+            if (sel_len == val_len)
+                return (strictParsing && !strcmp(sel->value, value)) ||
+		       (!strictParsing && !strcasecmp(sel->value, value));
+            // else the value is longer and can be a list
+            if ( sel->match == CSSSelector::Class && !e->hasClassList() ) return false;
 
-            // The selector's value can't contain a space, or it's totally bogus.
-            // ### check if this can still happen
-            if (sel->value.find(' ') != -1)
-                return false;
+            QChar* sel_uc = sel->value.unicode();
+            QChar* val_uc = value->unicode();
 
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            const int selStrlen = selStr.length();
+            QConstString sel_str(sel_uc, sel_len);
+            QConstString val_str(val_uc, val_len);
+
             int pos = 0;
             for ( ;; ) {
-                pos = str.indexOf(selStr, pos, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive));
+                pos = val_str.string().find(sel_str.string(), pos, strictParsing);
                 if ( pos == -1 ) return false;
-                if ( pos == 0 || str[pos-1].isSpace() ) {
-                    int endpos = pos + selStrlen;
-                    if ( endpos >= str.length() || str[endpos].isSpace() )
+                if ( pos == 0 || val_uc[pos-1].isSpace() ) {
+                    int endpos = pos + sel_len;
+                    if ( endpos >= val_len || val_uc[endpos].isSpace() )
                         break; // We have a match.
                 }
                 ++pos;
@@ -1132,39 +1147,31 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Contain:
         {
             //kDebug( 6080 ) << "checking for contains match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive));
-            if(pos == -1) return false;
-            break;
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            return val_str.string().contains(sel_str.string());
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-            int pos = str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive));
-            if(pos != 0) return false;
-            break;
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            return val_str.string().startsWith(sel_str.string());
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
-	    if (strictParsing && !str.endsWith(selStr)) return false;
-	    if (!strictParsing) {
-	        int pos = str.length() - selStr.length();
-		if (pos < 0 || pos != str.indexOf(selStr, pos, Qt::CaseInsensitive) )
-		    return false;
-	    }
-            break;
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            return val_str.string().endsWith(sel_str.string());
         }
         case CSSSelector::Hyphen:
         {
             //kDebug( 6080 ) << "checking for hyphen match" << endl;
-            QString str = value.string();
-            QString selStr = sel->value.string();
+            QConstString val_str(value->unicode(), value->length());
+            QConstString sel_str(sel->value.unicode(), sel->value.length());
+            const QString& str = val_str.string();
+            const QString& selStr = sel_str.string();
             if(str.length() < selStr.length()) return false;
             // Check if str begins with selStr:
             if(str.indexOf(selStr, 0, (strictParsing ? Qt::CaseSensitive : Qt::CaseInsensitive)) != 0) return false;
@@ -1404,21 +1411,27 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             if (e == doc->getCSSTarget())
                 return true;
             break;
+        case CSSSelector::PseudoRoot:
+            if (e == doc->documentElement())
+                return true;
+            break;
 	case CSSSelector::PseudoLink:
 	    if (e == element) {
-	    if ( pseudoState == PseudoUnknown )
+	       // cache pseudoState
+	       if ( pseudoState == PseudoUnknown )
                     pseudoState = checkPseudoState( encodedurl, e );
-	    if ( pseudoState == PseudoLink )
-		return true;
+	       if ( pseudoState == PseudoLink )
+                    return true;
             } else
                 return checkPseudoState( encodedurl, e ) == PseudoLink;
 	    break;
 	case CSSSelector::PseudoVisited:
 	    if (e == element) {
-	    if ( pseudoState == PseudoUnknown )
+                // cache pseudoState
+                if ( pseudoState == PseudoUnknown )
                     pseudoState = checkPseudoState( encodedurl, e );
-	    if ( pseudoState == PseudoVisited )
-		return true;
+                if ( pseudoState == PseudoVisited )
+                    return true;
             } else
                 return checkPseudoState( encodedurl, e ) == PseudoVisited;
 	    break;
@@ -1427,18 +1440,12 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    // unfocusable anchors.
 	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
                 doc->dynamicDomRestyler().addDependency(element, e, HoverDependency);
-                if (e->renderer() && e->renderer()->mouseInside())
+
+                if (e->hovered())
 			return true;
 		}
 	    break;
             }
-	case CSSSelector::PseudoFocus:
-	    if (e != element && e->isFocusable()) {
-                // *:focus is a default style, no need to track it.
-                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
-	    }
-            if (e->focused()) return true;
-	    break;
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then *:active should only match focusable elements
 	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
@@ -1448,20 +1455,23 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    return true;
 	    }
 	    break;
-        case CSSSelector::PseudoRoot:
-            if (e == doc->documentElement())
-                return true;
+	case CSSSelector::PseudoFocus:
+	    if (e != element && e->isFocusable()) {
+                // *:focus is a default style, no need to track it.
+                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
+            }
+            if (e->focused()) return true;
             break;
         case CSSSelector::PseudoLang: {
             // Set dynamic attribute dependency
             if (e == element) {
                 doc->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
-                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AscendentDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             }
             else if (isAncestor)
-                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AscendentDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             else
-                doc->dynamicDomRestyler().addDependency(ATTR_LANG, PrecedentDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
             // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
@@ -1562,8 +1572,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoAfter:
 	    // Pseudo-elements can only apply to subject
 	    if ( e == element ) {
-                // The can be only one pseudo-element
-                if (dynamicPseudo != RenderStyle::NOPSEUDO) return false;
+                // Pseudo-elements has to be the last sub-selector on subject
+                if (sel->tagHistory && sel->relation == CSSSelector::SubSelector) return false;
+
+                assert(dynamicPseudo == RenderStyle::NOPSEUDO);
 
                 switch (sel->pseudoType()) {
                 case CSSSelector::PseudoFirstLine:
@@ -3292,32 +3304,33 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
         int len = list->length();
 
+        style->setContentNormal(); // clear the content
+
         for(int i = 0; i < len; i++) {
             CSSValueImpl *item = list->item(i);
             if(!item->isPrimitiveValue()) continue;
             CSSPrimitiveValueImpl *val = static_cast<CSSPrimitiveValueImpl *>(item);
             if(val->primitiveType()==CSSPrimitiveValue::CSS_STRING)
             {
-                style->setContent(val->getStringValue(), i != 0);
+                style->addContent(val->getStringValue());
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
                 // TODO: setup dynamic attribute dependencies
                 int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
                 if (attrID)
-                    style->setContent(element->getAttribute(attrID).implementation(), i != 0);
-//                 else
-//                      #warning
-
+                    style->addContent(element->getAttribute(attrID).implementation());
+                else
+                    kdDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found" << endl;
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
                 CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(val);
-                style->setContent(image->image(), i != 0);
+                style->addContent(image->image());
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_COUNTER)
             {
-                style->setContent(val->getCounterValue(), i != 0);
+                style->addContent(val->getCounterValue());
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_IDENT)
             {
@@ -3338,8 +3351,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                     default:
                         assert(false);
                 }
-                style->setContent(quote, i != 0);
-            }
+                style->addContent(quote);
+            } else
+                kdDebug(6080) << "Unrecognized CSS content" << endl;
 
         }
         break;

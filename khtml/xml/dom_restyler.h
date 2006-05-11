@@ -60,9 +60,9 @@ enum AttributeDependencyType {
         // Style of the changed element depend on this attribute
         PersonalDependency = 0,
         // Style of the elements children depend on this attribute
-        AscendentDependency = 1,
+        AncestorDependency = 1,
         // Style of the elements later siblings or their children depend on this attribute
-        PrecedentDependency = 2,
+        PredecessorDependency = 2,
         LastAttributeDependency
 };
 

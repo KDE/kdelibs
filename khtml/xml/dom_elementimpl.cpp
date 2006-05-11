@@ -308,7 +308,6 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     namedAttrMap = 0;
     m_styleDecls = 0;
     m_prefix = 0;
-    m_hasClassList = false;
 }
 
 ElementImpl::~ElementImpl()
@@ -333,22 +332,27 @@ unsigned short ElementImpl::nodeType() const
     return Node::ELEMENT_NODE;
 }
 
-DOMString ElementImpl::getAttribute( NodeImpl::Id id, bool nsAware, const DOMString& qName) const
+DOMStringImpl* ElementImpl::getAttributeImpl( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName) const
 {
     if (!namedAttrMap)
-	return DOMString();
+	return 0;
 
-    DOMStringImpl *value = namedAttrMap->getValue(id, nsAware, (qName.isEmpty() ? 0: qName.implementation()));
+    DOMStringImpl *value = namedAttrMap->getValue(id, nsAware, qName);
     if (value)
 	return value;
 
     // then search in default attr in case it is not yet set
     NamedAttrMapImpl* dm = defaultMap();
-    value = dm ? dm->getValue(id, nsAware, (qName.isEmpty() ? 0: qName.implementation())) : 0;
+    value = dm ? dm->getValue(id, nsAware, qName) : 0;
     if (value)
 	return value;
 
-    return DOMString();
+    return 0;
+}
+
+DOMString ElementImpl::getAttribute( NodeImpl::Id id, bool nsAware, const DOMString& qName) const
+{
+    return DOMString(getAttributeImpl(id, nsAware, qName.implementation()));
 }
 
 void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value, const DOMString& qName, int &exceptioncode)
@@ -657,10 +661,6 @@ void ElementImpl::attach()
 #endif
 
     NodeBaseImpl::attach();
-
-    // Trigger all the addChild changes as one large dynamic appendChildren change
-    if (closed())
-        backwardsStructureChanged();
 }
 
 void ElementImpl::close()
@@ -670,6 +670,13 @@ void ElementImpl::close()
     // Trigger all the addChild changes as one large dynamic appendChildren change
     if (attached())
         backwardsStructureChanged();
+}
+
+void ElementImpl::detach()
+{
+    getDocument()->dynamicDomRestyler().resetDependencies(this);
+
+    NodeBaseImpl::detach();
 }
 
 void ElementImpl::structureChanged()
@@ -706,10 +713,10 @@ void ElementImpl::attributeChanged(NodeImpl::Id id)
 #endif
     if (getDocument()->dynamicDomRestyler().checkDependency(id, PersonalDependency))
         setChanged(true);
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, AscendentDependency))
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, AncestorDependency))
         setChangedAscendentAttribute(true);
-    if (getDocument()->dynamicDomRestyler().checkDependency(id, PrecedentDependency) && parent())
-        // Any element that dependt on a precedent attribute, also depend structurally on parent
+    if (getDocument()->dynamicDomRestyler().checkDependency(id, PredecessorDependency) && parent())
+        // Any element that dependt on a predecessors attribute, also depend structurally on parent
         parent()->structureChanged();
 }
 
@@ -734,35 +741,30 @@ void ElementImpl::recalcStyle( StyleChange change )
     qDebug("recalcStyle(%d: %s, changed: %d)[%p: %s]", change, debug, changed(), this, tagName().string().toLatin1().constData());
 #endif
     if ( hasParentRenderer && (change >= Inherit || changed()) ) {
-        EDisplay oldDisplay = _style ? _style->display() : NONE;
-        EPosition oldPosition = _style ? _style->position() : STATIC;
-
         RenderStyle *newStyle = getDocument()->styleSelector()->styleForElement(this);
         newStyle->ref();
         StyleChange ch = diff( _style, newStyle );
-        if ( ch != NoChange ) {
-            if (oldDisplay != newStyle->display()
-                || oldPosition != newStyle->position()) {
-                if (attached()) detach();
-                // ### uuhm, suboptimal. style gets calculated again
-                attach();
-		// attach recalulates the style for all children. No need to do it twice.
-		setChanged( false );
-		setHasChangedChild( false );
-		newStyle->deref();
-		return;
-            }
+        if (ch == Detach) {
+            if (attached()) detach();
+            // ### Suboptimal. Style gets calculated again.
+            attach();
+            // attach recalulates the style for all children. No need to do it twice.
+            setChanged( false );
+            setHasChangedChild( false );
+            newStyle->deref();
+            return;
+        }
+        else if (ch != NoChange) {
             if( m_render ) {
-                //qDebug("--> setting style on render element bgcolor=%s", newStyle->backgroundColor().name().toLatin1().constData());
                 m_render->setStyle(newStyle);
             }
         }
         newStyle->deref();
 
         if ( change != Force)
-                change = ch;
-        }
-    // If a changed attribute has ascendent dependencies, restyle all children
+            change = ch;
+    }
+    // If a changed attribute has ancestor dependencies, restyle all children
     if (changedAscendentAttribute()) {
         change = Force;
         setChangedAscendentAttribute(false);
@@ -1257,7 +1259,7 @@ DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, bool nsAware, DOMStri
         if ((m_attrs[i].id() & mask) == id) {
             // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
             if (qName && (namespacePart(m_attrs[i].id()) != defaultNamespace) &&
-                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                strcasecmp(m_attrs[i].name(), qName))
                 continue;
             return m_attrs[i].val();
         }
