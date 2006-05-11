@@ -1,3 +1,17 @@
+2006-05-12  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement replaced CSS content
+
+        * rendering/render_style.{h,cpp}: Add INSIDE and future pseudo styles OUTSIDE and MARKER
+        * rendering/render_container.{h,cpp}: 
+            (updateGeneratedContent) Handle changes in generated content.
+            (childrenAllowed) forbid children when generated content is used, this prevents
+                 their render-objects from being attached.
+        * xml/dom_nodeimpl.cpp:
+            (NodeImpl::diff) detect changes in content and return Detach
+        * css/css_base.{h,cpp}: Add marker, inside and outside pseudo-styles
+        * css/cssstyleselector.cpp: Allow content on more elements
+
 2006-04-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement full support for CSS updates on dynamic DOM and user-interaction

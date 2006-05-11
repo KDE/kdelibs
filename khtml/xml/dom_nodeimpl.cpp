@@ -788,6 +788,8 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
 	ch = Inherit;
     else if ( *s1 == *s2 )
 	ch = NoChange;
+    else if (s1->useNormalContent() != s2->useNormalContent())
+        ch = Detach; // when we add generated content all children must be detached
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
 
@@ -799,6 +801,8 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::BEFORE))
         ch = NoInherit;
     if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::AFTER))
+        ch = NoInherit;
+    if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::MARKER))
         ch = NoInherit;
     if (ch == NoChange && pseudoDiff(s1, s2, khtml::RenderStyle::SELECTION))
         ch = NoInherit;

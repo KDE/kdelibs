@@ -171,6 +171,17 @@ void CSSSelector::extractPseudoType() const
     if (!value.isEmpty()) {
         value = value.lower();
         switch (value[0]) {
+            case '-':
+                if (value == "-khtml-inside")
+                    _pseudoType = PseudoInside;
+                else
+                if (value == "-khtml-outside")
+                    _pseudoType = PseudoOutside;
+                else
+                if (value == "-khtml-marker")
+                    _pseudoType = PseudoMarker;
+                element = true;
+                break;
             case 'a':
                 if (value == "active")
                     _pseudoType = PseudoActive;

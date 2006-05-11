@@ -141,25 +141,31 @@ namespace DOM {
             PseudoNthOfType,
             PseudoNthLastOfType,
             PseudoOnlyOfType,
-            PseudoFirstLine,
-	    PseudoFirstLetter,
 	    PseudoLink,
 	    PseudoVisited,
 	    PseudoHover,
 	    PseudoFocus,
 	    PseudoActive,
             PseudoTarget,
-	    PseudoBefore,
-	    PseudoAfter,
             PseudoLang,
             PseudoNot,
             PseudoContains,
             PseudoRoot,
-            PseudoSelection,
             PseudoEnabled,
             PseudoDisabled,
             PseudoChecked,
-            PseudoIndeterminate
+            PseudoIndeterminate,
+// pseudo-elements:
+    // inherited:
+            PseudoFirstLine,
+            PseudoFirstLetter,
+            PseudoSelection,
+    // generated:
+            PseudoBefore,
+            PseudoAfter,
+            PseudoMarker,
+            PseudoInside,
+            PseudoOutside
 	};
 
 	PseudoType pseudoType() const {
@@ -178,8 +184,8 @@ namespace DOM {
 	Relation relation     : 3;
 	mutable Match 	 match         : 4;
 	bool	nonCSSHint : 1;
-	unsigned int pseudoId : 3;
-	mutable PseudoType _pseudoType : 5;
+	unsigned int pseudoId : 4;
+	mutable PseudoType _pseudoType : 6;
 
     private:
 	void extractPseudoType() const;
