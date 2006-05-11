@@ -2,10 +2,10 @@ kde4_header()
 
 project(kdeprint)
 
-ADD_DEFINITIONS(-D_KDEPRINT_COMPILE)
+add_definitions(-D_KDEPRINT_COMPILE)
 
-include_directories( ${KDE4_KIO_INCLUDES} )
 # Needed for the subdirs
+include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
