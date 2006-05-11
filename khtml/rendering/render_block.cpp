@@ -92,7 +92,6 @@ RenderBlock::RenderBlock(DOM::NodeImpl* node)
     m_childrenInline = true;
     m_floatingObjects = 0;
     m_positionedObjects = 0;
-    m_pre = false;
     m_firstLine = false;
     m_avoidPageBreak = false;
     m_clearStatus = CNONE;
@@ -114,8 +113,6 @@ void RenderBlock::setStyle(RenderStyle* _style)
     setReplaced(_style->isDisplayReplacedType());
 
     RenderFlow::setStyle(_style);
-
-    m_pre = ( _style->whiteSpace() == PRE );
 
     // ### we could save this call when the change only affected
     // non inherited properties
@@ -2498,7 +2495,7 @@ void RenderBlock::calcMinMaxWidth()
     m_minWidth = 0;
     m_maxWidth = 0;
 
-    bool preOrNowrap = style()->whiteSpace() != NORMAL;
+    bool noWrap = !style()->autoWrap();
     if (childrenInline())
         calcInlineMinMaxWidth();
     else
@@ -2506,7 +2503,7 @@ void RenderBlock::calcMinMaxWidth()
 
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
-    if (preOrNowrap && childrenInline()) {
+    if (noWrap && childrenInline()) {
          m_minWidth = m_maxWidth;
 
         // A horizontal marquee with inline children has no minimum width.
@@ -2640,11 +2637,11 @@ static int getBorderPaddingMargin(RenderObject* child, bool endOfInline)
 }
 #endif
 
-static void stripTrailingSpace(bool pre,
+static void stripTrailingSpace(bool preserveWS,
                                int& inlineMax, int& inlineMin,
                                RenderObject* trailingSpaceChild)
 {
-    if (!pre && trailingSpaceChild && trailingSpaceChild->isText()) {
+    if (!preserveWS && trailingSpaceChild && trailingSpaceChild->isText()) {
         // Collapse away the trailing space at the end of a block.
         RenderText* t = static_cast<RenderText *>(trailingSpaceChild);
         const Font *f = t->htmlFont( false );
@@ -2895,7 +2892,7 @@ void RenderBlock::calcInlineMinMaxWidth()
         oldAutoWrap = autoWrap;
     }
 
-    stripTrailingSpace(m_pre, inlineMax, inlineMin, trailingSpaceChild);
+    stripTrailingSpace(style()->preserveWS(), inlineMax, inlineMin, trailingSpaceChild);
 
     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
     if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
@@ -2908,7 +2905,7 @@ void RenderBlock::calcInlineMinMaxWidth()
 
 void RenderBlock::calcBlockMinMaxWidth()
 {
-    bool nowrap = style()->whiteSpace() == NOWRAP;
+    bool nowrap = !style()->autoWrap();
 
     RenderObject *child = firstChild();
     RenderObject* prevFloat = 0;
@@ -3099,7 +3096,8 @@ void RenderBlock::dump(QTextStream &stream, const QString &ind) const
     RenderFlow::dump(stream,ind);
 
     if (m_childrenInline) { stream << " childrenInline"; }
-    if (m_pre) { stream << " pre"; }
+    // FIXME: currently only print pre to not mess up regression
+    if (style()->preserveWS()) { stream << " pre"; }
     if (m_firstLine) { stream << " firstLine"; }
 
     if (m_floatingObjects && !m_floatingObjects->isEmpty())

@@ -347,7 +347,6 @@ private:
     QPtrList<RenderObject>* m_positionedObjects;
 
     bool m_childrenInline : 1;
-    bool m_pre            : 1;
     bool m_firstLine      : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
     bool m_avoidPageBreak : 1; // anonymous avoid page-break block
