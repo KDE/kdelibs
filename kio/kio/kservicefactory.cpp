@@ -149,10 +149,11 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
    KService::Ptr newService(createEntry(offset));
    if ( !newService )
       qDebug( "findServiceByDesktopPath: createEntry failed!" );
-   // Check whether the dictionary was right.
+   // Check whether the dictionary was right
+   // It's ok that it's wrong, for the case where we're looking up an unknown service,
+   // and the hash value gave us another one.
    if (newService && (newService->desktopEntryPath() != _name))
    {
-       qDebug( "the dictionary was wrong. desktopEntryPath=%s, name=%s", qPrintable( newService->desktopEntryPath() ), qPrintable( _name ) );
       // No it wasn't...
       return KService::Ptr();
    }
@@ -279,7 +280,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
             }
             // Restore position
             str->device()->seek( savedPos );
-         } else if ( aServiceTypeOffset > (qint32)serviceTypeOffset )
+         } else if ( aServiceTypeOffset > serviceTypeOffset )
             break; // too far
       }
       else
