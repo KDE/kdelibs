@@ -372,29 +372,30 @@ void KColorCells::setColor( int colNum, const QColor &col )
 void KColorCells::paintCell( QPainter *painter, int row, int col )
 {
 	QBrush brush;
-        int w = 1;
+	int w = 1;
 
 	if (shade)
-        {
+	{
 		qDrawShadePanel( painter, 1, 1, cellWidth()-2,
-		    cellHeight()-2, palette(), true, 1, &brush );
+						 cellHeight()-2, palette(), true, 1, &brush );
 		w = 2;
-        }
-        QColor color = colors[ row * numCols() + col ];
-        if (!color.isValid())
+	}
+	QColor color = colors[ row * numCols() + col ];
+	if (!color.isValid())
 	{
 		if (!shade) return;
 		color = palette().color(backgroundRole());
 	}
 
-	painter->setPen( color );
-	painter->setBrush( QBrush( color ) );
-	painter->drawRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	const QRect colorRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+	painter->fillRect( colorRect, color );
 
 	if ( row * numCols() + col == selected ) {
-		painter->setCompositionMode( QPainter::CompositionMode_Xor );
-		painter->drawRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
-	//	painter->drawWinFocusRect( w, w, cellWidth()-w*2, cellHeight()-w*2 );
+		int hue = ( color.hue() + 180 ) % 360;
+		QColor contrastedColor = QColor::fromHsv( hue, color.saturation(), color.value() );
+		painter->setPen( contrastedColor );
+		painter->drawLine( colorRect.topLeft(), colorRect.bottomRight() );
+		painter->drawLine( colorRect.topRight(), colorRect.bottomLeft() );
 	}
 }
 
@@ -1119,16 +1120,17 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   //
   // The add to custom colors button
   //
-  QPushButton *button = new QPushButton( page );
-  button->setText(i18n("&Add to Custom Colors"));
-  l_hbox->addWidget(button, 0, Qt::AlignLeft);
-  connect( button, SIGNAL( clicked()), SLOT( slotAddToCustomColors()));
+  QPushButton *addButton = new QPushButton( page );
+  addButton->setText(i18n("&Add to Custom Colors"));
+  l_hbox->addWidget(addButton, 0, Qt::AlignLeft);
+  connect( addButton, SIGNAL( clicked()), SLOT( slotAddToCustomColors()));
 
   //
   // The color picker button
   //
-  button = new QPushButton( page );
+  QPushButton* button = new QPushButton( page );
   button->setIcon( BarIconSet("colorpicker"));
+  button->setMinimumHeight( addButton->sizeHint().height() );
   l_hbox->addWidget(button, 0, Qt::AlignHCenter );
   connect( button, SIGNAL( clicked()), SLOT( slotColorPicker()));
 
