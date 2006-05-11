@@ -114,6 +114,8 @@ namespace KJS {
     virtual UString toString(ExecState *exec) const;
     enum { Length, Location };
     ValueImp *indexGetter(ExecState *, unsigned index);
+    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
+    virtual bool implementsCall() const { return true; }
   private:
     static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     static ValueImp *nameFallBackGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
@@ -2306,6 +2308,19 @@ UString FrameArray::toString(ExecState *) const
 {
   return "[object FrameArray]";
 }
+
+ValueImp* FrameArray::callAsFunction(ExecState *exec, ObjectImp */*thisObj*/, const List &args)
+{
+    //IE supports a subset of the get functionality as call...
+    //... basically, when the return is a window, it supports that, otherwise it 
+    //errors out. We do a cheap-and-easy emulation of that, and just do the same
+    //thing as get does.
+    if (args.size() == 1)
+        return get(exec, Identifier(args[0]->toString(exec)));
+
+    return Undefined();
+}
+
 
 ////////////////////// Location Object ////////////////////////
 

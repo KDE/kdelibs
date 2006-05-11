@@ -1291,7 +1291,6 @@ void RenderObject::setStyle(RenderStyle *style)
 
     updateBackgroundImages(oldStyle);
 
-    if (m_style)
         m_style->ref();
 
     if (oldStyle)
@@ -1524,8 +1523,6 @@ DOM::DocumentImpl* RenderObject::document() const
 
 void RenderObject::remove()
 {
-    removeFromObjectLists();
-
     if ( parent() )
         //have parent, take care of the tree integrity
         parent()->removeChild(this);

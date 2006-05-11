@@ -172,7 +172,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
         if (oldChild->isSelectionBorder()) {
             RenderObject *root = oldChild;
-            while (root && root->parent())
+            while (root->parent())
                 root = root->parent();
             if (root->isCanvas()) {
                 static_cast<RenderCanvas*>(root)->clearSelection();
@@ -180,7 +180,11 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         }
     }
 
-    // remove the child
+    // remove the child from any special layout lists
+    if ( oldChild->isFloating() || oldChild->isPositioned() )
+        oldChild->removeFromObjectLists();
+
+    // remove the child from the render-tree
     if (oldChild->previousSibling())
         oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())

@@ -167,7 +167,14 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
     bool changedLF = false;
     for(unsigned int i=0; i<l; i++) {
         ushort ch = s[i].unicode();
-        if (!preserveLF && (ch == '\n' || ch == '\r')) {
+
+        // We act on \r as we would on \n because CSS uses it to indicate new-line
+        if (ch == '\r') ch = '\n';
+        else
+        // ### The XML parser lets \t through, for now treat them as spaces
+        if (ch == '\t') ch = ' ';
+
+        if (!preserveLF && ch == '\n') {
             // ### Not strictly correct according to CSS3 text-module.
             // - In ideographic languages linefeed should be ignored
             // - and in Thai and Khmer it should be treated as a zero-width space
@@ -178,8 +185,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
         if (collapsing) {
             if (ch == ' ')
                 continue;
-            // We act on \r as we would on \n because CSS uses it to indicate new-line
-            if (ch == '\n' || ch == '\r') {
+            if (ch == '\n') {
                 collapsingLF = true;
                 continue;
             }
@@ -194,7 +200,7 @@ DOMStringImpl *DOMStringImpl::collapseWhiteSpace(bool preserveLF, bool preserveW
             continue;
         }
         else
-        if (!preserveWS && (ch == '\n' || ch == '\r')) {
+        if (!preserveWS && ch == '\n') {
             collapsing = true;
             collapsingLF = true;
             continue;

@@ -1,3 +1,17 @@
+2006-04-09  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Distinguish between having no determined namespace, and determined to have no namespace
+
+        * xml/dom_nodeimpl.h: Split noNamespace into defaultNamespace and emptyNamespace
+        * css/cssstyleselector.cpp: Change HTML-hack to only trigger on undetermined namespace.
+
+2006-04-04  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Make so-called nondeterministic CSS matching work
+
+        * css/cssstyleselector.{h,cpp} (checkSubSelector/checkOneSelector):
+            Extract combinator matching from checkSelector and make it a recursive function. Clean-up checkOneSelector.
+
 2006-03-25  Germain Garand  <germain@ebooksfrance.org>
 
         Scope: fix handling of nested/external scripts in the tokenizer (#91701) 

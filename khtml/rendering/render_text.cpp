@@ -143,10 +143,33 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     p->setPen(hc);
 
     //kDebug( 6040 ) << "textRun::painting(" << QString::fromRawData(text->str->s + m_start, m_len).left(30) << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
+
+   const bool needClipping = startPos != 0 || endPos != m_len;
+
+   if (needClipping) {
+       p->save();
+
+       int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos);
+       int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos);
+       int visualSelectionWidth = visualSelectionEnd - visualSelectionStart;
+       if (m_reversed) {
+           visualSelectionStart = f->width(text->str->s, text->str->l, m_start, m_len) - visualSelectionEnd;
+       }
+
+       QRect selectionRect(m_x + tx + visualSelectionStart, m_y + ty, visualSelectionWidth, height());
+       QRegion r(selectionRect);
+       if (p->hasClipping())
+           r &= p->clipRegion();
+       p->setClipRegion(r, Qt::IntersectClip);
+    }
+
     f->drawText(p, m_x + tx, m_y + ty + m_baseline, text->str->s, text->str->l,
-    		m_start, m_len, m_toAdd,
+		m_start, m_len, m_toAdd,
 		m_reversed ? Qt::RightToLeft : Qt::LeftToRight,
-		startPos, endPos, hbg, m_y + ty, height(), deco);
+                needClipping ? 0 : startPos, needClipping ? m_len : endPos,
+		hbg, m_y + ty, height(), deco);
+
+    if (needClipping) p->restore();
 }
 
 void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco)
@@ -309,12 +332,12 @@ FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, 
     }
     if ( _x > _tx + m_x + m_width ) {
 	// to the right
-	return m_reversed ? SelectionPointBeforeInLine : SelectionPointAfterInLine;
+	return  SelectionPointAfterInLine;
     }
 
     // The Y matches, check if we're on the left
     if ( _x < _tx + m_x ) {
-        return m_reversed ? SelectionPointAfterInLine : SelectionPointBeforeInLine;
+        return SelectionPointBeforeInLine;
     }
 
     // consider spacing for justified text
@@ -924,55 +947,18 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
             }
 #endif
 
+            const int offset = s->m_start;
+            const int sPos = qMax( startPos - offset, 0 );
+            const int ePos = qMin( endPos - offset, int( s->m_len ) );
             if (s->m_len > 0 && pI.phase != PaintActionSelection) {
-	        if (!haveSelection) {
-	            //kDebug( 6040 ) << "RenderObject::paintObject(" << QString::fromRawData(str->s + s->m_start, s->m_len) << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
-#ifndef APPLE_CHANGES
-                    if (_style->textShadow())
-                        s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
-#endif
+                //kDebug( 6040 ) << "RenderObject::paintObject(" << QString::fromRawData(str->s + s->m_start, s->m_len) << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
+                if (_style->textShadow())
+                    s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
 // kDebug(6040) << QString::fromRawData(str->s + s->m_start, s->m_len).left(40) << endl;
+                if (!haveSelection || sPos != 0 || ePos != s->m_len) {
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 				   s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
 	        }
-		else {
-                    int offset = s->m_start;
-                    int sPos = qMax( startPos - offset, 0 );
-                    int ePos = qMin( endPos - offset, int( s->m_len ) );
-// selected text is always separate in konqueror
-#ifdef APPLE_CHANGES
-                    if (paintSelectedTextSeparately) {
-#endif
-#ifndef APPLE_CHANGES
-                        if (_style->textShadow())
-                            s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
-#endif
-                        if (sPos >= ePos)
-                            font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
-                                           str->s, str->l, s->m_start, s->m_len,
-                                           s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight);
-                        else {
-                            if (sPos-1 >= 0)
-                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
-                                               str->s, str->l, s->m_start, s->m_len,
-                                               s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, 0, sPos);
-                            if (ePos < s->m_len)
-                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
-                                               str->s, str->l, s->m_start, s->m_len,
-                                               s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, ePos, s->m_len);
-                        }
-#ifdef APPLE_CHANGES
-                    }
-
-                    if ( sPos < ePos ) {
-                        p->setPen(selectionColor);
-
-                        font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
-                                       str->l, s->m_start, s->m_len,
-                                       s->m_toAdd, s->m_reversed ? Qt::RightToLeft : Qt::LeftToRight, sPos, ePos);
-                    }
-#endif
-                }
 	    }
 
             if (d != TDNONE && pI.phase == PaintActionForeground
@@ -982,9 +968,6 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
             }
 
             if (haveSelection && pI.phase == PaintActionSelection) {
-		int offset = s->m_start;
-		int sPos = qMax( startPos - offset, 0 );
-		int ePos = qMin( endPos - offset, int( s->m_len ) );
                 //kDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
 		if ( sPos < ePos )
 		    s->paintSelection(font, this, pI.p, _style, tx, ty, sPos, ePos, d);

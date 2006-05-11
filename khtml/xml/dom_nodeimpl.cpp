@@ -75,7 +75,8 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_active( false ),
       m_implicit( false ),
       m_rendererNeedsClose( false ),
-      m_htmlCompat( false )
+      m_htmlCompat( false ),
+      m_hasClass( false )
 {
     if (document)
         document->ref();
@@ -694,7 +695,7 @@ void NodeImpl::checkSetPrefix(const DOMString &_prefix, int &exceptioncode)
     // - if this node is an attribute and the specified prefix is "xmlns" and
     //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
     // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
-    if (Element::khtmlMalformedPrefix(_prefix) || (!(id() & NodeImpl_IdNSMask) && id() > ID_LAST_TAG) ||
+    if (Element::khtmlMalformedPrefix(_prefix) || (namespacePart(id()) == defaultNamespace && id() > ID_LAST_TAG) ||
         (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
         exceptioncode = DOMException::NAMESPACE_ERR;
         return;
@@ -1810,8 +1811,7 @@ bool TagNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) con
     else {
         NodeImpl::Id testId = testNode->id();
         //we have to strip the namespaces if we compare in a namespace unaware fashion
-        if ( !m_namespaceAware )
-            testId &= ~NodeImpl_IdNSMask;
+        if ( !m_namespaceAware ) testId = localNamePart(testId);
 	return (m_id == 0 || m_id == testId);
     }
 }

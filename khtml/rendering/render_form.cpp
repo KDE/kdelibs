@@ -179,7 +179,7 @@ void RenderCheckBox::updateFromElement()
 
 void RenderCheckBox::slotStateChanged(int state)
 {
-    element()->setChecked(state == 2);
+    element()->setChecked(state == Qt::Checked);
 
     ref();
     element()->onChange();

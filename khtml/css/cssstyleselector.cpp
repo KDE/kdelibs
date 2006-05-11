@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2003-2004 Apple Computer, Inc.
- *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
@@ -778,8 +778,6 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     return numProps;
 }
 
-static bool subject;
-
 // modified version of the one in kurl.cpp
 static void cleanpath(QString &path)
 {
@@ -847,7 +845,7 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
 }
 
 // a helper function for parsing nth-arguments
-static inline bool matchNth(int count, const QString& nth)
+static bool matchNth(int count, const QString& nth)
 {
     if (nth.isEmpty()) return false;
     int a = 0;
@@ -902,85 +900,77 @@ static inline bool matchNth(int count, const QString& nth)
     return false;
 }
 
-void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
+// Recursive check of combinators to support nondeterministic matching
+DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::ElementImpl * e, DOM::NodeImpl * n, bool &onlyHoverActive, bool isAncestor)
 {
-    dynamicPseudo = RenderStyle::NOPSEUDO;
+    if(!n->isElementNode()) return 0;
 
-    NodeImpl *n = e;
-
-    selectorCache[ selIndex ].state = Invalid;
-    CSSSelector *sel = selectors[ selIndex ];
-
-    // we have the subject part of the selector
-    subject = true;
-
-    // We track whether or not the rule contains only :hover and :active in a simple selector. If
-    // so, we can't allow that to apply to every element on the page.  We assume the author intended
-    // to apply the rules only to links.
-    bool onlyHoverActive = (sel->tag == anyQName &&
-                            (sel->match == CSSSelector::PseudoClass &&
-                              (sel->pseudoType() == CSSSelector::PseudoHover ||
-                               sel->pseudoType() == CSSSelector::PseudoActive)));
-    bool affectedByHover = style->affectedByHoverRules();
-    bool affectedByActive = style->affectedByActiveRules();
-
-    // first selector has to match
-    if(!checkOneSelector(sel, e)) return;
-
-    // check the subselectors
     CSSSelector::Relation relation = sel->relation;
-    while((sel = sel->tagHistory))
+    sel = sel->tagHistory;
+    if (!sel) return n;
+
+    switch(relation)
     {
-        if(!n->isElementNode()) return;
-        switch(relation)
-        {
         case CSSSelector::Descendant:
         {
-            bool found = false;
-            while(!found)
+            ElementImpl *elem = 0;
+            while(true)
             {
-		subject = false;
                 n = n->parentNode();
-                if(!n || !n->isElementNode()) return;
-                ElementImpl *elem = static_cast<ElementImpl *>(n);
-                if(checkOneSelector(sel, elem)) found = true;
+                if(!n || !n->isElementNode()) return 0;
+                elem = static_cast<ElementImpl *>(n);
+                // Found one matching element
+                if(checkOneSelector(sel, elem, e, true)) {
+                    // Check the rest of the combinators
+                    bool t_onlyHoverActive = onlyHoverActive;
+                    if (checkSubSelectors(sel, e, n, t_onlyHoverActive, true)) {
+                        onlyHoverActive = t_onlyHoverActive;
+                        return n;
+                    }
+                }
             }
-            break;
+            return 0;
         }
         case CSSSelector::Child:
         {
-	    subject = false;
             n = n->parentNode();
             if (!strictParsing)
                 while (n && n->implicitNode()) n = n->parentNode();
-            if(!n || !n->isElementNode()) return;
+            if(!n || !n->isElementNode()) return 0;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
-            if(!checkOneSelector(sel, elem)) return;
-            break;
-        }
-        case CSSSelector::DirectAdjacent:
-        {
-            subject = false;
-            n = n->previousSibling();
-            while( n && !n->isElementNode() )
-                n = n->previousSibling();
-            if( !n ) return;
-            ElementImpl *elem = static_cast<ElementImpl *>(n);
-            if(!checkOneSelector(sel, elem)) return;
+            if(!checkOneSelector(sel, elem, e, true)) return 0;
             break;
         }
         case CSSSelector::IndirectAdjacent:
         {
-            subject = false;
             ElementImpl *elem = 0;
-            do {
+            while(true)
+            {
                 n = n->previousSibling();
                 while( n && !n->isElementNode() )
                     n = n->previousSibling();
-                if( !n ) return;
+                if( !n ) return 0;
                 elem = static_cast<ElementImpl *>(n);
-            } while (!checkOneSelector(sel, elem));
-            break;
+                if (checkOneSelector(sel, elem, e, false)) {
+                    // Check the rest of the combinators
+                    bool t_onlyHoverActive = onlyHoverActive;
+                    if (checkSubSelectors(sel, e, n, t_onlyHoverActive, false)) {
+                        onlyHoverActive = t_onlyHoverActive;
+                        return n;
+                    }
+                }
+            };
+            return 0;
+        }
+        case CSSSelector::DirectAdjacent:
+        {
+                n = n->previousSibling();
+                while( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if( !n ) return 0;
+                ElementImpl *elem = static_cast<ElementImpl *>(n);
+                if(!checkOneSelector(sel, elem, e, false)) return 0;
+                break;
         }
         case CSSSelector::SubSelector:
 	{
@@ -993,19 +983,44 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
 	    // a selector is invalid if something follows :first-xxx
 	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
-		return;
+		return 0;
 	    }
-	    if(!checkOneSelector(sel, elem, true)) return;
+            if(!checkOneSelector(sel, elem, e, isAncestor)) return 0;
 	    //kDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
 	    break;
 	}
-        }
-        relation = sel->relation;
     }
+    return checkSubSelectors(sel, e, n, onlyHoverActive, isAncestor);
+}
 
+void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
+{
+    dynamicPseudo = RenderStyle::NOPSEUDO;
+
+    selectorCache[ selIndex ].state = Invalid;
+    CSSSelector *sel = selectors[ selIndex ];
+
+    // We track whether or not the rule contains only :hover and :active in a simple selector. If
+    // so, we can't allow that to apply to every element on the page.  We assume the author intended
+    // to apply the rules only to links.
+    bool onlyHoverActive = (sel->tag == anyQName &&
+                            (sel->match == CSSSelector::PseudoClass &&
+                              (sel->pseudoType() == CSSSelector::PseudoHover ||
+                               sel->pseudoType() == CSSSelector::PseudoActive)));
+    bool affectedByHover = style->affectedByHoverRules();
+    bool affectedByActive = style->affectedByActiveRules();
+
+    // first selector has to match
+    if(!checkOneSelector(sel, e, e, true)) return;
+
+    // check the subselectors
+    NodeImpl *n = checkSubSelectors(sel, e, e, onlyHoverActive, true);
+    if (!n) return;
+
+    bool isSubject = (n == e);
     // disallow *:hover, *:active, and *:hover:active except for links
-    if (onlyHoverActive && subject) {
-        if (pseudoState == PseudoUnknown)
+    if (onlyHoverActive && isSubject) {
+       if (pseudoState == PseudoUnknown)
             checkPseudoState( encodedurl, e );
 
         if (pseudoState == PseudoNone) {
@@ -1027,7 +1042,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     return;
 }
 
-bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isSubSelector)
+bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, DOM::ElementImpl *subject, bool isAncestor )
 {
     if(!e)
         return false;
@@ -1039,14 +1054,18 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         quint16 selLocalName = localNamePart(sel->tag);
         quint16 selNS = namespacePart(sel->tag);
 
-        if (localName <= ID_LAST_TAG && e->isHTMLElement())
-            ns = xhtmlNamespace; // FIXME: Really want to move away from this complicated hackery and just
-                                 // switch tags and attr names over to AtomicStrings.
+        if (localName <= ID_LAST_TAG && ns == defaultNamespace) {
+            assert(e->isHTMLElement());
+            ns = xhtmlNamespace;
+        }
 
-        if ((selLocalName != anyLocalName && localName != selLocalName) ||
-            (selNS != anyNamespace && ns != selNS))
-            return false;
+        // match on local
+        if (selLocalName != anyLocalName && localName != selLocalName) return false;
+        // match on namespace
+        if (selNS != anyNamespace && ns != selNS) return false;
     }
+
+    DOM::DocumentImpl* doc = e->getDocument();
 
     if(sel->attr)
     {
@@ -1056,9 +1075,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         switch(sel->match)
         {
         case CSSSelector::Exact:
-            /* attribut values are case insensitive in all HTML modes,
+            /* attribute values are case insensitive in all HTML modes,
                even in the strict ones */
-            if ( e->getDocument()->htmlMode() != DocumentImpl::XHtml ) {
+            if ( doc->htmlMode() != DocumentImpl::XHtml ) {
                 if ( strcasecmp(sel->value, value) )
                     return false;
             } else {
@@ -1182,6 +1201,17 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             if (!e->firstChild())
                 return true;
+            else {
+                // check for empty text nodes
+                NodeImpl *t = e->firstChild();
+
+                while (t && t->isTextNode() && static_cast<TextImpl*>(t)->length() == 0) t = t->nextSibling();
+
+                if (t == 0)
+                    return true;
+                else
+                    return false;
+            }
             break;
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
@@ -1197,6 +1227,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoLastChild: {
             // last-child matches the last child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                // Handle unfinished parsing
                 if (!e->parentNode()->closed()) {
                     e->setRestyleLate();
                     static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
@@ -1240,7 +1271,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                     if (n->isElementNode()) count++;
                     n = n->previousSibling();
                 }
-                kDebug(6080) << "NthChild " << count << "=" << sel->string_arg << endl;
+//                 kDebug(6080) << "NthChild " << count << "=" << sel->string_arg << endl;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1359,7 +1390,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         }
         case CSSSelector::PseudoTarget:
-            if (e == e->getDocument()->getCSSTarget())
+            if (e == doc->getCSSTarget())
                 return true;
             break;
 	case CSSSelector::PseudoLink:
@@ -1377,7 +1408,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then hover should never match anchors with no
 	    // href and *:hover should not match anything. This is important for sites like wsj.com.
-	    if (strictParsing || isSubSelector || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
+	    if (strictParsing || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
 		if (element == e)
 		    style->setAffectedByHoverRules(true);
 		if (e->renderer()) {
@@ -1397,7 +1428,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then :active should never match anchors with no
 	    // href.
-	    if (strictParsing || isSubSelector || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
+	    if (strictParsing || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
 		if (element == e)
 		    style->setAffectedByActiveRules(true);
 		else if (e->renderer())
@@ -1407,16 +1438,16 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    }
 	    break;
         case CSSSelector::PseudoRoot:
-            if (e == e->getDocument()->documentElement())
+            if (e == doc->documentElement())
                 return true;
             break;
         case CSSSelector::PseudoLang: {
+            // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
             NodeImpl *n = e->parent();;
             while (n && value.isEmpty()) {
                 if (n->isElementNode()) {
-                    // ### check xml:lang attribute in XML and XHTML documents
                     value = static_cast<ElementImpl*>(n)->getAttribute(ATTR_LANG);
                 } else
                 if (n->isDocumentNode()) {
@@ -1446,7 +1477,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 // but it is, so let's honor it.
                 if (subSel->simpleSelector)
                     break;
-                if (!checkOneSelector(subSel, e))
+                if (!checkOneSelector(subSel, e, subject, isAncestor))
                     return true;
             }
             break;
@@ -1490,13 +1521,13 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
 	// Pseudo-elements:
 	case CSSSelector::PseudoFirstLine:
-	    if ( subject ) {
+	    if ( e == subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LINE;
 		return true;
 	    }
 	    break;
 	case CSSSelector::PseudoFirstLetter:
-	    if ( subject ) {
+	    if ( e == subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LETTER;
 		return true;
 	    }

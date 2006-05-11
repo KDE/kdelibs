@@ -810,7 +810,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   selected	KJS::HTMLElement::OptionSelected	DontDelete
   value		KJS::HTMLElement::OptionValue		DontDelete
 @end
-@begin HTMLInputElementTable 24
+@begin HTMLInputElementTable 25
   defaultValue	KJS::HTMLElement::InputDefaultValue	DontDelete
   defaultChecked KJS::HTMLElement::InputDefaultChecked	DontDelete
   form		KJS::HTMLElement::InputForm		DontDelete|ReadOnly
@@ -819,6 +819,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   align		KJS::HTMLElement::InputAlign		DontDelete
   alt		KJS::HTMLElement::InputAlt		DontDelete
   checked	KJS::HTMLElement::InputChecked		DontDelete
+  indeterminate	KJS::HTMLElement::InputIndeterminate	DontDelete
   status	KJS::HTMLElement::InputChecked		DontDelete
   disabled	KJS::HTMLElement::InputDisabled		DontDelete
   maxLength	KJS::HTMLElement::InputMaxLength	DontDelete
@@ -1718,6 +1719,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case InputForm:            return getDOMNode(exec,input.form()); // type HTMLFormElement
     case InputChecked:         return Boolean(input.checked());
+    case InputIndeterminate:   return Boolean(input.indeterminate());
     case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
     case InputType:            return String(input.type());
     case InputValue:           return String(input.value());
@@ -2492,6 +2494,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
       DOM::HTMLInputElementImpl& input = static_cast<DOM::HTMLInputElementImpl&>(element);
       switch (token) {
       case InputChecked:         { input.setChecked(value->toBoolean(exec)); return; }
+      case InputIndeterminate:   { input.setIndeterminate(value->toBoolean(exec)); return; }
       case InputName:            { input.setName(str); return; }
       case InputType:            { input.setType(str); return; }
       case InputValue:           { input.setValue(str); return; }

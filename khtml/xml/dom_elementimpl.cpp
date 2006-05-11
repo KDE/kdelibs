@@ -1059,7 +1059,7 @@ NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id, bool nsAware, DOMStr
     for (unsigned long i = 0; i < m_attrCount; i++) {
 	if ((m_attrs[i].id() & mask) == id) {
             // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
-            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+            if (qName && (namespacePart(m_attrs[i].id()) != defaultNamespace) &&
                 strcasecmp(m_attrs[i].name(), DOMString(qName)))
                 continue;
 	    return m_attrs[i].createAttr(m_element,m_element->docPtr());
@@ -1087,7 +1087,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStrin
     for (unsigned long i = 0; i < m_attrCount; i++) {
 	if ((m_attrs[i].id() & mask) == id) {
             // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
-            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+            if (qName && (namespacePart(m_attrs[i].id()) != defaultNamespace) &&
                 strcasecmp(m_attrs[i].name(), DOMString(qName)))
                 continue;
 	    id = m_attrs[i].id();
@@ -1153,7 +1153,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl
     for (unsigned long i = 0; i < m_attrCount; i++) {
 	if ((m_attrs[i].id() & mask) == id) {
             // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
-            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+            if (qName && (namespacePart(m_attrs[i].id()) != defaultNamespace) &&
                 strcasecmp(m_attrs[i].name(), DOMString(qName)))
                 continue;
 	    // Attribute exists; replace it
@@ -1225,7 +1225,7 @@ DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, bool nsAware, DOMStri
     for (unsigned long i = 0; i < m_attrCount; i++)
         if ((m_attrs[i].id() & mask) == id) {
             // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
-            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+            if (qName && (namespacePart(m_attrs[i].id()) != defaultNamespace) &&
                 strcasecmp(m_attrs[i].name(), DOMString(qName)))
                 continue;
             return m_attrs[i].val();

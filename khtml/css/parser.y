@@ -258,7 +258,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %%
 
 stylesheet:
-    maybe_charset maybe_sgml import_list maybe_namespace rule_list
+    maybe_charset maybe_sgml import_list namespace_list rule_list
   | khtml_rule maybe_space
   | khtml_decls maybe_space
   | khtml_value maybe_space
@@ -355,9 +355,9 @@ import:
     }
   ;
 
-maybe_namespace
-  : /* empty */ %prec UNIMPORTANT_TOK
-  | namespace maybe_sgml
+namespace_list:
+    /* empty */ %prec UNIMPORTANT_TOK
+  | namespace_list namespace maybe_sgml
 ;
 
 namespace:

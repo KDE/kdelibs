@@ -197,6 +197,8 @@ void RenderBlock::updateFirstLetter()
             if ( length < oldText->l && 
                     !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
                 length++;
+            while ( length < oldText->l && (oldText->s+length)->isMark() )
+                length++;
             RenderTextFragment* remainingText =
                 new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
             remainingText->setIsAnonymous( textObj->isAnonymous() );
@@ -1730,6 +1732,10 @@ void RenderBlock::removePositionedObject(RenderObject *o)
             if (it.current() == o)
                 m_positionedObjects->removeRef(it.current());
             ++it;
+        }
+        if (m_positionedObjects->isEmpty()) {
+            delete m_positionedObjects;
+            m_positionedObjects = 0;
         }
     }
 }

@@ -84,25 +84,25 @@ blockquote {
         margin: 1__qem 40px 1em 40px;
 }
 
-Q        {
+q        {
          display: inline;
 }
 
-Q:before {
+q:before {
         content: open-quote;
 }
 
-Q:after  {
+q:after  {
         content: close-quote;
 }
 
-CENTER {
+center {
 	display: block;
 	/* special centering to be able to emulate the html4/netscape behavior */
 	text-align: -khtml-center;
 }
 
-HR  {
+hr  {
         display: block;
         margin: 12px auto;
         border-style: inset;
@@ -110,53 +110,53 @@ HR  {
         -khtml-flow-mode: -khtml-around-floats
 }
 
-MAP {
+map {
 	display: inline;
 }
 
 /*
  * heading elements
- * margin values rely on font-sizes ratio defined in CSS-2.1 15.7
- * (cf. CSSStyleSelector for absolute font-sizes computation)
- * We have an 1.1/font-ratio margin
+ * margin values rely on font-sizes ratio defined in css-2.1 15.7
+ * (cf. cssstyleselector for absolute font-sizes computation)
+ * we have an 1.1/font-ratio margin
  */
 
-H1 {
+h1 {
 	display: block;
 	font-size: xx-large;
 	margin: .55__qem 0 .55em 0;
 	font-weight: bolder;
 }
 
-H2 {
+h2 {
 	display: block;
 	font-size: x-large;
 	margin: .73__qem 0 .73em 0;
 	font-weight: bolder;
 }
 
-H3 {
+h3 {
 	display: block;
 	font-size: large;
 	margin: 0.92__qem 0 0.92em 0;
 	font-weight: bolder;
 }
 
-H4 {
+h4 {
 	display: block;
         font-size: medium;
 	margin: 1.1__qem 0 1.1em 0;
 	font-weight: bolder;
 }
 
-H5 {
+h5 {
 	display: block;
 	font-size: small;
 	margin: 1.24__qem 0 1.24em 0;
 	font-weight: bolder;
 }
 
-H6 {
+h6 {
 	display: block;
 	font-size: xx-small;
 	margin: 1.83__qem 0 1.83em 0;
@@ -167,7 +167,7 @@ H6 {
  * tables
  */
 
-TABLE {
+table {
 	display: table;
 	border-collapse: separate;
 	text-align: -khtml-auto;
@@ -176,142 +176,131 @@ TABLE {
         box-sizing: border-box;
 }
 
-TABLE[align="center"] {
+table[align="center"] {
 	margin-left: auto;
 	margin-right: auto;
 }
 
-TABLE[align="left"] {
+table[align="left"] {
 	float: -khtml-left;
 }
 
-TABLE[align="right"] {
+table[align="right"] {
 	float: -khtml-right;
 }
 
-THEAD {
+thead {
 	display: table-header-group;
         border-color: inherit;
 	vertical-align: middle;
 }
 
-TBODY {
+tbody {
 	display: table-row-group;
         border-color: inherit;
 	vertical-align: middle;
 }
 
-TFOOT {
+tfoot {
 	display: table-footer-group;
         border-color: inherit;
 	vertical-align: middle;
 }
 
-COL {
+col {
 	display: table-column;
 }
 
-COLGROUP {
+colgroup {
 	display: table-column-group;
 }
 
-TR {
+tr {
 	display: table-row;
 	vertical-align: inherit;
         border-color: inherit;
 }
 
 
-TD, TH {
+td, th {
 	display: table-cell;
 	vertical-align: inherit;
 }
 
-TH {
+th {
 	font-weight: bolder;
 }
 
-CAPTION {
+caption {
 	display: table-caption;
 	text-align: -khtml-center;
 }
 
 /*
- * Lists
+ * lists
  */
 
-UL, MENU, DIR {
+ul, menu, dir {
         display: block;
         list-style-type: disc;
         margin: 1__qem 0 1em 0;
         -khtml-padding-start: 40px
 }
 
-OL {
+ol {
         display: block;
         list-style-type: decimal;
         margin: 1__qem 0 1em 0;
         -khtml-padding-start: 40px
 }
 
-LI {
+li {
         display: list-item;
         -khtml-flow-mode: -khtml-around-floats;
 }
 
 
-UL UL, OL UL {
+ul ul, ol ul {
 	list-style-type: circle;
 }
 
-OL OL UL, OL UL UL, UL OL UL, UL UL UL {
+ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
 }
 
 
-DD {
+dd {
 	display: block;
 	-khtml-margin-start: 40px;
 }
 
-DL {
+dl {
 	display: block;
         margin: 1__qem 0 1em 0;
 }
 
-DT {
+dt {
 	display: block;
 }
 
-DL[compact] > DT {
+dl[compact] > dt {
 	display: compact;
 }
 
-/* for right to left */
-
-*[dir="rtl"] UL,
-*[dir="rtl"] OL,
-*[dir="rtl"] DIR,
-*[dir="rtl"] MENU,
-*[dir="rtl"] DD {
-	margin-right:40px;
-	margin-left: auto;
-}
-
-OL UL,
-UL OL,
-UL UL,
-OL OL {
+ol ul,
+ul ol,
+ul ul,
+ol ol {
 	margin-top: auto;
 	margin-bottom: auto;
 }
 
-LI > P {
+li > p {
 	margin-top: auto;
 /*	margin-bottom: auto;*/
 }
 
-LI > DIV {
+li > div {
 	margin-top: auto;
 /*	margin-bottom: auto;*/
 }
@@ -320,12 +309,12 @@ LI > DIV {
  * form elements
  */
 
-FORM {
+form {
 	display: block;
         margin: 0__qem 0 1em 0;
 }
 
-LEGEND {
+legend {
         display: block;
         padding-left: 2px;
         padding-right: 2px;
@@ -333,76 +322,76 @@ LEGEND {
         margin: 0;
 }
 
-FIELDSET {
+fieldset {
 	display: block;
         padding: 0.75em 0.625em;
 	margin: 1.0em 0;
-        border: 2px groove ThreeDFace;
+        border: 2px groove threedface;
         -khtml-flow-mode: -khtml-around-floats
 }
 
-BUTTON {
+button {
         display: inline-block;
-        border: 2px outset ButtonFace;
-        background-color: ButtonFace;
-        color: ButtonText;
+        border: 2px outset buttonface;
+        background-color: buttonface;
+        color: buttontext;
         padding: 2px 2px 2px 2px;
         cursor: default;
 }
 
-BUTTON:active {
+button:active {
         border-style: inset;
 }
 
-INPUT, TEXTAREA {
+input, textarea {
         text-align: -khtml-auto;
 }
 
-INPUT, TEXTAREA, SELECT, BUTTON {
+input, textarea, select, button {
         font-weight: normal;
         margin: 0__qem;
 }
 
-INPUT { color: windowtext;
+input { color: windowtext;
         font-family: sans-serif;
         font-size: small;
         border: 2px -khtml-native;
 }
 
-INPUT[type="hidden"] {
+input[type="hidden"] {
 	display: none;
 }
 
-INPUT[type="radio"], INPUT[type="checkbox"] {
+input[type="radio"], input[type="checkbox"] {
         margin: 0 0.5ex;
         color: buttontext;
 }
 
-INPUT[type="text"], INPUT[type="password"] {
+input[type="text"], input[type="password"] {
 	cursor: text;
 }
 
-INPUT[type="submit"], INPUT[type="reset"], INPUT[type="button"] {
+input[type="submit"], input[type="reset"], input[type="button"] {
         color: buttontext;
 }
 
-ISINDEX { color: windowtext; font-size: small; }
+isindex { color: windowtext; font-size: small; }
 
 
-OPTION,
-OPTGROUP,
-AREA,
-PARAM  {
+option,
+optgroup,
+area,
+param  {
 	display: none;
 }
 
-SELECT {
+select {
         font-family: sans-serif;
         font-size: small;
         color: windowtext;
 }
 
-TEXTAREA {
+textarea {
         color: windowtext;
         font-family: monospace;
         border: 2px -khtml-native;
@@ -412,64 +401,64 @@ TEXTAREA {
  * inline elements
  */
 
-U,
-INS {
+u,
+ins {
 	text-decoration: underline;
 }
 
-STRONG,
-B {
+strong,
+b {
 	font-weight: bolder;
 }
 
-I,
-CITE,
-EM,
-VAR,
-ADDRESS {
+i,
+cite,
+em,
+var,
+address {
 	font-style: italic;
 }
 
-TT,
-CODE,
-KBD,
-SAMP {
+tt,
+code,
+kbd,
+samp {
 	font-family: monospace;
 }
 
-PRE,
-XMP,
-PLAINTEXT {
+pre,
+xmp,
+plaintext {
 	display: block;
 	font-family: monospace;
 	white-space: pre;
 	margin: 1__qem 0;
 }
 
-BIG {
+big {
 	font-size: larger;
 }
 
-SMALL {
+small {
 	font-size: smaller;
 }
 
-S,
-STRIKE,
-DEL  {
+s,
+strike,
+del  {
 	text-decoration: line-through;
 }
 
-SUB {
+sub {
 	vertical-align: sub;
 	font-size: smaller;
 }
-SUP {
+sup {
 	vertical-align: super;
 	font-size: smaller;
 }
 
-ABBR, ACRONYM {
+abbr, acronym {
 	font-variant: small-caps;
 	letter-spacing: 0.1em
 }
@@ -482,43 +471,43 @@ pre[wrap] {
 a:link:active          { color: red; outline: 1px dotted invert; }
 a:visited:active          { color: red; outline: 1px dotted invert; }
 
-/* With the current design it is too expensive to set this default via CSS
+/* with the current design it is too expensive to set this default via css
 :before,:after  { white-space: pre-line }
 */
 
-/* ### use this to replace renderBR
-      BR:before       { content: "\n" }
+/* ### use this to replace renderbr
+      br:before       { content: "\n" }
 */
 
 
-/* Bidirectionality settings (do not change) */
+/* bidirectionality settings (do not change) */
 
-BDO[DIR="ltr"]  {
+bdo[dir="ltr"]  {
 	direction: ltr;
 	unicode-bidi: bidi-override;
 }
 
-BDO[DIR="rtl"]  {
+bdo[dir="rtl"]  {
 	direction: rtl;
 	unicode-bidi: bidi-override;
 }
 
 /* ### this selector seems to be still broken ...
-      *[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
-      *[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
+      *[dir="ltr"]    { direction: ltr; unicode-bidi: embed }
+      *[dir="rtl"]    { direction: rtl; unicode-bidi: embed }
 */
 
-/* Elements that are block-level in HTML4 */
+/* elements that are block-level in html4 */
 /* ### don't support unicode-bidi at the moment
-      ADDRESS, BLOCKQUOTE, BODY, DD, DIV, DL, DT, FIELDSET,
-      FORM, FRAME, FRAMESET, H1, H2, H3, H4, H5, H6, IFRAME,
-      NOSCRIPT, NOFRAMES, OBJECT, OL, P, UL, APPLET, CENTER,
-      DIR, HR, MENU, PRE, LI, TABLE, TR, THEAD, TBODY, TFOOT,
-      COL, COLGROUP, TD, TH, CAPTION
+      address, blockquote, body, dd, div, dl, dt, fieldset,
+      form, frame, frameset, h1, h2, h3, h4, h5, h6, iframe,
+      noscript, noframes, object, ol, p, ul, applet, center,
+      dir, hr, menu, pre, li, table, tr, thead, tbody, tfoot,
+      col, colgroup, td, th, caption
                       { unicode-bidi: embed }
 */
 
-/* End bidi settings */
+/* end bidi settings */
 
 /*
  * other elements

@@ -182,11 +182,15 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
           while( l && !s->isSpace() )
             l--,s++;
           setHasClassList(l);
-        } else
+          setHasClass(true);
+        } else {
           setHasClassList(false);                 
-    // no break                                         
+          setHasClass(false);
+        }
+        setChanged(); // in case of a CSS selector on class
+        break;
     case ATTR_NAME:
-        setChanged(); // in case of a CSS selector on class/name
+        setChanged(); // in case of a CSS selector on name
         getDocument()->incDOMTreeVersion();
         break;
     case ATTR_STYLE:

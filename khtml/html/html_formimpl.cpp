@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2004, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,6 +41,7 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
+// #include "xml/dom_restyler.h"
 #include "khtml_ext.h"
 
 #include "rendering/render_form.h"
@@ -647,7 +649,9 @@ void HTMLFormElementImpl::submit(  )
                     // otherwise we might have a potential security problem
                     // by saving passwords under wrong lookup key.
 
-                    getDocument()->view()->part()->saveToWallet(key, m_walletMap);
+                    if (view->part()) {
+                        view->part()->saveToWallet(key, m_walletMap);
+                    }
                 } else if ( savePassword == KDialogBase::No ) {
                     view->addNonPasswordStorableSite(formUrl.host());
                 }
@@ -950,7 +954,9 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 {
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
+        // Trigger dynamic restyles
         setChanged();
+//         getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
     }
 }
 
@@ -1225,6 +1231,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_size = 20;
     m_clicked = false;
     m_checked = false;
+    m_indeterminate = false;
 
     m_haveType = false;
     m_activeSubmit = false;
@@ -1666,9 +1673,24 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
     if (m_checked == _checked) return;
     m_checked = _checked;
+
+    // Trigger dynamic restyles
     setChanged();
+//     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
 }
 
+void HTMLInputElementImpl::setIndeterminate(bool _indeterminate)
+{
+    // Only checkboxes honor indeterminate.
+    if (inputType() != CHECKBOX || indeterminate() == _indeterminate)
+        return;
+
+    m_indeterminate = _indeterminate;
+
+    // Trigger dynamic restyles
+    setChanged();
+//     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+}
 
 DOMString HTMLInputElementImpl::value() const
 {

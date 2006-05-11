@@ -802,12 +802,18 @@ void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)
     if (bottomOfLine > m_height && bottomOfLine > m_overflowHeight)
         m_overflowHeight = bottomOfLine;
 
+    bool beforeContent = true;
+
     // Now make sure we place replaced render objects correctly.
     for (BidiRun* r = sFirstBidiRun; r; r = r->nextRun) {
-        // Align positioned boxes with the top of the line box.  This is
-        // a reasonable approximation of an appropriate y position.
+
+        // For positioned placeholders, cache the static Y position an object with non-inline display would have.
+        // Either it is unchanged if it comes before any real linebox, or it must clear the current line (already accounted in m_height).
+        // This value will be picked up by position() if relevant.
         if (r->obj->isPositioned())
-            r->box->setYPos(m_height);
+            r->box->setYPos( beforeContent && r->obj->isBox() ? static_cast<RenderBox*>(r->obj)->staticY() : m_height );
+        else if (beforeContent)
+           beforeContent = false;
 
         // Position is used to properly position both replaced elements and
         // to update the static normal flow x/y of positioned elements.
