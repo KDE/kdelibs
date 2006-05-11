@@ -74,6 +74,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void clear();
+    void contextMenu( const QPoint & );
 
     void slotBookmarksChanged( const QString & );
     void slotBookmarkSelected();

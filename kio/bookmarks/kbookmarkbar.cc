@@ -87,6 +87,12 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     m_toolBar->setAcceptDrops( true );
     m_toolBar->installEventFilter( this ); // for drops
 
+    if (KBookmarkSettings::self()->m_contextmenu )
+    {
+      m_toolBar->setContextMenuPolicy(Qt::CustomContextMenu);
+      connect(m_toolBar, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
+    }
+
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
 
@@ -264,16 +270,6 @@ void KBookmarkBar::removeTempSep(KBookmarkBarPrivate* p)
     }
 }
 
-//TODO: kill me
-static KAction* findPluggedAction(const QList<KAction *>& actions, KToolBar *tb, int id)
-{
-    /*for ( QList<KAction *>::const_iterator it = actions.begin(), end = actions.end() ; it != end ; ++it ) {
-        if ((*it)->isPlugged(tb, id))
-            return (*it);
-    }*/
-    return 0;
-}
-
 /**
  * Handle a QDragMoveEvent event on a toolbar drop
  * @return the address of the bookmark to be dropped after/before
@@ -372,67 +368,26 @@ skipact:
     return address;
 }
 
-// TODO - document!!!!
-static QAction* handleToolbarMouseButton(const QPoint& pos, const QList<KAction *>& actions,
-                                         KBookmarkManager * /*mgr*/, QPoint & pt)
+void KBookmarkBar::contextMenu(const QPoint & pos)
 {
-    if (actions.isEmpty() || !actions.first()) {
-        return 0;
-    }
-
-    QAction *act = actions.first();
-
-    KToolBar *tb = qobject_cast<KToolBar*>(act->associatedWidgets().first());
-    Q_ASSERT(tb);
-
-    QAction* a = 0;
-
-    foreach (QAction* action, tb->actions())
-      if (QWidget* button = tb->widgetForAction(action))
-        if (button->geometry().contains(pos)) {
-          a = action;
-          break;
-        }
-
-    pt = tb->mapToGlobal(pos);
-
-    return a;
+    QAction * action = m_toolBar->actionAt(pos);
+    d->m_highlightedAddress = action->property("address").toString();
+    delete d->m_rmb; 
+    d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
+    d->m_rmb->fillContextMenu( d->m_highlightedAddress);
+    emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), d->m_rmb->contextMenu() );
+    d->m_rmb->fillContextMenu2( d->m_highlightedAddress);
+    d->m_rmb->popup( m_toolBar->mapToGlobal(pos) );
 }
 
 // TODO    *** drop improvements ***
 // open submenus on drop interactions
-
 bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
 {
     if (d->m_readOnly || d->m_filteredMgr) // note, we assume m_pManager in various places,
                                                      // this shouldn't really be the case
         return false; // todo: make this limit the actions
-
-    if ( (e->type() == QEvent::MouseButtonRelease) || (e->type() == QEvent::MouseButtonPress) ) // FIXME, which one?
-    {
-        QMouseEvent *mev = (QMouseEvent*)e;
-
-        QPoint pt;
-        QAction *_a;
-
-        // FIXME, see how this holds up on an empty toolbar
-        _a = handleToolbarMouseButton( mev->pos(), d->m_actions, m_pManager, pt );
-        if (_a && mev->button() == Qt::RightButton)
-        {
-            d->m_highlightedAddress = _a->property("address").toString();
-            KBookmark bookmark = m_pManager->findByAddress( d->m_highlightedAddress );
-            delete d->m_rmb; 
-            d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
-            d->m_rmb->fillContextMenu( d->m_highlightedAddress);
-            emit aboutToShowContextMenu( d->m_rmb->atAddress( d->m_highlightedAddress ), d->m_rmb->contextMenu() );
-            d->m_rmb->fillContextMenu2( d->m_highlightedAddress);
-            d->m_rmb->popup( pt );
-            mev->accept();
-        }
-
-        return !!_a; // ignore the event if we didn't find the button
-    }
-    else if ( e->type() == QEvent::DragLeave )
+    if ( e->type() == QEvent::DragLeave )
     {
         removeTempSep(d);
         d->m_dropAddress.clear();

@@ -105,9 +105,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     if ( KBookmarkSettings::self()->m_contextmenu )
     {
       m_parentMenu->setContextMenuPolicy(Qt::CustomContextMenu);
-
       connect(m_parentMenu, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
-
     }
 
     if ( m_bIsRoot )
