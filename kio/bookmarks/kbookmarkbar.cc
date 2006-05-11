@@ -44,7 +44,6 @@ class KBookmarkBarPrivate
 public:
     QList<KAction *> m_actions;
     KBookmarkManager* m_filteredMgr;
-    KToolBar* m_sepToolBar;
     int m_sepIndex;
     bool m_readOnly;
     bool m_atFirst;
@@ -54,7 +53,6 @@ public:
 
     KBookmarkBarPrivate() :
         m_filteredMgr( 0 ),
-        m_sepToolBar( 0 ),
         m_sepIndex( -1 ),
         m_readOnly( false ),
         m_atFirst( false ),
@@ -98,6 +96,7 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
 
     KBookmarkGroup toolbar = getToolbar();
     fillBookmarkBar( toolbar );
+    m_toolBarSeparator = 0;
 }
 
 QString KBookmarkBar::parentAddress()
@@ -262,11 +261,11 @@ void KBookmarkBar::slotBookmarkSelected()
     }
 }
 
-void KBookmarkBar::removeTempSep(KBookmarkBarPrivate* p)
+void KBookmarkBar::removeTempSep()
 {
-    if (p->m_sepToolBar) {
-        p->m_sepToolBar->removeAction(m_toolBarSeparator);
-        p->m_sepToolBar = 0; // needed?
+    if (m_toolBarSeparator) {
+        m_toolBar->removeAction(m_toolBarSeparator);
+        m_toolBarSeparator = 0;
     }
 }
 
@@ -281,20 +280,23 @@ void KBookmarkBar::removeTempSep(KBookmarkBarPrivate* p)
  *        returned action was dropped on
  */
 QString KBookmarkBar::handleToolbarDragMoveEvent(
-    KBookmarkBarPrivate *p, KToolBar *tb, const QPoint& pos, const QList<KAction *>& actions,
+    const QPoint& pos, const QList<KAction *>& actions,
     bool &atFirst, KBookmarkManager *mgr)
 {
     Q_UNUSED( mgr );
-    Q_ASSERT( actions.isEmpty() || (tb == qobject_cast<KToolBar*>(actions.first()->container(0))) );
-    p->m_sepToolBar = tb;
-    p->m_sepToolBar->removeAction(m_toolBarSeparator);
+    Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->container(0))) );
+    if(m_toolBarSeparator)
+    {
+        m_toolBar->removeAction(m_toolBarSeparator);
+        m_toolBarSeparator = 0;
+    }
 
     int index = 0;
     QWidget* b = 0;
 
-    for (int i = 0; i < tb->actions().count(); ++i)
-      if (QWidget* button = tb->widgetForAction(tb->actions()[i]))
-        if (b->geometry().contains(pos)) {
+    for (int i = 0; i < m_toolBar->actions().count(); ++i)
+      if (QWidget* button = m_toolBar->widgetForAction(m_toolBar->actions()[i]))
+        if (button->geometry().contains(pos)) {
           b = button;
           index = i;
           break;
@@ -315,7 +317,7 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
                 atFirst = true;
             else {
                 index--;
-                a = tb->actions()[index];
+                a = m_toolBar->actions()[index];
             }
         }
     }
@@ -328,14 +330,14 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
         // FIXME - here we want to get the
         // parent address of the bookmark
         // bar itself and return that + "/0"
-        p->m_sepIndex = 0;
+        d->m_sepIndex = 0;
         goto skipact;
     }
     else // (!b)
     {
         index = actions.count() - 1;
-        a = tb->actions()[index];
-        b = tb->widgetForAction(a);
+        a = m_toolBar->actions()[index];
+        b = m_toolBar->widgetForAction(a);
         // if !b and not past last button, we didn't find button
         if (pos.x() <= b->geometry().left())
             goto skipact; // TODO - rename
@@ -345,7 +347,7 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
         return QString(); // TODO Make it works for that case
 
     address = a->property("address").toString();
-    p->m_sepIndex = index + (atFirst ? 0 : 1);
+    d->m_sepIndex = index + (atFirst ? 0 : 1);
 
 #if 0
     { // ugly workaround to fix the goto scoping problems...
@@ -355,22 +357,24 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
             kDebug() << "kbookmarkbar:: popping up " << bk.text() << endl;
             KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
             Q_ASSERT(menu);
-            menu->popup(tb->mapToGlobal(b->geometry().center()));
+            menu->popup(m_toolBar->mapToGlobal(b->geometry().center()));
         }
     }
 #endif
 
 skipact:
     QAction* before = 0L;
-    if (p->m_sepIndex > 0 && p->m_sepIndex < tb->actions().count())
-      before = tb->actions().at(p->m_sepIndex - 1);
-    m_toolBarSeparator = tb->insertSeparator(before);
+    if (d->m_sepIndex > 0 && d->m_sepIndex < m_toolBar->actions().count())
+      before = m_toolBar->actions().at(d->m_sepIndex - 1);
+    m_toolBarSeparator = m_toolBar->insertSeparator(before);
     return address;
 }
 
 void KBookmarkBar::contextMenu(const QPoint & pos)
 {
     QAction * action = m_toolBar->actionAt(pos);
+    if(!action)
+        return;
     d->m_highlightedAddress = action->property("address").toString();
     delete d->m_rmb; 
     d->m_rmb = new RMB(parentAddress(), d->m_highlightedAddress, m_pManager, m_pOwner);
@@ -382,19 +386,26 @@ void KBookmarkBar::contextMenu(const QPoint & pos)
 
 // TODO    *** drop improvements ***
 // open submenus on drop interactions
-bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
+bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
 {
     if (d->m_readOnly || d->m_filteredMgr) // note, we assume m_pManager in various places,
                                                      // this shouldn't really be the case
         return false; // todo: make this limit the actions
-    if ( e->type() == QEvent::DragLeave )
+
+    if ( e->type() == QEvent::DragEnter)
     {
-        removeTempSep(d);
+        //TODO Check that we can decode
+        e->accept();
+        return true;
+    }
+    else if ( e->type() == QEvent::DragLeave )
+    {
+        removeTempSep();
         d->m_dropAddress.clear();
     }
     else if ( e->type() == QEvent::Drop )
     {
-        removeTempSep(d);
+        removeTempSep();
         QDropEvent *dev = static_cast<QDropEvent*>( e );
         QList<KBookmark> list = KBookmark::List::fromMimeData( dev->mimeData() );
         if ( list.isEmpty() )
@@ -424,13 +435,13 @@ bool KBookmarkBar::eventFilter( QObject *o, QEvent *e )
             return false;
         bool _atFirst;
         QString dropAddress;
-        KToolBar *tb = (KToolBar*)o;
-        dropAddress = handleToolbarDragMoveEvent(d, tb, dme->pos(), d->m_actions, _atFirst, m_pManager);
+        dropAddress = handleToolbarDragMoveEvent(dme->pos(), d->m_actions, _atFirst, m_pManager);
         if (!dropAddress.isNull())
         {
             d->m_dropAddress = dropAddress;
             d->m_atFirst = _atFirst;
             dme->accept();
+            return true; //Really?
         }
     }
     return false;
