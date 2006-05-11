@@ -264,6 +264,7 @@ void KCMultiDialog::addModule(const KCModuleInfo& moduleinfo,
             case Plain:
                 page = plainPage();
                 hbox = new QHBoxLayout( page );
+                hbox->setMargin( 0 );
                 break;
             default:
                 kError( 710 ) << "unsupported dialog face for KCMultiDialog"
