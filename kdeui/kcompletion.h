@@ -28,7 +28,7 @@
 
 #include "kdelibs_export.h"
 #include <kglobalsettings.h>
-#include <ksortablevaluelist.h>
+#include <ksortablelist.h>
 #include <kshortcut.h>
 
 class KCompTreeNode;
@@ -578,7 +578,7 @@ private:
 };
 
 // some more helper stuff
-typedef KSortableValueList<QString> KCompletionMatchesList;
+typedef KSortableList<QString> KCompletionMatchesList;
 class KCompletionMatchesPrivate;
 
 /**

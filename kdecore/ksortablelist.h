@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KSORTABLEVALUELIST_H
-#define KSORTABLEVALUELIST_H
+#ifndef KSORTABLELIST_H
+#define KSORTABLELIST_H
 
 #include <qpair.h>
 #include <QList>
@@ -27,7 +27,7 @@
 /**
  * KSortableItem is a QPair that provides several operators
  * for sorting.
- * @see KSortableValueList
+ * @see KSortableList
  */
 template<typename T, typename Key = int> class KSortableItem : public QPair<Key,T>
 {
@@ -121,13 +121,15 @@ public:
 
 
 /**
- * KSortableValueList is a special QValueList for
- * KSortableItem. It includes convenience operators
- * to get the first value of the KSortableItem and a method
- * to sort all items.
+ * KSortableList is a QList which associates a key with each item in the list.
+ * This key is used for sorting when calling sort().
+ *
+ * This allows to temporarily calculate a key and use it for sorting, without having
+ * to store that key in the items, or calculate that key many times for the same item
+ * during sorting if that calculation is expensive.
  */
 template <typename T, typename Key = int>
-class KSortableValueList : public QList<KSortableItem<T, Key> >
+class KSortableList : public QList<KSortableItem<T, Key> >
 {
 public:
     /**
@@ -164,8 +166,4 @@ public:
     }
 };
 
-// template <class T> class KSortableValueListIterator : public QValueListIterator<KSortableItem<T>  >
-// {
-// };
-
-#endif // KSORTABLEVALUELIST_H
+#endif // KSORTABLELIST_H

@@ -356,7 +356,7 @@ install_files( /include FILES
    kgenericfactory.h
    kgenericfactory.tcc
    ktypelist.h
-   ksortablevaluelist.h
+   ksortablelist.h
    kclipboard.h
    kcalendarsystem.h
    kcalendarsystemfactory.h
