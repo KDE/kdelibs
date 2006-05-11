@@ -25,9 +25,9 @@
 #include <config.h>
 #endif
 
-#include <qcheckbox.h>
-#include <qdatetime.h>
-#include <qlineedit.h>
+#include <QCheckBox>
+#include <QDateTime>
+#include <QLineEdit>
 #include <q3listview.h>
 #include <q3ptrlist.h>
 #include <qtabwidget.h>

@@ -23,8 +23,8 @@
 #endif
 
 #include "kdatetimedlg.h"
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QLayout>
+#include <QLabel>
 //Added by qt3to4:
 #include <QGridLayout>
 #include <klocale.h>

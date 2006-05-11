@@ -24,15 +24,15 @@
 #endif
 
 #include "certexport.h"
-#include <qpushbutton.h>
+#include <QPushButton>
 //Added by qt3to4:
 #include <QGridLayout>
 #include <klineedit.h>
 #include <kfiledialog.h>
 #include <qradiobutton.h>
 #include <q3buttongroup.h>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QLayout>
+#include <QLabel>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>

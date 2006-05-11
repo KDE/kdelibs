@@ -32,16 +32,16 @@
 #include <unistd.h>
 
 #include <q3buttongroup.h>
-#include <qcheckbox.h>
-#include <qfile.h>
+#include <QCheckBox>
+#include <QFile>
 #include <qfileinfo.h>
 #include <qframe.h>
 #include <q3groupbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
 #include <qradiobutton.h>
-#include <qregexp.h>
+#include <QRegExp>
 
 //Added by qt3to4:
 #include <QGridLayout>
