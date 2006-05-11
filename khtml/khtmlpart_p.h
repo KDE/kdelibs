@@ -463,15 +463,15 @@ public:
   QString m_overURL;
   QString m_overURLTarget;
 
-  bool m_startBeforeEnd:1;
-  bool m_extendAtEnd:1;		// true if selection is to be extended at its end
-  enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode:2;
-  bool m_bDnd:1;
-  bool m_bFirstData:1;
-  bool m_bClearing:1;
-  bool m_bCleared:1;
-  bool m_bSecurityInQuestion:1;
-  bool m_focusNodeRestored:1;
+  bool m_startBeforeEnd;
+  bool m_extendAtEnd;		// true if selection is to be extended at its end
+  enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode;
+  bool m_bDnd;
+  bool m_bFirstData;
+  bool m_bClearing;
+  bool m_bCleared;
+  bool m_bSecurityInQuestion;
+  bool m_focusNodeRestored;
 
   int m_focusNodeNumber;
 
