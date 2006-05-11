@@ -33,8 +33,9 @@ class KNotifyConfigElement;
  * 
  * @author Olivier Goffart <ogoffart @ kde.org>
  */
-class KDE_EXPORT KNotifyConfigWidget : public KVBox
-{ Q_OBJECT
+class KNOTIFYCONFIG_EXPORT KNotifyConfigWidget : public KVBox
+{ 
+	Q_OBJECT
 public:
 	KNotifyConfigWidget( QWidget *parent);
 	~KNotifyConfigWidget();
