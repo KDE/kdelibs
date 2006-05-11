@@ -24,6 +24,8 @@
 #include <QHBoxLayout>
 #include <kdialog.h>
 #include "outputdevicechoice2.h"
+#include <QTabWidget>
+#include "backendselection.h"
 
 typedef KGenericFactory<PhononKcm, QWidget> PhononKcmFactory;
 K_EXPORT_COMPONENT_FACTORY( kcm_phonon, PhononKcmFactory("kcm_phonon"))
@@ -42,24 +44,33 @@ PhononKcm::PhononKcm( QWidget* parent, const QStringList& args )
 	layout()->setMargin( 0 );
 	layout()->setSpacing( 0 );
 
-	m_outputDeviceWidget = new OutputDeviceChoice( this );
-	layout()->addWidget( m_outputDeviceWidget );
+	QTabWidget* tabs = new QTabWidget( this );
+	layout()->addWidget( tabs );
+
+	m_outputDeviceWidget = new OutputDeviceChoice;
+	tabs->addTab( m_outputDeviceWidget, i18n( "Output Device" ) );
+	m_backendSelection = new BackendSelection;
+	tabs->addTab( m_backendSelection, i18n( "Backend" ) );
 	load();
+	connect( m_backendSelection, SIGNAL( changed() ), SLOT( changed() ) );
 }
 
 void PhononKcm::load()
 {
 	m_outputDeviceWidget->load();
+	m_backendSelection->load();
 }
 
 void PhononKcm::save()
 {
 	m_outputDeviceWidget->save();
+	m_backendSelection->save();
 }
 
 void PhononKcm::defaults()
 {
 	m_outputDeviceWidget->defaults();
+	m_backendSelection->defaults();
 }
 
 #include "main.moc"

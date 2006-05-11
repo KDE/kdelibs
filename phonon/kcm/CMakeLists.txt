@@ -2,8 +2,8 @@ kde4_header()
 
 include_directories( ${QT_INCLUDES} )
 
-set(kcmphonon_SRCS main.cpp outputdevicechoice2.cpp)
-kde4_add_ui_files(kcmphonon_SRCS outputdevicechoice2.ui)
+set(kcmphonon_SRCS main.cpp outputdevicechoice2.cpp backendselection.cpp)
+kde4_add_ui_files(kcmphonon_SRCS outputdevicechoice2.ui backendselection.ui)
 kde4_automoc(${kcmphonon_SRCS})
 
 kde4_add_plugin(kcm_phonon ${kcmphonon_SRCS})

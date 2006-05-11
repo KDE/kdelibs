@@ -22,6 +22,7 @@
 
 #include <kcmodule.h>
 class OutputDeviceChoice;
+class BackendSelection;
 
 class PhononKcm : public KCModule
 {
@@ -35,6 +36,7 @@ class PhononKcm : public KCModule
 
 	private:
 		OutputDeviceChoice* m_outputDeviceWidget;
+		BackendSelection* m_backendSelection;
 };
 
 #endif // MAIN_H
