@@ -58,7 +58,8 @@ void KMimeTypeTest::testIcons()
     // Obviously those tests will need to be fixed if we ever change the name of the icons
     // but at least they unit-test KMimeType::iconNameForURL.
     checkIcon( KUrl( "file:/tmp/" ), "folder" );
-    checkIcon( KUrl( "file:/root/" ), "folder_locked" );
+    if ( QFile::exists( "/root/.ssh/" ) )
+        checkIcon( KUrl( "file:/root/.ssh/" ), "folder_locked" );
 }
 
 void KMimeTypeTest::testFindByPath()

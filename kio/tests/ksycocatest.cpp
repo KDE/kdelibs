@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 David Faure   <faure@kde.org>
+ *  Copyright (C) 2002-2006 David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -51,6 +51,9 @@ void debug(const char *format, const char *txt)
 // ############
 // Some of the tests here (those that don't depend on other modules being installed)
 // should be moved to kmimetypetest, and then kmimetypetest can be renamed ksycocatest.
+//
+// But it's still convenient to have an interactive test program, for checking things
+// in the user's ksycoca instead of checking them in the safe .kde-unit-test one.
 //
 int main(int argc, char *argv[])
 {
