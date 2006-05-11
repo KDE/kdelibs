@@ -6,6 +6,11 @@ find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)
 
+# not done by cmake's FindJPEG.cmake:
+if (NOT JPEG_FOUND)
+  message(FATAL_ERROR "JPEG library not found, required by KHTML - please install libjpeg")
+endif (NOT JPEG_FOUND)
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
 # khtml/dom/Makefile.am: khtmldom
