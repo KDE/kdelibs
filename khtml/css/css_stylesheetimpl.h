@@ -102,6 +102,7 @@ public:
 
     void addNamespace(CSSParser* p, const DOM::DOMString& prefix, const DOM::DOMString& uri);
     void determineNamespace(quint32& id, const DOM::DOMString& prefix);
+    quint32 defaultNamespace() { return m_defaultNamespace; };
 
     virtual bool parseString( const DOMString &string, bool strict = true );
 
@@ -119,6 +120,7 @@ public:
 protected:
     DocumentImpl *m_doc;
     bool m_implicit;
+    Q_UINT32 m_defaultNamespace;
     CSSNamespace* m_namespaces;
 };
 

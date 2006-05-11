@@ -41,7 +41,7 @@
 #include "xml/dom_textimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom2_eventsimpl.h"
-// #include "xml/dom_restyler.h"
+#include "xml/dom_restyler.h"
 #include "khtml_ext.h"
 
 #include "rendering/render_form.h"
@@ -955,8 +955,11 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
         // Trigger dynamic restyles
-        setChanged();
-//         getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+        getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+        // We need to update rendering under all circumstances
+        if (!changed() && m_render) {
+            m_render->updateFromElement();
+        }
     }
 }
 
@@ -1511,6 +1514,9 @@ void HTMLInputElementImpl::attach()
         }
     }
 
+    // Let check and radio boxes start indeterminate
+    setIndeterminate(true);
+
     if (m_render)
         m_render->setStyle(_style);
 
@@ -1664,6 +1670,7 @@ void HTMLInputElementImpl::reset()
 {
     setValue(getAttribute(ATTR_VALUE));
     setChecked(getAttribute(ATTR_CHECKED) != 0);
+    setIndeterminate(true);
 }
 
 void HTMLInputElementImpl::setChecked(bool _checked)
@@ -1674,22 +1681,30 @@ void HTMLInputElementImpl::setChecked(bool _checked)
     if (m_checked == _checked) return;
     m_checked = _checked;
 
+//     setIndeterminate(false);
+
     // Trigger dynamic restyles
-    setChanged();
-//     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+    getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+    // We need to update rendering under all circumstances
+    if (!changed() && m_render) {
+        m_render->updateFromElement();
+    }
 }
 
 void HTMLInputElementImpl::setIndeterminate(bool _indeterminate)
 {
-    // Only checkboxes honor indeterminate.
-    if (inputType() != CHECKBOX || indeterminate() == _indeterminate)
+    // Only checkboxes and radio-boxes honor indeterminate.
+    if (inputType() != CHECKBOX || inputType() != RADIO || indeterminate() == _indeterminate)
         return;
 
     m_indeterminate = _indeterminate;
 
     // Trigger dynamic restyles
-    setChanged();
 //     getDocument()->dynamicDomRestyler().restyleDepedent(this, OtherStateDependency);
+    // We need to update rendering under all circumstances
+    if (!changed() && m_render) {
+        m_render->updateFromElement();
+    }
 }
 
 DOMString HTMLInputElementImpl::value() const

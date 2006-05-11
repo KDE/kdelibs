@@ -110,8 +110,6 @@ CSSParser::CSSParser( bool strictParsing )
     nonCSSHint = false;
     inParseShortHand = false;
 
-    defaultNamespace = anyNamespace;
-
     yy_start = 1;
 
 #if YYDEBUG > 0
@@ -136,6 +134,14 @@ CSSParser::~CSSParser()
 
 }
 
+unsigned int CSSParser::defaultNamespace()
+{
+    if (styleElement && styleElement->isCSSStyleSheet())
+        return static_cast<CSSStyleSheetImpl*>(styleElement)->defaultNamespace();
+    else
+        return anyNamespace;
+}
+
 void CSSParser::runParser(int length)
 {
     data[length-1] = 0;
@@ -158,7 +164,6 @@ void CSSParser::runParser(int length)
 void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
 {
     styleElement = sheet;
-    defaultNamespace = anyNamespace; // Reset the default namespace.
 
     int length = string.length() + 3;
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );

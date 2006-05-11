@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom_nodeimpl.h"
+#include "xml/dom_restyler.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -68,6 +70,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_closed(false),
       m_changed( false ),
       m_hasChangedChild( false ),
+      m_changedAscendentAttribute( false ),
       m_inDocument( false ),
       m_hasAnchor( false ),
       m_specified( false ),
@@ -935,7 +938,7 @@ RenderObject *NodeImpl::createRenderer(RenderArena* /*arena*/, RenderStyle* /*st
 bool NodeImpl::contentEditable() const
 {
     RenderObject *r = renderer();
-    if (!r) return false;
+    if (!r || !r->style()) return false;
     return r->style()->userInput() == UI_ENABLED;
 }
 
@@ -1088,8 +1091,9 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
         child = nextChild;
     }
 
+    structureChanged();
+
     // ### set style in case it's attached
-    setChanged(true);
     dispatchSubtreeModifiedEvent();
     return newChild;
 }
@@ -1161,8 +1165,9 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
         child = nextChild;
     }
 
+    structureChanged();
+
     // ### set style in case it's attached
-    setChanged(true);
     dispatchSubtreeModifiedEvent();
     return oldChild;
 }
@@ -1205,7 +1210,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
 
-    setChanged(true);
+    structureChanged();
 
     // Dispatch post-removal mutation events
     dispatchSubtreeModifiedEvent();
@@ -1304,7 +1309,8 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
         child = nextChild;
     }
 
-    setChanged(true);
+    backwardsStructureChanged();
+
     // ### set style in case it's attached
     dispatchSubtreeModifiedEvent();
     return newChild;
@@ -1511,7 +1517,10 @@ void NodeBaseImpl::setFocus(bool received)
     NodeImpl::setFocus(received);
 
     // note that we need to recalc the style
-    setChanged();
+    if (isElementNode()) {
+        setChanged(); // *:focus is a default style, so we just assume personal dependency
+        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), OtherStateDependency);
+    }
 }
 
 void NodeBaseImpl::setActive(bool down)
@@ -1521,8 +1530,8 @@ void NodeBaseImpl::setActive(bool down)
     NodeImpl::setActive(down);
 
     // note that we need to recalc the style
-    if (m_render && m_render->style()->affectedByActiveRules())
-        setChanged();
+    if (isElementNode())
+        getDocument()->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(this), ActiveDependency);
 }
 
 unsigned long NodeBaseImpl::childNodeCount()

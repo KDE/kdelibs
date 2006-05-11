@@ -151,7 +151,6 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     ElementImpl *newElement = m_doc->document()->createElementNS(nsURI,qName);
     if (!newElement)
         return false;
-
     int i;
     for (i = 0; i < atts.length(); i++) {
         int exceptioncode = 0;

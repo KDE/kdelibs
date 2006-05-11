@@ -568,17 +568,17 @@ static const unsigned short int yyrline[] =
      381,   383,   394,   395,   396,   397,   398,   399,   400,   404,
      405,   409,   412,   417,   421,   426,   433,   447,   448,   458,
      480,   483,   489,   492,   498,   499,   500,   501,   505,   506,
-     510,   530,   543,   557,   564,   567,   588,   595,   596,   597,
-     601,   605,   610,   615,   622,   631,   643,   659,   665,   669,
-     679,   686,   692,   693,   694,   698,   707,   731,   736,   742,
-     750,   762,   765,   768,   771,   774,   777,   783,   784,   788,
-     794,   800,   807,   814,   821,   828,   837,   840,   843,   846,
-     851,   857,   861,   864,   869,   875,   897,   903,   910,   911,
-     915,   919,   935,   938,   941,   947,   948,   950,   951,   952,
-     958,   959,   960,   962,   968,   969,   970,   971,   972,   973,
-     974,   975,   976,   977,   978,   979,   980,   981,   982,   983,
-     984,   985,   990,   998,  1014,  1021,  1027,  1036,  1062,  1063,
-    1067,  1068
+     510,   530,   543,   557,   564,   567,   581,   588,   589,   590,
+     594,   598,   603,   608,   615,   624,   636,   652,   658,   662,
+     672,   679,   685,   686,   687,   691,   700,   724,   729,   735,
+     743,   755,   758,   761,   764,   767,   770,   776,   777,   781,
+     787,   793,   800,   807,   814,   821,   830,   833,   836,   839,
+     844,   850,   854,   857,   862,   868,   890,   896,   903,   904,
+     908,   912,   928,   931,   934,   940,   941,   943,   944,   945,
+     951,   952,   953,   955,   961,   962,   963,   964,   965,   966,
+     967,   968,   969,   970,   971,   972,   973,   974,   975,   976,
+     977,   978,   983,   991,  1007,  1014,  1020,  1029,  1055,  1056,
+    1060,  1061
 };
 #endif
 
@@ -1918,13 +1918,6 @@ yyreduce:
 		end = end->tagHistory;
 	    end->relation = yyvsp[-1].relation;
 	    end->tagHistory = yyvsp[-2].selector;
-	    if ( yyvsp[-1].relation == CSSSelector::Descendant ||
-		 yyvsp[-1].relation == CSSSelector::Child ) {
-		CSSParser *p = static_cast<CSSParser *>(parser);
-		DOM::DocumentImpl *doc = p->document();
-		if ( doc )
-		    doc->setUsesDescendantRules(true);
-	    }
 	}
     ;}
     break;
@@ -1974,7 +1967,7 @@ yyreduce:
     {
 	yyval.selector = yyvsp[-1].selector;
         if ( yyval.selector )
-            yyval.selector->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);;
+            yyval.selector->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
     ;}
     break;
 
@@ -2025,9 +2018,9 @@ yyreduce:
 	    if (doc->isHTMLDocument())
 		tag = tag.toLower();
 	    const DOMString dtag(tag);
-            yyval.element = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
+            yyval.element = makeId(p->defaultNamespace(), doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    yyval.element = makeId(p->defaultNamespace, khtml::getTagID(tag.toLower().toAscii(), tag.length()));
+	    yyval.element = makeId(p->defaultNamespace(), khtml::getTagID(tag.toLower().toAscii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
@@ -2038,7 +2031,7 @@ yyreduce:
   case 77:
 
     {
-	yyval.element = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);
+	yyval.element = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
     ;}
     break;
 

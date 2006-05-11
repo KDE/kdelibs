@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2003 Apple Computer, Inc.
- * Copyright (C) 2006 Germain Garand <germain@ebooksfrance.org>
+ *           (C) 2006 Germain Garand <germain@ebooksfrance.org>
+ *           (C) 2006 Allan Sandfeld Jense <kde@carewolf.com>
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -55,6 +56,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "misc/htmltags.h"
 #include "html/html_blockimpl.h"
+#include "xml/dom_restyler.h"
 
 #include <qscrollbar.h>
 #include <q3ptrvector.h>
@@ -1155,23 +1157,24 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     if (info.readonly())
         return;
 
-    // Check to see if the hovered node has changed.  If not, then we don't need to
-    // do anything.  An exception is if we just went from :hover into :hover:active,
-    // in which case we need to update to get the new :active state.
     DOM::NodeImpl *e = m_object->element();
     DOM::DocumentImpl *doc = e ? e->getDocument() : 0;
-    if (!doc)
-	return;
+    if (!doc) return;
 
+    // Check to see if the hovered node has changed.  If not, then we don't need to
+    // do anything.
     DOM::NodeImpl* oldHoverNode = doc->hoverNode();
     DOM::NodeImpl* newHoverNode = info.innerNode();
 
-    
     if (oldHoverNode == newHoverNode && (!oldHoverNode || oldHoverNode->active() == info.active()))
         return;
 
     // Update our current hover node.
     doc->setHoverNode(newHoverNode);
+    if (info.active())
+        doc->setActiveNode(newHoverNode);
+    else
+        doc->setActiveNode(0);
 
     // We have two different objects.  Fetch their renderers.
     RenderObject* oldHoverObj = oldHoverNode ? oldHoverNode->renderer() : 0;
@@ -1184,11 +1187,8 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
     for (RenderObject* curr = oldHoverObj; curr && curr != ancestor; curr = hoverAncestor(curr)) {
         curr->setMouseInside(false);
         if (curr->element()) {
-            bool oldActive = curr->element()->active();
-            curr->element()->NodeImpl::setActive(false);
-            if (!curr->isText() && (curr->style()->affectedByHoverRules() ||
-                 (curr->style()->affectedByActiveRules() && oldActive)))
-                curr->element()->setChanged();
+            curr->element()->setActive(false);
+            doc->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(curr->element()), HoverDependency);
         }
     }
 
@@ -1197,12 +1197,9 @@ void RenderLayer::updateHoverActiveState(RenderObject::NodeInfo& info)
         bool oldInside = curr->mouseInside();
         curr->setMouseInside(true);
         if (curr->element()) {
-            bool oldActive = curr->element()->active();
-            curr->element()->NodeImpl::setActive(info.active());
-            if (!curr->isText() && (curr->style()->affectedByHoverRules() && !oldInside) ||
-                 (curr->style()->affectedByActiveRules() && oldActive != info.active())) {
-                curr->element()->setChanged();
-            }
+            curr->element()->setActive(info.active());
+            if (!oldInside)
+                doc->dynamicDomRestyler().restyleDepedent(static_cast<ElementImpl*>(curr->element()), HoverDependency);
         }
     }
 }

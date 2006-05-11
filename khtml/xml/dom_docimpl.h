@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2006 Allan Sandfeld Jensen(kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -59,6 +60,7 @@ namespace khtml {
     class CounterNode;
     class CachedObject;
     class CachedCSSStyleSheet;
+    class DynamicDomRestyler;
 }
 
 namespace DOM {
@@ -175,6 +177,7 @@ private:
     Q3Dict<ItemInfo> m_dict;
 };
 
+
 /**
  * @internal
  */
@@ -261,9 +264,6 @@ public:
     void updateStyleSelector();
 
     void recalcStyleSelector();
-
-    bool usesDescendantRules() { return m_usesDescendantRules; }
-    void setUsesDescendantRules(bool b) { m_usesDescendantRules = b; }
 
     QString nextState();
 
@@ -400,6 +400,9 @@ public:
     void setHoverNode(NodeImpl *newHoverNode);
     NodeImpl *focusNode() const { return m_focusNode; }
     void setFocusNode(NodeImpl *newFocusNode);
+    NodeImpl* activeNode() const { return m_activeNode; }
+    void setActiveNode(NodeImpl *newActiveNode);
+
     // Updates for :target (CSS3 selector).
     void setCSSTarget(NodeImpl* n);
     NodeImpl* getCSSTarget() { return m_cssTarget; }
@@ -535,6 +538,9 @@ public:
     QString contentLanguage() const { return m_contentLanguage; }
     void setContentLanguage(const QString& cl) { m_contentLanguage = cl; }
 
+    khtml::DynamicDomRestyler& dynamicDomRestyler() { return *m_dynamicDomRestyler; }
+    const khtml::DynamicDomRestyler& dynamicDomRestyler() const { return *m_dynamicDomRestyler; }
+
 Q_SIGNALS:
     void finishedParsing();
 
@@ -575,6 +581,7 @@ protected:
     QColor m_textColor;
     NodeImpl *m_hoverNode;
     NodeImpl *m_focusNode;
+    NodeImpl *m_activeNode;
     NodeImpl *m_cssTarget;
 
     unsigned int m_domtree_version;
@@ -631,12 +638,13 @@ protected:
     // ### evaluate for placement in RenderStyle
     Q3PtrDict<Q3Dict<khtml::CounterNode> > m_counterDict;
 
+    khtml::DynamicDomRestyler *m_dynamicDomRestyler;
+
     bool visuallyOrdered;
     bool m_bParsing;
     bool m_docChanged;
     bool m_styleSelectorDirty;
     bool m_inStyleRecalc;
-    bool m_usesDescendantRules;
     bool m_async;
     bool m_hadLoadError;
     bool m_docLoading;

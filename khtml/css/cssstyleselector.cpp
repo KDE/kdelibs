@@ -32,6 +32,7 @@
 #include "html/html_documentimpl.h"
 #include "html/html_elementimpl.h"
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_restyler.h"
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
 #include "khtml_factory.h"
@@ -465,6 +466,9 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     settings = part->settings();
     paintDeviceMetrics = element->getDocument()->paintDeviceMetrics();
 
+    // reset dynamic DOM dependencies
+    e->getDocument()->dynamicDomRestyler().resetDependencies(e);
+
     style = new RenderStyle();
     if( parentStyle )
         style->inheritFrom( parentStyle );
@@ -816,16 +820,14 @@ static void cleanpath(QString &path)
     //kDebug() << "checkPseudoState " << path << endl;
 }
 
-static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
+static PseudoState checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
 {
     if( e->id() != ID_A ) {
-        pseudoState = PseudoNone;
-        return;
+        return PseudoNone;
     }
     DOMString attr = e->getAttribute(ATTR_HREF);
     if( attr.isNull() ) {
-        pseudoState = PseudoNone;
-        return;
+        return PseudoNone;
     }
     QString u = QString::fromRawData(attr.unicode(), attr.length());
     if ( !u.contains("://") ) {
@@ -841,7 +843,7 @@ static void checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DO
     bool contains = KHTMLFactory::vLinks()->contains( u );
     if ( !contains && u.count('/')==2 )
       contains = KHTMLFactory::vLinks()->contains( u+'/' );
-    pseudoState = contains ? PseudoVisited : PseudoLink;
+    return contains ? PseudoVisited : PseudoLink;
 }
 
 // a helper function for parsing nth-arguments
@@ -901,7 +903,7 @@ static bool matchNth(int count, const QString& nth)
 }
 
 // Recursive check of combinators to support nondeterministic matching
-DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::ElementImpl * e, DOM::NodeImpl * n, bool &onlyHoverActive, bool isAncestor)
+DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::NodeImpl * n, bool isAncestor)
 {
     if(!n->isElementNode()) return 0;
 
@@ -911,126 +913,105 @@ DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::E
 
     switch(relation)
     {
-        case CSSSelector::Descendant:
-        {
-            ElementImpl *elem = 0;
-            while(true)
-            {
-                n = n->parentNode();
-                if(!n || !n->isElementNode()) return 0;
-                elem = static_cast<ElementImpl *>(n);
-                // Found one matching element
-                if(checkOneSelector(sel, elem, e, true)) {
-                    // Check the rest of the combinators
-                    bool t_onlyHoverActive = onlyHoverActive;
-                    if (checkSubSelectors(sel, e, n, t_onlyHoverActive, true)) {
-                        onlyHoverActive = t_onlyHoverActive;
-                        return n;
-                    }
-                }
-            }
-            return 0;
-        }
-        case CSSSelector::Child:
+    case CSSSelector::Descendant:
+    {
+        ElementImpl *elem = 0;
+        while(true)
         {
             n = n->parentNode();
-            if (!strictParsing)
-                while (n && n->implicitNode()) n = n->parentNode();
             if(!n || !n->isElementNode()) return 0;
-            ElementImpl *elem = static_cast<ElementImpl *>(n);
-            if(!checkOneSelector(sel, elem, e, true)) return 0;
-            break;
-        }
-        case CSSSelector::IndirectAdjacent:
-        {
-            ElementImpl *elem = 0;
-            while(true)
-            {
-                n = n->previousSibling();
-                while( n && !n->isElementNode() )
-                    n = n->previousSibling();
-                if( !n ) return 0;
-                elem = static_cast<ElementImpl *>(n);
-                if (checkOneSelector(sel, elem, e, false)) {
-                    // Check the rest of the combinators
-                    bool t_onlyHoverActive = onlyHoverActive;
-                    if (checkSubSelectors(sel, e, n, t_onlyHoverActive, false)) {
-                        onlyHoverActive = t_onlyHoverActive;
-                        return n;
-                    }
+            elem = static_cast<ElementImpl *>(n);
+            // Found one matching element
+            if(checkOneSelector(sel, elem, true)) {
+                // Check the rest of the combinators
+                if (checkSubSelectors(sel, n, true)) {
+                    return n;
                 }
-            };
+            }
+        }
+        return 0;
+    }
+    case CSSSelector::Child:
+    {
+        n = n->parentNode();
+        if (!strictParsing)
+            while (n && n->implicitNode()) n = n->parentNode();
+        if(!n || !n->isElementNode()) return 0;
+        ElementImpl *elem = static_cast<ElementImpl *>(n);
+        if(!checkOneSelector(sel, elem, true)) return 0;
+        break;
+    }
+    case CSSSelector::IndirectAdjacent:
+    {
+        // Sibling selectors always generate structural dependencies
+        // because new inserted element might fullfill them.
+        if (n->parentNode()->isElementNode())
+            element->getDocument()->dynamicDomRestyler().addDependency(element,
+                        static_cast<ElementImpl*>(n->parentNode()),
+                        StructuralDependency);
+        ElementImpl *elem = 0;
+        while(true)
+        {
+            n = n->previousSibling();
+            while( n && !n->isElementNode() )
+                n = n->previousSibling();
+            if( !n ) return 0;
+            elem = static_cast<ElementImpl *>(n);
+            if (checkOneSelector(sel, elem, false)) {
+                // Check the rest of the combinators
+                if (checkSubSelectors(sel, n, false)) {
+                    return n;
+                }
+            }
+        };
+        return 0;
+    }
+    case CSSSelector::DirectAdjacent:
+    {
+        if (n->parentNode()->isElementNode())
+            element->getDocument()->dynamicDomRestyler().addDependency(element,
+                        static_cast<ElementImpl*>(n->parentNode()),
+                        StructuralDependency);
+        n = n->previousSibling();
+        while( n && !n->isElementNode() )
+            n = n->previousSibling();
+        if( !n ) return 0;
+        ElementImpl *elem = static_cast<ElementImpl *>(n);
+        if(!checkOneSelector(sel, elem, false)) return 0;
+        break;
+    }
+    case CSSSelector::SubSelector:
+    {
+        //kDebug() << "CSSOrderedRule::checkSelector" << endl;
+        ElementImpl *elem = static_cast<ElementImpl *>(n);
+
+        // a selector is invalid if something follows a pseudo-element
+        // if elem !=element the subselector however precedes the pseudo-element
+        if ( n == element && dynamicPseudo != RenderStyle::NOPSEUDO ) {
             return 0;
         }
-        case CSSSelector::DirectAdjacent:
-        {
-                n = n->previousSibling();
-                while( n && !n->isElementNode() )
-                    n = n->previousSibling();
-                if( !n ) return 0;
-                ElementImpl *elem = static_cast<ElementImpl *>(n);
-                if(!checkOneSelector(sel, elem, e, false)) return 0;
-                break;
-        }
-        case CSSSelector::SubSelector:
-	{
-            if (onlyHoverActive)
-                onlyHoverActive = (sel->match == CSSSelector::PseudoClass &&
-                                   (sel->pseudoType() == CSSSelector::PseudoHover ||
-                                    sel->pseudoType() == CSSSelector::PseudoActive));
-
-	    //kDebug() << "CSSOrderedRule::checkSelector" << endl;
-	    ElementImpl *elem = static_cast<ElementImpl *>(n);
-	    // a selector is invalid if something follows :first-xxx
-	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
-		return 0;
-	    }
-            if(!checkOneSelector(sel, elem, e, isAncestor)) return 0;
-	    //kDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
-	    break;
-	}
+        if(!checkOneSelector(sel, elem, isAncestor)) return 0;
+        //kDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
+        break;
     }
-    return checkSubSelectors(sel, e, n, onlyHoverActive, isAncestor);
+    }
+    return checkSubSelectors(sel, n, isAncestor);
 }
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
 {
+    assert(e == element); // yes, actually
+
     dynamicPseudo = RenderStyle::NOPSEUDO;
 
     selectorCache[ selIndex ].state = Invalid;
     CSSSelector *sel = selectors[ selIndex ];
 
-    // We track whether or not the rule contains only :hover and :active in a simple selector. If
-    // so, we can't allow that to apply to every element on the page.  We assume the author intended
-    // to apply the rules only to links.
-    bool onlyHoverActive = (sel->tag == anyQName &&
-                            (sel->match == CSSSelector::PseudoClass &&
-                              (sel->pseudoType() == CSSSelector::PseudoHover ||
-                               sel->pseudoType() == CSSSelector::PseudoActive)));
-    bool affectedByHover = style->affectedByHoverRules();
-    bool affectedByActive = style->affectedByActiveRules();
-
     // first selector has to match
-    if(!checkOneSelector(sel, e, e, true)) return;
+    if(!checkOneSelector(sel, e, true)) return;
 
     // check the subselectors
-    NodeImpl *n = checkSubSelectors(sel, e, e, onlyHoverActive, true);
-    if (!n) return;
-
-    bool isSubject = (n == e);
-    // disallow *:hover, *:active, and *:hover:active except for links
-    if (onlyHoverActive && isSubject) {
-       if (pseudoState == PseudoUnknown)
-            checkPseudoState( encodedurl, e );
-
-        if (pseudoState == PseudoNone) {
-            if (!affectedByHover && style->affectedByHoverRules())
-        style->setAffectedByHoverRules(false);
-            if (!affectedByActive && style->affectedByActiveRules())
-                style->setAffectedByActiveRules(false);
-        return;
-    }
-    }
+    if(!checkSubSelectors(sel, e, true)) return;
 
     if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 	selectorCache[selIndex].state = AppliesPseudo;
@@ -1042,7 +1023,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
     return;
 }
 
-bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, DOM::ElementImpl *subject, bool isAncestor )
+bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor)
 {
     if(!e)
         return false;
@@ -1069,6 +1050,15 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
     if(sel->attr)
     {
+        // Sets up global dependencies of attributes
+        // ### could be done in the parser
+        if (e == element)
+            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
+        else if (isAncestor)
+            doc->dynamicDomRestyler().addDependency(sel->attr, AscendentDependency);
+        else
+            doc->dynamicDomRestyler().addDependency(sel->attr, PrecedentDependency);
+
         DOMString value = e->getAttribute(sel->attr);
         if(value.isNull()) return false; // attribute is not set
 
@@ -1189,14 +1179,15 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         }
     }
+
     if(sel->match == CSSSelector::PseudoClass || sel->match == CSSSelector::PseudoElement)
     {
 	switch (sel->pseudoType()) {
         // Pseudo classes:
 	case CSSSelector::PseudoEmpty:
+            doc->dynamicDomRestyler().addDependency(element, e, BackwardsStructuralDependency);
             // If e is not closed yet we don't know the number of children
             if (!e->closed()) {
-                e->setRestyleSelfLate();
                 return false;
             }
             if (!e->firstChild())
@@ -1216,6 +1207,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                // Handle dynamic DOM changes
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            StructuralDependency);
                 DOM::NodeImpl* n = e->previousSibling();
                 while ( n && !n->isElementNode() )
                     n = n->previousSibling();
@@ -1227,10 +1222,12 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoLastChild: {
             // last-child matches the last child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
-                // Handle unfinished parsing
+                // Handle unfinished parsing and dynamic DOM changes
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            BackwardsStructuralDependency);
                 if (!e->parentNode()->closed()) {
-                    e->setRestyleLate();
-                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
+//                     kdDebug(6080) << e->nodeName().string() << "::last-child: Parent unclosed" << endl;
                     return false;
                 }
                 DOM::NodeImpl* n = e->nextSibling();
@@ -1244,9 +1241,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoOnlyChild: {
             // If both first-child and last-child apply, then only-child applies.
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            BackwardsStructuralDependency);
                 if (!e->parentNode()->closed()) {
-                    e->setRestyleLate();
-                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
                     return false;
                 }
                 DOM::NodeImpl* n = e->previousSibling();
@@ -1265,6 +1263,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoNthChild: {
 	    // nth-child matches every (a*n+b)th element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            StructuralDependency);
                 int count = 1;
                 DOM::NodeImpl* n = e->previousSibling();
                 while ( n ) {
@@ -1279,9 +1280,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::PseudoNthLastChild: {
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            BackwardsStructuralDependency);
                 if (!e->parentNode()->closed()) {
-                    e->setRestyleLate();
-                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
                     return false;
                 }
                 int count = 1;
@@ -1299,6 +1301,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoFirstOfType: {
 	    // first-of-type matches the first element of its type!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            StructuralDependency);
                 const DOMString& type = e->tagName();
                 DOM::NodeImpl* n = e->previousSibling();
                 while ( n ) {
@@ -1314,9 +1319,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoLastOfType: {
             // last-child matches the last child that is an element!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            BackwardsStructuralDependency);
                 if (!e->parentNode()->closed()) {
-                    e->setRestyleLate();
-                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
                     return false;
                 }
                 const DOMString& type = e->tagName();
@@ -1334,9 +1340,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoOnlyOfType: {
             // If both first-of-type and last-of-type apply, then only-of-type applies.
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            BackwardsStructuralDependency);
                 if (!e->parentNode()->closed()) {
-                    e->setRestyleLate();
-                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
                     return false;
                 }
                 const DOMString& type = e->tagName();
@@ -1356,6 +1363,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoNthOfType: {
 	    // nth-of-type matches every (a*n+b)th element of this type!
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            StructuralDependency);
                 int count = 1;
                 const DOMString& type = e->tagName();
                 DOM::NodeImpl* n = e->previousSibling();
@@ -1371,9 +1381,10 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::PseudoNthLastOfType: {
             if (e->parentNode() && e->parentNode()->isElementNode()) {
+                doc->dynamicDomRestyler().addDependency(element,
+                            static_cast<ElementImpl*>(e->parentNode()),
+                            BackwardsStructuralDependency);
                 if (!e->parentNode()->closed()) {
-                    e->setRestyleLate();
-                    static_cast<ElementImpl*>(e->parentNode())->setRestyleChildrenLate();
                     return false;
                 }
                 int count = 1;
@@ -1394,45 +1405,45 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 return true;
             break;
 	case CSSSelector::PseudoLink:
+	    if (e == element) {
 	    if ( pseudoState == PseudoUnknown )
-                    checkPseudoState( encodedurl, e );
+                    pseudoState = checkPseudoState( encodedurl, e );
 	    if ( pseudoState == PseudoLink )
 		return true;
+            } else
+                return checkPseudoState( encodedurl, e ) == PseudoLink;
 	    break;
 	case CSSSelector::PseudoVisited:
+	    if (e == element) {
 	    if ( pseudoState == PseudoUnknown )
-                    checkPseudoState( encodedurl, e );
+                    pseudoState = checkPseudoState( encodedurl, e );
 	    if ( pseudoState == PseudoVisited )
 		return true;
+            } else
+                return checkPseudoState( encodedurl, e ) == PseudoVisited;
 	    break;
         case CSSSelector::PseudoHover: {
-	    // If we're in quirks mode, then hover should never match anchors with no
-	    // href and *:hover should not match anything. This is important for sites like wsj.com.
-	    if (strictParsing || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
-		if (element == e)
-		    style->setAffectedByHoverRules(true);
-		if (e->renderer()) {
-		    if (element != e)
-			e->renderer()->style()->setAffectedByHoverRules(true);
-		    if (e->renderer()->mouseInside())
+	    // If we're in quirks mode, then *:active should only match focusable elements, and never
+	    // unfocusable anchors.
+	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
+                doc->dynamicDomRestyler().addDependency(element, e, HoverDependency);
+                if (e->renderer() && e->renderer()->mouseInside())
 			return true;
 		}
-	    }
 	    break;
             }
 	case CSSSelector::PseudoFocus:
-	    if (e && e->focused()) {
-		return true;
+	    if (e != element && e->isFocusable()) {
+                // *:focus is a default style, no need to track it.
+                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
 	    }
+            if (e->focused()) return true;
 	    break;
 	case CSSSelector::PseudoActive:
-	    // If we're in quirks mode, then :active should never match anchors with no
-	    // href.
-	    if (strictParsing || sel->relation == CSSSelector::SubSelector || (sel->tag != anyQName && e->id() != ID_A) || e->hasAnchor()) {
-		if (element == e)
-		    style->setAffectedByActiveRules(true);
-		else if (e->renderer())
-		    e->renderer()->style()->setAffectedByActiveRules(true);
+	    // If we're in quirks mode, then *:active should only match focusable elements
+	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
+                doc->dynamicDomRestyler().addDependency(element, e, ActiveDependency);
+
 		if (e->active())
 		    return true;
 	    }
@@ -1442,6 +1453,15 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 return true;
             break;
         case CSSSelector::PseudoLang: {
+            // Set dynamic attribute dependency
+            if (e == element) {
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AscendentDependency);
+            }
+            else if (isAncestor)
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, AscendentDependency);
+            else
+                doc->dynamicDomRestyler().addDependency(ATTR_LANG, PrecedentDependency);
             // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
@@ -1477,13 +1497,14 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                 // but it is, so let's honor it.
                 if (subSel->simpleSelector)
                     break;
-                if (!checkOneSelector(subSel, e, subject, isAncestor))
+                if (!checkOneSelector(subSel, e, isAncestor))
                     return true;
             }
             break;
         }
         case CSSSelector::PseudoEnabled: {
             if (e->isGenericFormElement()) {
+                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
                 HTMLGenericFormElementImpl *form;
                 form = static_cast<HTMLGenericFormElementImpl*>(e);
                 return !form->disabled();
@@ -1492,6 +1513,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::PseudoDisabled: {
             if (e->isGenericFormElement()) {
+                doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
                 HTMLGenericFormElementImpl *form;
                 form = static_cast<HTMLGenericFormElementImpl*>(e);
                 return form->disabled();
@@ -1500,8 +1522,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         }
         case CSSSelector::PseudoContains: {
             if (e->isHTMLElement()) {
+                doc->dynamicDomRestyler().addDependency(element, e, BackwardsStructuralDependency);
                 if (!e->closed()) {
-                    e->setRestyleSelfLate();
                     return false;
                 }
                 HTMLElementImpl *elem;
@@ -1513,35 +1535,58 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
             break;
         }
-	case CSSSelector::PseudoChecked:
-	case CSSSelector::PseudoIndeterminate:
-	    /* not supported for now */
+	case CSSSelector::PseudoChecked: {
+           if (e->isHTMLElement() && e->id() == ID_INPUT) {
+               doc->dynamicDomRestyler().addDependency(element, e, OtherStateDependency);
+               return (static_cast<HTMLInputElementImpl*>(e)->checked());
+           }
+           return false;
+        }
+ 	case CSSSelector::PseudoIndeterminate: {
+#if 0
+           if (e->isHTMLElement() && e->id() == ID_INPUT) {
+               return (static_cast<HTMLInputElementImpl*>(e)->indeterminate() &&
+                      !static_cast<HTMLInputElementImpl*>(e)->checked());
+           }
+           return false;
+#endif
+        }
 	case CSSSelector::PseudoOther:
 	    break;
 
 	// Pseudo-elements:
 	case CSSSelector::PseudoFirstLine:
-	    if ( e == subject ) {
-		dynamicPseudo=RenderStyle::FIRST_LINE;
-		return true;
-	    }
+	case CSSSelector::PseudoFirstLetter:
+	case CSSSelector::PseudoSelection:
+	case CSSSelector::PseudoBefore:
+	case CSSSelector::PseudoAfter:
+	    // Pseudo-elements can only apply to subject
+	    if ( e == element ) {
+                // The can be only one pseudo-element
+                if (dynamicPseudo != RenderStyle::NOPSEUDO) return false;
+
+                switch (sel->pseudoType()) {
+                case CSSSelector::PseudoFirstLine:
+                    dynamicPseudo = RenderStyle::FIRST_LINE;
 	    break;
 	case CSSSelector::PseudoFirstLetter:
-	    if ( e == subject ) {
-		dynamicPseudo=RenderStyle::FIRST_LETTER;
-		return true;
-	    }
+                    dynamicPseudo = RenderStyle::FIRST_LETTER;
 	    break;
 	case CSSSelector::PseudoSelection:
 	    dynamicPseudo = RenderStyle::SELECTION;
-	    return true;
+                    break;
 	case CSSSelector::PseudoBefore:
 	    dynamicPseudo = RenderStyle::BEFORE;
-	    return true;
+                    break;
 	case CSSSelector::PseudoAfter:
 	    dynamicPseudo = RenderStyle::AFTER;
+                    break;
+                default:
+                    assert(false);
+                }
 	    return true;
-
+	    }
+	    break;
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
@@ -3257,13 +3302,13 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
-#ifdef APPLE_CHANGES
-                int attrID = element->getDocument()->attrId(0, val->getStringValue(), false);
-#else
+                // TODO: setup dynamic attribute dependencies
                 int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false, true);
-#endif
                 if (attrID)
                     style->setContent(element->getAttribute(attrID).implementation(), i != 0);
+//                 else
+//                      #warning
+
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {

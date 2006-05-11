@@ -823,12 +823,10 @@ protected:
                 EPageBreak _page_break_after : 3;
 
                 PseudoId _styleType : 4;
-		bool _affectedByHover : 1;
-		bool _affectedByActive : 1;
                 bool _hasClip : 1;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 22;
+                unsigned int unused : 24;
             } f;
             quint64 _niflags;
         };
@@ -896,8 +894,6 @@ protected:
         noninherited_flags.f._page_break_before = initialPageBreak();
         noninherited_flags.f._page_break_after = initialPageBreak();
 	noninherited_flags.f._styleType = NOPSEUDO;
-	noninherited_flags.f._affectedByHover = false;
-	noninherited_flags.f._affectedByActive = false;
 	noninherited_flags.f._hasClip = false;
 	noninherited_flags.f._unicodeBidi = initialUnicodeBidi();
         noninherited_flags.f.unused = 0;
@@ -919,12 +915,6 @@ public:
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
     void removePseudoStyle(PseudoId pi);
-
-    bool affectedByHoverRules() const { return  noninherited_flags.f._affectedByHover; }
-    bool affectedByActiveRules() const { return  noninherited_flags.f._affectedByActive; }
-
-    void setAffectedByHoverRules(bool b) {  noninherited_flags.f._affectedByHover = b; }
-    void setAffectedByActiveRules(bool b) {  noninherited_flags.f._affectedByActive = b; }
 
     bool operator==(const RenderStyle& other) const;
     bool        isFloating() const { return !(noninherited_flags.f._floating == FNONE); }

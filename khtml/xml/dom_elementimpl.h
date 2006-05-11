@@ -204,6 +204,10 @@ public:
 
     virtual void attach();
     virtual void close();
+    virtual void structureChanged();
+    virtual void backwardsStructureChanged();
+    virtual void attributeChanged(NodeImpl::Id attrId);
+
     virtual khtml::RenderStyle *styleForRenderer(khtml::RenderObject *parent);
     virtual khtml::RenderObject *createRenderer(khtml::RenderArena *, khtml::RenderStyle *);
     virtual void recalcStyle( StyleChange = NoChange );
@@ -241,15 +245,6 @@ public:
      */
     DOMString openTagStartToString(bool expandurls = false) const;
     
-    bool restyleLate() const { return m_restyleLate; };
-    void setRestyleLate(bool b=true) { m_restyleLate = b; };
-    void setRestyleSelfLate() { m_restyleSelfLate = true; };
-    void setRestyleChildrenLate() { m_restyleChildrenLate = true; };
-
-    // for style selection performance: whether the element matches several CSS Classes
-    bool hasClassList() const { return m_hasClassList; }
-    void setHasClassList(bool b) { m_hasClassList = b; }
-
     void updateId(DOMStringImpl* oldId, DOMStringImpl* newId);
     //Called when mapping from id to this node in document should be removed
     virtual void removeId(const QString& id);
@@ -272,10 +267,6 @@ protected: // member variables
 
     DOM::CSSStyleDeclarationImpl *m_styleDecls;
     DOMStringImpl *m_prefix;
-    bool m_restyleLate;
-    bool m_restyleSelfLate;
-    bool m_restyleChildrenLate;
-    bool m_hasClassList;
 };
 
 

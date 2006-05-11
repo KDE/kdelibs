@@ -576,13 +576,6 @@ selector:
 		end = end->tagHistory;
 	    end->relation = $2;
 	    end->tagHistory = $1;
-	    if ( $2 == CSSSelector::Descendant ||
-		 $2 == CSSSelector::Child ) {
-		CSSParser *p = static_cast<CSSParser *>(parser);
-		DOM::DocumentImpl *doc = p->document();
-		if ( doc )
-		    doc->setUsesDescendantRules(true);
-	    }
 	}
     }
     | selector error {
@@ -610,7 +603,7 @@ simple_selector:
     | specifier_list maybe_space {
 	$$ = $1;
         if ( $$ )
-            $$->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);;
+            $$->tag = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
     }
     | namespace_selector element_name maybe_space {
         $$ = new CSSSelector();
@@ -648,16 +641,16 @@ element_name:
 	    if (doc->isHTMLDocument())
 		tag = tag.toLower();
 	    const DOMString dtag(tag);
-            $$ = makeId(p->defaultNamespace, doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
+            $$ = makeId(p->defaultNamespace(), doc->getId(NodeImpl::ElementId, dtag.implementation(), false, true));
 	} else {
-	    $$ = makeId(p->defaultNamespace, khtml::getTagID(tag.toLower().toAscii(), tag.length()));
+	    $$ = makeId(p->defaultNamespace(), khtml::getTagID(tag.toLower().toAscii(), tag.length()));
 	    // this case should never happen - only when loading
 	    // the default stylesheet - which must not contain unknown tags
 // 	    assert($$ != 0);
 	}
     }
     | '*' {
-	$$ = makeId(static_cast<CSSParser*>(parser)->defaultNamespace, anyLocalName);
+	$$ = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
     }
   ;
 
