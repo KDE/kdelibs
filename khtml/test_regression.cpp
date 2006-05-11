@@ -710,7 +710,7 @@ int main(int argc, char *argv[])
     // create widgets
     KHTMLFactory *fac = new KHTMLFactory();
     KMainWindow *toplevel = new KMainWindow();
-    KHTMLPart *part = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
+    KHTMLPart *part = new KHTMLPart( toplevel, 0, KHTMLPart::BrowserViewGUI );
 
     toplevel->setCentralWidget( part->widget() );
     KAcceleratorManager::setNoAccel ( part->widget() );
@@ -1507,9 +1507,7 @@ void RegressionTest::testStaticFile(const QString & filename)
 
         if ( m_known_failures & PaintFailure )
             m_known_failures = AllFailure;
-        CheckResult dumped = checkPaintdump(filename);
-        reportResult( dumped, "PAINT");
-        if (dumped == Failure)
+        if (!reportResult( checkPaintdump(filename), "PAINT") )
             failures |= PaintFailure;
 
         doFailureReport(filename, failures );
@@ -1615,6 +1613,15 @@ RegressionTest::CheckResult RegressionTest::checkPaintdump(const QString &filena
     if ( !imageEqual( baseline, output ) ) {
         QString outputFilename = m_outputDir + "/" + againstFilename;
         createMissingDirs(outputFilename );
+
+        bool kf = false;
+        if ( m_known_failures & AllFailure )
+            kf = true;
+        else if ( m_known_failures & PaintFailure )
+            kf = true;
+        if ( kf )
+            outputFilename += "-KF";
+
         output.save(outputFilename, "PNG", 60);
     }
     else {
