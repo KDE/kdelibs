@@ -1,9 +1,9 @@
 #include <qstring.h>
-#include <ksortablevaluelist.h>
+#include <ksortablelist.h>
 
 int main( int argc, char **argv )
 {
-    KSortableValueList<QString> list;
+    KSortableList<QString> list;
     list.insert( 1,  "FOO           (1)" );
     list.insert( 2,  "Test          (2)" );
     list.insert( 1,  "Huba!         (1)" );

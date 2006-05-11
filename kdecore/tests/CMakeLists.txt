@@ -293,15 +293,15 @@ add_test(kdecore-kdatetimetest ${EXECUTABLE_OUTPUT_PATH}/kdatetimetest)
 
 ########### next target ###############
 
-set(ksortablevaluelisttest_SRCS ksortablevaluelisttest.cpp )
+set(ksortablelisttest_SRCS ksortablelisttest.cpp )
 
-kde4_automoc(${ksortablevaluelisttest_SRCS})
+kde4_automoc(${ksortablelisttest_SRCS})
 
-kde4_add_executable(ksortablevaluelisttest RUN_UNINSTALLED ${ksortablevaluelisttest_SRCS})
+kde4_add_executable(ksortablelisttest RUN_UNINSTALLED ${ksortablelisttest_SRCS})
 
-target_link_libraries(ksortablevaluelisttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(ksortablelisttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-add_test(kdecore-ksortablevaluelisttest ${EXECUTABLE_OUTPUT_PATH}/ksortablevaluelisttest)
+add_test(kdecore-ksortablelisttest ${EXECUTABLE_OUTPUT_PATH}/ksortablelisttest)
 
 ########### next target ###############
 
