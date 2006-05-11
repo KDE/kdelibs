@@ -9,6 +9,7 @@ if (WIN32)
 endif (WIN32)
 
 # for visual studio IDE set the path correctly for custom commands
+# maybe under windows bat-files should be generated for running apps during the build
 if(MSVC_IDE)
   find_program(PERL_PATH perl)
   get_filename_component(PERL_LOCATION "${PERL_PATH}" PATH)
@@ -56,7 +57,7 @@ link_directories(${KDE4_LIB_DIR})
 # for including config.h and for includes like <kparts/foo.h>
 include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdefx)
 
-# Those variables for include_directories() are only valid inside of kdelibs, of course.
+# Those variables for  are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
 # E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
 

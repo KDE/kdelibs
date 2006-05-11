@@ -6,7 +6,7 @@ ADD_DEFINITIONS(-D_KDEPRINT_COMPILE)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 # Needed for the subdirs
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
+
 
 # you can find macro_optional_find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)

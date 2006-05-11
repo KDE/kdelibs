@@ -37,8 +37,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_proxyscout )
 
 set(kpac_dhcp_helper_SRCS kpac_dhcp_helper.c )
 
-kde4_automoc(${kpac_dhcp_helper_SRCS})
-
 kde4_add_executable(kpac_dhcp_helper NOGUI ${kpac_dhcp_helper_SRCS})
 
 target_link_libraries(kpac_dhcp_helper  ${KDE4_KDECORE_LIBS} )
