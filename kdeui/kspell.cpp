@@ -442,7 +442,7 @@ KSpell::cleanFputsWord( const QString & s, bool appendCR )
   if (empty)
     return false;
 
-  return proc->writeStdin( "^"+qs, appendCR );
+  return proc->writeStdin( '^'+qs, appendCR );
 }
 
 bool
@@ -462,7 +462,7 @@ KSpell::cleanFputs( const QString & s, bool appendCR )
   {
     if ( qs.isEmpty() )
       qs="";
-    return proc->writeStdin( "^"+qs, appendCR );
+    return proc->writeStdin( '^'+qs, appendCR );
   }
   else
     return proc->writeStdin( QString::fromAscii( "^\n" ),appendCR );

@@ -83,7 +83,7 @@ void KDatePicker::fillWeeksCombo(const QDate &date)
   for (; day <= lastDay ; day = calendar->addDays(day, 7 /*calendar->daysOfWeek()*/) )
   {
     QString week = i18n("Week %1", calendar->weekNumber(day, &year));
-    if ( year != calendar->year(day) ) week += "*";  // show that this is a week from a different year
+    if ( year != calendar->year(day) ) week += '*';  // show that this is a week from a different year
     d->selectWeek->addItem(week);
 
     // make sure that the week of the lastDay is always inserted: in Chinese calendar

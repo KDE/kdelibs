@@ -252,7 +252,7 @@ void KRecentFilesAction::addUrl( const KUrl& url, const QString& name )
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
     {
-      if ( action->text().endsWith( file + "]" ) )
+      if ( action->text().endsWith( file + ']' ) )
       {
         delete removeAction(action);
         break;
@@ -266,7 +266,7 @@ void KRecentFilesAction::addUrl( const KUrl& url, const QString& name )
     }
 
     // add file to list
-    const QString title = tmpName + " [" + file + "]";
+    const QString title = tmpName + " [" + file + ']';
     QAction* action = new QAction(title, selectableActionGroup());
     addAction(action, url, tmpName);
 }
@@ -338,7 +338,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
 
         nameKey = QString( "Name%1" ).arg( i );
         nameValue = config->readPathEntry( nameKey, url.fileName() );
-        title = nameValue + " [" + value + "]";
+        title = nameValue + " [" + value + ']';
         if (!value.isNull())
         {
           addAction(new QAction(title, selectableActionGroup()), url, nameValue);

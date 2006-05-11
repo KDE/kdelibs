@@ -376,7 +376,7 @@ KSpellConfig::interpret( const QString &fname, QString &lname,
   }
   if (!extension.isEmpty())
   {
-    hname = hname + " (" + extension + ")";
+    hname = hname + " (" + extension + ')';
   }
 
   //We have explicitly chosen English as the default here.
@@ -508,7 +508,7 @@ void KSpellConfig::getAvailDictsIspell () {
     else
     {
       langfnames.append (fname);
-      hname=hname+" ["+fname+"]";
+      hname=hname+" ["+fname+']';
 
       dictcombo->addItem (hname);
     }
@@ -658,7 +658,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         else
         {
           langfnames.append (fname);
-          hname=hname+" ["+fname+"]";
+          hname=hname+" ["+fname+']';
 
           box->addItem (hname);
         }

@@ -162,15 +162,15 @@ void KShortcutDialog::updateShortcutDisplay()
 			if( d->mod ) {
 				QString keyModStr;
 #if defined(Q_WS_MAC)
-				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + "+";
-				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + "+";
-				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + "+";
-				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + "+";
+				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + '+';
+				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + '+';
+				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #elif defined(Q_WS_X11)
-				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + "+";
-				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + "+";
-				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + "+";
-				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + "+";
+				if( d->mod & Qt::META )  keyModStr += KKeyServer::modToStringUser(Qt::META) + '+';
+				if( d->mod & Qt::CTRL )  keyModStr += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+				if( d->mod & Qt::ALT )   keyModStr += KKeyServer::modToStringUser(Qt::ALT) + '+';
+				if( d->mod & Qt::SHIFT ) keyModStr += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #endif
 				s[d->iSeq] = keyModStr;
 			}
@@ -178,7 +178,7 @@ void KShortcutDialog::updateShortcutDisplay()
 		// When in the middle of entering multi-key shortcuts,
 		//  add a "," to the end of the displayed shortcut.
 		else
-			s[d->iSeq] += ",";
+			s[d->iSeq] += ',';
 	}
 	else {
 		d->adv->m_txtPrimary->setDefault( false );

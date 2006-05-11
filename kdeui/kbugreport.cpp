@@ -194,7 +194,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   d->kde_version = QString::fromLatin1( KDE_VERSION_STRING );
   d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
   if ( !d->submitBugButton )
-      m_strVersion += " " + d->kde_version;
+      m_strVersion += ' ' + d->kde_version;
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
   glay->addWidget( m_version, row, 1, 1, 2 );

@@ -303,7 +303,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     foreach (KActionCollection* ac, KActionCollection::allCollections())
       foreach (KAction* action, ac->actions())
         if (action->associatedWidgets().isEmpty())
-          unaddedActions += action->objectName() + " ";
+          unaddedActions += action->objectName() + ' ';
 
     if (!unaddedActions.isEmpty())
       kWarning() << k_funcinfo << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions << endl;

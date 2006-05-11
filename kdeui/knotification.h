@@ -392,7 +392,7 @@ public Q_SLOTS:
 	/**
 	 * Emit the event.
 	 * 
-	 * This will send a syncronous dbus call to the notify deamon. 
+	 * This will send a synchronous dbus call to the notify deamon. 
 	 * If you are in a critical code path, you can do 
 	 * \code
 	 * QTimer::singleShot(0,notify,SLOT(sendEvent()));

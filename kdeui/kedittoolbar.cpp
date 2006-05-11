@@ -261,7 +261,7 @@ public:
            ( xmlData.m_type == XmlData::Part ) )
       {
         QString doc_name(xmlData.m_document.documentElement().attribute( attrName ));
-        name += " <" + doc_name + ">";
+        name += " <" + doc_name + '>';
       }
       return name;
   }
