@@ -362,8 +362,8 @@ void MidiPlayer::parseSpecialEvents(void)
  
 #endif
                     strncpy(pspev->text,(char *)ev->data,
-                        (ev->length>1024)? (1023) : (ev->length) );
-                    pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
+                        (ev->length>= sizeof(lasttext))? sizeof(lasttext)-1 : (ev->length) );
+                    pspev->text[(ev->length>= sizeof(lasttext))? sizeof(lasttext)-1:(ev->length)]=0;
 #ifdef PLAYERDEBUG
                     printf("(%s)(%s)\n",pspev->text,lasttext);
 #endif
@@ -373,7 +373,7 @@ void MidiPlayer::parseSpecialEvents(void)
                       lasttexttime=pspev->absmilliseconds;
                       lasttexttype=pspev->type;
                       strncpy(lasttext, pspev->text, 1024);
-                      lasttext[1023] = 0;
+                      lasttext[sizeof(lasttext)-1] = 0;
 #endif
                       pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG
