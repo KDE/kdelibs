@@ -1,4 +1,3 @@
-
 add_subdirectory( kfileaudiopreview )
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
@@ -22,7 +21,7 @@ kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
 
 target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} )
 
-set_target_properties(kmediaplayer PROPERTIES VERSION 1.0.0 SOVERSION 1 )
+set_target_properties(kmediaplayer PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} kmediaplayer )
 
 
@@ -30,4 +29,3 @@ install_targets(${LIB_INSTALL_DIR} kmediaplayer )
 
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
 install_files( /include/kmediaplayer FILES player.h playerdcopobject.h view.h )
-
