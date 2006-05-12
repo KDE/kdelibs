@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -20,7 +19,6 @@ install(TARGETS designer DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

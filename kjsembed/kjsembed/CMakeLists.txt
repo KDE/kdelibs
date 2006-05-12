@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kjsembed-kjsembed)
 
@@ -49,7 +48,6 @@ install_targets(${LIB_INSTALL_DIR} kjsembed )
 
 install_files( /include/kjsembed FILES global.h binding_support.h static_binding.h value_binding.h                            object_binding.h builtins.h fileio.h jseventmapper.h                            eventproxy.h slotproxy.h jseventutils.h qobject_binding.h                            kjsembed.h scalar_binding.h iosupport.h qwidget_binding.h                            widgetfactory.h qformbuilder_binding.h qpainter_binding.h                            settings.h svg_binding.h filedialog_binding.h                            brush.h color.h dom.h font.h image.h pen.h                            pixmap.h point.h rect.h size.h url.h pointer.h )
 
-kde4_footer()
 
 
 

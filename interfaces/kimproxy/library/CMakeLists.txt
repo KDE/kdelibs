@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( icons )
 
@@ -36,7 +35,6 @@ install_targets(${LIB_INSTALL_DIR} kimproxy )
 install_files( /include FILES kimproxy.h kimproxyiface.h )
 
 
-kde4_footer()
 
 
 

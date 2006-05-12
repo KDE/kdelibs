@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### install files ###############
 
@@ -7,4 +6,3 @@ install_files( ${DATA_INSTALL_DIR}/kdeprint/filters
 
 install(PROGRAMS imagetops DESTINATION bin)
 
-kde4_footer()

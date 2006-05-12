@@ -1,4 +1,3 @@
-kde4_header()
 
 # for <kio/global.h>
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
@@ -385,7 +384,6 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

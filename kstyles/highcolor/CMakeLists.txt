@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-highcolor)
 add_definitions(-DQT_PLUGIN)
@@ -20,7 +19,6 @@ install_targets(${PLUGIN_INSTALL_DIR} highcolor )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

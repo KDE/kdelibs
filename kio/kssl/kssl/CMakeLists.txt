@@ -1,4 +1,3 @@
-kde4_header()
 
 
 add_subdirectory( caroot )
@@ -6,7 +5,6 @@ add_subdirectory( caroot )
 
 install_files( ${CONFIG_INSTALL_DIR} FILES ksslcalist )
 
-kde4_footer()
 
 
 

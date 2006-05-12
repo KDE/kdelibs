@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdeprint)
 
@@ -123,7 +122,6 @@ install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kdeprintrc.upd )
 install_files( /include FILES kprinter.h kprintaction.h )
 install_files( /include/kdeprint FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-kthemestyle)
 
@@ -26,7 +25,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kthemestyle )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

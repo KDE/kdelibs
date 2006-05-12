@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -45,7 +44,6 @@ install(TARGETS cupsdconf DESTINATION bin)
 
 install_files( ${DATA_INSTALL_DIR}/kdeprint FILES kde_logo.png cups_logo.png cupsd.conf.template )
 
-kde4_footer()
 
 
 

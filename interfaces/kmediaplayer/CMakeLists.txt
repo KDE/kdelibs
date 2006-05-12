@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( kfileaudiopreview )
 
@@ -32,4 +31,3 @@ install_targets(${LIB_INSTALL_DIR} kmediaplayer )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
 install_files( /include/kmediaplayer FILES player.h playerdcopobject.h view.h )
 
-kde4_footer()

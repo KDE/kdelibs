@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdewidgets)
 
@@ -53,7 +52,6 @@ install_targets(${PLUGIN_INSTALL_DIR}/plugins/designer kdewidgets )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-keramik)
 
@@ -64,7 +63,6 @@ install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ keramik )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

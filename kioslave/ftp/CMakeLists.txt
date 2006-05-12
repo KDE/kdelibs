@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kioslave-ftp)
 
@@ -25,7 +24,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kio_ftp )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES ftp.protocol )
 
-kde4_footer()
 
 
 

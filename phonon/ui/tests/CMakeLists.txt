@@ -1,4 +1,3 @@
-kde4_header()
 
 set(seekslider_SRCS seekslider.cpp )
 kde4_automoc(${seekslider_SRCS})
@@ -22,6 +21,5 @@ target_link_libraries(mediaplayer  ${KDE4_KDECORE_LIBS} phononui ${QT_QTTEST_LIB
 endif(KDE4_BUILD_TESTS)
 
 
-kde4_footer()
 #LDADD = ../libphononui.la -lQtTest_debug
 #AM_LDFLAGS = $(KDE_RPATH) $(all_libraries)

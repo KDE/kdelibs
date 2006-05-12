@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kabc ${CMAKE_BINARY_DIR}/kabc )
 
@@ -21,7 +20,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kabcformat_binary )
 
 install_files( ${DATA_INSTALL_DIR}/kabc/formats FILES binary.desktop )
 
-kde4_footer()
 
 
 

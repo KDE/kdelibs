@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -30,7 +29,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kspell_ispell )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES kspell_ispell.desktop )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdesu)
 
@@ -41,7 +40,6 @@ install(TARGETS kdesu_stub DESTINATION bin)
 ########### install files ###############
 install_files( /include/kdesu FILES  defaults.h client.h process.h kdesu_pty.h kcookie.h su.h ssh.h stub.h)
 
-kde4_footer()
 
 
 

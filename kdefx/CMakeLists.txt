@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdefx)
 
@@ -36,7 +35,6 @@ install_targets(${LIB_INSTALL_DIR} kdefx )
 install_files( /include FILES kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h )
 
 
-kde4_footer()
 
 
 

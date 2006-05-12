@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -34,4 +33,3 @@ kde4_header()
 ########### install files ###############
 
 
-kde4_footer()

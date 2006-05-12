@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kde3support)
 
@@ -76,4 +75,3 @@ install_targets(${LIB_INSTALL_DIR} kde3support )
 ########### install files ###############
 
 
-kde4_footer()

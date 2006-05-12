@@ -1,4 +1,3 @@
-kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
@@ -87,7 +86,6 @@ install_files( ${DATA_INSTALL_DIR}/kpartstestpart FILES kpartstest_part1.rc )
 
 endif(KDE4_BUILD_TESTS)
 
-kde4_footer()
 
 
 

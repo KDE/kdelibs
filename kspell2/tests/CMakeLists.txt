@@ -1,4 +1,3 @@
-kde4_header()
 
 if(KDE4_BUILD_TESTS)
 include_directories( ${CMAKE_SOURCE_DIR}/kspell2/ui )
@@ -98,7 +97,6 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

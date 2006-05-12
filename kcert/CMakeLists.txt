@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kcert)
 
@@ -28,7 +27,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kcertpart )
 install_files( ${SERVICES_INSTALL_DIR} FILES kcertpart.desktop )
 install_files( ${DATA_INSTALL_DIR}/kcertpart FILES kcertpart.rc )
 
-kde4_footer()
 
 
 

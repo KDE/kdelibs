@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdeinit)
 
@@ -147,7 +146,6 @@ install(TARGETS klauncher DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

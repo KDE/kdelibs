@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -29,7 +28,6 @@ install_targets(${LIB_INSTALL_DIR} kspell2 )
 install_files( /include/kspell2 FILES dialog.h highlighter.h configdialog.h   configwidget.h )
 
 
-kde4_footer()
 
 
 

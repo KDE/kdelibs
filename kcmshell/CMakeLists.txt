@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kcmshell)
 
@@ -28,7 +27,6 @@ install(TARGETS kcmshell DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

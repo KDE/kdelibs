@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR} )
 include_directories( ${KDE4_KIO_INCLUDES} )
@@ -23,4 +22,3 @@ install_targets(${PLUGIN_INSTALL_DIR} kfileaudiopreview )
 ########### install files ###############
 
 
-kde4_footer()

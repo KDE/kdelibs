@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -19,7 +18,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kstyle_highcontrast_config )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

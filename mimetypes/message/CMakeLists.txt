@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -6,7 +5,6 @@ kde4_header()
 
 install_files( ${MIME_INSTALL_DIR}/message FILES rfc822.desktop news.desktop )
 
-kde4_footer()
 
 
 

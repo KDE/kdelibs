@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kconf_update)
 
@@ -23,7 +22,6 @@ install(TARGETS kconf_update DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

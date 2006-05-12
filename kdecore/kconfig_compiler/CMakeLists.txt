@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( example tests )
 
@@ -20,5 +19,4 @@ install(TARGETS kconfig_compiler DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 

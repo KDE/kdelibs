@@ -1,4 +1,3 @@
-kde4_header()
 
 project(knotifytest)
 
@@ -25,7 +24,6 @@ install(TARGETS knotifytest DESTINATION bin)
 
 install_files( ${DATA_INSTALL_DIR}/knotifytest FILES  knotifytestui.rc knotifytest.notifyrc )
 
-kde4_footer()
 
 
 

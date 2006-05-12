@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
@@ -20,7 +19,6 @@ install_targets(${LIB_INSTALL_DIR} kdocument )
 install_files( /include/kdocument FILES factory.h document.h view.h )
 
 
-kde4_footer()
 
 
 

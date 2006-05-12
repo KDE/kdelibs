@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kutils)
 
@@ -54,7 +53,6 @@ install_targets(${LIB_INSTALL_DIR} kutils )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kplugininfo.desktop )
 install_files( /include FILES kfind.h kfinddialog.h kreplace.h kreplacedialog.h                    kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h                    kmultitabbar.h kplugininfo.h kcmoduleproxy.h                    kpluginselector.h kcmodulecontainer.h )
 
-kde4_footer()
 
 
 

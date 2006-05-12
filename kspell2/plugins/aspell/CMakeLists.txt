@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${ASPELL_INCLUDE_DIR}  )
 
@@ -21,7 +20,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kspell_aspell )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES kspell_aspell.desktop )
 
-kde4_footer()
 
 
 

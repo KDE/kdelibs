@@ -1,4 +1,3 @@
-kde4_header()
 
 set(kab2kabc_SRCS kab2kabc.cpp kabapi.cc kabaddressbook.cc qconfigDB.cc)
 
@@ -10,5 +9,4 @@ target_link_libraries(kab2kabc ${KDE4_KDECORE_LIBS} kabc)
 
 install(TARGETS kab2kabc DESTINATION bin)
 
-kde4_footer()
 

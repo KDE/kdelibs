@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kded )
 
@@ -25,7 +24,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_kdetrayproxy )
 
 install_files( ${SERVICES_INSTALL_DIR}/kded FILES kdetrayproxy.desktop )
 
-kde4_footer()
 
 
 

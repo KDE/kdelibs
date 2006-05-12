@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( cupsdconf2 )
 
@@ -78,7 +77,6 @@ install(TARGETS cupsdoprint DESTINATION bin)
 install_files( ${DATA_INSTALL_DIR}/kdeprint FILES preview.png preview-mini.png )
 install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES cups.print )
 
-kde4_footer()
 
 
 

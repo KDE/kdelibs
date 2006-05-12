@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-utils)
 
@@ -9,7 +8,6 @@ add_subdirectory( installtheme )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

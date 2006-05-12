@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( application ) 
 add_subdirectory( text ) 
@@ -17,7 +16,6 @@ add_subdirectory( uri )
 
 install_files( ${MIME_INSTALL_DIR}/all FILES all.desktop allfiles.desktop )
 
-kde4_footer()
 
 
 

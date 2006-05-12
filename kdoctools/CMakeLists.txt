@@ -1,4 +1,3 @@
-kde4_header()
 
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
@@ -207,7 +206,6 @@ foreach (_currentcustomizedir ${customizedir})
 endforeach(_currentcustomizedir ${customizedir}) 
 	  
 
-kde4_footer()
 
 
 

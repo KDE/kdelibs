@@ -1,7 +1,5 @@
-kde4_header()
 
 
-kde4_footer()
 
 
 

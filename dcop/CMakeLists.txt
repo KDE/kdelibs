@@ -1,4 +1,3 @@
-kde4_header()
 
 project(dcop)
 
@@ -119,7 +118,6 @@ install(TARGETS dcopserver DESTINATION bin)
 ########### install files ###############
 install_files( /include FILES dcopclient.h dcopobject.h dcopstub.h dcopref.h dcoptypes.h kdatastream.h )
 
-kde4_footer()
 
 
 

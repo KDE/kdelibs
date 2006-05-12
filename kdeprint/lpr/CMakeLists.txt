@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdeprint/management )
 
@@ -54,7 +53,6 @@ install_files( ${DATA_INSTALL_DIR}/kdeprint FILES apsdriver1 apsdriver2 lprngtoo
 install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES lpr.print )
 install_files( /include/kdeprint/lpr FILES printcapentry.h lprhandler.h lprsettings.h )
 
-kde4_footer()
 
 
 

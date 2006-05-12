@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( ifaces )
 add_subdirectory( tests )
@@ -35,4 +34,3 @@ install_files( /include/phonon/ui FILES
 	effectwidget.h
 	)
 
-kde4_footer()

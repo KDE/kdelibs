@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdeprint/management )
 
@@ -30,7 +29,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kdeprint_rlpr )
 
 install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES rlpr.print )
 
-kde4_footer()
 
 
 

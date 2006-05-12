@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -29,7 +28,6 @@ install_targets(${LIB_INSTALL_DIR} knotifyconfig )
 install_files( /include FILES knotifyconfigwidget.h )
 
 
-kde4_footer()
 
 
 

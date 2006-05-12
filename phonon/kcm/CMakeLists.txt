@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${QT_INCLUDES} )
 
@@ -14,4 +13,3 @@ install_targets(${PLUGIN_INSTALL_DIR} kcm_phonon )
 ########### install files ###############
 install_files( ${XDG_APPS_DIR} FILES kcm_phonon.desktop )
 
-kde4_footer()

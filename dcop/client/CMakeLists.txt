@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
@@ -95,7 +94,6 @@ install(TARGETS dcopquit DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

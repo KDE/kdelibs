@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kimgio)
 
@@ -146,7 +145,6 @@ install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES png.desktop xpm.de
 
 install_files( ${SERVICETYPES_INSTALL_DIR}/ FILES qimageio_plugin.desktop)
 
-kde4_footer()
 
 
 

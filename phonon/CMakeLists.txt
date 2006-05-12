@@ -1,4 +1,3 @@
-kde4_header()
 
 # Those apply to all subdirs
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
@@ -110,4 +109,3 @@ install_files( /include/phonon FILES
 	)
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES  phononbackend.desktop )
 
-kde4_footer()

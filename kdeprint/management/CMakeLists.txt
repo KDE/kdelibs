@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -108,7 +107,6 @@ install(TARGETS kaddprinterwizard DESTINATION bin)
 install_files( ${DATA_INSTALL_DIR}/kdeprint FILES tileup.png tiledown.png side.png )
 install_files( /include/kdeprint FILES  kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h )
 
-kde4_footer()
 
 
 

@@ -1,9 +1,7 @@
-kde4_header()
 
 ########### install files ###############
 install_files( /include FILES kde_terminal_interface.h )
 
-kde4_footer()
 
 
 

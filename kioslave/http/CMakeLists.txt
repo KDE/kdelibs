@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kioslave-http)
 
@@ -71,7 +70,6 @@ install_targets(${PLUGIN_INSTALL_DIR}  kio_http )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol )
 
-kde4_footer()
 
 
 

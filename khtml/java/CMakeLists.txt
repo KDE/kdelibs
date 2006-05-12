@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( tests ) 
 
@@ -41,7 +40,6 @@ install_files( ${DATA_INSTALL_DIR}/kjava/ FILES kjava.jar kjava.policy pluginsin
 install_files( ${SERVICES_INSTALL_DIR} FILES kjavaappletviewer.desktop )
 kde4_install_icons( ${DATA_INSTALL_DIR}/kjava/icons crystalsvg )
 
-kde4_footer()
 
 
 

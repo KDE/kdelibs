@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( file ) 
 if (UNIX) 
@@ -7,7 +6,6 @@ endif (UNIX)
 add_subdirectory( ftp ) 
 add_subdirectory( metainfo ) 
 
-kde4_footer()
 
 
 

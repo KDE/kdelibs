@@ -1,5 +1,4 @@
 
-kde4_header()
 
 project(interfaces)
 
@@ -16,7 +15,6 @@ add_subdirectory( kspeech )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

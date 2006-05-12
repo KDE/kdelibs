@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -16,7 +15,6 @@ install(TARGETS kfile DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

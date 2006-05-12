@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kioslave-metainfo)
 
@@ -24,7 +23,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kio_metainfo )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES metainfo.protocol )
 
-kde4_footer()
 
 
 

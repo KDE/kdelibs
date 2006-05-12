@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
@@ -44,7 +43,6 @@ endif(KDE4_BUILD_TESTS)
 install_files( /include/kabc FILES vcard.h vcardline.h vcardparser.h )
 
 
-kde4_footer()
 
 
 

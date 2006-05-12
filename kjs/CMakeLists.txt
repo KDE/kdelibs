@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kjs)
 
@@ -139,5 +138,4 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 install_files( /include/kjs FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h global.h identifier.h property_map.h           property_slot.h reference.h reference_list.h completion.h            scope_chain.h list.h function.h JSLock.h JSImmediate.h JSType.h )
 
-kde4_footer()
 

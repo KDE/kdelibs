@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -19,7 +18,6 @@ install(TARGETS ksendbugmail DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

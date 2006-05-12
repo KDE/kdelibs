@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -37,7 +36,6 @@ install(TARGETS knotify DESTINATION bin)
 install_files( ${DATA_INSTALL_DIR}/kde FILES kde.notifyrc )
 install_files( ${SERVICES_INSTALL_DIR} FILES knotify.desktop )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 
 ########### next target ###############
@@ -27,7 +26,6 @@ install_targets(${LIB_INSTALL_DIR} kwalletclient )
 install_files( /include FILES kwallet.h kwallettypes.h )
 
 
-kde4_footer()
 
 
 

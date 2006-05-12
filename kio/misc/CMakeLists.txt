@@ -1,4 +1,3 @@
-kde4_header()
 
 # for strange kio/foo.h includes
 include_directories( BEFORE ${CMAKE_SOURCE_DIR}/kio )
@@ -74,7 +73,6 @@ if (UNIX)
    set_target_properties(kio_uiserver PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
 endif (UNIX)
 
-kde4_footer()
 
 
 

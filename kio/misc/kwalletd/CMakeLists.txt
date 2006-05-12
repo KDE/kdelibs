@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwallet/client )
 
@@ -35,7 +34,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_kwalletd )
 
 install_files( ${SERVICES_INSTALL_DIR}/kded FILES kwalletd.desktop )
 
-kde4_footer()
 
 
 

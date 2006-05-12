@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -18,7 +17,6 @@ install_targets(${LIB_INSTALL_DIR} kntlm )
 install_files( /include/kio FILES kntlm.h )
 
 
-kde4_footer()
 
 
 

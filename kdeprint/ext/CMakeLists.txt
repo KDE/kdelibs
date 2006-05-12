@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -25,7 +24,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kdeprint_ext )
 
 install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES ext.print )
 
-kde4_footer()
 
 
 

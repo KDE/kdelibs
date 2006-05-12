@@ -1,4 +1,3 @@
-kde4_header()
 
 
 # simple first try: add a target "doc" which calls meinproc, and have it depend on meinproc
@@ -9,7 +8,6 @@ add_custom_target(doc
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

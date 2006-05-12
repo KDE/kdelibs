@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kwallet)
 
@@ -12,7 +11,6 @@ add_subdirectory( tests )
 
 
 
-kde4_footer()
 
 
 

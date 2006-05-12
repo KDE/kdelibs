@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-light)
 add_definitions(-DQT_PLUGIN)
@@ -25,7 +24,6 @@ install_targets(${PLUGIN_INSTALL_DIR} light )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -22,7 +21,6 @@ install(TARGETS embed DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

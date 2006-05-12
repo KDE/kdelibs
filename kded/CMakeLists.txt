@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kded)
 
@@ -75,7 +74,6 @@ install_files( ${SYSCONF_INSTALL_DIR}/xdg/menus FILES applications.menu )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kdedmodule.desktop )
 install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kded.upd )
 
-kde4_footer()
 
 
 

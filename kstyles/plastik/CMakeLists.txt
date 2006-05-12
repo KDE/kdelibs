@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-plastik)
 
@@ -24,7 +23,6 @@ install_targets(${PLUGIN_INSTALL_DIR}/plugins/styles/ plastik )
 
 install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES plastik.themerc )
 
-kde4_footer()
 
 
 

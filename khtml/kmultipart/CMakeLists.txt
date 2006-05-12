@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/httpfilter ${CMAKE_SOURCE_DIR}/kutils )
 include_directories(${ZLIB_INCLUDE_DIR})
@@ -21,7 +20,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kmultipart )
 
 install_files( ${SERVICES_INSTALL_DIR} FILES kmultipart.desktop )
 
-kde4_footer()
 
 
 

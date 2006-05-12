@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -27,7 +26,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kcm_spellchecking )
 
 install_files( ${XDG_APPS_DIR} FILES spellchecking.desktop )
 
-kde4_footer()
 
 
 

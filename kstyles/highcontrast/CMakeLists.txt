@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-highcontrast)
 
@@ -24,7 +23,6 @@ install_targets(${PLUGIN_INSTALL_DIR} highcontrast )
 
 install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES highcontrast.themerc )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 
 
@@ -38,7 +37,6 @@ install(TARGETS editor DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

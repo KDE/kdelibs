@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdecore)
 
@@ -381,5 +380,4 @@ install_files( /include FILES
    kautostart.h
 )
 
-kde4_footer()
 

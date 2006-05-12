@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -22,7 +21,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_kssld )
 
 install_files( ${SERVICES_INSTALL_DIR}/kded FILES kssld.desktop )
 
-kde4_footer()
 
 
 

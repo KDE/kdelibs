@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kde3support )
 
@@ -33,4 +32,3 @@ install(TARGETS kunittestmodrunner DESTINATION bin)
 install_files( /include/kunittest FILES runner.h tester.h module.h )
 
 
-kde4_footer()

@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
@@ -20,7 +19,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kstyle_plastik_config )
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

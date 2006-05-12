@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
@@ -38,7 +37,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kabc_net_plugin )
 install_files( ${SERVICES_INSTALL_DIR}/kresources/kabc FILES net.desktop )
 install_files( /include/kabc FILES resourcenet.h )
 
-kde4_footer()
 
 
 

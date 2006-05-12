@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( tests ) 
 
@@ -51,7 +50,6 @@ install_files( ${DATA_INSTALL_DIR}/khtml FILES domain_info )
 install_files( ${SERVICES_INSTALL_DIR}/kded FILES kcookiejar.desktop )
 install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kcookiescfg.upd )
 
-kde4_footer()
 
 
 

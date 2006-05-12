@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kjsembed-kjscmd)
 
@@ -24,7 +23,6 @@ install(TARGETS kjscmd DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

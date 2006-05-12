@@ -1,4 +1,3 @@
-kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
@@ -64,7 +63,6 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

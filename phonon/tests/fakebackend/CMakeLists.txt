@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( ui )
 
@@ -36,4 +35,3 @@ install_targets(${PLUGIN_INSTALL_DIR} phonon_fake )
 
 install_files( ${SERVICES_INSTALL_DIR}/phononbackends FILES  fake.desktop )
 
-kde4_footer()

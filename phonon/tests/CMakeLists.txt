@@ -1,4 +1,3 @@
-kde4_header()
 
 add_subdirectory( fakebackend ) 
 
@@ -23,4 +22,3 @@ PHONON_DECLARE_TESTS(
 	videocapturedevicetest
 	)
 
-kde4_footer()

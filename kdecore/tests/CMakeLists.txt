@@ -1,4 +1,3 @@
-kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
@@ -624,4 +623,3 @@ add_test(kdecore-kjobtest ${EXECUTABLE_OUTPUT_PATH}/kjobtest)
 
 endif(KDE4_BUILD_TESTS)
 
-kde4_footer()

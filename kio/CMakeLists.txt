@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kio)
 
@@ -282,7 +281,6 @@ install_files( ${SERVICES_INSTALL_DIR}/kded FILES kpasswdserver.desktop )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES renamedlgplugin.desktop )
 install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kioslave.upd )
 
-kde4_footer()
 
 
 

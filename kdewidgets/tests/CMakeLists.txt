@@ -1,9 +1,7 @@
-kde4_header()
 
 
 # TODO test programs
 
-kde4_footer()
 
 
 

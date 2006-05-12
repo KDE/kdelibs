@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
@@ -37,7 +36,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kabc_ldapkio_plugin )
 install_files( ${SERVICES_INSTALL_DIR}/kresources/kabc FILES ldapkio.desktop )
 install_files( /include/kabc FILES resourceldapkio.h )
 
-kde4_footer()
 
 
 

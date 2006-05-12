@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -17,7 +16,6 @@ endif(KDE4_BUILD_TESTS)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdeprint/management )
 
@@ -47,7 +46,6 @@ install(TARGETS make_driver_db_lpd DESTINATION bin)
 
 install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES lpd.print )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 
 ########### next target ###############
@@ -32,7 +31,6 @@ install(TARGETS make_driver_db_foomatic DESTINATION bin)
 
 install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES foomatic.print )
 
-kde4_footer()
 
 
 

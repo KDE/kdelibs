@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kjsembed-console)
 
@@ -31,7 +30,6 @@ install(TARGETS console DESTINATION bin)
 ########### install files ###############
 
 
-kde4_footer()
 
 
 

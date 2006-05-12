@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kioslave-file)
 
@@ -24,7 +23,6 @@ install_targets(${PLUGIN_INSTALL_DIR} kio_file )
 install_files( ${SERVICES_INSTALL_DIR} FILES file.protocol )
 install_files( /include/kio FILES file.h )
 
-kde4_footer()
 
 
 

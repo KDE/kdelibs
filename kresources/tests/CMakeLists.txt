@@ -1,4 +1,3 @@
-kde4_header()
 
 if(KDE4_BUILD_TESTS)
 
@@ -31,4 +30,3 @@ add_test(kresources-idmappertest ${EXECUTABLE_OUTPUT_PATH}/idmappertest)
 
 endif(KDE4_BUILD_TESTS)
 
-kde4_footer()

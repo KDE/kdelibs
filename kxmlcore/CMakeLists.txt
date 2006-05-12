@@ -1,4 +1,3 @@
-kde4_header()
 
 ########### next target ###############
 
@@ -14,4 +13,3 @@ install_targets(${LIB_INSTALL_DIR} kxmlcore )
 ########### install files ###############
 install_files( /include/kxmlcore FILES HashMap.h         HashTraits.h         HashMapPtrSpec.h           SharedPtr.h          HashSet.h         HashFunctions.h         HashTable.h   Noncopyable.h OwnArrayPtr.h OwnPtr.h)
 
-kde4_footer()

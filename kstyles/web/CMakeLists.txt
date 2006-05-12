@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kstyle-web)
 
@@ -22,7 +21,6 @@ install_targets(${LIB_INSTALL_DIR} webstyle )
 
 install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES web.themerc )
 
-kde4_footer()
 
 
 

@@ -1,4 +1,3 @@
-kde4_header()
 
 project(kdeui)
 
@@ -314,7 +313,6 @@ install_files( /include FILES
 
 install(PROGRAMS preparetips DESTINATION bin)
 
-kde4_footer()
 
 
 
