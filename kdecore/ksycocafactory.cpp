@@ -29,6 +29,7 @@
 #include <qhash.h>
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
+ : m_resourceList(0), m_entryDict(0)
 {
   if (!KSycoca::self()->isBuilding() && (m_str = KSycoca::self()->findFactory( factory_id )))
   {
@@ -50,7 +51,6 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
    {
       // Build new database!
       m_str = 0;
-      m_resourceList = 0;
       m_entryDict = new KSycocaEntryDict;
       m_sycocaDict = new KSycocaDict;
       m_beginEntryOffset = 0;
