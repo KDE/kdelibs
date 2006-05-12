@@ -21,10 +21,6 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/*
- * To debug add "--nofork" to the commandline!
- */
-
 #include <dcopclient.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
