@@ -242,12 +242,14 @@ void Scheduler::_cancelJob(SimpleJob *job) {
         protInfo->joblist.removeAll(job);
 
         // Search all slaves to see if job is in the queue of a coSlave
-        foreach( slave, *slaveList )
+        foreach( Slave* coSlave, *slaveList )
         {
            JobList *list = coSlaves.value(slave);
-           if (list && list->removeAll(job))
-              break; // Job was found and removed.
-                     // Fall through to kill the slave as well!
+           if (list && list->removeAll(job)) {
+               // Job was found and removed.
+               // Fall through to kill the slave as well!
+               slave = coSlave;
+           }
         }
         if (!slave)
         {
