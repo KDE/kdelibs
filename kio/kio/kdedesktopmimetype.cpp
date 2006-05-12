@@ -172,7 +172,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cf
     KUrl mpURL;
     mpURL.setPath( mp );
     // Open a new window
-    retval = KRun::runURL( mpURL, QLatin1String("inode/directory") );
+    retval = KRun::runURL( mpURL, QLatin1String("inode/directory"), 0 /*TODO - window*/ );
   }
   else
   {
@@ -198,7 +198,7 @@ pid_t KDEDesktopMimeType::runApplication( const KUrl& , const QString & _service
     return 0;
 
   KUrl::List lst;
-  return KRun::run( s, lst );
+  return KRun::run( s, lst, 0 /*TODO - window*/ );
 }
 
 pid_t KDEDesktopMimeType::runLink( const KUrl& _url, const KSimpleConfig &cfg )
@@ -420,7 +420,7 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
   {
     kDebug() << "KDEDesktopMimeType::executeService " << _service.m_strName
               << " first url's path=" << urls.first().path() << " exec=" << _service.m_strExec << endl;
-    KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon, _service.m_strIcon );
+    KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon );
     // The action may update the desktop file. Example: eject unmounts (#5129).
     KDirNotify_stub allDirNotify("*", "KDirNotify*");
     allDirNotify.FilesChanged( urls );

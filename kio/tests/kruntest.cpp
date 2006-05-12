@@ -111,15 +111,15 @@ void checkBN(QString a, bool tr, QString b)
   check( QString().sprintf("binaryName('%s', %s)", a.toLatin1().constData(), bt(tr)), KRun::binaryName(a, tr), b);
 }
 
-void checkPDE(const KService &service, const KUrl::List &urls, bool hs, bool tf, QString b)
+void checkPDE(const KService &service, const KUrl::List &urls, bool tf, QString b)
 {
   check(
    QString().sprintf("processDesktopExec( "
       "service = {\nexec = %s\nterminal = %s, terminalOptions = %s\nsubstituteUid = %s, user = %s },"
-       "\nURLs = { %s },\nhas_shell = %s, temp_files = %s )",
+       "\nURLs = { %s },\ntemp_files = %s )",
       service.exec().toLatin1().constData(), bt(service.terminal()), service.terminalOptions().toLatin1().constData(), bt(service.substituteUid()), service.username().toLatin1().constData(),
-       KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(hs), bt(tf)),
-   KShell::joinArgs(KRun::processDesktopExec(service,urls,hs,tf)), b);
+       KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(tf)),
+   KShell::joinArgs(KRun::processDesktopExec(service,urls,tf)), b);
 }
 
 int main(int argc, char **argv)
@@ -162,47 +162,46 @@ int main(int argc, char **argv)
 "'x-term -T \" - just_a_test\"' '-e' 'su' 'sprallo' '-c' ''\\''date -u '\\'''", // e
 "'x-term -T \" - just_a_test\"' '-e' 'su' 'sprallo' '-c' ''\\''/bin/sh -c '\\''\\'\\'''\\''echo $PWD '\\''\\'\\'''\\'''\\'''", // f
     };
-  for (int hs = 0; hs < 2; hs++)
     for (int su = 0; su < 2; su++)
       for (int te = 0; te < 2; te++)
         for (int ex = 0; ex < 2; ex++) {
-          int fd = creat("kruntest.desktop", 0666);
-	  FILE *f;
-          if (fd < 0) abort();
-	  f = KDE_fdopen(fd, "w");
-          fprintf(f, "[Desktop Entry]\n"
-		"Type=Application\n"
-		"Name=just_a_test\n"
-		"Icon=~/icon.png\n"
-		"%s\n%s\n%s\n",execs[ex],terms[te],sus[su]);
-          close(fd);
-	  fclose(f);
+          QFile out( "kruntest.desktop" );
+          if ( !out.open( IO_WriteOnly ) )
+            abort();
+          QByteArray str = "[Desktop Entry]\n"
+                           "Type=Application\n"
+                           "Name=just_a_test\n"
+                           "Icon=~/icon.png\n";
+          str += QByteArray(execs[ex]) + '\n';
+          str += QByteArray(terms[te]) + '\n';
+          str += QByteArray(sus[su]) + '\n';
+          out.write( str );
+          out.close();
           KService s(QDir::currentPath() + "/kruntest.desktop");
-          unlink("kruntest.desktop");
-          checkPDE( s, l0, hs, false, rslts[ex+te*2+su*4+hs*8]);
+          //::unlink("kruntest.desktop");
+          checkPDE( s, l0, false, rslts[ex+te*2+su*4]);
         }
 
   KService s1("dummy", "kate %U", "app");
-  checkPDE( s1, l0, false, false, "'kate'");
-  checkPDE( s1, l1, false, false, "'kate' '/tmp'");
-  checkPDE( s1, l2, false, false, "'kate' 'http://localhost/foo'");
-  checkPDE( s1, l3, false, false, "'kate' '/local/file' 'http://remotehost.org/bar'");
+  checkPDE( s1, l0, false, "'kate'");
+  checkPDE( s1, l1, false, "'kate' '/tmp'");
+  checkPDE( s1, l2, false, "'kate' 'http://localhost/foo'");
+  checkPDE( s1, l3, false, "'kate' '/local/file' 'http://remotehost.org/bar'");
   KService s2("dummy", "kate %u", "app");
-  checkPDE( s2, l0, false, false, "'kate'");
-  checkPDE( s2, l1, false, false, "'kate' '/tmp'");
-  checkPDE( s2, l2, false, false, "'kate' 'http://localhost/foo'");
-  checkPDE( s2, l3, false, false, "'kate'");
+  checkPDE( s2, l0, false, "'kate'");
+  checkPDE( s2, l1, false, "'kate' '/tmp'");
+  checkPDE( s2, l2, false, "'kate' 'http://localhost/foo'");
+  checkPDE( s2, l3, false, "'kate'");
   KService s3("dummy", "kate %F", "app");
-  checkPDE( s3, l0, false, false, "'kate'");
-  checkPDE( s3, l1, false, false, "'kate' '/tmp'");
-  checkPDE( s3, l2, false, false, "'kfmexec' 'kate %F' 'http://localhost/foo'");
-  checkPDE( s3, l3, false, false, "'kfmexec' 'kate %F' 'file:/local/file' 'http://remotehost.org/bar'");
+  checkPDE( s3, l0, false, "'kate'");
+  checkPDE( s3, l1, false, "'kate' '/tmp'");
+  checkPDE( s3, l2, false, "'kfmexec' 'kate %F' 'http://localhost/foo'");
+  checkPDE( s3, l3, false, "'kfmexec' 'kate %F' 'file:/local/file' 'http://remotehost.org/bar'");
 
-  checkPDE( s3, l1, false, true, "'kfmexec' '--tempfiles' 'kate %F' 'file:/tmp'");
-  checkPDE( s3, l1, true, true, "''\\''kfmexec'\\'' '\\''--tempfiles'\\'' '\\''kate %F'\\'' '\\''file:/tmp'\\'''");
+  checkPDE( s3, l1, true, "'kfmexec' '--tempfiles' 'kate %F' 'file:/tmp'");
 
   KService s4("dummy", "sh -c \"kate \"'\\\"'\"%F\"'\\\"'", "app");
-  checkPDE( s4, l1, false, false, "'kate' '\"/tmp\"'");
+  checkPDE( s4, l1, false, "'kate' '\"/tmp\"'");
 
   Receiver receiver;
   return app.exec();

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Torben Weis <weis@kde.org>
+    Copyright (C) 2006 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -82,6 +83,7 @@ public:
     QString m_preferredService;
     QString m_externalBrowser;
     QString m_localPath;
+    QString m_suggestedFileName;
     QPointer <QWidget> m_window;
 };
 
@@ -101,13 +103,13 @@ bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
-pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, bool tempFile, bool runExecutables )
+pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName )
 {
   bool noRun = false;
   bool noAuth = false;
   if ( _mimetype == "inode/directory-locked" )
   {
-    KMessageBoxWrapper::error( 0L,
+    KMessageBoxWrapper::error( window,
             i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyURL())) );
     return 0;
   }
@@ -146,14 +148,14 @@ pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, bool tempFile, bool
 
   if ( noRun )
   {
-    KMessageBox::sorry( 0L,
+    KMessageBox::sorry( window,
         i18n("<qt>The file <b>%1</b> is an executable program. "
              "For safety it will not be started.</qt>", Qt::escape(u.prettyURL())));
     return 0;
   }
   if ( noAuth )
   {
-    KMessageBoxWrapper::error( 0L,
+    KMessageBoxWrapper::error( window,
         i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyURL())) );
     return 0;
   }
@@ -170,35 +172,29 @@ pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, bool tempFile, bool
     // Open-with dialog
     // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog !
     // Hmm, in fact KOpenWithDlg::setServiceType already guesses the mimetype from the first URL of the list...
-    return displayOpenWithDialog( lst, tempFile );
+    return displayOpenWithDialog( lst, window, tempFile, suggestedFileName );
   }
 
-  return KRun::run( *offer, lst, tempFile );
+  return KRun::run( *offer, lst, window, tempFile, suggestedFileName );
 }
 
-bool KRun::displayOpenWithDialog( const KUrl::List& lst )
-{
-    return displayOpenWithDialog( lst, false );
-}
-
-bool KRun::displayOpenWithDialog( const KUrl::List& lst, bool tempFiles )
+bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles, const QString& suggestedFileName )
 {
     if (!KAuthorized::authorizeKAction("openwith"))
     {
-       // TODO: Better message, i18n freeze :-(
-       KMessageBox::sorry(0L, i18n("You are not authorized to open this file."));
+       KMessageBox::sorry(window, i18n("You are not authorized to select an application to open this file."));
        return false;
     }
 
-    KOpenWithDlg l( lst, i18n("Open with:"), QString(), 0L );
+    KOpenWithDlg l( lst, i18n("Open with:"), QString(), window );
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
       if ( !!service )
-        return KRun::run( *service, lst, tempFiles );
+        return KRun::run( *service, lst, window, tempFiles, suggestedFileName );
 
       kDebug(7010) << "No service set, running " << l.text() << endl;
-      return KRun::run( l.text(), lst ); // TODO handle tempFiles
+      return KRun::run( l.text(), lst, suggestedFileName ); // TODO handle tempFiles
     }
     return false;
 }
@@ -338,12 +334,7 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
    return 2;
 }
 
-// BIC: merge with method below
-QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool has_shell) {
-    return processDesktopExec( _service, _urls, has_shell, false );
-}
-
-QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool has_shell /* KDE4: remove */, bool tempFiles)
+QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool tempFiles, const QString& suggestedFileName)
 {
   QString exec = _service.exec();
   QStringList result;
@@ -361,9 +352,11 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   appHasTempFileOption = tempFiles && _service.property("X-KDE-HasTempFileOption").toBool();
   if( tempFiles && !appHasTempFileOption && _urls.size() ) {
     result << "kioexec" << "--tempfiles" << exec;
+    if ( !suggestedFileName.isEmpty() ) {
+        result << "--suggestedfilename";
+        result << suggestedFileName;
+    }
     result += _urls.toStringList();
-    if (has_shell)
-      result = QStringList( KShell::joinArgs( result ) );
     return result;
   }
 
@@ -375,10 +368,12 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
         result << "kioexec";
         if ( tempFiles )
             result << "--tempfiles";
+        if ( !suggestedFileName.isEmpty() ) {
+            result << "--suggestedfilename";
+            result << suggestedFileName;
+        }
         result << exec;
         result += _urls.toStringList();
-        if (has_shell)
-          result = QStringList( KShell::joinArgs( result ) );
         return result;
       }
   }
@@ -397,7 +392,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   mx2.expandMacrosShellQuote( exec ); // syntax was already checked, so don't check return value
 
 /*
- 1 = need_shell, 2 = terminal, 4 = su, 8 = has_shell
+ 1 = need_shell, 2 = terminal, 4 = su
 
  0                                                           << split(cmd)
  1                                                           << "sh" << "-c" << cmd
@@ -408,16 +403,6 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
  5                        << "kdesu" << "-u" << user << "-c" << ("sh -c " + quote(cmd))
  6 << split(term) << "-e" << "su"            << user << "-c" << cmd
  7 << split(term) << "-e" << "su"            << user << "-c" << ("sh -c " + quote(cmd))
-
- 8                                                           << cmd
- 9                                                           << cmd
- a << term        << "-e"                                    << cmd
- b << term        << "-e"                                    << ("sh -c " + quote(cmd))
-
- c                        << "kdesu" << "-u" << user << "-c" << quote(cmd)
- d                        << "kdesu" << "-u" << user << "-c" << quote("sh -c " + quote(cmd))
- e << term        << "-e" << "su"            << user << "-c" << quote(cmd)
- f << term        << "-e" << "su"            << user << "-c" << quote("sh -c " + quote(cmd))
 
  "sh -c" is needed in the "su" case, too, as su uses the user's login shell, not sh.
  this could be optimized with the -s switch of some su versions (e.g., debian linux).
@@ -435,10 +420,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
       return QStringList();
     }
     mx2.expandMacrosShellQuote( terminal );
-    if (has_shell)
-      result << terminal;
-    else
-      result = KShell::splitArgs( terminal ); // assuming that the term spec never needs a shell!
+    result = KShell::splitArgs( terminal ); // assuming that the term spec never needs a shell!
     result << "-e";
   }
 
@@ -455,27 +437,13 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
       exec.prepend( "/bin/sh -c " );
     } else if (err != KShell::NoError)
       goto synerr;
-    if (has_shell)
-      shellQuote( exec );
     result << exec;
   } else {
-    if (has_shell) {
-      if (_service.terminal()) {
-        KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
-        if (err == KShell::FoundMeta) {
-          shellQuote( exec );
-          exec.prepend( "/bin/sh -c " );
-        } else if (err != KShell::NoError)
-          goto synerr;
-      }
-      result << exec;
-    } else {
-      result += KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
-      if (err == KShell::FoundMeta)
-        result << "/bin/sh" << "-c" << exec;
-      else if (err != KShell::NoError)
-        goto synerr;
-    }
+    result += KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
+    if (err == KShell::FoundMeta)
+      result << "/bin/sh" << "-c" << exec;
+    else if (err != KShell::NoError)
+      goto synerr;
   }
 
   return result;
@@ -591,7 +559,7 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
   return true;
 }
 
-static pid_t runTempService( const KService& _service, const KUrl::List& _urls, bool tempFiles )
+static pid_t runTempService( const KService& _service, const KUrl::List& _urls, bool tempFiles, const QString& suggestedFileName )
 {
   if (!_urls.isEmpty()) {
     kDebug(7010) << "runTempService: first url " << _urls.first().url() << endl;
@@ -610,15 +578,15 @@ static pid_t runTempService( const KService& _service, const KUrl::List& _urls, 
       {
          KUrl::List singleUrl;
          singleUrl.append(*it);
-         runTempService( _service, singleUrl, tempFiles );
+         runTempService( _service, singleUrl, tempFiles, suggestedFileName );
       }
       KUrl::List singleUrl;
       singleUrl.append(_urls.first());
-      args = KRun::processDesktopExec(_service, singleUrl, false, tempFiles);
+      args = KRun::processDesktopExec( _service, singleUrl, tempFiles, suggestedFileName );
   }
   else
   {
-      args = KRun::processDesktopExec(_service, _urls, false, tempFiles);
+      args = KRun::processDesktopExec(_service, _urls, tempFiles, suggestedFileName );
   }
   kDebug(7010) << "runTempService: KProcess args=" << args << endl;
 
@@ -677,13 +645,13 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
   return urls;
 }
 
-pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFiles )
+pid_t KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* window, bool tempFiles, const QString& suggestedFileName )
 {
   if (!_service.desktopEntryPath().isEmpty() &&
       !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
   {
      kWarning() << "No authorization to execute " << _service.desktopEntryPath() << endl;
-     KMessageBox::sorry(0, i18n("You are not authorized to execute this service."));
+     KMessageBox::sorry( window, i18n("You are not authorized to execute this service.") );
      return 0;
   }
 
@@ -697,9 +665,9 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
       }
   }
 
-  if ( tempFiles || _service.desktopEntryPath().isEmpty())
+  if ( tempFiles || _service.desktopEntryPath().isEmpty() || !suggestedFileName.isEmpty() )
   {
-     return runTempService(_service, _urls, tempFiles);
+     return runTempService( _service, _urls, tempFiles, suggestedFileName );
   }
 
   kDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
@@ -721,7 +689,7 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
   if (i != 0)
   {
      kDebug(7010) << error << endl;
-     KMessageBox::sorry( 0L, error );
+     KMessageBox::sorry( window, error );
      return 0;
   }
 
@@ -731,11 +699,11 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, bool tempFil
 
 
 pid_t KRun::run( const QString& _exec, const KUrl::List& _urls, const QString& _name,
-                const QString& _icon, const QString&, const QString&)
+                 const QString& _icon, QWidget* window )
 {
   KService::Ptr service(new KService(_name, _exec, _icon));
 
-  return run(*service, _urls);
+  return run( *service, _urls, window );
 }
 
 pid_t KRun::runCommand( const QString &cmd )
@@ -877,7 +845,7 @@ void KRun::init()
        KService::Ptr service = KService::serviceByStorageId( exec );
        if (service)
        {
-          run( *service, urls );
+          run( *service, urls, d->m_window );
           ok = true;
        }
     }
@@ -1161,7 +1129,7 @@ void KRun::foundMimeType( const QString& type )
       {
           KUrl::List lst;
           lst.append( m_strURL );
-          m_bFinished = KRun::run( *serv, lst );
+          m_bFinished = KRun::run( *serv, lst, d->m_window );
           /// Note: the line above means that if that service failed, we'll
           /// go to runURL to maybe find another service, even though a dialog
           /// box was displayed. That's good if runURL tries another service,
@@ -1176,7 +1144,7 @@ void KRun::foundMimeType( const QString& type )
     m_strURL.setPath( d->m_localPath );
   }
 
-  if (!m_bFinished && KRun::runURL( m_strURL, type, false, d->m_runExecutables )){
+  if (!m_bFinished && KRun::runURL( m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName )){
     m_bFinished = true;
   }
   else{
@@ -1230,6 +1198,16 @@ void KRun::setPreferredService( const QString& desktopEntryName )
 void KRun::setRunExecutables(bool b)
 {
     d->m_runExecutables = b;
+}
+
+void KRun::setSuggestedFileName( const QString& fileName )
+{
+    d->m_suggestedFileName = fileName;
+}
+
+QString KRun::suggestedFileName() const
+{
+  return d->m_suggestedFileName;
 }
 
 bool KRun::isExecutable( const QString& serviceType )

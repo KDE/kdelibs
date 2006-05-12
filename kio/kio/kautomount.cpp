@@ -59,7 +59,7 @@ void KAutoMount::slotResult( KJob * job )
         kWarning(7015) << m_strDevice << " was correctly mounted, but KIO::findDeviceMountPoint didn't find it. "
                         << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab line" << endl;
     else if ( m_bShowFilemanagerWindow )
-      KRun::runURL( mountpoint, "inode/directory" );
+      KRun::runURL( mountpoint, "inode/directory", 0 /*TODO - window*/ );
 
     // Notify about the new stuff in that dir, in case of opened windows showing it
     KDirNotify_stub allDirNotify("*", "KDirNotify*");

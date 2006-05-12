@@ -1,5 +1,7 @@
+// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -159,35 +161,50 @@ public:
   void setEnableExternalBrowser(bool b);
 
   /**
+   * Sets the file name to use in the case of downloading the file to a tempfile
+   * in order to give to a non-url-aware application. Some apps rely on the extension
+   * to determine the mimetype of the file. Usually the file name comes from the URL,
+   * but in the case of the HTTP Content-Disposition header, we need to override the
+   * file name.
+   */
+  void setSuggestedFileName( const QString& fileName );
+
+  /**
+   * Suggested file name given by the server (e.g. HTTP content-disposition)
+   */
+  QString suggestedFileName() const;
+
+
+  /**
    * Open a list of URLs with a certain service (application).
    *
-   * @param _service the service to run
-   * @param _urls the list of URLs, can be empty (app launched
+   * @param service the service to run
+   * @param urls the list of URLs, can be empty (app launched
    *        without argument)
-   * @param tempFiles if true and _urls are local files, they will be deleted
+   * @param window The top-level widget of the app that invoked this object.
+   * @param tempFiles if true and urls are local files, they will be deleted
    *        when the application exits.
+   * @param suggestedFileName see setSuggestedFileName
    * @return the process id, or 0 on error
    */
-  static pid_t run( const KService& _service, const KUrl::List& _urls, bool tempFiles = false );
+  static pid_t run( const KService& service, const KUrl::List& urls, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString::null );
 
   /**
    * Open a list of URLs with.
    *
-   * @param _exec the name of the executable, for example
+   * @param exec the name of the executable, for example
    *        "/usr/bin/netscape".
-   * @param _urls  the list of URLs to open, can be empty (app launched without argument)
-   * @param _name the logical name of the application, for example
+   * @param urls  the list of URLs to open, can be empty (app launched without argument)
+   * @param name the logical name of the application, for example
    *        "Netscape 4.06".
-   * @param _icon the icon which should be used by the application.
-   * @param _obsolete1 Do not use!
-   * @param _obsolete2 Do not use!
+   * @param icon the icon which should be used by the application.
+   * @param window The top-level widget of the app that invoked this object.
    * @return the process id, or 0 on error
    */
-  static pid_t run( const QString& _exec, const KUrl::List& _urls,
-		   const QString& _name = QString(),
-		   const QString& _icon = QString(),
-		   const QString& _obsolete1 = QString(),
-		   const QString& _obsolete2 = QString() );
+  static pid_t run( const QString& exec, const KUrl::List& urls,
+                    const QString& name = QString(),
+                    const QString& icon = QString(),
+                    QWidget* window = 0 );
 
   /**
    * Open the given URL.
@@ -195,16 +212,18 @@ public:
    * This function is used after the mime type
    * is found out. It will search for all services which can handle
    * the mime type and call run() afterwards.
-   * @param _url the URL to open
-   * @param _mimetype the mime type of the resource
-   * @param tempFile if true and _url is a local file, it will be deleted
+   * @param url the URL to open
+   * @param mimetype the mime type of the resource
+   * @param window The top-level widget of the app that invoked this object.
+   * @param tempFile if true and url is a local file, it will be deleted
    *        when the launched application exits.
    * @param runExecutables if false then local .desktop files,
    *        executables and shell scripts will not be run.
    *        See also isExecutable().
+   * @param suggestedFileName see setSuggestedFileName
    * @return the process id, or 0 on error
    */
-  static pid_t runURL( const KUrl& _url, const QString& _mimetype, bool tempFile = false , bool runExecutables = true);
+  static pid_t runURL( const KUrl& url, const QString& mimetype, QWidget* window, bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString::null );
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -214,7 +233,7 @@ public:
    * Use only when you know the full command line. Otherwise use the other
    * static methods, or KRun's constructor.
    *
-   * @p _cmd must be a shell command. You must not append "&"
+   * @p cmd must be a shell command. You must not append "&"
    * to it, since the function will do that for you.
    *
    * @return PID of running command, 0 if it could not be started, 0 - (PID
@@ -238,37 +257,31 @@ public:
   /**
    * Display the Open-With dialog for those URLs, and run the chosen application.
    * @param lst the list of applications to run
+   * @param window The top-level widget of the app that invoked this object.
    * @param tempFiles if true and lst are local files, they will be deleted
    *        when the application exits.
+   * @param suggestedFileName see setSuggestedFileName
    * @return false if the dialog was canceled
    */
-  // BIC merge second overload with first one, using tempFiles=false
-  static bool displayOpenWithDialog( const KUrl::List& lst, bool tempFiles );
-  static bool displayOpenWithDialog( const KUrl::List& lst );
+  static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString::null );
 
   /**
    * Quotes a string for the shell.
-   * @param _str the string to quote. The quoted string will be written here
+   * @param str the string to quote. The quoted string will be written here
    */
-  static void shellQuote( QString &_str );
+  static void shellQuote( QString &str );
 
   /**
    * Processes a Exec= line as found in .desktop files.
-   * @param _service the service to extract information from.
-   * @param _urls The urls the service should open.
-   * @param has_shell If true, the arguments are going to be fed into a
-   *        shell e.g by using system().
-   *        If false, the arguments are going to be fed into a exec() kind
-   *        call.
-   *        If the arguments are intended for an exec() kind of call and
-   *        the Exec line contains shell commands then "/bin/sh -c" is added.
-   * @param tempFiles if true and _urls are local files, they will be deleted
+   * @param service the service to extract information from.
+   * @param urls The urls the service should open.
+   * @param tempFiles if true and urls are local files, they will be deleted
    *        when the application exits.
+   * @param suggestedFileName see setSuggestedFileName
+   *
    * @return a list of arguments suitable for either system() or exec().
    */
-  // BIC merge second overload with first one, using tempFiles=false
-  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool has_shell, bool tempFiles);
-  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool has_shell);
+  static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool tempFiles = false, const QString& suggestedFileName = QString::null );
 
   /**
    * Given a full command line (e.g. the Exec= line from a .desktop file),
@@ -332,7 +345,7 @@ protected:
    * whether the document and appends the gzip protocol to the
    * URL. Otherwise runURL is called to finish the job.
    */
-  virtual void foundMimeType( const QString& _type );
+  virtual void foundMimeType( const QString& type );
 
   virtual void killJob();
 

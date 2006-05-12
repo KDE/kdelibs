@@ -172,8 +172,11 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   m_strURL = job->url();
   kDebug(1000) << "slotBrowserMimetype: found " << type << " for " << m_strURL.prettyURL() << endl;
 
-  m_suggestedFileName = job->queryMetaData("content-disposition");
-  //kDebug(1000) << "m_suggestedFileName=" << m_suggestedFileName << endl;
+  // Suggested filename given by the server (e.g. HTTP content-disposition)
+  // When set, we should really be saving instead of embedding
+  const QString suggestedFileName = job->queryMetaData("content-disposition");
+  setSuggestedFileName(suggestedFileName); // store it (in KRun)
+  //kDebug(1000) << "suggestedFileName=" << suggestedFileName << endl;
 
   // Make a copy to avoid a dead reference
   QString _type = type;
@@ -196,9 +199,9 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
         kDebug(1000) << "BrowserRun: ask for saving" << endl;
         KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, "Application");
         // ... -> ask whether to save
-        KParts::BrowserRun::AskSaveResult res = askSave( m_strURL, offer, mimeType, m_suggestedFileName );
+        KParts::BrowserRun::AskSaveResult res = askSave( m_strURL, offer, mimeType, suggestedFileName() );
         if ( res == KParts::BrowserRun::Save ) {
-            save( m_strURL, m_suggestedFileName );
+            save( m_strURL, suggestedFileName() );
             kDebug(1000) << "BrowserRun::handleNonEmbeddable: Save: returning Handled" << endl;
             m_bFinished = true;
             return Handled;
@@ -218,7 +221,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 kDebug(1000) << "BrowserRun: request comes from a POST, can't pass a URL to another app, need to save" << endl;
                 m_sMimeType = mimeType;
                 QString extension;
-                QString fileName = m_suggestedFileName.isEmpty() ? m_strURL.fileName() : m_suggestedFileName;
+                QString fileName = suggestedFileName().isEmpty() ? m_strURL.fileName() : suggestedFileName();
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
@@ -466,7 +469,7 @@ void BrowserRun::slotCopyToTempFileResult(KJob *job)
         static_cast<KIO::Job*>( job )->showErrorDialog( m_window );
     } else {
         // Same as KRun::foundMimeType but with a different URL
-        (void) (KRun::runURL( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType ));
+        (void) (KRun::runURL( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType, m_window ));
     }
     m_bFault = true; // see above
     m_bFinished = true;

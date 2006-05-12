@@ -1196,7 +1196,7 @@ void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
                        const QStringList &urls)
 {
-  QStringList params = KRun::processDesktopExec(*service, urls, false);
+  const QStringList params = KRun::processDesktopExec(*service, urls);
 
   for(QStringList::ConstIterator it = params.begin();
       it != params.end(); ++it)
@@ -1361,7 +1361,7 @@ KLauncher::slotSlaveStatus(IdleSlave *slave)
     QMutableListIterator<SlaveWaitRequest *> it(mSlaveWaitRequest);
     while(it.hasNext())
     {
-       SlaveWaitRequest *waitRequest = it.next(); 
+       SlaveWaitRequest *waitRequest = it.next();
        if (waitRequest->pid == slave->pid())
        {
           QByteArray replyData;

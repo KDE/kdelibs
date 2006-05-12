@@ -62,9 +62,6 @@ namespace KParts {
 
         bool hideErrorDialog() const;
 
-        // Suggested file name given by the server (e.g. HTTP content-disposition)
-        QString suggestedFileName() const { return m_suggestedFileName; }
-
         enum AskSaveResult { Save, Open, Cancel };
         /**
          * Ask the user whether to save or open a url in another application.
@@ -137,9 +134,6 @@ namespace KParts {
         KParts::URLArgs m_args;
         KParts::ReadOnlyPart *m_part; // QGuardedPtr?
         QPointer<QWidget> m_window;
-        // Suggested filename given by the server (e.g. HTTP content-disposition)
-        // When set, we should really be saving instead of embedding
-        QString m_suggestedFileName;
         QString m_sMimeType;
         bool m_bRemoveReferrer;
         bool m_bTrustedSource;
