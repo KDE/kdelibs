@@ -40,7 +40,7 @@
 #endif
 
 #ifdef Q_OS_SOLARIS
-extern "C" extern int madvise(caddr_t, size_t, int); 
+extern "C" extern int madvise(caddr_t, size_t, int);
 #endif
 
 #ifndef MAP_FAILED
@@ -253,12 +253,10 @@ void KSycoca::closeDatabase()
    d->database = 0;
    // It is very important to delete all factories here
    // since they cache information about the database file
-#if 0
-   while( !m_lstFactories->isEmpty() )
-       delete m_lstFactories->takeFirst();
-#endif
+   if ( m_lstFactories )
+       qDeleteAll( *m_lstFactories );
    delete m_lstFactories;
-   m_lstFactories = 0L;
+   m_lstFactories = 0;
 }
 
 void KSycoca::addFactory( KSycocaFactory *factory )
