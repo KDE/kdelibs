@@ -107,6 +107,10 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
         break;
     case QEvent::ChildAdded:
     case QEvent::ChildRemoved:
+        // Only care about widgets; this also avoids starting the timer in other threads
+        if ( !static_cast<QChildEvent *>(e)->child()->isWidgetType() )
+            break;
+        // fall-through
     case QEvent::Resize:
     case QEvent::LayoutRequest:
     case QEvent::WindowActivate:
