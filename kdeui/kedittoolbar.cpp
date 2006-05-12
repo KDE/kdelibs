@@ -1375,6 +1375,12 @@ void KEditToolbarWidget::slotChangeIcon()
 {
   // We can't use KIconChooser here, since it's in libkio
   // ##### KDE4: reconsider this, e.g. move KEditToolbar to libkio
+  
+  //if the process is already running (e.g. when somebody clicked the change button twice (see #127149)) - do nothing... 
+  //otherwise m_kdialogProcess will be overwritten and set to zero in slotProcessExited()...crash!
+  if ( d->m_kdialogProcess && d->m_kdialogProcess->isRunning() )
+        return;
+  
   d->m_kdialogProcess = new KProcIO;
   QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
   (*d->m_kdialogProcess) << kdialogExe;
@@ -1403,6 +1409,12 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
   m_toolbarCombo->setEnabled( true );
 
   QString icon;
+
+  if (!d->m_kdialogProcess) {
+         kdError(240) << "Something is wrong here! m_kdialogProcess is zero!" << endl;
+         return;
+  }
+
   if ( !d->m_kdialogProcess->normalExit() ||
        d->m_kdialogProcess->exitStatus() ||
        d->m_kdialogProcess->readln(icon, true) <= 0 ) {
