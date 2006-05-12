@@ -561,7 +561,7 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 enum EPseudoBit { NO_BIT = 0x0, 
                   FIRST_LINE_BIT = 0x1, FIRST_LETTER_BIT = 0x2, SELECTION_BIT = 0x4, 
                   BEFORE_BIT = 0x8, AFTER_BIT = 0x10, MARKER_BIT = 0x20,
-                  INSIDE_BIT = 0x40, OUTSIDE_BIT = 0x80,
+                  INSIDE_BIT = 0x40, OUTSIDE_BIT = 0x80
                   };
 
 static int pseudoBit(RenderStyle::PseudoId pseudo)
