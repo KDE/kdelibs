@@ -53,7 +53,7 @@ Comment[vi]=Giản đồ XML W3C
 Comment[zh_CN]=W3C WML 大纲
 Icon=html
 Type=MimeType
-MimeType=application/xml
+MimeType=application/xsd
 X-KDE-IsAlso=text/xml
 Patterns=*.xsd;
 
