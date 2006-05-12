@@ -97,6 +97,11 @@ inline void KCMultiDialog::init()
     enableButton(Apply, false);
     connect(this, SIGNAL(currentPageChanged(QWidget *)), this, SLOT(slotCurrentPageChanged(QWidget *)));
     setInitialSize(QSize(640,480));
+    connect( this, SIGNAL( applyClicked() ), SLOT( slotApplyClicked() ) );
+    connect( this, SIGNAL( okClicked() ), SLOT( slotOkClicked() ) );
+    connect( this, SIGNAL( defaultClicked() ), SLOT( slotDefaultClicked() ) );
+    connect( this, SIGNAL( helpClicked() ), SLOT( slotHelpClicked() ) );
+    connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1Clicked() ) );
 }
 
 KCMultiDialog::~KCMultiDialog()
@@ -106,7 +111,7 @@ KCMultiDialog::~KCMultiDialog()
         delete ( *it );
 }
 
-void KCMultiDialog::slotDefault()
+void KCMultiDialog::slotDefaultClicked()
 {
     int curPageIndex = activePageIndex();
 
@@ -120,7 +125,7 @@ void KCMultiDialog::slotDefault()
         }
 }
 
-void KCMultiDialog::slotUser1()
+void KCMultiDialog::slotUser1Clicked()
 {
     int curPageIndex = activePageIndex();
 
@@ -159,27 +164,25 @@ void KCMultiDialog::apply()
     emit configCommitted();
 }
 
-void KCMultiDialog::slotApply()
+void KCMultiDialog::slotApplyClicked()
 {
     QPushButton *button = actionButton(Apply);
     if (button)
         button->setFocus();
-    emit applyClicked();
     apply();
 }
 
 
-void KCMultiDialog::slotOk()
+void KCMultiDialog::slotOkClicked()
 {
     QPushButton *button = actionButton(Ok);
     if (button)
         button->setFocus();
-    emit okClicked();
     apply();
     accept();
 }
 
-void KCMultiDialog::slotHelp()
+void KCMultiDialog::slotHelpClicked()
 {
     QString docPath;
 

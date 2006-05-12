@@ -181,7 +181,7 @@ protected Q_SLOTS:
      *
      * @note Make sure you call the original implementation.
      **/
-    virtual void slotDefault();
+    void slotDefaultClicked();
 
     /**
      * This slot is called when the user presses the "Reset" Button.
@@ -189,7 +189,7 @@ protected Q_SLOTS:
      *
      * @note Make sure you call the original implementation.
      */
-    virtual void slotUser1();
+    void slotUser1Clicked();
 
     /**
      * This slot is called when the user presses the "Apply" Button.
@@ -197,7 +197,7 @@ protected Q_SLOTS:
      *
      * @note Make sure you call the original implementation.
      **/
-    virtual void slotApply();
+    void slotApplyClicked();
 
     /**
      * This slot is called when the user presses the "OK" Button.
@@ -205,7 +205,7 @@ protected Q_SLOTS:
      *
      * @note Make sure you call the original implementation.
      **/
-    virtual void slotOk();
+    void slotOkClicked();
 
     /**
      * This slot is called when the user presses the "Help" Button.
@@ -217,7 +217,7 @@ protected Q_SLOTS:
      *
      * @note Make sure you call the original implementation.
      **/
-    virtual void slotHelp();
+    void slotHelpClicked();
 
 private Q_SLOTS:
 
