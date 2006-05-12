@@ -433,8 +433,10 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
                 cw = pixw;
                 int xp = bgLayer->backgroundXPosition().minWidth(pw-pixw);
-                if ( xp >= 0 )
+                if ( xp >= 0 ) {
                     cx = _tx + xp;
+                    cw = kMin(cw, pw - xp);
+                }
                 else {
                     cx = _tx;
                     if (pixw > 0) {
@@ -461,8 +463,10 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
                 int yp = bgLayer->backgroundYPosition().minWidth(ph-pixh);
-                if ( yp >= 0 )
+                if ( yp >= 0 ) {
                     cy = _ty + yp;
+                    ch = kMin(ch, ph - yp);
+                }
                 else {
                     cy = _ty;
                     if (pixh > 0) {
