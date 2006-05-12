@@ -1223,17 +1223,17 @@ KIO::Job *Loader::jobForRequest( const DOM::DOMString &url ) const
 // ----------------------------------------------------------------------------
 
 
-QDict<CachedObject> *Cache::cache;
-QPtrList<DocLoader>* Cache::docloader;
-QPtrList<CachedObject> *Cache::freeList;
-Loader *Cache::m_loader;
+QDict<CachedObject> *Cache::cache = 0;
+QPtrList<DocLoader>* Cache::docloader = 0;
+QPtrList<CachedObject> *Cache::freeList = 0;
+Loader *Cache::m_loader = 0;
 
 int Cache::maxSize = DEFCACHESIZE;
 int Cache::totalSizeOfLRU;
 
-QPixmap *Cache::nullPixmap;
-QPixmap *Cache::brokenPixmap;
-QPixmap *Cache::blockedPixmap;
+QPixmap *Cache::nullPixmap = 0;
+QPixmap *Cache::brokenPixmap = 0;
+QPixmap *Cache::blockedPixmap = 0;
 
 void Cache::init()
 {
@@ -1275,9 +1275,8 @@ void Cache::clear()
 #ifndef NDEBUG
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
-    if (!freeList->isEmpty())
-        for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
-            assert(it.current()->canDelete());
+    for (freeList->first(); freeList->current(); freeList->next())
+        assert(freeList->current()->canDelete());
 #endif
 
     delete cache; cache = 0;
@@ -1364,9 +1363,12 @@ void Cache::flush(bool force)
 #endif
     }
 
-    for ( CachedObject* p = freeList->first(); p; p = freeList->next() ) {
+    for ( freeList->first(); freeList->current(); ) {
+        CachedObject* p = freeList->current();
         if ( p->canDelete() )
             freeList->remove();
+        else
+            freeList->next();
     }
 
 }
