@@ -989,6 +989,18 @@ int RenderBox::calcHeightUsing(const Length& h)
     return height;
 }
 
+int RenderBox::calcImplicitHeight() const {
+    assert(hasImplicitHeight());
+
+    RenderBlock* cb = containingBlock();
+    // padding-box height
+    int ch = cb->height() - cb->borderTop() + cb->borderBottom();
+    int top = style()->top().width(ch);
+    int bottom = style()->bottom().width(ch);
+
+    return ch - top - bottom;
+}
+
 int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) const
 {
     int result = -1;
@@ -1028,6 +1040,10 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         // IE quirk.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
     }
+    else if (cb->hasImplicitHeight()) {
+        result = cb->calcImplicitHeight();
+    }
+
     if (result != -1) {
         result = height.width(result);
         if (cb->isTableCell() && style()->boxSizing() != BORDER_BOX) {
@@ -1146,6 +1162,10 @@ int RenderBox::availableHeightUsing(const Length& h) const
 
     if (h.isPercent())
        return calcContentHeight(h.width(containingBlock()->availableHeight()));
+
+    // Check for implicit height 
+    if (hasImplicitHeight())
+        return calcImplicitHeight();
 
     return containingBlock()->availableHeight();
 }

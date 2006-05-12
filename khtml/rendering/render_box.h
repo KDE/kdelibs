@@ -130,6 +130,10 @@ protected:
     int calcReplacedHeightUsing(HeightType heightType) const;
     int calcPercentageHeight(const Length& height, bool treatAsReplaced = false) const;
     int availableHeightUsing(const Length& h) const;
+    int calcImplicitHeight() const;
+    bool hasImplicitHeight() const {
+        return isPositioned() && !style()->top().isVariable() && !style()->bottom().isVariable();
+    }
 
 protected:
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
