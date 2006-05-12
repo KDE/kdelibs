@@ -34,7 +34,7 @@ http_cache_cleaner.cpp
 
 kde4_automoc(${kio_http_cache_cleaner_KDEINIT_SRCS})
 
-kde4_add_kdeinit_executable( kio_http_cache_cleaner ${kio_http_cache_cleaner_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kio_http_cache_cleaner  ${KDE4_KDECORE_LIBS} kio )
 

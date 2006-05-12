@@ -13,7 +13,7 @@ set(makekdewidgets_SRCS makekdewidgets.cpp )
 
 kde4_automoc(${makekdewidgets_SRCS})
 
-kde4_add_executable(makekdewidgets RUN_UNINSTALLED ${makekdewidgets_SRCS})
+kde4_add_executable(makekdewidgets NOGUI RUN_UNINSTALLED ${makekdewidgets_SRCS})
 
 target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} )
 

@@ -134,7 +134,7 @@ set(klauncher_KDEINIT_SRCS
 
 kde4_automoc(${klauncher_KDEINIT_SRCS})
 
-kde4_add_kdeinit_executable( klauncher ${klauncher_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_klauncher  ${KDE4_KDECORE_LIBS} kio )
 

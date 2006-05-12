@@ -33,7 +33,7 @@ set(kbuildsycoca_KDEINIT_SRCS
 
 kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
 
-kde4_add_kdeinit_executable( kbuildsycoca ${kbuildsycoca_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kbuildsycoca NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca  ${KDE4_KDECORE_LIBS} kio )
 
