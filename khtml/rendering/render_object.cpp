@@ -194,8 +194,12 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
 
 RenderObject::~RenderObject()
 {
-    if(m_style->backgroundImage())
-        m_style->backgroundImage()->deref(this);
+    const BackgroundLayer* bgLayer = m_style->backgroundLayers();
+    while (bgLayer) {
+        if(bgLayer->backgroundImage())
+            bgLayer->backgroundImage()->deref(this);
+        bgLayer = bgLayer->next();
+    }
 
     if (m_style)
         m_style->deref();
