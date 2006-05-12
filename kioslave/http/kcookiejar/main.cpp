@@ -21,10 +21,6 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/*
- * To debug add "--nofork" to the commandline!
- */
-
 #include <dcopclient.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
@@ -44,7 +40,7 @@ static const KCmdLineOptions options[] =
  KCmdLineLastOption
 };
 
-extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    KLocale::setMainCatalog("kdelibs");
    KCmdLineArgs::init(argc, argv, "kcookiejar", I18N_NOOP("HTTP cookie daemon"),
