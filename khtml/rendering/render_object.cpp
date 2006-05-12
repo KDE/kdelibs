@@ -1314,17 +1314,9 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
     m_markedForRepaint = true;
     if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
         return;
-    if (m_parent) {
-         if (isInlineFlow()) {
-             if (!checkContainer && !m_parent->isInline())
-                 return;
-             else
-                 m_parent->dirtyFormattingContext(false);
-         }
-         else if (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
-                     !(isFloating() || flowAroundFloats() || isTableCell()))
-             m_parent->dirtyFormattingContext(false);
-    }
+    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
+                    !(isFloating() || flowAroundFloats() || isTableCell())))
+        m_parent->dirtyFormattingContext(false);
 }
 
 void RenderObject::repaintDuringLayout()

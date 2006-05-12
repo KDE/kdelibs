@@ -146,7 +146,6 @@
 
 2006-02-28  Germain Garand  <germain@ebooksfrance.org>
 
-        * rendering/render_object.cpp (dirtyFormattingContext): be more efficient with inlineflow objects.
         * rendering/render_block.cpp (layoutBlockChildren): be more efficient with regard to positioned objects relayout.
         Merge WC margin-collapse regression fix (WC/#3508).
         (layoutPositionedObjects) Objects with staticX() need a relayout too.
