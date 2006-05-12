@@ -74,6 +74,8 @@ namespace Phonon
 			 */
 			NameDescriptionTupleModel( QObject* parent = 0 );
 
+			virtual ~NameDescriptionTupleModel();
+
 			/**
 			 * Sets the model data using the list provided by \p data.
 			 *

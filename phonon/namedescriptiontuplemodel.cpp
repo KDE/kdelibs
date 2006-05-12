@@ -41,6 +41,12 @@ NameDescriptionTupleModel::NameDescriptionTupleModel( NameDescriptionTupleModelP
 	d_ptr->q_ptr = this;
 }
 
+NameDescriptionTupleModel::~NameDescriptionTupleModel()
+{
+	delete d_ptr;
+	d_ptr = 0;
+}
+
 void NameDescriptionTupleModel::setModelData( const QList<NameDescriptionTuple>& newData )
 {
 	Q_D( NameDescriptionTupleModel );
