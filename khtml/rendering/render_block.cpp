@@ -129,9 +129,6 @@ void RenderBlock::setStyle(RenderStyle* _style)
         child = child->nextSibling();
     }
 
-    // Update generated content and ::inside
-    updateGeneratedContent();
-
     // Update pseudos for :before and :after now.
     updatePseudoChildren();
 

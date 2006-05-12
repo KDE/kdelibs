@@ -777,10 +777,7 @@ public:
     KDE_EXPORT static void cleanup();
 
     // static pseudo styles. Dynamic ones are produced on the fly.
-    enum PseudoId { 
-        NOPSEUDO, FIRST_LINE, FIRST_LETTER, SELECTION,
-        BEFORE, AFTER, PSEUDO_INSIDE, PSEUDO_OUTSIDE, MARKER
-    };
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION };
 
 protected:
 
@@ -848,10 +845,10 @@ protected:
 
                 PseudoId _styleType : 4;
                 bool _hasClip : 1;
-                unsigned _pseudoBits : 8;
+                unsigned _pseudoBits : 6;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 16;
+                unsigned int unused : 18;
             } f;
             Q_UINT64 _niflags;
         };
@@ -932,15 +929,7 @@ public:
 
     void inheritFrom(const RenderStyle* inheritParent);
 
-    PseudoId styleType() const { return  noninherited_flags.f._styleType; }
-    void setStyleType(PseudoId pi) { noninherited_flags.f._styleType = pi; }
-    bool isGenerated() const {
-        if (styleType() == AFTER || styleType() == BEFORE || styleType() == MARKER ||
-            styleType() == PSEUDO_INSIDE || styleType() == PSEUDO_OUTSIDE)
-            return true;
-        else
-            return false;
-    }
+    PseudoId styleType() { return  noninherited_flags.f._styleType; }
 
     bool hasPseudoStyle(PseudoId pi) const;
     void setHasPseudoStyle(PseudoId pi, bool b=true);
@@ -1291,7 +1280,6 @@ public:
         const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();
     }
 
-    bool useNormalContent() const { return generated->content == 0; }
     ContentData* contentData() const { return generated->content; }
     bool contentDataEquivalent(const RenderStyle* otherStyle) const 
     { 
@@ -1303,7 +1291,6 @@ public:
     void addContent(EQuoteContent q);
     void setContentNone();
     void setContentNormal();
-    void setContentData(ContentData* content);
 
     DOM::CSSValueListImpl* counterReset() const { return generated->counter_reset; }
     DOM::CSSValueListImpl* counterIncrement() const { return generated->counter_increment; }

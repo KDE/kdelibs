@@ -213,7 +213,8 @@ void RenderContainer::setStyle(RenderStyle* _style)
     RenderObject::setStyle(_style);
 
     // If we are a pseudo-container we need to restyle the children
-    if (style()->isGenerated())
+    if (style()->styleType() == RenderStyle::BEFORE
+     || style()->styleType() == RenderStyle::AFTER)
     {
         // ### we could save this call when the change only affected
         // non inherited properties
@@ -307,7 +308,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     RenderContainer* pseudoContainer = 0;
     pseudoContainer = RenderFlow::createFlow(element(), pseudo, renderArena());
     pseudoContainer->setIsAnonymous( true );
-    pseudoContainer->createGeneratedContent();
+    pseudoContainer->createCSSContent();
 
     // Only add the container if it had content
     if (pseudoContainer->firstChild()) {
@@ -318,7 +319,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
     }
 }
 
-void RenderContainer::createGeneratedContent()
+void RenderContainer::createCSSContent()
 {
     RenderStyle* pseudo = style();
     RenderStyle* style = new RenderStyle();
@@ -363,55 +364,6 @@ void RenderContainer::createGeneratedContent()
     }
     style->deref();
 }
-
-void RenderContainer::updateGeneratedContent()
-{
-    // Only for normal elements
-    if (!style() || style()->styleType() != RenderStyle::NOPSEUDO)
-        return;
-
-    // delete old generated content
-    RenderContainer *container = pseudoContainer(RenderStyle::PSEUDO_INSIDE);
-    if (container) {
-        container->detach();
-    }
-
-    if (style()->useNormalContent()) return;
-
-    // create generated content
-    RenderStyle* pseudo = style()->getPseudoStyle(RenderStyle::PSEUDO_INSIDE);
-    if (!pseudo) {
-        pseudo = new RenderStyle();
-        pseudo->inheritFrom(style());
-        pseudo->setStyleType(RenderStyle::PSEUDO_INSIDE);
-    }
-    if (pseudo->useNormalContent())
-        pseudo->setContentData(style()->contentData());
-
-    container = RenderFlow::createFlow(node(), pseudo, renderArena());
-    container->setIsAnonymous( true );
-    container->createGeneratedContent();
-
-    addChild(container, pseudoContainer(RenderStyle::AFTER));
-}
-
-RenderContainer* RenderContainer::pseudoContainer(RenderStyle::PseudoId type) const
-{
-    RenderObject *child = firstChild();
-    // ::after can only be the last element
-    if (type == RenderStyle::AFTER) 
-        child = lastChild();
-    while(child) {
-        if (child->style()->styleType() == type) {
-            assert(child->isRenderBlock() || child->isRenderInline());
-            return static_cast<RenderContainer*>(child);
-        }
-        if (child->style()->styleType() == RenderStyle::NOPSEUDO) break;
-        child = child->nextSibling();
-    }
-    return 0;
-}
-
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {

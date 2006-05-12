@@ -56,10 +56,7 @@ void RenderInline::setStyle(RenderStyle* _style)
         currCont = currCont->continuation();
     }
 
-    // Update generated content
-    updateGeneratedContent();
-
-    // Update pseudos for ::before and ::after
+    // Update pseudos for ::before and ::after now.
     updatePseudoChildren();
 }
 
