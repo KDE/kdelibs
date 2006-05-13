@@ -4,6 +4,7 @@ Header=^\x23\x3f(RGBE|RADIANCE)
 Name=High Dynamic Range Image
 Name[af]=Hoe Dinamiese Reeks Beeld
 Name[bg]=Изображение с висока динамичност (High Dynamic Range)
+Name[bs]=High Dynamic Range slika
 Name[ca]=Imatge de rang altament dinàmic
 Name[cs]=Obrázek ve formátu HDRI
 Name[da]=Billede med højt dynamisk område

@@ -7,6 +7,7 @@ Patterns=*.mhtml;*.MHTML;*.mht;*.MHT;*.eml;*.EML
 Comment=Mime Encapsulated Web Archive
 Comment[af]=Mimiek Saamgevatte web Argief
 Comment[bg]=Капсулиран уеб архив
+Comment[bs]=MIME enkapsulirana web arhiva
 Comment[ca]=Arxiu web encapsulat mime
 Comment[cs]=Webový archív (MIME)
 Comment[da]=Mime-indkapslet www-arkiv
