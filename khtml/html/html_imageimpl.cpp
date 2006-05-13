@@ -407,6 +407,12 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) {
             HTMLElementImpl::parseAttribute(attr);
             break;
+        } 
+        else {
+            // add name with full url:
+            QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );
+            if(getDocument()->isHTMLDocument())
+                static_cast<HTMLDocumentImpl*>(getDocument())->mapMap[url] = this;
         }
         // fall through
     case ATTR_NAME:
