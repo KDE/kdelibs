@@ -34,13 +34,13 @@
 #include <q3buttongroup.h>
 #include <QCheckBox>
 #include <QFile>
-#include <qfileinfo.h>
+#include <QFileInfo>
 #include <qframe.h>
 #include <q3groupbox.h>
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
-#include <qradiobutton.h>
+#include <QRadioButton>
 #include <QRegExp>
 
 //Added by qt3to4:

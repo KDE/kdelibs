@@ -29,7 +29,7 @@
 #include <QGridLayout>
 #include <klineedit.h>
 #include <kfiledialog.h>
-#include <qradiobutton.h>
+#include <QRadioButton>
 #include <q3buttongroup.h>
 #include <QLayout>
 #include <QLabel>

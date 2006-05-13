@@ -30,7 +30,7 @@
 #include <QLineEdit>
 #include <q3listview.h>
 #include <q3ptrlist.h>
-#include <qtabwidget.h>
+#include <QTabWidget>
 //Added by qt3to4:
 #include <QGridLayout>
 #include <QLabel>
