@@ -28,7 +28,7 @@ target_link_libraries(kabc_dir_plugin ${KDE4_KDECORE_LIBS} kabc_dir)
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_dir_plugin )
 
-set_target_properties(kabc_dir_plugin PROPERTIES OUTPUT_NAME kabc_dir)
+set_target_properties(kabc_dir_plugin PROPERTIES OUTPUT_NAME kabc_directory )
 
 install_targets(${PLUGIN_INSTALL_DIR} kabc_dir_plugin )
 
