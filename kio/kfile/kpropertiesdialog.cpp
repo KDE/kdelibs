@@ -1859,10 +1859,9 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   Q3GroupBox *gb;
   QGridLayout *gl;
 
-  KVBox *mainVBox = dlg.makeVBoxMainWidget();
-
+  QWidget *mainw = new QWidget( &dlg );
   // Group: Access Permissions
-  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), mainVBox );
+  gb = new Q3GroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), mainw );
   gb->layout()->setSpacing(KDialog::spacingHint());
   gb->layout()->setMargin(KDialog::marginHint());
 
@@ -2062,7 +2061,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
   if ( d->fileSystemSupportsACLs  ) {
     std::for_each( theNotSpecials.begin(), theNotSpecials.end(), std::mem_fun( &QWidget::hide ) );
-    extendedACLs = new KACLEditWidget( mainVBox );
+    extendedACLs = new KACLEditWidget( mainw );
     if ( d->extendedACL.isValid() && d->extendedACL.isExtended() )
       extendedACLs->setACL( d->extendedACL );
     else
@@ -2074,6 +2073,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     if ( properties->items().first()->isDir() )
       extendedACLs->setAllowDefaults( true );
   }
+  dlg.setMainWidget( mainw );
   if (dlg.exec() != KDialogBase::Accepted)
     return;
 #endif
