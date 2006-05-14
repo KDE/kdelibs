@@ -18,16 +18,19 @@ install_targets(${LIB_INSTALL_DIR} kabc_dir )
 
 ########### next target ###############
 
-set(kabc_directory_PART_SRCS resourcedirplugin.cpp )
+set(kabc_dir_plugin_PART_SRCS resourcedirplugin.cpp )
 
-kde4_automoc(${kabc_directory_PART_SRCS})
+kde4_automoc(${kabc_dir_plugin_PART_SRCS})
 
-kde4_add_plugin(kabc_directory ${kabc_directory_PART_SRCS})
+kde4_add_plugin(kabc_dir_plugin ${kabc_dir_plugin_PART_SRCS})
 
-target_link_libraries(kabc_directory  ${KDE4_KDECORE_LIBS} kabc_dir)
+target_link_libraries(kabc_dir_plugin ${KDE4_KDECORE_LIBS} kabc_dir)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_directory )
-install_targets(${PLUGIN_INSTALL_DIR} kabc_directory )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_dir_plugin )
+
+set_target_properties(kabc_dir_plugin PROPERTIES OUTPUT_NAME kabc_dir)
+
+install_targets(${PLUGIN_INSTALL_DIR} kabc_dir_plugin )
 
 
 ########### install files ###############
