@@ -26,8 +26,11 @@ kde4_automoc(${kabc_ldapkio_plugin_PART_SRCS})
 kde4_add_plugin(kabc_ldapkio_plugin ${kabc_ldapkio_plugin_PART_SRCS})
 
 target_link_libraries(kabc_ldapkio_plugin  ${KDE4_KDECORE_LIBS} kabc_ldapkio )
-set_target_properties(kabc_ldapkio_plugin PROPERTIES OUTPUT_NAME kabc_ldapkio)
+
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_ldapkio_plugin )
+
+set_target_properties(kabc_ldapkio_plugin PROPERTIES OUTPUT_NAME kabc_ldapkio)
+
 install_targets(${PLUGIN_INSTALL_DIR} kabc_ldapkio_plugin )
 
 
