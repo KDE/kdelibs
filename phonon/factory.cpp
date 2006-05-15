@@ -67,14 +67,16 @@ class Factory::Private
 			for( ; it != end; ++it )
 			{
 				KService::Ptr ptr = *it;
+				KLibFactory* factory = 0;
 #ifdef PHONON_LOAD_BACKEND_GLOBAL
 				// This code is in here temporarily until NMM gets fixed.
 				// Currently the NMM backend will fail with undefined symbols if
 				// the backend is not loaded with global symbol resolution
 				KLibrary* library = KLibLoader::self()->globalLibrary( QFile::encodeName( ptr->library() ) );
-				KLibFactory * factory = library->factory();
+				if( library )
+					factory = library->factory();
 #else
-				KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
+				factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
 #endif
 				if( factory )
 				{
@@ -84,7 +86,7 @@ class Factory::Private
 						QString e = i18n( "create method returned 0" );
 						errormsg.append( e );
 						kDebug( 600 ) << "Error getting backend from factory for " <<
-							ptr->name() << ":\n" << e << endl;
+							ptr->name() << ", " << ptr->library() << ":\n" << e << endl;
 					}
 					else
 					{
