@@ -69,9 +69,6 @@ public:
     FAMRequest fr;
 #endif
 
-#ifdef HAVE_DNOTIFY
-    int dn_fd;
-#endif
 #ifdef HAVE_INOTIFY
     int wd;
 #endif
@@ -107,7 +104,7 @@ public:
 public Q_SLOTS:
   void slotRescan();
   void famEventReceived(); // for FAM
-  void slotActivated(); // for DNOTIFY
+  void slotActivated();
   void slotRemoveDelayed();
 
 public:
@@ -135,18 +132,8 @@ public:
   bool useFAM(Entry*);
 #endif
 
-#if defined(HAVE_DNOTIFY) || defined(HAVE_INOTIFY)
+#if defined(HAVE_INOTIFY)
    QSocketNotifier *mSn;
-#endif
-
-#ifdef HAVE_DNOTIFY
-  bool supports_dnotify;
-  int mPipe[2];
-  Q3IntDict<Entry> fd_Entry;
-
-  static void dnotify_handler(int, siginfo_t *si, void *);
-  static void dnotify_sigio_handler(int, siginfo_t *si, void *);
-  bool useDNotify(Entry*);
 #endif
 
 #ifdef HAVE_INOTIFY

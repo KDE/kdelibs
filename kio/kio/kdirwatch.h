@@ -50,7 +50,7 @@ class KDirWatchPrivate;
   * Directories and files can be added/removed from the list in any state.
   *
   * The implementation uses the FAM service when available;
-  * if FAM is not available, the DNOTIFY functionality is used on LINUX.
+  * if FAM is not available, the INOTIFY functionality is used on LINUX.
   * As a last resort, a regular polling for change of modification times
   * is done; the polling interval is a global config option:
   * DirWatch/PollInterval and DirWatch/NFSPollInterval for NFS mounted
