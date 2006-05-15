@@ -90,6 +90,7 @@ check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
 check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
 
 check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
+check_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)                   # kio
 
 if (X11_XTest_FOUND)                                                   # kdecore
   set(HAVE_XTEST 1)

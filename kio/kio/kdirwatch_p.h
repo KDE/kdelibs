@@ -69,7 +69,7 @@ public:
     FAMRequest fr;
 #endif
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
     int wd;
 #endif
   };
@@ -132,11 +132,8 @@ public:
   bool useFAM(Entry*);
 #endif
 
-#if defined(HAVE_INOTIFY)
-   QSocketNotifier *mSn;
-#endif
-
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
+  QSocketNotifier *mSn;
   bool supports_inotify;
   int m_inotify_fd;
 

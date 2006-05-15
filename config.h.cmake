@@ -83,6 +83,7 @@
 #cmakedefine HAVE_SYS_MNTTAB_H 1
 #cmakedefine HAVE_SYS_MNTENT_H 1
 #cmakedefine HAVE_SYS_MOUNT_H 1
+#cmakedefine HAVE_SYS_INOTIFY_H 1
 #cmakedefine HAVE_TERMIOS_H 1
 #cmakedefine HAVE_TERMIO_H 1
 

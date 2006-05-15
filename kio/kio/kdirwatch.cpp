@@ -33,6 +33,7 @@
 // Mar 28. 1998 - Created.  (sven)
 
 #include <config-kdirwatch.h>
+#include <config.h>
 
 #include <sys/stat.h>
 #include <assert.h>
@@ -52,41 +53,17 @@
 // debug
 #include <sys/ioctl.h>
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/syscall.h>
-#include <linux/types.h>
-#include <linux/inotify.h>
-
-// Linux kernel header suck. including that crap
-// and then trying to make them compile isn't worth the effort
-
-static inline int inotify_init (void)
-{
-  return syscall (__NR_inotify_init);
-}
-
-static inline int inotify_add_watch (int fd, const char *name, __u32 mask)
-{
-  return syscall (__NR_inotify_add_watch, fd, name, mask);
-}
-
-static inline int inotify_rm_watch (int fd, __u32 wd)
-{
-  return syscall (__NR_inotify_rm_watch, fd, wd);
-}
-
-#ifndef  IN_ONLYDIR
-#define  IN_ONLYDIR 0x01000000
-#endif
+#include <sys/inotify.h>
 
 #ifndef IN_DONT_FOLLOW
 #define IN_DONT_FOLLOW 0x02000000
 #endif
 
-#ifndef IN_MOVE_SELF
-#define IN_MOVE_SELF 0x00000800
+#ifndef IN_ONLYDIR
+#define IN_ONLYDIR 0x01000000
 #endif
 
 #endif
@@ -168,7 +145,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   }
 #endif
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
   supports_inotify = true;
 
   m_inotify_fd = inotify_init();
@@ -217,7 +194,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
     kDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
   if ( supports_inotify )
     ::close( m_inotify_fd );
 #endif
@@ -228,7 +205,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 void KDirWatchPrivate::slotActivated()
 {
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
   if ( !supports_inotify )
     return;
 
@@ -442,7 +419,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 }
 #endif
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
 // setup INotify notification, returns false if not possible
 bool KDirWatchPrivate::useINotify( Entry* e )
 {
@@ -588,7 +565,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   if (useFAM(e)) return;
 #endif
 
-#if defined(HAVE_INOTIFY)
+#if defined(HAVE_SYS_INOTIFY_H)
   if (useINotify(e)) return;
 #endif
 
@@ -639,7 +616,7 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   }
 #endif
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
   if (e->m_mode == INotifyMode) {
     if ( e->m_status == Normal ) {
       (void) inotify_rm_watch( m_inotify_fd, e->wd );
@@ -828,7 +805,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
   // Shouldn't happen: Ignore "unknown" notification method
   if (e->m_mode == UnknownMode) return NoChange;
 
-#if defined( HAVE_INOTIFY )
+#if defined( HAVE_SYS_INOTIFY_H )
   if (e->m_mode == DNotifyMode || e->m_mode == INotifyMode ) {
     // we know nothing has changed, no need to stat
     if(!e->dirty) return NoChange;
@@ -987,7 +964,7 @@ void KDirWatchPrivate::slotRescan()
 
     int ev = scanEntry( &(*it) );
 
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
     if ((*it).m_mode == INotifyMode) {
       if ( ev == Deleted ) {
         addEntry(0, QDir::cleanPath( ( *it ).path+"/.."), &*it, true);
@@ -1039,7 +1016,7 @@ void KDirWatchPrivate::famEventReceived()
       it = m_mapEntries.begin();
       for( ; it != m_mapEntries.end(); ++it )
 	if ((*it).m_mode == FAMMode && (*it).m_clients.count()>0) {
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
 	  if (useINotify( &(*it) )) continue;
 #endif
 	  useStat( &(*it) );
@@ -1134,7 +1111,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
               removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
               sub_entry->m_status = Normal;
               if (!useFAM(sub_entry))
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
                 if (!useINotify(sub_entry ))
 #endif
                   useStat(sub_entry);
@@ -1366,7 +1343,7 @@ KDirWatch::Method KDirWatch::internalMethod()
   if (d->use_fam)
     return KDirWatch::FAM;
 #endif
-#ifdef HAVE_INOTIFY
+#ifdef HAVE_SYS_INOTIFY_H
   if (d->supports_inotify)
     return KDirWatch::INotify;
 #endif
