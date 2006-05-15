@@ -73,7 +73,7 @@ target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} )
 install_files( ${SERVICES_INSTALL_DIR} FILES help.protocol ghelp.protocol )
 install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kio_help.upd )
 
-install_files( /bin FILES checkXML )
+install(PROGRAMS checkXML DESTINATION bin)
 
 install_files(${KCONF_UPDATE_INSTALL_DIR} FILES move_kio_help_cache.sh )
 
