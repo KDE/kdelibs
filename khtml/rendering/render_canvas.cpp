@@ -715,7 +715,9 @@ int RenderCanvas::docWidth() const
 
     RenderObject *fc = firstChild();
     if(fc) {
-        int dw = fc->effectiveWidth() + fc->marginLeft() + fc->marginRight();
+        // ow: like effectiveWidth() but without the negative
+        const int ow = hasOverflowClip() ? width() : overflowWidth();
+        int dw = ow + fc->marginLeft() + fc->marginRight();
         int rightmostPos = fc->rightmostPosition(false);
 // kdDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;
         if( rightmostPos > dw )

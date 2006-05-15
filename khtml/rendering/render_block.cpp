@@ -1566,7 +1566,10 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
                 if (r->effectiveXPos() + r->effectiveWidth() > m_overflowWidth)
-                    m_overflowWidth = r->xPos() + r->effectiveWidth();
+                {
+                    m_overflowWidth = r->xPos() + r->overflowWidth();
+                    m_negativeOverflowWidth = r->negativeOverflowWidth();
+                }
                 if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
                     m_overflowHeight = r->yPos() + r->effectiveHeight();
             }
