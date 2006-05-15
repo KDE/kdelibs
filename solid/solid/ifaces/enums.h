@@ -73,7 +73,7 @@ namespace Enums
                     Volume = 16, OpticalDisc = 32,
                     Camera = 64, PortableMediaPlayer = 128,
                     NetworkIface = 256, AcAdapter = 512,
-                    Battery = 1024, Display = 2048 };
+                    Battery = 1024, Button = 2048, Display = 4096 };
 
         /**
          * This type stores an OR combination of Type values.
@@ -281,6 +281,23 @@ namespace Enums
          * - Discharging : Battery is discharging
          */
         enum ChargeState { NoCharge, Charging, Discharging };
+    };
+
+    /**
+     * This struct holds the enumeration used by KDEHW::Button
+     * and KDEHW::Ifaces::Button. You shouldn't use it directly.
+     */
+    struct Button
+    {
+        /**
+         * This enum type defines the type of button.
+         *
+         * - LidButton : The switch on a laptop that senses whether the lid is open or closed.
+         * - PowerButton : The main power button on the computer.
+         * - SleepButton : The sleep button on a computer capable of putting the computer into a suspend state.
+         * - UnknowButtonType : The type of the button is unknow.
+         */
+         enum ButtonType{ LidButton, PowerButton, SleepButton, UnknowButtonType };
     };
 
     /**

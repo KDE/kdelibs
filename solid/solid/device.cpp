@@ -44,6 +44,8 @@
 #include <kdehw/ifaces/acadapter.h>
 #include <kdehw/battery.h>
 #include <kdehw/ifaces/battery.h>
+#include <kdehw/button.h>
+#include <kdehw/ifaces/button.h>
 #include <kdehw/display.h>
 #include <kdehw/ifaces/display.h>
 
@@ -289,6 +291,9 @@ KDEHW::Capability *KDEHW::Device::asCapability( const Capability::Type &capabili
                 break;
             case Capability::Battery:
                 iface = capability_cast<Ifaces::Battery, Battery>( cap_iface );
+                break;
+            case Capability::Button:
+                iface = capability_cast<Ifaces::Button, Button>( cap_iface );
                 break;
             case Capability::Display:
                 iface = capability_cast<Ifaces::Display, Display>( cap_iface );

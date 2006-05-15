@@ -19,6 +19,7 @@ set(kdehwifaces_LIB_SRCS
    networkiface.cpp 
    acadapter.cpp 
    battery.cpp 
+   button.cpp
    display.cpp 
    abstractcapability.cpp )
 
@@ -34,7 +35,7 @@ install_targets(${LIB_INSTALL_DIR} kdehwifaces )
 
 ########### install files ###############
 
-install_files( /include/kdehw/ifaces FILES  devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h display.h abstractcapability.h )
+install_files( /include/kdehw/ifaces FILES  devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h abstractcapability.h )
 
 kde4_footer()
 
