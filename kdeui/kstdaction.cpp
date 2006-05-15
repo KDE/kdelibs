@@ -116,7 +116,7 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 			break;
 
 		 default:
-			pAction = new KAction(KIcon(iconName), sLabel, parent, name ? name : pInfo->psName);
+			pAction = new KAction(iconName.isEmpty() ? KIcon() : KIcon(iconName), sLabel, parent, name ? name : pInfo->psName);
 			break;
 		}
 
