@@ -67,7 +67,7 @@ kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 
 target_link_libraries(phononcore  ${KDE4_KDECORE_LIBS} kio )
 
-set_target_properties(phononcore PROPERTIES VERSION 0.0.0 SOVERSION 0 )
+set_target_properties(phononcore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} phononcore )
 
 

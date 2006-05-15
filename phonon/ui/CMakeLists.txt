@@ -20,7 +20,7 @@ kde4_add_library(phononui SHARED ${phononui_LIB_SRCS})
 
 target_link_libraries(phononui  ${KDE4_KDECORE_LIBS} phononcore )
 
-set_target_properties(phononui PROPERTIES VERSION 0.0.0 SOVERSION 0 )
+set_target_properties(phononui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} phononui )
 
 
