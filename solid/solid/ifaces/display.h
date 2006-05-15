@@ -36,7 +36,7 @@ namespace Ifaces
      */
     class KDE_EXPORT Display : virtual public Capability, public Enums::Display
     {
-//         Q_PROPERTY( DisplayType displayType READ displayType )
+//         Q_PROPERTY( DisplayType type READ type )
 //         Q_PROPERTY( int lcdBrightness READ lcdBrightness )
 //         Q_ENUMS( DisplayType )
 
@@ -50,7 +50,7 @@ namespace Ifaces
          * Get the type of display device.
          * @returns the type of display device.
          */
-        virtual DisplayType displayType() const = 0;
+        virtual DisplayType type() const = 0;
 
         /**
          * Get the brightness level in percent.

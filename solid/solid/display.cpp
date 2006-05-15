@@ -43,9 +43,9 @@ KDEHW::Display::~Display()
     delete d;
 }
 
-KDEHW::Display::DisplayType KDEHW::Display::displayType() const
+KDEHW::Display::DisplayType KDEHW::Display::type() const
 {
-    return d->iface->displayType();
+    return d->iface->type();
 }
 
 int KDEHW::Display::lcdBrightness() const

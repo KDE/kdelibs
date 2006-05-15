@@ -61,7 +61,7 @@ namespace KDEHW
          * Get the type of display device.
          * @returns the type of display device.
          */
-        DisplayType displayType() const;
+        DisplayType type() const;
 
         /**
          * Get the brightness level in percent.
