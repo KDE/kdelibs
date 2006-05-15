@@ -349,8 +349,8 @@ target_link_libraries(khtmlimagepart  ${KDE4_KDECORE_LIBS} khtml)
 
 install_targets(${PLUGIN_INSTALL_DIR} khtmlimagepart )
 
-
-if(KDE4_BUILD_TESTS)
+# msvc linker doesn't like "#define protected public"
+if(KDE4_BUILD_TESTS AND NOT MSVC)
 
     ########### next target ###############
 
@@ -379,7 +379,7 @@ if(KDE4_BUILD_TESTS)
     target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############
-endif(KDE4_BUILD_TESTS)
+endif(KDE4_BUILD_TESTS AND NOT MSVC)
 
 if(KDE4_BUILD_TESTS AND NOT WIN32)
 # #### TODO: declare/set this var somewhere?

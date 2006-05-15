@@ -118,9 +118,21 @@ void KConfigTest::initTestCase()
 
   sc.setGroup( "EnumTypes" );
   sc.writeEntry( "enum-10", KConfigTest::Tens );
+  
+#ifndef Q_CC_MSVC
   sc.writeEntry( "enum-100", KConfigTest::Hundreds );
+#else
+  int val = KConfigTest::Hundreds;
+  sc.writeEntry( "enum-100", val );
+#endif
   sc.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
+  
+#ifndef Q_CC_MSVC
   sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
+#else
+  int fl = KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1);
+  sc.writeEntry( "flags-bit0-bit1", fl);
+#endif
 
   sc.sync();
 
