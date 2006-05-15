@@ -123,7 +123,7 @@ int KNotifyDialog::configure( QWidget *parent, const char *name,
 
 KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
                               const KAboutData *aboutData )
-    : KDialogBase(Swallow, 0, parent, name, modal, i18n("Notification Settings"),
+    : KDialogBase( parent, name, modal, i18n("Notification Settings"),
                   Ok | Apply | Cancel | Default, Ok, true )
 {
     KVBox *box = makeVBoxMainWidget();
