@@ -43,14 +43,6 @@
 
 using namespace KABC;
 
-extern "C"
-{
-  void *init_kabc_dir()
-  {
-    return new KRES::PluginFactory<ResourceDir,ResourceDirConfig>();
-  }
-}
-
 
 ResourceDir::ResourceDir( const KConfig *config )
   : Resource( config ), mAsynchronous( false )

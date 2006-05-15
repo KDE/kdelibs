@@ -4,34 +4,17 @@ include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
 ########### next target ###############
 
-set(kabc_ldapkio_LIB_SRCS resourceldapkio.cpp resourceldapkioconfig.cpp )
+set(kabc_ldapkio_SRCS resourceldapkioplugin.cpp resourceldapkio.cpp resourceldapkioconfig.cpp )
 
-kde4_automoc(${kabc_ldapkio_LIB_SRCS})
+kde4_automoc(${kabc_ldapkio_SRCS})
 
-kde4_add_library(kabc_ldapkio SHARED ${kabc_ldapkio_LIB_SRCS})
+kde4_add_plugin(kabc_ldapkio ${kabc_ldapkio_SRCS})
 
 target_link_libraries(kabc_ldapkio  ${KDE4_KDECORE_LIBS} kabc kio )
 
-set_target_properties(kabc_ldapkio PROPERTIES VERSION 4.0.0 SOVERSION 4 )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_ldapkio )
 
-install_targets(${LIB_INSTALL_DIR} kabc_ldapkio )
-
-
-########### next target ###############
-
-set(kabc_ldapkio_plugin_PART_SRCS resourceldapkioplugin.cpp )
-
-kde4_automoc(${kabc_ldapkio_plugin_PART_SRCS})
-
-kde4_add_plugin(kabc_ldapkio_plugin ${kabc_ldapkio_plugin_PART_SRCS})
-
-target_link_libraries(kabc_ldapkio_plugin  ${KDE4_KDECORE_LIBS} kabc_ldapkio )
-
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_ldapkio_plugin )
-
-set_target_properties(kabc_ldapkio_plugin PROPERTIES OUTPUT_NAME kabc_ldapkio)
-
-install_targets(${PLUGIN_INSTALL_DIR} kabc_ldapkio_plugin )
+install_targets(${PLUGIN_INSTALL_DIR} kabc_ldapkio )
 
 
 ########### install files ###############
