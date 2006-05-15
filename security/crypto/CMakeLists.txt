@@ -2,7 +2,6 @@
 
 
 ########### next target ###############
-
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 
 kde4_automoc(${kcm_crypto_PART_SRCS})
@@ -11,7 +10,7 @@ kde4_add_plugin(kcm_crypto ${kcm_crypto_PART_SRCS})
 
 kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kcm_crypto )
 
-target_link_libraries(kcm_crypto  ${KDE4_KDE3SUPPORT_LIBS} )
+target_link_libraries(kcm_crypto  ${KDE4_KDE3SUPPORT_LIBS} ${OPENSSL_LIBRARIES})
 
 install_targets(${PLUGIN_INSTALL_DIR} kcm_crypto )
 
