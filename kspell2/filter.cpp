@@ -27,7 +27,7 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 
-#include <qstring.h>
+#include <QString>
 
 namespace KSpell2
 {
@@ -277,7 +277,8 @@ bool Filter::ignore( const QString& word ) const
 
 QChar Filter::skipToLetter( int &fromPosition ) const
 {
-
+	if( m_buffer.isEmpty())
+		return QChar();
     QChar currentChar = m_buffer[ fromPosition ];
     while ( !currentChar.isLetter() &&
             (int)++fromPosition < m_buffer.length() ) {
