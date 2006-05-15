@@ -1214,7 +1214,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
 
         // Some objects (e.g., tables, horizontal rules, overflow:auto blocks) avoid floats.  They need
         // to shift over as necessary to dodge any floats that might get in the way.
-        if (child->flowAroundFloats()) {
+        if (child->flowAroundFloats() && child->style()->clear() == CNONE) {
             int leftOff = leftOffset(m_height);
             if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
                 if (child->marginLeft() < 0)
