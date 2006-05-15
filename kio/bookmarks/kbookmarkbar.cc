@@ -271,34 +271,51 @@ void KBookmarkBar::removeTempSep()
 
 /**
  * Handle a QDragMoveEvent event on a toolbar drop
- * @return the address of the bookmark to be dropped after/before
- *         else a QString() if event should be ignored
+ * @return true if the event should be accepted, false if the event should be ignored
  * @param pos the current QDragMoveEvent position
  * @param the toolbar
  * @param actions the list of actions plugged into the bar
  * @param atFirst bool reference, when true the position before the
  *        returned action was dropped on
  */
-QString KBookmarkBar::handleToolbarDragMoveEvent(
+bool KBookmarkBar::handleToolbarDragMoveEvent(
     const QPoint& pos, const QList<KAction *>& actions,
     bool &atFirst, KBookmarkManager *mgr)
 {
+    //TODO separators aren't shown if they are the first/last action, 
+    // instead insert a dummy action, already with bookmark url
+    kDebug()<<"KBookmarkBar::handleToolbarDragMoveEvent "<<pos<<endl;
     Q_UNUSED( mgr );
     Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->container(0))) );
+    m_toolBar->setUpdatesEnabled(false);
     if(m_toolBarSeparator)
     {
         m_toolBar->removeAction(m_toolBarSeparator);
         m_toolBarSeparator = 0;
     }
 
-    int index = 0;
     QWidget* b = 0;
 
+    // Empty toolbar
+    if(actions.isEmpty())
+    {
+        kDebug()<<"actions empty "<<endl;
+        atFirst = true;
+        d->m_sepIndex = 0;
+        m_toolBarSeparator = m_toolBar->addSeparator();
+        m_toolBar->setUpdatesEnabled(true);
+        return true;
+    }
+
+    // else find the toolbar button 
+    //TODO contains is wrong, we should only care about .left() and .right() in horizontal bars
+    // and about .top() .bottom() for vertical ones
     for (int i = 0; i < m_toolBar->actions().count(); ++i)
       if (QWidget* button = m_toolBar->widgetForAction(m_toolBar->actions()[i]))
         if (button->geometry().contains(pos)) {
+          kDebug()<<"button contains pos "<<m_toolBar->actions()[i]->text()<<endl;
           b = button;
-          index = i;
+          d->m_sepIndex = i;
           break;
         }
 
@@ -306,68 +323,50 @@ QString KBookmarkBar::handleToolbarDragMoveEvent(
     QString address;
     atFirst = false;
 
-    if (b)
+    if (b) // found the containing button
     {
         QRect r = b->geometry();
-        if (pos.x() < ((r.left() + r.right())/2))
+        if (pos.x() >= ((r.left() + r.right())/2)) //TODO only works for horizontal toolbars
         {
-            // if in first half of button then
-            // we jump to previous index
-            if ( index == 0 )
-                atFirst = true;
-            else {
-                index--;
-                a = m_toolBar->actions()[index];
-            }
+            kDebug()<<"in second half "<<endl;
+            // if in second half of button then
+            // we jump to next index
+            d->m_sepIndex++;
         }
-    }
-    else if (actions.isEmpty())
-    {
-        atFirst = true;
-        index = 0;
-        // we skip the action related stuff
-        // and do what it should have...
-        // FIXME - here we want to get the
-        // parent address of the bookmark
-        // bar itself and return that + "/0"
-        d->m_sepIndex = 0;
-        goto skipact;
+        if(d->m_sepIndex != actions.count())
+        {
+            a = m_toolBar->actions()[d->m_sepIndex];
+            kDebug()<<"containing widget found, inserting before "<<a->text()<<endl;
+            m_toolBarSeparator = m_toolBar->insertSeparator(a);
+        }
+        else
+        {
+            kDebug()<<"containing widget found, inserting at the end "<<endl;
+            m_toolBarSeparator = m_toolBar->addSeparator();
+        }
+        m_toolBar->setUpdatesEnabled(true);
+        return true;
     }
     else // (!b)
     {
-        index = actions.count() - 1;
-        a = m_toolBar->actions()[index];
+        kDebug()<<"no containing widget found"<<endl;
+        a = m_toolBar->actions()[actions.count() - 1];
         b = m_toolBar->widgetForAction(a);
         // if !b and not past last button, we didn't find button
-        if (pos.x() <= b->geometry().left())
-            goto skipact; // TODO - rename
-    }
-
-    if ( !a )
-        return QString(); // TODO Make it works for that case
-
-    address = a->property("address").toString();
-    d->m_sepIndex = index + (atFirst ? 0 : 1);
-
-#if 0
-    { // ugly workaround to fix the goto scoping problems...
-        KBookmark bk = mgr->findByAddress( address );
-        if (bk.isGroup()) // TODO - fix this ****!!!, manhatten distance should be used!!!
+        if (pos.x() <= b->geometry().left()) //TODO only works for horizontal toolbars
         {
-            kDebug() << "kbookmarkbar:: popping up " << bk.text() << endl;
-            KBookmarkActionMenu *menu = dynamic_cast<KBookmarkActionMenu*>(a);
-            Q_ASSERT(menu);
-            menu->popup(m_toolBar->mapToGlobal(b->geometry().center()));
+            m_toolBar->setUpdatesEnabled(true);
+            return false;
+        }
+        else // location is beyond last action, assuming we want to add in the end
+        {
+            kDebug()<<" beyond last widget "<<endl;
+            d->m_sepIndex = actions.count();
+            m_toolBarSeparator = m_toolBar->addSeparator();
+            m_toolBar->setUpdatesEnabled(true);
+            return true;
         }
     }
-#endif
-
-skipact:
-    QAction* before = 0L;
-    if (d->m_sepIndex > 0 && d->m_sepIndex < m_toolBar->actions().count())
-      before = m_toolBar->actions().at(d->m_sepIndex - 1);
-    m_toolBarSeparator = m_toolBar->insertSeparator(before);
-    return address;
 }
 
 void KBookmarkBar::contextMenu(const QPoint & pos)
@@ -392,13 +391,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
                                                      // this shouldn't really be the case
         return false; // todo: make this limit the actions
 
-    if ( e->type() == QEvent::DragEnter)
-    {
-        //TODO Check that we can decode
-        e->accept();
-        return true;
-    }
-    else if ( e->type() == QEvent::DragLeave )
+    if ( e->type() == QEvent::DragLeave )
     {
         removeTempSep();
         d->m_dropAddress.clear();
@@ -406,6 +399,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
     else if ( e->type() == QEvent::Drop )
     {
         removeTempSep();
+
         QDropEvent *dev = static_cast<QDropEvent*>( e );
         QList<KBookmark> list = KBookmark::List::fromMimeData( dev->mimeData() );
         if ( list.isEmpty() )
@@ -414,31 +408,43 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
             kWarning(7043) << "Sorry, currently you can only drop one address "
                 "onto the bookmark bar!" << endl;
         KBookmark toInsert = list.first();
-        KBookmark bookmark = m_pManager->findByAddress( d->m_dropAddress );
-        Q_ASSERT(!bookmark.isNull());
-        kDebug(7043) << "inserting "
-            << QString(d->m_atFirst ? "before" : "after")
-            << " d->m_dropAddress == " << d->m_dropAddress << endl;
-        KBookmarkGroup parentBookmark = bookmark.parentGroup();
-        Q_ASSERT(!parentBookmark.isNull());
-        KBookmark newBookmark = parentBookmark.addBookmark(
+
+        KBookmarkGroup parentBookmark = getToolbar();
+
+        if(d->m_sepIndex == 0)
+        {
+            KBookmark newBookmark = parentBookmark.addBookmark(
                 m_pManager, toInsert.fullText(),
                 toInsert.url() );
-        parentBookmark.moveItem( newBookmark, d->m_atFirst ? KBookmark() : bookmark );
-        m_pManager->emitChanged( parentBookmark );
-        return true;
+
+            parentBookmark.moveItem( newBookmark, KBookmark() );
+            m_pManager->emitChanged( parentBookmark );
+            return true;
+        }
+        else
+        {
+            KBookmark after = parentBookmark.first();
+
+            for(int i=0; i < d->m_sepIndex - 1 ; ++i)
+                after = parentBookmark.next(after);
+            KBookmark newBookmark = parentBookmark.addBookmark(
+                    m_pManager, toInsert.fullText(),
+                    toInsert.url() );
+
+            parentBookmark.moveItem( newBookmark, after );
+            m_pManager->emitChanged( parentBookmark );
+            return true;
+        }
     }
-    else if ( e->type() == QEvent::DragMove )
+    else if ( e->type() == QEvent::DragMove || e->type() == QEvent::DragEnter )
     {
         QDragMoveEvent *dme = static_cast<QDragMoveEvent*>( e );
         if (!KBookmark::List::canDecode( dme->mimeData() ))
             return false;
         bool _atFirst;
-        QString dropAddress;
-        dropAddress = handleToolbarDragMoveEvent(dme->pos(), d->m_actions, _atFirst, m_pManager);
-        if (!dropAddress.isNull())
+        bool accept = handleToolbarDragMoveEvent(dme->pos(), d->m_actions, _atFirst, m_pManager);
+        if (accept)
         {
-            d->m_dropAddress = dropAddress;
             d->m_atFirst = _atFirst;
             dme->accept();
             return true; //Really?

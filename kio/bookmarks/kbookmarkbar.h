@@ -86,7 +86,7 @@ protected:
 private:
     KBookmarkGroup getToolbar();
     void removeTempSep();
-    QString handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAction *>& actions, bool &atFirst, KBookmarkManager *mgr);
+    bool handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAction *>& actions, bool &atFirst, KBookmarkManager *mgr);
 
     KBookmarkOwner *m_pOwner;
     QPointer<KToolBar> m_toolBar;
