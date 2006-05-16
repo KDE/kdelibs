@@ -274,16 +274,17 @@ void KBookmarkBar::removeTempSep()
  * @param actions the list of actions plugged into the bar
  *        returned action was dropped on
  */
-bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAction *>& actions, QString text)
+bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KAction *>& actions, QString text)
 {
     //TODO separators aren't shown if they are the first/last action, 
     // instead insert a dummy action, already with bookmark url
+    int pos = m_toolBar->orientation() == Qt::Horizontal ? p.x() : p.y();
     kDebug()<<"KBookmarkBar::handleToolbarDragMoveEvent "<<pos<<endl;
     Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->container(0))) );
     m_toolBar->setUpdatesEnabled(false);
     removeTempSep();
 
-    QWidget* b = 0;
+    bool foundWidget = false;
     m_toolBarSeparator->setText(text);
 
     // Empty toolbar
@@ -297,27 +298,26 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAc
     }
 
     // else find the toolbar button 
-    //TODO contains is wrong, we should only care about .left() and .right() in horizontal bars
-    // and about .top() .bottom() for vertical ones
-
     for(int i = 0; i < d->widgetPositions.count(); ++i)
     {
-        if(pos.x() <= d->widgetPositions[i])
+        if( pos <= d->widgetPositions[i])
         {
             kDebug()<<"button contains pos "<<m_toolBar->actions()[i]->text()<<endl;
-            b = m_toolBar->widgetForAction(m_toolBar->actions()[i]);
+            foundWidget = true;
             d->m_sepIndex = i;
             break;
         }
     }
 
-    QAction *a = 0;
     QString address;
 
-    if (b) // found the containing button
+    //TODO b is otherwise unused!
+
+    if (foundWidget) // found the containing button
     {
-        QRect r = b->geometry();
-        if (pos.x() >= ((r.left() + r.right())/2)) //TODO only works for horizontal toolbars
+        int leftOrTop = d->m_sepIndex == 0 ? 0 : d->widgetPositions[d->m_sepIndex-1];
+        int rightOrBottom = d->widgetPositions[d->m_sepIndex];
+        if (pos >= (leftOrTop + rightOrBottom)/2)
         {
             kDebug()<<"in second half "<<endl;
             // if in second half of button then
@@ -326,9 +326,9 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAc
         }
         if(d->m_sepIndex != actions.count())
         {
-            a = m_toolBar->actions()[d->m_sepIndex];
-            kDebug()<<"containing widget found, inserting before "<<a->text()<<endl;
-            m_toolBar->insertAction(a, m_toolBarSeparator);
+            QAction *before = m_toolBar->actions()[d->m_sepIndex];
+            kDebug()<<"containing widget found, inserting before "<<before->text()<<endl;
+            m_toolBar->insertAction(before, m_toolBarSeparator);
         }
         else
         {
@@ -338,13 +338,11 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& pos, const QList<KAc
         m_toolBar->setUpdatesEnabled(true);
         return true;
     }
-    else // (!b)
+    else // (!foundWidget)
     {
         kDebug()<<"no containing widget found"<<endl;
-        a = m_toolBar->actions()[actions.count() - 1];
-        b = m_toolBar->widgetForAction(a);
         // if !b and not past last button, we didn't find button
-        if (pos.x() <= b->geometry().left()) //TODO only works for horizontal toolbars
+        if (pos <= d->widgetPositions[d->widgetPositions.count()-1])
         {
             m_toolBar->setUpdatesEnabled(true);
             return false;
@@ -432,21 +430,23 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
         if (!KBookmark::List::canDecode( dme->mimeData() ))
             return false;
 
-        //cache
+        //cache text, save positions (inserting the temporary widget changes the positions)
         if(e->type() == QEvent::DragEnter)
         {
             QList<KBookmark> list = KBookmark::List::fromMimeData( dme->mimeData() );
             if ( list.isEmpty() )
                 return false;
             d->tempLabel  = list.first().url().pathOrURL();
-            //FIXME doesn't work for vertical toolbars
             //FIXME and neither for rtl toolbars
 
             d->widgetPositions.clear();
 
             for (int i = 0; i < m_toolBar->actions().count(); ++i)
                 if (QWidget* button = m_toolBar->widgetForAction(m_toolBar->actions()[i]))
-                    d->widgetPositions.push_back(button->geometry().right());
+                    if(m_toolBar->orientation() == Qt::Horizontal)
+                        d->widgetPositions.push_back(button->geometry().right());
+                    else
+                        d->widgetPositions.push_back(button->geometry().bottom());
         }
 
         bool accept = handleToolbarDragMoveEvent(dme->pos(), d->m_actions, d->tempLabel);
