@@ -218,8 +218,9 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     KActiveLabel *label2 = new KActiveLabel( qt_text, contents );
     if (!(options & KMessageBox::AllowLink))
     {
-       QObject::disconnect(label2, SIGNAL(anchorClicked (const QUrl &)),
-                        label2, SLOT(openLink(const QUrl &)));
+#warning "kde4: for the moment kactiveLabel doesn't support it"			
+       //QObject::disconnect(label2, SIGNAL(anchorClicked (const QUrl &)),
+       //                 label2, SLOT(openLink(const QUrl &)));
     }
 
     // We add 10 pixels extra to compensate for some KActiveLabel margins.
@@ -255,8 +256,9 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
          label3->setMinimumSize(label3->sizeHint());
          if (!(options & KMessageBox::AllowLink))
          {
-           QObject::disconnect(label3, SIGNAL(anchorClicked (const QUrl &)),
-                            label3, SLOT(openLink(const QUrl &)));
+#warning "kde4: for the moment kactiveLabel doesn't support it"				 
+           //QObject::disconnect(label3, SIGNAL(anchorClicked (const QUrl &)),
+           //                 label3, SLOT(openLink(const QUrl &)));
          }
        } else {
          QTextEdit* te = new QTextEdit(details, detailsGroup);
