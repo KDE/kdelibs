@@ -105,7 +105,7 @@ static UString formatTime(struct tm &tm)
 #if defined BSD || defined(__linux__) || defined(__APPLE__)
     tz = tm.tm_gmtoff;
 #else
-#  if defined(__BORLANDC__)
+#  if defined(__BORLANDC__) || defined (__CYGWIN__)
     tz = - _timezone;
 #  else
     tz = - timezone;
