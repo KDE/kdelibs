@@ -9,7 +9,7 @@
     <x>0</x>
     <y>0</y>
     <width>391</width>
-    <height>314</height>
+    <height>332</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -17,7 +17,7 @@
   </property>
   <layout class="QGridLayout" >
    <property name="margin" >
-    <number>0</number>
+    <number>9</number>
    </property>
    <property name="spacing" >
     <number>6</number>
@@ -417,6 +417,7 @@
  </widget>
  <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
  <pixmapfunction>Small</pixmapfunction>
+ <includes/>
  <resources/>
  <connections/>
 </ui>
