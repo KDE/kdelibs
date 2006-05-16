@@ -48,6 +48,8 @@
 #include <kdehw/ifaces/button.h>
 #include <kdehw/display.h>
 #include <kdehw/ifaces/display.h>
+#include <kdehw/audioiface.h>
+#include <kdehw/ifaces/audioiface.h>
 
 namespace KDEHW
 {
@@ -297,6 +299,9 @@ KDEHW::Capability *KDEHW::Device::asCapability( const Capability::Type &capabili
                 break;
             case Capability::Display:
                 iface = capability_cast<Ifaces::Display, Display>( cap_iface );
+                break;
+            case Capability::AudioIface:
+                iface = capability_cast<Ifaces::AudioIface, AudioIface>( cap_iface );
                 break;
             case Capability::Unknown:
                 break;

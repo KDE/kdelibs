@@ -73,7 +73,8 @@ namespace Enums
                     Volume = 16, OpticalDisc = 32,
                     Camera = 64, PortableMediaPlayer = 128,
                     NetworkIface = 256, AcAdapter = 512,
-                    Battery = 1024, Button = 2048, Display = 4096 };
+                    Battery = 1024, Button = 2048,
+                    Display = 4096, AudioIface = 8192 };
 
         /**
          * This type stores an OR combination of Type values.
@@ -316,6 +317,40 @@ namespace Enums
          */
         enum DisplayType{ Lcd, Crt, TvOut, UnknowDisplayType };
     };
+
+    /**
+     * This struct holds the enumerations used by KDEHW::AudioIface
+     * and KDEHW::Ifaces::AudioIface. You shouldn't use it directly.
+     */
+    struct AudioIface
+    {
+        /**
+         * This enum type defines the type of driver required to
+         * interact with the device.
+         *
+         * - Alsa: An Advanced Linux Sound Architecture (ALSA) driver device
+         * - OpenSoundSystem: An Open Sound System (OSS) driver device
+         * - UnknownAudioDriver: An unknown driver device
+         */
+        enum AudioDriver{ Alsa, OpenSoundSystem, UnknownAudioDriver };
+
+        /**
+         * This enum type defines the type of audio interface this
+         * device expose.
+         *
+         * - AudioControl: A control/mixer interface
+         * - AudioInput: An audio source
+         * - AudioOutput: An audio sink
+         * - UnknownAudioIfaceType: An unknown audio interface
+         */
+        enum AudioIfaceType{ UnknownAudioIfaceType, AudioControl, AudioInput, AudioOutput };
+
+        /**
+         * This type stores an OR combination of AudioIfaceType values.
+         */
+        Q_DECLARE_FLAGS( AudioIfaceTypes, AudioIfaceType )
+    };
+    Q_DECLARE_OPERATORS_FOR_FLAGS( AudioIface::AudioIfaceTypes )
 }
 }
 }
