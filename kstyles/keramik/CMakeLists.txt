@@ -28,7 +28,7 @@ endforeach(pics ${keramikPics})
 # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
 get_target_property(GENEMBED_EXECUTABLE genembed WRAPPER_SCRIPT)
 
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/keramikrc.h ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
   COMMAND ${GENEMBED_EXECUTABLE} --file ${CMAKE_CURRENT_BINARY_DIR}/keramikPics.txt > ${CMAKE_CURRENT_BINARY_DIR}/pixmaps.keramik
   DEPENDS genembed ${keramikPics}
 )
