@@ -122,16 +122,15 @@ void KConfigTest::initTestCase()
 #ifndef Q_CC_MSVC
   sc.writeEntry( "enum-100", KConfigTest::Hundreds );
 #else
-  int val = KConfigTest::Hundreds;
-  sc.writeEntry( "enum-100", val );
+  sc.writeEntry( "enum-100", KConfigTest::Hundreds, KConfigBase::Normal );
 #endif
+
   sc.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
   
 #ifndef Q_CC_MSVC
   sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
 #else
-  int fl = KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1);
-  sc.writeEntry( "flags-bit0-bit1", fl);
+  sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1), KConfigBase::Normal );
 #endif
 
   sc.sync();
