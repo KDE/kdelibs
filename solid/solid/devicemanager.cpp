@@ -87,7 +87,6 @@ KDEHW::DeviceManager::DeviceManager()
     Ifaces::DeviceManager *backend = 0;
 
     KTrader::OfferList offers = KTrader::self()->query( "KdeHwDeviceManager", "(Type == 'Service')" );
-    KService::Ptr ptr = offers.first();
 
     foreach ( KService::Ptr ptr, offers )
     {
