@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include <cmath>
+#include <math.h>
 #include <climits>
 #include <cstdlib>
 
