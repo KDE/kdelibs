@@ -146,8 +146,8 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
     if (needClipping) {
         p->save();
 
-        int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos);
-        int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos);
+        int visualSelectionStart = f->width(text->str->s, text->str->l, m_start, startPos, m_start, m_start + m_len, m_toAdd);
+        int visualSelectionEnd = f->width(text->str->s, text->str->l, m_start, endPos, m_start, m_start + m_len, m_toAdd);
         int visualSelectionWidth = visualSelectionEnd - visualSelectionStart;
         if (m_reversed) {
             visualSelectionStart = f->width(text->str->s, text->str->l, m_start, m_len) - visualSelectionEnd;
