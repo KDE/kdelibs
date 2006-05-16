@@ -174,9 +174,9 @@ by QX11Info::display()</li>
 <li>enableStyles(), disableStyles(), and the constructor argument has been removed.</li>
 <li>installKDEPropertyMap has been moved into k3sqlpropertymap.h and renamed to kInstallKDEPropertyMap. It can be used to keep old code that uses the Q3Data* classes working.For new code, use User in the meta object to determine which Q_PROPERTY to use for any widget.
 <pre>
-  const QMetaObject *metaObject = widget->metaObject();
-  for (int i = 0; i < metaObject->propertyCount(); ++i) {
-    const QMetaProperty metaProperty = metaObject->property(i);
+  const QMetaObject *metaObject = widget-&gt;metaObject();
+  for (int i = 0; i < metaObject-&gt;propertyCount(); ++i) {
+    const QMetaProperty metaProperty = metaObject-&gt;property(i);
     if (metaProperty.isUser()) {
       QString propertyToUse = metaProperty.name();
       break;
@@ -278,7 +278,7 @@ Desktop Entry Spec</a>
 <H4>KKey</H4>
 <ul>
 <li>Removed. Use plain ints as the Qt key code instead.</li>
-<li>When replacing KKey(QKeyEvent*), you need to OR the event->key() and event->modifiers() to get the replacement.</li>
+<li>When replacing KKey(QKeyEvent*), you need to OR the event-&gt;key() and event-&gt;modifiers() to get the replacement.</li>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
 <li>modFlagLabel() was removed, use either KKeyServer::modToStringUser(), or QKeySequence(Qt::yourmodifier).toString()</li>
 </ul>
@@ -535,7 +535,7 @@ cg.readXXX("entry name");
 <li>setGroup() / group() removed - use QActionGroup instead (setActionGroup() / actionGroup())</li>
 <li>ActivationReason has been removed (not supported by Qt). For a surrogate, you can connect to QMenu::triggered(QAction*), QToolBar::actionTriggered(QAction*), etc.</li>
 <li>setters are no longer slots; where they were used as such, an intermediary will be required</li>
-<li>New feature from Qt: statusTip() / setStatusTip().  Usually this will be the same as the tooltip.  It appears in the status bar whenever the action is hovered in a QMenu.  A porting convenience is being investigated for automatic toolTip() -> statusTip(), but the best solution is to set both.</li>
+<li>New feature from Qt: statusTip() / setStatusTip().  Usually this will be the same as the tooltip.  It appears in the status bar whenever the action is hovered in a QMenu.  A porting convenience is being investigated for automatic toolTip() -&gt; statusTip(), but the best solution is to set both.</li>
 <li>New feature: globalShortcut() and globalShortcutAllowed().  Automatically communicates with KGlobalAccel to register a global shortcut (ie. one that does not need the application to have focus to be activated).</li>
 <li>setShortcut() now defaults to setting the default shortcut as well (as it was by far the most common use case).  To just set the custom shortcut, use setShortcut(myShortcut, KAction::CustomShortcut)</li>
 </ul>
@@ -577,7 +577,7 @@ cg.readXXX("entry name");
 <H4>KRecentFilesAction</H4>
 <ul>
 <li>clearURLList() removed, use clear() instead</li>
-<li>*URL* -> *Url* as per KDE naming policy</li>
+<li>*URL* -&gt; *Url* as per KDE naming policy</li>
 </ul>
 
 <H4>KWidgetAction</H4>
@@ -922,8 +922,8 @@ KContextMenuManager::insert(widget, menu);
 </pre>
 <p>New code:</p>
 <pre>
-widget->setContextMenuPolicy(Qt::ActionsContextMenu);
-widget->addActions(menu->actions());
+widget-&gt;setContextMenuPolicy(Qt::ActionsContextMenu);
+widget-&gt;addActions(menu-&gt;actions());
 </pre>
 <li>Otherwise consider handling the context menu in a contextMenuEvent() handler, which Qt
 calls automatically on a right-mouse-button click or on activation by the context menu key.
