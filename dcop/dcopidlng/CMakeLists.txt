@@ -3,7 +3,7 @@
 
 ########### install files ###############
 
-install(PROGRAMS ${KDE4_DCOPIDL_EXECUTABLE} DESTINATION bin)
+install(PROGRAMS ${KDE4_DCOPIDL_EXECUTABLE_INSTALL} DESTINATION bin)
 
 install_files( ${DATA_INSTALL_DIR}/dcopidl FILES Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocParseDoc.pm kdocUtil.pm kalyptus )
 
