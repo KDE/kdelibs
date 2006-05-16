@@ -221,7 +221,6 @@ void RMB::fillContextMenu( const QString & address)
 {
   m_contextMenu->clear();
   KBookmark bookmark = atAddress(address);
-
   m_contextMenu->addAction( SmallIcon("bookmark_add"), i18n( "Add Bookmark Here" ), this, SLOT(slotInsert()) );
 }
 
