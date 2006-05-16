@@ -47,12 +47,6 @@
 #include <qmimedata.h>
 #include <qtextcodec.h>
 
-#ifdef Q_WS_WIN
-# define KURL_ROOTDIR_PATH "C:/"
-#else
-# define KURL_ROOTDIR_PATH "/"
-#endif
-
 static const QString fileProt = "file";
 
 static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool decodeDots )
@@ -128,7 +122,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 #endif
 
   if ( result.isEmpty() )
-    result = KURL_ROOTDIR_PATH;
+    result = '/';
   else if ( slash && result[result.length()-1] != QLatin1Char('/') )
        result.append(QChar('/'));
 
