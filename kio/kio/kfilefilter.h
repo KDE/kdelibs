@@ -96,14 +96,12 @@ public:
     /**
      * Sets a list of regular expressions to filter by name.
      * The file will only pass if its name matches one of the regular
-     * expressions.
-     * @param nameFilters a list of regular expressions, separated by
-     *                    the character @p separator
+     * expressions. The regular expressions are using wildcard matching.
+     * @param nameFilters a list of regular expressions
      * @param caseSensitive Qt::CaseSensitive or Qt::CaseInsensitive
-     * @param separator the separator in the @p nameFilter
      */
-    virtual void setNameFilters( const QString& nameFilters, Qt::CaseSensitivity caseSensitive = Qt::CaseSensitive,
-                                 const QChar& separator = ' ' );
+    virtual void setNameFilters( const QStringList& nameFilters,
+                                 Qt::CaseSensitivity caseSensitive = Qt::CaseSensitive );
     /**
      * Sets a list of mime filters. A file can only pass if its
      * mime type is contained in this list.
