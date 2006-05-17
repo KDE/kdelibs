@@ -39,10 +39,6 @@
 
 #include <qapplication.h>
 
-#ifdef Q_CC_MSVC
-#include <iso646.h> // define xor, and, not, ...
-#endif
-
 
 class KBookmarkBarPrivate
 {
@@ -303,7 +299,7 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     // else find the toolbar button 
     for(int i = 0; i < d->widgetPositions.count(); ++i)
     {
-        if( rtl xor pos <= d->widgetPositions[i])
+        if( rtl ^ (pos <= d->widgetPositions[i]) )
         {
             foundWidget = true;
             d->m_sepIndex = i;
@@ -317,7 +313,7 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     {
         int leftOrTop = d->m_sepIndex == 0 ? 0 : d->widgetPositions[d->m_sepIndex-1];
         int rightOrBottom = d->widgetPositions[d->m_sepIndex];
-        if ( rtl xor pos >= (leftOrTop + rightOrBottom)/2)
+        if ( rtl ^ (pos >= (leftOrTop + rightOrBottom)/2) )
         {
             // if in second half of button then
             // we jump to next index
@@ -338,7 +334,7 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     else // (!foundWidget)
     {
         // if !b and not past last button, we didn't find button
-        if (rtl xor pos <= d->widgetPositions[d->widgetPositions.count()-1])
+        if (rtl ^ (pos <= d->widgetPositions[d->widgetPositions.count()-1]) )
         {
             m_toolBar->setUpdatesEnabled(true);
             return false;
