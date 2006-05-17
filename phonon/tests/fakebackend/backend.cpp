@@ -117,6 +117,17 @@ bool Backend::supportsOSD() const
 	return false;
 }
 
+bool Backend::supportsFourcc( quint32 fourcc ) const
+{
+	switch( fourcc )
+	{
+		case 0x00000000:
+			return true;
+		default:
+			return false;
+	}
+}
+
 bool Backend::supportsSubtitles() const
 {
 	return false;

@@ -155,6 +155,14 @@ namespace Ifaces
 			virtual bool supportsOSD() const = 0;
 
 			/**
+			 * Tells whether the FOURCC (four character code) is supported for
+			 * the VideoDataOutput interface. If you return true, you have to be
+			 * able to return VideoFrame objects accordingly from
+			 * VideoDataOutput.
+			 */
+			virtual bool supportsFourcc( quint32 fourcc ) const = 0;
+
+			/**
 			 * Tells whether the backend supports subtitle rendering on the
 			 * video output.
 			 *

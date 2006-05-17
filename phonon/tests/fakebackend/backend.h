@@ -72,6 +72,7 @@ namespace Fake
 
 			virtual bool supportsVideo() const;
 			virtual bool supportsOSD() const;
+			virtual bool supportsFourcc( quint32 fourcc ) const;
 			virtual bool supportsSubtitles() const;
 			virtual const QStringList& knownMimeTypes() const;
 
