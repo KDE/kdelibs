@@ -47,7 +47,7 @@ class Factory::Private
 			const char* lib = Phonon::Factory::self()->uiLibrary();
 			if( lib == 0 )
 			{
-				KMessageBox::error( 0, i18n( "The current backend does not support any graphical user interface functionality. Choose a different backend if this is not what you want." ) ); //FIXME: Make this error message more usefull: Offer the user a simple way to change the backend
+				KMessageBox::error( 0, i18n( "The current backend does not support any graphical user interface functionality. Choose a different backend if this is not what you want." ) ); //FIXME: Make this error message more useful: Offer the user a simple way to change the backend
 				return;
 			}
 

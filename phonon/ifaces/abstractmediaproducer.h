@@ -91,7 +91,7 @@ namespace Ifaces
 			/**
 			 * Return the time interval in milliseconds between two ticks.
 			 *
-			 * @returns Returns the tick intervall that it was set to (might not
+			 * @returns Returns the tick interval that it was set to (might not
 			 * be the same as you asked for).
 			 */
 			virtual qint32 tickInterval() const = 0;
@@ -114,7 +114,7 @@ namespace Ifaces
 			 *
 			 * \param newTickInterval tick interval in milliseconds
 			 *
-			 * @returns Returns the tick intervall that it was set to (might not
+			 * @returns Returns the tick interval that it was set to (might not
 			 * be the same as you asked for).
 			 */
 			virtual void setTickInterval( qint32 newTickInterval ) = 0;

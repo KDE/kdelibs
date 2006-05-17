@@ -64,7 +64,7 @@ namespace Phonon
 	 * BufferingState.
 	 *
 	 * As soon as you know the size of the stream (in bytes) you should call
-	 * setStreamSize. This could be usefull for the ByteStream object to
+	 * setStreamSize. This could be useful for the ByteStream object to
 	 * correctly emit the aboutToFinish signal. If the size is not known the
 	 * aboutToFinish signal will still work, but you should not depend on it
 	 * being emitted at the correct time.
@@ -122,7 +122,7 @@ namespace Phonon
 			/**
 			 * Tell the object whether you will support seeking in the
 			 * datastream. If you do, you have to react to the seekStream
-			 * signal. If you don't you can savely ignore that signal.
+			 * signal. If you don't you can safely ignore that signal.
 			 *
 			 * \param seekable Whether you are able to seek in the datastream
 			 * and provide the writeData method with the data at arbitrary

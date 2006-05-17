@@ -371,7 +371,7 @@ namespace Ifaces
 			 * Returns the symbol used for retrieving the Ui::Ifaces::Backend
 			 * instance.
 			 *
-			 * This is usefull if you have both Phonon::Ifaces and
+			 * This is useful if you have both Phonon::Ifaces and
 			 * Phonon::Ui::Ifaces in the same DSO. Then you can add another
 			 * function returning the Ui::Ifaces::Backend instance.
 			 */

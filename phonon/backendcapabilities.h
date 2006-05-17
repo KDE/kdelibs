@@ -166,7 +166,7 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 
 	Q_SIGNALS:
 		/**
-		 * This signal is emitted if the capabilites have changed. This can
+		 * This signal is emitted if the capabilities have changed. This can
 		 * happen if the user has requested a backend change.
 		 */
 		void capabilitiesChanged();

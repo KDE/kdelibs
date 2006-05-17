@@ -72,7 +72,7 @@ namespace Ifaces
 			 * This signal is emitted as soon as the length of the media file is
 			 * known or has changed. For most non-local media data the length of
 			 * the media can only be known after some time. At that time the
-			 * totalTime function can not return usefull information. You have
+			 * totalTime function can not return useful information. You have
 			 * to wait for this signal to know the real length.
 			 *
 			 * @param length The length of the media file in milliseconds.

@@ -72,7 +72,7 @@ namespace Phonon
 		 */
 		PausedState,
 		/**
-		 * An unrecoverable error occured. The Object is unusable in this state.
+		 * An unrecoverable error occurred. The Object is unusable in this state.
 		 */
 		ErrorState
 	};
@@ -83,7 +83,7 @@ namespace Phonon
 	 * A Jukebox will set this to Music, a VoIP program to Communication, a
 	 * DVD player to video, and so on.
 	 *
-	 * \note These categories can also become usefull for an application that
+	 * \note These categories can also become useful for an application that
 	 * controls the volumes automatically, like turning down the music when a call
 	 * comes in, or turning down the notifications when the media player knows
 	 * it's playing classical music.

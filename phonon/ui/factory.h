@@ -36,7 +36,7 @@ namespace Ifaces
 }
 
 /**
- * \brief Factory to access the GUI dependend part of the Backend.
+ * \brief Factory to access the GUI dependent part of the Backend.
  *
  * This class is used internally to map the backends functionality to the API.
  *

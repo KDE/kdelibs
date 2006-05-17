@@ -37,7 +37,7 @@ namespace Phonon
 	 * This effect differs from gradually changing the output volume in that
 	 * a dedicated effect can change the volume in the smallest possible
 	 * steps while every other volume control will make more or less
-	 * noticable steps.
+	 * noticeable steps.
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \see AudioOutput::setVolume

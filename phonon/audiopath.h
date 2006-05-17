@@ -79,7 +79,7 @@ namespace Phonon
 			 * This can be standard soundcard outputs or special outputs that
 			 * give your program access to the audio data (or frequency spectrum).
 			 *
-			 * \return Returns whether the call was successfull.
+			 * \return Returns whether the call was successful.
 			 *
 			 * \see removeOutput
 			 * \see AudioOutput
@@ -98,7 +98,7 @@ namespace Phonon
 			 *
 			 * \param audioOutput your audio output object
 			 *
-			 * \return Returns whether the call was successfull. If it returns
+			 * \return Returns whether the call was successful. If it returns
 			 * \c false the audio output could not be found in the path, meaning
 			 * it was not connected at all.
 			 *
@@ -149,7 +149,7 @@ namespace Phonon
 			 *
 			 * \param effect The effect to be removed.
 			 *
-			 * \return Returns whether the call was successfull. If it returns
+			 * \return Returns whether the call was successful. If it returns
 			 * \c false the effect could not be found in the path, meaning it
 			 * has not been inserted before.
 			 *

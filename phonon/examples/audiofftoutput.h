@@ -34,7 +34,7 @@ namespace Phonon
 	/**
 	 * @short Fourier transforms the audio data for visualizations.
 	 *
-	 * This class is usefull to easily get the fourier transformed audio data,
+	 * This class is useful to easily get the fourier transformed audio data,
 	 * i.e. the frequency spectrum. The spectrum can be used for visualizations.
 	 *
 	 * @author Matthias Kretz <kretz@kde.org>

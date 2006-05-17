@@ -55,7 +55,7 @@ class PHONONUI_EXPORT MediaControls : public QWidget
 	Q_PROPERTY( bool seekSliderVisible READ isSeekSliderVisible WRITE setSeekSliderVisible )
 
 	/**
-	 * This property holds whether the slider controling the volume is visible.
+	 * This property holds whether the slider controlling the volume is visible.
 	 *
 	 * By default the slider is visible if an AudioOutput has been set with
 	 * setAudioOutput.

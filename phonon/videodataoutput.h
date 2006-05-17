@@ -78,7 +78,7 @@ namespace Phonon
 		 * In order to give the backend a chance to perfectly synchronize
 		 * audio and video it needs to know how much time you need in order
 		 * to display the video frame after it emitted the frameReady
-		 * signal. If you render the video to screen immediatly, setting the
+		 * signal. If you render the video to screen immediately, setting the
 		 * latency to 0 ms should be good enough.
 		 *
 		 * If set to -1 the backend may disregard this

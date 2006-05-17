@@ -164,7 +164,7 @@ namespace Phonon
 			 * model. The indexes come from the NameDescriptionTuple::index
 			 * method.
 			 *
-			 * This is usefull to let the user define a list of preference.
+			 * This is useful to let the user define a list of preference.
 			 */
 			QList<int> tupleIndexOrder() const;
 
