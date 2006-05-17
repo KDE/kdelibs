@@ -25,16 +25,37 @@
 
 namespace Phonon
 {
+	/**
+	 * \brief A single video frame.
+	 *
+	 * This simple class contains the data of a frame and metadata describing
+	 * how to interpret the data.
+	 *
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
 	class VideoFrame
 	{
 		public:
-			Phonon::VideoDataOutput::Format format;
 			QByteArray data;
+			/**
+			 * The width of the video frame in pixels.
+			 */
 			int width;
+			/**
+			 * The height of the video frame in pixels.
+			 */
 			int height;
-			//zrusin: both format, depth and bpp are necessary. eg format could be rgb32, depth
-			//        32 and bpp 8 ir format rgb32, depth 24 and bpp 8...
+			/**
+			 * The FOURCC (four character code) identifying the data format.
+			 */
+			quint32 fourcc;
+			/**
+			 * The color depth in bits.
+			 */
 			int depth;
+			/**
+			 * The number of bits per pixel.
+			 */
 			int bpp;
 	};
 } // namespace Phonon
