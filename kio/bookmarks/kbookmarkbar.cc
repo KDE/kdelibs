@@ -261,9 +261,8 @@ void KBookmarkBar::slotBookmarkSelected()
 
 void KBookmarkBar::removeTempSep()
 {
-    if (m_toolBarSeparator) {
+    if (m_toolBarSeparator)
         m_toolBar->removeAction(m_toolBarSeparator);
-    }
 }
 
 /**
@@ -277,7 +276,6 @@ void KBookmarkBar::removeTempSep()
 bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KAction *>& actions, QString text)
 {
     int pos = m_toolBar->orientation() == Qt::Horizontal ? p.x() : p.y();
-    kDebug()<<"KBookmarkBar::handleToolbarDragMoveEvent "<<pos<<endl;
     Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->container(0))) );
     m_toolBar->setUpdatesEnabled(false);
     removeTempSep();
@@ -291,7 +289,6 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     // Empty toolbar
     if(actions.isEmpty())
     {
-        kDebug()<<"actions empty "<<endl;
         d->m_sepIndex = 0;
         m_toolBar->addAction(m_toolBarSeparator);
         m_toolBar->setUpdatesEnabled(true);
@@ -303,7 +300,6 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     {
         if( rtl xor pos <= d->widgetPositions[i])
         {
-            kDebug()<<"button contains pos "<<m_toolBar->actions()[i]->text()<<endl;
             foundWidget = true;
             d->m_sepIndex = i;
             break;
@@ -318,7 +314,6 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
         int rightOrBottom = d->widgetPositions[d->m_sepIndex];
         if ( rtl xor pos >= (leftOrTop + rightOrBottom)/2)
         {
-            kDebug()<<"in second half "<<endl;
             // if in second half of button then
             // we jump to next index
             d->m_sepIndex++;
@@ -326,12 +321,10 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
         if(d->m_sepIndex != actions.count())
         {
             QAction *before = m_toolBar->actions()[d->m_sepIndex];
-            kDebug()<<"containing widget found, inserting before "<<before->text()<<endl;
             m_toolBar->insertAction(before, m_toolBarSeparator);
         }
         else
         {
-            kDebug()<<"containing widget found, inserting at the end "<<endl;
             m_toolBar->addAction(m_toolBarSeparator);
         }
         m_toolBar->setUpdatesEnabled(true);
@@ -339,7 +332,6 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     }
     else // (!foundWidget)
     {
-        kDebug()<<"no containing widget found"<<endl;
         // if !b and not past last button, we didn't find button
         if (rtl xor pos <= d->widgetPositions[d->widgetPositions.count()-1])
         {
@@ -348,7 +340,6 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
         }
         else // location is beyond last action, assuming we want to add in the end
         {
-            kDebug()<<" beyond last widget "<<endl;
             d->m_sepIndex = actions.count();
             m_toolBar->addAction(m_toolBarSeparator);
             m_toolBar->setUpdatesEnabled(true);
