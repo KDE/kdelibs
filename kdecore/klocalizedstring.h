@@ -173,7 +173,7 @@ class KLocalizedStringPrivate;
  * \code
  *   KLocale *myLocale;
  *   ...
- *   ki18n("Welcome!").toString(myLocale);
+ *   ki18n("Welcome").toString(myLocale);
  * \endcode
  *
  * \section subs_notes Placeholder Substitution

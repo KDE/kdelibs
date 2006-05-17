@@ -169,7 +169,7 @@ bool CupsdDialog::setConfigFile(const QString& filename)
 	filename_ = filename;
 	if (!conf_->loadFromFile(filename_))
 	{
-		KMessageBox::error(this, i18n("Error while loading configuration file!"), i18n("CUPS Configuration Error"));
+		KMessageBox::error(this, i18n("Error while loading configuration file."), i18n("CUPS Configuration Error"));
 		return false;
 	}
 	if (conf_->unknown_.count() > 0)
@@ -247,10 +247,10 @@ bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *m
 	{
 		QFileInfo	fi(fn);
 		if (!fi.exists() || !fi.isReadable() || !fi.isWritable())
-			errormsg = i18n("Internal error: file '%1' not readable/writable!", fn);
+			errormsg = i18n("Internal error: file '%1' not readable/writable.", fn);
 		// check file size
 		if (fi.size() == 0)
-			errormsg = i18n("Internal error: empty file '%1'!", fn);
+			errormsg = i18n("Internal error: empty file '%1'.", fn);
 	}
 
 	if (!errormsg.isEmpty())

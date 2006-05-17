@@ -1016,7 +1016,7 @@ void KApplication::dcopFailure(const QString &msg)
                       "communications for KDE. The message returned "
                       "by the system was:\n\n"));
      msgStr += msg;
-     msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running!");
+     msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running.");
 
      if (Tty != kapp->type())
      {

@@ -96,7 +96,7 @@ Resource *SelectDialog::resource()
 Resource *SelectDialog::getResource( QList<Resource *> list, QWidget *parent )
 {
   if ( list.count() == 0 ) {
-    KMessageBox::error( parent, i18n( "There is no resource available!" ) );
+    KMessageBox::error( parent, i18n( "There is no resource available." ) );
     return 0;
   }
 

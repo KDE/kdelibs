@@ -822,7 +822,7 @@ AddressBook::configFileChanged()
   if (!config->load())
     {
       KMessageBox::error(this,
-	 i18n("Cannot reload configuration file!"),
+	 i18n("Can not reload configuration file."),
 	 i18n("File Error"));
     } else {
 	kDebug(GUARD, KAB_KDEBUG_AREA) << "AddressBook::configFileChanged: "

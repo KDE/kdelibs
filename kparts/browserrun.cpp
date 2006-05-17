@@ -367,7 +367,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
             if (cmd.isEmpty())
             {
                 QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ", downloadManger);
-                QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled!");
+                QString errMsgEx= i18n("Try to reinstall it  \n\nThe integration with Konqueror will be disabled.");
                 KMessageBox::detailedSorry(0,errMsg,errMsgEx);
                 cfg.writePathEntry("DownloadManager",QString());
                 cfg.sync ();

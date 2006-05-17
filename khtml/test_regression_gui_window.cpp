@@ -177,7 +177,7 @@ void TestRegressionWindow::initTestsDirectory()
 			QFileInfo sourceDir(m_testsUrl.path() + "/" + subdirs[i]);
 			if(!sourceDir.exists() || !sourceDir.isDir())
 			{
-				KMessageBox::error(0, i18n("Please choose a valid 'khtmltests/regression/' directory!"));
+				KMessageBox::error(0, i18n("Please choose a valid 'khtmltests/regression/' directory."));
 
 				okay = false;
 				m_testsUrl = KUrl();
@@ -245,7 +245,7 @@ void TestRegressionWindow::setKHTMLDirectory()
 			QFileInfo sourceDir(m_khtmlUrl.path() + "/" + subdirs[i]);
 			if(!sourceDir.exists() || !sourceDir.isDir())
 			{
-				KMessageBox::error(0, i18n("Please choose a valid 'khtml/' build directory!"));
+				KMessageBox::error(0, i18n("Please choose a valid 'khtml/' build directory."));
 
 				m_khtmlUrl = KUrl();
 				break;
@@ -626,7 +626,7 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 	{
 		if(!QFileInfo(program2).exists())
 		{
-			KMessageBox::error(0, i18n("Can't find testregression executable!"));
+			KMessageBox::error(0, i18n("Can't find testregression executable."));
 			return;
 		}
 		else

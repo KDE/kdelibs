@@ -457,7 +457,7 @@ void ResourceFile::downloadFinished( KJob* )
   d->mIsLoading = false;
 
   if ( !hasTempFile() || mTempFile->status() != 0 ) {
-    emit loadingError( this, i18n( "Download failed in some way!" ) );
+    emit loadingError( this, i18n( "Download failed, could not create temporary file" ) );
     return;
   }
 

@@ -85,7 +85,7 @@ void KX509Item::setup(KSSLCertificate *x) {
 		}
 		setText(0, _prettyName);
 	} else {
-		setText(0, i18n("Invalid certificate!"));
+		setText(0, i18n("Invalid certificate"));
 	}
 }
 
@@ -108,7 +108,7 @@ KPKCS12Item::KPKCS12Item(K3ListViewItem *parent, KSSLPKCS12 *x) :
 		_prettyName = CN;
 		setText(0, _prettyName);
 	} else {
-		setText(0, i18n("Invalid certificate!"));
+		setText(0, i18n("Invalid certificate"));
 	}
 }
 

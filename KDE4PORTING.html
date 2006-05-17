@@ -1309,7 +1309,7 @@ ki18ncp("Personal file", "1 file", "%n files").subs(n).toString();
 <pre>
 KLocale *myLocale;
 ...
-ki18n("Welcome!").toString(myLocale);
+ki18n("Welcome").toString(myLocale);
 </pre>
 
 <p>There is a script for semi-automatic conversion of KDE 3 code, <code>i18nk34conv.pl</code> in <code>branches/work/kde4-l10n/scripts/conversion/</code>. It will convert most of the calls automatically, and mark the places that need manual review. There is also the script <code>i18ncheckarg.pl</code> in <code>branches/work/kde4-l10n/scripts</code>, which will check whether placeholders and arguments match. Use it to catch and correct deferred substitutions (like in the examples above). Both these scripts you can just run without any arguments in top directory of your sources (but you can also specify paths or filenames as arguments). <i>Do not</i> run conversion script twice on same sources!</p>

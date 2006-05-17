@@ -167,7 +167,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QByteArray context = textElem.attribute(d->attrContext).toUtf8();
 
     if ( text.isEmpty() ) // still no luck
-      i18nText = i18n( "No text!" );
+      i18nText = i18n( "No text" );
     else if ( context.isEmpty() )
       i18nText = i18n( text );
     else
@@ -367,7 +367,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
       QByteArray text = element.text().toUtf8();
 
       if ( text.isEmpty() )
-        i18nText = i18n( "No text!" );
+        i18nText = i18n( "No text" );
       else
         i18nText = i18n( text );
 

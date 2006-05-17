@@ -286,7 +286,7 @@ void ConfigPage::slotFamilyChanged( int pos )
     mCurrentManager->writeConfig( mCurrentConfig );
   } else {
     if ( !standardResource )
-      KMessageBox::sorry( this, i18n( "There is no standard resource! Please select one." ) );
+      KMessageBox::sorry( this, i18n( "There is no standard resource. Please select one." ) );
 
     emit changed( false );
   }
@@ -360,7 +360,7 @@ void ConfigPage::slotRemove()
     return;
 
   if ( confItem->standard() ) {
-    KMessageBox::sorry( this, i18n( "You cannot remove your standard resource! Please select a new standard resource first." ) );
+    KMessageBox::sorry( this, i18n( "You cannot remove your standard resource. Please select a new standard resource first." ) );
     return;
   }
 
@@ -394,7 +394,7 @@ void ConfigPage::slotEdit()
     configItem->setText( 1, resource->type() );
 
     if ( configItem->standard() && configItem->readOnly() ) {
-      KMessageBox::sorry( this, i18n( "You cannot use a read-only resource as standard!" ) );
+      KMessageBox::sorry( this, i18n( "You cannot use a read-only resource as standard." ) );
       configItem->setStandard( false );
     }
 
@@ -413,12 +413,12 @@ void ConfigPage::slotStandard()
     return;
 
   if ( item->readOnly() ) {
-    KMessageBox::sorry( this, i18n( "You cannot use a read-only resource as standard!" ) );
+    KMessageBox::sorry( this, i18n( "You cannot use a read-only resource as standard." ) );
     return;
   }
 
   if ( !item->isOn() ) {
-    KMessageBox::sorry( this, i18n( "You cannot use an inactive resource as standard!" ) );
+    KMessageBox::sorry( this, i18n( "You cannot use an inactive resource as standard." ) );
     return;
   }
 
@@ -521,7 +521,7 @@ void ConfigPage::saveResourceSettings()
     mCurrentManager->writeConfig( mCurrentConfig );
 
     if ( !mCurrentManager->standardResource() )
-      KMessageBox::sorry( this, i18n( "There is no valid standard resource! Please select one which is neither read-only nor inactive." ) );
+      KMessageBox::sorry( this, i18n( "There is no valid standard resource. Please select one which is neither read-only nor inactive." ) );
   }
 }
 

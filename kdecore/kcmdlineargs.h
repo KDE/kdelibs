@@ -323,7 +323,7 @@ public:
    *     specified by the user:
    *     \code
    *       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-   *       if (args->count() == 0) KCmdLineArgs::usage(i18n("No file specified!"));
+   *       if (args->count() == 0) KCmdLineArgs::usage(i18n("No file specified"));
    *     \endcode
    *
    * In BNF:

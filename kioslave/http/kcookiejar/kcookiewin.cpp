@@ -130,7 +130,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 
     txt = QString("<b>%1</b>").arg( KIDNA::toUnicode(host) );
     if (cookie->isCrossDomain())
-       txt += i18n(" <b>[Cross Domain!]</b>");
+       txt += i18n(" <b>[Cross Domain]</b>");
     lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
     lbl = new QLabel( i18n("Do you want to accept or reject?"), vBox );
