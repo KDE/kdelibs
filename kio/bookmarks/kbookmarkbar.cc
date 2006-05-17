@@ -276,8 +276,6 @@ void KBookmarkBar::removeTempSep()
  */
 bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KAction *>& actions, QString text)
 {
-    //TODO separators aren't shown if they are the first/last action, 
-    // instead insert a dummy action, already with bookmark url
     int pos = m_toolBar->orientation() == Qt::Horizontal ? p.x() : p.y();
     kDebug()<<"KBookmarkBar::handleToolbarDragMoveEvent "<<pos<<endl;
     Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->container(0))) );
@@ -285,6 +283,9 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     removeTempSep();
 
     bool foundWidget = false;
+    // Right To Left
+    // only relevant if the toolbar is Horizontal!
+    bool rtl = QApplication::isRightToLeft() && m_toolBar->orientation() == Qt::Horizontal;
     m_toolBarSeparator->setText(text);
 
     // Empty toolbar
@@ -300,7 +301,7 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     // else find the toolbar button 
     for(int i = 0; i < d->widgetPositions.count(); ++i)
     {
-        if( pos <= d->widgetPositions[i])
+        if( rtl xor pos <= d->widgetPositions[i])
         {
             kDebug()<<"button contains pos "<<m_toolBar->actions()[i]->text()<<endl;
             foundWidget = true;
@@ -311,13 +312,11 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
 
     QString address;
 
-    //TODO b is otherwise unused!
-
     if (foundWidget) // found the containing button
     {
         int leftOrTop = d->m_sepIndex == 0 ? 0 : d->widgetPositions[d->m_sepIndex-1];
         int rightOrBottom = d->widgetPositions[d->m_sepIndex];
-        if (pos >= (leftOrTop + rightOrBottom)/2)
+        if ( rtl xor pos >= (leftOrTop + rightOrBottom)/2)
         {
             kDebug()<<"in second half "<<endl;
             // if in second half of button then
@@ -342,7 +341,7 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
     {
         kDebug()<<"no containing widget found"<<endl;
         // if !b and not past last button, we didn't find button
-        if (pos <= d->widgetPositions[d->widgetPositions.count()-1])
+        if (rtl xor pos <= d->widgetPositions[d->widgetPositions.count()-1])
         {
             m_toolBar->setUpdatesEnabled(true);
             return false;
@@ -437,14 +436,16 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
             if ( list.isEmpty() )
                 return false;
             d->tempLabel  = list.first().url().pathOrURL();
-            //FIXME and neither for rtl toolbars
 
             d->widgetPositions.clear();
 
             for (int i = 0; i < m_toolBar->actions().count(); ++i)
                 if (QWidget* button = m_toolBar->widgetForAction(m_toolBar->actions()[i]))
                     if(m_toolBar->orientation() == Qt::Horizontal)
-                        d->widgetPositions.push_back(button->geometry().right());
+                        if(QApplication::isLeftToRight())
+                            d->widgetPositions.push_back(button->geometry().right());
+                        else
+                            d->widgetPositions.push_back(button->geometry().left());
                     else
                         d->widgetPositions.push_back(button->geometry().bottom());
         }
