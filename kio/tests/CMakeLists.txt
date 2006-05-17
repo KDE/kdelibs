@@ -124,16 +124,6 @@ kde4_add_executable(speed RUN_UNINSTALLED ${speed_SRCS})
 target_link_libraries(speed ${KDE4_KIO_LIBS})
 
 
-########### next target ###############
-
-set(kurifiltertest_SRCS kurifiltertest.cpp)
-
-kde4_automoc(${kurifiltertest_SRCS})
-
-kde4_add_executable(kurifiltertest NOGUI RUN_UNINSTALLED ${kurifiltertest_SRCS})
-
-target_link_libraries(kurifiltertest ${KDE4_KIO_LIBS})
-
 
 ########### next target ###############
 
