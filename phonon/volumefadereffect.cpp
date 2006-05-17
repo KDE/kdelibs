@@ -20,6 +20,7 @@
 #include "volumefadereffect.h"
 #include "volumefadereffect_p.h"
 #include "factory.h"
+#include <cmath>
 
 namespace Phonon
 {
@@ -38,6 +39,18 @@ void VolumeFaderEffect::setVolume( float volume )
 		d->iface()->setVolume( volume );
 	else
 		d->currentVolume = volume;
+}
+
+static const float log10over20 = 0.1151292546497022842; // ln(10) / 20
+
+float VolumeFaderEffect::volumeDecibel() const
+{
+	return -logf( volume() ) / log10over20;
+}
+
+void VolumeFaderEffect::setVolumeDecibel( float newVolumeDecibel )
+{
+	setVolume( expf( -newVolumeDecibel * log10over20 ) );
 }
 
 VolumeFaderEffect::FadeCurve VolumeFaderEffect::fadeCurve() const

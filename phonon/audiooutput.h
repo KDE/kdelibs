@@ -61,10 +61,23 @@ namespace Phonon
 		 */
 		Q_PROPERTY( QString name READ name WRITE setName )
 		/**
-		 * This is the current volume of the output. 1.0 means 100%, 0.0
-		 * means 0%
+		 * This is the current volume of the output as voltage factor.
+		 *
+		 * 1.0 means 100%, 0.5 means 50% voltage/25% power, 0.0 means 0%
+		 *
+		 * \see volumeDecibel
 		 */
 		Q_PROPERTY( float volume READ volume WRITE setVolume )
+		/**
+		 * This is the current volume of the output in decibel.
+		 *
+		 * 0 dB means no change in volume, -6dB means an attenuation of the
+		 * voltage to 50% and an attenuation of the power to 25%, -inf dB means
+		 * silence.
+		 *
+		 * \see volume
+		 */
+		Q_PROPERTY( float volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
 		/**
 		 * The category can be used by mixer applications to control the
 		 * volume of a whole category instead of the user having to identify

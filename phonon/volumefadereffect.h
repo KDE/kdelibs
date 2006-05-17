@@ -40,7 +40,7 @@ namespace Phonon
 	 * noticeable steps.
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
-	 * \see AudioOutput::setVolume
+	 * \see AudioOutput::volume
 	 */
 	class PHONONCORE_EXPORT VolumeFaderEffect : public AudioEffect
 	{
@@ -49,12 +49,25 @@ namespace Phonon
 		PHONON_HEIR( VolumeFaderEffect )
 		Q_ENUMS( FadeCurve )
 		/**
-		 * This property holds the current volume. Setting this property changes
-		 * the volume immediately.
+		 * This is the current volume of the output as voltage factor.
+		 * Setting this property changes the volume immediately.
 		 *
-		 * 0.0 means 0%, 1.0 means 100%
+		 * 1.0 means 100%, 0.5 means 50% voltage/25% power, 0.0 means 0%
+		 *
+		 * \see volumeDecibel
 		 */
 		Q_PROPERTY( float volume READ volume WRITE setVolume )
+		/**
+		 * This is the current volume of the output in decibel.
+		 * Setting this property changes the volume immediately.
+		 *
+		 * 0 dB means no change in volume, -6dB means an attenuation of the
+		 * voltage to 50% and an attenuation of the power to 25%, -inf dB means
+		 * silence.
+		 *
+		 * \see volume
+		 */
+		Q_PROPERTY( float volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
 		/**
 		 * This property holds the fade curve to be used for the fadeIn(), fadeOut()
 		 * and fadeTo() slots.
@@ -107,6 +120,7 @@ namespace Phonon
 			};
 
 			float volume() const;
+			float volumeDecibel() const;
 
 			FadeCurve fadeCurve() const;
 
@@ -119,7 +133,7 @@ namespace Phonon
 			 * \param fadeTime the fade duration in milliseconds
 			 *
 			 * \see fadeTo
-			 * \see setVolume
+			 * \see volume
 			 */
 			void fadeIn( int fadeTime );
 
@@ -135,6 +149,7 @@ namespace Phonon
 			void fadeOut( int fadeTime );
 
 			void setVolume( float volume );
+			void setVolumeDecibel( float volumeDecibel );
 
 			void setFadeCurve( FadeCurve curve );
 
