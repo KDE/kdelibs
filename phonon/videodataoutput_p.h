@@ -24,6 +24,7 @@
 #include "ifaces/videodataoutput.h"
 #include "abstractvideooutput_p.h"
 #include "videoframe.h"
+#include <QSize>
 
 namespace Phonon
 {
@@ -33,14 +34,18 @@ class VideoDataOutputPrivate : public AbstractVideoOutputPrivate
 	PHONON_PRIVATECLASS( VideoDataOutput, AbstractVideoOutput )
 	protected:
 		VideoDataOutputPrivate()
-			: format( VideoDataOutput::Format_ARGB32 ) //TODO: what should be the default?
+			: format( 0x00000000 ) //BI_RGB TODO: what should be the default?
 			// after changing the default -> change the dox accordingly
 			, displayLatency( 0 )
+			, frameRate( -1 )
 		{
 		}
 
-		VideoDataOutput::Format format;
+		quint32 format;
 		int displayLatency;
+		int frameRate;
+		QSize frameSize;
+		Qt::AspectRatioMode frameAspectRatioMode;
 };
 } //namespace Phonon
 

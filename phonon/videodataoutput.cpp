@@ -20,6 +20,8 @@
 #include "videodataoutput_p.h"
 #include "ifaces/videodataoutput.h"
 #include "factory.h"
+#include "ifaces/backend.h"
+#include <QSize>
 
 namespace Phonon
 {
@@ -59,25 +61,42 @@ void VideoDataOutputPrivate::createIface()
 	}
 }
 
-VideoDataOutput::Format VideoDataOutput::format() const
+quint32 VideoDataOutput::format() const
 {
 	K_D( const VideoDataOutput );
 	return d->iface() ? d->iface()->format() : d->format;
 }
 
-int VideoDataOutput::displayLatency() const
+//X int VideoDataOutput::displayLatency() const
+//X {
+//X 	K_D( const VideoDataOutput );
+//X 	return d->iface() ? d->iface()->displayLatency() : d->displayLatency;
+//X }
+
+bool VideoDataOutput::formatSupported( quint32 fourcc )
 {
-	K_D( const VideoDataOutput );
-	return d->iface() ? d->iface()->displayLatency() : d->displayLatency;
+	const Ifaces::Backend* backend = Factory::self()->backend();
+	if( backend )
+		return backend->supportsFourcc( fourcc );
+	return false;
 }
 
 int VideoDataOutput::frameRate() const
 {
 	K_D( const VideoDataOutput );
-	return d->iface() ? d->iface()->frameRate() : -1;
+	return d->iface() ? d->iface()->frameRate() : d->frameRate;
 }
 
-void VideoDataOutput::setFormat( Format newformat )
+void VideoDataOutput::setFrameRate( int newRate )
+{
+	K_D( VideoDataOutput );
+	if( iface() )
+		d->iface()->setFrameRate( newRate );
+	else
+		d->frameRate = newRate;
+}
+
+void VideoDataOutput::setFormat( quint32 newformat )
 {
 	K_D( VideoDataOutput );
 	if( iface() )
@@ -86,20 +105,45 @@ void VideoDataOutput::setFormat( Format newformat )
 		d->format = newformat;
 }
 
-void VideoDataOutput::setDisplayLatency( int milliseconds )
+QSize VideoDataOutput::frameSize() const
+{
+	K_D( const VideoDataOutput );
+	return d->iface() ? d->iface()->frameSize() : d->frameSize;
+}
+
+void VideoDataOutput::setFrameSize( const QSize& size, Qt::AspectRatioMode aspectRatioMode )
 {
 	K_D( VideoDataOutput );
+	d->frameSize = size;
+	d->frameAspectRatioMode = aspectRatioMode;
+
 	if( iface() )
-		d->iface()->setDisplayLatency( milliseconds );
-	else
-		d->displayLatency = milliseconds;
+	{
+		QSize newsize = d->iface()->naturalFrameSize();
+		newsize.scale( size, aspectRatioMode );
+		d->iface()->setFrameSize( newsize );
+	}
 }
+
+void VideoDataOutput::setFrameSize( int width, int height, Qt::AspectRatioMode aspectRatioMode )
+{
+	setFrameSize( QSize( width, height ), aspectRatioMode );
+}
+
+//X void VideoDataOutput::setDisplayLatency( int milliseconds )
+//X {
+//X 	K_D( VideoDataOutput );
+//X 	if( iface() )
+//X 		d->iface()->setDisplayLatency( milliseconds );
+//X 	else
+//X 		d->displayLatency = milliseconds;
+//X }
 
 bool VideoDataOutputPrivate::aboutToDeleteIface()
 {
 	Q_ASSERT( iface() );
 	format = iface()->format();
-	displayLatency = iface()->displayLatency();
+	//displayLatency = iface()->displayLatency();
 
 	return AbstractVideoOutputPrivate::aboutToDeleteIface();
 }
@@ -112,7 +156,7 @@ void VideoDataOutput::setupIface()
 
 	// set up attributes
 	d->iface()->setFormat( d->format );
-	d->iface()->setDisplayLatency( d->displayLatency );
+	//d->iface()->setDisplayLatency( d->displayLatency );
 	connect( d->iface()->qobject(), SIGNAL( frameReady( const Phonon::VideoFrame& ) ),
 			SIGNAL( frameReady( const Phonon::VideoFrame& ) ) );
 	connect( d->iface()->qobject(), SIGNAL( endOfMedia() ), SIGNAL( endOfMedia() ) );

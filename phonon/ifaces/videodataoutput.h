@@ -36,11 +36,26 @@ namespace Ifaces
 	class VideoDataOutput : virtual public AbstractVideoOutput
 	{
 		public:
-			virtual Phonon::VideoDataOutput::Format format() const = 0;
-			virtual int displayLatency() const = 0;
 			virtual int frameRate() const = 0;
-			virtual void setFormat( Phonon::VideoDataOutput::Format format ) = 0;
-			virtual void setDisplayLatency( int milliseconds ) = 0;
+			virtual void setFrameRate( int frameRate ) = 0;
+
+			virtual QSize naturalFrameSize() const = 0;
+			virtual QSize frameSize() const = 0;
+			virtual void setFrameSize( const QSize& frameSize ) = 0;
+
+			/**
+			 * Returns the FOURCC (four character code) the VideoFrame objects
+			 * will be encoded in.
+			 */
+			virtual quint32 format() const = 0;
+			/**
+			 * Requests the backend to return the VideoFrame objects in the
+			 * passed FOURCC (four character code).
+			 */
+			virtual void setFormat( quint32 fourcc ) = 0;
+
+			//virtual int displayLatency() const = 0;
+			//virtual void setDisplayLatency( int milliseconds ) = 0;
 
 		protected: //signals
 			virtual void frameReady( const Phonon::VideoFrame& frame ) = 0;

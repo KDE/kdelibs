@@ -29,6 +29,7 @@
 template<typename T> class QVector;
 template<typename Key, typename T> class QMap;
 #endif
+class QSize;
 
 namespace Phonon
 {
@@ -59,7 +60,6 @@ namespace Phonon
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( VideoDataOutput )
-		Q_ENUMS( Format )
 		/**
 		 * This property sets the dataformat you'd like to receive.
 		 *
@@ -67,7 +67,8 @@ namespace Phonon
 		 *
 		 * \see Format
 		 */
-		Q_PROPERTY( Format format READ format WRITE setFormat )
+		Q_PROPERTY( quint32 format READ format WRITE setFormat )
+		//TODO: do we need properties for depth and bpp?
 
 		/**
 		 * This property tells the backend how many milliseconds it
@@ -86,62 +87,40 @@ namespace Phonon
 		 *
 		 * The latency defaults to 0 ms.
 		 */
-		Q_PROPERTY( int displayLatency READ displayLatency WRITE setDisplayLatency )
+		//Q_PROPERTY( int displayLatency READ displayLatency WRITE setDisplayLatency )
+
+		/**
+		 * This property holds the size of the frame.
+		 */
+		Q_PROPERTY( QSize frameSize READ frameSize WRITE setFrameSize )
+
+		/**
+		 * This property holds the frame rate in Hz. The frame rate tells how
+		 * many frameReady signals are emitted per second.
+		 */
+		Q_PROPERTY( int frameRate READ frameRate WRITE setFrameRate )
+
 		PHONON_HEIR( VideoDataOutput )
 		public:
-			/**
-			 * Specifies the format for the frames in the video stream.
-			 */
-			enum Format
-			{
-				/**
-				 * The frame is stored using a 32-bit ARGB format (0xAARRGGBB).
-				 */
-				Format_ARGB32,
-				/**
-				 * The frame is stored using a 32-bit RGB format (0xffRRGGBB).
-				 */
-				Format_RGB32,
-				/**
-				 * The frame is stored using a 24-bit RGB format. Pixels are not
-				 * padded to 32 bit.
-				 */
-				Format_RGB24,
-				/**
-				 * The frame is stored as 4:2:0 YUV: a width x height Y plane
-				 * followed by a width/2 x height/2 V plane and a width/2 x
-				 * height/2 U plane.
-				 *
-				 * \see Format_I420
-				 */
-				Format_YV12,
-				/**
-				 * I420 is a 4:2:0 YUV format like Format_YV12 but with the U
-				 * and V planes reversed.
-				 *
-				 * \see Format_YV12
-				 */
-				Format_I420
-			};
+			quint32 format() const;
+			void setFormat( quint32 format );
 
-			Format format() const;
-
-			/**
-			 * Returns the frame rate in Hz.
-			 *
-			 * VideoDataOutput will not do any frame rate conversion.
-			 *
-			 * \return The frame rate as reported by the backend. If the backend
-			 * is unavailable -1 is returned.
-			 */
 			int frameRate() const;
+			void setFrameRate( int );
 
-			int displayLatency() const;
+			//int displayLatency() const;
+			//void setDisplayLatency( int milliseconds );
 
-		public Q_SLOTS:
-			void setFormat( Phonon::VideoDataOutput::Format format );
+			QSize frameSize() const;
+			void setFrameSize( const QSize& size, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio );
+			void setFrameSize( int width, int height, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio );
 
-			void setDisplayLatency( int milliseconds );
+			/**
+			 * Tells whether the FOURCC (four character code) is supported by
+			 * the backend. If it is supported you can request the backend to
+			 * send the video frames in this format.
+			 */
+			static bool formatSupported( quint32 fourcc );
 
 		Q_SIGNALS:
 			/**

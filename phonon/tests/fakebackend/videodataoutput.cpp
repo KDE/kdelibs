@@ -33,34 +33,54 @@ VideoDataOutput::~VideoDataOutput()
 {
 }
 
-Phonon::VideoDataOutput::Format VideoDataOutput::format() const
+quint32 VideoDataOutput::format() const
 {
-	return m_format;
+	return m_fourcc;
 }
 
-int VideoDataOutput::displayLatency() const
-{
-	return m_latency;
-}
+//X int VideoDataOutput::displayLatency() const
+//X {
+//X 	return m_latency;
+//X }
 
 int VideoDataOutput::frameRate() const
 {
-	return 25;
+	return m_frameRate;
 }
 
-void VideoDataOutput::setFormat( Phonon::VideoDataOutput::Format format )
+void VideoDataOutput::setFrameRate( int frameRate )
 {
-	m_format = format;
+	m_frameRate = frameRate;
 }
 
-void VideoDataOutput::setDisplayLatency( int milliseconds )
+QSize VideoDataOutput::naturalFrameSize() const
 {
-	m_latency = milliseconds;
+	return QSize( 320, 240 );
 }
+
+QSize VideoDataOutput::frameSize() const
+{
+	return m_frameSize;
+}
+
+void VideoDataOutput::setFrameSize( const QSize& frameSize )
+{
+	m_frameSize = frameSize;
+}
+
+void VideoDataOutput::setFormat( quint32 fourcc )
+{
+	m_fourcc = fourcc;
+}
+
+//X void VideoDataOutput::setDisplayLatency( int milliseconds )
+//X {
+//X 	m_latency = milliseconds;
+//X }
 
 void VideoDataOutput::processFrame( Phonon::VideoFrame& frame )
 {
-	if( frame.format == m_format )
+	if( frame.fourcc == m_fourcc )
 		emit frameReady( frame );
 	else
 		kError( 604 ) << "format conversion not implemented" << endl;

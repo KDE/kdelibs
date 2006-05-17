@@ -25,6 +25,7 @@
 #include <QVector>
 #include <QByteArray>
 #include <QObject>
+#include <QSize>
 
 namespace Phonon
 {
@@ -40,11 +41,18 @@ namespace Fake
 			VideoDataOutput( QObject* parent );
 			~VideoDataOutput();
 
-			virtual Phonon::VideoDataOutput::Format format() const;
-			virtual int displayLatency() const;
 			virtual int frameRate() const;
-			virtual void setFormat( Phonon::VideoDataOutput::Format format );
-			virtual void setDisplayLatency( int milliseconds );
+			virtual void setFrameRate( int frameRate );
+
+			virtual QSize naturalFrameSize() const;
+			virtual QSize frameSize() const;
+			virtual void setFrameSize( const QSize& frameSize );
+
+			virtual quint32 format() const;
+			virtual void setFormat( quint32 fourcc );
+
+			//virtual int displayLatency() const;
+			//virtual void setDisplayLatency( int milliseconds );
 
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
 
@@ -60,9 +68,11 @@ namespace Fake
 			virtual const QObject* qobject() const { return this; }
 
 		private:
-			Phonon::VideoDataOutput::Format m_format;
+			quint32 m_fourcc;
 			QByteArray m_pendingData;
-			int m_latency;
+			//int m_latency;
+			int m_frameRate;
+			QSize m_frameSize;
 	};
 }} //namespace Phonon::Fake
 
