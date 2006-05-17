@@ -39,23 +39,6 @@
 
 #include <kdebug.h>
 
-extern "C" KDE_EXPORT void *init_libkhtml()
-{
-    // We can't use a plain self() here, because that would
-    // return the global factory, which might already exist
-    // at the time init_libkhtml is called! As soon as someone
-    // does new KHTMLPart() in his application and loads up
-    // an html document into that part which either embeds
-    // embeds another KHTMLPart instance via <object> or
-    // as html frame, then we cannot return self(), as
-    // what we return here is what the KLibLoader deletes
-    // in the end, and we don't want the libloader to
-    // delete our global instance. Anyway, the new
-    // KHTMLFactory we create here is very cheap :)
-    // (Simon)
-    return new KHTMLFactory( true );
-}
-
 KHTMLFactory *KHTMLFactory::s_self = 0;
 unsigned long int KHTMLFactory::s_refcnt = 0;
 KInstance *KHTMLFactory::s_instance = 0;

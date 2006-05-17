@@ -265,7 +265,7 @@ create_lut(ecma/domparser.cpp domparser.lut.h)
 create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
 
 
-########### next target ###############
+########### libkhtml ###############
 
 set(khtml_LIB_SRCS
    khtmlview.cpp
@@ -306,16 +306,9 @@ set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION 
 install_targets(${LIB_INSTALL_DIR} khtml )
 
 
-########### next target ###############
+########### khtmlpart ###############
 
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp
-"#include <kdelibs_export.h>\n
-extern \"C\"  KDE_EXPORT void* init_libkhtml();\n
-extern \"C\"  KDE_EXPORT void* init_libkhtmlpart() { return init_libkhtml(); }\n" )
-
-#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
-
-set(khtmlpart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/dummy.cpp )
+set(khtmlpart_PART_SRCS khtml_factory_init.cpp )
 
 kde4_automoc(${khtmlpart_PART_SRCS})
 
@@ -329,23 +322,13 @@ install_targets(${PLUGIN_INSTALL_DIR} khtmlpart )
 
 ########### next target ###############
 
-# TODO use ${CMAKE_COMMAND} -E copy_if_different to avoid useless recompiles...
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp
-"#include <kdelibs_export.h>\n
-extern \"C\"  KDE_EXPORT void* init_khtmlimagefactory();\n
-extern \"C\"  KDE_EXPORT void* init_khtmlimagepart() { return init_khtmlimagefactory(); }\n" )
-
-#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
-
-set(khtmlimagepart_PART_SRCS ${CMAKE_CURRENT_BINARY_DIR}/imgdummy.cpp )
-
-kde4_automoc(${khtmlimagepart_PART_SRCS})
-
-kde4_add_plugin(khtmlimagepart ${khtmlimagepart_PART_SRCS})
+# Note that khtmlimage.cpp is part of libkhtml because it uses internal objects (render tree and loader)
+# Only the entry point is separated into khtmlimage_init.cpp
+kde4_add_plugin(khtmlimagepart khtmlimage_init.cpp)
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
-target_link_libraries(khtmlimagepart  ${KDE4_KDECORE_LIBS} khtml)
+target_link_libraries(khtmlimagepart khtml)
 
 install_targets(${PLUGIN_INSTALL_DIR} khtmlimagepart )
 

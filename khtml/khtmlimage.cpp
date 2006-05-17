@@ -36,7 +36,9 @@
 #include <kvbox.h>
 #include <kactioncollection.h>
 
-K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory /*NOT the part name, see Makefile.am*/, KHTMLImageFactory )
+// Export init_khtmlimagefactory. This way we don't have to export the whole class
+// just for khtmlimagepart. See khtmlimage_init.cpp
+K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory, KHTMLImageFactory )
 
 KInstance *KHTMLImageFactory::s_instance = 0;
 
