@@ -85,13 +85,13 @@ QList<EffectParameter> AudioEffect::parameterList() const
 	return ret;
 }
 
-float AudioEffect::value( int parameterId ) const
+QVariant AudioEffect::value( int parameterId ) const
 {
 	K_D( const AudioEffect );
 	return d->iface() ? d->iface()->value( parameterId ) : d->parameterValues[ parameterId ];
 }
 
-void AudioEffect::setValue( int parameterId, float newValue )
+void AudioEffect::setValue( int parameterId, QVariant newValue )
 {
 	K_D( AudioEffect );
 	if( iface() )

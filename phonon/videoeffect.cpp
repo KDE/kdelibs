@@ -86,13 +86,13 @@ QList<EffectParameter> VideoEffect::parameterList() const
 	return ret;
 }
 
-float VideoEffect::value( int parameterId ) const
+QVariant VideoEffect::value( int parameterId ) const
 {
 	K_D( const VideoEffect );
 	return d->iface() ? d->iface()->value( parameterId ) : d->parameterValues[ parameterId ];
 }
 
-void VideoEffect::setValue( int parameterId, float newValue )
+void VideoEffect::setValue( int parameterId, QVariant newValue )
 {
 	K_D( VideoEffect );
 	if( iface() )

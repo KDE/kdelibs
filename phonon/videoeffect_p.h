@@ -24,6 +24,7 @@
 #include "ifaces/videoeffect.h"
 #include "base_p.h"
 #include <QHash>
+#include <QVariant>
 
 namespace Phonon
 {
@@ -38,7 +39,7 @@ class VideoEffectPrivate : public BasePrivate
 
 	private:
 		int type;
-		QHash<int, float> parameterValues;
+		QHash<int, QVariant> parameterValues;
 };
 }
 

@@ -46,7 +46,7 @@ namespace Ui
 		private slots:
 			void setToggleParameter( bool checked );
 			void setIntParameter( int value );
-			void setFloatParameter( double value );
+			void setDoubleParameter( double value );
 
 		private:
 			void init( Effect* effect );

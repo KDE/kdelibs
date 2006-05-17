@@ -35,7 +35,7 @@ bool EffectParameter::isValid() const
 }
 
 EffectParameter::EffectParameter( int parameterId, Hints hints,
-		float min, float max, float defaultValue, const QString& name,
+		QVariant min, QVariant max, QVariant defaultValue, const QString& name,
 		const QString& description )
 	: d( new EffectParameterPrivate )
 {
@@ -98,40 +98,44 @@ bool EffectParameter::isIntegerControl() const
 	return d->hints & IntegerHint;
 }
 
-bool EffectParameter::isBoundedBelow() const
-{
-	return d->hints & BoundedBelowHint;
-}
-
-bool EffectParameter::isBoundedAbove() const
-{
-	return d->hints & BoundedAboveHint;
-}
-
-float EffectParameter::minimumValue() const
+QVariant EffectParameter::minimumValue() const
 {
 	return d->min;
 }
 
-float EffectParameter::maximumValue() const
+QVariant EffectParameter::maximumValue() const
 {
 	return d->max;
 }
 
-float EffectParameter::defaultValue() const
+QVariant EffectParameter::defaultValue() const
 {
 	return d->defaultValue;
 }
 
-float EffectParameter::value() const
+QVariant EffectParameter::value() const
 {
 	Q_ASSERT( d->effect );
 	return d->effect->value( d->parameterId );
 }
 
-void EffectParameter::setValue( float newValue )
+void EffectParameter::setValue( QVariant newValue )
 {
 	Q_ASSERT( d->effect );
+	if( isIntegerControl() )
+	{
+		const int min = qvariant_cast<int>( d->min );
+		const int max = qvariant_cast<int>( d->max );
+		const int val = qvariant_cast<int>( newValue );
+		newValue = qBound( min, val, max );
+	}
+	else if( !isToggleControl() ) // double
+	{
+		const double min = qvariant_cast<double>( d->min );
+		const double max = qvariant_cast<double>( d->max );
+		const double val = qvariant_cast<double>( newValue );
+		newValue = qBound( min, val, max );
+	} // bool doesn't need to be bounded :)
 	d->effect->setValue( d->parameterId, newValue );
 }
 

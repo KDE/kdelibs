@@ -42,8 +42,8 @@ Effect::Effect( EffectPrivate& dd )
 }
 
 void Effect::addParameter( int parameterId, const QString& name,
-		EffectParameter::Hints hints, float defaultValue,
-		float min, float max, const QString& description )
+		EffectParameter::Hints hints, QVariant defaultValue,
+		QVariant min, QVariant max, const QString& description )
 {
 	Q_D( Effect );
 	d->parameterList.append( EffectParameter( parameterId, hints, min, max, defaultValue, name, description ) );

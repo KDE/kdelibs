@@ -33,13 +33,13 @@ AudioEffect::AudioEffect( int effectId, QObject* parent )
 	{
 		case 0x7F000001:
 			m_effect = new DelayAudioEffect;
-			addParameter( 1, i18n( "time" ), EffectParameter::BoundedBelowHint | EffectParameter::BoundedAboveHint,
-					m_effect->value( 1 ), 1.0f, 15000.0f,
+			addParameter( 1, i18n( "time" ), 0,
+					m_effect->value( 1 ), 1.0, 15000.0,
 					i18n( "Set's the delay in milliseconds" ) );
-			addParameter( 2, i18n( "feedback" ), EffectParameter::BoundedBelowHint | EffectParameter::BoundedAboveHint,
-					m_effect->value( 2 ), 0.0f, 1.0f );
-			addParameter( 3, i18n( "level" ), EffectParameter::BoundedBelowHint | EffectParameter::BoundedAboveHint,
-					m_effect->value( 3 ), 0.0f, 1.0f );
+			addParameter( 2, i18n( "feedback" ), 0,
+					m_effect->value( 2 ), 0.0, 1.0 );
+			addParameter( 3, i18n( "level" ), 0,
+					m_effect->value( 3 ), 0.0, 1.0 );
 	}
 }
 
@@ -49,14 +49,14 @@ AudioEffect::~AudioEffect()
 	m_effect = 0;
 }
 
-float AudioEffect::value( int parameterId ) const
+QVariant AudioEffect::value( int parameterId ) const
 {
 	if( m_effect )
 		return m_effect->value( parameterId );
-	return 0.0f;
+	return QVariant(); // invalid
 }
 
-void AudioEffect::setValue( int parameterId, float newValue )
+void AudioEffect::setValue( int parameterId, QVariant newValue )
 {
 	if( m_effect )
 		m_effect->setValue( parameterId, newValue );

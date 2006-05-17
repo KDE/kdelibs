@@ -88,8 +88,8 @@ namespace Phonon
 			Ifaces::VideoEffect* iface();
 
 		protected:
-			virtual float value( int parameterId ) const;
-			virtual void setValue( int parameterId, float newValue );
+			virtual QVariant value( int parameterId ) const;
+			virtual void setValue( int parameterId, QVariant newValue );
 	};
 } //namespace Phonon
 

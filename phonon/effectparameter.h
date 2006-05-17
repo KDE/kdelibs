@@ -23,6 +23,7 @@
 #include <QSharedDataPointer>
 #include <QString>
 #include <kdelibs_export.h>
+#include <QVariant>
 
 namespace Phonon
 {
@@ -53,6 +54,8 @@ class PHONONCORE_EXPORT EffectParameter
 	friend class VideoEffectPrivate;
 	public:
 		/**
+		 * \internal
+		 *
 		 * Creates an invalid effect parameter.
 		 *
 		 * \see isValid()
@@ -60,6 +63,8 @@ class PHONONCORE_EXPORT EffectParameter
 		EffectParameter();
 
 		/**
+		 * \internal
+		 *
 		 * A parameter that has no pointer to an effect is invalid.
 		 */
 		bool isValid() const;
@@ -83,10 +88,11 @@ class PHONONCORE_EXPORT EffectParameter
 		const QString& description() const;
 
 		/**
-		 * Returns whether the parameter should be
-		 * considered a boolean toggle. Data less than or equal to zero
-		 * should be considered "off" or \c false and data above zero should be
-		 * considered "on" or \c true.
+		 * Returns whether the parameter should be considered a boolean toggle.
+		 *
+		 * \return \c true: all values are booleans
+		 * \return \c false: all values are doubles or integers depending on
+		 * isIntegerControl()
 		 */
 		bool isToggleControl() const;
 
@@ -98,46 +104,48 @@ class PHONONCORE_EXPORT EffectParameter
 		bool isLogarithmicControl() const;
 
 		/**
-		 * Returns whether the parameter should be
-		 * displayed as integers using a stepped control.
+		 * Returns whether the parameter should be displayed as integers using
+		 * a stepped control.
 		 *
-		 * The bounds should be slightly wider than the actual
-		 * integer range required to avoid floating point rounding
-		 * errors. For instance, the integer set {0,1,2,3} might be described as
-		 * [ -0.1, 3.1 ]. That means the bounds have to be rounded and not
-		 * simply casted to an integer.
+		 * \return \c true: all values are integers
+		 * \return \c false: all values are doubles or booleans depending on
+		 * isToggleControl()
 		 */
 		bool isIntegerControl() const;
 
 		/**
-		 * Returns whether the minimumValue() method should be considered
-		 * meaningful.
-		 */
-		bool isBoundedBelow() const;
-
-		/**
-		 * Returns whether the maximumValue() method should be considered
-		 * meaningful.
-		 */
-		bool isBoundedAbove() const;
-
-		/**
 		 * The minimum value to be used for the control to edit the parameter.
+		 *
+		 * If the returned QVariant is invalid the value is not bounded from
+		 * below.
 		 */
-		float minimumValue() const;
+		QVariant minimumValue() const;
 
 		/**
 		 * The maximum value to be used for the control to edit the parameter.
+		 *
+		 * If the returned QVariant is invalid the value is not bounded from
+		 * above.
 		 */
-		float maximumValue() const;
+		QVariant maximumValue() const;
 
 		/**
 		 * The default value.
 		 */
-		float defaultValue() const;
+		QVariant defaultValue() const;
 
-		float value() const;
-		void setValue( float );
+		/**
+		 * The current value of the parameter.
+		 */
+		QVariant value() const;
+
+		/**
+		 * Sets the new value for the parameter.
+		 *
+		 * \param newValue Depending on the isIntegerControl() hint the QVariant
+		 * is expected either as an integer or a double.
+		 */
+		void setValue( QVariant newValue );
 
 		/**
 		 * Equality operator
@@ -175,22 +183,6 @@ class PHONONCORE_EXPORT EffectParameter
 		enum Hint {
 			/**
 			 * If this hint is set it means that
-			 * the minimumValue() returns a value to be used as lower bound for
-			 * the values.
-			 *
-			 * \see isBoundedBelow()
-			 */
-			BoundedBelowHint = 0x01,
-			/**
-			 * If this hint is set it means that
-			 * the maximumValue() returns a value to be used as upper bound for
-			 * the values.
-			 *
-			 * \see isBoundedAbove()
-			 */
-			BoundedAboveHint = 0x02,
-			/**
-			 * If this hint is set it means that
 			 * the the control has only two states: zero and non-zero.
 			 *
 			 * \see isToggleControl()
@@ -218,8 +210,8 @@ class PHONONCORE_EXPORT EffectParameter
 		 * Constructs a new effect parameter and
 		 * sets all the internal data.
 		 */
-		EffectParameter( int parameterId, Hints hints, float min, float max,
-				float defaultValue, const QString& name, const QString& description = QString() );
+		EffectParameter( int parameterId, Hints hints, QVariant min, QVariant max,
+				QVariant defaultValue, const QString& name, const QString& description = QString() );
 
 		/**
 		 * \internal
@@ -248,9 +240,9 @@ class EffectParameterPrivate : public QSharedData
 	public:
 		Effect* effect;
 		int parameterId;
-		float min;
-		float max;
-		float defaultValue;
+		QVariant min;
+		QVariant max;
+		QVariant defaultValue;
 		QString name;
 		QString description;
 		EffectParameter::Hints hints;

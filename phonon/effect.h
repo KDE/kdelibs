@@ -21,6 +21,7 @@
 #define PHONON_EFFECT_H
 
 #include <kdelibs_export.h>
+#include <QVariant>
 
 template<class T> class QList;
 
@@ -60,12 +61,12 @@ class PHONONCORE_EXPORT Effect
 		/**
 		 * Gets the value of the parameter with the id \p parameterId.
 		 */
-		virtual float value( int parameterId ) const = 0;
+		virtual QVariant value( int parameterId ) const = 0;
 
 		/**
 		 * Sets the value of the parameter with the id \p parameterId.
 		 */
-		virtual void setValue( int parameterId, float newValue ) = 0;
+		virtual void setValue( int parameterId, QVariant newValue ) = 0;
 };
 
 } // namespace Phonon

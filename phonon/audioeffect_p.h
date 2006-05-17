@@ -24,6 +24,7 @@
 #include "ifaces/audioeffect.h"
 #include "base_p.h"
 #include <QHash>
+#include <QVariant>
 
 namespace Phonon
 {
@@ -37,7 +38,7 @@ class AudioEffectPrivate : public BasePrivate
 		}
 	private:
 		int type;
-		QHash<int, float> parameterValues;
+		QHash<int, QVariant> parameterValues;
 };
 } //namespace Phonon
 

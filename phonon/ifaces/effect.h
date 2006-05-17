@@ -21,6 +21,7 @@
 
 #include "base.h"
 #include "../effectparameter.h"
+#include <QVariant>
 
 class QString;
 class QStringList;
@@ -46,8 +47,8 @@ namespace Ifaces
 			 */
 			QList<Phonon::EffectParameter> parameterList() const;
 
-			virtual float value( int parameterId ) const = 0;
-			virtual void setValue( int parameterId, float newValue ) = 0;
+			virtual QVariant value( int parameterId ) const = 0;
+			virtual void setValue( int parameterId, QVariant newValue ) = 0;
 
 		protected:
 			Effect();
@@ -84,8 +85,8 @@ namespace Ifaces
 			void addParameter( int parameterId,
 					const QString& name,
 					EffectParameter::Hints hints,
-					float defaultValue,
-					float min = 0.0f, float max = 0.0f,
+					QVariant defaultValue,
+					QVariant min = QVariant(), QVariant max = QVariant(),
 					const QString& description = QString() );
 	};
 }} //namespace Phonon::Ifaces

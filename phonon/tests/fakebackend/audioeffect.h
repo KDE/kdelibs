@@ -37,8 +37,8 @@ namespace Fake
 		public:
 			AudioEffect( int effectId, QObject* parent );
 			virtual ~AudioEffect();
-			virtual float value( int parameterId ) const;
-			virtual void setValue( int parameterId, float newValue );
+			virtual QVariant value( int parameterId ) const;
+			virtual void setValue( int parameterId, QVariant newValue );
 
 			// Fake specific:
 			virtual void processBuffer( QVector<float>& buffer );

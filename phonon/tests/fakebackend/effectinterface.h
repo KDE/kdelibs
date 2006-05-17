@@ -21,6 +21,7 @@
 #define PHONON_FAKE_EFFECTINTERFACE_H
 
 #include <QQueue>
+#include <QVariant>
 
 namespace Phonon
 {
@@ -33,8 +34,8 @@ namespace Fake
 	{
 		public:
 			virtual ~EffectInterface() {}
-			virtual float value( int parameterId ) const = 0;
-			virtual void setValue( int parameterId, float newValue ) = 0;
+			virtual QVariant value( int parameterId ) const = 0;
+			virtual void setValue( int parameterId, QVariant newValue ) = 0;
 			virtual void processBuffer( QVector<float>& buffer ) = 0;
 	};
 }} //namespace Phonon::Fake

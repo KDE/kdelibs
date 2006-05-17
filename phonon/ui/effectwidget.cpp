@@ -90,18 +90,18 @@ void EffectWidget::autogenerateUi()
 		{
 			QCheckBox* cb = new QCheckBox( this );
 			control = cb;
-			cb->setChecked( para.value() > 0.0f );
+			cb->setChecked( para.value().toBool() );
 			connect( cb, SIGNAL( toggled( bool ) ), SLOT( setToggleParameter( bool ) ) );
 		}
-		else if( para.isBoundedBelow() && para.isBoundedAbove() )
+		else if( para.minimumValue().isValid() && para.maximumValue().isValid() )
 		{
 			if( para.isIntegerControl() )
 			{
 				QSpinBox* sb = new QSpinBox( this );
 				control = sb;
-				sb->setRange( qRound( para.minimumValue() ),
-						qRound( para.maximumValue() ) );
-				sb->setValue( qRound( para.value() ) );
+				sb->setRange( para.minimumValue().toInt(),
+						para.maximumValue().toInt() );
+				sb->setValue( para.value().toInt() );
 				connect( sb, SIGNAL( valueChanged( int ) ),
 						SLOT( setIntParameter( int ) ) );
 			}
@@ -109,10 +109,11 @@ void EffectWidget::autogenerateUi()
 			{
 				QDoubleSpinBox* sb = new QDoubleSpinBox( this );
 				control = sb;
-				sb->setRange( para.minimumValue(), para.maximumValue() );
-				sb->setValue( para.value() );
+				sb->setRange( para.minimumValue().toDouble(),
+						para.maximumValue().toDouble() );
+				sb->setValue( para.value().toDouble() );
 				connect( sb, SIGNAL( valueChanged( double ) ),
-						SLOT( setFloatParameter( double ) ) );
+						SLOT( setDoubleParameter( double ) ) );
 			}
 		}
 		else
@@ -120,9 +121,9 @@ void EffectWidget::autogenerateUi()
 			QDoubleSpinBox* sb = new QDoubleSpinBox( this );
 			control = sb;
 			sb->setDecimals( 7 );
-			sb->setRange( -3.402824e38, 3.402824e38 ); // [-inf, inf] for floats (single precision)
+			sb->setRange( -1e100, 1e100 );
 			connect( sb, SIGNAL( valueChanged( double ) ),
-					SLOT( setFloatParameter( double ) ) );
+					SLOT( setDoubleParameter( double ) ) );
 		}
 		control->setToolTip( para.description() );
 		label->setBuddy( control );
@@ -136,7 +137,7 @@ void EffectWidget::setToggleParameter( bool checked )
 	Q_D( EffectWidget );
 	EffectParameter p = d->parameterForObject[ sender() ];
 	if( p.isValid() )
-		p.setValue( checked ? 1.0f : 0.0f );
+		p.setValue( checked );
 }
 
 void EffectWidget::setIntParameter( int value )
@@ -144,15 +145,15 @@ void EffectWidget::setIntParameter( int value )
 	Q_D( EffectWidget );
 	EffectParameter p = d->parameterForObject[ sender() ];
 	if( p.isValid() )
-		p.setValue( static_cast<float>( value ) );
+		p.setValue( value );
 }
 
-void EffectWidget::setFloatParameter( double value )
+void EffectWidget::setDoubleParameter( double value )
 {
 	Q_D( EffectWidget );
 	EffectParameter p = d->parameterForObject[ sender() ];
 	if( p.isValid() )
-		p.setValue( static_cast<float>( value ) );
+		p.setValue( value );
 }
 
 }} // namespace Phonon::Ui

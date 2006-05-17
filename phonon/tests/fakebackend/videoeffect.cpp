@@ -32,12 +32,12 @@ VideoEffect::~VideoEffect()
 {
 }
 
-float VideoEffect::value( int parameterId ) const
+QVariant VideoEffect::value( int parameterId ) const
 {
-	return 0.0f;
+	return QVariant(); // invalid
 }
 
-void VideoEffect::setValue( int parameterId, float newValue )
+void VideoEffect::setValue( int parameterId, QVariant newValue )
 {
 }
 

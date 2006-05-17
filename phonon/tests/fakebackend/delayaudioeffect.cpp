@@ -37,27 +37,28 @@ DelayAudioEffect::~DelayAudioEffect()
 {
 }
 
-float DelayAudioEffect::value( int parameterId ) const
+QVariant DelayAudioEffect::value( int parameterId ) const
 {
 	switch( parameterId )
 	{
 		case 1:
-			return static_cast<float>( m_delayBuffer.size() ) / 44.1f;
+			return static_cast<double>( m_delayBuffer.size() ) / 44.1;
 		case 2:
 			return m_feedback;
 		case 3:
 			return m_level;
 	}
-	return 0.0f;
+	return 0.0;
 }
 
-void DelayAudioEffect::setValue( int parameterId, float newValue )
+void DelayAudioEffect::setValue( int parameterId, QVariant _newValue )
 {
+	const double newValue = qvariant_cast<double>( _newValue );
 	switch( parameterId )
 	{
 		case 1:
 			{
-				const int newsize = qRound( 44.1f * newValue );
+				const int newsize = qRound( 44.1 * newValue );
 				while( m_delayBuffer.size() < newsize )
 					m_delayBuffer.enqueue( 0.0f );
 				while( m_delayBuffer.size() > newsize )
