@@ -17,6 +17,7 @@ set(phonon_fake_PART_SRCS
    videoeffect.cpp
    videopath.cpp
    videodataoutput.cpp
+   visualization.cpp
    backend.cpp
    volumefadereffect.cpp )
 

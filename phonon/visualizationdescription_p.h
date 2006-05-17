@@ -17,29 +17,22 @@
 
 */
 
-#ifndef AUDIOPATH_P_H
-#define AUDIOPATH_P_H
+#ifndef AUDIOEFFECTDESCRIPTION_P_H
+#define AUDIOEFFECTDESCRIPTION_P_H
 
-#include "audiopath.h"
-#include "ifaces/audiopath.h"
-#include "base_p.h"
-#include <QList>
+#include "visualizationdescription.h"
+#include "namedescriptiontuple_p.h"
 
 namespace Phonon
 {
-class AudioPathPrivate : public BasePrivate
+
+class VisualizationDescriptionPrivate : public NameDescriptionTuplePrivate
 {
-	K_DECLARE_PUBLIC( AudioPath )
-	PHONON_PRIVATECLASS( AudioPath, Base )
+	Q_DECLARE_PUBLIC( VisualizationDescription )
 	protected:
-		AudioPathPrivate()
-		{
-		}
-
-		QList<AbstractAudioOutput*> outputs;
-		QList<AudioEffect*> effects;
 };
-}
 
-#endif // AUDIOPATH_P_H
+} // namespace Phonon
+
+#endif // AUDIOEFFECTDESCRIPTION_P_H
 // vim: sw=4 ts=4 tw=80

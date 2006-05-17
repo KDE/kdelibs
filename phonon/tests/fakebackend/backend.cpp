@@ -25,6 +25,7 @@
 #include "audioeffect.h"
 #include "audiooutput.h"
 #include "audiodataoutput.h"
+#include "visualization.h"
 #include "videopath.h"
 #include "videoeffect.h"
 
@@ -90,6 +91,11 @@ Ifaces::AudioOutput*      Backend::createAudioOutput( QObject* parent )
 Ifaces::AudioDataOutput*  Backend::createAudioDataOutput( QObject* parent )
 {
 	return new AudioDataOutput( parent );
+}
+
+Ifaces::Visualization*    Backend::createVisualization( QObject* parent )
+{
+	return new Visualization( parent );
 }
 
 Ifaces::VideoPath*        Backend::createVideoPath( QObject* parent )
@@ -284,6 +290,22 @@ int Backend::videoCaptureDeviceAudioIndex( int index ) const
 		default:
 			return -1;
 	}
+}
+
+QSet<int> Backend::visualizationIndexes() const
+{
+	QSet<int> ret;
+	return ret;
+}
+
+QString Backend::visualizationName( int index ) const
+{
+	return QString();
+}
+
+QString Backend::visualizationDescription( int index ) const
+{
+	return QString();
 }
 
 QSet<int> Backend::audioEffectIndexes() const

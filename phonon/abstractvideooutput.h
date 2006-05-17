@@ -36,6 +36,7 @@ namespace Phonon
 	{
 		friend class VideoPath;
 		friend class VideoPathPrivate;
+		friend class Visualization;
 		K_DECLARE_PRIVATE( AbstractVideoOutput )
 		protected:
 			/**

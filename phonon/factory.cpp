@@ -23,6 +23,7 @@
 #include "ifaces/volumefadereffect.h"
 #include "ifaces/audiooutput.h"
 #include "ifaces/audiodataoutput.h"
+#include "ifaces/visualization.h"
 #include "ifaces/videopath.h"
 #include "ifaces/videoeffect.h"
 #include "ifaces/videodataoutput.h"
@@ -239,6 +240,7 @@ FACTORY_IMPL_1ARG( int, AudioEffect )
 FACTORY_IMPL( VolumeFaderEffect )
 FACTORY_IMPL( AudioOutput )
 FACTORY_IMPL( AudioDataOutput )
+FACTORY_IMPL( Visualization )
 FACTORY_IMPL( VideoPath )
 FACTORY_IMPL_1ARG( int, VideoEffect )
 FACTORY_IMPL( VideoDataOutput )

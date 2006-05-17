@@ -39,6 +39,7 @@ namespace Phonon
 		class AudioPath;
 		class AudioOutput;
 		class AudioDataOutput;
+		class Visualization;
 
 		class VideoEffect;
 		class VideoPath;
@@ -125,6 +126,13 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * \return a pointer to the Ifaces::AudioDataOutput the backend provides
 		 */
 		Ifaces::AudioDataOutput* createAudioDataOutput( QObject* parent = 0 );
+
+		/**
+		 * Create a new Ifaces::Visualization.
+		 *
+		 * \return a pointer to the Ifaces::Visualization the backend provides
+		 */
+		Ifaces::Visualization* createVisualization( QObject* parent = 0 );
 
 		/**
 		 * Create a new Ifaces::VideoPath.

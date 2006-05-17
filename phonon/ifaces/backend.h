@@ -52,6 +52,7 @@ namespace Ifaces
 	class VolumeFaderEffect;
 	class AudioOutput;
 	class AudioDataOutput;
+	class Visualization;
 
 	class VideoPath;
 	class VideoEffect;
@@ -125,6 +126,11 @@ namespace Ifaces
 			 * Creates an instance of AudioDataOutput
 			 */
 			virtual AudioDataOutput*  createAudioDataOutput( QObject* parent ) = 0;
+
+			/**
+			 * Creates an instance of Visualization
+			 */
+			virtual Visualization*    createVisualization( QObject* parent ) = 0;
 
 			/**
 			 * Creates an instance of VideoPath
@@ -352,6 +358,10 @@ namespace Ifaces
 			 * \return The index of the associated AudioCaptureSource object.
 			 */
 			virtual int videoCaptureDeviceAudioIndex( int index ) const = 0;
+
+			virtual QSet<int> visualizationIndexes() const = 0;
+			virtual QString visualizationName( int index ) const = 0;
+			virtual QString visualizationDescription( int index ) const = 0;
 
 			// effects
 			virtual QSet<int> audioEffectIndexes() const = 0;

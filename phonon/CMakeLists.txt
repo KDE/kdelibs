@@ -36,6 +36,7 @@ set(phononcore_LIB_SRCS
 	videocapturedevice.cpp
 	audioeffectdescription.cpp
 	videoeffectdescription.cpp
+	visualizationdescription.cpp
 	phononnamespace.cpp
 	base.cpp
 	abstractmediaproducer.cpp
@@ -54,6 +55,7 @@ set(phononcore_LIB_SRCS
 	audiodataoutput.cpp
 	abstractvideooutput.cpp
 	videodataoutput.cpp
+	visualization.cpp
 	simpleplayer.cpp
 	backendcapabilities.cpp
 	factory.cpp
@@ -82,6 +84,7 @@ install_files( /include/phonon FILES
 	videocapturedevice.h
 	audioeffectdescription.h
 	videoeffectdescription.h
+	visualizationdescription.h
 	phononnamespace.h
 	base.h
 	basedestructionhandler.h
@@ -103,6 +106,7 @@ install_files( /include/phonon FILES
 	abstractvideooutput.h
 	videoframe.h
 	videodataoutput.h
+	visualization.h
 	simpleplayer.h
 	backendcapabilities.h
 	phonondefs.h

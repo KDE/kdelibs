@@ -60,6 +60,7 @@ namespace Phonon
 	{
 		friend class AbstractMediaProducer;
 		friend class AbstractMediaProducerPrivate;
+		friend class Visualization;
 		K_DECLARE_PRIVATE( AudioPath )
 		Q_OBJECT
 		PHONON_OBJECT( AudioPath )

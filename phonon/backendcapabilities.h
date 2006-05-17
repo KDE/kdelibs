@@ -24,6 +24,7 @@
 
 #include <kdelibs_export.h>
 #include <kstaticdeleter.h>
+#include "visualizationdescription.h"
 
 template<class T> class QList;
 class QStringList;
@@ -147,6 +148,14 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * description for every supported video capture device.
 		 */
 		static QList<VideoCaptureDevice> availableVideoCaptureDevices();
+
+		/**
+		 * Returns the visualization effects the backend supports.
+		 *
+		 * \return A list of VisualizationEffect objects that give a name and
+		 * description for every supported visualization effect.
+		 */
+		static QList<VisualizationDescription> availableVisualizationEffects();
 
 		/**
 		 * Returns descriptions for the audio effects the backend supports.

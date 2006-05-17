@@ -40,7 +40,6 @@ bool VideoPath::addOutput( Ifaces::AbstractVideoOutput* videoOutputIface )
 {
 	Q_ASSERT( videoOutputIface );
 	AbstractVideoOutput* vo = reinterpret_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface->internal1() );
-	// this should be changed to an "if( vo ) { ..." for production backends
 	Q_ASSERT( vo );
 	Q_ASSERT( !m_outputs.contains( vo ) );
 	m_outputs.append( vo );
