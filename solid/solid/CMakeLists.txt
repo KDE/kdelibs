@@ -45,41 +45,28 @@ install_targets(${LIB_INSTALL_DIR} kdehw )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES  kdehwdevicemanager.desktop )
 install_files( /include/kdehw FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h )
 
+########### parser build ###############
+
+option(SOLID_PREDICATE_PARSER_UPDATE  "Update Solid predicate parser")
+
+if(SOLID_PREDICATE_PARSER_UPDATE)
+
+set(lexer_FILE predicate_lexer)
+set(parser_FILE predicate_parser)
+
+add_custom_command(OUTPUT ${lexer_FILE}.c
+                   COMMAND flex ARGS -o${lexer_FILE}.c ${lexer_FILE}.l
+                   DEPENDS ${lexer_FILE}.l
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
+                   COMMAND bison ARGS -d -b ${parser_FILE} ${parser_FILE}.y
+                   COMMAND mv ARGS ${parser_FILE}.tab.c ${parser_FILE}.c
+                   COMMAND mv ARGS ${parser_FILE}.tab.h ${parser_FILE}.h
+                   DEPENDS ${lexer_FILE}.c
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+endif(SOLID_PREDICATE_PARSER_UPDATE)
+
 kde4_footer()
 
-
-
-#original Makefile.am contents follow:
-
-#INCLUDES = $(all_includes)
-#
-#SUBDIRS = . ifaces
-#
-#lib_LTLIBRARIES  = libkdehw.la 
-#libkdehw_la_LIBADD = $(LIB_QTCORE) $(LIB_QT) $(LIB_KDECORE) $(LIB_KIO) ifaces/libkdehwifaces.la
-#libkdehw_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
-#
-#include_HEADERS = device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h display.h predicate.h
-#
-#METASOURCES = AUTO
-#
-#libkdehw_la_SOURCES = device.cpp devicemanager.cpp capability.cpp processor.cpp block.cpp storage.cpp cdrom.cpp volume.cpp opticaldisc.cpp camera.cpp portablemediaplayer.cpp display.cpp predicate.cpp predicateparse.cpp predicate_lexer.c predicate_parser.c
-#
-#
-#kde_servicetypes_DATA = kdehwdevicemanager.desktop
-#
-#
-#parserfiles = predicate_parser.y predicate_lexer.l
-#
-#EXTRA_DIST = $(parserfiles)
-#
-#parser: $(parserfiles)
-#	cd $(srcdir) ;\
-#	flex -opredicate_lexer.c predicate_lexer.l ;\
-#	bison -d predicate_parser.y &&\
-#	mv predicate_parser.tab.c predicate_parser.c &&\
-#	mv predicate_parser.tab.h predicate_parser.h
-#
-#.PHONY: parser
-#
-#

@@ -39,20 +39,3 @@ install_targets(${LIB_INSTALL_DIR} kdehwifaces )
 install_files( /include/kdehw/ifaces FILES  devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h abstractcapability.h )
 
 kde4_footer()
-
-
-
-#original Makefile.am contents follow:
-
-#INCLUDES = $(all_includes)
-#
-#lib_LTLIBRARIES  = libkdehwifaces.la 
-#libkdehwifaces_la_LIBADD = $(LIB_QTCORE)
-#libkdehwifaces_la_LDFLAGS = $(KDE_RPATH) -version-info 6:0:2 -no-undefined $(all_libraries)
-#
-#include_HEADERS = devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h display.h abstractcapability.h
-#
-#METASOURCES = AUTO
-#
-#libkdehwifaces_la_SOURCES = devicemanager.cpp device.cpp capability.cpp processor.cpp block.cpp storage.cpp cdrom.cpp volume.cpp opticaldisc.cpp camera.cpp portablemediaplayer.cpp display.cpp abstractcapability.cpp
-#
