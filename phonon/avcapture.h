@@ -54,6 +54,8 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AvCapture )
 		PHONON_HEIR( AvCapture )
+		Q_PROPERTY( AudioCaptureDevice audioCaptureDevice READ audioCaptureDevice WRITE setAudioCaptureDevice )
+		Q_PROPERTY( VideoCaptureDevice videoCaptureDevice READ videoCaptureDevice WRITE setVideoCaptureDevice )
 		public:
 			/**
 			 * Returns the currently used capture source for the audio signal.
