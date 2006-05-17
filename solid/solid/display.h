@@ -32,9 +32,10 @@ namespace KDEHW
     }
 
     /**
-     * This class implement Display capability interface and represent display
-     * devices attached to the system.
+     * This capability is available on display devices.
+     *
      * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
+     *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
     class KDE_EXPORT Display : public Capability, public Ifaces::Enums::Display
@@ -42,31 +43,42 @@ namespace KDEHW
         Q_OBJECT
     public:
         /**
-         * Constructs a Display.
+         * Creates a new Display object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param iface the capability interface provided by the backend
+         * @param parent the parent QObject
+         * @see KDEHW::Device::as()
          */
         Display( Ifaces::Display *iface, QObject *parent = 0 );
 
         /**
-         * Destruct the Display object.
+         * Destroys a Display object.
          */
         virtual ~Display();
 
         /**
-         * Get the capability type (Display).
-         * @returns Capability::Display.
+         * Get the KDEHW::Capability::Type of the Button capability.
+         *
+         * @return the Button capability type
+         * @see KDEHW::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Display; }
 
         /**
-         * Get the type of display device.
-         * @returns the type of display device.
+         * Retrieves the type of display device.
+         *
+         * @return the type of display device.
+         * @see KDEHW::Ifaces::Enums::Display::DisplayType
          */
         DisplayType type() const;
 
         /**
-         * Get the brightness level in percent.
+         * Retrieves the brightness level in percent.
          * Avaible only if displayType is lcd.
-         * @returns the brightness level in percent. If displayType is different from lcd, return 100.
+         *
+         * @return the brightness level in percent. If displayType is different from lcd, return 100.
          */
         int lcdBrightness() const;
 

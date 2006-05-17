@@ -29,9 +29,11 @@ namespace KDEHW
 namespace Ifaces
 {
     /**
-     * This class specifies Button capability interface and represent button
-     * devices attached to the system.
-     * A button is a device that can be pressed by user.
+     * This capability is available on button devices.
+     *
+     * A button is a device, like power button or lid switch, that can be pressed by user.
+     * Some buttons can have two states (Enabled/Disabled, On/Off ...), other buttons haven't state.
+     *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
     class KDE_EXPORT Button : virtual public Capability, public Enums::Button
@@ -42,14 +44,46 @@ namespace Ifaces
 //         Q_ENUMS( ButtonType )
 
     public:
+        /**
+         * Destroys a Button object.
+         */
         virtual ~Button();
 
+        /**
+         * Retrieves the type of button device.
+         *
+         * @return the type of button device.
+         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         */
         virtual ButtonType type() const = 0;
+
+        /**
+         * Indicates if the button mantains state (Can toggled on/off).
+         *
+         * @return true if the button maintains state, false otherwise.
+         * @see stateValue()
+         */
         virtual bool hasState() const = 0;
+
+        /**
+         * Retrieves the state of the button.
+         * A button can have two states (Enabled/Disabled, On/Off ...).
+         * Avaible only if hasState is true.
+         *
+         * @return true if the button is enabled, false otherwise.
+         * @see hasState()
+         */
         virtual bool stateValue() const = 0;
 
     protected:
     //signals:
+        /**
+         * This signal is emitted when the button is pressed.
+         *
+         * @param type the type of button device, it's one of
+         * the type KDEHW::Ifaces::Enums::Button::ButtonType
+         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         */
         virtual void pressed( int type ) = 0;
     };
 }

@@ -29,9 +29,10 @@ namespace KDEHW
 namespace Ifaces
 {
     /**
-     * This class specifies Display capability interface and represent display
-     * devices attached to the system.
+     * This capability is available on display devices.
+     *
      * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
+     *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
     class KDE_EXPORT Display : virtual public Capability, public Enums::Display
@@ -42,20 +43,23 @@ namespace Ifaces
 
     public:
         /**
-         * Destruct the Display object.
+         * Destroys a Display object.
          */
         virtual ~Display();
 
         /**
-         * Get the type of display device.
-         * @returns the type of display device.
+         * Retrieves the type of display device.
+         *
+         * @return the type of display device.
+         * @see KDEHW::Ifaces::Enums::Display::DisplayType
          */
         virtual DisplayType type() const = 0;
 
         /**
-         * Get the brightness level in percent.
+         * Retrieves the brightness level in percent.
          * Avaible only if displayType is lcd.
-         * @returns the brightness level in percent. If displayType is different from lcd, return 100.
+         *
+         * @return the brightness level in percent. If displayType is different from lcd, return 100.
          */
         virtual int lcdBrightness() const = 0;
     };

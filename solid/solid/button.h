@@ -31,20 +31,76 @@ namespace KDEHW
         class Button;
     }
 
+    /**
+     * This capability is available on button devices.
+     *
+     * A button is a device, like power button or lid switch, that can be pressed by user.
+     * Some buttons can have two states (Enabled/Disabled, On/Off ...), other buttons haven't state.
+     *
+     * @author Davide Bettio <davbet@aliceposta.it>
+     */
     class KDE_EXPORT Button : public Capability, public Ifaces::Enums::Button
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new Button object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param iface the capability interface provided by the backend
+         * @param parent the parent QObject
+         * @see KDEHW::Device::as()
+         */
         Button( Ifaces::Button *iface, QObject *parent = 0 );
 
+        /**
+         * Destroys a Button object.
+         */
         virtual ~Button();
 
+        /**
+         * Get the KDEHW::Capability::Type of the Button capability.
+         *
+         * @return the Button capability type
+         * @see KDEHW::Ifaces::Enums::Capability::Type
+         */
         static Type capabilityType() { return Capability::Button; }
+
+        /**
+         * Retrieves the type of button device.
+         *
+         * @return the type of button device.
+         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         */
         ButtonType type() const;
+
+        /**
+         * Indicates if the button mantains state (Can toggled on/off).
+         *
+         * @return true if the button maintains state, false otherwise.
+         * @see stateValue()
+         */
         bool hasState() const;
+
+        /**
+         * Retrieves the state of the button.
+         * A button can have two states (Enabled/Disabled, On/Off ...).
+         * Avaible only if hasState is true.
+         *
+         * @return true if the button is enabled, false otherwise.
+         * @see hasState()
+         */
         bool stateValue() const;
 
     signals:
+        /**
+         * This signal is emitted when the button is pressed.
+         *
+         * @param type the type of button device, it's one of
+         * the type KDEHW::Ifaces::Enums::Button::ButtonType
+         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         */
         void pressed( int type );
 
     private slots:
