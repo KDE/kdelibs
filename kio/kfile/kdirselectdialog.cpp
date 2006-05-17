@@ -470,7 +470,7 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
         myDialog.setCaption( caption );
 
     if ( myDialog.exec() == QDialog::Accepted )
-        return myDialog.url();
+        return KIO::NetAccess::mostLocalURL(myDialog.url(),parent);
     else
         return KURL();
 }
