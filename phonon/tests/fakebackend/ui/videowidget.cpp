@@ -43,9 +43,9 @@ VideoWidget::VideoWidget( QWidget* parent )
 
 void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 {
-	switch( frame.format )
+	switch( frame.fourcc )
 	{
-		case Phonon::VideoDataOutput::Format_RGB32:
+		case 0x00000000:
 			{
 				QImage image( reinterpret_cast<uchar*>( frame.data.data() ), frame.width, frame.height, QImage::Format_RGB32 );
 				image = image.scaled( size(), Qt::KeepAspectRatio, Qt::FastTransformation );
