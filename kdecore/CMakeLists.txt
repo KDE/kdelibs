@@ -235,7 +235,7 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
-set_target_properties(kdecore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdecore )
 
 
