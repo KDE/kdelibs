@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include <cmath>
 #include <climits>
 #include <cstdlib>
 
@@ -248,9 +247,9 @@ KTimeZonePrivate::KTimeZonePrivate(KTimeZoneSource *src, const QString& nam,
     data(0)
 {
     // Detect duff values.
-    if (::fabsf(latitude) > 90)
+    if ( latitude > 90 || latitude < -90 )
         latitude = KTimeZone::UNKNOWN;
-    if (::fabsf(longitude) > 180)
+    if ( longitude > 180 || longitude < -180 )
         longitude = KTimeZone::UNKNOWN;
 }
 
