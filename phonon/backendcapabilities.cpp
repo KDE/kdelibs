@@ -127,15 +127,15 @@ availableDevicesImpl( AudioCaptureDevice )
 availableDevicesImpl( VideoOutputDevice )
 availableDevicesImpl( VideoCaptureDevice )
 
-QList<VisualizationDescription> availableVisualizationEffects()
+QList<VisualizationEffect> availableVisualizationEffects()
 {
 	const Ifaces::Backend* backend = Factory::self()->backend();
-	QList<VisualizationDescription> ret;
+	QList<VisualizationEffect> ret;
 	if( backend )
 	{
 		QSet<int> indexes = backend->visualizationIndexes();
 		foreach( int i, indexes )
-			ret.append( VisualizationDescription::fromIndex( i ) );
+			ret.append( VisualizationEffect::fromIndex( i ) );
 	}
 	return ret;
 }

@@ -19,7 +19,7 @@
 
 #include "visualization.h"
 #include "visualization_p.h"
-#include "visualizationdescription.h"
+#include "visualizationeffect.h"
 #include "audiopath.h"
 #include "abstractvideooutput.h"
 
@@ -64,13 +64,13 @@ void Visualization::setVideoOutput( AbstractVideoOutput* videoOutput )
 		d->iface()->setVideoOutput( videoOutput->iface() );
 }
 
-VisualizationDescription Visualization::visualization() const
+VisualizationEffect Visualization::visualization() const
 {
 	K_D( const Visualization );
-	return VisualizationDescription::fromIndex( d->iface() ? d->iface()->visualization() : d->visualizationIndex );
+	return VisualizationEffect::fromIndex( d->iface() ? d->iface()->visualization() : d->visualizationIndex );
 }
 
-void Visualization::setVisualization( const VisualizationDescription& newVisualization )
+void Visualization::setVisualization( const VisualizationEffect& newVisualization )
 {
 	K_D( Visualization );
 	if( iface() )

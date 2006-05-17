@@ -30,7 +30,7 @@ namespace Phonon
 	class VisualizationPrivate;
 	class AudioPath;
 	class AbstractVideoOutput;
-	class VisualizationDescription;
+	class VisualizationEffect;
 
 	namespace Ifaces
 	{
@@ -68,7 +68,7 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base, private Bas
 	Q_OBJECT
 	K_DECLARE_PRIVATE( Visualization )
 	PHONON_OBJECT( Visualization )
-	Q_PROPERTY( VisualizationDescription visualization READ visualization WRITE setVisualization )
+	Q_PROPERTY( VisualizationEffect visualization READ visualization WRITE setVisualization )
 
 	public:
 		~Visualization();
@@ -79,8 +79,8 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base, private Bas
 		AbstractVideoOutput* videoOutput() const;
 		void setVideoOutput( AbstractVideoOutput* output );
 
-		VisualizationDescription visualization() const;
-		void setVisualization( const VisualizationDescription& newVisualization );
+		VisualizationEffect visualization() const;
+		void setVisualization( const VisualizationEffect& newVisualization );
 
 	private:
 		/**

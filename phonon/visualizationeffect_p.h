@@ -17,22 +17,22 @@
 
 */
 
-#ifndef AUDIOEFFECTDESCRIPTION_P_H
-#define AUDIOEFFECTDESCRIPTION_P_H
+#ifndef PHONON_VISUALIZATIONEFFECT_P_H
+#define PHONON_VISUALIZATIONEFFECT_P_H
 
-#include "visualizationdescription.h"
+#include "visualizationeffect.h"
 #include "namedescriptiontuple_p.h"
 
 namespace Phonon
 {
 
-class VisualizationDescriptionPrivate : public NameDescriptionTuplePrivate
+class VisualizationEffectPrivate : public NameDescriptionTuplePrivate
 {
-	Q_DECLARE_PUBLIC( VisualizationDescription )
+	Q_DECLARE_PUBLIC( VisualizationEffect )
 	protected:
 };
 
 } // namespace Phonon
 
-#endif // AUDIOEFFECTDESCRIPTION_P_H
+#endif // PHONON_VISUALIZATIONEFFECT_P_H
 // vim: sw=4 ts=4 tw=80

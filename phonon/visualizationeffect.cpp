@@ -17,8 +17,8 @@
 
 */
 
-#include "visualizationdescription.h"
-#include "visualizationdescription_p.h"
+#include "visualizationeffect.h"
+#include "visualizationeffect_p.h"
 #include "factory.h"
 #include "ifaces/backend.h"
 
@@ -28,41 +28,41 @@
 namespace Phonon
 {
 
-VisualizationDescription::VisualizationDescription()
-	: NameDescriptionTuple( *new VisualizationDescriptionPrivate, -1, QString(), QString() )
+VisualizationEffect::VisualizationEffect()
+	: NameDescriptionTuple( *new VisualizationEffectPrivate, -1, QString(), QString() )
 {
 }
 
-VisualizationDescription::VisualizationDescription( const VisualizationDescription& rhs )
-	: NameDescriptionTuple( *new VisualizationDescriptionPrivate, rhs.index(), rhs.name(), rhs.description() )
+VisualizationEffect::VisualizationEffect( const VisualizationEffect& rhs )
+	: NameDescriptionTuple( *new VisualizationEffectPrivate, rhs.index(), rhs.name(), rhs.description() )
 {
 }
 
-VisualizationDescription::VisualizationDescription( int index, const QString& name, const QString& description )
-	: NameDescriptionTuple( *new VisualizationDescriptionPrivate, index, name, description )
+VisualizationEffect::VisualizationEffect( int index, const QString& name, const QString& description )
+	: NameDescriptionTuple( *new VisualizationEffectPrivate, index, name, description )
 {
 }
 
-VisualizationDescription& VisualizationDescription::operator=( const VisualizationDescription& rhs )
+VisualizationEffect& VisualizationEffect::operator=( const VisualizationEffect& rhs )
 {
 	*d_func() = *rhs.d_func();
 	return *this;
 }
 
-bool VisualizationDescription::operator==( const VisualizationDescription& rhs ) const
+bool VisualizationEffect::operator==( const VisualizationEffect& rhs ) const
 {
 	return *d_func() == *rhs.d_func();
 }
 
-VisualizationDescription VisualizationDescription::fromIndex( int index )
+VisualizationEffect VisualizationEffect::fromIndex( int index )
 {
 	const Ifaces::Backend* b = Factory::self()->backend();
 	if( b->visualizationIndexes().contains( index ) )
-		return VisualizationDescription( index,
+		return VisualizationEffect( index,
 				b->visualizationName( index ),
 				b->visualizationDescription( index ) );
 	else
-		return VisualizationDescription(); //isValid() == false
+		return VisualizationEffect(); //isValid() == false
 }
 
 } // namespace Phonon

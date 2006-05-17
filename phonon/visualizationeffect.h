@@ -17,39 +17,39 @@
 
 */
 
-#ifndef PHONON_VISUALIZATIONDESCRIPTION_H
-#define PHONON_VISUALIZATIONDESCRIPTION_H
+#ifndef PHONON_VISUALIZATIONEFFECT_H
+#define PHONON_VISUALIZATIONEFFECT_H
 
 #include "namedescriptiontuple.h"
 
 namespace Phonon
 {
 
-class VisualizationDescriptionPrivate;
+class VisualizationEffectPrivate;
 
 /**
  * \author Matthias Kretz <kretz@kde.org>
  * \see Visualization
  */
-class PHONONCORE_EXPORT VisualizationDescription : public NameDescriptionTuple
+class PHONONCORE_EXPORT VisualizationEffect : public NameDescriptionTuple
 {
-	Q_DECLARE_PRIVATE( VisualizationDescription )
+	Q_DECLARE_PRIVATE( VisualizationEffect )
 	public:
-		VisualizationDescription();
-		VisualizationDescription( const VisualizationDescription& visualizationDescription );
-		VisualizationDescription& operator=( const VisualizationDescription& visualizationDescription );
-		bool operator==( const VisualizationDescription& visualizationDescription ) const;
-		static VisualizationDescription fromIndex( int index );
+		VisualizationEffect();
+		VisualizationEffect( const VisualizationEffect& visualizationEffect );
+		VisualizationEffect& operator=( const VisualizationEffect& visualizationEffect );
+		bool operator==( const VisualizationEffect& visualizationEffect ) const;
+		static VisualizationEffect fromIndex( int index );
 
 	protected:
 		/**
 		 * \internal
 		 * Creates new (valid) description.
 		 */
-		VisualizationDescription( int index, const QString& name, const QString& description );
+		VisualizationEffect( int index, const QString& name, const QString& description );
 };
 
 }
 
-#endif // PHONON_VISUALIZATIONDESCRIPTION_H
+#endif // PHONON_VISUALIZATIONEFFECT_H
 // vim: sw=4 ts=4 noet tw=80
