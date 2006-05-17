@@ -36,30 +36,30 @@ namespace Fake
 			MediaObject( QObject* parent );
 			virtual ~MediaObject();
 			virtual KUrl url() const;
-			virtual long totalTime() const;
-			//virtual long remainingTime() const;
-			virtual long aboutToFinishTime() const;
+			virtual qint64 totalTime() const;
+			//virtual qint64 remainingTime() const;
+			virtual qint32 aboutToFinishTime() const;
 			virtual void setUrl( const KUrl& url );
-			virtual void setAboutToFinishTime( long newAboutToFinishTime );
+			virtual void setAboutToFinishTime( qint32 newAboutToFinishTime );
 
 			virtual void play();
 			virtual void pause();
-			virtual void seek( long time );
+			virtual void seek( qint64 time );
 
 		public Q_SLOTS:
 			virtual void stop();
 
 		Q_SIGNALS:
 			void finished();
-			void aboutToFinish( long msec );
-			void length( long length );
+			void aboutToFinish( qint32 msec );
+			void length( qint64 length );
 
 		protected:
 			virtual void emitTick();
 
 		private:
 			KUrl m_url;
-			long m_aboutToFinishTime;
+			qint32 m_aboutToFinishTime;
 			bool m_aboutToFinishNotEmitted;
 	};
 }} //namespace Phonon::Fake

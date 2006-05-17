@@ -56,6 +56,8 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( MediaObject )
 		PHONON_HEIR( MediaObject )
+		Q_PROPERTY( KUrl url READ url WRITE setUrl )
+		Q_PROPERTY( qint32 aboutToFinishTime READ aboutToFinishTime WRITE setAboutToFinishTime )
 		public:
 			/**
 			 * Get the URL the MediaObject should use as media data source.
@@ -68,11 +70,11 @@ namespace Phonon
 			 *
 			 * \see length
 			 */
-			long totalTime() const;
+			qint64 totalTime() const;
 			/**
 			 * Get the remaining time (in milliseconds) of the file currently being played.
 			 */
-			long remainingTime() const;
+			qint64 remainingTime() const;
 
 			/**
 			 * Returns the time in milliseconds the aboutToFinish signal is
@@ -83,7 +85,7 @@ namespace Phonon
 			 * \see setAboutToFinishTime
 			 * \see aboutToFinish
 			 */
-			long aboutToFinishTime() const;
+			qint32 aboutToFinishTime() const;
 
 		public Q_SLOTS:
 			// Attributes Setters:
@@ -104,7 +106,7 @@ namespace Phonon
 			 * \see aboutToFinishTime
 			 * \see aboutToFinish
 			 */
-			void setAboutToFinishTime( long newAboutToFinishTime );
+			void setAboutToFinishTime( qint32 newAboutToFinishTime );
 
 		Q_SIGNALS:
 			/**
@@ -126,7 +128,7 @@ namespace Phonon
 			 * \see aboutToFinishTime
 			 * \see finished
 			 */
-			void aboutToFinish( long msec );
+			void aboutToFinish( qint32 msec );
 
 			/**
 			 * This signal is emitted as soon as the length of the media file is
@@ -139,7 +141,7 @@ namespace Phonon
 			 *
 			 * \see totalTime
 			 */
-			void length( long length );
+			void length( qint64 length );
 	};
 } //namespace Phonon
 

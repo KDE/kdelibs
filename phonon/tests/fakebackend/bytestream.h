@@ -34,42 +34,42 @@ namespace Fake
 			ByteStream( QObject* parent );
 			virtual ~ByteStream();
 
-			virtual long currentTime() const;
-			virtual long totalTime() const;
-			virtual long aboutToFinishTime() const;
-			virtual long streamSize() const;
+			virtual qint64 currentTime() const;
+			virtual qint64 totalTime() const;
+			virtual qint32 aboutToFinishTime() const;
+			virtual qint64 streamSize() const;
 			virtual bool streamSeekable() const;
 			virtual bool seekable() const;
 
 			virtual void setStreamSeekable( bool );
 			virtual void writeData( const QByteArray& data );
-			virtual void setStreamSize( long );
+			virtual void setStreamSize( qint64 );
 			virtual void endOfData();
-			virtual void setAboutToFinishTime( long );
+			virtual void setAboutToFinishTime( qint32 );
 
 			virtual void play();
 			virtual void pause();
-			virtual void seek( long time );
+			virtual void seek( qint64 time );
 
 		public Q_SLOTS:
 			virtual void stop();
 
 		Q_SIGNALS:
 			void finished();
-			void aboutToFinish( long );
-			void length( long );
+			void aboutToFinish( qint32 );
+			void length( qint64 );
 			void needData();
 			void enoughData();
-			void seekStream( long );
+			void seekStream( qint64 );
 
 		private Q_SLOTS:
 			void consumeStream();
 
 		private:
-			long m_aboutToFinishBytes;
-			long m_streamSize;
-			long m_bufferSize;
-			long m_streamPosition;
+			qint64 m_aboutToFinishBytes;
+			qint64 m_streamSize;
+			qint64 m_bufferSize;
+			qint64 m_streamPosition;
 			bool m_streamSeekable;
 			bool m_eof;
 			bool m_aboutToFinishEmitted;

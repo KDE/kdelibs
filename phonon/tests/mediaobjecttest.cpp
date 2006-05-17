@@ -96,7 +96,7 @@ void MediaObjectTest::initTestCase()
 
 void MediaObjectTest::setMedia()
 {
-	QSignalSpy lengthSignalSpy( m_media, SIGNAL( length( long ) ) );
+	QSignalSpy lengthSignalSpy( m_media, SIGNAL( length( qint64 ) ) );
 	QVERIFY( m_media->url().isEmpty() );
 	QCOMPARE( m_media->state(), Phonon::LoadingState );
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
@@ -131,7 +131,7 @@ void MediaObjectTest::setMedia()
 		// check for length signal
 		QVERIFY( lengthSignalSpy.count() > 0 );
 		args = lengthSignalSpy.takeLast();
-		QCOMPARE( m_media->totalTime(), qvariant_cast<long>( args.at( 0 ) ) );
+		QCOMPARE( m_media->totalTime(), qvariant_cast<qint64>( args.at( 0 ) ) );
 	}
 	else
 	{
@@ -141,8 +141,8 @@ void MediaObjectTest::setMedia()
 
 void MediaObjectTest::checkForDefaults()
 {
-	QCOMPARE( m_media->tickInterval(), 0L );
-	QCOMPARE( m_media->aboutToFinishTime(), 0L );
+	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
+	QCOMPARE( m_media->aboutToFinishTime(), qint32( 0 ) );
 }
 
 void MediaObjectTest::stopToStop()
@@ -232,12 +232,12 @@ void MediaObjectTest::pauseToStop()
 void MediaObjectTest::testSeek()
 {
 	startPlayback();
-	long c = m_media->currentTime();
-	long r = m_media->remainingTime();
+	qint64 c = m_media->currentTime();
+	qint64 r = m_media->remainingTime();
 	if( m_media->seekable() )
 		if( r > 0 )
 		{
-			long s = c + r/2;
+			qint64 s = c + r/2;
 			QTime start = QTime::currentTime();
 			m_media->seek( s );
 			c = m_media->currentTime();
@@ -277,21 +277,21 @@ void MediaObjectTest::testSeek()
 
 void MediaObjectTest::testAboutToFinish()
 {
-	m_media->setAboutToFinishTime( 500L );
-	QCOMPARE( m_media->aboutToFinishTime(), 500L );
-	QSignalSpy aboutToFinishSpy( m_media, SIGNAL( aboutToFinish( long ) ) );
+	m_media->setAboutToFinishTime( 500 );
+	QCOMPARE( m_media->aboutToFinishTime(), qint32( 500 ) );
+	QSignalSpy aboutToFinishSpy( m_media, SIGNAL( aboutToFinish( qint32 ) ) );
 	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
 	startPlayback();
 	if( m_media->seekable() )
-		m_media->seek( m_media->totalTime() - 1000L );
+		m_media->seek( m_media->totalTime() - 1000 );
 	while( aboutToFinishSpy.count() == 0 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		QCoreApplication::processEvents();
 	// at this point the media should be about to finish playing
-	long r = m_media->remainingTime();
+	qint64 r = m_media->remainingTime();
 	Phonon::State state = m_media->state();
 	QCOMPARE( aboutToFinishSpy.count(), 1 );
-	long aboutToFinishTime = qvariant_cast<long>( aboutToFinishSpy.first().at( 0 ) );
-	QVERIFY( aboutToFinishTime <= 500L );
+	qint32 aboutToFinishTime = qvariant_cast<qint32>( aboutToFinishSpy.first().at( 0 ) );
+	QVERIFY( aboutToFinishTime <= 500 );
 	if( state == Phonon::PlayingState || state == Phonon::BufferingState )
 	{
 		QVERIFY( r <= aboutToFinishTime );
@@ -300,7 +300,7 @@ void MediaObjectTest::testAboutToFinish()
 	}
 	else
 	{
-		QVERIFY( aboutToFinishTime > 0L );
+		QVERIFY( aboutToFinishTime > 0 );
 	}
 	QCOMPARE( finishSpy.count(), 1 );
 
@@ -315,9 +315,9 @@ void MediaObjectTest::testAboutToFinish()
 
 void MediaObjectTest::testTickSignal()
 {
-	QSignalSpy tickSpy( m_media, SIGNAL( tick( long ) ) );
-	QCOMPARE( m_media->tickInterval(), 0L );
-	for( long tickInterval = 20; tickInterval <= 1000; tickInterval *= 2 )
+	QSignalSpy tickSpy( m_media, SIGNAL( tick( qint64 ) ) );
+	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
+	for( qint32 tickInterval = 20; tickInterval <= 1000; tickInterval *= 2 )
 	{
 		qDebug() << "Test 20 ticks with an interval of" <<  tickInterval << "ms";
 		m_media->setTickInterval( tickInterval );
@@ -327,13 +327,13 @@ void MediaObjectTest::testTickSignal()
 		startPlayback();
 		QTime start2 = QTime::currentTime();
 		int lastCount = 0;
-		long s1, s2 = start2.elapsed();
+		qint64 s1, s2 = start2.elapsed();
 		while( tickSpy.count() < 20 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		{
 			if( tickSpy.count() > lastCount )
 			{
 				s1 = start1.elapsed();
-				long tickTime = qvariant_cast<long>( tickSpy.last().at( 0 ) );
+				qint64 tickTime = qvariant_cast<qint64>( tickSpy.last().at( 0 ) );
 				lastCount = tickSpy.count();
 				// s1 is the time from before the beginning of the playback to
 				// after the tick signal

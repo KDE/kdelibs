@@ -86,7 +86,7 @@ namespace Ifaces
 			/**
 			 * Get the current time (in milliseconds) of the file currently being played.
 			 */
-			virtual long currentTime() const = 0;
+			virtual qint64 currentTime() const = 0;
 
 			/**
 			 * Return the time interval in milliseconds between two ticks.
@@ -94,7 +94,7 @@ namespace Ifaces
 			 * @returns Returns the tick intervall that it was set to (might not
 			 * be the same as you asked for).
 			 */
-			virtual long tickInterval() const = 0;
+			virtual qint32 tickInterval() const = 0;
 
 			virtual QStringList availableAudioStreams() const = 0;
 			virtual QStringList availableVideoStreams() const = 0;
@@ -117,7 +117,7 @@ namespace Ifaces
 			 * @returns Returns the tick intervall that it was set to (might not
 			 * be the same as you asked for).
 			 */
-			virtual long setTickInterval( long newTickInterval ) = 0;
+			virtual void setTickInterval( qint32 newTickInterval ) = 0;
 
 			/**
 			 * Play the media data.
@@ -139,7 +139,7 @@ namespace Ifaces
 			 *
 			 * @param time The time in milliseconds where to continue playing.
 			 */
-			virtual void seek( long time ) = 0;
+			virtual void seek( qint64 time ) = 0;
 
 		//Q_SIGNALS:
 			/**
@@ -159,7 +159,7 @@ namespace Ifaces
 			 *
 			 * \see setTickInterval, tickInterval
 			 */
-			virtual void tick( long time ) = 0;
+			virtual void tick( qint64 time ) = 0;
 	};
 }} //namespace Phonon::Ifaces
 

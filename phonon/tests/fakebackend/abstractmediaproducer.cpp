@@ -120,7 +120,7 @@ bool AbstractMediaProducer::seekable() const
 	return true;
 }
 
-long AbstractMediaProducer::currentTime() const
+qint64 AbstractMediaProducer::currentTime() const
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	switch( state() )
@@ -139,13 +139,13 @@ long AbstractMediaProducer::currentTime() const
 	return -1;
 }
 
-long AbstractMediaProducer::tickInterval() const
+qint32 AbstractMediaProducer::tickInterval() const
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	return m_tickInterval;
 }
 
-long AbstractMediaProducer::setTickInterval( long newTickInterval )
+void AbstractMediaProducer::setTickInterval( qint32 newTickInterval )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	m_tickInterval = newTickInterval;
@@ -153,7 +153,6 @@ long AbstractMediaProducer::setTickInterval( long newTickInterval )
 		m_tickTimer->setInterval( 50 );
 	else
 		m_tickTimer->setInterval( newTickInterval );
-	return m_tickInterval;
 }
 
 QStringList AbstractMediaProducer::availableAudioStreams() const
@@ -233,7 +232,7 @@ void AbstractMediaProducer::stop()
 	m_frequency = 440.0f;
 }
 
-void AbstractMediaProducer::seek( long time )
+void AbstractMediaProducer::seek( qint64 time )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	if( seekable() )
@@ -294,7 +293,7 @@ void AbstractMediaProducer::emitTick()
 	}
 	QVector<float> buffer( m_bufferSize );
 	VideoFrame frame;
-	frame.format = VideoDataOutput::Format_RGB32;
+	frame.fourcc = 0x00000000;
 	frame.width = 320;
 	frame.height = 240;
 	frame.depth = 24;

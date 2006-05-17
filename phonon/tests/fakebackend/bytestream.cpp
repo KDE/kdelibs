@@ -46,24 +46,24 @@ ByteStream::~ByteStream()
 {
 }
 
-long ByteStream::currentTime() const
+qint64 ByteStream::currentTime() const
 {
 	return m_streamPosition * 3 / 50;
 }
 
-long ByteStream::totalTime() const
+qint64 ByteStream::totalTime() const
 {
 	if( m_streamSize >= 0 )
 		return m_streamSize * 3 / 50;
 	return 1000*60*3; // 3 minutes
 }
 
-long ByteStream::aboutToFinishTime() const
+qint32 ByteStream::aboutToFinishTime() const
 {
 	return m_aboutToFinishBytes * 3 / 50;
 }
 
-long ByteStream::streamSize() const
+qint64 ByteStream::streamSize() const
 {
 	return m_streamSize;
 }
@@ -89,7 +89,7 @@ void ByteStream::writeData( const QByteArray& data )
 			setState( Phonon::StoppedState );
 }
 
-void ByteStream::setStreamSize( long s )
+void ByteStream::setStreamSize( qint64 s )
 {
 	m_streamSize = s;
 	emit length( totalTime() );
@@ -104,7 +104,7 @@ void ByteStream::endOfData()
 		setState( Phonon::StoppedState );
 }
 
-void ByteStream::setAboutToFinishTime( long t )
+void ByteStream::setAboutToFinishTime( qint32 t )
 {
 	m_aboutToFinishBytes = t * 50 / 3;
 }
@@ -143,14 +143,14 @@ bool ByteStream::seekable() const
 	return m_streamSeekable;
 }
 
-void ByteStream::seek( long time )
+void ByteStream::seek( qint64 time )
 {
 	if( ! seekable() )
 		return;
 
-	const long dataStart = m_streamPosition;
-	const long dataEnd = dataStart + m_bufferSize;
-	long newDataPosition = time * 50 / 3;
+	const qint64 dataStart = m_streamPosition;
+	const qint64 dataEnd = dataStart + m_bufferSize;
+	qint64 newDataPosition = time * 50 / 3;
 	m_streamPosition = newDataPosition;
 	if( newDataPosition < dataStart || newDataPosition > dataEnd )
 	{
@@ -178,7 +178,7 @@ void ByteStream::consumeStream()
 		case Phonon::PlayingState:
 			break;
 	}
-	long bytes = m_streamConsumeTimer->interval() * 50 / 3;
+	qint64 bytes = m_streamConsumeTimer->interval() * 50 / 3;
 	if( m_bufferSize < bytes )
 	{
 		m_streamPosition += m_bufferSize;

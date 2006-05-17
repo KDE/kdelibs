@@ -26,25 +26,25 @@ namespace Phonon
 {
 PHONON_HEIR_IMPL( ByteStream, AbstractMediaProducer )
 
-long ByteStream::totalTime() const
+qint64 ByteStream::totalTime() const
 {
 	K_D( const ByteStream );
 	return d->iface() ? d->iface()->totalTime() : -1;
 }
 
-long ByteStream::remainingTime() const
+qint64 ByteStream::remainingTime() const
 {
 	K_D( const ByteStream );
 	return d->iface() ? d->iface()->remainingTime() : -1;
 }
 
-long ByteStream::aboutToFinishTime() const
+qint32 ByteStream::aboutToFinishTime() const
 {
 	K_D( const ByteStream );
 	return d->iface() ? d->iface()->aboutToFinishTime() : d->aboutToFinishTime;
 }
 
-long ByteStream::streamSize() const
+qint64 ByteStream::streamSize() const
 {
 	K_D( const ByteStream );
 	return d->iface() ? d->iface()->streamSize() : d->streamSize;
@@ -72,7 +72,7 @@ void ByteStream::writeData( const QByteArray& data )
 		d->iface()->writeData( data );
 }
 
-void ByteStream::setStreamSize( long streamSize )
+void ByteStream::setStreamSize( qint64 streamSize )
 {
 	K_D( ByteStream );
 	if( d->iface() )
@@ -88,7 +88,7 @@ void ByteStream::endOfData()
 		d->iface()->endOfData();
 }
 
-void ByteStream::setAboutToFinishTime( long newAboutToFinishTime )
+void ByteStream::setAboutToFinishTime( qint32 newAboutToFinishTime )
 {
 	K_D( ByteStream );
 	if( d->iface() )
@@ -115,11 +115,11 @@ void ByteStream::setupIface()
 	AbstractMediaProducer::setupIface();
 
 	connect( d->iface()->qobject(), SIGNAL( finished() ), SIGNAL( finished() ) );
-	connect( d->iface()->qobject(), SIGNAL( aboutToFinish( long ) ), SIGNAL( aboutToFinish( long ) ) );
-	connect( d->iface()->qobject(), SIGNAL( length( long ) ), SIGNAL( length( long ) ) );
+	connect( d->iface()->qobject(), SIGNAL( aboutToFinish( qint32 ) ), SIGNAL( aboutToFinish( qint32 ) ) );
+	connect( d->iface()->qobject(), SIGNAL( length( qint64 ) ), SIGNAL( length( qint64 ) ) );
 	connect( d->iface()->qobject(), SIGNAL( needData() ), SIGNAL( needData() ) );
 	connect( d->iface()->qobject(), SIGNAL( enoughData() ), SIGNAL( enoughData() ) );
-	connect( d->iface()->qobject(), SIGNAL( seekStream( long ) ), SIGNAL( seekStream( long ) ) );
+	connect( d->iface()->qobject(), SIGNAL( seekStream( qint64 ) ), SIGNAL( seekStream( qint64 ) ) );
 
 	d->iface()->setAboutToFinishTime( d->aboutToFinishTime );
 }

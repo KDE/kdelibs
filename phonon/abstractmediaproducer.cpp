@@ -93,13 +93,13 @@ bool AbstractMediaProducer::seekable() const
 	return d->iface() ? d->iface()->seekable() : false;
 }
 
-long AbstractMediaProducer::currentTime() const
+qint64 AbstractMediaProducer::currentTime() const
 {
 	K_D( const AbstractMediaProducer );
 	return d->iface() ? d->iface()->currentTime() : d->currentTime;
 }
 
-long AbstractMediaProducer::tickInterval() const
+qint32 AbstractMediaProducer::tickInterval() const
 {
 	K_D( const AbstractMediaProducer );
 	return d->iface() ? d->iface()->tickInterval() : d->tickInterval;
@@ -174,11 +174,11 @@ void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, Vid
 		d->selectedSubtitleStream[ videoPath->iface() ] = streamName;
 }
 
-void AbstractMediaProducer::setTickInterval( long newTickInterval )
+void AbstractMediaProducer::setTickInterval( qint32 newTickInterval )
 {
 	K_D( AbstractMediaProducer );
 	if( d->iface() )
-		d->tickInterval = d->iface()->setTickInterval( newTickInterval );
+		d->iface()->setTickInterval( newTickInterval );
 	else
 		d->tickInterval = newTickInterval;
 }
@@ -216,7 +216,7 @@ void AbstractMediaProducer::stop()
 		d->iface()->stop();
 }
 
-void AbstractMediaProducer::seek( long time )
+void AbstractMediaProducer::seek( qint64 time )
 {
 	K_D( AbstractMediaProducer );
 	State s = state();
@@ -245,7 +245,7 @@ void AbstractMediaProducer::setupIface()
 	//kDebug( 600 ) << k_funcinfo << endl;
 
 	connect( d->iface()->qobject(), SIGNAL( stateChanged( Phonon::State, Phonon::State ) ), SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
-	connect( d->iface()->qobject(), SIGNAL( tick( long ) ), SIGNAL( tick( long ) ) );
+	connect( d->iface()->qobject(), SIGNAL( tick( qint64 ) ), SIGNAL( tick( qint64 ) ) );
 
 	// set up attributes
 	d->iface()->setTickInterval( d->tickInterval );

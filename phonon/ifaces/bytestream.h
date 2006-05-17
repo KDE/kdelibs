@@ -31,10 +31,10 @@ namespace Ifaces
 	class ByteStream : virtual public AbstractMediaProducer
 	{
 		public:
-			virtual long totalTime() const = 0;
-			virtual long remainingTime() const { return totalTime() - currentTime(); }
-			virtual long aboutToFinishTime() const = 0;
-			virtual long streamSize() const = 0;
+			virtual qint64 totalTime() const = 0;
+			virtual qint64 remainingTime() const { return totalTime() - currentTime(); }
+			virtual qint32 aboutToFinishTime() const = 0;
+			virtual qint64 streamSize() const = 0;
 			virtual bool streamSeekable() const = 0;
 
 			virtual void setStreamSeekable( bool ) = 0;
@@ -44,22 +44,22 @@ namespace Ifaces
 			 * Sets the total number of bytes that will be streamed via
 			 * writeData
 			 */
-			virtual void setStreamSize( long ) = 0;
+			virtual void setStreamSize( qint64 ) = 0;
 
 			/**
 			 * Called when there will be no more calls to writeBuffer
 			 */
 			virtual void endOfData() = 0;
 
-			virtual void setAboutToFinishTime( long ) = 0;
+			virtual void setAboutToFinishTime( qint32 ) = 0;
 
 		protected: //signals
 			virtual void finished() = 0;
-			virtual void aboutToFinish( long ) = 0;
-			virtual void length( long ) = 0;
+			virtual void aboutToFinish( qint32 ) = 0;
+			virtual void length( qint64 ) = 0;
 			virtual void needData() = 0;
 			virtual void enoughData() = 0;
-			virtual void seekStream( long ) = 0;
+			virtual void seekStream( qint64 ) = 0;
 	};
 }} //namespace Phonon::Ifaces
 

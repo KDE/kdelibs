@@ -76,21 +76,24 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( ByteStream )
 		PHONON_HEIR( ByteStream )
+		Q_PROPERTY( qint32 aboutToFinishTime READ aboutToFinishTime WRITE setAboutToFinishTime )
+		Q_PROPERTY( qint64 streamSize READ streamSize WRITE setStreamSize )
+		Q_PROPERTY( bool streamSeekable READ streamSeekable WRITE setStreamSeekable )
 		public:
 			/**
 			 * \copydoc MediaObject::totalTime()
 			 */
-			long totalTime() const;
+			qint64 totalTime() const;
 
 			/**
-			 * \copydoc MediaObject::totalTime()
+			 * \copydoc MediaObject::remainingTime()
 			 */
-			long remainingTime() const;
+			qint64 remainingTime() const;
 
 			/**
-			 * \copydoc MediaObject::totalTime()
+			 * \copydoc MediaObject::aboutToFinishTime()
 			 */
-			long aboutToFinishTime() const;
+			qint32 aboutToFinishTime() const;
 
 			/**
 			 * Returns the size of the stream in bytes. If the size is unknown
@@ -100,7 +103,7 @@ namespace Phonon
 			 *
 			 * \see setStreamSize
 			 */
-			long streamSize() const;
+			qint64 streamSize() const;
 
 			/**
 			 * Returns whether you need to react on the seekStream signal when
@@ -158,7 +161,7 @@ namespace Phonon
 			 * \see streamSize
 			 * \see endOfData
 			 */
-			void setStreamSize( long streamSize );
+			void setStreamSize( qint64 streamSize );
 
 			/**
 			 * Call this slot after your last call to writeData. This is needed
@@ -174,9 +177,9 @@ namespace Phonon
 			void endOfData();
 
 			/**
-			 * \copydoc MediaObject::setAboutToFinishTime( long )
+			 * \copydoc MediaObject::setAboutToFinishTime( qint32 )
 			 */
-			void setAboutToFinishTime( long newAboutToFinishTime );
+			void setAboutToFinishTime( qint32 newAboutToFinishTime );
 
 		Q_SIGNALS:
 			/**
@@ -192,12 +195,12 @@ namespace Phonon
 			 *
 			 * \param msec The time in milliseconds until the stream finishes.
 			 */
-			void aboutToFinish( long msec );
+			void aboutToFinish( qint32 msec );
 
 			/**
-			 * \copydoc MediaObject::finished()
+			 * \copydoc MediaObject::length()
 			 */
-			void length( long length );
+			void length( qint64 length );
 
 			/**
 			 * Emitted when the ByteStream object needs more data to process.
@@ -216,7 +219,7 @@ namespace Phonon
 			/**
 			 * Emitted when the ByteStream needs you to continue streaming data
 			 * at a different position in the stream. This happens when seek(
-			 * long ) is called and the needed data is not in the internal
+			 * qint64 ) is called and the needed data is not in the internal
 			 * buffer.
 			 *
 			 * \param age The number of bytes since the start of the stream.
@@ -225,7 +228,7 @@ namespace Phonon
 			 *
 			 * \see setStreamSeekable
 			 */
-			void seekStream( long age );
+			void seekStream( qint64 age );
 	};
 } //namespace Phonon
 

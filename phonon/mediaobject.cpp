@@ -33,19 +33,19 @@ KUrl MediaObject::url() const
 	return d->iface() ? d->iface()->url() : d->url;
 }
 
-long MediaObject::totalTime() const
+qint64 MediaObject::totalTime() const
 {
 	K_D( const MediaObject );
 	return d->iface() ? d->iface()->totalTime() : -1;
 }
 
-long MediaObject::remainingTime() const
+qint64 MediaObject::remainingTime() const
 {
 	K_D( const MediaObject );
 	return d->iface() ? d->iface()->remainingTime() : -1;
 }
 
-long MediaObject::aboutToFinishTime() const
+qint32 MediaObject::aboutToFinishTime() const
 {
 	K_D( const MediaObject );
 	return d->iface() ? d->iface()->aboutToFinishTime() : d->aboutToFinishTime;
@@ -54,6 +54,7 @@ long MediaObject::aboutToFinishTime() const
 void MediaObject::setUrl( const KUrl& url )
 {
 	K_D( MediaObject );
+	d->url = url;
 	if( iface() )
 	{
 		d->iface()->stop(); // first call stop as that often is the expected state
@@ -67,11 +68,9 @@ void MediaObject::setUrl( const KUrl& url )
 			//This essentially makes all media frameworks read data via KIO...
 		}
 	}
-	else
-		d->url = url;
 }
 
-void MediaObject::setAboutToFinishTime( long newAboutToFinishTime )
+void MediaObject::setAboutToFinishTime( qint32 newAboutToFinishTime )
 {
 	K_D( MediaObject );
 	//kDebug( 600 ) << k_funcinfo << endl;
@@ -97,8 +96,8 @@ void MediaObject::setupIface()
 	AbstractMediaProducer::setupIface();
 
 	connect( d->iface()->qobject(), SIGNAL( finished() ), SIGNAL( finished() ) );
-	connect( d->iface()->qobject(), SIGNAL( aboutToFinish( long ) ), SIGNAL( aboutToFinish( long ) ) );
-	connect( d->iface()->qobject(), SIGNAL( length( long ) ), SIGNAL( length( long ) ) );
+	connect( d->iface()->qobject(), SIGNAL( aboutToFinish( qint32 ) ), SIGNAL( aboutToFinish( qint32 ) ) );
+	connect( d->iface()->qobject(), SIGNAL( length( qint64 ) ), SIGNAL( length( qint64 ) ) );
 
 	// set up attributes
 	if( !d->url.isEmpty() )

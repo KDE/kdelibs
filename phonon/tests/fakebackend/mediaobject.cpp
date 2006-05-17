@@ -43,13 +43,13 @@ KUrl MediaObject::url() const
 	return m_url;
 }
 
-long MediaObject::totalTime() const
+qint64 MediaObject::totalTime() const
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	return 1000*60*3; // 3 minutes
 }
 
-long MediaObject::aboutToFinishTime() const
+qint32 MediaObject::aboutToFinishTime() const
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	return m_aboutToFinishTime;
@@ -63,7 +63,7 @@ void MediaObject::setUrl( const KUrl& url )
 	emit length( totalTime() );
 }
 
-void MediaObject::setAboutToFinishTime( long newAboutToFinishTime )
+void MediaObject::setAboutToFinishTime( qint32 newAboutToFinishTime )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	m_aboutToFinishTime = newAboutToFinishTime;
@@ -93,7 +93,7 @@ void MediaObject::stop()
 	m_aboutToFinishNotEmitted = true;
 }
 
-void MediaObject::seek( long time )
+void MediaObject::seek( qint64 time )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
 	AbstractMediaProducer::seek( time );

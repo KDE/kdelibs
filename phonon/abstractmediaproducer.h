@@ -50,6 +50,7 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AbstractMediaProducer )
 		PHONON_ABSTRACTBASE( AbstractMediaProducer )
+		Q_PROPERTY( qint32 tickInterval READ tickInterval WRITE setTickInterval )
 		public:
 			~AbstractMediaProducer();
 
@@ -129,7 +130,7 @@ namespace Phonon
 			 *
 			 * @return The current time (in milliseconds)
 			 */
-			long currentTime() const;
+			qint64 currentTime() const;
 
 			// TODO: document the freedom of the backend to choose the
 			// tickInterval
@@ -143,7 +144,7 @@ namespace Phonon
 			 * @see setTickInterval
 			 * @see tick
 			 */
-			long tickInterval() const;
+			qint32 tickInterval() const;
 
 			/**
 			 * Returns the list of all connected VideoPath objects.
@@ -290,7 +291,7 @@ namespace Phonon
 			 * @see tickInterval
 			 * @see tick
 			 */
-			void setTickInterval( long newTickInterval );
+			void setTickInterval( qint32 newTickInterval );
 
 			/**
 			 * Start playback of the media data.
@@ -314,7 +315,7 @@ namespace Phonon
 			 *
 			 * @param time The time in milliseconds where to continue playing.
 			 */
-			void seek( long time );
+			void seek( qint64 time );
 
 		Q_SIGNALS:
 			/**
@@ -334,7 +335,7 @@ namespace Phonon
 			 *
 			 * @see setTickInterval, tickInterval
 			 */
-			void tick( long time );
+			void tick( qint64 time );
 
 		private Q_SLOTS:
 			void resumePlay();

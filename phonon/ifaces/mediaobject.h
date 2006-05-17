@@ -45,16 +45,16 @@ namespace Ifaces
 			 *
 			 * \see length
 			 */
-			virtual long totalTime() const = 0;
+			virtual qint64 totalTime() const = 0;
 			/**
 			 * Get the remaining time (in milliseconds) of the file currently being played.
 			 */
-			virtual long remainingTime() const { return totalTime() - currentTime(); }
-			virtual long aboutToFinishTime() const = 0;
+			virtual qint64 remainingTime() const { return totalTime() - currentTime(); }
+			virtual qint32 aboutToFinishTime() const = 0;
 
 			// Attributes Setters:
 			virtual void setUrl( const KUrl& url ) = 0;
-			virtual void setAboutToFinishTime( long newAboutToFinishTime ) = 0;
+			virtual void setAboutToFinishTime( qint32 newAboutToFinishTime ) = 0;
 
 		protected:
 		//Q_SIGNALS:
@@ -67,7 +67,7 @@ namespace Ifaces
 			/**
 			 * @param msec The remaining time until the playback finishes
 			 */
-			virtual void aboutToFinish( long msec ) = 0;
+			virtual void aboutToFinish( qint32 msec ) = 0;
 			/**
 			 * This signal is emitted as soon as the length of the media file is
 			 * known or has changed. For most non-local media data the length of
@@ -79,7 +79,7 @@ namespace Ifaces
 			 *
 			 * \see totalTime
 			 */
-			virtual void length( long length ) = 0;
+			virtual void length( qint64 length ) = 0;
 	};
 }} //namespace Phonon::Ifaces
 
