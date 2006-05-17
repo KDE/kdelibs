@@ -418,15 +418,18 @@ void KUrlTest::testURLsWithoutPath()
 
   waba1 = "http://a:389#b=c"; // has port and fragment
   qDebug( "%s", qPrintable( waba1.url() ) );
+  QCOMPARE( waba1.scheme(), QString( "http" ) );
   QCOMPARE( waba1.url(), QString( "http://a:389#b=c" ) );
   QCOMPARE( waba1.host(), QString( "a" ) );
   QCOMPARE( waba1.port(), 389 );
   QCOMPARE( waba1.path(), QString( "" ) );
   QCOMPARE( waba1.ref(), QString( "b%3Dc" ) ); // was b=c with KDE3, but the docu says encoded, so encoding the = is ok
   QCOMPARE( waba1.htmlRef(), QString( "b=c" ) );
-#if 0 // TODO re-enable once testEmptyQueryOrRef works
   QCOMPARE( waba1.query(), QString() );
-#endif
+
+  QUrl schemeOnly( "ftp:" );
+  QVERIFY( schemeOnly.isValid() );
+  QCOMPARE( schemeOnly.scheme(), QString( "ftp" ) );
 }
 
 void KUrlTest::testPathAndQuery()
