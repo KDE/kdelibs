@@ -95,7 +95,7 @@ void KURIFilterData::init( const KUrl& url )
 void KURIFilterData::init( const QString& url )
 {
     m_iType = KURIFilterData::UNKNOWN;
-    m_pURI = url;
+    m_pURI = url; // note: this calls operator= which calls KUrl::fromPathOrURL()
     m_strErrMsg.clear();
     m_strIconName.clear();
     m_bCheckForExecutables = true;
@@ -128,7 +128,7 @@ bool KURIFilterData::setAbsolutePath( const QString& absPath )
 {
     // Since a malformed URL could possibly be a relative
     // URL we tag it as a possible local resource...
-    if( (!m_pURI.isValid() || m_pURI.isLocalFile()) )
+    if( (m_pURI.protocol().isEmpty() || m_pURI.isLocalFile()) )
     {
         d->abs_path = absPath;
         return true;
