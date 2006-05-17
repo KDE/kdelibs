@@ -39,6 +39,11 @@
 
 #include <qapplication.h>
 
+#ifdef Q_CC_MSVC
+#include <iso646.h> // define xor, and, not, ...
+#endif
+
+
 class KBookmarkBarPrivate
 {
 public:
