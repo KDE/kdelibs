@@ -55,6 +55,16 @@ void VolumeFaderEffect::setVolume( float volume )
 	m_volume = volume;
 }
 
+Phonon::VolumeFaderEffect::FadeCurve VolumeFaderEffect::fadeCurve() const
+{
+	return m_fadeCurve;
+}
+
+void VolumeFaderEffect::setFadeCurve( Phonon::VolumeFaderEffect::FadeCurve curve )
+{
+	m_fadeCurve = curve;
+}
+
 void VolumeFaderEffect::fadeTo( float volume, int fadeTime )
 {
 	if( m_fadeTime > 0 )

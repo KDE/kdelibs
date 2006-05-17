@@ -21,6 +21,7 @@
 #define PHONON_IFACES_VOLUMEFADEREFFECT_H
 
 #include "audioeffect.h"
+#include "../volumefadereffect.h"
 
 namespace Phonon
 {
@@ -34,6 +35,8 @@ namespace Ifaces
 		public:
 			virtual float volume() const = 0;
 			virtual void setVolume( float volume ) = 0;
+			virtual Phonon::VolumeFaderEffect::FadeCurve fadeCurve() const = 0;
+			virtual void setFadeCurve( Phonon::VolumeFaderEffect::FadeCurve curve ) = 0;
 			virtual void fadeTo( float volume, int fadeTime ) = 0;
 	};
 }} //namespace Phonon::Ifaces

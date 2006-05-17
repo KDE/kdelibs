@@ -47,15 +47,68 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( VolumeFaderEffect )
 		PHONON_HEIR( VolumeFaderEffect )
+		Q_ENUMS( FadeCurve )
+		/**
+		 * This property holds the current volume. Setting this property changes
+		 * the volume immediately.
+		 *
+		 * 0.0 means 0%, 1.0 means 100%
+		 */
+		Q_PROPERTY( float volume READ volume WRITE setVolume )
+		/**
+		 * This property holds the fade curve to be used for the fadeIn(), fadeOut()
+		 * and fadeTo() slots.
+		 *
+		 * Defaults to Fade3Decibel.
+		 *
+		 * \see FadeCurve
+		 */
+		Q_PROPERTY( FadeCurve fadeCurve READ fadeCurve WRITE setFadeCurve )
 		public:
 			/**
-			 * Returns the current volume.
-			 *
-			 * \return The volume: 0.0 means 0%, 1.0 means 100%
-			 *
-			 * \see setVolume
+			 * Determines the curve of the volume change.
 			 */
+			enum FadeCurve {
+				/**
+				 * "Crossfade curve" / "fast" fade out
+				 *
+				 * Often the best fade for a crossfade, as after half of the
+				 * time the volume reached -3dB. This means that half the
+				 * possible power (which is proportional to the square of the
+				 * voltage) is reached. Summed, the maximum power of two audio
+				 * signals fading with a -3dB curve will always be equal.
+				 *
+				 * For fading in or out the -3dB curve is too abrupt in the end.
+				 *
+				 * This is the default fade curve.
+				 */
+				Fade3Decibel,
+				/**
+				 * "Linear" fade out
+				 *
+				 * With a -6dB fade curve after half of the fading time -6dB has
+				 * been reached. -6dB is equal to half of the voltage meaning
+				 * that the voltage multiplier changes linearly from the start
+				 * of the fade to the end.
+				 */
+				Fade6Decibel,
+				/**
+				 * "slow" fade out
+				 *
+				 * After half of the fade time -9dB are reached. So the fade is
+				 * fast in the beginning and slow in the end. This is a good
+				 * fade for ending music.
+				 */
+				Fade9Decibel,
+				/**
+				 * more extreme version of the -9dB fade
+				 */
+				Fade12Decibel
+			};
+
 			float volume() const;
+
+			FadeCurve fadeCurve() const;
 
 		public Q_SLOTS:
 			/**
@@ -81,14 +134,9 @@ namespace Phonon
 			 */
 			void fadeOut( int fadeTime );
 
-			/**
-			 * Sets the volume of the fader immediately to the
-			 * desired value.
-			 *
-			 * \param volume The volume: 0.0 means 0%, 1.0 means
-			 * 100%
-			 */
 			void setVolume( float volume );
+
+			void setFadeCurve( FadeCurve curve );
 
 			/**
 			 * Tells the Fader to change the volume from the current value to

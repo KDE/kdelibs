@@ -33,10 +33,12 @@ class VolumeFaderEffectPrivate : public AudioEffectPrivate
 	protected:
 		VolumeFaderEffectPrivate()
 			: currentVolume( 1.0 )
+			, fadeCurve( VolumeFaderEffect::Fade3Decibel )
 		{
 		}
 
 		float currentVolume;
+		VolumeFaderEffect::FadeCurve fadeCurve;
 };
 }
 

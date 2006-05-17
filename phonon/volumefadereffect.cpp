@@ -34,10 +34,25 @@ float VolumeFaderEffect::volume() const
 void VolumeFaderEffect::setVolume( float volume )
 {
 	K_D( VolumeFaderEffect );
-	if( d->iface() )
+	if( iface() )
 		d->iface()->setVolume( volume );
 	else
 		d->currentVolume = volume;
+}
+
+VolumeFaderEffect::FadeCurve VolumeFaderEffect::fadeCurve() const
+{
+	K_D( const VolumeFaderEffect );
+	return d->iface() ? d->iface()->fadeCurve() : d->fadeCurve;
+}
+
+void VolumeFaderEffect::setFadeCurve( FadeCurve curve )
+{
+	K_D( VolumeFaderEffect );
+	if( iface() )
+		d->iface()->setFadeCurve( curve );
+	else
+		d->fadeCurve = curve;
 }
 
 void VolumeFaderEffect::fadeIn( int fadeTime )
@@ -62,7 +77,10 @@ void VolumeFaderEffect::fadeTo( float volume, int fadeTime )
 bool VolumeFaderEffectPrivate::aboutToDeleteIface()
 {
 	if( iface() )
+	{
 		currentVolume = iface()->volume();
+		fadeCurve = iface()->fadeCurve();
+	}
 	return true;
 }
 
@@ -73,6 +91,7 @@ void VolumeFaderEffect::setupIface()
 
 	// set up attributes
 	d->iface()->setVolume( d->currentVolume );
+	d->iface()->setFadeCurve( d->fadeCurve );
 }
 }
 
