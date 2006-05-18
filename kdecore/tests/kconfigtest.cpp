@@ -148,7 +148,8 @@ void KConfigTest::cleanupTestCase()
   QDir local = QDir::homePath() + "/.kde-kconfigtest/share/config";
 
   foreach(QString file, local.entryList(QDir::Files))
-    local.remove(file);
+    if(!local.remove(file))
+      qWarning(file.toLatin1()+": removing failed!");
 
   local.cdUp();
   local.rmpath("config");
