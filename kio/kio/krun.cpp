@@ -18,11 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "krun.h"
+
+#include <config.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -52,7 +50,7 @@
 #include <kauthorized.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprotocolinfo.h>
+#include <kprotocolmanager.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
 #include <dcopclient.h>
@@ -827,7 +825,7 @@ void KRun::init()
        exec = KProtocolInfo::exec( m_strURL.protocol() );
        if (exec.isEmpty())
        {
-          foundMimeType(KProtocolInfo::defaultMimetype(m_strURL));
+          foundMimeType(KProtocolManager::defaultMimetype(m_strURL));
           return;
        }
        run( exec, urls );
@@ -868,7 +866,7 @@ void KRun::init()
 
   // Let's see whether it is a directory
 
-  if ( !KProtocolInfo::supportsListing( m_strURL ) )
+  if ( !KProtocolManager::supportsListing( m_strURL ) )
   {
     //kDebug(7010) << "Protocol has no support for listing" << endl;
     // No support for listing => it can't be a directory (example: http)
@@ -918,7 +916,7 @@ void KRun::scanFile()
   // We need to apply the 'KIO' method, i.e. either asking the server or
   // getting some data out of the file, to know what mimetype it is.
 
-  if ( !KProtocolInfo::supportsReading( m_strURL ) )
+  if ( !KProtocolManager::supportsReading( m_strURL ) )
   {
     kError(7010) << "#### NO SUPPORT FOR READING!" << endl;
     m_bFault = true;

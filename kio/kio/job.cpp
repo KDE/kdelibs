@@ -1537,12 +1537,12 @@ void FileCopyJob::slotStart()
          startRenameJob(m_src);
          return;
       }
-      else if (m_src.isLocalFile() && KProtocolInfo::canRenameFromFile(m_dest))
+      else if (m_src.isLocalFile() && KProtocolManager::canRenameFromFile(m_dest))
       {
          startRenameJob(m_dest);
          return;
       }
-      else if (m_dest.isLocalFile() && KProtocolInfo::canRenameToFile(m_src))
+      else if (m_dest.isLocalFile() && KProtocolManager::canRenameToFile(m_src))
       {
          startRenameJob(m_src);
          return;
@@ -1563,11 +1563,11 @@ void FileCopyJob::startBestCopyMethod()
    {
       startCopyJob();
    }
-   else if (m_src.isLocalFile() && KProtocolInfo::canCopyFromFile(m_dest))
+   else if (m_src.isLocalFile() && KProtocolManager::canCopyFromFile(m_dest))
    {
       startCopyJob(m_dest);
    }
-   else if (m_dest.isLocalFile() && KProtocolInfo::canCopyToFile(m_src))
+   else if (m_dest.isLocalFile() && KProtocolManager::canCopyToFile(m_src))
    {
       startCopyJob(m_src);
    }
@@ -2306,7 +2306,7 @@ void CopyJob::slotResultStating( KJob *job )
             {
                 // Use <desturl>/<directory_copied> as destination, from now on
                 QString directory = srcurl.fileName();
-                if ( !sName.isEmpty() && KProtocolInfo::fileNameUsedForCopying( srcurl ) == KProtocolInfo::Name )
+                if ( !sName.isEmpty() && KProtocolManager::fileNameUsedForCopying( srcurl ) == KProtocolInfo::Name )
                 {
                     directory = sName;
                 }
@@ -2450,7 +2450,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             {
                 QString destFileName;
                 if ( hasCustomURL &&
-                     KProtocolInfo::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) {
+                     KProtocolManager::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) {
                     //destFileName = url.fileName(); // Doesn't work for recursive listing
                     // Count the number of prefixes used by the recursive listjob
                     int numberOfSlashes = displayName.count( '/' ); // don't make this a find()!
@@ -2556,7 +2556,7 @@ void CopyJob::statCurrentSrc()
         }
         else if ( m_mode == Move && (
                 // Don't go renaming right away if we need a stat() to find out the destination filename
-                KProtocolInfo::fileNameUsedForCopying( m_currentSrcURL ) == KProtocolInfo::FromURL ||
+                KProtocolManager::fileNameUsedForCopying( m_currentSrcURL ) == KProtocolInfo::FromURL ||
                 destinationState != DEST_IS_DIR || m_asMethod )
             )
         {
@@ -2571,12 +2571,12 @@ void CopyJob::statCurrentSrc()
               startRenameJob( m_currentSrcURL );
               return;
            }
-           else if ( m_currentSrcURL.isLocalFile() && KProtocolInfo::canRenameFromFile( m_dest ) )
+           else if ( m_currentSrcURL.isLocalFile() && KProtocolManager::canRenameFromFile( m_dest ) )
            {
               startRenameJob( m_dest );
               return;
            }
-           else if ( m_dest.isLocalFile() && KProtocolInfo::canRenameToFile( m_currentSrcURL ) )
+           else if ( m_dest.isLocalFile() && KProtocolManager::canRenameToFile( m_currentSrcURL ) )
            {
               startRenameJob( m_currentSrcURL );
               return;
@@ -2584,7 +2584,7 @@ void CopyJob::statCurrentSrc()
         }
 
         // if the file system doesn't support deleting, we do not even stat
-        if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
+        if (m_mode == Move && !KProtocolManager::supportsDeleting(m_currentSrcURL)) {
             QPointer<CopyJob> that = this;
             if (isInteractive())
                 KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyUrl()));
@@ -3284,7 +3284,7 @@ void CopyJob::copyNextFile()
         {
             // If source isn't local and target is local, we ignore the original permissions
             // Otherwise, files downloaded from HTTP end up with -r--r--r--
-            bool remoteSource = !KProtocolInfo::supportsListing((*it).uSource);
+            bool remoteSource = !KProtocolManager::supportsListing((*it).uSource);
             int permissions = (*it).permissions;
             if ( d->m_defaultPermissions || ( remoteSource && (*it).uDest.isLocalFile() ) )
                 permissions = -1;
@@ -3889,7 +3889,7 @@ void DeleteJob::statNextSrc()
         m_currentURL = (*m_currentStat);
 
         // if the file system doesn't support deleting, we do not even stat
-        if (!KProtocolInfo::supportsDeleting(m_currentURL)) {
+        if (!KProtocolManager::supportsDeleting(m_currentURL)) {
             QPointer<DeleteJob> that = this;
             ++m_currentStat;
             if (isInteractive())
@@ -3984,7 +3984,7 @@ void DeleteJob::deleteNextDir()
                 }
             } else {
                 SimpleJob* job;
-                if ( KProtocolInfo::canDeleteRecursive( *it ) ) {
+                if ( KProtocolManager::canDeleteRecursive( *it ) ) {
                     // If the ioslave supports recursive deletion of a directory, then
                     // we only need to send a single CMD_DEL command, so we use file_delete :)
                     job = KIO::file_delete( *it, false /*no gui*/ );
@@ -4074,7 +4074,7 @@ void DeleteJob::slotResult( KJob *job )
             if ( url.isLocalFile() && !m_parentDirs.contains( url.path(KUrl::RemoveTrailingSlash) ) )
               m_parentDirs.append( url.path(KUrl::RemoveTrailingSlash) );
 
-            if ( !KProtocolInfo::canDeleteRecursive( url ) ) {
+            if ( !KProtocolManager::canDeleteRecursive( url ) ) {
                 //kDebug(7007) << " Target is a directory " << endl;
                 // List it
                 state = STATE_LISTING;

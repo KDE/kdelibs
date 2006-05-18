@@ -113,7 +113,6 @@ set(kiocore_STAT_SRCS
   kio/kdirnotify_stub.cpp
   kio/observer.cpp
   kio/kemailsettings.cpp
-  kio/kprotocolinfo.cpp
   kio/renamedlg.cpp
   kio/skipdlg.cpp
   kio/kremoteencoding.cpp

@@ -22,7 +22,7 @@
 #include "kmimetype.h"
 #include "kservicetypefactory.h"
 #include "kmimemagic.h"
-#include <kprotocolinfo.h>
+#include "kprotocolmanager.h"
 #include <kde_file.h>
 
 #include <kmessageboxwrapper.h>
@@ -237,7 +237,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
 
   if ( !_is_local_file || _fast_mode )
   {
-    QString def = KProtocolInfo::defaultMimetype( _url );
+    QString def = KProtocolManager::defaultMimetype( _url );
     if ( !def.isEmpty() && def != defaultMimeType() )
     {
        // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
@@ -252,7 +252,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
       if ( def.isEmpty() )
       {
           // Assume inode/directory, if the protocol supports listing.
-          if ( KProtocolInfo::supportsListing( _url ) )
+          if ( KProtocolManager::supportsListing( _url ) )
               return mimeType( QLatin1String("inode/directory") );
           else
               return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"

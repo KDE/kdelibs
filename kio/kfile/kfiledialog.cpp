@@ -54,7 +54,7 @@
 #include <kmessagebox.h>
 #include <kmimetype.h>
 #include <kmenu.h>
-#include <kprotocolinfo.h>
+#include <kprotocolmanager.h>
 #include <kpushbutton.h>
 #include <krecentdirs.h>
 #include <kshell.h>
@@ -1188,7 +1188,7 @@ void KFileDialog::setSelection(const QString& url)
         QString filename = u.url();
         int sep = filename.lastIndexOf('/');
         if (sep >= 0) { // there is a / in it
-            if ( KProtocolInfo::supportsListing( u )) {
+            if ( KProtocolManager::supportsListing( u )) {
                 KUrl dir(u);
                 dir.setQuery( QString() );
                 dir.setFileName( QString() );
@@ -2237,7 +2237,7 @@ KUrl KFileDialog::getStartURL( const QString& startDir,
         {
             ret = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
             // If we won't be able to list it (e.g. http), then use default
-            if ( !KProtocolInfo::supportsListing( ret ) )
+            if ( !KProtocolManager::supportsListing( ret ) )
                 useDefaultStartDir = true;
         }
     }

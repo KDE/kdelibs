@@ -23,9 +23,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifdef HAVE_CONFIG_H
+#include "kurlcompletion.h"
+
 #include <config.h>
-#endif
 
 #include <stdlib.h>
 #include <assert.h>
@@ -45,7 +45,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/job.h>
-#include <kprotocolinfo.h>
+#include <kprotocolmanager.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kde_file.h>
@@ -57,8 +57,6 @@
 #include <pwd.h>
 #include <time.h>
 #include <sys/param.h>
-
-#include "kurlcompletion.h"
 
 static bool expandTilde(QString &);
 static bool expandEnv(QString &);
@@ -974,7 +972,7 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 	                     || url_dir.protocol() == QLatin1String("info") );
 
 	if ( !url_dir.isValid()
-	     || !KProtocolInfo::supportsListing( url_dir )
+	     || !KProtocolManager::supportsListing( url_dir )
 	     || ( !man_or_info
                      && ( url_dir.directory(KUrl::AppendTrailingSlash|KUrl::ObeyTrailingSlash).isEmpty()
 	               || ( isAutoCompletion()

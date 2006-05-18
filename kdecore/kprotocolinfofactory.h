@@ -20,7 +20,7 @@
 #ifndef kprotocolinfofactory_h
 #define kprotocolinfofactory_h
 
-#include "../kio/kio/kprotocolinfo.h"
+#include "kprotocolinfo.h"
 
 #include <qmap.h>
 #include <qstring.h>

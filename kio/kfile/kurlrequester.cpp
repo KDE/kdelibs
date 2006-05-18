@@ -29,7 +29,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kurlcompletion.h>
-#include <kprotocolinfo.h>
+#include <kprotocolmanager.h>
 #include <kstdaccel.h>
 
 #include <qevent.h>
@@ -273,7 +273,7 @@ void KUrlRequester::slotOpenDialog()
       if ( !d->url().isEmpty() ) {
           KUrl u( url() );
           // If we won't be able to list it (e.g. http), then don't try :)
-          if ( KProtocolInfo::supportsListing( u ) )
+          if ( KProtocolManager::supportsListing( u ) )
               dlg->setSelection( u.url() );
       }
 
@@ -349,10 +349,8 @@ KComboBox * KUrlRequester::comboBox() const
 
 void KUrlRequester::slotUpdateURL()
 {
-    // bin compat, myButton is declared as QPushButton
-    KUrl u;
-    u = KUrl( KUrl::fromPath( QDir::currentPath() + '/' ), url() );
-    (static_cast<KUrlDragPushButton *>( myButton ))->setURL( u );
+    KUrl u( KUrl::fromPath( QDir::currentPath() + '/' ), url().url() );
+    myButton->setURL( u );
 }
 
 KPushButton * KUrlRequester::button() const

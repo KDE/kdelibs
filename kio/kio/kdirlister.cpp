@@ -34,7 +34,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstaticdeleter.h>
-#include <kprotocolinfo.h>
+#include "kprotocolmanager.h"
 
 #include "kdirlister_p.h"
 
@@ -291,7 +291,7 @@ bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) cons
     return false;
   }
 
-  if ( !KProtocolInfo::supportsListing( url ) )
+  if ( !KProtocolManager::supportsListing( url ) )
   {
     if ( lister->d->autoErrorHandling )
     {

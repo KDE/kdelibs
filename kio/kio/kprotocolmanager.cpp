@@ -36,6 +36,7 @@
 #include <kio/http_slave_defaults.h>
 
 #include "kprotocolmanager.h"
+#include <kprotocolinfofactory.h>
 
 class
 KProtocolManagerPrivate
@@ -531,3 +532,185 @@ QString KProtocolManager::proxyConfigScript()
   cfg->setGroup( "Proxy Settings" );
   return cfg->readEntry( "Proxy Config Script" );
 }
+
+/* =========================== PROTOCOL CAPABILITIES ============== */
+
+static KProtocolInfo::Ptr findProtocol(const KUrl &url)
+{
+   QString protocol = url.protocol();
+
+   if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
+   {
+      QString dummy;
+      protocol = KProtocolManager::slaveProtocol(url, dummy);
+   }
+
+   return KProtocolInfoFactory::self()->findProtocol(protocol);
+}
+
+
+KProtocolInfo::Type KProtocolManager::inputType( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return KProtocolInfo::T_NONE;
+
+  return prot->m_inputType;
+}
+
+KProtocolInfo::Type KProtocolManager::outputType( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return KProtocolInfo::T_NONE;
+
+  return prot->m_outputType;
+}
+
+
+bool KProtocolManager::isSourceProtocol( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_isSourceProtocol;
+}
+
+bool KProtocolManager::supportsListing( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsListing;
+}
+
+QStringList KProtocolManager::listing( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return QStringList();
+
+  return prot->m_listing;
+}
+
+bool KProtocolManager::supportsReading( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsReading;
+}
+
+bool KProtocolManager::supportsWriting( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsWriting;
+}
+
+bool KProtocolManager::supportsMakeDir( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsMakeDir;
+}
+
+bool KProtocolManager::supportsDeleting( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsDeleting;
+}
+
+bool KProtocolManager::supportsLinking( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsLinking;
+}
+
+bool KProtocolManager::supportsMoving( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_supportsMoving;
+}
+
+bool KProtocolManager::canCopyFromFile( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_canCopyFromFile;
+}
+
+
+bool KProtocolManager::canCopyToFile( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->m_canCopyToFile;
+}
+
+bool KProtocolManager::canRenameFromFile( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->canRenameFromFile();
+}
+
+
+bool KProtocolManager::canRenameToFile( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->canRenameToFile();
+}
+
+bool KProtocolManager::canDeleteRecursive( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->canDeleteRecursive();
+}
+
+KProtocolInfo::FileNameUsedForCopying KProtocolManager::fileNameUsedForCopying( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return KProtocolInfo::FromURL;
+
+  return prot->fileNameUsedForCopying();
+}
+
+QString KProtocolManager::defaultMimetype( const KUrl &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return QString();
+
+  return prot->m_defaultMimetype;
+}
+

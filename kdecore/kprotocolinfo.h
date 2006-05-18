@@ -43,21 +43,17 @@ class QDataStream;
  *
  * @author Torben Weis <weis@kde.org>
  */
-class KIO_EXPORT KProtocolInfo : public KSycocaEntry
+class KDECORE_EXPORT KProtocolInfo : public KSycocaEntry
 {
   friend class KProtocolInfoFactory;
+  friend class KBuildProtocolInfoFactory;
+  friend class KProtocolManager;
   K_SYCOCATYPE( KST_KProtocolInfo, KSycocaEntry )
 
 public:
   typedef KSharedPtr<KProtocolInfo> Ptr;
 
 public:
-  /**
-   * Read a protocol description file
-   * @param path the path of the description file
-   */
-  KProtocolInfo( const QString & path); // KDE4: make private and add friend class KProtocolInfoBuildFactory
-                                        // Then we can get rid of the d pointer
 
   /**
    * Returns whether the protocol description file is valid.
@@ -123,44 +119,6 @@ public:
   };
 
   /**
-   * Returns whether the protocol should be treated as a filesystem
-   * or as a stream when reading from it.
-   *
-   * This corresponds to the "input=" field in the protocol description file.
-   * Valid values for this field are "filesystem", "stream" or "none" (default).
-   *
-   * @param url the url to check
-   * @return the input type of the given @p url
-   */
-  static Type inputType( const KUrl &url );
-
-  /**
-   * Returns whether the protocol should be treated as a filesystem
-   * or as a stream when writing to it.
-   *
-   * This corresponds to the "output=" field in the protocol description file.
-   * Valid values for this field are "filesystem", "stream" or "none" (default).
-   *
-   * @param url the url to check
-   * @return the output type of the given @p url
-   */
-  static Type outputType( const KUrl &url );
-
-  /**
-   * Returns the list of fields this protocol returns when listing
-   * The current possibilities are
-   * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
-   * as well as Extra1, Extra2 etc. for extra fields (see extraFields).
-   *
-   * This corresponds to the "listing=" field in the protocol description file.
-   * The supported fields should be separated with ',' in the protocol description file.
-   *
-   * @param url the url to check
-   * @return a list of field names
-   */
-  static QStringList listing( const KUrl &url );
-
-  /**
    * Definition of an extra field in the UDS entries, returned by a listDir operation.
    *
    * The name is the name of the column, translated.
@@ -188,21 +146,6 @@ public:
    * See ExtraField for details about names and types
    */
   static ExtraFieldList extraFields( const KUrl& url );
-
-  /**
-   * Returns whether the protocol can act as a source protocol.
-   *
-   * A source protocol retrieves data from or stores data to the
-   * location specified by a URL.
-   * A source protocol is the opposite of a filter protocol.
-   *
-   * The "source=" field in the protocol description file determines
-   * whether a protocol is a source protocol or a filter protocol.
-   * @param url the url to check
-   * @return true if the protocol is a source of data (e.g. http), false if the
-   *         protocol is a filter (e.g. gzip)
-   */
-  static bool isSourceProtocol( const KUrl &url );
 
   /**
    * Returns whether the protocol can act as a helper protocol.
@@ -247,188 +190,6 @@ public:
    * the whole URL.
    */
   static bool isFilterProtocol( const QString& protocol );
-
-  /**
-   * Returns whether the protocol can list files/objects.
-   * If a protocol supports listing it can be browsed in e.g. file-dialogs
-   * and konqueror.
-   *
-   * Whether a protocol supports listing is determined by the "listing="
-   * field in the protocol description file.
-   * If the protocol support listing it should list the fields it provides in
-   * this field. If the protocol does not support listing this field should
-   * remain empty (default.)
-   *
-   * @param url the url to check
-   * @return true if the protocol support listing
-   * @see listing()
-   */
-  static bool supportsListing( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can retrieve data from URLs.
-   *
-   * This corresponds to the "reading=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if it is possible to read from the URL
-   */
-  static bool supportsReading( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can store data to URLs.
-   *
-   * This corresponds to the "writing=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol supports writing
-   */
-  static bool supportsWriting( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can create directories/folders.
-   *
-   * This corresponds to the "makedir=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol can create directories
-   */
-  static bool supportsMakeDir( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can delete files/objects.
-   *
-   * This corresponds to the "deleting=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol supports deleting
-   */
-  static bool supportsDeleting( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can create links between files/objects.
-   *
-   * This corresponds to the "linking=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol supports linking
-   */
-  static bool supportsLinking( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can move files/objects between different
-   * locations.
-   *
-   * This corresponds to the "moving=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol supports moving
-   */
-  static bool supportsMoving( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can copy files/objects directly from the
-   * filesystem itself. If not, the application will read files from the
-   * filesystem using the file-protocol and pass the data on to the destination
-   * protocol.
-   *
-   * This corresponds to the "copyFromFile=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol can copy files from the local file system
-   */
-  static bool canCopyFromFile( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can copy files/objects directly to the
-   * filesystem itself. If not, the application will receive the data from
-   * the source protocol and store it in the filesystem using the
-   * file-protocol.
-   *
-   * This corresponds to the "copyToFile=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol can copy files to the local file system
-   */
-  static bool canCopyToFile( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can rename (i.e. move fast) files/objects
-   * directly from the filesystem itself. If not, the application will read
-   * files from the filesystem using the file-protocol and pass the data on
-   * to the destination protocol.
-   *
-   * This corresponds to the "renameFromFile=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol can rename/move files from the local file system
-   */
-  static bool canRenameFromFile( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can rename (i.e. move fast) files/objects
-   * directly to the filesystem itself. If not, the application will receive
-   * the data from the source protocol and store it in the filesystem using the
-   * file-protocol.
-   *
-   * This corresponds to the "renameToFile=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol can rename files to the local file system
-   */
-  static bool canRenameToFile( const KUrl &url );
-
-  /**
-   * Returns whether the protocol can recursively delete directories by itself.
-   * If not (the usual case) then KIO will list the directory and delete files
-   * and empty directories one by one.
-   *
-   * This corresponds to the "deleteRecursive=" field in the protocol description file.
-   * Valid values for this field are "true" or "false" (default).
-   *
-   * @param url the url to check
-   * @return true if the protocol can delete non-empty directories by itself.
-   */
-  static bool canDeleteRecursive( const KUrl &url );
-
-  typedef enum { Name, FromURL } FileNameUsedForCopying;
-
-  /**
-   * This setting defines the strategy to use for generating a filename, when
-   * copying a file or directory to another directory. By default the destination
-   * filename is made out of the filename in the source URL. However if the
-   * ioslave displays names that are different from the filename of the URL
-   * (e.g. kio_fonts shows Arial for arial.ttf, or kio_trash shows foo.txt and
-   * uses some internal URL), using Name means that the display name (UDS_NAME)
-   * will be used to as the filename in the destination directory.
-   *
-   * This corresponds to the "fileNameUsedForCopying=" field in the protocol description file.
-   * Valid values for this field are "Name" or "FromURL" (default).
-   *
-   * @param url the url to check
-   * @return how to generate the filename in the destination directory when copying/moving
-   */
-  static FileNameUsedForCopying fileNameUsedForCopying( const KUrl &url );
-
-  /**
-   * Returns default mimetype for this URL based on the protocol.
-   *
-   * This corresponds to the "defaultMimetype=" field in the protocol description file.
-   *
-   * @param url the url to check
-   * @return the default mime type of the protocol, or null if unknown
-   */
-  static QString defaultMimetype( const KUrl& url );
 
   /**
    * Returns the name of the icon, associated with the specified protocol.
@@ -584,43 +345,7 @@ public:
    */
   virtual void save(QDataStream& );
 
-  ////////////////////////// DEPRECATED /////////////////////////
-  // The following methods are deprecated:
-
-  /// @deprecated
-  static KDE_DEPRECATED Type inputType( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED Type outputType( const QString& protocol );
-  /**
-   * @deprecated
-   * Returns the list of fields this protocol returns when listing
-   * The current possibilities are
-   * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType
-   */
-  static KDE_DEPRECATED QStringList listing( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool isSourceProtocol( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsListing( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsReading( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsWriting( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsMakeDir( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsDeleting( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsLinking( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool supportsMoving( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool canCopyFromFile( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED bool canCopyToFile( const QString& protocol );
-  /// @deprecated
-  static KDE_DEPRECATED QString defaultMimetype( const QString& protocol);
-  //////////////////////// END DEPRECATED ///////////////////////
+  typedef enum { Name, FromURL } FileNameUsedForCopying;
 
 protected:
   QString m_name;
@@ -645,15 +370,22 @@ protected:
   QString m_config;
   int m_maxSlaves;
 
-  bool canRenameFromFile() const; // for kprotocolinfo_kdecore
-  bool canRenameToFile() const; // for kprotocolinfo_kdecore
-  bool canDeleteRecursive() const; // for kprotocolinfo_kdecore
-  FileNameUsedForCopying fileNameUsedForCopying() const; // for kprotocolinfo_kdecore
-  static KProtocolInfo::Ptr findProtocol(const KUrl &url); // for kprotocolinfo_kdecore
+  bool canRenameFromFile() const;
+  bool canRenameToFile() const;
+  bool canDeleteRecursive() const;
+  FileNameUsedForCopying fileNameUsedForCopying() const;
 
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  /**
+   * Read a protocol description file
+   * @param path the path of the description file
+   */
+  KProtocolInfo( const QString & path);
+
+  // KDE4: In theory we could get rid of the d pointer.
+  // This class can only be instanciated by its friend classes.
   class KProtocolInfoPrivate;
   KProtocolInfoPrivate* const d;
 };

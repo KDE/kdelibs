@@ -184,7 +184,7 @@ set(kdecore_LIB_SRCS
    kshell.cpp
    kmountpoint.cpp
    kcalendarsystemjalali.cpp
-   kprotocolinfo_kdecore.cpp
+   kprotocolinfo.cpp
    kprotocolinfofactory.cpp
    kxerrorhandler.cpp
    kuser.cpp
@@ -378,6 +378,6 @@ install_files( /include FILES
    conversion_check.h
    kdedmodule.h
    kautostart.h
+   kprotocolinfo.h
 )
-
 

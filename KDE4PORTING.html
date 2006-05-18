@@ -1011,6 +1011,21 @@ a listDir result.</li>
     <li>KFileMetaInfo::KiloBytes has been renamed KFileMetaInfo::KibiBytes (1 KiB = 1024 B)</li>
 </ul>
 
+<H4>KProtocolInfo</H4>
+<ul>
+<li>Many static methods have been moved to KProtocolManager (which is in kio)
+so that kprotocolinfo itself could be moved to kdecore:
+  <ul>
+    <li>KProtocolInfo::supportsListing(url or protocol) -&gt; KProtocolManager::supportsListing(url)</li>
+    <li>KProtocolInfo::supportsReading(url or protocol) -&gt; KProtocolManager::supportsReading(url)</li>
+    <li>KProtocolInfo::supportsDeleting(url or protocol) -&gt; KProtocolManager::supportsDeleting(url)</li>
+    <li>etc.</li>
+  </ul>
+</li>
+The deprecated methods taking a QString protocol as input have been removed, make sure
+to pass a KUrl to most methods instead.
+</ul>
+
 <H4>KRun</H4>
 <ul>
 <li>the constructor needs a second parameter (a widget) now</li>

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "../../kio/kio/kprotocolinfo.h"
+#include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 
 #include <kstandarddirs.h>
@@ -265,18 +266,9 @@ QStringList KProtocolInfo::protocols()
   return KProtocolInfoFactory::self()->protocols();
 }
 
-bool KProtocolInfo::isSourceProtocol( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_isSourceProtocol;
-}
-
-#ifdef MAKE_KDECORE_LIB //needed for proper linkage (win32)
 bool KProtocolInfo::isFilterProtocol( const QString& _protocol )
 {
+  // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
     return false;
@@ -284,115 +276,9 @@ bool KProtocolInfo::isFilterProtocol( const QString& _protocol )
   return !prot->m_isSourceProtocol;
 }
 
-bool KProtocolInfo::isHelperProtocol( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_isHelperProtocol;
-}
-
-bool KProtocolInfo::isKnownProtocol( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  return prot;
-}
-#endif
-
-bool KProtocolInfo::supportsListing( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsListing;
-}
-
-QStringList KProtocolInfo::listing( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return QStringList();
-
-  return prot->m_listing;
-}
-
-bool KProtocolInfo::supportsReading( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsReading;
-}
-
-bool KProtocolInfo::supportsWriting( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsWriting;
-}
-
-bool KProtocolInfo::supportsMakeDir( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsMakeDir;
-}
-
-bool KProtocolInfo::supportsDeleting( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsDeleting;
-}
-
-bool KProtocolInfo::supportsLinking( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsLinking;
-}
-
-bool KProtocolInfo::supportsMoving( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_supportsMoving;
-}
-
-bool KProtocolInfo::canCopyFromFile( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_canCopyFromFile;
-}
-
-
-bool KProtocolInfo::canCopyToFile( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return false;
-
-  return prot->m_canCopyToFile;
-}
-
 QString KProtocolInfo::icon( const QString& _protocol )
 {
+  // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
     return QLatin1String("unknown");
@@ -402,6 +288,7 @@ QString KProtocolInfo::icon( const QString& _protocol )
 
 QString KProtocolInfo::config( const QString& _protocol )
 {
+  // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
   if ( !prot )
     return QString();
@@ -416,15 +303,6 @@ int KProtocolInfo::maxSlaves( const QString& _protocol )
     return 1;
 
   return prot->m_maxSlaves;
-}
-
-QString KProtocolInfo::defaultMimetype( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return QString();
-
-  return prot->m_defaultMimetype;
 }
 
 bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )
@@ -443,24 +321,6 @@ QString KProtocolInfo::exec( const QString& _protocol )
     return QString();
 
   return prot->m_exec;
-}
-
-KProtocolInfo::Type KProtocolInfo::inputType( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return T_NONE;
-
-  return prot->m_inputType;
-}
-
-KProtocolInfo::Type KProtocolInfo::outputType( const QString& _protocol )
-{
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return T_NONE;
-
-  return prot->m_outputType;
 }
 
 KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )
@@ -548,6 +408,38 @@ KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() co
   return d->fileNameUsedForCopying ? Name : FromURL;
 }
 
+bool KProtocolInfo::isFilterProtocol( const KUrl &url )
+{
+  return isFilterProtocol (url.protocol());
+}
+
+bool KProtocolInfo::isHelperProtocol( const KUrl &url )
+{
+  return isHelperProtocol (url.protocol());
+}
+
+bool KProtocolInfo::isHelperProtocol( const QString &protocol )
+{
+  // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
+  if ( !prot )
+    return false;
+
+  return prot->m_isHelperProtocol;
+}
+
+bool KProtocolInfo::isKnownProtocol( const KUrl &url )
+{
+  return isKnownProtocol (url.protocol());
+}
+
+bool KProtocolInfo::isKnownProtocol( const QString &protocol )
+{
+  // We call the findProtocol (const QString&) to bypass any proxy settings.
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
+  return prot;
+}
+
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {
   s >> field.name;
   int type;
@@ -562,8 +454,5 @@ QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field 
   return s;
 }
 
-// KUrl based static functions are implemented in ../kio/kio/kprotocolinfo.cpp
-
 void KProtocolInfo::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
-
