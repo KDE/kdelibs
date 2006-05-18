@@ -21,6 +21,9 @@
 #define PHONON_IFACES_VISUALIZATION_H
 
 #include "base.h"
+#include <QtCore/QtGlobal>
+
+class QWidget;
 
 namespace Phonon
 {
@@ -36,6 +39,9 @@ namespace Ifaces
 			virtual void setVisualization( int newVisualization ) = 0;
 			virtual void setAudioPath( AudioPath* audioPath ) = 0;
 			virtual void setVideoOutput( AbstractVideoOutput* videoOutput ) = 0;
+
+			virtual bool hasParameterWidget() const { return false; }
+			virtual QWidget* createParameterWidget( QWidget* parent ) { Q_UNUSED( parent ); return 0; }
 	};
 }} // namespace Phonon::Ifaces
 

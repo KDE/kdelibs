@@ -82,6 +82,21 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base, private Bas
 		VisualizationEffect visualization() const;
 		void setVisualization( const VisualizationEffect& newVisualization );
 
+		/**
+		 * Returns whether the selected visualization effect can be configured
+		 * by the user with a widget returned by createParameterWidget(). In
+		 * short it tells you whether createParameterWidget() will return 0 or
+		 * not.
+		 */
+		bool hasParameterWidget() const;
+
+		/**
+		 * Returns a widget that displays effect parameter controls to the user.
+		 *
+		 * \param parent The parent widget for the new widget.
+		 */
+		QWidget* createParameterWidget( QWidget* parent = 0 );
+
 	private:
 		/**
 		 * \internal

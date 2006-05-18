@@ -79,6 +79,22 @@ void Visualization::setVisualization( const VisualizationEffect& newVisualizatio
 		d->visualizationIndex = newVisualization.index();
 }
 
+bool Visualization::hasParameterWidget() const
+{
+	K_D( const Visualization );
+	if( d->iface() )
+		return d->iface()->hasParameterWidget();
+	return false;
+}
+
+QWidget* Visualization::createParameterWidget( QWidget* parent )
+{
+	K_D( Visualization );
+	if( iface() )
+		return d->iface()->createParameterWidget( parent );
+	return 0;
+}
+
 void Visualization::phononObjectDestroyed( Base* o )
 {
 	// this method is called from Phonon::Base::~Base(), meaning the AudioEffect
