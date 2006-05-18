@@ -66,7 +66,7 @@ protected Q_SLOTS:
 	void slotExtensionClicked();
 	void slotToggleFilter(bool);
 	void slotHelp();
-	void slotOutputFileSelected(const QString&);
+	void slotOutputFileSelected(const KUrl&);
 	void slotUpdatePossible( bool );
 	void slotOpenFileDialog();
 

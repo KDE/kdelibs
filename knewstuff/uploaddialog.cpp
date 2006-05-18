@@ -53,7 +53,7 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   topLayout->setSpacing( spacingHint() );
 
   QLabel *nameLabel = new QLabel( i18n("Name:"), topPage );
-  topLayout->addWidget( nameLabel, 0, 0 );  
+  topLayout->addWidget( nameLabel, 0, 0 );
   mNameEdit = new QLineEdit( topPage );
   topLayout->addWidget( mNameEdit, 0, 1 );
 
@@ -63,12 +63,12 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   topLayout->addWidget( mAuthorEdit, 1, 1 );
 
   QLabel *versionLabel = new QLabel( i18n("Version:"), topPage );
-  topLayout->addWidget( versionLabel, 2, 0 );  
+  topLayout->addWidget( versionLabel, 2, 0 );
   mVersionEdit = new QLineEdit( topPage );
   topLayout->addWidget( mVersionEdit, 2, 1 );
 
   QLabel *releaseLabel = new QLabel( i18n("Release:"), topPage );
-  topLayout->addWidget( releaseLabel, 3, 0 );  
+  topLayout->addWidget( releaseLabel, 3, 0 );
   mReleaseSpin = new QSpinBox( topPage );
   mReleaseSpin->setMinimum( 1 );
   topLayout->addWidget( mReleaseSpin, 3, 1 );
@@ -124,7 +124,9 @@ void UploadDialog::slotOk()
   entry->setVersion( mVersionEdit->text() );
   entry->setRelease( mReleaseSpin->value() );
   entry->setLicense( mLicenseCombo->currentText() );
-  entry->setPreview( KUrl( mPreviewUrl->url().section("/", -1) ), mLanguageCombo->currentText() );
+  KUrl purl = mPreviewUrl->url();
+  purl.setFileName(QString());
+  entry->setPreview( purl, mLanguageCombo->currentText() );
   entry->setSummary( mSummaryEdit->toPlainText(), mLanguageCombo->currentText() );
 
   if ( mPayloadUrl.isValid() ) {
@@ -134,7 +136,7 @@ void UploadDialog::slotOk()
     cg.writeEntry("version", mVersionEdit->text());
     cg.writeEntry("release", mReleaseSpin->value());
     cg.writeEntry("licence", mLicenseCombo->currentText());
-    cg.writeEntry("preview", mPreviewUrl->url());
+    cg.writeEntry("preview", mPreviewUrl->url().url());
     cg.writeEntry("summary", mSummaryEdit->toPlainText());
     cg.writeEntry("language", mLanguageCombo->currentText());
     KGlobal::config()->sync();
@@ -145,12 +147,12 @@ void UploadDialog::slotOk()
   accept();
 }
 
-void UploadDialog::setPreviewFile( const QString &previewFile )
+void UploadDialog::setPreviewFile( const KUrl& previewFile )
 {
-  mPreviewUrl->setURL( previewFile );
+  mPreviewUrl->setUrl( previewFile );
 }
 
-void UploadDialog::setPayloadFile( const QString &payloadFile )
+void UploadDialog::setPayloadFile( const KUrl& payloadFile )
 {
   mPayloadUrl = payloadFile;
 
@@ -159,7 +161,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
   QString author = cg.readEntry("author");
   QString version = cg.readEntry("version");
   QString release = cg.readEntry("release");
-  QString preview = cg.readEntry("preview");
+  KUrl preview = KUrl::fromPathOrURL(cg.readEntry("preview"));
   QString summary = cg.readEntry("summary");
   QString lang = cg.readEntry("language");
   QString license = cg.readEntry("licence");
@@ -173,7 +175,7 @@ void UploadDialog::setPayloadFile( const QString &payloadFile )
       mAuthorEdit->setText(author);
       mVersionEdit->setText(version);
       mReleaseSpin->setValue(release.toInt());
-      mPreviewUrl->setURL(preview);
+      mPreviewUrl->setUrl(preview);
       mSummaryEdit->setPlainText(summary);
       if(!lang.isEmpty()) mLanguageCombo->setCurrentIndex(mLanguageCombo->findText(lang));
       if(!license.isEmpty()) mLicenseCombo->setCurrentIndex(mLicenseCombo->findText(license));

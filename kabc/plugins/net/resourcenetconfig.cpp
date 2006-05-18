@@ -80,7 +80,7 @@ void ResourceNetConfig::loadSettings( KRES::Resource *res )
 
   mFormatBox->setCurrentIndex( mFormatTypes.indexOf( resource->format() ) );
 
-  mUrlEdit->setURL( resource->url().url() );
+  mUrlEdit->setUrl( resource->url() );
 }
 
 void ResourceNetConfig::saveSettings( KRES::Resource *res )

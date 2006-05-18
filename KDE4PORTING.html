@@ -72,7 +72,7 @@ or <a href="http://doc.trolltech.com/4.1/porting4.html">this page online</a>.</p
 <H3><A NAME="globalchanges">Global Changes</A></H3>
 <ul>
 <li>
-The "const char *name" arguments in the constructors of QObject derived classes 
+The "const char *name" arguments in the constructors of QObject derived classes
 have been removed (not of all classes yet). Use setObjectName() instead if the object name is really necessary.
 </li>
 <li>The define KDE_DEPRECATED must be used now at the start of the declaration
@@ -205,7 +205,7 @@ by QX11Info::display()</li>
 
 <H4>KConfigBase</H4>
 <ul>
-<li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b>. 
+<li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b>.
 This uses QVariant in the background so only types that QVariant can convert to QString work. The use of QVariant allows some ambiguous conversions, so it might be necessary to use <em>explicit</em> construction to disambiguate the type wanted, i.e.
  <ul>
 		 <li>bool var = readEntry(key, <b>false</b>);</li>
@@ -1077,6 +1077,9 @@ a listDir result.</li>
 <ul>
 <li>renamed to KUrlRequester</li>
 <li>setCaption is gone, use setWindowTitle instead</li>
+<li>Renamed setURL() to setUrl(), per KDE naming policy</li>
+<li>Ported to use KUrl instead of QString.  Thus, the constructors, setUrl(), url(), and urlChanged() all use KUrl.</li>
+<li>Removed showLocalProtocol() and setShowLocalProtocol(); this is now always false (the user never sees file:///)</li>
 </ul>
 
 <H4>KURLBar</H4>
@@ -1228,7 +1231,7 @@ any similar problems when you use contexts.)</li>
 <li>As in Gettext 0.15-pre, contexts are supposed to be short, please consider
 using a special comment instead of a context to give long hints to translators.
 The special comment starts with //i18n: ot /*i18n: and must be <em>before</em>
-the message code. (Note: this is not new to KDE4, but very seldomly used in 
+the message code. (Note: this is not new to KDE4, but very seldomly used in
 KDE3.)</li>
 </ul>
 

@@ -39,10 +39,10 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Logfile_check->setChecked( actions.contains("Logfile") );
 	m_ui.Execute_check->setChecked( actions.contains("Execute") );
 	m_ui.Taskbar_check->setChecked( actions.contains("Taskbar") );
-	
-	m_ui.Sound_select->setURL( config->readEntry( "sound" , true ) );
-	m_ui.Logfile_select->setURL( config->readEntry( "logfile" , true ) );
-	m_ui.Execute_select->setURL( config->readEntry( "execute"  ) );
+
+	m_ui.Sound_select->setUrl( KUrl::fromPathOrURL( config->readEntry( "sound" , true ) ) );
+	m_ui.Logfile_select->setUrl( KUrl::fromPathOrURL( config->readEntry( "logfile" , true ) ) );
+	m_ui.Execute_select->setUrl( KUrl::fromPathOrURL( config->readEntry( "execute"  ) ) );
 }
 
 void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
@@ -58,11 +58,11 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 		actions << "Execute";
 	if(m_ui.Taskbar_check->isChecked())
 		actions << "Taskbar";
-	
+
 	config->writeEntry( "Action" , actions.join("|") );
-	
-	config->writeEntry( "sound" , m_ui.Sound_select->url() );
-	config->writeEntry( "logfile" , m_ui.Logfile_select->url() );
-	config->writeEntry( "execute" , m_ui.Execute_select->url() );
+
+	config->writeEntry( "sound" , m_ui.Sound_select->url().url() );
+	config->writeEntry( "logfile" , m_ui.Logfile_select->url().url() );
+	config->writeEntry( "execute" , m_ui.Execute_select->url().url() );
 }
 

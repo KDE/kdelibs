@@ -288,7 +288,7 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
         "<b>%i</b>: for the numeric event ID.");
     m_execute->setWhatsThis(whatsThis );
     m_executePath->setWhatsThis(whatsThis );
-    
+
     showAdvanced( false );
 
     slotEventChanged( 0L ); // disable widgets by default
@@ -394,7 +394,7 @@ bool KNotifyWidget::eventFilter( QObject * watched, QEvent * event )
 
     return true;
   }
-  
+
   return QWidget::eventFilter(watched, event);
 }
 
@@ -429,7 +429,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
     // sound settings
     m_playButton->setEnabled( !event.soundfile.isEmpty() );
-    m_soundPath->setURL( event.soundfile );
+    m_soundPath->setUrl( KUrl::fromPathOrURL( event.soundfile ) );
     enable = (event.dontShow & KNotifyClient::Sound) == 0;
     checked = enable && !event.soundfile.isEmpty() &&
               (event.presentation & KNotifyClient::Sound);
@@ -439,7 +439,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
 
     // logfile settings
-    m_logfilePath->setURL( event.logfile );
+    m_logfilePath->setUrl( KUrl::fromPathOrURL(event.logfile) );
     enable = (event.dontShow & KNotifyClient::Logfile) == 0;
     checked = enable && !event.logfile.isEmpty()  &&
               (event.presentation & KNotifyClient::Logfile);
@@ -449,7 +449,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
 
     // execute program settings
-    m_executePath->setURL( event.commandline );
+    m_executePath->setUrl( KUrl::fromPathOrURL(event.commandline) );
     enable = (event.dontShow & KNotifyClient::Execute) == 0;
     checked = enable && !event.commandline.isEmpty() &&
               (event.presentation & KNotifyClient::Execute);
@@ -912,7 +912,7 @@ void KNotifyWidget::openExecDialog( KUrlRequester *requester )
 
 void KNotifyWidget::playSound()
 {
-    if (!KIO::NetAccess::exists( m_soundPath->url(), true, 0 )) {        
+    if (!KIO::NetAccess::exists( m_soundPath->url(), true, 0 )) {
         bool foundSound=false;
 
         // find the first "sound"-resource that contains files
@@ -926,7 +926,7 @@ void KNotifyWidget::playSound()
            QStringList::ConstIterator it = soundDirs.begin();
            while ( it != soundDirs.end() ) {
                dir = *it;
-               if ( dir.isReadable() && dir.count() > 2 && 
+               if ( dir.isReadable() && dir.count() > 2 &&
 	            KIO::NetAccess::exists( *it + m_soundPath->url(), true, 0 )) {
                        foundSound=true;
                        break;

@@ -58,7 +58,7 @@ class QEvent;
 class KIO_EXPORT KUrlRequester : public KHBox
 {
     Q_OBJECT
-    Q_PROPERTY( QString url READ url WRITE setURL USER true )
+    Q_PROPERTY( KUrl url READ url WRITE setUrl USER true )
     Q_PROPERTY( bool showLocalProtocol READ showLocalProtocol WRITE setShowLocalProtocol )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( uint mode READ mode WRITE setMode )
@@ -71,9 +71,8 @@ public:
 
     /**
      * Constructs a KUrlRequester widget with the initial URL @p url.
-     * // TODO KDE4: Use KUrl instead
      */
-    KUrlRequester( const QString& url, QWidget *parent=0);
+    KUrlRequester( const KUrl& url, QWidget *parent=0);
 
     /**
      * Special constructor, which creates a KUrlRequester widget with a custom
@@ -91,17 +90,8 @@ public:
      * @returns the current url in the lineedit. May be malformed, if the user
      * entered something weird. ~user or environment variables are substituted
      * for local files.
-     * // TODO KDE4: Use KUrl so that the result is properly defined
      */
-    QString url() const;
-
-    /**
-     * Enables/disables showing file:/ in the lineedit, when a local file has
-     * been selected in the filedialog or was set via setURL().
-     * Default is false, not showing file:/
-     * @see showLocalProtocol
-     */
-    void setShowLocalProtocol( bool b );
+    KUrl url() const;
 
     /**
      * Sets the mode of the file dialog.
@@ -129,14 +119,6 @@ public:
     * @see KFileDialog::filter()
     */
     QString filter() const;
-
-    /**
-     * @returns whether local files will be prefixed with file:/ in the
-     * lineedit
-     * @see setShowLocalProtocol
-     */
-    bool showLocalProtocol() const { return myShowLocalProt; }
-    // ## KDE4: there's no reason to keep this, it should always be false
 
     /**
      * @returns a pointer to the filedialog
@@ -190,15 +172,8 @@ public Q_SLOTS:
     /**
      * Sets the url in the lineedit to @p url. Depending on the state of
      * showLocalProtocol(), file:/ on local files will be shown or not.
-     * // TODO KDE4: Use KUrl instead
      */
-    void setURL( const QString& url );
-
-    /**
-     * Sets the url in the lineedit to @p url.
-     * // TODO KDE4: rename to setURL
-     */
-    void setKUrl( const KUrl& url );
+    void setUrl( const KUrl& url );
 
     /**
      * Clears the lineedit/combobox.
@@ -240,9 +215,8 @@ Q_SIGNALS:
     /**
      * Emitted when the user changed the URL via the file dialog.
      * The parameter contains the contents of the lineedit.
-     * // TODO KDE4: Use KUrl instead
      */
-    void urlSelected( const QString& );
+    void urlSelected( const KUrl& );
 
 protected:
     void		init();

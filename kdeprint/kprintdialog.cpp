@@ -413,7 +413,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	connect(d->m_extbtn, SIGNAL(clicked()), SLOT(slotExtensionClicked()));
 	connect(d->m_filter, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 	connect(m_help, SIGNAL(clicked()), SLOT(slotHelp()));
-	connect(d->m_file, SIGNAL(urlSelected(const QString&)), SLOT(slotOutputFileSelected(const QString&)));
+	connect(d->m_file, SIGNAL(urlSelected(const KUrl&)), SLOT(slotOutputFileSelected(const KUrl&)));
 	connect( d->m_file, SIGNAL( openFileDialog( KUrlRequester* ) ), SLOT( slotOpenFileDialog() ) );
 	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
@@ -597,9 +597,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 
 	// Initialize output filename
 	if (!d->m_printer->outputFileName().isEmpty())
-		d->m_file->setURL( d->m_printer->outputFileName() );
+		d->m_file->setUrl( KUrl::fromPathOrURL(d->m_printer->outputFileName()) );
 	else if (!d->m_printer->docFileName().isEmpty())
-		d->m_file->setURL( d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps" );
+		d->m_file->setUrl( KUrl::fromPathOrURL(d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps") );
 
 	if ( d->m_printers->count() > 0 )
 		slotPrinterSelected( d->m_printers->currentIndex() );
@@ -760,7 +760,7 @@ bool KPrintDialog::checkOutputFile()
 						break;
 					case KIO::R_RENAME:
 						url = dlg.newDestURL();
-						d->m_file->setURL( url.path() );
+						d->m_file->setUrl( url );
 						value = true;
 						anotherCheck = true;
 						break;
@@ -824,7 +824,7 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 		if ( p > 0 && p != int (f.length () - 1) )
 		{
 			url.setFileName( f.left( p ) + "." + ext );
-			d->m_file->setURL( KUrl::decode_string( url.url() ) );
+			d->m_file->setUrl( url );
 		}
 	}
 }
@@ -935,9 +935,9 @@ void KPrintDialog::slotHelp()
 	KToolInvocation::invokeHelp(QString(), "kdeprint");
 }
 
-void KPrintDialog::slotOutputFileSelected(const QString& txt)
+void KPrintDialog::slotOutputFileSelected(const KUrl& url)
 {
-	d->m_file->setURL( txt );
+	d->m_file->setUrl( url );
 }
 
 void KPrintDialog::init()

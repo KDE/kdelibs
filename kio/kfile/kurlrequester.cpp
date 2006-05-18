@@ -137,7 +137,7 @@ public:
     /**
      * replaces ~user or $FOO, if necessary
      */
-    QString url() {
+    KUrl url() {
         QString txt = combo ? combo->currentText() : edit->text();
         KUrlCompletion *comp;
         if ( combo )
@@ -146,9 +146,9 @@ public:
             comp = qobject_cast<KUrlCompletion*>(edit->completionObject());
 
         if ( comp )
-            return comp->replacedPath( txt );
+            return KUrl::fromPathOrURL( comp->replacedPath( txt ) );
         else
-            return txt;
+            return KUrl::fromPathOrURL( txt );
     }
 
     KLineEdit *edit;
@@ -179,11 +179,11 @@ KUrlRequester::KUrlRequester( QWidget *parent)
 }
 
 
-KUrlRequester::KUrlRequester( const QString& url, QWidget *parent)
+KUrlRequester::KUrlRequester( const KUrl& url, QWidget *parent)
   : KHBox( parent),d(new KUrlRequesterPrivate)
 {
     init();
-    setKUrl( KUrl::fromPathOrURL( url ) );
+    setUrl( url );
 }
 
 
@@ -200,7 +200,6 @@ void KUrlRequester::init()
     setMargin(0);
 
     myFileDialog    = 0L;
-    myShowLocalProt = false;
 
     if ( !d->combo && !d->edit )
 	d->edit = new KLineEdit( this);
@@ -231,30 +230,9 @@ void KUrlRequester::init()
 }
 
 
-void KUrlRequester::setURL( const QString& url )
+void KUrlRequester::setUrl( const KUrl& url )
 {
-    if ( myShowLocalProt )
-    {
-        d->setText( url );
-    }
-    else
-    {
-        // ### This code is broken (e.g. for paths with '#')
-        if ( url.startsWith("file://") )
-            d->setText( url.mid( 7 ) );
-        else if ( url.startsWith("file:") )
-            d->setText( url.mid( 5 ) );
-        else
-            d->setText( url );
-    }
-}
-
-void KUrlRequester::setKUrl( const KUrl& url )
-{
-    if ( myShowLocalProt )
-        d->setText( url.url() );
-    else
-        d->setText( url.pathOrURL() );
+    d->setText( url.pathOrURL() );
 }
 
 void KUrlRequester::changeEvent(QEvent *e)
@@ -268,7 +246,7 @@ void KUrlRequester::changeEvent(QEvent *e)
    KHBox::changeEvent(e);
 }
 
-QString KUrlRequester::url() const
+KUrl KUrlRequester::url() const
 {
     return d->url();
 }
@@ -307,7 +285,7 @@ void KUrlRequester::slotOpenDialog()
       newurl = dlg->selectedURL();
     }
 
-    setKUrl( newurl );
+    setUrl( newurl );
     emit urlSelected( d->url() );
 }
 
@@ -353,15 +331,6 @@ KFileDialog * KUrlRequester::fileDialog() const
     return myFileDialog;
 }
 
-
-void KUrlRequester::setShowLocalProtocol( bool b )
-{
-    if ( myShowLocalProt == b )
-	return;
-
-    myShowLocalProt = b;
-    setKUrl( url() );
-}
 
 void KUrlRequester::clear()
 {

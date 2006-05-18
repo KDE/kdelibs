@@ -87,9 +87,9 @@ void ResourceFileConfig::loadSettings( KRES::Resource *res  )
 
   mFormatBox->setCurrentIndex( mFormatTypes.indexOf( resource->format() ) );
 
-  mFileNameEdit->setURL( resource->fileName() );
+  mFileNameEdit->setUrl( KUrl::fromPathOrURL(resource->fileName()) );
   if ( mFileNameEdit->url().isEmpty() )
-    mFileNameEdit->setURL( KABC::StdAddressBook::fileName() );
+    mFileNameEdit->setUrl( KUrl::fromPathOrURL(KABC::StdAddressBook::fileName()) );
 }
 
 void ResourceFileConfig::saveSettings( KRES::Resource *res )
@@ -104,7 +104,7 @@ void ResourceFileConfig::saveSettings( KRES::Resource *res )
   if ( !mInEditMode )
     resource->setFormat( mFormatTypes[ mFormatBox->currentIndex() ] );
 
-  resource->setFileName( mFileNameEdit->url() );
+  resource->setFileName( mFileNameEdit->url().url() );
 }
 
 void ResourceFileConfig::checkFilePermissions( const QString& fileName )

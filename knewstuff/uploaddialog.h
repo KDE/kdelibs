@@ -67,7 +67,7 @@ class UploadDialog : public KDialogBase
 
       @param previewFile the preview image file
     */
-    void setPreviewFile( const QString &previewFile );
+    void setPreviewFile( const KUrl& previewFile );
 
     /**
       Sets the payload filename.
@@ -76,7 +76,7 @@ class UploadDialog : public KDialogBase
 
       @param payloadFile the payload data file
     */
-    void setPayloadFile( const QString &payloadFile );
+    void setPayloadFile( const KUrl& payloadFile );
 
   protected Q_SLOTS:
     void slotOk();

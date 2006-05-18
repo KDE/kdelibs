@@ -2537,7 +2537,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   URLStr = config.readPathEntry( "URL" );
 
   if ( !URLStr.isNull() )
-    URLEdit->setURL( URLStr );
+    URLEdit->setUrl( KUrl::fromPathOrURL(URLStr) );
 
   connect( URLEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
