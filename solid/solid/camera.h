@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHW_CAMERA_H
-#define KDEHW_CAMERA_H
+#ifndef SOLID_CAMERA_H
+#define SOLID_CAMERA_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -53,7 +53,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         Camera( Ifaces::Camera *iface, QObject *parent = 0 );
 
@@ -64,10 +64,10 @@ namespace KDEHW
 
 
         /**
-         * Get the KDEHW::Capability::Type of the Camera capability.
+         * Get the Solid::Capability::Type of the Camera capability.
          *
          * @return the Camera capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Camera; }
 
@@ -77,7 +77,7 @@ namespace KDEHW
          * device.
          *
          * @return the access method type
-         * @see KDEHW::Ifaces::Enums::Camera::AccessType
+         * @see Solid::Ifaces::Enums::Camera::AccessType
          */
         AccessType accessMethod() const;
 

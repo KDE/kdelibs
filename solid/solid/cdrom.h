@@ -17,16 +17,16 @@
 
 */
 
-#ifndef KDEHW_CDROM_H
-#define KDEHW_CDROM_H
+#ifndef SOLID_CDROM_H
+#define SOLID_CDROM_H
 
 #include <QList>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/storage.h>
+#include <solid/storage.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -49,7 +49,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         Cdrom( Ifaces::Cdrom *iface, QObject *parent = 0 );
 
@@ -60,10 +60,10 @@ namespace KDEHW
 
 
         /**
-         * Get the KDEHW::Capability::Type of the Cdrom capability.
+         * Get the Solid::Capability::Type of the Cdrom capability.
          *
          * @return the Cdrom capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Cdrom; }
 

@@ -19,7 +19,7 @@
 
 #include "capability.h"
 
-KDEHW::Ifaces::Capability::~Capability()
+Solid::Ifaces::Capability::~Capability()
 {
 }
 

@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHW_IFACES_CAMERA_H
-#define KDEHW_IFACES_CAMERA_H
+#ifndef SOLID_IFACES_CAMERA_H
+#define SOLID_IFACES_CAMERA_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -57,7 +57,7 @@ namespace Ifaces
          * device.
          *
          * @return the access method type
-         * @see KDEHW::Ifaces::Enums::Camera::AccessType
+         * @see Solid::Ifaces::Enums::Camera::AccessType
          */
         virtual AccessType accessMethod() const = 0;
 

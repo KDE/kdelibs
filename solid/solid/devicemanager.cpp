@@ -33,7 +33,7 @@
 #include "ifaces/device.h"
 
 
-namespace KDEHW
+namespace Solid
 {
     class DeviceManager::Private
     {
@@ -52,41 +52,41 @@ namespace KDEHW
     };
 }
 
-static ::KStaticDeleter<KDEHW::DeviceManager> sd;
+static ::KStaticDeleter<Solid::DeviceManager> sd;
 
-KDEHW::DeviceManager *KDEHW::DeviceManager::s_self = 0;
+Solid::DeviceManager *Solid::DeviceManager::s_self = 0;
 
 
-KDEHW::DeviceManager &KDEHW::DeviceManager::self()
+Solid::DeviceManager &Solid::DeviceManager::self()
 {
     if( !s_self )
     {
-        s_self = new KDEHW::DeviceManager();
+        s_self = new Solid::DeviceManager();
         sd.setObject( s_self, s_self );
     }
 
     return *s_self;
 }
 
-KDEHW::DeviceManager &KDEHW::DeviceManager::selfForceBackend( KDEHW::Ifaces::DeviceManager *backend )
+Solid::DeviceManager &Solid::DeviceManager::selfForceBackend( Solid::Ifaces::DeviceManager *backend )
 {
     if( !s_self )
     {
-        s_self = new KDEHW::DeviceManager( backend );
+        s_self = new Solid::DeviceManager( backend );
         sd.setObject( s_self, s_self );
     }
 
     return *s_self;
 }
 
-KDEHW::DeviceManager::DeviceManager()
+Solid::DeviceManager::DeviceManager()
     : QObject(), d( new Private( this ) )
 {
     QStringList error_msg;
 
     Ifaces::DeviceManager *backend = 0;
 
-    KTrader::OfferList offers = KTrader::self()->query( "KdeHwDeviceManager", "(Type == 'Service')" );
+    KTrader::OfferList offers = KTrader::self()->query( "SolidDeviceManager", "(Type == 'Service')" );
 
     foreach ( KService::Ptr ptr, offers )
     {
@@ -94,7 +94,7 @@ KDEHW::DeviceManager::DeviceManager()
 
         if ( factory )
         {
-            backend = (Ifaces::DeviceManager*)factory->create( 0, "KDEHW::Ifaces::DeviceManager" );
+            backend = (Ifaces::DeviceManager*)factory->create( 0, "Solid::Ifaces::DeviceManager" );
 
             if( backend != 0 )
             {
@@ -138,7 +138,7 @@ KDEHW::DeviceManager::DeviceManager()
     }
 }
 
-KDEHW::DeviceManager::DeviceManager( KDEHW::Ifaces::DeviceManager *backend )
+Solid::DeviceManager::DeviceManager( Solid::Ifaces::DeviceManager *backend )
     : QObject(), d( new Private( this ) )
 {
     if ( backend != 0 )
@@ -147,17 +147,17 @@ KDEHW::DeviceManager::DeviceManager( KDEHW::Ifaces::DeviceManager *backend )
     }
 }
 
-KDEHW::DeviceManager::~DeviceManager()
+Solid::DeviceManager::~DeviceManager()
 {
     d->unregisterBackend();
 }
 
-const QString &KDEHW::DeviceManager::errorText() const
+const QString &Solid::DeviceManager::errorText() const
 {
     return d->errorText;
 }
 
-KDEHW::DeviceList KDEHW::DeviceManager::allDevices()
+Solid::DeviceList Solid::DeviceManager::allDevices()
 {
     DeviceList list;
 
@@ -178,7 +178,7 @@ KDEHW::DeviceList KDEHW::DeviceManager::allDevices()
     return list;
 }
 
-bool KDEHW::DeviceManager::deviceExists( const QString &udi )
+bool Solid::DeviceManager::deviceExists( const QString &udi )
 {
     if ( d->backend == 0 ) return false;
 
@@ -192,7 +192,7 @@ bool KDEHW::DeviceManager::deviceExists( const QString &udi )
     }
 }
 
-KDEHW::Device KDEHW::DeviceManager::findDevice( const QString &udi )
+Solid::Device Solid::DeviceManager::findDevice( const QString &udi )
 {
     if ( d->backend == 0 ) return Device();
 
@@ -208,12 +208,12 @@ KDEHW::Device KDEHW::DeviceManager::findDevice( const QString &udi )
     }
 }
 
-KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
+Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
                                                               const Capability::Type &capability,
                                                               const QString &predicate )
 {
     Predicate p = Predicate::fromString( predicate );
-    
+
     if ( p.isValid() )
     {
         return findDevicesFromQuery( parentUdi, capability, p );
@@ -224,7 +224,7 @@ KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &par
     }
 }
 
-KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
+Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
                                                               const Capability::Type &capability,
                                                               const Predicate &predicate )
 {
@@ -255,12 +255,12 @@ KDEHW::DeviceList KDEHW::DeviceManager::findDevicesFromQuery( const QString &par
     return list;
 }
 
-const KDEHW::Ifaces::DeviceManager *KDEHW::DeviceManager::backend() const
+const Solid::Ifaces::DeviceManager *Solid::DeviceManager::backend() const
 {
     return d->backend;
 }
 
-void KDEHW::DeviceManager::slotDeviceAdded( const QString &udi )
+void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
 {
     Ifaces::Device *device = d->devicesMap.take( udi );
 
@@ -275,7 +275,7 @@ void KDEHW::DeviceManager::slotDeviceAdded( const QString &udi )
     emit deviceAdded( udi );
 }
 
-void KDEHW::DeviceManager::slotDeviceRemoved( const QString &udi )
+void Solid::DeviceManager::slotDeviceRemoved( const QString &udi )
 {
     Ifaces::Device *device = d->devicesMap.take( udi );
 
@@ -287,12 +287,12 @@ void KDEHW::DeviceManager::slotDeviceRemoved( const QString &udi )
     emit deviceRemoved( udi );
 }
 
-void KDEHW::DeviceManager::slotNewCapability( const QString &udi, int capability )
+void Solid::DeviceManager::slotNewCapability( const QString &udi, int capability )
 {
     emit newCapability( udi, capability );
 }
 
-void KDEHW::DeviceManager::slotDestroyed( QObject *object )
+void Solid::DeviceManager::slotDestroyed( QObject *object )
 {
     Ifaces::Device *device = dynamic_cast<Ifaces::Device*>( object );
 
@@ -303,7 +303,7 @@ void KDEHW::DeviceManager::slotDestroyed( QObject *object )
     }
 }
 
-KDEHW::Ifaces::Device *KDEHW::DeviceManager::Private::findRegisteredDevice( const QString &udi )
+Solid::Ifaces::Device *Solid::DeviceManager::Private::findRegisteredDevice( const QString &udi )
 {
     Ifaces::Device *device;
 
@@ -324,7 +324,7 @@ KDEHW::Ifaces::Device *KDEHW::DeviceManager::Private::findRegisteredDevice( cons
     return device;
 }
 
-void KDEHW::DeviceManager::Private::registerBackend( Ifaces::DeviceManager *newBackend )
+void Solid::DeviceManager::Private::registerBackend( Ifaces::DeviceManager *newBackend )
 {
     unregisterBackend();
     backend = newBackend;
@@ -337,7 +337,7 @@ void KDEHW::DeviceManager::Private::registerBackend( Ifaces::DeviceManager *newB
                       q, SLOT( slotNewCapability( QString, int ) ) );
 }
 
-void KDEHW::DeviceManager::Private::unregisterBackend()
+void Solid::DeviceManager::Private::unregisterBackend()
 {
     if ( backend!=0 )
     {

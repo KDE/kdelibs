@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHW_IFACES_STORAGE_H
-#define KDEHW_IFACES_STORAGE_H
+#ifndef SOLID_IFACES_STORAGE_H
+#define SOLID_IFACES_STORAGE_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/block.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -59,7 +59,7 @@ namespace Ifaces
          * connected to.
          *
          * @return the bus type
-         * @see KDEHW::Ifaces::Enums::Storage::Bus
+         * @see Solid::Ifaces::Enums::Storage::Bus
          */
         virtual Bus bus() const = 0;
 
@@ -67,7 +67,7 @@ namespace Ifaces
          * Retrieves the type of this storage drive.
          *
          * @return the drive type
-         * @see KDEHW::Ifaces::Enums::Storage::DriveType
+         * @see Solid::Ifaces::Enums::Storage::DriveType
          */
         virtual DriveType driveType() const = 0;
 

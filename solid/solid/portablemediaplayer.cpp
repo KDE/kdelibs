@@ -17,11 +17,11 @@
 
 */
 
-#include "portablemediaplayer.h" 
+#include "portablemediaplayer.h"
 
-#include <kdehw/ifaces/portablemediaplayer.h>
+#include <solid/ifaces/portablemediaplayer.h>
 
-namespace KDEHW
+namespace Solid
 {
     class PortableMediaPlayer::Private
     {
@@ -32,33 +32,33 @@ namespace KDEHW
     };
 }
 
-KDEHW::PortableMediaPlayer::PortableMediaPlayer( Ifaces::PortableMediaPlayer *iface, QObject *parent )
+Solid::PortableMediaPlayer::PortableMediaPlayer( Ifaces::PortableMediaPlayer *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::PortableMediaPlayer::~PortableMediaPlayer()
+Solid::PortableMediaPlayer::~PortableMediaPlayer()
 {
     delete d;
 }
 
-KDEHW::PortableMediaPlayer::AccessType KDEHW::PortableMediaPlayer::accessMethod() const
+Solid::PortableMediaPlayer::AccessType Solid::PortableMediaPlayer::accessMethod() const
 {
     return d->iface->accessMethod();
 }
 
-QStringList KDEHW::PortableMediaPlayer::outputFormats() const
+QStringList Solid::PortableMediaPlayer::outputFormats() const
 {
     return d->iface->outputFormats();
 }
 
-QStringList KDEHW::PortableMediaPlayer::inputFormats() const
+QStringList Solid::PortableMediaPlayer::inputFormats() const
 {
     return d->iface->inputFormats();
 }
 
-QStringList KDEHW::PortableMediaPlayer::playlistFormats() const
+QStringList Solid::PortableMediaPlayer::playlistFormats() const
 {
     return d->iface->playlistFormats();
 }

@@ -19,9 +19,9 @@
 
 #include "display.h"
 
-#include <kdehw/ifaces/display.h>
+#include <solid/ifaces/display.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Display::Private
     {
@@ -32,23 +32,23 @@ namespace KDEHW
     };
 }
 
-KDEHW::Display::Display( Ifaces::Display *iface, QObject *parent )
+Solid::Display::Display( Ifaces::Display *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::Display::~Display()
+Solid::Display::~Display()
 {
     delete d;
 }
 
-KDEHW::Display::DisplayType KDEHW::Display::type() const
+Solid::Display::DisplayType Solid::Display::type() const
 {
     return d->iface->type();
 }
 
-int KDEHW::Display::lcdBrightness() const
+int Solid::Display::lcdBrightness() const
 {
     return d->iface->lcdBrightness();
 }

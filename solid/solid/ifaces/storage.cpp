@@ -19,7 +19,7 @@
 
 #include "storage.h"
 
-KDEHW::Ifaces::Storage::~Storage()
+Solid::Ifaces::Storage::~Storage()
 {
 }
 

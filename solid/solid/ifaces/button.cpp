@@ -19,7 +19,7 @@
 
 #include "button.h"
 
-KDEHW::Ifaces::Button::~Button()
+Solid::Ifaces::Button::~Button()
 {
 
 }

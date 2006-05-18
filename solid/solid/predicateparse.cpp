@@ -32,9 +32,9 @@ void PredicateParse_mainParse( const char *_code );
 
 #include <kdebug.h>
 
-static KDEHW::Predicate *s_result = 0;
+static Solid::Predicate *s_result = 0;
 
-KDEHW::Predicate KDEHW::Predicate::fromString( const QString &predicate )
+Solid::Predicate Solid::Predicate::fromString( const QString &predicate )
 {
     PredicateParse_mainParse( predicate.toAscii() );
 
@@ -54,7 +54,7 @@ KDEHW::Predicate KDEHW::Predicate::fromString( const QString &predicate )
 
 void PredicateParse_setResult( void *result )
 {
-    s_result = (KDEHW::Predicate*) result;
+    s_result = (Solid::Predicate*) result;
 }
 
 void PredicateParse_errorDetected()
@@ -72,7 +72,7 @@ void *PredicateParse_newAtom( char *capability, char *property, void *value )
     QString prop( property );
     QVariant *val = (QVariant*)value;
 
-    KDEHW::Predicate *result = new KDEHW::Predicate( cap, prop, *val );
+    Solid::Predicate *result = new Solid::Predicate( cap, prop, *val );
 
     delete val;
     free( capability );
@@ -84,10 +84,10 @@ void *PredicateParse_newAtom( char *capability, char *property, void *value )
 
 void *PredicateParse_newAnd( void *pred1, void *pred2 )
 {
-    KDEHW::Predicate *result = new KDEHW::Predicate();
+    Solid::Predicate *result = new Solid::Predicate();
 
-    KDEHW::Predicate *p1 = (KDEHW::Predicate*)pred1;
-    KDEHW::Predicate *p2 = (KDEHW::Predicate*)pred2;
+    Solid::Predicate *p1 = (Solid::Predicate*)pred1;
+    Solid::Predicate *p2 = (Solid::Predicate*)pred2;
 
     *result = *p1 & *p2;
 
@@ -100,10 +100,10 @@ void *PredicateParse_newAnd( void *pred1, void *pred2 )
 
 void *PredicateParse_newOr( void *pred1, void *pred2 )
 {
-    KDEHW::Predicate *result = new KDEHW::Predicate();
+    Solid::Predicate *result = new Solid::Predicate();
 
-    KDEHW::Predicate *p1 = (KDEHW::Predicate*)pred1;
-    KDEHW::Predicate *p2 = (KDEHW::Predicate*)pred2;
+    Solid::Predicate *p1 = (Solid::Predicate*)pred1;
+    Solid::Predicate *p2 = (Solid::Predicate*)pred2;
 
     *result = *p1 | *p2;
 

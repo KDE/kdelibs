@@ -8,19 +8,19 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 ########### next target ###############
 
-set(kdehwtest_SRCS 
-   kdehwtest.cpp 
+set(solidtest_SRCS 
+   solidtest.cpp 
    fakedevice.cpp 
    fakemanager.cpp 
    fakeprocessor.cpp )
 
-kde4_automoc(${kdehwtest_SRCS})
+kde4_automoc(${solidtest_SRCS})
 
-kde4_add_executable(kdehwtest RUN_UNINSTALLED ${kdehwtest_SRCS})
+kde4_add_executable(solidtest RUN_UNINSTALLED ${solidtest_SRCS})
 
-target_link_libraries(kdehwtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kdehw kdehwifaces)
+target_link_libraries(solidtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces)
 
-add_test(kdehwtest ${EXECUTABLE_OUTPUT_PATH}/kdehwtest)
+add_test(solidtest ${EXECUTABLE_OUTPUT_PATH}/solidtest)
 
 endif(KDE4_BUILD_TESTS)
 

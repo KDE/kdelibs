@@ -19,9 +19,9 @@
 
 #include "networkiface.h"
 
-#include <kdehw/ifaces/networkiface.h>
+#include <solid/ifaces/networkiface.h>
 
-namespace KDEHW
+namespace Solid
 {
     class NetworkIface::Private
     {
@@ -32,33 +32,33 @@ namespace KDEHW
     };
 }
 
-KDEHW::NetworkIface::NetworkIface( Ifaces::NetworkIface *iface, QObject *parent )
+Solid::NetworkIface::NetworkIface( Ifaces::NetworkIface *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::NetworkIface::~NetworkIface()
+Solid::NetworkIface::~NetworkIface()
 {
     delete d;
 }
 
-QString KDEHW::NetworkIface::ifaceName() const
+QString Solid::NetworkIface::ifaceName() const
 {
     return d->iface->ifaceName();
 }
 
-bool KDEHW::NetworkIface::isWireless() const
+bool Solid::NetworkIface::isWireless() const
 {
     return d->iface->isWireless();
 }
 
-QString KDEHW::NetworkIface::hwAddress() const
+QString Solid::NetworkIface::hwAddress() const
 {
     return d->iface->hwAddress();
 }
 
-qulonglong KDEHW::NetworkIface::macAddress() const
+qulonglong Solid::NetworkIface::macAddress() const
 {
     return d->iface->macAddress();
 }

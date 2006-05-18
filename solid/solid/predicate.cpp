@@ -19,10 +19,10 @@
 
 #include "predicate.h"
 
-#include <kdehw/ifaces/device.h>
+#include <solid/ifaces/device.h>
 #include <QStringList>
 
-namespace KDEHW
+namespace Solid
 {
     class Predicate::Private
     {
@@ -45,18 +45,18 @@ namespace KDEHW
 }
 
 
-KDEHW::Predicate::Predicate()
+Solid::Predicate::Predicate()
     : d( new Private() )
 {
 }
 
-KDEHW::Predicate::Predicate( const Predicate &other )
+Solid::Predicate::Predicate( const Predicate &other )
     : d( new Private() )
 {
     *this = other;
 }
 
-KDEHW::Predicate::Predicate( const Capability::Type &capability,
+Solid::Predicate::Predicate( const Capability::Type &capability,
                              const QString &property, const QVariant &value )
     : d( new Private() )
 {
@@ -66,7 +66,7 @@ KDEHW::Predicate::Predicate( const Capability::Type &capability,
     d->value = value;
 }
 
-KDEHW::Predicate::Predicate( const QString &capability,
+Solid::Predicate::Predicate( const QString &capability,
                              const QString &property, const QVariant &value )
     : d( new Private() )
 {
@@ -95,7 +95,7 @@ KDEHW::Predicate::Predicate( const QString &capability,
     }
 }
 
-KDEHW::Predicate::~Predicate()
+Solid::Predicate::~Predicate()
 {
     if ( d->type!=Private::AtomType )
     {
@@ -106,7 +106,7 @@ KDEHW::Predicate::~Predicate()
     delete d;
 }
 
-KDEHW::Predicate &KDEHW::Predicate::operator=( const Predicate &other )
+Solid::Predicate &Solid::Predicate::operator=( const Predicate &other )
 {
     d->isValid = other.d->isValid;
     d->type = other.d->type;
@@ -126,7 +126,7 @@ KDEHW::Predicate &KDEHW::Predicate::operator=( const Predicate &other )
     return *this;
 }
 
-KDEHW::Predicate KDEHW::Predicate::operator&( const Predicate &other )
+Solid::Predicate Solid::Predicate::operator&( const Predicate &other )
 {
     Predicate result;
 
@@ -138,7 +138,7 @@ KDEHW::Predicate KDEHW::Predicate::operator&( const Predicate &other )
     return result;
 }
 
-KDEHW::Predicate KDEHW::Predicate::operator|( const Predicate &other )
+Solid::Predicate Solid::Predicate::operator|( const Predicate &other )
 {
     Predicate result;
 
@@ -150,12 +150,12 @@ KDEHW::Predicate KDEHW::Predicate::operator|( const Predicate &other )
     return result;
 }
 
-bool KDEHW::Predicate::isValid() const
+bool Solid::Predicate::isValid() const
 {
     return d->isValid;
 }
 
-bool KDEHW::Predicate::matches( Ifaces::Device *device ) const
+bool Solid::Predicate::matches( Ifaces::Device *device ) const
 {
     if ( !d->isValid ) return false;
 
@@ -183,7 +183,7 @@ bool KDEHW::Predicate::matches( Ifaces::Device *device ) const
     return false;
 }
 
-QString KDEHW::Predicate::toString() const
+QString Solid::Predicate::toString() const
 {
     if ( !d->isValid ) return "False";
 

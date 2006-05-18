@@ -19,9 +19,9 @@
 
 #include "acadapter.h"
 
-#include <kdehw/ifaces/acadapter.h>
+#include <solid/ifaces/acadapter.h>
 
-namespace KDEHW
+namespace Solid
 {
     class AcAdapter::Private
     {
@@ -32,7 +32,7 @@ namespace KDEHW
     };
 }
 
-KDEHW::AcAdapter::AcAdapter( Ifaces::AcAdapter *iface, QObject *parent )
+Solid::AcAdapter::AcAdapter( Ifaces::AcAdapter *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
@@ -41,17 +41,17 @@ KDEHW::AcAdapter::AcAdapter( Ifaces::AcAdapter *iface, QObject *parent )
              this, SLOT( slotPlugStateChanged( bool ) ) );
 }
 
-KDEHW::AcAdapter::~AcAdapter()
+Solid::AcAdapter::~AcAdapter()
 {
     delete d;
 }
 
-bool KDEHW::AcAdapter::isPlugged() const
+bool Solid::AcAdapter::isPlugged() const
 {
     return d->iface->isPlugged();
 }
 
-void KDEHW::AcAdapter::slotPlugStateChanged( bool newState )
+void Solid::AcAdapter::slotPlugStateChanged( bool newState )
 {
     emit plugStateChanged( newState );
 }

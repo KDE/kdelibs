@@ -19,7 +19,7 @@
 
 #include "portablemediaplayer.h"
 
-KDEHW::Ifaces::PortableMediaPlayer::~PortableMediaPlayer()
+Solid::Ifaces::PortableMediaPlayer::~PortableMediaPlayer()
 {
 
 }

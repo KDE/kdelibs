@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_PROCESSOR_H
-#define KDEHW_PROCESSOR_H
+#ifndef SOLID_PROCESSOR_H
+#define SOLID_PROCESSOR_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
+#include <solid/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -45,7 +45,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         Processor( Ifaces::Processor *iface, QObject *parent = 0 );
 
@@ -56,10 +56,10 @@ namespace KDEHW
 
 
         /**
-         * Get the KDEHW::Capability::Type of the Processor capability.
+         * Get the Solid::Capability::Type of the Processor capability.
          *
          * @return the Processor capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Processor; }
 

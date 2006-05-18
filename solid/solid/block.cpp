@@ -19,9 +19,9 @@
 
 #include "block.h"
 
-#include <kdehw/ifaces/block.h>
+#include <solid/ifaces/block.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Block::Private
     {
@@ -33,28 +33,28 @@ namespace KDEHW
 }
 
 
-KDEHW::Block::Block( Ifaces::Block *iface, QObject *parent )
+Solid::Block::Block( Ifaces::Block *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::Block::~Block()
+Solid::Block::~Block()
 {
     delete d;
 }
 
-int KDEHW::Block::major() const
+int Solid::Block::major() const
 {
     return d->iface->major();
 }
 
-int KDEHW::Block::minor() const
+int Solid::Block::minor() const
 {
     return d->iface->minor();
 }
 
-QString KDEHW::Block::device() const
+QString Solid::Block::device() const
 {
     return d->iface->device();
 }

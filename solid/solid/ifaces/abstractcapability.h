@@ -17,23 +17,23 @@
 
 */
 
-#ifndef KDEHW_IFACES_ABSTRACTCAPABILITY_H
-#define KDEHW_IFACES_ABSTRACTCAPABILITY_H
+#ifndef SOLID_IFACES_ABSTRACTCAPABILITY_H
+#define SOLID_IFACES_ABSTRACTCAPABILITY_H
 
 #include <QObject>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
     /**
-     * Default implementation of the KDEHW::Ifaces::Capability interface.
+     * Default implementation of the Solid::Ifaces::Capability interface.
      *
-     * @see KDEHW::Ifaces::Capability
+     * @see Solid::Ifaces::Capability
      */
     class KDE_EXPORT AbstractCapability : public QObject, virtual public Capability
     {
@@ -52,11 +52,11 @@ namespace Ifaces
         virtual ~AbstractCapability();
 
         /**
-         * Override from KDEHW::Ifaces::Capability. It simply returns
+         * Override from Solid::Ifaces::Capability. It simply returns
          * 'this' since we inherit from QObject.
          *
          * @return this capability as a QObject
-         * @see KDEHW::Ifaces::Capability::qobject()
+         * @see Solid::Ifaces::Capability::qobject()
          */
 	virtual const QObject *qobject() const;
 
@@ -64,7 +64,7 @@ namespace Ifaces
          * This method is the const version of the above method.
          *
          * @return this capability as a const QObject
-         * @see KDEHW::Ifaces::Capability::qobject()
+         * @see Solid::Ifaces::Capability::qobject()
          */
 	virtual QObject *qobject();
     };

@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_DISPLAY_H
-#define KDEHW_DISPLAY_H
+#ifndef SOLID_DISPLAY_H
+#define SOLID_DISPLAY_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
+#include <solid/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -49,7 +49,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         Display( Ifaces::Display *iface, QObject *parent = 0 );
 
@@ -59,10 +59,10 @@ namespace KDEHW
         virtual ~Display();
 
         /**
-         * Get the KDEHW::Capability::Type of the Button capability.
+         * Get the Solid::Capability::Type of the Button capability.
          *
          * @return the Button capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Display; }
 
@@ -70,7 +70,7 @@ namespace KDEHW
          * Retrieves the type of display device.
          *
          * @return the type of display device.
-         * @see KDEHW::Ifaces::Enums::Display::DisplayType
+         * @see Solid::Ifaces::Enums::Display::DisplayType
          */
         DisplayType type() const;
 

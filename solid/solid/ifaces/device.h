@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KDEHW_IFACES_DEVICE_H
-#define KDEHW_IFACES_DEVICE_H
+#ifndef SOLID_IFACES_DEVICE_H
+#define SOLID_IFACES_DEVICE_H
 
 #include <QObject>
 #include <QVariant>
@@ -27,10 +27,10 @@
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -192,7 +192,7 @@ namespace Ifaces
          * @param key the changed property name
          * @param change the kind of change done on the device
          * property (added/removed/modified), it's one of the type
-         * KDEHW::PropertyChange
+         * Solid::PropertyChange
          */
         void propertyChanged( const QMap<QString,int> &changes );
 

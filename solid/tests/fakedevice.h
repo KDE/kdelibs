@@ -20,8 +20,8 @@
 #ifndef FAKEDEVICE_H
 #define FAKEDEVICE_H
 
-#include <kdehw/ifaces/device.h>
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/device.h>
+#include <solid/ifaces/capability.h>
 
 #include "fakeprocessor.h"
 
@@ -29,7 +29,7 @@
 
 class FakeManager;
 
-class FakeDevice : public KDEHW::Ifaces::Device
+class FakeDevice : public Solid::Ifaces::Device
 {
     Q_OBJECT
 
@@ -52,9 +52,9 @@ public:
     virtual bool removeProperty( const QString &key );
     virtual bool propertyExists( const QString &key ) const;
 
-    virtual bool addCapability( const KDEHW::Ifaces::Capability::Type &capability );
-    virtual bool queryCapability( const KDEHW::Ifaces::Capability::Type &capability ) const;
-    virtual KDEHW::Ifaces::Capability *asCapability( const KDEHW::Ifaces::Capability::Type &capability );
+    virtual bool addCapability( const Solid::Ifaces::Capability::Type &capability );
+    virtual bool queryCapability( const Solid::Ifaces::Capability::Type &capability ) const;
+    virtual Solid::Ifaces::Capability *asCapability( const Solid::Ifaces::Capability::Type &capability );
 
     virtual bool lock(const QString &reason);
     virtual bool unlock();
@@ -70,7 +70,7 @@ private:
     FakeManager *m_manager;
     QString m_udi;
     QString m_parent;
-    KDEHW::Ifaces::Capability::Types m_capabilities;
+    Solid::Ifaces::Capability::Types m_capabilities;
     QMap<QString, QVariant> m_data;
     bool m_brokenDevice;
     bool m_locked;

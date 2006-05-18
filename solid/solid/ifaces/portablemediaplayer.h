@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHW_IFACES_PORTABLEMEDIAPLAYER_H
-#define KDEHW_IFACES_PORTABLEMEDIAPLAYER_H
+#ifndef SOLID_IFACES_PORTABLEMEDIAPLAYER_H
+#define SOLID_IFACES_PORTABLEMEDIAPLAYER_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -55,7 +55,7 @@ namespace Ifaces
          * device.
          *
          * @return the access method type
-         * @see KDEHW::Ifaces::Enums::PortableMediaPlayer::AccessType
+         * @see Solid::Ifaces::Enums::PortableMediaPlayer::AccessType
          */
         virtual AccessType accessMethod() const = 0;
 

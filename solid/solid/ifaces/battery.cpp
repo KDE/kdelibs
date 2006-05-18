@@ -19,7 +19,7 @@
 
 #include "battery.h"
 
-KDEHW::Ifaces::Battery::~Battery()
+Solid::Ifaces::Battery::~Battery()
 {
 }
 

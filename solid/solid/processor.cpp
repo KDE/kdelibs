@@ -19,9 +19,9 @@
 
 #include "processor.h"
 
-#include <kdehw/ifaces/processor.h>
+#include <solid/ifaces/processor.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Processor::Private
     {
@@ -32,28 +32,28 @@ namespace KDEHW
     };
 }
 
-KDEHW::Processor::Processor( Ifaces::Processor *iface, QObject *parent )
+Solid::Processor::Processor( Ifaces::Processor *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::Processor::~Processor()
+Solid::Processor::~Processor()
 {
     delete d;
 }
 
-int KDEHW::Processor::number() const
+int Solid::Processor::number() const
 {
     return d->iface->number();
 }
 
-qulonglong KDEHW::Processor::maxSpeed() const
+qulonglong Solid::Processor::maxSpeed() const
 {
     return d->iface->maxSpeed();
 }
 
-bool KDEHW::Processor::canThrottle() const
+bool Solid::Processor::canThrottle() const
 {
     return d->iface->canThrottle();
 }

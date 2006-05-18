@@ -19,53 +19,53 @@
 
 #include "device.h"
 
-KDEHW::Ifaces::Device::Device( QObject *parent )
+Solid::Ifaces::Device::Device( QObject *parent )
     : QObject( parent )
 {
 
 }
 
-KDEHW::Ifaces::Device::~Device()
+Solid::Ifaces::Device::~Device()
 {
 
 }
 
-QString KDEHW::Ifaces::Device::parentUdi() const
+QString Solid::Ifaces::Device::parentUdi() const
 {
     return QString();
 }
 
-bool KDEHW::Ifaces::Device::setProperty( const QString &/*key*/, const QVariant &/*value*/ )
+bool Solid::Ifaces::Device::setProperty( const QString &/*key*/, const QVariant &/*value*/ )
 {
     return false;
 }
 
-bool KDEHW::Ifaces::Device::removeProperty( const QString &/*key*/ )
+bool Solid::Ifaces::Device::removeProperty( const QString &/*key*/ )
 {
     return false;
 }
 
-bool KDEHW::Ifaces::Device::addCapability( const Capability::Type &/*capability*/ )
+bool Solid::Ifaces::Device::addCapability( const Capability::Type &/*capability*/ )
 {
     return false;
 }
 
-bool KDEHW::Ifaces::Device::lock(const QString &/*reason*/)
+bool Solid::Ifaces::Device::lock(const QString &/*reason*/)
 {
     return false;
 }
 
-bool KDEHW::Ifaces::Device::unlock()
+bool Solid::Ifaces::Device::unlock()
 {
     return false;
 }
 
-bool KDEHW::Ifaces::Device::isLocked() const
+bool Solid::Ifaces::Device::isLocked() const
 {
     return false;
 }
 
-QString KDEHW::Ifaces::Device::lockReason() const
+QString Solid::Ifaces::Device::lockReason() const
 {
     return QString();
 }

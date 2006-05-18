@@ -17,17 +17,17 @@
 
 */
 
-#ifndef KDEHW_VOLUME_H
-#define KDEHW_VOLUME_H
+#ifndef SOLID_VOLUME_H
+#define SOLID_VOLUME_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/block.h>
+#include <solid/ifaces/enums.h>
 
 class KJob;
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -51,7 +51,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         Volume( Ifaces::Volume *iface, QObject *parent = 0 );
 
@@ -62,10 +62,10 @@ namespace KDEHW
 
 
         /**
-         * Get the KDEHW::Capability::Type of the Volume capability.
+         * Get the Solid::Capability::Type of the Volume capability.
          *
          * @return the Volume capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Volume; }
 
@@ -100,7 +100,7 @@ namespace KDEHW
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
-         * @see KDEHW::Ifaces::Enums::Volume::UsageType
+         * @see Solid::Ifaces::Enums::Volume::UsageType
          */
         UsageType usage() const;
 

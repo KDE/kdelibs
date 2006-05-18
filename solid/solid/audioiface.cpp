@@ -19,9 +19,9 @@
 
 #include "audioiface.h"
 
-#include <kdehw/ifaces/audioiface.h>
+#include <solid/ifaces/audioiface.h>
 
-namespace KDEHW
+namespace Solid
 {
     class AudioIface::Private
     {
@@ -32,34 +32,34 @@ namespace KDEHW
     };
 }
 
-KDEHW::AudioIface::AudioIface( Ifaces::AudioIface *iface, QObject *parent )
+Solid::AudioIface::AudioIface( Ifaces::AudioIface *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::AudioIface::~AudioIface()
+Solid::AudioIface::~AudioIface()
 {
     delete d;
 }
 
 
-KDEHW::AudioIface::AudioDriver KDEHW::AudioIface::driver()
+Solid::AudioIface::AudioDriver Solid::AudioIface::driver()
 {
     return d->iface->driver();
 }
 
-QString KDEHW::AudioIface::driverHandler()
+QString Solid::AudioIface::driverHandler()
 {
     return d->iface->driverHandler();
 }
 
-QString KDEHW::AudioIface::name()
+QString Solid::AudioIface::name()
 {
     return d->iface->name();
 }
 
-KDEHW::AudioIface::AudioIfaceTypes KDEHW::AudioIface::type()
+Solid::AudioIface::AudioIfaceTypes Solid::AudioIface::type()
 {
     return d->iface->type();
 }

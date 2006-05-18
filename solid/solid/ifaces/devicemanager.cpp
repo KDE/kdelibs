@@ -20,13 +20,13 @@
 #include "devicemanager.h"
 
 
-KDEHW::Ifaces::DeviceManager::DeviceManager( QObject *parent )
+Solid::Ifaces::DeviceManager::DeviceManager( QObject *parent )
     : QObject(parent)
 {
 
 }
 
-KDEHW::Ifaces::DeviceManager::~DeviceManager()
+Solid::Ifaces::DeviceManager::~DeviceManager()
 {
 
 }

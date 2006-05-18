@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHWTEST_H
-#define KDEHWTEST_H
+#ifndef SOLIDTEST_H
+#define SOLIDTEST_H
 
 #include <QObject>
 #include <QMap>
 
 class FakeManager;
 
-class KdeHwTest : public QObject
+class SolidTest : public QObject
 {
     Q_OBJECT
 private slots:

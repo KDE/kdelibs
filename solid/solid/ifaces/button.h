@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_IFACES_BUTTON_H
-#define KDEHW_IFACES_BUTTON_H
+#ifndef SOLID_IFACES_BUTTON_H
+#define SOLID_IFACES_BUTTON_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -53,7 +53,7 @@ namespace Ifaces
          * Retrieves the type of button device.
          *
          * @return the type of button device.
-         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         * @see Solid::Ifaces::Enums::Button::ButtonType
          */
         virtual ButtonType type() const = 0;
 
@@ -81,8 +81,8 @@ namespace Ifaces
          * This signal is emitted when the button is pressed.
          *
          * @param type the type of button device, it's one of
-         * the type KDEHW::Ifaces::Enums::Button::ButtonType
-         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         * the type Solid::Ifaces::Enums::Button::ButtonType
+         * @see Solid::Ifaces::Enums::Button::ButtonType
          */
         virtual void pressed( int type ) = 0;
     };

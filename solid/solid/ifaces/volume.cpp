@@ -18,8 +18,8 @@
 */
 
 #include "volume.h"
-        
-KDEHW::Ifaces::Volume::~Volume()
+
+Solid::Ifaces::Volume::~Volume()
 {
 }
 

@@ -19,7 +19,7 @@
 
 #include "audioiface.h"
 
-KDEHW::Ifaces::AudioIface::~AudioIface()
+Solid::Ifaces::AudioIface::~AudioIface()
 {
 }
 

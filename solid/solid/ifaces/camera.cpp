@@ -19,7 +19,7 @@
 
 #include "camera.h"
 
-KDEHW::Ifaces::Camera::~Camera()
+Solid::Ifaces::Camera::~Camera()
 {
 }
 

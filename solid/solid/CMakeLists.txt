@@ -7,7 +7,7 @@ include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 
 ########### next target ###############
 
-set(kdehw_LIB_SRCS 
+set(solid_LIB_SRCS 
    device.cpp 
    devicemanager.cpp 
    capability.cpp 
@@ -30,20 +30,20 @@ set(kdehw_LIB_SRCS
    predicate_lexer.c 
    predicate_parser.c )
 
-kde4_automoc(${kdehw_LIB_SRCS})
+kde4_automoc(${solid_LIB_SRCS})
 
-kde4_add_library(kdehw SHARED ${kdehw_LIB_SRCS})
+kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(kdehw  ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} kdehwifaces )
+target_link_libraries(solid  ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} solidifaces )
 
-set_target_properties(kdehw PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${LIB_INSTALL_DIR} kdehw )
+set_target_properties(solid PROPERTIES VERSION 4.2.0 SOVERSION 4 )
+install_targets(${LIB_INSTALL_DIR} solid )
 
 
 ########### install files ###############
 
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES  kdehwdevicemanager.desktop )
-install_files( /include/kdehw FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES  soliddevicemanager.desktop )
+install_files( /include/solid FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h )
 
 ########### parser build ###############
 

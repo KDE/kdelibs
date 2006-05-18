@@ -19,13 +19,13 @@
 
 #include "capability.h"
 
-KDEHW::Capability::Capability( QObject *parent )
+Solid::Capability::Capability( QObject *parent )
     : QObject( parent )
 {
 
 }
 
-KDEHW::Capability::~Capability()
+Solid::Capability::~Capability()
 {
 
 }

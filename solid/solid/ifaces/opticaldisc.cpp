@@ -18,8 +18,8 @@
 */
 
 #include "opticaldisc.h"
-        
-KDEHW::Ifaces::OpticalDisc::~OpticalDisc()
+
+Solid::Ifaces::OpticalDisc::~OpticalDisc()
 {
 }
 

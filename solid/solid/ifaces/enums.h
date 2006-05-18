@@ -17,12 +17,12 @@
 
 */
 
-#ifndef KDEHW_IFACES_ENUMS_H
-#define KDEHW_IFACES_ENUMS_H
+#ifndef SOLID_IFACES_ENUMS_H
+#define SOLID_IFACES_ENUMS_H
 
 #include <QFlags>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -30,8 +30,8 @@ namespace Enums
 {
 
     /**
-     * This struct holds the enumerations used by KDEHW::Device
-     * and KDEHW::Ifaces::Device. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Device
+     * and Solid::Ifaces::Device. You shouldn't use it directly.
      */
     struct Device
     {
@@ -48,8 +48,8 @@ namespace Enums
 
 
     /**
-     * This struct holds the enumerations used by KDEHW::Capability
-     * and KDEHW::Ifaces::Capability. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Capability
+     * and Solid::Ifaces::Capability. You shouldn't use it directly.
      */
     struct Capability
     {
@@ -85,8 +85,8 @@ namespace Enums
 
 
     /**
-     * This struct holds the enumerations used by KDEHW::Storage
-     * and KDEHW::Ifaces::Storage. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Storage
+     * and Solid::Ifaces::Storage. You shouldn't use it directly.
      */
     struct Storage
     {
@@ -119,8 +119,8 @@ namespace Enums
 
 
     /**
-     * This struct holds the enumerations used by KDEHW::Cdrom
-     * and KDEHW::Ifaces::Cdrom. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Cdrom
+     * and Solid::Ifaces::Cdrom. You shouldn't use it directly.
      */
     struct Cdrom
     {
@@ -148,8 +148,8 @@ namespace Enums
 
 
     /**
-     * This struct holds the enumerations used by KDEHW::Volume
-     * and KDEHW::Ifaces::Volume. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Volume
+     * and Solid::Ifaces::Volume. You shouldn't use it directly.
      */
     struct Volume
     {
@@ -167,8 +167,8 @@ namespace Enums
 
 
     /**
-     * This struct holds the enumerations used by KDEHW::OpticalDisc
-     * and KDEHW::Ifaces::OpticalDisc. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::OpticalDisc
+     * and Solid::Ifaces::OpticalDisc. You shouldn't use it directly.
      */
     struct OpticalDisc
     {
@@ -210,8 +210,8 @@ namespace Enums
 
 
     /**
-     * This struct holds the enumerations used by KDEHW::Camera
-     * and KDEHW::Ifaces::Camera. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Camera
+     * and Solid::Ifaces::Camera. You shouldn't use it directly.
      */
     struct Camera
     {
@@ -226,8 +226,8 @@ namespace Enums
     };
 
     /**
-     * This struct holds the enumerations used by KDEHW::PortableMediaPlayer
-     * and KDEHW::Ifaces::PortableMediaPlayer. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::PortableMediaPlayer
+     * and Solid::Ifaces::PortableMediaPlayer. You shouldn't use it directly.
      */
     struct PortableMediaPlayer
     {
@@ -241,8 +241,8 @@ namespace Enums
     };
 
     /**
-     * This struct holds the enumerations used by KDEHW::Battery
-     * and KDEHW::Ifaces::Battery. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Battery
+     * and Solid::Ifaces::Battery. You shouldn't use it directly.
      */
     struct Battery
     {
@@ -285,8 +285,8 @@ namespace Enums
     };
 
     /**
-     * This struct holds the enumeration used by KDEHW::Button
-     * and KDEHW::Ifaces::Button. You shouldn't use it directly.
+     * This struct holds the enumeration used by Solid::Button
+     * and Solid::Ifaces::Button. You shouldn't use it directly.
      */
     struct Button
     {
@@ -302,8 +302,8 @@ namespace Enums
     };
 
     /**
-     * This struct holds the enumerations used by KDEHW::Display
-     * and KDEHW::Ifaces::Display. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::Display
+     * and Solid::Ifaces::Display. You shouldn't use it directly.
      */
     struct Display
     {
@@ -319,8 +319,8 @@ namespace Enums
     };
 
     /**
-     * This struct holds the enumerations used by KDEHW::AudioIface
-     * and KDEHW::Ifaces::AudioIface. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::AudioIface
+     * and Solid::Ifaces::AudioIface. You shouldn't use it directly.
      */
     struct AudioIface
     {

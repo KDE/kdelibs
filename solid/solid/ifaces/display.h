@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_IFACES_DISPLAY_H
-#define KDEHW_IFACES_DISPLAY_H
+#ifndef SOLID_IFACES_DISPLAY_H
+#define SOLID_IFACES_DISPLAY_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -51,7 +51,7 @@ namespace Ifaces
          * Retrieves the type of display device.
          *
          * @return the type of display device.
-         * @see KDEHW::Ifaces::Enums::Display::DisplayType
+         * @see Solid::Ifaces::Enums::Display::DisplayType
          */
         virtual DisplayType type() const = 0;
 

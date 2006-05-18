@@ -44,7 +44,7 @@ bool FakeManager::deviceExists( const QString &udi )
 }
 
 QStringList FakeManager::devicesFromQuery( const QString &parentUdi,
-                                           KDEHW::Ifaces::Capability::Type capability )
+                                           Solid::Ifaces::Capability::Type capability )
 {
     QStringList matches;
 
@@ -55,7 +55,7 @@ QStringList FakeManager::devicesFromQuery( const QString &parentUdi,
         bool matches_parent = parentUdi.isEmpty()
                            || ( dev->parentUdi()==parentUdi );
 
-        bool matches_capability = capability==KDEHW::Ifaces::Capability::Unknown
+        bool matches_capability = capability==Solid::Ifaces::Capability::Unknown
                                || dev->queryCapability( capability );
 
         if ( matches_parent && matches_capability )
@@ -67,7 +67,7 @@ QStringList FakeManager::devicesFromQuery( const QString &parentUdi,
     return matches;
 }
 
-KDEHW::Ifaces::Device *FakeManager::createDevice( const QString &udi )
+Solid::Ifaces::Device *FakeManager::createDevice( const QString &udi )
 {
     if ( m_devices.contains( udi ) )
     {

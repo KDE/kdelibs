@@ -18,8 +18,8 @@
 */
 
 #include "cdrom.h"
-        
-KDEHW::Ifaces::Cdrom::~Cdrom()
+
+Solid::Ifaces::Cdrom::~Cdrom()
 {
 }
 

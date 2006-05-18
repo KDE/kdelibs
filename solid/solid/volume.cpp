@@ -19,9 +19,9 @@
 
 #include "volume.h"
 
-#include <kdehw/ifaces/volume.h>
+#include <solid/ifaces/volume.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Volume::Private
     {
@@ -32,7 +32,7 @@ namespace KDEHW
     };
 }
 
-KDEHW::Volume::Volume( Ifaces::Volume *iface, QObject *parent )
+Solid::Volume::Volume( Ifaces::Volume *iface, QObject *parent )
     : Block( iface, parent ), d( new Private() )
 {
     d->iface = iface;
@@ -41,67 +41,67 @@ KDEHW::Volume::Volume( Ifaces::Volume *iface, QObject *parent )
              this, SLOT( slotMountStateChanged( bool ) ) );
 }
 
-KDEHW::Volume::~Volume()
+Solid::Volume::~Volume()
 {
     delete d;
 }
 
-bool KDEHW::Volume::isIgnored() const
+bool Solid::Volume::isIgnored() const
 {
     return d->iface->isIgnored();
 }
 
-bool KDEHW::Volume::isMounted() const
+bool Solid::Volume::isMounted() const
 {
     return d->iface->isMounted();
 }
 
-QString KDEHW::Volume::mountPoint() const
+QString Solid::Volume::mountPoint() const
 {
     return d->iface->mountPoint();
 }
 
-KDEHW::Volume::UsageType KDEHW::Volume::usage() const
+Solid::Volume::UsageType Solid::Volume::usage() const
 {
     return d->iface->usage();
 }
 
-QString KDEHW::Volume::fsType() const
+QString Solid::Volume::fsType() const
 {
     return d->iface->fsType();
 }
 
-QString KDEHW::Volume::label() const
+QString Solid::Volume::label() const
 {
     return d->iface->label();
 }
 
-QString KDEHW::Volume::uuid() const
+QString Solid::Volume::uuid() const
 {
     return d->iface->uuid();
 }
 
-qulonglong KDEHW::Volume::size() const
+qulonglong Solid::Volume::size() const
 {
     return d->iface->size();
 }
 
-KJob *KDEHW::Volume::mount()
+KJob *Solid::Volume::mount()
 {
     return d->iface->mount();
 }
 
-KJob *KDEHW::Volume::unmount()
+KJob *Solid::Volume::unmount()
 {
     return d->iface->unmount();
 }
 
-KJob *KDEHW::Volume::eject()
+KJob *Solid::Volume::eject()
 {
     return d->iface->eject();
 }
 
-void KDEHW::Volume::slotMountStateChanged( bool newState )
+void Solid::Volume::slotMountStateChanged( bool newState )
 {
     emit mountStateChanged( newState );
 }

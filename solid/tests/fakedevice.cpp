@@ -109,7 +109,7 @@ bool FakeDevice::propertyExists( const QString &key ) const
     return m_data.contains( key );
 }
 
-bool FakeDevice::addCapability( const KDEHW::Ifaces::Capability::Type &capability )
+bool FakeDevice::addCapability( const Solid::Ifaces::Capability::Type &capability )
 {
     if ( m_brokenDevice )
     {
@@ -125,16 +125,16 @@ bool FakeDevice::addCapability( const KDEHW::Ifaces::Capability::Type &capabilit
     return true;
 }
 
-bool FakeDevice::queryCapability( const KDEHW::Ifaces::Capability::Type &capability ) const
+bool FakeDevice::queryCapability( const Solid::Ifaces::Capability::Type &capability ) const
 {
     if ( m_brokenDevice ) return false;
 
     return m_capabilities & capability;
 }
 
-KDEHW::Ifaces::Capability *FakeDevice::asCapability( const KDEHW::Ifaces::Capability::Type &capability )
+Solid::Ifaces::Capability *FakeDevice::asCapability( const Solid::Ifaces::Capability::Type &capability )
 {
-    if ( ( capability == KDEHW::Ifaces::Capability::Processor )
+    if ( ( capability == Solid::Ifaces::Capability::Processor )
       && queryCapability( capability ) )
     {
         return m_processor;

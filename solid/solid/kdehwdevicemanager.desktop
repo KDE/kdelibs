@@ -1,5 +1,5 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=ServiceType
-X-KDE-ServiceType=KdeHwDeviceManager
+X-KDE-ServiceType=SolidDeviceManager
 Name=KDE Hardware Discovery Backend

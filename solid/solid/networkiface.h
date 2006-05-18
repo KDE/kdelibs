@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_NETWORKIFACE_H
-#define KDEHW_NETWORKIFACE_H
+#ifndef SOLID_NETWORKIFACE_H
+#define SOLID_NETWORKIFACE_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
+#include <solid/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -45,7 +45,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         NetworkIface( Ifaces::NetworkIface *iface, QObject *parent = 0 );
 
@@ -56,10 +56,10 @@ namespace KDEHW
 
 
         /**
-         * Get the KDEHW::Capability::Type of the NetworkIface capability.
+         * Get the Solid::Capability::Type of the NetworkIface capability.
          *
          * @return the NetworkIface capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::NetworkIface; }
 

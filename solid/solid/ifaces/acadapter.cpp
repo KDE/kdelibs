@@ -19,7 +19,7 @@
 
 #include "acadapter.h"
 
-KDEHW::Ifaces::AcAdapter::~AcAdapter()
+Solid::Ifaces::AcAdapter::~AcAdapter()
 {
 }
 

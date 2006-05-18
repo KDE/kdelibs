@@ -19,9 +19,9 @@
 
 #include "storage.h"
 
-#include <kdehw/ifaces/storage.h>
+#include <solid/ifaces/storage.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Storage::Private
     {
@@ -32,53 +32,53 @@ namespace KDEHW
     };
 }
 
-KDEHW::Storage::Storage( Ifaces::Storage *iface, QObject *parent )
+Solid::Storage::Storage( Ifaces::Storage *iface, QObject *parent )
     : Block( iface, parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::Storage::~Storage()
+Solid::Storage::~Storage()
 {
     delete d;
 }
 
-KDEHW::Storage::Bus KDEHW::Storage::bus() const
+Solid::Storage::Bus Solid::Storage::bus() const
 {
     return d->iface->bus();
 }
 
-KDEHW::Storage::DriveType KDEHW::Storage::driveType() const
+Solid::Storage::DriveType Solid::Storage::driveType() const
 {
     return d->iface->driveType();
 }
 
-bool KDEHW::Storage::isRemovable() const
+bool Solid::Storage::isRemovable() const
 {
     return d->iface->isRemovable();
 }
 
-bool KDEHW::Storage::isEjectRequired() const
+bool Solid::Storage::isEjectRequired() const
 {
     return d->iface->isEjectRequired();
 }
 
-bool KDEHW::Storage::isHotpluggable() const
+bool Solid::Storage::isHotpluggable() const
 {
     return d->iface->isHotpluggable();
 }
 
-bool KDEHW::Storage::isMediaCheckEnabled() const
+bool Solid::Storage::isMediaCheckEnabled() const
 {
     return d->iface->isMediaCheckEnabled();
 }
 
-QString KDEHW::Storage::vendor() const
+QString Solid::Storage::vendor() const
 {
     return d->iface->vendor();
 }
 
-QString KDEHW::Storage::product() const
+QString Solid::Storage::product() const
 {
     return d->iface->product();
 }

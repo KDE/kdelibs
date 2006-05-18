@@ -17,17 +17,17 @@
 
 */
 
-#ifndef KDEHW_IFACES_CDROM_H
-#define KDEHW_IFACES_CDROM_H
+#ifndef SOLID_IFACES_CDROM_H
+#define SOLID_IFACES_CDROM_H
 
 #include <QList>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/storage.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/storage.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {

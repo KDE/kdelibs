@@ -17,16 +17,16 @@
 
 */
 
-#ifndef KDEHW_PREDICATE_H
-#define KDEHW_PREDICATE_H
+#ifndef SOLID_PREDICATE_H
+#define SOLID_PREDICATE_H
 
 #include <QVariant>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
+#include <solid/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {

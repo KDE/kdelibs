@@ -19,7 +19,7 @@
 
 #include "display.h"
 
-KDEHW::Ifaces::Display::~Display()
+Solid::Ifaces::Display::~Display()
 {
 
 }

@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_IFACES_PROCESSOR_H
-#define KDEHW_IFACES_PROCESSOR_H
+#ifndef SOLID_IFACES_PROCESSOR_H
+#define SOLID_IFACES_PROCESSOR_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {

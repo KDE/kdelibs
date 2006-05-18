@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHW_AUDIOIFACE_H
-#define KDEHW_AUDIOIFACE_H
+#ifndef SOLID_AUDIOIFACE_H
+#define SOLID_AUDIOIFACE_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -46,7 +46,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         AudioIface( Ifaces::AudioIface *iface, QObject *parent = 0 );
 
@@ -57,10 +57,10 @@ namespace KDEHW
 
 
         /**
-         * Get the KDEHW::Capability::Type of the AudioIface capability.
+         * Get the Solid::Capability::Type of the AudioIface capability.
          *
          * @return the AudioIface capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::AudioIface; }
 
@@ -70,7 +70,7 @@ namespace KDEHW
          * Retrieves the audio driver that should be used to access the device.
          *
          * @return the driver needed to access the device
-         * @see KDEHW::Ifaces::Enums::AudioDriver
+         * @see Solid::Ifaces::Enums::AudioDriver
          */
         AudioDriver driver();
 
@@ -97,7 +97,7 @@ namespace KDEHW
          * Retrieves the type of this audio interface.
          *
          * @return the type of this audio interface
-         * @see KDEHW::Ifaces::Enums::AudioIfaceTypes
+         * @see Solid::Ifaces::Enums::AudioIfaceTypes
          */
         AudioIfaceTypes type();
 

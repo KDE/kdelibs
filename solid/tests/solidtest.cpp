@@ -17,27 +17,27 @@
 
 */
 
-#include "kdehwtest.h"
+#include "solidtest.h"
 
 #include <qtest_kde.h>
 
 #include <kinstance.h>
 #include <kdebug.h>
 
-#include <kdehw/devicemanager.h>
-#include <kdehw/device.h>
-#include <kdehw/processor.h>
-#include <kdehw/predicate.h>
+#include <solid/devicemanager.h>
+#include <solid/device.h>
+#include <solid/processor.h>
+#include <solid/predicate.h>
 #include "fakeprocessor.h"
 #include "fakemanager.h"
 #include "fakedevice.h"
 
-QTEST_KDEMAIN( KdeHwTest, NoGUI )
+QTEST_KDEMAIN( SolidTest, NoGUI )
 
-void KdeHwTest::initTestCase()
+void SolidTest::initTestCase()
 {
     fakeManager = new FakeManager();
-    KDEHW::DeviceManager::selfForceBackend( fakeManager );
+    Solid::DeviceManager::selfForceBackend( fakeManager );
 
     FakeDevice *dev;
 
@@ -53,8 +53,8 @@ void KdeHwTest::initTestCase()
     dev->setProperty( "info.product", "CD22U" );
     dev->setProperty( "info.vendor", "Sona Inc." );
     dev->setProperty( "info.parent", "/fake/computer" );
-    dev->addCapability( KDEHW::Ifaces::Capability::Storage );
-    dev->addCapability( KDEHW::Ifaces::Capability::Cdrom );
+    dev->addCapability( Solid::Ifaces::Capability::Storage );
+    dev->addCapability( Solid::Ifaces::Capability::Cdrom );
 
     dev = fakeManager->newDevice( "/fake/volume_label_SOLIDMAN_THE_MOVIE" );
     dev->setParent( "/fake/storage_SONA_CD22U" );
@@ -63,8 +63,8 @@ void KdeHwTest::initTestCase()
     dev->setProperty( "volume.label", "SOLIDMAN_THE_MOVIE" );
     dev->setProperty( "volume.disc.type", "dvd_rom" );
     dev->setProperty( "volume.disc.is_videodvd", true );
-    dev->addCapability( KDEHW::Ifaces::Capability::Volume );
-    dev->addCapability( KDEHW::Ifaces::Capability::OpticalDisc );
+    dev->addCapability( Solid::Ifaces::Capability::Volume );
+    dev->addCapability( Solid::Ifaces::Capability::OpticalDisc );
 
     dev = fakeManager->newDevice( "/fake/acpi_LID0" );
     dev->setParent( "/fake/computer" );
@@ -76,11 +76,11 @@ void KdeHwTest::initTestCase()
     //dev->addCapability( "button" );
 }
 
-void KdeHwTest::testAllDevices()
+void SolidTest::testAllDevices()
 {
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
-    KDEHW::DeviceList devices = manager.allDevices();
+    Solid::DeviceList devices = manager.allDevices();
 
     // Verify that the framework reported correctly the devices available
     // in the backend.
@@ -90,7 +90,7 @@ void KdeHwTest::testAllDevices()
                   << "/fake/volume_label_SOLIDMAN_THE_MOVIE"
                   << "/fake/acpi_LID0";
 
-    foreach ( KDEHW::Device dev , devices )
+    foreach ( Solid::Device dev , devices )
     {
         received_udis << dev.udi();
     }
@@ -98,9 +98,9 @@ void KdeHwTest::testAllDevices()
     QCOMPARE( expected_udis, received_udis );
 }
 
-void KdeHwTest::testDeviceExists()
+void SolidTest::testDeviceExists()
 {
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     QCOMPARE( manager.deviceExists( "/fake/acpi_LID0" ), true );
     QCOMPARE( manager.deviceExists( "/fake/volume_label_SOLIDMAN_THE_MOVIE" ), true );
@@ -111,22 +111,22 @@ void KdeHwTest::testDeviceExists()
     QCOMPARE( manager.deviceExists( QString() ), false );
 }
 
-void KdeHwTest::testDeviceBasicFeatures()
+void SolidTest::testDeviceBasicFeatures()
 {
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     // Retrieve a valid Device object
-    KDEHW::Device valid_dev = manager.findDevice( "/fake/storage_SONA_CD22U" );
+    Solid::Device valid_dev = manager.findDevice( "/fake/storage_SONA_CD22U" );
 
     QCOMPARE( valid_dev.isValid(), true );
 
 
     // A few attempts at creating invalid Device objects
-    KDEHW::Device invalid_dev = manager.findDevice( "uhoh? doesn't exist, I guess" );
+    Solid::Device invalid_dev = manager.findDevice( "uhoh? doesn't exist, I guess" );
     QCOMPARE( invalid_dev.isValid(), false );
     invalid_dev = manager.findDevice( QString() );
     QCOMPARE( invalid_dev.isValid(), false );
-    invalid_dev = KDEHW::Device();
+    invalid_dev = Solid::Device();
     QCOMPARE( invalid_dev.isValid(), false );
 
 
@@ -155,12 +155,12 @@ void KdeHwTest::testDeviceBasicFeatures()
 
 
     // Query capabilities
-    QCOMPARE( valid_dev.queryCapability( KDEHW::Ifaces::Capability::Storage ), true );
-    QCOMPARE( valid_dev.queryCapability( KDEHW::Ifaces::Capability::Cdrom ), true );
-    QCOMPARE( valid_dev.queryCapability( KDEHW::Ifaces::Capability::Volume ), false );
+    QCOMPARE( valid_dev.queryCapability( Solid::Ifaces::Capability::Storage ), true );
+    QCOMPARE( valid_dev.queryCapability( Solid::Ifaces::Capability::Cdrom ), true );
+    QCOMPARE( valid_dev.queryCapability( Solid::Ifaces::Capability::Volume ), false );
 
-    QCOMPARE( invalid_dev.queryCapability( KDEHW::Ifaces::Capability::Unknown ), false );
-    QCOMPARE( invalid_dev.queryCapability( KDEHW::Ifaces::Capability::Storage ), false );
+    QCOMPARE( invalid_dev.queryCapability( Solid::Ifaces::Capability::Unknown ), false );
+    QCOMPARE( invalid_dev.queryCapability( Solid::Ifaces::Capability::Storage ), false );
 
 
     // Query parent
@@ -179,11 +179,11 @@ void KdeHwTest::testDeviceBasicFeatures()
     QCOMPARE( invalid_dev.product(), QString() );
 }
 
-void KdeHwTest::testDeviceLocking()
+void SolidTest::testDeviceLocking()
 {
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
-    KDEHW::Device device = manager.findDevice( "/fake/computer" );
+    Solid::Device device = manager.findDevice( "/fake/computer" );
 
 
     // Test locking on a device that refuses it
@@ -212,7 +212,7 @@ void KdeHwTest::testDeviceLocking()
 
 
     // Test locking on an invalid Device object
-    device = KDEHW::Device();
+    device = Solid::Device();
     QCOMPARE( device.lock( "won't work!" ), false );
     QVERIFY( !device.isLocked() );
     QCOMPARE( device.lockReason(), QString() );
@@ -223,9 +223,9 @@ void KdeHwTest::testDeviceLocking()
     QCOMPARE( device.unlock(), false );
 }
 
-void KdeHwTest::testManagerSignals()
+void SolidTest::testManagerSignals()
 {
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     FakeDevice *dev;
 
@@ -239,20 +239,20 @@ void KdeHwTest::testManagerSignals()
     QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/fake/acpi_CPU0" ) );
 
     // Moreover we check that the device is really available
-    KDEHW::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
+    Solid::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
     QVERIFY( cpu.isValid() );
 
 
 
     // Now we add a capability to the newly created device, and spy the signal
     QSignalSpy new_capability( &manager, SIGNAL( newCapability( QString, int ) ) );
-    dev->addCapability( KDEHW::Ifaces::Capability::Processor );
+    dev->addCapability( Solid::Ifaces::Capability::Processor );
     QCOMPARE( new_capability.count(), 1 );
     QCOMPARE( new_capability.at( 0 ).at( 0 ).toString(), QString( "/fake/acpi_CPU0" ) );
-    QCOMPARE( new_capability.at( 0 ).at( 1 ), QVariant( KDEHW::Ifaces::Capability::Processor ) );
+    QCOMPARE( new_capability.at( 0 ).at( 1 ), QVariant( Solid::Ifaces::Capability::Processor ) );
 
     // We also check that the Device object noticed it
-    QVERIFY( cpu.queryCapability( KDEHW::Ifaces::Capability::Processor ) );
+    QVERIFY( cpu.queryCapability( Solid::Ifaces::Capability::Processor ) );
 
 
 
@@ -266,14 +266,14 @@ void KdeHwTest::testManagerSignals()
     QVERIFY( !cpu.isValid() );
 }
 
-void KdeHwTest::testDeviceSignals()
+void SolidTest::testDeviceSignals()
 {
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
 
     // A button is a nice device for testing state changes, isn't it?
     FakeDevice *fake = fakeManager->findDevice( "/fake/acpi_LID0" );
-    KDEHW::Device device = manager.findDevice( "/fake/acpi_LID0" );
+    Solid::Device device = manager.findDevice( "/fake/acpi_LID0" );
 
     // We'll spy our button
     connect( &device, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
@@ -294,19 +294,19 @@ void KdeHwTest::testDeviceSignals()
     changes = m_changesList.at( 0 );
     QCOMPARE( changes.count(), 1 );
     QVERIFY( changes.contains( "button.state" ) );
-    QCOMPARE( changes["button.state"], (int)KDEHW::Device::PropertyModified );
+    QCOMPARE( changes["button.state"], (int)Solid::Device::PropertyModified );
 
     // Second one is a "PropertyAdded" for "hactar"
     changes = m_changesList.at( 1 );
     QCOMPARE( changes.count(), 1 );
     QVERIFY( changes.contains( "hactar" ) );
-    QCOMPARE( changes["hactar"], (int)KDEHW::Device::PropertyAdded );
+    QCOMPARE( changes["hactar"], (int)Solid::Device::PropertyAdded );
 
     // Third one is a "PropertyRemoved" for "hactar"
     changes = m_changesList.at( 2 );
     QCOMPARE( changes.count(), 1 );
     QVERIFY( changes.contains( "hactar" ) );
-    QCOMPARE( changes["hactar"], (int)KDEHW::Device::PropertyRemoved );
+    QCOMPARE( changes["hactar"], (int)Solid::Device::PropertyRemoved );
 
 
 
@@ -318,37 +318,37 @@ void KdeHwTest::testDeviceSignals()
     QCOMPARE( condition_raised.at( 0 ).at( 1 ).toString(), QString( "Why not?" ) );
 }
 
-void KdeHwTest::testDeviceCapabilities()
+void SolidTest::testDeviceCapabilities()
 {
     FakeDevice *fake = fakeManager->newDevice( "/fake/acpi_CPU0" );
     fake->setParent( "/fake/computer" );
-    fake->addCapability( KDEHW::Capability::Processor );
-    QVERIFY( fake->asCapability( KDEHW::Capability::Processor ) != 0 );
+    fake->addCapability( Solid::Capability::Processor );
+    QVERIFY( fake->asCapability( Solid::Capability::Processor ) != 0 );
 
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
-    KDEHW::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    Solid::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
 
-    KDEHW::Capability *iface = cpu.asCapability( KDEHW::Capability::Processor );
-    KDEHW::Processor *processor = cpu.as<KDEHW::Processor>();
+    Solid::Capability *iface = cpu.asCapability( Solid::Capability::Processor );
+    Solid::Processor *processor = cpu.as<Solid::Processor>();
 
-    QVERIFY( cpu.queryCapability( KDEHW::Capability::Processor ) );
+    QVERIFY( cpu.queryCapability( Solid::Capability::Processor ) );
     QVERIFY( iface!=0 );
     QCOMPARE( iface, processor );
 }
 
-void KdeHwTest::testPredicate()
+void SolidTest::testPredicate()
 {
     FakeDevice *fake = fakeManager->findDevice( "/fake/acpi_CPU0" );
 
-    KDEHW::Predicate p1 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3200 )
-                        & KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", true );
-    KDEHW::Predicate p2 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3200 )
-                        & KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", false );
-    KDEHW::Predicate p3 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3201 )
-                        | KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", true );
-    KDEHW::Predicate p4 = KDEHW::Predicate( KDEHW::Capability::Processor, "maxSpeed", 3201 )
-                        | KDEHW::Predicate( KDEHW::Capability::Processor, "canThrottle", false );
-    KDEHW::Predicate p5 = KDEHW::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
+    Solid::Predicate p1 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3200 )
+                        & Solid::Predicate( Solid::Capability::Processor, "canThrottle", true );
+    Solid::Predicate p2 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3200 )
+                        & Solid::Predicate( Solid::Capability::Processor, "canThrottle", false );
+    Solid::Predicate p3 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3201 )
+                        | Solid::Predicate( Solid::Capability::Processor, "canThrottle", true );
+    Solid::Predicate p4 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3201 )
+                        | Solid::Predicate( Solid::Capability::Processor, "canThrottle", false );
+    Solid::Predicate p5 = Solid::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
 
     QVERIFY( p1.matches( fake ) );
     QVERIFY( !p2.matches( fake ) );
@@ -359,18 +359,18 @@ void KdeHwTest::testPredicate()
 
     QString str_pred = "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]";
     // Since str_pred is canonicalized, fromString().toString() should be invariant
-    QCOMPARE( KDEHW::Predicate::fromString( str_pred ).toString(), str_pred );
+    QCOMPARE( Solid::Predicate::fromString( str_pred ).toString(), str_pred );
 
 
 
 
     QString parentUdi = "/fake/storage_SONA_CD22U";
-    KDEHW::Capability::Type capability = KDEHW::Capability::Unknown;
+    Solid::Capability::Type capability = Solid::Capability::Unknown;
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 1 );
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
               QString( "/fake/volume_label_SOLIDMAN_THE_MOVIE" ) );
 
-    capability = KDEHW::Capability::Processor;
+    capability = Solid::Capability::Processor;
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 0 );
 
     parentUdi = "/fake/computer";
@@ -380,11 +380,11 @@ void KdeHwTest::testPredicate()
 
 
 
-    KDEHW::DeviceManager &manager = KDEHW::DeviceManager::self();
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     parentUdi = QString();
-    capability = KDEHW::Capability::Unknown;
-    KDEHW::DeviceList list;
+    capability = Solid::Capability::Unknown;
+    Solid::DeviceList list;
 
 
     list = manager.findDevicesFromQuery( parentUdi, capability, p1 );
@@ -405,23 +405,23 @@ void KdeHwTest::testPredicate()
                                          "[Processor.canThrottle==true AND Processor.number==1]" );
     QCOMPARE( list.size(), 1 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
-    
-    capability = KDEHW::Capability::Processor;
+
+    capability = Solid::Capability::Processor;
     list = manager.findDevicesFromQuery( parentUdi, capability );
     QCOMPARE( list.size(), 1 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
 
-    capability = KDEHW::Capability::Unknown;
+    capability = Solid::Capability::Unknown;
     list = manager.findDevicesFromQuery( parentUdi, capability,
                                          "blup" );
     QCOMPARE( list.size(), 0 );
 
 }
 
-void KdeHwTest::slotPropertyChanged( const QMap<QString,int> &changes )
+void SolidTest::slotPropertyChanged( const QMap<QString,int> &changes )
 {
     m_changesList << changes;
 }
 
-#include "kdehwtest.moc"
+#include "solidtest.moc"
 

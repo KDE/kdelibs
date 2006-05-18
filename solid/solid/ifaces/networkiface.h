@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_IFACES_NETWORKIFACE_H
-#define KDEHW_IFACES_NETWORKIFACE_H
+#ifndef SOLID_IFACES_NETWORKIFACE_H
+#define SOLID_IFACES_NETWORKIFACE_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {

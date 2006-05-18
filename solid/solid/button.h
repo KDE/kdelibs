@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_BUTTON_H
-#define KDEHW_BUTTON_H
+#ifndef SOLID_BUTTON_H
+#define SOLID_BUTTON_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
+#include <solid/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -50,7 +50,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         Button( Ifaces::Button *iface, QObject *parent = 0 );
 
@@ -60,10 +60,10 @@ namespace KDEHW
         virtual ~Button();
 
         /**
-         * Get the KDEHW::Capability::Type of the Button capability.
+         * Get the Solid::Capability::Type of the Button capability.
          *
          * @return the Button capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::Button; }
 
@@ -71,7 +71,7 @@ namespace KDEHW
          * Retrieves the type of button device.
          *
          * @return the type of button device.
-         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         * @see Solid::Ifaces::Enums::Button::ButtonType
          */
         ButtonType type() const;
 
@@ -98,8 +98,8 @@ namespace KDEHW
          * This signal is emitted when the button is pressed.
          *
          * @param type the type of button device, it's one of
-         * the type KDEHW::Ifaces::Enums::Button::ButtonType
-         * @see KDEHW::Ifaces::Enums::Button::ButtonType
+         * the type Solid::Ifaces::Enums::Button::ButtonType
+         * @see Solid::Ifaces::Enums::Button::ButtonType
          */
         void pressed( int type );
 

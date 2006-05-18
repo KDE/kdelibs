@@ -19,9 +19,9 @@
 
 #include "button.h"
 
-#include <kdehw/ifaces/button.h>
+#include <solid/ifaces/button.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Button::Private
     {
@@ -32,7 +32,7 @@ namespace KDEHW
     };
 }
 
-KDEHW::Button::Button( Ifaces::Button *iface, QObject *parent )
+Solid::Button::Button( Ifaces::Button *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
@@ -41,27 +41,27 @@ KDEHW::Button::Button( Ifaces::Button *iface, QObject *parent )
              this, SLOT( slotPressed( ButtonType ) ) );
 }
 
-KDEHW::Button::~Button()
+Solid::Button::~Button()
 {
     delete d;
 }
 
-KDEHW::Button::ButtonType KDEHW::Button::type() const
+Solid::Button::ButtonType Solid::Button::type() const
 {
     return d->iface->type();
 }
 
-bool KDEHW::Button::hasState() const
+bool Solid::Button::hasState() const
 {
     return d->iface->hasState();
 }
 
-bool KDEHW::Button::stateValue() const
+bool Solid::Button::stateValue() const
 {
     return d->iface->stateValue();
 }
 
-void KDEHW::Button::slotPressed( int type )
+void Solid::Button::slotPressed( int type )
 {
     emit pressed( type );
 }

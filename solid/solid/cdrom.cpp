@@ -19,9 +19,9 @@
 
 #include "cdrom.h"
 
-#include <kdehw/ifaces/cdrom.h>
+#include <solid/ifaces/cdrom.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Cdrom::Private
     {
@@ -32,7 +32,7 @@ namespace KDEHW
     };
 }
 
-KDEHW::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
+Solid::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
     : Storage( iface, parent ), d( new Private() )
 {
     d->iface = iface;
@@ -41,32 +41,32 @@ KDEHW::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
              this, SLOT( ejectPressed() ) );
 }
 
-KDEHW::Cdrom::~Cdrom()
+Solid::Cdrom::~Cdrom()
 {
     delete d;
 }
 
-KDEHW::Cdrom::MediumTypes KDEHW::Cdrom::supportedMedia() const
+Solid::Cdrom::MediumTypes Solid::Cdrom::supportedMedia() const
 {
     return d->iface->supportedMedia();
 }
 
-int KDEHW::Cdrom::readSpeed() const
+int Solid::Cdrom::readSpeed() const
 {
     return d->iface->readSpeed();
 }
 
-int KDEHW::Cdrom::writeSpeed() const
+int Solid::Cdrom::writeSpeed() const
 {
     return d->iface->writeSpeed();
 }
 
-QList<int> KDEHW::Cdrom::writeSpeeds() const
+QList<int> Solid::Cdrom::writeSpeeds() const
 {
     return d->iface->writeSpeeds();
 }
 
-void KDEHW::Cdrom::slotEjectPressed()
+void Solid::Cdrom::slotEjectPressed()
 {
     emit ejectPressed();
 }

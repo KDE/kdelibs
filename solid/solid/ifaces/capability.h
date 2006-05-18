@@ -17,17 +17,17 @@
 
 */
 
-#ifndef KDEHW_IFACES_CAPABILITY_H
-#define KDEHW_IFACES_CAPABILITY_H
+#ifndef SOLID_IFACES_CAPABILITY_H
+#define SOLID_IFACES_CAPABILITY_H
 
 #include <QObject>
 #include <QFlags>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -37,7 +37,7 @@ namespace Ifaces
      * A capability describes what a device can do. A device generally has
      * a set of capabilities.
      *
-     * @see KDEHW::Ifaces::AbstractCapability
+     * @see Solid::Ifaces::AbstractCapability
      */
     class KDE_EXPORT Capability : public Enums::Capability
     {
@@ -57,11 +57,11 @@ namespace Ifaces
          *
          * In most implementation this method will simply return 'this'.
          * In this case the capabilities provided by the backend can subclass
-         * KDEHW::Ifaces::AbstractCapability which provide the necessary
+         * Solid::Ifaces::AbstractCapability which provide the necessary
          * implementation.
          *
          * @return this capability as a QObject
-         * @see KDEHW::Ifaces::AbstractCapability::qobject()
+         * @see Solid::Ifaces::AbstractCapability::qobject()
          */
 	virtual QObject *qobject() = 0;
 
@@ -69,7 +69,7 @@ namespace Ifaces
          * This method is the const version of the above method.
          *
          * @return this capability as a const QObject
-         * @see KDEHW::Ifaces::AbstractCapability::qobject()
+         * @see Solid::Ifaces::AbstractCapability::qobject()
          */
         virtual const QObject *qobject() const = 0;
     };

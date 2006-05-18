@@ -19,7 +19,7 @@
 
 #include "networkiface.h"
 
-KDEHW::Ifaces::NetworkIface::~NetworkIface()
+Solid::Ifaces::NetworkIface::~NetworkIface()
 {
 }
 

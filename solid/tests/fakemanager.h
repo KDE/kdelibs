@@ -20,13 +20,13 @@
 #ifndef FAKEMANAGER_H
 #define FAKEMANAGER_H
 
-#include <kdehw/ifaces/devicemanager.h>
+#include <solid/ifaces/devicemanager.h>
 #include <QVariant>
 #include <QStringList>
 
 class FakeDevice;
 
-class FakeManager : public KDEHW::Ifaces::DeviceManager
+class FakeManager : public Solid::Ifaces::DeviceManager
 {
     Q_OBJECT
 
@@ -38,9 +38,9 @@ public:
     virtual bool deviceExists( const QString &udi );
 
     virtual QStringList devicesFromQuery( const QString &parentUdi,
-                                          KDEHW::Ifaces::Capability::Type capability );
+                                          Solid::Ifaces::Capability::Type capability );
 
-    virtual KDEHW::Ifaces::Device *createDevice( const QString &udi );
+    virtual Solid::Ifaces::Device *createDevice( const QString &udi );
 
 
     FakeDevice *newDevice( const QString &udi );

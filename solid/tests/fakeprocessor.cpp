@@ -20,7 +20,7 @@
 #include "fakeprocessor.h"
 
 FakeProcessor::FakeProcessor()
-    : KDEHW::Ifaces::AbstractCapability()
+    : Solid::Ifaces::AbstractCapability()
 {
 }
 

@@ -19,7 +19,7 @@
 
 #include "processor.h"
 
-KDEHW::Ifaces::Processor::~Processor()
+Solid::Ifaces::Processor::~Processor()
 {
 }
 

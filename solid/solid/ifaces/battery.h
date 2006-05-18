@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_IFACES_BATTERY_H
-#define KDEHW_IFACES_BATTERY_H
+#ifndef SOLID_IFACES_BATTERY_H
+#define SOLID_IFACES_BATTERY_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
+#include <solid/ifaces/capability.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -63,7 +63,7 @@ namespace Ifaces
          * Retrieves the type of device holding this battery.
          *
          * @return the type of device holding this battery
-         * @see KDEHW::Ifaces::Enums::Battery::BatteryType
+         * @see Solid::Ifaces::Enums::Battery::BatteryType
          */
         virtual BatteryType type() const = 0;
 
@@ -85,7 +85,7 @@ namespace Ifaces
          * The unit of the returned value is determined by chargeLevelUnit()
          *
          * @return the requested charge level
-         * @see KDEHW::Ifaces::Enums::Battery::LevelType
+         * @see Solid::Ifaces::Enums::Battery::LevelType
          */
         virtual int charge( LevelType type = CurrentLevel ) const = 0;
 
@@ -129,7 +129,7 @@ namespace Ifaces
          * state (no charge), charging or discharging.
          *
          * @return the current battery charge state
-         * @see KDEHW::Ifaces::Enums::Battery::ChargeState
+         * @see Solid::Ifaces::Enums::Battery::ChargeState
          */
         virtual ChargeState chargeState() const = 0;
 
@@ -148,8 +148,8 @@ namespace Ifaces
          * has changed.
          *
          * @param newState the new charge state of the battery, it's one of
-         * the type KDEHW::Ifaces::Enums::ChargeState
-         * @see KDEHW::Ifaces::Enums::ChargeState
+         * the type Solid::Ifaces::Enums::ChargeState
+         * @see Solid::Ifaces::Enums::ChargeState
          */
         virtual void chargeStateChanged( int newState ) = 0;
     };

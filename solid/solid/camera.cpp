@@ -19,9 +19,9 @@
 
 #include "camera.h"
 
-#include <kdehw/ifaces/camera.h>
+#include <solid/ifaces/camera.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Camera::Private
     {
@@ -32,24 +32,24 @@ namespace KDEHW
     };
 }
 
-KDEHW::Camera::Camera( Ifaces::Camera *iface, QObject *parent )
+Solid::Camera::Camera( Ifaces::Camera *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::Camera::~Camera()
+Solid::Camera::~Camera()
 {
     delete d;
 }
 
 
-KDEHW::Camera::AccessType KDEHW::Camera::accessMethod() const
+Solid::Camera::AccessType Solid::Camera::accessMethod() const
 {
     return d->iface->accessMethod();
 }
 
-bool KDEHW::Camera::isGphotoSupported() const
+bool Solid::Camera::isGphotoSupported() const
 {
     return d->iface->isGphotoSupported();
 }

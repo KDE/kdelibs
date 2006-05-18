@@ -19,9 +19,9 @@
 
 #include "opticaldisc.h"
 
-#include <kdehw/ifaces/opticaldisc.h>
+#include <solid/ifaces/opticaldisc.h>
 
-namespace KDEHW
+namespace Solid
 {
     class OpticalDisc::Private
     {
@@ -32,43 +32,43 @@ namespace KDEHW
     };
 }
 
-KDEHW::OpticalDisc::OpticalDisc( Ifaces::OpticalDisc *iface, QObject *parent )
+Solid::OpticalDisc::OpticalDisc( Ifaces::OpticalDisc *iface, QObject *parent )
     : Volume( iface, parent ), d( new Private() )
 {
     d->iface = iface;
 }
 
-KDEHW::OpticalDisc::~OpticalDisc()
+Solid::OpticalDisc::~OpticalDisc()
 {
     delete d;
 }
 
-KDEHW::OpticalDisc::ContentTypes KDEHW::OpticalDisc::availableContent() const
+Solid::OpticalDisc::ContentTypes Solid::OpticalDisc::availableContent() const
 {
     return d->iface->availableContent();
 }
 
-KDEHW::OpticalDisc::DiscType KDEHW::OpticalDisc::discType() const
+Solid::OpticalDisc::DiscType Solid::OpticalDisc::discType() const
 {
     return d->iface->discType();
 }
 
-bool KDEHW::OpticalDisc::isAppendable() const
+bool Solid::OpticalDisc::isAppendable() const
 {
     return d->iface->isAppendable();
 }
 
-bool KDEHW::OpticalDisc::isBlank() const
+bool Solid::OpticalDisc::isBlank() const
 {
     return d->iface->isBlank();
 }
 
-bool KDEHW::OpticalDisc::isRewritable() const
+bool Solid::OpticalDisc::isRewritable() const
 {
     return d->iface->isRewritable();
 }
 
-qulonglong KDEHW::OpticalDisc::capacity() const
+qulonglong Solid::OpticalDisc::capacity() const
 {
     return d->iface->capacity();
 }

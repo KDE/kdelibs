@@ -19,9 +19,9 @@
 
 #include "battery.h"
 
-#include <kdehw/ifaces/battery.h>
+#include <solid/ifaces/battery.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Battery::Private
     {
@@ -32,7 +32,7 @@ namespace KDEHW
     };
 }
 
-KDEHW::Battery::Battery( Ifaces::Battery *iface, QObject *parent )
+Solid::Battery::Battery( Ifaces::Battery *iface, QObject *parent )
     : Capability( parent ), d( new Private() )
 {
     d->iface = iface;
@@ -45,62 +45,62 @@ KDEHW::Battery::Battery( Ifaces::Battery *iface, QObject *parent )
 
 }
 
-KDEHW::Battery::~Battery()
+Solid::Battery::~Battery()
 {
     delete d;
 }
 
-bool KDEHW::Battery::isPlugged() const
+bool Solid::Battery::isPlugged() const
 {
     return d->iface->isPlugged();
 }
 
-KDEHW::Battery::BatteryType KDEHW::Battery::type() const
+Solid::Battery::BatteryType Solid::Battery::type() const
 {
     return d->iface->type();
 }
 
-QString KDEHW::Battery::chargeLevelUnit() const
+QString Solid::Battery::chargeLevelUnit() const
 {
     return d->iface->chargeLevelUnit();
 }
 
-int KDEHW::Battery::charge( LevelType type ) const
+int Solid::Battery::charge( LevelType type ) const
 {
     return d->iface->charge( type );
 }
 
-int KDEHW::Battery::chargePercent() const
+int Solid::Battery::chargePercent() const
 {
     return d->iface->chargePercent();
 }
 
-QString KDEHW::Battery::voltageUnit() const
+QString Solid::Battery::voltageUnit() const
 {
     return d->iface->voltageUnit();
 }
 
-int KDEHW::Battery::voltage() const
+int Solid::Battery::voltage() const
 {
     return d->iface->voltage();
 }
 
-bool KDEHW::Battery::isRechargeable() const
+bool Solid::Battery::isRechargeable() const
 {
     return d->iface->isRechargeable();
 }
 
-KDEHW::Battery::ChargeState KDEHW::Battery::chargeState() const
+Solid::Battery::ChargeState Solid::Battery::chargeState() const
 {
     return d->iface->chargeState();
 }
 
-void KDEHW::Battery::slotChargePercentChanged( int value )
+void Solid::Battery::slotChargePercentChanged( int value )
 {
     emit chargePercentChanged( value );
 }
 
-void KDEHW::Battery::slotChargeStateChanged( int newState )
+void Solid::Battery::slotChargeStateChanged( int newState )
 {
     emit chargeStateChanged( newState );
 }

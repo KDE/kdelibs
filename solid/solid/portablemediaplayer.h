@@ -17,17 +17,17 @@
 
 */
 
-#ifndef KDEHW_PORTABLEMEDIAPLAYER_H
-#define KDEHW_PORTABLEMEDIAPLAYER_H
+#ifndef SOLID_PORTABLEMEDIAPLAYER_H
+#define SOLID_PORTABLEMEDIAPLAYER_H
 
 #include <QStringList>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {
@@ -52,7 +52,7 @@ namespace KDEHW
          *
          * @param iface the capability interface provided by the backend
          * @param parent the parent QObject
-         * @see KDEHW::Device::as()
+         * @see Solid::Device::as()
          */
         PortableMediaPlayer( Ifaces::PortableMediaPlayer *iface, QObject *parent = 0 );
 
@@ -62,10 +62,10 @@ namespace KDEHW
         virtual ~PortableMediaPlayer();
 
         /**
-         * Get the KDEHW::Capability::Type of the PortableMediaPlayer capability.
+         * Get the Solid::Capability::Type of the PortableMediaPlayer capability.
          *
          * @return the PortableMediaPlayer capability type
-         * @see KDEHW::Ifaces::Enums::Capability::Type
+         * @see Solid::Ifaces::Enums::Capability::Type
          */
         static Type capabilityType() { return Capability::PortableMediaPlayer; };
 
@@ -74,7 +74,7 @@ namespace KDEHW
          * device.
          *
          * @return the access method type
-         * @see KDEHW::Ifaces::Enums::PortableMediaPlayer::AccessType
+         * @see Solid::Ifaces::Enums::PortableMediaPlayer::AccessType
          */
         AccessType accessMethod() const;
 

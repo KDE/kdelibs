@@ -17,15 +17,15 @@
 
 */
 
-#ifndef KDEHW_IFACES_AUDIOIFACE_H
-#define KDEHW_IFACES_AUDIOIFACE_H
+#ifndef SOLID_IFACES_AUDIOIFACE_H
+#define SOLID_IFACES_AUDIOIFACE_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/capability.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/capability.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -52,7 +52,7 @@ namespace Ifaces
          * Retrieves the audio driver that should be used to access the device.
          *
          * @return the driver needed to access the device
-         * @see KDEHW::Ifaces::Enums::AudioDriver
+         * @see Solid::Ifaces::Enums::AudioDriver
          */
         virtual AudioDriver driver() = 0;
 
@@ -79,7 +79,7 @@ namespace Ifaces
          * Retrieves the type of this audio interface.
          *
          * @return the type of this audio interface
-         * @see KDEHW::Ifaces::Enums::AudioIfaceTypes
+         * @see Solid::Ifaces::Enums::AudioIfaceTypes
          */
         virtual AudioIfaceTypes type() = 0;
     };

@@ -20,11 +20,11 @@
 #ifndef FAKEPROCESSOR_H
 #define FAKEPROCESSOR_H
 
-#include <kdehw/ifaces/abstractcapability.h>
-#include <kdehw/ifaces/processor.h>
+#include <solid/ifaces/abstractcapability.h>
+#include <solid/ifaces/processor.h>
 
-class FakeProcessor : public KDEHW::Ifaces::AbstractCapability,
-                      virtual public KDEHW::Ifaces::Processor
+class FakeProcessor : public Solid::Ifaces::AbstractCapability,
+                      virtual public Solid::Ifaces::Processor
 {
     Q_OBJECT
     Q_PROPERTY( int number READ number )

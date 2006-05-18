@@ -20,38 +20,38 @@
 #include "device.h"
 #include "devicemanager.h"
 
-#include <kdehw/ifaces/device.h>
+#include <solid/ifaces/device.h>
 
-#include <kdehw/processor.h>
-#include <kdehw/ifaces/processor.h>
-#include <kdehw/block.h>
-#include <kdehw/ifaces/block.h>
-#include <kdehw/storage.h>
-#include <kdehw/ifaces/storage.h>
-#include <kdehw/cdrom.h>
-#include <kdehw/ifaces/cdrom.h>
-#include <kdehw/volume.h>
-#include <kdehw/ifaces/volume.h>
-#include <kdehw/opticaldisc.h>
-#include <kdehw/ifaces/opticaldisc.h>
-#include <kdehw/camera.h>
-#include <kdehw/ifaces/camera.h>
-#include <kdehw/portablemediaplayer.h>
-#include <kdehw/ifaces/portablemediaplayer.h>
-#include <kdehw/networkiface.h>
-#include <kdehw/ifaces/networkiface.h>
-#include <kdehw/acadapter.h>
-#include <kdehw/ifaces/acadapter.h>
-#include <kdehw/battery.h>
-#include <kdehw/ifaces/battery.h>
-#include <kdehw/button.h>
-#include <kdehw/ifaces/button.h>
-#include <kdehw/display.h>
-#include <kdehw/ifaces/display.h>
-#include <kdehw/audioiface.h>
-#include <kdehw/ifaces/audioiface.h>
+#include <solid/processor.h>
+#include <solid/ifaces/processor.h>
+#include <solid/block.h>
+#include <solid/ifaces/block.h>
+#include <solid/storage.h>
+#include <solid/ifaces/storage.h>
+#include <solid/cdrom.h>
+#include <solid/ifaces/cdrom.h>
+#include <solid/volume.h>
+#include <solid/ifaces/volume.h>
+#include <solid/opticaldisc.h>
+#include <solid/ifaces/opticaldisc.h>
+#include <solid/camera.h>
+#include <solid/ifaces/camera.h>
+#include <solid/portablemediaplayer.h>
+#include <solid/ifaces/portablemediaplayer.h>
+#include <solid/networkiface.h>
+#include <solid/ifaces/networkiface.h>
+#include <solid/acadapter.h>
+#include <solid/ifaces/acadapter.h>
+#include <solid/battery.h>
+#include <solid/ifaces/battery.h>
+#include <solid/button.h>
+#include <solid/ifaces/button.h>
+#include <solid/display.h>
+#include <solid/ifaces/display.h>
+#include <solid/audioiface.h>
+#include <solid/ifaces/audioiface.h>
 
-namespace KDEHW
+namespace Solid
 {
     class Device::Private
     {
@@ -67,24 +67,24 @@ namespace KDEHW
     };
 }
 
-KDEHW::Device::Device()
+Solid::Device::Device()
     : QObject(), d( new Private( this ) )
 {
 }
 
-KDEHW::Device::Device( const Device &device )
+Solid::Device::Device( const Device &device )
     : QObject(), d( new Private( this ) )
 {
     d->registerData( device.d->data );
 }
 
-KDEHW::Device::Device( Ifaces::Device *data )
+Solid::Device::Device( Ifaces::Device *data )
     : QObject(), d( new Private( this ) )
 {
     d->registerData( data );
 }
 
-KDEHW::Device::~Device()
+Solid::Device::~Device()
 {
     foreach( Capability *iface, d->ifaces.values() )
     {
@@ -94,7 +94,7 @@ KDEHW::Device::~Device()
     delete d;
 }
 
-KDEHW::Device &KDEHW::Device::operator=( const KDEHW::Device &device )
+Solid::Device &Solid::Device::operator=( const Solid::Device &device )
 {
     d->unregisterData();
     d->registerData( device.d->data );
@@ -102,12 +102,12 @@ KDEHW::Device &KDEHW::Device::operator=( const KDEHW::Device &device )
     return *this;
 }
 
-bool KDEHW::Device::isValid() const
+bool Solid::Device::isValid() const
 {
     return d->data!=0;
 }
 
-QString KDEHW::Device::udi() const
+QString Solid::Device::udi() const
 {
     if ( d->data!=0 )
     {
@@ -119,7 +119,7 @@ QString KDEHW::Device::udi() const
     }
 }
 
-QString KDEHW::Device::parentUdi() const
+QString Solid::Device::parentUdi() const
 {
     if ( d->data!=0 )
     {
@@ -131,7 +131,7 @@ QString KDEHW::Device::parentUdi() const
     }
 }
 
-KDEHW::Device KDEHW::Device::parent() const
+Solid::Device Solid::Device::parent() const
 {
     QString udi = parentUdi();
 
@@ -145,7 +145,7 @@ KDEHW::Device KDEHW::Device::parent() const
     }
 }
 
-QString KDEHW::Device::vendor() const
+QString Solid::Device::vendor() const
 {
     if ( d->data!=0 )
     {
@@ -157,7 +157,7 @@ QString KDEHW::Device::vendor() const
     }
 }
 
-QString KDEHW::Device::product() const
+QString Solid::Device::product() const
 {
     if ( d->data!=0 )
     {
@@ -169,7 +169,7 @@ QString KDEHW::Device::product() const
     }
 }
 
-bool KDEHW::Device::setProperty( const QString &key, const QVariant &value )
+bool Solid::Device::setProperty( const QString &key, const QVariant &value )
 {
     if ( d->data!=0 )
     {
@@ -181,7 +181,7 @@ bool KDEHW::Device::setProperty( const QString &key, const QVariant &value )
     }
 }
 
-QVariant KDEHW::Device::property( const QString &key ) const
+QVariant Solid::Device::property( const QString &key ) const
 {
     if ( d->data!=0 )
     {
@@ -193,7 +193,7 @@ QVariant KDEHW::Device::property( const QString &key ) const
     }
 }
 
-QMap<QString, QVariant> KDEHW::Device::allProperties() const
+QMap<QString, QVariant> Solid::Device::allProperties() const
 {
     if ( d->data!=0 )
     {
@@ -205,7 +205,7 @@ QMap<QString, QVariant> KDEHW::Device::allProperties() const
     }
 }
 
-bool KDEHW::Device::propertyExists( const QString &key ) const
+bool Solid::Device::propertyExists( const QString &key ) const
 {
     if ( d->data!=0 )
     {
@@ -217,7 +217,7 @@ bool KDEHW::Device::propertyExists( const QString &key ) const
     }
 }
 
-bool KDEHW::Device::queryCapability( const Capability::Type &capability ) const
+bool Solid::Device::queryCapability( const Capability::Type &capability ) const
 {
     if ( d->data!=0 )
     {
@@ -230,7 +230,7 @@ bool KDEHW::Device::queryCapability( const Capability::Type &capability ) const
 }
 
 template<typename IfaceType, typename CapType>
-inline CapType* capability_cast( KDEHW::Ifaces::Capability *cap_iface )
+inline CapType* capability_cast( Solid::Ifaces::Capability *cap_iface )
 {
     IfaceType *iface = dynamic_cast<IfaceType*>( cap_iface );
 
@@ -244,7 +244,7 @@ inline CapType* capability_cast( KDEHW::Ifaces::Capability *cap_iface )
     }
 }
 
-KDEHW::Capability *KDEHW::Device::asCapability( const Capability::Type &capability )
+Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability )
 {
     if ( d->data!=0 )
     {
@@ -321,7 +321,7 @@ KDEHW::Capability *KDEHW::Device::asCapability( const Capability::Type &capabili
     }
 }
 
-bool KDEHW::Device::lock(const QString &reason)
+bool Solid::Device::lock(const QString &reason)
 {
     if ( d->data!=0 )
     {
@@ -333,7 +333,7 @@ bool KDEHW::Device::lock(const QString &reason)
     }
 }
 
-bool KDEHW::Device::unlock()
+bool Solid::Device::unlock()
 {
     if ( d->data!=0 )
     {
@@ -345,7 +345,7 @@ bool KDEHW::Device::unlock()
     }
 }
 
-bool KDEHW::Device::isLocked() const
+bool Solid::Device::isLocked() const
 {
     if ( d->data!=0 )
     {
@@ -357,7 +357,7 @@ bool KDEHW::Device::isLocked() const
     }
 }
 
-QString KDEHW::Device::lockReason() const
+QString Solid::Device::lockReason() const
 {
     if ( d->data!=0 )
     {
@@ -369,17 +369,17 @@ QString KDEHW::Device::lockReason() const
     }
 }
 
-void KDEHW::Device::slotPropertyChanged( const QMap<QString,int> &changes )
+void Solid::Device::slotPropertyChanged( const QMap<QString,int> &changes )
 {
     emit propertyChanged( changes );
 }
 
-void KDEHW::Device::slotConditionRaised( const QString &condition, const QString &reason )
+void Solid::Device::slotConditionRaised( const QString &condition, const QString &reason )
 {
     emit conditionRaised( condition, reason );
 }
 
-void KDEHW::Device::slotDestroyed( QObject *object )
+void Solid::Device::slotDestroyed( QObject *object )
 {
     if ( object == d->data )
     {
@@ -388,7 +388,7 @@ void KDEHW::Device::slotDestroyed( QObject *object )
     }
 }
 
-void KDEHW::Device::Private::registerData( KDEHW::Ifaces::Device *newData )
+void Solid::Device::Private::registerData( Solid::Ifaces::Device *newData )
 {
     data = newData;
 
@@ -403,7 +403,7 @@ void KDEHW::Device::Private::registerData( KDEHW::Ifaces::Device *newData )
     }
 }
 
-void KDEHW::Device::Private::unregisterData()
+void Solid::Device::Private::unregisterData()
 {
     if ( data )
     {

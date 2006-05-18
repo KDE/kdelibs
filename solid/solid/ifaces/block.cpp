@@ -18,8 +18,8 @@
 */
 
 #include "block.h"
-        
-KDEHW::Ifaces::Block::~Block()
+
+Solid::Ifaces::Block::~Block()
 {
 }
 

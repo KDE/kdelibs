@@ -17,14 +17,14 @@
 
 */
 
-#ifndef KDEHW_IFACES_OPTICALDISC_H
-#define KDEHW_IFACES_OPTICALDISC_H
+#ifndef SOLID_IFACES_OPTICALDISC_H
+#define SOLID_IFACES_OPTICALDISC_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/volume.h>
+#include <solid/ifaces/volume.h>
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {

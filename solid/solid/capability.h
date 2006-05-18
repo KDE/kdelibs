@@ -17,17 +17,17 @@
 
 */
 
-#ifndef KDEHW_CAPABILITY_H
-#define KDEHW_CAPABILITY_H
+#ifndef SOLID_CAPABILITY_H
+#define SOLID_CAPABILITY_H
 
 #include <QObject>
 #include <QFlags>
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/enums.h>
 
-namespace KDEHW
+namespace Solid
 {
     /**
      * Base class of all the capabilities.

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KDEHW_DEVICEMANAGER_H
-#define KDEHW_DEVICEMANAGER_H
+#ifndef SOLID_DEVICEMANAGER_H
+#define SOLID_DEVICEMANAGER_H
 
 #include <QObject>
 #include <QList>
@@ -26,9 +26,9 @@
 #include <kdelibs_export.h>
 
 #include <kstaticdeleter.h>
-#include <kdehw/predicate.h>
+#include <solid/predicate.h>
 
-namespace KDEHW
+namespace Solid
 {
     namespace Ifaces
     {

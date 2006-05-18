@@ -17,17 +17,17 @@
 
 */
 
-#ifndef KDEHW_IFACES_VOLUME_H
-#define KDEHW_IFACES_VOLUME_H
+#ifndef SOLID_IFACES_VOLUME_H
+#define SOLID_IFACES_VOLUME_H
 
 #include <kdelibs_export.h>
 
-#include <kdehw/ifaces/block.h>
-#include <kdehw/ifaces/enums.h>
+#include <solid/ifaces/block.h>
+#include <solid/ifaces/enums.h>
 
 class KJob;
 
-namespace KDEHW
+namespace Solid
 {
 namespace Ifaces
 {
@@ -86,7 +86,7 @@ namespace Ifaces
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
-         * @see KDEHW::Ifaces::Enums::Volume::UsageType
+         * @see Solid::Ifaces::Enums::Volume::UsageType
          */
         virtual UsageType usage() const = 0;
 
