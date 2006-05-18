@@ -76,7 +76,7 @@
 #endif
 
 #ifdef __KDE_HAVE_ICC_VISIBILITY
-#define KDE_NO_EXPORT __attribute__ ((__visibility__("hidden")))
+#define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
 #define KDE_EXPORT __attribute__ ((visibility("default")))
 #define KDE_IMPORT
 #endif
