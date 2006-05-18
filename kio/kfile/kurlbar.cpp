@@ -1017,14 +1017,7 @@ void KUrlBarItemDialog::urlChanged(const QString & text )
 
 KUrl KUrlBarItemDialog::url() const
 {
-    QString text = m_urlEdit->url();
-    KUrl u;
-    if ( text.at(0) == '/' )
-        u.setPath( text );
-    else
-        u = text;
-
-    return u;
+    return m_urlEdit->url();
 }
 
 QString KUrlBarItemDialog::description() const
