@@ -41,16 +41,16 @@ void VolumeFaderEffect::setVolume( float volume )
 		d->currentVolume = volume;
 }
 
-static const float log10over20 = 0.1151292546497022842; // ln(10) / 20
+static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
-float VolumeFaderEffect::volumeDecibel() const
+double VolumeFaderEffect::volumeDecibel() const
 {
-	return -logf( volume() ) / log10over20;
+	return -log( volume() ) / log10over20;
 }
 
-void VolumeFaderEffect::setVolumeDecibel( float newVolumeDecibel )
+void VolumeFaderEffect::setVolumeDecibel( double newVolumeDecibel )
 {
-	setVolume( expf( -newVolumeDecibel * log10over20 ) );
+	setVolume( exp( -newVolumeDecibel * log10over20 ) );
 }
 
 VolumeFaderEffect::FadeCurve VolumeFaderEffect::fadeCurve() const

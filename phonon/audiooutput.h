@@ -77,7 +77,7 @@ namespace Phonon
 		 *
 		 * \see volume
 		 */
-		Q_PROPERTY( float volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
+		Q_PROPERTY( double volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
 		/**
 		 * The category can be used by mixer applications to control the
 		 * volume of a whole category instead of the user having to identify
@@ -109,7 +109,7 @@ namespace Phonon
 		public:
 			QString name() const;
 			float volume() const;
-			float volumeDecibel() const;
+			double volumeDecibel() const;
 			Phonon::Category category() const;
 			AudioOutputDevice outputDevice() const;
 
@@ -119,7 +119,7 @@ namespace Phonon
 		public Q_SLOTS:
 			void setName( const QString& newName );
 			void setVolume( float newVolume );
-			void setVolumeDecibel( float newVolumeDecibel );
+			void setVolumeDecibel( double newVolumeDecibel );
 			void setCategory( Phonon::Category category );
 			void setOutputDevice( const AudioOutputDevice& newAudioOutputDevice );
 

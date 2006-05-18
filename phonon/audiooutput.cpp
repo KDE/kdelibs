@@ -61,16 +61,16 @@ void AudioOutput::setVolume( float newVolume )
 		d->volume = newVolume;
 }
 
-static const float log10over20 = 0.1151292546497022842; // ln(10) / 20
+static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
-float AudioOutput::volumeDecibel() const
+double AudioOutput::volumeDecibel() const
 {
-	return -logf( volume() ) / log10over20;
+	return -log( volume() ) / log10over20;
 }
 
-void AudioOutput::setVolumeDecibel( float newVolumeDecibel )
+void AudioOutput::setVolumeDecibel( double newVolumeDecibel )
 {
-	setVolume( expf( -newVolumeDecibel * log10over20 ) );
+	setVolume( exp( -newVolumeDecibel * log10over20 ) );
 }
 
 Category AudioOutput::category() const

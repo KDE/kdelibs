@@ -67,7 +67,7 @@ namespace Phonon
 		 *
 		 * \see volume
 		 */
-		Q_PROPERTY( float volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
+		Q_PROPERTY( double volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
 		/**
 		 * This property holds the fade curve to be used for the fadeIn(), fadeOut()
 		 * and fadeTo() slots.
@@ -120,7 +120,7 @@ namespace Phonon
 			};
 
 			float volume() const;
-			float volumeDecibel() const;
+			double volumeDecibel() const;
 
 			FadeCurve fadeCurve() const;
 
@@ -149,7 +149,7 @@ namespace Phonon
 			void fadeOut( int fadeTime );
 
 			void setVolume( float volume );
-			void setVolumeDecibel( float volumeDecibel );
+			void setVolumeDecibel( double volumeDecibel );
 
 			void setFadeCurve( FadeCurve curve );
 
