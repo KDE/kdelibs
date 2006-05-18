@@ -67,7 +67,7 @@ void KMConfigPreview::loadConfig(KConfig *conf)
 {
 	conf->setGroup("General");
 	m_useext->setChecked(conf->readEntry("ExternalPreview", false));
-	m_program->setUrl(KUrl::fromPathOrUrl(conf->readPathEntry("PreviewCommand", "gv")));
+	m_program->setUrl(KUrl(conf->readPathEntry("PreviewCommand", "gv")));
 }
 
 void KMConfigPreview::saveConfig(KConfig *conf)

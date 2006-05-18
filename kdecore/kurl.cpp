@@ -308,25 +308,36 @@ KUrl::~KUrl()
 }
 
 
-KUrl::KUrl( const QString &url )
-    // : QUrl( url )  can't do that
+KUrl::KUrl( const QString &str )
+  : QUrl()
 {
-    Q_ASSERT( !url.startsWith('/') ); // Use KUrl::fromPathOrUrl() or KUrl::fromPath()
-    setEncodedUrl( url.toUtf8(), QUrl::TolerantMode );
+  if ( !str.isEmpty() ) {
+    if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
+      setPath( str );
+    else
+      setEncodedUrl( str.toUtf8(), QUrl::TolerantMode );
+  }
 }
 
-KUrl::KUrl( const char * url )
-    // : QUrl( QLatin1String(url) )
+KUrl::KUrl( const char * str )
+  : QUrl()
 {
-    Q_ASSERT( !(url && *url == '/') ); // Use KUrl::fromPathOrUrl() or KUrl::fromPath()
-    setEncodedUrl( url, QUrl::TolerantMode );
+  if ( str ) {
+    if ( str[0] == '/' || str[0] == '~' )
+      setPath( QString::fromUtf8( str ) );
+    else
+      setEncodedUrl( str, QUrl::TolerantMode );
+  }
 }
 
-KUrl::KUrl( const QByteArray& url )
-    // : QUrl( QLatin1String(url) )
+KUrl::KUrl( const QByteArray& str )
 {
-    Q_ASSERT( !url.startsWith('/') ); // Use KUrl::fromPathOrUrl() or KUrl::fromPath()
-    setEncodedUrl( url, QUrl::TolerantMode );
+  if ( !str.isEmpty() ) {
+    if ( str[0] == '/' || str[0] == '~' )
+      setPath( QString::fromUtf8( str ) );
+    else
+      setEncodedUrl( str, QUrl::TolerantMode );
+  }
 }
 
 KUrl::KUrl( const KUrl& _u )
@@ -594,7 +605,7 @@ QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPath
      }
 #endif
      // The list of chars to exclude comes from QUrlPrivate::toEncoded
-     tmp = QLatin1String( QUrl::toPercentEncoding( tmp, "!$&'()*+,;=:@/" ) );
+     tmp = QString::fromLatin1( QUrl::toPercentEncoding( tmp, "!$&'()*+,;=:@/" ) );
   }
 
 #if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
@@ -748,9 +759,9 @@ QString KUrl::url( AdjustPathOption trailing ) const
       // Let's hope this is fast, or not called often...
       QUrl newUrl( *this );
       newUrl.setPath( path() + QLatin1Char('/') );
-      return QLatin1String( newUrl.toEncoded() ); // ### check
+      return QString::fromLatin1( newUrl.toEncoded() ); // ### check
   }
-  return QLatin1String( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
+  return QString::fromLatin1( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
 QString KUrl::prettyUrl( AdjustPathOption trailing ) const
@@ -766,9 +777,9 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   if ( trailing == AddTrailingSlash && !path().endsWith( QLatin1Char('/') ) ) {
       // -1 and 0 are provided by QUrl, but not +1.
       newUrl.setPath( path() + QLatin1Char('/') );
-      return QLatin1String( newUrl.toEncoded() );
+      return QString::fromLatin1( newUrl.toEncoded() );
   }
-  return QLatin1String( newUrl.toEncoded(  trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
+  return QString::fromLatin1( newUrl.toEncoded(  trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
 #if 0

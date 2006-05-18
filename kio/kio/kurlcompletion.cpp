@@ -368,7 +368,7 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 	// no protocol.  (KUrl does this only for absoute paths)
 	if ( protocol_regex.indexIn( url_copy ) == 0 )
     {
-		m_kurl = new KUrl( KUrl::fromPathOrUrl( url_copy ) );
+		m_kurl = new KUrl( url_copy );
 		m_isURL = true;
 	}
 	else // relative path or ~ or $something
@@ -386,8 +386,8 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 		}
 		else
 		{
-			KUrl base = KUrl::fromPathOrUrl( cwd );
-                        base.adjustPath(KUrl::AddTrailingSlash);
+			KUrl base = cwd;
+			base.adjustPath(KUrl::AddTrailingSlash);
 
 			if ( !QDir::isRelativePath(url_copy) ||
 			     url_copy.at(0) == QLatin1Char('~') ||
@@ -957,7 +957,7 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 		return false;
 
 	// Use d->cwd as base url in case url is not absolute
-	KUrl url_cwd = KUrl::fromPathOrUrl( d->cwd );
+	KUrl url_cwd( d->cwd );
 
 	// Create an URL with the directory to be listed
 	KUrl url_dir( url_cwd, url.kurl()->url() );
@@ -1096,8 +1096,8 @@ QString KUrlCompletion::listDirectories(
 	QStringList::ConstIterator it = dirList.begin();
 
 	for ( ; it != dirList.end(); ++it ) {
-		url_list.append( new KUrl( KUrl::fromPathOrUrl( *it ) ) );
-        }
+		url_list.append( new KUrl( *it ) );
+	}
 
 	listURLs( url_list, filter, only_exe, no_hidden );
 	// Will call addMatches() and finished()

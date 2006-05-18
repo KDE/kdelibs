@@ -325,7 +325,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             QFile::exists(KGlobalSettings::documentPath() + val)) {
                             path.setPath(KGlobalSettings::documentPath() + val);
                         } else {
-                            path = KUrl::fromPathOrUrl(val);
+                            path = KUrl(val);
                         }
 
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
@@ -1624,7 +1624,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 QFile::exists(KGlobalSettings::documentPath() + val)) {
                 fileurl.setPath(KGlobalSettings::documentPath() + val);
             } else {
-                fileurl = KUrl::fromPathOrUrl(val);
+                fileurl = KUrl(val);
             }
 
             KIO::UDSEntry filestat;

@@ -179,7 +179,7 @@ void KNewStuffSecure::uploadResource(const QString& fileName)
   m_tempDir->setAutoDelete(true);
   QFileInfo f(fileName);
   m_signedFileName = m_tempDir->name() + "/" + f.fileName();
-  KIO::NetAccess::file_copy(KUrl::fromPathOrUrl(fileName), KUrl::fromPathOrUrl(m_signedFileName), -1, true);
+  KIO::NetAccess::file_copy(KUrl(fileName), KUrl(m_signedFileName), -1, true);
   Security::ref()->signFile(m_signedFileName);
 }
 
@@ -215,7 +215,7 @@ void KNewStuffSecure::slotFileSigned(int result)
       file.close();
     }
     tar.close();
-    KIO::NetAccess::file_move(KUrl::fromPathOrUrl(m_signedFileName + ".signed"), KUrl::fromPathOrUrl(m_signedFileName), -1, true);
+    KIO::NetAccess::file_move(KUrl(m_signedFileName + ".signed"), KUrl(m_signedFileName), -1, true);
     KNewStuff::upload(m_signedFileName, QString());
     disconnect(Security::ref(), SIGNAL(fileSigned(int)), this, SLOT(slotFileSigned(int)));
   }
@@ -231,7 +231,7 @@ void KNewStuffSecure::removeTempDirectory()
 {
   if (m_tempDir)
   {
-    KIO::NetAccess::del(KUrl().fromPathOrUrl(m_tempDir->name()), parentWidget());
+    KIO::NetAccess::del(KUrl(m_tempDir->name()), parentWidget());
     delete m_tempDir;
     m_tempDir = 0L;
   }

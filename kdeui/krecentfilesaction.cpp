@@ -330,7 +330,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     {
         key = QString( "File%1" ).arg( i );
         value = config->readPathEntry( key );
-        url = KUrl::fromPathOrUrl( value );
+        url = KUrl( value );
 
         // Don't restore if file doesn't exist anymore
         if (url.isLocalFile() && !QFile::exists(url.path()))

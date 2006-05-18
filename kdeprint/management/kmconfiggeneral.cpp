@@ -120,7 +120,7 @@ void KMConfigGeneral::loadConfig(KConfig *conf)
 	if (!tpage.isEmpty())
 	{
 		m_defaulttestpage->setChecked(true);
-		m_testpage->setUrl(KUrl::fromPathOrUrl(tpage));
+		m_testpage->setUrl(KUrl(tpage));
 	}
 	m_statusmsg->setChecked(conf->readEntry("ShowStatusMsg", true));
 	m_uselast->setChecked(conf->readEntry("UseLast", true));

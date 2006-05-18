@@ -40,9 +40,9 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Execute_check->setChecked( actions.contains("Execute") );
 	m_ui.Taskbar_check->setChecked( actions.contains("Taskbar") );
 
-	m_ui.Sound_select->setUrl( KUrl::fromPathOrUrl( config->readEntry( "sound" , true ) ) );
-	m_ui.Logfile_select->setUrl( KUrl::fromPathOrUrl( config->readEntry( "logfile" , true ) ) );
-	m_ui.Execute_select->setUrl( KUrl::fromPathOrUrl( config->readEntry( "execute"  ) ) );
+	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "sound" , true ) ) );
+	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "logfile" , true ) ) );
+	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "execute"  ) ) );
 }
 
 void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )

@@ -22,7 +22,8 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 
-#include <kapplication.h>
+#include <kglobal.h>
+#include <kinstance.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <kio/job.h>
@@ -279,8 +280,7 @@ void Engine::requestMetaInformation( Provider *provider )
 void Engine::upload( Entry *entry )
 {
   if ( mUploadFile.isNull()) {
-    mUploadFile = entry->fullName();
-    mUploadFile = locateLocal( "data", QString(kapp->instanceName()) + "/upload/" + mUploadFile );
+     mUploadFile = locateLocal( "data", QString(KGlobal::instance()->instanceName()) + "/upload/" + entry->fullName() );
 
     if ( !d->mNewStuff->createUploadFile( mUploadFile ) ) {
       KMessageBox::error( mParentWidget, i18n("Unable to create file to upload.") );
@@ -291,7 +291,7 @@ void Engine::upload( Entry *entry )
 
   QString lang = entry->langs().first();
   QFileInfo fi( mUploadFile );
-  entry->setPayload( KUrl::fromPathOrUrl( fi.fileName() ), lang );
+  entry->setPayload( KUrl( fi.fileName() ), lang );
 
   if ( !createMetaFile( entry ) ) {
     emit uploadFinished( false );
@@ -329,7 +329,7 @@ void Engine::upload( Entry *entry )
       KUrl destination = mUploadProvider->uploadUrl();
       destination.setFileName( fi.fileName() );
 
-      KIO::FileCopyJob *job = KIO::file_copy( KUrl::fromPathOrUrl( mUploadFile ), destination );
+      KIO::FileCopyJob *job = KIO::file_copy( KUrl( mUploadFile ), destination );
       connect( job, SIGNAL( result( KJob * ) ),
                SLOT( slotUploadPayloadJobResult( KJob * ) ) );
     } else {
@@ -354,7 +354,7 @@ bool Engine::createMetaFile( Entry *entry )
 
   if ( mUploadMetaFile.isNull() ) {
     mUploadMetaFile = entry->fullName() + ".meta";
-    mUploadMetaFile = locateLocal( "data", QString(kapp->instanceName()) + "/upload/" + mUploadMetaFile );
+    mUploadMetaFile = locateLocal( "data", QString(KGlobal::instance()->instanceName()) + "/upload/" + mUploadMetaFile );
   }
 
   QFile f( mUploadMetaFile );
@@ -391,7 +391,7 @@ void Engine::slotUploadPayloadJobResult( KJob *job )
   KUrl previewDestination = mUploadProvider->uploadUrl();
   previewDestination.setFileName( fi.fileName() );
 
-  KIO::FileCopyJob *newJob = KIO::file_copy( KUrl::fromPathOrUrl( mPreviewFile ), previewDestination );
+  KIO::FileCopyJob *newJob = KIO::file_copy( KUrl( mPreviewFile ), previewDestination );
   connect( newJob, SIGNAL( result( KJob * ) ),
            SLOT( slotUploadPreviewJobResult( KJob * ) ) );
 }
@@ -410,7 +410,7 @@ void Engine::slotUploadPreviewJobResult( KJob *job )
   KUrl metaDestination = mUploadProvider->uploadUrl();
   metaDestination.setFileName( fi.fileName() );
 
-  KIO::FileCopyJob *newJob = KIO::file_copy( KUrl::fromPathOrUrl( mUploadMetaFile ), metaDestination );
+  KIO::FileCopyJob *newJob = KIO::file_copy( KUrl( mUploadMetaFile ), metaDestination );
   connect( newJob, SIGNAL( result( KJob * ) ),
            SLOT( slotUploadMetaJobResult( KJob * ) ) );
 }

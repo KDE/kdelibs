@@ -371,6 +371,7 @@ Desktop Entry Spec</a>
 <li>filename() has been removed, use fileName() instead</li>
 <li>isMalformed -&gt; !isValid()</li>
 <li>prettyURL(0,KUrl::StripFileProtocol) -&gt; pathOrURL()</li>
+<li>fromPathOrURL() is deprecated, use the KUrl(str) constructor which now accepts both paths and urls</li>
 <li>htmlURL() had to be removed, please use Qt::escape(url.prettyURL()) now, with #include &lt;QTextDocument&gt;.
 This requires libQtGui, which is why it can't be in KUrl anymore.</li>
 <li>url(0,106) or any other use of the 'mib enum' for encoding has been removed. QUrl is UTF8 based, and the world is becoming more and more utf8 based as well, the old encoding hacks inside urls should disappear.</li>
@@ -383,7 +384,6 @@ This requires libQtGui, which is why it can't be in KUrl anymore.</li>
   <li>prettyURL() -&gt; prettyUrl()</li>
   <li>pathOrURL() -&gt; pathOrUrl()</li>
   <li>upURL() -&gt; upUrl()</li>
-  <li>fromPathOrURL() -&gt; fromPathOrUrl()</li>
   <li>isRelativeURL() -&gt; isRelativeUrl()</li>
   <li>relativeURL() -&gt; relativeUrl()</li>
 </ul>

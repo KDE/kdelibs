@@ -703,7 +703,7 @@ void TestRegressionWindow::loadOutputHTML() const
 	QFileInfo indexHtml(fileName);
 	if(indexHtml.exists())
 	{
-		m_browserPart->openURL(KUrl::fromPathOrUrl(fileName));
+		m_browserPart->openURL(KUrl::fromPath(fileName));
 		m_ui.tabWidget->setTabEnabled(1, true);
 	}
 	else

@@ -220,7 +220,7 @@ void KioslaveTest::changeProgressMode( QAbstractButton *b ) {
 
 
 void KioslaveTest::startJob() {
-  KUrl sCurrent = KUrl::fromPathOrUrl (QDir::currentPath() );
+  KUrl sCurrent( QDir::currentPath() );
   QString sSrc( le_source->text() );
   KUrl src = KUrl( sCurrent, sSrc );
 

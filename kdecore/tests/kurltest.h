@@ -58,6 +58,7 @@ private Q_SLOTS:
     void testOtherProtocols();
     void testOtherEncodings();
     void testPathOrURL();
+    void testAssignment();
     void testQueryItem();
     void testEncodeString();
     void testIdn();

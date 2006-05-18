@@ -3262,7 +3262,7 @@ void CopyJob::copyNextFile()
             newjob = newJob;
             //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest << endl;
             //emit linking( this, (*it).linkDest, (*it).uDest );
-            m_currentSrcURL = KUrl::fromPathOrUrl( (*it).linkDest );
+            m_currentSrcURL = KUrl( (*it).linkDest );
             m_currentDestURL=(*it).uDest;
             d->m_bURLDirty = true;
             //Observer::self()->slotCopying( this, m_currentSrcURL, (*it).uDest ); // should be slotLinking perhaps

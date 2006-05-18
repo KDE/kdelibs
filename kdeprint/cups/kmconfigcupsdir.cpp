@@ -62,7 +62,7 @@ void KMConfigCupsDir::loadConfig(KConfig *conf)
 	conf->setGroup("CUPS");
 	QString	dir = conf->readPathEntry("InstallDir");
 	m_stddir->setChecked(dir.isEmpty());
-	m_installdir->setUrl(KUrl::fromPathOrUrl(dir));
+	m_installdir->setUrl(KUrl::fromPath(dir));
 }
 
 void KMConfigCupsDir::saveConfig(KConfig *conf)

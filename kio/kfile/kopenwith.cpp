@@ -445,7 +445,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     edit->button()->hide();
   }
 
-  edit->setUrl( KUrl::fromPathOrUrl(_value) );
+  edit->setUrl( KUrl(_value) );
   edit->setWhatsThis(i18n(
     "Following the command, you can have several place holders which will be replaced "
     "with the actual values when the actual program is run:\n"
@@ -562,7 +562,7 @@ void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec 
 {
     kDebug(250)<<"KOpenWithDlg::slotSelected"<<endl;
     KService::Ptr pService = d->curService;
-    edit->setUrl( KUrl::fromPathOrUrl(_exec) ); // calls slotTextChanged :(
+    edit->setUrl( KUrl(_exec) ); // calls slotTextChanged :(
     d->curService = pService;
 }
 

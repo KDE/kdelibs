@@ -2536,8 +2536,8 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   config.setDesktopGroup();
   URLStr = config.readPathEntry( "URL" );
 
-  if ( !URLStr.isNull() )
-    URLEdit->setUrl( KUrl::fromPathOrUrl(URLStr) );
+  if ( !URLStr.isEmpty() )
+    URLEdit->setUrl( KUrl(URLStr) );
 
   connect( URLEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );

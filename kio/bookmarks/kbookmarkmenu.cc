@@ -270,7 +270,7 @@ void RMB::slotProperties()
   makeTextNodeMod(bookmark, "title", dlg.finalTitle());
   if ( !dlg.finalUrl().isNull() )
   {
-    KUrl u = KUrl::fromPathOrUrl(dlg.finalUrl());
+    KUrl u(dlg.finalUrl());
     bookmark.internalElement().setAttribute("href", u.url()); // utf8
   }
 
@@ -403,7 +403,7 @@ void KBookmarkMenu::refill()
   m_lstSubMenus.clear();
 
   for ( QList<KAction *>::iterator it = m_actions.begin(), end = m_actions.end() ;
-        it != end ; ++it ) 
+        it != end ; ++it )
   {
         m_parentMenu->removeAction(*it);
   }
@@ -660,7 +660,7 @@ void KBookmarkMenu::slotBookmarkSelected(Qt::MouseButtons mb, Qt::KeyboardModifi
   kDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
 
-  if (const KAction* action = qobject_cast<const KAction*>(sender()))
+  if (qobject_cast<const KAction*>(sender()))
   {
       const QString& url = sender()->property("url").toString();
       m_pOwner->openBookmarkURL( url );

@@ -1144,14 +1144,14 @@ void KFileDialog::locationActivated( const QString& url )
         setSelection( url );
 }
 
-void KFileDialog::enterURL( const KUrl& url)
+void KFileDialog::enterURL( const KUrl& url )
 {
     setURL( url );
 }
 
 void KFileDialog::enterURL( const QString& url )
 {
-    setURL( KUrl::fromPathOrUrl( KUrlCompletion::replacedPath( url, true, true )) );
+    setURL( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
 
@@ -2231,7 +2231,7 @@ KUrl KFileDialog::getStartURL( const QString& startDir,
         if (startDir[0] == ':')
         {
             recentDirClass = startDir;
-            ret = KUrl::fromPathOrUrl( KRecentDirs::dir(recentDirClass) );
+            ret = KUrl( KRecentDirs::dir(recentDirClass) );
         }
         else
         {

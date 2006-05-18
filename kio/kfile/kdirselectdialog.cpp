@@ -77,7 +77,7 @@ static KUrl rootUrl(const KUrl &url)
 
     if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
     {
-        root = KUrl::fromPathOrUrl( QDir::homePath() );
+        root = KUrl( QDir::homePath() );
         if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
         {
             root = url;
@@ -171,7 +171,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
              SLOT( slotURLActivated( const QString& )));
 
     setCurrentURL( d->startURL );
-    
+
     connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 }
 
@@ -359,7 +359,7 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
     if ( text.isEmpty() )
         return;
 
-    KUrl url = KUrl::fromPathOrUrl( text );
+    KUrl url( text );
     d->urlCombo->addToHistory( url.prettyUrl() );
 
     if ( localOnly() && !url.isLocalFile() )
@@ -367,7 +367,7 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
 
     KUrl oldURL = m_treeView->currentURL();
     if ( oldURL.isEmpty() )
-        oldURL = KUrl::fromPathOrUrl( m_startDir );
+        oldURL = KUrl( m_startDir ); // ### TODO m_startDir should be a KUrl
 
     setCurrentURL( url );
 }
@@ -386,7 +386,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
 {
     if ( d->branch )
     {
-        KUrl url = KUrl::fromPathOrUrl( text );
+        KUrl url( text );
         KFileTreeViewItem *item = d->branch->findTVIByURL( url );
         if ( item )
         {

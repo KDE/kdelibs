@@ -1361,25 +1361,25 @@ void KUrlTest::testOtherEncodings()
 void KUrlTest::testPathOrURL()
 {
   kDebug() << k_funcinfo << endl;
-  // fromPathOrUrl tests
-  KUrl uloc = KUrl::fromPathOrUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
+  // passing path or url to the constructor: both work
+  KUrl uloc( "/home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
-  uloc = KUrl::fromPathOrUrl( "http://www.kde.org" );
+  uloc = KUrl( "http://www.kde.org" );
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
-  uloc = KUrl::fromPathOrUrl( QString("www.kde.org" ) );
+  uloc = KUrl( QString("www.kde.org" ) );
   QVERIFY( uloc.isValid() ); // KDE3: was invalid. But it's now a url with path="www.kde.org", ok.
-  uloc = KUrl::fromPathOrUrl( "index.html" );
+  uloc = KUrl( "index.html" );
   QVERIFY( uloc.isValid() ); // KDE3: was invalid; same as above
-  uloc = KUrl::fromPathOrUrl( "" );
+  uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
   KUser currentUser;
   const QString userName = currentUser.loginName();
   QVERIFY( !userName.isEmpty() );
-  uloc = KUrl::fromPathOrUrl(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
+  uloc = KUrl(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 
   // pathOrUrl tests
-  uloc = KUrl::fromPathOrUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
+  uloc = KUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.pathOrUrl(), uloc.path() );
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.url(), QString("http://www.kde.org") );
@@ -1389,8 +1389,42 @@ void KUrlTest::testPathOrURL()
   QCOMPARE( uloc.pathOrUrl(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel#ref" ) );
   uloc = "file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query";
   QCOMPARE( uloc.pathOrUrl(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query" ) );
-  uloc = KUrl::fromPathOrUrl( "/home/dfaure/file#with#hash" );
+  uloc = KUrl( "/home/dfaure/file#with#hash" );
   QCOMPARE( uloc.pathOrUrl(), QString("/home/dfaure/file#with#hash" ) );
+}
+
+void KUrlTest::testAssignment()
+{
+  kDebug() << k_funcinfo << endl;
+  // passing path or url to the constructor: both work
+  KUrl uloc;
+  uloc = "/home/dfaure/konqtests/Mat%C3%A9riel";
+  QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  KUrl u2;
+  u2 = uloc;
+  QCOMPARE( u2.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  uloc = "http://www.kde.org";
+  QCOMPARE( uloc.pathOrUrl(), uloc.url() );
+  uloc = QString("www.kde.org" );
+  QVERIFY( uloc.isValid() );
+  uloc = KUrl( "index.html" );
+  QVERIFY( uloc.isValid() );
+  uloc = KUrl( "" );
+  QVERIFY( !uloc.isValid() );
+  KUser currentUser;
+  const QString userName = currentUser.loginName();
+  QVERIFY( !userName.isEmpty() );
+  uloc = QString::fromUtf8("~%1/konqtests/Matériel").arg(userName);
+  QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
+  uloc = QByteArray('~' + userName.toUtf8() + "/konqtests/Matériel");
+  QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
+
+  // Assigning a KUrl to a QUrl and back
+  QUrl qurl = uloc;
+  QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
+  uloc = qurl;
+  QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
+  QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 }
 
 void KUrlTest::testQueryItem()

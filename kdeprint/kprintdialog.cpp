@@ -597,9 +597,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 
 	// Initialize output filename
 	if (!d->m_printer->outputFileName().isEmpty())
-		d->m_file->setUrl( KUrl::fromPathOrUrl(d->m_printer->outputFileName()) );
+		d->m_file->setUrl( KUrl(d->m_printer->outputFileName()) );
 	else if (!d->m_printer->docFileName().isEmpty())
-		d->m_file->setUrl( KUrl::fromPathOrUrl(d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps") );
+		d->m_file->setUrl( KUrl(d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps") );
 
 	if ( d->m_printers->count() > 0 )
 		slotPrinterSelected( d->m_printers->currentIndex() );

@@ -721,8 +721,9 @@ public:
    * Return the URL as a string, which will be either the URL (as prettyUrl
    * would return) or, when the URL is a local file without query or ref,
    * the path.
-   * Use this method, together with its opposite, fromPathOrUrl(),
-   * to display and even let the user edit URLs.
+   * Use this method, to display URLs to the user.
+   * You can give the result of pathOrUrl back to the KUrl constructor, it accepts
+   * both paths and urls.
    *
    * @return the new KUrl
    */
@@ -751,8 +752,9 @@ public:
 #endif
 
   // Define those, since the constructors are explicit
-  //KUrl& operator=( const char * _url ) { *this = KUrl::fromPathOrUrl(_url); return *this; }
-  KUrl& operator=( const QString& _url ) { *this = KUrl::fromPathOrUrl(_url); return *this; }
+  KUrl& operator=( const char * _url ) { *this = KUrl(_url); return *this; }
+  KUrl& operator=( const QByteArray& _url ) { *this = KUrl(_url); return *this; }
+  KUrl& operator=( const QString& _url ) { *this = KUrl(_url); return *this; }
 
   bool operator==( const KUrl& _u ) const;
   bool operator==( const QString& _u ) const;
@@ -853,31 +855,20 @@ public:
 
   /**
    * Creates a KUrl object from a QString representing an absolute path.
-   * Use this method instead of
-   * \code
-   * QString someDir = ...
-   * KUrl url = someDir;
-   * \endcode
+   * KUrl url( somePath ) does the same, but this method is more explicit
+   * and avoids the path-or-url detection in the KUrl constructor.
    *
-   * Otherwise some characters (e.g. the '#') won't be encoded properly.
-   * @param text the string representation of the URL to convert
+   * @param text the path
    * @return the new KUrl
    */
   static KUrl fromPath( const QString& text ) { KUrl u; u.setPath( text ); return u; }
 
   /**
-   * Creates a KUrl object from a QString representing either an absolute path
-   * or a real URL. Use this method instead of
-   * \code
-   * QString someDir = ...
-   * KUrl url = someDir;
-   * \endcode
-   *
-   * Otherwise some characters (e.g. the '#') won't be encoded properly.
-   * @param text the string representation of the URL to convert
-   * @return the new KUrl
+   * \deprecated
+   * Since KDE4 you can pass both urls and paths to the KUrl constructors.
+   * Use KUrl(text) instead.
    */
-  static KUrl fromPathOrUrl( const QString& text );
+  static KUrl fromPathOrUrl( const QString& text ) KDE_DEPRECATED;
 
   /**
    * Creates a KUrl from a string, using the standard conventions for mime data

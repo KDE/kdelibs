@@ -612,7 +612,7 @@ void KUrlBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 void KUrlBar::readItem( int i, KConfigBase *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    KUrl url = KUrl::fromPathOrUrl( config->readPathEntry( QString("URL_") + number ));
+    KUrl url( config->readPathEntry( QString("URL_") + number ));
     if ( !url.isValid() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 

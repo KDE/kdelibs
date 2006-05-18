@@ -161,7 +161,7 @@ void UploadDialog::setPayloadFile( const KUrl& payloadFile )
   QString author = cg.readEntry("author");
   QString version = cg.readEntry("version");
   QString release = cg.readEntry("release");
-  KUrl preview = KUrl::fromPathOrUrl(cg.readEntry("preview"));
+  KUrl preview(cg.readEntry("preview"));
   QString summary = cg.readEntry("summary");
   QString lang = cg.readEntry("language");
   QString license = cg.readEntry("licence");

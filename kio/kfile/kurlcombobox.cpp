@@ -113,7 +113,7 @@ void KUrlComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
         if (myMode == Directories)
           mode = KUrl::AddTrailingSlash;
         else
-          mode = KUrl::RemoveTrailingSlash;        
+          mode = KUrl::RemoveTrailingSlash;
         if ( url.isLocalFile() )
           item->text = url.path( mode );
         else
@@ -176,14 +176,13 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
     it = urls.begin();
 
     KUrlComboItem *item = 0L;
-    KUrl u;
 
     while ( it != urls.end() ) {
         if ( (*it).isEmpty() ) {
             ++it;
             continue;
         }
-        u = KUrl::fromPathOrUrl( *it );
+        KUrl u = *it;
 
         // Don't restore if file doesn't exist anymore
         if (u.isLocalFile() && !QFile::exists(u.path())) {
@@ -255,7 +254,7 @@ void KUrlComboBox::setURL( const KUrl& url )
     if (myMode == Directories)
       mode = KUrl::AddTrailingSlash;
     else
-      mode = KUrl::RemoveTrailingSlash;    
+      mode = KUrl::RemoveTrailingSlash;
     KUrlComboItem *item = new KUrlComboItem;
     item->url = url;
     item->icon = getIcon( url );
