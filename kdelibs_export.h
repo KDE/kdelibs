@@ -29,7 +29,7 @@
 #endif
 
 
-#if defined _WIN32 || defined _WIN64
+#if defined Q_OS_WIN
 # include <kdelibs_export_win.h>
 #else /* UNIX */
 
