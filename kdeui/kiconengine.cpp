@@ -114,6 +114,8 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
 
   QPixmap pix(size);
   {
+    pix.fill(QColor(0,0,0,0));
+
     QPainter painter(&pix);
 
     K3Icon::States kstate;
@@ -130,9 +132,6 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
         break;
     }
 
-    painter.fillRect(QRect(QPoint(), size), state == QIcon::Off ?
-                     QApplication::palette().color( QPalette::Background ) :
-                     QApplication::palette().color( QPalette::Highlight ) );
     painter.drawPixmap(QPoint(), iconLoader()->loadIcon(d->iconName, K3Icon::Desktop,
                                                         qMin(size.width(), size.height()), kstate));
   }
