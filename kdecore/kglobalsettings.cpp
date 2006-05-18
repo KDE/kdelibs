@@ -50,7 +50,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kcharsets.h>
 #include <klocale.h>
 #include <stdlib.h>
-#include "../kio/kio/kprotocolinfo.h"
+#include <kprotocolinfo.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
