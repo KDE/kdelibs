@@ -217,6 +217,7 @@ void KUrlRequester::init()
 
     QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
     setFocusProxy( widget );
+    setFocusPolicy(Qt::StrongFocus);
 
     d->connectSignals( this );
     connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
