@@ -116,14 +116,26 @@ void MediaObjectPrivate::setupKioStreaming()
 		QObject::connect( bytestream->qobject(), SIGNAL( aboutToFinish( qint32 ) ), q, SIGNAL( aboutToFinish( qint32 ) ) );
 		QObject::connect( bytestream->qobject(), SIGNAL( length( qint64 ) ), q, SIGNAL( length( qint64 ) ) );
 
-		QObject::connect( bytestream->qobject(), SIGNAL( needData() ), kiojob, SLOT( resume() ) );
-		QObject::connect( bytestream->qobject(), SIGNAL( enoughData() ), kiojob, SLOT( suspend() ) );
+		QObject::connect( bytestream->qobject(), SIGNAL( needData() ), q, SLOT( _k_bytestreamNeedData() ) );
+		QObject::connect( bytestream->qobject(), SIGNAL( enoughData() ), q, SLOT( _k_bytestreamEnoughData() ) );
 
 		bytestream->setStreamSeekable( false ); //FIXME: KIO doesn't support seeking at this point
 		//connect( bytestream->qobject(), SIGNAL( seekStream( qint64 ), kiojob, SLOT(
 
 		static_cast<AbstractMediaProducer*>( q )->setupIface();
 	}
+}
+
+void MediaObjectPrivate::_k_bytestreamNeedData()
+{
+	if( kiojob->isSuspended() )
+		kiojob->resume();
+}
+
+void MediaObjectPrivate::_k_bytestreamEnoughData()
+{
+	if( !kiojob->isSuspended() )
+		kiojob->suspend();
 }
 
 void MediaObjectPrivate::_k_bytestreamData( KIO::Job*, const QByteArray& data )
