@@ -391,9 +391,7 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 	painter->fillRect( colorRect, color );
 
 	if ( row * numCols() + col == selected ) {
-		int hue = ( color.hue() + 180 ) % 360;
-		QColor contrastedColor = QColor::fromHsv( hue, color.saturation(), color.value() );
-		painter->setPen( contrastedColor );
+		painter->setPen( qGray(color.rgb())>=127 ? Qt::black : Qt::white );
 		painter->drawLine( colorRect.topLeft(), colorRect.bottomRight() );
 		painter->drawLine( colorRect.topRight(), colorRect.bottomLeft() );
 	}
