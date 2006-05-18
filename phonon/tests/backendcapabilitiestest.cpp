@@ -23,9 +23,14 @@
 #include "../factory.h"
 #include "../audiooutputdevice.h"
 #include "../audiocapturedevice.h"
+#include "../videooutputdevice.h"
 #include "../videocapturedevice.h"
+#include "../visualizationeffect.h"
 #include "../audioeffectdescription.h"
 #include "../videoeffectdescription.h"
+#include "../audiocodec.h"
+#include "../videocodec.h"
+#include "../containerformat.h"
 #include "../ifaces/backend.h"
 #include <QStringList>
 #include <QSet>
@@ -37,6 +42,16 @@ void BackendCapabilitiesTest::initTestCase()
 	QVERIFY( BackendCapabilities::self() );
 }
 
+#define VERIFY_TUPLE( classname, availableMethod, indexMethod ) \
+QVERIFY( BackendCapabilities::availableMethod().size() >= 0 ); \
+for( int i = 0; i < BackendCapabilities::availableMethod().size(); ++i ) \
+{ \
+	classname device = BackendCapabilities::availableMethod().at( i ); \
+	QVERIFY( device.index() >= 0 ); \
+	QVERIFY( Factory::self()->backend()->indexMethod().contains( device.index() ) ); \
+	QVERIFY( !device.name().isEmpty() ); \
+} do {} while( false )
+
 void BackendCapabilitiesTest::sensibleValues()
 {
 	//if( BackendCapabilities::supportsVideo() ) create VideoWidget and such - needs UI libs
@@ -44,46 +59,16 @@ void BackendCapabilitiesTest::sensibleValues()
 	QVERIFY( mimeTypes.size() > 0 ); // a backend that doesn't know any mimetypes is useless
 	foreach( QString mimeType, mimeTypes )
 		QVERIFY( BackendCapabilities::isMimeTypeKnown( mimeType ) );
-	QVERIFY( BackendCapabilities::availableAudioOutputDevices().size() >= 0 );
-	for( int i = 0; i < BackendCapabilities::availableAudioOutputDevices().size(); ++i )
-	{
-		AudioOutputDevice device = BackendCapabilities::availableAudioOutputDevices().at( i );
-		QVERIFY( device.index() >= 0 );
-		QVERIFY( Factory::self()->backend()->audioOutputDeviceIndexes().contains( device.index() ) );
-		QVERIFY( !device.name().isEmpty() );
-	}
-	QVERIFY( BackendCapabilities::availableAudioCaptureDevices().size() >= 0 );
-	for( int i = 0; i < BackendCapabilities::availableAudioCaptureDevices().size(); ++i )
-	{
-		AudioCaptureDevice device = BackendCapabilities::availableAudioCaptureDevices().at( i );
-		QVERIFY( device.index() >= 0 );
-		QVERIFY( Factory::self()->backend()->audioCaptureDeviceIndexes().contains( device.index() ) );
-		QVERIFY( !device.name().isEmpty() );
-	}
-	QVERIFY( BackendCapabilities::availableVideoCaptureDevices().size() >= 0 );
-	for( int i = 0; i < BackendCapabilities::availableVideoCaptureDevices().size(); ++i )
-	{
-		VideoCaptureDevice device = BackendCapabilities::availableVideoCaptureDevices().at( i );
-		QVERIFY( device.index() >= 0 );
-		QVERIFY( Factory::self()->backend()->videoCaptureDeviceIndexes().contains( device.index() ) );
-		QVERIFY( !device.name().isEmpty() );
-	}
-	QVERIFY( BackendCapabilities::availableAudioEffects().size() >= 0 );
-	for( int i = 0; i < BackendCapabilities::availableAudioEffects().size(); ++i )
-	{
-		AudioEffectDescription device = BackendCapabilities::availableAudioEffects().at( i );
-		QVERIFY( device.index() >= 0 );
-		QVERIFY( Factory::self()->backend()->audioEffectIndexes().contains( device.index() ) );
-		QVERIFY( !device.name().isEmpty() );
-	}
-	QVERIFY( BackendCapabilities::availableVideoEffects().size() >= 0 );
-	for( int i = 0; i < BackendCapabilities::availableVideoEffects().size(); ++i )
-	{
-		VideoEffectDescription device = BackendCapabilities::availableVideoEffects().at( i );
-		QVERIFY( device.index() >= 0 );
-		QVERIFY( Factory::self()->backend()->videoEffectIndexes().contains( device.index() ) );
-		QVERIFY( !device.name().isEmpty() );
-	}
+	VERIFY_TUPLE( AudioOutputDevice, availableAudioOutputDevices, audioOutputDeviceIndexes );
+	VERIFY_TUPLE( AudioCaptureDevice, availableAudioCaptureDevices, audioCaptureDeviceIndexes );
+	VERIFY_TUPLE( VideoOutputDevice, availableVideoOutputDevices, videoOutputDeviceIndexes );
+	VERIFY_TUPLE( VideoCaptureDevice, availableVideoCaptureDevices, videoCaptureDeviceIndexes );
+	VERIFY_TUPLE( VisualizationEffect, availableVisualizationEffects, visualizationIndexes );
+	VERIFY_TUPLE( AudioEffectDescription, availableAudioEffects, audioEffectIndexes );
+	VERIFY_TUPLE( VideoEffectDescription, availableVideoEffects, videoEffectIndexes );
+	VERIFY_TUPLE( AudioCodec, availableAudioCodecs, audioCodecIndexes );
+	VERIFY_TUPLE( VideoCodec, availableVideoCodecs, videoCodecIndexes );
+	VERIFY_TUPLE( ContainerFormat, availableContainerFormats, containerFormatIndexes );
 }
 
 void BackendCapabilitiesTest::checkSignals()
