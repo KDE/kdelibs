@@ -59,7 +59,6 @@ class KIO_EXPORT KUrlRequester : public KHBox
 {
     Q_OBJECT
     Q_PROPERTY( KUrl url READ url WRITE setUrl USER true )
-    Q_PROPERTY( bool showLocalProtocol READ showLocalProtocol WRITE setShowLocalProtocol )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( uint mode READ mode WRITE setMode )
 
