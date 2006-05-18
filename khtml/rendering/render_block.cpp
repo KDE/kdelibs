@@ -140,39 +140,60 @@ void RenderBlock::setStyle(RenderStyle* _style)
 
 void RenderBlock::updateFirstLetter()
 {
-    // FIXME: We need to destroy the first-letter object if it is no longer the first child.  Need to find
-    // an efficient way to check for that situation though before implementing anything.
+    // Only blocks with inline-children can generate a first-letter
+    if (!childrenInline() || !firstChild()) return;
 
-    RenderStyle * pseudoStyle;
-    if ( isTable() || !(pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LETTER)) )
+    // Don't recurse
+    if (style()->styleType() == RenderStyle::FIRST_LETTER) return;
+
+    // The first-letter style is inheritable. 
+    RenderStyle *pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LETTER);
+    RenderObject *o = this;
+    while (o && !pseudoStyle) {
+        // ### We should ignore empty preceding siblings
+        if (o->parent() && o->parent()->firstChild() == this)
+            o = o->parent();
+        else
+            break;
+        pseudoStyle = o->style()->getPseudoStyle(RenderStyle::FIRST_LETTER);
+    };
+
+    // FIXME: Currently we don't delete first-letters, this is
+    // handled instead in NodeImpl::diff by issuing Detach on first-letter changes.
+    if (!pseudoStyle) {
         return;
+    }
 
     // Drill into inlines looking for our first text child.
-    RenderObject* currChild = firstChild();
-    while (currChild && currChild->needsLayout() && !currChild->isReplaced() && !currChild->isText())
-        currChild = currChild->firstChild();
+    RenderObject* firstText = firstChild();
+    while (firstText && firstText->needsLayout() && !firstText->isFloating() && !firstText->isRenderBlock() && !firstText->isReplaced() && !firstText->isText())
+        // ### We should skip first children with only white-space and punctuation
+        firstText = firstText->firstChild();
 
-   if (currChild && currChild->isText() && !currChild->isBR()) {
-
-        bool update = (currChild->parent()->style()->styleType() == RenderStyle::FIRST_LETTER);
-        RenderObject* firstLetterContainer = update ? currChild->parent()->parent() : currChild->parent();
-        RenderText* textObj = static_cast<RenderText*>(currChild);
+    if (firstText && firstText->isText() && !firstText->isBR()) {
+        RenderObject* firstLetterObject = 0;
+        // Find the old first-letter
+        if (firstText->parent()->style()->styleType() == RenderStyle::FIRST_LETTER)
+            firstLetterObject = firstText->parent();
 
         // Force inline display (except for floating first-letters)
         pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
         pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
 
-        if (update) {
-            firstLetterContainer->firstChild()->setStyle( pseudoStyle );
+        if (firstLetterObject != 0) {
+            firstLetterObject->setStyle( pseudoStyle );
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom( pseudoStyle );
-            currChild->setStyle( newStyle );
+            firstText->setStyle( newStyle );
             return;
         }
 
-        RenderObject* firstLetter = RenderFlow::createFlow(element(), pseudoStyle, renderArena() );
-        firstLetter->setIsAnonymous( true );
-        firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
+        RenderText* textObj = static_cast<RenderText*>(firstText);
+        RenderObject* firstLetterContainer = firstText->parent();
+
+        firstLetterObject = RenderFlow::createFlow(node(), pseudoStyle, renderArena() );
+        firstLetterObject->setIsAnonymous( true );
+        firstLetterContainer->addChild(firstLetterObject, firstLetterContainer->firstChild());
 
         // if this object is the result of a :begin, then the text may have not been
         // generated yet if it is a counter
@@ -214,10 +235,10 @@ void RenderBlock::updateFirstLetter()
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom(pseudoStyle);
             letter->setStyle(newStyle);
-            firstLetter->addChild(letter);
+            firstLetterObject->addChild(letter);
             oldText->deref();
         }
-        firstLetter->close();
+        firstLetterObject->close();
     }
 }
 
