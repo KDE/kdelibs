@@ -35,12 +35,10 @@ namespace Fake
 			virtual ~AudioOutput();
 
 			// Attributes Getters:
-			virtual QString name() const;
 			virtual float volume() const;
 			virtual int outputDevice() const;
 
 			// Attributes Setters:
-			virtual void setName( const QString& newName );
 			virtual void setVolume( float newVolume );
 			virtual void setOutputDevice( int newDevice );
 
@@ -54,7 +52,6 @@ namespace Fake
 
 		private:
 			float m_volume;
-			QString m_name;
 			int m_device;
 			QFile m_dsp;
 	};

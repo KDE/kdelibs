@@ -34,16 +34,13 @@ PHONON_HEIR_IMPL( AudioOutput, AbstractAudioOutput )
 QString AudioOutput::name() const
 {
 	K_D( const AudioOutput );
-	return d->iface() ? d->iface()->name() : d->name;
+	return d->name;
 }
 
 void AudioOutput::setName( const QString& newName )
 {
 	K_D( AudioOutput );
-	if( d->iface() )
-		d->iface()->setName( newName );
-	else
-		d->name = newName;
+	d->name = newName;
 }
 
 float AudioOutput::volume() const
@@ -110,10 +107,7 @@ void AudioOutput::setOutputDevice( const AudioOutputDevice& newAudioOutputDevice
 bool AudioOutputPrivate::aboutToDeleteIface()
 {
 	if( iface() )
-	{
-		name = iface()->name();
 		volume = iface()->volume();
-	}
 	return AbstractAudioOutputPrivate::aboutToDeleteIface();
 }
 
@@ -126,7 +120,6 @@ void AudioOutput::setupIface()
 	connect( d->iface()->qobject(), SIGNAL( volumeChanged( float ) ), SIGNAL( volumeChanged( float ) ) );
 
 	// set up attributes
-	d->iface()->setName( d->name );
 	d->iface()->setVolume( d->volume );
 }
 

@@ -45,11 +45,6 @@ AudioOutput::~AudioOutput()
 {
 }
 
-QString AudioOutput::name() const
-{
-	return m_name;
-}
-
 float AudioOutput::volume() const
 {
 	return m_volume;
@@ -58,11 +53,6 @@ float AudioOutput::volume() const
 int AudioOutput::outputDevice() const
 {
 	return m_device;
-}
-
-void AudioOutput::setName( const QString& newName )
-{
-	m_name = newName;
 }
 
 void AudioOutput::setVolume( float newVolume )
