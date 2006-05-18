@@ -863,7 +863,7 @@ void RenderFileButton::slotReturnPressed()
 
 void RenderFileButton::slotTextChanged(const QString &/*string*/)
 {
-   element()->m_value = KUrl( widget()->url() ).pathOrURL();
+   element()->m_value = KUrl( widget()->url() ).pathOrUrl();
 }
 
 void RenderFileButton::select()

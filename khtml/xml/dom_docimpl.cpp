@@ -697,7 +697,7 @@ void DocumentImpl::setTitle(const DOMString& _title)
 	    KUrl url = m_url;
 	    url.setRef(QString());
 	    url.setQuery(QString());
-	    titleStr = url.prettyURL();
+	    titleStr = url.prettyUrl();
 	}
 
 	emit view()->part()->setWindowCaption( KStringHandler::csqueeze( titleStr, 128 ) );

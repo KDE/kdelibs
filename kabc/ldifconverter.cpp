@@ -140,8 +140,8 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "organization", addr.organization() );
   ldif_out( t, "organizationname", addr.organization() );
   ldif_out( t, "department", addr.custom("KADDRESSBOOK", "X-Department") );
-  ldif_out( t, "workurl", addr.url().prettyURL() );
-  ldif_out( t, "homeurl", addr.url().prettyURL() );
+  ldif_out( t, "workurl", addr.url().prettyUrl() );
+  ldif_out( t, "homeurl", addr.url().prettyUrl() );
   ldif_out( t, "description", addr.note() );
   if (addr.revision().isValid())
     ldif_out(t, "modifytimestamp", dateToVCardString( addr.revision()) );
@@ -305,7 +305,7 @@ addComment:
       a.setUrl( KUrl( value ) );
       return true;
     }
-    if ( a.url().prettyURL() == KUrl(value).prettyURL() )
+    if ( a.url().prettyUrl() == KUrl(value).prettyUrl() )
       return true;
     // TODO: current version of kabc only supports one URL.
     // TODO: change this with KDE 4

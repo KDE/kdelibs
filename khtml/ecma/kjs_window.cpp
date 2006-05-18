@@ -1383,7 +1383,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
                                           "window via JavaScript.\n"
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
-                                          "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.prettyURL()),  100)),
+                                          "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.prettyUrl()),  100)),
                                     caption, i18n("Allow"), i18n("Do Not Allow") ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
@@ -2414,9 +2414,9 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
       return String( UString(url.host()) );
     case Href:
       if (!url.hasPath())
-        return String( UString(url.prettyURL()+"/") );
+        return String( UString(url.prettyUrl()+"/") );
       else
-        return String( UString(url.prettyURL()) );
+        return String( UString(url.prettyUrl()) );
     case Pathname:
       return String( UString(url.path().isEmpty() ? QString("/") : url.path()) );
     case Port:
@@ -2516,9 +2516,9 @@ UString Location::toString(ExecState *exec) const
     if ( window && window->isSafeScript(exec) )
     {
       if (!m_frame->m_part->url().hasPath())
-        return m_frame->m_part->url().prettyURL()+"/";
+        return m_frame->m_part->url().prettyUrl()+"/";
       else
-        return m_frame->m_part->url().prettyURL();
+        return m_frame->m_part->url().prettyUrl();
     }
   }
   return "";

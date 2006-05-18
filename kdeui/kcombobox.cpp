@@ -197,38 +197,38 @@ bool KComboBox::trapReturnKey() const
 
 void KComboBox::setEditURL( const KUrl& url )
 {
-    QComboBox::setEditText( url.prettyURL() );
+    QComboBox::setEditText( url.prettyUrl() );
 }
 
 void KComboBox::addURL( const KUrl& url )
 {
-    QComboBox::addItem( url.prettyURL() );
+    QComboBox::addItem( url.prettyUrl() );
 }
 
 void KComboBox::addURL( const QIcon& icon, const KUrl& url )
 {
-    QComboBox::addItem( icon, url.prettyURL() );
+    QComboBox::addItem( icon, url.prettyUrl() );
 }
 
 void KComboBox::insertURL( int index, const KUrl& url )
 {
-    QComboBox::insertItem( index, url.prettyURL() );
+    QComboBox::insertItem( index, url.prettyUrl() );
 }
 
 void KComboBox::insertURL( int index, const QIcon& icon, const KUrl& url )
 {
-    QComboBox::insertItem( index, icon, url.prettyURL() );
+    QComboBox::insertItem( index, icon, url.prettyUrl() );
 }
 
 void KComboBox::changeURL( int index, const KUrl& url )
 {
-    QComboBox::setItemText( index, url.prettyURL() );
+    QComboBox::setItemText( index, url.prettyUrl() );
 }
 
 void KComboBox::changeURL( int index, const QIcon& icon, const KUrl& url )
 {
 	QComboBox::setItemIcon( index, icon );
-	QComboBox::setItemText( index, url.prettyURL() );
+	QComboBox::setItemText( index, url.prettyUrl() );
 }
 
 void KComboBox::setCompletedItems( const QStringList& items, bool autosubject )

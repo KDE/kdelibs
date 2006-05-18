@@ -1316,7 +1316,7 @@ KUrl KCmdLineArgs::makeURL(const char *_urlArg)
       return result; // Absolute path.
    }
 
-   if ( !KUrl::isRelativeURL(urlArg) )
+   if ( !KUrl::isRelativeUrl(urlArg) )
      return KUrl(urlArg); // Argument is a URL
 
    KUrl result;

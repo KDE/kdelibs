@@ -437,7 +437,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
 
   QString url, protocol, datetime;
   if ( reqUrl ) {
-    url = Qt::escape(reqUrl->prettyURL());
+    url = Qt::escape(reqUrl->prettyUrl());
     protocol = reqUrl->protocol();
   } else {
     url = i18n( "(unknown)" );
@@ -480,7 +480,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   QString url, host, protocol, datetime, domain, path, dir, filename;
   bool isSlaveNetwork = false;
   if ( reqUrl ) {
-    url = reqUrl->prettyURL();
+    url = reqUrl->prettyUrl();
     host = reqUrl->host();
     protocol = reqUrl->protocol();
 

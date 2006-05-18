@@ -448,7 +448,7 @@ bool KBookmark::hasMetaData() const
 
 void KBookmark::updateAccessMetadata()
 {
-    kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyURL() << endl;
+    kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyUrl() << endl;
 
     const uint timet = QDateTime::currentDateTime().toTime_t();
     setMetaDataItem( "time_added", QString::number( timet ), DontOverwriteMetaData );
@@ -600,7 +600,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
         {
             //kDebug(7043) << k_funcinfo << "url=" << (*uit) << endl;
             bookmarks.append( KBookmark::standaloneBookmark(
-                                  (*uit).prettyURL(), (*uit) ));
+                                  (*uit).prettyUrl(), (*uit) ));
         }
     }
     return bookmarks;

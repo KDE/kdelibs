@@ -64,7 +64,7 @@ public:
    * @see RenameDlg_Mode
    */
   RenameDlg( QWidget *parent, const QString & caption,
-             // KDE4: make those KUrls, and use pathOrURL() internally.
+             // KDE4: make those KUrls, and use pathOrUrl() internally.
              const QString & src, const QString & dest,
              RenameDlg_Mode mode,
              KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,

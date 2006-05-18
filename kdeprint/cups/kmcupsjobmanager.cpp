@@ -139,7 +139,7 @@ bool KMCupsJobManager::listJobs(const QString& prname, KMJobManager::JobType typ
 
 	if (!mp->uri().isEmpty())
 	{
-		req.addURI(IPP_TAG_OPERATION, "printer-uri", mp->uri().prettyURL());
+		req.addURI(IPP_TAG_OPERATION, "printer-uri", mp->uri().prettyUrl());
 		/*
 		req.setHost(mp->uri().host());
 		req.setPort(mp->uri().port());

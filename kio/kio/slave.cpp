@@ -357,7 +357,7 @@ void Slave::setConfig(const MetaData &config)
 
 Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
 {
-    //kDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    //kDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyUrl() << endl;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return new DataProtocol();
@@ -467,7 +467,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
 Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
 {
-    //kDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    //kDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyUrl() << endl;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return 0;

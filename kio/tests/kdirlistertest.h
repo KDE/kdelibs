@@ -45,21 +45,21 @@ public Q_SLOTS:
    void canceled() { cout << "canceled()" << endl; }
    void canceled( const KUrl& url )
    {
-      cout << "*** canceled( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
+      cout << "*** canceled( " << url.prettyUrl().toLocal8Bit().data() << " )" << endl;
    }
    void completed() { cout << "*** completed()" << endl; }
    void completed( const KUrl& url )
    {
-      cout << "*** completed( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
+      cout << "*** completed( " << url.prettyUrl().toLocal8Bit().data() << " )" << endl;
    }
    void redirection( const KUrl& url )
    {
-      cout << "*** redirection( " << url.prettyURL().toLocal8Bit().data() << " )" << endl;
+      cout << "*** redirection( " << url.prettyUrl().toLocal8Bit().data() << " )" << endl;
    }
    void redirection( const KUrl& src, const KUrl& dest )
    {
-      cout << "*** redirection( " << src.prettyURL().toLocal8Bit().data() << ", "
-           << dest.prettyURL().toLocal8Bit().data() << " )" << endl;
+      cout << "*** redirection( " << src.prettyUrl().toLocal8Bit().data() << ", "
+           << dest.prettyUrl().toLocal8Bit().data() << " )" << endl;
    }
    void clear() { cout << "*** clear()" << endl; }
    void newItems( const KFileItemList& items )
@@ -71,7 +71,7 @@ public Q_SLOTS:
    }
    void deleteItem( KFileItem* item )
    {
-      cout << "*** deleteItem: " << item->url().prettyURL().toLocal8Bit().data() << endl;
+      cout << "*** deleteItem: " << item->url().prettyUrl().toLocal8Bit().data() << endl;
    }
    void itemsFilteredByMime( const KFileItemList&  )
    {

@@ -326,7 +326,7 @@ static bool revmatch(const char *host, const char *nplist)
 
 QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 {
-  if (url.hasSubURL()) // We don't want the suburl's protocol
+  if (url.hasSubUrl()) // We don't want the suburl's protocol
   {
      KUrl::List list = KUrl::split(url);
      KUrl l = list.last();

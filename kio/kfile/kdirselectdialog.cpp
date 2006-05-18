@@ -77,7 +77,7 @@ static KUrl rootUrl(const KUrl &url)
 
     if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
     {
-        root = KUrl::fromPathOrURL( QDir::homePath() );
+        root = KUrl::fromPathOrUrl( QDir::homePath() );
         if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
         {
             root = url;
@@ -316,12 +316,12 @@ void KDirSelectDialog::accept()
     {
         KUrl dir = item->url();
         if ( !item->isDir() )
-            dir = dir.upURL();
+            dir = dir.upUrl();
 
         KRecentDirs::add(d->recentDirClass, dir.url());
     }
 
-    d->urlCombo->addToHistory( item->url().prettyURL() );
+    d->urlCombo->addToHistory( item->url().prettyUrl() );
     KFileDialog::setStartDir( url() );
 
     KDialog::accept();
@@ -348,7 +348,7 @@ void KDirSelectDialog::slotCurrentChanged()
             d->urlCombo->setEditText( u.path() );
 
         else // remote url
-            d->urlCombo->setEditText( u.prettyURL() );
+            d->urlCombo->setEditText( u.prettyUrl() );
     }
     else
         d->urlCombo->setEditText( QString() );
@@ -359,22 +359,22 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
     if ( text.isEmpty() )
         return;
 
-    KUrl url = KUrl::fromPathOrURL( text );
-    d->urlCombo->addToHistory( url.prettyURL() );
+    KUrl url = KUrl::fromPathOrUrl( text );
+    d->urlCombo->addToHistory( url.prettyUrl() );
 
     if ( localOnly() && !url.isLocalFile() )
         return; // ### messagebox
 
     KUrl oldURL = m_treeView->currentURL();
     if ( oldURL.isEmpty() )
-        oldURL = KUrl::fromPathOrURL( m_startDir );
+        oldURL = KUrl::fromPathOrUrl( m_startDir );
 
     setCurrentURL( url );
 }
 
 KFileTreeBranch * KDirSelectDialog::createBranch( const KUrl& url )
 {
-    QString title = url.isLocalFile() ? url.path() : url.prettyURL();
+    QString title = url.isLocalFile() ? url.path() : url.prettyUrl();
     KFileTreeBranch *branch = view()->addBranch( url, title, m_showHiddenFolders->isChecked() );
     branch->setChildRecurse( false );
     view()->setDirOnlyMode( branch, true );
@@ -386,7 +386,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
 {
     if ( d->branch )
     {
-        KUrl url = KUrl::fromPathOrURL( text );
+        KUrl url = KUrl::fromPathOrUrl( text );
         KFileTreeViewItem *item = d->branch->findTVIByURL( url );
         if ( item )
         {
@@ -414,7 +414,7 @@ void KDirSelectDialog::slotContextMenu( K3ListView *, Q3ListViewItem *, const QP
 void KDirSelectDialog::slotMkdir()
 {
     bool ok;
-    QString where = url().pathOrURL();
+    QString where = url().pathOrUrl();
     QString name = i18n( "New Folder" );
     if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
         name = KIO::RenameDlg::suggestName( url(), name );
@@ -442,7 +442,7 @@ void KDirSelectDialog::slotMkdir()
 
     if ( exists ) // url was already existant
     {
-        QString which = folderurl.isLocalFile() ? folderurl.path() : folderurl.prettyURL();
+        QString which = folderurl.isLocalFile() ? folderurl.path() : folderurl.prettyUrl();
         KMessageBox::sorry(this, i18n("A file or folder named %1 already exists.", which));
         selectDirectory = false;
     }

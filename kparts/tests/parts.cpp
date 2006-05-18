@@ -51,7 +51,7 @@ bool Part1::openFile()
     return false;
   m_edit->setPlainText(s);
 
-  emit setStatusBarText( m_url.prettyURL() );
+  emit setStatusBarText( m_url.prettyUrl() );
 
   return true;
 }

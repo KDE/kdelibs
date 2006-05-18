@@ -201,7 +201,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                 action->setProperty( "url", bm.url().url() );
                 action->setProperty( "address", bm.address() );
 
-                action->setToolTip( bm.url().pathOrURL() );
+                action->setToolTip( bm.url().pathOrUrl() );
 
                 m_toolBar->addAction(action);
 
@@ -427,7 +427,7 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e )
             QList<KBookmark> list = KBookmark::List::fromMimeData( dme->mimeData() );
             if ( list.isEmpty() )
                 return false;
-            d->tempLabel  = list.first().url().pathOrURL();
+            d->tempLabel  = list.first().url().pathOrUrl();
 
             d->widgetPositions.clear();
 

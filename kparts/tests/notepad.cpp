@@ -65,7 +65,7 @@ bool NotepadPart::openFile()
   }
   m_edit->setText(s);
 
-  emit setStatusBarText( m_url.prettyURL() );
+  emit setStatusBarText( m_url.prettyUrl() );
 
   return true;
 }

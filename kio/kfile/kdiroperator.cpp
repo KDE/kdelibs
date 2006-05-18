@@ -388,7 +388,7 @@ void KDirOperator::slotToggleIgnoreCase()
 void KDirOperator::mkdir()
 {
     bool ok;
-    QString where = url().pathOrURL();
+    QString where = url().pathOrUrl();
     QString name = i18n( "New Folder" );
     if ( url().isLocalFile() && QFileInfo( url().path(KUrl::AddTrailingSlash) + name ).exists() )
          name = KIO::RenameDlg::suggestName( url(), name );
@@ -422,7 +422,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 
     if ( exists ) // url was already existant
     {
-        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.", url.pathOrURL()));
+        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.", url.pathOrUrl()));
         enterDirectory = false;
     }
     else if ( !writeOk ) {
@@ -456,7 +456,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     const KUrl::List urls = items.urlList();
     QStringList files;
     foreach( const KUrl& url, urls )
-        files.append( url.pathOrURL() );
+        files.append( url.pathOrUrl() );
 
     bool doIt = !ask;
     if ( ask ) {
@@ -511,7 +511,7 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
     const KUrl::List urls = items.urlList();
     QStringList files;
     foreach( const KUrl& url, urls )
-        files.append( url.pathOrURL() );
+        files.append( url.pathOrUrl() );
 
     bool doIt = !ask;
     if ( ask ) {

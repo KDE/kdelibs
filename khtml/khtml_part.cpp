@@ -593,7 +593,7 @@ bool KHTMLPart::openURL( const KUrl &url )
   // check to see if this is an "error://" URL. This is caused when an error
   // occurs before this part was loaded (e.g. KonqRun), and is passed to
   // khtmlpart so that it can display the error.
-  if ( url.protocol() == "error" && url.hasSubURL() ) {
+  if ( url.protocol() == "error" && url.hasSubUrl() ) {
     closeURL();
 
     if(  d->m_bJScriptEnabled )
@@ -615,8 +615,8 @@ bool KHTMLPart::openURL( const KUrl &url )
       QString errorText = mainURL.queryItem( "errText" );
       urls.pop_front();
       d->m_workingURL = KUrl::join( urls );
-      //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
-      emit d->m_extension->setLocationBarURL( d->m_workingURL.prettyURL() );
+      //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyUrl() << endl;
+      emit d->m_extension->setLocationBarURL( d->m_workingURL.prettyUrl() );
       htmlError( error, errorText, d->m_workingURL );
       return true;
     }
@@ -701,7 +701,7 @@ bool KHTMLPart::openURL( const KUrl &url )
   if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
      m_url.path().isEmpty()) {
     m_url.setPath("/");
-    emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
+    emit d->m_extension->setLocationBarURL( m_url.prettyUrl() );
   }
   // copy to m_workingURL after fixing m_url above
   d->m_workingURL = m_url;
@@ -823,8 +823,8 @@ bool KHTMLPart::closeURL()
   if ( !d->m_workingURL.isEmpty() )
   {
     // Aborted before starting to render
-    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << m_url.prettyURL() << endl;
-    emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
+    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << m_url.prettyUrl() << endl;
+    emit d->m_extension->setLocationBarURL( m_url.prettyUrl() );
   }
 
   d->m_workingURL = KUrl();
@@ -1104,7 +1104,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   }
   if (!d->m_jsedlg) {
     d->m_jsedlg = new KJSErrorDlg;
-    d->m_jsedlg->setURL(m_url.prettyURL());
+    d->m_jsedlg->setURL(m_url.prettyUrl());
     if (KGlobalSettings::showIconsOnPushButtons()) {
       d->m_jsedlg->_clear->setIcon(SmallIconSet("locationbar_erase"));
       d->m_jsedlg->_close->setIcon(SmallIconSet("fileclose"));
@@ -1703,9 +1703,9 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   begin();
   QString errText = QString::fromLatin1( "<HTML dir=%1><HEAD><TITLE>" )
                            .arg(QApplication::isRightToLeft() ? "rtl" : "ltr");
-  errText += i18n( "Error while loading %1" ,  Qt::escape(reqUrl.prettyURL()) );
+  errText += i18n( "Error while loading %1" ,  Qt::escape(reqUrl.prettyUrl()) );
   errText += QLatin1String( "</TITLE></HEAD><BODY><P>" );
-  errText += i18n( "An error occurred while loading <B>%1</B>:" ,  Qt::escape(reqUrl.prettyURL()) );
+  errText += i18n( "An error occurred while loading <B>%1</B>:" ,  Qt::escape(reqUrl.prettyUrl()) );
   errText += QLatin1String( "</P>" );
   errText += Qt::convertFromPlainText( KIO::buildErrorString( errorCode, text ) );
   errText += QLatin1String( "</BODY></HTML>" );
@@ -1734,7 +1734,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   stream >> errorName >> techName >> description >> causes >> solutions;
 
   QString url, protocol, datetime;
-  url = reqUrl.prettyURL();
+  url = reqUrl.prettyUrl();
   protocol = reqUrl.protocol();
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 false );
@@ -1872,7 +1872,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   if(url.isValid()) {
       QString urlString = url.url();
       KHTMLFactory::vLinks()->insert( urlString );
-      QString urlString2 = url.prettyURL();
+      QString urlString2 = url.prettyUrl();
       if ( urlString != urlString2 ) {
           KHTMLFactory::vLinks()->insert( urlString2 );
       }
@@ -2435,7 +2435,7 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KUrl& url)
 {
   // the slave told us that we got redirected
   //kDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
-  emit d->m_extension->setLocationBarURL( url.prettyURL() );
+  emit d->m_extension->setLocationBarURL( url.prettyUrl() );
   d->m_workingURL = url;
 }
 
@@ -3703,7 +3703,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   emit onURL( url );
 
   if ( url.isEmpty() ) {
-    setStatusBarText(Qt::escape(u.prettyURL()), BarHoverText);
+    setStatusBarText(Qt::escape(u.prettyUrl()), BarHoverText);
     return;
   }
 
@@ -3727,7 +3727,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     com = typ->comment( u );
 
   if ( !u.isValid() ) {
-    setStatusBarText(Qt::escape(u.prettyURL()), BarHoverText);
+    setStatusBarText(Qt::escape(u.prettyUrl()), BarHoverText);
     return;
   }
 
@@ -3743,7 +3743,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     KDE_struct_stat lbuff;
     if (ok) ok = !KDE_lstat( path.data(), &lbuff );
 
-    QString text = Qt::escape(u.prettyURL());
+    QString text = Qt::escape(u.prettyUrl());
     QString text2 = text;
 
     if (ok && S_ISLNK( lbuff.st_mode ) )
@@ -3850,12 +3850,12 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
                 locate("locale", QLatin1String("l10n/")
                 + countryCode
                 + QLatin1String("/flag.png")));
-            emit setStatusBarText(flagImg + u.prettyURL() + extra);
+            emit setStatusBarText(flagImg + u.prettyUrl() + extra);
           }
         }
       }
 #endif
-    setStatusBarText(Qt::escape(u.prettyURL()) + extra, BarHoverText);
+    setStatusBarText(Qt::escape(u.prettyUrl()) + extra, BarHoverText);
   }
 }
 
@@ -3972,7 +3972,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
       emit d->m_extension->openURLNotify();
       if ( !gotoAnchor( m_url.encodedHtmlRef()) )
         gotoAnchor( m_url.htmlRef() );
-      emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
+      emit d->m_extension->setLocationBarURL( m_url.prettyUrl() );
       return false; // we jumped, but we didn't open a URL
     }
   }
@@ -4026,7 +4026,7 @@ void KHTMLPart::slotViewPageInfo()
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>", d->m_pageServices);
 
-  QString squeezedURL = KStringHandler::csqueeze( url().prettyURL(), 80 );
+  QString squeezedURL = KStringHandler::csqueeze( url().prettyUrl(), 80 );
   ui._url->setHtml("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
@@ -6811,14 +6811,14 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     if (!message.isEmpty())
     {
 	    response = KMessageBox::warningContinueCancel( 0,
-							   message.subs(Qt::escape(linkURL.prettyURL())).toString(),
+							   message.subs(Qt::escape(linkURL.prettyUrl())).toString(),
 							   i18n( "Security Warning" ),
 							   button);
     }
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.", Qt::escape(linkURL.prettyURL())),
+				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.", Qt::escape(linkURL.prettyUrl())),
 				i18n( "Security Alert" ));
     }
 

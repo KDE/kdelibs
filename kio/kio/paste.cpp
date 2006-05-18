@@ -66,8 +66,8 @@ static KUrl getNewFileName( const KUrl &u, const QString& text )
       // Ask confirmation about resuming previous transfer
       res = Observer::self()->open_RenameDlg(
                           0L, i18n("File Already Exists"),
-                          u.pathOrURL(),
-                          myurl.pathOrURL(),
+                          u.pathOrUrl(),
+                          myurl.pathOrUrl(),
                           (KIO::RenameDlg_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE), newPath);
 
       if ( res == KIO::R_RENAME )

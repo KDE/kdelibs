@@ -977,7 +977,7 @@ void KLineEdit::dropEvent(QDropEvent *e)
                 if(!dropText.isEmpty())
                     dropText+=' ';
 
-                dropText += (*it).prettyURL();
+                dropText += (*it).prettyUrl();
             }
 
             setText(dropText);
@@ -1063,7 +1063,7 @@ bool KLineEdit::trapReturnKey() const
 
 void KLineEdit::setURL( const KUrl& url )
 {
-    setText( url.prettyURL() );
+    setText( url.prettyUrl() );
 }
 
 void KLineEdit::setCompletionBox( KCompletionBox *box )

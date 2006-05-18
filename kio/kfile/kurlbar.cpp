@@ -159,7 +159,7 @@ void KUrlBarItem::setToolTip( const QString& tip )
 
 QString KUrlBarItem::toolTip() const
 {
-    return m_toolTip.isEmpty() ? m_url.prettyURL() : m_toolTip;
+    return m_toolTip.isEmpty() ? m_url.prettyUrl() : m_toolTip;
 }
 
 int KUrlBarItem::iconSize() const
@@ -612,7 +612,7 @@ void KUrlBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 void KUrlBar::readItem( int i, KConfigBase *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-    KUrl url = KUrl::fromPathOrURL( config->readPathEntry( QString("URL_") + number ));
+    KUrl url = KUrl::fromPathOrUrl( config->readPathEntry( QString("URL_") + number ));
     if ( !url.isValid() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
@@ -698,7 +698,7 @@ void KUrlBar::writeItem( KUrlBarItem *item, int i, KConfig *config,
     KConfigBase::WriteConfigFlags flags = KConfigBase::Normal;
     if ( global )
         flags |= KConfigBase::Global;
-    config->writePathEntry( URL + number, item->url().prettyURL(), flags );
+    config->writePathEntry( URL + number, item->url().prettyUrl(), flags );
     config->writeEntry( Description + number, item->description(), flags );
     config->writeEntry( Icon + number, item->icon(), flags );
     config->writeEntry( IconGroup + number, item->iconGroup(), flags );
@@ -966,7 +966,7 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>", QDir::homePath());
     label = new QLabel( i18n("&URL:"), grid );
-    m_urlEdit = new KUrlRequester( url.prettyURL(), grid );
+    m_urlEdit = new KUrlRequester( url.prettyUrl(), grid );
     m_urlEdit->setMode( KFile::Directory );
     label->setBuddy( m_urlEdit );
     label->setWhatsThis(whatsThisText );

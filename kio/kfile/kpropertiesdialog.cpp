@@ -746,10 +746,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       if ( isLocal )
         path = properties->kurl().path();
       else
-        path = properties->kurl().prettyURL();
+        path = properties->kurl().prettyUrl();
     } else {
       path = properties->currentDir().path(KUrl::AddTrailingSlash) + properties->defaultName();
-      directory = properties->currentDir().prettyURL();
+      directory = properties->currentDir().prettyUrl();
     }
 
     if (KExecPropsPlugin::supports(properties->items()) || // KDE4 remove me
@@ -792,7 +792,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
     {
       const KUrl url = (*kit)->url();
-      kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyURL() << endl;
+      kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyUrl() << endl;
       // The list of things we check here should match the variables defined
       // at the beginning of this method.
       if ( url.isLocalFile() != isLocal )
@@ -2537,7 +2537,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   URLStr = config.readPathEntry( "URL" );
 
   if ( !URLStr.isNull() )
-    URLEdit->setUrl( KUrl::fromPathOrURL(URLStr) );
+    URLEdit->setUrl( KUrl::fromPathOrUrl(URLStr) );
 
   connect( URLEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );

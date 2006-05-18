@@ -395,7 +395,7 @@ bool KJavaAppletViewer::openURL (const KUrl & url) {
         // preview without setting a class?
         if (applet->baseURL ().isEmpty ()) {
             applet->setAppletClass (url.fileName ());
-            applet->setBaseURL (url.upURL ().url ());
+            applet->setBaseURL (url.upUrl ().url ());
         } else
             applet->setAppletClass (url.url ());
         AppletParameterDialog (w).exec ();

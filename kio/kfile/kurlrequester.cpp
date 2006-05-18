@@ -146,9 +146,9 @@ public:
             comp = qobject_cast<KUrlCompletion*>(edit->completionObject());
 
         if ( comp )
-            return KUrl::fromPathOrURL( comp->replacedPath( txt ) );
+            return KUrl::fromPathOrUrl( comp->replacedPath( txt ) );
         else
-            return KUrl::fromPathOrURL( txt );
+            return KUrl::fromPathOrUrl( txt );
     }
 
     KLineEdit *edit;
@@ -232,7 +232,7 @@ void KUrlRequester::init()
 
 void KUrlRequester::setUrl( const KUrl& url )
 {
-    d->setText( url.pathOrURL() );
+    d->setText( url.pathOrUrl() );
 }
 
 void KUrlRequester::changeEvent(QEvent *e)

@@ -325,19 +325,19 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             QFile::exists(KGlobalSettings::documentPath() + val)) {
                             path.setPath(KGlobalSettings::documentPath() + val);
                         } else {
-                            path = KUrl::fromPathOrURL(val);
+                            path = KUrl::fromPathOrUrl(val);
                         }
 
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
-                            fileUploads << path.pathOrURL();
+                            fileUploads << path.pathOrUrl();
                             const KMimeType::Ptr ptr = KMimeType::findByURL(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().toAscii().constData();
                             }
                         } else if (!val.isEmpty()) {
-                            fileNotUploads << path.pathOrURL();
+                            fileNotUploads << path.pathOrUrl();
                         }
                     }
 
@@ -1624,7 +1624,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 QFile::exists(KGlobalSettings::documentPath() + val)) {
                 fileurl.setPath(KGlobalSettings::documentPath() + val);
             } else {
-                fileurl = KUrl::fromPathOrURL(val);
+                fileurl = KUrl::fromPathOrUrl(val);
             }
 
             KIO::UDSEntry filestat;

@@ -124,7 +124,7 @@ QString Field::value( const KABC::Addressee &a )
       else
         return QString();
     case FieldImpl::Url:
-      return a.url().prettyURL();
+      return a.url().prettyUrl();
     case FieldImpl::HomePhone:
     {
       PhoneNumber::List::ConstIterator it;

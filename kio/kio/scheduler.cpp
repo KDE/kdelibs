@@ -502,12 +502,12 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
        {
           if (job->url() == urlOnHold)
           {
-             kDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyURL() << endl;
+             kDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyUrl() << endl;
              slave = slaveOnHold;
           }
           else
           {
-             kDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyURL() << ")" << endl;
+             kDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyUrl() << ")" << endl;
              slaveOnHold->kill();
           }
           slaveOnHold = 0;

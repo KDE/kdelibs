@@ -177,7 +177,7 @@ public:
     virtual ~KLineEdit ();
 
     /**
-     * Sets @p url into the lineedit. It uses KUrl::prettyURL() so
+     * Sets @p url into the lineedit. It uses KUrl::prettyUrl() so
      * that the url is properly decoded for displaying.
      */
     void setURL( const KUrl& url );

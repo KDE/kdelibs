@@ -390,7 +390,7 @@ public Q_SLOTS:
    * Otherwise, reimplement openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
-   * emit setWindowCaption( url.prettyURL() );
+   * emit setWindowCaption( url.prettyUrl() );
    */
   virtual bool openURL( const KUrl &url );
 

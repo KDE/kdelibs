@@ -44,7 +44,7 @@ void KUrlTest::testEmptyURL()
   KUrl emptyURL;
   QVERIFY( !emptyURL.isValid() );
   QVERIFY( emptyURL.isEmpty() );
-  QVERIFY( emptyURL.prettyURL().isEmpty() );
+  QVERIFY( emptyURL.prettyUrl().isEmpty() );
 
   emptyURL = "";
   QVERIFY( !emptyURL.isValid() );
@@ -60,8 +60,8 @@ void KUrlTest::testEmptyURL()
   QCOMPARE( udir.url(), QString() );
   QVERIFY( udir.isEmpty() );
   QVERIFY( !udir.isValid() );
-  udir = udir.upURL();
-  QVERIFY( udir.upURL().isEmpty() );
+  udir = udir.upUrl();
+  QVERIFY( udir.upUrl().isEmpty() );
 }
 
 void KUrlTest::testIsValid()
@@ -189,9 +189,9 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#myref") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("myref") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
 #if 0
   QUrl qurl = QUrl::fromEncoded( "file:///home/dfaure/my#%23" );
@@ -211,7 +211,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#/") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.ref().toLower(), QString("%2f") );
   QCOMPARE( url1.encodedHtmlRef().toLower(), QString("%2f") );
   QCOMPARE( url1.htmlRef(), QString("/") );
@@ -221,7 +221,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%23") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.ref(), QString("%23") );
   QCOMPARE( url1.encodedHtmlRef(), QString("%23") );
   QCOMPARE( url1.htmlRef(), QString("#") );
@@ -231,7 +231,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%6a") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.ref(), QString("j") );
   QCOMPARE( url1.encodedHtmlRef().toLower(), QString("%6a") );
   QCOMPARE( url1.htmlRef(), QString("j") );
@@ -242,36 +242,36 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#myref") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("myref") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
   QCOMPARE( url1.url(), QString("file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("QObject::connect") );
-  QCOMPARE( url1.upURL().url(), QString("file:///opt/kde2/qt2/doc/html/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
   u1 = "file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect";
   url1 = u1;
   QCOMPARE( url1.url(), QString("file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject::connect") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("QObject::connect") );
-  QCOMPARE( url1.upURL().url(), QString("file:///opt/kde2/qt2/doc/html/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
   u1 = "file:/opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject:connect";
   url1 = u1;
   QCOMPARE( url1.url(), QString("file:///opt/kde2/qt2/doc/html/showimg-main-cpp.html#QObject:connect") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
-  QVERIFY( !url1.hasSubURL() );
+  QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("QObject:connect") );
-  QCOMPARE( url1.upURL().url(), QString("file:///opt/kde2/qt2/doc/html/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
   KUrl carsten;
   carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
@@ -363,7 +363,7 @@ void KUrlTest::testParsingTolerance()
   // URL with ':' in query (':' should NOT be encoded!)
   waba1 = "http://www.kde.org/cgi/test.cgi?hello:My Value";
   QCOMPARE( waba1.url(), QString("http://www.kde.org/cgi/test.cgi?hello:My%20Value") );
-  QCOMPARE( waba1.upURL().url(), QString("http://www.kde.org/cgi/test.cgi") );
+  QCOMPARE( waba1.upUrl().url(), QString("http://www.kde.org/cgi/test.cgi") );
 
   // URLs who forgot to encode spaces in the query.
   waba1 = "http://www.kde.org/cgi/test.cgi?hello=My Value+20";
@@ -469,11 +469,11 @@ void KUrlTest::testPathAndQuery()
   KUrl url1( "ftp://user%40host.com@ftp.host.com/var/www/" );
   QCOMPARE( url1.user(), QString("user@host.com" ) );
   QCOMPARE( url1.host(), QString("ftp.host.com" ) );
-  KUrl up = url1.upURL();
+  KUrl up = url1.upUrl();
   QCOMPARE( up.url(), QString("ftp://user%40host.com@ftp.host.com/var/") );
-  up = up.upURL();
+  up = up.upUrl();
   QCOMPARE( up.url(), QString("ftp://user%40host.com@ftp.host.com/") );
-  up = up.upURL();
+  up = up.upUrl();
   QCOMPARE( up.url(), QString("ftp://user%40host.com@ftp.host.com/") ); // unchanged
 }
 
@@ -526,7 +526,7 @@ void KUrlTest::testSetFileName() // and addPath
   QCOMPARE( u2.url(), QString("file:///specials/") );
 
   const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
-  QVERIFY( !KUrl(u3).hasSubURL() );
+  QVERIFY( !KUrl(u3).hasSubUrl() );
 
   KUrl::List lst = KUrl::split( KUrl(u3) );
   QCOMPARE( lst.count(), 1 );
@@ -578,48 +578,48 @@ void KUrlTest::testDirectory()
   u2 = "ftp://ftp.kde.org/";
   u2.cd("pub");
   QCOMPARE( u2.url(), QString("ftp://ftp.kde.org/pub") );
-  u2 = u2.upURL();
+  u2 = u2.upUrl();
   QCOMPARE( u2.url(), QString("ftp://ftp.kde.org/") );
 }
 
-// In KDE4, prettyURL does pretty much the same as url(), except for removing passwords from URLs.
+// In KDE4, prettyUrl does pretty much the same as url(), except for removing passwords from URLs.
 // We don't have a way to decode %20 into ' ' and still avoid decoding everything (e.g. %23 must remain %23)
-// but we don't really need it anymore; it was primarily for paths in konq's locationbar, but it uses pathOrURL() now.
+// but we don't really need it anymore; it was primarily for paths in konq's locationbar, but it uses pathOrUrl() now.
 void KUrlTest::testPrettyURL()
 {
   kDebug() << k_funcinfo << endl;
   KUrl notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
-  QCOMPARE( notPretty.prettyURL(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/") );
+  QCOMPARE( notPretty.prettyUrl(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/") );
   KUrl notPretty2("file:/home/test/directory%20with%20spaces");
-  // KDE3: QCOMPARE( notPretty2.prettyURL(), QString("file:///home/test/directory with spaces") );
-  QCOMPARE( notPretty2.prettyURL(), QString("file:///home/test/directory%20with%20spaces") );
+  // KDE3: QCOMPARE( notPretty2.prettyUrl(), QString("file:///home/test/directory with spaces") );
+  QCOMPARE( notPretty2.prettyUrl(), QString("file:///home/test/directory%20with%20spaces") );
 
   KUrl notPretty3("fish://foo/%23README%23");
-  QCOMPARE( notPretty3.prettyURL(), QString("fish://foo/%23README%23") );
+  QCOMPARE( notPretty3.prettyUrl(), QString("fish://foo/%23README%23") );
   KUrl url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
-  // KDE3: QCOMPARE( url15581.prettyURL(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html") );
-  QCOMPARE( url15581.prettyURL(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
+  // KDE3: QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html") );
+  QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
   QCOMPARE( url15581.url(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
 
   // KDE3 test was for parsing "percentage%in%url.html", but this is not supported; too broken.
   KUrl url15581bis("http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
-  QCOMPARE( url15581bis.prettyURL(), QString("http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html") );
+  QCOMPARE( url15581bis.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html") );
   QCOMPARE( url15581bis.url(), QString("http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html") );
 
   KUrl urlWithPass("ftp://user:password@ftp.kde.org/path");
   QCOMPARE( urlWithPass.pass(), QString::fromLatin1( "password" ) );
-  QCOMPARE( urlWithPass.prettyURL(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
+  QCOMPARE( urlWithPass.prettyUrl(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
 }
 
 void KUrlTest::testIsRelative()
 {
   kDebug() << k_funcinfo << endl;
-  QVERIFY( !KUrl::isRelativeURL("man:mmap") );
-  QVERIFY( !KUrl::isRelativeURL("javascript:doSomething()") );
-  QVERIFY( !KUrl::isRelativeURL("file:///blah") );
+  QVERIFY( !KUrl::isRelativeUrl("man:mmap") );
+  QVERIFY( !KUrl::isRelativeUrl("javascript:doSomething()") );
+  QVERIFY( !KUrl::isRelativeUrl("file:///blah") );
   // arguable, but necessary for KUrl( baseURL, "//www1.foo.bar" );
-  QVERIFY( KUrl::isRelativeURL("/path") );
-  QVERIFY( KUrl::isRelativeURL("something") );
+  QVERIFY( KUrl::isRelativeUrl("/path") );
+  QVERIFY( KUrl::isRelativeUrl("something") );
 }
 
 void KUrlTest::testRelativePath()
@@ -644,14 +644,14 @@ void KUrlTest::testRelativePath()
 void KUrlTest::testRelativeURL()
 {
   KUrl baseURL( "http://www.kde.org/index.html" );
-  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/index.html#help") ), QString("#help") );
-  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/index.html?help=true") ), QString("index.html?help=true") );
-  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/contact.html") ), QString("contact.html") );
-  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("ftp://ftp.kde.org/pub/kde") ), QString("ftp://ftp.kde.org/pub/kde") );
-  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/index.html") ), QString("./") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/index.html#help") ), QString("#help") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/index.html?help=true") ), QString("index.html?help=true") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/contact.html") ), QString("contact.html") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("ftp://ftp.kde.org/pub/kde") ), QString("ftp://ftp.kde.org/pub/kde") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/index.html") ), QString("./") );
 
   baseURL = "http://www.kde.org/info/index.html";
-  QCOMPARE( KUrl::relativeURL(baseURL, KUrl("http://www.kde.org/bugs/contact.html") ), QString( "../bugs/contact.html") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/bugs/contact.html") ), QString( "../bugs/contact.html") );
 }
 
 void KUrlTest::testAdjustPath()
@@ -771,8 +771,8 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QCOMPARE( baseURL.protocol(), QString( "http" ) ); // lowercase
   QCOMPARE( baseURL.port(), 80 );
 
-  QString relativeURL = "//www1.foo.bar";
-  QVERIFY( KUrl::isRelativeURL( relativeURL ) );
+  QString relativeUrl = "//www1.foo.bar";
+  QVERIFY( KUrl::isRelativeUrl( relativeUrl ) );
 
   // Mimick what KUrl(2 urls) does:
   QUrl qurl;
@@ -786,7 +786,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   qurl.setPort( -1 );
   QCOMPARE( qurl.toEncoded(), QByteArray("http:") ); // hmm we have no '//' anymore
 
-  KUrl url1 ( baseURL, relativeURL );
+  KUrl url1 ( baseURL, relativeUrl );
   QCOMPARE( url1.url(), QString("http://www1.foo.bar"));
   QCOMPARE( url1.host(), QString("www1.foo.bar"));
 
@@ -942,9 +942,9 @@ void KUrlTest::testSubURL()
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/%23myref") ); // KDE3 would say # 3 times
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.isLocalFile() );  // Not strictly local!
-  QVERIFY( url1.hasSubURL() );
+  QVERIFY( url1.hasSubUrl() );
   //QCOMPARE( url1.htmlRef(), QString("myref") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
   const KUrl::List splitted = KUrl::split( url1 );
   QCOMPARE( splitted.count(), 3 );
@@ -963,7 +963,7 @@ void KUrlTest::testSubURL()
   u1 = "error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi";
   url1 = u1;
   QCOMPARE( url1.url(), QString("error:/?error=14&errText=Unknown%20host%20asdfu.adgi.sdfgoi#http://asdfu.adgi.sdfgoi") );
-  QVERIFY( url1.hasSubURL() );
+  QVERIFY( url1.hasSubUrl() );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.isLocalFile() );
   QVERIFY( !url1.hasHTMLRef() );
@@ -973,18 +973,18 @@ void KUrlTest::testSubURL()
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") ); // KDE3: #tar
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
-  QVERIFY( url1.hasSubURL() );
+  QVERIFY( url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
   u1 = "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") ); // KDE3: #tar
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
-  QVERIFY( url1.hasSubURL() );
+  QVERIFY( url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
 #if 0
 // This URL is broken, '#' should be escaped.
@@ -993,9 +993,9 @@ void KUrlTest::testSubURL()
   QCOMPARE( url1.url(), QString("file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#") );
   QVERIFY( !url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
-  QVERIFY( url1.hasSubURL() );
+  QVERIFY( url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#") );
 #endif
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
@@ -1003,9 +1003,9 @@ void KUrlTest::testSubURL()
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/README") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
-  QVERIFY( url1.hasSubURL() );
+  QVERIFY( url1.hasSubUrl() );
   QCOMPARE( url1.htmlRef(), QString("") );
-  QCOMPARE( url1.upURL().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") );
+  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") );
 }
 
 void KUrlTest::testSetUser()
@@ -1246,7 +1246,7 @@ void KUrlTest::testMailto()
   KUrl umail1 ( "mailto:faure@kde.org" );
   QCOMPARE( umail1.protocol(), QString("mailto") );
   QCOMPARE( umail1.path(), QString("faure@kde.org") );
-  QVERIFY( !KUrl::isRelativeURL("mailto:faure@kde.org") );
+  QVERIFY( !KUrl::isRelativeUrl("mailto:faure@kde.org") );
 
   KUrl mailtoOnly( "mailto:" );
   QVERIFY( mailtoOnly.isValid() ); // KDE3 said invalid, QUrl is more tolerant
@@ -1262,7 +1262,7 @@ void KUrlTest::testMailto()
   KUrl umail2 ( "mailto:Faure David <faure@kde.org>" );
   QCOMPARE( umail2.protocol(), QString("mailto") );
   QCOMPARE( umail2.path(), QString("Faure David <faure@kde.org>") );
-  QVERIFY( !KUrl::isRelativeURL("mailto:faure@kde.org") );
+  QVERIFY( !KUrl::isRelativeUrl("mailto:faure@kde.org") );
 #endif
 }
 
@@ -1324,8 +1324,8 @@ void KUrlTest::testUtf8()
   uloc.setPath( QString::fromUtf8( "/home/dfaure/Matériel" ) );
   QCOMPARE( uloc.url(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 would say %E9 here; but from now on URLs are always utf8 encoded.
   QCOMPARE( uloc.path(), QString::fromUtf8( "/home/dfaure/Matériel") );
-  QCOMPARE( uloc.prettyURL(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 wouldn't escape the letters here...
-  QCOMPARE( uloc.pathOrURL(), QString::fromUtf8( "/home/dfaure/Matériel") );             // ... but that's why pathOrURL is nicer.
+  QCOMPARE( uloc.prettyUrl(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 wouldn't escape the letters here...
+  QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8( "/home/dfaure/Matériel") );             // ... but that's why pathOrUrl is nicer.
   QCOMPARE( uloc.url(), QString( "file:///home/dfaure/Mat%C3%A9riel") );
   uloc = KUrl("file:///home/dfaure/Mat%C3%A9riel");
   QCOMPARE( uloc.path(), QString::fromUtf8("/home/dfaure/Matériel") );
@@ -1361,36 +1361,36 @@ void KUrlTest::testOtherEncodings()
 void KUrlTest::testPathOrURL()
 {
   kDebug() << k_funcinfo << endl;
-  // fromPathOrURL tests
-  KUrl uloc = KUrl::fromPathOrURL( "/home/dfaure/konqtests/Mat%C3%A9riel" );
+  // fromPathOrUrl tests
+  KUrl uloc = KUrl::fromPathOrUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
-  uloc = KUrl::fromPathOrURL( "http://www.kde.org" );
-  QCOMPARE( uloc.pathOrURL(), uloc.url() );
-  uloc = KUrl::fromPathOrURL( QString("www.kde.org" ) );
+  uloc = KUrl::fromPathOrUrl( "http://www.kde.org" );
+  QCOMPARE( uloc.pathOrUrl(), uloc.url() );
+  uloc = KUrl::fromPathOrUrl( QString("www.kde.org" ) );
   QVERIFY( uloc.isValid() ); // KDE3: was invalid. But it's now a url with path="www.kde.org", ok.
-  uloc = KUrl::fromPathOrURL( "index.html" );
+  uloc = KUrl::fromPathOrUrl( "index.html" );
   QVERIFY( uloc.isValid() ); // KDE3: was invalid; same as above
-  uloc = KUrl::fromPathOrURL( "" );
+  uloc = KUrl::fromPathOrUrl( "" );
   QVERIFY( !uloc.isValid() );
   KUser currentUser;
   const QString userName = currentUser.loginName();
   QVERIFY( !userName.isEmpty() );
-  uloc = KUrl::fromPathOrURL(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
+  uloc = KUrl::fromPathOrUrl(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 
-  // pathOrURL tests
-  uloc = KUrl::fromPathOrURL( "/home/dfaure/konqtests/Mat%C3%A9riel" );
-  QCOMPARE( uloc.pathOrURL(), uloc.path() );
+  // pathOrUrl tests
+  uloc = KUrl::fromPathOrUrl( "/home/dfaure/konqtests/Mat%C3%A9riel" );
+  QCOMPARE( uloc.pathOrUrl(), uloc.path() );
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.url(), QString("http://www.kde.org") );
   uloc = "file:///home/dfaure/konq%20tests/Mat%C3%A9riel#ref";
   // KDE3 difference: we don't decode accents and spaces in URLs anymore;
   // only in paths.
-  QCOMPARE( uloc.pathOrURL(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel#ref" ) );
+  QCOMPARE( uloc.pathOrUrl(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel#ref" ) );
   uloc = "file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query";
-  QCOMPARE( uloc.pathOrURL(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query" ) );
-  uloc = KUrl::fromPathOrURL( "/home/dfaure/file#with#hash" );
-  QCOMPARE( uloc.pathOrURL(), QString("/home/dfaure/file#with#hash" ) );
+  QCOMPARE( uloc.pathOrUrl(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query" ) );
+  uloc = KUrl::fromPathOrUrl( "/home/dfaure/file#with#hash" );
+  QCOMPARE( uloc.pathOrUrl(), QString("/home/dfaure/file#with#hash" ) );
 }
 
 void KUrlTest::testQueryItem()

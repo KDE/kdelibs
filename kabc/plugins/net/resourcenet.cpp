@@ -136,7 +136,7 @@ bool ResourceNet::load()
   QString tempFile;
 
   if ( !KIO::NetAccess::download( mUrl, tempFile, 0 ) ) {
-    addressBook()->error( i18n( "Unable to download file '%1'." ,  mUrl.prettyURL() ) );
+    addressBook()->error( i18n( "Unable to download file '%1'." ,  mUrl.prettyUrl() ) );
     return false;
   }
 
@@ -245,7 +245,7 @@ bool ResourceNet::save( Ticket* )
 
   ok = KIO::NetAccess::upload( tempFile.name(), mUrl, 0 );
   if ( !ok )
-    addressBook()->error( i18n( "Unable to upload to '%1'." ,  mUrl.prettyURL() ) );
+    addressBook()->error( i18n( "Unable to upload to '%1'." ,  mUrl.prettyUrl() ) );
 
   return ok;
 }

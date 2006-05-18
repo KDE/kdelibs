@@ -70,7 +70,7 @@ class KUrlPrivate;
  * \endcode
  *
  * The other way round: if the user can enter a string, that can be either a
- * path or a URL, then you need to use KUrl::fromPathOrURL() to build a KUrl.
+ * path or a URL, then you need to use KUrl::fromPathOrUrl() to build a KUrl.
  *
  * This must also be considered, when you have separated directory and file
  * strings and need to put them together.
@@ -95,14 +95,14 @@ class KUrlPrivate;
  * \endcode
  *
  * Also consider that some URLs contain the password, but this shouldn't be
- * visible. Your program should use prettyURL() every time it displays a
+ * visible. Your program should use prettyUrl() every time it displays a
  * URL, whether in the GUI or in debug output or...
  *
  * \code
  *    KUrl url( "ftp://name:password@ftp.faraway.org/bar/%23foo%23");
- *    QString visibleURL = url.prettyURL(); // -> "ftp://name@ftp.faraway.org/bar/%23foo%23"
+ *    QString visibleURL = url.prettyUrl(); // -> "ftp://name@ftp.faraway.org/bar/%23foo%23"
  * \endcode
- * Note that prettyURL() doesn't change the character escapes (like "%23").
+ * Note that prettyUrl() doesn't change the character escapes (like "%23").
  * Otherwise the URL would be invalid and the user wouldn't be able to use it in another
  * context.
  *
@@ -305,7 +305,7 @@ public:
    * @return true if the URL has a host
    **/
   bool hasHost() const { return !host().isEmpty(); }
-  
+
   /**
    * Options to be used in adjustPath
    */
@@ -315,12 +315,12 @@ public:
      * strips any trailing '/'
      */
     RemoveTrailingSlash,
- 
+
     /**
      * Do not change the path.
      */
     LeaveTrailingSlash,
-    
+
     /**
      * adds a trailing '/' if there is none yet
      */
@@ -335,7 +335,7 @@ public:
    *         be QString() if no path is set.
    */
   QString path( AdjustPathOption trailing ) const;
-  
+
   /**
    * same as QURL::path()
    */
@@ -360,13 +360,13 @@ public:
      * (e.g. /foo//bar) are cleaned up as well.  (set by default)
      */
     SimplifyDirSeparators = 0x00,
-    
+
     /**
      * The opposite of SimplifyDirSeparators.
      */
     KeepDirSeparators = 0x01
   };
-  
+
   Q_DECLARE_FLAGS(CleanPathOptions,CleanPathOption)
 
   /**
@@ -374,24 +374,24 @@ public:
    * Some servers seem not to like the removal of extra '/'
    * even though it is against the specification in RFC 2396.
    *
-   * @param options use KeepDirSeparators if you don't want to remove consecutive 
+   * @param options use KeepDirSeparators if you don't want to remove consecutive
    *                occurrences of directory separator
    */
   void cleanPath(const CleanPathOption& options = SimplifyDirSeparators);
 
-  
+
   /**
    * Add or remove a trailing slash to/from the path.
-   * 
+   *
    * If the URL has no path, then no '/' is added
    * anyway. And on the other side: If the path is "/", then this
    * character won't be stripped. Reason: "ftp://weis\@host" means something
    * completely different than "ftp://weis\@host/". So adding or stripping
    * the '/' would really alter the URL, while "ftp://host/path" and
    * "ftp://host/path/" mean the same directory.
-   * 
-   * @param trailing  RemoveTrailingSlash strips any trailing '/' and 
-   *                  AddTrailingSlash adds  a trailing '/' if there is none yet 
+   *
+   * @param trailing  RemoveTrailingSlash strips any trailing '/' and
+   *                  AddTrailingSlash adds  a trailing '/' if there is none yet
    */
   void adjustPath(AdjustPathOption trailing);
 
@@ -412,7 +412,7 @@ public:
 #endif
 
   /**
-   * Option to be used in encodedPathAndQuery 
+   * Option to be used in encodedPathAndQuery
    **/
   enum EncodedPathAndQueryOption
   {
@@ -481,7 +481,7 @@ public:
    * Returns the HTML reference (the part of the URL after "#").
    * @return The HTML-style reference.
    * @see split
-   * @see hasSubURL
+   * @see hasSubUrl
    * @see encodedHtmlRef
    */
   QString htmlRef() const;
@@ -538,7 +538,7 @@ public:
    * @return true if the file has at least one sub URL.
    * @see split
    */
-  bool hasSubURL() const;
+  bool hasSubUrl() const;
 
   /**
    * Adds to the current path.
@@ -615,28 +615,28 @@ public:
    *             with '/' or not.
    */
   void setFileName( const QString&_txt );
-  
+
   /**
    * option to be used in fileName and directory
    */
   enum DirectoryOption
   {
     /**
-     * This tells whether a trailing '/' should be ignored. 
-     * 
+     * This tells whether a trailing '/' should be ignored.
+     *
      * If the flag is not set, for both <tt>file:///hallo/torben/</tt> and <tt>file:///hallo/torben</tt>
      * the fileName is "torben" and the path is "hallo"
      *
-     * If the flag is set, then everything behind the last '/'is considered to be the filename. 
+     * If the flag is set, then everything behind the last '/'is considered to be the filename.
      * So "hallo/torben" will be the path and the filename will be empty.
      */
     ObeyTrailingSlash = 0x01,
     /**
      * tells whether the returned result should end with '/' or not.
      * If the flag is set, '/' is added to the end of the path
-     * 
+     *
      * If the path is empty or just "/" then this flag has no effect.
-     * 
+     *
      * This option should only be used in directory(), it has no effect in fileName()
      */
     AppendTrailingSlash = 0x02,
@@ -647,7 +647,7 @@ public:
 
   };
   Q_DECLARE_FLAGS(DirectoryOptions,DirectoryOption)
-  
+
 
   /**
    * Returns the filename of the path.
@@ -694,12 +694,12 @@ public:
    * in a drag and drop operation.
    * Please note that the string returned by url() will include
    * the password of the URL. If you want to show the URL to the
-   * user, use prettyURL().
+   * user, use prettyUrl().
    *
    * @param trailing use to add or remove a trailing slash to/from the path. See adjustPath
    * @return The complete URL, with all escape sequences intact, encoded
    * in a given charset.
-   * @see prettyURL()
+   * @see prettyUrl()
    */
   QString url( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
@@ -715,18 +715,18 @@ public:
    * characters. Password will not be shown.
    * @see url()
    */
-  QString prettyURL( AdjustPathOption trailing = LeaveTrailingSlash ) const;
+  QString prettyUrl( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
   /**
-   * Return the URL as a string, which will be either the URL (as prettyURL
+   * Return the URL as a string, which will be either the URL (as prettyUrl
    * would return) or, when the URL is a local file without query or ref,
    * the path.
-   * Use this method, together with its opposite, fromPathOrURL(),
+   * Use this method, together with its opposite, fromPathOrUrl(),
    * to display and even let the user edit URLs.
    *
    * @return the new KUrl
    */
-  QString pathOrURL() const;
+  QString pathOrUrl() const;
 
   /**
    * Returns the URL as a string, using the standard conventions for mime data
@@ -743,7 +743,7 @@ public:
    * possible it strips the right most URL. It continues stripping URLs.
    * @return a URL that is a level higher
    */
-  KUrl upURL( ) const;
+  KUrl upUrl( ) const;
 
 #if 0
   KUrl& operator=( const KUrl& _u );
@@ -751,8 +751,8 @@ public:
 #endif
 
   // Define those, since the constructors are explicit
-  //KUrl& operator=( const char * _url ) { *this = KUrl::fromPathOrURL(_url); return *this; }
-  KUrl& operator=( const QString& _url ) { *this = KUrl::fromPathOrURL(_url); return *this; }
+  //KUrl& operator=( const char * _url ) { *this = KUrl::fromPathOrUrl(_url); return *this; }
+  KUrl& operator=( const QString& _url ) { *this = KUrl::fromPathOrUrl(_url); return *this; }
 
   bool operator==( const KUrl& _u ) const;
   bool operator==( const QString& _u ) const;
@@ -771,7 +771,7 @@ public:
    */
   KDE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
 
-  
+
   /**
    * flags to be used in url compartators function like equal, or urlcmp
    **/
@@ -783,11 +783,11 @@ public:
     CompareWithoutTrailingSlash = 0x01,
     /**
      * disables comparison of HTML-style references.
-     */    
+     */
     CompareWithoutFragment = 0x02
   };
   Q_DECLARE_FLAGS(EqualsOptions,EqualsOption)
-  
+
   /**
    * Compares this url with @p u.
    * @param u the URL to compare this one with.
@@ -821,7 +821,7 @@ public:
    *
    * @param _url The URL that has to be split.
    * @return An empty list on error or the list of split URLs.
-   * @see hasSubURL
+   * @see hasSubUrl
    */
   static List split( const QString& _url );
 
@@ -838,7 +838,7 @@ public:
    * @return An empty list on error or the list of split URLs.
    *
    * @param _url The URL that has to be split.
-   * @see hasSubURL
+   * @see hasSubUrl
    */
   static List split( const KUrl& _url );
 
@@ -877,7 +877,7 @@ public:
    * @param text the string representation of the URL to convert
    * @return the new KUrl
    */
-  static KUrl fromPathOrURL( const QString& text );
+  static KUrl fromPathOrUrl( const QString& text );
 
   /**
    * Creates a KUrl from a string, using the standard conventions for mime data
@@ -958,7 +958,7 @@ public:
    * @param _url URL to examine
    * @return true when the URL is likely to be "relative", false otherwise.
    */
-  static bool isRelativeURL(const QString &_url);
+  static bool isRelativeUrl(const QString &_url);
 
   /**
    * Convenience function
@@ -974,7 +974,7 @@ public:
    * @param url new URL
    * @see adjustPath()
    */
-  static QString relativeURL(const KUrl &base_url, const KUrl &url);
+  static QString relativeUrl(const KUrl &base_url, const KUrl &url);
 
   /**
    * Convenience function
@@ -1019,6 +1019,6 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  * @param _url2 A URL that will be compared with the reference URL
  * @param options a set of KUrl::EqualsOption flags
  */
-KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); 
+KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options );
 
 #endif

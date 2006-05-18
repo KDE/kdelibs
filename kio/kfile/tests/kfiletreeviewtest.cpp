@@ -59,7 +59,7 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
    setCentralWidget( treeView );
    resize( 600, 400 );
 
-   showPath( KUrl::fromPathOrURL( QDir::homePath() ));
+   showPath( KUrl::fromPathOrUrl( QDir::homePath() ));
 }
 
 void testFrame::showPath( const KUrl &url )
@@ -93,16 +93,16 @@ void testFrame::urlsDropped( QWidget* , QDropEvent* , KUrl::List& list )
 {
    KUrl::List::ConstIterator it = list.begin();
    for ( ; it != list.end(); ++it ) {
-      kDebug() << "Url dropped: " << (*it).prettyURL() << endl;
+      kDebug() << "Url dropped: " << (*it).prettyUrl() << endl;
    }
 }
 
 void testFrame::copyURLs( KUrl::List& list, KUrl& to )
 {
    KUrl::List::ConstIterator it = list.begin();
-   kDebug() << "Copy to " << to.prettyURL() << endl;
+   kDebug() << "Copy to " << to.prettyUrl() << endl;
    for ( ; it != list.end(); ++it ) {
-      kDebug() << "Url: " << (*it).prettyURL() << endl;
+      kDebug() << "Url: " << (*it).prettyUrl() << endl;
    }
 
 }

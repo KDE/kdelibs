@@ -47,7 +47,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KUrl& url,
       m_recurseChildren(true),
       m_showExtensions(true)
 {
-    kDebug( 250) << "Creating branch for url " << url.prettyURL() << endl;
+    kDebug( 250) << "Creating branch for url " << url.prettyUrl() << endl;
 
     /* if non exists, create one */
     if( ! branchRoot )
@@ -107,7 +107,7 @@ void KFileTreeBranch::setOpenPixmap( const QPixmap& pix )
 void KFileTreeBranch::slotListerStarted( const KUrl &url )
 {
     /* set the parent correct if it is zero. */
-    kDebug( 250) << "Starting to list " << url.prettyURL() << endl;
+    kDebug( 250) << "Starting to list " << url.prettyUrl() << endl;
 }
 
 
@@ -121,10 +121,10 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
      * and check again.
      */
     KUrl url = item->url();
-    // kDebug(250) << "Item's url is " << url.prettyURL() << endl;
+    // kDebug(250) << "Item's url is " << url.prettyUrl() << endl;
     KUrl dirUrl( url );
     dirUrl.setFileName( QString() );
-    // kDebug(250) << "Directory url is " << dirUrl.prettyURL() << endl;
+    // kDebug(250) << "Directory url is " << dirUrl.prettyUrl() << endl;
 
     parent  = findTVIByURL( dirUrl );
     // kDebug(250) << "Returning as parent item <" << parent <<  ">" << endl;
@@ -216,7 +216,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
                 }
                 if( hardLinks >= 2 ) // "Normal" directory with subdirs
                 {
-                    kDebug(250) << "Emitting for " << url.prettyURL() << endl;
+                    kDebug(250) << "Emitting for " << url.prettyUrl() << endl;
                     emit( directoryChildCount( newKFTVI, hardLinks-2)); // parentItem, hardLinks-1 ));
                 }
             }
@@ -274,7 +274,7 @@ bool KFileTreeBranch::showExtensions( ) const
 void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 {
     if( !it ) return;
-    kDebug(250) << "Slot Delete Item hitted for " << it->url().prettyURL() << endl;
+    kDebug(250) << "Slot Delete Item hitted for " << it->url().prettyUrl() << endl;
 
     KFileTreeViewItem *kfti = static_cast<KFileTreeViewItem*>(it->extraData(this));
 
@@ -331,7 +331,7 @@ void KFileTreeBranch::slotDirlisterClear()
 
 void KFileTreeBranch::slotDirlisterClearURL( const KUrl& url )
 {
-    kDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
+    kDebug(250)<< "*** Clear for URL !" << url.prettyUrl() << endl;
     KFileItem *item = findByURL( url );
     if( item )
     {
@@ -394,7 +394,7 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
 
 void KFileTreeBranch::slCompleted( const KUrl& url )
 {
-    kDebug(250) << "SlotCompleted hit for " << url.prettyURL() << endl;
+    kDebug(250) << "SlotCompleted hit for " << url.prettyUrl() << endl;
     KFileTreeViewItem *currParent = findTVIByURL( url );
     if( ! currParent ) return;
 
@@ -432,7 +432,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
         }
 
         KFileTreeViewItem    *nextChild = 0;
-        kDebug(250) << "Recursing " << url.prettyURL() << "? " << wantRecurseUrl << endl;
+        kDebug(250) << "Recursing " << url.prettyUrl() << "? " << wantRecurseUrl << endl;
 
         if( wantRecurseUrl && currParent )
         {
@@ -471,7 +471,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
                     if( kfi && kfi->isReadable())
                     {
                         KUrl recurseUrl = kfi->url();
-                        kDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyURL() << endl;
+                        kDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyUrl() << endl;
                         openURL( recurseUrl, true );
                     }
                 }
@@ -493,13 +493,13 @@ bool KFileTreeBranch::populate( const KUrl& url,  KFileTreeViewItem *currItem )
     if( ! currItem )
         return ret;
 
-    kDebug(250) << "Populating <" << url.prettyURL() << ">" << endl;
+    kDebug(250) << "Populating <" << url.prettyUrl() << ">" << endl;
 
     /* Add this url to the list of urls to recurse for children */
     if( m_recurseChildren )
     {
         m_openChildrenURLs.append( url );
-        kDebug(250) << "Appending to list " << url.prettyURL() << endl;
+        kDebug(250) << "Appending to list " << url.prettyUrl() << endl;
     }
 
     if( ! currItem->alreadyListed() )

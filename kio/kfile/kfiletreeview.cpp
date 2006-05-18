@@ -301,7 +301,7 @@ void KFileTreeView::slotExpanded( Q3ListViewItem *item )
    if( it->isDir() && branch && item->childCount() == 0 )
    {
       /* check here if the branch really needs to be populated again */
-      kDebug(250 ) << "starting to open " << it->url().prettyURL() << endl;
+      kDebug(250 ) << "starting to open " << it->url().prettyUrl() << endl;
       startAnimation( it );
       bool branchAnswer = branch->populate( it->url(), it );
       kDebug(250) << "Branches answer: " << branchAnswer << endl;
@@ -367,7 +367,7 @@ KFileTreeBranch* KFileTreeView::addBranch( const KUrl &path, const QString& name
 KFileTreeBranch* KFileTreeView::addBranch( const KUrl &path, const QString& name,
                               const QPixmap& pix, bool showHidden )
 {
-   kDebug(250) << "adding another root " << path.prettyURL() << endl;
+   kDebug(250) << "adding another root " << path.prettyUrl() << endl;
 
    /* Open a new branch */
    KFileTreeBranch *newBranch = new KFileTreeBranch( this, path, name, pix,
@@ -577,7 +577,7 @@ void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
    else
    {
       if( item )
-	 kDebug(250)<< "StopAnimation - could not find item " << item->url().prettyURL()<< endl;
+	 kDebug(250)<< "StopAnimation - could not find item " << item->url().prettyUrl()<< endl;
       else
 	 kDebug(250)<< "StopAnimation - item is zero !" << endl;
    }
@@ -608,7 +608,7 @@ void KFileTreeView::slotOnItem( Q3ListViewItem *item )
        if ( url.isLocalFile() )
 	  emit onItem( url.path() );
        else
-	  emit onItem( url.prettyURL() );
+	  emit onItem( url.prettyUrl() );
     }
 }
 
@@ -640,7 +640,7 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 
          url.addPath( partUrl );
 
-         kDebug(250) << "assembled complete dir string " << url.prettyURL() << endl;
+         kDebug(250) << "assembled complete dir string " << url.prettyUrl() << endl;
 
          KFileItem *fi = brnch->findByURL( url );
          if( fi )

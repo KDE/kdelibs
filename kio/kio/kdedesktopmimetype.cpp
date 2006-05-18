@@ -206,7 +206,7 @@ pid_t KDEDesktopMimeType::runLink( const KUrl& _url, const KSimpleConfig &cfg )
   QString u = cfg.readPathEntry( "URL" );
   if ( u.isEmpty() )
   {
-    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.prettyURL() );
+    QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.prettyUrl() );
     KMessageBoxWrapper::error( 0, tmp );
     return 0;
   }

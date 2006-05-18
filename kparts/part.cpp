@@ -344,7 +344,7 @@ bool ReadOnlyPart::openURL( const KUrl &url )
     if (ret)
     {
         emit completed();
-        emit setWindowCaption( m_url.prettyURL() );
+        emit setWindowCaption( m_url.prettyUrl() );
     };
     return ret;
   }
@@ -406,7 +406,7 @@ void ReadOnlyPart::slotJobFinished( KJob * job )
   else
   {
     if ( openFile() )
-      emit setWindowCaption( m_url.prettyURL() );
+      emit setWindowCaption( m_url.prettyUrl() );
     emit completed();
   }
 }
@@ -417,8 +417,8 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
   {
     if (!m_url.isEmpty())
     {
-      kDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.prettyURL() << endl;
-      emit setWindowCaption( m_url.prettyURL() );
+      kDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.prettyUrl() << endl;
+      emit setWindowCaption( m_url.prettyUrl() );
     } else emit setWindowCaption( "" );
   }
 }
@@ -568,7 +568,7 @@ bool ReadWritePart::saveAs( const KUrl & kurl )
   prepareSaving();
   bool result = save(); // Save local file and upload local file
   if (result)
-    emit setWindowCaption( m_url.prettyURL() );
+    emit setWindowCaption( m_url.prettyUrl() );
   else
   {
     m_url = d->m_originalURL;

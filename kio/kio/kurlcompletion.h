@@ -155,7 +155,7 @@ public:
 	 * urls.
 	 * @param text the text to process
 	 * @return the path or URL resulting from this operation. If you
-         * want to convert it to a KUrl, use KUrl::fromPathOrURL.
+         * want to convert it to a KUrl, use KUrl::fromPathOrUrl.
 	 */
 	QString replacedPath( const QString& text );
 

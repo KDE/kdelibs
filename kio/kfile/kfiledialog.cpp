@@ -282,7 +282,7 @@ KUrl KFileDialog::getCompleteURL(const QString &_url)
     QString url = KShell::tildeExpand(_url);
     KUrl u;
 
-    if ( KUrl::isRelativeURL(url) ) // only a full URL isn't relative. Even /path is.
+    if ( KUrl::isRelativeUrl(url) ) // only a full URL isn't relative. Even /path is.
     {
         if (!url.isEmpty() && !QDir::isRelativePath(url) ) // absolute path
             u.setPath( url );
@@ -494,7 +494,7 @@ void KFileDialog::slotOk()
 
     if (!KAuthorized::authorizeURLAction("open", KUrl(), d->url))
     {
-        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyURL());
+        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
         KMessageBox::error( d->mainWidget, msg);
         return;
     }
@@ -512,7 +512,7 @@ void KFileDialog::slotOk()
         {
             if (!KAuthorized::authorizeURLAction("open", KUrl(), *it))
             {
-                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyURL());
+                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyUrl());
                 KMessageBox::error( d->mainWidget, msg);
                 return;
             }
@@ -607,7 +607,7 @@ void KFileDialog::accept()
         // we strip the last slash (-1) because KUrlComboBox does that as well
         // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
         // work.
-        QString file = url.isLocalFile() ? url.path(KUrl::RemoveTrailingSlash) : url.prettyURL(KUrl::RemoveTrailingSlash);
+        QString file = url.isLocalFile() ? url.path(KUrl::RemoveTrailingSlash) : url.prettyUrl(KUrl::RemoveTrailingSlash);
 
         // remove dupes
         for ( int i = 1; i < locationEdit->count(); i++ ) {
@@ -830,11 +830,11 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     {
         if ( !QFile::exists( d->url.path() ) )
         {
-            d->url = d->url.upURL();
+            d->url = d->url.upUrl();
             QDir dir( d->url.path() );
             while ( !dir.exists() )
             {
-                d->url = d->url.upURL();
+                d->url = d->url.upUrl();
                 dir.setPath( d->url.path() );
             }
         }
@@ -1151,7 +1151,7 @@ void KFileDialog::enterURL( const KUrl& url)
 
 void KFileDialog::enterURL( const QString& url )
 {
-    setURL( KUrl::fromPathOrURL( KUrlCompletion::replacedPath( url, true, true )) );
+    setURL( KUrl::fromPathOrUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
 
@@ -2231,7 +2231,7 @@ KUrl KFileDialog::getStartURL( const QString& startDir,
         if (startDir[0] == ':')
         {
             recentDirClass = startDir;
-            ret = KUrl::fromPathOrURL( KRecentDirs::dir(recentDirClass) );
+            ret = KUrl::fromPathOrUrl( KRecentDirs::dir(recentDirClass) );
         }
         else
         {

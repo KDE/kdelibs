@@ -566,7 +566,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
 void HTTPProtocol::stat(const KUrl& url)
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::stat " << url.prettyURL()
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::stat " << url.prettyUrl()
                 << endl;
 
   if ( !checkRequestURL( url ) )
@@ -578,7 +578,7 @@ void HTTPProtocol::stat(const KUrl& url)
     if ( statSide != "source" )
     {
       // When uploading we assume the file doesn't exit
-      error( ERR_DOES_NOT_EXIST, url.prettyURL() );
+      error( ERR_DOES_NOT_EXIST, url.prettyUrl() );
       return;
     }
 
@@ -739,13 +739,13 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
     else
     {
       kDebug(7113) << "Error: no URL contained in response to PROPFIND on "
-                    << url.prettyURL() << endl;
+                    << url.prettyUrl() << endl;
     }
   }
 
   if ( stat || !hasResponse )
   {
-    error( ERR_DOES_NOT_EXIST, url.prettyURL() );
+    error( ERR_DOES_NOT_EXIST, url.prettyUrl() );
   }
   else
   {
@@ -1184,7 +1184,7 @@ void HTTPProtocol::get( const KUrl& url )
 
 void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyURL()
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyUrl()
                 << endl;
 
   if ( !checkRequestURL( url ) )
@@ -1247,8 +1247,8 @@ void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite )
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyURL()
-                << " -> " << dest.prettyURL() << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyUrl()
+                << " -> " << dest.prettyUrl() << endl;
 
   if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
     return;
@@ -1279,8 +1279,8 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite 
 
 void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, bool overwrite )
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyURL()
-                << " -> " << dest.prettyURL() << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyUrl()
+                << " -> " << dest.prettyUrl() << endl;
 
   if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
     return;
@@ -1310,7 +1310,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, bool overwrite )
 
 void HTTPProtocol::del( const KUrl& url, bool )
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyURL()
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyUrl()
                 << endl;
 
   if ( !checkRequestURL( url ) )
@@ -1335,7 +1335,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
 void HTTPProtocol::post( const KUrl& url )
 {
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::post "
-                << url.prettyURL() << endl;
+                << url.prettyUrl() << endl;
 
   if ( !checkRequestURL( url ) )
     return;
@@ -1353,7 +1353,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
                             const QString& type, const QString& owner )
 {
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::davLock "
-                << url.prettyURL() << endl;
+                << url.prettyUrl() << endl;
 
   if ( !checkRequestURL( url ) )
     return;
@@ -1418,7 +1418,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
 void HTTPProtocol::davUnlock( const KUrl& url )
 {
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::davUnlock "
-                << url.prettyURL() << endl;
+                << url.prettyUrl() << endl;
 
   if ( !checkRequestURL( url ) )
     return;
@@ -1645,7 +1645,7 @@ void HTTPProtocol::httpError()
 
   switch ( m_request.method ) {
     case HTTP_PUT:
-      action = i18n( "upload %1" , m_request.url.prettyURL());
+      action = i18n( "upload %1" , m_request.url.prettyUrl());
       break;
     default:
       // this should not happen, this function is for http errors only
@@ -3914,7 +3914,7 @@ void HTTPProtocol::slave_status()
 void HTTPProtocol::mimetype( const KUrl& url )
 {
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::mimetype: "
-                << url.prettyURL() << endl;
+                << url.prettyUrl() << endl;
 
   if ( !checkRequestURL( url ) )
     return;

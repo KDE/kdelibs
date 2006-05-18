@@ -549,7 +549,7 @@ kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
 }
 kdbgstream& kdbgstream::operator<<( const KUrl& u ) {
     if ( d->print )
-        d->output += u.prettyURL();
+        d->output += u.prettyUrl();
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QStringList& l ) {

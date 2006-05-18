@@ -100,7 +100,7 @@ void KUrlRequesterDlg::slotClear()
 KUrl KUrlRequesterDlg::selectedURL() const
 {
     if ( result() == QDialog::Accepted )
-        return KUrl::fromPathOrURL( urlRequester_->url() );
+        return KUrl::fromPathOrUrl( urlRequester_->url() );
     else
         return KUrl();
 }

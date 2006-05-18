@@ -186,49 +186,49 @@ public:
 
 	/**
      * Sets @p url into the edit field of the combobox. It uses
-     * KUrl::prettyURL() so that the url is properly decoded for
+     * KUrl::prettyUrl() so that the url is properly decoded for
      * displaying.
      */
     void setEditURL( const KUrl& url );
    
 	/**
      * Appends @p url to the combobox.
-     * KUrl::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
     void addURL( const KUrl& url );
 
 	/**
      * Appends @p url with the icon &p icon to the combobox.
-     * KUrl::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
     void addURL( const QIcon& icon,  const KUrl& url );
 
 	/**
      * Inserts @p url at position @p index into the combobox.
-     * KUrl::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
 	void insertURL( int index, const KUrl& url );
 
     /**
      * Inserts @p url with the pixmap &p pixmap at position @p index into
-     * the combobox. KUrl::prettyURL() is used so that the url is
+     * the combobox. KUrl::prettyUrl() is used so that the url is
      * properly decoded for displaying.
      */
     void insertURL( int index, const QIcon& icon, const KUrl& url );
 
     /**
      * Replaces the item at position @p index with @p url.
-     * KUrl::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
     void changeURL( int index, const KUrl& url );
 
     /**
      * Replaces the item at position @p index with @p url and icon @p icon.
-     * KUrl::prettyURL() is used so that the url is properly decoded
+     * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
     void changeURL( int index , const QIcon& icon, const KUrl& url);

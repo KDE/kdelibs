@@ -97,7 +97,7 @@ QByteArray K3BookmarkDrag::encodedData( const char* mime ) const
             KUrl::List::ConstIterator uit = m_lstDragURLs.begin();
             KUrl::List::ConstIterator uEnd = m_lstDragURLs.end();
             for ( ; uit != uEnd ; ++uit )
-                uris.append( (*uit).prettyURL() );
+                uris.append( (*uit).prettyUrl() );
 
             Q3CString s = uris.join( "\n" ).toLocal8Bit();
             a.resize( s.length() + 1 ); // trailing zero
@@ -142,7 +142,7 @@ Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
             {
                 //kDebug(7043) << "K3BookmarkDrag::decode url=" << (*uit).url() << endl;
                 bookmarks.append( KBookmark::standaloneBookmark( 
-                                        (*uit).prettyURL(), (*uit) ));
+                                        (*uit).prettyUrl(), (*uit) ));
             }
             return bookmarks;
         }
@@ -160,7 +160,7 @@ Q3ValueList<KBookmark> K3BookmarkDrag::decode( const QMimeSource * e )
             for( ; it!=end; ++it)
             {
                 //kDebug(7043)<<"K3BookmarkDrag::decode string"<<(*it)<<endl;
-                bookmarks.append( KBookmark::standaloneBookmark( KUrl(*it).prettyURL(), KUrl(*it)));
+                bookmarks.append( KBookmark::standaloneBookmark( KUrl(*it).prettyUrl(), KUrl(*it)));
             }
             return bookmarks;
         }

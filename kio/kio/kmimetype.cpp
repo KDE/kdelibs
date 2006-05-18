@@ -200,7 +200,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
       if ( mime )
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
-        if ( _is_local_file || _url.hasSubURL() || // Explicitly trust suburls
+        if ( _is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
              KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
         {
             if ( _is_local_file && !_fast_mode ) {

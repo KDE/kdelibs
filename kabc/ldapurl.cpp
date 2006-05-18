@@ -147,7 +147,7 @@ void LDAPUrl::updateQuery()
     q.remove( q.length() - 1, 1 );
 
   setQuery(q);
-  kDebug(5700) << "LDAP URL updateQuery(): " << prettyURL() << endl;
+  kDebug(5700) << "LDAP URL updateQuery(): " << prettyUrl() << endl;
 }
 
 void LDAPUrl::parseQuery()

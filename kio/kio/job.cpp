@@ -389,7 +389,7 @@ SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
     }
 
 
-    if (m_url.hasSubURL())
+    if (m_url.hasSubUrl())
     {
        KUrl::List list = KUrl::split(m_url);
        list.removeLast();
@@ -658,7 +658,7 @@ void MkdirJob::slotRedirection( const KUrl &url)
      {
        kWarning(7007) << "MkdirJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        setError( ERR_ACCESS_DENIED );
-       setErrorText( url.prettyURL() );
+       setErrorText( url.prettyUrl() );
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -793,7 +793,7 @@ void StatJob::slotRedirection( const KUrl &url)
      {
        kWarning(7007) << "StatJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        setError( ERR_ACCESS_DENIED );
-       setErrorText( url.prettyURL() );
+       setErrorText( url.prettyUrl() );
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -897,7 +897,7 @@ void TransferJob::slotRedirection( const KUrl &url)
     {
        kDebug(7007) << "TransferJob::slotRedirection: CYCLIC REDIRECTION!" << endl;
        setError( ERR_CYCLIC_LINK );
-       setErrorText( m_url.prettyURL() );
+       setErrorText( m_url.prettyUrl() );
     }
     else
     {
@@ -1298,7 +1298,7 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, bool s
     if (_error)
     {
         KIO_ARGS << (int)1 << url;
-        TransferJob * job = new PostErrorJob(_error, url.prettyURL(), packedArgs, postData, showProgressInfo);
+        TransferJob * job = new PostErrorJob(_error, url.prettyUrl(), packedArgs, postData, showProgressInfo);
         return job;
     }
 
@@ -1532,7 +1532,7 @@ void FileCopyJob::slotStart()
           (m_src.port() == m_dest.port()) &&
           (m_src.user() == m_dest.user()) &&
           (m_src.pass() == m_dest.pass()) &&
-          !m_src.hasSubURL() && !m_dest.hasSubURL())
+          !m_src.hasSubUrl() && !m_dest.hasSubUrl())
       {
          startRenameJob(m_src);
          return;
@@ -1559,7 +1559,7 @@ void FileCopyJob::startBestCopyMethod()
        (m_src.port() == m_dest.port()) &&
        (m_src.user() == m_dest.user()) &&
        (m_src.pass() == m_dest.pass()) &&
-       !m_src.hasSubURL() && !m_dest.hasSubURL())
+       !m_src.hasSubUrl() && !m_dest.hasSubUrl())
    {
       startCopyJob();
    }
@@ -2316,7 +2316,7 @@ void CopyJob::slotResultStating( KJob *job )
         else if ( destinationState == DEST_IS_FILE ) // (case 2)
         {
             setError( ERR_IS_FILE );
-            setErrorText( m_dest.prettyURL() );
+            setErrorText( m_dest.prettyUrl() );
             emitResult();
             return;
         }
@@ -2475,7 +2475,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
                 // (This can happen when dropping a link to a webpage with no path)
                 if ( destFileName.isEmpty() )
-                    destFileName = KIO::encodeFileName( info.uSource.prettyURL() );
+                    destFileName = KIO::encodeFileName( info.uSource.prettyUrl() );
 
                 //kDebug(7007) << " adding destFileName=" << destFileName << endl;
                 info.uDest.addPath( destFileName );
@@ -2547,7 +2547,7 @@ void CopyJob::statCurrentSrc()
                     // Different protocols, we'll create a .desktop file
                     // We have to change the extension anyway, so while we're at it,
                     // name the file like the URL
-                    info.uDest.addPath( KIO::encodeFileName( m_currentSrcURL.prettyURL() )+".desktop" );
+                    info.uDest.addPath( KIO::encodeFileName( m_currentSrcURL.prettyUrl() )+".desktop" );
                 }
             }
             files.append( info ); // Files and any symlinks
@@ -2587,7 +2587,7 @@ void CopyJob::statCurrentSrc()
         if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
             QPointer<CopyJob> that = this;
             if (isInteractive())
-                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
+                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyUrl()));
             if (that)
                 statNextSrc(); // we could use a loop instead of a recursive call :)
             return;
@@ -3243,7 +3243,7 @@ void CopyJob::copyNextFile()
                 } else {
                     // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
                     setError( ERR_CANNOT_SYMLINK );
-                    setErrorText( (*it).uDest.prettyURL() );
+                    setErrorText( (*it).uDest.prettyUrl() );
                     emitResult();
                     return;
                 }
@@ -3262,7 +3262,7 @@ void CopyJob::copyNextFile()
             newjob = newJob;
             //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest << endl;
             //emit linking( this, (*it).linkDest, (*it).uDest );
-            m_currentSrcURL = KUrl::fromPathOrURL( (*it).linkDest );
+            m_currentSrcURL = KUrl::fromPathOrUrl( (*it).linkDest );
             m_currentDestURL=(*it).uDest;
             d->m_bURLDirty = true;
             //Observer::self()->slotCopying( this, m_currentSrcURL, (*it).uDest ); // should be slotLinking perhaps
@@ -3893,7 +3893,7 @@ void DeleteJob::statNextSrc()
             QPointer<DeleteJob> that = this;
             ++m_currentStat;
             if (isInteractive())
-                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
+                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyUrl()));
             if (that)
                 statNextSrc();
             return;

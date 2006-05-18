@@ -370,7 +370,7 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 	// no protocol.  (KUrl does this only for absoute paths)
 	if ( protocol_regex.indexIn( url_copy ) == 0 )
     {
-		m_kurl = new KUrl( KUrl::fromPathOrURL( url_copy ) );
+		m_kurl = new KUrl( KUrl::fromPathOrUrl( url_copy ) );
 		m_isURL = true;
 	}
 	else // relative path or ~ or $something
@@ -388,7 +388,7 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 		}
 		else
 		{
-			KUrl base = KUrl::fromPathOrURL( cwd );
+			KUrl base = KUrl::fromPathOrUrl( cwd );
                         base.adjustPath(KUrl::AddTrailingSlash);
 
 			if ( !QDir::isRelativePath(url_copy) ||
@@ -959,7 +959,7 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 		return false;
 
 	// Use d->cwd as base url in case url is not absolute
-	KUrl url_cwd = KUrl::fromPathOrURL( d->cwd );
+	KUrl url_cwd = KUrl::fromPathOrUrl( d->cwd );
 
 	// Create an URL with the directory to be listed
 	KUrl url_dir( url_cwd, url.kurl()->url() );
@@ -991,12 +991,12 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 
 	// List files if needed
 	//
-	if ( !isListedURL( CTUrl, url_dir.prettyURL(), url.file() ) )
+	if ( !isListedURL( CTUrl, url_dir.prettyUrl(), url.file() ) )
 	{
 		stop();
 		clear();
 
-		setListedURL( CTUrl, url_dir.prettyURL(), QString() );
+		setListedURL( CTUrl, url_dir.prettyUrl(), QString() );
 
 		QList<KUrl*> url_list;
 		url_list.append( new KUrl( url_dir ) );
@@ -1098,7 +1098,7 @@ QString KUrlCompletion::listDirectories(
 	QStringList::ConstIterator it = dirList.begin();
 
 	for ( ; it != dirList.end(); ++it ) {
-		url_list.append( new KUrl( KUrl::fromPathOrURL( *it ) ) );
+		url_list.append( new KUrl( KUrl::fromPathOrUrl( *it ) ) );
         }
 
 	listURLs( url_list, filter, only_exe, no_hidden );
@@ -1129,7 +1129,7 @@ void KUrlCompletion::listURLs(
 	d->list_urls_only_exe = only_exe;
 	d->list_urls_no_hidden = no_hidden;
 
-//	kDebug() << "Listing URLs: " << urls[0]->prettyURL() << ",..." << endl;
+//	kDebug() << "Listing URLs: " << urls[0]->prettyUrl() << ",..." << endl;
 
 	// Start it off by calling slotIOFinished
 	//
@@ -1222,7 +1222,7 @@ void KUrlCompletion::slotIOFinished( KJob * job )
 
 //		d->list_urls.removeAll( kurl );
 
-//		kDebug() << "Start KIO: " << kurl->prettyURL() << endl;
+//		kDebug() << "Start KIO: " << kurl->prettyUrl() << endl;
 
 		d->list_job = KIO::listDir( *kurl, false );
 		d->list_job->addMetaData("no-auth-prompt", "true");

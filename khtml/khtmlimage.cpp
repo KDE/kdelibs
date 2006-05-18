@@ -135,7 +135,7 @@ bool KHTMLImage::openURL( const KUrl &url )
     KParts::URLArgs args = m_ext->urlArgs();
     m_mimeType = args.serviceType;
 
-    emit setWindowCaption( url.prettyURL() );
+    emit setWindowCaption( url.prettyUrl() );
 
     // Need to keep a copy of the offsets since they are cleared when emitting completed
     m_xOffset = args.xOffset;

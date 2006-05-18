@@ -15,7 +15,7 @@ int main( int argc, char **argv )
     if ( u.isValid() )
         KMessageBox::information( 0L,
                                 QString("You selected the url: %1")
-                                .arg( u.prettyURL() ), "Selected URL" );
+                                .arg( u.prettyUrl() ), "Selected URL" );
 
     return 0;
 }

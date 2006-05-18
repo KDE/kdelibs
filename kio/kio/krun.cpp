@@ -110,7 +110,7 @@ pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, QWidget* window, bo
   if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( window,
-            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyURL())) );
+            i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyUrl())) );
     return 0;
   }
   else if ( _mimetype == "application/x-desktop" )
@@ -150,13 +150,13 @@ pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, QWidget* window, bo
   {
     KMessageBox::sorry( window,
         i18n("<qt>The file <b>%1</b> is an executable program. "
-             "For safety it will not be started.</qt>", Qt::escape(u.prettyURL())));
+             "For safety it will not be started.</qt>", Qt::escape(u.prettyUrl())));
     return 0;
   }
   if ( noAuth )
   {
     KMessageBoxWrapper::error( window,
-        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyURL())) );
+        i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyUrl())) );
     return 0;
   }
 
@@ -753,7 +753,7 @@ void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFil
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0 );
-  kDebug(7010) << " new KRun " << this << " " << url.prettyURL() << " timer=" << &m_timer << endl;
+  kDebug(7010) << " new KRun " << this << " " << url.prettyUrl() << " timer=" << &m_timer << endl;
 
   KGlobal::ref();
 }
@@ -773,7 +773,7 @@ void KRun::init()
   }
   if ( !KAuthorized::authorizeURLAction( "open", KUrl(), m_strURL))
   {
-    QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyURL());
+    QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyUrl());
     d->m_showingError = true;
     KMessageBoxWrapper::error( d->m_window, msg );
     d->m_showingError = false;
@@ -800,7 +800,7 @@ void KRun::init()
       if ( KDE_stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
-        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(m_strURL.prettyURL()) ) );
+        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(m_strURL.prettyUrl()) ) );
         d->m_showingError = false;
         m_bFault = true;
         m_bFinished = true;

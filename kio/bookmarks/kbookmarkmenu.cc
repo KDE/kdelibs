@@ -260,7 +260,7 @@ void RMB::slotProperties()
 
   KBookmark bookmark = atAddress(m_highlightedAddress);
 
-  QString folder = bookmark.isGroup() ? QString() : bookmark.url().pathOrURL();
+  QString folder = bookmark.isGroup() ? QString() : bookmark.url().pathOrUrl();
   KBookmarkEditDialog dlg( bookmark.fullText(), folder,
                            m_pManager, KBookmarkEditDialog::ModifyMode, 0,
                            0, 0, i18n("Bookmark Properties") );
@@ -270,7 +270,7 @@ void RMB::slotProperties()
   makeTextNodeMod(bookmark, "title", dlg.finalTitle());
   if ( !dlg.finalUrl().isNull() )
   {
-    KUrl u = KUrl::fromPathOrURL(dlg.finalUrl());
+    KUrl u = KUrl::fromPathOrUrl(dlg.finalUrl());
     bookmark.internalElement().setAttribute("href", u.url()); // utf8
   }
 
@@ -567,7 +567,7 @@ void KBookmarkMenu::fillBookmarkMenu()
         action->setProperty( "url", bm.url().url() );
         action->setProperty( "address", bm.address() );
 
-        action->setToolTip( bm.url().pathOrURL() );
+        action->setToolTip( bm.url().pathOrUrl() );
 
         m_parentMenu->addAction(action);
         m_actions.append( action );

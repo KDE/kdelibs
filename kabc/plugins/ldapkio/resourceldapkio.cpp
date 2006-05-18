@@ -162,7 +162,7 @@ QString ResourceLDAPKIO::findUid( const QString &uid )
   url.setExtension( "x-dir", "one" );
 
   kDebug(7125) << "ResourceLDAPKIO::findUid() uid: " << uid << " url " <<
-    url.prettyURL() << endl;
+    url.prettyUrl() << endl;
 
   KIO::ListJob * listJob = KIO::listDir( url, false /* no GUI */ );
   connect( listJob,
@@ -407,7 +407,7 @@ void ResourceLDAPKIO::init()
 
   d->mReadOnly = readOnly();
 
-  kDebug(7125) << "resource_ldapkio url: " << d->mLDAPUrl.prettyURL() << endl;
+  kDebug(7125) << "resource_ldapkio url: " << d->mLDAPUrl.prettyUrl() << endl;
 }
 
 void ResourceLDAPKIO::writeConfig( KConfig *config )

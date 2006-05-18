@@ -95,7 +95,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 				break;
 			default:
 				// double decoding in case the printer name contains chars like '#' that are
-				// not decoded by "prettyURL".
+				// not decoded by "prettyUrl".
 				txt.append(s.arg(i18n("URI")).arg(shadowPassword( p->device() )));
 				break;
 		}

@@ -285,7 +285,7 @@ bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("Malformed URL\n%1",  url.prettyURL() );
+      QString tmp = i18n("Malformed URL\n%1",  url.prettyUrl() );
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;
@@ -295,7 +295,7 @@ bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("URL cannot be listed\n%1",  url.prettyURL() );
+      QString tmp = i18n("URL cannot be listed\n%1",  url.prettyUrl() );
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;
@@ -778,7 +778,7 @@ void KDirListerCache::FilesChanged( const KUrl::List &fileList )
 
 void KDirListerCache::FileRenamed( const KUrl &src, const KUrl &dst )
 {
-  kDebug(7004) << k_funcinfo << src.prettyURL() << " -> " << dst.prettyURL() << endl;
+  kDebug(7004) << k_funcinfo << src.prettyUrl() << " -> " << dst.prettyUrl() << endl;
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
@@ -1074,7 +1074,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
     return;
   }
 
-  kDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << newUrl.prettyURL() << endl;
+  kDebug(7004) << k_funcinfo << oldUrl.prettyUrl() << " -> " << newUrl.prettyUrl() << endl;
 
 #ifdef DEBUG_CACHE
   printDebug();
@@ -1311,7 +1311,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
 void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
 {
-  kDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << newUrl.prettyURL() << endl;
+  kDebug(7004) << k_funcinfo << oldUrl.prettyUrl() << " -> " << newUrl.prettyUrl() << endl;
   QString oldUrlStr = oldUrl.url(KUrl::RemoveTrailingSlash);
   QString newUrlStr = newUrl.url(KUrl::RemoveTrailingSlash);
 
@@ -1327,7 +1327,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
     goNext = true;
     DirItem *dir = itu.current();
     KUrl oldDirUrl ( itu.currentKey() );
-    //kDebug(7004) << "itemInUse: " << oldDirUrl.prettyURL() << endl;
+    //kDebug(7004) << "itemInUse: " << oldDirUrl.prettyUrl() << endl;
     // Check if this dir is oldUrl, or a subfolder of it
     if ( oldUrl.isParentOf( oldDirUrl ) )
     {
@@ -1337,7 +1337,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
       KUrl newDirUrl( newUrl ); // take new base
       if ( !relPath.isEmpty() )
         newDirUrl.addPath( relPath ); // add unchanged relative path
-      //kDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl.prettyURL() << endl;
+      //kDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl.prettyUrl() << endl;
 
       // Update URL in dir item and in itemsInUse
       dir->redirect( newDirUrl );
@@ -1372,7 +1372,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
 
 void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &url )
 {
-  kDebug(7004) << k_funcinfo << oldUrl.prettyURL() << " -> " << url.prettyURL() << endl;
+  kDebug(7004) << k_funcinfo << oldUrl.prettyUrl() << " -> " << url.prettyUrl() << endl;
   QString oldUrlStr = oldUrl.url(KUrl::RemoveTrailingSlash);
   QString urlStr = url.url(KUrl::RemoveTrailingSlash);
 
@@ -1435,7 +1435,7 @@ void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &url )
 
 void KDirListerCache::removeDirFromCache( const KUrl& dir )
 {
-  kDebug(7004) << "KDirListerCache::removeDirFromCache " << dir.prettyURL() << endl;
+  kDebug(7004) << "KDirListerCache::removeDirFromCache " << dir.prettyUrl() << endl;
   Q3CacheIterator<DirItem> itc( itemsCached );
   while ( itc.current() )
   {
@@ -1685,7 +1685,7 @@ void KDirListerCache::deleteUnmarkedItems( Q3PtrList<KDirLister> *listers, KFile
 
 void KDirListerCache::deleteDir( const KUrl& dirUrl )
 {
-  //kDebug() << k_funcinfo << dirUrl.prettyURL() << endl;
+  //kDebug() << k_funcinfo << dirUrl.prettyUrl() << endl;
   // unregister and remove the children of the deleted item.
   // Idea: tell all the KDirListers that they should forget the dir
   //       and then remove it from the cache.
@@ -1804,13 +1804,13 @@ void KDirListerCache::printDebug()
   QMap< KIO::ListJob *, KIO::UDSEntryList >::Iterator jit = jobs.begin();
   kDebug(7004) << "Jobs: " << endl;
   for ( ; jit != jobs.end() ; ++jit )
-    kDebug(7004) << "   " << jit.key() << " listing " << joburl( jit.key() ).prettyURL() << ": " << (*jit).count() << " entries." << endl;
+    kDebug(7004) << "   " << jit.key() << " listing " << joburl( jit.key() ).prettyUrl() << ": " << (*jit).count() << " entries." << endl;
 
   kDebug(7004) << "Items in cache: " << endl;
   Q3CacheIterator<DirItem> itc( itemsCached );
   for ( ; itc.current() ; ++itc )
     kDebug(7004) << "   " << itc.currentKey() << "  rootItem: "
-                  << ( itc.current()->rootItem ? itc.current()->rootItem->url().prettyURL() : QString("NULL") )
+                  << ( itc.current()->rootItem ? itc.current()->rootItem->url().prettyUrl() : QString("NULL") )
                   << QString(" with %1 items.").arg(itc.current()->lstItems.count()) << endl;
 }
 #endif
@@ -1847,7 +1847,7 @@ KDirLister::~KDirLister()
 
 bool KDirLister::openURL( const KUrl& _url, bool _keep, bool _reload )
 {
-  kDebug(7003) << k_funcinfo << _url.prettyURL()
+  kDebug(7003) << k_funcinfo << _url.prettyUrl()
                 << " keep=" << _keep << " reload=" << _reload << endl;
 
   // emit the current changes made to avoid an inconsistent treeview
@@ -1867,7 +1867,7 @@ void KDirLister::stop()
 
 void KDirLister::stop( const KUrl& _url )
 {
-  kDebug(7003) << k_funcinfo << _url.prettyURL() << endl;
+  kDebug(7003) << k_funcinfo << _url.prettyUrl() << endl;
   s_pCache->stop( this, _url );
 }
 

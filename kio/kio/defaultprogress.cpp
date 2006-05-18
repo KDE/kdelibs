@@ -335,10 +335,10 @@ void DefaultProgress::slotCopying( KIO::Job*, const KUrl& src, const KUrl& dest 
     d->noCaptionYet = false;
   }
   mode = Copy;
-  sourceEdit->setText(src.prettyURL());
+  sourceEdit->setText(src.prettyUrl());
   setDestVisible( true );
   checkDestination( dest );
-  destEdit->setText(dest.prettyURL());
+  destEdit->setText(dest.prettyUrl());
 }
 
 
@@ -349,10 +349,10 @@ void DefaultProgress::slotMoving( KIO::Job*, const KUrl& src, const KUrl& dest )
     d->noCaptionYet = false;
   }
   mode = Move;
-  sourceEdit->setText(src.prettyURL());
+  sourceEdit->setText(src.prettyUrl());
   setDestVisible( true );
   checkDestination( dest );
-  destEdit->setText(dest.prettyURL());
+  destEdit->setText(dest.prettyUrl());
 }
 
 
@@ -363,7 +363,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KUrl& dir )
     d->noCaptionYet = false;
   }
   mode = Create;
-  sourceEdit->setText(dir.prettyURL());
+  sourceEdit->setText(dir.prettyUrl());
   setDestVisible( false );
 }
 
@@ -375,7 +375,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KUrl& url )
     d->noCaptionYet = false;
   }
   mode = Delete;
-  sourceEdit->setText(url.prettyURL());
+  sourceEdit->setText(url.prettyUrl());
   setDestVisible( false );
 }
 
@@ -385,14 +385,14 @@ void DefaultProgress::slotTransferring( KIO::Job*, const KUrl& url )
     setWindowTitle(i18n("Loading Progress"));
     d->noCaptionYet = false;
   }
-  sourceEdit->setText(url.prettyURL());
+  sourceEdit->setText(url.prettyUrl());
   setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KUrl& url )
 {
   setWindowTitle(i18n("Examining File Progress"));
-  sourceEdit->setText(url.prettyURL());
+  sourceEdit->setText(url.prettyUrl());
   setDestVisible( false );
 }
 
@@ -485,7 +485,7 @@ void DefaultProgress::checkDestination(const KUrl& dest) {
 void DefaultProgress::slotOpenFile()
 {
   KProcess proc;
-  proc << "konqueror" << d->location.prettyURL();
+  proc << "konqueror" << d->location.prettyUrl();
   proc.start(KProcess::DontCare);
 }
 
@@ -493,7 +493,7 @@ void DefaultProgress::slotOpenLocation()
 {
   KProcess proc;
   d->location.setFileName("");
-  proc << "konqueror" << d->location.prettyURL();
+  proc << "konqueror" << d->location.prettyUrl();
   proc.start(KProcess::DontCare);
 }
 

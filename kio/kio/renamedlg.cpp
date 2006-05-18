@@ -148,7 +148,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     // User tries to overwrite a file with itself ?
     if ( _mode & M_OVERWRITE_ITSELF ) {
         QLabel *lb = new QLabel( i18n( "This action would overwrite '%1' with itself.\n"
-                                       "Please enter a new file name:" ,  KStringHandler::csqueeze( d->src.pathOrURL(),100 ) ), this );
+                                       "Please enter a new file name:" ,  KStringHandler::csqueeze( d->src.pathOrUrl(),100 ) ), this );
         d->bRename->setText(i18n("C&ontinue"));
         pLayout->addWidget( lb );
     }
@@ -219,11 +219,11 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
             QString sentence1;
             if (mtimeDest < mtimeSrc)
-                sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrURL());
+                sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrUrl());
             else if (mtimeDest == mtimeSrc)
-                sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrURL());
+                sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrUrl());
             else
-                sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrURL());
+                sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrUrl());
 
             QLabel * lb1 = new KSqueezedTextLabel( sentence1, this );
             gridLayout->addWidget( lb1, 0, 0, 1, 2 ); // takes the complete first line
@@ -259,7 +259,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             {
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
 
-                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'", d->src.pathOrURL()), this );
+                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'", d->src.pathOrUrl()), this );
                 gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
@@ -297,11 +297,11 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         // file must be preserved (e.g. when renaming).
         QString sentence1;
         if (mtimeDest < mtimeSrc)
-            sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrURL());
+            sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrUrl());
         else if (mtimeDest == mtimeSrc)
-            sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrURL());
+            sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrUrl());
         else
-            sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrURL());
+            sentence1 = i18n("A newer item named '%1' already exists.", d->dest.pathOrUrl());
 
         QLabel *lb = new KSqueezedTextLabel( sentence1, this );
         pLayout->addWidget(lb);

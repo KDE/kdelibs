@@ -73,7 +73,7 @@ void ChmodJob::processList()
                           << "\n new permissions = " << QString::number(info.permissions,8)
                           << endl;*/
             m_infos.prepend( info );
-            //kDebug(7007) << "processList : Adding info for " << info.url.prettyURL() << endl;
+            //kDebug(7007) << "processList : Adding info for " << info.url.prettyUrl() << endl;
             // Directory and recursive -> list
             if ( item->isDir() && m_recursive )
             {
@@ -164,7 +164,7 @@ void ChmodJob::chmodNextFile()
             }
         }
 
-        kDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyURL()
+        kDebug(7007) << "ChmodJob::chmodNextFile chmod'ing " << info.url.prettyUrl()
                       << " to " << QString::number(info.permissions,8) << endl;
         KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
         // copy the metadata for acl and default acl

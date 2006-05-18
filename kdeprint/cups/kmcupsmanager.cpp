@@ -975,7 +975,7 @@ QString printerURI(KMPrinter *p, bool use)
 {
 	QString	uri;
 	if (use && !p->uri().isEmpty())
-		uri = p->uri().prettyURL();
+		uri = p->uri().prettyUrl();
 	else
 		uri = QString("ipp://%1/%3/%2")
 			.arg(CupsInfos::self()->ippaddr())

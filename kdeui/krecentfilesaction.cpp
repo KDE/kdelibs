@@ -247,7 +247,7 @@ void KRecentFilesAction::addUrl( const KUrl& url, const QString& name )
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
     const QString tmpName = name.isEmpty() ?  url.fileName() : name;
-    const QString file = url.pathOrURL();
+    const QString file = url.pathOrUrl();
 
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
@@ -330,7 +330,7 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     {
         key = QString( "File%1" ).arg( i );
         value = config->readPathEntry( key );
-        url = KUrl::fromPathOrURL( value );
+        url = KUrl::fromPathOrUrl( value );
 
         // Don't restore if file doesn't exist anymore
         if (url.isLocalFile() && !QFile::exists(url.path()))
@@ -368,7 +368,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname 
     {
         key = QString( "File%1" ).arg( i );
         // FIXME KAction port - why is this -1?
-        value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].pathOrURL();
+        value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].pathOrUrl();
         config->writePathEntry( key, value );
         key = QString( "Name%1" ).arg( i );
         value = d->m_shortNames[ selectableActionGroup()->actions()[ i - 1 ] ];

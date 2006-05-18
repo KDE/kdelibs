@@ -117,7 +117,7 @@ void KUrlComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
         if ( url.isLocalFile() )
           item->text = url.path( mode );
         else
-          item->text = url.prettyURL( mode );
+          item->text = url.prettyUrl( mode );
     }
     else
         item->text = text;
@@ -183,7 +183,7 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
             ++it;
             continue;
         }
-        u = KUrl::fromPathOrURL( *it );
+        u = KUrl::fromPathOrUrl( *it );
 
         // Don't restore if file doesn't exist anymore
         if (u.isLocalFile() && !QFile::exists(u.path())) {
@@ -262,11 +262,11 @@ void KUrlComboBox::setURL( const KUrl& url )
     if ( url.isLocalFile() )
       item->text = url.path( mode );
     else
-      item->text = url.prettyURL( mode );
+      item->text = url.prettyUrl( mode );
      kDebug(250) << "setURL: text=" << item->text << endl;
 
     int id = count();
-    QString text = /*isEditable() ? item->url.prettyURL( (KUrl::AdjustPathOption)myMode ) : */ item->text;
+    QString text = /*isEditable() ? item->url.prettyUrl( (KUrl::AdjustPathOption)myMode ) : */ item->text;
 
     if ( myMode == Directories )
         KComboBox::insertItem( id,opendirIcon, text);
@@ -375,7 +375,7 @@ void KUrlComboBox::updateItem( const KUrlComboItem *item,
 	insertItem( index,
                     icon,
 		    item->url.isLocalFile() ? item->url.path( mode ) :
-                        item->url.prettyURL( mode ));
+                        item->url.prettyUrl( mode ));
     }
     else {
         setItemIcon(index,icon);

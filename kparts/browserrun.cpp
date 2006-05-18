@@ -71,7 +71,7 @@ void BrowserRun::init()
       struct stat buff;
       if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
-        kDebug(1000) << "BrowserRun::init : " << m_strURL.prettyURL() << " doesn't exist." << endl;
+        kDebug(1000) << "BrowserRun::init : " << m_strURL.prettyUrl() << " doesn't exist." << endl;
         redirectToError( KIO::ERR_DOES_NOT_EXIST, m_strURL.path() );
         return;
       }
@@ -83,7 +83,7 @@ void BrowserRun::init()
 
 void BrowserRun::scanFile()
 {
-  kDebug(1000) << "BrowserRun::scanfile " << m_strURL.prettyURL() << endl;
+  kDebug(1000) << "BrowserRun::scanfile " << m_strURL.prettyUrl() << endl;
 
   // Let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
@@ -170,7 +170,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   //kDebug(1000) << "old URL=" << m_strURL.url() << endl;
   //kDebug(1000) << "new URL=" << job->url().url() << endl;
   m_strURL = job->url();
-  kDebug(1000) << "slotBrowserMimetype: found " << type << " for " << m_strURL.prettyURL() << endl;
+  kDebug(1000) << "slotBrowserMimetype: found " << type << " for " << m_strURL.prettyUrl() << endl;
 
   // Suggested filename given by the server (e.g. HTTP content-disposition)
   // When set, we should really be saving instead of embedding
@@ -258,13 +258,13 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KUrl &url )
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
         return false;
 
-    return ( KMessageBox::warningContinueCancel( 0, i18n( "Do you really want to execute '%1'? " ,  url.prettyURL() ),
+    return ( KMessageBox::warningContinueCancel( 0, i18n( "Do you really want to execute '%1'? " ,  url.prettyUrl() ),
     i18n("Execute File?"), i18n("Execute") ) == KMessageBox::Continue );
 }
 
 static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFileName )
 {
-    QString surl = KStringHandler::csqueeze( url.prettyURL() );
+    QString surl = KStringHandler::csqueeze( url.prettyUrl() );
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
     QString comment = mimeType;
 
@@ -457,7 +457,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     KUrl::List lst;
     lst << newURL << m_strURL;
     m_strURL = KUrl::join( lst );
-    //kDebug(1202) << "BrowserRun::handleError m_strURL=" << m_strURL.prettyURL() << endl;
+    //kDebug(1202) << "BrowserRun::handleError m_strURL=" << m_strURL.prettyUrl() << endl;
 
     m_job = 0;
     foundMimeType( "text/html" );

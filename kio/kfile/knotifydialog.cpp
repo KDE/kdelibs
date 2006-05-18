@@ -429,7 +429,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
     // sound settings
     m_playButton->setEnabled( !event.soundfile.isEmpty() );
-    m_soundPath->setUrl( KUrl::fromPathOrURL( event.soundfile ) );
+    m_soundPath->setUrl( KUrl::fromPathOrUrl( event.soundfile ) );
     enable = (event.dontShow & KNotifyClient::Sound) == 0;
     checked = enable && !event.soundfile.isEmpty() &&
               (event.presentation & KNotifyClient::Sound);
@@ -439,7 +439,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
 
     // logfile settings
-    m_logfilePath->setUrl( KUrl::fromPathOrURL(event.logfile) );
+    m_logfilePath->setUrl( KUrl::fromPathOrUrl(event.logfile) );
     enable = (event.dontShow & KNotifyClient::Logfile) == 0;
     checked = enable && !event.logfile.isEmpty()  &&
               (event.presentation & KNotifyClient::Logfile);
@@ -449,7 +449,7 @@ void KNotifyWidget::updateWidgets( ListViewItem *item )
 
 
     // execute program settings
-    m_executePath->setUrl( KUrl::fromPathOrURL(event.commandline) );
+    m_executePath->setUrl( KUrl::fromPathOrUrl(event.commandline) );
     enable = (event.dontShow & KNotifyClient::Execute) == 0;
     checked = enable && !event.commandline.isEmpty() &&
               (event.presentation & KNotifyClient::Execute);

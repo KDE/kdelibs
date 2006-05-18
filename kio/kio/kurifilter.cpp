@@ -95,7 +95,7 @@ void KURIFilterData::init( const KUrl& url )
 void KURIFilterData::init( const QString& url )
 {
     m_iType = KURIFilterData::UNKNOWN;
-    m_pURI = url; // note: this calls operator= which calls KUrl::fromPathOrURL()
+    m_pURI = url; // note: this calls operator= which calls KUrl::fromPathOrUrl()
     m_strErrMsg.clear();
     m_strIconName.clear();
     m_bCheckForExecutables = true;

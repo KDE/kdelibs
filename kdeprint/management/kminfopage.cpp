@@ -125,7 +125,7 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 		m_state->setText(p->stateString());
 		m_location->setText(p->location());
 		m_description->setText(p->description());
-		m_uri->setText(p->uri().prettyURL());
+		m_uri->setText(p->uri().prettyUrl());
 		if (p->isClass(false))
 		{
 			QString	s;

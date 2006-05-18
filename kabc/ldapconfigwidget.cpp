@@ -334,7 +334,7 @@ void LdapConfigWidget::sendQuery()
   if ( mVer ) _url.setExtension( "x-ver", QString::number( mVer->value() ) );
   if ( mSecTLS && mSecTLS->isChecked() ) _url.setExtension( "x-tls", "" );
 
-  kDebug(5700) << "sendQuery url: " << _url.prettyURL() << endl;
+  kDebug(5700) << "sendQuery url: " << _url.prettyUrl() << endl;
   mLdif.startParsing();
   KIO::Job *job = KIO::get( _url, true, false );
   job->addMetaData("no-auth-prompt","true");
@@ -349,7 +349,7 @@ void LdapConfigWidget::sendQuery()
     mProg->setWindowTitle( i18n("LDAP Query") );
     mProg->setModal( true );
   }
-  mProg->setLabelText( _url.prettyURL() );
+  mProg->setLabelText( _url.prettyUrl() );
   mProg->setRange( 0, 1 );
   mProg->setValue( 0 );
   mProg->exec();
