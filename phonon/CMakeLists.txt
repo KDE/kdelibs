@@ -37,6 +37,9 @@ set(phononcore_LIB_SRCS
 	audioeffectdescription.cpp
 	videoeffectdescription.cpp
 	visualizationeffect.cpp
+	audiocodec.cpp
+	videocodec.cpp
+	containerformat.cpp
 	phononnamespace.cpp
 	base.cpp
 	abstractmediaproducer.cpp
@@ -85,6 +88,9 @@ install_files( /include/phonon FILES
 	audioeffectdescription.h
 	videoeffectdescription.h
 	visualizationeffect.h
+	audiocodec.h
+	videocodec.h
+	containerformat.h
 	phononnamespace.h
 	base.h
 	basedestructionhandler.h

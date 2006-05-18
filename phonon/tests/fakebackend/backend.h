@@ -102,7 +102,6 @@ namespace Fake
 			virtual QString visualizationName( int index ) const;
 			virtual QString visualizationDescription( int index ) const;
 
-			// effects
 			virtual QSet<int> audioEffectIndexes() const;
 			virtual QString audioEffectName( int index ) const;
 			virtual QString audioEffectDescription( int index ) const;
@@ -110,6 +109,18 @@ namespace Fake
 			virtual QSet<int> videoEffectIndexes() const;
 			virtual QString videoEffectName( int index ) const;
 			virtual QString videoEffectDescription( int index ) const;
+
+			virtual QSet<int> audioCodecIndexes() const;
+			virtual QString audioCodecName( int index ) const;
+			virtual QString audioCodecDescription( int index ) const;
+
+			virtual QSet<int> videoCodecIndexes() const;
+			virtual QString videoCodecName( int index ) const;
+			virtual QString videoCodecDescription( int index ) const;
+
+			virtual QSet<int> containerFormatIndexes() const;
+			virtual QString containerFormatName( int index ) const;
+			virtual QString containerFormatDescription( int index ) const;
 
 			virtual const char* uiLibrary() const;
 			//virtual const char* uiSymbol() const;

@@ -24,7 +24,6 @@
 
 #include <kdelibs_export.h>
 #include <kstaticdeleter.h>
-#include "visualizationeffect.h"
 
 template<class T> class QList;
 class QStringList;
@@ -35,8 +34,12 @@ class AudioOutputDevice;
 class AudioCaptureDevice;
 class VideoOutputDevice;
 class VideoCaptureDevice;
+class VisualizationEffect;
 class AudioEffectDescription;
 class VideoEffectDescription;
+class AudioCodec;
+class VideoCodec;
+class ContainerFormat;
 
 /**
  * Singleton class describing the capabilities of the Backend.
@@ -172,6 +175,30 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		 * description for every supported video effect.
 		 */
 		static QList<VideoEffectDescription> availableVideoEffects();
+
+		/**
+		 * Returns descriptions for the audio codecs the backend supports.
+		 *
+		 * \return A list of AudioCodec objects that give a name and
+		 * description for every supported audio codec.
+		 */
+		static QList<AudioCodec> availableAudioCodecs();
+
+		/**
+		 * Returns descriptions for the video codecs the backend supports.
+		 *
+		 * \return A list of VideoCodec objects that give a name and
+		 * description for every supported video codec.
+		 */
+		static QList<VideoCodec> availableVideoCodecs();
+
+		/**
+		 * Returns descriptions for the container formats the backend supports.
+		 *
+		 * \return A list of ContainerFormat objects that give a name and
+		 * description for every supported container format.
+		 */
+		static QList<ContainerFormat> availableContainerFormats();
 
 	Q_SIGNALS:
 		/**

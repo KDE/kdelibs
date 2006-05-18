@@ -362,6 +362,51 @@ QString Backend::videoEffectDescription( int index ) const
 	return QString();
 }
 
+QSet<int> Backend::audioCodecIndexes() const
+{
+	return QSet<int>();
+}
+
+QString Backend::audioCodecName( int index ) const
+{
+	return QString();
+}
+
+QString Backend::audioCodecDescription( int index ) const
+{
+	return QString();
+}
+
+QSet<int> Backend::videoCodecIndexes() const
+{
+	return QSet<int>();
+}
+
+QString Backend::videoCodecName( int index ) const
+{
+	return QString();
+}
+
+QString Backend::videoCodecDescription( int index ) const
+{
+	return QString();
+}
+
+QSet<int> Backend::containerFormatIndexes() const
+{
+	return QSet<int>();
+}
+
+QString Backend::containerFormatName( int index ) const
+{
+	return QString();
+}
+
+QString Backend::containerFormatDescription( int index ) const
+{
+	return QString();
+}
+
 const char* Backend::uiLibrary() const
 {
 	return "phonon_fakeui";

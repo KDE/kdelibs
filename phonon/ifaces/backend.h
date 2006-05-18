@@ -372,6 +372,18 @@ namespace Ifaces
 			virtual QString videoEffectName( int index ) const = 0;
 			virtual QString videoEffectDescription( int index ) const = 0;
 
+			virtual QSet<int> audioCodecIndexes() const = 0;
+			virtual QString audioCodecName( int index ) const = 0;
+			virtual QString audioCodecDescription( int index ) const = 0;
+
+			virtual QSet<int> videoCodecIndexes() const = 0;
+			virtual QString videoCodecName( int index ) const = 0;
+			virtual QString videoCodecDescription( int index ) const = 0;
+
+			virtual QSet<int> containerFormatIndexes() const = 0;
+			virtual QString containerFormatName( int index ) const = 0;
+			virtual QString containerFormatDescription( int index ) const = 0;
+
 			/**
 			 * Returns the name of the DSO implementing Ui::Ifaces.
 			 */

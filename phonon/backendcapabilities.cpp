@@ -20,17 +20,21 @@
 #include "backendcapabilities.h"
 #include "ifaces/backend.h"
 #include "factory.h"
+#include "audiooutputdevice.h"
+#include "videooutputdevice.h"
 #include "audiocapturedevice.h"
 #include "videocapturedevice.h"
-#include "audiooutputdevice.h"
+#include "visualizationeffect.h"
 #include "audioeffectdescription.h"
+#include "videoeffectdescription.h"
+#include "audiocodec.h"
+#include "videocodec.h"
+#include "containerformat.h"
 #include <QList>
 #include <QSet>
-#include "videoeffectdescription.h"
 #include <QStringList>
 #include <ktrader.h>
 #include <kservice.h>
-#include "videooutputdevice.h"
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -109,36 +113,27 @@ bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
 	}
 }
 
-#define availableDevicesImpl( classname ) \
+#define availableDevicesImpl( classname, indexesMethod ) \
 QList<classname> BackendCapabilities::available ## classname ## s() \
 { \
 	const Ifaces::Backend* backend = Factory::self()->backend(); \
 	QList<classname> ret; \
 	if( backend ) \
 	{ \
-		QSet<int> deviceIndexes = backend->audioOutputDeviceIndexes(); \
+		QSet<int> deviceIndexes = backend->indexesMethod(); \
 		foreach( int i, deviceIndexes ) \
 			ret.append( classname::fromIndex( i ) ); \
 	} \
 	return ret; \
 }
-availableDevicesImpl( AudioOutputDevice )
-availableDevicesImpl( AudioCaptureDevice )
-availableDevicesImpl( VideoOutputDevice )
-availableDevicesImpl( VideoCaptureDevice )
-
-QList<VisualizationEffect> availableVisualizationEffects()
-{
-	const Ifaces::Backend* backend = Factory::self()->backend();
-	QList<VisualizationEffect> ret;
-	if( backend )
-	{
-		QSet<int> indexes = backend->visualizationIndexes();
-		foreach( int i, indexes )
-			ret.append( VisualizationEffect::fromIndex( i ) );
-	}
-	return ret;
-}
+availableDevicesImpl( AudioOutputDevice, audioOutputDeviceIndexes )
+availableDevicesImpl( AudioCaptureDevice, audioCaptureDeviceIndexes )
+availableDevicesImpl( VideoOutputDevice, videoOutputDeviceIndexes )
+availableDevicesImpl( VideoCaptureDevice, videoCaptureDeviceIndexes )
+availableDevicesImpl( VisualizationEffect, visualizationIndexes )
+availableDevicesImpl( AudioCodec, audioCodecIndexes )
+availableDevicesImpl( VideoCodec, videoCodecIndexes )
+availableDevicesImpl( ContainerFormat, containerFormatIndexes )
 
 QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
 {
