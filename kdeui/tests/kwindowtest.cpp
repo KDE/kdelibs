@@ -193,6 +193,8 @@ testWindow::testWindow (QWidget *parent)
 
     connect (completions, SIGNAL(triggered(QAction*)), this, SLOT(slotCompletionsMenu(QAction*)));
     pr = 0;
+    
+    setStandardToolBarMenuEnabled(true);
 	
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // Let's add $PWD (ideally $srcdir instead...) to it
