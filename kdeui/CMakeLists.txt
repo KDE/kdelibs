@@ -89,6 +89,7 @@ set(kdeui_LIB_SRCS
  kxmlguifactory.cpp
  kxmlguifactory_p.cpp
  kxmlguibuilder.cpp
+ kmenumenuhandler_p.cpp
  kedittoolbar.cpp
  kanimwidget.cpp
  krootpixmap.cpp

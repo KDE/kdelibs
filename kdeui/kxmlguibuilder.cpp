@@ -34,14 +34,15 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <qobject.h>
+#include "kmenumenuhandler_p.h"
+
+using namespace KDEPrivate;
 
 class KXMLGUIBuilderPrivate
 {
-public:
-    KXMLGUIBuilderPrivate() {
-    }
-  ~KXMLGUIBuilderPrivate() {
-  }
+  public:
+    KXMLGUIBuilderPrivate() : m_instance(0L) , m_client(0L)  {}
+    ~KXMLGUIBuilderPrivate() { }
 
     QWidget *m_widget;
 
@@ -66,7 +67,10 @@ public:
 
     KInstance *m_instance;
     KXMLGUIClient *m_client;
+    
+    KMenuMenuHandler *m_menumenuhandler;
 };
+
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 {
@@ -91,13 +95,13 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->attrContext = QLatin1String( "context" );
 
   d->attrIcon = QLatin1String( "icon" );
-
-  d->m_instance = 0;
-  d->m_client = 0;
+  
+  d->m_menumenuhandler=new KMenuMenuHandler(this);
 }
 
 KXMLGUIBuilder::~KXMLGUIBuilder()
 {
+  delete d->m_menumenuhandler;
   delete d;
 }
 
@@ -158,6 +162,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     KMenu *popup = new KMenu(p);
     popup->setObjectName(name);
+
+    d->m_menumenuhandler->insertKMenu(popup);
 
     QString i18nText;
     QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
