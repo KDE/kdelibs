@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QTextEdit>
+#include <QDir>
 
 #include <stdlib.h>
 
@@ -13,6 +14,8 @@
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kstdaction.h>
+#include <kstandarddirs.h>
+#include <kxmlguifactory.h>
 
 /*
  Ok this is a constructor of our top widget. It inherits KMainWindow.
@@ -29,6 +32,8 @@ testWindow::testWindow (QWidget *parent)
 {
     ena=false;
     setCaption("test window");
+	
+#if 0
     /******************************/
     /* First, we setup setup Menus */
     /******************************/
@@ -76,9 +81,10 @@ testWindow::testWindow (QWidget *parent)
     QAction* helpAction = menuBar->addAction( "&Help" );
     helpAction->setMenu(helpMenu->menu());
 
-    KAction* configtoolbars = KStdAction::configureToolbars( this, SLOT( configureToolbars() ),
-                                actionCollection() );
-    fileMenu->addAction(configtoolbars);
+#endif
+    KStdAction::configureToolbars( this, SLOT( configureToolbars() ),  actionCollection() );
+	KStdAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
+
 
     /**************************************************/
     /*Now, we setup statusbar; order is not important. */
@@ -97,81 +103,62 @@ testWindow::testWindow (QWidget *parent)
     /***********************/
 
     // Create main toolbar...
-    tb = toolBar();
-
-    // and set it to full width
+    
+	// and set it to full width
     //tb->setFullSize(true);
-    addToolBarBreak();
+    //addToolBarBreak();
 
 
     // First four  buttons
     fileNewAction = new KAction(KIcon("filenew"), "Create.. (toggles upper button)", actionCollection(), "filenew");
     fileNewAction->setCheckable(true);
-    tb->addAction(fileNewAction);
     connect(fileNewAction, SIGNAL(triggered(bool)), SLOT(slotNew()));
 
     KAction* fileOpenAction = new KAction(KIcon("fileopen"), "Open", actionCollection(), "fileopen");
-    tb->addAction(fileOpenAction);
     connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
     KActionMenu* fileFloppyAction = new KActionMenu(KIcon("filefloppy"), "Save (beep or delayed popup)", actionCollection(), "filefloppy");
     fileFloppyAction->setDelayed(true);
-    tb->addAction(fileFloppyAction);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
     KAction* filePrintAction = new KAction(KIcon("fileprint"), "Print (enables/disables open)", actionCollection(), "fileprint");
-    tb->addAction(filePrintAction);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
 
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
-    testComboBox = new KComboBox(tb);
-    K3WidgetAction* comboAction = new K3WidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox");
-    tb->addAction(comboAction);
-    connect(testComboBox, SIGNAL(activated(const QString&)), this, SLOT(slotList(const QString&)));
+	testComboBox = new KComboBox(toolBar());
+    //K3WidgetAction* comboAction = new K3WidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox");
+    //connect(testComboBox, SIGNAL(activated(const QString&)), this, SLOT(slotList(const QString&)));
 
 
     // Then one line editor
     // arguments: text, id, signal, object (this), slot, enabled, tooltiptext, size
-    testLineEdit = new KLineEdit(tb);
+	testLineEdit = new KLineEdit(toolBar());
     testLineEdit->setText("ftp://ftp.kde.org/pub/kde");
-    K3WidgetAction* lineEditAction = new K3WidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location");
-    tb->addAction(lineEditAction);
-    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
+//    K3WidgetAction* lineEditAction = new K3WidgetAction(testLineEdit, QString(), 0, 0, 0, actionCollection(), "location");
+//    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
     // Now add another button and align it right
     exitAction = new KAction("exit", "Exit", actionCollection(), "exit");
     connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT( quit() ));
-    tb->addAction(exitAction);
 
     // Another toolbar
-    tb1 = new KToolBar(this); // this one is normal and has separators
-    tb1->setObjectName( "AnotherToolbar" );
-    addToolBar(tb1);
-
 
     KAction* fileNewAction2 = new KAction("filenew", "Create new file2 (Toggle)", actionCollection(), "filenew2");
-    tb1->addAction(fileNewAction2);
     connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
 
     KAction* fileOpenAction2 = new KAction("fileopen", "Open (starts progres in sb)", actionCollection(), "fileopen2");
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
-    tb1->addAction(fileOpenAction2);
 
-    tb1->addSeparator ();
-
+    
     KAction* fileFloppyAction2 = new KAction("filefloppy", "Save file2 (autorepeat)", actionCollection(), "filefloppy2");
-    tb1->addAction(fileFloppyAction2);
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
-    qobject_cast<QToolButton*>(tb1->widgetForAction(fileFloppyAction2))->setAutoRepeat(true);
 
     KAction* filePrintAction2 = new KAction("fileprint", "Print (pops menu)", actionCollection(), "fileprint2");
     filePrintAction2->setMenu(itemsMenu);
-    tb1->addAction(filePrintAction2);
 
-    tb1->addSeparator ();
-
+	
     // *** RADIO BUTTONS
     QActionGroup* radioGroup = new QActionGroup(this);
     radioGroup->setExclusive(true);
@@ -182,8 +169,6 @@ testWindow::testWindow (QWidget *parent)
 
     connect (radioGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotToggled(QAction*)));
 
-    tb->setWindowTitle ("Toolbar 1");
-    tb1->setWindowTitle ("Toolbar 2");
 
     // Set main widget. In this example it is Qt's multiline editor.
     widget = new QTextEdit (this);
@@ -208,6 +193,17 @@ testWindow::testWindow (QWidget *parent)
 
     connect (completions, SIGNAL(triggered(QAction*)), this, SLOT(slotCompletionsMenu(QAction*)));
     pr = 0;
+	
+    // KXMLGUIClient looks in the "data" resource for the .rc files
+    // Let's add $PWD (ideally $srcdir instead...) to it
+	KGlobal::dirs()->addResourceDir( "data", QDir::currentPath() );
+	createGUI( "./kwindowtest.rc" );
+	
+	tb=toolBar();
+	tb1=toolBar("AnotherToolBar");
+//	qobject_cast<QToolButton*>(tb1->widgetForAction(fileFloppyAction2))->setAutoRepeat(true);
+
+
 }
 /***********************************/
 /*  Now slots for toolbar actions  */
