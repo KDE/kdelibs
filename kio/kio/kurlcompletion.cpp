@@ -356,8 +356,8 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 	QString url_copy = _url;
 
 	// Special shortcuts for "man:" and "info:"
-	if ( url_copy.at(0) == QLatin1Char('#') ) {
-		if ( url_copy.at(1) == QLatin1Char('#') )
+	if ( url_copy.startsWith( QLatin1Char('#') ) ) {
+		if ( url_copy.length() > 1 && url_copy.at(1) == QLatin1Char('#') )
 			url_copy.replace( 0, 2, QLatin1String("info:") );
 		else
 			url_copy.replace( 0, 1, QLatin1String("man:") );
@@ -370,7 +370,7 @@ void KUrlCompletion::MyURL::init(const QString &_url, const QString &cwd)
 	// no protocol.  (KUrl does this only for absoute paths)
 	if ( protocol_regex.indexIn( url_copy ) == 0 )
     {
-		m_kurl = new KUrl( url_copy );
+		m_kurl = new KUrl( KUrl::fromPathOrURL( url_copy ) );
 		m_isURL = true;
 	}
 	else // relative path or ~ or $something
@@ -916,7 +916,7 @@ bool KUrlCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 	}
 
 	// No hidden files unless the user types "."
-	bool no_hidden_files = ( url.file().length() && url.file().at(0) != QLatin1Char('.') );
+	bool no_hidden_files = !url.file().startsWith( QLatin1Char('.') );
 
 	// List files if needed
 	//
@@ -1097,8 +1097,9 @@ QString KUrlCompletion::listDirectories(
 
 	QStringList::ConstIterator it = dirList.begin();
 
-	for ( ; it != dirList.end(); ++it )
-		url_list.append( new KUrl(*it) );
+	for ( ; it != dirList.end(); ++it ) {
+		url_list.append( new KUrl( KUrl::fromPathOrURL( *it ) ) );
+        }
 
 	listURLs( url_list, filter, only_exe, no_hidden );
 	// Will call addMatches() and finished()
