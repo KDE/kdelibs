@@ -111,13 +111,16 @@ namespace Solid
         Device findDevice( const QString &udi );
 
         /**
-         * Retrieves a list of devices of the system given a set of constraints.
-         * FIXME: Currently document this
+         * Retrieves a list of devices of the system given matching the given
+         * constraints (parent, capability and predicate)
          *
-         * @param parentUdi
-         * @param capability
-         * @param predicate
+         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
+         * if there's no constraint on the parent
+         * @param capability Capability of the devices we're searching for, or Capability::Unknown
+         * if there's no constraint on the capabilities
+         * @param predicate Predicate that the devices we're searching for must verify
          * @return the list of devices corresponding to the given constraints
+         * @see Solid::Predicate
          */
         DeviceList findDevicesFromQuery( const QString &parentUdi,
                                          const Capability::Type &capability = Capability::Unknown,
@@ -125,6 +128,11 @@ namespace Solid
 
         /**
          * Convenience function see above.
+         *
+         * @param parentUdi
+         * @param capability
+         * @param predicate
+         * @return the list of devices
          */
         DeviceList findDevicesFromQuery( const QString &parentUdi,
                                          const Capability::Type &capability,
