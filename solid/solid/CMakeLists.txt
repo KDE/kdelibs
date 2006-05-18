@@ -1,4 +1,4 @@
-kde4_header()
+
 
 add_subdirectory( ifaces )
 
@@ -68,5 +68,5 @@ add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
 
 endif(SOLID_PREDICATE_PARSER_UPDATE)
 
-kde4_footer()
+
 
