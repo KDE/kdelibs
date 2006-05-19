@@ -54,7 +54,7 @@ namespace DOM {
  * the corresponding method descriptions.
  *
  */
-class DOMException
+class KHTML_EXPORT DOMException
 {
 public:
     DOMException(unsigned short _code) { code = _code; }
