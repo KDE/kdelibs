@@ -21,26 +21,14 @@
 #include <qfile.h>
 
 #include <klocale.h>
-#include <ktrader.h>
+#include <kparts/componentfactory.h>
 
 #include "kscan.h"
 
 // static factory method
 KScanDialog * KScanDialog::getScanDialog( QWidget *parent )
 {
-    KTrader::OfferList offers = KTrader::self()->query("KScan/KScanDialog");
-    if ( offers.isEmpty() )
-	return 0L;
-
-    KService::Ptr ptr = *(offers.begin());
-    KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
-
-    if ( !factory )
-        return 0;
-
-    QObject *res = factory->create( parent, "KScanDialog", QStringList() );
-
-    return dynamic_cast<KScanDialog *>( res );
+    return KParts::ComponentFactory::createInstanceFromQuery<KScanDialog>( "KScan/KScanDialog", QString(), parent );
 }
 
 
@@ -67,19 +55,7 @@ bool KScanDialog::setup()
 // static factory method
 KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent )
 {
-    KTrader::OfferList offers = KTrader::self()->query("KScan/KOCRDialog");
-    if ( offers.isEmpty() )
-	return 0L;
-
-    KService::Ptr ptr = *(offers.begin());
-    KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
-
-    if ( !factory )
-        return 0;
-
-    QObject *res = factory->create( parent, "KOCRDialog", QStringList() );
-
-    return dynamic_cast<KOCRDialog *>( res );
+    return KParts::ComponentFactory::createInstanceFromQuery<KOCRDialog>( "KScan/KOCRDialog", QString(), parent );
 }
 
 
