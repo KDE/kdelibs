@@ -111,7 +111,7 @@ public:
    * @param _url the url to run
    * @param _is_local true if the URL is local, false otherwise
    * @return true on success and false on failure.
-   * @see KRun::runURL
+   * @see KRun::runUrl
    */
   static pid_t run( const KUrl& _url, bool _is_local );
 

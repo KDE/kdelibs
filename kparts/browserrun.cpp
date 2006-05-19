@@ -469,7 +469,7 @@ void BrowserRun::slotCopyToTempFileResult(KJob *job)
         static_cast<KIO::Job*>( job )->showErrorDialog( m_window );
     } else {
         // Same as KRun::foundMimeType but with a different URL
-        (void) (KRun::runURL( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType, m_window ));
+        (void) (KRun::runUrl( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType, m_window ));
     }
     m_bFault = true; // see above
     m_bFinished = true;

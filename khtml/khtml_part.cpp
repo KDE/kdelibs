@@ -4001,7 +4001,7 @@ void KHTMLPart::slotViewDocumentSource()
      }
   }
 
-  (void) KRun::runURL( url, QLatin1String("text/plain"), view(), isTempFile );
+  (void) KRun::runUrl( url, QLatin1String("text/plain"), view(), isTempFile );
 }
 
 void KHTMLPart::slotViewPageInfo()
@@ -4086,7 +4086,7 @@ void KHTMLPart::slotViewFrameSource()
      }
   }
 
-  (void) KRun::runURL( url, QLatin1String("text/plain"), view(), isTempFile );
+  (void) KRun::runUrl( url, QLatin1String("text/plain"), view(), isTempFile );
 }
 
 KUrl KHTMLPart::backgroundURL() const

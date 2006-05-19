@@ -144,7 +144,7 @@ void KMConfigGeneral::slotTestPagePreview()
 	if (tpage.isEmpty())
 		KMessageBox::error(this, i18n("Empty file name."));
 	else
-		KRun::runURL(KUrl( tpage ), KMimeMagic::self()->findFileType(tpage)->mimeType(), this);
+		KRun::runUrl(KUrl( tpage ), KMimeMagic::self()->findFileType(tpage)->mimeType(), this);
 }
 
 #include "kmconfiggeneral.moc"

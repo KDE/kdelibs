@@ -172,7 +172,7 @@ pid_t KDEDesktopMimeType::runFSDevice( const KUrl& _url, const KSimpleConfig &cf
     KUrl mpURL;
     mpURL.setPath( mp );
     // Open a new window
-    retval = KRun::runURL( mpURL, QLatin1String("inode/directory"), 0 /*TODO - window*/ );
+    retval = KRun::runUrl( mpURL, QLatin1String("inode/directory"), 0 /*TODO - window*/ );
   }
   else
   {

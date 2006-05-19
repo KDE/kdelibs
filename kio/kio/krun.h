@@ -223,7 +223,7 @@ public:
    * @param suggestedFileName see setSuggestedFileName
    * @return the process id, or 0 on error
    */
-  static pid_t runURL( const KUrl& url, const QString& mimetype, QWidget* window, bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString::null );
+  static pid_t runUrl( const KUrl& url, const QString& mimetype, QWidget* window, bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString::null );
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -343,7 +343,7 @@ protected:
   /**
    * Called if the mimetype has been detected. The function checks
    * whether the document and appends the gzip protocol to the
-   * URL. Otherwise runURL is called to finish the job.
+   * URL. Otherwise runUrl is called to finish the job.
    */
   virtual void foundMimeType( const QString& type );
 

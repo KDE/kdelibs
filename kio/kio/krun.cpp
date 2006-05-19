@@ -101,7 +101,7 @@ bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
-pid_t KRun::runURL( const KUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName )
+pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName )
 {
   bool noRun = false;
   bool noAuth = false;
@@ -1129,8 +1129,8 @@ void KRun::foundMimeType( const QString& type )
           lst.append( m_strURL );
           m_bFinished = KRun::run( *serv, lst, d->m_window );
           /// Note: the line above means that if that service failed, we'll
-          /// go to runURL to maybe find another service, even though a dialog
-          /// box was displayed. That's good if runURL tries another service,
+          /// go to runUrl to maybe find another service, even though a dialog
+          /// box was displayed. That's good if runUrl tries another service,
           /// but it's not good if it tries the same one :}
       }
   }
@@ -1142,7 +1142,7 @@ void KRun::foundMimeType( const QString& type )
     m_strURL.setPath( d->m_localPath );
   }
 
-  if (!m_bFinished && KRun::runURL( m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName )){
+  if (!m_bFinished && KRun::runUrl( m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName )){
     m_bFinished = true;
   }
   else{
