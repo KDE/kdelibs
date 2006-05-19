@@ -26,7 +26,7 @@
 #include <qbuffer.h>
 #include <q3tl.h>
 
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>

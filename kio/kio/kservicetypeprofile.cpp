@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kuserprofile.h"
+#include "kservicetypeprofile.h"
 #include "kservice.h"
 #include "kservicetype.h"
 #include "kservicetypefactory.h"

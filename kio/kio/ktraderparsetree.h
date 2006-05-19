@@ -25,7 +25,7 @@
 #include <qmap.h>
 
 #include <kservice.h>
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 
 #include "ktrader.h"
 

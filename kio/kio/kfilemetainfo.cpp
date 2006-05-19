@@ -26,7 +26,7 @@
 #include <ktrader.h>
 #include <kstaticdeleter.h>
 #include <kparts/componentfactory.h>
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kdatastream.h> // needed for serialization of bool

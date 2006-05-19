@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kuserprofile_h__
-#define __kuserprofile_h__
+#ifndef __kservicetypeprofile_h__
+#define __kservicetypeprofile_h__
 
 #include <qmap.h>
 #include <qstring.h>

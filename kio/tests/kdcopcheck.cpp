@@ -1,4 +1,4 @@
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 #include <ktrader.h>
 #include <kservice.h>
 #include <kmimetype.h>

@@ -31,7 +31,7 @@
 #include <qwidget.h>
 #include <qpointer.h>
 
-#include "kuserprofile.h"
+#include "kservicetypeprofile.h"
 #include "kmimetype.h"
 #include "kmimemagic.h"
 #include "kio/job.h"

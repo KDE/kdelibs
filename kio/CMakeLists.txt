@@ -60,7 +60,7 @@ set(kiocore_STAT_SRCS
   kio/kservicegroup.cpp
   kio/kservice.cpp
   kio/kservicefactory.cpp
-  kio/kuserprofile.cpp
+  kio/kservicetypeprofile.cpp
   kio/kservicegroupfactory.cpp
   kio/kurifilter.cpp
   kio/kshellcompletion.cpp

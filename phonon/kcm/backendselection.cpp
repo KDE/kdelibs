@@ -19,7 +19,7 @@
 
 #include "backendselection.h"
 
-#include <kuserprofile.h> // KServiceTypeProfile
+#include <kservicetypeprofile.h>
 #include <dcopclient.h>
 #include <ktrader.h>
 #include <ksimpleconfig.h>

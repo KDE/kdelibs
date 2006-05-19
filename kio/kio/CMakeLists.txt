@@ -45,7 +45,7 @@ install_files( /include FILES kservicetype.h
   krun.h
   kdirwatch.h
   kautomount.h
-  kuserprofile.h
+  kservicetypeprofile.h
   kar.h
   ktar.h
   kzip.h

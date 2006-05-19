@@ -37,7 +37,7 @@
  * A service type is the generic notion for a mimetype, a type of service
  * instead of a type of file.
  * For instance, KOfficeFilter is a service type.
- * It is associated to services according to the user profile (kuserprofile.h).
+ * It is associated to services according to the user profile (kservicetypeprofile.h).
  * Service types are stored as desktop files in $KDEHOME/share/servicetypes.
  * @see KService
  */

@@ -28,7 +28,7 @@
 #include <kaction.h>
 #include <klibloader.h>
 #include <ktrader.h>
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 #include <krun.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>

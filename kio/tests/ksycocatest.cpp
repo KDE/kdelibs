@@ -27,7 +27,7 @@
 #include <kservicegroup.h>
 #include <kstandarddirs.h>
 #include <ktrader.h>
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 
 #include <assert.h>
 #include <stdio.h>

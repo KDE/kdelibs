@@ -23,7 +23,7 @@
 #include "ksycocadict.h"
 #include "kservicetype.h"
 #include "kmimetype.h"
-#include "kuserprofile.h"
+#include "kservicetypeprofile.h"
 #include "kdedesktopmimetype.h"
 
 #include <kapplication.h>

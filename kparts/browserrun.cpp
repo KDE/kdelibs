@@ -24,7 +24,7 @@
 #include <klocale.h>
 #include <kprocess.h>
 #include <kstringhandler.h>
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 #include <ktempfile.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>

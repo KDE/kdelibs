@@ -46,7 +46,7 @@
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
-#include <kuserprofile.h>
+#include <kservicetypeprofile.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
 #include <dcopclient.h>
