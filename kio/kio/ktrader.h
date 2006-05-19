@@ -137,7 +137,7 @@ public:
      *                    a number
      *
      * @return A list of services that satisfy the query
-     * @see http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html
+     * @see http://developer.kde.org/documentation/library/3.5-api/kdelibs-apidocs/kio/kio/html/tradersyntax.html
      */
     virtual OfferList query( const QString& servicetype,
 			     const QString& constraint = QString::null,
