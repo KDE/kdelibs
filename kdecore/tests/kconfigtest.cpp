@@ -118,7 +118,7 @@ void KConfigTest::initTestCase()
 
   sc.setGroup( "EnumTypes" );
   sc.writeEntry( "enum-10", KConfigTest::Tens );
-  
+
 #ifndef Q_CC_MSVC
   sc.writeEntry( "enum-100", KConfigTest::Hundreds );
 #else
@@ -126,7 +126,7 @@ void KConfigTest::initTestCase()
 #endif
 
   sc.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
-  
+
 #ifndef Q_CC_MSVC
   sc.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
 #else
@@ -149,9 +149,9 @@ void KConfigTest::cleanupTestCase()
 
   foreach(QString file, local.entryList(QDir::Files))
     if(!local.remove(file))
-      qWarning(file.toLatin1()+": removing failed!");
+      qWarning("%s: removing failed", qPrintable( file ));
 
-  QVERIFY(local.count()==0);
+  QCOMPARE((int)local.entryList(QDir::Files).count(), 0);
 
   local.cdUp();
   local.rmpath("config");
