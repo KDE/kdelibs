@@ -29,8 +29,7 @@
  * all KDE services (that is, applications and components) that match
  * a specific set of requirements.  This allows you to find an
  * application in real-time without you having to hard-code the name
- * and/or path of the application.  It is mostly used when you want to
- * do complex queries that KServiceTypeProfile can't handle.
+ * and/or path of the application.
  *
  * \par Examples
  *
@@ -47,7 +46,7 @@
  * query to search for all services that handle 'text/html' @em and,
  * furthermore, they must be applications (Type=Application).  You
  * then will use KRun::run() to invoke the application.  In "trader-speak",
- * this looks like so:
+ * this looks like this:
  * \code
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
  * KService::Ptr ptr = offers.first();
@@ -56,27 +55,15 @@
  * KRun::run(*ptr, lst);
  * \endcode
  *
- * It should be noted that in the above example, using
- * KServiceTypeProfile would be the better choice since you would
- * probably want the preferred service and the trader doesn't take
- * this into account.  The trader does allow you to do more complex
- * things, though.  Say, for instance, you want to only choose
- * Netscape.  You can do it with the constraint: "(Type ==
- * 'Application') and (Name == 'Netscape')"
- *
- * More the likely, though, you will only use the trader for such
- * things as finding components.  In our continuing example, we say
- * that we want to load any KParts component that can handle HTML.  We
- * will need to use the KLibFactory and KLibLoader to
- * actually do something with our query, then.  Our code would look
- * like so:
+ * Now, say that you want to list all KParts component that can handle HTML. 
  * \code
- * KTrader::OfferList offers = KTrader::self()->query("text/html", "'KParts/ReadOnlyPart' in ServiceTypes");
- * KService::Ptr ptr = offers.first();
- * KLibFactory *factory = KLibLoader::self()->factory( ptr->library() );
- * if (factory)
- *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
+ * KTrader::OfferList offers = KTrader::self()->query("text/html", "KParts/ReadOnlyPart");
  * \endcode
+ *
+ * If you want to get the preferred KParts component for text/html you could use
+ * KServiceTypeProfile::preferredService("text/html", "KParts/ReadOnlyPart"), although if this is about
+ * loading that component you would rather use KParts::ComponentFactory directly.
+ *
  *
  * Please note that when including property names containing arithmetic operators like - or +, then you have
  * to put brackets around the property name, in order to correctly separate arithmetic operations from
