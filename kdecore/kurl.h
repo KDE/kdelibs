@@ -69,10 +69,7 @@ class KUrlPrivate;
  *       QString path = url.path();       // -> "/bar/#foo#"
  * \endcode
  *
- * The other way round: if the user can enter a string, that can be either a
- * path or a URL, then you need to use KUrl::fromPathOrUrl() to build a KUrl.
- *
- * This must also be considered, when you have separated directory and file
+ * This must also be considered when you have separated directory and file
  * strings and need to put them together.
  * While you can simply concatenate normal path strings, you must take care if
  * the directory-part is already an escaped URL.
