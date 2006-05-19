@@ -29,7 +29,6 @@
 #define _KDE_MACROS_H_
 
 #cmakedefine __KDE_HAVE_GCC_VISIBILITY
-#cmakedefine __KDE_HAVE_ICC_VISIBILITY
 
 /**
  * @def KDE_NO_EXPORT
@@ -64,30 +63,16 @@
  */
 
 #ifdef __KDE_HAVE_GCC_VISIBILITY
-#ifdef Q_OS_WIN
+#define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
+#define KDE_EXPORT __attribute__ ((visibility("default")))
+#define KDE_IMPORT
+#elif Q_OS_WIN
 #define KDE_NO_EXPORT
 #define KDE_EXPORT __declspec(dllexport)
 #define KDE_IMPORT __declspec(dllimport)
 #else
-#define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#define KDE_EXPORT __attribute__ ((visibility("default")))
-#define KDE_IMPORT
-#endif
-#endif
-
-#ifdef __KDE_HAVE_ICC_VISIBILITY
-#define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
-#define KDE_EXPORT __attribute__ ((visibility("default")))
-#define KDE_IMPORT
-#endif
-
-#ifndef KDE_NO_EXPORT
 #define KDE_NO_EXPORT
-#endif
-#ifndef KDE_EXPORT
 #define KDE_EXPORT
-#endif
-#ifndef KDE_IMPORT
 #define KDE_IMPORT
 #endif
 
