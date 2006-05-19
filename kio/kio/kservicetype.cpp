@@ -268,7 +268,7 @@ KService::List KServiceType::offers( const QString& _servicetype )
 
   //debug
   //foreach( KService::Ptr serv, lst )
-  //    kDebug() << serv.get() << " " << serv->name() << endl;
+  //    kDebug() << serv.data() << " " << serv->name() << endl;
 
   // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
   // (and makes no sense when querying for an "all" servicetype itself

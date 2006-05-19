@@ -51,7 +51,6 @@ KDCOPServiceStarter::~KDCOPServiceStarter()
 
 int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
                                          const QString& _constraint,
-                                         const QString& preferences,
                                          QString *error, DCOPCString* pDcopService,
                                          int flags )
 {
@@ -61,7 +60,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
     if ( !constraint.isEmpty() )
         constraint += " and ";
     constraint += "exist [X-DCOP-ServiceName]";
-    KTrader::OfferList offers = KTrader::self()->query(serviceType, "Application", constraint, preferences);
+    const KService::List offers = KTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() ) {
         if ( error )
             *error = i18n("No service implementing %1",  serviceType );
@@ -74,7 +73,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
     if ( !KApplication::dcopClient()->isApplicationRegistered( dcopService ) )
     {
         QString error;
-        if ( startServiceFor( serviceType, constraint, preferences, &error, &dcopService, flags ) != 0 )
+        if ( startServiceFor( serviceType, constraint, &error, &dcopService, flags ) != 0 )
         {
             kDebug() << "KDCOPServiceStarter: Couldn't start service: " << error << endl;
             return -2;
@@ -88,10 +87,9 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
 
 int KDCOPServiceStarter::startServiceFor( const QString& serviceType,
                                           const QString& constraint,
-                                          const QString& preferences,
                                           QString *error, DCOPCString* dcopService, int /*flags*/ )
 {
-    KTrader::OfferList offers = KTrader::self()->query(serviceType, "Application", constraint, preferences);
+    const KService::List offers = KTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();

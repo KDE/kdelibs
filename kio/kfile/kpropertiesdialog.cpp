@@ -110,7 +110,7 @@ extern "C" {
 #include <kseparator.h>
 #include <ksqueezedtextlabel.h>
 #include <klibloader.h>
-#include <ktrader.h>
+#include <kmimetypetrader.h>
 #include <kmetaprops.h>
 #include <kpreviewprops.h>
 #include <kprocess.h>
@@ -515,9 +515,9 @@ void KPropertiesDialog::insertPages()
       " ([X-KDE-Protocol] == '%1'  )   )"          ).arg(item->url().protocol());
 
   kDebug( 250 ) << "trader query: " << query << endl;
-  KTrader::OfferList offers = KTrader::self()->query( mimetype, query );
-  KTrader::OfferList::ConstIterator it = offers.begin();
-  KTrader::OfferList::ConstIterator end = offers.end();
+  KService::List offers = KMimeTypeTrader::self()->query( mimetype, query );
+  KService::List::ConstIterator it = offers.begin();
+  KService::List::ConstIterator end = offers.end();
   for (; it != end; ++it )
   {
     KPropsDlgPlugin *plugin = KLibLoader
@@ -2584,7 +2584,7 @@ void KUrlPropsPlugin::applyChanges()
   KSimpleConfig config( path );
   config.setDesktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("Link"));
-  config.writePathEntry( "URL", URLEdit->url() );
+  config.writePathEntry( "URL", URLEdit->url().url() );
   // Users can't create a Link .desktop file with a Name field,
   // but distributions can. Update the Name field in that case.
   if ( config.hasKey("Name") )

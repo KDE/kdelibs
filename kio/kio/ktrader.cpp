@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Torben Weis <weis@kde.org>
+   Copyright (C) 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,71 +18,16 @@
 */
 
 #include "ktrader.h"
-#include <config.h>
 
 #include "ktraderparsetree.h"
-
-#include <qbuffer.h>
-
 #include <kservicetypeprofile.h>
-#include <kstandarddirs.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
+#include "kservicetype.h"
 
 template class KStaticDeleter<KTrader>;
 
-using namespace KIO;
-
-class KTraderSorter
-{
-public:
-  KTraderSorter() { m_pService = 0; };
-  KTraderSorter( const KTraderSorter& s ) : m_userPreference( s.m_userPreference ),
-    m_bAllowAsDefault( s.m_bAllowAsDefault ),
-    m_traderPreference( s.m_traderPreference ), m_pService( s.m_pService ) { }
-  KTraderSorter( const KService::Ptr &_service, double _pref1, int _pref2, bool _default )
-  { m_pService = _service;
-    m_userPreference = _pref2;
-    m_traderPreference = _pref1;
-    m_bAllowAsDefault = _default;
-  }
-
-  KService::Ptr service() const { return m_pService; }
-
-  bool operator< ( const KTraderSorter& ) const;
-
-private:
-  /**
-   * The bigger this number is, the better is this service in
-   * the users opinion.
-   */
-  int m_userPreference;
-  /**
-   * Is it allowed to use this service for default actions.
-   */
-  bool m_bAllowAsDefault;
-
-  /**
-   * The bigger this number is, the better is this service with
-   * respect to the queries preferences expression.
-   */
-  double m_traderPreference;
-
-  KService::Ptr m_pService;
-};
-
-bool KTraderSorter::operator< ( const KTraderSorter& _o ) const
-{
-  if ( _o.m_bAllowAsDefault && !m_bAllowAsDefault )
-    return true;
-  if ( _o.m_userPreference > m_userPreference )
-    return true;
-  if ( _o.m_userPreference < m_userPreference )
-    return false;
-  if ( _o.m_traderPreference > m_traderPreference )
-    return true;
-  return false;
-}
+using namespace KTraderParse;
 
 // --------------------------------------------------
 
@@ -104,84 +50,122 @@ KTrader::~KTrader()
 {
 }
 
-KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _constraint,
-                                   const QString& _preferences ) const
+// shared with KMimeTypeTrader
+void KTrader::applyConstraints( KService::List& lst,
+                                const QString& constraint )
 {
-    return query( _servicetype, QString(), _constraint, _preferences );
+    if ( lst.isEmpty() || constraint.isEmpty() )
+        return;
+
+    const ParseTreeBase::Ptr constr = parseConstraints( constraint ); // for ownership
+    const ParseTreeBase* pConstraintTree = constr.data(); // for speed
+
+    if ( !!constr )
+    {
+        // Find all services matching the constraint
+        // and remove the other ones
+        KService::List::iterator it = lst.begin();
+        while( it != lst.end() )
+        {
+            if ( matchConstraint( pConstraintTree, (*it), lst ) != 1 )
+                it = lst.erase( it );
+            else
+                ++it;
+        }
+    }
+    // TODO: catch parse errors here (to delete the partial tree)
 }
 
-KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _genericServiceType,
-                                   const QString& _constraint,
-                                   const QString& _preferences ) const
+#if 0
+static void dumpOfferList( const KServiceTypeProfile::OfferList& offers )
 {
-  // TODO: catch errors here
-  ParseTreeBase::Ptr constr;
-  ParseTreeBase::Ptr prefs;
-
-  if ( !_constraint.isEmpty() )
-    constr = KIO::parseConstraints( _constraint );
-
-  if ( !_preferences.isEmpty() )
-    prefs = KIO::parsePreferences( _preferences );
-
-  KServiceTypeProfile::OfferList lst;
-  KTrader::OfferList ret;
-
-  // Get all services of this service type.
-  lst = KServiceTypeProfile::offers( _servicetype, _genericServiceType );
-  if ( lst.count() == 0 )
-    return ret;
-
-  if ( !!constr )
-  {
-    // Find all services matching the constraint
-    // and remove the other ones
-    KServiceTypeProfile::OfferList::Iterator it = lst.begin();
-    while( it != lst.end() )
-    {
-      if ( matchConstraint( constr.data(), (*it).service(), lst ) != 1 )
-	it = lst.erase( it );
-      else
-	++it;
-    }
-  }
-
-  if ( !!prefs )
-  {
-    QList<KTraderSorter> sorter;
-    KServiceTypeProfile::OfferList::Iterator it = lst.begin();
-    for( ; it != lst.end(); ++it )
-    {
-      PreferencesReturn p = matchPreferences( prefs.data(), (*it).service(), lst );
-      if ( p.type == PreferencesReturn::PRT_DOUBLE )
-	sorter.append( KTraderSorter( (*it).service(), p.f, (*it).preference(), (*it).allowAsDefault() ) );
-    }
-    qSort( sorter );
-
-    QList<KTraderSorter>::Iterator it2 = sorter.begin();
-    for( ; it2 != sorter.end(); ++it2 )
-      ret.prepend( (*it2).service() );
-  }
-  else
-  {
-    KServiceTypeProfile::OfferList::Iterator it = lst.begin();
-    for( ; it != lst.end(); ++it )
-      ret.append( (*it).service() );
-  }
-
-#ifndef NDEBUG
-  QString query = _servicetype;
-  if ( !_genericServiceType.isEmpty() ) {
-      query += ", ";
-      query += _genericServiceType;
-  }
-  kDebug(7014) << "query for " << query
-                << " : returning " << ret.count() << " offers" << endl;
+    kDebug(7014) << "Sorted list:" << endl;
+    OfferList::Iterator itOff = offers.begin();
+    for( ; itOff != offers.end(); ++itOff )
+        kDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference() << endl;
+}
 #endif
-  return ret;
+
+
+KTrader::OfferList KTrader::weightedOffers( const QString& serviceType ) const
+{
+    KTrader::OfferList offers = KServiceTypeProfile::serviceTypeProfileOffers( serviceType );
+    //kDebug(7014) << "KTrader::weightedOffers( " << serviceType << " )" << endl;
+
+    // Note that KTrader::offers() calls KServiceType::offers(),
+    // so we _do_ get the new services, that are available but not in the profile.
+    //kDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
+
+    // Collect services, to make the next loop faster
+    QStringList serviceList;
+    KTrader::OfferList::const_iterator itOffers = offers.begin();
+    for( ; itOffers != offers.end(); ++itOffers )
+        serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
+    //kDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
+
+    // Now complete with any other offers that aren't in the profile
+    // This can be because the services have been installed after the profile was written,
+    // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
+    const KService::List list = KServiceType::offers( serviceType );
+    //kDebug(7014) << "Using KServiceType::offers, result: " << list.count() << " offers" << endl;
+    KService::List::const_iterator it = list.begin();
+    for( ; it != list.end(); ++it )
+    {
+        // Check that we don't already have it ;)
+        if ( !serviceList.contains( (*it)->desktopEntryPath() ) )
+        {
+            bool allow = (*it)->allowAsDefault();
+            offers.append( KServiceOffer( (*it), 1, allow ) );
+            //kDebug(7014) << "Appending offer " << (*it)->name() << " initial preference=" << (*it)->initialPreference() << " allow-as-default=" << allow << endl;
+        }
+        //else
+        //    kDebug(7014) << "Already having offer " << (*it)->name() << endl;
+    }
+
+    if (!offers.isEmpty())
+        qStableSort( offers );
+
+#if 0
+    // debug code, comment if you wish but don't remove.
+    kDebug(7014) << "Sorted list:" << endl;
+    OfferList::Iterator itOff = offers.begin();
+    for( ; itOff != offers.end(); ++itOff )
+        kDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference() << endl;
+#endif
+
+    return offers;
 }
 
-void KTrader::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
+KService::List KTrader::query( const QString& serviceType,
+                               const QString& constraint ) const
+{
+    // Get all services of this service type.
+    const OfferList offers = weightedOffers( serviceType );
 
-#include "ktrader.moc"
+    // Now extract only the services; the weighting was only used for sorting.
+    KService::List lst;
+    OfferList::const_iterator itOff = offers.begin();
+    for( ; itOff != offers.end(); ++itOff )
+        lst.append( (*itOff).service() );
+
+    KTrader::applyConstraints( lst, constraint );
+
+    kDebug(7014) << "query for serviceType " << serviceType
+                 << " : returning " << lst.count() << " offers" << endl;
+    return lst;
+}
+
+KService::Ptr KTrader::preferredService( const QString & serviceType ) const
+{
+    const KTrader::OfferList offers = weightedOffers( serviceType );
+
+    KTrader::OfferList::const_iterator itOff = offers.begin();
+    // Look for the first one that is allowed as default.
+    // Since the allowed-as-default are first anyway, we only have
+    // to look at the first one to know.
+    if( itOff != offers.end() && (*itOff).allowAsDefault() )
+        return (*itOff).service();
+
+    //kDebug(7014) << "No offers, or none allowed as default" << endl;
+    return KService::Ptr();
+}

@@ -126,7 +126,7 @@ ConfigPage::ConfigPage( QWidget *parent )
   mListView->setHeaderItem( new QTreeWidgetItem( headerLabels ) );
 
   groupBoxLayout->addWidget( mListView, 1, 0 );
-  connect(  mListView, SIGNAL( itemDoubleClicked( QTreeWidgetItem *, int ) ), 
+  connect(  mListView, SIGNAL( itemDoubleClicked( QTreeWidgetItem *, int ) ),
             this, SLOT( slotEdit() ) );
   KButtonBox *buttonBox = new KButtonBox( groupBox, Qt::Vertical );
   mAddButton = buttonBox->addButton( i18n( "&Add..." ), this, SLOT(slotAdd()) );
@@ -180,17 +180,17 @@ void ConfigPage::load()
 
   // KDE-3.3 compatibility code: get families from the plugins
   QStringList compatFamilyNames;
-  const KTrader::OfferList plugins = KTrader::self()->query( "KResources/Plugin" );
-  KTrader::OfferList::ConstIterator it = plugins.begin();
-  KTrader::OfferList::ConstIterator end = plugins.end();
+  const KService::List plugins = KTrader::self()->query( "KResources/Plugin" );
+  KService::List::ConstIterator it = plugins.begin();
+  KService::List::ConstIterator end = plugins.end();
   for ( ; it != end; ++it ) {
     const QString family = (*it)->property( "X-KDE-ResourceFamily" ).toString();
     if ( compatFamilyNames.indexOf( family ) == -1 )
         compatFamilyNames.append( family );
   }
 
-  const KTrader::OfferList managers = KTrader::self()->query( "KResources/Manager" );
-  KTrader::OfferList::ConstIterator m_it;
+  const KService::List managers = KTrader::self()->query( "KResources/Manager" );
+  KService::List::ConstIterator m_it;
   for( m_it = managers.begin(); m_it != managers.end(); ++m_it ) {
     QString displayName = (*m_it)->property( "Name" ).toString();
     familyDisplayNames.append( displayName );

@@ -31,7 +31,7 @@
 #include <qwidget.h>
 #include <qpointer.h>
 
-#include "kservicetypeprofile.h"
+#include "kmimetypetrader.h"
 #include "kmimetype.h"
 #include "kmimemagic.h"
 #include "kio/job.h"
@@ -161,9 +161,7 @@ pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bo
   KUrl::List lst;
   lst.append( u );
 
-  static const QString& app_str = KGlobal::staticQString("Application");
-
-  KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype, app_str );
+  KService::Ptr offer = KMimeTypeTrader::self()->preferredService( _mimetype );
 
   if ( !offer )
   {

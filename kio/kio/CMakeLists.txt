@@ -39,6 +39,7 @@ install_files( /include/kio FILES
 
 install_files( /include FILES kservicetype.h
   kmimetype.h
+  kmimetypetrader.h
   kmimemagic.h
   kservice.h
   kimageio.h
@@ -50,6 +51,7 @@ install_files( /include FILES kservicetype.h
   ktar.h
   kzip.h
   ktrader.h
+  kserviceoffer.h
   kurifilter.h
   kurlcompletion.h
   kshellcompletion.h

@@ -24,152 +24,47 @@
 #include <qstring.h>
 #include <QList>
 
-#include <kservice.h>
+#include <ktrader.h>
 
 class KServiceTypeProfileList;
-
-/**
- * This class holds the user-specific preferences of a service
- * (whether it can be a default offer or not, how big is the preference
- * for this offer, ...). Basically it is a reference to a
- * KService, a number that represents the user's preference (bigger
- * is better) and a flag whether the KService can be used as default.
- *
- * @see KService
- * @short Holds the user's preference of a service.
- */
-class KIO_EXPORT KServiceOffer
-{
-public:
-  /**
-   * Create an invalid service offer.
-   */
-  KServiceOffer();
-
-  /**
-   * Copy constructor.
-   * Shallow copy (the KService will not be copied).
-   */
-  KServiceOffer( const KServiceOffer& );
-
-  /**
-   * Creates a new KServiceOffer.
-   * @param _service a pointer to the KService
-   * @param _pref the user's preference value, must be positive,
-   *              bigger is better
-   * @param _default true if the service should be used as
-   *                 default
-   */
-  KServiceOffer( KService::Ptr _service,
-		 int _pref, bool _default );
-
-  /**
-   * A service is bigger that the other when it can be default
-   * (and the other is not) and its preference value it higher.
-   */
-  bool operator< ( const KServiceOffer& ) const;
-  /**
-   * Is it allowed to use this service for default actions
-   * (e.g. Left Click in a file manager, or KRun in general).
-   * @return true if the service is a allowed as default
-   */
-  bool allowAsDefault() const { return m_bAllowAsDefault; }
-  /**
-   * The bigger this number is, the better is this service.
-   * @return the preference number (negative numbers will be
-   *         returned by invalid service offers)
-   */
-  int preference() const { return m_iPreference; }
-  /**
-   * The service which this offer is about.
-   * @return the service this offer is about, can be 0
-   *         in valid offers or when not set
-   */
-  KService::Ptr service() const { return m_pService; }
-  /**
-   * Check whether the entry is valid. A service is valid if
-   * its preference value is positive.
-   * @return true if the service offer is valid
-   */
-  bool isValid() const { return m_iPreference >= 0; }
-
-private:
-  int m_iPreference;
-  bool m_bAllowAsDefault;
-  KService::Ptr m_pService;
-private:
-  class KServiceOfferPrivate;
-};
 
 /**
  * KServiceTypeProfile represents the user's preferences for services
  * of a service type.
  * It consists of a list of services (service offers) for the service type
  * that is sorted by the user's preference.
- * KTrader uses KServiceTypeProfile to sort its results, so usually
- * you can just use KTrader to find the user's preferred service.
+ * KTrader uses KServiceTypeProfile to sort its results.
  *
  * @see KService
  * @see KServiceType
- * @see KServiceOffer
  * @see KTrader
  * @short Represents the user's preferences for services of a service type
+ *
+ * @internal used by KTrader/KMimeTypeTrader
  */
 class KIO_EXPORT KServiceTypeProfile
 {
 public:
-  typedef QList<KServiceOffer> OfferList;
-
   ~KServiceTypeProfile();
 
   /**
-   * Returns the list of all service offers for the service types
-   * that are represented by this profile.
-   * @return the list of KServiceOffer instances
+   * Returns the offers in the profile for the requested service type.
+   * @param servicetype the service type
+   * @return the KServiceTypeProfile with the given arguments, or 0 if not found
+   * @internal used by KTrader
    */
-  OfferList offers() const;
+  static KTrader::OfferList serviceTypeProfileOffers( const QString& servicetype );
 
   /**
-   * Returns the preferred service for @p _serviceType and @p _genericServiceType
-   * ("Application", type of component, or null).
-   *
-   * @param serviceType the service type (e.g. a MIME type)
-   * @param genericServiceType the generic service type (e.g. "Application" or
-   *                           "KParts/ReadOnlyPart")
-   * @return the preferred service, or 0 if no service is available
-   */
-  static KService::Ptr preferredService( const QString & serviceType, const QString & genericServiceType );
-
-  /**
-   * Returns the profile for the requested service type.
-   * @param servicetype the service type (e.g. a MIME type)
+   * Returns the offers in the profile for the requested mime type.
+   * @param mimeType the mime type
    * @param genericServiceType the generic service type (e.g. "Application"
    *                           or "KParts/ReadOnlyPart"). Can be QString(),
    *                           then the "Application" generic type will be used
    * @return the KServiceTypeProfile with the given arguments, or 0 if not found
+   * @internal used by KMimeTypeTrader
    */
-  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype, const QString & genericServiceType = QString() );
-
-  /**
-   * Returns the offers associated with a given servicetype, sorted by preference.
-   * This is what KTrader uses to get the list of offers, before applying the
-   * constraints and preferences.
-   *
-   * If @p genericServiceType is specified, a list is returned with
-   * the offers associated with the combination of the two service types.
-   * This is almost like an "foo in ServiceTypes" constraint in the KTrader,
-   * but the difference is that to order the offers, we will look at entries
-   * specifically for those two service types. Typically, this is used for
-   * getting the list of embeddable components that can handle a given mimetype.
-   * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
-   *
-   * @param servicetype the service type (e.g. a MIME type)
-   * @param genericServiceType the generic service type (e.g. "Application"
-   *                           or "KParts/ReadOnlyPart"). Can be QString(),
-   *                           then all generic types will be included
-   * @return the list of offers witht he given parameters
-   */
-  static OfferList offers( const QString& servicetype, const QString& genericServiceType = QString() );
+  static KTrader::OfferList mimeTypeProfileOffers( const QString& mimeType, const QString & genericServiceType );
 
   /**
    * Clear all cached information
@@ -211,6 +106,16 @@ private:
   void addService( const QString& _service, int _preference = 1, bool _allow_as_default = true );
 
 private:
+  /**
+   * Returns the list of all service offers for the service types
+   * that are represented by this profile.
+   * @return the list of KServiceOffer instances
+   * @internal used by KTrader/KMimeTypeTrader
+   */
+  KTrader::OfferList offers() const;
+
+  static KServiceTypeProfile* findProfile( const QString& type, const QString& type2 );
+
   /**
    * Represents the users assessment of a special service
    */

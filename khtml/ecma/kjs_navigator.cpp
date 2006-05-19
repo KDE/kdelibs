@@ -297,8 +297,8 @@ PluginBase::PluginBase(ExecState *exec)
             return; // plugins disabled
 
         // read in using KTrader
-        KTrader::OfferList offers = KTrader::self()->query("Browser/View");
-        KTrader::OfferList::iterator it;
+        KService::List offers = KTrader::self()->query("Browser/View");
+        KService::List::iterator it;
         for ( it = offers.begin(); it != offers.end(); ++it ) {
 
             QVariant pluginsinfo = (**it).property( "X-KDE-BrowserView-PluginsInfo" );
@@ -406,7 +406,7 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
 #endif
   if (getStaticOwnPropertySlot<PluginsFunc, Plugins>(&PluginsTable, this, propertyName, slot))
       return true;
-      
+
   // plugins[#]
   bool ok;
   unsigned int i = propertyName.toUInt32(&ok);

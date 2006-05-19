@@ -27,8 +27,7 @@
 #include <kparts/part.h>
 #include <kaction.h>
 #include <klibloader.h>
-#include <ktrader.h>
-#include <kservicetypeprofile.h>
+#include <kmimetypetrader.h>
 #include <krun.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
@@ -108,8 +107,8 @@ static KLibFactory* componentFactory()
 {
 	kDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
 	KLibFactory	*factory(0);
-	KTrader::OfferList	offers = KTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"), QString(), QString());
-	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
+	KService::List offers = KMimeTypeTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"));
+	for (KService::List::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;
 		factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
@@ -295,7 +294,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	}
 	else
 	{
-		KService::Ptr serv = KServiceTypeProfile::preferredService( mime->name(), QString() );
+		KService::Ptr serv = KMimeTypeTrader::self()->preferredService( mime->name() );
 		if ( serv )
 		{
 			KUrl url;

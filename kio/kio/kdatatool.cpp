@@ -193,9 +193,9 @@ QList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QStrin
 
     // Query the trader
     //kDebug() << "KDataToolInfo::query " << constr << endl;
-    KTrader::OfferList offers = KTrader::self()->query( "KDataTool", constr );
+    KService::List offers = KTrader::self()->query( "KDataTool", constr );
 
-    KTrader::OfferList::ConstIterator it = offers.begin();
+    KService::List::ConstIterator it = offers.begin();
     for( ; it != offers.end(); ++it )
     {
         // Temporary replacement for the non-working trader query above

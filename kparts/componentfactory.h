@@ -5,6 +5,7 @@
 #include <kparts/part.h>
 #include <ktrader.h>
 #include <klibloader.h>
+#include <kmimetypetrader.h>
 
 namespace KParts
 {
@@ -230,7 +231,7 @@ namespace KParts
                                            const QStringList &args = QStringList(),
                                            int *error = 0 )
         {
-            const KTrader::OfferList offers = KTrader::self()->query( serviceType, constraint );
+            const KService::List offers = KTrader::self()->query( serviceType, constraint );
             if ( offers.isEmpty() )
             {
                 if ( error )
@@ -254,11 +255,11 @@ namespace KParts
          * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, parentObject );
          * if ( part ) {
          *     part->openURL( url );
-         *     part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
+         *     part->widget()->show();  // also insert the widget into a layout, or simply use a KVBox as parentWidget
          * }
          * \endcode
          *
-         * @param serviceType the type of service for which to find a part, e.g. a mimetype
+         * @param mimeType the mimetype which this part is associated with
          * @param constraint an optionnal constraint to pass to the trader (see KTrader)
          * @param parentWidget the parent widget, will be set as the parent of the part's widget
          * @param parent the parent object for the part itself
@@ -270,14 +271,14 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        static T *createPartInstanceFromQuery( const QString &serviceType,
+        static T *createPartInstanceFromQuery( const QString &mimeType,
                                                const QString &constraint,
                                                QWidget *parentWidget = 0,
                                                QObject *parent = 0,
                                                const QStringList &args = QStringList(),
                                                int *error = 0 )
         {
-            const KTrader::OfferList offers = KTrader::self()->query( serviceType, QLatin1String("KParts/ReadOnlyPart"), constraint, QString() );
+            const KService::List offers = KMimeTypeTrader::self()->query( mimeType, QLatin1String("KParts/ReadOnlyPart"), constraint );
             if ( offers.isEmpty() )
             {
                 if ( error )

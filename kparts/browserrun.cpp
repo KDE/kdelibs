@@ -24,7 +24,7 @@
 #include <klocale.h>
 #include <kprocess.h>
 #include <kstringhandler.h>
-#include <kservicetypeprofile.h>
+#include <kmimetypetrader.h>
 #include <ktempfile.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -197,7 +197,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
         if ( isTextExecutable(mimeType) )
             mimeType = QLatin1String("text/plain"); // view, don't execute
         kDebug(1000) << "BrowserRun: ask for saving" << endl;
-        KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, "Application");
+        KService::Ptr offer = KMimeTypeTrader::self()->preferredService(mimeType, "Application");
         // ... -> ask whether to save
         KParts::BrowserRun::AskSaveResult res = askSave( m_strURL, offer, mimeType, suggestedFileName() );
         if ( res == KParts::BrowserRun::Save ) {

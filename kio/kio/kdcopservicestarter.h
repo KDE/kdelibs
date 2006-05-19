@@ -47,7 +47,6 @@ public:
      *
      * @param serviceType the type of service we're looking for
      * @param constraint see KTrader
-     * @param preferences see KTrader
      * @param error On failure, @p error contains a description of the error
      *         that occurred. If the pointer is 0, the argument will be
      *         ignored
@@ -60,7 +59,6 @@ public:
      */
     int findServiceFor( const QString& serviceType,
                         const QString& constraint = QString(),
-                        const QString& preferences = QString(),
                         QString *error=0, DCOPCString* dcopService=0,
                         int flags=0 );
 
@@ -75,7 +73,6 @@ public:
      *
      * @param serviceType the type of service we're looking for
      * @param constraint see KTrader
-     * @param preferences see KTrader
      * @param error On failure, @p error contains a description of the error
      *         that occurred. If the pointer is 0, the argument will be
      *         ignored
@@ -88,7 +85,6 @@ public:
      */
     virtual int startServiceFor( const QString& serviceType,
                                  const QString& constraint = QString(),
-                                 const QString& preferences = QString(),
                                  QString *error=0, DCOPCString* dcopService=0,
                                  int flags=0 );
 protected:

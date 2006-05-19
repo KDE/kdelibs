@@ -25,31 +25,13 @@
 #include <qmap.h>
 
 #include <kservice.h>
-#include <kservicetypeprofile.h>
+#include <ktrader.h>
 
 #include "ktrader.h"
 
-namespace KIO {
+namespace KTraderParse {
 
 class ParseTreeBase;
-
-/** \internal */
-struct KIO_EXPORT PreferencesReturn
-{
-  enum Type { PRT_DOUBLE, PRT_ERROR };
-
-  PreferencesReturn() { type = PRT_ERROR; }
-
-  PreferencesReturn( const PreferencesReturn& _r )
-  {
-    type = _r.type;
-    f = _r.f;
-  }
-
-  Type type;
-  double f;
-};
-
 
 /**
  * @internal
@@ -58,14 +40,7 @@ struct KIO_EXPORT PreferencesReturn
  *         <0 => Error
  */
 KIO_EXPORT int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
-		     const KServiceTypeProfile::OfferList& );
-
-/**
- * @internal
- * @return 1 on success or <0 on Error
- */
-KIO_EXPORT PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &,
-				    const KServiceTypeProfile::OfferList& );
+                                const KService::List& );
 
 /**
  * @internal
@@ -97,7 +72,7 @@ public:
    */
   ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
     offers( _ctx->offers ) {}
-  ParseContext( const KService::Ptr & _service, const KServiceTypeProfile::OfferList& _offers,
+  ParseContext( const KService::Ptr & _service, const KService::List& _offers,
 		QMap<QString,PreferencesMaxima>& _m )
     : service( _service ), maxima( _m ), offers( _offers ) {}
 
@@ -117,7 +92,7 @@ public:
   KService::Ptr service;
 
   QMap<QString,PreferencesMaxima>& maxima;
-  const KServiceTypeProfile::OfferList& offers;
+  const KService::List& offers;
 };
 
 /**
@@ -134,7 +109,6 @@ public:
 };
 
 KIO_EXPORT ParseTreeBase::Ptr parseConstraints( const QString& _constr );
-KIO_EXPORT ParseTreeBase::Ptr parsePreferences( const QString& _prefs );
 
 /**
  * @internal

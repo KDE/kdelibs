@@ -1,8 +1,8 @@
-/*    
+/*
 	kimproxy.cpp
-	
+
 	IM service library for KDE
-	
+
 	Copyright (c) 2004 Will Stephenson   <lists@stevello.free-online.co.uk>
 
     This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 
 #include <dcopclient.h>
 #include <kapplication.h>
-#include <kdcopservicestarter.h> 
+#include <kdcopservicestarter.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>
@@ -76,7 +76,7 @@ bool ContactPresenceListCurrent::update( AppPresenceCurrent ap )
 		append( ap );
 		return true;
 	}
-	
+
 	bool bestChanged = false;
 	AppPresenceCurrent best;
 	best.presence = -1;
@@ -92,11 +92,11 @@ bool ContactPresenceListCurrent::update( AppPresenceCurrent ap )
 			existing = it;
 		++it;
 	}
-	
+
 	if ( ap.presence > best.presence ||
       best.appId == ap.appId )
 		bestChanged = true;
-	
+
 	if ( existing != itEnd )
 	{
 		erase( existing );
@@ -136,12 +136,12 @@ AppPresenceCurrent ContactPresenceListCurrent::best()
 // 		for ( ; it != ap->end(); ++it )
 // 		{
 // 			if ( it.data() > best )
-// 				best = it.data(); 
+// 				best = it.data();
 // 		}
 // 	}
 // 	return best;
 // }
-// 
+//
 // QCString bestAppId( AppPresence* ap )
 // {
 // 	Q_ASSERT( ap );
@@ -165,7 +165,7 @@ AppPresenceCurrent ContactPresenceListCurrent::best()
 // 	return bestAppId;
 // }
 
-KIMProxy * KIMProxy::instance( DCOPClient * client ) 
+KIMProxy * KIMProxy::instance( DCOPClient * client )
 {
 	if ( client )
 	{
@@ -190,18 +190,18 @@ KIMProxy::KIMProxy( DCOPClient* dc ) : DCOPObject( "KIMProxyIface" ), QObject(),
 	d->presence_strings.append( "Connecting" );
 	d->presence_strings.append( "Away" );
 	d->presence_strings.append( "Online" );
-	
+
 	d->presence_icons.append( "presence_unknown" );
 	d->presence_icons.append( "presence_offline" );
 	d->presence_icons.append( "presence_connecting" );
 	d->presence_icons.append( "presence_away" );
 	d->presence_icons.append( "presence_online" );
-	
+
 	//QCString senderApp = "Kopete";
 	//QCString senderObjectId = "KIMIface";
 	DCOPCString method = "contactPresenceChanged( QString, QCString, int )";
 	//QCString receiverObjectId = "KIMProxyIface";
-	
+
 	// FIXME: make this work when the sender object id is set to KIMIFace
 	if ( !connectDCOPSignal( 0, 0, method, method, false ) )
 		KMessageBox::information( 0, QString( "Couldn't connect DCOP signal.\nWon't receive any status notifications!" ) );
@@ -220,11 +220,11 @@ bool KIMProxy::initialize()
 	{
 		m_initialized = true; // we should only do this once, as registeredToDCOP() will catch any new starts
 		// So there is no error from a failed query when using kdelibs 3.2, which don't have this servicetype
-		if ( KServiceType::serviceType( IM_SERVICE_TYPE ) ) 
+		if ( KServiceType::serviceType( IM_SERVICE_TYPE ) )
 		{
 			//kDebug( 790 ) << k_funcinfo << endl;
 			DCOPCString dcopObjectId = "KIMIface";
-	
+
 			// see what apps implementing our service type are out there
 			KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
 			KService::List::iterator offer;
@@ -244,7 +244,7 @@ bool KIMProxy::initialize()
 						//kDebug( 790 ) << " is it: " << dcopService << "?" << endl;
 						// get the application name ( minus any process ID )
 						DCOPCString instanceName =  (*app).left( dcopService.length() );
-						// if the application implements the dcop service, add it 
+						// if the application implements the dcop service, add it
 						if ( instanceName == dcopService )
 						{
 							m_apps_available = true;
@@ -305,7 +305,7 @@ void KIMProxy::unregisteredFromDCOP( const QByteArray& appId )
 	if ( m_im_client_stubs.contains( appId ) )
 	{
 		kDebug( 790 ) << appId << " quit, removing its presence info." << endl;
-		
+
 		PresenceStringMap::Iterator it = d->presence_map.begin();
 		const PresenceStringMap::Iterator end = d->presence_map.end();
 		for ( ; it != end; ++it )
@@ -401,7 +401,7 @@ QStringList KIMProxy::allContacts()
 QStringList KIMProxy::reachableContacts()
 {
 	QStringList value;
-	
+
 	if ( initialize() )
 	{
 		QHashIterator<QString, KIMIface_stub*> it( m_im_client_stubs );
@@ -422,14 +422,14 @@ QStringList KIMProxy::onlineContacts()
 	for ( ; it != end; ++it )
 		if ( it.value().best().presence > 2 /*Better than Connecting, ie Away or Online*/ )
 			value.append( it.key() );
-		
+
 	return value;
 }
 
 QStringList KIMProxy::fileTransferContacts()
 {
 	QStringList value;
-	
+
 	if ( initialize() )
 	{
 		QHashIterator<QString, KIMIface_stub*> it( m_im_client_stubs );
@@ -488,7 +488,7 @@ QString KIMProxy::context( const QString & uid )
 	}
 	return QString();
 }
-	
+
 void KIMProxy::chatWithContact( const QString& uid )
 {
 	if ( initialize() )
@@ -529,7 +529,7 @@ void KIMProxy::sendFile(const QString &uid, const KUrl &sourceURL, const QString
 				it.value()->sendFile( uid, sourceURL, altFileName, fileSize );
 				break;
 			}
-		}	
+		}
 	}
 	return;
 }
@@ -569,7 +569,7 @@ bool KIMProxy::startPreferredApp()
 	// The app will notify itself to us using registeredToDCOP, so we don't need to record a stub for it here
 	// FIXME: error in preferences, see debug output
 	preferences.clear();
-	int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString(), preferences, &error, &dcopService );
+	int result = KDCOPServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString("Application"), &error, &dcopService );
 
 	kDebug( 790 ) << k_funcinfo << "error was: " << error << ", dcopService: " << dcopService << endl;
 
@@ -642,7 +642,7 @@ KIMIface_stub * KIMProxy::stubForProtocol( const QString &protocol)
     it.next();
 		if ( it.value()->protocols().filter( protocol ).count() > 0 )
 			return it.value();
-	}	
+	}
 	return 0L;
 }
 
@@ -653,6 +653,6 @@ QString KIMProxy::preferredApp()
 	QString preferredApp = store->readEntry( IM_CLIENT_PREFERENCES_ENTRY );
 	//kDebug( 790 ) << k_funcinfo << "found preferred app: " << preferredApp << endl;
 	return preferredApp;
-}	
+}
 
 #include "kimproxy.moc"

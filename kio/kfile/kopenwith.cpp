@@ -46,7 +46,7 @@
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
-#include <kservicetypeprofile.h>
+#include <kmimetypetrader.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
 #include <dcopclient.h>
@@ -338,7 +338,7 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
     else
         // Should never happen ??
         text = i18n( "Choose the name of the program with which to open the selected files." );
-    setServiceType( _urls );
+    setMimeType( _urls );
     init( text, QString() );
 }
 
@@ -352,21 +352,21 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setWindowTitle(caption);
-  setServiceType( _urls );
+  setMimeType( _urls );
   init( _text, _value );
 }
 
-KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
+KOpenWithDlg::KOpenWithDlg( const QString &mimeType, const QString& value,
                             QWidget *parent)
              :QDialog( parent ),d(new KOpenWithDlgPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  setWindowTitle(i18n("Choose Application for %1", serviceType));
+  setWindowTitle(i18n("Choose Application for %1", mimeType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
-                      "the browse button.</qt>", serviceType);
-  qServiceType = serviceType;
+                      "the browse button.</qt>", mimeType);
+  qMimeType = mimeType;
   init( text, value );
   if (remember)
       remember->hide();
@@ -381,20 +381,20 @@ KOpenWithDlg::KOpenWithDlg( QWidget *parent)
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>");
-  qServiceType.clear();
+  qMimeType.clear();
   init( text, QString() );
 }
 
-void KOpenWithDlg::setServiceType( const KUrl::List& _urls )
+void KOpenWithDlg::setMimeType( const KUrl::List& _urls )
 {
   if ( _urls.count() == 1 )
   {
-    qServiceType = KMimeType::findByURL( _urls.first())->name();
-    if (qServiceType == QString::fromLatin1("application/octet-stream"))
-      qServiceType.clear();
+    qMimeType = KMimeType::findByURL( _urls.first())->name();
+    if (qMimeType == QString::fromLatin1("application/octet-stream"))
+      qMimeType.clear();
   }
   else
-      qServiceType.clear();
+      qMimeType.clear();
 }
 
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
@@ -508,7 +508,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   nocloseonexitLayout->addWidget( nocloseonexit );
   topLayout->addLayout( nocloseonexitLayout );
 
-  if (!qServiceType.isNull())
+  if (!qMimeType.isNull())
   {
     remember = new QCheckBox(i18n("&Remember application association for this type of file"), this);
     //    remember->setChecked(true);
@@ -618,7 +618,7 @@ void KOpenWithDlg::setSaveNewApplications(bool b)
 
 void KOpenWithDlg::slotOK()
 {
-  QString typedExec(edit->url());
+  QString typedExec(edit->url().pathOrUrl());
   QString fullExec(typedExec);
 
   QString serviceName;
@@ -688,7 +688,7 @@ void KOpenWithDlg::slotOK()
     if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
       m_command += QString::fromLatin1(" --noclose");
     m_command += QString::fromLatin1(" -e ");
-    m_command += edit->url();
+    m_command += edit->url().pathOrUrl();
     kDebug(250) << "Setting m_command to " << m_command << endl;
   }
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
@@ -738,9 +738,9 @@ void KOpenWithDlg::slotOK()
   }
 
   int maxPreference = 1;
-  if (!qServiceType.isEmpty())
+  if (!qMimeType.isEmpty())
   {
-    KServiceTypeProfile::OfferList offerList = KServiceTypeProfile::offers( qServiceType );
+    const KTrader::OfferList offerList = KMimeTypeTrader::self()->weightedOffers( qMimeType );
     if (!offerList.isEmpty())
       maxPreference = offerList.first().preference();
   }
@@ -775,14 +775,14 @@ void KOpenWithDlg::slotOK()
   if (bRemember || d->saveNewApps)
   {
     QStringList mimeList = desktop->readEntry("MimeType", QStringList(), ';');
-    if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
-      mimeList.append(qServiceType);
+    if (!qMimeType.isEmpty() && !mimeList.contains(qMimeType))
+      mimeList.append(qMimeType);
     desktop->writeEntry("MimeType", mimeList, ';');
 
-    if ( !qServiceType.isEmpty() )
+    if ( !qMimeType.isEmpty() )
     {
       // Also make sure the "auto embed" setting for this mimetype is off
-      KDesktopFile mimeDesktop( locateLocal( "mime", qServiceType + ".desktop" ) );
+      KDesktopFile mimeDesktop( locateLocal( "mime", qMimeType + ".desktop" ) );
       mimeDesktop.writeEntry( "X-KDE-AutoEmbed", false );
       mimeDesktop.sync();
     }
@@ -806,7 +806,7 @@ QString KOpenWithDlg::text() const
     if (!m_command.isEmpty())
         return m_command;
     else
-        return edit->url();
+        return edit->url().url();
 }
 
 void KOpenWithDlg::hideNoCloseOnExit()
@@ -826,7 +826,7 @@ void KOpenWithDlg::accept()
 {
     KHistoryCombo *combo = static_cast<KHistoryCombo*>( edit->comboBox() );
     if ( combo ) {
-        combo->addToHistory( edit->url() );
+        combo->addToHistory( edit->url().url() );
 
         KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
         cg.writeEntry( QString::fromLatin1("History"), combo->historyItems() );

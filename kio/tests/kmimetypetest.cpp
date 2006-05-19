@@ -25,7 +25,7 @@
 
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
-#include <kservicetypeprofile.h>
+#include <kmimetypetrader.h>
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
 {
@@ -216,30 +216,38 @@ void KMimeTypeTest::testAllInitServices()
     }
 }
 
-static bool offerListHasService( const KServiceTypeProfile::OfferList& offers,
+static bool offerListHasService( const KService::List& offers,
                                  const QString& desktopEntryPath )
 {
-    KServiceTypeProfile::OfferList::const_iterator it = offers.begin();
+    bool found = false;
+    KService::List::const_iterator it = offers.begin();
     for ( ; it != offers.end() ; it++ )
     {
-        if ( (*it).service()->desktopEntryPath() == desktopEntryPath )
-            return true;
+        if ( (*it)->desktopEntryPath() == desktopEntryPath ) {
+            if( found ) { // should be there only once
+                qWarning( "ERROR: %s was found twice in the list", qPrintable( desktopEntryPath ) );
+                return false; // make test fail
+            }
+            found = true;
+        }
     }
-    return false;
+    return found;
 }
 
-void KMimeTypeTest::testTraderForTextPlain()
+void KMimeTypeTest::testMimeTypeTraderForTextPlain()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
     // Querying userprofile for services associated with text/plain
-    const KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("text/plain");
+    KService::List offers = KMimeTypeTrader::self()->query("text/plain", "KParts/ReadOnlyPart");
+    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+
+    offers = KMimeTypeTrader::self()->query("text/plain", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );
 
-    // We should have at least katepart, plus a few kate plugins like
+    // We should have at least a few kate plugins like
     // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
-    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }
@@ -250,7 +258,7 @@ void KMimeTypeTest::testTraderForReadOnlyPart()
         QSKIP( "ksycoca not available", SkipAll );
 
     // Querying userprofile for services associated with KParts/ReadOnlyPart
-    const KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("KParts/ReadOnlyPart");
+    KService::List offers = KTrader::self()->query("KParts/ReadOnlyPart");
     QVERIFY( offers.count() > 0 );
 
     // Only test for parts provided by kdelibs:
@@ -260,4 +268,9 @@ void KMimeTypeTest::testTraderForReadOnlyPart()
     QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
     QVERIFY( offerListHasService( offers, "kjavaappletviewer.desktop" ) );
     QVERIFY( offerListHasService( offers, "kcertpart.desktop" ) );
+
+    // Now look for any KTextEditor/Plugin
+    offers = KTrader::self()->query("KTextEditor/Plugin");
+    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }

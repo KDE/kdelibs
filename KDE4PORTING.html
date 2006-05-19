@@ -1156,7 +1156,19 @@ with ServiceType as QImageIOPlugins</li>
 
 <h4>KServiceTypeProfile</h4>
 <ul>
-<li>The header file for KServiceTypeProfile has changed from kuserprofile.h to kservicetypeprofile.h</li>
+<li>This class has been moved to kservicetypeprofile.h and is mostly internal now. Use KTrader or KMimeTypeTrader instead.</li>
+<li>KServiceTypeProfile::preferredService is now KMimeTypeTrader::self()->preferredService or KTrader::self()->preferredService</li>
+<li>KServiceTypeProfile::offers is now KMimeTypeTrader::self()->query or KTrader::self()->query</li>
+<li>
+</ul>
+
+<h4>KTrader</h4>
+<ul>
+<li>KTrader::query() should be ported to KMimeTypeTrader::query() when it's about mimetypes.</li>
+<li>query() now returns KService::List instead of an OfferList</li>
+<li>Constraints like "'RenameDlg/Plugin' in ServiceTypes" should be turned into
+  KMimeTypeTrader::self()->query(mimetype,"RenameDlg/Plugin")</li>
+
 </ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>

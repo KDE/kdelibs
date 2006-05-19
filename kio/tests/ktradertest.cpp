@@ -17,7 +17,7 @@
  */
 
 #include <kcmdlineargs.h>
-#include <ktrader.h>
+#include <kmimetypetrader.h>
 #include <kmimetype.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -25,10 +25,9 @@
 
 static KCmdLineOptions options[] =
 {
-  { "+query", "the query", 0 },
-  { "+[genericServiceType]", "Application (default), or KParts/ReadOnlyPart", 0 },
-  { "+[constraint]", "constraint", 0 },
-  { "+[preference]", "preference", 0 },
+  { "mimetype <mimetype>", "a mimetype", 0 },
+  { "servicetype <servicetype>", "a servicetype, like KParts/ReadOnlyPart or KMyApp/Plugin", 0 },
+  { "constraint <constraint>", "a constraint expressed in the trader query language", 0 },
   KCmdLineLastOption
 };
 
@@ -42,34 +41,34 @@ int main( int argc, char **argv )
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-  if ( args->count() < 1 )
+  const QString mimetype = QString::fromLocal8Bit( args->getOption( "mimetype" ) );
+  QString servicetype = QString::fromLocal8Bit( args->getOption( "servicetype" ) );
+  const QString constraint = QString::fromLocal8Bit( args->getOption( "constraint" ) );
+
+  if ( mimetype.isEmpty() && servicetype.isEmpty() )
       KCmdLineArgs::usage();
 
-  QString query = QString::fromLocal8Bit( args->arg( 0 ) );
+  if ( !mimetype.isEmpty() )
+      printf( "mimetype is : %s\n", qPrintable( mimetype ) );
+  if ( !servicetype.isEmpty() )
+      printf( "servicetype is : %s\n", qPrintable( servicetype ) );
+  if ( !constraint.isEmpty() )
+      printf( "constraint is : %s\n", qPrintable( constraint ) );
 
-  QString genericServiceType, constraint, preference;
-
-  if ( args->count() >= 2 )
-    genericServiceType = QString::fromLocal8Bit( args->arg( 1 ) );
-
-  if ( args->count() >= 3 )
-    constraint = QString::fromLocal8Bit( args->arg( 2 ) );
-
-  if ( args->count() == 4 )
-    preference = QString::fromLocal8Bit( args->arg( 3 ) );
-
-  printf( "query is : %s\n", query.toLocal8Bit().data() );
-  printf( "genericServiceType is : %s\n", genericServiceType.toLocal8Bit().data() );
-  printf( "constraint is : %s\n", constraint.toLocal8Bit().data() );
-  printf( "preference is : %s\n", preference.toLocal8Bit().data() );
-
-  KTrader::OfferList offers = KTrader::self()->query( query, genericServiceType, constraint, preference );
+  KService::List offers;
+  if ( !mimetype.isEmpty() ) {
+      if ( servicetype.isEmpty() )
+          servicetype = "Application";
+     offers = KMimeTypeTrader::self()->query( mimetype, servicetype, constraint );
+  }
+  else
+     offers = KTrader::self()->query( servicetype, constraint );
 
   printf("got %d offers.\n", offers.count());
 
   int i = 0;
-  KTrader::OfferList::ConstIterator it = offers.begin();
-  KTrader::OfferList::ConstIterator end = offers.end();
+  KService::List::ConstIterator it = offers.begin();
+  const KService::List::ConstIterator end = offers.end();
   for (; it != end; ++it, ++i )
   {
     printf("---- Offer %d ----\n", i);

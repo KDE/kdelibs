@@ -35,7 +35,7 @@
 #include <kpushbutton.h>
 #include <kapplication.h>
 #include <kio/global.h>
-#include <ktrader.h>
+#include <kmimetypetrader.h>
 #include <klibloader.h>
 #include <kdialog.h>
 #include <klocale.h>
@@ -157,17 +157,17 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         // Figure out the mimetype and load one plugin
         // (This is the only mode that is handled by plugins)
         pluginHandling();
-        KTrader::OfferList plugin_offers;
+        KService::List plugin_offers;
         if( d->mimeSrc != KMimeType::defaultMimeType()   ){
-            plugin_offers = KTrader::self()->query(d->mimeSrc, "'RenameDlg/Plugin' in ServiceTypes");
+            plugin_offers = KMimeTypeTrader::self()->query(d->mimeSrc, "RenameDlg/Plugin");
 
         }else if(d->mimeDest != KMimeType::defaultMimeType() ) {
-            plugin_offers = KTrader::self()->query(d->mimeDest, "'RenameDlg/Plugin' in ServiceTypes");
+            plugin_offers = KMimeTypeTrader::self()->query(d->mimeDest, "RenameDlg/Plugin");
         }
         if(!plugin_offers.isEmpty() ){
             kDebug(7024) << "Offers" << endl;
-            KTrader::OfferList::ConstIterator it = plugin_offers.begin();
-            KTrader::OfferList::ConstIterator end = plugin_offers.end();
+            KService::List::ConstIterator it = plugin_offers.begin();
+            const KService::List::ConstIterator end = plugin_offers.end();
             for( ; it != end; ++it ){
                 QString libName = (*it)->library();
                 if( libName.isEmpty() ){

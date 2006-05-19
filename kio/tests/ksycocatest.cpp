@@ -20,13 +20,12 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-//#include <kimageio.h>
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
 #include <kservice.h>
 #include <kservicegroup.h>
 #include <kstandarddirs.h>
-#include <ktrader.h>
+#include <kmimetypetrader.h>
 #include <kservicetypeprofile.h>
 
 #include <assert.h>
@@ -129,42 +128,6 @@ int main(int argc, char *argv[])
    }
 
 #if 1
-   debug("Querying userprofile for services associated with text/plain");
-   KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("text/plain");
-   debug(QString("got %1 offers").arg(offers.count()));
-   KServiceTypeProfile::OfferList::Iterator it = offers.begin();
-   for ( ; it != offers.end() ; it++ )
-   {
-     debug((*it).service()->name());
-   }
-
-   debug("Querying userprofile for services associated with KOfficeFilter");
-   offers = KServiceTypeProfile::offers("KOfficeFilter");
-   debug(QString("got %1 offers").arg(offers.count()));
-   it = offers.begin();
-   for ( ; it != offers.end() ; it++ )
-   {
-     debug((*it).service()->name());
-   }
-
-   debug("Querying trader for Konqueror/Plugin");
-   KTrader::OfferList traderoffers = KTrader::self()->query("Konqueror/Plugin");
-   debug(QString("got %1 offers").arg(traderoffers.count()));
-   KTrader::OfferList::Iterator trit = traderoffers.begin();
-   for ( ; trit != traderoffers.end() ; trit++ )
-   {
-     debug((*trit)->name());
-   }
-#endif
-
-   //
-   //debug("\nTrying findByURL for Makefile.am");
-   //mf = KMimeType::findByURL( KUrl("/tmp/Makefile.am"), 0, true, false );
-   //assert( mf );
-   //debug(QString("Name is %1").arg(mf->name()));
-   //debug(QString("Comment is %1").arg(mf->comment(KUrl(),false)));
-
-#if 1
    KServiceGroup::Ptr root = KServiceGroup::root();
    KServiceGroup::List list = root->entries();
    //KServiceGroup::Ptr topGroup = KServiceGroup::childGroup( "kview" );
@@ -229,47 +192,6 @@ int main(int argc, char *argv[])
       debug((*it).toAscii().constData());
    }
    debug("--End of list--");
-#endif
-
-#if 0
-   KImageIO::registerFormats();
-
-   QStringList types;
-   types = KImageIO::types(KImageIO::Reading);
-   debug("Can read:");
-   for(QStringList::ConstIterator it = types.begin();
-       it != types.end(); ++it)
-      debug(QString("    %1").arg((*it)));
-
-   types = KImageIO::types(KImageIO::Writing);
-   debug("Can write:");
-   for(QStringList::ConstIterator it = types.begin();
-       it != types.end(); ++it)
-      debug(QString("    %1").arg((*it)));
-
-
-   QString rPattern = KImageIO::pattern( KImageIO::Reading );
-   debug("Read pattern:\n%s", rPattern.toAscii().constData());
-
-   QString wPattern = KImageIO::pattern( KImageIO::Writing );
-   debug("Write pattern:\n%s", wPattern.toAscii().constData());
-
-   QString suffix = KImageIO::suffix("JPEG");
-   debug("Standard suffix for JPEG: %s", suffix.toAscii().constData());
-
-   types = KImageIO::mimeTypes(KImageIO::Reading);
-   debug("Can read (mimetypes):");
-   for(QStringList::ConstIterator it = types.begin();
-       it != types.end(); ++it)
-      debug("    %s", (*it).toAscii().constData());
-
-   types = KImageIO::mimeTypes(KImageIO::Writing);
-   debug("Can write (mimetypes):");
-   for(QStringList::ConstIterator it = types.begin();
-       it != types.end(); ++it)
-      debug("    %s", (*it).toAscii().constData());
-
-   debug("done");
 #endif
    return 0;
 }

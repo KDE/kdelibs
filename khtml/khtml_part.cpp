@@ -87,7 +87,7 @@ using namespace DOM;
 #include <kmessagebox.h>
 #include <kstdaction.h>
 #include <kfiledialog.h>
-#include <ktrader.h>
+#include <kmimetypetrader.h>
 #include <kdatastream.h>
 #include <ktempfile.h>
 #include <kglobalsettings.h>
@@ -4622,20 +4622,20 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
   if ( !serviceName.isEmpty() )
     constr.append( QString::fromLatin1( "Name == '%1'" ).arg( serviceName ) );
 
-  KTrader::OfferList offers = KTrader::self()->query( mimetype, "KParts/ReadOnlyPart", constr, QString() );
+  KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KParts/ReadOnlyPart", constr );
 
   if ( offers.isEmpty() ) {
     int pos = mimetype.indexOf( "-plugin" );
     if (pos < 0)
         return 0L;
     QString stripped_mime = mimetype.left( pos );
-    offers = KTrader::self()->query( stripped_mime, "KParts/ReadOnlyPart", constr, QString() );
+    offers = KMimeTypeTrader::self()->query( stripped_mime, "KParts/ReadOnlyPart", constr );
     if ( offers.isEmpty() )
         return 0L;
   }
 
-  KTrader::OfferList::ConstIterator it = offers.begin();
-  const KTrader::OfferList::ConstIterator itEnd = offers.end();
+  KService::List::ConstIterator it = offers.begin();
+  const KService::List::ConstIterator itEnd = offers.end();
   for ( ; it != itEnd; ++it )
   {
     KService::Ptr service = (*it);

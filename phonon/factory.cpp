@@ -34,7 +34,6 @@
 #include "base_p.h"
 
 #include <ktrader.h>
-#include <kservice.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
 #include <QFile>
@@ -60,10 +59,10 @@ class Factory::Private
 
 		void createBackend()
 		{
-			KTrader::OfferList offers = KTrader::self()->query( "PhononBackend",
+			const KService::List offers = KTrader::self()->query( "PhononBackend",
 					"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
-			KTrader::OfferListIterator it = offers.begin();
-			KTrader::OfferListIterator end = offers.end();
+			KService::List::const_iterator it = offers.begin();
+			const KService::List::const_iterator end = offers.end();
 			QStringList errormsg;
 			for( ; it != end; ++it )
 			{
@@ -113,8 +112,8 @@ class Factory::Private
 					QString details = "<qt><table>";
 					QStringList::Iterator eit = errormsg.begin();
 					QStringList::Iterator eend = errormsg.end();
-					KTrader::OfferListIterator oit = offers.begin();
-					KTrader::OfferListIterator oend = offers.end();
+					KService::List::const_iterator oit = offers.begin();
+					const KService::List::const_iterator oend = offers.end();
 					for( ; eit != eend || oit != oend; ++eit, ++oit )
 						details += QString( "<tr><td><b>%1</b></td><td>%2</td></tr>" )
 							.arg( ( *oit )->name() ).arg( *eit );

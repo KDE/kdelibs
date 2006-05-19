@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Torben Weis <weis@kde.org>
+   Copyright (C) 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,102 +19,64 @@
 #ifndef __ktrader_h__
 #define __ktrader_h__
 
-#include <qstring.h>
-#include <qobject.h>
-#include <kservice.h>
+#include "kserviceoffer.h"
 
 /**
  * A Trader interface, similar to the CORBA Trader.
  *
  * Basically, it provides a way for an application to query
- * all KDE services (that is, applications and components) that match
- * a specific set of requirements.  This allows you to find an
- * application in real-time without you having to hard-code the name
- * and/or path of the application.  It is mostly used when you want to
- * do complex queries that KServiceTypeProfile can't handle.
+ * all KDE services (that is, applications, components, plugins) that match
+ * a specific set of requirements. This allows you to find components
+ * and plugins in real-time without you having to hard-code their names
+ * and/or paths.
+ *
+ * For anything relating to mimetypes (type of files), ignore KTrader
+ * and use KMimeTypeTrader.
  *
  * \par Examples
  *
- * A few examples will make this a lot more clear.
- *
- * Say you have an application that will display HTML.  In this
- * example, you don't want to link to khtml... and furthermore, you
- * really don't care if the HTML browser is ours or not, as long as
- * it works.  The way that you formulate your query as well as the way
- * that you execute the browser depends on whether or not you want the
- * browser to run stand-alone or embedded.
- *
- * If you want the browser to run standalone, then you will limit the
- * query to search for all services that handle 'text/html' @em and,
- * furthermore, they must be applications (Type=Application).  You
- * then will use KRun::run() to invoke the application.  In "trader-speak",
- * this looks like so:
+ * As an example: if you want to find all plugins for your application,
+ * you would define a KMyApp/Plugin servicetype, and then you can query
+ * the trader for it:
  * \code
- * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
- * KService::Ptr ptr = offers.first();
- * KUrl::List lst;
- * lst.append("http://www.kde.org/index.html");
- * KRun::run(*ptr, lst);
+ * KTrader::OfferList offers = KTrader::self()->query("KMyApp/Plugin");
  * \endcode
  *
- * It should be noted that in the above example, using
- * KServiceTypeProfile would be the better choice since you would
- * probably want the preferred service and the trader doesn't take
- * this into account.  The trader does allow you to do more complex
- * things, though.  Say, for instance, you want to only choose
- * Netscape.  You can do it with the constraint: "(Type ==
- * 'Application') and (Name == 'Netscape')"
- *
- * More the likely, though, you will only use the trader for such
- * things as finding components.  In our continuing example, we say
- * that we want to load any KParts component that can handle HTML.  We
- * will need to use the KLibFactory and KLibLoader to
- * actually do something with our query, then.  Our code would look
- * like so:
+ * You can add a constraint in the "trader query language". For instance:
  * \code
- * KTrader::OfferList offers = KTrader::self()->query("text/html", "'KParts/ReadOnlyPart' in ServiceTypes");
- * KService::Ptr ptr = offers.first();
- * KLibFactory *factory = KLibLoader::self()->factory( ptr->library() );
- * if (factory)
- *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
+ * KTrader::self()->query("KMyApp/Plugin", "[X-KMyApp-InterfaceVersion] > 15");
  * \endcode
  *
  * Please note that when including property names containing arithmetic operators like - or +, then you have
  * to put brackets around the property name, in order to correctly separate arithmetic operations from
  * the name. So for example a constraint expression like
- *  X-KDE-Blah < 4
+ *  X-KMyApp-InterfaceVersion > 4
  * needs to be written as
- * [X-KDE-Blah] < 4
+ * [X-KMyApp-InterfaceVersion] > 4
  * otherwise it could also be interpreted as
- * Substract the numeric value of the property "KDE" and "Blah" from the property "X" and make sure it
- * is less than 4.
- * Instead of the other meaning, make sure that the numeric value of "X-KDE-Blah" is less than 4.
+ * Substract the numeric value of the property "KMyApp" and "InterfaceVersion" from the
+ * property "X" and make sure it is greater than 4.
+ * Instead of the other meaning, make sure that the numeric value of "X-KMyApp-InterfaceVersion" is
+ * greater than 4.
  *
  * Please read http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html for
  * a more complete description of the trader language syntax.
  *
  * @short Provides a way to query the KDE infrastructure for specific
  *        applications or components.
- * @author Torben Weis <weis@kde.org>
  */
-class KIO_EXPORT KTrader : public QObject
+class KIO_EXPORT KTrader
 {
-    Q_OBJECT
 public:
     /**
-     * A list of services.
+     * A list of weighted offers.
      */
-    typedef KService::List OfferList;
-
-    /**
-     * The iterator type for containers of type OfferList.
-     */
-    typedef KService::List::const_iterator OfferListIterator;
+    typedef QList<KServiceOffer> OfferList;
 
     /**
      * Standard destructor
      */
-    virtual ~KTrader();
+    ~KTrader();
 
     /**
      * The main function in the KTrader class.
@@ -134,59 +97,50 @@ public:
      * The keys used in the query (Type, ServiceType, Exec) are all
      * fields found in the .desktop files.
      *
-     * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
+     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
      * @param constraint  A constraint to limit the choices returned, QString() to
      *                    get all services of the given @p servicetype
-     * @param preferences Indicates a particular preference to return, QString() to ignore.
-     *                    Uses an expression in the constraint language that must return
-     *                    a number
      *
      * @return A list of services that satisfy the query
      * @see http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html
      */
-    virtual OfferList query( const QString& servicetype,
-			     const QString& constraint = QString(),
-			     const QString& preferences = QString()) const;
+    KService::List query( const QString& servicetype,
+                          const QString& constraint = QString() ) const;
 
     /**
-     * A variant of query(), that takes two service types as an input.
-     * It is not exactly the same as adding the second service type
-     * in the constraints of the other query call, because this one
-     * takes into account user preferences for this combination of service types.
+     * Returns the offers associated with a given servicetype, sorted by preference.
+     * This is what query() uses to get the list of offers, before applying the
+     * constraints and preferences. In general you want to simply use query().
      *
-     * Example usage:
-     * To get list of applications that can handle a given mimetype,
-     * set @p servicetype to the mimetype and @p genericServiceType is "Application".
-     * To get list of embeddable components that can handle a given mimetype,
-     * set @p servicetype to the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
-     *
-     * @param servicetype A service type like 'text/plain', 'text/html', or 'KOfficePlugin'.
-     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart' or 'Application'
-     * @param constraint  A constraint to limit the choices returned, QString() to
-     *                    get all services of the given @p servicetype
-     * @param preferences Indicates a particular preference to return, QString() to ignore.
-     *                    Uses an expression in the constraint language that must return
-     *                    a number
-     *
-     * @return A list of services that satisfy the query
-     * @see http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html
+     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
      */
-    OfferList query( const QString& servicetype, const QString& genericServiceType,
-                     const QString& constraint /*= QString()*/,
-                     const QString& preferences /*= QString()*/) const;
+    OfferList weightedOffers( const QString& serviceType ) const;
 
     /**
-     * This is a static pointer to a KTrader instance.
+     * Returns the preferred service for @p serviceType.
      *
-     *  You will need
-     * to use this to access the KTrader functionality since the
+     * @param serviceType the service type (e.g. "KMyApp/Plugin")
+     * @return the preferred service, or 0 if no service is available
+     */
+    KService::Ptr preferredService( const QString & serviceType ) const;
+
+    /**
+     * This is a static pointer to the KTrader singleton.
+     *
+     * You will need to use this to access the KTrader functionality since the
      * constructors are protected.
      *
      * @return Static KTrader instance
      */
     static KTrader* self();
 
-protected:
+    /**
+     * @internal  (public for KMimeTypeTrader)
+     */
+    static void applyConstraints( KService::List& lst,
+                                  const QString& constraint );
+
+private:
     /**
      * @internal
      */
@@ -194,8 +148,6 @@ protected:
 
 private:
     static KTrader* s_self;
-protected:
-    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

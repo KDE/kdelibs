@@ -19,7 +19,7 @@
 
 #include "ktraderparsetree.h"
 
-namespace KIO {
+namespace KTraderParse {
 
 bool ParseTreeOR::eval( ParseContext *_context ) const
 {
@@ -589,7 +589,7 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 }
 
 int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
-		     const KServiceTypeProfile::OfferList& _list )
+		     const KService::List& _list )
 {
   // Empty tree matches always
   if ( !_tree )
@@ -607,36 +607,6 @@ int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
     return -1;
 
   return ( c.b ? 1 : 0 );
-}
-
-PreferencesReturn matchPreferences( const ParseTreeBase *_tree, const KService::Ptr &_service,
-				    const KServiceTypeProfile::OfferList& _list )
-{
-  // By default: error
-  PreferencesReturn ret;
-
-  if ( !_tree )
-    return ret;
-
-  QMap<QString,PreferencesMaxima> maxima;
-  ParseContext c( _service, _list, maxima );
-
-  if ( !_tree->eval( &c ) )
-    return ret;
-
-  // Did we get a numeric return value ?
-  if ( c.type == ParseContext::T_NUM )
-  {
-    ret.type = PreferencesReturn::PRT_DOUBLE;
-    ret.f = (double)c.i;
-  }
-  else if ( c.type == ParseContext::T_DOUBLE )
-  {
-    ret.type = PreferencesReturn::PRT_DOUBLE;
-    ret.f = c.f;
-  }
-
-  return ret;
 }
 
 bool ParseContext::initMaxima( const QString& _prop )
@@ -664,10 +634,10 @@ bool ParseContext::initMaxima( const QString& _prop )
     extrema.type = PreferencesMaxima::PM_INVALID_DOUBLE;
 
   // Iterate over all offers
-  KServiceTypeProfile::OfferList::ConstIterator oit = offers.begin();
+  KService::List::ConstIterator oit = offers.begin();
   for( ; oit != offers.end(); ++oit )
   {
-    QVariant p = (*oit).service()->property( _prop );
+    QVariant p = (*oit)->property( _prop );
     if ( p.isValid() )
     {
       // Determine new maximum/minimum

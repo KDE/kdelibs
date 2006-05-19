@@ -58,9 +58,9 @@ Factory *Factory::self( const QString& resourceFamily )
 Factory::Factory( const QString& resourceFamily ) :
   mResourceFamily( resourceFamily )
 {
-  KTrader::OfferList plugins = KTrader::self()->query( "KResources/Plugin", QString( "[X-KDE-ResourceFamily] == '%1'" )
+  KService::List plugins = KTrader::self()->query( "KResources/Plugin", QString( "[X-KDE-ResourceFamily] == '%1'" )
                                                 .arg( resourceFamily ) );
-  KTrader::OfferList::ConstIterator it;
+  KService::List::ConstIterator it;
   for ( it = plugins.begin(); it != plugins.end(); ++it ) {
     QVariant type = (*it)->property( "X-KDE-ResourceType" );
     if ( !type.toString().isEmpty() )

@@ -36,10 +36,8 @@ class QLabel;
 
 class KOpenWithDlgPrivate;
 
-/* ------------------------------------------------------------------------- */
 /**
  * "Open with" dialog box.
- * Used automatically by KRun, and used by libkonq.
  *
  * @author David Faure <faure@kde.org>
  */
@@ -71,14 +69,14 @@ public:
                   QWidget *parent = 0L );
 
     /**
-     * Create a dialog to select a service for a given service type.
+     * Create a dialog to select a service for a given mimetype.
      * Note that this dialog doesn't apply to URLs.
      *
-     * @param serviceType the service type we want to choose an application for.
+     * @param mimeType the mime type we want to choose an application for.
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const QString& serviceType, const QString& value,
+    KOpenWithDlg( const QString& mimeType, const QString& value,
                   QWidget *parent = 0L );
 
     /**
@@ -143,9 +141,9 @@ protected Q_SLOTS:
 protected:
 
     /**
-     * Determine service type from URLs
+     * Determine mime type from URLs
      */
-    void setServiceType( const KUrl::List& _urls );
+    void setMimeType( const KUrl::List& _urls );
 
     /**
      * Create a dialog that asks for a application to open a given
@@ -162,7 +160,7 @@ protected:
     KApplicationTree* m_pTree;
     QLabel *label;
 
-    QString qName, qServiceType;
+    QString qName, qMimeType;
     bool m_terminaldirty;
     QCheckBox   *terminal, *remember, *nocloseonexit;
     QPushButton *UNUSED;

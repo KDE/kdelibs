@@ -918,17 +918,15 @@ KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const Q
     //kDebug() << "loadPlugin: mimeType=" << mimeType << " protocol=" << protocol << endl;
     // Currently the idea is: either the mimetype is set or the protocol, but not both.
     // We need PNG fileinfo, and trash: fileinfo, but not "PNG in the trash".
-    QString queryMimeType, query;
+    KService::List offers;
     if ( !mimeType.isEmpty() ) {
-        query = "(not exist [X-KDE-Protocol])";
-        queryMimeType = mimeType;
+        offers = KMimeTypeTrader::self()->query( mimeType, "KFilePlugin", "(not exist [X-KDE-Protocol])" );
     } else {
-        query = QString::fromLatin1( "[X-KDE-Protocol] == '%1'" ).arg(protocol);
+        const QString constraint = QString::fromLatin1( "[X-KDE-Protocol] == '%1'" ).arg(protocol);
         // querying for a protocol: we have no mimetype, so we need to use KFilePlugin as one
-        queryMimeType = "KFilePlugin";
         // hopefully using KFilePlugin as genericMimeType too isn't a problem
+        offers = KTrader::self()->query( "KFilePlugin", constraint );
     }
-    const KTrader::OfferList offers = KTrader::self()->query( queryMimeType, "KFilePlugin", query, QString() );
     if ( offers.isEmpty() )
         return 0;
     KService::Ptr service = *(offers.begin());
@@ -1025,7 +1023,7 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QStri
 QStringList KFileMetaInfoProvider::preferredKeys( const QString& mimeType ) const
 {
     KService::Ptr service =
-        KServiceTypeProfile::preferredService( mimeType, "KFilePlugin");
+        KMimeTypeTrader::self()->preferredService( mimeType, "KFilePlugin");
 
     if ( !service || !service->isValid() )
     {
@@ -1038,7 +1036,7 @@ QStringList KFileMetaInfoProvider::preferredKeys( const QString& mimeType ) cons
 QStringList KFileMetaInfoProvider::preferredGroups( const QString& mimeType ) const
 {
     KService::Ptr service =
-        KServiceTypeProfile::preferredService( mimeType, "KFilePlugin");
+        KMimeTypeTrader::self()->preferredService( mimeType, "KFilePlugin");
 
     if ( !service || !service->isValid() )
     {
@@ -1102,8 +1100,8 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
     QStringList allMimeTypes;
     QString kfilePlugin = "KFilePlugin";
 
-    KTrader::OfferList offers = KTrader::self()->query( "KFilePlugin" );
-    KTrader::OfferListIterator it = offers.begin();
+    const KService::List offers = KTrader::self()->query( "KFilePlugin" );
+    KService::List::const_iterator it = offers.begin();
     for ( ; it != offers.end(); ++it )
     {
         const QStringList mimeTypes = (*it)->serviceTypes();

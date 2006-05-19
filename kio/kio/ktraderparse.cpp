@@ -32,24 +32,14 @@ void KTraderParse_mainParse( const char *_code );
 
 #include "ktraderparsetree.h"
 
-using namespace KIO;
+using namespace KTraderParse;
 
 static ParseTreeBase::Ptr *pTree = 0;
 static const char* sCode = 0;
 
-ParseTreeBase::Ptr KIO::parseConstraints( const QString& _constr )
+ParseTreeBase::Ptr KTraderParse::parseConstraints( const QString& _constr )
 {
   const QByteArray buffer = _constr.toUtf8();
-  sCode = buffer.constData();
-  KTraderParse_mainParse( sCode );
-  sCode = 0;
-  assert( pTree );
-  return *pTree;
-}
-
-ParseTreeBase::Ptr KIO::parsePreferences( const QString& _prefs )
-{
-  const QByteArray buffer = _prefs.toUtf8();
   sCode = buffer.constData();
   KTraderParse_mainParse( sCode );
   sCode = 0;

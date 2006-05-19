@@ -97,7 +97,7 @@ struct KIO::PreviewJobPrivate
     // If the file to create a thumb for was a temp file, this is its name
     QString tempName;
     // Over that, it's too much
-    unsigned long maximumSize;
+    long long maximumSize;
     // the size for the icon overlay
     int iconSize;
     // the transparency of the blended mimetype icon
@@ -157,10 +157,10 @@ PreviewJob::~PreviewJob()
 void PreviewJob::startPreview()
 {
     // Load the list of plugins to determine which mimetypes are supported
-    KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
+    KService::List plugins = KTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
 
-    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         if (!d->enabledPlugins || d->enabledPlugins->contains((*it)->desktopEntryName()))
     {
         QStringList mimeTypes = (*it)->property("MimeTypes").toStringList();
@@ -240,7 +240,7 @@ void PreviewJob::startPreview()
 
   // Read configuration value for the maximum allowed size
     KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
-    d->maximumSize = cg.readEntry( "MaximumSize", 1024*1024 /* 1MB */ );
+    d->maximumSize = cg.readEntry( "MaximumSize", 1024*1024LL /* 1MB */ );
 
     if (bNeedCache)
     {
@@ -521,8 +521,8 @@ void PreviewJob::emitFailed(const KFileItem *item)
 QStringList PreviewJob::availablePlugins()
 {
     QStringList result;
-    KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
-    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+    KService::List plugins = KTrader::self()->query("ThumbCreator");
+    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         if (!result.contains((*it)->desktopEntryName()))
             result.append((*it)->desktopEntryName());
     return result;
@@ -531,8 +531,8 @@ QStringList PreviewJob::availablePlugins()
 QStringList PreviewJob::supportedMimeTypes()
 {
     QStringList result;
-    KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
-    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+    KService::List plugins = KTrader::self()->query("ThumbCreator");
+    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result += (*it)->property("MimeTypes").toStringList();
     return result;
 }

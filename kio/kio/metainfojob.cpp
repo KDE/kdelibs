@@ -154,8 +154,8 @@ void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 QStringList MetaInfoJob::availablePlugins()
 {
     QStringList result;
-    KTrader::OfferList plugins = KTrader::self()->query("KFilePlugin");
-    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+    KService::List plugins = KTrader::self()->query("KFilePlugin");
+    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result.append((*it)->desktopEntryName());
     return result;
 }
@@ -163,8 +163,8 @@ QStringList MetaInfoJob::availablePlugins()
 QStringList MetaInfoJob::supportedMimeTypes()
 {
     QStringList result;
-    KTrader::OfferList plugins = KTrader::self()->query("KFilePlugin");
-    for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
+    KService::List plugins = KTrader::self()->query("KFilePlugin");
+    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result += (*it)->property("MimeTypes").toStringList();
     return result;
 }
