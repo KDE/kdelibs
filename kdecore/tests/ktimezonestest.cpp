@@ -178,9 +178,11 @@ void KTimeZonesTest::abbreviation()
     QVERIFY( london != 0 );
     QDateTime winter(QDate(2005,1,1), QTime(0,0,0), Qt::UTC);
     QDateTime summer(QDate(2005,6,1), QTime(0,0,0), Qt::UTC);
+    QDateTime standard(QDate(1970,4,30), QTime(12,45,16,25), Qt::LocalTime);
     QString sResult = london->abbreviation(winter);
     QCOMPARE(london->abbreviation(winter), QByteArray("GMT"));
     QCOMPARE(london->abbreviation(summer), QByteArray("BST"));
+    QCOMPARE(london->abbreviation(standard), QByteArray("BST"));
     QCOMPARE(losAngeles->abbreviation(winter), QByteArray("PST"));
     QCOMPARE(losAngeles->abbreviation(summer), QByteArray("PDT"));
 }
