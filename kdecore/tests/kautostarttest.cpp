@@ -88,9 +88,9 @@ void KAutostartTest::testStartphase()
     QFETCH(QString, service);
     QFETCH(int, startPhase);
 
-//    QEXPECT_FAIL("kicker",
-//                 "Waiting for Lubos to finish the new autostart levels",
-//                 Continue);
+    QEXPECT_FAIL("kicker",
+                 "Waiting for Lubos to finish the new autostart levels",
+                 Continue);
 
     QEXPECT_FAIL("klipper",
                  "Waiting for Lubos to finish the new autostart levels",
