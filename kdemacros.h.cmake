@@ -66,7 +66,7 @@
 #define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
 #define KDE_EXPORT __attribute__ ((visibility("default")))
 #define KDE_IMPORT
-#elif Q_OS_WIN
+#elif defined(Q_OS_WIN)
 #define KDE_NO_EXPORT
 #define KDE_EXPORT __declspec(dllexport)
 #define KDE_IMPORT __declspec(dllimport)
