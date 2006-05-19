@@ -868,7 +868,7 @@ public:
    * Since KDE4 you can pass both urls and paths to the KUrl constructors.
    * Use KUrl(text) instead.
    */
-  static KUrl fromPathOrUrl( const QString& text ) KDE_DEPRECATED;
+  static KDE_DEPRECATED KUrl fromPathOrUrl( const QString& text );
 
   /**
    * Creates a KUrl from a string, using the standard conventions for mime data
