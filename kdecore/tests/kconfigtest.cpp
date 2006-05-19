@@ -151,6 +151,8 @@ void KConfigTest::cleanupTestCase()
     if(!local.remove(file))
       qWarning(file.toLatin1()+": removing failed!");
 
+  QVERIFY(local.count()==0);
+
   local.cdUp();
   local.rmpath("config");
 }
