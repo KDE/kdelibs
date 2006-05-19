@@ -25,6 +25,7 @@
 
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
+#include <kservicetypeprofile.h>
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
 {
@@ -215,3 +216,48 @@ void KMimeTypeTest::testAllInitServices()
     }
 }
 
+static bool offerListHasService( const KServiceTypeProfile::OfferList& offers,
+                                 const QString& desktopEntryPath )
+{
+    KServiceTypeProfile::OfferList::const_iterator it = offers.begin();
+    for ( ; it != offers.end() ; it++ )
+    {
+        if ( (*it).service()->desktopEntryPath() == desktopEntryPath )
+            return true;
+    }
+    return false;
+}
+
+void KMimeTypeTest::testTraderForTextPlain()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
+    // Querying userprofile for services associated with text/plain
+    const KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("text/plain");
+    QVERIFY( offers.count() > 0 );
+
+    // We should have at least katepart, plus a few kate plugins like
+    // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
+    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+}
+
+void KMimeTypeTest::testTraderForReadOnlyPart()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
+    // Querying userprofile for services associated with KParts/ReadOnlyPart
+    const KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("KParts/ReadOnlyPart");
+    QVERIFY( offers.count() > 0 );
+
+    // Only test for parts provided by kdelibs:
+    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "khtml.desktop" ) );
+    QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
+    QVERIFY( offerListHasService( offers, "kjavaappletviewer.desktop" ) );
+    QVERIFY( offerListHasService( offers, "kcertpart.desktop" ) );
+}

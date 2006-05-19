@@ -123,23 +123,6 @@ public:
   ~KServiceTypeProfile();
 
   /**
-   * @deprecated Remove in KDE 4, unused.
-   * Returns the users preference of the given service.
-   * @param _service the name of the service to check
-   * @return the user's preference number of the given
-   *         @p _service, or 0 the service is unknown.
-   */
-  int preference( const QString& _service ) const;
-
-  /**
-   * @deprecated Remove in KDE 4, unused.
-   * Checks whether the given @p _service can be used as default.
-   * @param _service the name of the service to check
-   * @return true if allowed as default
-   */
-  bool allowAsDefault( const QString& _service ) const;
-
-  /**
    * Returns the list of all service offers for the service types
    * that are represented by this profile.
    * @return the list of KServiceOffer instances
@@ -205,7 +188,7 @@ public:
    */
   static bool configurationMode() { return s_configurationMode; }
 
-protected:
+private:
   /**
    * Constructor is called when the user profile is read for the
    * first time.

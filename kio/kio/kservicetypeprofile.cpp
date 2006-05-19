@@ -134,7 +134,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         }
         else
         {
-            // Try the other way round, order is not like size, it doesn't matter.
+            // Try the other way round, order doesn't matter.
             profile = serviceTypeProfile( _genericServiceType, _servicetype );
             if ( profile )
             {
@@ -145,7 +145,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     }
 
     // Collect services, to make the next loop faster
-    OfferList::Iterator itOffers = offers.begin();
+    OfferList::const_iterator itOffers = offers.begin();
     for( ; itOffers != offers.end(); ++itOffers )
         serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
     //kDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
@@ -153,7 +153,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     // Now complete with any other offers that aren't in the profile
     // This can be because the services have been installed after the profile was written,
     // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
-    KService::List list = KServiceType::offers( _servicetype );
+    const KService::List list = KServiceType::offers( _servicetype );
     //kDebug(7014) << "Using KServiceType::offers, result: " << list.count() << " offers" << endl;
     KService::List::const_iterator it = list.begin();
     for( ; it != list.end(); ++it )
@@ -205,36 +205,6 @@ void KServiceTypeProfile::addService( const QString& _service,
 {
   m_mapServices[ _service ].m_iPreference = _preference;
   m_mapServices[ _service ].m_bAllowAsDefault = _allow_as_default;
-}
-
-int KServiceTypeProfile::preference( const QString& _service ) const
-{
-  KService::Ptr service = KService::serviceByName( _service );
-  if (!service)
-    return 0;
-  QMap<QString,Service>::ConstIterator it = m_mapServices.find( service->storageId() );
-  if ( it == m_mapServices.end() )
-    return 0;
-
-  return it.value().m_iPreference;
-}
-
-bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
-{
-  KService::Ptr service = KService::serviceByName( _service );
-  if (!service)
-    return false;
-
-  // Does the service itself not allow that ?
-  if ( !service->allowAsDefault() )
-    return false;
-
-  // Look what the user says ...
-  QMap<QString,Service>::ConstIterator it = m_mapServices.find( service->storageId() );
-  if ( it == m_mapServices.end() )
-    return 0;
-
-  return it.value().m_bAllowAsDefault;
 }
 
 KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
