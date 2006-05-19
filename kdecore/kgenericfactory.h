@@ -165,7 +165,7 @@ KInstance *KGenericFactoryBase<T>::instance()
  *         ...
  *     };
  *
- *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; )
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory<MyPlugin> )
  * \endcode
  */
 template <class Product, class ParentType = QObject>
@@ -255,7 +255,7 @@ protected:
  *     };
  *
  *     typedef K_TYPELIST_2( MyPlugin, MyDialogComponent ) Products;
- *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; )
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory<Products> )
  * \endcode
  */
 template <class Product, class ProductListTail>
@@ -347,7 +347,7 @@ protected:
  *     };
  *
  *     typedef K_TYPELIST_2( MyPlugin, MyDialogComponent ) Products;
- *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; )
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory<Products> )
  * \endcode
  */
 template <class Product, class ProductListTail,
