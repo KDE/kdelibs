@@ -206,7 +206,8 @@ void RenderBlock::updateFirstLetter()
         DOMStringImpl* oldText = textObj->originalString();
         if (!oldText)
             oldText = textObj->string();
-
+        // ### In theory a first-letter can stretch across multiple text objects, if they only contain
+        // punctuation and white-space
         if(oldText->l >= 1) {
             oldText->ref();
             unsigned int length = 0;
@@ -218,7 +219,9 @@ void RenderBlock::updateFirstLetter()
                 length++;
             while ( length < oldText->l && (oldText->s+length)->isMark() )
                 length++;
-            RenderTextFragment* remainingText =
+            // we need to generated a remainingText object even if no text is left
+            // because it holds the place and style for the old textObj
+            RenderTextFragment* remainingText = 
                 new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
             remainingText->setIsAnonymous( textObj->isAnonymous() );
             remainingText->setStyle(textObj->style());
@@ -226,7 +229,7 @@ void RenderBlock::updateFirstLetter()
                 remainingText->element()->setRenderer(remainingText);
 
             RenderObject* nextObj = textObj->nextSibling();
-            firstLetterContainer->removeChild(textObj);
+            textObj->detach();
             firstLetterContainer->addChild(remainingText, nextObj);
 
             RenderTextFragment* letter =
