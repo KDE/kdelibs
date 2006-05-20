@@ -334,28 +334,32 @@ KDictSpellingHighlighter::~KDictSpellingHighlighter()
 void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
     kdDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
-    if ( d->globalConfig ) {
-        connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
-                 this, SLOT( slotDictionaryChanged() ));
-    }
-    if ( spell != d->spell )
+    KConfigGroup cg( KGlobal::config(),"KSpell" );
+    if ( cg.readEntry("KSpell_DoSpellChecking") != "0" )
     {
-        delete d->spell;
-        d->spell = spell;
+      if ( d->globalConfig ) {
+          connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
+                   this, SLOT( slotDictionaryChanged() ));
+      }
+      if ( spell != d->spell )
+      {
+          delete d->spell;
+          d->spell = spell;
+      }
+      d->spellReady = true;
+      const QStringList l = KSpellingHighlighter::personalWords();
+      for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+          d->spell->addPersonal( *it );
+      }
+      connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
+	       this, SLOT( slotMisspelling( const QString &, const QStringList &, unsigned int )));
+      connect( spell, SIGNAL( corrected( const QString &, const QString &, unsigned int )),
+               this, SLOT( slotCorrected( const QString &, const QString &, unsigned int )));
+      d->checksRequested = 0;
+      d->checksDone = 0;
+      d->completeRehighlightRequired = true;
+      d->rehighlightRequest->start( 0, true );
     }
-    d->spellReady = true;
-    const QStringList l = KSpellingHighlighter::personalWords();
-    for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
-        d->spell->addPersonal( *it );
-    }
-    connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
-	     this, SLOT( slotMisspelling( const QString &, const QStringList &, unsigned int )));
-    connect( spell, SIGNAL( corrected( const QString &, const QString &, unsigned int )),
-	     this, SLOT( slotCorrected( const QString &, const QString &, unsigned int )));
-    d->checksRequested = 0;
-    d->checksDone = 0;
-    d->completeRehighlightRequired = true;
-    d->rehighlightRequest->start( 0, true );
 }
 
 bool KDictSpellingHighlighter::isMisspelled( const QString &word )
