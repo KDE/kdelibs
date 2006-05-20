@@ -587,7 +587,7 @@ bool KActionCollection::isEnabled( ) const
 
 void KActionCollection::setEnabled( bool enable )
 {
-  if (enable ? d->enabled == KActionCollectionPrivate::Disabled : d->enabled == KActionCollectionPrivate::Enabled) {
+  if (d->enabled == KActionCollectionPrivate::Unchanged || enable ? d->enabled == KActionCollectionPrivate::Disabled : d->enabled == KActionCollectionPrivate::Enabled) {
     d->enabled = enable ? KActionCollectionPrivate::Enabled : KActionCollectionPrivate::Disabled;
     foreach (KAction* action, actions())
       action->setEnabled(enable);
