@@ -112,14 +112,22 @@ class KSystemTimeZoneDataPrivate;
  * Normally, KSystemTimeZoneSource and KSystemTimeZoneData operate in the
  * background and you will not need to use them directly.
  *
+ * @warning The KSystemTimeZone class uses the standard system libraries to
+ * access time zone data, and its functionality is limited to what these libraries
+ * provide. On many systems, dates earlier than 1970 are not handled, and on
+ * non-GNU systems there is no guarantee that the time zone abbreviation returned
+ * for a given date will be correct if the abbreviations applicable then were
+ * not those currently in use.
  *
  * \section tzfile Tzfile access
  *
  * The KTzfileTimeZone class provides access to tzfile(5) time zone definition
  * files, which are used to form the time zone database on UNIX systems. Usually,
- * it is easier to use the KSystemTimeZones class to access system tzfile data;
- * you can use the KTzfileTimeZone class to obtain more detailed information or
- * to read non-system tzfile files.
+ * for current information, it is easier to use the KSystemTimeZones class to
+ * access system tzfile data. However, for dealing with past data the
+ * KTzfileTimeZone class provides better guarantees of accurary. It also
+ * provides more detailed information, and allows you to read non-system tzfile
+ * files.
  *
  * KTzfileTimeZone uses the KTzfileTimeZoneSource and KTzfileTimeZoneData classes
  * to obtain time zone data from tzfile files.
@@ -795,13 +803,13 @@ private:
  * Each individual time zone is defined in a KSystemTimeZone instance. Additional
  * time zones (of any class derived from KTimeZone) may be added if desired.
  *
- * At initialization, KSystemTimeZones reads the zone.tab file to obtain the list
+ * At initialisation, KSystemTimeZones reads the zone.tab file to obtain the list
  * of system time zones, and creates a KSystemTimeZone instance for each one.
  *
  * Note that KSystemTimeZones is not derived from KTimeZones, but instead contains
  * a KTimeZones instance which holds the system time zone database. Convenience
  * static methods are defined to access its data, or alternatively you can access
- * the KTimeZones instance directly via the timezones() method.
+ * the KTimeZones instance directly via the timeZones() method.
  *
  * As an example, find the local time in Oman corresponding to the local system
  * time of 12:15:00 on 13th November 1999:
@@ -812,8 +820,15 @@ private:
  * QDateTime omaniTime = local->convert(oman, sampleTime);
  * \endcode
  *
+ * @warning The time zones in the KSystemTimeZones collection are by default
+ * instances of the KSystemTimeZone class, which uses the standard system libraries
+ * to access time zone data, and whose functionality is limited to what these
+ * libraries provide. For guaranteed accuracy for past dates, especially for time
+ * zone abbreviations or dates before 1970, you should use the KTzfileTimeZone
+ * class instead.
+ *
  * @short System time zone access
- * @see KTimeZones, KSystemTimeZone, KSystemTimeZoneSource
+ * @see KTimeZones, KSystemTimeZone, KSystemTimeZoneSource, KTzfileTimeZone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  */
@@ -825,7 +840,7 @@ public:
      *
      * @return time zone collection
      */
-    static const KTimeZones::ZoneMap zones()   { return timezones()->zones(); }
+    static const KTimeZones::ZoneMap zones()   { return timeZones()->zones(); }
 
     /**
      * Returns the time zone with the given name.
@@ -833,7 +848,7 @@ public:
      * @param name name of time zone
      * @return time zone (usually a KSystemTimeZone instance), or 0 if not found
      */
-    static const KTimeZone *zone(const QString &name)   { return timezones()->zone(name); }
+    static const KTimeZone *zone(const QString &name)   { return timeZones()->zone(name); }
 
     /**
      * Returns the current local system time zone.
@@ -866,7 +881,7 @@ public:
      *
      * @return time zones.
      */
-    static KTimeZones *timezones();
+    static KTimeZones *timeZones();
 
 private:
     KSystemTimeZonesPrivate *d;
@@ -881,8 +896,16 @@ private:
  *
  * Typically, instances are created and accessed via the KSystemTimeZones class.
  *
+ * @warning The KSystemTimeZone class uses the standard system libraries to
+ * access time zone data, and its functionality is limited to what these libraries
+ * provide. On many systems, dates earlier than 1970 are not handled, and on
+ * non-GNU systems there is no guarantee that the time zone abbreviation returned
+ * for a given date will be correct if the abbreviations applicable then were
+ * not those currently in use. Consider using the KTzfileTimeZone class instead,
+ * which always provides accurate information from the time zone definition files.
+ *
  * @short System time zone
- * @see KSystemTimeZones, KSystemTimeZoneSource, KSystemTimeZoneData
+ * @see KSystemTimeZones, KSystemTimeZoneSource, KSystemTimeZoneData, KTzfileTimeZone
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  */

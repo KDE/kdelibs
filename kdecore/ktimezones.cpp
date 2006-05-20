@@ -580,7 +580,7 @@ QString KSystemTimeZones::zoneinfoDir()
     return KSystemTimeZonesPrivate::zoneinfoDir();
 }
 
-KTimeZones *KSystemTimeZones::timezones()
+KTimeZones *KSystemTimeZones::timeZones()
 {
     return KSystemTimeZonesPrivate::instance();
 }
