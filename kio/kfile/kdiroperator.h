@@ -843,6 +843,8 @@ private:
 
     void connectView(KFileView *);
 
+    bool openURL( const KURL& url, bool keep = false, bool reload = false );
+
     KFileView *m_fileView;
     KFileItemList pendingMimeTypes;
 

@@ -665,7 +665,7 @@ void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
     backAction->setEnabled( !backStack.isEmpty() );
     upAction->setEnabled( !isRoot() );
 
-    dir->openURL( newurl );
+    openURL( newurl );
 }
 
 void KDirOperator::updateDir()
@@ -678,7 +678,17 @@ void KDirOperator::updateDir()
 void KDirOperator::rereadDir()
 {
     pathChanged();
-    dir->openURL( currUrl, false, true );
+    openURL( currUrl, false, true );
+}
+
+
+bool KDirOperator::openURL( const KURL& url, bool keep, bool reload )
+{
+    bool result = dir->openURL( url, keep, reload );
+    if ( !result ) // in that case, neither completed() nor canceled() will be emitted by KDL
+        slotCanceled();
+
+    return result;
 }
 
 // Protected
@@ -1052,7 +1062,7 @@ void KDirOperator::connectView(KFileView *view)
 
     if ( listDir ) {
         QApplication::setOverrideCursor( Qt::WaitCursor );
-        dir->openURL( currUrl );
+        openURL( currUrl );
     }
     else
         view->listingCompleted();
