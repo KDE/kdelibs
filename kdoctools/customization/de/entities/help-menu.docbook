@@ -25,7 +25,7 @@
 <listitem><para><action>Ändert den Mauscursor zu einer Kombination von
 Zeiger und Fragezeichen.</action>  Das Klicken auf ein Element
 innerhalb von &kappname; öffnet ein Hilfefenster, das die Funktion des
-Elementes beschreibt (wenn es denn Hilfe für das bestimmte Element
+Elementes beschreibt (sofern es Hilfe für das bestimmte Element
 gibt).</para></listitem>
 </varlistentry>
 
