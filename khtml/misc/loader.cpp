@@ -489,7 +489,6 @@ void CachedImage::deref( CachedObjectClient *c )
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
 
-
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
     static QRgb bgTransparent = qRgba( 0, 0, 0, 0xFF );
@@ -511,11 +510,12 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     QSize s(pixmap_size());
     int w = r.width();
     int h = r.height();
+    assert(s.width() == r.width() && s.height() == s.height());
 
     const QPixmap* src; //source for pretiling, if any
     //See whether we can - and should - pre-blend
     if (isvalid && (r.hasAlphaChannel() || r.mask() )) {
-        bg = new QPixmap(w, h);
+        bg = new QPixmap(w, h, r.depth());
         bg->fill(newc);
         bitBlt(bg, 0, 0, &r);
         bgColor = newc.rgb();
@@ -529,15 +529,16 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if ( w*h < 8192 )
     {
         if ( r.width() < BGMINWIDTH )
-            w = ((BGMINWIDTH  / s.width())+1) * s.width();
+            w = ((BGMINWIDTH-1) / s.width() + 1) * s.width();
         if ( r.height() < BGMINHEIGHT )
-            h = ((BGMINHEIGHT / s.height())+1) * s.height();
+            h = ((BGMINHEIGHT-1) / s.height() + 1) * s.height();
     }
-
     if ( w != r.width() || h != r.height() )
     {
-	QPixmap* oldbg = bg;
-        bg = new QPixmap(w, h);
+//         kdDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
+        QPixmap* oldbg = bg;
+        bg = new QPixmap(w, h, r.depth());
+
         //Tile horizontally on the first stripe
         for (int x = 0; x < w; x += r.width())
             copyBlt(bg, x, 0, src, 0, 0, r.width(), r.height());
