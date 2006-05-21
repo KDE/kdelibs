@@ -756,7 +756,6 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_DIRECTION:
-        case CSS_PROP_BACKGROUND_IMAGE:
         case CSS_PROP_DISPLAY:
             // these have to be applied first, because other properties use the computed
             // values of these properties.
@@ -1879,7 +1878,6 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         case CSS_PROP_FONT_VARIANT:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
-        case CSS_PROP_BACKGROUND_IMAGE:
         case CSS_PROP_DISPLAY:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
