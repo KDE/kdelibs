@@ -368,7 +368,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	QGridLayout	*l4 = new QGridLayout();
 	l4->setMargin(0);
 	l4->setSpacing(5);
-	l3->addLayout(l4,0,0,0,1);
+	l3->addLayout(l4,0,0,1,2);
 	l4->addWidget(m_printerlabel,0,0);
 	l4->addWidget(m_statelabel,1,0);
 	l4->addWidget(m_typelabel,2,0);
