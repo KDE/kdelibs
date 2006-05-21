@@ -1,5 +1,8 @@
-
 project(kdecore)
+
+# Configure checks for network/ but also for netsupp.*
+include(network/ConfigureChecks.cmake)
+configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 # hack for kacceleratormanager
@@ -10,7 +13,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/network )
 
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${KDE4_DCOP_INCLUDES} )
-
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore

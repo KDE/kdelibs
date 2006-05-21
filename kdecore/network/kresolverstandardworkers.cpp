@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>

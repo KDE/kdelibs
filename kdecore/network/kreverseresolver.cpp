@@ -23,6 +23,7 @@
  */
 
 #include "config.h"
+#include <config-network.h>
 
 // System includes
 #include <sys/types.h>

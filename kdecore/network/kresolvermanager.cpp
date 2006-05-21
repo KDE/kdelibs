@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include "config.h"
+#include <config-network.h>
 
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -134,11 +135,11 @@ public:
 
   bool shouldResInit()
   {
-    // check if /etc/resolv.conf has changed 
+    // check if /etc/resolv.conf has changed
     KDE_struct_stat st;
     if (KDE_stat("/etc/resolv.conf", &st) != 0)
       return false;
-    
+
     if (mTime != st.st_mtime)
       {
 	kDebug(179) << "shouldResInit: /etc/resolv.conf updated" << endl;
@@ -156,7 +157,7 @@ public:
 	kDebug(179) << "callResInit: calling res_init()" << endl;
 	res_init();
       }
-    
+
     KDE_struct_stat st;
     if (KDE_stat("/etc/resolv.conf", &st) == 0)
       mTime = st.st_mtime;
@@ -263,22 +264,22 @@ void KResolverThread::run()
   while (true)
     {
       data = KResolverManager::manager()->requestData(this, ::maxThreadWaitTime);
-      //qDebug("KResolverThread(thread %u/%p) got data %p", KResolverManager::pid, 
+      //qDebug("KResolverThread(thread %u/%p) got data %p", KResolverManager::pid,
       //       (void*)QThread::currentThread(), (void*)data);
       if (data)
 	{
 	  // yes, we got data
 	  // process it!
-      
+
 	  // 1) set up
 	  ;
-      
+
 	  // 2) run it
 	  data->worker->run();
-	  
+
 	  // 3) release data
 	  KResolverManager::manager()->releaseData(this, data);
-	  
+
 	  // now go back to the loop
 	}
       else
@@ -391,11 +392,11 @@ RequestData* KResolverManager::findData(KResolverThread* th)
 	  if (curr->obj)
 	    curr->obj->status = KResolver::InProgress;
 	  curr->worker->th = th;
-	  
+
 	  // move it to the currentRequests list
 	  it.remove();
 	  currentRequests.append(curr);
-	  
+
 	  return curr;
 	}
     }
@@ -411,14 +412,14 @@ void KResolverManager::releaseData(KResolverThread *, RequestData* data)
   // This function is called in a worker thread!!
   /////
 
-  //qDebug("KResolverManager::releaseData(%u/%p): %p has been released", pid, 
+  //qDebug("KResolverManager::releaseData(%u/%p): %p has been released", pid,
 //	 (void*)QThread::currentThread(), (void*)data);
 
   if (data->obj)
     {
-      data->obj->status = KResolver::PostProcessing;	
+      data->obj->status = KResolver::PostProcessing;
     }
-      
+
   data->worker->m_finished = true;
   data->worker->th = 0L;	// this releases the object
 
@@ -440,7 +441,7 @@ void KResolverManager::handleFinished()
     }
 
   // loop over all items on the currently running list
-  // we loop from the last to the first so that we catch requests 
+  // we loop from the last to the first so that we catch requests
   // with "requestors" before we catch the requestor itself.
   QMutableListIterator<RequestData*> it(currentRequests);
   it.toBack();
@@ -455,14 +456,14 @@ void KResolverManager::handleFinished()
 	      doneRequests.enqueue(curr);
 
 	      if (curr->requestor &&
-		  curr->requestor->nRequests == 0 && 
+		  curr->requestor->nRequests == 0 &&
 		  curr->requestor->worker->m_finished)
 		// there's a requestor that is now finished
 		redo = true;
 	    }
 	}
     }
-      
+
   //qDebug("KResolverManager::handleFinished(%u): %d requests to notify", pid, doneRequests.count());
   while (!doneRequests.isEmpty())
     doNotifying(doneRequests.dequeue());
@@ -479,7 +480,7 @@ void KResolverManager::handleFinished()
 
 // This function is called by KResolverManager::handleFinished above
 bool KResolverManager::handleFinishedItem(RequestData* curr)
-					  
+
 {
   // for all items that aren't currently running, remove from the list
   // this includes all finished or canceled requests
@@ -513,7 +514,7 @@ KResolverWorkerBase* KResolverManager::findWorker(KResolverPrivate* p)
   // this function can be called on any user thread
   /////
 
-  // this function is called with an unlocked mutex and it's expected to be 
+  // this function is called with an unlocked mutex and it's expected to be
   // thread-safe!
   // but the factory list is expected not to be changed asynchronously
 
@@ -532,7 +533,7 @@ KResolverWorkerBase* KResolverManager::findWorker(KResolverPrivate* p)
       if (worker->preprocess())
 	{
 	  // good, this one says it can process
-	  if (worker->m_finished)	   
+	  if (worker->m_finished)
 	    p->status = KResolver::PostProcessing;
 	  else
 	    p->status = KResolver::Queued;
@@ -601,12 +602,12 @@ void KResolverManager::doNotifying(RequestData *p)
 	  // reset address
 	  r.setAddress(p->input->node, p->input->service);
 
-	  //qDebug("KResolverManager::doNotifying(%u/%p): for %p whose status is %d and has %d results", 
+	  //qDebug("KResolverManager::doNotifying(%u/%p): for %p whose status is %d and has %d results",
 		 //pid, (void*)QThread::currentThread(), (void*)p, p->obj->status, r.count());
 
 	  p->obj->errorcode = r.error();
 	  p->obj->syserror = r.systemError();
-	  p->obj->status = !r.isEmpty() ? 
+	  p->obj->status = !r.isEmpty() ?
 	    KResolver::Success : KResolver::Failed;
 	}
       else
@@ -644,7 +645,7 @@ void KResolverManager::doNotifying(RequestData *p)
 }
 
 // enqueue a new request
-// this function is called from KResolver::start and 
+// this function is called from KResolver::start and
 // from KResolverWorkerBase::enqueue
 void KResolverManager::enqueue(KResolver *obj, RequestData *requestor)
 {
@@ -722,7 +723,7 @@ void KResolverManager::dispatch(RequestData *data)
   //     have decremented yet. This means that we will not start a new thread
   //     that we could have. However, since there are other threads working, our
   //     event should be handled soon.
-  //     It won't be handled if and only if ALL threads are in the process of 
+  //     It won't be handled if and only if ALL threads are in the process of
   //     exiting. That situation is EXTREMELY unlikely and is not handled either.
   //
   if (availableThreads == 0 && runningThreads < maxThreads)
@@ -744,7 +745,7 @@ void KResolverManager::dispatch(RequestData *data)
 	  th = new KResolverThread;
 	  workers.append(th);
 	}
-	  
+
       th->start();
       runningThreads++;
     }
@@ -774,7 +775,7 @@ bool KResolverManager::dequeueNew(KResolver* obj)
   KResolverPrivate *d = obj->d;
 
   // check if it's in the new request list
-  for (QMutableListIterator<RequestData*> it(newRequests); 
+  for (QMutableListIterator<RequestData*> it(newRequests);
        it.hasNext(); )
     {
       RequestData *curr = it.next();
@@ -789,7 +790,7 @@ bool KResolverManager::dequeueNew(KResolver* obj)
 
 	  delete curr->worker;
 	  delete curr;
-	
+
 	  return true;
 	}
     }

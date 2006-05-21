@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -55,7 +56,7 @@ KDatagramSocket::KDatagramSocket(QObject* parent)
   //  QObject::connect(localResolver(), SIGNAL(finished(const KNetwork::KResolverResults&))
   //		   this, SLOT(lookupFinishedLocal()));
   QObject::connect(&peerResolver(),
-		   SIGNAL(finished(const KNetwork::KResolverResults&)), 
+		   SIGNAL(finished(const KNetwork::KResolverResults&)),
   		   this, SLOT(lookupFinishedPeer()));
   QObject::connect(this, SIGNAL(hostFound()), this, SLOT(lookupFinishedLocal()));
 }
@@ -158,7 +159,7 @@ KDatagramPacket KDatagramSocket::receive()
   QByteArray data;
   data.resize(size);
   KSocketAddress address;
-  
+
   // now do the reading
   size = read(data.data(), size, address);
   if (size < 0)
@@ -174,7 +175,7 @@ qint64 KDatagramSocket::send(const KDatagramPacket& packet)
   return write(packet.data(), packet.size(), packet.address());
 }
 
-qint64 KDatagramSocket::writeData(const char *data, qint64 len, 
+qint64 KDatagramSocket::writeData(const char *data, qint64 len,
 				  const KSocketAddress* to)
 {
   if (to->family() != AF_UNSPEC)

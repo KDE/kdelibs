@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <QSocketNotifier>
 #include <QDateTime>
@@ -340,7 +341,7 @@ bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
 	if (socketDevice()->bind(*d->local))
 	  return true;
       }
-  
+
   if (!foundone)
     {
       // found nothing
@@ -363,7 +364,7 @@ void KStreamSocket::connectionSucceeded(const KResolverEntry& peer)
   socketDevice()->setSocketOptions(socketOptions());
   d->timer.stop();
   emit stateChanged(Connected);
-  
+
   if (!localResults().isEmpty())
     emit bound(*d->local);
   emit connected(peer);

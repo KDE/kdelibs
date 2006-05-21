@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -36,6 +36,7 @@
 #include "kresolverworkerbase.h"
 
 #include <config.h>
+#include <config-network.h>
 
 namespace KNetwork { namespace Internal
 {
@@ -49,11 +50,11 @@ namespace KNetwork { namespace Internal
   {
   public:
     static QStringList blacklist;
-    
+
     static void loadBlacklist();
     static void init();
     static bool isBlacklisted(const QString&);
-    
+
     virtual bool preprocess();
     virtual bool run();
     virtual bool postprocess() { return true; }

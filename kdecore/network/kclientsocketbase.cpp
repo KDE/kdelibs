@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <QSocketNotifier>
 #include <QTimer>
@@ -144,11 +145,11 @@ bool KClientSocketBase::lookup()
 
       // don't restart the lookups if they had succeeded and
       // the input values weren't changed
-      QObject::connect(&d->peerResolver, 
-		       SIGNAL(finished(const KNetwork::KResolverResults&)), 
+      QObject::connect(&d->peerResolver,
+		       SIGNAL(finished(const KNetwork::KResolverResults&)),
 		       this, SLOT(lookupFinishedSlot()));
       QObject::connect(&d->localResolver,
-		       SIGNAL(finished(const KNetwork::KResolverResults&)), 
+		       SIGNAL(finished(const KNetwork::KResolverResults&)),
 		       this, SLOT(lookupFinishedSlot()));
 
       if (d->localResolver.status() <= 0)

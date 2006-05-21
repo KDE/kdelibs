@@ -23,6 +23,7 @@
  */
 
 #include "config.h"
+#include "config-network.h"
 
 // System includes
 #include <sys/types.h>
@@ -590,7 +591,7 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
 			     int flags, int families)
 {
   KResolver* qres = new KResolver(host, service, QCoreApplication::instance());
-  QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)), 
+  QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)),
 		   userObj, userSlot);
   qres->setObjectName("asynchronous KResolver");
   qres->setFlags(flags);

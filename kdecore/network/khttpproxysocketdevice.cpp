@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -121,7 +122,7 @@ bool KHttpProxySocketDevice::connect(const KResolverEntry& address)
 
   if (m_sockfd == -1)
     // socket isn't created yet
-    return connect(address.address().nodeName(), 
+    return connect(address.address().nodeName(),
 		   address.address().serviceName());
 
   d->peer = address.address();
@@ -263,7 +264,7 @@ bool KHttpProxySocketDevice::parseServerReply()
 	  else
 	    state = 0;
 	}
-    }	    
+    }
 
   // now really parse the reply
   qDebug("KHttpProxySocketDevice: get reply: %s\n",

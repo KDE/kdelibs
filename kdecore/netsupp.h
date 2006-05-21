@@ -26,14 +26,15 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include "config-network.h"
 
 #include <sys/socket.h>
 #include <netdb.h>
 //#include "ksockaddr.h"
 
-#ifdef __CYGWIN__                 
+#ifdef __CYGWIN__
 typedef unsigned ksocklen_t;
-#endif                            
+#endif
 
 /*
  * Seems some systems don't know about AF_LOCAL

@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <QMap>
 
@@ -80,7 +81,7 @@ public:
 
 
 KSocketDevice::KSocketDevice(const KSocketBase* parent, QObject* objparent)
-  : KActiveSocketBase(objparent), m_sockfd(-1), 
+  : KActiveSocketBase(objparent), m_sockfd(-1),
     d(new KSocketDevicePrivate)
 {
   setSocketDevice(this);
@@ -808,7 +809,7 @@ static KSocketDeviceFactoryBase* defaultImplFactory;
 static QMutex defaultImplFactoryMutex;
 typedef QMap<int, KSocketDeviceFactoryBase* > factoryMap;
 static factoryMap factories;
- 
+
 KSocketDevice* KSocketDevice::createDefault(KSocketBase* parent)
 {
   KSocketDevice* device = dynamic_cast<KSocketDevice*>(parent);

@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <assert.h>
 #include <string.h>
@@ -231,11 +232,11 @@ qint64 KSocketBuffer::sendTo(KActiveSocketBase* dev, qint64 len)
     return 0;
 
   QMutexLocker locker(&m_mutex);
-  
+
   QMutableListIterator<QByteArray> it(m_list);
   qint64 offset = m_offset;
   qint64 written = 0;
-  
+
   // walk the buffer
   while (it.hasNext() && (len || len == -1))
     {

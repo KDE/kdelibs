@@ -18,6 +18,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 
 #include <errno.h>
 #include <sys/types.h>
@@ -28,9 +29,9 @@
 #endif
 
 #ifdef __CYGWIN__
-#undef kde_socklen_t 
-#define kde_socklen_t ksocklen_t 
-#endif 
+#undef kde_socklen_t
+#define kde_socklen_t ksocklen_t
+#endif
 
 #include <QCoreApplication>
 
@@ -124,7 +125,7 @@ bool KSocksSocketDevice::connect(const KResolverEntry& address)
 
   int retval;
   if (KSocks::self()->hasWorkingAsyncConnect())
-    retval = KSocks::self()->connect(m_sockfd, address.address(), 
+    retval = KSocks::self()->connect(m_sockfd, address.address(),
 				     address.length());
   else
     {
@@ -133,7 +134,7 @@ bool KSocksSocketDevice::connect(const KResolverEntry& address)
       // FIXME: KDE4, write a proper SOCKS implementation
       bool isBlocking = blocking();
       setBlocking(true);
-      retval = KSocks::self()->connect(m_sockfd, address.address(), 
+      retval = KSocks::self()->connect(m_sockfd, address.address(),
 				       address.length());
       setBlocking(isBlocking);
     }

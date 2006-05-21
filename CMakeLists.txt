@@ -76,7 +76,7 @@ set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts ${KDE4_KIO_INCLUDES})
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
+configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 
 # create config.h

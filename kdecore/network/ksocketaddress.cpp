@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include "config.h"
+#include <config-network.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -117,7 +118,7 @@ bool KIpAddress::compare(const KIpAddress& other, bool checkMapped) const
       // check the possibility of a v4-mapped address being compared to an IPv4 one
       if (m_version == 6 && other.m_version == 4 && check_v4mapped(m_data, *other.m_data))
 	return true;
-      
+
       if (other.m_version == 6 && m_version == 4 && check_v4mapped(other.m_data, *m_data))
 	return true;
     }
@@ -379,12 +380,12 @@ void KSocketAddressData::dup(const sockaddr* sa, quint16 len, bool clear)
       else if (addr.generic->sa_family == AF_INET6)
 	{
 	  // set the extra field (sin6_scope_id)
-	  
+
 	  // the buffer is never smaller than 32 bytes, so this is always
 	  // allowed
 	  if (reallen < SOCKADDR_IN6_LEN)
 	    addr.in6->sin6_scope_id = 0;
-	  
+
 	  reallen = SOCKADDR_IN6_LEN;
 	}
 #endif
@@ -615,7 +616,7 @@ QString KSocketAddress::toString() const
   else if (d->addr.generic->sa_family == AF_UNIX)
     return QString(QLatin1String("unix:%1")).arg(serviceName());
   else
-    return i18nc("1: the unknown socket address family number", 
+    return i18nc("1: the unknown socket address family number",
 		"Unknown family %1", d->addr.generic->sa_family);
 
   return fmt.arg(nodeName()).arg(serviceName());
@@ -818,13 +819,13 @@ KInetSocketAddress& KInetSocketAddress::setPort(quint16 port)
     case AF_INET:
       d->addr.in->sin_port = htons(port);
       break;
-      
+
 #ifdef AF_INET6
     case AF_INET6:
       d->addr.in6->sin6_port = htons(port);
       break;
 #endif
-      
+
     default:
       d->invalidate();		// setting the port on something else
     }

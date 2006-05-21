@@ -12,6 +12,8 @@ endif (NOT JPEG_FOUND)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
+configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
+
 # khtml/dom/Makefile.am: khtmldom
 
 set(khtmldom_STAT_SRCS

@@ -38,6 +38,7 @@
 #include <netdb.h>
 
 #include "config.h"
+#include "config-network.h"
 #include "klocale.h"
 
 #ifndef IN6_IS_ADDR_V4MAPPED
@@ -192,7 +193,7 @@ static int check_ipv6_stack()
   int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
   if (fd == -1)
      return 2;
-     
+
   ::close(fd);
   return 1;
 # endif
@@ -246,7 +247,7 @@ int kde_getaddrinfo(const char *name, const char *service,
   res->origin = KAI_SYSTEM;	// at first, it'll be only system data
 
   struct addrinfo* last = NULL;
-  
+
   // Skip the getaddrinfo call and the ipv6 check for a UNIX socket.
   if (hint && (hint->ai_family == PF_UNIX))
   {
@@ -262,7 +263,7 @@ int kde_getaddrinfo(const char *name, const char *service,
 
      goto do_unix;
   }
-  
+
 #if defined(KDE_IPV6_LOOKUP_MODE) && KDE_IPV6_LOOKUP_MODE != 0
 # if KDE_IPV6_LOOKUP_MODE == 1
   // mode 1: do a check on whether we have an IPv6 stack

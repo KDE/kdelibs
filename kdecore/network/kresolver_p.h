@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -26,6 +26,7 @@
 #define KRESOLVER_P_H
 
 #include <config.h>
+#include <config-network.h>
 #include <sys/types.h>
 
 #include <QString>
@@ -50,7 +51,7 @@ extern QMutex getXXbyYYmutex;
 extern "C" {
   struct servent;
   extern int getservbyname_r(const char* serv, const char* proto,
-			     struct servent* servbuf, 
+			     struct servent* servbuf,
 			     char* buf, size_t buflen,
 			     struct servent** result);
   extern int getservbyport_r(int port, const char* proto,
@@ -60,7 +61,7 @@ extern "C" {
 
   struct protoent;
   extern int getprotobyname_r(const char* proto, struct protoent* protobuf,
-			      char *buf, size_t buflen, 
+			      char *buf, size_t buflen,
 			      struct protoent** result);
   extern int getprotobynumber_r(int proto, struct protoent* protobuf,
 				char *buf, size_t buflen,
@@ -96,7 +97,7 @@ namespace KNetwork
       int protocol;
     };
   }
-    
+
   class KResolverPrivate
   {
   public:
@@ -119,7 +120,7 @@ namespace KNetwork
     KResolverResults results;
 
     KResolverPrivate(KResolver* _parent,
-		     const QString& _node = QString(), 
+		     const QString& _node = QString(),
 		     const QString& _service = QString())
       : parent(_parent), deleteWhenDone(false), waiting(false),
 	status(0), errorcode(0), syserror(0)
@@ -313,7 +314,7 @@ namespace KNetwork
 
       /*
        * Dequeues and notifies an object that is in Queued state
-       * Returns true if the object is no longer queued; false if it could not 
+       * Returns true if the object is no longer queued; false if it could not
        * be dequeued (i.e., it's running)
        */
       bool dequeueNew(KNetwork::KResolver* obj);
@@ -330,7 +331,7 @@ namespace KNetwork
       // private constructor. Only the manager can create worker threads
       KResolverThread();
       RequestData* data;
-  
+
     protected:
       virtual void run();		// here the thread starts
 

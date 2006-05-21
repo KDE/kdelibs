@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -23,6 +23,7 @@
  */
 
 #include <config.h>
+#include <config-network.h>
 #include <QMutex>
 #include "klocale.h"
 
@@ -207,7 +208,7 @@ QString KSocketBase::errorString(KSocketBase::SocketError code)
       reason = i18nc("Socket error code AlreadyCreated",
 		    "socket is already created");
       break;
-      
+
     case NotBound:
       reason = i18nc("Socket error code NotBound",
 		    "socket is not bound");
@@ -334,7 +335,7 @@ qint64 KActiveSocketBase::peek(char *data, qint64 len, KSocketAddress& from)
   return peekData(data, len, &from);
 }
 
-qint64 KActiveSocketBase::write(const char *data, qint64 len, 
+qint64 KActiveSocketBase::write(const char *data, qint64 len,
 				const KSocketAddress& to)
 {
   return writeData(data, len, &to);
