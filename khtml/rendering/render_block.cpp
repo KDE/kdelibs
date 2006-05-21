@@ -1106,7 +1106,8 @@ void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInf
         child->setPos(child->xPos(), child->yPos() + heightIncrease);
 
         // Increase our height by the amount we had to clear.
-        if (!child->isSelfCollapsingBlock())
+        bool selfCollapsing = child->isSelfCollapsingBlock();
+        if (!selfCollapsing)
             m_height += heightIncrease;
         else {
             // For self-collapsing blocks that clear, they may end up collapsing
@@ -1131,13 +1132,13 @@ void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInf
         // If our value of clear caused us to be repositioned vertically to be
         // underneath a float, we might have to do another layout to take into account
         // the extra space we now have available.
-        if (!child->style()->width().isFixed()  && child->usesLineWidth())
+        if (!selfCollapsing && !child->style()->width().isFixed() && child->usesLineWidth())
             // The child's width is a percentage of the line width.
             // When the child shifts to clear an item, its width can
             // change (because it has more available line width).
             // So go ahead and mark the item as dirty.
             child->setChildNeedsLayout(true);
-        if (child->hasFloats())
+        if (!child->flowAroundFloats() && child->hasFloats())
             child->markAllDescendantsWithFloatsForLayout();
         child->layoutIfNeeded();
     }
@@ -1238,7 +1239,7 @@ void RenderBlock::determineHorizontalPosition(RenderObject* child)
 
         // Some objects (e.g., tables, horizontal rules, overflow:auto blocks) avoid floats.  They need
         // to shift over as necessary to dodge any floats that might get in the way.
-        if (child->flowAroundFloats() && child->style()->clear() == CNONE) {
+        if (child->flowAroundFloats()) {
             int leftOff = leftOffset(m_height);
             if (style()->textAlign() != KHTML_CENTER && !child->style()->marginLeft().isVariable()) {
                 if (child->marginLeft() < 0)
