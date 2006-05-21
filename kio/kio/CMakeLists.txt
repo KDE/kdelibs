@@ -51,6 +51,7 @@ install_files( /include FILES kservicetype.h
   ktar.h
   kzip.h
   ktrader.h
+  kservicetypetrader.h
   kserviceoffer.h
   kurifilter.h
   kurlcompletion.h

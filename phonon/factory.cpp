@@ -33,7 +33,7 @@
 #include "ifaces/bytestream.h"
 #include "base_p.h"
 
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
 #include <QFile>
@@ -59,7 +59,7 @@ class Factory::Private
 
 		void createBackend()
 		{
-			const KService::List offers = KTrader::self()->query( "PhononBackend",
+			const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
 					"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 			KService::List::const_iterator it = offers.begin();
 			const KService::List::const_iterator end = offers.end();

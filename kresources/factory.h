@@ -28,8 +28,7 @@
 #include <qstring.h>
 
 #include <kconfig.h>
-#include <klibloader.h>
-#include <ktrader.h>
+#include <kservice.h>
 
 #include "resource.h"
 #include "configwidget.h"

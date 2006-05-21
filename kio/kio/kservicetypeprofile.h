@@ -24,7 +24,7 @@
 #include <qstring.h>
 #include <QList>
 
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 
 class KServiceTypeProfileList;
 
@@ -33,14 +33,15 @@ class KServiceTypeProfileList;
  * of a service type.
  * It consists of a list of services (service offers) for the service type
  * that is sorted by the user's preference.
- * KTrader uses KServiceTypeProfile to sort its results.
+ * KServiceTypeTrader uses KServiceTypeProfile to get results sorted according
+ * to the user's profile.
  *
  * @see KService
  * @see KServiceType
- * @see KTrader
+ * @see KServiceTypeTrader
  * @short Represents the user's preferences for services of a service type
  *
- * @internal used by KTrader/KMimeTypeTrader
+ * @internal used by KServiceTypeTrader/KMimeTypeTrader
  */
 class KIO_EXPORT KServiceTypeProfile
 {
@@ -51,9 +52,9 @@ public:
    * Returns the offers in the profile for the requested service type.
    * @param servicetype the service type
    * @return the KServiceTypeProfile with the given arguments, or 0 if not found
-   * @internal used by KTrader
+   * @internal used by KServiceTypeTrader
    */
-  static KTrader::OfferList serviceTypeProfileOffers( const QString& servicetype );
+  static KServiceOfferList serviceTypeProfileOffers( const QString& servicetype );
 
   /**
    * Returns the offers in the profile for the requested mime type.
@@ -64,7 +65,7 @@ public:
    * @return the KServiceTypeProfile with the given arguments, or 0 if not found
    * @internal used by KMimeTypeTrader
    */
-  static KTrader::OfferList mimeTypeProfileOffers( const QString& mimeType, const QString & genericServiceType );
+  static KServiceOfferList mimeTypeProfileOffers( const QString& mimeType, const QString & genericServiceType );
 
   /**
    * Clear all cached information
@@ -110,9 +111,9 @@ private:
    * Returns the list of all service offers for the service types
    * that are represented by this profile.
    * @return the list of KServiceOffer instances
-   * @internal used by KTrader/KMimeTypeTrader
+   * @internal used by KServiceTypeTrader/KMimeTypeTrader
    */
-  KTrader::OfferList offers() const;
+  KServiceOfferList offers() const;
 
   static KServiceTypeProfile* findProfile( const QString& type, const QString& type2 );
 

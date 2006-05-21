@@ -36,7 +36,7 @@
 #include <kstandarddirs.h>
 #include <kurlrequester.h>
 #include <kbuttonbox.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kinputdialog.h>
 #include <QList>
 
@@ -180,7 +180,7 @@ void ConfigPage::load()
 
   // KDE-3.3 compatibility code: get families from the plugins
   QStringList compatFamilyNames;
-  const KService::List plugins = KTrader::self()->query( "KResources/Plugin" );
+  const KService::List plugins = KServiceTypeTrader::self()->query( "KResources/Plugin" );
   KService::List::ConstIterator it = plugins.begin();
   KService::List::ConstIterator end = plugins.end();
   for ( ; it != end; ++it ) {
@@ -189,7 +189,7 @@ void ConfigPage::load()
         compatFamilyNames.append( family );
   }
 
-  const KService::List managers = KTrader::self()->query( "KResources/Manager" );
+  const KService::List managers = KServiceTypeTrader::self()->query( "KResources/Manager" );
   KService::List::ConstIterator m_it;
   for( m_it = managers.begin(); m_it != managers.end(); ++m_it ) {
     QString displayName = (*m_it)->property( "Name" ).toString();

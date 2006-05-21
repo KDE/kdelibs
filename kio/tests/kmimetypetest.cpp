@@ -26,6 +26,7 @@
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
+#include <kservicetypetrader.h>
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
 {
@@ -252,13 +253,13 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }
 
-void KMimeTypeTest::testTraderForReadOnlyPart()
+void KMimeTypeTest::testServiceTypeTraderForReadOnlyPart()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
     // Querying userprofile for services associated with KParts/ReadOnlyPart
-    KService::List offers = KTrader::self()->query("KParts/ReadOnlyPart");
+    KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
     QVERIFY( offers.count() > 0 );
 
     // Only test for parts provided by kdelibs:
@@ -270,7 +271,7 @@ void KMimeTypeTest::testTraderForReadOnlyPart()
     QVERIFY( offerListHasService( offers, "kcertpart.desktop" ) );
 
     // Now look for any KTextEditor/Plugin
-    offers = KTrader::self()->query("KTextEditor/Plugin");
+    offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
     QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }

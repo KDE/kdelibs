@@ -24,7 +24,7 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include "kservicetype.h"
-#include "ktrader.h"
+#include "kservicetypetrader.h"
 
 KMimeTypeTrader* KMimeTypeTrader::s_self = 0;
 static KStaticDeleter<KMimeTypeTrader> kmimetypetradersd;
@@ -44,18 +44,18 @@ KMimeTypeTrader::KMimeTypeTrader()
 {
 }
 
-KTrader::OfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
+KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
                                                     const QString& genericServiceType ) const
 {
     kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << "," << genericServiceType << " )" << endl;
     Q_ASSERT( !genericServiceType.isEmpty() );
 
     // First look into the user preference (profile)
-    KTrader::OfferList offers = KServiceTypeProfile::mimeTypeProfileOffers( mimeType, genericServiceType );
+    KServiceOfferList offers = KServiceTypeProfile::mimeTypeProfileOffers( mimeType, genericServiceType );
 
     // Collect services, to make the next loop faster
     QStringList serviceList;
-    KTrader::OfferList::const_iterator itOffers = offers.begin();
+    KServiceOfferList::const_iterator itOffers = offers.begin();
     for( ; itOffers != offers.end(); ++itOffers )
         serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
     //kDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
@@ -95,15 +95,15 @@ KService::List KMimeTypeTrader::query( const QString& mimeType,
                                        const QString& constraint ) const
 {
     // Get all services of this mime type.
-    const KTrader::OfferList offers = weightedOffers( mimeType, genericServiceType );
+    const KServiceOfferList offers = weightedOffers( mimeType, genericServiceType );
 
     // Now extract only the services; the weighting was only used for sorting.
     KService::List lst;
-    KTrader::OfferList::const_iterator itOff = offers.begin();
+    KServiceOfferList::const_iterator itOff = offers.begin();
     for( ; itOff != offers.end(); ++itOff )
         lst.append( (*itOff).service() );
 
-    KTrader::applyConstraints( lst, constraint );
+    KServiceTypeTrader::applyConstraints( lst, constraint );
 
     kDebug(7014) << "query for mimeType " << mimeType << " , " << genericServiceType
                  << " : returning " << lst.count() << " offers" << endl;
@@ -112,9 +112,9 @@ KService::List KMimeTypeTrader::query( const QString& mimeType,
 
 KService::Ptr KMimeTypeTrader::preferredService( const QString & mimeType, const QString & genericServiceType )
 {
-    const KTrader::OfferList offers = weightedOffers( mimeType, genericServiceType );
+    const KServiceOfferList offers = weightedOffers( mimeType, genericServiceType );
 
-    KTrader::OfferList::const_iterator itOff = offers.begin();
+    KServiceOfferList::const_iterator itOff = offers.begin();
     // Look for the first one that is allowed as default.
     // Since the allowed-as-default are first anyway, we only have
     // to look at the first one to know.

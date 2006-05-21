@@ -22,7 +22,7 @@
 
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kmimetype.h>
 #include <klibloader.h>
 #include <kstaticdeleter.h>
@@ -311,10 +311,10 @@ QStringList KURIFilter::pluginNames() const
 
 void KURIFilter::loadPlugins()
 {
-    KService::List offers = KTrader::self()->query( "KURIFilter/Plugin" );
+    const KService::List offers = KServiceTypeTrader::self()->query( "KURIFilter/Plugin" );
 
     KService::List::ConstIterator it = offers.begin();
-    KService::List::ConstIterator end = offers.end();
+    const KService::List::ConstIterator end = offers.end();
 
     for (; it != end; ++it )
     {

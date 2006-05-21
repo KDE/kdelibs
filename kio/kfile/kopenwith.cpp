@@ -740,7 +740,7 @@ void KOpenWithDlg::slotOK()
   int maxPreference = 1;
   if (!qMimeType.isEmpty())
   {
-    const KTrader::OfferList offerList = KMimeTypeTrader::self()->weightedOffers( qMimeType );
+    const KServiceOfferList offerList = KMimeTypeTrader::self()->weightedOffers( qMimeType );
     if (!offerList.isEmpty())
       maxPreference = offerList.first().preference();
   }

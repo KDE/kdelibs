@@ -16,7 +16,6 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <ktrader.h>
 #include <kmimetype.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
@@ -52,6 +51,6 @@ int main(int argc, char *argv[])
     printf( "%s\n", mime->name().toLatin1().constData());
   else
     return 1; // error
-     
+
   return 0;
 }

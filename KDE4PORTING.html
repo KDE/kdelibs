@@ -1164,11 +1164,15 @@ with ServiceType as QImageIOPlugins</li>
 
 <h4>KTrader</h4>
 <ul>
-<li>KTrader::query() should be ported to KMimeTypeTrader::query() when it's about mimetypes.</li>
-<li>query() now returns KService::List instead of an OfferList</li>
+<li>KTrader has been split up into two classes: KServiceTypeTrader and KMimeTypeTrader.</li>
+<li>So KTrader::query() should be ported to KMimeTypeTrader::query() when it's about mimetypes
+(finding the application or part for a give mimetype), and to KServiceTypeTrader::query() when 
+it's about pure service types (plugins, kcmodules, etc.)</li>
+<li>In other terms, KTrader::query(1 or 2 args) -&gt; KServiceTypeTypeTrader::query and 
+                    KTrader::query(4 args but the last one was always QString::null) -&gt; KMimeTypeTrader::query</li>
+<li>In both cases, query() now returns KService::List instead of an OfferList, adjust the type of the variable</li>
 <li>Constraints like "'RenameDlg/Plugin' in ServiceTypes" should be turned into
   KMimeTypeTrader::self()->query(mimetype,"RenameDlg/Plugin")</li>
-
 </ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>

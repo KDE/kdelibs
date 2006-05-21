@@ -205,11 +205,12 @@ public:
 
   /**
    * Returns all services supporting the given servicetype name.
-   * This doesn't take care of the user profile.
-   * In fact it is used by KServiceTypeProfile,
-   * which is used by KTrader, and that's the one you should use.
+   * This doesn't take care of the user profile (order preference),
+   * you should use KServiceTypeTrader/KMimeTypeTrader instead.
+   *
    * @param _servicetype the name of the service type to search
    * @return the list of all services of the given type
+   * @internal
    */
   static KService::List offers( const QString& _servicetype );
 

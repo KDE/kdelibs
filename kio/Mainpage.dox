@@ -25,11 +25,12 @@
  *   a .desktop file stating that it is a service that implements the servicetype
  *   KOfficePlugin.
  *
- * @see KServiceTypeProfile:
- *   Stores the user's preferences for services bound to mimetypes/servicetypes.
+ * @see KServiceTypeTrader:
+ *   Use it to query for which services implement a given servicetype.
+ *   Has its own language, in order to allow complex queries.
  *
- * @see KTrader:
- *   Use it to query for which services implement a given mimetype/servicetype.
+ * @see KMimeTypeTrader:
+ *   Use it to query for which services implement a given mimetype.
  *   Has its own language, in order to allow complex queries.
  *
  *

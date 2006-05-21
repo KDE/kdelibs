@@ -42,7 +42,6 @@
 #include <ktabctl.h>
 #include <kcmoduleinfo.h>
 #include <kservice.h>
-#include <ktrader.h>
 #include <ktabwidget.h>
 #include <kiconloader.h>
 #include <kcmodule.h>

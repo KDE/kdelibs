@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "ktrader.h"
+#include "kservicetypetrader.h"
 
 #include "ktraderparsetree.h"
 #include <kservicetypeprofile.h>
@@ -25,33 +25,33 @@
 #include <kdebug.h>
 #include "kservicetype.h"
 
-template class KStaticDeleter<KTrader>;
+template class KStaticDeleter<KServiceTypeTrader>;
 
 using namespace KTraderParse;
 
 // --------------------------------------------------
 
-KTrader* KTrader::s_self = 0;
-static KStaticDeleter<KTrader> ktradersd;
+KServiceTypeTrader* KServiceTypeTrader::s_self = 0;
+static KStaticDeleter<KServiceTypeTrader> ktradersd;
 
-KTrader* KTrader::self()
+KServiceTypeTrader* KServiceTypeTrader::self()
 {
     if ( !s_self )
-	ktradersd.setObject( s_self, new KTrader );
+	ktradersd.setObject( s_self, new KServiceTypeTrader );
 
     return s_self;
 }
 
-KTrader::KTrader()
+KServiceTypeTrader::KServiceTypeTrader()
 {
 }
 
-KTrader::~KTrader()
+KServiceTypeTrader::~KServiceTypeTrader()
 {
 }
 
 // shared with KMimeTypeTrader
-void KTrader::applyConstraints( KService::List& lst,
+void KServiceTypeTrader::applyConstraints( KService::List& lst,
                                 const QString& constraint )
 {
     if ( lst.isEmpty() || constraint.isEmpty() )
@@ -77,7 +77,7 @@ void KTrader::applyConstraints( KService::List& lst,
 }
 
 #if 0
-static void dumpOfferList( const KServiceTypeProfile::OfferList& offers )
+static void dumpOfferList( const KServiceOfferList& offers )
 {
     kDebug(7014) << "Sorted list:" << endl;
     OfferList::Iterator itOff = offers.begin();
@@ -87,18 +87,18 @@ static void dumpOfferList( const KServiceTypeProfile::OfferList& offers )
 #endif
 
 
-KTrader::OfferList KTrader::weightedOffers( const QString& serviceType ) const
+KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType ) const
 {
-    KTrader::OfferList offers = KServiceTypeProfile::serviceTypeProfileOffers( serviceType );
-    //kDebug(7014) << "KTrader::weightedOffers( " << serviceType << " )" << endl;
+    KServiceOfferList offers = KServiceTypeProfile::serviceTypeProfileOffers( serviceType );
+    //kDebug(7014) << "KServiceTypeTrader::weightedOffers( " << serviceType << " )" << endl;
 
-    // Note that KTrader::offers() calls KServiceType::offers(),
+    // Note that KServiceTypeTrader::offers() calls KServiceType::offers(),
     // so we _do_ get the new services, that are available but not in the profile.
     //kDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
 
     // Collect services, to make the next loop faster
     QStringList serviceList;
-    KTrader::OfferList::const_iterator itOffers = offers.begin();
+    KServiceOfferList::const_iterator itOffers = offers.begin();
     for( ; itOffers != offers.end(); ++itOffers )
         serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
     //kDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
@@ -126,40 +126,36 @@ KTrader::OfferList KTrader::weightedOffers( const QString& serviceType ) const
         qStableSort( offers );
 
 #if 0
-    // debug code, comment if you wish but don't remove.
-    kDebug(7014) << "Sorted list:" << endl;
-    OfferList::Iterator itOff = offers.begin();
-    for( ; itOff != offers.end(); ++itOff )
-        kDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference() << endl;
+    dumpOfferList( offers );
 #endif
 
     return offers;
 }
 
-KService::List KTrader::query( const QString& serviceType,
+KService::List KServiceTypeTrader::query( const QString& serviceType,
                                const QString& constraint ) const
 {
     // Get all services of this service type.
-    const OfferList offers = weightedOffers( serviceType );
+    const KServiceOfferList offers = weightedOffers( serviceType );
 
     // Now extract only the services; the weighting was only used for sorting.
     KService::List lst;
-    OfferList::const_iterator itOff = offers.begin();
+    KServiceOfferList::const_iterator itOff = offers.begin();
     for( ; itOff != offers.end(); ++itOff )
         lst.append( (*itOff).service() );
 
-    KTrader::applyConstraints( lst, constraint );
+    applyConstraints( lst, constraint );
 
     kDebug(7014) << "query for serviceType " << serviceType
                  << " : returning " << lst.count() << " offers" << endl;
     return lst;
 }
 
-KService::Ptr KTrader::preferredService( const QString & serviceType ) const
+KService::Ptr KServiceTypeTrader::preferredService( const QString & serviceType ) const
 {
-    const KTrader::OfferList offers = weightedOffers( serviceType );
+    const KServiceOfferList offers = weightedOffers( serviceType );
 
-    KTrader::OfferList::const_iterator itOff = offers.begin();
+    KServiceOfferList::const_iterator itOff = offers.begin();
     // Look for the first one that is allowed as default.
     // Since the allowed-as-default are first anyway, we only have
     // to look at the first one to know.

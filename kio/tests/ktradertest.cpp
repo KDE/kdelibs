@@ -21,6 +21,8 @@
 #include <kmimetype.h>
 #include <kapplication.h>
 #include <klocale.h>
+#include <kservicetypetrader.h>
+
 #include <stdio.h>
 
 static KCmdLineOptions options[] =
@@ -62,7 +64,7 @@ int main( int argc, char **argv )
      offers = KMimeTypeTrader::self()->query( mimetype, servicetype, constraint );
   }
   else
-     offers = KTrader::self()->query( servicetype, constraint );
+     offers = KServiceTypeTrader::self()->query( servicetype, constraint );
 
   printf("got %d offers.\n", offers.count());
 

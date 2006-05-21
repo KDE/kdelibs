@@ -19,7 +19,7 @@
 
 #include "kplugininfo.h"
 #include <ksimpleconfig.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kdebug.h>
 #include <kconfigbase.h>
 #include <kglobal.h>
@@ -276,7 +276,7 @@ const QList<KService::Ptr> & KPluginInfo::kcmServices() const
 {
     if ( !d->kcmservicesCached )
     {
-        d->kcmservices = KTrader::self()->query( "KCModule", "'" + d->pluginName +
+        d->kcmservices = KServiceTypeTrader::self()->query( "KCModule", "'" + d->pluginName +
             "' in [X-KDE-ParentComponents]" );
         kDebug( 703 ) << "found " << d->kcmservices.count() << " offers for " <<
             d->pluginName << endl;

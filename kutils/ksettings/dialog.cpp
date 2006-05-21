@@ -23,7 +23,7 @@
 #include <klocale.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kplugininfo.h>
 #include "ksettings/dispatcher.h"
 #include "ksettings/componentsdialog.h"
@@ -463,7 +463,7 @@ QList<KService::Ptr> Dialog::parentComponentsServices(
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
 
 	kDebug( 700 ) << "constraint = " << constraint << endl;
-	return KTrader::self()->query( "KCModule", constraint );
+	return KServiceTypeTrader::self()->query( "KCModule", constraint );
 }
 
 bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const

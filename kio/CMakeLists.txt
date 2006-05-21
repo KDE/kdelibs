@@ -50,7 +50,7 @@ set(kiocore_STAT_SRCS
   kio/kfileshare.cpp
   kio/ksambashare.cpp
   kio/knfsshare.cpp
-  kio/ktrader.cpp
+  kio/kservicetypetrader.cpp
   kio/ktraderparse.cpp
   kio/ktraderparsetree.cpp
   kio/kservicetypefactory.cpp

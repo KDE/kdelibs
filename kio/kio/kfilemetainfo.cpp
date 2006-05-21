@@ -23,7 +23,8 @@
 #include <q3shared.h>
 #include <qdatetime.h>
 
-#include <ktrader.h>
+#include <kservicetypetrader.h>
+#include <kmimetypetrader.h>
 #include <kstaticdeleter.h>
 #include <kparts/componentfactory.h>
 #include <kservicetypeprofile.h>
@@ -34,6 +35,7 @@
 #include <kio/global.h>
 
 #include "kfilemetainfo.h"
+#include <QSet>
 
 // shared data of a KFileMetaInfoItem
 class KFileMetaInfoItem::Data : public Q3Shared
@@ -925,7 +927,7 @@ KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const Q
         const QString constraint = QString::fromLatin1( "[X-KDE-Protocol] == '%1'" ).arg(protocol);
         // querying for a protocol: we have no mimetype, so we need to use KFilePlugin as one
         // hopefully using KFilePlugin as genericMimeType too isn't a problem
-        offers = KTrader::self()->query( "KFilePlugin", constraint );
+        offers = KServiceTypeTrader::self()->query( "KFilePlugin", constraint );
     }
     if ( offers.isEmpty() )
         return 0;
@@ -1098,18 +1100,24 @@ KFileMimeTypeInfo * KFileMetaInfoProvider::addMimeTypeInfo(
 QStringList KFileMetaInfoProvider::supportedMimeTypes() const
 {
     QStringList allMimeTypes;
-    QString kfilePlugin = "KFilePlugin";
+    QSet<QString> foundMimeTypes;
+    const QString kfilePlugin = "KFilePlugin";
 
-    const KService::List offers = KTrader::self()->query( "KFilePlugin" );
+    const KService::List offers = KServiceTypeTrader::self()->query( kfilePlugin );
     KService::List::const_iterator it = offers.begin();
     for ( ; it != offers.end(); ++it )
     {
         const QStringList mimeTypes = (*it)->serviceTypes();
         QStringList::ConstIterator it2 = mimeTypes.begin();
         for ( ; it2 != mimeTypes.end(); ++it2 )
-            if ( !allMimeTypes.contains( *it2 ) &&
-                 *it2 != kfilePlugin ) // also in serviceTypes()
-                allMimeTypes.append( *it2 );
+        {
+            const QString mimeType = *it2;
+            if ( !foundMimeTypes.contains( mimeType ) &&
+                 mimeType != kfilePlugin ) { // also in serviceTypes()
+                allMimeTypes.append( mimeType );
+                foundMimeTypes.insert( mimeType );
+            }
+        }
     }
 
     return allMimeTypes;

@@ -21,7 +21,7 @@
 
 #include <kservicetypeprofile.h>
 #include <dcopclient.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <ksimpleconfig.h>
 #include <QStringList>
 #include <QListWidgetItem>
@@ -48,7 +48,7 @@ void BackendSelection::load()
 	m_select->clear();
 	KServiceTypeProfile::clear();
 
-        const KService::List offers = KTrader::self()->query( "PhononBackend",
+        const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
 			"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 	// the offers are already sorted for preference
         KService::List::const_iterator it = offers.begin();

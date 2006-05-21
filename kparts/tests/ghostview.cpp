@@ -12,7 +12,7 @@
 #include <qdir.h>
 #include <qfile.h>
 
-#include <ktrader.h>
+#include <kparts/componentfactory.h>
 
 #include "ghostview.h"
 
@@ -26,26 +26,10 @@ Shell::Shell()
   KAction * paQuit = new KAction( "&Quit" , "exit", 0, this, SLOT( close() ), actionCollection(), "file_quit" );
 
   // Try to find a postscript component first
-  KTrader::OfferList offers = KTrader::self()->query("application/postscript", "('KParts/ReadOnlyPart' in ServiceTypes) or ('Browser/View' in ServiceTypes)");
-
-  KLibFactory *factory = 0;
-  m_gvpart = 0;
-  KTrader::OfferList::Iterator it(offers.begin());
-  for( ; it != offers.end(); ++it)
-  {
-    KService::Ptr ptr = (*it);
-
-    factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
-    if (factory)
-    {
-      m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name().toLatin1().constData(), "KParts::ReadOnlyPart"));
-      setCentralWidget( m_gvpart->widget() );
-      // Integrate its GUI
-      createGUI( m_gvpart );
-
-      break;
-    }
-  }
+  m_gvpart = KParts::ComponentFactory::createPartInstanceFromQuery( "application/postscript",
+      QString(),
+      this,
+      this );
 
   // if we couldn't find a component with the trader, try the
   // kghostview library directly.  if this ever happens, then something
@@ -57,18 +41,21 @@ Shell::Shell()
     if (factory)
     {
       // Create the part
-      m_gvpart = (KParts::ReadOnlyPart *)factory->create( this, "kgvpart",
-                 "KParts::ReadOnlyPart" );
-      // Set the main widget
-      setCentralWidget( m_gvpart->widget() );
-      // Integrate its GUI
-      createGUI( m_gvpart );
+        m_gvpart = factory->create<KParts::ReadOnlyPart *>( this );
     }
     else
     {
        KMessageBox::error(this, "No libkghostview found !");
     }
   }
+
+  if ( m_gvpart )
+  {
+      setCentralWidget( m_gvpart->widget() );
+      // Integrate its GUI
+      createGUI( m_gvpart );
+  }
+
   // Set a reasonable size
   resize( 600, 350 );
 }

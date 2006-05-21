@@ -223,7 +223,7 @@
  * If you want to detect if KTTSD is installed without starting it, use this code.
  *
    @verbatim
-     KTrader::OfferList offers = KTrader::self()->query("DCOP/Text-to-Speech", "Name == 'KTTSD'");
+     KServiceOfferList offers = KTrader::self()->query("DCOP/Text-to-Speech", "Name == 'KTTSD'");
      if (offers.count() > 0)
      {
        // KTTSD is installed.

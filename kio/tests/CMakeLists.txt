@@ -1,19 +1,18 @@
+# Tests don't need to go into toplevel/bin, they are fine in the current dir.
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 # for <kio/global.h>
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 ########## ktradertest - which is installed
 
-kde4_add_executable(ktradertest NOGUI ktradertest.cpp)
+kde4_add_executable(ktradertest NOGUI RUN_UNINSTALLED ktradertest.cpp)
 
 target_link_libraries(ktradertest ${KDE4_KIO_LIBS})
 
 install(TARGETS ktradertest DESTINATION bin)
 
 if(KDE4_BUILD_TESTS)
-
-# Tests don't need to go into toplevel/bin, they are fine in the current dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 ########### next target ###############
 

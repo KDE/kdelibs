@@ -3,7 +3,7 @@
 
 #include <kparts/factory.h>
 #include <kparts/part.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <klibloader.h>
 #include <kmimetypetrader.h>
 
@@ -231,7 +231,7 @@ namespace KParts
                                            const QStringList &args = QStringList(),
                                            int *error = 0 )
         {
-            const KService::List offers = KTrader::self()->query( serviceType, constraint );
+            const KService::List offers = KServiceTypeTrader::self()->query( serviceType, constraint );
             if ( offers.isEmpty() )
             {
                 if ( error )

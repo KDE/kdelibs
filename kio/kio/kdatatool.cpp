@@ -29,7 +29,7 @@
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kparts/componentfactory.h>
 
 #include <qpixmap.h>
@@ -181,7 +181,7 @@ QList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QStrin
         else
             constr = constr + " and " + tmp;
     }
-/* Bug in KTrader ? Test with HEAD-kdelibs!
+/* Bug in KServiceTypeTrader ? Test with HEAD-kdelibs!
     if ( instance )
     {
         QString tmp = QString::fromLatin1( "not ('%1' in ExcludeFrom)" ).arg( instance->instanceName() );
@@ -193,7 +193,7 @@ QList<KDataToolInfo> KDataToolInfo::query( const QString& datatype, const QStrin
 
     // Query the trader
     //kDebug() << "KDataToolInfo::query " << constr << endl;
-    KService::List offers = KTrader::self()->query( "KDataTool", constr );
+    KService::List offers = KServiceTypeTrader::self()->query( "KDataTool", constr );
 
     KService::List::ConstIterator it = offers.begin();
     for( ; it != offers.end(); ++it )

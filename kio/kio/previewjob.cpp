@@ -44,7 +44,7 @@
 #include <kfileitem.h>
 #include <kapplication.h>
 #include <ktempfile.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kcodecs.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -157,13 +157,13 @@ PreviewJob::~PreviewJob()
 void PreviewJob::startPreview()
 {
     // Load the list of plugins to determine which mimetypes are supported
-    KService::List plugins = KTrader::self()->query("ThumbCreator");
+    const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
 
     for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         if (!d->enabledPlugins || d->enabledPlugins->contains((*it)->desktopEntryName()))
     {
-        QStringList mimeTypes = (*it)->property("MimeTypes").toStringList();
+        const QStringList mimeTypes = (*it)->property("MimeTypes").toStringList();
         for (QStringList::ConstIterator mt = mimeTypes.begin(); mt != mimeTypes.end(); ++mt)
             mimeMap.insert(*mt, *it);
     }
@@ -521,7 +521,7 @@ void PreviewJob::emitFailed(const KFileItem *item)
 QStringList PreviewJob::availablePlugins()
 {
     QStringList result;
-    KService::List plugins = KTrader::self()->query("ThumbCreator");
+    const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         if (!result.contains((*it)->desktopEntryName()))
             result.append((*it)->desktopEntryName());
@@ -531,7 +531,7 @@ QStringList PreviewJob::availablePlugins()
 QStringList PreviewJob::supportedMimeTypes()
 {
     QStringList result;
-    KService::List plugins = KTrader::self()->query("ThumbCreator");
+    const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result += (*it)->property("MimeTypes").toStringList();
     return result;

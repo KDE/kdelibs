@@ -135,11 +135,11 @@ void KServiceTypeProfile::addService( const QString& _service,
 }
 
 
-KTrader::OfferList KServiceTypeProfile::serviceTypeProfileOffers( const QString& serviceType )
+KServiceOfferList KServiceTypeProfile::serviceTypeProfileOffers( const QString& serviceType )
 {
     initStatic();
 
-    KTrader::OfferList offers;
+    KServiceOfferList offers;
     // We want all profiles for _serviceType, if we have profiles.
     // This uses a standard multimap-lookup
     KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( serviceType );
@@ -150,7 +150,7 @@ KTrader::OfferList KServiceTypeProfile::serviceTypeProfileOffers( const QString&
     return offers;
 }
 
-KTrader::OfferList KServiceTypeProfile::mimeTypeProfileOffers( const QString& servicetype, const QString& genericServiceType )
+KServiceOfferList KServiceTypeProfile::mimeTypeProfileOffers( const QString& servicetype, const QString& genericServiceType )
 {
     initStatic();
 
@@ -158,13 +158,13 @@ KTrader::OfferList KServiceTypeProfile::mimeTypeProfileOffers( const QString& se
     if ( profile )
         return profile->offers();
 
-    return KTrader::OfferList();
+    return KServiceOfferList();
 }
 
 
-KTrader::OfferList KServiceTypeProfile::offers() const
+KServiceOfferList KServiceTypeProfile::offers() const
 {
-  KTrader::OfferList offers;
+  KServiceOfferList offers;
 
   kDebug(7014) << "KServiceTypeProfile::offers serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
   KService::List list = KServiceType::offers( m_strServiceType );

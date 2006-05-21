@@ -15,7 +15,7 @@ private Q_SLOTS:
     void testAllServices();
     void testAllInitServices();
     void testMimeTypeTraderForTextPlain();
-    void testTraderForReadOnlyPart();
+    void testServiceTypeTraderForReadOnlyPart();
 };
 
 

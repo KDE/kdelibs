@@ -21,16 +21,18 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "factory.h"
+
 #include <kdebug.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
-
+#include <kservicetypetrader.h>
+#include <klibloader.h>
 #include <qfile.h>
 
 #include "resource.h"
-#include "factory.h"
 
 using namespace KRES;
 
@@ -58,11 +60,11 @@ Factory *Factory::self( const QString& resourceFamily )
 Factory::Factory( const QString& resourceFamily ) :
   mResourceFamily( resourceFamily )
 {
-  KService::List plugins = KTrader::self()->query( "KResources/Plugin", QString( "[X-KDE-ResourceFamily] == '%1'" )
+  const KService::List plugins = KServiceTypeTrader::self()->query( "KResources/Plugin", QString( "[X-KDE-ResourceFamily] == '%1'" )
                                                 .arg( resourceFamily ) );
   KService::List::ConstIterator it;
   for ( it = plugins.begin(); it != plugins.end(); ++it ) {
-    QVariant type = (*it)->property( "X-KDE-ResourceType" );
+    const QVariant type = (*it)->property( "X-KDE-ResourceType" );
     if ( !type.toString().isEmpty() )
       mTypeMap.insert( type.toString(), *it );
   }

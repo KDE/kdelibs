@@ -30,7 +30,7 @@
 #include <kio/kprotocolmanager.h>
 #include <kio/kmimetype.h>
 #include <kio/kservice.h>
-#include <kio/ktrader.h>
+#include <kservicetypetrader.h>
 #include "kjs_navigator.h"
 #include "kjs/lookup.h"
 #include "kjs_binding.h"
@@ -296,9 +296,9 @@ PluginBase::PluginBase(ExecState *exec)
         if (!KConfigGroup(&kc, "Java/JavaScript Settings").readEntry("EnablePlugins", true))
             return; // plugins disabled
 
-        // read in using KTrader
-        KService::List offers = KTrader::self()->query("Browser/View");
-        KService::List::iterator it;
+        // read in using KServiceTypeTrader
+        const KService::List offers = KServiceTypeTrader::self()->query("Browser/View");
+        KService::List::const_iterator it;
         for ( it = offers.begin(); it != offers.end(); ++it ) {
 
             QVariant pluginsinfo = (**it).property( "X-KDE-BrowserView-PluginsInfo" );

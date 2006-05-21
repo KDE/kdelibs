@@ -30,7 +30,7 @@
 #include <kparts/componentfactory.h>
 
 #include <kplugininfo.h>
-#include <ktrader.h>
+#include <kservicetypetrader.h>
 #include <kconfig.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
@@ -286,7 +286,7 @@ Settings* Broker::settings() const
 void Broker::loadPlugins()
 {
     d->plugins = KPluginInfo::fromServices(
-        KTrader::self()->query( "KSpell/Client" ) );
+        KServiceTypeTrader::self()->query( "KSpell/Client" ) );
 
     for ( KPluginInfo::List::Iterator itr = d->plugins.begin();
           itr != d->plugins.end(); ++itr ) {

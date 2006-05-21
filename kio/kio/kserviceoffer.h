@@ -94,5 +94,10 @@ private:
   KService::Ptr m_pService;
 };
 
+/**
+ * A list of weighted offers.
+ */
+typedef QList<KServiceOffer> KServiceOfferList;
+
 #endif /* KSERVICEOFFER_H */
 

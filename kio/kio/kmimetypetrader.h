@@ -20,15 +20,16 @@
 #ifndef KMIMETYPETRADER_H
 #define KMIMETYPETRADER_H
 
-#include "ktrader.h"
+#include "kserviceoffer.h"
 
 /**
- * A trader for mimetypes. See KTrader for documentation.
+ * A trader for services associated to a given mimetype.
+ * Service means Application or Component/Plugin, see KService.
  *
  * Example: say that you want to the list of all KParts components that can handle HTML.
  * Our code would look like:
  * \code
- * KTrader::OfferList lst = KMimeTypeTrader::self()->query("text/html", "KParts/ReadOnlyPart");
+ * KServiceOfferList lst = KMimeTypeTrader::self()->query("text/html", "KParts/ReadOnlyPart");
  * \endcode
  *
  * If you want to get the preferred KParts component for text/html you could use
@@ -37,6 +38,7 @@
  *
  * @short Provides a way to query the KDE infrastructure for
  *        applications or components that can handle a specific mimetype.
+ * @see KServiceTypeTrader, KService
  */
 class KIO_EXPORT KMimeTypeTrader
 {
@@ -91,7 +93,7 @@ public:
      * @param mimeType A mime type like 'text/plain' or 'text/html'.
      * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart' or 'Application'
      */
-    KTrader::OfferList weightedOffers( const QString& mimeType, const QString& genericServiceType = QString::fromLatin1("Application") ) const;
+    KServiceOfferList weightedOffers( const QString& mimeType, const QString& genericServiceType = QString::fromLatin1("Application") ) const;
 
     /**
      * Returns the preferred service for @p mimeType and @p genericServiceType

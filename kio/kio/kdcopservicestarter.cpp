@@ -17,7 +17,7 @@
 */
 
 #include "kdcopservicestarter.h"
-#include "ktrader.h"
+#include "kservicetypetrader.h"
 #include <kapplication.h>
 #include "kservice.h"
 #include <kstaticdeleter.h>
@@ -60,7 +60,7 @@ int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
     if ( !constraint.isEmpty() )
         constraint += " and ";
     constraint += "exist [X-DCOP-ServiceName]";
-    const KService::List offers = KTrader::self()->query(serviceType, constraint);
+    const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() ) {
         if ( error )
             *error = i18n("No service implementing %1",  serviceType );
@@ -89,7 +89,7 @@ int KDCOPServiceStarter::startServiceFor( const QString& serviceType,
                                           const QString& constraint,
                                           QString *error, DCOPCString* dcopService, int /*flags*/ )
 {
-    const KService::List offers = KTrader::self()->query(serviceType, constraint);
+    const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();
