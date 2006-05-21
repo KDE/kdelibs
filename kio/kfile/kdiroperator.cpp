@@ -682,7 +682,7 @@ void KDirOperator::rereadDir()
 }
 
 
-bool KDirOperator::openURL( const KURL& url, bool keep, bool reload )
+bool KDirOperator::openURL( const KUrl& url, bool keep, bool reload )
 {
     bool result = dir->openURL( url, keep, reload );
     if ( !result ) // in that case, neither completed() nor canceled() will be emitted by KDL
