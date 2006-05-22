@@ -250,9 +250,9 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
 }
 
 //static
-bool BrowserRun::allowExecution( const QString &serviceType, const KUrl &url )
+bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
 {
-    if ( !KRun::isExecutable( serviceType ) )
+    if ( !KRun::isExecutable( mimeType ) )
       return true;
 
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
@@ -476,10 +476,10 @@ void BrowserRun::slotCopyToTempFileResult(KJob *job)
     m_timer.start( 0 );
 }
 
-bool BrowserRun::isTextExecutable( const QString &serviceType )
+bool BrowserRun::isTextExecutable( const QString &mimeType )
 {
-    return ( serviceType == "application/x-desktop" ||
-             serviceType == "application/x-shellscript" );
+    return ( mimeType == "application/x-desktop" ||
+             mimeType == "application/x-shellscript" );
 }
 
 bool BrowserRun::hideErrorDialog() const

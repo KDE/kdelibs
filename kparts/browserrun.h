@@ -91,9 +91,9 @@ namespace KParts {
                                 QWidget* window =0 );
 
 
-        static bool allowExecution( const QString &serviceType, const KUrl &url );
+        static bool allowExecution( const QString &mimeType, const KUrl &url );
 
-        static bool isTextExecutable( const QString &serviceType );
+        static bool isTextExecutable( const QString &mimeType );
 
     protected:
         /**
