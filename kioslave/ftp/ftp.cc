@@ -1352,7 +1352,9 @@ void Ftp::stat( const KUrl &url)
               ftpCreateUDSEntry( filename, ftpEnt, entry, isDir );
               statEntry( entry );
             }
-        } else if ( isDir && ( ftpEnt.name == listarg || ftpEnt.name+'/' == listarg ) ) {
+        }
+#if 0 // goes with the "old implementation" above
+        else if ( isDir && ( ftpEnt.name == listarg || ftpEnt.name+'/' == listarg ) ) {
             // Damn, the dir we're trying to list is in fact a symlink
             // Follow it and try again
             if ( ftpEnt.link.isEmpty() )
@@ -1376,6 +1378,7 @@ void Ftp::stat( const KUrl &url)
             }
             bFound = true;
         }
+#endif
     }
 
     // kDebug(7102) << ftpEnt.name << endl;
