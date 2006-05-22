@@ -1263,14 +1263,16 @@ parameter of the $XGETTEXT if you are using the class KAboutData and if
 you are not explicitely setting KAboutData::setTranslator.</p>
 
 <h4>Gettext 0.15-pre</h4>
-<p>Scripty uses xgettext 0.15-pre (the development version) for extracting
+<p>Scripty uses
+<a href="http://savannah.gnu.org/projects/gettext/">xgettext 0.15-pre (the development version)</a>
+for extracting
 messages out of code. This is a huge step from the former xgettext 0.10.35-kde
 used in KDE3.</p>
 <p>Important changes:</p>
 <ul>
 <li>If you define your own keywords (-k parameter of xgettext), you probably
 need to adapt them, as xgettext does not automatically know about the
-1, 2 or 3 parameter version.</li>
+1, 2 or 3 parameter versions.</li>
 <li>You cannot have two similar messages, one being a normal message and
 the other the singular form of a plural-form messages. For Gettext, this is
 the same message and therefore this creates problems. (Note: there is not
