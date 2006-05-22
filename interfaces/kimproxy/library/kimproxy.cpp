@@ -33,11 +33,12 @@
 #include <ksimpleconfig.h>
 #include <kiconloader.h>
 #include <kservice.h>
-#include <kservicetype.h>
+#include <kservicetypetrader.h>
 
 #include "kimiface_stub.h"
 
 #include "kimproxy.h"
+#include <kservicetype.h>
 
 static KStaticDeleter<KIMProxy> _staticDeleter;
 
@@ -226,10 +227,10 @@ bool KIMProxy::initialize()
 			DCOPCString dcopObjectId = "KIMIface";
 
 			// see what apps implementing our service type are out there
-			KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
-			KService::List::iterator offer;
+			const KService::List offers = KServiceTypeTrader::self()->query( IM_SERVICE_TYPE );
+			KService::List::const_iterator offer;
 			DCOPCStringList registeredApps = d->dc->registeredApplications();
-			DCOPCStringList::iterator app;
+			DCOPCStringList::const_iterator app;
 			const DCOPCStringList::iterator end = registeredApps.end();
 			// for each registered app
 			for ( app = registeredApps.begin(); app != end; ++app )
@@ -243,7 +244,7 @@ bool KIMProxy::initialize()
 					{
 						//kDebug( 790 ) << " is it: " << dcopService << "?" << endl;
 						// get the application name ( minus any process ID )
-						DCOPCString instanceName =  (*app).left( dcopService.length() );
+						DCOPCString instanceName = (*app).left( dcopService.length() );
 						// if the application implements the dcop service, add it
 						if ( instanceName == dcopService )
 						{
@@ -276,7 +277,7 @@ void KIMProxy::registeredToDCOP( const QByteArray& appId )
 	// get an up to date list of offers in case a new app was installed
 	// and check each of the offers that implement the service type we're looking for,
 	// to see if any of them are the app that just registered
-	const KService::List offers = KServiceType::offers( IM_SERVICE_TYPE );
+	const KService::List offers = KServiceTypeTrader::self()->query( IM_SERVICE_TYPE );
 	KService::List::const_iterator it;
 	for ( it = offers.begin(); it != offers.end(); ++it )
 	{
