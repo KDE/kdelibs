@@ -2,37 +2,34 @@
 include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
 
-########### kabc_file library (also used by kaddressbook) ###############
+########### kabc_file_core library (also used by kaddressbook) ###############
 
-set(kabc_file_LIB_SRCS resourcefile.cpp resourcefileconfig.cpp )
+set(kabc_file_core_SRCS resourcefile.cpp resourcefileconfig.cpp )
 
-kde4_automoc(${kabc_file_LIB_SRCS})
+kde4_automoc(${kabc_file_core_SRCS})
 
-kde4_add_library(kabc_file SHARED ${kabc_file_LIB_SRCS})
+kde4_add_library(kabc_file_core SHARED ${kabc_file_core_SRCS})
 
-target_link_libraries(kabc_file ${KDE4_KDECORE_LIBS} kabc)
+target_link_libraries(kabc_file_core ${KDE4_KDECORE_LIBS} kabc)
 
-set_target_properties(kabc_file PROPERTIES VERSION 4.0.0 SOVERSION 4 )
-set_target_properties(kabc_file PROPERTIES OUTPUT_NAME kabc_file_core)
+set_target_properties(kabc_file_core PROPERTIES VERSION 4.0.0 SOVERSION 4 )
 
-install_targets(${LIB_INSTALL_DIR} kabc_file )
+install_targets(${LIB_INSTALL_DIR} kabc_file_core )
 
 
-########### kabc_file_plugin ###############
+########### kabc_file plugin ###############
 
-set(kabc_file_plugin_PART_SRCS resourcefileplugin.cpp)
+set(kabc_file_SRCS resourcefileplugin.cpp)
 
-kde4_automoc(${kabc_file_plugin_PART_SRCS})
+kde4_automoc(${kabc_file_SRCS})
 
-kde4_add_plugin(kabc_file_plugin ${kabc_file_plugin_PART_SRCS})
+kde4_add_plugin(kabc_file ${kabc_file_SRCS})
 
-target_link_libraries(kabc_file_plugin ${KDE4_KDECORE_LIBS} kabc_file)
+target_link_libraries(kabc_file ${KDE4_KDECORE_LIBS} kabc_file_core)
 
-kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_file_plugin )
+kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kabc_file )
 
-set_target_properties(kabc_file_plugin PROPERTIES OUTPUT_NAME kabc_file)
-
-install_targets(${PLUGIN_INSTALL_DIR} kabc_file_plugin )
+install_targets(${PLUGIN_INSTALL_DIR} kabc_file )
 
 
 ########### install files ###############

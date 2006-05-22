@@ -75,10 +75,9 @@ bigread.cpp
 kde4_automoc(${bigread_SRCS})
 
 
-message(STATUS "skipping kabc/tests bigread, how to link to a plugin (kabc_file.so) ?")
-#kde4_add_executable(bigread RUN_UNINSTALLED ${bigread_SRCS})
-#
-#target_link_libraries(bigread  ${KDE4_KDECORE_LIBS} kabc kabc_file )
+kde4_add_executable(bigread RUN_UNINSTALLED ${bigread_SRCS})
+
+target_link_libraries(bigread  ${KDE4_KDECORE_LIBS} kabc kabc_file_core )
 
 
 ########### next target ###############
@@ -90,11 +89,9 @@ bigwrite.cpp
 kde4_automoc(${bigwrite_SRCS})
 
 
-message(STATUS "skipping kabc/tests bigwrite, how to link to a plugin (kabc_file.so) ?")
+kde4_add_executable(bigwrite RUN_UNINSTALLED ${bigwrite_SRCS})
 
-#kde4_add_executable(bigwrite RUN_UNINSTALLED ${bigwrite_SRCS})
-#
-#target_link_libraries(bigwrite  ${KDE4_KDECORE_LIBS} kabc kabc_file )
+target_link_libraries(bigwrite  ${KDE4_KDECORE_LIBS} kabc kabc_file_core )
 
 
 ########### next target ###############
