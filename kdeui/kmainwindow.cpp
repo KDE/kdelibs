@@ -113,8 +113,9 @@ public:
             n++;
             mw->savePropertiesInternal(config, n);
         }
-        config->setGroup(QLatin1String("Number"));
-        config->writeEntry(QLatin1String("NumberOfWindows"), n );
+
+        KConfigGroup group( config, QLatin1String("Number") );
+        group.writeEntry(QLatin1String("NumberOfWindows"), n );
         return true;
     }
 
@@ -373,8 +374,9 @@ bool KMainWindow::canBeRestored( int number )
     KConfig *config = kapp->sessionConfig();
     if ( !config )
         return false;
-    config->setGroup( QLatin1String("Number") );
-    int n = config->readEntry( QLatin1String("NumberOfWindows") , 1 );
+
+    KConfigGroup group( config, QLatin1String("Number") );
+    int n = group.readEntry( QLatin1String("NumberOfWindows") , 1 );
     return number >= 1 && number <= n;
 }
 
@@ -388,11 +390,12 @@ const QString KMainWindow::classNameOfToplevel( int number )
     QString s;
     s.setNum( number );
     s.prepend( QLatin1String("WindowProperties") );
-    config->setGroup( s );
-    if ( !config->hasKey( QLatin1String("ClassName") ) )
+
+    KConfigGroup group( config, s );
+    if ( !group.hasKey( QLatin1String("ClassName") ) )
         return QString();
     else
-        return config->readEntry( "ClassName" );
+        return group.readEntry( "ClassName" );
 }
 
 bool KMainWindow::restore( int number, bool show )

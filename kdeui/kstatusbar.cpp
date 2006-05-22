@@ -65,11 +65,10 @@ KStatusBar::KStatusBar( QWidget *parent )
   // make the size grip stuff configurable
   // ...but off by default (sven)
   KConfig *config = KGlobal::config();
-  QString group(config->group());
-  config->setGroup(QLatin1String("StatusBar style"));
-  bool grip_enabled = config->readEntry(QLatin1String("SizeGripEnabled"), false);
+
+  KConfigGroup group( config, QLatin1String("StatusBar style") );
+  bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), false);
   setSizeGripEnabled(grip_enabled);
-  config->setGroup(group);
 }
 
 KStatusBar::~KStatusBar ()
