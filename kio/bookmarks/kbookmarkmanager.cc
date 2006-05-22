@@ -480,7 +480,7 @@ static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
 
 KBookmarkGroup KBookmarkManager::addBookmarkDialog(
                      const QString & _url, const QString & _title,
-                     const QString & _parentBookmarkAddress
+                     const QString & _parentBookmarkAddress //TODO parametr to override m_advancedaddbookmark
 ) {
     QString url = _url;
     QString title = _title;
@@ -509,7 +509,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
     parentBookmark = findByAddress( parentBookmarkAddress ).toGroup();
     Q_ASSERT( !parentBookmark.isNull() );
 
-    QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url );
+    QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url ); //TODO pickUnusedTitle is used only here. Why?
     if ( !uniqueTitle.isNull() )
         parentBookmark.addBookmark( this, uniqueTitle, KUrl( url ));
 
@@ -611,6 +611,7 @@ void KBookmarkManager::slotEditBookmarks()
 void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 {
     KProcess proc;
+    //TODO shouldn't we pass --customcaption and --nobrowser too?
     proc << QLatin1String("keditbookmarks")
          << QLatin1String("--address") << address
          << m_bookmarksFile;

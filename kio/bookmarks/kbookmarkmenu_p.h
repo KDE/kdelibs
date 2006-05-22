@@ -25,12 +25,13 @@
 #include <sys/types.h>
 
 #include <qobject.h>
-#include <q3listview.h>
 
 #include <kdialogbase.h>
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
+#include <QModelIndex>
+#include <QTreeWidget>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"
@@ -39,7 +40,6 @@
 class QString;
 class QMenu;
 class QPushButton;
-class Q3ListView;
 class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;
@@ -129,7 +129,7 @@ public:
   void setLocation(const QString &str);
 };
 
-class KBookmarkEditDialog : public KDialogBase
+class KBookmarkEditDialog : public KDialog
 {
   Q_OBJECT
 
@@ -147,36 +147,27 @@ protected Q_SLOTS:
   void slotOk();
   void slotCancel();
   void slotUser1();
-  void slotDoubleClicked(Q3ListViewItem* item);
+  void slotDoubleClicked(QTreeWidgetItem* item);
 
 private:
+  void fillGroup( QTreeWidget* listview, QTreeWidgetItem * parentItem, KBookmarkGroup group, const QString& address);
   QWidget * m_main;
   KBookmarkEditFields * m_fields;
-  Q3ListView * m_folderTree;
+  QTreeWidget * m_folderTree;
   QPushButton * m_button;
   KBookmarkManager * m_mgr;
   BookmarkEditType m_editType;
-  QString m_address;
 };
 
-class KBookmarkFolderTreeItem : public Q3ListViewItem
+class KBookmarkTreeItem : public QTreeWidgetItem
 {
-  // make this an accessor
-  friend class KBookmarkFolderTree;
 public:
-  KBookmarkFolderTreeItem( Q3ListView *, const KBookmark & );
-  KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *, Q3ListViewItem *, const KBookmarkGroup & );
+    KBookmarkTreeItem(QTreeWidget * tree);
+    KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, KBookmarkGroup bk);
+    ~KBookmarkTreeItem();
+    QString address();
 private:
-  KBookmark m_bookmark;
-};
-
-class KBookmarkFolderTree
-{
-public:
-  static Q3ListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& = QString() );
-  static void fillTree( Q3ListView*, KBookmarkManager *, const QString& = QString() );
-  static QString selectedAddress( Q3ListView* );
-  static void setAddress( Q3ListView *, const QString & );
+    QString m_address;
 };
 
 class KBookmarkSettings

@@ -47,9 +47,9 @@
 #include <qpushbutton.h>
 #include <qmimedata.h>
 
-#include <q3header.h>
-#include <q3listview.h>
+
 #include <QStack>
+#include <QHeaderView>
 
 static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
@@ -162,7 +162,6 @@ void KBookmarkMenu::slotActionHoovered( QAction* action )
       qobject_cast<KBookmarkAction*>(action))
   {
     m_highlightedAddress = action->property("address").toString();
-    kDebug() << "KBookmarkMenu::slotActionHighlighted" << m_highlightedAddress << endl;
   }
   else if (qobject_cast<KImportedBookmarksActionMenu*>(action))
   {
@@ -273,11 +272,6 @@ void RMB::slotProperties()
     KUrl u(dlg.finalUrl());
     bookmark.internalElement().setAttribute("href", u.url()); // utf8
   }
-
-#ifdef __GNUC__
-#warning "Here dlg.finalAddress crash because when we modify a bookmark m_foldertree is null ! Bug ?"
-#endif
-  //kDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
 
   KBookmarkGroup parentBookmark = atAddress(m_parentAddress).toGroup();
   m_pManager->emitChanged( parentBookmark );
@@ -729,19 +723,46 @@ void KBookmarkEditFields::setLocation(const QString &str)
   m_url->setText(str);
 }
 
-/********************************************************************/
-/********************************************************************/
+
 /********************************************************************/
 
-// TODO - make the dialog use Properties as a title when in Modify mode... (dirk noticed the bug...)
+KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidget * tree)
+    : QTreeWidgetItem(tree), m_address("") //TODO KBookmarkAddress::root()
+{
+    setText(0, i18n("Bookmarks"));
+    setIcon(0, SmallIcon("bookmark"));
+    tree->expandItem(this);
+    tree->setCurrentItem( this );
+    tree->setItemSelected( this, true );
+}
+
+KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, KBookmarkGroup bk)
+    : QTreeWidgetItem(parent)
+{
+    setIcon(0, SmallIcon(bk.icon()));
+    setText(0, bk.fullText() );
+    tree->expandItem(this);
+    m_address = bk.address();
+    kDebug()<<"** setting address to "<<bk.address()<<endl;
+}
+
+KBookmarkTreeItem::~KBookmarkTreeItem()
+{
+}
+
+QString KBookmarkTreeItem::address()
+{
+    return m_address;
+}
+
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType, const QString& address,
                                          QWidget * parent, const char * name, const QString& caption )
-  : KDialogBase(parent, name, true, caption,
-                (editType == InsertionMode) ? (User1|Ok|Cancel) : (Ok|Cancel),
-                Ok, false, KGuiItem()),
-    m_folderTree(0), m_mgr(mgr), m_editType(editType), m_address(address)
+  : KDialog(parent, caption, (editType == InsertionMode) ? (User1|Ok|Cancel) : (Ok|Cancel)),
+    m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
-  setButtonGuiItem(KDialogBase::Ok, (editType == InsertionMode) ? KGuiItem( i18n( "&Add" ), "bookmark_add") : i18n( "&Update" ) );
+
+  setButtonGuiItem(KDialog::Ok, (editType == InsertionMode) ? KGuiItem( i18n( "&Add" ), "bookmark_add") : i18n( "&Update" ) );
+  setDefaultButton( KDialog::Ok );
   if (editType == InsertionMode) {
     setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder_new") );
   }
@@ -764,15 +785,27 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
 
   if ( editType == InsertionMode )
   {
-    m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name, m_address );
-    connect( m_folderTree, SIGNAL( doubleClicked(Q3ListViewItem*) ),
-             this,         SLOT( slotDoubleClicked(Q3ListViewItem*) ) );
-    vbox->addWidget( m_folderTree );
+    m_folderTree = new QTreeWidget(m_main);
+    m_folderTree->setColumnCount(1);
+    m_folderTree->header()->hide();
+    m_folderTree->setSortingEnabled(false);
+    m_folderTree->setSelectionMode( QTreeWidget::SingleSelection );
+    m_folderTree->setSelectionBehavior( QTreeWidget::SelectRows );
+    m_folderTree->setMinimumSize( 60, 100 );
+
+    vbox->addWidget(m_folderTree);
+
+    QTreeWidgetItem *root = new KBookmarkTreeItem(m_folderTree);
+
+    fillGroup( m_folderTree, root, mgr->root(), address );
+
+    connect( m_folderTree, SIGNAL( itemDoubleClicked(QTreeWidgetItem *, int) ),
+             this,         SLOT( slotDoubleClicked(QTreeWidgetItem *) ) );
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1() ) );
   }
 }
 
-void KBookmarkEditDialog::slotDoubleClicked( Q3ListViewItem* item )
+void KBookmarkEditDialog::slotDoubleClicked( QTreeWidgetItem * item )
 {
   Q_ASSERT( m_folderTree );
   m_folderTree->setCurrentItem( item );
@@ -792,7 +825,7 @@ void KBookmarkEditDialog::slotCancel()
 QString KBookmarkEditDialog::finalAddress() const
 {
   Q_ASSERT( m_folderTree );
-  return KBookmarkFolderTree::selectedAddress( m_folderTree );
+  return dynamic_cast<KBookmarkTreeItem *>(m_folderTree->selectedItems().first())->address();
 }
 
 QString KBookmarkEditDialog::finalUrl() const
@@ -810,8 +843,7 @@ void KBookmarkEditDialog::slotUser1()
   // kDebug(7043) << "KBookmarkEditDialog::slotUser1" << endl;
   Q_ASSERT( m_folderTree );
 
-  QString address = KBookmarkFolderTree::selectedAddress( m_folderTree );
-  if ( address.isNull() ) return;
+  QString address = finalAddress();
   KBookmarkGroup bm = m_mgr->findByAddress( address ).toGroup();
   Q_ASSERT(!bm.isNull());
   Q_ASSERT(m_editType == InsertionMode);
@@ -819,119 +851,30 @@ void KBookmarkEditDialog::slotUser1()
   KBookmarkGroup group = bm.createNewFolder( m_mgr );
   if ( !group.isNull() )
   {
-    KBookmarkGroup parentGroup = group.parentGroup();
-    m_mgr->emitChanged( parentGroup );
-  }
-  KBookmarkFolderTree::fillTree( m_folderTree, m_mgr );
+     KBookmarkGroup parentGroup = group.parentGroup();
+     m_mgr->emitChanged( parentGroup );
+     m_folderTree->clear();
+     QTreeWidgetItem *root = new KBookmarkTreeItem(m_folderTree);
+     fillGroup( m_folderTree, root, m_mgr->root(), address );
+   }
 }
 
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-
-static void fillGroup( Q3ListView* listview, KBookmarkFolderTreeItem * parentItem, KBookmarkGroup group, bool expandOpenGroups = true, const QString& address = QString() )
+void KBookmarkEditDialog::fillGroup( QTreeWidget* view, QTreeWidgetItem * parentItem, KBookmarkGroup group, const QString& address)
 {
-  bool noSubGroups = true;
-  KBookmarkFolderTreeItem * lastItem = 0L;
-  KBookmarkFolderTreeItem * item = 0L;
   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
   {
     if ( bk.isGroup() )
     {
-      KBookmarkGroup grp = bk.toGroup();
-      item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
-      fillGroup( listview, item, grp, expandOpenGroups, address );
-      if ( expandOpenGroups && grp.isOpen() )
-        item->setOpen( true );
-      lastItem = item;
-      noSubGroups = false;
-    }
-    if (bk.address() == address) {
-      listview->setCurrentItem( lastItem );
-      listview->ensureItemVisible( item );
+      KBookmarkGroup childGrp = bk.toGroup();
+      QTreeWidgetItem* item = new KBookmarkTreeItem(parentItem, view, childGrp );
+      fillGroup( view, item, childGrp , address );
+      if (childGrp.address() == address) 
+      {
+        view->setCurrentItem( item );
+        view->scrollToItem( item );
+      }
     }
   }
-  if ( noSubGroups ) {
-     parentItem->setOpen( true );
-  }
-}
-
-Q3ListView* KBookmarkFolderTree::createTree( KBookmarkManager* mgr, QWidget* parent, const char* name, const QString& address )
-{
-  Q3ListView *listview = new Q3ListView( parent, name );
-
-  listview->setRootIsDecorated( false );
-  listview->header()->hide();
-  listview->addColumn( i18n("Bookmark"), 200 );
-  listview->setSorting( -1, false );
-  listview->setSelectionMode( Q3ListView::Single );
-  listview->setAllColumnsShowFocus( true );
-  listview->setResizeMode( Q3ListView::AllColumns );
-  listview->setMinimumSize( 60, 100 );
-
-  fillTree( listview, mgr, address );
-
-  return listview;
-}
-
-void KBookmarkFolderTree::fillTree( Q3ListView *listview, KBookmarkManager* mgr, const QString& address )
-{
-  listview->clear();
-
-  KBookmarkGroup root = mgr->root();
-  KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
-  listview->setCurrentItem( rootItem );
-  rootItem->setSelected( true );
-  fillGroup( listview, rootItem, root, (address == root.groupAddress() || address.isNull()) ? true : false, address );
-  rootItem->setOpen( true );
-}
-
-static KBookmarkFolderTreeItem* ft_cast( Q3ListViewItem *i )
-{
-  return static_cast<KBookmarkFolderTreeItem*>( i );
-}
-
-QString KBookmarkFolderTree::selectedAddress( Q3ListView *listview )
-{
-  if ( !listview)
-    return QString();
-  KBookmarkFolderTreeItem *item = ft_cast( listview->currentItem() );
-  return item ? item->m_bookmark.address() : QString();
-}
-
-void KBookmarkFolderTree::setAddress( Q3ListView *listview, const QString & address )
-{
-  KBookmarkFolderTreeItem* it = ft_cast( listview->firstChild() );
-  while ( true ) {
-    kDebug(7043) << it->m_bookmark.address() << endl;
-    it = ft_cast( it->itemBelow() );
-    if ( !it )
-      return;
-    if ( it->m_bookmark.address() == address )
-      break;
-  }
-  it->setSelected( true );
-  listview->setCurrentItem( it );
-}
-
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-
-// toplevel item
-KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( Q3ListView *parent, const KBookmark & gp )
-   : Q3ListViewItem(parent, i18n("Bookmarks")), m_bookmark(gp)
-{
-  setPixmap(0, SmallIcon("bookmark"));
-  setExpandable(true);
-}
-
-// group
-KBookmarkFolderTreeItem::KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *parent, Q3ListViewItem *after, const KBookmarkGroup & gp )
-   : Q3ListViewItem(parent, after, gp.fullText()), m_bookmark(gp)
-{
-  setPixmap(0, SmallIcon( gp.icon() ) );
-  setExpandable(true);
 }
 
 /********************************************************************/

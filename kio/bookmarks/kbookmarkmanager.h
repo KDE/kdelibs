@@ -237,7 +237,6 @@ public:
 k_dcop:
     /**
      * Reparse the whole bookmarks file and notify about the change
-     * (Called by the bookmark editor)
      */
     ASYNC notifyCompleteChange( QString caller );
 
@@ -278,12 +277,6 @@ private:
 
     QString m_editorCaption;
     bool m_browserEditor;
-
-    /**
-     * If you want to extend KBookmarkManager without breaking binary compatibility, 
-     * put additional members into this class. When you can break compatibility, move 
-     * members into KBookmarkManager and empty this private class.
-     */
     class KBookmarkManagerPrivate* d;
 };
 
