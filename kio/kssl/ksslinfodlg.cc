@@ -407,37 +407,44 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     QGridLayout *grid = new QGridLayout(_frame);
     grid->setMargin(KDialog::marginHint());
     grid->setSpacing(KDialog::spacingHint());
-    grid->setAutoAdd(true);
+
+    int row = 0;
     QLabel *label = 0L;
     if (!(tmp = cert.getValue("O")).isEmpty()) {
         label = new QLabel(i18n("Organization:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
+        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        row++;
     }
     if (!(tmp = cert.getValue("OU")).isEmpty()) {
         label = new QLabel(i18n("Organizational unit:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
+        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        row++;
     }
     if (!(tmp = cert.getValue("L")).isEmpty()) {
         label = new QLabel(i18n("Locality:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
+        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        row++;
     }
     if (!(tmp = cert.getValue("ST")).isEmpty()) {
         label = new QLabel(i18nc("Federal State","State:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
+        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        row++;
     }
     if (!(tmp = cert.getValue("C")).isEmpty()) {
         label = new QLabel(i18n("Country:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
+        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        row++;
     }
     if (!(tmp = cert.getValue("CN")).isEmpty()) {
         label = new QLabel(i18n("Common name:"), _frame);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        new QLabel(tmp, _frame);
+        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        row++;
     }
     if (!(tmp = cert.getValue("Email")).isEmpty()) {
         label = new QLabel(i18n("Email:"), _frame);
@@ -448,6 +455,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
         } else {
             label = new QLabel(tmp, _frame);
         }
+        grid->addWidget( label, row, 0 );
     }
     if (label && viewport()) {
         viewport()->setBackgroundRole(label->backgroundRole());
