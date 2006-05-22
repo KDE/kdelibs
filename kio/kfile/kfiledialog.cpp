@@ -857,19 +857,19 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
                    KDirOperator::ViewActions);
     KActionCollection *coll = ops->actionCollection();
 
-    // plug nav items into the toolbar
-    coll->action( "up" )->plug( toolbar );
+    // add nav items to the toolbar
+    toolbar->addAction( coll->action( "up" ) );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<p>"
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>",  KUser().loginName() ));
-    coll->action( "back" )->plug( toolbar );
+    toolbar->addAction( coll->action( "back" ) );
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
-    coll->action( "forward" )->plug( toolbar );
+    toolbar->addAction( coll->action( "forward" ) );
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
-    coll->action( "reload" )->plug( toolbar );
+    toolbar->addAction( coll->action( "reload" ) );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
     coll->action( "mkdir" )->setShortcut(Qt::Key_F10);
-    coll->action( "mkdir" )->plug( toolbar );
+    toolbar->addAction( coll->action( "mkdir" ) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KToggleAction *showSidebarAction =
@@ -911,7 +911,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     menu->addAction( coll->action( "separate dirs" ));
 
     menu->setDelayed( false );
-    connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
+    connect( menu->kMenu(), SIGNAL( aboutToShow() ),
              ops, SLOT( updateSelectionDependentActions() ));
     toolbar->addAction( menu );
 
@@ -2149,7 +2149,7 @@ void KFileDialog::toggleSpeedbar( bool show )
         {
           if ( homeURL.equals( urlItem->url(), KUrl::CompareWithoutTrailingSlash ) )
             {
-                ops->actionCollection()->action( "home" )->unplug( toolbar );
+                toolbar->removeAction( ops->actionCollection()->action( "home" ) );
                 break;
             }
 
@@ -2163,7 +2163,7 @@ void KFileDialog::toggleSpeedbar( bool show )
 
         KAction* homeAction = ops->actionCollection()->action( "home" );
         if ( !toolbar->actions().contains(homeAction) )
-            homeAction->plug( toolbar, 3 );
+            toolbar->addAction( homeAction ); // TODO: add at index 3
     }
 
     static_cast<KToggleAction *>(actionCollection()->action("toggleSpeedbar"))->setChecked( show );
