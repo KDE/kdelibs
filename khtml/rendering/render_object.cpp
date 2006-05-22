@@ -505,8 +505,7 @@ bool RenderObject::hasStaticY() const
 void RenderObject::setPixmap(const QPixmap&, const QRect& /*r*/, CachedImage* image)
 {
     //repaint bg when it finished loading
-    if(image && parent() && style() && style()->backgroundImage() == image
-       && image->valid_rect().size() == image->pixmap_size() ) {
+    if(image && parent() && style() && style()->backgroundLayers()->containsImage(image)) {
         isBody() ? canvas()->repaint() : repaint();
     }
 }
