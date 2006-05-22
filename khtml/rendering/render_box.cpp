@@ -1269,7 +1269,7 @@ void RenderBox::calcAbsoluteHorizontal()
 
     int maxW = m_width, maxML, maxMR, maxX;
     if (style()->maxWidth().value() != UNDEFINED)
-        calcAbsoluteHorizontalValues(MaxWidth, cb, cw, static_distance, pab, l, r, maxW, maxML, maxMR, maxX);
+        calcAbsoluteHorizontalValues(MaxWidth, cb, cw, pab, static_distance, l, r, maxW, maxML, maxMR, maxX);
 
     if (m_width > maxW) {
         m_width = maxW;
