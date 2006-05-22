@@ -696,7 +696,7 @@ void KPrintDialog::done(int result)
 			if (!checkOutputFile()) return;
 			d->m_printer->setOutputToFile(true);
 			/* be sure to decode the output filename */
-			d->m_printer->setOutputFileName( KUrl::decode_string( d->m_file->url() ) );
+			d->m_printer->setOutputFileName( KUrl::fromPercentEncoding( d->m_file->url().url().toLatin1() ) );
 		}
 		else
 			d->m_printer->setOutputToFile(false);

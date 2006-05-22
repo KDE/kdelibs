@@ -304,32 +304,32 @@ void KToolInvocation::invokeMailer(const QString &address, const QString &subjec
 
 void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
-   QString address = KUrl::decode_string(mailtoURL.path()), subject, cc, bcc, body;
+   QString address = KUrl::fromPercentEncoding(mailtoURL.path().toLatin1()), subject, cc, bcc, body;
    QStringList queries = mailtoURL.query().mid(1).split( '&');
    QStringList attachURLs;
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
    {
      QString q = (*it).toLower();
      if (q.startsWith("subject="))
-       subject = KUrl::decode_string((*it).mid(8));
+       subject = KUrl::fromPercentEncoding((*it).mid(8).toLatin1());
      else
      if (q.startsWith("cc="))
-       cc = cc.isEmpty()? KUrl::decode_string((*it).mid(3)): cc + ',' + KUrl::decode_string((*it).mid(3));
+       cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc + ',' + KUrl::fromPercentEncoding((*it).mid(3));
      else
      if (q.startsWith("bcc="))
-       bcc = bcc.isEmpty()? KUrl::decode_string((*it).mid(4)): bcc + ',' + KUrl::decode_string((*it).mid(4));
+       bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc + ',' + KUrl::fromPercentEncoding((*it).mid(4));
      else
      if (q.startsWith("body="))
-       body = KUrl::decode_string((*it).mid(5));
+       body = KUrl::fromPercentEncoding((*it).mid(5).toLatin1());
      else
      if (allowAttachments && q.startsWith("attach="))
-       attachURLs.push_back(KUrl::decode_string((*it).mid(7)));
+       attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(7).toLatin1()));
      else
      if (allowAttachments && q.startsWith("attachment="))
-       attachURLs.push_back(KUrl::decode_string((*it).mid(11)));
+       attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(11).toLatin1()));
      else
      if (q.startsWith("to="))
-       address = address.isEmpty()? KUrl::decode_string((*it).mid(3)): address + ',' + KUrl::decode_string((*it).mid(3));
+       address = address.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): address + ',' + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
    }
 
    invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
@@ -346,7 +346,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 	url.addQueryItem("bcc", _bcc);
 	url.addQueryItem("body", body);
 	for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
-		url.addQueryItem("attach", KUrl::encode_string(*it));
+		url.addQueryItem("attach", QLatin1String( KUrl::toPercentEncoding(*it) ));
 
    QString sOpen( "open" );
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.url().utf16(), 0, 0, SW_NORMAL);

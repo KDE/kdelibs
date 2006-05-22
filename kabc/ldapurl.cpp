@@ -178,7 +178,7 @@ void LDAPUrl::parseQuery()
         if ( (*it) == "one") m_scope = One;
         break;
       case 2:
-        m_filter = decode_string( *it );
+        m_filter = fromPercentEncoding( (*it).toLatin1() );
         break;
       case 3:
         extensions = (*it).split( ',', QString::SkipEmptyParts );
@@ -189,8 +189,8 @@ void LDAPUrl::parseQuery()
   QString name,value;
   for ( QStringList::Iterator it = extensions.begin(); it != extensions.end(); ++it ) {
     ext.critical = false;
-    name = decode_string( (*it).section('=',0,0) ).toLower();
-    value = decode_string( (*it).section('=',1) );
+    name = fromPercentEncoding( (*it).section('=',0,0).toLatin1() ).toLower();
+    value = fromPercentEncoding( (*it).section('=',1).toLatin1() );
     if ( name.startsWith("!") ) {
       ext.critical = true;
       name.remove(0, 1);

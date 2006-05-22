@@ -2382,7 +2382,7 @@ void KHTMLPart::slotRedirect()
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
-    QString script = KUrl::decode_string( u.right( u.length() - 11 ) );
+    QString script = KUrl::fromPercentEncoding( u.right( u.length() - 11 ).toLatin1() );
     kDebug( 6050 ) << "KHTMLPart::slotRedirect script=" << script << endl;
     QVariant res = executeScript( DOM::Node(), script );
     if ( res.type() == QVariant::String ) {
@@ -3708,7 +3708,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   }
 
   if (url.indexOf( QLatin1String( "javascript:" ),0, Qt::CaseInsensitive ) == 0 ) {
-    QString jscode = KUrl::decode_string( url.mid( url.indexOf( "javascript:", 0, Qt::CaseInsensitive ) ) );
+    QString jscode = KUrl::fromPercentEncoding( url.mid( url.indexOf( "javascript:", 0, Qt::CaseInsensitive ) ).toLatin1() );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
     if (url.startsWith("javascript:window.open"))
       jscode += i18n(" (In new window)");
@@ -3816,17 +3816,17 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 
     if (u.protocol() == QLatin1String("mailto")) {
       QString mailtoMsg /* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
-      mailtoMsg += i18n("Email to: ") + KUrl::decode_string(u.path());
+      mailtoMsg += i18n("Email to: ") + KUrl::fromPercentEncoding(u.path().toLatin1());
       QStringList queries = u.query().mid(1).split('&');
       QStringList::Iterator it = queries.begin();
       const QStringList::Iterator itEnd = queries.end();
       for (; it != itEnd; ++it)
         if ((*it).startsWith(QLatin1String("subject=")))
-          mailtoMsg += i18n(" - Subject: ") + KUrl::decode_string((*it).mid(8));
+          mailtoMsg += i18n(" - Subject: ") + KUrl::fromPercentEncoding((*it).mid(8).toLatin1());
         else if ((*it).startsWith(QLatin1String("cc=")))
-          mailtoMsg += i18n(" - CC: ") + KUrl::decode_string((*it).mid(3));
+          mailtoMsg += i18n(" - CC: ") + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
         else if ((*it).startsWith(QLatin1String("bcc=")))
-          mailtoMsg += i18n(" - BCC: ") + KUrl::decode_string((*it).mid(4));
+          mailtoMsg += i18n(" - BCC: ") + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
       mailtoMsg = Qt::escape(mailtoMsg);
       mailtoMsg.replace(QRegExp("([\n\r\t]|[ ]{10})"), QString());
       setStatusBarText("<qt>"+mailtoMsg, BarHoverText);
@@ -3884,7 +3884,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
 
   if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
-    crossFrameExecuteScript( target, KUrl::decode_string( url.mid( 11 ) ) );
+    crossFrameExecuteScript( target, KUrl::fromPercentEncoding( url.mid( 11 ).toLatin1() ) );
     return false;
   }
 
@@ -4296,7 +4296,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   // Support for <frame src="javascript:string">
   if ( url.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 )
   {
-      QVariant res = executeScript( DOM::Node(frame->element()), KUrl::decode_string( url.right( url.length() - 11) ) );
+      QVariant res = executeScript( DOM::Node(frame->element()), KUrl::fromPercentEncoding( url.right( url.length() - 11).toLatin1() ) );
       KUrl myurl;
       myurl.setProtocol("javascript");
       if ( res.type() == QVariant::String )
@@ -4782,7 +4782,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   QString urlstring = u.url();
 
   if ( urlstring.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
-    urlstring = KUrl::decode_string(urlstring);
+    urlstring = KUrl::fromPercentEncoding(urlstring.toLatin1());
     crossFrameExecuteScript( _target, urlstring.right( urlstring.length() - 11) );
     return;
   }
@@ -4843,19 +4843,19 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       QString bodyEnc;
       if (contentType.toLower() == "multipart/form-data") {
          // FIXME: is this correct?  I suspect not
-         bodyEnc = KUrl::encode_string(QString::fromLatin1(formData.data(),
-                                                           formData.size()));
+         bodyEnc = QLatin1String( KUrl::toPercentEncoding(QString::fromLatin1(formData.data(),
+                                                           formData.size())));
       } else if (contentType.toLower() == "text/plain") {
          // Convention seems to be to decode, and s/&/\n/
          QString tmpbody = QString::fromLatin1(formData.data(),
                                                formData.size());
          tmpbody.replace(QRegExp("[&]"), "\n");
          tmpbody.replace(QRegExp("[+]"), " ");
-         tmpbody = KUrl::decode_string(tmpbody);  // Decode the rest of it
-         bodyEnc = KUrl::encode_string(tmpbody);  // Recode for the URL
+         tmpbody = KUrl::fromPercentEncoding(tmpbody.toLatin1());  // Decode the rest of it
+         bodyEnc = QLatin1String( KUrl::toPercentEncoding(tmpbody) );  // Recode for the URL
       } else {
-         bodyEnc = KUrl::encode_string(QString::fromLatin1(formData.data(),
-                                                           formData.size()));
+         bodyEnc = QLatin1String( KUrl::toPercentEncoding(QString::fromLatin1(formData.data(),
+                                                           formData.size())) );
       }
 
       nvps.append(QString("body=%1").arg(bodyEnc));
@@ -5068,7 +5068,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
   // TODO: handle child target correctly! currently the script are always executed fur the parent
   QString urlStr = url.url();
   if ( urlStr.indexOf( QLatin1String( "javascript:" ), 0, Qt::CaseInsensitive ) == 0 ) {
-      QString script = KUrl::decode_string( urlStr.right( urlStr.length() - 11 ) );
+      QString script = KUrl::fromPercentEncoding( urlStr.right( urlStr.length() - 11 ).toLatin1() );
       executeScript( DOM::Node(), script );
       return;
   }

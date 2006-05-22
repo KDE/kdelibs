@@ -1462,12 +1462,12 @@ void KUrlTest::testEncodeString()
 {
   kDebug() << k_funcinfo << endl;
   // Needed for #49616
-  QCOMPARE( KUrl::encode_string( "C++" ), QString("C%2B%2B") );
-  QCOMPARE( KUrl::decode_string( "C%2B%2B" ), QString("C++") );
-  QCOMPARE( KUrl::decode_string( "C%00%A" ), QString("C") ); // we stop at %00
+  QCOMPARE( KUrl::toPercentEncoding( "C++" ), QString("C%2B%2B") );
+  QCOMPARE( KUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
+  QCOMPARE( KUrl::fromPercentEncoding( "C%00%A" ), QString("C") ); // we stop at %00
 
-  QCOMPARE( KUrl::encode_string( "%" ), QString("%25") );
-  QCOMPARE( KUrl::encode_string( ":" ), QString("%3A") );
+  QCOMPARE( KUrl::toPercentEncoding( "%" ), QString("%25") );
+  QCOMPARE( KUrl::toPercentEncoding( ":" ), QString("%3A") );
 }
 
 void KUrlTest::testIdn()

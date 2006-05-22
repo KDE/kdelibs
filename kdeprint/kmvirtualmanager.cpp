@@ -266,17 +266,17 @@ void KMVirtualManager::loadFile(const QString& filename)
 			words = line.split(' ', QString::SkipEmptyParts);
 			if (words.count() < 2) continue;
 			pair = words[1].split('/', QString::SkipEmptyParts);
-			realprinter = m_manager->findPrinter(KUrl::decode_string(pair[0]));
+			realprinter = m_manager->findPrinter(KUrl::fromPercentEncoding(pair[0].toLatin1()));
 			if (realprinter && !realprinter->isDiscarded())
 			{ // keep only instances corresponding to an existing and
 			  // non discarded printer.
 			  	// "clone" the real printer and modify settings as needed
 				printer = new KMPrinter(*realprinter);
-				printer->setName(KUrl::decode_string(words[1]));
-				printer->setPrinterName(KUrl::decode_string(pair[0]));
+				printer->setName(KUrl::fromPercentEncoding(words[1].toLatin1()));
+				printer->setPrinterName(KUrl::fromPercentEncoding(pair[0].toLatin1()));
 				if (pair.count() > 1)
 				{
-					printer->setInstanceName(KUrl::decode_string(pair[1]));
+					printer->setInstanceName(KUrl::fromPercentEncoding(pair[1].toLatin1()));
 					printer->addType(KMPrinter::Virtual);
 				}
 				// parse options
@@ -289,7 +289,7 @@ void KMVirtualManager::loadFile(const QString& filename)
 				addPrinter(printer);	// don't use "printer" after this point !!!
 				// check default state
 				if (words[0].toLower().startsWith("default"))
-					setDefault(findPrinter(KUrl::decode_string(words[1])),false);
+					setDefault(findPrinter(KUrl::fromPercentEncoding(words[1].toLatin1())),false);
 			}
 		}
 	}
@@ -325,9 +325,9 @@ void KMVirtualManager::saveFile(const QString& filename)
 			if (printer->isSpecial())
 			{
 				t << ( printer->isSoftDefault() ? "DefaultSpecial " : "Special " );
-				t << KUrl::encode_string_no_slash( printer->printerName() );
+				t << QLatin1String( KUrl::toPercentEncoding( printer->printerName(), "/" ) );
 				if ( !printer->instanceName().isEmpty() )
-					t << "/" << KUrl::encode_string_no_slash( printer->instanceName() );
+					t << "/" << QLatin1String( KUrl::toPercentEncoding( printer->instanceName(), "/" ) );
 			}
 			else
 				t << (printer->isSoftDefault() ? "Default " : "Dest ") << printer->name();

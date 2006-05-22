@@ -804,7 +804,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (Value.isEmpty())
                    lastCookie->mPath = QString(); // Catch "" <> QString()
                 else
-                   lastCookie->mPath = KUrl::decode_string(Value);
+                   lastCookie->mPath = QUrl::fromPercentEncoding(Value.toLatin1());
                 lastCookie->mExplicitPath = true;
             }
             else if (cName == "version")
