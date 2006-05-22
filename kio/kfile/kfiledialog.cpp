@@ -2273,11 +2273,11 @@ void KFileDialog::setStartDir( const KUrl& directory )
 void KFileDialog::setNonExtSelection()
 {
     // Enhanced rename: Don't highlight the file extension.
-    QString pattern, filename = locationEdit->currentText().trimmed();
-    KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
+    QString filename = locationEdit->currentText().trimmed();
+    QString extension = KMimeType::extractKnownExtension( filename );
 
-    if ( !pattern.isEmpty() && pattern.at( 0 ) == '*' && pattern.indexOf( '*' , 1 ) == -1 )
-       locationEdit->lineEdit()->setSelection( 0, filename.length() - pattern.trimmed().length()+1 );
+    if ( !extension.isEmpty() )
+       locationEdit->lineEdit()->setSelection( 0, filename.length() - extension.length() - 1 );
     else
     {
        int lastDot = filename.lastIndexOf( '.' );

@@ -24,6 +24,8 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include "kservicetype.h"
+#include "kservicetypefactory.h"
+#include "kservicefactory.h"
 
 template class KStaticDeleter<KServiceTypeTrader>;
 
@@ -86,44 +88,21 @@ static void dumpOfferList( const KServiceOfferList& offers )
 }
 #endif
 
-
 KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType ) const
 {
-    KServiceOfferList offers = KServiceTypeProfile::serviceTypeProfileOffers( serviceType );
     //kDebug(7014) << "KServiceTypeTrader::weightedOffers( " << serviceType << " )" << endl;
 
-    // Note that KServiceTypeTrader::offers() calls KServiceType::offers(),
-    // so we _do_ get the new services, that are available but not in the profile.
-    //kDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
-
-    // Collect services, to make the next loop faster
-    QStringList serviceList;
-    KServiceOfferList::const_iterator itOffers = offers.begin();
-    for( ; itOffers != offers.end(); ++itOffers )
-        serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
-    //kDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
-
-    // Now complete with any other offers that aren't in the profile
-    // This can be because the services have been installed after the profile was written,
-    // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
-    const KService::List list = KServiceType::offers( serviceType );
-    //kDebug(7014) << "Using KServiceType::offers, result: " << list.count() << " offers" << endl;
-    KService::List::const_iterator it = list.begin();
-    for( ; it != list.end(); ++it )
-    {
-        // Check that we don't already have it ;)
-        if ( !serviceList.contains( (*it)->desktopEntryPath() ) )
-        {
-            bool allow = (*it)->allowAsDefault();
-            offers.append( KServiceOffer( (*it), 1, allow ) );
-            //kDebug(7014) << "Appending offer " << (*it)->name() << " initial preference=" << (*it)->initialPreference() << " allow-as-default=" << allow << endl;
-        }
-        //else
-        //    kDebug(7014) << "Already having offer " << (*it)->name() << endl;
+    KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
+    if ( !servTypePtr ) {
+        kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
+        return KServiceOfferList();
     }
 
-    if (!offers.isEmpty())
-        qStableSort( offers );
+    // First, get all offers known to ksycoca.
+    const KService::List list = KServiceFactory::self()->offers( servTypePtr->offset() );
+
+    const KServiceOfferList offers = KServiceTypeProfile::sortServiceTypeOffers( list, serviceType );
+    //kDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
 
 #if 0
     dumpOfferList( offers );
@@ -133,16 +112,30 @@ KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType
 }
 
 KService::List KServiceTypeTrader::query( const QString& serviceType,
-                               const QString& constraint ) const
+                                          const QString& constraint ) const
 {
-    // Get all services of this service type.
-    const KServiceOfferList offers = weightedOffers( serviceType );
-
-    // Now extract only the services; the weighting was only used for sorting.
     KService::List lst;
-    KServiceOfferList::const_iterator itOff = offers.begin();
-    for( ; itOff != offers.end(); ++itOff )
-        lst.append( (*itOff).service() );
+
+    if ( !KServiceTypeProfile::findProfile( serviceType, QString::null ) )
+    {
+        // Fast path: skip the profile stuff if there's none (to avoid kservice->serviceoffer->kservice)
+        KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
+        if ( !servTypePtr ) {
+            kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
+            return KService::List();
+        }
+        lst = KServiceFactory::self()->offers( servTypePtr->offset() );
+    }
+    else
+    {
+        // Get all services of this service type.
+        const KServiceOfferList offers = weightedOffers( serviceType );
+
+        // Now extract only the services; the weighting was only used for sorting.
+        KServiceOfferList::const_iterator itOff = offers.begin();
+        for( ; itOff != offers.end(); ++itOff )
+            lst.append( (*itOff).service() );
+    }
 
     applyConstraints( lst, constraint );
 

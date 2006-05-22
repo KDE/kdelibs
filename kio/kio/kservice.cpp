@@ -46,6 +46,7 @@
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
+#include "kmimetype.h"
 
 class KService::Private
 {
@@ -378,7 +379,7 @@ int KService::initialPreferenceForMimeType( const QString& mimeType ) const
       if (isNumber)
          continue;
       //kDebug(7012) << "    has " << (*it) << endl;
-      KServiceType::Ptr ptr = KServiceType::serviceType( *it );
+      KMimeType::Ptr ptr = KMimeType::mimeType( *it );
       if ( !ptr || !ptr->inherits( mimeType ) )
           continue;
 

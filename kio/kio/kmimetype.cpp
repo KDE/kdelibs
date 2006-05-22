@@ -20,7 +20,7 @@
 #include <config.h>
 
 #include "kmimetype.h"
-#include "kservicetypefactory.h"
+#include "kmimetypefactory.h"
 #include "kmimemagic.h"
 #include "kprotocolmanager.h"
 #include <kde_file.h>
@@ -51,6 +51,7 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "kmimetypefactory.h"
 
 template class KSharedPtr<KMimeType>;
 
@@ -61,12 +62,12 @@ void KMimeType::buildDefaultType()
 {
   assert ( !s_pDefaultType );
   // Try to find the default type
-  KServiceType::Ptr mime = KServiceTypeFactory::self()->
-        findServiceTypeByName( defaultMimeType() );
+  KMimeType::Ptr mime = KMimeTypeFactory::self()->
+        findMimeTypeByName( defaultMimeType() );
 
-  if (mime && mime->isType( KST_KMimeType ))
+  if (mime)
   {
-      s_pDefaultType = KMimeType::Ptr::staticCast( mime );
+      s_pDefaultType = mime;
   }
   else
   {
@@ -97,7 +98,7 @@ void KMimeType::checkEssentialMimeTypes()
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
-  if ( !KServiceTypeFactory::self()->checkMimeTypes() )
+  if ( !KMimeTypeFactory::self()->checkMimeTypes() )
   {
     KMessageBoxWrapper::error( 0L, i18n( "No mime types installed." ) );
     return; // no point in going any further
@@ -132,7 +133,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
-  KServiceType::Ptr mime = KServiceTypeFactory::self()->findServiceTypeByName( _name );
+  KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( _name );
 
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
@@ -142,12 +143,12 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
   }
 
   // We got a mimetype
-  return KMimeType::Ptr::staticCast( mime );
+  return mime;
 }
 
 KMimeType::List KMimeType::allMimeTypes()
 {
-  return KServiceTypeFactory::self()->allMimeTypes();
+  return KMimeTypeFactory::self()->allMimeTypes();
 }
 
 KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
@@ -196,7 +197,7 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
   if ( ! fileName.isNull() && !path.endsWith( slash ) )
   {
       // Try to find it out by looking at the filename
-      KMimeType::Ptr mime( KServiceTypeFactory::self()->findFromPattern( fileName ) );
+      KMimeType::Ptr mime( KMimeTypeFactory::self()->findFromPattern( fileName ) );
       if ( mime )
       {
         // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
@@ -277,16 +278,20 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
 
 KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
                                      bool _is_local_file, bool _fast_mode,
-                                     bool *accurate)
+                                     bool *accurate )
 {
     KMimeType::Ptr mime = findByURL(_url, _mode, _is_local_file, _fast_mode);
     if (accurate) *accurate = !(_fast_mode) || ((mime->patternsAccuracy() == 100) && mime != defaultMimeTypePtr());
     return mime;
 }
 
-KMimeType::Ptr KMimeType::diagnoseFileName(const QString &fileName, QString &pattern)
+QString KMimeType::extractKnownExtension(const QString &fileName)
 {
-    return Ptr( KServiceTypeFactory::self()->findFromPattern( fileName, &pattern ) );
+    QString pattern;
+    KMimeTypeFactory::self()->findFromPattern( fileName, &pattern );
+    if ( !pattern.isEmpty() && pattern.startsWith( "*." ) && pattern.indexOf('*', 2) == -1 )
+        return pattern.mid( 2 ); // remove the leading "*."
+    return QString();
 }
 
 KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fast_mode )

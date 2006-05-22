@@ -39,6 +39,7 @@ public:
    * Create factory
    */
   KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
+                        KSycocaFactory *mimeTypeFactory,
                         KBuildServiceGroupFactory *serviceGroupFactory );
 
   virtual ~KBuildServiceFactory();
@@ -83,6 +84,7 @@ private:
   QHash<QString, KService::Ptr> m_serviceDict;
   QSet<KSycocaEntry::Ptr> m_dupeDict;
   KSycocaFactory *m_serviceTypeFactory;
+  KSycocaFactory *m_mimeTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
 };
 

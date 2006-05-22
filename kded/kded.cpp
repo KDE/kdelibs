@@ -40,13 +40,14 @@
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kglobal.h>
+#include <kconfig.h>
 #include <kprocess.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>
 #include <kdatastream.h>
 #include <kio/global.h>
-#include <kservicetype.h>
+#include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
 
 #ifdef Q_WS_X11
@@ -166,7 +167,7 @@ void Kded::initModules()
      bool kde_running = !( getenv( "KDE_FULL_SESSION" ) == NULL || getenv( "KDE_FULL_SESSION" )[ 0 ] == '\0' );
 
      // Preload kded modules.
-     KService::List kdedModules = KServiceType::offers("KDEDModule");
+     KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;
@@ -209,7 +210,7 @@ void Kded::loadSecondPhase()
 {
      kDebug(7020) << "Loading second phase autoload" << endl;
      KConfig *config = KGlobal::config();
-     KService::List kdedModules = KServiceType::offers("KDEDModule");
+     KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
      {
          KService::Ptr service = *it;

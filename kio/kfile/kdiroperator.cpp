@@ -47,7 +47,7 @@
 #include <kio/previewjob.h>
 #include <kio/renamedlg.h>
 #include <kpropertiesdialog.h>
-#include <kservicetypefactory.h>
+#include <kmimetypefactory.h>
 #include <kstdaccel.h>
 #include <kde_file.h>
 #include <kactioncollection.h>
@@ -838,18 +838,17 @@ bool KDirOperator::checkPreviewInternal() const
 
         if ( !nameFilter.isEmpty() ) {
             // find the mimetypes of all the filter-patterns and
-            KServiceTypeFactory *fac = KServiceTypeFactory::self();
+            KMimeTypeFactory *fac = KMimeTypeFactory::self();
             QStringList::Iterator it1 = nameFilter.begin();
             for ( ; it1 != nameFilter.end(); ++it1 ) {
                 if ( (*it1) == "*" ) {
                     return true;
                 }
 
-                KMimeType *mt = fac->findFromPattern( *it1 );
+                KMimeType::Ptr mt = fac->findFromPattern( *it1 );
                 if ( !mt )
                     continue;
                 QString mime = mt->name();
-                delete mt;
 
                 // the "mimetypes" we get from the PreviewJob can be "image/*"
                 // so we need to check in wildcard mode

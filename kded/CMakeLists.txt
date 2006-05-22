@@ -22,6 +22,7 @@ install(TARGETS kded DESTINATION bin)
 
 set(kbuildsycoca_KDEINIT_SRCS
    kbuildsycoca.cpp
+   kbuildmimetypefactory.cpp
    kbuildservicetypefactory.cpp
    kbuildservicefactory.cpp
    kbuildservicegroupfactory.cpp

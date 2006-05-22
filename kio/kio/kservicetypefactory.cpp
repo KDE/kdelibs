@@ -22,32 +22,21 @@
 #include "ksycocatype.h"
 #include "ksycocadict.h"
 #include "kservicetype.h"
-#include "kmimetype.h"
 #include "kservicetypeprofile.h"
-#include "kdedesktopmimetype.h"
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <assert.h>
-#include <kstringhandler.h>
 #include <qfile.h>
 
 KServiceTypeFactory::KServiceTypeFactory()
  : KSycocaFactory( KST_KServiceTypeFactory )
 {
    _self = this;
-   m_fastPatternOffset = 0;
-   m_otherPatternOffset = 0;
    if (m_str)
    {
       // Read Header
-      qint32 i,n;
-      (*m_str) >> i;
-      m_fastPatternOffset = i;
-      (*m_str) >> i;
-      m_otherPatternOffset = i;
+      qint32 n;
       (*m_str) >> n;
-
       if (n > 1024)
       {
          KSycoca::flagError();
@@ -55,6 +44,7 @@ KServiceTypeFactory::KServiceTypeFactory()
       else
       {
          QString str;
+         qint32 i;
          for(;n;n--)
          {
             KSycocaEntry::read(*m_str, str);
@@ -68,7 +58,7 @@ KServiceTypeFactory::KServiceTypeFactory()
 
 KServiceTypeFactory::~KServiceTypeFactory()
 {
-  _self = 0L;
+  _self = 0;
   KServiceTypeProfile::clear();
 }
 
@@ -106,123 +96,6 @@ QVariant::Type KServiceTypeFactory::findPropertyTypeByName(const QString &_name)
    return static_cast<QVariant::Type>( m_propertyTypeDict.value( _name, QVariant::Invalid ) );
 }
 
-KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QString *match)
-{
-   // Assume we're NOT building a database
-   if (!m_str) return 0;
-
-   // Get stream to the header
-   QDataStream *str = m_str;
-
-   str->device()->seek( m_fastPatternOffset );
-
-   qint32 nrOfEntries;
-   (*str) >> nrOfEntries;
-   qint32 entrySize;
-   (*str) >> entrySize;
-
-   qint32 fastOffset =  str->device()->pos();
-
-   qint32 matchingOffset = 0;
-
-   // Let's go for a binary search in the "fast" pattern index
-   qint32 left = 0;
-   qint32 right = nrOfEntries - 1;
-   qint32 middle;
-   // Extract extension
-   int lastDot = _filename.lastIndexOf('.');
-   int ext_len = _filename.length() - lastDot - 1;
-   if (lastDot != -1 && ext_len <= 4) // if no '.', skip the extension lookup
-   {
-      QString extension = _filename.right( ext_len );
-      extension = extension.leftJustified(4);
-
-      QString pattern;
-      while (left <= right) {
-         middle = (left + right) / 2;
-         // read pattern at position "middle"
-         str->device()->seek( middle * entrySize + fastOffset );
-         KSycocaEntry::read(*str, pattern);
-         int cmp = pattern.compare( extension );
-         if (cmp < 0)
-            left = middle + 1;
-         else if (cmp == 0) // found
-         {
-            (*str) >> matchingOffset;
-            // don't return newServiceType - there may be an "other" pattern that
-            // matches best this file, like *.tar.bz
-            if (match)
-                *match = "*."+pattern;
-            break; // but get out of the fast patterns
-         }
-         else
-            right = middle - 1;
-      }
-   }
-
-   // Now try the "other" Pattern table
-   if ( m_patterns.isEmpty() ) {
-      str->device()->seek( m_otherPatternOffset );
-
-      QString pattern;
-      qint32 mimetypeOffset;
-
-      while (true)
-      {
-         KSycocaEntry::read(*str, pattern);
-         if (pattern.isEmpty()) // end of list
-            break;
-         (*str) >> mimetypeOffset;
-         m_patterns.push_back( pattern );
-         m_pattern_offsets.push_back( mimetypeOffset );
-      }
-   }
-
-   assert( m_patterns.size() == m_pattern_offsets.size() );
-
-   QStringList::const_iterator it = m_patterns.begin();
-   QStringList::const_iterator end = m_patterns.end();
-   QList<qint32>::const_iterator it_offset = m_pattern_offsets.begin();
-
-  for ( ; it != end; ++it, ++it_offset )
-   {
-      if ( KStringHandler::matchFileName( _filename, *it ) )
-      {
-         if ( !matchingOffset || !(*it).endsWith( "*" ) ) // *.html wins over Makefile.*
-         {
-             matchingOffset = *it_offset;
-             if (match)
-                *match = *it;
-             break;
-         }
-      }
-   }
-
-   if ( matchingOffset ) {
-      KServiceType *newServiceType = createEntry( matchingOffset );
-      assert (newServiceType && newServiceType->isType( KST_KMimeType ));
-      return (KMimeType *) newServiceType;
-   }
-   else
-      return 0;
-}
-
-KMimeType::List KServiceTypeFactory::allMimeTypes()
-{
-   KMimeType::List result;
-   const KSycocaEntry::List list = allEntries();
-   for( KSycocaEntry::List::ConstIterator it = list.begin();
-        it != list.end();
-        ++it)
-   {
-      if ( (*it)->isType( KST_KMimeType ) ) {
-          KMimeType::Ptr newMimeType = KMimeType::Ptr::staticCast( *it );
-          result.append( newMimeType );
-      }
-   }
-   return result;
-}
-
 KServiceType::List KServiceTypeFactory::allServiceTypes()
 {
    KServiceType::List result;
@@ -239,15 +112,6 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
    return result;
 }
 
-bool KServiceTypeFactory::checkMimeTypes()
-{
-   QDataStream *str = KSycoca::self()->findFactory( factoryId() );
-   if (!str) return false;
-
-   // check if there are mimetypes/servicetypes
-   return (m_beginEntryOffset != m_endEntryOffset);
-}
-
 KServiceType * KServiceTypeFactory::createEntry(int offset)
 {
    KServiceType *newEntry = 0;
@@ -260,17 +124,6 @@ KServiceType * KServiceTypeFactory::createEntry(int offset)
      case KST_KServiceType:
         newEntry = new KServiceType(*str, offset);
         break;
-     case KST_KMimeType:
-   case KST_KExecMimeType: // old type, kept for compatibility, can be removed
-        newEntry = new KMimeType(*str, offset);
-        break;
-     case KST_KFolderType:
-        newEntry = new KFolderType(*str, offset);
-        break;
-     case KST_KDEDesktopMimeType:
-        newEntry = new KDEDesktopMimeType(*str, offset);
-        break;
-
      default:
         kError(7011) << QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
         break;

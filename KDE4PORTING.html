@@ -985,6 +985,7 @@ a listDir result.</li>
     and KIconLoader::loadMimeTypeIcon with that icon name.</li>
     <li>KMimeType::pixmapForURL &gt; KIO::pixmapForURL</li>
     <li>KMimeType::comment(KUrl,bool) &gt; KIO::comment(KUrl)</li>
+    <li>KMimeType::diagnoseFileName has been replaced with KMimeType::extractKnownExtension which returns the extension only, not the pattern</li>
 </ul>
 
 <H4>KIO::Job</H4>
@@ -1152,6 +1153,13 @@ with ServiceType as QImageIOPlugins</li>
 <H4>KDESasl class</H4>
 <ul>
 <li>This class is removed due to its inflexiblity, use cyrus-sasl or the upcoming QCA SASL implementation</li>
+</ul>
+
+<h4>KServiceType</h4>
+<ul>
+<li>KServiceType::offers() -&gt; KServiceTypeTrader::self()->query()</li>
+<li>The behavior of KServiceType::serviceType() has changed: it now only returns real service types, and no more mimetypes. For mimetypes, use KMimeType::mimeType().</li>
+<li>Similarly, allServiceTypes() only returns real service types, no more mimetypes.</li>
 </ul>
 
 <h4>KServiceTypeProfile</h4>

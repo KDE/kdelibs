@@ -114,8 +114,7 @@ void KMimeTypeTest::testAllMimeTypes()
 
     const KMimeType::List lst = KMimeType::allMimeTypes();
     QVERIFY( !lst.isEmpty() );
-    const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
-    QVERIFY( allServiceTypes.count() >= lst.count() ); // all mimetypes are in the allServiceTypes list.
+    const KMimeType::List allMimeTypes = KMimeType::allMimeTypes();
 
     for ( KMimeType::List::ConstIterator it = lst.begin();
           it != lst.end(); ++it ) {
@@ -129,18 +128,33 @@ void KMimeTypeTest::testAllMimeTypes()
         QVERIFY( lookedupMime ); // not null
         QCOMPARE( lookedupMime->name(), name );
 
-        const KServiceType::Ptr lookedupServiceType = KMimeType::serviceType( name );
-        QVERIFY( lookedupServiceType ); // not null
-        QCOMPARE( lookedupServiceType->name(), name );
-
-        // Check that the mimetype is part of the allServiceTypes list (by name)
-        KServiceType::List::ConstIterator stit = allServiceTypes.begin();
-        const KServiceType::List::ConstIterator stend = allServiceTypes.end();
+        // Check that the mimetype is part of the allMimeTypes list (by name)
+        KMimeType::List::ConstIterator stit = allMimeTypes.begin();
+        const KMimeType::List::ConstIterator stend = allMimeTypes.end();
         bool found = false;
         for ( ; !found && stit != stend; ++stit ) {
             found = ( (*stit)->name() == name );
         }
     }
+
+    // A bit of checking on the allMimeTypes list itself
+    KMimeType::List::ConstIterator stit = allMimeTypes.begin();
+    const KMimeType::List::ConstIterator stend = allMimeTypes.end();
+    for ( ; stit != stend; ++stit ) {
+        const KMimeType::Ptr mime = (*stit);
+        const QString name = mime->name();
+        QVERIFY( !name.isEmpty() );
+        QCOMPARE( name.count( '/' ), 1 );
+        QVERIFY( mime->isType( KST_KMimeType ) );
+    }
+}
+
+void KMimeTypeTest::testAllServiceTypes()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
+    const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
 
     // A bit of checking on the allServiceTypes list itself
     KServiceType::List::ConstIterator stit = allServiceTypes.begin();
@@ -149,11 +163,7 @@ void KMimeTypeTest::testAllMimeTypes()
         const KServiceType::Ptr servtype = (*stit);
         const QString name = servtype->name();
         QVERIFY( !name.isEmpty() );
-        // It's a pure servicetype, or a mimetype, or mimetype-derivative.
-        QVERIFY( servtype->sycocaType() == KST_KServiceType || servtype->isType( KST_KMimeType ) );
-        if ( servtype->sycocaType() == KST_KServiceType ) {
-            //qDebug( "%s", qPrintable( name ) );
-        }
+        QVERIFY( servtype->sycocaType() == KST_KServiceType );
     }
 }
 
@@ -217,6 +227,19 @@ void KMimeTypeTest::testAllInitServices()
     }
 }
 
+void KMimeTypeTest::testMimeTypeParent()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
+    // Check that text/x-diff knows that inherits from text/plain
+    const KMimeType::Ptr plain = KMimeType::mimeType( "text/plain" );
+    const KMimeType::Ptr derived = KMimeType::mimeType( "text/x-diff" );
+    QVERIFY( derived );
+    QCOMPARE( derived->parentMimeType(), plain->name() );
+}
+
+// Helper method for all the trader tests
 static bool offerListHasService( const KService::List& offers,
                                  const QString& desktopEntryPath )
 {
@@ -240,11 +263,29 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    // Querying userprofile for services associated with text/plain
+    // Querying mimetype trader for services associated with text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/plain", "KParts/ReadOnlyPart");
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
 
     offers = KMimeTypeTrader::self()->query("text/plain", "KTextEditor/Plugin");
+    QVERIFY( offers.count() > 0 );
+
+    // We should have at least a few kate plugins like
+    // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
+    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+}
+
+void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+
+    // Querying mimetype trader for services associated with text/x-diff, which inherits from text/plain
+    KService::List offers = KMimeTypeTrader::self()->query("text/x-diff", "KParts/ReadOnlyPart");
+    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+
+    offers = KMimeTypeTrader::self()->query("text/x-diff", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );
 
     // We should have at least a few kate plugins like
@@ -258,7 +299,7 @@ void KMimeTypeTest::testServiceTypeTraderForReadOnlyPart()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    // Querying userprofile for services associated with KParts/ReadOnlyPart
+    // Querying trader for services associated with KParts/ReadOnlyPart
     KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
     QVERIFY( offers.count() > 0 );
 
@@ -275,3 +316,5 @@ void KMimeTypeTest::testServiceTypeTraderForReadOnlyPart()
     QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }
+
+// TODO tests that involve writing a profilerc and checking that the trader is obeying it

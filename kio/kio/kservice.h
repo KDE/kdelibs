@@ -503,8 +503,8 @@ protected:
 
   void init(const KDesktopFile *config);
 
+  /// @internal for KBuildSycoca only
   QStringList &accessServiceTypes() { return m_lstServiceTypes; }
-
 
 private:
   Q_DISABLE_COPY(KService)

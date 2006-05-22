@@ -889,10 +889,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->m_lined->setFocus();
 
     // Enhanced rename: Don't highlight the file extension.
-    QString pattern;
-    KServiceTypeFactory::self()->findFromPattern( filename, &pattern );
-    if (!pattern.isEmpty() && pattern.at(0)=='*' && pattern.indexOf('*',1)==-1)
-      d->m_lined->setSelection(0, filename.length()-pattern.trimmed().length()+1);
+    QString extension = KMimeType::extractKnownExtension( filename );
+    if ( !extension.isEmpty() )
+      d->m_lined->setSelection( 0, filename.length() - extension.length() - 1 );
     else
     {
       int lastDot = filename.lastIndexOf('.');

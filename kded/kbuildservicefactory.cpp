@@ -32,18 +32,18 @@
 #include <qhash.h>
 
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
-	KBuildServiceGroupFactory *serviceGroupFactory ) :
+                                            KSycocaFactory *mimeTypeFactory,
+                                            KBuildServiceGroupFactory *serviceGroupFactory ) :
   KServiceFactory(),
   m_serviceDict(),
   m_dupeDict(),
   m_serviceTypeFactory( serviceTypeFactory ),
+  m_mimeTypeFactory( mimeTypeFactory ),
   m_serviceGroupFactory( serviceGroupFactory )
 {
    m_resourceList = new KSycocaResourceList();
 //   m_resourceList->add( "apps", "*.desktop" );
-//   m_resourceList->add( "apps", "*.kdelnk" );
    m_resourceList->add( "services", "*.desktop" );
-   m_resourceList->add( "services", "*.kdelnk" );
 }
 
 // return all service types for this factory
@@ -74,7 +74,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
      name = name.mid(pos+1);
   }
   // Is it a .desktop file?
-  if (!name.endsWith(".desktop") && !name.endsWith(".kdelnk"))
+  if (!name.endsWith(".desktop"))
       return 0;
 
   KDesktopFile desktopFile(file, true, resource);
@@ -88,7 +88,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
      if (!serv->isDeleted())
         kWarning(7012) << "Invalid Service : " << file << endl;
      delete serv;
-     return 0L;
+     return 0;
   }
 }
 
@@ -155,6 +155,8 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
 
          KServiceType::Ptr serviceType = KServiceType::serviceType(*it);
          if (!serviceType)
+            serviceType = KServiceType::Ptr::staticCast( KMimeType::mimeType(*it) );
+         if (!serviceType)
          {
            kWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< (*it) << "'" << endl;
            continue;
@@ -183,6 +185,26 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    {
       // export associated services
       const KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
+      Q_ASSERT( entry );
+      const KService::List services = entry->services();
+
+      for(KService::List::ConstIterator it2 = services.begin();
+          it2 != services.end(); ++it2)
+      {
+         str << (qint32) entry->offset();
+         str << (qint32) (*it2)->offset();
+      }
+   }
+
+   // ### TODO separate this into a different list  (split offerList into serviceTypeOfferList and mimeTypeOfferList)
+   // ### or even better: store the list of offers into the servicetype/mimetype itself, if possible.
+   // For each entry in mimeTypeFactory
+   KSycocaEntryDict::const_iterator itmtf = m_mimeTypeFactory->entryDict()->begin();
+   const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->end();
+   for( ; itmtf != endmtf; ++itmtf )
+   {
+      // export associated services
+      const KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
       Q_ASSERT( entry );
       const KService::List services = entry->services();
 

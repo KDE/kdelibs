@@ -361,6 +361,9 @@ public:
    */
   static KMimeType::Ptr defaultMimeTypePtr();
 
+  /// Return true if this mimetype is the default mimetype
+  bool isDefault() const { return this == defaultMimeTypePtr().data(); }
+
   /**
    * If this mimetype inherits from ("is also") another mimetype,
    * return the name of the parent.
@@ -386,11 +389,11 @@ public:
   bool is( const QString& mimeTypeName ) const;
 
   /**
-   * @internal
-   * Determines the mimetype of file based on it's name and returns the
-   * matching pattern if any.
+   * Determines the extension from a filename (or full path) using the mimetype database.
+   * This allows to extract "tar.bz2" for foo.tar.bz2
+   * but still return "txt" for my.doc.with.dots.txt
    */
-  static KMimeType::Ptr diagnoseFileName(const QString &file, QString &pattern);
+  static QString extractKnownExtension( const QString &fileName );
 
 protected:
   void loadInternal( QDataStream& );

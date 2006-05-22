@@ -28,7 +28,9 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
+#include <qhash.h>
 #include <QtAlgorithms>
+#include "kservicefactory.h"
 
 // servicetype -> profile
 class KServiceTypeProfileList : public QMultiMap<QString, KServiceTypeProfile *>
@@ -45,12 +47,12 @@ KServiceTypeProfileList* KServiceTypeProfile::s_lstProfiles = 0;
 static KStaticDeleter< KServiceTypeProfileList > profileDeleter;
 bool KServiceTypeProfile::s_configurationMode = false;
 
-KServiceTypeProfile* KServiceTypeProfile::findProfile( const QString& servicetype, const QString& genservicetype )
+KServiceTypeProfile* KServiceTypeProfile::findProfile( const QString& mimeType, const QString& genservicetype )
 {
     // This uses a standard multimap-lookup to find the entry where
-    // both servicetype and generic servicetype match.
-    KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( servicetype );
-    while (it != s_lstProfiles->end() && it.key() == servicetype) {
+    // both mimeType and generic servicetype match.
+    KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( mimeType );
+    while (it != s_lstProfiles->end() && it.key() == mimeType) {
         if ( it.value()->m_strGenericServiceType == genservicetype )
             return it.value();
         ++it;
@@ -82,18 +84,17 @@ void KServiceTypeProfile::initStatic()
 
     QString appId = config.readEntry( "Application" );
 
-    KService::Ptr pService = KService::serviceByStorageId(appId);
+    // DF: we used to look up every service... but we don't really need to, at this point.
+    // KService::Ptr pService = KService::serviceByStorageId(appId);
+    //if ( pService ) {
+    //  appId = pService->storageId();
 
-    if ( pService ) {
-      QString application = pService->storageId();
-      QString type = config.readEntry( "ServiceType" );
-      QString type2 = config.readEntry( "GenericServiceType" );
-      if (type2.isEmpty()) // compat code
-          type2 = (pService->type() == "Application") ? "Application" : "KParts/ReadOnlyPart";
-      int pref = config.readEntry( "Preference", 0 );
+    QString type = config.readEntry( "ServiceType" );
+    QString type2 = config.readEntry( "GenericServiceType" );
+    int pref = config.readEntry( "Preference", 0 );
 
-      if ( !type.isEmpty() /* && pref >= 0*/ ) // Don't test for pref here. We want those in the list, to mark them as forbidden
-      {
+    if ( !type.isEmpty() /* && pref >= 0*/ ) // Don't test for pref here. We want those in the list, to mark them as forbidden
+    {
         KServiceTypeProfile* p = findProfile( type, type2 );
 
         if ( !p ) {
@@ -102,9 +103,8 @@ void KServiceTypeProfile::initStatic()
         }
 
         const bool allow = config.readEntry( "AllowAsDefault", false );
-        //kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
-        p->addService( application, pref, allow );
-      }
+        //kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << appId << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
+        p->addService( appId, pref, allow );
     }
   }
 }
@@ -115,11 +115,11 @@ void KServiceTypeProfile::clear()
     profileDeleter.destructObject();
 }
 
-KServiceTypeProfile::KServiceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
+KServiceTypeProfile::KServiceTypeProfile( const QString& _mimeType, const QString& _genericServiceType )
 {
     initStatic();
 
-    m_strServiceType = _servicetype;
+    m_strServiceType = _mimeType;
     m_strGenericServiceType = _genericServiceType;
 }
 
@@ -134,74 +134,108 @@ void KServiceTypeProfile::addService( const QString& _service,
     m_mapServices[ _service ].m_bAllowAsDefault = _allow_as_default;
 }
 
+KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KService::List& list, const QString& serviceType )
+{
+    initStatic();
 
-KServiceOfferList KServiceTypeProfile::serviceTypeProfileOffers( const QString& serviceType )
+    // ######## TODO simplify s_lstProfiles to be a single-map for servicetypes.
+    KServiceTypeProfile* profile = 0;
+    KServiceTypeProfileList::const_iterator itprof = s_lstProfiles->find( serviceType ); // ## -> value()
+    if (itprof != s_lstProfiles->end()) {
+        profile = itprof.value();
+    }
+
+    KServiceOfferList offers;
+
+    KService::List::const_iterator it = list.begin();
+    const KService::List::const_iterator end = list.end();
+    for( ; it != end; ++it )
+    {
+        //kDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
+        // Look into the profile (if there's one), to find this service's preference.
+        bool foundInProfile = false;
+        if ( profile )
+        {
+            QMap<QString,Service>::ConstIterator it2 = profile->m_mapServices.find( (*it)->storageId() );
+            if( it2 != profile->m_mapServices.end() )
+            {
+                const Service& userService = it2.value();
+                //kDebug(7014) << "found in mapServices pref=" << it2.value().m_iPreference << endl;
+                if ( userService.m_iPreference > 0 ) {
+                    const bool allow = (*it)->allowAsDefault() && userService.m_bAllowAsDefault;
+                    offers.append( KServiceOffer( (*it), userService.m_iPreference, allow ) );
+                }
+                foundInProfile = true;
+            }
+        }
+        if ( !foundInProfile )
+        {
+            // This offer isn't in the profile
+            // This can be because we have no profile at all, or because the
+            // services have been installed after the profile was written,
+            // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
+            //kDebug(7014) << "not found in mapServices. Appending." << endl;
+
+            // We use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
+            offers.append( KServiceOffer( (*it), 0, (*it)->allowAsDefault() ) );
+        }
+    }
+
+    qStableSort( offers );
+
+    //kDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
+    return offers;
+}
+
+KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KService::List& list, const QString& mimeType, const QString& genericServiceType )
 {
     initStatic();
 
     KServiceOfferList offers;
-    // We want all profiles for _serviceType, if we have profiles.
-    // This uses a standard multimap-lookup
-    KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( serviceType );
-    while (it != s_lstProfiles->end() && it.key() == serviceType) {
-        offers += it.value()->offers();
-        ++it;
-    }
-    return offers;
-}
 
-KServiceOfferList KServiceTypeProfile::mimeTypeProfileOffers( const QString& servicetype, const QString& genericServiceType )
-{
-    initStatic();
+    KServiceTypeProfile* profile = findProfile( mimeType, genericServiceType );
 
-    KServiceTypeProfile* profile = findProfile( servicetype, genericServiceType );
-    if ( profile )
-        return profile->offers();
-
-    return KServiceOfferList();
-}
-
-
-KServiceOfferList KServiceTypeProfile::offers() const
-{
-  KServiceOfferList offers;
-
-  kDebug(7014) << "KServiceTypeProfile::offers serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
-  KService::List list = KServiceType::offers( m_strServiceType );
-  KService::List::const_iterator it = list.begin();
-  const KService::List::const_iterator end = list.end();
-  for( ; it != end; ++it )
-  {
-    //kDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
-    if ( m_strGenericServiceType.isEmpty() || (*it)->hasServiceType( m_strGenericServiceType ) )
+    // Assign preferences from profilerc to those offers.
+    KService::List::const_iterator it = list.begin();
+    const KService::List::const_iterator end = list.end();
+    for( ; it != end; ++it )
     {
-      // Now look into the profile, to find this service's preference.
-      QMap<QString,Service>::ConstIterator it2 = m_mapServices.find( (*it)->storageId() );
+        //kDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
+        if ( genericServiceType.isEmpty() || (*it)->hasServiceType( genericServiceType ) )
+        {
+            // Now look into the profile, to find this service's preference.
+            bool foundInProfile = false;
+            if ( profile )
+            {
+                QMap<QString,Service>::ConstIterator it2 = profile->m_mapServices.find( (*it)->storageId() );
+                if( it2 != profile->m_mapServices.end() )
+                {
+                    const Service& userService = it2.value();
+                    //kDebug(7014) << "found in mapServices pref=" << it2.data().m_iPreference << endl;
+                    if ( userService.m_iPreference > 0 ) {
+                        const bool allow = (*it)->allowAsDefault() && userService.m_bAllowAsDefault;
+                        offers.append( KServiceOffer( (*it), userService.m_iPreference, allow ) );
+                    }
+                    foundInProfile = true;
+                }
+            }
+            if ( !foundInProfile )
+            {
+                // This offer isn't in the profile
+                // This can be because we have no profile at all, or because
+                // the services have been installed after the profile was written.
+                //kDebug(7014) << "not found in mapServices. Appending." << endl;
 
-      if( it2 != m_mapServices.end() )
-      {
-        //kDebug(7014) << "found in mapServices pref=" << it2.data().m_iPreference << endl;
-        if ( it2.value().m_iPreference > 0 ) {
-          bool allow = (*it)->allowAsDefault();
-          if ( allow )
-            allow = it2.value().m_bAllowAsDefault;
-          offers.append( KServiceOffer( (*it), it2.value().m_iPreference, allow ) );
-        }
-      }
-      else
-      {
-        //kDebug(7014) << "not found in mapServices. Appending." << endl;
-        // We use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
-        offers.append( KServiceOffer( (*it), 0, (*it)->allowAsDefault() ) );
-      }
-    }/* else
-      kDebug(7014) << "Doesn't have " << m_strGenericServiceType << endl;*/
-  }
+                offers.append( KServiceOffer( (*it), (*it)->initialPreferenceForMimeType(mimeType),
+                                              (*it)->allowAsDefault() ) );
+            }
+        }/* else
+            kDebug(7014) << "Doesn't have " << m_strGenericServiceType << endl;*/
+    }
 
-  qStableSort( offers );
+    qStableSort( offers );
 
-  //kDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
-  return offers;
+    return offers;
 }
 
 /*********************************************

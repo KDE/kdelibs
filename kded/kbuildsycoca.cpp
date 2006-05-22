@@ -29,6 +29,7 @@
 #include <kservice.h>
 #include <kmimetype.h>
 #include <kbuildservicetypefactory.h>
+#include <kbuildmimetypefactory.h>
 #include <kbuildservicefactory.h>
 #include <kbuildservicegroupfactory.h>
 #include <kbuildprotocolinfofactory.h>
@@ -487,10 +488,10 @@ bool KBuildSycoca::recreate()
 
 	QFile database(path);
 	if (database.exists())
-		database.remove(); 
+		database.remove();
 
 	database.open(QIODevice::WriteOnly | QIODevice::Truncate);
-	// check error and return false if so 
+	// check error and return false if so
   m_str = new QDataStream(&database);
 
   kDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
@@ -498,8 +499,9 @@ bool KBuildSycoca::recreate()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
+  KSycocaFactory *mtf = new KBuildMimeTypeFactory;
   g_bsgf = new KBuildServiceGroupFactory();
-  g_bsf = new KBuildServiceFactory(stf, g_bsgf);
+  g_bsf = new KBuildServiceFactory(stf, mtf, g_bsgf);
   (void) new KBuildProtocolInfoFactory();
 
   if( build()) { // Parse dirs
@@ -507,17 +509,17 @@ bool KBuildSycoca::recreate()
     if (m_str->device()->status()) {
     	database.close();
     	// print error message
-    	delete m_str; 
+    	delete m_str;
     	m_str = 0;
 	    kError(7021) << "Database writing error " << database.fileName() << endl;
     	return false;
     }
-   	delete m_str; 
+   	delete m_str;
     m_str = 0L;
     database.close();
 	}
 	else {
-   	delete m_str; 
+   	delete m_str;
     m_str = 0L;
     database.close();
     if (bMenuTest)
@@ -572,8 +574,9 @@ bool KBuildSycoca::recreate()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
+  KSycocaFactory *mtf = new KBuildMimeTypeFactory;
   g_bsgf = new KBuildServiceGroupFactory();
-  g_bsf = new KBuildServiceFactory(stf, g_bsgf);
+  g_bsf = new KBuildServiceFactory(stf, mtf, g_bsgf);
   (void) new KBuildProtocolInfoFactory();
 
   if( build()) // Parse dirs
@@ -625,6 +628,7 @@ void KBuildSycoca::save()
 
    (*m_str) << (qint32) KSycoca::version();
    KSycocaFactory * servicetypeFactory = 0L;
+   KSycocaFactory * mimeTypeFactory = 0L;
    KSycocaFactory * serviceFactory = 0L;
    for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
        factory != m_lstFactories->end();
@@ -635,6 +639,8 @@ void KBuildSycoca::save()
       aId = (*factory)->factoryId();
       if ( aId == KST_KServiceTypeFactory )
          servicetypeFactory = *factory;
+      else if ( aId == KST_KMimeTypeFactory )
+         mimeTypeFactory = *factory;
       else if ( aId == KST_KServiceFactory )
          serviceFactory = *factory;
       aOffset = (*factory)->offset();
@@ -741,6 +747,7 @@ QStringList KBuildSycoca::existingResourceDirs()
    // these are all resources cached by ksycoca
    QStringList resources;
    resources += KBuildServiceTypeFactory::resourceTypes();
+   resources += KBuildMimeTypeFactory::resourceTypes();
    resources += KBuildServiceGroupFactory::resourceTypes();
    resources += KBuildServiceFactory::resourceTypes();
    resources += KBuildProtocolInfoFactory::resourceTypes();
@@ -946,6 +953,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
          // Must be in same order as in KBuildSycoca::recreate()!
          factories->append( new KServiceTypeFactory );
+         factories->append( new KMimeTypeFactory );
          factories->append( new KServiceGroupFactory );
          factories->append( new KServiceFactory );
          factories->append( new KProtocolInfoFactory );

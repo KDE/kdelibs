@@ -49,25 +49,6 @@ public:
   ~KServiceTypeProfile();
 
   /**
-   * Returns the offers in the profile for the requested service type.
-   * @param servicetype the service type
-   * @return the KServiceTypeProfile with the given arguments, or 0 if not found
-   * @internal used by KServiceTypeTrader
-   */
-  static KServiceOfferList serviceTypeProfileOffers( const QString& servicetype );
-
-  /**
-   * Returns the offers in the profile for the requested mime type.
-   * @param mimeType the mime type
-   * @param genericServiceType the generic service type (e.g. "Application"
-   *                           or "KParts/ReadOnlyPart"). Can be QString(),
-   *                           then the "Application" generic type will be used
-   * @return the KServiceTypeProfile with the given arguments, or 0 if not found
-   * @internal used by KMimeTypeTrader
-   */
-  static KServiceOfferList mimeTypeProfileOffers( const QString& mimeType, const QString & genericServiceType );
-
-  /**
    * Clear all cached information
    */
   static void clear();
@@ -106,15 +87,32 @@ private:
    */
   void addService( const QString& _service, int _preference = 1, bool _allow_as_default = true );
 
-private:
-  /**
-   * Returns the list of all service offers for the service types
-   * that are represented by this profile.
-   * @return the list of KServiceOffer instances
-   * @internal used by KServiceTypeTrader/KMimeTypeTrader
-   */
-  KServiceOfferList offers() const;
 
+  /**
+   * Returns the offers in the profile for the requested service type.
+   * @param list list of offers
+   * @param servicetype the service type
+   * @return the weighted and sorted offer list
+   * @internal used by KServiceTypeTrader
+   */
+  static KServiceOfferList sortServiceTypeOffers( const KService::List& list, const QString& servicetype );
+
+  /**
+   * Sort the offers for the requested mime type according to the profile (if any),
+   * and filter for genericServiceType. This method is really internal to KMimeTypeTrader
+   * and might go away at any time.
+   *
+   * @param list list of offers
+   * @param mimeType the mime type
+   * @param genericServiceType the generic service type (e.g. "Application"
+   *                           or "KParts/ReadOnlyPart"). Can be QString(),
+   *                           then the "Application" generic type will be used
+   * @return the weighted and sorted offer list
+   * @internal used by KMimeTypeTrader
+   */
+  static KServiceOfferList sortMimeTypeOffers( const KService::List& list, const QString& mimeType, const QString & genericServiceType );
+
+private:
   static KServiceTypeProfile* findProfile( const QString& type, const QString& type2 );
 
   /**
@@ -151,6 +149,9 @@ private:
 
   static KServiceTypeProfileList* s_lstProfiles;
   static bool s_configurationMode;
+  friend class KServiceTypeTrader; // for sortServiceTypeOffers
+  friend class KMimeTypeTrader; // for sortMimeTypeOffers
+
 private:
   class KServiceTypeProfilePrivate* d;
 };

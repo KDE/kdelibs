@@ -55,6 +55,7 @@ set(kiocore_STAT_SRCS
   kio/ktraderparsetree.cpp
   kio/kservicetypefactory.cpp
   kio/kservicetype.cpp
+  kio/kmimetypefactory.cpp
   kio/kmimetypetrader.cpp
   kio/kmimetype.cpp
   kio/kdedesktopmimetype.cpp

@@ -991,8 +991,6 @@ kDebug(7021) << "processKDELegacyDirs()" << endl;
    QString prefix = "kde-";
 
    QStringList relFiles;
-   QRegExp files("\\.(desktop|kdelnk)$");
-   QRegExp dirs("\\.directory$");
 
    (void) KGlobal::dirs()->findAllResources( "apps",
                                              QString(),
@@ -1002,7 +1000,7 @@ kDebug(7021) << "processKDELegacyDirs()" << endl;
    for(QStringList::ConstIterator it = relFiles.begin();
        it != relFiles.end(); ++it)
    {
-      if (!m_forcedLegacyLoad && (dirs.indexIn(*it) != -1))
+      if (!m_forcedLegacyLoad && (*it).endsWith(".directory"))
       {
          QString name = *it;
          if (!name.endsWith("/.directory"))
@@ -1017,7 +1015,7 @@ kDebug(7021) << "processKDELegacyDirs()" << endl;
          continue;
       }
 
-      if (files.indexIn(*it) != -1)
+      if ((*it).endsWith(".desktop"))
       {
          QString name = *it;
          KService::Ptr service;

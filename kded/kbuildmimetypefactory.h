@@ -17,38 +17,38 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __k_build_service_type_factory_h__
-#define __k_build_service_type_factory_h__
+#ifndef __k_build_mime_type_factory_h__
+#define __k_build_mime_type_factory_h__
 
-#include <kservicetypefactory.h>
+#include <kmimetypefactory.h>
 #include <qstringlist.h>
 
 /**
- * Service-type factory for building ksycoca
+ * Mime-type factory for building ksycoca
  * @internal
  */
-class KBuildServiceTypeFactory : public KServiceTypeFactory
+class KBuildMimeTypeFactory : public KMimeTypeFactory
 {
 public:
   /**
    * Create factory
    */
-  KBuildServiceTypeFactory();
+  KBuildMimeTypeFactory();
 
-  virtual ~KBuildServiceTypeFactory();
+  virtual ~KBuildMimeTypeFactory();
 
   /**
-   * Find a service type in the database file
-   * @return a pointer to the servicetype in the memory dict (don't free!)
+   * Find a mime type in the database file
+   * @return a pointer to the mimetype in the memory dict (don't free!)
    */
-  virtual KServiceType::Ptr findServiceTypeByName(const QString &_name);
+  virtual KMimeType::Ptr findMimeTypeByName(const QString &_name);
 
   /**
-   * Construct a KServiceType from a config file.
+   * Construct a KMimeType from a config file.
    */
   virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
 
-  virtual KServiceType * createEntry( int ) { assert(0); return 0L; }
+  virtual KMimeType * createEntry( int ) { assert(0); return 0L; }
 
   /**
    * Add entry
@@ -56,7 +56,7 @@ public:
   virtual void addEntry(const KSycocaEntry::Ptr& newEntry);
 
   /**
-   * Write out service type specific index files.
+   * Write out mime type specific index files.
    */
   virtual void save(QDataStream &str);
 
@@ -72,6 +72,9 @@ public:
    * Returns all resource types for this factory
    */
   static QStringList resourceTypes();
+private:
+
+  void savePatternLists(QDataStream &str);
 };
 
 #endif

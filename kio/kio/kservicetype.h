@@ -204,17 +204,6 @@ public:
   static Ptr serviceType( const QString& _name );
 
   /**
-   * Returns all services supporting the given servicetype name.
-   * This doesn't take care of the user profile (order preference),
-   * you should use KServiceTypeTrader/KMimeTypeTrader instead.
-   *
-   * @param _servicetype the name of the service type to search
-   * @return the list of all services of the given type
-   * @internal
-   */
-  static KService::List offers( const QString& _servicetype );
-
-  /**
    * Returns a list of all the supported servicetypes. Useful for
    *         showing the list of available servicetypes in a listbox,
    *         for example.

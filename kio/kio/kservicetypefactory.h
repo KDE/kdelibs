@@ -25,21 +25,19 @@
 #include <qstringlist.h>
 
 #include "ksycocafactory.h"
-#include "kmimetype.h"
+#include "kservicetype.h"
 
 class KSycoca;
 class KSycocaDict;
 
 class KServiceType;
-class KFolderType;
-class KDEDesktopMimeType;
-class KExecMimeType;
 
 /**
  * @internal
- * A sycoca factory for service types (e.g. mimetypes)
- * It loads the service types from parsing directories (e.g. mimelnk/)
+ * A sycoca factory for service types
+ * It loads the service types from parsing directories (e.g. servicetypes/)
  * but can also create service types from data streams or single config files
+ * @see KServiceType
  */
 class KIO_EXPORT KServiceTypeFactory : public KSycocaFactory
 {
@@ -70,29 +68,10 @@ public:
   QVariant::Type findPropertyTypeByName(const QString &_name);
 
   /**
-   * Find a mimetype from a filename (using the pattern list)
-   * @param _filename filename to check.
-   * @param match if provided, returns the pattern that matched.
-   */
-  KMimeType * findFromPattern(const QString &_filename, QString *match = 0);
-
-  /**
-   * @return all mimetypes
-   * Slow and memory consuming, avoid using
-   */
-  KMimeType::List allMimeTypes();
-
-  /**
    * @return all servicetypes
    * Slow and memory consuming, avoid using
    */
   KServiceType::List allServiceTypes();
-
-  /**
-   * @return true if at least one mimetype is present
-   * Safety test
-   */
-  bool checkMimeTypes();
 
   /**
    * @return the unique servicetype factory, creating it if necessary
@@ -102,17 +81,12 @@ public:
 protected:
   virtual KServiceType *createEntry(int offset);
 
-private:
-  static KServiceTypeFactory *_self;
-
-protected:
-  int m_fastPatternOffset;
-  int m_otherPatternOffset;
+  // protected for KBuildServiceTypeFactory
   QMap<QString,int> m_propertyTypeDict;
 
 private:
-  QStringList m_patterns;
-  QList<qint32> m_pattern_offsets;
+  static KServiceTypeFactory *_self;
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
