@@ -2,7 +2,7 @@
 include_directories( ${CMAKE_SOURCE_DIR}/kabc )
 
 
-########### next target ###############
+########### kabc_file library (also used by kaddressbook) ###############
 
 set(kabc_file_LIB_SRCS resourcefile.cpp resourcefileconfig.cpp )
 
@@ -18,7 +18,7 @@ set_target_properties(kabc_file PROPERTIES OUTPUT_NAME kabc_file_core)
 install_targets(${LIB_INSTALL_DIR} kabc_file )
 
 
-########### next target ###############
+########### kabc_file_plugin ###############
 
 set(kabc_file_plugin_PART_SRCS resourcefileplugin.cpp)
 
