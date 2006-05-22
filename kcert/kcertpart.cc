@@ -45,7 +45,7 @@
 #include <kcombobox.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
-#include <kio/kservicetypefactory.h>
+#include <kio/kmimetype.h>
 
 K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 
@@ -473,7 +473,7 @@ bool KCertPart::openFile() {
 	QString whatType = d->browserExtension->urlArgs().serviceType;
 //whatType = KMimeType::findByURL(m_url,0,true)->name();
 	if (whatType.isEmpty())
-		whatType = KServiceTypeFactory::self()->findFromPattern(m_file)->name();
+        	whatType = KMimeType::findByPath(m_file, 0, true)->name();
 
 /*
   QString blah = "file: " + m_file
