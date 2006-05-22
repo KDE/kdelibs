@@ -863,12 +863,12 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setURL(config->readPathEntry("EGDPath"));
+  mEGDPath->setUrl(config->readPathEntry("EGDPath"));
 
 
 #ifdef HAVE_SSL
   config->setGroup("OpenSSL");
-  oPath->setURL(config->readPathEntry("Path"));
+  oPath->setUrl(config->readPathEntry("Path"));
 #endif
 
   config->setGroup("SSLv3");
@@ -1162,8 +1162,8 @@ void KCryptoConfig::defaults()
   mUseEFile->setChecked(false);
   mEGDLabel->setEnabled(false);
   mEGDPath->setEnabled(false);
-  mEGDPath->setURL(QString());
-  oPath->setURL(QString());
+  mEGDPath->setUrl(QString());
+  oPath->setUrl(QString());
 
   defCertBG->setButton(defCertBG->id(defDont));
 #endif
