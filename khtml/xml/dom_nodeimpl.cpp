@@ -1366,7 +1366,7 @@ bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
 {
     exceptioncode = 0;
     DocumentImpl *ownerDocThis = getDocument();
-    DocumentImpl *ownerDocNew = getDocument();
+    DocumentImpl *ownerDocNew = newChild->getDocument();
     if(ownerDocThis != ownerDocNew) {
         kDebug(6010)<< "not same document, newChild = " << newChild << "document = " << getDocument() << endl;
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
