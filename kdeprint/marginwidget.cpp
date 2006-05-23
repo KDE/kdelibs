@@ -127,7 +127,7 @@ MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
 			" <li>Move the scroll wheel of a wheel mouse. </li> "
 			" <li>Use the mouse to drag margins in the preview frame. </li> "
 			" </ul> "
-			" <b>Note:</b> The margin setting does not work if you load files into kprinter which
+			" <b>Note:</b> The margin setting does not work if you load files into kprinter which"
 			" have their margins hardcoded internally, such as most"
 			" PDF or PostScript files. It works for all ASCII text files however. It also may not "
 			" work with non-KDE applications which fail to "
