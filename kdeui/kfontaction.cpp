@@ -179,7 +179,7 @@ KFontAction::~KFontAction()
 QWidget* KFontAction::createToolBarWidget(QToolBar* parent)
 {
     KFontCombo *cb = new KFontCombo( items(), parent );
-    connect( cb, SIGNAL( activated( const QString & ) ), SLOT( slotActivated( const QString & ) ) );
+    connect( cb, SIGNAL( activated( const QString & ) ), SIGNAL(triggered( const QString&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
     return cb;
 }
