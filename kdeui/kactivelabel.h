@@ -62,10 +62,6 @@ protected:
     virtual void focusOutEvent( QFocusEvent* fe );
     virtual void keyPressEvent ( QKeyEvent * e );
     virtual bool event(QEvent *e);
-
-public Q_SLOTS:
-    virtual void setSource(const QUrl &name);
-
 private:
     KActiveLabelPrivate *const d;
 };

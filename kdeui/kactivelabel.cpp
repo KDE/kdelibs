@@ -23,7 +23,7 @@
 
 #include <Q3SimpleRichText>
 #include <QFocusEvent>
-#include <QWhatsThis>
+
 #include <ktoolinvocation.h>
 
 #include "kactivelabel.h"
@@ -72,17 +72,6 @@ KActiveLabel::~KActiveLabel()
     delete d;
 }
 
-void KActiveLabel::setSource(const QUrl &name)
-{
-   QRegExp whatsthis("whatsthis:/*([^/].*)");
-   if (whatsthis.exactMatch(name)) {
-	  QWhatsThis::showText(QCursor::pos(), whatsthis.cap(1), this);
-      return;
-   }
-   QStringList args;
-   args << "exec" << name;
-   KToolInvocation::kdeinitExec("kfmclient", args);
-}
 
 void KActiveLabel::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
