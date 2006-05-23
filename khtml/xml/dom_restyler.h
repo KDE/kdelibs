@@ -54,7 +54,7 @@ enum StructuralDependencyType {
 };
 
 // Attribute dependencies are much coarser than structural, for memory reasons rather than performance
-// This tracks global depencies of various kinds.
+// This tracks global dependencies of various kinds.
 // The groups are separated into where possible depending elements might be:
 enum AttributeDependencyType {
         // Style of the changed element depend on this attribute

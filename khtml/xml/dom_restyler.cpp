@@ -40,7 +40,7 @@ void DynamicDomRestyler::addDependency(ElementImpl* subject, ElementImpl* depend
 void DynamicDomRestyler::removeDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type)
 {
     dependency_map[type].remove(dependency, subject);
-    // don't remove from reverse_map as there might be other depencies to the same element
+    // don't remove from reverse_map as there might be other dependencies to the same element
 }
 
 void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDependencyType type)
@@ -55,7 +55,7 @@ void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDepe
         dependency_map[type].remove(e,subject);
     }
 
-    // don't remove from reverse_map as there might be other depencies to the same elements
+    // don't remove from reverse_map as there might be other dependencies to the same elements
 }
 
 void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
