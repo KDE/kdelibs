@@ -20,6 +20,7 @@
 #include "devicemanager.h"
 
 #include <QFile>
+
 #include <kservicetypetrader.h>
 #include <kservice.h>
 #include <klibloader.h>
@@ -85,7 +86,7 @@ Solid::DeviceManager::DeviceManager()
 
     Ifaces::DeviceManager *backend = 0;
 
-	KService::List offers = KServiceTypeTrader::self()->query( "SolidDeviceManager", "(Type == 'Service')" );
+    KService::List offers = KServiceTypeTrader::self()->query( "SolidDeviceManager", "(Type == 'Service')" );
 
     foreach ( KService::Ptr ptr, offers )
     {
