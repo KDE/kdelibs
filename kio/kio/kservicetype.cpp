@@ -17,7 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kservice.h"
 #include "ksycoca.h"
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
@@ -26,7 +25,6 @@
 #include <assert.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
-#include <qhash.h>
 
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);

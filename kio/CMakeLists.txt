@@ -119,6 +119,7 @@ set(kiocore_STAT_SRCS
   kio/skipdlg.cpp
   kio/kremoteencoding.cpp
   kio/kmimetypechooser.cpp
+  kio/kbuildsycocaprogressdialog.cpp
 )
 
 if(UNIX)

@@ -16,19 +16,32 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kservices_p_h__
-#define __kservices_p_h__
+#ifndef KBUILDSYCOCAPROGRESSDIALOG_H
+#define KBUILDSYCOCAPROGRESSDIALOG_H
 
 #include <qtimer.h>
 #include <qprogressdialog.h>
+#include <kdelibs_export.h>
 
-class KServiceProgressDialog : public QProgressDialog
+/**
+ * Progress dialog while ksycoca is being rebuilt (by kbuildsycoca).
+ * Usage: KBuildSycocaProgressDialog::rebuildKSycoca(parentWidget)
+ */
+class KIO_EXPORT KBuildSycocaProgressDialog : public QProgressDialog
 {
    Q_OBJECT
 public:
-   KServiceProgressDialog(QWidget *parent, const char *name, 
-                          const QString &caption, const QString &text);
-public Q_SLOTS:
+
+  /**
+   * Rebuild KSycoca and show a progress dialog while doing so.
+   * @param parent Parent widget for the progress dialog
+   */
+  static void rebuildKSycoca(QWidget *parent);
+
+private:
+   KBuildSycocaProgressDialog(QWidget *parent,
+                              const QString &caption, const QString &text);
+private Q_SLOTS:
    void slotProgress();
    void slotFinished();
 

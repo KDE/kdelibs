@@ -493,12 +493,6 @@ public:
                                 const QStringList *reservedMenuIds = 0);
 
 
-  /**
-   * Rebuild KSycoca and show a progress dialog while doing so.
-   * @param parent Parent widget for the progress dialog
-   */
-  static void rebuildKSycoca(QWidget *parent);
-
 protected:
 
   void init(const KDesktopFile *config);

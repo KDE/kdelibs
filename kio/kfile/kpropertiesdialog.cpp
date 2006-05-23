@@ -98,7 +98,6 @@ extern "C" {
 #include <kio/chmodjob.h>
 #include <kio/renamedlg.h>
 #include <kio/netaccess.h>
-#include <kio/kservicetypefactory.h>
 #include <kfiledialog.h>
 #include <kmimetype.h>
 #include <kmountpoint.h>
@@ -128,6 +127,7 @@ extern "C" {
 #endif
 
 #include "kpropertiesdialog.h"
+#include <kbuildsycocaprogressdialog.h>
 
 #ifdef Q_WS_WIN
 # include <win32_utils.h>
@@ -3360,7 +3360,7 @@ void KDesktopPropsPlugin::applyChanges()
      updateNeeded = !sycocaPath.startsWith("/");
   }
   if (updateNeeded)
-     KService::rebuildKSycoca(m_frame);
+     KBuildSycocaProgressDialog::rebuildKSycoca(m_frame);
 }
 
 

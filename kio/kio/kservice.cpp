@@ -20,7 +20,6 @@
 #include <config.h>
 
 #include "kservice.h"
-#include "kservice_p.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -32,17 +31,13 @@
 #include <qstring.h>
 #include <qfile.h>
 #include <qdir.h>
-#include <qprogressdialog.h>
 
-#include <kapplication.h>
 #include <kauthorized.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kglobal.h>
 #include <kiconloader.h>
-#include <klocale.h>
 #include <kstandarddirs.h>
-#include <dcopclient.h>
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
@@ -802,64 +797,3 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
 
 void KService::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
-
-
-void KService::rebuildKSycoca(QWidget *parent)
-{
-  KServiceProgressDialog dlg(parent, "ksycoca_progress",
-                      i18n("Updating System Configuration"),
-                      i18n("Updating system configuration."));
-
-  QByteArray data;
-  DCOPClient *client = KApplication::dcopClient();
-
-  int result = client->callAsync("kded", "kbuildsycoca", "recreate()",
-               data, &dlg, SLOT(slotFinished()));
-
-  if (result)
-  {
-     dlg.exec();
-  }
-}
-
-KServiceProgressDialog::KServiceProgressDialog(QWidget *_parent, const char *_name,
-                          const QString &_caption, const QString &text)
- : QProgressDialog(_parent)
-{
-  connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
-  setObjectName(_name);
-  setWindowTitle(_caption);
-  setModal(true);
-  setLabelText(text);
-  setRange(0, 20);
-  m_timeStep = 700;
-  m_timer.start(m_timeStep);
-  setAutoClose(false);
-}
-
-void
-KServiceProgressDialog::slotProgress()
-{
-  int p = value();
-  if (p == 18)
-  {
-     reset();
-     setValue(1);
-     m_timeStep = m_timeStep * 2;
-     m_timer.start(m_timeStep);
-  }
-  else
-  {
-     setValue(p+1);
-  }
-}
-
-void
-KServiceProgressDialog::slotFinished()
-{
-  setValue(20);
-  m_timer.stop();
-  QTimer::singleShot(1000, this, SLOT(close()));
-}
-
-#include "kservice_p.moc"

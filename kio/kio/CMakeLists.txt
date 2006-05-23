@@ -79,4 +79,5 @@ install_files( /include FILES kservicetype.h
   kmimetypechooser.h
   kacl.h
   kdedesktopmimetype.h 
+  kbuildsycocaprogressdialog.h
 )

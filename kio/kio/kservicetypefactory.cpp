@@ -21,12 +21,10 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocadict.h"
-#include "kservicetype.h"
 #include "kservicetypeprofile.h"
 
 #include <kdebug.h>
 #include <assert.h>
-#include <qfile.h>
 
 KServiceTypeFactory::KServiceTypeFactory()
  : KSycocaFactory( KST_KServiceTypeFactory )

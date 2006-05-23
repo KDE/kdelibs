@@ -62,6 +62,7 @@
 #include <kdebug.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <kbuildsycocaprogressdialog.h>
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 
@@ -792,7 +793,7 @@ void KOpenWithDlg::slotOK()
   desktop->sync();
   delete desktop;
 
-  KService::rebuildKSycoca(this);
+  KBuildSycocaProgressDialog::rebuildKSycoca(this);
 
   m_pService = KService::serviceByMenuId( menuId );
 
