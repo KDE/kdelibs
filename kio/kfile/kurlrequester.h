@@ -169,8 +169,7 @@ public:
 
 public Q_SLOTS:
     /**
-     * Sets the url in the lineedit to @p url. Depending on the state of
-     * showLocalProtocol(), file:/ on local files will be shown or not.
+     * Sets the url in the lineedit to @p url.
      */
     void setUrl( const KUrl& url );
 
@@ -225,7 +224,6 @@ protected:
 
 private:
     KUrlDragPushButton * myButton;
-    bool 		myShowLocalProt;
     mutable KFileDialog * myFileDialog;
 
 
