@@ -178,12 +178,12 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 		if (::access(QFile::encodeName(*it).data(), R_OK) != 0)
 		{
 			if (KMessageBox::warningContinueCancel(0,
-				i18n("Some of the files to print are not readable by the KDE "
+				i18n("Some of the files to printed are not readable by the KDE "
 				     "print daemon. This may happen if you are trying to print "
 				     "as a different user to the one currently logged in. To continue "
 				     "printing, you need to provide root's password."),
 				QString(),
-				i18n("Provide root's Password"),
+				i18n("Enter the root password"),
 				"provideRootsPassword") == KMessageBox::Continue)
 			{
 				cmd = ("kdesu -c " + KProcess::quote(cmd));

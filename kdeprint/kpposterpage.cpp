@@ -142,7 +142,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
                         " <b>Order and number of tile pages to be printed</b> "
 			" <p>This field displays and sets the individual tiles to be printed, as well as the order "
 			" for their printout. </p> "
-			" You can file the field with 2 different methods: "
+			" You can fill the field with 2 different methods: "
 			" <ul> "
 			" <li>Either use the interactive thumbnail preview above and '[SHIFT]-click' on the tiles. </li> "
 			" <li>Or edit this text field accordingly. </li> "

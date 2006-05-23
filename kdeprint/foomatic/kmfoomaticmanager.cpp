@@ -72,7 +72,7 @@ DrMain* KMFoomaticManager::loadPrinterDriver(KMPrinter *printer, bool)
 	}
 	else if (printer->option("driver").isEmpty() || printer->option("printer").isEmpty())
 	{
-		setErrorMsg(i18n("Some printer information are missing"));
+		setErrorMsg(i18n("Some printer information is missing"));
 		return NULL;
 	}
 

@@ -381,7 +381,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 		if (!inputMimeTypes.contains(mime))
 		{
 			if (KMessageBox::warningContinueCancel(0,
-				"<p>" + i18n("The MIME type %1 is not supported as input of the filter chain "
+				"<p>" + i18n("<p>The MIME type %1 is not supported as input of the filter chain "
 				     "(this may happen with non-CUPS spoolers when performing page selection "
 				     "on a non-PostScript file). Do you want KDE to convert the file to a supported "
 				     "format?</p>", mime),

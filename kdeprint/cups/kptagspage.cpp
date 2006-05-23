@@ -33,9 +33,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 {
 
 	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisAdditionalTagsTable = i18n(" <qt><p><b>Additional Tags</b></p>"
-						" You may send additional commands to the CUPS server via this editable list. "
-						" There are 3 purposes for this:"
+	QString whatsThisAdditionalTagsTable = i18n(" 
 						" <ul>"
 						" <li>Use any current or future standard CUPS job option not supported by the "
 						" KDEPrint GUI. </li>"
@@ -47,13 +45,13 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 						" <p><b>Standard CUPS job options:</b> A complete list of standard CUPS job "
 						" options is in the <a href=\"http://localhost:631/sum.html\">CUPS User Manual</a>. "
 						" Mappings of the kprinter user interface widgets to respective CUPS job option "
-						" names are named in the various <em>WhatsThis</em> help items..</p>"
+						" names are named in the various <em>What\'s This</em> help items.</p>"
 						" <p><b>Custom CUPS job options:</b> CUPS print servers may be customized with additional "
 						" print filters and backends which understand custom job options. You can specify such "
-						" custom job options here. If in doubt, ask your system administrator..</p>"
+						" custom job options here. If in doubt, ask your system administrator.</p>"
 						" <p><b> </b></p>"
 						" <p><b>Operator Messages:</b> You may send additional messages to the operator(s) of your"
-						" production printers (e.g. in your <em>Central Repro Department</p>)"
+						" production printers (e.g. in your <em>Central Repro Department</p>)."
 						" Messages can be read by the operator(s) (or yourself) by viewing"
 						" the <em>\"Job IPP Report\"</em> for the job.</p>"
 						" <b>Examples:</b><br>"
@@ -72,7 +70,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 						" <p><b>Warning:</b> Do not use such standard CUPS option names which also can be used "
 						" through the KDEPrint GUI. Results may be  unpredictable if they conflict, "
 						" or if they are sent multiple times. For all options supported by the GUI, please do use "
-						" the GUI. (Each GUI element's  'WhatsThis' names the related CUPS option name.) </p> "
+						" the GUI. (Each GUI element's  'What\'s This' names the related CUPS option name.) </p> "
 						" </qt>" );
 	setTitle(i18n("Additional Tags"));
 	setOnlyRealPrinters(true);

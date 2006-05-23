@@ -104,7 +104,7 @@ KMWQuota::KMWQuota(QWidget *parent)
 	QLabel	*lab4 = new QLabel(this);
 	lab4->setWordWrap(true);
 	lab4->setText(i18n("<p>Set here the quota for this printer. Using limits of <b>0</b> means "
-					"that no quota will be used. This is equivalent to set quota period to "
+					"that no quota will be used. This is equivalent to setting the quota period to "
 					"<b><nobr>No quota</nobr></b> (-1). Quota limits are defined on a per-user base and "
 					"applied to all users.</p>"));
 
