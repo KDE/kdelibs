@@ -112,9 +112,8 @@ void NotifyBySound::loadConfig()
 
 void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 {
-	kDebug() << k_funcinfo << endl;
-	
 	QString soundFile = config->readEntry( "sound" , true );
+    
 	if (soundFile.isEmpty())
 	{
 		finish( eventId );
@@ -122,7 +121,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 	}
 
     // get file name
-	if ( QFileInfo(soundFile).isRelative() )
+	if ( KUrl::isRelativeUrl(soundFile) )
 	{
 		QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
 		search = KGlobal::instance()->dirs()->findResource("data", search);
@@ -147,7 +146,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		d->signalmapper->setMapping( media , eventId );
 		
 		media->addAudioPath(d->audiopath);
-		media->setUrl( KUrl::fromPath(soundFile) );
+		media->setUrl( KUrl(soundFile) );
 		media->play();
 		d->mediaobjects.insert(eventId , media);
 	}
