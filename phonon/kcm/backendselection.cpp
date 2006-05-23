@@ -88,7 +88,7 @@ void BackendSelection::save()
 		config.writeEntry( "ServiceType", "PhononBackend" );
 	}
 	config.sync();
-	KService::rebuildKSycoca( this );
+	KServiceTypeProfile::clear();
 
 	kapp->dcopClient()->emitDCOPSignal( "phononBackendChanged()", QByteArray() );
 }
