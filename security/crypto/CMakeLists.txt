@@ -1,3 +1,4 @@
+configure_file (config-crypto.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-crypto.h )
 
 
 
