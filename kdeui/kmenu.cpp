@@ -364,6 +364,7 @@ QMenu* KMenu::contextMenu()
     {
         d->ctxMenu = new QMenu(this);
         connect(d->ctxMenu, SIGNAL(aboutToHide()), this, SLOT(ctxMenuHiding()));
+        connect(this, SIGNAL(hovered(QAction*)), SLOT(actionHovered(QAction*)));
     }
 
     return d->ctxMenu;
@@ -387,7 +388,7 @@ void KMenu::actionHovered(QAction* action)
     }
 
     d->ctxMenu->hide();
-    showCtxMenu(actionGeometry(action).center());
+    //showCtxMenu(actionGeometry(action).center());
 }
 
 Q_DECLARE_METATYPE(KMenuContext)
@@ -431,7 +432,6 @@ void KMenu::showCtxMenu(const QPoint &pos)
     }
 
     d->ctxMenu->exec(this->mapToGlobal(pos));
-    connect(this, SIGNAL(hovered(QAction*)), SLOT(actionHovered(QAction*)));
 }
 
 KMenu * KMenu::contextMenuFocus( )
@@ -469,7 +469,6 @@ void KMenu::ctxMenuHiding()
         if (QMenu* subMenu = d->highlightedAction->menu())
             disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
 
-    connect(this, SIGNAL(hovered(QAction*)), this, SLOT(actionHovered(QAction*)));
     d->continueCtxMenuShow = true;
 }
 

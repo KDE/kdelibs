@@ -60,7 +60,6 @@ void KMenuMenuHandler::insertKMenu( KMenu *popup )
 
 void KMenuMenuHandler::buildToolbarAction()
 {
-  kDebug() << k_funcinfo << endl;
   KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
   if(!window)
     return;
@@ -93,7 +92,6 @@ void KMenuMenuHandler::slotSetShortcut()
 
 void KMenuMenuHandler::slotAddToToolBar(int tb)
 {
-  kDebug() << k_funcinfo << tb << endl;
   KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
   if(!window)
     return;
