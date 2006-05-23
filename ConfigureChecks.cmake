@@ -1,3 +1,8 @@
+# NOTE: only add something here if it is really needed by all of kdelibs.
+#     Otherwise please prefer adding to the relevant config-foo.h.cmake file,
+#     and the CMakeLists.txt that generates it (or a separate ConfigureChecks.make file if you prefer)
+#     to minimize recompilations and increase modularity.
+
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
@@ -89,7 +94,6 @@ check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
 check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
 
 check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
-check_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)                   # kio
 
 if (X11_XTest_FOUND)                                                   # kdecore
   set(HAVE_XTEST 1)
@@ -186,19 +190,19 @@ check_function_exists(dld_init   HAVE_DLD)               # libltdl
 
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
 check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu
-check_function_exists(mkstemps   HAVE_MKSTEMPS)          # various
-check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore
-check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore
+check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
+check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore/fakes.c
+check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore/fakes.c
 check_function_exists(ptsname    HAVE_PTSNAME)           # kdecore, kdesu
-check_function_exists(random     HAVE_RANDOM)            # kdecore
-check_function_exists(revoke     HAVE_REVOKE)            # kdecore
-check_function_exists(strlcpy    HAVE_STRLCPY)           # config.h, kdecore
-check_function_exists(strlcat    HAVE_STRLCAT)           # config.h, kdecore
-check_function_exists(setenv     HAVE_SETENV)            # config.h, kdecore
-check_function_exists(seteuid    HAVE_SETEUID)           # kdecore
+check_function_exists(random     HAVE_RANDOM)            # kdecore/fakes.c
+check_function_exists(revoke     HAVE_REVOKE)            # kdecore/fakes.c
+check_function_exists(strlcpy    HAVE_STRLCPY)           # kdecore/fakes.c
+check_function_exists(strlcat    HAVE_STRLCAT)           # kdecore/fakes.c
+check_function_exists(setenv     HAVE_SETENV)            # kdecore/fakes.c
+check_function_exists(seteuid    HAVE_SETEUID)           # kdecore/fakes.c
 check_function_exists(setmntent  HAVE_SETMNTENT)         # kio, kdecore
-check_function_exists(unsetenv   HAVE_UNSETENV)          # config.h, kdecore
-check_function_exists(usleep     HAVE_USLEEP)            # config.h, kdecore
+check_function_exists(unsetenv   HAVE_UNSETENV)          # kdecore/fakes.c
+check_function_exists(usleep     HAVE_USLEEP)            # kdecore/fakes.c, kdeui/qxembed
 check_function_exists(_getpty    HAVE__GETPTY)           # kdesu
 
 check_function_exists(_finite    HAVE_FUNC__FINITE)      # kjs
@@ -206,7 +210,7 @@ check_function_exists(finite     HAVE_FUNC_FINITE)       # kjs
 check_function_exists(isinf      HAVE_FUNC_ISINF)        # kjs
 check_function_exists(isnan      HAVE_FUNC_ISNAN)        # kjs
 
-# check for prototypes
+# check for prototypes [for functions provided by kdefakes when not available]
 
 check_prototype_exists(mkstemps "stdlib.h;unistd.h" HAVE_MKSTEMPS_PROTO)
 check_prototype_exists(mkdtemp "stdlib.h;unistd.h"  HAVE_MKDTEMP_PROTO)
@@ -245,52 +249,3 @@ check_cxx_source_compiles("
 
 check_struct_member(tm tm_zone time.h HAVE_STRUCT_TM_TM_ZONE)  # kdecore
 check_struct_member(tm tm_gmtoff time.h HAVE_TM_GMTOFF)        # kdecore
-
-
-
-# unused tests ?
-
-check_include_files(sys/filio.h   HAVE_SYS_FILIO_H)
-check_include_files(sys/ndir.h    HAVE_SYS_NDIR_H)
-check_include_files(inttypes.h    HAVE_INTTYPES_H)               
-check_include_files(linux/awe_voice.h   HAVE_LINUX_AWE_VOICE_H)
-check_include_files(locale.h      HAVE_LOCALE_H)
-check_include_files(machine/soundcard.h HAVE_MACHINE_SOUNDCARD_H)
-check_include_files(ndir.h        HAVE_NDIR_H)
-check_include_files(nl_types.h    HAVE_NL_TYPES_H)
-check_include_files(punycode.h    HAVE_PUNYCODE_H)
-check_include_files(stringprep.h  HAVE_STRINGPREP_H)
-check_include_files(values.h      HAVE_VALUES_H)
-check_include_files(sys/dir.h     HAVE_SYS_DIR_H)
-check_include_files(dirent.h      HAVE_DIRENT_H)
-
-check_include_files( X11/extensions/shape.h HAVE_X11_EXTENSIONS_SHAPE_H)
-check_include_files( "X11/Xlib.h;X11/extensions/XShm.h"  HAVE_X11_EXTENSIONS_XSHM_H)
-check_include_files( X11/ICE/ICElib.h       HAVE_X11_ICE_ICELIB_H)
-check_include_files( X11/extensions/Xrender.h HAVE_XRENDER)
-
-check_symbol_exists(stpcpy          "string.h"                 HAVE_STPCPY)
-check_symbol_exists(strcasecmp      "strings.h"                HAVE_STRCASECMP)
-check_symbol_exists(strfmon         "monetary.h"               HAVE_STRFMON)
-check_symbol_exists(LC_MESSAGES     "locale.h"                 HAVE_LC_MESSAGES)
-check_symbol_exists(gai_strerror    "netdb.h"                  HAVE_GAI_STRERROR)
-
-check_function_exists(getcwd          HAVE_GETCWD)
-check_function_exists(getgroups       HAVE_GETGROUPS)
-check_function_exists(getsockname     HAVE_GETSOCKNAME)
-check_function_exists(getsockopt      HAVE_GETSOCKOPT)
-check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)
-check_function_exists(munmap          HAVE_MUNMAP)
-check_function_exists(putenv          HAVE_PUTENV)
-check_function_exists(setegid         HAVE_SETEGID)
-check_function_exists(setfsent        HAVE_SETFSENT)
-check_function_exists(setgroups       HAVE_SETGROUPS)
-check_function_exists(setlocale       HAVE_SETLOCALE)
-check_function_exists(socket          HAVE_SOCKET)
-check_function_exists(__argz_count    HAVE___ARGZ_COUNT)
-check_function_exists(__argz_next     HAVE___ARGZ_NEXT)
-check_function_exists(__argz_stringify HAVE___ARGZ_STRINGIFY)
-check_function_exists(mkstemps        HAVE_MPSTEMPS)
-check_function_exists(mkstemp         HAVE_MPSTEMP)
-
-check_library_exists(crypt crypt "" HAVE_CRYPT)

@@ -63,8 +63,6 @@
 
 #cmakedefine HAVE_VOLMGT 1
 
-#cmakedefine HAVE_LC_MESSAGES 1
-
 #cmakedefine HAVE_ERRNO_H 1
 #cmakedefine HAVE_STDINT_H 1
 #cmakedefine HAVE_SYS_STAT_H 1
@@ -79,102 +77,68 @@
 #cmakedefine HAVE_SYS_MNTTAB_H 1
 #cmakedefine HAVE_SYS_MNTENT_H 1
 #cmakedefine HAVE_SYS_MOUNT_H 1
-#cmakedefine HAVE_SYS_INOTIFY_H 1
 #cmakedefine HAVE_TERMIOS_H 1
 #cmakedefine HAVE_TERMIO_H 1
 
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_CRT_EXTERNS_H 1
 #cmakedefine HAVE_CARBON_CARBON_H 1
-#cmakedefine HAVE_DIRENT_H 1
 #cmakedefine HAVE_DLD_H 1
 #cmakedefine HAVE_DL_H 1
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_IEEEFP_H 1
-#cmakedefine HAVE_INTTYPES_H 1
 #cmakedefine HAVE_LIBUTIL_H 1
 #cmakedefine HAVE_LIMITS_H 1
-#cmakedefine HAVE_LINUX_AWE_VOICE_H 1
-#cmakedefine HAVE_LOCALE_H 1
-#cmakedefine HAVE_MACHINE_SOUNDCARD_H 1
 #cmakedefine HAVE_MNTENT_H 1
 #cmakedefine HAVE_NETINET_IN_H 1
-#cmakedefine HAVE_NL_TYPES_H 1
 #cmakedefine HAVE_PATHS_H 1
 #cmakedefine HAVE_PTHREAD_NP_H 1
-#cmakedefine HAVE_PUNYCODE_H 1
 #cmakedefine HAVE_PTY_H 1
-#cmakedefine HAVE_STRINGPREP_H 1
 #cmakedefine HAVE_SYS_BITYPES_H 1
-#cmakedefine HAVE_SYS_DIR_H 1
-#cmakedefine HAVE_SYS_FILIO_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
-#cmakedefine HAVE_SYS_NDIR_H 1
 #cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_UNISTD_H 1
 #cmakedefine HAVE_UTIL_H 1
-#cmakedefine HAVE_VALUES_H 1
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
 
-#cmakedefine HAVE_X11_EXTENSIONS_SHAPE_H 1
-#cmakedefine HAVE_X11_EXTENSIONS_XSHM_H 1
-#cmakedefine HAVE_X11_ICE_ICELIB_H 1
 #cmakedefine HAVE_XTEST 1
-#cmakedefine HAVE_XRENDER 1
 
 
 #cmakedefine   HAVE_BACKTRACE 1
 #cmakedefine   HAVE_BCOPY 1
-#cmakedefine   HAVE_CRYPT  1
 #cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_FUNC__FINITE 1
 #cmakedefine   HAVE_FUNC_FINITE 1
 #cmakedefine   HAVE_FUNC_ISINF 1
 #cmakedefine   HAVE_FUNC_ISNAN 1
-#cmakedefine   HAVE_GAI_STRERROR 1
-#cmakedefine   HAVE_GETCWD 1
-#cmakedefine   HAVE_GETGROUPS 1
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_GETPT 1
-#cmakedefine   HAVE_GETSOCKNAME 1
-#cmakedefine   HAVE_GETSOCKOPT 1
-#cmakedefine   HAVE_GETTIMEOFDAY 1
 #cmakedefine   HAVE_GRANTPT 1
 #cmakedefine   HAVE_INDEX 1
 #cmakedefine   HAVE_INITGROUPS 1
 #cmakedefine   HAVE_MADVISE 1
 #cmakedefine   HAVE_MEMCPY 1
 #cmakedefine   HAVE_MMAP 1
-#cmakedefine   HAVE_MUNMAP 1
 #cmakedefine   HAVE_MKSTEMPS 1
 #cmakedefine   HAVE_MKSTEMP 1
 #cmakedefine   HAVE_MKDTEMP 1
 #cmakedefine   HAVE_OPENPTY 1
-#cmakedefine   HAVE_PUTENV 1
 #cmakedefine   HAVE_PTSNAME 1
 #cmakedefine   HAVE_RANDOM 1
 #cmakedefine   HAVE_READDIR_R 1
 #cmakedefine   HAVE_REVOKE 1
 #cmakedefine   HAVE_RINDEX 1
 #cmakedefine   HAVE_SENDFILE 1
-#cmakedefine   HAVE_SETEGID 1
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1
-#cmakedefine   HAVE_SETFSENT 1
-#cmakedefine   HAVE_SETGROUPS 1
-#cmakedefine   HAVE_SETLOCALE 1
 #cmakedefine   HAVE_SETMNTENT 1
 #cmakedefine   HAVE_SETPRIORITY 1
 #cmakedefine   HAVE_SHL_LOAD 1
 #cmakedefine   HAVE_SNPRINTF 1
-#cmakedefine   HAVE_SOCKET 1
 #cmakedefine   HAVE_SRANDOM 1
-#cmakedefine   HAVE_STPCPY 1
-#cmakedefine   HAVE_STRCASECMP 1
 #cmakedefine   HAVE_STRCHR 1
 #cmakedefine   HAVE_STRCMP 1
-#cmakedefine   HAVE_STRFMON 1
 #cmakedefine   HAVE_STRLCPY 1
 #cmakedefine   HAVE_STRLCAT 1
 #cmakedefine   HAVE_STRNCASECMP 1
@@ -187,9 +151,6 @@
 #cmakedefine   HAVE_VSNPRINTF 1
 #cmakedefine   HAVE__GETPTY 1
 #cmakedefine   HAVE_NSGETENVIRON 1
-#cmakedefine   HAVE___ARGZ_COUNT 1
-#cmakedefine   HAVE___ARGZ_NEXT  1
-#cmakedefine   HAVE___ARGZ_STRINGIFY 1
 
 #cmakedefine HAVE_S_ISSOCK 1
 
