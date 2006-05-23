@@ -59,7 +59,7 @@ KMWFile::KMWFile(QWidget *parent)
 
 bool KMWFile::isValid(QString& msg)
 {
-	QFileInfo	fi(m_url->url());
+	QFileInfo	fi(m_url->url().path());
 	if (fi.fileName().isEmpty())
 	{
 		msg = i18n("Empty file name.");
@@ -77,6 +77,5 @@ bool KMWFile::isValid(QString& msg)
 
 void KMWFile::updatePrinter(KMPrinter *p)
 {
-	QString	dev = QString::fromLatin1("file:%1").arg(m_url->url());
-	p->setDevice(dev);
+	p->setDevice( m_url->url().url() );
 }

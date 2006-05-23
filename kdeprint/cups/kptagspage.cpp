@@ -33,7 +33,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 {
 
 	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisAdditionalTagsTable = i18n(" 
+	QString whatsThisAdditionalTagsTable = i18n( 
 						" <ul>"
 						" <li>Use any current or future standard CUPS job option not supported by the "
 						" KDEPrint GUI. </li>"
