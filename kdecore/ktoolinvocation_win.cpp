@@ -314,10 +314,10 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
        subject = KUrl::fromPercentEncoding((*it).mid(8).toLatin1());
      else
      if (q.startsWith("cc="))
-       cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc + ',' + KUrl::fromPercentEncoding((*it).mid(3));
+		 cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc.toLatin1() + ',' + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
      else
      if (q.startsWith("bcc="))
-       bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc + ',' + KUrl::fromPercentEncoding((*it).mid(4));
+		 bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc.toLatin1() + ',' + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
      else
      if (q.startsWith("body="))
        body = KUrl::fromPercentEncoding((*it).mid(5).toLatin1());
