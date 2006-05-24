@@ -60,8 +60,6 @@ KWindowListMenu::KWindowListMenu(QWidget *parent)
   : KMenu(parent)
 {
     kwin_module = new KWinModule(this);
-
-    connect(this, SIGNAL(activated(int)), SLOT(slotExec(int)));
 }
 
 KWindowListMenu::~KWindowListMenu()

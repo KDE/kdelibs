@@ -18,7 +18,7 @@ public:
 public Q_SLOTS:
     void slotPress(int i);
     void slotClick(int i);
-    void slotMenu(int i);
+    void slotMenu(QAction*);
 
 protected:
     QMenu *fileMenu;

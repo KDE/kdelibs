@@ -112,7 +112,7 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
         undo->setShortcut( KStdAccel::shortcut(KStdAccel::Undo) );
         connect( undo, SIGNAL(triggered(bool)), this, SLOT( undo() ) );
         connect( undo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotUndoAboutToShow() ) );
-        connect( undo->menu(), SIGNAL( activated( int ) ), this, SLOT( slotUndoActivated( int ) ) );
+        connect( undo->menu(), SIGNAL( triggered( QAction* ) ), this, SLOT( slotUndoActivated( QAction* ) ) );
         m_undo = undo;
         m_undoPopup = undo->menu();
 
@@ -121,7 +121,7 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
         redo->setShortcut( KStdAccel::shortcut(KStdAccel::Redo) );
         connect( redo, SIGNAL(triggered(bool)), this, SLOT( redo() ) );
         connect( redo->menu(), SIGNAL( aboutToShow() ), this, SLOT( slotRedoAboutToShow() ) );
-        connect( redo->menu(), SIGNAL( activated( int ) ), this, SLOT( slotRedoActivated( int ) ) );
+        connect( redo->menu(), SIGNAL( triggered( QAction* ) ), this, SLOT( slotRedoActivated( QAction* ) ) );
         m_redo = redo;
         m_redoPopup = redo->menu();
     }
@@ -308,13 +308,19 @@ void KCommandHistory::slotUndoAboutToShow()
     // Start at d->m_current and go back until d->m_current - 9 included (or 0 if bigger).
     // TODO make number of items configurable ?
     const int end = qMax( d->m_current - 9, 0 );
+    int j = 0;
     for ( int i = d->m_current; i >= end; --i ) {
-        m_undoPopup->addAction( i18n("Undo: %1", m_commands[i]->name()) );
+        QAction *action = m_undoPopup->addAction( i18n("Undo: %1", m_commands[i]->name()) );
+        action->setData( j );
+
+        j++;
     }
 }
 
-void KCommandHistory::slotUndoActivated( int pos )
+void KCommandHistory::slotUndoActivated( QAction *action )
 {
+    const int pos = action->data().toInt();
+
     kDebug(230) << "KCommandHistory::slotUndoActivated " << pos << endl;
     for ( int i = 0 ; i < pos+1; ++i )
         undo();
@@ -326,13 +332,19 @@ void KCommandHistory::slotRedoAboutToShow()
     // Start at d->m_current + 1 and go up until d->m_current + 10 included (or count-1 if bigger).
     // TODO make number of items configurable ?
     const int end = qMin( d->m_current + 10, m_commands.count() - 1 );
+    int j = 0;
     for ( int i = d->m_current + 1; i < end; ++i ) {
-        m_redoPopup->addAction( i18n("Redo: %1", m_commands[i]->name()) );
+        QAction *action = m_redoPopup->addAction( i18n("Redo: %1", m_commands[i]->name()) );
+        action->setData( j );
+
+        j++;
     }
 }
 
-void KCommandHistory::slotRedoActivated( int pos )
+void KCommandHistory::slotRedoActivated( QAction *action )
 {
+    const int pos = action->data().toInt();
+
     kDebug(230) << "KCommandHistory::slotRedoActivated " << pos << endl;
     for ( int i = 0 ; i < pos+1; ++i )
         redo();

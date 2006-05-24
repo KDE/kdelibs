@@ -25,8 +25,11 @@ testWindow::testWindow (QWidget *)
     menuBar = new KMenuBar (this);
     fileMenu = new QMenu;
     menuBar->addAction ( "&File" );
-    fileMenu->insertItem ("&Exit", KApplication::kApplication(),
-                          SLOT( quit() ), Qt::ALT + Qt::Key_Q );
+    QAction *action = fileMenu->addAction("&Exit");
+    action->setShortcut( Qt::ALT + Qt::Key_Q );
+
+    connect( action, SIGNAL( triggered() ), KApplication::kApplication(), SLOT( quit() ) );
+
     statusbar = new KStatusBar (this);
     statusbar->insertItem("Zoom: XXXX", 0);
     statusbar->insertItem("XXX", 1);
@@ -47,16 +50,16 @@ testWindow::testWindow (QWidget *)
     setCaption( KApplication::kApplication()->caption() );
 
     smenu = new QMenu;
-  
-    smenu->insertItem("50%");
-    smenu->insertItem("75%");
-    smenu->insertItem("100%");
-    smenu->insertItem("150%");
-    smenu->insertItem("200%");
-    smenu->insertItem("400%");
-    smenu->insertItem("oo%");
 
-    connect (smenu, SIGNAL(activated(int)), this, SLOT(slotMenu(int)));
+    smenu->addAction("50%");
+    smenu->addAction("75%");
+    smenu->addAction("100%");
+    smenu->addAction("150%");
+    smenu->addAction("200%");
+    smenu->addAction("400%");
+    smenu->addAction("oo%");
+
+    connect (smenu, SIGNAL(triggered(QAction*)), this, SLOT(slotMenu(QAction*)));
 }
 
 void testWindow::slotClick(int id)
@@ -85,17 +88,17 @@ void testWindow::slotClick(int id)
       break;
    }
 }
-       
+
 void testWindow::slotPress(int id)
 {
   if (id == 0)
     smenu->popup(QCursor::pos()); // This popup should understand keys up and down
 }
 
-void testWindow::slotMenu(int id)
+void testWindow::slotMenu(QAction *action)
 {
   QString s = "Zoom: ";
-  s.append (smenu->text(id));
+  s.append (action->text());
   statusbar->changeItem(s,0);
 }
 

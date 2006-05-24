@@ -29,6 +29,7 @@
 
 class KAction;
 class KActionCollection;
+class QAction;
 class QMenu;
 
 /**
@@ -284,9 +285,9 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     void slotUndoAboutToShow();
-    void slotUndoActivated( int );
+    void slotUndoActivated( QAction* );
     void slotRedoAboutToShow();
-    void slotRedoActivated( int );
+    void slotRedoActivated( QAction* );
 
 Q_SIGNALS:
     /**
