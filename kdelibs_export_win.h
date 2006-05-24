@@ -294,6 +294,14 @@
 # endif
 #endif
 
+#ifndef KABC_FILE_CORE_EXPORT
+# ifdef MAKE_KABC_FILE_CORE_LIB
+#  define KABC_FILE_CORE_EXPORT KDE_EXPORT
+# else
+#  define KABC_FILE_CORE_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #ifndef KABC_FILE_EXPORT
 # ifdef MAKE_KABC_FILE_LIB
 #  define KABC_FILE_EXPORT KDE_EXPORT
