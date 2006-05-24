@@ -1857,6 +1857,7 @@ void KCryptoConfig::slotCAImport() {
 			KMessageBox::sorry(this,
 					i18n("This is not a signer certificate."),
 					i18n("SSL"));
+			delete x;
 			return;
 		}
 
