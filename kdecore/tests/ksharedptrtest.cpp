@@ -157,4 +157,27 @@ void KSharedPtrTest::testDifferentTypes()
 	QCOMPARE( dtor_called, 1 );
 }
 
+void KSharedPtrTest::testOrdering()
+{
+	Base* obj = new Base;
+	KSharedPtr<Base> ptrBase(obj);
+
+	Base* obj2 = new Base;
+	KSharedPtr<Base> ptrBase2(obj2);
+
+	QVERIFY( obj != obj2 );
+	QVERIFY( ptrBase != ptrBase2 );
+	QVERIFY( ptrBase < ptrBase2 || ptrBase2 < ptrBase );
+
+	QMap<KSharedPtr<Base>, int> map;
+	map.insert( ptrBase, 1 );
+	QVERIFY( map.contains( ptrBase ) );
+	QVERIFY( !map.contains( ptrBase2 ) );
+	QCOMPARE( map.value( ptrBase, 0 ),  1 );
+	map.insert( ptrBase2, 2 );
+	QVERIFY( map.contains( ptrBase2 ) );
+	QCOMPARE( map.value( ptrBase2, 0 ),  2 );
+	QCOMPARE( map.count(), 2 );
+}
+
 #include "ksharedptrtest.moc"

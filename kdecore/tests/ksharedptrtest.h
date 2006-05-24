@@ -10,6 +10,7 @@ class KSharedPtrTest : public QObject
 		void testWithStrings();
 		void testDeletion();
 		void testDifferentTypes();
+		void testOrdering();
 };
 
 #endif /* KSHAREDPTRTEST_H */

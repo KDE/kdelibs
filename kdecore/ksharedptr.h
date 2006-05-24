@@ -74,6 +74,7 @@ public:
     inline KSharedPtr<T>& operator= ( const KSharedPtr& o ) { attach(o.d); return *this; }
     inline bool operator== ( const KSharedPtr& o ) const { return ( d == o.d ); }
     inline bool operator!= ( const KSharedPtr& o ) const { return ( d != o.d ); }
+    inline bool operator< ( const KSharedPtr& o ) const { return ( d < o.d ); }
 
     inline KSharedPtr<T>& operator= ( T* p ) { attach(p); return *this; }
     inline bool operator== ( const T* p ) const { return ( d == p ); }
