@@ -309,10 +309,10 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
 		xcf_io.readRawData(data, size);
         }
 
-	if (size != 0 && data) {
+	if (size != 0 && data)
             bytes = QByteArray(data,size);
-            delete [] data;
-	}
+	
+        delete [] data;
 
 	return true;
 }
