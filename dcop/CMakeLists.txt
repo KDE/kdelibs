@@ -95,7 +95,7 @@ kde4_add_library(DCOP SHARED ${DCOP_LIB_SRCS})
 
 target_link_libraries(DCOP  ${QT_QTCORE_LIBRARY} ${KDEWIN32_LIBRARIES} )
 
-set_target_properties(DCOP PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+set_target_properties(DCOP PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 
 install_targets(${LIB_INSTALL_DIR} DCOP )
 
