@@ -632,7 +632,7 @@ void KMJobViewer::loadPluginActions()
 	foreach (KAction* action, acts)
 	{
 		// connect the action to this
-		connect(action, SIGNAL(activated(int)), SLOT(pluginActionActivated(int)));
+		connect(action, SIGNAL(triggered(QAction*)), SLOT(pluginActionActivated(QAction*)));
 
 		// should add it to the toolbar and menubar
 		action->plug(toolBar(), toolbarindex++);
@@ -692,8 +692,10 @@ void KMJobViewer::closeEvent(QCloseEvent *e)
 		e->accept();
 }
 
-void KMJobViewer::pluginActionActivated(int ID)
+void KMJobViewer::pluginActionActivated(QAction *action)
 {
+  const int ID = action->data().toInt();
+
 	KMTimer::self()->hold();
 
 	QList<KMJob*>	joblist;

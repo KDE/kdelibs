@@ -67,7 +67,7 @@ Q_SIGNALS:
 	void viewerDestroyed(KMJobViewer*);
 
 public Q_SLOTS:
-	void pluginActionActivated(int);
+	void pluginActionActivated(QAction*);
 
 protected Q_SLOTS:
 	void slotSelectionChanged();

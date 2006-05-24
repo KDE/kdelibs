@@ -29,14 +29,6 @@ class KDEPRINT_MANAGEMENT_EXPORT PluginAction : public KAction
 public:
 	PluginAction(int ID, const QString& txt, const QString& icon, int accel, KActionCollection *parent = 0, const char *name = 0);
 
-Q_SIGNALS:
-	void activated(int);
-
-protected Q_SLOTS:
-	void slotActivated();
-
-private:
-	int	m_id;
 };
 
 #endif

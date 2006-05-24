@@ -186,7 +186,7 @@ void KMMainView::initActions()
 	iconlst << "view_icon" << "view_detailed" << "view_tree";
 	vact->setItems(i18n("&Icons,&List,&Tree").split(',', QString::SkipEmptyParts), iconlst);
 	vact->setCurrentItem(0);
-	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
+	connect(vact,SIGNAL(triggered(int)),SLOT(slotChangeView(int)));
 
 	KActionMenu	*stateAct = new KActionMenu(KIcon("kdeprint_printstate"), i18n("Start/Stop Printer"), m_actions, "printer_state_change");
 	stateAct->setDelayed(false);
@@ -255,7 +255,7 @@ void KMMainView::initActions()
 	iconlst << "view_top_bottom" << "view_left_right";
 	dact->setItems(i18n("&Vertical,&Horizontal").split(',', QString::SkipEmptyParts), iconlst);
 	dact->setCurrentItem(0);
-	connect(dact,SIGNAL(activated(int)),SLOT(slotChangeDirection(int)));
+	connect(dact,SIGNAL(triggered(int)),SLOT(slotChangeDirection(int)));
 
   action = new KAction(i18n("R&estart Server"), m_actions,"server_restart");
   action->setIcon( KIcon( "kdeprint_restartsrv" ) );
