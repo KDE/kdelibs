@@ -40,10 +40,8 @@ public:
     KDE_CONSTRUCTOR_DEPRECATED KNSBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
     ~KNSBookmarkImporter() {}
 
-    // for compat reasons only
-    KDE_DEPRECATED void parseNSBookmarks() { parseNSBookmarks(false); }
     // go for it. Set utf8 to true for Mozilla, false for Netscape.
-    KDE_DEPRECATED void parseNSBookmarks( bool utf8 );
+    KDE_DEPRECATED void parseNSBookmarks( bool utf8 = false );
 
     static KDE_DEPRECATED QString netscapeBookmarksFile( bool forSaving=false );
     static KDE_DEPRECATED QString mozillaBookmarksFile( bool forSaving=false );
@@ -98,8 +96,7 @@ public:
       : m_fileName(fileName), m_pManager(mgr) { }
     ~KNSBookmarkExporter() {}
 
-    KDE_DEPRECATED void write() { write(false); } // deprecated
-    KDE_DEPRECATED void write( bool utf8 );
+    KDE_DEPRECATED void write( bool utf8 = false );
 
 protected:
     void writeFolder(QTextStream &stream, KBookmarkGroup parent);
