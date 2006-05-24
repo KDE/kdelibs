@@ -90,19 +90,19 @@ private:
 
   /**
    * Returns the offers in the profile for the requested service type.
-   * @param list list of offers
+   * @param list list of offers (key=service, value=initialPreference)
    * @param servicetype the service type
    * @return the weighted and sorted offer list
    * @internal used by KServiceTypeTrader
    */
-  static KServiceOfferList sortServiceTypeOffers( const KService::List& list, const QString& servicetype );
+  static KServiceOfferList sortServiceTypeOffers( const QMap<KService::Ptr,int>& list, const QString& servicetype );
 
   /**
    * Sort the offers for the requested mime type according to the profile (if any),
    * and filter for genericServiceType. This method is really internal to KMimeTypeTrader
    * and might go away at any time.
    *
-   * @param list list of offers
+   * @param list list of offers (key=service, value=initialPreference)
    * @param mimeType the mime type
    * @param genericServiceType the generic service type (e.g. "Application"
    *                           or "KParts/ReadOnlyPart"). Can be QString(),
@@ -110,7 +110,7 @@ private:
    * @return the weighted and sorted offer list
    * @internal used by KMimeTypeTrader
    */
-  static KServiceOfferList sortMimeTypeOffers( const KService::List& list, const QString& mimeType, const QString & genericServiceType );
+  static KServiceOfferList sortMimeTypeOffers( const QMap<KService::Ptr,int>& list, const QString& mimeType, const QString & genericServiceType );
 
 private:
   static KServiceTypeProfile* findProfile( const QString& type, const QString& type2 );

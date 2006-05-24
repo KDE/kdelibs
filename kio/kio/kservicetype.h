@@ -55,11 +55,10 @@ public:
    * specific properties.
    * @param _fullpath the path of the service type's desktop file
    * @param _name the name of the service type
-   * @param _icon the icon name of the service type (can be null)
-   * @param _comment a comment (can be null)
+   * @param _comment a comment (can be empty)
    */
   KServiceType( const QString & _fullpath, const QString& _name,
-                const QString& _icon, const QString& _comment);
+                const QString& _comment);
 
   /**
    * Construct a service type and take all information from a config file.
@@ -81,16 +80,6 @@ public:
   KServiceType( QDataStream& _str, int offset );
 
   virtual ~KServiceType();
-
-  /**
-   * Returns the icon associated with this service type. Some
-   *         derived classes offer special functions which take for
-   *         example an URL and returns a special icon for this
-   *         URL. An example is KMimeType, KFolderType and
-   *         others.
-   * @return the name of the icon, can be QString().
-   */
-  QString icon() const { return m_strIcon; }
 
   /**
    * Returns the descriptive comment associated, if any.
@@ -185,14 +174,13 @@ public:
   Ptr parentType();
   /**
    * @internal  only used by kbuildsycoca
-   * Register service that provides this service type
+   * Register offset into offers list
    */
-  void addService(const KService::Ptr& service);
+  void setServiceOffersOffset( int offset );
   /**
    * @internal  only used by kbuildsycoca
-   * List services that provide this service type
    */
-  KService::List services() const;
+  int serviceOffersOffset() const;
 
   /**
    * Returns a pointer to the servicetype '_name' or 0L if the
@@ -216,18 +204,18 @@ public:
 protected:
   void init( KDesktopFile *config );
 
-private:
-  QString m_strName;
-  QString m_strIcon;
-  QString m_strComment;
 protected: // used by KMimeType
   QMap<QString,QVariant> m_mapProps;
-private:
-  QMap<QString,QVariant::Type> m_mapPropDefs;
 
 private:
-  bool m_bValid:1;
-  bool m_bDerived:1;
+  QString m_strName;
+  QString m_strComment;
+  int m_serviceOffersOffset;
+  QMap<QString,QVariant::Type> m_mapPropDefs;
+  bool m_bValid;
+  bool m_bDerived;
+  bool m_parentTypeLoaded;
+  bool m_unused; // for future usage
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

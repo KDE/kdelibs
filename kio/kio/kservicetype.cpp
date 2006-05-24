@@ -32,15 +32,24 @@ template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QS
 class KServiceType::KServiceTypePrivate
 {
 public:
-  KServiceTypePrivate() : parentTypeLoaded(false) { }
+  KServiceTypePrivate() { }
 
   KServiceType::Ptr parentType;
-  KService::List services;
-  bool parentTypeLoaded;
 };
 
+KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
+                            const QString& _comment )
+  : KSycocaEntry(_fullpath),
+    m_serviceOffersOffset( -1 ), m_parentTypeLoaded(false), d(0)
+{
+  m_strName = _type;
+  m_strComment = _comment;
+  m_bValid = !m_strName.isEmpty();
+}
+
 KServiceType::KServiceType( const QString & _fullpath)
- : KSycocaEntry(_fullpath), d(0)
+  : KSycocaEntry(_fullpath),
+    m_serviceOffersOffset( -1 ), m_parentTypeLoaded(false), d(0)
 {
   KDesktopFile config( _fullpath );
 
@@ -48,7 +57,8 @@ KServiceType::KServiceType( const QString & _fullpath)
 }
 
 KServiceType::KServiceType( KDesktopFile *config )
- : KSycocaEntry(config->fileName()), d(0)
+  : KSycocaEntry(config->fileName()),
+    m_serviceOffersOffset( -1 ), m_parentTypeLoaded(false), d(0)
 {
   init(config);
 }
@@ -67,7 +77,6 @@ KServiceType::init( KDesktopFile *config)
 
   m_strComment = config->readComment();
   m_bDeleted = config->readEntry("Hidden", false);
-  m_strIcon = config->readIcon();
 
   // We store this as property to preserve BC, we can't change that
   // because KSycoca needs to remain BC between KDE 2.x and KDE 3.x
@@ -106,16 +115,6 @@ KServiceType::init( KDesktopFile *config)
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
-                            const QString& _icon, const QString& _comment )
- : KSycocaEntry(_fullpath), d(0)
-{
-  m_strName = _type;
-  m_strIcon = _icon;
-  m_strComment = _comment;
-  m_bValid = !m_strName.isEmpty();
-}
-
 KServiceType::KServiceType( QDataStream& _str, int offset )
  : KSycocaEntry( _str, offset ), d(0)
 {
@@ -126,8 +125,9 @@ void
 KServiceType::load( QDataStream& _str )
 {
   qint8 b;
-  _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs
-       >> b;
+  QString dummy;
+  _str >> m_strName >> dummy >> m_strComment >> m_mapProps >> m_mapPropDefs
+       >> b >> m_serviceOffersOffset;
   m_bValid = b;
   m_bDerived = m_mapProps.contains("X-KDE-Derived");
 }
@@ -139,8 +139,8 @@ KServiceType::save( QDataStream& _str )
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
-  _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs
-       << (qint8)m_bValid;
+  _str << m_strName << QString() /*was icon*/ << m_strComment << m_mapProps << m_mapPropDefs
+       << (qint8)m_bValid << m_serviceOffersOffset;
 }
 
 KServiceType::~KServiceType()
@@ -177,8 +177,6 @@ KServiceType::property( const QString& _name ) const
 
   if ( _name == "Name" )
     v = QVariant( m_strName );
-  else if ( _name == "Icon" )
-    v = QVariant( m_strIcon );
   else if ( _name == "Comment" )
     v = QVariant( m_strComment );
   else
@@ -193,7 +191,6 @@ KServiceType::propertyNames() const
   QStringList res = m_mapProps.keys();
   res.append( "Name" );
   res.append( "Comment" );
-  res.append( "Icon" );
   return res;
 }
 
@@ -221,42 +218,32 @@ KServiceType::List KServiceType::allServiceTypes()
 
 KServiceType::Ptr KServiceType::parentType()
 {
-  if (d && d->parentTypeLoaded)
-     return d->parentType;
+  if (m_parentTypeLoaded)
+    return d ? d->parentType : KServiceType::Ptr();
 
-  if (!d)
-     d = new KServiceTypePrivate;
+  m_parentTypeLoaded = true;
 
   QString parentSt = parentServiceType();
-  if (!parentSt.isEmpty())
-  {
-    d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
-    if (!d->parentType)
-      kWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
-  }
+  if (parentSt.isEmpty())
+    return KServiceType::Ptr();
 
-  d->parentTypeLoaded = true;
-
+  if (!d)
+    d = new KServiceTypePrivate;
+  d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
+  if (!d->parentType)
+    kWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
   return d->parentType;
 }
 
-void KServiceType::addService(const KService::Ptr& service)
+void KServiceType::setServiceOffersOffset( int offset )
 {
-  if (!d)
-     d = new KServiceTypePrivate;
-
-  if (d->services.count() && d->services.last() == service)
-     return;
-
-  d->services.append(service);
+  Q_ASSERT( offset != -1 );
+  m_serviceOffersOffset = offset;
 }
 
-KService::List KServiceType::services() const
+int KServiceType::serviceOffersOffset() const
 {
-  if (d)
-     return d->services;
-
-  return KService::List();
+  return m_serviceOffersOffset;
 }
 
 void KServiceType::virtual_hook( int id, void* data )

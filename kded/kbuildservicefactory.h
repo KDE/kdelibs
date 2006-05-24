@@ -27,6 +27,7 @@
 // We export the services to the service group factory!
 #include <kbuildservicegroupfactory.h>
 #include <QSet>
+class KBuildMimeTypeFactory;
 
 /**
  * Service factory for building ksycoca
@@ -39,7 +40,7 @@ public:
    * Create factory
    */
   KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
-                        KSycocaFactory *mimeTypeFactory,
+                        KBuildMimeTypeFactory *mimeTypeFactory,
                         KBuildServiceGroupFactory *serviceGroupFactory );
 
   virtual ~KBuildServiceFactory();
@@ -77,14 +78,23 @@ public:
    */
   static QStringList resourceTypes();
 
+  void populateServiceTypes();
+
 private:
   void saveOfferList(QDataStream &str);
   void saveInitList(QDataStream &str);
+  void addServiceOffer( const QString& serviceType, const KService::Ptr& service, int initialPreference );
 
   QHash<QString, KService::Ptr> m_serviceDict;
   QSet<KSycocaEntry::Ptr> m_dupeDict;
+
+  struct ServiceTypeOffersData {
+    QMap<KService::Ptr,int> data;
+  };
+  QHash<QString, ServiceTypeOffersData> m_serviceTypeData;
+
   KSycocaFactory *m_serviceTypeFactory;
-  KSycocaFactory *m_mimeTypeFactory;
+  KBuildMimeTypeFactory *m_mimeTypeFactory;
   KBuildServiceGroupFactory *m_serviceGroupFactory;
 };
 

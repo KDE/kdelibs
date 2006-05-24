@@ -27,6 +27,18 @@
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
+#include <kprocess.h>
+
+void KMimeTypeTest::initTestCase()
+{
+    if ( !KSycoca::isAvailable() ) {
+        // Create ksycoca in ~/.kde-unit-test
+        KProcess proc;
+        proc.setEnvironment( "KDEHOME", QFile::decodeName( getenv( "KDEHOME" ) ) );
+        proc << "kbuildsycoca" << "--noincremental";
+        proc.start( KProcess::Block );
+    }
+}
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
 {
@@ -114,38 +126,19 @@ void KMimeTypeTest::testAllMimeTypes()
 
     const KMimeType::List lst = KMimeType::allMimeTypes();
     QVERIFY( !lst.isEmpty() );
-    const KMimeType::List allMimeTypes = KMimeType::allMimeTypes();
 
     for ( KMimeType::List::ConstIterator it = lst.begin();
           it != lst.end(); ++it ) {
         const KMimeType::Ptr mime = (*it);
         const QString name = mime->name();
-        //qDebug( "%s", qPrintable( name ) );
+        qDebug( "%s", qPrintable( name ) );
         QVERIFY( !name.isEmpty() );
+        QCOMPARE( name.count( '/' ), 1 );
         QVERIFY( mime->isType( KST_KMimeType ) );
 
         const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
         QVERIFY( lookedupMime ); // not null
         QCOMPARE( lookedupMime->name(), name );
-
-        // Check that the mimetype is part of the allMimeTypes list (by name)
-        KMimeType::List::ConstIterator stit = allMimeTypes.begin();
-        const KMimeType::List::ConstIterator stend = allMimeTypes.end();
-        bool found = false;
-        for ( ; !found && stit != stend; ++stit ) {
-            found = ( (*stit)->name() == name );
-        }
-    }
-
-    // A bit of checking on the allMimeTypes list itself
-    KMimeType::List::ConstIterator stit = allMimeTypes.begin();
-    const KMimeType::List::ConstIterator stend = allMimeTypes.end();
-    for ( ; stit != stend; ++stit ) {
-        const KMimeType::Ptr mime = (*stit);
-        const QString name = mime->name();
-        QVERIFY( !name.isEmpty() );
-        QCOMPARE( name.count( '/' ), 1 );
-        QVERIFY( mime->isType( KST_KMimeType ) );
     }
 }
 
@@ -302,6 +295,8 @@ void KMimeTypeTest::testServiceTypeTraderForReadOnlyPart()
     // Querying trader for services associated with KParts/ReadOnlyPart
     KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
     QVERIFY( offers.count() > 0 );
+    //foreach( KService::Ptr service, offers )
+    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->desktopEntryPath() ) );
 
     // Only test for parts provided by kdelibs:
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );

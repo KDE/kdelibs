@@ -574,7 +574,7 @@ bool KBuildSycoca::recreate()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  KSycocaFactory *mtf = new KBuildMimeTypeFactory;
+  KBuildMimeTypeFactory *mtf = new KBuildMimeTypeFactory;
   g_bsgf = new KBuildServiceGroupFactory();
   g_bsf = new KBuildServiceFactory(stf, mtf, g_bsgf);
   (void) new KBuildProtocolInfoFactory();
@@ -629,7 +629,7 @@ void KBuildSycoca::save()
    (*m_str) << (qint32) KSycoca::version();
    KSycocaFactory * servicetypeFactory = 0L;
    KSycocaFactory * mimeTypeFactory = 0L;
-   KSycocaFactory * serviceFactory = 0L;
+   KBuildServiceFactory * serviceFactory = 0L;
    for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
        factory != m_lstFactories->end();
        ++factory)
@@ -642,7 +642,7 @@ void KBuildSycoca::save()
       else if ( aId == KST_KMimeTypeFactory )
          mimeTypeFactory = *factory;
       else if ( aId == KST_KServiceFactory )
-         serviceFactory = *factory;
+         serviceFactory = static_cast<KBuildServiceFactory *>( *factory );
       aOffset = (*factory)->offset();
       (*m_str) << aId;
       (*m_str) << aOffset;
@@ -654,6 +654,9 @@ void KBuildSycoca::save()
    (*m_str) << KGlobal::locale()->language();
    (*m_str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
    (*m_str) << (*g_allResourceDirs);
+
+   // Calculate per-servicetype/mimetype data
+   serviceFactory->populateServiceTypes();
 
    // Write factory data....
    for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
@@ -962,8 +965,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 	 for (KSycocaFactoryList::Iterator factory = factories->begin();
 	      factory != factories->end(); ++factory)
          {
-             KSycocaEntry::List list;
-             list = (*factory)->allEntries();
+             const KSycocaEntry::List list = (*factory)->allEntries();
              g_allEntries->append( list );
          }
          delete factories; factories = 0;

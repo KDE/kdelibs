@@ -299,16 +299,6 @@ public:
   int initialPreference() const { return m_initialPreference; }
 
   /**
-   * What preference to associate with this service initially
-   * for handling the specified mimetype. (before the user has
-   * had any chance to define a profile for it).
-   * The bigger the value, the most preferred the service is.
-   * @return the service preference level of the service for
-   * this mimetype
-   */
-  int initialPreferenceForMimeType( const QString& mimeType ) const;
-
-  /**
    * @internal. Allows KServiceType::offers to tweak the initial preference.
    */
   void setInitialPreference( int i ) { m_initialPreference = i; }

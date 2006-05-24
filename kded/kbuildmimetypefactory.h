@@ -43,6 +43,8 @@ public:
    */
   virtual KMimeType::Ptr findMimeTypeByName(const QString &_name);
 
+  virtual KSycocaEntry::List allEntries();
+
   /**
    * Construct a KMimeType from a config file.
    */

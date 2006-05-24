@@ -85,7 +85,7 @@ public:
    /**
     * Get a list of all entries from the database.
     */
-   KSycocaEntry::List allEntries();
+   virtual KSycocaEntry::List allEntries();
 
    /**
     * Saves all entries it maintains as well as index files

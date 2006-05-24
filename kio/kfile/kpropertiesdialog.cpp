@@ -1399,7 +1399,7 @@ void KFilePropsPlugin::applyIconChanges()
     // Get the default image
     QString str = KMimeType::findByURL( properties->kurl(),
                                         properties->item()->mode(),
-                                        true )->KServiceType::icon();
+                                        true )->icon();
     // Is it another one than the default ?
     QString sIcon;
     if ( str != iconButton->icon() )
@@ -2916,7 +2916,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   readonly->setChecked( ro );
 
   if ( unmountedStr.isEmpty() )
-    unmountedStr = KMimeType::defaultMimeTypePtr()->KServiceType::icon(); // default icon
+    unmountedStr = KMimeType::defaultMimeTypePtr()->icon(); // default icon
 
   unmounted->setIcon( unmountedStr );
 

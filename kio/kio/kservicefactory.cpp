@@ -251,24 +251,22 @@ KService::List KServiceFactory::allInitServices()
    return list;
 }
 
-KService::List KServiceFactory::offers( int serviceTypeOffset )
+QMap<KService::Ptr,int> KServiceFactory::offers( int serviceTypeOffset, int serviceOffersOffset )
 {
-   KService::List list;
+   QMap<KService::Ptr,int> list;
 
    QDataStream *str = m_str;
    // Jump to the offer list
-   str->device()->seek( m_offerListOffset );
+   str->device()->seek( m_offerListOffset + serviceOffersOffset );
 
-   qint32 aServiceTypeOffset;
-   qint32 aServiceOffset;
-   // We might want to do a binary search instead of a linear search
-   // since servicetype offsets are sorted. Bah.
+   qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
    while (true)
    {
       (*str) >> aServiceTypeOffset;
       if ( aServiceTypeOffset )
       {
          (*str) >> aServiceOffset;
+         (*str) >> initialPreference;
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
             // Save stream position !
@@ -276,11 +274,11 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
             // Create Service
             KService * serv = createEntry( aServiceOffset );
             if (serv) {
-                list.append( KService::Ptr( serv ) );
+                list.insert( KService::Ptr( serv ), initialPreference );
             }
             // Restore position
             str->device()->seek( savedPos );
-         } else if ( aServiceTypeOffset > serviceTypeOffset )
+         } else
             break; // too far
       }
       else

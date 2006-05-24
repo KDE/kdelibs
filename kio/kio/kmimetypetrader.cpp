@@ -29,7 +29,6 @@
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-#include <qhash.h>
 
 KMimeTypeTrader* KMimeTypeTrader::s_self = 0;
 static KStaticDeleter<KMimeTypeTrader> kmimetypetradersd;
@@ -49,27 +48,25 @@ KMimeTypeTrader::KMimeTypeTrader()
 {
 }
 
-static void addUnique(KService::List &lst, QHash<QString, KService::Ptr> &hash, const KService::List &newLst, bool lowPrio)
+static void addUnique(QMap<KService::Ptr,int> &lst, const QMap<KService::Ptr,int> &newLst, bool lowPrio)
 {
-  KService::List::const_iterator it = newLst.begin();
-  const KService::List::const_iterator end = newLst.end();
+  QMap<KService::Ptr,int>::const_iterator it = newLst.begin();
+  const QMap<KService::Ptr,int>::const_iterator end = newLst.end();
   for( ; it != end; ++it )
   {
-     KService::Ptr service = *it;
-     if (hash.contains(service->desktopEntryPath()))
+     KService::Ptr service = it.key();
+     if (lst.contains(service))
         continue;
-     hash.insert(service->desktopEntryPath(), service);
-     lst.append(service);
+     lst.insert(service, it.value());
      if (lowPrio)
         service->setInitialPreference( 0 );
   }
 }
 
 // helper method for weightedOffers
-static KService::List mimeTypeSycocaOffers( const QString& mimeType )
+static QMap<KService::Ptr,int> mimeTypeSycocaOffers( const QString& mimeType )
 {
-    QHash<QString, KService::Ptr> hash;
-    KService::List lst;
+    QMap<KService::Ptr,int> lst;
 
     // Services associated directly with this mimetype (the normal case)
     KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType );
@@ -77,20 +74,8 @@ static KService::List mimeTypeSycocaOffers( const QString& mimeType )
         kWarning(7014) << "KMimeTypeTrader: mimeType " << mimeType << " not found" << endl;
         return lst;
     }
-
-    addUnique(lst, hash, KServiceFactory::self()->offers( mime->offset() ), false);
-
-    // Find services associated with any mimetype parents. e.g. text/x-java -> text/plain
-    while(true)
-    {
-        const QString parent = mime->parentMimeType();
-        if (parent.isEmpty())
-            break;
-        mime = KMimeTypeFactory::self()->findMimeTypeByName( parent );
-        if (!mime)
-            break;
-
-        addUnique(lst, hash, KServiceFactory::self()->offers( mime->offset() ), false);
+    if ( mime->serviceOffersOffset() > -1 ) {
+        addUnique(lst, KServiceFactory::self()->offers( mime->offset(), mime->serviceOffersOffset() ), false);
     }
 
     //debug
@@ -105,9 +90,9 @@ static KService::List mimeTypeSycocaOffers( const QString& mimeType )
     {
         // Support for services associated with "all"
         const KMimeType::Ptr mimeAll = KMimeTypeFactory::self()->findMimeTypeByName( "all/all" );
-        if ( mimeAll )
-        {
-            addUnique(lst, hash, KServiceFactory::self()->offers( mimeAll->offset() ), true);
+        if ( mimeAll ) {
+            if ( mimeAll->serviceOffersOffset() > -1 )
+                addUnique(lst, KServiceFactory::self()->offers( mimeAll->offset(), mimeAll->serviceOffersOffset() ), true);
         }
         else
             kWarning(7014) << "KMimeTypeTrader : mimetype all/all not found" << endl;
@@ -116,9 +101,9 @@ static KService::List mimeTypeSycocaOffers( const QString& mimeType )
         if ( mimeType != "inode/directory" && mimeType != "inode/directory-locked" )
         {
             const KMimeType::Ptr mimeAllFiles = KMimeTypeFactory::self()->findMimeTypeByName( "all/allfiles" );
-            if ( mimeAllFiles )
-            {
-                addUnique(lst, hash, KServiceFactory::self()->offers( mimeAllFiles->offset() ), true);
+            if ( mimeAllFiles ) {
+                if ( mimeAllFiles->serviceOffersOffset() > -1 )
+                    addUnique(lst, KServiceFactory::self()->offers( mimeAllFiles->offset(), mimeAllFiles->serviceOffersOffset() ), true);
             }
             else
                 kWarning(7014) << "KMimeTypeTrader : mimetype all/allfiles not found" << endl;
@@ -135,10 +120,10 @@ KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
     Q_ASSERT( !genericServiceType.isEmpty() );
 
     // First, get all offers known to ksycoca.
-    const KService::List list = mimeTypeSycocaOffers( mimeType );
+    const QMap<KService::Ptr,int> offers = mimeTypeSycocaOffers( mimeType );
 
     // Assign preferences from the profile to those offers - and filter for genericServiceType
-    return KServiceTypeProfile::sortMimeTypeOffers( list, mimeType, genericServiceType );
+    return KServiceTypeProfile::sortMimeTypeOffers( offers, mimeType, genericServiceType );
 }
 
 KService::List KMimeTypeTrader::query( const QString& mimeType,

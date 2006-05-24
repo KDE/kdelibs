@@ -20,20 +20,31 @@ object (KSycoca::notifyDatabaseChanged()).
 Format of the sycoca database file
 ==================================
 
+* Version
+
 List of factories
  | * Factory id, Factory offset
  | * Factory id, Factory offset
  | * ...
  | * 0
 
-Header
+* KDE prefixes
+* timestamp
+* KDE language
+* resource hash
+* list of all resource dirs
+
+For each factory
+ | Header
+ | * offset of the dict
+ | * offset of the beginning of the entries
+ | * offset of the end of the entries
+ | Rest of the header (factory-specific), for instance:
  | * Offer-list offset
  | * Mimetype-patterns index offset (fast patterns)
  | * Mimetype-patterns index offset (other)
  | * Entry size in the mimetype-patterns index ("fast" part)
-
-For each factory
- | * offset of the dict
+ |
  | KSycocaEntries
  | | * entry type
  | | Entry
@@ -58,6 +69,10 @@ Offer list
 | * servicetype offset, service offset
 | * servicetype offset, service offset
 | * servicetype offset, service offset
+| * mimetype offset, service offset
+| * mimetype offset, service offset
+| * mimetype offset, service offset
+| * mimetype offset, service offset
 | * 0
 This allows to quickly find services associated with a servicetype.
 It does NOT reflect the user profile, which is stored in profilerc and

@@ -58,6 +58,16 @@ KMimeType::Ptr KBuildMimeTypeFactory::findMimeTypeByName(const QString &_name)
    return KMimeType::Ptr::staticCast( servType );
 }
 
+KSycocaEntry::List KBuildMimeTypeFactory::allEntries()
+{
+   assert (KSycoca::self()->isBuilding());
+   KSycocaEntry::List lst;
+   KSycocaEntryDict::Iterator itmime = m_entryDict->begin();
+   const KSycocaEntryDict::Iterator endmime = m_entryDict->end();
+   for( ; itmime != endmime ; ++itmime )
+      lst.append( *itmime );
+   return lst;
+}
 
 KSycocaEntry *
 KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
@@ -154,26 +164,25 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
        ++it)
    {
       const KSycocaEntry::Ptr& entry = (*it);
-      if ( entry->isType( KST_KMimeType ) )
+      Q_ASSERT( entry->isType( KST_KMimeType ) );
+
+      const KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
+      const QStringList pat = mimeType->patterns();
+      QStringList::ConstIterator patit = pat.begin();
+      for ( ; patit != pat.end() ; ++patit )
       {
-        const KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
-        const QStringList pat = mimeType->patterns();
-        QStringList::ConstIterator patit = pat.begin();
-        for ( ; patit != pat.end() ; ++patit )
-        {
-           const QString &pattern = *patit;
-           if ( pattern.lastIndexOf('*') == 0
-                && pattern.lastIndexOf('.') == 1
-                && pattern.length() <= 6 )
-              // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
-              // => fast patttern
-              fastPatterns.append( pattern );
-           else if (!pattern.isEmpty()) // some stupid mimetype files have "Patterns=;"
-              otherPatterns.append( pattern );
-           // Assumption : there is only one mimetype for that pattern
-           // It doesn't really make sense otherwise, anyway.
-           dict.insert( pattern, mimeType.constData() );
-        }
+         const QString &pattern = *patit;
+         if ( pattern.lastIndexOf('*') == 0
+              && pattern.lastIndexOf('.') == 1
+              && pattern.length() <= 6 )
+            // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
+            // => fast patttern
+            fastPatterns.append( pattern );
+         else if (!pattern.isEmpty()) // some stupid mimetype files have "Patterns=;"
+            otherPatterns.append( pattern );
+         // Assumption : there is only one mimetype for that pattern
+         // It doesn't really make sense otherwise, anyway.
+         dict.insert( pattern, mimeType.constData() );
       }
    }
    // Sort the list - the fast one, useless for the other one
@@ -235,4 +244,3 @@ KBuildMimeTypeFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
    }
    KSycocaFactory::addEntry(newEntry);
 }
-

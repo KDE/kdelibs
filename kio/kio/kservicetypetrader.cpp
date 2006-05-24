@@ -97,11 +97,13 @@ KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType
         kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
         return KServiceOfferList();
     }
+    if ( servTypePtr->serviceOffersOffset() == -1 )  // no offers in ksycoca
+        return KServiceOfferList();
 
     // First, get all offers known to ksycoca.
-    const KService::List list = KServiceFactory::self()->offers( servTypePtr->offset() );
+    const QMap<KService::Ptr,int> services = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
 
-    const KServiceOfferList offers = KServiceTypeProfile::sortServiceTypeOffers( list, serviceType );
+    const KServiceOfferList offers = KServiceTypeProfile::sortServiceTypeOffers( services, serviceType );
     //kDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
 
 #if 0
@@ -124,7 +126,9 @@ KService::List KServiceTypeTrader::query( const QString& serviceType,
             kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
             return KService::List();
         }
-        lst = KServiceFactory::self()->offers( servTypePtr->offset() );
+        if ( servTypePtr->serviceOffersOffset() == -1 )
+            return KService::List();
+        lst = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() ).keys();
     }
     else
     {

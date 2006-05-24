@@ -7,6 +7,7 @@ class KMimeTypeTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void testByName();
     void testIcons();
     void testFindByURL();

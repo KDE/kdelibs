@@ -517,7 +517,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   if ( !m_pMimeType )
   {
     static const QString & defaultFolderIcon =
-       KGlobal::staticQString(KMimeType::mimeType( "inode/directory" )->KServiceType::icon());
+       KGlobal::staticQString(KMimeType::mimeType( "inode/directory" )->icon());
 
     if ( S_ISDIR( m_fileMode ) )
      return DesktopIcon( defaultFolderIcon, _size, _state );

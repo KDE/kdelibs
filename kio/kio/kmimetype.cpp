@@ -346,14 +346,15 @@ KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
   return result;
 }
 
+// Used to create the default mimetype, in particular
 KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
                       const QString& _comment, const QStringList& _patterns )
-  : KServiceType( _fullpath, _type, _icon, _comment )
+  : KServiceType( _fullpath, _type, _comment ), m_strIcon( _icon ), d( 0 )
 {
   m_lstPatterns = _patterns;
 }
 
-KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
+KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath ), d( 0 )
 {
   KDesktopFile _cfg( _fullpath, true );
   init ( &_cfg );
@@ -362,7 +363,7 @@ KMimeType::KMimeType( const QString & _fullpath ) : KServiceType( _fullpath )
     kWarning(7009) << "mimetype not valid '" << name() << "' (missing entry in the file ?)" << endl;
 }
 
-KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
+KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d( 0 )
 {
   init( config );
 
@@ -373,6 +374,7 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
 void KMimeType::init( KDesktopFile * config )
 {
   config->setDesktopGroup();
+  m_strIcon = config->readIcon();
   m_lstPatterns = config->readEntry( "Patterns", QStringList(), ';' );
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
@@ -398,7 +400,7 @@ void KMimeType::init( KDesktopFile * config )
     m_mapProps.insert( XKDEPatternsAccuracy, config->readEntry( XKDEPatternsAccuracy, QString() ) );
 }
 
-KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
+KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset ), d( 0 )
 {
   loadInternal( _str ); // load our specific stuff
 }
@@ -412,7 +414,7 @@ void KMimeType::load( QDataStream& _str )
 void KMimeType::loadInternal( QDataStream& _str )
 {
   // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
-  _str >> m_lstPatterns;
+  _str >> m_lstPatterns >> m_strIcon;
 }
 
 void KMimeType::save( QDataStream& _str )
@@ -420,13 +422,15 @@ void KMimeType::save( QDataStream& _str )
   KServiceType::save( _str );
   // Warning adding/removing fields here involves a binary incompatible change - update version
   // number in ksycoca.h
-  _str << m_lstPatterns;
+  _str << m_lstPatterns << m_strIcon;
 }
 
 QVariant KMimeType::property( const QString& _name ) const
 {
   if ( _name == "Patterns" )
     return QVariant( m_lstPatterns );
+  if ( _name == "Icon" )
+    return QVariant( m_strIcon );
 
   return KServiceType::property( _name );
 }
@@ -435,6 +439,7 @@ QStringList KMimeType::propertyNames() const
 {
   QStringList res = KServiceType::propertyNames();
   res.append( "Patterns" );
+  res.append( "Icon" );
 
   return res;
 }

@@ -90,6 +90,17 @@ public:
   virtual ~KMimeType();
 
   /**
+   * Returns the icon associated with this mime type. See also icon(url)
+   * which takes an URL and returns a special icon for this URL.
+   *
+   * For instance for a folder you can get the folder-specific icon instead
+   * of the generic folder icon.
+   *
+   * @return the name of the icon, can be QString().
+   */
+  QString icon() const { return m_strIcon; } // KDE4: rename to iconName?
+
+  /**
    * Return the filename of the icon associated with the mimetype.
    *
    * The url argument is unused, but is provided so that KMimeType-derived classes
@@ -97,8 +108,8 @@ public:
    *
    * @return The path to the icon associated with this MIME type.
    */
-  virtual QString icon( const KUrl& = KUrl() ) const { return KServiceType::icon(); }
-    // TODO KDE4: rename to iconName, to be consistent with iconNameForURL and not sounding like we return a QIcon?
+  virtual QString icon( const KUrl& ) const { return m_strIcon; }
+  // TODO KDE4: rename to iconName, to be consistent with iconNameForURL and not sounding like we return a QIcon?
 
   /**
    * Use this function only if you don't have a special URL
@@ -420,6 +431,9 @@ protected:
   static bool s_bChecked;
 
   QStringList m_lstPatterns;
+  QString m_strIcon;
+  class Private;
+  Private* const d;
 
   static Ptr s_pDefaultType;
 
