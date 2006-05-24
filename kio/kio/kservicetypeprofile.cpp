@@ -49,6 +49,7 @@ bool KServiceTypeProfile::s_configurationMode = false;
 
 KServiceTypeProfile* KServiceTypeProfile::findProfile( const QString& mimeType, const QString& genservicetype )
 {
+    initStatic();
     // This uses a standard multimap-lookup to find the entry where
     // both mimeType and generic servicetype match.
     KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( mimeType );
