@@ -57,6 +57,9 @@ public:
      * Constructor, does nothing but initialize some default-values.
      */
     KPixmapSplitter();
+    /**
+     * Just an empty destructor.
+     */
     ~KPixmapSplitter();
 
     /**

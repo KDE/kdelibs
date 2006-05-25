@@ -63,6 +63,9 @@ public:
        @param ref the DCOP reference
      */
     explicit DCOPStub( const DCOPRef& ref );
+    /**
+     * Destroys a DCOPStub
+     */
     virtual ~DCOPStub();
 
     /**

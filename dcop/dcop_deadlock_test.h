@@ -38,10 +38,19 @@ class MyDCOPObject : public QObject, public DCOPObject
 {
   Q_OBJECT
 public:
+  /**
+   * Creates a test DCOP object
+   */
   MyDCOPObject(const QCString &name, const QCString &remoteName);
+  /**
+   * Processes a DCOP message
+   */
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString& replyType, QByteArray &replyData);
 public Q_SLOTS:
+  /**
+   * A slot connected to internal timer timeout, performs a DCOP call.
+   */
   void slotTimeout();
 
 private:

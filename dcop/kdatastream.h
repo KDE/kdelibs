@@ -9,19 +9,37 @@
 class DCOPCString: public QByteArray
 {
 public:
-    DCOPCString()
-    {}
 
-    DCOPCString(int size): QByteArray(size, '\0')
-    {}
+    /**
+     * Creates an empty DCOPCString.
+     */
+    DCOPCString() {}
 
+    /**
+     * Creates a  DCOPCString of given size filled with @c 0's.
+     * @param size size of created string
+     */
+    DCOPCString(int size): QByteArray(size, '\0') {}
 
+    /**
+     * Creates a DCOPCString that is a deep copy of a C string.
+     * @param str string to copy
+     */
     DCOPCString(const char* str): QByteArray(str)
     { squeezeTrailNulls(); }
 
+    /**
+     * Creates a DCOPCString that is a deep copy of a byte array.
+     * @param array byte array to copy
+     */
     DCOPCString(const QByteArray& array): QByteArray(array)
     { squeezeTrailNulls(); }
 
+    /**
+     * Assigns a copy of byte array to this string
+     * @param ba byte array to copy
+     * @return reference to this string
+     */
     DCOPCString& operator=(const QByteArray& ba)
     {
         QByteArray::operator=(ba);
@@ -29,16 +47,30 @@ public:
         return *this;
     }
 
+    /**
+     * Assigns a copy of C string to this string
+     * @param data C string to copy
+     * @return reference to this string
+     */
     DCOPCString& operator=(const char* data)
     {
         QByteArray::operator=(data); return *this;
     }
 
+    /**
+     * Assigns a copy of DCOPCString to this string
+     * @param ds DCOPCString to copy
+     * @return reference to this string
+     */
     DCOPCString& operator=(const DCOPCString& ds)
     {
         QByteArray::operator=(ds); return *this;
     }
 private:
+
+    /**
+     * Removes trailing nulls from the string
+     */
     void squeezeTrailNulls()
     {
         while (length() && data()[length() - 1] == '\0')

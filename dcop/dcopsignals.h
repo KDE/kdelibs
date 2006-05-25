@@ -38,20 +38,28 @@ class DCOPConnection;
 class DCOPSignalConnection
 {
 public:
-   DCOPCString sender;      // Sender client, empty means any client
-   DCOPConnection *senderConn; //Sender client.
-   DCOPCString senderObj;   // Object that sends the signal.
-   DCOPCString signal;      // Signal name. Connections are sorted on signal name.
+   /** Sender client, empty means any client. */
+   DCOPCString sender;
+   /** Sender connection. */
+   DCOPConnection *senderConn;
+   /** Object that sends the signal. */
+   DCOPCString senderObj;
+   /** Signal name. Connections are sorted on signal name. */
+   DCOPCString signal;      
 
-   DCOPConnection *recvConn; // Client that wants to receive the signal
-   DCOPCString recvObj;     // Object that wants to receive the signal
-   DCOPCString slot;        // Function to send to in the object.
+   /** Client that wants to receive the signal. */
+   DCOPConnection *recvConn; 
+   /** Object that wants to receive the signal. */
+   DCOPCString recvObj;
+   /** Function to send to in the object. */
+   DCOPCString slot; 
 };
 
 /** \internal */
 class DCOPSignalConnectionList : public QList<DCOPSignalConnection*>
 {
 public:
+   /** Default constructor. */ 
    DCOPSignalConnectionList() { };
 };
 
@@ -61,6 +69,10 @@ public:
 class DCOPSignals
 {
 public:
+
+   /** 
+    * Destructor - deletes all connections.
+    */
    ~DCOPSignals();
 
    /**
@@ -115,7 +127,7 @@ public:
    void removeConnections(DCOPConnection *conn, const DCOPCString &obj=0);
 
 
-   /*
+   /**
     * The administration.
     *
     * All connections are sorted by "signal" and then inserted in the

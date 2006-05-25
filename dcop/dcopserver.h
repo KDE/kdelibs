@@ -66,22 +66,49 @@ class QFile;
 class DCOPConnection : public QSocketNotifier
 {
 public:
+    /**
+     * Constructor for DCOP connection.
+     * @param conn ICE protocol connection to use for this DCOP connection
+     */
     DCOPConnection( IceConn conn );
+
+		/**
+		 * Destructor for DCOP connection.
+		 */
     ~DCOPConnection();
 
+    /**
+     * List of signal connections.
+     */
     DCOPSignalConnectionList *signalConnectionList();
 
-    // Add the data from offset @p start in @p _data to the output
-    // buffer and schedule it for later transmission.
+    /**
+     * Add the data from offset @p start in @p _data to the output
+     * buffer and schedule it for later transmission.
+     */
     void waitForOutputReady(const QByteArray &_data, int start);
 
-    // Called from DCOPServer::slotOutputReady()
-    // Flush the output buffer.
+    /**
+     * Called from DCOPServer::slotOutputReady()
+     * Flush the output buffer.
+     */
     void slotOutputReady();
 
+    /**
+     * Application identifier, eg. "konsole-10140"
+     */
     DCOPCString appId;
+    /**
+     * Application identifier without '-' and the number, eg. "konsole"
+     */
     DCOPCString plainAppId;
+    /** 
+     * Inter Client Exchange connection
+     */
     IceConn iceConn;
+    /**
+     * If > 0, application registration will be broadcasted.
+     */
     int notifyRegister;
     /**
      * When client A has called client B then for the duration of the call:
@@ -95,13 +122,39 @@ public:
      * or both unregister during the call.
      */
     QList <IceConn> waitingOnReply;
+    /**
+     * List of ICE connections waiting for reply.
+     */
     QList <IceConn> waitingForReply;
+		/** 
+		 * List of ICE connections waiting for delayed (after DCOPReplyWait) reply.
+		 */ 
     QList <IceConn> waitingForDelayedReply;
+		/**
+		 * List of signal connections.
+		 */
     DCOPSignalConnectionList *_signalConnectionList;
+		/**
+		 * Determines whether the application runs as a daemon.
+		 */
     bool daemon;
+		/**
+		 * Determines whether output of the application is blocked. If so, the
+		 * data are stored in outputBuffer instead of being immediately sent.
+		 * @see outputBuffer
+		 */
     bool outputBlocked;
+		/**
+		 * Output buffer to store ICE data when output is blocked.
+		 */
     QList <QByteArray> outputBuffer;
+		/**
+		 * Index of first valid element in outputBuffer.
+		 */
     unsigned long outputBufferStart;
+    /**
+		 * Used in waitForOutputReady to be notified when output is ready.
+		 */
     QSocketNotifier *outputBufferNotifier;
 };
 
@@ -113,19 +166,55 @@ class DCOPServer : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * Creates new server.
+     * @param _suicide Determines whether the server should quit if no clients
+     * connect in certain time period.
+     */
     DCOPServer(bool _suicide);
+
+    /**
+     * Destroys the server.
+     */
     ~DCOPServer();
 
+    /**
+     * Adds a connection to watch (process data when some activity occurs)
+     * @param iceConn connection to watch
+     */
     void* watchConnection( IceConn iceConn );
-    void removeConnection( void* data );
+    /**
+     * Removes a connection and deletes it.
+     * @param data DCOPConnection to be removed
+     */
+    void removeConnection( void* data );    
+    /**
+     * Handles incoming DCOP message - reads it from sender, processes and sends
+     * to the receiver.
+     * @param iceConn ICE connection for the message
+     * @param opcode Type of the message
+     * @param length Length of the message
+     * @param swap Unused?
+     */
     void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
+    
     void ioError( IceConn iceConn );
 
     bool receive(const DCOPCString &app, const DCOPCString &obj,
                  const DCOPCString &fun, const QByteArray& data,
                  DCOPCString& replyType, QByteArray &replyData, IceConn iceConn);
 
+    /**
+     * Finds an application for given identificator.
+     * @param appId application identificator to look for
+     * @return Connection to this application if found, null otherwise
+     */
     DCOPConnection *findApp(const DCOPCString &appId);
+    /**
+     * Find a DCOP connection for given ICE connection.
+     * @param iceConn ICE connection to find DCOP connection for
+     * @return DCOP connection for given ICE connection
+     */
     DCOPConnection *findConn(IceConn iceConn)
        { return clients.value(iceConn); }
 

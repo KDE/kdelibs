@@ -1115,9 +1115,9 @@ DCOPServer::~DCOPServer()
 DCOPConnection* DCOPServer::findApp( const DCOPCString& appId )
 {
     if ( appId.isNull() )
-	return 0;
+        return 0;
     else
-	return appIds.value( appId );
+        return appIds.value( appId );
 }
 
 /*!
@@ -1164,7 +1164,7 @@ void DCOPServer::newClient( int /*socket*/ )
     IceConn iceConn = IceAcceptConnection( static_cast<const  DCOPListener*>(sender())->listenObj, &status);
     if (!iceConn) {
       if (status == IceAcceptBadMalloc)
-	 qWarning("Failed to alloc connection object!\n");
+         qWarning("Failed to alloc connection object!\n");
       else // IceAcceptFailure
          qWarning("Failed to accept ICE connection!\n");
       return;
@@ -1178,12 +1178,12 @@ void DCOPServer::newClient( int /*socket*/ )
     }
 
     if (cstatus != IceConnectAccepted) {
-	if (cstatus == IceConnectIOError)
-	    qWarning ("IO error opening ICE Connection!\n");
-	else
-	    qWarning ("ICE Connection rejected!\n");
-        deadConnections.removeAll(iceConn);
-	(void) IceCloseConnection (iceConn);
+      if (cstatus == IceConnectIOError)
+	      qWarning ("IO error opening ICE Connection!\n");
+      else
+        qWarning ("ICE Connection rejected!\n");
+      deadConnections.removeAll(iceConn);
+      (void) IceCloseConnection (iceConn);
     }
 }
 
