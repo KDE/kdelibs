@@ -20,10 +20,7 @@
 #ifndef KDEWIN_SYS_TIMES_H
 #define KDEWIN_SYS_TIMES_H
 
-// include everywhere
-#include <sys/types.h>
-
-#include <machine/types.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
