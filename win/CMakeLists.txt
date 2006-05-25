@@ -20,6 +20,7 @@ if(MINGW)
    # find the headers for mingw
    file(GLOB _arpa_headers include/mingw/arpa/*.h)
    file(GLOB _asm_headers include/mingw/asm/*.h)
+   file(GLOB _machine_headers include/msvc/machine/*.h)
    file(GLOB _net_headers include/mingw/net/*.h)
    file(GLOB _netinet_headers include/mingw/netinet/*.h)
    file(GLOB _sys_headers include/mingw/sys/*.h)
