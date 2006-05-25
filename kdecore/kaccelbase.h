@@ -166,6 +166,10 @@ class KDECORE_EXPORT KAccelBase
 	*/
 	void setConfigGroup( const QString& group );
 	void setConfigGlobal( bool global );
+	/** Enables or disables the accelerator.
+	 * @param bEnabled determines whether the accelerator should be enabled or
+	 * disabled.
+	 */
 	virtual void setEnabled( bool bEnabled ) = 0;
 	/** Returns whether autoupdate is enabled for these accelerators. */
 	bool getAutoUpdate() { return m_bAutoUpdate; }
@@ -217,14 +221,32 @@ class KDECORE_EXPORT KAccelBase
 	void slotRemoveAction( KAccelAction* );
 
 	struct X;
+
+	/** Constructs a list of keys to be connected, sorted highest priority first.
+	 * @param rgKeys constructed list of keys
+	 */
 	void createKeyList( QValueVector<struct X>& rgKeys );
 	bool insertConnection( KAccelAction* );
 	bool removeConnection( KAccelAction* );
 
-	virtual bool emitSignal( Signal ) = 0;
-	virtual bool connectKey( KAccelAction&, const KKeyServer::Key& ) = 0;
-	virtual bool connectKey( const KKeyServer::Key& ) = 0;
+	/** Emits a signal.
+	 * @param signal signal to be emitted
+	 */
+	virtual bool emitSignal( Signal signal ) = 0;
+	/** Defines a key which activates the accelerator and executes the action
+	 * @param action action to be executed when key is pressed
+	 * @param key key which causes the action to be executed
+	 */
+	virtual bool connectKey( KAccelAction& action, const KKeyServer::Key& key ) = 0;
+	/** Defines a key which activates the accelerator
+	 * @param key key which causes the action to be executed
+	 */
+	virtual bool connectKey( const KKeyServer::Key& key) = 0;
+	/** Removes the key from accelerator so it no longer executes the action
+	 */
 	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& ) = 0;
+	/** Removes the key from accelerator
+	 */
 	virtual bool disconnectKey( const KKeyServer::Key& ) = 0;
 
  protected:
