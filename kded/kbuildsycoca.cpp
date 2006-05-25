@@ -499,7 +499,7 @@ bool KBuildSycoca::recreate()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  KSycocaFactory *mtf = new KBuildMimeTypeFactory;
+  KBuildMimeTypeFactory *mtf = new KBuildMimeTypeFactory;
   g_bsgf = new KBuildServiceGroupFactory();
   g_bsf = new KBuildServiceFactory(stf, mtf, g_bsgf);
   (void) new KBuildProtocolInfoFactory();
