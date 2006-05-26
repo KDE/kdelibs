@@ -539,7 +539,13 @@ public:
          * calls createGUI() once ToolBar, Keys and Statusbar have been
          * taken care of.  @see createGUI
          */
-        Create = 16
+        Create = 16,
+ 
+        /**
+         * All the above option
+         * (this is the default)
+         */
+        Default = ToolBar | Keys | StatusBar | Save | Create
     };
     Q_DECLARE_FLAGS(StandardWindowOptions, StandardWindowOption)
 
@@ -553,7 +559,7 @@ public:
      * @see StandardWindowOptions
      *
      */
-    void setupGUI( StandardWindowOptions options = static_cast<StandardWindowOptions>(ToolBar | Keys | StatusBar | Save | Create), const QString& xmlfile = QString() );
+    void setupGUI( StandardWindowOptions options = Default, const QString& xmlfile = QString() );
 
     /**
      * Configures the current windows and its actions in the typical KDE
