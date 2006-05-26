@@ -22,7 +22,7 @@
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
-#include <kio/kservice.h>
+#include <kservice.h>
 #include <kparts/componentfactory.h>
 
 #include <qtimer.h>

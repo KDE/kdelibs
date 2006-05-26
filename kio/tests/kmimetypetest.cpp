@@ -142,84 +142,6 @@ void KMimeTypeTest::testAllMimeTypes()
     }
 }
 
-void KMimeTypeTest::testAllServiceTypes()
-{
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
-    const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
-
-    // A bit of checking on the allServiceTypes list itself
-    KServiceType::List::ConstIterator stit = allServiceTypes.begin();
-    const KServiceType::List::ConstIterator stend = allServiceTypes.end();
-    for ( ; stit != stend; ++stit ) {
-        const KServiceType::Ptr servtype = (*stit);
-        const QString name = servtype->name();
-        QVERIFY( !name.isEmpty() );
-        QVERIFY( servtype->sycocaType() == KST_KServiceType );
-    }
-}
-
-void KMimeTypeTest::testAllServices()
-{
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-    const KService::List lst = KService::allServices();
-    QVERIFY( !lst.isEmpty() );
-
-    for ( KService::List::ConstIterator it = lst.begin();
-          it != lst.end(); ++it ) {
-        const KService::Ptr service = (*it);
-        QVERIFY( service->isType( KST_KService ) );
-
-        const QString type = service->type();
-        QVERIFY( !type.isEmpty() );
-        QVERIFY( type == "Application" || type == "Service" );
-        const QString name = service->name();
-        const QString dep = service->desktopEntryPath();
-        qDebug( "%s %s", qPrintable( name ), qPrintable( dep ) );
-        QVERIFY( !name.isEmpty() );
-        QVERIFY( !dep.isEmpty() );
-
-        KService::Ptr lookedupService = KService::serviceByDesktopPath( dep );
-        QVERIFY( lookedupService ); // not null
-        QCOMPARE( lookedupService->desktopEntryPath(), dep );
-
-        if ( type == "Application" )
-        {
-            const QString menuId = service->menuId();
-            QVERIFY( !menuId.isEmpty() );
-            lookedupService = KService::serviceByMenuId( menuId );
-            QVERIFY( lookedupService ); // not null
-            QCOMPARE( lookedupService->menuId(), menuId );
-        }
-    }
-}
-
-void KMimeTypeTest::testAllInitServices()
-{
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-    const KService::List lst = KService::allInitServices();
-    if ( lst.isEmpty() )
-        QSKIP( "no init services available", SkipAll ); // this happens when only kdelibs is installed
-
-    for ( KService::List::ConstIterator it = lst.begin();
-          it != lst.end(); ++it ) {
-        const KService::Ptr service = (*it);
-        QVERIFY( service->isType( KST_KService ) );
-
-        const QString name = service->name();
-        const QString dep = service->desktopEntryPath();
-        qDebug( "%s %s (type=%s init=%s)", qPrintable( name ), qPrintable( dep ), qPrintable( service->type() ), qPrintable( service->init() ) );
-        QVERIFY( !name.isEmpty() );
-        QVERIFY( !dep.isEmpty() );
-
-        const QString init = service->init();
-        QVERIFY( !init.isEmpty() ); // kbuildservicefactory.cpp ensures that only services with init not empty are put in the init list
-    }
-}
-
 void KMimeTypeTest::testMimeTypeParent()
 {
     if ( !KSycoca::isAvailable() )
@@ -283,31 +205,6 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
 
     // We should have at least a few kate plugins like
     // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
-    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
-    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
-}
-
-void KMimeTypeTest::testServiceTypeTraderForReadOnlyPart()
-{
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-
-    // Querying trader for services associated with KParts/ReadOnlyPart
-    KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
-    QVERIFY( offers.count() > 0 );
-    //foreach( KService::Ptr service, offers )
-    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->desktopEntryPath() ) );
-
-    // Only test for parts provided by kdelibs:
-    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
-    QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) );
-    QVERIFY( offerListHasService( offers, "khtml.desktop" ) );
-    QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
-    QVERIFY( offerListHasService( offers, "kjavaappletviewer.desktop" ) );
-    QVERIFY( offerListHasService( offers, "kcertpart.desktop" ) );
-
-    // Now look for any KTextEditor/Plugin
-    offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
     QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }

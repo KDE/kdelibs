@@ -618,6 +618,17 @@ target_link_libraries(kjobtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kdecore-kjobtest ${EXECUTABLE_OUTPUT_PATH}/kjobtest)
 
+########### kservicetest ###############
+
+set(kservicetest_SRCS kservicetest.cpp )
+
+kde4_automoc(${kservicetest_SRCS})
+
+kde4_add_executable(kservicetest NOGUI RUN_UNINSTALLED ${kservicetest_SRCS})
+
+target_link_libraries(kservicetest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kservicetest ${EXECUTABLE_OUTPUT_PATH}/kservicetest)
 
 #######################################
 

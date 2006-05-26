@@ -29,7 +29,7 @@
 
 #include <kio/kprotocolmanager.h>
 #include <kio/kmimetype.h>
-#include <kio/kservice.h>
+#include <kservice.h>
 #include <kservicetypetrader.h>
 #include "kjs_navigator.h"
 #include "kjs/lookup.h"

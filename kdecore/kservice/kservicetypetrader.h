@@ -65,7 +65,7 @@
  *        applications or components.
  * @see KMimeTypeTrader, KService
  */
-class KIO_EXPORT KServiceTypeTrader
+class KDECORE_EXPORT KServiceTypeTrader
 {
 public:
     /**

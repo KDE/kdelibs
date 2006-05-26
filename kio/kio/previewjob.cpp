@@ -48,7 +48,7 @@
 #include <kcodecs.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <kio/kservice.h>
+#include <kservice.h>
 #include <qlinkedlist.h>
 
 #include "previewjob.moc"

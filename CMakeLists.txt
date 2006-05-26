@@ -65,7 +65,7 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES} ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
 # kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
-set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${KDE4_DCOP_INCLUDES})
+set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kdecore/kservice ${KDE4_DCOP_INCLUDES})
 # kdeui depends on kdefx+kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${KDE4_KDECORE_INCLUDES})
 # kio depends on kdeui

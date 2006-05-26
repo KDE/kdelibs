@@ -43,7 +43,7 @@ class KServiceTypeProfileList;
  *
  * @internal used by KServiceTypeTrader/KMimeTypeTrader
  */
-class KIO_EXPORT KServiceTypeProfile
+class KDECORE_EXPORT KServiceTypeProfile
 {
 public:
   ~KServiceTypeProfile();

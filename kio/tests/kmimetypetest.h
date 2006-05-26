@@ -13,13 +13,9 @@ private Q_SLOTS:
     void testFindByURL();
     void testFindByPath();
     void testAllMimeTypes();
-    void testAllServiceTypes();
-    void testAllServices();
-    void testAllInitServices();
     void testMimeTypeParent();
     void testMimeTypeTraderForTextPlain();
     void testMimeTypeTraderForDerivedMimeType();
-    void testServiceTypeTraderForReadOnlyPart();
     void testHasServiceType1();
     void testHasServiceType2();
 };

@@ -43,7 +43,7 @@
 
 #include "kio/dataprotocol.h"
 #include "kio/slave.h"
-#include "kio/kservice.h"
+#include "kservice.h"
 #include <kio/global.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>

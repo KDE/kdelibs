@@ -36,7 +36,7 @@ class KSycocaDict;
  * It loads the services from parsing directories (e.g. applnk/)
  * but can also create service from data streams or single config files
  */
-class KIO_EXPORT KServiceFactory : public KSycocaFactory
+class KDECORE_EXPORT KServiceFactory : public KSycocaFactory
 {
   K_SYCOCAFACTORY( KST_KServiceFactory )
 public:

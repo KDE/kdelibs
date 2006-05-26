@@ -43,7 +43,7 @@ class QWidget;
  * @see KServiceGroup
  * @author Torben Weis <weis@kde.org>
  */
-class KIO_EXPORT KService : public KSycocaEntry
+class KDECORE_EXPORT KService : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KService, KSycocaEntry )
 

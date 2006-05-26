@@ -477,7 +477,7 @@ static int input YY_PROTO(( void ));
 #endif
 #endif
 
-#if YY_STACK_USED
+#ifdef YY_STACK_USED
 static int yy_start_stack_ptr = 0;
 static int yy_start_stack_depth = 0;
 static int *yy_start_stack = 0;
@@ -1385,10 +1385,10 @@ FILE *file;
 	b->yy_input_file = file;
 	b->yy_fill_buffer = 1;
 
-#if YY_ALWAYS_INTERACTIVE
+#ifdef YY_ALWAYS_INTERACTIVE
 	b->yy_is_interactive = 1;
 #else
-#if YY_NEVER_INTERACTIVE
+#ifdef YY_NEVER_INTERACTIVE
 	b->yy_is_interactive = 0;
 #else
 	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
@@ -1679,7 +1679,7 @@ void *ptr;
 	free( ptr );
 	}
 
-#if YY_MAIN
+#ifdef YY_MAIN
 int main()
 	{
 	yylex();

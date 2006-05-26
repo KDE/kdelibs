@@ -50,19 +50,11 @@ set(kiocore_STAT_SRCS
   kio/kfileshare.cpp
   kio/ksambashare.cpp
   kio/knfsshare.cpp
-  kio/kservicetypetrader.cpp
-  kio/ktraderparse.cpp
-  kio/ktraderparsetree.cpp
-  kio/kservicetypefactory.cpp
-  kio/kservicetype.cpp
   kio/kmimetypefactory.cpp
   kio/kmimetypetrader.cpp
   kio/kmimetype.cpp
   kio/kdedesktopmimetype.cpp
   kio/kservicegroup.cpp
-  kio/kservice.cpp
-  kio/kservicefactory.cpp
-  kio/kservicetypeprofile.cpp
   kio/kservicegroupfactory.cpp
   kio/kurifilter.cpp
   kio/kshellcompletion.cpp
@@ -71,8 +63,6 @@ set(kiocore_STAT_SRCS
   kio/kfileitem.cpp
   kio/kdirlister.cpp
   kio/kimageio.cpp
-  kio/yacc.c
-  kio/lex.c
   kio/chmodjob.cpp
   kio/kscan.cpp
   kio/kar.cpp

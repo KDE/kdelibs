@@ -49,7 +49,7 @@
 #include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
-#include <kio/kservicetypefactory.h>
+#include <kservicetypefactory.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>

@@ -10,6 +10,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdeui )
 
 # our own subdirs
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/network )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kservice )
 
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${KDE4_DCOP_INCLUDES} )
@@ -91,7 +92,7 @@ add_subdirectory( malloc )
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( network )
-
+add_subdirectory( kservice )
 
 ########### next target ###############
 
@@ -214,6 +215,16 @@ set(kdecore_LIB_SRCS
    network/kbufferedsocket.cpp
    network/ksocketbuffer.cpp
    ${kdecore_OPTIONAL_SRCS}
+   kservice/kservice.cpp
+   kservice/kservicefactory.cpp
+   kservice/kservicetype.cpp
+   kservice/kservicetypefactory.cpp
+   kservice/kservicetypeprofile.cpp
+   kservice/kservicetypetrader.cpp
+   kservice/ktraderparse.cpp
+   kservice/ktraderparsetree.cpp
+   kservice/yacc.c
+   kservice/lex.c
    malloc/malloc.c
    ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
 )

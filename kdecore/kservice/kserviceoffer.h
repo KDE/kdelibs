@@ -33,7 +33,7 @@
  * @see KService
  * @short Holds the user's preference of a service.
  */
-class KIO_EXPORT KServiceOffer
+class KDECORE_EXPORT KServiceOffer
 {
 public:
   /**

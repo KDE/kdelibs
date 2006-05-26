@@ -38,22 +38,17 @@ install_files( /include/kio FILES
   skipdlg.h
 )
 
-install_files( /include FILES kservicetype.h
+install_files( /include FILES
   kmimetype.h
   kmimetypetrader.h
   kmimemagic.h
-  kservice.h
   kimageio.h
   krun.h
   kdirwatch.h
   kautomount.h
-  kservicetypeprofile.h
   kar.h
   ktar.h
   kzip.h
-  ktrader.h
-  kservicetypetrader.h
-  kserviceoffer.h
   kurifilter.h
   kurlcompletion.h
   kshellcompletion.h

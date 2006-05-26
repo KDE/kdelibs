@@ -40,7 +40,7 @@ class KDesktopFile;
  * Service types are stored as desktop files in $KDEHOME/share/servicetypes.
  * @see KService
  */
-class KIO_EXPORT KServiceType : public KSycocaEntry
+class KDECORE_EXPORT KServiceType : public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KServiceType, KSycocaEntry )
 
