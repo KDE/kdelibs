@@ -312,4 +312,42 @@ void KMimeTypeTest::testServiceTypeTraderForReadOnlyPart()
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }
 
+void KMimeTypeTest::testHasServiceType1() // with services constructed with a full path (rare)
+{
+    QString katepartPath = locate( "services", "katepart.desktop" );
+    QVERIFY( !katepartPath.isEmpty() );
+    KService katepart( katepartPath );
+    QVERIFY( katepart.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
+    //QVERIFY( katepart.hasMimeType( KMimeType::mimeType( "text/x-diff" ).data() ) ); // inherited mimetype; fails
+    QVERIFY( !katepart.hasMimeType( KMimeType::mimeType( "image/png" ).data() ) );
+    QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
+
+    QString ktexteditor_isearchPath = locate( "services", "ktexteditor_isearch.desktop" );
+    QVERIFY( !ktexteditor_isearchPath.isEmpty() );
+    KService ktexteditor_isearch( ktexteditor_isearchPath );
+    QVERIFY( ktexteditor_isearch.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
+    //QVERIFY( ktexteditor_isearch.hasMimeType( KMimeType::mimeType( "text/x-diff" ).data() ) ); // inherited mimetype; fails
+    QVERIFY( ktexteditor_isearch.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !ktexteditor_isearch.hasServiceType( "KParts/ReadOnlyPart" ) );
+}
+
+void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
+{
+    KService::Ptr katepart = KService::serviceByDesktopPath( "katepart.desktop" );
+    QVERIFY( !katepart.isNull() );
+    QVERIFY( katepart->hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
+    QVERIFY( katepart->hasMimeType( KMimeType::mimeType( "text/x-diff" ).data() ) ); // due to inheritance
+    QVERIFY( !katepart->hasMimeType( KMimeType::mimeType( "image/png" ).data() ) );
+    QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
+    QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
+
+    KService::Ptr ktexteditor_isearch = KService::serviceByDesktopPath( "ktexteditor_isearch.desktop" );
+    QVERIFY( !ktexteditor_isearch.isNull() );
+    QVERIFY( ktexteditor_isearch->hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
+    QVERIFY( ktexteditor_isearch->hasMimeType( KMimeType::mimeType( "text/x-diff" ).data() ) ); // due to inheritance
+    QVERIFY( ktexteditor_isearch->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !ktexteditor_isearch->hasServiceType( "KParts/ReadOnlyPart" ) );
+}
+
 // TODO tests that involve writing a profilerc and checking that the trader is obeying it

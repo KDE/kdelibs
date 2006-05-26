@@ -17,8 +17,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "ksycoca.h"
 #include "kservicetype.h"
+#include "ksycoca.h"
+#include "kservice.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
 #include "kservicetypeprofile.h"

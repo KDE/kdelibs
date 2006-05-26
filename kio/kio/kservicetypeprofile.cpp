@@ -199,6 +199,12 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const QMap<KService::
 
     KServiceTypeProfile* profile = findProfile( mimeType, genericServiceType );
 
+    KServiceType::Ptr genericServiceTypePtr( 0 );
+    if ( !genericServiceType.isEmpty() ) {
+       genericServiceTypePtr = KServiceType::serviceType( genericServiceType );
+       Q_ASSERT( genericServiceTypePtr );
+    }
+
     // Assign preferences from profilerc to those offers.
     QMap<KService::Ptr,int>::const_iterator it = list.begin();
     const QMap<KService::Ptr,int>::const_iterator end = list.end();
@@ -206,7 +212,12 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const QMap<KService::
     {
         const KService::Ptr servPtr = it.key();
         //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->name() << endl;
-        if ( genericServiceType.isEmpty() || servPtr->hasServiceType( genericServiceType ) )
+        if ( genericServiceTypePtr ||
+             // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
+             KServiceFactory::self()->hasOffer( genericServiceTypePtr->offset(),
+                                                genericServiceTypePtr->serviceOffersOffset(),
+                                                servPtr->offset() )
+            )
         {
             // Now look into the profile, to find this service's preference.
             bool foundInProfile = false;

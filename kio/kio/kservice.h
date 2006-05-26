@@ -25,7 +25,7 @@
 #include <qvariant.h>
 #include <kicontheme.h>
 
-#include "ksycocaentry.h"
+#include "kservicetype.h"
 
 class QDataStream;
 class KDesktopFile;
@@ -124,12 +124,12 @@ public:
   QString icon() const { return m_strIcon; }
   /**
    * Returns the pixmap that represents the icon.
-   * @return a pixmap for this service (finds and loads icon()),
-   *         null if not set
+   * @return a pixmap for this service (finds and loads icon()), null if not set
    * @see icon()
+   * @deprecated use icon() and KIconLoader.
    */
-  QPixmap pixmap( K3Icon::Group _group, int _force_size = 0, int _state = 0,
-                  QString * _path = 0L ) const;
+  KDE_DEPRECATED QPixmap pixmap( K3Icon::Group _group, int _force_size = 0, int _state = 0,
+                                 QString * _path = 0L ) const;
   /**
    * Checks whethe the service should be run in a terminal.
    * @return true if the service is to be run in a terminal.
@@ -261,18 +261,39 @@ public:
   /**
    * Returns the service types that this service supports.
    * @return the list of service types that are supported
+   * Note that this doesn't include inherited servicetypes or mimetypes,
+   * only the service types listed in the .desktop file.
    */
   QStringList serviceTypes() const { return m_lstServiceTypes; }
 
   /**
    * Checks whether the service supports this service type
-   * @param _service The name of the service type you are
-   *        interested in determining whether this services supports.
+   * @param serviceTypePtr The name of the service type you are
+   *        interested in determining whether this service supports.
    *
-   * @return true if the service you specified is supported,
-   *        otherwise false.
+   * @return true if the service type you specified is supported, otherwise false.
    */
-  bool hasServiceType( const QString& _service ) const;
+  bool hasServiceType( const QString& serviceTypePtr ) const;
+
+  /**
+   * Checks whether the mime supports this mime type
+   * @param mimeTypePtr The name of the mime type you are
+   *        interested in determining whether this service supports.
+   *
+   * Note that if you only have the name of the mime type, you have to look it up
+   * with KMimeType::mimeType( mimetype ) and use .data() on the result (this is
+   * because KService doesn't know KMimeType for dependency reasons)
+   *
+   * Warning this method will fail to return true if this KService isn't from ksycoca
+   * (i.e. it was created with a full path or a KDesktopFile) *and* the mimetype
+   * isn't explicited listed in the .desktop file but a parent mimetype is.
+   * For this reason you should generally get KServices with KMimeTypeTrader
+   * or one of the KService::serviceBy methods.
+   *
+   * @return true if the mime type you specified is supported, otherwise false.
+   */
+  bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+
   /**
    * Checks whether a service is used as a default setting, for
    *         example as plugin in a file manager. Usually that is the
@@ -388,7 +409,8 @@ public:
 
   /**
    * Find a service by name, i.e. the translated Name field. You should
-   * really not use this method, since the name is translated.
+   * never use this method with a litteral name as argument, since the name
+   * is translated Name field of the desktop file. See serviceByStorageId instead.
    *
    * @param _name the name to search
    * @return a pointer to the requested service or 0 if the service is
@@ -502,16 +524,17 @@ private:
   QString m_strComment;
   QString m_strLibrary;
   QStringList m_lstServiceTypes;
-  bool m_bAllowAsDefault;
   int m_initialPreference;
-  bool m_bTerminal;
   QString m_strDesktopEntryName;
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
-  bool m_bValid;
   QStringList m_lstKeywords;
   QString m_strInit;
   QString m_strGenName;
+  bool m_bAllowAsDefault;
+  bool m_bTerminal;
+  bool m_bValid;
+  bool m_unused;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

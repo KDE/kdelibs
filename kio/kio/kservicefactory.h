@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright (C) 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -52,7 +53,7 @@ public:
     { assert(0); return 0; }
 
   /**
-   * Find a service (by name, e.g. "Terminal")
+   * Find a service (by translated name, e.g. "Terminal")
    */
   KService::Ptr findServiceByName( const QString &_name );
 
@@ -76,6 +77,14 @@ public:
    * The @p serviceOffersOffset allows to jump to the right entries directly.
    */
   QMap<KService::Ptr,int> offers( int serviceTypeOffset, int serviceOffersOffset );
+
+  /**
+   * Test if a specific service is associated with a specific servicetype
+   * @param serviceTypeOffset the offset of the service type being tested
+   * @param serviceOffersOffset allows to jump to the right entries for the service type directly.
+   * @param testedServiceOffset the offset of the service being tested
+   */
+  bool hasOffer( int serviceTypeOffset, int serviceOffersOffset, int testedServiceOffset );
 
   /**
    * @return all services. Very memory consuming, avoid using.

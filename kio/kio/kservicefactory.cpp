@@ -1,6 +1,6 @@
 // -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
- *  Copyright (C) 1999 David Faure <faure@kde.org>
+ *  Copyright (C) 1999-2006 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -285,6 +285,38 @@ QMap<KService::Ptr,int> KServiceFactory::offers( int serviceTypeOffset, int serv
          break; // 0 => end of list
    }
    return list;
+}
+
+bool KServiceFactory::hasOffer( int serviceTypeOffset, int serviceOffersOffset, int testedServiceOffset )
+{
+   // Save stream position
+   const int savedPos = m_str->device()->pos();
+
+   QDataStream *str = m_str;
+   // Jump to the offer list
+   str->device()->seek( m_offerListOffset + serviceOffersOffset );
+   bool found = false;
+   qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
+   while (!found)
+   {
+      (*str) >> aServiceTypeOffset;
+      if ( aServiceTypeOffset )
+      {
+         (*str) >> aServiceOffset;
+         (*str) >> initialPreference;
+         if ( aServiceTypeOffset == serviceTypeOffset )
+         {
+            if( aServiceOffset == testedServiceOffset )
+               found = true;
+         } else
+            break; // too far
+      }
+      else
+         break; // 0 => end of list
+   }
+   // Restore position
+   str->device()->seek( savedPos );
+   return found;
 }
 
 KServiceFactory *KServiceFactory::_self = 0;

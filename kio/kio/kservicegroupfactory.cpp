@@ -71,7 +71,7 @@ KServiceGroup::Ptr KServiceGroupFactory::findGroupByDesktopPath(const QString &_
    if (!m_sycocaDict) return KServiceGroup::Ptr(); // Error!
 
    // Warning : this assumes we're NOT building a database
-   // But since findServiceByName isn't called in that case...
+   // But since findGroupByDesktopPath isn't called in that case...
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_sycocaDict->find_string( _name );
@@ -93,7 +93,7 @@ KServiceGroup::Ptr KServiceGroupFactory::findBaseGroup(const QString &_baseGroup
    if (!m_baseGroupDict) return KServiceGroup::Ptr(); // Error!
 
    // Warning : this assumes we're NOT building a database
-   // But since findServiceByName isn't called in that case...
+   // But since findBaseGroup isn't called in that case...
    // [ see KServiceTypeFactory for how to do it if needed ]
 
    int offset = m_baseGroupDict->find_string( _baseGroupName );

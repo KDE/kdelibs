@@ -22,16 +22,15 @@
 #define __kservicetype_h__
 
 #include "ksycocaentry.h"
-#include "kservice.h"
 
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qmap.h>
-#include <QList>
-#include <qdatastream.h>
 #include <qvariant.h>
 
 #include <ksimpleconfig.h>
+
+class KDesktopFile;
 
 /**
  * A service type is the generic notion for a mimetype, a type of service

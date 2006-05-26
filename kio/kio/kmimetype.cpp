@@ -134,7 +134,10 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 {
   KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( _name );
-
+#if 0
+  // was in kde3, but is inconsistent with KServiceType::serviceType,
+  // and it breaks code that looks/creates offers, since application/octet-stream
+  // is used instead.
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
     if ( !s_pDefaultType )
@@ -143,6 +146,7 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
   }
 
   // We got a mimetype
+#endif
   return mime;
 }
 

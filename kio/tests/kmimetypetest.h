@@ -20,6 +20,8 @@ private Q_SLOTS:
     void testMimeTypeTraderForTextPlain();
     void testMimeTypeTraderForDerivedMimeType();
     void testServiceTypeTraderForReadOnlyPart();
+    void testHasServiceType1();
+    void testHasServiceType2();
 };
 
 

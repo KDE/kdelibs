@@ -41,7 +41,7 @@
 
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
-#include "kmimetype.h"
+#include <QPixmap>
 
 class KService::Private
 {
@@ -327,16 +327,26 @@ void KService::save( QDataStream& s )
     << d->categories << d->menuId;
 }
 
-bool KService::hasServiceType( const QString& _servicetype ) const
+bool KService::hasServiceType( const QString& serviceType ) const
 {
-  if (!m_bValid) return false; // safety test
+  if (!m_bValid) return false; // (useless) safety test
+  const KServiceType::Ptr ptr = KServiceType::serviceType( serviceType );
+  // share the implementation, at least as long as
+  // we don't have special code for mimetype inheritance
+  return hasMimeType( ptr.data() );
+}
 
-  //kDebug(7012) << "Testing " << m_strDesktopEntryName << " for " << _servicetype << endl;
+bool KService::hasMimeType( const KServiceType* ptr ) const
+{
+  if (!ptr) return false;
+  int serviceOffset = offset();
+  // doesn't seem to work:
+  //if ( serviceOffset == 0 )
+  //    serviceOffset = serviceByStorageId( storageId() );
+  if ( serviceOffset )
+      return KServiceFactory::self()->hasOffer( ptr->offset(), ptr->serviceOffersOffset(), serviceOffset );
 
-  KMimeType::Ptr mimePtr = KMimeType::mimeType( _servicetype );
-  if ( mimePtr && mimePtr->isDefault() )
-      mimePtr = 0;
-
+  // fall-back code for services that are from ksycoca
   bool isNumber;
   // For each service type we are associated with, if it doesn't
   // match then we try its parent service types.
@@ -347,15 +357,19 @@ bool KService::hasServiceType( const QString& _servicetype ) const
       if (isNumber)
          continue;
       //kDebug(7012) << "    has " << (*it) << endl;
-      KServiceType::Ptr ptr = KServiceType::serviceType( *it );
-      if ( ptr && ptr->inherits( _servicetype ) )
+      if ( *it == ptr->name() )
           return true;
-
-      // The mimetype inheritance ("is also") works the other way.
-      // e.g. if we're looking for a handler for mimePtr==smb-workgroup
-      // then a handler for inode/directory is ok.
-      if ( mimePtr && mimePtr->is( *it ) )
+      // also the case of parent servicetypes
+      KServiceType::Ptr p = KServiceType::serviceType( *it );
+      if ( p && p->inherits( ptr->name() ) )
           return true;
+      // #### but we can't handle inherited mimetypes here,
+      // since KMimeType is in kio... One solution would be a kdecore
+      // factory for accessing the mimetypes as servicetypes, plus
+      // the notion of the parent mimetype; ouch.
+      // Or a reverse API, KMimeType::isHandledBy( KService::Ptr )
+      // and KServiceType::isHandledBy( KService::Ptr )...
+      // Anyway this should be a very rare case, most code gets KServices from ksycoca.
   }
   return false;
 }

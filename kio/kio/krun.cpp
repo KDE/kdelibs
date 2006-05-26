@@ -1117,11 +1117,15 @@ void KRun::foundMimeType( const QString& type )
 
   Q_ASSERT( !m_bFinished );
 
+  KMimeType::Ptr mime = KMimeType::mimeType( type );
+  if ( !mime )
+      kWarning(7010) << "Unknown mimetype " << type << endl;
+
   // Suport for preferred service setting, see setPreferredService
   if ( !d->m_preferredService.isEmpty() ) {
       kDebug(7010) << "Attempting to open with preferred service: " << d->m_preferredService << endl;
       KService::Ptr serv = KService::serviceByDesktopName( d->m_preferredService );
-      if ( serv && serv->hasServiceType( type ) )
+      if ( serv && serv->hasMimeType( mime.data() ) )
       {
           KUrl::List lst;
           lst.append( m_strURL );
@@ -1134,7 +1138,7 @@ void KRun::foundMimeType( const QString& type )
   }
 
   // Resolve .desktop files from media:/, remote:/, applications:/ etc.
-  if ( type == "application/x-desktop" /* or inheriting? */ && !d->m_localPath.isEmpty() )
+  if ( mime && mime->is( "application/x-desktop" ) && !d->m_localPath.isEmpty() )
   {
     m_strURL = KUrl();
     m_strURL.setPath( d->m_localPath );

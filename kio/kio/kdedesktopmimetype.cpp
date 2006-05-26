@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kapplication.h>
 #include <dcopclient.h>
+#include "kservice.h"
 
 QString KDEDesktopMimeType::icon( const KUrl& _url ) const
 {
