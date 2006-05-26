@@ -1014,7 +1014,7 @@ static QStringSet *KResolver_initIdnDomains()
 {
   const char *kde_use_idn = getenv("KDE_USE_IDN");
   if (!kde_use_idn)
-     kde_use_idn = "ac:at:cat:br:ch:cl:cn:de:dk:fi:hu:info:io:jp:kr:li:lt:museum:no:se:sh:th:tm:tw:vn";
+     kde_use_idn = "ac:at:br:cat:ch:cl:cn:de:dk:fi:gr:hu:info:io:is:jp:kr:li:lt:museum:org:no:se:sh:th:tm:tw:vn";
   return new QStringSet(QString::fromLatin1(kde_use_idn).toLower().split(':').toSet());
 }
 
