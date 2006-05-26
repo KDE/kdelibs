@@ -399,11 +399,11 @@ void HTTPProtocol::resetSessionSettings()
   m_remoteConnTimeout = connectTimeout();
   m_remoteRespTimeout = responseTimeout();
 
-  // Bounce back the actual referrer sent
-  setMetaData("referrer", m_request.referrer);
-
   // Set the SSL meta-data here...
   setSSLMetaData();
+
+  // Bounce back the actual referrer sent
+  setMetaData("referrer", m_request.referrer);
 
   // Follow HTTP/1.1 spec and enable keep-alive by default
   // unless the remote side tells us otherwise or we determine
