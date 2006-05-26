@@ -920,14 +920,14 @@ void KNotifyWidget::playSound()
         QStringList soundDirs = KGlobal::dirs()->findDirs("data", app->appName() + "/sounds");
         soundDirs += KGlobal::dirs()->resourceDirs( "sound" );
 
-        if ( !soundDirs.isEmpty() ) {
+        if ( !soundDirs.isEmpty() && m_soundPath->url().isLocalFile() ) {
            QDir dir;
            dir.setFilter( QDir::Files | QDir::Readable );
            QStringList::ConstIterator it = soundDirs.begin();
            while ( it != soundDirs.end() ) {
                dir = *it;
                if ( dir.isReadable() && dir.count() > 2 &&
-	            KIO::NetAccess::exists( *it + m_soundPath->url(), true, 0 )) {
+	            KIO::NetAccess::exists( *it + m_soundPath->url().path(), true, 0 )) {
                        foundSound=true;
                        break;
                }
