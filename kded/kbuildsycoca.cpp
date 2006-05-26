@@ -481,68 +481,6 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
   }
 }
 
-#ifdef Q_WS_WIN
-bool KBuildSycoca::recreate()
-{
-  QString path(sycocaPath());
-
-	QFile database(path);
-	if (database.exists())
-		database.remove();
-
-	database.open(QIODevice::WriteOnly | QIODevice::Truncate);
-	// check error and return false if so
-  m_str = new QDataStream(&database);
-
-  kDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
-
-  // It is very important to build the servicetype one first
-  // Both are registered in KSycoca, no need to keep the pointers
-  KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  KBuildMimeTypeFactory *mtf = new KBuildMimeTypeFactory;
-  g_bsgf = new KBuildServiceGroupFactory();
-  g_bsf = new KBuildServiceFactory(stf, mtf, g_bsgf);
-  (void) new KBuildProtocolInfoFactory();
-
-  if( build()) { // Parse dirs
-    save(); 		// Save database
-    if (m_str->device()->status()) {
-    	database.close();
-    	// print error message
-    	delete m_str;
-    	m_str = 0;
-	    kError(7021) << "Database writing error " << database.fileName() << endl;
-    	return false;
-    }
-   	delete m_str;
-    m_str = 0L;
-    database.close();
-	}
-	else {
-   	delete m_str;
-    m_str = 0L;
-    database.close();
-    if (bMenuTest)
-       return true;
-    kDebug(7021) << "Database is up to date" << endl;
-  }
-
-  if (!bGlobalDatabase)
-  {
-    // update the timestamp file
-    QString stamppath = path + "stamp";
-    QFile ksycocastamp(stamppath);
-    ksycocastamp.open( IO_WriteOnly );
-    QDataStream str( &ksycocastamp );
-    str << newTimestamp;
-    str << existingResourceDirs();
-    if (g_vfolder)
-        str << g_vfolder->allDirectories(); // Extra resource dirs
-  }
-  return true;
-}
-#else
-
 bool KBuildSycoca::recreate()
 {
   QString path(sycocaPath());
@@ -619,7 +557,6 @@ bool KBuildSycoca::recreate()
   }
   return true;
 }
-#endif
 
 void KBuildSycoca::save()
 {
