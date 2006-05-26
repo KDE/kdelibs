@@ -68,30 +68,38 @@ target_link_libraries(testdistlist  ${KDE4_KDECORE_LIBS} kabc ${QT_QTTEST_LIBRAR
 
 ########### next target ###############
 
-set(bigread_SRCS
-bigread.cpp
-)
+if (UNIX)
 
-kde4_automoc(${bigread_SRCS})
+   set(bigread_SRCS
+   bigread.cpp
+   )
+
+   kde4_automoc(${bigread_SRCS})
 
 
-kde4_add_executable(bigread RUN_UNINSTALLED ${bigread_SRCS})
+   kde4_add_executable(bigread RUN_UNINSTALLED ${bigread_SRCS})
 
-target_link_libraries(bigread  ${KDE4_KDECORE_LIBS} kabc kabc_file_core )
+   target_link_libraries(bigread  ${KDE4_KDECORE_LIBS} kabc kabc_file_core )
+
+endif (UNIX)
 
 
 ########### next target ###############
 
-set(bigwrite_SRCS
-bigwrite.cpp
-)
+if (UNIX)
 
-kde4_automoc(${bigwrite_SRCS})
+   set(bigwrite_SRCS
+   bigwrite.cpp
+   )
+
+   kde4_automoc(${bigwrite_SRCS})
 
 
-kde4_add_executable(bigwrite RUN_UNINSTALLED ${bigwrite_SRCS})
+   kde4_add_executable(bigwrite RUN_UNINSTALLED ${bigwrite_SRCS})
 
-target_link_libraries(bigwrite  ${KDE4_KDECORE_LIBS} kabc kabc_file_core )
+   target_link_libraries(bigwrite  ${KDE4_KDECORE_LIBS} kabc kabc_file_core )
+
+endif (UNIX)
 
 
 ########### next target ###############
