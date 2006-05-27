@@ -29,6 +29,16 @@ using namespace Phonon;
 
 Q_DECLARE_METATYPE( Phonon::State )
 
+static const qint64 castQVariantToInt64( const QVariant& variant )
+{
+	return *reinterpret_cast<const qint64*>( variant.constData() );
+}
+
+static const qint32 castQVariantToInt32( const QVariant& variant )
+{
+	return *reinterpret_cast<const qint32*>( variant.constData() );
+}
+
 void MediaObjectTest::startPlayback()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
@@ -132,7 +142,7 @@ void MediaObjectTest::setMedia()
 		// check for length signal
 		QVERIFY( lengthSignalSpy.count() > 0 );
 		args = lengthSignalSpy.takeLast();
-		QCOMPARE( m_media->totalTime(), qvariant_cast<qint64>( args.at( 0 ) ) );
+		QCOMPARE( m_media->totalTime(), castQVariantToInt64( args.at( 0 ) ) );
 	}
 	else
 	{
@@ -291,7 +301,7 @@ void MediaObjectTest::testAboutToFinish()
 	qint64 r = m_media->remainingTime();
 	Phonon::State state = m_media->state();
 	QCOMPARE( aboutToFinishSpy.count(), 1 );
-	qint32 aboutToFinishTime = qvariant_cast<qint32>( aboutToFinishSpy.first().at( 0 ) );
+	const qint32 aboutToFinishTime = castQVariantToInt32( aboutToFinishSpy.first().at( 0 ) );
 	QVERIFY( aboutToFinishTime <= 500 );
 	if( state == Phonon::PlayingState || state == Phonon::BufferingState )
 	{
@@ -334,7 +344,7 @@ void MediaObjectTest::testTickSignal()
 			if( tickSpy.count() > lastCount )
 			{
 				s1 = start1.elapsed();
-				qint64 tickTime = qvariant_cast<qint64>( tickSpy.last().at( 0 ) );
+				qint64 tickTime = castQVariantToInt64( tickSpy.last().at( 0 ) );
 				lastCount = tickSpy.count();
 				// s1 is the time from before the beginning of the playback to
 				// after the tick signal
