@@ -29,7 +29,6 @@ using namespace Phonon;
 
 Q_DECLARE_METATYPE( Phonon::State )
 
-
 void MediaObjectTest::startPlayback()
 {
 	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
@@ -84,6 +83,8 @@ void MediaObjectTest::pausePlayback( Phonon::State currentState )
 void MediaObjectTest::initTestCase()
 {
 	qRegisterMetaType<Phonon::State>( "Phonon::State" );
+	qRegisterMetaType<qint32>( "qint32" );
+	qRegisterMetaType<qint64>( "qint64" );
 
 	m_url.setUrl( getenv( "PHONON_TESTURL" ) );
 	if( !m_url.isValid() )
