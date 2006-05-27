@@ -5,7 +5,7 @@
   Copyright:
   (C) 2002-2003 by José Pablo Ezequiel "Pupeno" Fernández <pupeno@kde.org>
   (C) 2003-2004 by Olaf Schmidt <ojschmidt@kde.org>
-  (C) 2004-2005 by Gary Cramblitt <garycramblitt@comcast.net>
+  (C) 2004-2006 by Gary Cramblitt <garycramblitt@comcast.net>
   -------------------
   Original author: José Pablo Ezequiel "Pupeno" Fernández
  ******************************************************************************/
@@ -21,8 +21,9 @@
 #ifndef _KSPEECH_H_
 #define _KSPEECH_H_
 
+#include <QByteArray>
+#include <QStringList>
 #include <dcopobject.h>
-#include <qstringlist.h>
 
 /**
  * @interface KSpeech
@@ -30,6 +31,8 @@
  * kspeech - the KDE Text-to-Speech API.
  *
  * @version 1.0 Draft 10
+ *
+ * @since KDE 3.4
  *
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "KSpeech".
@@ -162,6 +165,8 @@
      dcop kttsd KSpeech sayText <text> <talker>
    @endverbatim
  *
+ * @since KDE 3.5
+ *
  * To stop speaking and rewind to the beginning of the text.
  *
    @verbatim
@@ -215,7 +220,7 @@
      client->attach();
      if (!client->isApplicationRegistered("kttsd")) {
          QString error;
-         if (KApplication::startServiceByDesktopName("kttsd", QStringList(), &error))
+         if (KToolInvocation::startServiceByDesktopName("kttsd", QStringList(), &error))
              cout << "Starting KTTSD failed with message " << error << endl;
      }
    @endverbatim
@@ -223,7 +228,7 @@
  * If you want to detect if KTTSD is installed without starting it, use this code.
  *
    @verbatim
-     KServiceOfferList offers = KTrader::self()->query("DCOP/Text-to-Speech", "Name == 'KTTSD'");
+     KTrader::OfferList offers = KTrader::self()->query("DCOP/Text-to-Speech", "Name == 'KTTSD'");
      if (offers.count() > 0)
      {
        // KTTSD is installed.
@@ -267,7 +272,7 @@
          virtual public KSpeechSink
      {
          protected:
-            ASYNC sentenceStarted(const QCString& appId, const uint jobNum, const uint seq);
+            ASYNC sentenceStarted(const QByteArray& appId, const uint jobNum, const uint seq);
    @endverbatim
  *
  *     You can combine sending and receiving in one object.
@@ -280,7 +285,7 @@
          virtual public KSpeechSink
      {
          protected:
-            ASYNC sentenceStarted(const QCString& appId, const uint jobNum, const uint seq);
+            ASYNC sentenceStarted(const QByteArray& appId, const uint jobNum, const uint seq);
    @endverbatim
  *
  *     See below for the signals you can declare.
@@ -302,7 +307,7 @@
  *
    @verbatim
      // Register DCOP client.
-     DCOPClient *client = KApplication::dcopClient();
+     DCOPClient *client = kapp->dcopClient();
      if (!client->isRegistered())
      {
          client->attach();
@@ -310,8 +315,8 @@
      }
      // Connect KTTSD DCOP signals to our slots.
      connectDCOPSignal("kttsd", "KSpeech",
-         "sentenceStarted(QCString,uint,uint)",
-         "sentenceStarted(QCString,uint,uint)",
+         "sentenceStarted(QByteArray,uint,uint)",
+         "sentenceStarted(QByteArray,uint,uint)",
          false);
    @endverbatim
  *
@@ -319,13 +324,13 @@
  *     example
  *
    @verbatim
-     ASYNC sentenceStarted(const QCString& appId, const uint jobNum, const uint seq);
+     ASYNC sentenceStarted(const QByteArray& appId, const uint jobNum, const uint seq);
    @endverbatim
  *
  *     becomes
  *
    @verbatim
-       "sentenceStarted(QCString,uint,uint)",
+       "sentenceStarted(QByteArray,uint,uint)",
    @endverbatim
  *
  *     in the connectDCOPSignal call.
@@ -334,7 +339,7 @@
  *     is intended for your application.
  *
    @verbatim
-     ASYNC MyPart::sentenceStarted(const QCString& appId, const uint jobNum, const uint seq)
+     ASYNC MyPart::sentenceStarted(const QByteArray& appId, const uint jobNum, const uint seq)
      {
          // Check appId to determine if this is our signal.
          if (appId != dcopClient()->appId()) return;
@@ -367,11 +372,11 @@
  *
  * A Talker Code consists of a series of XML tags and attributes.
  * An example of a full Talker Code with all attributes specified is
- *   \code
+ *
  *   <voice lang="en" name="kal" gender="male"/>
  *   <prosody volume="soft" rate="fast"/>
  *   <kttsd synthesizer="Festival" />
- *   \endcode
+ *
  * (The @e voice and @e prosody tags are adapted from the W3C Speech Synthesis
  * Markup Language (SSML) and Java Speech Markup Language (JSML).
  * The @e kttsd tag is an extension to the SMML and JSML languages to support
@@ -665,7 +670,7 @@ class KSpeech : virtual public DCOPObject {
             mtJsml = 1,                  /**< Java %Speech Markup Language */
             mtSsml = 2,                  /**< %Speech Synthesis Markup Language */
             mtSable = 3,                 /**< Sable 2.0 */
-            mtHtml = 4                   /**< HTML */
+            mtHtml = 4                   /**< HTML @since 3.5 */
         };
 
     k_dcop:
@@ -812,6 +817,8 @@ class KSpeech : virtual public DCOPObject {
         * If there are no other speakable jobs preceeding this one, it begins speaking.
         *
         * @see getTextCount
+        *
+        * @since KDE 3.5
         */
         virtual uint sayText(const QString &text, const QString &talker) = 0;
 
@@ -917,7 +924,7 @@ class KSpeech : virtual public DCOPObject {
         *
         * The stream contains the following elements:
         *   - int state        - Job state.
-        *   - QCString appId   - DCOP senderId of the application that requested the speech job.
+        *   - QByteArray appId - DCOP senderId of the application that requested the speech job.
         *   - QString talker   - Talker Code requested by application.
         *   - int seq          - Current sentence being spoken.  Sentences are numbered starting at 1.
         *   - int sentenceCount - Total number of sentences in the job.
@@ -932,7 +939,7 @@ class KSpeech : virtual public DCOPObject {
                     QByteArray jobInfo = getTextJobInfo(jobNum);
                     QDataStream stream(jobInfo, QIODevice::ReadOnly);
                     int state;
-                    QCString appId;
+                    QByteArray appId;
                     QString talker;
                     int seq;
                     int sentenceCount;
@@ -1164,6 +1171,12 @@ class KSpeech : virtual public DCOPObject {
         * Re-start %KTTSD.
         */
         virtual void reinit() = 0;
+
+        /**
+        * Return the KTTSD deamon version number.
+        * @since KDE 3.5.1
+        */
+        virtual QString version() = 0;
         //@}
 
     k_dcop_signals:
@@ -1187,7 +1200,7 @@ class KSpeech : virtual public DCOPObject {
         *
         * @see markers
         */
-        void markerSeen(const DCOPCString& appId, const QString& markerName);
+        void markerSeen(const QByteArray& appId, const QString& markerName);
         /**
         * This signal is emitted whenever a sentence begins speaking.
         * @param appId          DCOP application ID of the application that queued the text.
@@ -1196,7 +1209,7 @@ class KSpeech : virtual public DCOPObject {
         *
         * @see getTextCount
         */
-        void sentenceStarted(const DCOPCString& appId, uint jobNum, uint seq);
+        void sentenceStarted(const QByteArray& appId, uint jobNum, uint seq);
         /**
         * This signal is emitted when a sentence has finished speaking.
         * @param appId          DCOP application ID of the application that queued the text.
@@ -1205,14 +1218,14 @@ class KSpeech : virtual public DCOPObject {
         *
         * @see getTextCount
         */
-        void sentenceFinished(const DCOPCString& appId, uint jobNum, uint seq);
+        void sentenceFinished(const QByteArray& appId, uint jobNum, uint seq);
 
         /**
         * This signal is emitted whenever a new text job is added to the queue.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textSet(const DCOPCString& appId, uint jobNum);
+        void textSet(const QByteArray& appId, uint jobNum);
 
         /**
         * This signal is emitted whenever a new part is appended to a text job.
@@ -1221,14 +1234,14 @@ class KSpeech : virtual public DCOPObject {
         * @param partNum        Part number of the new part.  Parts are numbered starting
         *                       at 1.
         */
-        void textAppended(const DCOPCString& appId, uint jobNum, int partNum);
+        void textAppended(const QByteArray& appId, uint jobNum, int partNum);
 
         /**
         * This signal is emitted whenever speaking of a text job begins.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textStarted(const DCOPCString& appId, uint jobNum);
+        void textStarted(const QByteArray& appId, uint jobNum);
         /**
         * This signal is emitted whenever a text job is finished.  The job has
         * been marked for deletion from the queue and will be deleted when another
@@ -1238,7 +1251,7 @@ class KSpeech : virtual public DCOPObject {
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textFinished(const DCOPCString& appId, uint jobNum);
+        void textFinished(const QByteArray& appId, uint jobNum);
         /**
         * This signal is emitted whenever a speaking text job stops speaking.
         * @param appId          The DCOP senderId of the application that created the job.
@@ -1247,26 +1260,26 @@ class KSpeech : virtual public DCOPObject {
         * The signal is only emitted if stopText() is called and the job is currently
         * speaking.
         */
-        void textStopped(const DCOPCString& appId, uint jobNum);
+        void textStopped(const QByteArray& appId, uint jobNum);
         /**
         * This signal is emitted whenever a speaking text job is paused.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textPaused(const DCOPCString& appId, uint jobNum);
+        void textPaused(const QByteArray& appId, uint jobNum);
         /**
         * This signal is emitted when a text job, that was previously paused, resumes speaking.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textResumed(const DCOPCString& appId, uint jobNum);
+        void textResumed(const QByteArray& appId, uint jobNum);
         /**
         * This signal is emitted whenever a text job is deleted from the queue.
         * The job is no longer in the queue when this signal is emitted.
         * @param appId          The DCOP senderId of the application that created the job.
         * @param jobNum         Job number of the text job.
         */
-        void textRemoved(const DCOPCString& appId, uint jobNum);
+        void textRemoved(const QByteArray& appId, uint jobNum);
         //@}
 };
 
