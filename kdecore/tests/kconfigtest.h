@@ -20,6 +20,7 @@ private Q_SLOTS:
     void testComplex();
     void testEnums();
     void testInvalid();
+    void testDelete();
     void initTestCase();
     void cleanupTestCase();
 private:

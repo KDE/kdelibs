@@ -370,3 +370,21 @@ void KConfigTest::testInvalid()
   QVERIFY( sc.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc.readEntry( "badList", QSize() ) == QSize() );
 }
+
+void KConfigTest::testDelete()
+{
+  KConfig sc( "kconfigtest" );
+  sc.setGroup("Hello");
+
+  sc.deleteEntry("Test");
+  QCOMPARE( sc.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
+
+  sc.deleteGroup("ComplexTypes");
+
+  KConfigGroup cg(&sc , "AAA" );
+  cg.deleteGroup();
+  QVERIFY( sc.entryMap("ComplexTypes").isEmpty() );
+  QVERIFY( sc.entryMap("AAA").isEmpty() );
+  QVERIFY( !sc.entryMap("Hello").isEmpty() ); //not deleted group
+  QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
+}
