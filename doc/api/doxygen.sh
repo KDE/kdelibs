@@ -223,7 +223,7 @@ extract_line()
 	test -f "$file" || return
 	pattern=`echo "$1" | tr + .`
 	grep "^//[[:space:]]*$1" "$file" | \
-		sed -e "s+//\s*$pattern.*=\s*++"
+		sed -e "s+//[[:space:]]*$pattern.*=[[:space:]]*++"
 }
 
 ### Try to order the top-level subdirectories so that we get the smallest
