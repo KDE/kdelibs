@@ -226,63 +226,30 @@ extract_line()
 		sed -e "s+//\s*$pattern.*=\s*++"
 }
 
-### Handle the COMPILE_{FIRST,LAST,BEFORE,AFTER} part of Makefile.am
-### in the toplevel. Copied from admin/cvs.sh. Licence presumed LGPL).
+### Try to order the top-level subdirectories so that we get the smallest
+### amount of re-processing due to missing tag files.
 create_subdirs()
 {
 echo "* Sorting top-level subdirs"
-dirs=
-idirs=
-if test -f "$top_srcdir/inst-apps"; then
-   idirs=`cat "$top_srcdir/"inst-apps`
-else
-   idirs=`cd "$top_srcdir" && ls -1 | sort`
-fi
 
-compilefirst=""
-compilelast=""
-if test -f "$top_srcdir/"Makefile.am.in ; then
-	compilefirst=`sed -ne 's#^COMPILE_FIRST[ ]*=[ ]*##p' "$top_srcdir/"Makefile.am.in | head -n 1`
-	compilelast=`sed -ne 's#^COMPILE_LAST[ ]*=[ ]*##p' "$top_srcdir/"Makefile.am.in | head -n 1`
-fi
-for i in $idirs; do
-    if test -f "$top_srcdir/$i"/Makefile.am; then
-       case " $compilefirst $compilelast " in
-         *" $i "*) ;;
-         *) dirs="$dirs $i"
-       esac
-    fi
-done
+( cd "$top_srcdir" && 
+for dir in *
+do
+	# For each Mainpage.dox, get the list (possibly empty) of
+	# referenced tag files.
+	list=""
+	if test -d "$dir" && test -f "$dir/Mainpage.dox" ; then
+		list=`grep DOXYGEN_REFERENCES $dir/Mainpage.dox | sed 's/.*=//'`
+	fi
 
-: > ./_SUBDIRS
+	# Print the partial order pairs that we now know. This
+	# is *expected* to produce loops in the partial order;
+	# these cannot be avoided.
+	for req in $list ; do
+		echo $req $dir
+	done
 
-for d in $compilefirst; do
-   echo $d >> ./_SUBDIRS
-done
-
-(for d in $dirs; do
-   list=""
-   if test -f "$top_srcdir/"Makefile.am.in ; then
-	   list=`sed -ne "s#^COMPILE_BEFORE_$d""[ ]*=[ ]*##p" "$top_srcdir/"Makefile.am.in | head -n 1`
-   fi
-   for s in $list; do
-      echo $s $d
-   done
-   list=""
-   if test -f "$top_srcdir/"Makefile.am.in ; then
-	   list=`sed -ne "s#^COMPILE_AFTER_$d""[ ]*=[ ]*##p" "$top_srcdir/"Makefile.am.in | head -n 1`
-   fi
-   for s in $list; do
-      echo $d $s
-   done
-   echo $d $d
-done ) | tsort >> ./_SUBDIRS
-
-for d in $compilelast; do
-   echo $d >> ./_SUBDIRS
-done
-
-test -r _SUBDIRS && mv _SUBDIRS subdirs.top || true
+done ) | grep -v / | tsort 2> /dev/null > subdirs.top
 }
 
 
