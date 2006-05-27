@@ -56,21 +56,21 @@ public:
    * @param _name the name of the service type
    * @param _comment a comment (can be empty)
    */
-  KServiceType( const QString & _fullpath, const QString& _name,
-                const QString& _comment);
+  KServiceType( const QString& _fullpath, const QString& _name,
+                const QString& _comment );
 
   /**
    * Construct a service type and take all information from a config file.
    * @param _fullpath path of the desktop file, set to "" if calling from
    *                  a inherited constructor.
    */
-  explicit KServiceType( const QString & _fullpath );
+  explicit KServiceType( const QString& _fullpath );
 
   /**
    * Construct a service type and take all information from a desktop file.
    * @param config the configuration file
    */
-  explicit KServiceType( KDesktopFile *config);
+  explicit KServiceType( KDesktopFile *config );
 
   /**
    * @internal construct a service from a stream.
