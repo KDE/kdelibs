@@ -58,7 +58,6 @@ K_EXPORT_COMPONENT_FACTORY( kfileaudiopreview, KFileAudioPreviewFactory )
 ///////////////////////////////////////////////////////////////////
 
 using namespace Phonon;
-using namespace Phonon::Ui;
 
 class KFileAudioPreview::Private
 {
