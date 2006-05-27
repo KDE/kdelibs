@@ -29,9 +29,6 @@ namespace Phonon
 class AbstractMediaProducer;
 class AudioOutput;
 
-namespace Ui
-{
-
 /**
  * \short Simple widget showing buttons to control an AbstractMediaProducer
  * object.
@@ -106,7 +103,7 @@ class PHONONUI_EXPORT MediaControls : public QWidget
 		Private* d;
 };
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_UI_MEDIACONTROLS_H

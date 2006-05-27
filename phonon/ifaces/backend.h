@@ -44,6 +44,7 @@ namespace Phonon
 namespace Ifaces
 {
 	class MediaObject;
+	class MediaQueue;
 	class AvCapture;
 	class ByteStream;
 
@@ -56,6 +57,7 @@ namespace Ifaces
 
 	class VideoPath;
 	class VideoEffect;
+	class BrightnessControl;
 	class VideoDataOutput;
 
 	/**
@@ -91,6 +93,11 @@ namespace Ifaces
 			 * Creates an instance of MediaObject
 			 */
 			virtual MediaObject*      createMediaObject( QObject* parent ) = 0;
+
+			/**
+			 * Creates an instance of MediaQueue
+			 */
+			virtual MediaQueue*      createMediaQueue( QObject* parent ) = 0;
 
 			/**
 			 * Creates an instance of AvCapture
@@ -141,6 +148,11 @@ namespace Ifaces
 			 * Creates an instance of VideoEffect
 			 */
 			virtual VideoEffect*      createVideoEffect( int effectId, QObject* parent ) = 0;
+
+			/**
+			 * Creates an instance of BrightnessControl
+			 */
+			virtual BrightnessControl* createBrightnessControl( QObject* parent ) = 0;
 
 			/**
 			 * Creates an instance of VideoDataOutput

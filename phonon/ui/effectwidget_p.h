@@ -26,8 +26,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 	class EffectWidgetPrivate
 	{
 		Q_DECLARE_PUBLIC( EffectWidget )
@@ -38,7 +36,7 @@ namespace Ui
 			Effect* effect;
 			QHash<QObject*, Phonon::EffectParameter> parameterForObject;
 	};
-}} // namespace Phonon::Ui
+} // namespace Phonon
 #endif // PHONON_UI_EFFECTWIDGET_P_H
 
 // vim: sw=4 ts=4 tw=80

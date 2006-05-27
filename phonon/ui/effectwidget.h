@@ -27,8 +27,6 @@ namespace Phonon
 {
 class Effect;
 
-namespace Ui
-{
 	class EffectWidgetPrivate;
 
 	class PHONONUI_EXPORT EffectWidget : public QWidget
@@ -52,7 +50,7 @@ namespace Ui
 			void init( Effect* effect );
 			void autogenerateUi();
 	};
-}} // namespace Phonon::Ui
+} // namespace Phonon
 #endif // PHONON_UI_EFFECTWIDGET_H
 
 // vim: sw=4 ts=4 tw=80

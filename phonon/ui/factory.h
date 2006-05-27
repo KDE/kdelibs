@@ -17,8 +17,8 @@
 
 */
 
-#ifndef Phonon_Ui_FACTORY_H
-#define Phonon_Ui_FACTORY_H
+#ifndef Phonon_UiFACTORY_H
+#define Phonon_UiFACTORY_H
 
 #include <QObject>
 #include <kdelibs_export.h>
@@ -27,11 +27,9 @@ class KUrl;
 
 namespace Phonon
 {
-namespace Ui
-{
 namespace Ifaces
 {
-	class Backend;
+	class UiBackend;
 	class VideoWidget;
 }
 
@@ -48,30 +46,30 @@ namespace Ifaces
  * \author Matthias Kretz <kretz@kde.org>
  * \internal
  */
-class PHONONUI_EXPORT Factory : public QObject
+class PHONONUI_EXPORT UiFactory : public QObject
 {
 	Q_OBJECT
 	public:
 		/**
 		 * Returns a pointer to the factory.
-		 * Use this function to get an instance of Factory.
+		 * Use this function to get an instance of UiFactory.
 		 *
 		 * @return a pointer to the factory. If no factory exists until now then
 		 * one is created
 		 */
-		static Factory* self();
+		static UiFactory* self();
 
 		/**
-		 * Create a new Ui::Ifaces::VideoWidget.
+		 * Create a new Ifaces::VideoWidget.
 		 *
-		 * \return a pointer to the Ui::Ifaces::VideoWidget the backend provides
+		 * \return a pointer to the Ifaces::VideoWidget the backend provides
 		 */
-		Ui::Ifaces::VideoWidget* createVideoWidget( QWidget* parent = 0 );
+		Ifaces::VideoWidget* createVideoWidget( QWidget* parent = 0 );
 
 		/**
 		 * \return a pointer to the backend interface.
 		 */
-		const Ui::Ifaces::Backend* backend() const;
+		const Ifaces::UiBackend* backend() const;
 
 	Q_SIGNALS:
 		/**
@@ -98,8 +96,8 @@ class PHONONUI_EXPORT Factory : public QObject
 		 * \internal
 		 * Singleton constructor
 		 */
-		Factory();
-		~Factory();
+		UiFactory();
+		~UiFactory();
 
 	protected:
 		/**
@@ -115,11 +113,11 @@ class PHONONUI_EXPORT Factory : public QObject
 		void deleteNow();
 
 	private:
-		static Factory * m_self;
+		static UiFactory * m_self;
 		class Private;
 		Private * d;
 };
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
-#endif // Phonon_Ui_FACTORY_H
+#endif // Phonon_UiFACTORY_H
 // vim: sw=4 ts=4 tw=80 noet

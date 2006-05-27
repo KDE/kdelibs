@@ -48,11 +48,12 @@ class SimplePlayer::Private
 		QString type;
 };
 
-SimplePlayer::SimplePlayer( QObject * parent )
+SimplePlayer::SimplePlayer( Phonon::Category category, QObject* parent )
 	: QObject( parent )
 	, d( new Private )
 {
 	d->output = new AudioOutput( this );
+	d->output->setCategory( category );
 	d->path = new AudioPath( this );
 	d->path->addOutput( d->output );
 }

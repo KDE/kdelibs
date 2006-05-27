@@ -13,8 +13,10 @@ set(phonon_fake_PART_SRCS
    audiopath.cpp
    bytestream.cpp
    mediaobject.cpp
+   mediaqueue.cpp
    avcapture.cpp
    videoeffect.cpp
+   brightnesscontrol.cpp
    videopath.cpp
    videodataoutput.cpp
    visualization.cpp

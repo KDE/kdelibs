@@ -28,7 +28,6 @@
 #include <QLabel>
 
 using namespace Phonon;
-using namespace Phonon::Ui;
 
 void SeekSliderTest::initTestCase()
 {

@@ -26,8 +26,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 
 SeekSlider::SeekSlider( QWidget* parent )
 	: QWidget( parent )
@@ -145,7 +143,7 @@ void SeekSlider::setIconVisible( bool vis )
 	d->icon.setVisible( vis );
 }
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 #include "seekslider.moc"
 // vim: sw=4 ts=4 noet

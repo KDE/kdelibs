@@ -52,6 +52,7 @@ class PHONONCORE_EXPORT EffectParameter
 	friend class AudioEffectPrivate;
 	friend class VideoEffect;
 	friend class VideoEffectPrivate;
+	friend class BrightnessControl;
 	public:
 		/**
 		 * \internal

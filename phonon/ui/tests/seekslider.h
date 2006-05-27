@@ -24,9 +24,7 @@
 
 namespace Phonon {
 	class MediaObject;
-	namespace Ui {
-		class SeekSlider;
-	}
+	class SeekSlider;
 }
 class QSlider;
 class QLabel;
@@ -42,7 +40,7 @@ class SeekSliderTest : public QObject
 		void seekWithSlider();
 		void cleanupTestCase();
 	private:
-		Phonon::Ui::SeekSlider* ss;
+		Phonon::SeekSlider* ss;
 		QSlider* qslider;
 		QLabel* qlabel;
 		Phonon::MediaObject* media;

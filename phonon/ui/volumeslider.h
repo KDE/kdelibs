@@ -27,9 +27,6 @@ namespace Phonon
 {
 class AudioOutput;
 
-namespace Ui
-{
-
 /**
  * \short Widget providing a slider to control the volume of an AudioOutput.
  *
@@ -87,7 +84,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
 		Private* d;
 };
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_UI_VOLUMESLIDER_H

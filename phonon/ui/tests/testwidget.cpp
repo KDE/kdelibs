@@ -193,7 +193,7 @@ void TestWidget::loadFile( const QString & file )
 	{
 		vpath = new VideoPath( this );
 		m_media->addVideoPath( vpath );
-		vout = new Ui::VideoWidget( this );
+		vout = new VideoWidget( this );
 		vpath->addOutput( vout );
 
 		vout->setMinimumSize( 160, 120 );

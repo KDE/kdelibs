@@ -31,6 +31,7 @@ namespace Phonon
 	namespace Ifaces
 	{
 		class MediaObject;
+		class MediaQueue;
 		class AvCapture;
 		class ByteStream;
 
@@ -42,6 +43,7 @@ namespace Phonon
 		class Visualization;
 
 		class VideoEffect;
+		class BrightnessControl;
 		class VideoPath;
 		class VideoDataOutput;
 
@@ -83,6 +85,12 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * \return a pointer to the Ifaces::MediaObject the backend provides
 		 */
 		Ifaces::MediaObject* createMediaObject( QObject* parent = 0 );
+		/**
+		 * Create a new Ifaces::MediaQueue.
+		 *
+		 * \return a pointer to the Ifaces::MediaQueue the backend provides
+		 */
+		Ifaces::MediaQueue* createMediaQueue( QObject* parent = 0 );
 		/**
 		 * Create a new Ifaces::AvCapture.
 		 *
@@ -146,6 +154,7 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * \return a pointer to the Ifaces::VideoEffect the backend provides
 		 */
 		Ifaces::VideoEffect* createVideoEffect( int effectId, QObject* parent = 0 );
+		Ifaces::BrightnessControl* createBrightnessControl( QObject* parent = 0 );
 		/**
 		 * Create a new Ifaces::VideoDataOutput.
 		 *

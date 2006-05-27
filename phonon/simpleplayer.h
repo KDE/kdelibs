@@ -33,7 +33,7 @@ class PHONONCORE_EXPORT SimplePlayer : public QObject
 {
 	Q_OBJECT
 	public:
-		SimplePlayer( QObject * parent = 0 );
+		SimplePlayer( Phonon::Category category, QObject * parent = 0 );
 		~SimplePlayer();
 
 		void play( const KUrl & url );

@@ -52,7 +52,19 @@ namespace Ifaces
 			virtual qint64 remainingTime() const { return totalTime() - currentTime(); }
 			virtual qint32 aboutToFinishTime() const = 0;
 
-			// Attributes Setters:
+			/**
+			 * Tells the backed the media location. It is expected that the
+			 * backend now starts preloading the media data, filling the audio
+			 * and video buffers and making all media meta data available. It
+			 * will also trigger the length signal.
+			 *
+			 * If the backend does not know how to handle the URL it needs to
+			 * change state to Phonon::ErrorState. Then the frontend MediaObject
+			 * will delete this backend MediaObject instance and request a
+			 * ByteStream object to feed the media data using KIO. That means
+			 * you don't need to bother about providing KIO access, just provide the
+			 * ByteStream class
+			 */
 			virtual void setUrl( const KUrl& url ) = 0;
 			virtual void setAboutToFinishTime( qint32 newAboutToFinishTime ) = 0;
 

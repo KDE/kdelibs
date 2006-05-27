@@ -58,6 +58,7 @@ namespace Fake
 			virtual ~Backend();
 
 			virtual Ifaces::MediaObject*      createMediaObject( QObject* parent );
+			virtual Ifaces::MediaQueue*       createMediaQueue( QObject* parent );
 			virtual Ifaces::AvCapture*        createAvCapture( QObject* parent );
 			virtual Ifaces::ByteStream*       createByteStream( QObject* parent );
 
@@ -70,6 +71,7 @@ namespace Fake
 
 			virtual Ifaces::VideoPath*        createVideoPath( QObject* parent );
 			virtual Ifaces::VideoEffect*      createVideoEffect( int effectId, QObject* parent );
+			virtual Ifaces::BrightnessControl* createBrightnessControl( QObject* parent );
 			virtual Ifaces::VideoDataOutput*  createVideoDataOutput( QObject* parent );
 
 			virtual bool supportsVideo() const;

@@ -28,7 +28,6 @@
 #include "../../backendcapabilities.h"
 
 using namespace Phonon;
-using namespace Phonon::Ui;
 
 MediaPlayer::MediaPlayer( QWidget* parent )
 	: QWidget( parent )

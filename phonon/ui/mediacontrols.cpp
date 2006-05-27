@@ -30,8 +30,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 
 class MediaControls::Private
 {
@@ -183,7 +181,7 @@ void MediaControls::mediaDestroyed()
 	d->media = 0;
 }
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 #include "mediacontrols.moc"
 // vim: sw=4 ts=4 noet

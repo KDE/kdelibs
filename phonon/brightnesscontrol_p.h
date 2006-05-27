@@ -17,40 +17,28 @@
 
 */
 
-#ifndef SEEKSLIDER_P_H
-#define SEEKSLIDER_P_H
+#ifndef PHONON_BRIGHTNESSCONTROL_P_H
+#define PHONON_BRIGHTNESSCONTROL_P_H
 
-#include "seekslider.h"
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QLabel>
+#include "brightnesscontrol.h"
+#include "videoeffect_p.h"
+#include "ifaces/brightnesscontrol.h"
 
 namespace Phonon
 {
-class AbstractMediaProducer;
-class SeekSliderPrivate
+class BrightnessControlPrivate : public VideoEffectPrivate
 {
-	Q_DECLARE_PUBLIC( SeekSlider )
+	K_DECLARE_PUBLIC( BrightnessControl )
+	PHONON_PRIVATECLASS( BrightnessControl, VideoEffect )
 	protected:
-		SeekSliderPrivate( SeekSlider* parent )
-			: layout( parent )
-			, slider( Qt::Horizontal, parent )
-			, icon( parent )
-			, media( 0 )
-			, ticking( false )
+		BrightnessControlPrivate()
+			: brightness( 0 )
 		{
 		}
 
-		SeekSlider* q_ptr;
-		
-	private:
-		QHBoxLayout layout;
-		QSlider slider;
-		QLabel icon;
-		AbstractMediaProducer* media;
-		bool ticking;
+		int brightness;
 };
-} // namespace Phonon
+}
 
-#endif // SEEKSLIDER_P_H
+#endif // PHONON_BRIGHTNESSCONTROL_P_H
 // vim: sw=4 ts=4 tw=80

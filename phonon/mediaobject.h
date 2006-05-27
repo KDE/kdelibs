@@ -53,6 +53,7 @@ namespace Phonon
 	 */
 	class PHONONCORE_EXPORT MediaObject : public AbstractMediaProducer
 	{
+		friend class MediaQueue;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( MediaObject )
 		PHONON_HEIR( MediaObject )

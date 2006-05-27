@@ -29,8 +29,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 
 VideoWidget::VideoWidget( QWidget* parent )
 	: QWidget( parent )
@@ -71,7 +69,7 @@ void VideoWidgetPrivate::createIface()
 	if( iface_ptr )
 		return;
 	K_Q( VideoWidget );
-	Ifaces::VideoWidget* iface = Factory::self()->createVideoWidget( q );
+	Ifaces::VideoWidget* iface = UiFactory::self()->createVideoWidget( q );
 	if( iface )
 	{
 		setIface( iface );
@@ -164,7 +162,7 @@ QSize VideoWidget::minimumSizeHint()
 	return QSize( 0, 0 );
 }*/
 
-}} //namespace Phonon::Ui
+} //namespace Phonon
 
 #include "videowidget.moc"
 #include "videowidget_p.moc"

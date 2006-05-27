@@ -29,8 +29,6 @@ namespace Phonon
 {
 class AbstractVideoOutput;
 
-namespace Ui
-{
 	namespace Ifaces
 	{
 		class VideoWidget;
@@ -98,9 +96,9 @@ namespace Ui
 
 		private:
 			void init();
-			Ui::Ifaces::VideoWidget* iface();
+			Ifaces::VideoWidget* iface();
 	};
-}} //namespace Phonon::Ui
+} //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80 noet
 #endif // Phonon_VIDEOWIDGET_H

@@ -20,19 +20,17 @@
 #include "backend.h"
 namespace Phonon
 {
-namespace Ui
-{
 namespace Ifaces
 {
 
-Backend::Backend( QObject* parent )
+UiBackend::UiBackend( QObject* parent )
 	: QObject( parent )
 {
 }
 
-Backend::~Backend()
+UiBackend::~UiBackend()
 {
 }
 
-}}} // namespace Phonon::Ui::Ifaces
+}} // namespace Phonon::Ifaces
 #include "backend.moc"

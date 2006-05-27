@@ -31,8 +31,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 class FullScreenVideoWidget : public QWidget
 {
 	Q_OBJECT
@@ -110,7 +108,7 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 		QAction* fullScreenAction;
 		FullScreenVideoWidget* fullScreenWidget;
 };
-}}
+} // namespace Phonon
 
 #endif // VIDEOWIDGET_P_H
 // vim: sw=4 ts=4 tw=80

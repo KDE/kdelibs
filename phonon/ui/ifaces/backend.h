@@ -25,8 +25,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 /**
  * \short The interfaces that depend on a GUI.
  *
@@ -47,15 +45,15 @@ namespace Ifaces
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONONUI_EXPORT Backend : public QObject
+	class PHONONUI_EXPORT UiBackend : public QObject
 	{
 		Q_OBJECT
 		public:
 			/**
 			 * Standard QObject constructor.
 			 */
-			Backend( QObject* parent = 0 );
-			virtual ~Backend();
+			UiBackend( QObject* parent = 0 );
+			virtual ~UiBackend();
 
 			/**
 			 * Creates an instance of VideoWidget
@@ -66,7 +64,7 @@ namespace Ifaces
 			class Private;
 			Private * d;
 	};
-}}} // namespace Phonon::Ifaces::Ui
+}} // namespace Phonon::Ifaces
 
 // vim: sw=4 ts=4 noet tw=80
 #endif // Phonon_IFACES_UI_BACKEND_H

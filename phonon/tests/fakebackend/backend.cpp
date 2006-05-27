@@ -19,6 +19,7 @@
 
 #include "backend.h"
 #include "mediaobject.h"
+#include "mediaqueue.h"
 #include "avcapture.h"
 #include "bytestream.h"
 #include "audiopath.h"
@@ -28,6 +29,7 @@
 #include "visualization.h"
 #include "videopath.h"
 #include "videoeffect.h"
+#include "brightnesscontrol.h"
 
 #include <kgenericfactory.h>
 #include "volumefadereffect.h"
@@ -54,6 +56,11 @@ Backend::~Backend()
 Ifaces::MediaObject*      Backend::createMediaObject( QObject* parent )
 {
 	return new MediaObject( parent );
+}
+
+Ifaces::MediaQueue*       Backend::createMediaQueue( QObject* parent )
+{
+	return new MediaQueue( parent );
 }
 
 Ifaces::AvCapture*        Backend::createAvCapture( QObject* parent )
@@ -106,6 +113,11 @@ Ifaces::VideoPath*        Backend::createVideoPath( QObject* parent )
 Ifaces::VideoEffect*      Backend::createVideoEffect( int effectId, QObject* parent )
 {
 	return new VideoEffect( effectId, parent );
+}
+
+Ifaces::BrightnessControl* Backend::createBrightnessControl( QObject* parent )
+{
+	return new BrightnessControl( parent );
 }
 
 Ifaces::VideoDataOutput*  Backend::createVideoDataOutput( QObject* parent )

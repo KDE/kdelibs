@@ -25,8 +25,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 namespace Fake
 {
 
@@ -64,7 +62,7 @@ void VideoWidget::paintEvent( QPaintEvent* ev )
 	p.drawPixmap( 0, 0, m_pixmap );
 }
 
-}}} //namespace Phonon::Ui::Fake
+}} //namespace Phonon::Fake
 
 #include "videowidget.moc"
 // vim: sw=4 ts=4 noet

@@ -29,11 +29,9 @@ class QString;
 
 namespace Phonon
 {
-namespace Ui
-{
 namespace Fake
 {
-	class VideoWidget : public QWidget, virtual public Ui::Ifaces::VideoWidget, public Phonon::Fake::AbstractVideoOutput
+	class VideoWidget : public QWidget, virtual public Ifaces::VideoWidget, public Phonon::Fake::AbstractVideoOutput
 	{
 		Q_OBJECT
 		public:
@@ -55,7 +53,7 @@ namespace Fake
 			bool m_fullscreen;
 			QPixmap m_pixmap;
 	};
-}}} //namespace Phonon::Ui::Fake
+}} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80 noet
 #endif // Phonon_UI_FAKE_VIDEOWIDGET_H

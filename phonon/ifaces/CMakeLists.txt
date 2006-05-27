@@ -4,6 +4,7 @@
 install_files( /include/phonon/ifaces FILES
 	abstractmediaproducer.h
 	mediaobject.h
+	mediaqueue.h
 	audiopath.h
 	backend.h
 	abstractaudiooutput.h
@@ -15,6 +16,7 @@ install_files( /include/phonon/ifaces FILES
 	visualization.h
 	effect.h
 	videoeffect.h
+	brightnesscontrol.h
 	audioeffect.h
 	bytestream.h
 	base.h

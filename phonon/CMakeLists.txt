@@ -44,6 +44,7 @@ set(phononcore_LIB_SRCS
 	base.cpp
 	abstractmediaproducer.cpp
 	mediaobject.cpp
+	mediaqueue.cpp
 	avcapture.cpp
 	bytestream.cpp
 	audiopath.cpp
@@ -53,6 +54,7 @@ set(phononcore_LIB_SRCS
 	audioeffect.cpp
 	volumefadereffect.cpp
 	videoeffect.cpp
+	brightnesscontrol.cpp
 	abstractaudiooutput.cpp
 	audiooutput.cpp
 	audiodataoutput.cpp
@@ -96,6 +98,7 @@ install_files( /include/phonon FILES
 	basedestructionhandler.h
 	abstractmediaproducer.h
 	mediaobject.h
+	mediaqueue.h
 	avcapture.h
 	bytestream.h
 	audiopath.h
@@ -105,6 +108,7 @@ install_files( /include/phonon FILES
 	audioeffect.h
 	volumefadereffect.h
 	videoeffect.h
+	brightnesscontrol.h
 	mixeriface.h
 	abstractaudiooutput.h
 	audiooutput.h

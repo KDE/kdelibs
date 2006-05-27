@@ -34,10 +34,7 @@ namespace Phonon
 	class AudioOutput;
 	class VideoPath;
 	class VideoOutput;
-	namespace Ui
-	{
-		class VideoWidget;
-	}
+	class VideoWidget;
 }
 
 using namespace Phonon;
@@ -64,7 +61,7 @@ class TestWidget : public QWidget
 		AudioPath* path;
 		AudioOutput* m_output;
 		VideoPath* vpath;
-		Ui::VideoWidget* vout;
+		VideoWidget* vout;
 		bool m_ticking;
 		bool m_ignoreVolumeChange;
 		long m_length;

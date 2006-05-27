@@ -31,9 +31,7 @@
 
 namespace Phonon
 {
-namespace Ui
-{
-class Factory::Private
+class UiFactory::Private
 {
 	public:
 		Private()
@@ -76,7 +74,7 @@ class Factory::Private
 			}
 			if( factory )
 			{
-				backend = static_cast<Ui::Ifaces::Backend*>( factory->create( 0, "Phonon::Ui::Ifaces::Backend" ) );
+				backend = static_cast<Ifaces::UiBackend*>( factory->create( 0, "Phonon::Ifaces::UiBackend" ) );
 				if( 0 == backend )
 				{
 					QString e = i18n( "create method returned 0" );
@@ -98,16 +96,16 @@ class Factory::Private
 				KMessageBox::error( 0, i18n( "Unable to use the UI part of the loaded Multimedia Backend" ) );
 		}
 
-		Ui::Ifaces::Backend * backend;
+		Ifaces::UiBackend * backend;
 };
 
-Factory* Factory::m_self = 0;
+UiFactory* UiFactory::m_self = 0;
 
-Factory* Factory::self()
+UiFactory* UiFactory::self()
 {
 	if( !m_self )
 	{
-		m_self = new Factory();
+		m_self = new UiFactory();
 		Phonon::Factory* f = Phonon::Factory::self();
 		connect( f, SIGNAL( deleteYourObjects() ), m_self, SIGNAL( deleteYourObjects() ) );
 		connect( f, SIGNAL( recreateObjects() ), m_self, SIGNAL( recreateObjects() ) );
@@ -117,12 +115,12 @@ Factory* Factory::self()
 	return m_self;
 }
 
-Factory::Factory()
+UiFactory::UiFactory()
 	: d( new Private )
 {
 }
 
-Factory::~Factory()
+UiFactory::~UiFactory()
 {
 	kDebug( 602 ) << k_funcinfo << endl;
 	emit deleteYourObjects(); //FIXME: this is probably emitted twice: once through Phonon::Factory::~Factory, and the second one from here
@@ -130,28 +128,28 @@ Factory::~Factory()
 	delete d;
 }
 
-void Factory::deleteNow()
+void UiFactory::deleteNow()
 {
 	delete this;
 }
 
-Ui::Ifaces::VideoWidget* Factory::createVideoWidget( QWidget* parent )
+Ifaces::VideoWidget* UiFactory::createVideoWidget( QWidget* parent )
 {
 	return d->backend ? registerObject( d->backend->createVideoWidget( parent ) ) : 0;
 }
 
-const Ui::Ifaces::Backend* Factory::backend() const
+const Ifaces::UiBackend* UiFactory::backend() const
 {
 	return d->backend;
 }
 
-template<class T> inline T* Factory::registerObject( T* o )
+template<class T> inline T* UiFactory::registerObject( T* o )
 {
 	Phonon::Factory::self()->registerQObject( o->qobject() );
 	return o;
 }
 
-}} //namespace Phonon::Ui
+} //namespace Phonon
 
 #include "factory.moc"
 

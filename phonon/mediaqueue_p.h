@@ -17,40 +17,37 @@
 
 */
 
-#ifndef SEEKSLIDER_P_H
-#define SEEKSLIDER_P_H
+#ifndef PHONON_MEDIAQUEUE_P_H
+#define PHONON_MEDIAQUEUE_P_H
 
-#include "seekslider.h"
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QLabel>
+#include "mediaqueue.h"
+#include "ifaces/mediaqueue.h"
+#include "base_p.h"
+#include "mediaobject.h"
 
 namespace Phonon
 {
-class AbstractMediaProducer;
-class SeekSliderPrivate
+
+class MediaQueuePrivate : public BasePrivate
 {
-	Q_DECLARE_PUBLIC( SeekSlider )
+	K_DECLARE_PUBLIC( MediaQueue )
+	PHONON_PRIVATECLASS( MediaQueue, Base )
 	protected:
-		SeekSliderPrivate( SeekSlider* parent )
-			: layout( parent )
-			, slider( Qt::Horizontal, parent )
-			, icon( parent )
-			, media( 0 )
-			, ticking( false )
+		MediaQueuePrivate()
+			: current( 0 )
+			, next( 0 )
+			, timeBetweenMedia( 0 ) //gapless playback
+			, doCrossfade( true )
 		{
 		}
 
-		SeekSlider* q_ptr;
-		
-	private:
-		QHBoxLayout layout;
-		QSlider slider;
-		QLabel icon;
-		AbstractMediaProducer* media;
-		bool ticking;
+		void _k_needNextMediaObject();
+		MediaObject* current;
+		MediaObject* next;
+		qint32 timeBetweenMedia;
+		bool doCrossfade;
 };
 } // namespace Phonon
 
-#endif // SEEKSLIDER_P_H
+#endif // PHONON_MEDIAQUEUE_P_H
 // vim: sw=4 ts=4 tw=80

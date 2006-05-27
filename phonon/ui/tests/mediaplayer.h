@@ -46,9 +46,9 @@ class MediaPlayer : public QWidget
 		Phonon::AudioOutput* m_aoutput;
 		Phonon::VideoPath* m_vpath;
 		Phonon::AudioEffect* m_effect;
-		Phonon::Ui::VideoWidget* m_vwidget;
-		Phonon::Ui::MediaControls* m_controls;
-		Phonon::Ui::EffectWidget* m_effectWidget;
+		Phonon::VideoWidget* m_vwidget;
+		Phonon::MediaControls* m_controls;
+		Phonon::EffectWidget* m_effectWidget;
 };
 
 #endif // MEDIAPLAYER_H

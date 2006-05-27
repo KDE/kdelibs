@@ -28,8 +28,6 @@ namespace Phonon
 {
 class AbstractMediaProducer;
 
-namespace Ui
-{
 class SeekSliderPrivate;
 
 /**
@@ -76,7 +74,7 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 		SeekSliderPrivate* d_ptr;
 };
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_UI_SEEKSLIDER_H

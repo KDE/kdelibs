@@ -17,40 +17,44 @@
 
 */
 
-#ifndef SEEKSLIDER_P_H
-#define SEEKSLIDER_P_H
+#ifndef PHONON_FAKE_MEDIAQUEUE_H
+#define PHONON_FAKE_MEDIAQUEUE_H
 
-#include "seekslider.h"
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QLabel>
+#include <QObject>
+#include <phonon/ifaces/mediaqueue.h>
 
 namespace Phonon
 {
-class AbstractMediaProducer;
-class SeekSliderPrivate
+namespace Fake
 {
-	Q_DECLARE_PUBLIC( SeekSlider )
-	protected:
-		SeekSliderPrivate( SeekSlider* parent )
-			: layout( parent )
-			, slider( Qt::Horizontal, parent )
-			, icon( parent )
-			, media( 0 )
-			, ticking( false )
-		{
-		}
 
-		SeekSlider* q_ptr;
-		
+class MediaQueue : public QObject, virtual public Ifaces::MediaQueue
+{
+	Q_OBJECT
+	public:
+		MediaQueue( QObject* parent );
+
+		virtual void setNext( Ifaces::MediaObject* );
+
+		virtual qint32 timeBetweenMedia() const;
+		virtual void setTimeBetweenMedia( qint32 milliseconds );
+
+		virtual bool doCrossfade() const;
+		virtual void setDoCrossfade( bool doCrossfade );
+
+	public:
+		virtual QObject* qobject() { return this; }
+		virtual const QObject* qobject() const { return this; }
+
+	Q_SIGNALS:
+		void needNextMediaObject();
+
 	private:
-		QHBoxLayout layout;
-		QSlider slider;
-		QLabel icon;
-		AbstractMediaProducer* media;
-		bool ticking;
+		qint32 m_timeBetweenMedia;
+		bool m_doCrossfade;
 };
-} // namespace Phonon
 
-#endif // SEEKSLIDER_P_H
-// vim: sw=4 ts=4 tw=80
+}} // namespace Phonon::Fake
+
+#endif // PHONON_FAKE_MEDIAQUEUE_H
+// vim: sw=4 ts=4 tw=80 noet

@@ -26,24 +26,22 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 namespace Ifaces
 {
 	class VideoWidget;
 }
 namespace Fake
 {
-	class PHONON_FAKEUI_EXPORT Backend : public Ui::Ifaces::Backend
+	class PHONON_FAKEUI_EXPORT UiBackend : public Ifaces::UiBackend
 	{
 		Q_OBJECT
 		public:
-			Backend( QObject* parent, const QStringList& args );
-			virtual ~Backend();
+			UiBackend( QObject* parent, const QStringList& args );
+			virtual ~UiBackend();
 
 			virtual Ifaces::VideoWidget*  createVideoWidget( QWidget* parent );
 	};
-}}} // namespace Phonon::Ui::Fake
+}} // namespace Phonon::Fake
 
 // vim: sw=4 ts=4 noet tw=80
 #endif // Phonon_FAKE_UI_BACKEND_H

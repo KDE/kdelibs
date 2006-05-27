@@ -26,9 +26,11 @@
 #include "ifaces/visualization.h"
 #include "ifaces/videopath.h"
 #include "ifaces/videoeffect.h"
+#include "ifaces/brightnesscontrol.h"
 #include "ifaces/videodataoutput.h"
 #include "ifaces/backend.h"
 #include "ifaces/mediaobject.h"
+#include "ifaces/mediaqueue.h"
 #include "ifaces/avcapture.h"
 #include "ifaces/bytestream.h"
 #include "base_p.h"
@@ -232,6 +234,7 @@ Ifaces::classname* Factory::create ## classname( type1 name1, QObject* parent ) 
 }
 
 FACTORY_IMPL( MediaObject )
+FACTORY_IMPL( MediaQueue )
 FACTORY_IMPL( AvCapture )
 FACTORY_IMPL( ByteStream )
 FACTORY_IMPL( AudioPath )
@@ -242,6 +245,7 @@ FACTORY_IMPL( AudioDataOutput )
 FACTORY_IMPL( Visualization )
 FACTORY_IMPL( VideoPath )
 FACTORY_IMPL_1ARG( int, VideoEffect )
+FACTORY_IMPL( BrightnessControl )
 FACTORY_IMPL( VideoDataOutput )
 
 #undef FACTORY_IMPL

@@ -16,41 +16,37 @@
     Boston, MA 02110-1301, USA.
 
 */
+#ifndef Phonon_FAKE_BRIGHTNESSCONTROL_H
+#define Phonon_FAKE_BRIGHTNESSCONTROL_H
 
-#ifndef SEEKSLIDER_P_H
-#define SEEKSLIDER_P_H
-
-#include "seekslider.h"
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QLabel>
+#include "../../ifaces/brightnesscontrol.h"
+#include <QTime>
+#include "videoeffect.h"
 
 namespace Phonon
 {
-class AbstractMediaProducer;
-class SeekSliderPrivate
+namespace Fake
 {
-	Q_DECLARE_PUBLIC( SeekSlider )
-	protected:
-		SeekSliderPrivate( SeekSlider* parent )
-			: layout( parent )
-			, slider( Qt::Horizontal, parent )
-			, icon( parent )
-			, media( 0 )
-			, ticking( false )
-		{
-		}
+	/**
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
+	class BrightnessControl : public VideoEffect, virtual public Ifaces::BrightnessControl
+	{
+		Q_OBJECT
+		public:
+			BrightnessControl( QObject* parent );
+			virtual ~BrightnessControl();
 
-		SeekSlider* q_ptr;
-		
-	private:
-		QHBoxLayout layout;
-		QSlider slider;
-		QLabel icon;
-		AbstractMediaProducer* media;
-		bool ticking;
-};
-} // namespace Phonon
+			virtual int brightness() const;
+			virtual void setBrightness( int brightness );
 
-#endif // SEEKSLIDER_P_H
-// vim: sw=4 ts=4 tw=80
+			virtual int lowerBound() const;
+			virtual int upperBound() const;
+
+		private:
+			int m_brightness;
+	};
+}} //namespace Phonon::Fake
+
+// vim: sw=4 ts=4 tw=80 noet
+#endif // Phonon_FAKE_BRIGHTNESSCONTROL_H

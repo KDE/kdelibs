@@ -28,8 +28,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 
 class VolumeSlider::Private
 {
@@ -140,7 +138,7 @@ void VolumeSlider::setIconVisible( bool vis )
 	d->icon.setVisible( vis );
 }
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 #include "volumeslider.moc"
 // vim: sw=4 ts=4 noet

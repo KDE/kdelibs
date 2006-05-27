@@ -25,14 +25,12 @@ class QString;
 
 namespace Phonon
 {
-namespace Ui
-{
 namespace Ifaces
 {
 	class VideoWidget : virtual public Phonon::Ifaces::AbstractVideoOutput
 	{
 	};
-}}} //namespace Phonon::Ui::Ifaces
+}} //namespace Phonon::Ifaces
 
 // vim: sw=4 ts=4 tw=80 noet
 #endif // Phonon_UI_IFACES_VIDEOWIDGET_H

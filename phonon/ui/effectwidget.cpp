@@ -34,8 +34,6 @@
 
 namespace Phonon
 {
-namespace Ui
-{
 
 EffectWidget::EffectWidget( Effect* effect, QWidget* parent )
 	: QWidget( parent )
@@ -156,7 +154,7 @@ void EffectWidget::setDoubleParameter( double value )
 		p.setValue( value );
 }
 
-}} // namespace Phonon::Ui
+} // namespace Phonon
 
 #include "effectwidget.moc"
 
