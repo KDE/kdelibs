@@ -215,15 +215,15 @@ else
 	fi
 fi
 
-### Read a single line (TODO: support \ continuations) from the Makefile.am.
+### Read a single line (TODO: support \ continuations) from the Mainpage.dox.
 ### Used to extract variable assignments from it.
 extract_line()
 {
-	file="$2" ; test -z "$file" && file="$srcdir/Makefile.am"
+	file="$2" ; test -z "$file" && file="$srcdir/Mainpage.dox"
 	test -f "$file" || return
 	pattern=`echo "$1" | tr + .`
-	grep "^$1" "$file" | \
-		sed -e "s+$pattern.*=\s*++"
+	grep "^//[[:space:]]*$1" "$file" | \
+		sed -e "s+//\s*$pattern.*=\s*++"
 }
 
 ### Handle the COMPILE_{FIRST,LAST,BEFORE,AFTER} part of Makefile.am
@@ -475,12 +475,12 @@ apidox_toplevel()
 	apidox_htmlfiles "main"
 
 	# KDevelop has a top-level Makefile.am with settings.
-	for i in "$top_srcdir/Makefile.am.in" "$top_srcdir/Makefile.am"
+	for i in "$top_srcdir/Mainpage.dox"
 	do
 		if test -f "$i" ; then
-			grep '^DOXYGEN_SET_' "$i" | \
-				sed -e 's+DOXYGEN_SET_++' -e "s+@topdir@+$top_srcdir+" >> Doxyfile
-			apidox_specials "$srcdir/Makefile.am" "$subdir/Doxyfile"
+			grep '^//[[:space:]]*DOXYGEN_SET_' "$i" | \
+				sed -e 's+//\s*DOXYGEN_SET_++' -e "s+@topdir@+$top_srcdir+" >> Doxyfile
+			apidox_specials "$srcdir/Mainpage.dox" "$subdir/Doxyfile"
 
 			break
 		fi
@@ -490,7 +490,7 @@ apidox_toplevel()
 
 	doxygen Doxyfile
 
-	( cd "$top_srcdir" && grep -l '^include.*Doxyfile.am' `find . -name Makefile.am` ) | sed -e 's+/Makefile.am$++' -e 's+^\./++' | sort > subdirs.in
+	( cd "$top_srcdir" && find . -name Mainpage.dox ) | sed -e 's+/Mainpage.dox$++' -e 's+^\./++' | sort > subdirs.in
 	for i in `cat subdirs.in`
 	do
 		test "x." = "x$i" && continue;
@@ -503,10 +503,10 @@ apidox_toplevel()
 			dir="$dir/"
 		fi
 		indent=`echo "$dir" | sed -e 's+[^/]*/+\&nbsp;\&nbsp;+g' | sed -e 's+&+\\\&+g'`
-		entryname=`extract_line DOXYGEN_SET_PROJECT_NAME "$top_srcdir/$dir/$file/Makefile.am"`
+		entryname=`extract_line DOXYGEN_SET_PROJECT_NAME "$top_srcdir/$dir/$file/Mainpage.dox"`
 		test -z "$entryname" && entryname="$file"
 
-		if grep DOXYGEN_EMPTY "$top_srcdir/$dir/$file/Makefile.am" > /dev/null 2>&1 ; then
+		if grep DOXYGEN_EMPTY "$top_srcdir/$dir/$file/Mainpage.dox" > /dev/null 2>&1 ; then
 			echo "<li>$indent$file</li>"
 		else
 			echo "<li>$indent<a href=\"@topdir@/$dir$file/html/index.html\">$entryname</a></li>"
@@ -560,11 +560,11 @@ apidox_subdir()
 
 	apidox_htmlfiles ""
 
-	# Makefile.ams may contain overrides to our settings,
+	# Mainpage.doxs may contain overrides to our settings,
 	# so copy them in.
-	grep '^DOXYGEN_SET_' "$srcdir/Makefile.am" | \
-		sed -e 's+DOXYGEN_SET_++' >> "$subdir/Doxyfile"
-	apidox_specials "$srcdir/Makefile.am" "$subdir/Doxyfile"
+	grep '^//[[:space:]]*DOXYGEN_SET_' "$srcdir/Mainpage.dox" | \
+		sed -e 's+//\s*DOXYGEN_SET_++' >> "$subdir/Doxyfile"
+	apidox_specials "$srcdir/Mainpage.dox" "$subdir/Doxyfile"
 
 	excludes=`extract_line DOXYGEN_EXCLUDE`
 	if test -n "$excludes"; then
@@ -652,7 +652,7 @@ apidox_subdir()
 
 	apidox_local
 
-	if grep '^DOXYGEN_EMPTY' "$srcdir/Makefile.am" > /dev/null 2>&1 ; then
+	if grep '^DOXYGEN_EMPTY' "$srcdir/Mainpage.dox" > /dev/null 2>&1 ; then
 		# This directory is empty, so don't process it, but
 		# *do* handle subdirs that might have dox.
 		:
