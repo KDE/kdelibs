@@ -299,7 +299,7 @@ KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMa
 ////
 
 KUrl::KUrl()
-    : QUrl()
+    : QUrl(), d(0)
 {
 }
 
@@ -309,7 +309,7 @@ KUrl::~KUrl()
 
 
 KUrl::KUrl( const QString &str )
-  : QUrl()
+  : QUrl(), d(0)
 {
   if ( !str.isEmpty() ) {
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
@@ -320,7 +320,7 @@ KUrl::KUrl( const QString &str )
 }
 
 KUrl::KUrl( const char * str )
-  : QUrl()
+  : QUrl(), d(0)
 {
   if ( str ) {
     if ( str[0] == '/' || str[0] == '~' )
@@ -331,6 +331,7 @@ KUrl::KUrl( const char * str )
 }
 
 KUrl::KUrl( const QByteArray& str )
+   : QUrl(), d(0)
 {
   if ( !str.isEmpty() ) {
     if ( str[0] == '/' || str[0] == '~' )
@@ -341,16 +342,17 @@ KUrl::KUrl( const QByteArray& str )
 }
 
 KUrl::KUrl( const KUrl& _u )
-    : QUrl( _u )
+    : QUrl( _u ), d(0)
 {
 }
 
 KUrl::KUrl( const QUrl &u )
-    : QUrl( u )
+    : QUrl( u ), d(0)
 {
 }
 
 KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
+   : QUrl(), d(0)
 {
 #if 0
   if (_u.hasSubUrl()) // Operate on the last suburl, not the first
