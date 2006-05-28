@@ -860,11 +860,6 @@ bool KConfigBase::deleteGroup( const QString& _group, WriteConfigFlags pFlags )
 {
   KEntryMap aEntryMap = internalEntryMap(_group);
 
-  if (pFlags & Recursive) {
-    // Check if it empty
-    return aEntryMap.isEmpty();
-  }
-
   bool dirty = false;
   bool checkGroup = true;
   // we want to remove all entries in the group
@@ -1234,7 +1229,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
 void KConfigGroup::deleteGroup(bool bGlobal)
 {
   mMaster->deleteGroup(KConfigBase::group(),
-                   KConfigBase::WriteConfigFlags(bGlobal?Global:0)|Recursive);
+                   KConfigBase::WriteConfigFlags(bGlobal?Global:0));
 }
 
 bool KConfigGroup::groupIsImmutable() const

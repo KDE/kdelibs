@@ -94,11 +94,6 @@ public:
     /**<
      * Add the locale tag to the key when writing it.
      */
-    Recursive = 0x08,
-    /**<
-     * Don't delete entries of non-empty group.
-     * @note This flag @b only effects deleteGroup().
-     */
     Normal=Persistent
     /**<
      * Save the entry to the application specific config file without
@@ -1120,7 +1115,7 @@ public:
    * @param pFlags       The flags to use when writing this entry.
    * @return Whether the group was deleted.
    */
-  bool deleteGroup( const QString& group, WriteConfigFlags pFlags = Recursive );
+  bool deleteGroup( const QString& group, WriteConfigFlags pFlags = Normal );
 
   /**
    * Turns on or off "dollar  expansion" (see KConfigBase introduction)
