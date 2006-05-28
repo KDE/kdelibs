@@ -39,6 +39,8 @@ namespace Phonon
 				return i18n( "Communication" );
 			case Phonon::GameCategory:
 				return i18n( "Games" );
+			case Phonon::AccessibilityCategory:
+				return i18n( "Accessibility" );
 		}
 		return QString();
 	}

@@ -118,7 +118,11 @@ namespace Phonon
 		/**
 		 * Sound produced by a computer game should go into this category.
 		 */
-		GameCategory
+		GameCategory,
+		/**
+		 * Sounds produced for accessibility (e.g. Text-To-Speech)
+		 */
+		AccessibilityCategory
 	};
 
 	/**
