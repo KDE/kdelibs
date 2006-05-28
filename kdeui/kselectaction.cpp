@@ -362,9 +362,14 @@ QAction* KSelectAction::removeAction(QAction* action)
 
 void KSelectAction::actionTriggered(QAction* action)
 {
+  // cache values so we don't need access to members in the action
+  // after we've done an emit()
+  QString text = action->text();
+  int index = selectableActionGroup()->actions().indexOf(action);
+
   emit triggered(action);
-  emit triggered(selectableActionGroup()->actions().indexOf(action));
-  emit triggered(action->text());
+  emit triggered(index);
+  emit triggered(text);
 }
 
 QStringList KSelectAction::items() const
@@ -423,8 +428,10 @@ int KSelectAction::comboWidth() const
 
 void KSelectAction::clear()
 {
-  while (d->m_actionGroup->actions().count())
-    delete d->m_actionGroup->actions().first();
+  // we need to delete the actions later since we may get a call to clear()
+  // from a method called due to a triggered(...) signal
+  foreach (QAction* action, d->m_actionGroup->actions())
+    action->deleteLater();
 }
 
 void KSelectAction::removeAllActions( )
