@@ -39,3 +39,4 @@
 <!ENTITY kmenu  "menu <guimenu>K</guimenu>">
 <!ENTITY kinfocenter "<application>Centro de Informação do KDE</application>" >
 <!ENTITY ksystemlog "<application>KSystemLog</application>" >
+<!ENTITY kleopatra "<application>Kleopatra</application>" >
