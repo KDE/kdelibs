@@ -305,8 +305,6 @@ void KSelectAction::addAction(QAction* action)
   action->setActionGroup(selectableActionGroup());
   action->setCheckable( true );
 
-  int index = selectableActionGroup()->actions().indexOf(action);
-
   // Keep in sync with createToolBarWidget()
   foreach (QToolButton* button, d->m_buttons)
     button->menu()->addAction(action);
