@@ -61,6 +61,7 @@ public:
     /** Returns the type of the events handled by the specified handler. */
     QEvent::Type findEventType( const KJS::Identifier &name ) const;
 
+    /** Returns the name of the handler method for the specified event type. */
     KJS::Identifier findEventHandler( QEvent::Type t ) const;
 
     /**
