@@ -618,6 +618,7 @@ static const char * const *namedColorFilePath( void )
 #ifdef X11_RGBFILE
     X11_RGBFILE,
 #endif
+	"/usr/share/X11/rgb.txt",
     "/usr/X11R6/lib/X11/rgb.txt",
     "/usr/openwin/lib/X11/rgb.txt", // for Solaris.
     0
