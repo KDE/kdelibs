@@ -57,8 +57,10 @@ void BackendCapabilitiesTest::sensibleValues()
 	//if( BackendCapabilities::supportsVideo() ) create VideoWidget and such - needs UI libs
 	QStringList mimeTypes = BackendCapabilities::knownMimeTypes();
 	QVERIFY( mimeTypes.size() > 0 ); // a backend that doesn't know any mimetypes is useless
-	foreach( QString mimeType, mimeTypes )
+	foreach( QString mimeType, mimeTypes ) {
+		qDebug( "%s", qPrintable( mimeType ) );
 		QVERIFY( BackendCapabilities::isMimeTypeKnown( mimeType ) );
+	}
 	VERIFY_TUPLE( AudioOutputDevice, availableAudioOutputDevices, audioOutputDeviceIndexes );
 	VERIFY_TUPLE( AudioCaptureDevice, availableAudioCaptureDevices, audioCaptureDeviceIndexes );
 	VERIFY_TUPLE( VideoOutputDevice, availableVideoOutputDevices, videoOutputDeviceIndexes );

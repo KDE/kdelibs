@@ -34,6 +34,7 @@
 #include <QSet>
 #include <QStringList>
 #include <kservicetypetrader.h>
+#include <kmimetype.h>
 
 static KStaticDeleter<Phonon::BackendCapabilities> sd;
 
@@ -93,8 +94,11 @@ QStringList BackendCapabilities::knownMimeTypes()
 	{
 		const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
 				"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
-		if ( !offers.isEmpty() )
-			return offers.first()->serviceTypes();
+		if ( !offers.isEmpty() ) {
+			QStringList mimeTypes = offers.first()->serviceTypes();
+			mimeTypes.removeAll( "PhononBackend" );
+			return mimeTypes;
+		}
 		return QStringList();
 	}
 }
@@ -109,7 +113,7 @@ bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
 		const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
 				"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 		if ( !offers.isEmpty() )
-			return offers.first()->hasServiceType( mimeType );
+			return offers.first()->hasMimeType( KMimeType::mimeType(mimeType).data() );
 		return false;
 	}
 }
