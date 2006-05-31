@@ -368,7 +368,8 @@ KDEWIN32_EXPORT long getpagesize (void)
 // CE: from http://www.codeproject.com/cpp/xgetopt.asp
 //     removed unicode support to compile with mingw
 char *optarg = NULL;	// global argument pointer
-int   optind = 0; 		// global argv index
+int   optind = 0; 	// global argv index
+int   opterr = 0; 	
 
 KDEWIN32_EXPORT int getopt(int argc, char **argv, const char *optstring)
 {
