@@ -28,8 +28,7 @@
 class KConfig;
 class KConfigBase;
 class KCharsets;
-class DCOPClient;
-class DCOPObject;
+class QDBusInterface;
 
 #ifdef KDE3_SUPPORT
 #include <krandom.h>
@@ -97,8 +96,8 @@ class KUrl;
 */
 class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 {
-
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.kde.KApplication")
 public:
   /**
    * This constructor takes aboutData and command line
@@ -223,22 +222,6 @@ public:
    */
   bool sessionSaving() const;
 
-  /**
-   * Returns a pointer to a DCOPClient for the application.
-   * If a client does not exist yet, it is created when this
-   * function is called.
-   * Never use this client in a function registered with qAddPostRoutine,
-   * the result may be 0
-   * @return the DCOPClient for the application
-   */
-  static DCOPClient *dcopClient();
-
-  /**
-   * Disable automatic dcop registration
-   * Must be called before creating a KApplication instance to have an effect.
-   */
-  static void disableAutoDcopRegistration();
-
 #ifdef KDE3_SUPPORT
   /**
    * Returns a QPixmap with the application icon.
@@ -274,13 +257,6 @@ public:
   void setTopWidget( QWidget *topWidget );
 
 public:
-  /**
-   * Returns the DCOP name of the service launcher. This will be something like
-   * klaucher_$host_$uid.
-   * @return the name of the service launcher
-   */
-  static QByteArray launcher();
-
   /**
    * Get a file name in order to make a temporary copy of your document.
    *
@@ -383,13 +359,15 @@ public:
    */
   void setStartupId( const QByteArray& startup_id );
 
+public Q_SLOTS:
   /**
    * Updates the last user action timestamp to the given time, or to the current time,
    * if 0 is given. Do not use unless you're really sure what you're doing.
    * Consult focus stealing prevention section in kdebase/kwin/README.
    */
-  void updateUserTimestamp( quint32 time = 0 );
+  Q_SCRIPTABLE void updateUserTimestamp( int time = 0 );
 
+public:
   /**
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
    * @see updateuserTimestamp
@@ -403,7 +381,7 @@ public:
    * in the application using a DCOP call.
    * Consult focus stealing prevention section in kdebase/kwin/README.
    */
-  void updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 time = 0 );
+  void updateRemoteUserTimestamp( const QString& service, int time = 0 );
 
 #ifdef KDE3_SUPPORT
     /**
@@ -425,6 +403,10 @@ public:
     return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString();
   };
 #endif
+
+  // D-Bus slots:
+  Q_SCRIPTABLE void reparseConfiguration();
+  Q_SCRIPTABLE void quit();
 
 protected:
   /**
@@ -452,8 +434,6 @@ protected:
   static KApplication *KApp;
 
 private Q_SLOTS:
-  void dcopFailure(const QString &);
-  void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
   void checkAppStartedSlot();
 
@@ -467,9 +447,6 @@ private:
   void init();
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
   void read_app_startup_id();
-
-  void dcopAutoRegistration();
-  void dcopClientPostInit();
 
 public:
   /**

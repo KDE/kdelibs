@@ -142,26 +142,6 @@ public:
     KMainWindow( QWidget* parent = 0, const char* name = 0, Qt::WindowFlags f = 0 );
 
     /**
-     * Flags that can be passed in an argument to the constructor to
-     * change the behavior.
-     *
-     * NoDCOPObject tells KMainWindow not to create a KMainWindowInterface.
-     * This can be useful in particular for inherited classes, which
-     * might want to create more specific dcop interfaces. It's a good
-     * idea to use KMainWindowInterface as the base class for such interfaces
-     * though (to provide the standard mainwindow functionality via DCOP).
-     */
-    enum CreationFlags
-    {
-        NoDCOPObject = 1
-    };
-
-    /**
-     * Overloaded constructor which allows passing some KMainWindow::CreationFlags.
-     */
-    KMainWindow( int cflags, QWidget* parent = 0, const char* name = 0, Qt::WindowFlags f = 0 );
-
-    /**
      * \brief Destructor.
      *
      * Will also destroy the toolbars, and menubar if
@@ -925,7 +905,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     KMainWindowPrivate *d;
-    void initKMainWindow(const char *name, int cflags);
+    void initKMainWindow(const char *name);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KMainWindow::StandardWindowOptions)

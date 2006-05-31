@@ -20,6 +20,7 @@ if(MSVC_IDE)
 endif(MSVC_IDE)
 
 find_package(KDE4Internal REQUIRED)
+find_package(QtDBus REQUIRED)
 find_package(ZLIB REQUIRED)
 
 if (APPLE)
@@ -65,7 +66,9 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES} ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
 # kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
-set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${CMAKE_SOURCE_DIR}/kdecore/kservice ${KDE4_DCOP_INCLUDES})
+set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore
+${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network
+${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${QDBUS_INCLUDE_DIRS} ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${KDE4_KDECORE_INCLUDES})
 # kio depends on kdeui
@@ -86,9 +89,9 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
+add_definitions( ${QDBUS_DEFINITIONS} )
 
 add_subdirectory( cmake )
-add_subdirectory( dcop )
 add_subdirectory( libltdl )
 add_subdirectory( kdefx )
 add_subdirectory( kdecore )

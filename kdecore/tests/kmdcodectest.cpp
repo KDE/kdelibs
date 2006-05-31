@@ -336,7 +336,7 @@ int main (int argc, char *argv[])
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
 
-    KApplication::disableAutoDcopRegistration();
+    //KApplication::disableAutoDcopRegistration();
     KApplication app;
 
     if (!count)

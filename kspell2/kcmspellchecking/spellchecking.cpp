@@ -19,8 +19,7 @@
 #include <QVBoxLayout>
 #include <QBoxLayout>
 #include <QGroupBox>
-
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -60,10 +59,8 @@ void KSpellCheckingConfig::load()
 void KSpellCheckingConfig::save()
 {
     spellConfig->writeGlobalSettings();
-    QByteArray data;
-    if ( !KApplication::dcopClient()->isAttached() )
-        KApplication::dcopClient()->attach();
-    KApplication::dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
+    QDBusMessage msg = QDBusMessage::signal("/", "org.kde.KonquerorIface", "reparseConfiguration");
+    QDBus::sessionBus().send(msg);
 }
 
 void KSpellCheckingConfig::defaults()

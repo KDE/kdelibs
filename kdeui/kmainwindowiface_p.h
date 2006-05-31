@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2001 Ian Reinhart Geiser <geiseri@yahoo.com>
+   Copyright (C) 2006 Thiago Macieira <thiago@kde.org>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,26 +21,26 @@
 #ifndef KWINDOW_INTERFACE_H
 #define KWINDOW_INTERFACE_H
 
-#include <dcopobject.h>
-#include <dcopref.h>
-
+#include <dbus/qdbus.h>
 #include <qmap.h>
+#include <kdelibs_export.h>
 
 class KDCOPActionProxy;
 class KDCOPPropertyProxy;
 class KMainWindow;
 
 /**
- * @short DCOP interface to KMainWindow.
+ * @short D-Bus interface to KMainWindow.
  *
  * This is the main interface to the KMainWindow.  This will provide a consistent
- * DCOP interface to all KDE applications that use it.
+ * D-Bus interface to all KDE applications that use it.
  *
  * @author Ian Reinhart Geiser <geiseri@yahoo.com>
  */
-class KDEUI_EXPORT KMainWindowInterface : virtual public DCOPObject
+class KMainWindowInterface : public QDBusAbstractAdaptor
 {
-K_DCOP
+        Q_OBJECT
+        Q_CLASSINFO("D-Bus Interface", "org.kde.KMainWindow")
 
 public:
 	/**
@@ -54,16 +55,12 @@ public:
 	**/
 	~KMainWindowInterface();
 
-	DCOPCStringList functionsDynamic();
-	bool processDynamic(const DCOPCString &fun, const QByteArray &data, DCOPCString& replyType, QByteArray &replyData);
-
-
-k_dcop:
+public Q_SLOTS:
 	/**
 	Return a list of actions available to the application's window.
 	@return A QCStringList containing valid names actions.
 	*/
-	DCOPCStringList actions();
+	QStringList actions();
 
 	/**
 	Activates the requested action.
@@ -71,7 +68,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool activateAction( const DCOPCString& action);
+	bool activateAction( const QString& action);
 
 	/**
 	Disables the requested action.
@@ -79,7 +76,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool disableAction( const DCOPCString& action);
+	bool disableAction( const QString& action);
 
 	/**
 	Enables the requested action.
@@ -87,7 +84,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@return The success of the operation.
 	*/
-	bool enableAction( const DCOPCString& action);
+	bool enableAction( const QString& action);
 
 	/**
 	Returns the status of the requested action.
@@ -95,7 +92,7 @@ k_dcop:
 	actions can be found by calling actions().
 	@returns The state of the action, true - enabled, false - disabled.
 	*/
-	bool actionIsEnabled( const DCOPCString& action);
+	bool actionIsEnabled( const QString& action);
 
 	/**
 	Returns the tool tip text of the requested action.
@@ -103,56 +100,22 @@ k_dcop:
 	actions can be found by calling actions().
 	@return A QCString containing the text of the action's tool tip.
 	*/
-	DCOPCString actionToolTip( const DCOPCString& action);
+	QString actionToolTip( const QString& action);
 
-	/**
-	Returns a dcop reference to the selected KAction
-	@param name The name of the action.  The names of valid
-	actions can be found by calling actions().
-	@return A DCOPRef for the kaction.
-	**/
-	DCOPRef action( const DCOPCString& name );
-
-	/**
-	Returns and action map
-	**/
-  	QMap<DCOPCString,DCOPRef> actionMap();
 	/**
 	Returns the ID of the current main window.
 	This is useful for automated screen captures or other evil
 	widget fun.
 	@return A integer value of the main window's ID.
 	**/
-	int getWinID();
+	qlonglong winId();
 	/**
 	Copies a pixmap representation of the current main window to
 	the clipboard.
 	**/
 	void grabWindowToClipBoard();
-//	bool isHidden();
-	void hide();
-//	bool isMaximized();
-	void maximize();
-//	bool isMinimized();
-	void minimize();
-//	int width();
-//	int height();
-	void resize(int newWidth, int newHeight);
-//	int Xpos();
-//	int Ypos();
-	void move(int newX, int newY);
-	void setGeometry(int newX, int newY, int newWidth, int newHeight);
-	void raise();
-	void lower();
-	void restore();
-	void show();
-
-//	QCStringList getQTProperties();
-
 private:
 	KMainWindow *m_MainWindow;
-	KDCOPActionProxy *m_dcopActionProxy;
-	KDCOPPropertyProxy *m_dcopPropertyProxy;
 };
 
 #endif

@@ -40,7 +40,8 @@
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <qwidget.h>
-#include <QList>
+#include <qlist.h>
+#include <dbus/qdbus.h>
 
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
@@ -67,9 +68,6 @@
 #include <QtGui/qx11info_x11.h>
 #include <kstartupinfo.h>
 #endif
-
-#include <dcopclient.h>
-#include <dcopref.h>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -107,17 +105,7 @@
 #include <X11/Xatom.h>
 #include <X11/SM/SMlib.h>
 #include <fixx11h.h>
-#endif
 
-#ifndef Q_WS_WIN // TODO: could be removed ?
-#include <KDE-ICE/ICElib.h>
-#undef Bool
-#else
-typedef void* IceIOErrorHandler;
-#include <windows.h>
-#endif
-
-#if defined Q_WS_X11
 #include <kipc.h>
 #include <QX11Info>
 #endif
@@ -129,7 +117,6 @@ typedef void* IceIOErrorHandler;
 #include <qimage.h>
 #endif
 
-#include "kappdcopiface.h"
 #include <qevent.h>
 #include <QDesktopWidget>
 #include <QMetaObject>
@@ -141,9 +128,6 @@ bool kde_kiosk_admin = false;
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
-static DCOPClient* s_DCOPClient = 0L;
-static bool s_dcopClientNeedsPostInit = false;
-static bool s_dcopClientHasBeenClosedDown = false;
 
 #ifdef Q_WS_X11
 static Atom atom_DesktopWindow;
@@ -197,7 +181,6 @@ public:
 	overrideStyle( QString() ),
 	startup_id( "0" ),
 	app_started_timer( NULL ),
-	m_KAppDCOPInterface( 0L ),
 	session_save( false )
 #ifdef Q_WS_X11
 	,oldXErrorHandler( NULL )
@@ -216,7 +199,6 @@ public:
   QString overrideStyle;
   QByteArray startup_id;
   QTimer* app_started_timer;
-  KAppDCOPInterface *m_KAppDCOPInterface;
   bool session_save;
 #ifdef Q_WS_X11
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
@@ -229,14 +211,6 @@ public:
 
 
 static QList<const QWidget*> *x11Filter = 0;
-static bool autoDcopRegistration = true;
-
-static void cleanupAppClient() {
-  // close down IPC
-  s_dcopClientHasBeenClosedDown=true;
-  delete s_DCOPClient;
-  s_DCOPClient = 0L;
-}
 
 /**
    * Installs a handler for the SIGPIPE signal. It is thrown when you write to
@@ -421,7 +395,6 @@ KApplication::KApplication( bool GUIenabled ) :
     installSigpipeHandler();
     parseCommandLine( );
     init();
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 #ifdef Q_WS_X11
@@ -435,7 +408,6 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     installSigpipeHandler();
     parseCommandLine( );
     init();
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
@@ -449,7 +421,6 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     installSigpipeHandler();
     parseCommandLine( );
     init();
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 #endif
 
@@ -463,7 +434,6 @@ KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
     installSigpipeHandler();
     parseCommandLine( );
     init();
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 #ifdef Q_WS_X11
@@ -478,7 +448,6 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
     init();
-    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 #endif
 
@@ -582,8 +551,25 @@ void KApplication::init()
   }
 #endif
 
-  dcopAutoRegistration();
-  dcopClientPostInit();
+
+  // sanity checking, to make sure we've connected
+  extern void qDBusBindToApplication();
+  qDBusBindToApplication();
+  QDBusBusService *bus = 0;
+  if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().busService()))
+      kFatal(101) << "Session bus not found" << endl;
+  QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
+  QString reversedDomain;
+  if (parts.isEmpty())
+      reversedDomain = QLatin1String("local.");
+  else
+      foreach (const QString& s, parts)
+      {
+          reversedDomain.prepend(QLatin1Char('.'));
+          reversedDomain.prepend(s);
+      }
+  bus->requestName(reversedDomain + applicationName(), QDBusBusService::AllowReplacingName);
+  QDBus::sessionBus().registerObject("/MainApplication", this, QDBusConnection::ExportSlots);
 
   smw = 0;
 
@@ -682,7 +668,7 @@ void KApplication::init()
 	 "left-to-right languages (as english) or to 'RTL' in right-to-left "
 	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
          "LTR" ) == "RTL")
-  rtl = !rtl;
+      rtl = !rtl;
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
   // install appdata resource type
@@ -730,70 +716,21 @@ static int my_system (const char *command) {
    } while(1);
 }
 
-
-DCOPClient *KApplication::dcopClient()
-{
-  //Q_ASSERT_X(qApp,"KApplication::dcopClient","valid qApp needed");
-  Q_ASSERT_X(s_dcopClientHasBeenClosedDown==false,"KApplication::dcopClient()", "dcopClient must not be accessed from a qapp post routine");
-  if (s_dcopClientHasBeenClosedDown) return 0;
-
-  if (s_DCOPClient)
-    return s_DCOPClient;
-
-  s_DCOPClient = new DCOPClient;
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-  if (args && args->isSet("dcopserver"))
-  {
-    s_DCOPClient->setServerAddress( args->getOption("dcopserver"));
-  }
-  if( kapp ) {
-    connect(s_DCOPClient, SIGNAL(attachFailed(const QString &)),
-            kapp, SLOT(dcopFailure(const QString &)));
-    connect(s_DCOPClient, SIGNAL(blockUserInput(bool) ),
-            kapp, SLOT(dcopBlockUserInput(bool)) );
-    qAddPostRoutine(cleanupAppClient);
-  }
-  else
-    s_dcopClientNeedsPostInit = true;
-
-  //qAddPostRoutine(cleanupAppClient);
-
-  DCOPClient::setMainClient( s_DCOPClient );
-  return s_DCOPClient;
-}
-
-void KApplication::dcopClientPostInit()
-{
-  if( s_dcopClientNeedsPostInit )
-    {
-    s_dcopClientNeedsPostInit = false;
-    connect(s_DCOPClient, SIGNAL(blockUserInput(bool) ),
-            SLOT(dcopBlockUserInput(bool)) );
-    s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
-    qAddPostRoutine(cleanupAppClient);
-    }
-}
-
-void KApplication::dcopAutoRegistration()
-{
-  if (autoDcopRegistration)
-     {
-     ( void ) dcopClient();
-     if( dcopClient()->appId().isEmpty())
-         dcopClient()->registerAs(applicationName().toLatin1().data());
-     }
-}
-
-void KApplication::disableAutoDcopRegistration()
-{
-  autoDcopRegistration = false;
-}
-
 KConfig* KApplication::sessionConfig()
 {
     if (!pSessionConfig) // create an instance specific config object
         pSessionConfig = new KConfig( sessionConfigName(), false, false);
     return pSessionConfig;
+}
+
+void KApplication::reparseConfiguration()
+{
+    KGlobal::config()->reparseConfiguration();
+}
+
+void KApplication::quit()
+{
+    QApplication::quit();
 }
 
 KSessionManaged::KSessionManaged()
@@ -996,49 +933,6 @@ void KApplication::startKdeinit()
 #endif
 }
 
-void KApplication::dcopFailure(const QString &msg)
-{
-  static int failureCount = 0;
-  failureCount++;
-  if (failureCount == 1)
-  {
-     startKdeinit();
-     return;
-  }
-  if (failureCount == 2)
-  {
-#ifdef Q_WS_WIN
-     KGlobal::config()->setGroup("General");
-     if (KGlobal::config()->readEntry("ignoreDCOPFailures", QVariant(false)).toBool())
-         return;
-#endif
-     QString msgStr(i18n("There was an error setting up inter-process "
-                      "communications for KDE. The message returned "
-                      "by the system was:\n\n"));
-     msgStr += msg;
-     msgStr += i18n("\n\nPlease check that the \"dcopserver\" program is running.");
-
-     if (Tty != kapp->type())
-     {
-       QMessageBox::critical
-         (
-           kapp->activeWindow(),
-           i18n("DCOP communications error (%1)", KInstance::caption()),
-           msgStr,
-           i18n("&OK")
-         );
-     }
-     else
-     {
-       fprintf(stderr, "%s\n", msgStr.toLocal8Bit().data());
-     }
-
-     return;
-  }
-}
-
-
-
 void KApplication::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
@@ -1128,8 +1022,6 @@ extern void kDebugCleanup();
 
 KApplication::~KApplication()
 {
-  delete d->m_KAppDCOPInterface;
-
   // First call the static deleters and then call KLibLoader::cleanup()
   // The static deleters may delete libraries for which they need KLibLoader.
   // KLibLoader will take care of the remaining ones.
@@ -1171,11 +1063,6 @@ public:
 
 
 static bool kapp_block_user_input = false;
-
-void KApplication::dcopBlockUserInput( bool b )
-{
-    kapp_block_user_input = b;
-}
 
 #ifdef Q_WS_X11
 bool KApplication::x11EventFilter( XEvent *_event )
@@ -1312,7 +1199,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 }
 #endif // Q_WS_X11
 
-void KApplication::updateUserTimestamp( quint32 time )
+void KApplication::updateUserTimestamp( int time )
 {
 #if defined Q_WS_X11
     if( time == 0 )
@@ -1341,12 +1228,12 @@ unsigned long KApplication::userTimestamp() const
 #endif
 }
 
-void KApplication::updateRemoteUserTimestamp( const QByteArray& dcopId, quint32 time )
+void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 {
 #if defined Q_WS_X11
     if( time == 0 )
         time = QX11Info::appUserTime();
-    DCOPRef( dcopId, "MainApplication-Interface" ).call( "updateUserTimestamp", time );
+    QDBusInterfacePtr(service, "/MainApplication", "org.kde.KApplication")->call("updateUserTimestamp", time);
 #endif
 }
 
@@ -1577,12 +1464,6 @@ void KApplication::propagateSettings(SettingsCategory arg)
     //QToolTip::setGloballyEnabled( b ); ###
 
     emit settingsChanged(arg);
-}
-
-
-QByteArray KApplication::launcher()
-{
-   return "klauncher";
 }
 
 QString KApplication::tempSaveName( const QString& pFilename )

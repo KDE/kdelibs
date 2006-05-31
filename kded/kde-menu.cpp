@@ -20,9 +20,7 @@
 #include <stdlib.h>
 
 #include <qfile.h>
-
-#include <dcopclient.h>
-#include <dcopref.h>
+#include <dbus/qdbus.h>
 
 #include "kaboutdata.h"
 #include "kapplication.h"
@@ -32,6 +30,7 @@
 #include "kservice.h"
 #include "kservicegroup.h"
 #include "kstandarddirs.h"
+#include "ktoolinvocation.h"
 
 static KCmdLineOptions options[] = {
    { "utf8", I18N_NOOP("Output data in UTF-8 instead of local encoding"), 0 },
@@ -94,9 +93,9 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
             }
             if (bHighlight)
             {
-               DCOPRef kicker( "kicker", "kicker" );
-               bool result = kicker.call( "highlightMenuItem", menuId );
-               if (!result)
+               QDBusInterfacePtr kicker( "org.kde.kicker", "/kicker", "org.kde.Kicker" );
+               QDBusReply<void> result = kicker->call( "highlightMenuItem", menuId );
+               if (!result.isSuccess())
                   error(3, i18n("Menu item '%1' could not be highlighted.", menuId).toLocal8Bit());
             }
             exit(0);
@@ -148,8 +147,8 @@ int main(int argc, char **argv)
       args.append("--incremental");
       args.append("--checkstamps");
       QString command = "kbuildsycoca";
-      QByteArray _launcher = KApplication::launcher();
-      if (!DCOPRef(_launcher, _launcher).call("kdeinit_exec_wait", command, args).isValid())
+      QDBusMessage reply = KToolInvocation::klauncher()->call("kdeinit_exec_wait", command, args);
+      if (reply.type() != QDBusMessage::ReplyMessage)
       {
          qWarning("Can't talk to klauncher!");
          command = KGlobal::dirs()->findExe(command);

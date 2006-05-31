@@ -15,12 +15,6 @@ notifybyexecute.cpp
 
 kde4_automoc(${knotify_KDEINIT_SRCS})
 
-set( knotify_DCOP_SKEL_SRCS
-knotify.h
-)
-
-kde4_add_dcop_skels(knotify_KDEINIT_SRCS ${knotify_DCOP_SKEL_SRCS})
-
 kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_knotify  ${KDE4_KDECORE_LIBS} kdeui phononcore )

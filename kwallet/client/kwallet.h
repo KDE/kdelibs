@@ -28,11 +28,10 @@
 #include <qstringlist.h>
 #include <qobject.h>
 #include <qwindowdefs.h>
-#include <dcopobject.h>
 
 #include <kdelibs_export.h>
 
-class DCOPRef;
+class QDBusInterface;
 
 namespace KWallet {
 
@@ -40,14 +39,13 @@ namespace KWallet {
  * KDE Wallet
  *
  * This class implements a generic system-wide Wallet for KDE.  This is the
- * ONLY public interface.  The DCOP client is unsupported and considered to be
- * private.
+ * ONLY public interface. 
  *
  * @author George Staikos <staikos@kde.org>
  * @short KDE Wallet Class
  */
-class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
-	K_DCOP
+class KWALLETCLIENT_EXPORT Wallet : public QObject
+{
 	Q_OBJECT
 	protected:
 		/**
@@ -117,7 +115,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 		 *  @param app The name of the application to disconnect.
 		 *  @return Returns true on success, false on error.
 		 */
-		static bool disconnectApplication(const QString& wallet, const DCOPCString& app);
+		static bool disconnectApplication(const QString& wallet, const QString& app);
 
 		enum OpenType { Synchronous=0, Asynchronous, Path, OpenTypeUnused=0xff };
 
@@ -456,44 +454,42 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 		 */
 		void walletOpened(bool success);
 
-	private:
-	k_dcop:
+	private Q_SLOTS:
 		/**
 		 *  @internal
 		 *  DCOP slot for signals emitted by the wallet service.
 		 */
-		ASYNC slotWalletClosed(int handle);
+		void slotWalletClosed(int handle);
 
 		/**
 		 *  @internal
 		 *  DCOP slot for signals emitted by the wallet service.
 		 */
-		ASYNC slotFolderUpdated(const QString& wallet, const QString& folder);
+		void slotFolderUpdated(const QString& wallet, const QString& folder);
 
 		/**
 		 *  @internal
 		 *  DCOP slot for signals emitted by the wallet service.
 		 */
-		ASYNC slotFolderListUpdated(const QString& wallet);
+		void slotFolderListUpdated(const QString& wallet);
 
 		/**
 		 *  @internal
 		 *  DCOP slot for signals emitted by the wallet service.
 		 */
-		ASYNC slotApplicationDisconnected(const QString& wallet, const DCOPCString& application);
+		void slotApplicationDisconnected(const QString& wallet, const QString& application);
 
 		/**
 		 *  @internal
 		 *  Callback for kwalletd
 		 */
-		ASYNC walletOpenResult(int rc);
+		void walletOpenResult(int rc);
 
-	private Q_SLOTS:
 		/**
 		 *  @internal
 		 *  Used to detect when the wallet service dies.
 		 */
-		void slotAppUnregistered(const QByteArray&);
+		void slotAppUnregistered(const QString&);
 
 	private:
 		class WalletPrivate;
@@ -501,7 +497,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject, public DCOPObject {
 		QString _name;
 		QString _folder;
 		int _handle;
-		DCOPRef *_dcopRef;
+		QDBusInterface* _wallet;
 
 	protected:
 		/**

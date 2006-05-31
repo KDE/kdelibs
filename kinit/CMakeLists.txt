@@ -3,6 +3,8 @@ project(kdeinit)
 
 add_subdirectory( tests )
 
+add_definitions(${QDBUS_DEFINITIONS})
+
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 
@@ -129,6 +131,7 @@ install(TARGETS kdostartupconfig DESTINATION bin)
 set(klauncher_KDEINIT_SRCS
    klauncher.cpp
    klauncher_main.cpp
+   klauncher_adaptor.cpp
    autostart.cpp
    )
 

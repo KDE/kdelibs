@@ -27,18 +27,18 @@
 #include <krun.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
-#include <dcopref.h>
 #include <qregexp.h>
 #include <kmessagebox.h>
 #include <kprocess.h>
 #include <klocale.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <qdatetime.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
+#include <dbus/qdbus.h>
 #include <kstaticdeleter.h>
+#include "kbookmarkmanageradaptor_p.h"
 
 class KBookmarkManagerList : public QList<KBookmarkManager *>
 {
@@ -118,8 +118,10 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles )
-    : DCOPObject(DCOPCString("KBookmarkManager-")+bookmarksFile.toUtf8()), m_doc("xbel"), m_docIsLoaded(false)
+    : m_doc("xbel"), m_docIsLoaded(false)
 {
+    new KBookmarkManagerAdaptor(this);
+    QDBus::sessionBus().registerObject("KBookmarkManager-"+bookmarksFile, this);
     m_toolbarDoc.clear();
 
     m_update = true;
@@ -138,13 +140,17 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
         m_docIsLoaded = true;
     }
 
-    connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
-    connectDCOPSignal(0, objId(), "bookmarkConfigChanged()", "notifyConfigChanged()", false);
+    QDBus::sessionBus().connect(QString(), QString(), "org.kde.KIO.KBookmarkManager",
+                                "bookmarksChanged", this, SLOT(notifyChanged(QString,QDBusMessage)));
+    QDBus::sessionBus().connect(QString(), QString(), "org.kde.KIO.KBookmarkManager",
+                                "bookmarkConfigChanged", this, SLOT(notifyConfigChanged()));
 }
 
 KBookmarkManager::KBookmarkManager( )
-    : DCOPObject(DCOPCString("KBookmarkManager-generated")), m_doc("xbel"), m_docIsLoaded(true)
+    : m_doc("xbel"), m_docIsLoaded(true)
 {
+    new KBookmarkManagerAdaptor(this);
+    QDBus::sessionBus().registerObject("/KBookmarkManager-generated", this);
     m_update = false; // TODO - make it read/write
     m_showNSBookmarks = true;
 
@@ -152,11 +158,14 @@ KBookmarkManager::KBookmarkManager( )
     m_doc.appendChild( topLevel );
     m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
 
-    // TODO - enable this via some sort of api and fix the above DCOPObject script somehow
-#if 0
-    connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
-    connectDCOPSignal(0, objId(), "bookmarkConfigChanged()", "notifyConfigChanged()", false);
-#endif
+    QDBus::sessionBus().connect(QString(), "/KBookmarkManager-generated",
+                                "org.kde.KIO.KBookmarkManager",
+                                "bookmarksChanged",
+                                this, SLOT(notifyChanged(QString)));
+    QDBus::sessionBus().connect(QString(), "/KBookmarkManager-generated",
+                                "org.kde.KIO.KBookmarkManager",
+                                "bookmarkConfigChanged",
+                                this, SLOT(notifyConfigChanged(QString)));
 }
 
 KBookmarkManager::~KBookmarkManager()
@@ -524,11 +533,7 @@ void KBookmarkManager::emitChanged( const KBookmarkGroup & group )
     // Tell the other processes too
     // kDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
 
-    QByteArray data;
-    QDataStream ds( &data, QIODevice::WriteOnly );
-    ds << group.address();
-
-    emitDCOPSignal("bookmarksChanged(QString)", data);
+    emit bookmarksChanged(group.address());
 
     // We do get our own broadcast, so no need for this anymore
     //emit changed( group );
@@ -536,7 +541,7 @@ void KBookmarkManager::emitChanged( const KBookmarkGroup & group )
 
 void KBookmarkManager::emitConfigChanged()
 {
-    emitDCOPSignal("bookmarkConfigChanged()", QByteArray());
+    emit bookmarkConfigChanged();
 }
 
 void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
@@ -559,13 +564,13 @@ void KBookmarkManager::notifyConfigChanged() // DCOP call
     parse(); // reload, and thusly recreate the menus
 }
 
-void KBookmarkManager::notifyChanged( QString groupAddress ) // DCOP call
+void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &msg ) // DCOP call
 {
     if (!m_update) return;
 
     // Reparse (the whole file, no other choice)
     // if someone else notified us
-    if (callingDcopClient()->senderId() != DCOPClient::mainClient()->appId())
+    if (msg.sender() != QDBus::sessionBus().baseService())
        parse();
 
     //kDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;
@@ -644,7 +649,7 @@ bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
         (*it).updateAccessMetadata();
 
     if (emitSignal)
-        emit notifier().updatedAccessMetadata( path(), url );
+        emit KBookmarkNotifier::updatedAccessMetadata( path(), url );
 
     return true;
 }

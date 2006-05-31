@@ -20,7 +20,7 @@
 #include "krun.h"
 #include "kdirwatch.h"
 #include "kio/job.h"
-#include <kdirnotify_stub.h>
+#include <kdirnotify.h>
 #include <kdebug.h>
 
 /***********************************************************************
@@ -62,14 +62,13 @@ void KAutoMount::slotResult( KJob * job )
       KRun::runUrl( mountpoint, "inode/directory", 0 /*TODO - window*/ );
 
     // Notify about the new stuff in that dir, in case of opened windows showing it
-    KDirNotify_stub allDirNotify("*", "KDirNotify*");
-    allDirNotify.FilesAdded( mountpoint );
+    org::kde::KDirNotify::emitFilesAdded( mountpoint.url() );
 
     // Update the desktop file which is used for mount/unmount (icon change)
     kDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
     KUrl dfURL;
     dfURL.setPath( m_desktopFile );
-    allDirNotify.FilesChanged( dfURL );
+    org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
     //KDirWatch::self()->setFileDirty( m_desktopFile );
 
     emit finished();
@@ -92,12 +91,11 @@ void KAutoUnmount::slotResult( KJob * job )
   }
   else
   {
-    KDirNotify_stub allDirNotify("*", "KDirNotify*");
     // Update the desktop file which is used for mount/unmount (icon change)
     kDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
     KUrl dfURL;
     dfURL.setPath( m_desktopFile );
-    allDirNotify.FilesChanged( dfURL );
+    org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
     //KDirWatch::self()->setFileDirty( m_desktopFile );
 
     // Notify about the new stuff in that dir, in case of opened windows showing it
@@ -106,7 +104,7 @@ void KAutoUnmount::slotResult( KJob * job )
     // is to relist the directory anyway.
     KUrl mp;
     mp.setPath( m_mountpoint );
-    allDirNotify.FilesAdded( mp );
+    org::kde::KDirNotify::emitFilesAdded( mp.url() );
 
     emit finished();
   }

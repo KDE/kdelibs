@@ -7,8 +7,10 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <dcopclient.h>
 #include <kwallet.h>
+#include <dbus/qdbusbus.h>
+#include <dbus/qdbusconnection.h>
+#include <dbus/qdbusreply.h>
 
 #include "kwallettest.h"
 
@@ -47,8 +49,15 @@ int main( int argc, char *argv[] )
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KApplication app( "kwalletasync" );
 
-	// register with DCOP
-	_out << "DCOP registration returned " << app.dcopClient()->registerAs(app.objectName().toLatin1()) << endl;
+	// force name with D-BUS
+        QDBusReply<QDBusBusService::RequestNameReply> reply
+            = QDBus::sessionBus().busService()->requestName( app.objectName(),
+                                                             QDBusBusService::ReplaceExistingName );
+
+        if ( reply.isError() )
+        {
+                _out << "D-BUS name request returned " << reply.error().name() << endl;
+        }
 
 	openWallet();
 

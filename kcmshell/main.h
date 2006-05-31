@@ -22,8 +22,6 @@
 #ifndef kcmshell_h
 #define kcmshell_h
 
-#include <dcopobject.h>
-
 
 #include <kapplication.h>
 #include <kcmultidialog.h>
@@ -38,13 +36,13 @@ class KCMShell : public KApplication
 public:
 
     /**
-     * Sets m_dcopName basically to @p dcopName,
-     * and then registers with DCOP.
+     * Sets m_serviceName basically to @p serviceName,
+     * and then registers with D-BUS.
      *
-     * @param dcopName name to set the DCOP name to
+     * @param serviceName name to set the D-BUS name to
      * @param rootMode true if the kcmshell is embedding
      */
-    void setDCOPName(const DCOPCString &dcopName, bool rootMode );
+    void setServiceName(const QString &serviceName, bool rootMode );
 
     /**
      * Waits until the last instance of kcmshell with the same
@@ -61,7 +59,7 @@ private Q_SLOTS:
 
     /**
      */
-    void appExit( const QByteArray &appId );
+    void appExit( const QString &appId, const QString &, const QString & );
 
 private:
 
@@ -69,7 +67,7 @@ private:
      * The DCOP name which actually is registered.
      * For example "kcmshell_mouse".
      */
-    QByteArray m_dcopName;
+    QString m_serviceName;
 
 };
 
@@ -80,10 +78,10 @@ private:
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KCMShellMultiDialog : public KCMultiDialog, public DCOPObject
+class KCMShellMultiDialog : public KCMultiDialog
 {
     Q_OBJECT
-    K_DCOP
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KCMShellMultiDialog")
 
 public:
 
@@ -94,13 +92,13 @@ public:
     KCMShellMultiDialog( int dialogFace, const QString& caption,
             QWidget *parent=0, const char *name=0, bool modal=false);
 
-k_dcop:
+public slots:
 
     /**
      * Activate a module with id @p asn_id . This is used when
      * black helicopters are spotted overhead.
      */
-    virtual void activate( QByteArray asn_id );
+    virtual Q_SCRIPTABLE void activate( const QByteArray& asn_id );
 
 };
 

@@ -13,15 +13,10 @@ add_subdirectory( kntlm )
 
 set(kio_uiserver_KDEINIT_SRCS
 uiserver.cpp
+uiserveradaptor.cpp
 )
 
 kde4_automoc(${kio_uiserver_KDEINIT_SRCS})
-
-set( kio_uiserver_DCOP_SKEL_SRCS
-uiserver.h
-)
-
-kde4_add_dcop_skels(kio_uiserver_KDEINIT_SRCS ${kio_uiserver_DCOP_SKEL_SRCS})
 
 kde4_add_kdeinit_executable( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 

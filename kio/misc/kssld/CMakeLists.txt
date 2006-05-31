@@ -5,10 +5,6 @@ set(kded_kssld_PART_SRCS kssld.cpp )
 
 kde4_automoc(${kded_kssld_PART_SRCS})
 
-set( kded_kssld_DCOP_SKEL_SRCS kssld.h )
-
-kde4_add_dcop_skels(kded_kssld_PART_SRCS ${kded_kssld_DCOP_SKEL_SRCS})
-
 kde4_add_plugin(kded_kssld ${kded_kssld_PART_SRCS})
 
 target_link_libraries(kded_kssld  ${KDE4_KDECORE_LIBS} kio )

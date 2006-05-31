@@ -26,7 +26,7 @@
 */
 
 #include "knotification.h"
-#include "knotificationmanager.h"
+#include "knotificationmanager_p.h"
 
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -41,7 +41,6 @@
 #include <kdebug.h>
 #include <kvbox.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 
 #include <QMap>
 #include <QPixmap>
@@ -52,10 +51,6 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
-#include <QMetaObject>
-#include <QMetaEnum>
-
-
 
 struct KNotification::Private
 {

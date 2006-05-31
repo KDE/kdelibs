@@ -30,6 +30,8 @@
 
 #include <qwidget.h>
 
+#include <dbus/qdbus.h>
+
 #ifdef Q_WS_X11
 #include <QX11EmbedWidget>
 #include <qx11info_x11.h>
@@ -71,8 +73,7 @@ class KCModuleProxy::KCModuleProxyPrivate
 #endif
 			, rootProcess ( 0 )
 			, embedFrame ( 0 )
-			, dcopObject( 0 )
-			, dcopClient( 0 )
+			, dbusObject( 0 )
 			, topLayout( 0 )
 			, rootCommunicator( 0 )
 			, rootInfo( 0 )
@@ -91,8 +92,7 @@ class KCModuleProxy::KCModuleProxyPrivate
 			delete embedWidget; // Delete before embedFrame!
 #endif
 			delete embedFrame;
-			delete dcopClient;
-			delete dcopObject;
+			delete dbusObject;
 			delete rootCommunicator;
 			delete rootProcess;
 			delete kcm;
@@ -105,12 +105,12 @@ class KCModuleProxy::KCModuleProxyPrivate
 #endif
 		KProcess							*rootProcess;
 		KVBox								*embedFrame;
-		KCModuleProxyIfaceImpl  			*dcopObject;
-		DCOPClient							*dcopClient;
+		KCModuleProxyIfaceImpl  			*dbusObject;
 		QVBoxLayout							*topLayout; /* Contains QScrollView view, and root stuff */
 		KCModuleProxyRootCommunicatorImpl	*rootCommunicator;
 		QLabel								*rootInfo;
-		DCOPCString							dcopName;
+		QString							dbusService;
+		QString							dbusPath;
 		KCModuleInfo 						modInfo;
 		bool 								withFallback;
 		bool 								changed;
@@ -171,7 +171,9 @@ KCModule * KCModuleProxy::realModule() const
 
 	if( !d->isInitialized )
 	{
-  		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").toUtf8();
+		QString name = moduleInfo().handle();
+		d->dbusPath = QLatin1String("/KCModuleProxy/") + name;
+		d->dbusService = QLatin1String("org.kde.KCModuleProxy-") + name;
 		d->topLayout = new QVBoxLayout( that );
 		d->topLayout->setMargin( 0 );
 		d->topLayout->setSpacing( 0 );
@@ -179,28 +181,28 @@ KCModule * KCModuleProxy::realModule() const
 		d->isInitialized = true;
 	}
 
-	if( !d->dcopClient )
-		d->dcopClient = new DCOPClient();
 
-	if( !d->dcopClient->isRegistered() )
-  		d->dcopClient->registerAs( d->dcopName, false );
+	QDBusBusService *busService = QDBus::sessionBus().busService();
+	QDBusReply<QDBusBusService::RequestNameReply> reply
+	    = busService->requestName( d->dbusService,
+	                               QDBusBusService::DoNotQueueName );
 
-	d->dcopClient->setAcceptCalls( true );
-
-	if( d->dcopClient->appId() == d->dcopName || d->bogusOccupier )
+	if( reply.isSuccess() && (reply == QDBusBusService::PrimaryOwnerReply
+				  || reply == QDBusBusService::AlreadyOwnerReply)
+	    || d->bogusOccupier )
 	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
 		kDebug(711) << "Module not already loaded, loading module" << endl;
 
-		d->dcopObject = new KCModuleProxyIfaceImpl( d->dcopName, that );
+		d->dbusObject = new KCModuleProxyIfaceImpl( d->dbusPath, that );
 
 		d->kcm = KCModuleLoader::loadModule( moduleInfo(), KCModuleLoader::Inline, d->withFallback,
 			that, objectName().toLatin1(), d->args );
 
-		connect( d->kcm, SIGNAL( changed( bool ) ),
+		connect( d->kcm, SIGNAL(changed(bool)),
 				SLOT(moduleChanged(bool)) );
-		connect( d->kcm, SIGNAL( destroyed() ),
-				SLOT( moduleDestroyed() ) );
+		connect( d->kcm, SIGNAL(destroyed()),
+				SLOT(moduleDestroyed()) );
 		connect( d->kcm, SIGNAL(quickHelpChanged()),
 				SIGNAL(quickHelpChanged()));
 		that->setWhatsThis(d->kcm->quickHelp() );
@@ -241,28 +243,18 @@ KCModule * KCModuleProxy::realModule() const
 	{
 		kDebug(711) << "Module already loaded, loading KCMError" << endl;
 
-		d->dcopClient->detach();
- 		/* Re-register as anonymous */
-		d->dcopClient->attach();
-
-		d->dcopClient->setNotifications( true );
-		connect( d->dcopClient, SIGNAL( applicationRemoved( const QByteArray& )),
-			SLOT( applicationRemoved( const QByteArray& )));
+		connect( busService, SIGNAL(nameOwnerChanged(QString,QString,QString)),
+                         SLOT(ownerChanged(QString,QString,QString)) );
 
 		/* Figure out the name of where the module is already loaded */
-		QByteArray replyData, data;
-		DCOPCString replyType;
-		QString result;
-		QDataStream arg, stream( replyData );
+		QDBusInterfacePtr proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface");
+		QDBusReply<QString> reply = proxy->call("applicationName");
 
-		if( d->dcopClient->call( d->dcopName, d->dcopName, DCOPCString("applicationName()"),
-					data, replyType, replyData ))
+		if( reply.isSuccess() )
 		{
-			stream >> result;
-
 			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
 					i18nc( "Argument is application name", "This configuration section is "
-						"already opened in %1" ,  result ), " ", that );
+						"already opened in %1" ,  reply.value() ), " ", that );
 
 			d->topLayout->addWidget( d->kcm );
 		}
@@ -280,15 +272,14 @@ KCModule * KCModuleProxy::realModule() const
 	return d->kcm;
 }
 
-void KCModuleProxy::applicationRemoved( const QByteArray & app )
+void KCModuleProxy::ownerChanged( const QString & service, const QString &oldOwner, const QString &)
 {
-	if( app == d->dcopName )
+	if( service == d->dbusService && !oldOwner.isEmpty() )
 	{
 		/* Violence: Get rid of KCMError & CO, so that
 		 * realModule() attempts to reload the module */
 		delete d->kcm;
 		d->kcm = 0;
-		d->dcopClient->setNotifications( false );
 		realModule();
 		d->kcm->show();
 	}
@@ -389,8 +380,7 @@ void KCModuleProxy::runAsRoot()
 		else
 		{
 			d->rootMode = true;
-			KApplication::dcopClient();
-			d->rootCommunicator = new KCModuleProxyRootCommunicatorImpl( d->dcopName + "-RootCommunicator", this );
+			d->rootCommunicator = new KCModuleProxyRootCommunicatorImpl( d->dbusPath + "/RootCommunicator", this );
 		}
 
 		delete lblBusy;
@@ -459,14 +449,9 @@ void KCModuleProxy::deleteClient()
 	delete d->kcm;
 	d->kcm = 0;
 
-	delete d->dcopObject;
-	d->dcopObject = 0;
+	delete d->dbusObject;
+	d->dbusObject = 0;
 
-	if( d->dcopClient && !d->dcopClient->detach() )
-		kDebug(711) << "Unregistering from DCOP failed." << endl;
-
-	delete d->dcopClient;
-	d->dcopClient = 0;
 #endif
 
 	kapp->syncX();
@@ -532,7 +517,7 @@ void KCModuleProxy::load()
 {
 
 	if( d->rootMode )
-		callRootModule( "load()" );
+		callRootModule( "load" );
 	else if( realModule() )
 	{
 		d->kcm->load();
@@ -543,7 +528,7 @@ void KCModuleProxy::load()
 void KCModuleProxy::save()
 {
 	if( d->rootMode )
-		callRootModule( "save()" );
+		callRootModule( "save" );
 	else if( d->changed && realModule() )
 	{
 		d->kcm->save();
@@ -551,15 +536,13 @@ void KCModuleProxy::save()
 	}
 }
 
-void KCModuleProxy::callRootModule( const QByteArray& function )
+void KCModuleProxy::callRootModule( const QString& function )
 {
-	QByteArray sendData, replyData;
-	DCOPCString replyType;
+	QDBusInterfacePtr proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface" );
 
 	/* Note, we don't use d->dcopClient here, because it's used for
 	 * the loaded module(and it's not "us" when this function is called) */
-	if( !KApplication::dcopClient()->call( d->dcopName, d->dcopName, function, sendData,
-			replyType, replyData, true, -1 ))
+	if( proxy->call( function ).type()!=QDBusMessage::ReplyMessage )
 		kDebug(711) << "Calling function '" << function << "' failed." << endl;
 
 }
@@ -567,7 +550,7 @@ void KCModuleProxy::callRootModule( const QByteArray& function )
 void KCModuleProxy::defaults()
 {
 	if( d->rootMode )
-		callRootModule( "defaults()" );
+		callRootModule( "defaults" );
 	if( realModule() )
 		d->kcm->defaults();
 }
@@ -579,25 +562,13 @@ QString KCModuleProxy::quickHelp() const
 		return realModule() ? realModule()->quickHelp() : QString();
 	else
 	{
-		QByteArray data, replyData;
-		DCOPCString replyType;
+		QDBusInterfacePtr proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface" );
+		QDBusReply<QString> reply = proxy->call( "quickHelp" );
 
-		if (KApplication::dcopClient()->call(d->dcopName, d->dcopName, "quickHelp()",
-				  data, replyType, replyData))
+		if ( reply.isError() )
 			kDebug(711) << "Calling DCOP function bool changed() failed." << endl;
-		else
-		{
-			QDataStream reply(replyData);
-			if (replyType == "QString")
-			{
-				QString result;
-				reply >> result;
-				return result;
-			}
-			else
-				kDebug(711) << "DCOP function changed() returned mumbo jumbo." << endl;
-		}
-		return QString();
+
+		return reply;
 	}
 }
 
@@ -649,9 +620,14 @@ bool KCModuleProxy::rootMode() const
 	return d->rootMode;
 }
 
-QByteArray KCModuleProxy::dcopName() const
+QString KCModuleProxy::dbusService() const
 {
-	return d->dcopName;
+	return d->dbusService;
+}
+
+QString KCModuleProxy::dbusPath() const
+{
+	return d->dbusPath;
 }
 
 void KCModuleProxy::emitQuickHelpChanged()

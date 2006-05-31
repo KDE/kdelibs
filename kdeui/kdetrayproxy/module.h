@@ -21,7 +21,6 @@
 #define _KDE_TRAY_MODULE_H_
 
 #include <kdedmodule.h>
-#include <dcopobject.h>
 
 #include "kdetrayproxy.h"
 
@@ -29,9 +28,8 @@ class KDETrayModule
     : public KDEDModule
     {
     Q_OBJECT
-    K_DCOP
     public:
-        KDETrayModule( const QByteArray& obj );
+        KDETrayModule( const QString& obj );
     private:
         KDETrayProxy proxy;
     };

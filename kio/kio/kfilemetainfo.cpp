@@ -30,7 +30,6 @@
 #include <kservicetypeprofile.h>
 #include <kdebug.h>
 #include <kmimetype.h>
-#include <kdatastream.h> // needed for serialization of bool
 #include <klocale.h>
 #include <kio/global.h>
 

@@ -83,7 +83,7 @@ extern "C" {
 #include <kdialog.h>
 #include <kdirsize.h>
 #include <kdirwatch.h>
-#include <kdirnotify_stub.h>
+#include <kdirnotify.h>
 #include <kdiskfreesp.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -1442,8 +1442,7 @@ void KFilePropsPlugin::postApplyChanges()
 
   const KFileItemList items = properties->items();
   const KUrl::List lst = items.urlList();
-  KDirNotify_stub allDirNotify("*", "KDirNotify*");
-  allDirNotify.FilesChanged( lst );
+  org::kde::KDirNotify::emitFilesChanged( lst.toStringList() );
 }
 
 class KFilePermissionsPropsPlugin::KFilePermissionsPropsPluginPrivate

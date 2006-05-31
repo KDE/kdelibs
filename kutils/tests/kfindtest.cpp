@@ -124,7 +124,7 @@ void KFindTest::slotHighlight(int id, int index, int matchedLength)
 int main(int argc, char **argv)
 {
 	KCmdLineArgs::init(argc, argv, "kfindtest", "KFindTest", 0, 0, false);
-        KApplication::disableAutoDcopRegistration();
+        //KApplication::disableAutoDcopRegistration();
 	KApplication app;
 
 	QString text = "This file is part of the KDE project.\n"

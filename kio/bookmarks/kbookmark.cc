@@ -29,7 +29,6 @@
 #include <klocale.h>
 #include <assert.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <kbookmarkmanager.h>
 
 #include <qdatetime.h>
@@ -137,7 +136,7 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
     KBookmarkGroup grp(groupElem);
 
     if (emitSignal)
-        emit mgr->notifier().createdNewFolder(
+        KBookmarkNotifier::createdNewFolder(
                                 mgr->path(), grp.fullText(),
                                 grp.address() );
 
@@ -184,9 +183,9 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const KBookmark &b
 
     if (emitSignal) {
         if ( bm.hasMetaData() ) {
-            mgr->notifyCompleteChange( "" );
+            emit mgr->notifyCompleteChange( "" );
         } else {
-            emit mgr->notifier().addedBookmark(
+            emit KBookmarkNotifier::addedBookmark(
                                      mgr->path(), bm.url().url(),
                                      bm.fullText(), bm.address(), bm.icon() );
         }

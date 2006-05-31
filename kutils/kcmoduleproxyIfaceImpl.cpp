@@ -19,7 +19,7 @@
 #include <qdatastream.h>
 #include <qmessagebox.h>
 
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <kcmoduleproxy.h>
@@ -27,16 +27,15 @@
 
 #include "kcmoduleproxyIfaceImpl.h"
 
-KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QByteArray& name,
+KCModuleProxyIfaceImpl::KCModuleProxyIfaceImpl( const QString& name,
 		KCModuleProxy* const client )
-	: DCOPObject( name ), QObject( 0 ),
-		p( const_cast<KCModuleProxy *>( client ))
+	: KCModuleProxyIface( name ), p( const_cast<KCModuleProxy *>( client ))
 {
-    setObjectName( name );
-	connect( p, SIGNAL( changed(bool)),
-			SLOT( changedRelay(bool)));
-	connect( p, SIGNAL( quickHelpChanged()),
-			SLOT( quickHelpRelay()));
+	setObjectName( name );
+	connect( p, SIGNAL(changed(bool)),
+			SLOT(changedRelay(bool)));
+	connect( p, SIGNAL(quickHelpChanged()),
+			SLOT(quickHelpRelay()));
 }
 
 void KCModuleProxyIfaceImpl::save()
@@ -74,16 +73,12 @@ bool KCModuleProxyIfaceImpl::changed()
 
 void KCModuleProxyIfaceImpl::changedRelay( bool c )
 {
-	QByteArray data;
-	QDataStream stream(&data, QIODevice::WriteOnly);
-	stream << c;
-	emitDCOPSignal( "changed(bool)", data );
+	emit KCModuleProxyIface::changed( c );
 }
 
 void KCModuleProxyIfaceImpl::quickHelpRelay()
 {
-	QByteArray data;
-	emitDCOPSignal( "quickHelpChanged()", data );
+	emit quickHelpChanged();
 }
 
 /***************************************************************/
@@ -93,8 +88,8 @@ void KCModuleProxyIfaceImpl::quickHelpRelay()
 
 /***************************************************************/
 KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
-		( const QByteArray& name, KCModuleProxy* const client )
-	: DCOPObject( name ), QObject( 0 ),
+		( const QString& name, KCModuleProxy* const client )
+	: KCModuleProxyRootDispatcher( name ),
 		p( const_cast<KCModuleProxy *>( client ))
 {
     setObjectName( name );
@@ -105,11 +100,15 @@ KCModuleProxyRootCommunicatorImpl::KCModuleProxyRootCommunicatorImpl
 	 */
 
 	/* Note, we don't use KCModuleProxy::d->dcopClient */
-	KApplication::dcopClient()->connectDCOPSignal( 0, p->dcopName(),
-			"changed(bool)", objId(), "changed(bool)", false );
+	QDBusConnection connection = QDBus::sessionBus();
 
-	KApplication::dcopClient()->connectDCOPSignal( 0, p->dcopName(),
-			"quickHelpChanged()", objId(), "quickHelpChanged()", false );
+	connection.connect( p->dbusService(), p->dbusPath(),
+	                    "org.kde.KCModuleProxyIface", "changed",
+	                    this, SLOT( changed( bool ) ) );
+
+	connection.connect( p->dbusService(), p->dbusPath(),
+	                    "org.kde.KCModuleProxyIface", "quickHelpChanged",
+	                    this, SLOT( quickHelpChanged() ) );
 }
 
 /* Reimplementations of DCOP members */

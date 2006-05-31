@@ -22,17 +22,15 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
-#include <dcopclient.h>
 #include <kurl.h>
 
 #include "jobclasses.h"
 #include "observer.h"
 
-#include "uiserver_stub.h"
+#include "uiserveriface.h"
 
 #include "passdlg.h"
 #include "slavebase.h"
-#include "observer_stub.h"
 #include <kmessagebox.h>
 #include <ksslinfodlg.h>
 #include <ksslcertdlg.h>
@@ -42,21 +40,15 @@
 
 using namespace KIO;
 
-template class Q3IntDict<KIO::Job>;
-
 Observer * Observer::s_pObserver = 0L;
 
 const int KDEBUG_OBSERVER = 7007; // Should be 7028
 
-Observer::Observer() : DCOPObject("KIO::Observer")
+Observer::Observer()
 {
-    // Register app as able to receive DCOP messages
-    if (kapp && !KApplication::dcopClient()->isAttached())
-    {
-        KApplication::dcopClient()->attach();
-    }
+    QDBus::sessionBus().registerObject("/KIO/Observer", this, QDBusConnection::ExportSlots);
 
-    if ( !KApplication::dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
+    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio.uiserver" ) )
     {
         kDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
         QString error;
@@ -69,19 +61,20 @@ Observer::Observer() : DCOPObject("KIO::Observer")
             kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
-    if ( !KApplication::dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
+    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio.uiserver" ) )
         kDebug(KDEBUG_OBSERVER) << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
     else
         kDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
 
-    m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
+    m_uiserver = QDBus::sessionBus().findInterface<org::kde::KIO::UIServer>("org.kde.kio.uiserver",
+                                                                            "/UIServer");
 }
 
 int Observer::newJob( KIO::Job * job, bool showProgress )
 {
     // Tell the UI Server about this new job, and give it the application id
     // at the same time
-    int progressId = m_uiserver->newJob( KApplication::dcopClient()->appId(), showProgress );
+    int progressId = m_uiserver->newJob( QDBus::sessionBus().baseService(), showProgress );
 
     // Keep the result in a dict
     m_dctJobs.insert( progressId, job );
@@ -106,17 +99,21 @@ void Observer::killJob( int progressId )
     job->kill( false /* not quietly */ );
 }
 
-MetaData Observer::metadata( int progressId )
+QVariantMap Observer::metadata( int progressId )
 {
     KIO::Job * job = m_dctJobs.value( progressId );
     assert(job);
-    return job->metaData();
+    MetaData data = job->metaData();
+    QVariantMap map;
+    for (MetaData::ConstIterator it = data.constBegin(); it != data.constEnd(); ++it)
+        map.insert(it.key(), it.value());
+    return map;
 }
 
 void Observer::slotTotalSize( KJob* job, qulonglong size )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotTotalSize " << job << " " << KIO::number(size) << endl;
-  m_uiserver->totalSize64( job->progressId(), size );
+  m_uiserver->totalSize( job->progressId(), size );
 }
 
 void Observer::slotTotalFiles( KIO::Job* job, unsigned long files )
@@ -134,7 +131,7 @@ void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
 void Observer::slotProcessedSize( KJob* job, qulonglong size )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << KIO::number(size) << endl;
-  m_uiserver->processedSize64( job->progressId(), size );
+  m_uiserver->processedSize( job->progressId(), size );
 }
 
 void Observer::slotProcessedFiles( KIO::Job* job, unsigned long files )
@@ -169,42 +166,42 @@ void Observer::slotInfoMessage( KJob* job, const QString & msg )
 void Observer::slotCopying( KIO::Job* job, const KUrl& from, const KUrl& to )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
-  m_uiserver->copying( job->progressId(), from, to );
+  m_uiserver->copying( job->progressId(), from.url(), to.url() );
 }
 
 void Observer::slotMoving( KIO::Job* job, const KUrl& from, const KUrl& to )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
-  m_uiserver->moving( job->progressId(), from, to );
+  m_uiserver->moving( job->progressId(), from.url(), to.url() );
 }
 
 void Observer::slotDeleting( KIO::Job* job, const KUrl& url )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotDeleting " << job << " " << url.url() << endl;
-  m_uiserver->deleting( job->progressId(), url );
+  m_uiserver->deleting( job->progressId(), url.url() );
 }
 
 void Observer::slotTransferring( KIO::Job* job, const KUrl& url )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotTransferring " << job << " " << url.url() << endl;
-  m_uiserver->transferring( job->progressId(), url );
+  m_uiserver->transferring( job->progressId(), url.url() );
 }
 
 void Observer::slotCreatingDir( KIO::Job* job, const KUrl& dir )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
-  m_uiserver->creatingDir( job->progressId(), dir );
+  m_uiserver->creatingDir( job->progressId(), dir.url() );
 }
 
 void Observer::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
 {
   //kDebug(KDEBUG_OBSERVER) << "** Observer::slotCanResume " << job << " " << KIO::number(offset) << endl;
-  m_uiserver->canResume64( job->progressId(), offset );
+  m_uiserver->canResume( job->progressId(), offset );
 }
 
 void Observer::stating( KIO::Job* job, const KUrl& url )
 {
-  m_uiserver->stating( job->progressId(), url );
+  m_uiserver->stating( job->progressId(), url.url() );
 }
 
 void Observer::mounting( KIO::Job* job, const QString & dev, const QString & point )
@@ -290,17 +287,22 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             break;
         case KIO::SlaveBase::SSLMessageBox:
         {
-            DCOPCString observerAppId = caption.toUtf8(); // hack, see slaveinterface.cpp
+#ifdef __GNUC__
+# warning FIXME This will never work
+#endif
+            QString observerAppId = caption; // hack, see slaveinterface.cpp
             // Contact the object "KIO::Observer" in the application <appId>
             // Yes, this could be the same application we are, but not necessarily.
-            Observer_stub observer( observerAppId, "KIO::Observer" );
+            QDBusInterfacePtr observer( observerAppId, "/KIO/Observer", "org.kde.KIO.Observer" );
 
-            KIO::MetaData meta = observer.metadata( progressId );
-            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
-            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toLocal8Bit());
+            QDBusReply<QVariantMap> reply =
+                observer->call(QDBusInterface::UseEventLoop, "metadata", progressId );
+            const QVariantMap &meta = reply;
+            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
+            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toString().toLocal8Bit());
             if (x) {
                // Set the chain back onto the certificate
-               QStringList cl = meta["ssl_peer_chain"].split('\n', QString::SkipEmptyParts);
+               QStringList cl = meta["ssl_peer_chain"].toString().split('\n', QString::SkipEmptyParts);
                Q3PtrList<KSSLCertificate> ncl;
 
                ncl.setAutoDelete(true);
@@ -313,11 +315,11 @@ int Observer::messageBox( int progressId, int type, const QString &text,
                   x->chain().setChain(ncl);
 
                kid->setup( x,
-                           meta["ssl_peer_ip"],
+                           meta["ssl_peer_ip"].toString(),
                            text, // the URL
-                           meta["ssl_cipher"],
-                           meta["ssl_cipher_desc"],
-                           meta["ssl_cipher_version"],
+                           meta["ssl_cipher"].toString(),
+                           meta["ssl_cipher_desc"].toString(),
+                           meta["ssl_cipher_version"].toString(),
                            meta["ssl_cipher_used_bits"].toInt(),
                            meta["ssl_cipher_bits"].toInt(),
                            KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
@@ -408,7 +410,7 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
   return res;
 }
 
-void Observer::virtual_hook( int id, void* data )
-{ DCOPObject::virtual_hook( id, data ); }
+void Observer::virtual_hook( int, void* )
+{ /* BASe::virtual_hook( id, data ); */ }
 
 #include "observer.moc"

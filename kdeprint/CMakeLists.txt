@@ -1,7 +1,7 @@
 
 project(kdeprint)
 
-add_definitions(-D_KDEPRINT_COMPILE)
+add_definitions(-D_KDEPRINT_COMPILE ${QDBUS_DEFINITIONS})
 
 # Needed for the subdirs
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
@@ -36,8 +36,6 @@ set(kded_kdeprintd_PART_SRCS kdeprintd.cpp kprintprocess.cpp )
 
 kde4_automoc(${kded_kdeprintd_PART_SRCS})
 
-kde4_add_dcop_skels(kded_kdeprintd_PART_SRCS kdeprintd.h )
-
 kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 
 target_link_libraries(kded_kdeprintd  ${KDE4_KDECORE_LIBS} kio )
@@ -50,6 +48,8 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
 
 set(kdeprint_LIB_SRCS
    kmfactory.cpp
+   kmfactoryiface.cpp
+   kmfactoryadaptor.cpp
    kmjob.cpp
    kmjobmanager.cpp
    kmmanager.cpp
@@ -101,8 +101,6 @@ set(kdeprint_LIB_SRCS
    )
 
 kde4_automoc(${kdeprint_LIB_SRCS})
-
-kde4_add_dcop_skels(kdeprint_LIB_SRCS kmfactory.h )
 
 kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 

@@ -33,9 +33,10 @@
 #include <qfile.h>
 #include <qtimer.h>
 
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 
 #include <kuniqueapplication.h>
+#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <klocale.h>
@@ -45,7 +46,6 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>
-#include <kdatastream.h>
 #include <kio/global.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
@@ -56,10 +56,14 @@
 #include <fixx11h.h>
 #endif
 
+#define MODULES_PATH "/modules/"
+
 Kded *Kded::_self = 0;
 
 static bool checkStamps = true;
 static bool delayedCheck = false;
+
+extern QDBUS_EXPORT void qDBusSetSpyHook(void (*)(const QDBusMessage&));
 
 static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 {
@@ -73,12 +77,10 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
       checkStamps = false; // useful only during kded startup
    if (callBackObj)
    {
-      QByteArray data;
-      QDataStream dataStream( &data, QIODevice::WriteOnly );
-      dataStream << QString("kbuildsycoca") << args;
-      DCOPCString _launcher = KApplication::launcher();
-
-      KApplication::dcopClient()->callAsync(_launcher, _launcher, "kdeinit_exec_wait(QString,QStringList)", data, callBackObj, callBackSlot);
+      QVariantList args;
+      args << QString("kbuildsycoca") << args;
+      KToolInvocation::klauncher()->callWithArgs("kdeinit_exec_wait", callBackObj,
+                                                 callBackSlot, args);
    }
    else
    {
@@ -91,7 +93,7 @@ static void runKonfUpdate()
    KToolInvocation::kdeinitExecWait( "kconf_update", QStringList(), 0, 0, "0" /*no startup notification*/ );
 }
 
-static void runDontChangeHostname(const DCOPCString &oldName, const DCOPCString &newName)
+static void runDontChangeHostname(const QByteArray &oldName, const QByteArray &newName)
 {
    QStringList args;
    args.append(QFile::decodeName(oldName));
@@ -100,17 +102,31 @@ static void runDontChangeHostname(const DCOPCString &oldName, const DCOPCString 
 }
 
 Kded::Kded(bool checkUpdates)
-  : DCOPObject("kbuildsycoca"), DCOPObjectProxy(),
-    b_checkUpdates(checkUpdates),
+  : b_checkUpdates(checkUpdates),
     m_needDelayedCheck(false)
 {
   _self = this;
-  DCOPCString cPath;
-  DCOPCString ksycoca_env = getenv("KDESYCOCA");
+  
+  new KBuildsycocaAdaptor(this);
+  new KdedAdaptor(this);
+  
+  QDBusConnection &session = QDBus::sessionBus();
+  session.registerObject(MODULES_PATH "kbuildsycoca", this);
+  session.registerObject(MODULES_PATH "kded", this);
+
+  qDBusSetSpyHook(messageFilter);
+
+#ifdef __GNUC__
+# warning "Dead code (vars cPath and ksycoca_env)"
+#elif 0
+  QByteArray cPath;
+  QByteArray ksycoca_env = getenv("KDESYCOCA");
   if (ksycoca_env.isEmpty())
      cPath = QFile::encodeName(KGlobal::dirs()->saveLocation("tmp")+"ksycoca");
   else
      cPath = ksycoca_env;
+#endif
+
   m_pTimer = new QTimer(this);
   m_pTimer->setSingleShot( true );
   connect(m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
@@ -143,21 +159,27 @@ Kded::~Kded()
   }
 }
 
-bool Kded::process(const DCOPCString &obj, const DCOPCString &fun,
-                   const QByteArray &data,
-                   DCOPCString &replyType, QByteArray &replyData)
+// on-demand module loading
+// this function is called by the D-Bus message processing function before
+// calls are delivered to objects
+void Kded::messageFilter(const QDBusMessage &message)
 {
-  if (obj == "ksycoca") return false; // Ignore this one.
+  if (message.type() != QDBusMessage::MethodCallMessage)
+     return;
 
-  if (m_dontLoad[obj])
-     return false;
+  QString obj = message.path();
+  if (!obj.startsWith(MODULES_PATH))
+     return;
 
-  KDEDModule *module = loadModule(obj, true);
-  if (!module)
-     return false;
+  obj = obj.mid(strlen(MODULES_PATH));
+  if (obj == "ksycoca")
+     return; // Ignore this one.
 
-  module->setCallingDcopClient(KApplication::dcopClient());
-  return module->process(fun, data, replyType, replyData);
+  if (self()->m_dontLoad.value(obj, 0))
+     return;
+
+  KDEDModule *module = self()->loadModule(obj, true);
+  Q_UNUSED(module);
 }
 
 void Kded::initModules()
@@ -229,7 +251,7 @@ void Kded::noDemandLoad(const QString &obj)
   m_dontLoad.insert(obj.toLatin1(), this);
 }
 
-KDEDModule *Kded::loadModule(const DCOPCString &obj, bool onDemand)
+KDEDModule *Kded::loadModule(const QString &obj, bool onDemand)
 {
   KDEDModule *module = m_modules.value(obj, 0);
   if (module)
@@ -243,7 +265,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
   KDEDModule *module = 0;
   if (s && !s->library().isEmpty())
   {
-    DCOPCString obj = s->desktopEntryName().toLatin1();
+    QString obj = s->desktopEntryName();
     KDEDModule *oldModule = m_modules.value(obj, 0);
     if (oldModule)
        return oldModule;
@@ -291,8 +313,8 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
       if (create)
       {
         // create the module
-        KDEDModule* (*func)(const DCOPCString &);
-        func = (KDEDModule* (*)(const DCOPCString &)) create;
+        KDEDModule* (*func)(const QString &);
+        func = (KDEDModule* (*)(const QString &)) create;
         module = func(obj);
         if (module)
         {
@@ -315,7 +337,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
   return 0;
 }
 
-bool Kded::unloadModule(const DCOPCString &obj)
+bool Kded::unloadModule(const QString &obj)
 {
   KDEDModule *module = m_modules.value(obj, 0);
   if (!module)
@@ -326,33 +348,21 @@ bool Kded::unloadModule(const DCOPCString &obj)
   return true;
 }
 
-// DCOP
-DCOPCStringList Kded::loadedModules()
+QStringList Kded::loadedModules()
 {
-    DCOPCStringList modules;
-    QHash<QByteArray, KDEDModule*>::const_iterator it = m_modules.begin();
-    for ( ; it != m_modules.end(); ++it)
-        modules.append( it.key() );
-
-    return modules;
-}
-
-DCOPCStringList Kded::functions()
-{
-    DCOPCStringList res = DCOPObject::functions();
-    res += "ASYNC recreate()";
-    return res;
+    return m_modules.keys();
 }
 
 void Kded::slotKDEDModuleRemoved(KDEDModule *module)
 {
-  m_modules.remove(module->objId());
-  KLibrary *lib = m_libs.take(module->objId());
+  m_modules.remove(module->moduleName());
+  KLibrary *lib = m_libs.take(module->moduleName());
   if (lib)
      lib->unload();
 }
 
-void Kded::slotApplicationRemoved(const QByteArray &appId)
+void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,
+                                  const QString &)
 {
 #if 0 // see kdedmodule.cpp (KDED_OBJECTS)
   foreach( KDEDModule* module, m_modules )
@@ -360,19 +370,21 @@ void Kded::slotApplicationRemoved(const QByteArray &appId)
      module->removeAll(appId);
   }
 #endif
+  if (oldOwner.isEmpty() || !QDBusUtil::isValidUniqueConnectionName(name))
+     return;
 
-  const QList<long> windowIds = m_windowIdList.value(appId);
-  for( QList<long>::ConstIterator it = windowIds.begin();
+  const QList<qlonglong> windowIds = m_windowIdList.value(name);
+  for( QList<qlonglong>::ConstIterator it = windowIds.begin();
        it != windowIds.end(); ++it)
   {
-      long windowId = *it;
+      qlonglong windowId = *it;
       m_globalWindowIdList.remove(windowId);
       foreach( KDEDModule* module, m_modules )
       {
           emit module->windowUnregistered(windowId);
       }
   }
-  m_windowIdList.remove(appId);
+  m_windowIdList.remove(name);
 }
 
 void Kded::updateDirWatch()
@@ -422,14 +434,8 @@ void Kded::updateResourceList()
 
 void Kded::crashHandler(int)
 {
-   DCOPClient::emergencyClose();
    if (_self) // Don't restart if we were closing down
       system("kded");
-qWarning("Last DCOP call before KDED crash was from application '%s'\n"
-         "to object '%s', function '%s'.",
-         DCOPClient::postMortemSender(),
-         DCOPClient::postMortemObject(),
-         DCOPClient::postMortemFunction());
 }
 
 void Kded::installCrashHandler()
@@ -469,7 +475,7 @@ void Kded::recreate(bool initial)
       if(delayedCheck)
       {
          // do a proper ksycoca check after a delay
-         QTimer::singleShot( 60000, this, SLOT( runDelayedCheck()));
+         QTimer::singleShot( 60000, this, SLOT(runDelayedCheck()));
          m_needDelayedCheck = true;
          delayedCheck = false;
       }
@@ -485,12 +491,8 @@ void Kded::recreateDone()
 
    for(; m_recreateCount; m_recreateCount--)
    {
-      DCOPCString replyType = "void";
-      QByteArray replyData;
-      DCOPClientTransaction *transaction = m_recreateRequests.first();
-      if (transaction)
-         KApplication::dcopClient()->endTransaction(transaction, replyType, replyData);
-      m_recreateRequests.erase(m_recreateRequests.begin());
+      QDBusMessage reply = m_recreateRequests.takeFirst();
+      reply.connection().send(reply);
    }
    m_recreateBusy = false;
 
@@ -513,31 +515,21 @@ void Kded::update(const QString& )
   {
     m_pTimer->start( 2000 );
   }
-  else
-  {
-    m_recreateRequests.append(0);
-  }
 }
 
-bool Kded::process(const DCOPCString &fun, const QByteArray &data,
-                           DCOPCString &replyType, QByteArray &replyData)
+void Kded::recreate(const QDBusMessage &msg)
 {
-  if (fun == "recreate()") {
-    if (!m_recreateBusy)
-    {
-       if (m_recreateRequests.isEmpty())
-       {
-          m_pTimer->start(0);
-          m_recreateCount = 0;
-       }
-       m_recreateCount++;
-    }
-    m_recreateRequests.append(KApplication::dcopClient()->beginTransaction());
-    replyType = "void";
-    return true;
-  } else {
-    return DCOPObject::process(fun, data, replyType, replyData);
-  }
+   if (!m_recreateBusy)
+   {
+      if (m_recreateRequests.isEmpty())
+      {
+         m_pTimer->start(0);
+         m_recreateCount = 0;
+      }
+      m_recreateCount++;
+   }
+   m_recreateRequests.append(QDBusMessage::methodReply(msg));
+   return;
 }
 
 
@@ -594,14 +586,10 @@ bool Kded::isWindowRegistered(long windowId) const
 }
 */
 
-// DCOP
-void Kded::registerWindowId(long windowId)
+void Kded::registerWindowId(qlonglong windowId, const QString &sender)
 {
   m_globalWindowIdList.insert(windowId);
-  DCOPCString sender = callingDcopClient()->senderId();
-  if( sender.isEmpty()) // local call
-      sender = callingDcopClient()->appId();
-  QList<long> windowIds = m_windowIdList.value(sender);
+  QList<qlonglong> windowIds = m_windowIdList.value(sender);
   windowIds.append(windowId);
   m_windowIdList.insert(sender, windowIds);
 
@@ -611,14 +599,10 @@ void Kded::registerWindowId(long windowId)
   }
 }
 
-// DCOP
-void Kded::unregisterWindowId(long windowId)
+void Kded::unregisterWindowId(qlonglong windowId, const QString &sender)
 {
   m_globalWindowIdList.remove(windowId);
-  DCOPCString sender = callingDcopClient()->senderId();
-  if( sender.isEmpty()) // local call
-      sender = callingDcopClient()->appId();
-  QList<long> windowIds = m_windowIdList.value(sender);
+  QList<qlonglong> windowIds = m_windowIdList.value(sender);
   if (!windowIds.isEmpty())
   {
      windowIds.removeAll(windowId);
@@ -708,7 +692,7 @@ void KHostnameD::checkHostname()
     if (m_hostname == buf)
        return;
 
-    DCOPCString newHostname = buf;
+    QByteArray newHostname = buf;
 
     runDontChangeHostname(m_hostname, newHostname);
     m_hostname = newHostname;
@@ -721,6 +705,9 @@ static KCmdLineOptions options[] =
   KCmdLineLastOption
 };
 
+#ifdef __GNUC__
+# warning "I have no idea what the following class is here for"
+#elif 0
 class KDEDQtDCOPObject : public DCOPObject
 {
 public:
@@ -745,6 +732,63 @@ public:
        return res;
     }
 };
+#endif
+
+KBuildsycocaAdaptor::KBuildsycocaAdaptor(QObject *parent)
+   : QDBusAbstractAdaptor(parent)
+{
+}
+
+void KBuildsycocaAdaptor::recreate(const QDBusMessage &msg)
+{
+   Kded::self()->recreate(msg);
+}
+
+KdedAdaptor::KdedAdaptor(QObject *parent)
+   : QDBusAbstractAdaptor(parent)
+{
+}
+
+bool KdedAdaptor::loadModule(const QString &module)
+{
+   return Kded::self()->loadModule(module, false) != 0;
+}
+
+bool KdedAdaptor::unloadModule(const QString &module)
+{
+   return Kded::self()->unloadModule(module);
+}
+
+void KdedAdaptor::registerWindowId(qlonglong windowId, const QDBusMessage &msg)
+{
+   Kded::self()->registerWindowId(windowId, msg.sender());
+}
+
+void KdedAdaptor::unregisterWindowId(qlonglong windowId, const QDBusMessage &msg)
+{
+   Kded::self()->unregisterWindowId(windowId, msg.sender());
+}
+
+QStringList KdedAdaptor::loadedModules()
+{
+   return Kded::self()->loadedModules();
+}
+
+void KdedAdaptor::reconfigure()
+{
+   KGlobal::config()->reparseConfiguration();
+   Kded::self()->initModules();
+}
+
+void KdedAdaptor::loadSecondPhase()
+{
+   Kded::self()->loadSecondPhase();
+}
+
+void KdedAdaptor::quit()
+{
+   QCoreApplication::instance()->quit();
+}
 
 class KDEDApplication : public KUniqueApplication
 {
@@ -752,8 +796,6 @@ public:
   KDEDApplication() : KUniqueApplication( )
     {
        startup = true;
-       dcopClient()->connectDCOPSignal( "DCOPServer", "", "terminateKDE()",
-                                        objId(), "quit()", false );
     }
 
   int newInstance()
@@ -767,88 +809,7 @@ public:
        return 0;
     }
 
-  DCOPCStringList functions()
-    {
-       DCOPCStringList res = KUniqueApplication::functions();
-       res += "bool loadModule(QCString)";
-       res += "bool unloadModule(QCString)";
-       res += "void registerWindowId(long int)";
-       res += "void unregisterWindowId(long int)";
-       res += "QCStringList loadedModules()";
-       res += "void reconfigure()";
-       res += "void loadSecondPhase()";
-       res += "void quit()";
-       return res;
-    }
-
-  bool process(const DCOPCString &fun, const QByteArray &data,
-               DCOPCString &replyType, QByteArray &replyData)
-  {
-    if (fun == "loadModule(QCString)") {
-      DCOPCString module;
-      QDataStream arg( data );
-      arg >> module;
-      bool result = (Kded::self()->loadModule(module, false) != 0);
-      replyType = "bool";
-      QDataStream _replyStream( &replyData, QIODevice::WriteOnly );
-      _replyStream << result;
-      return true;
-    }
-    else if (fun == "unloadModule(QCString)") {
-      DCOPCString module;
-      QDataStream arg( data );
-      arg >> module;
-      bool result = Kded::self()->unloadModule(module);
-      replyType = "bool";
-      QDataStream _replyStream( &replyData, QIODevice::WriteOnly );
-      _replyStream << result;
-      return true;
-    }
-    else if (fun == "registerWindowId(long int)") {
-      long windowId;
-      QDataStream arg( data );
-      arg >> windowId;
-      Kded::self()->setCallingDcopClient(callingDcopClient());
-      Kded::self()->registerWindowId(windowId);
-      replyType = "void";
-      return true;
-    }
-     else if (fun == "unregisterWindowId(long int)") {
-      long windowId;
-      QDataStream arg( data );
-      arg >> windowId;
-      Kded::self()->setCallingDcopClient(callingDcopClient());
-      Kded::self()->unregisterWindowId(windowId);
-      replyType = "void";
-      return true;
-    }
-    else if (fun == "loadedModules()") {
-      replyType = "QCStringList";
-      QDataStream _replyStream(&replyData, QIODevice::WriteOnly);
-      _replyStream << Kded::self()->loadedModules();
-      return true;
-    }
-    else if (fun == "reconfigure()") {
-      KGlobal::config()->reparseConfiguration();
-      Kded::self()->initModules();
-      replyType = "void";
-      return true;
-    }
-    else if (fun == "loadSecondPhase()") {
-      Kded::self()->loadSecondPhase();
-      replyType = "void";
-      return true;
-    }
-    else if (fun == "quit()") {
-      quit();
-      replyType = "void";
-      return true;
-    }
-    return KUniqueApplication::process(fun, data, replyType, replyData);
-  }
-
   bool startup;
-  KDEDQtDCOPObject kdedQtDcopObject;
 };
 
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
@@ -874,11 +835,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
      // Check DCOP communication.
      {
-        DCOPClient testDCOP;
-        DCOPCString dcopName = testDCOP.registerAs("kded", false);
-        if (dcopName.isEmpty())
+        QDBusBusService *bus = QDBus::sessionBus().busService();
+        if (!QDBus::sessionBus().isConnected() || !bus->isValid() ||
+            bus->requestName("org.kde.kded", QDBusBusService::DoNotQueueName) !=
+            QDBusBusService::PrimaryOwnerReply)
         {
-           kFatal() << "DCOP communication problem!" << endl;
+           kFatal() << "D-Bus communication problem!" << endl;
            return 1;
         }
      }
@@ -901,7 +863,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
         exit(0);
      }
 
-     KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
+     // Thiago: reenable if such a thing exists in QtDBus in the future
+     //KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
 
      config->setGroup("General");
      int HostnamePollInterval = config->readEntry("HostnamePollInterval", 5000);
@@ -933,11 +896,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckHostname)
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
-     DCOPClient *client = KApplication::dcopClient();
-     QObject::connect(client, SIGNAL(applicationRemoved(const QByteArray&)),
-             kded, SLOT(slotApplicationRemoved(const QByteArray&)));
-     client->setNotifications(true);
-     client->setDaemonMode( true );
+     QObject::connect(QDBus::sessionBus().busService(),
+                      SIGNAL(nameOwnerChanged(QString,QString,QString)),
+                      kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
 
      // During startup kdesktop waits for KDED to finish.
      // Send a notifyDatabaseChanged signal even if the database hasn't
@@ -945,9 +906,14 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // If the database changed, kbuildsycoca's signal didn't go anywhere
      // anyway, because it was too early, so let's send this signal
      // unconditionnally (David)
-     QByteArray data;
-     client->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
-     client->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
+
+     // FIXME: rename the signal
+     QDBusMessage msg = QDBusMessage::signal(MODULES_PATH "kbuildsycoca", "org.kde.ksycoca",
+                                             "notifyDatabaseChanged");
+     QDBus::sessionBus().send(msg);
+
+     QDBusInterfacePtr("org.kde.ksplash", "/")->
+        call(QDBusInterface::NoWaitForReply, "upAndRunning", QString("kded"));
 #ifdef Q_WS_X11
      XEvent e;
      e.xclient.type = ClientMessage;

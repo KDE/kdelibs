@@ -29,7 +29,6 @@
 #include "dom/html_document.h"
 #include "dom/dom2_range.h"
 
-#include <kdatastream.h> // for DCOPCString
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kdemacros.h>
@@ -221,12 +220,14 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
-  Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
-  Q_PROPERTY( DCOPCString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
+  Q_PROPERTY( QString encoding READ encoding WRITE setEncoding )
+  Q_PROPERTY( QString lastModified READ lastModified )
+  Q_PROPERTY( bool metaRefreshEnabled READ metaRefreshEnabled WRITE setMetaRefreshEnabled )
+  Q_PROPERTY( QString url READ url )
 
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
@@ -1069,6 +1070,11 @@ Q_SIGNALS:
                   const QByteArray& formData, const QString& target,
                   const QString& contentType, const QString& boundary);
 
+  /**
+   * Emitted whenever the configuration has changed
+   */
+  void configurationChanged();
+
 
 protected:
 
@@ -1175,8 +1181,6 @@ public Q_SLOTS:
    * Stops all animated images on the current and child pages
    */
   void stopAnimations();
-
-  DCOPCString dcopObjectId() const;
 
   /**
    * Execute the specified snippet of JavaScript code.

@@ -24,19 +24,18 @@
 class KCModuleProxy;
 
 /***************************************************************/
-class KCModuleProxyIfaceImpl: public QObject, virtual public KCModuleProxyIface
+class KCModuleProxyIfaceImpl: public KCModuleProxyIface
 {
 	/* KDE4 Merge KCModuleProxyIfaceImpl with KCModuleProxy(MI)
 	 * if it doesn't break what DCOPClient it binds to.
-	 * Update: This is probably not possible, since we don't want the DCOPObject when 
+	 * Update: This is probably not possible, since we don't want the DCOPObject when
 	 * we're running in root mode. */
 
 	Q_OBJECT
 
 public:
-
 	/* Reimplementations of DCOP members */
-	KCModuleProxyIfaceImpl( const QByteArray& name, KCModuleProxy* const client );
+	KCModuleProxyIfaceImpl( const QString& name, KCModuleProxy* const client );
 
 	virtual void save();
 
@@ -60,7 +59,7 @@ public Q_SLOTS:
 	 * Simply relays KCModuleProxy's signal with the same name.
 	 */
 	void quickHelpRelay();
-	
+
 
 private:
 
@@ -72,13 +71,12 @@ private:
 
 
 /***************************************************************/
-class KCModuleProxyRootCommunicatorImpl: public QObject, 
-	virtual public KCModuleProxyRootDispatcher
+class KCModuleProxyRootCommunicatorImpl: public KCModuleProxyRootDispatcher
 {
 	Q_OBJECT
 
 public:
-	KCModuleProxyRootCommunicatorImpl( const QByteArray& name, KCModuleProxy* const client );
+	KCModuleProxyRootCommunicatorImpl( const QString& name, KCModuleProxy* const client );
 
 	/* Reimplementations of DCOP members */
 	virtual void changed( bool c );

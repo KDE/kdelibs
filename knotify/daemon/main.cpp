@@ -22,7 +22,6 @@
 #include <kuniqueapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <dcopclient.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -58,9 +57,6 @@ KDE_EXPORT int kdemain(int argc, char **argv)
 
     // start notify service
     KNotify notify;
-
-    app.dcopClient()->setDefaultObject( "Notify" );
-    app.dcopClient()->setDaemonMode( true );
 
     return app.exec();
 }

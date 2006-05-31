@@ -1,6 +1,8 @@
 
 project(kded)
 
+add_definitions(${QDBUS_DEFINITIONS})
+
 include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############

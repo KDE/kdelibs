@@ -21,11 +21,12 @@
 #define KDEPRINTD_H
 
 #include <kdedmodule.h>
-#include <QList>
+#include <qlist.h>
 #include <qstringlist.h>
 #include <q3ptrdict.h>
 #include <qpointer.h>
-#include <QMultiHash>
+#include <qhash.h>
+#include <dbus/qdbus.h>
 
 class KPrintProcess;
 class KProcess;
@@ -34,18 +35,18 @@ class StatusWindow;
 class KDEPrintd : public KDEDModule
 {
 	Q_OBJECT
-	K_DCOP
+	Q_CLASSINFO("D-Bus Interface", "org.kde.KDEPrintd")
 
 public:
-	KDEPrintd(const QByteArray& obj);
+	KDEPrintd(const QString& obj);
 	~KDEPrintd();
 
-k_dcop:
-	int print(const QString& cmd, const QStringList& files, bool remove);
-	QString openPassDlg(const QString& user);
-	ASYNC statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
-	QString requestPassword( const QString& user, const QString& host, int port, int seqNbr );
-	void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
+public Q_SLOTS:
+	Q_SCRIPTABLE int print(const QString& cmd, const QStringList& files, bool remove);
+	Q_SCRIPTABLE QString openPassDlg(const QString& user);
+	Q_SCRIPTABLE QString requestPassword( const QString& user, const QString& host, int port, int seqNbr, const QDBusMessage& msg );
+	Q_SCRIPTABLE void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
+	Q_SCRIPTABLE Q_ASYNC void statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
 
 protected Q_SLOTS:
 	void slotPrintTerminated( KPrintProcess* );

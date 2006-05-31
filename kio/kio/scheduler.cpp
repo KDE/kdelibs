@@ -32,9 +32,8 @@
 #include <kdesu/client.h>
 
 #include <qhash.h>
-#include <dcopclient.h>
 #include <qwidget.h>
-
+#include <dbus/qdbus.h>
 
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
 // to the system wide slave pool. (3 minutes)
@@ -122,10 +121,11 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 
 
 Scheduler::Scheduler()
-    : DCOPObject( "KIO::Scheduler" ),
-      QObject(kapp)
+    : QObject(kapp)
 {
     setObjectName( "scheduler" );
+    QDBus::sessionBus().registerObject("/KIO/Scheduler", this, QDBusConnection::ExportSlots);
+
     slaveTimer.setObjectName( "Scheduler::slaveTimer" );
     slaveTimer.setSingleShot( true );
     coSlaveTimer.setObjectName( "Scheduler::coSlaveTimer" );
@@ -165,18 +165,9 @@ Scheduler::debug_info()
 {
 }
 
-bool Scheduler::process(const DCOPCString &fun, const QByteArray &data, DCOPCString &replyType, QByteArray &replyData )
+void Scheduler::reparseSlaveConfiguration(const QString &proto)
 {
-    if ( fun != "reparseSlaveConfiguration(QString)" )
-        return DCOPObject::process( fun, data, replyType, replyData );
-
-    slaveConfig = SlaveConfig::self();
-    replyType = "void";
-    QDataStream stream( data );
-    QString proto;
-    stream >> proto;
-
-    kDebug( 7006 ) << "reparseConfiguration( " << proto << " )" << endl;
+    kDebug( 7006 ) << "reparseSlaveConfiguration( " << proto << " )" << endl;
     KProtocolManager::reparseConfiguration();
     slaveConfig->reset();
     sessionData->reset();
@@ -190,14 +181,6 @@ bool Scheduler::process(const DCOPCString &fun, const QByteArray &data, DCOPCStr
             slave->resetHost();
         }
     }
-    return true;
-}
-
-DCOPCStringList Scheduler::functions()
-{
-    DCOPCStringList funcs = DCOPObject::functions();
-    funcs << "void reparseSlaveConfiguration(QString)";
-    return funcs;
 }
 
 void Scheduler::_doJob(SimpleJob *job) {
@@ -857,12 +840,8 @@ Scheduler::_registerWindow(QWidget *wid)
       m_windowList.insert(obj, windowId);
       connect(wid, SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
-      QByteArray params;
-      QDataStream stream(&params, QIODevice::WriteOnly);
-      stream << windowId;
-      if( !KApplication::dcopClient()->send( "kded", "kded",
-                    "registerWindowId(long int)", params ) )
-      kDebug(7006) << "Could not register window with kded!" << endl;
+      QDBusInterfacePtr("org.kde.kded", "/modules/kded", "org.kde.KDED")->
+          call(QDBusInterface::NoWaitForReply, "registerWindowId", qlonglong(windowId));
    }
 }
 
@@ -879,14 +858,8 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    disconnect( it.key(), SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
    m_windowList.erase( it );
-   if (kapp)
-   {
-      QByteArray params;
-      QDataStream stream(&params, QIODevice::WriteOnly);
-      stream << windowId;
-      KApplication::dcopClient()->send( "kded", "kded",
-                    "unregisterWindowId(long int)", params );
-   }
+   QDBusInterfacePtr("org.kde.kded", "/modules/kded", "org.kde.KDED")->
+       call(QDBusInterface::NoWaitForReply, "unregisterWindowId", qlonglong(windowId));
 }
 
 Scheduler* Scheduler::self() {
@@ -896,8 +869,8 @@ Scheduler* Scheduler::self() {
     return instance;
 }
 
-void Scheduler::virtual_hook( int id, void* data )
-{ DCOPObject::virtual_hook( id, data ); }
+void Scheduler::virtual_hook( int, void* )
+{ /* BASE::virtual_hook( id, data ); */ }
 
 
 

@@ -21,7 +21,7 @@
 #include "krun.h"
 #include "kautomount.h"
 #include <kmessageboxwrapper.h>
-#include <kdirnotify_stub.h>
+#include <kdirnotify.h>
 #include <kio/global.h>
 
 #include <kiconloader.h>
@@ -31,7 +31,6 @@
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include "kservice.h"
 
 QString KDEDesktopMimeType::icon( const KUrl& _url ) const
@@ -329,30 +328,16 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
   QStringList keys;
 
   if( cfg.hasKey( "X-KDE-GetActionMenu" )) {
-    QString dcopcall = cfg.readEntry( "X-KDE-GetActionMenu" );
-    const DCOPCString app = dcopcall.section(' ', 0,0).toUtf8();
+    QStringList dbuscall = cfg.readEntry( "X-KDE-GetActionMenu" ).split( QLatin1Char( ' ' ) );
+    const QString& app       = dbuscall.at( 0 );
+    const QString& object    = dbuscall.at( 1 );
+    const QString& interface = dbuscall.at( 2 );
+    const QString& function  = dbuscall.at( 3 );
 
-    QByteArray dataToSend;
-    QDataStream dataStream(&dataToSend, QIODevice::WriteOnly);
-    dataStream.setVersion(QDataStream::Qt_3_1);
-    dataStream << file_list;
-    DCOPCString replyType;
-    QByteArray replyData;
-    DCOPCString object   =  dcopcall.section(' ', 1,-2).toUtf8();
-    DCOPCString function =  dcopcall.section(' ', -1).toUtf8();
-    if(!function.endsWith("(KUrl::List)")) {
-      kWarning() << "Desktop file " << path << " contains an invalid X-KDE-ShowIfDcopCall - the function must take the exact parameter (KUrl::List) and must be specified." << endl;
-    } else {
-      if(KApplication::dcopClient()->call( app, object,
-                   function,
-                   dataToSend, replyType, replyData, true, 100)
-	    && replyType == "QStringList" ) {
-
-        QDataStream dataStreamIn(replyData);
-        dataStreamIn.setVersion(QDataStream::Qt_3_1);
-        dataStreamIn >> keys;
-      }
-    }
+    QDBusInterfacePtr ref( app, object, interface );
+    QDBusReply<QStringList> reply = ref->call( QDBusInterface::UseEventLoop,
+                                               function, file_list.toStringList() );
+    keys = reply;               // ensures that the reply was a QStringList
   }
 
   keys += cfg.readEntry( "Actions", QStringList(), ';' ); //the desktop standard defines ";" as separator!
@@ -423,8 +408,7 @@ void KDEDesktopMimeType::executeService( const KUrl::List& urls, KDEDesktopMimeT
               << " first url's path=" << urls.first().path() << " exec=" << _service.m_strExec << endl;
     KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon );
     // The action may update the desktop file. Example: eject unmounts (#5129).
-    KDirNotify_stub allDirNotify("*", "KDirNotify*");
-    allDirNotify.FilesChanged( urls );
+    org::kde::KDirNotify::emitFilesChanged( urls.toStringList() );
     return;
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )

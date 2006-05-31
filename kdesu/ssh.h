@@ -64,14 +64,10 @@ public:
 protected:
     virtual QByteArray display();
     virtual QByteArray displayAuth();
-    virtual QByteArray dcopServer();
 
 private:
-    QByteArray dcopForward();
     int ConverseSsh(const char *password, int check);
 
-    int m_dcopPort;
-    int  m_dcopSrv;
     QByteArray m_Prompt;
     QByteArray m_Host;
     QByteArray m_Error;

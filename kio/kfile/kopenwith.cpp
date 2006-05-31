@@ -49,7 +49,6 @@
 #include <kmimetypetrader.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
-#include <dcopclient.h>
 #include <kmimetype.h>
 #include <kservicegroup.h>
 #include <k3listview.h>

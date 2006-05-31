@@ -25,11 +25,12 @@
 #include <qobject.h>
 #include <qdom.h>
 #include <qpair.h>
-#include <dcopobject.h>
 #include "kbookmark.h"
 #include "kbookmarknotifier.h"
 
 class KBookmarkManagerList;
+class KBookmarkGroup;
+class QDBusMessage;
 
 /**
  * This class implements the reading/writing of bookmarks in XML.
@@ -53,10 +54,9 @@ class KBookmarkManagerList;
  * </xbel>
  * \endcode
  */
-class KIO_EXPORT KBookmarkManager : public QObject, public DCOPObject
+class KIO_EXPORT KBookmarkManager : public QObject
 {
     Q_OBJECT
-    K_DCOP
 protected:
     /**
      * Creates a bookmark manager with a path to the bookmarks.  By
@@ -219,13 +219,6 @@ public:
      */
     const QDomDocument & internalDocument() const;
 
-    /**
-     * Access to bookmark notifier, for emitting signals.
-     * We need this object to exist in one instance only, so we could
-     * connectDCOP to it by name.
-     */
-    KBookmarkNotifier& notifier() { return m_notifier; }
-
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
                                       const QString & _parentBookmarkAddress = QString() );
 
@@ -233,12 +226,10 @@ public Q_SLOTS:
     void slotEditBookmarks();
     void slotEditBookmarksAtAddress( const QString& address );
 
-public:
-k_dcop:
     /**
      * Reparse the whole bookmarks file and notify about the change
      */
-    ASYNC notifyCompleteChange( QString caller );
+    void notifyCompleteChange( QString caller );
 
     /**
      * Emit the changed signal for the group whose address is given
@@ -246,11 +237,17 @@ k_dcop:
      * Called by the instance of konqueror that saved the file after
      * a small change (new bookmark or new folder).
      */
-    ASYNC notifyChanged( QString groupAddress );
+    void notifyChanged( QString groupAddress, const QDBusMessage &msg );
 
-    ASYNC notifyConfigChanged();
+    void notifyConfigChanged();
 
 Q_SIGNALS:
+    void bookmarkCompleteChange( QString caller );
+
+    void bookmarksChanged( QString groupAddress );
+
+    void bookmarkConfigChanged();
+
     /**
      * Signals that the group (or any of its children) with the address
      * @p groupAddress (e.g. "/4/5")
@@ -266,7 +263,6 @@ protected:
     static void convertAttribute( QDomElement elem, const QString & oldName, const QString & newName );
 
 private:
-    KBookmarkNotifier m_notifier;
     QString m_bookmarksFile;
     mutable QDomDocument m_doc;
     mutable QDomDocument m_toolbarDoc;
@@ -278,6 +274,8 @@ private:
     QString m_editorCaption;
     bool m_browserEditor;
     class KBookmarkManagerPrivate* d;
+
+    friend class KBookmarkGroup;
 };
 
 /**

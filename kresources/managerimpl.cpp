@@ -21,8 +21,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <dcopclient.h>
-
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <krandom.h>
@@ -30,58 +28,45 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 
+#include <dbus/qdbus.h>
+
 #include "resource.h"
 #include "factory.h"
 #include "manager.h"
 #include "managerimpl.h"
-#include "manageriface_stub.h"
+#include "manageradaptor_p.h"
 
 using namespace KRES;
 
 ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
-  : DCOPObject( "ManagerIface_" + family.toUtf8() ),
-    mNotifier( notifier ),
+  : mNotifier( notifier ),
     mFamily( family ), mConfig( 0 ), mStdConfig( 0 ), mStandard( 0 ),
     mFactory( 0 ), mConfigRead( false )
 {
+  new ManagerAdaptor(this);
+  const QString dBusPath = QLatin1String("/ManagerIface_") + family;
+  QDBus::sessionBus().registerObject(dBusPath, this);
   kDebug(5650) << "ManagerImpl::ManagerImpl()" << endl;
 
   mId = KRandom::randomString( 8 );
 
   // Register with DCOP
-  if ( !KApplication::dcopClient()->isRegistered() ) {
-    KApplication::dcopClient()->registerAs( "KResourcesManager" );
-    KApplication::dcopClient()->setDefaultObject( objId() );
-  }
+  QDBus::sessionBus().busService()->requestName("org.kde.KResourcesManager",
+         QDBusBusService::ReplaceExistingName);
 
-  kDebug(5650) << "Connecting DCOP signals..." << endl;
-  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
-                           "signalKResourceAdded( QString, QString )",
-                           "dcopKResourceAdded( QString, QString )", false ) )
-    kWarning(5650) << "Could not connect ResourceAdded signal!" << endl;
-
-  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
-                           "signalKResourceModified( QString, QString )",
-                           "dcopKResourceModified( QString, QString )", false ) )
-    kWarning(5650) << "Could not connect ResourceModified signal!" << endl;
-
-  if ( !connectDCOPSignal( 0, "ManagerIface_" + family.toUtf8(),
-                           "signalKResourceDeleted( QString, QString )",
-                           "dcopKResourceDeleted( QString, QString )", false ) )
-    kWarning(5650) << "Could not connect ResourceDeleted signal!" << endl;
-
-  KApplication::dcopClient()->setNotifications( true );
+  QDBus::sessionBus().connect("", dBusPath, "org.kde.KResourcesManager", "signalKResourceAdded",
+      this, SLOT(dcopKResourceAdded(QString,QString)));
+  QDBus::sessionBus().connect("", dBusPath, "org.kde.KResourcesManager", "signalKResourceModified",
+      this, SLOT(dcopKResourceModified(QString,QString)));
+  QDBus::sessionBus().connect("", dBusPath, "org.kde.KResourcesManager", "signalKResourceDeleted",
+      this, SLOT(dcopKResourceDeleted(QString,QString)));
 }
 
 ManagerImpl::~ManagerImpl()
 {
   kDebug(5650) << "ManagerImpl::~ManagerImpl()" << endl;
 
-  Resource::List::ConstIterator it;
-  for ( it = mResources.begin(); it != mResources.end(); ++it ) {
-    delete *it;
-  }
- 
+  qDeleteAll(mResources);
   delete mStdConfig;
 }
 
@@ -91,7 +76,7 @@ void ManagerImpl::createStandardConfig()
     QString file = defaultConfigFile( mFamily );
     mStdConfig = new KConfig( file );
   }
-  
+
   mConfig = mStdConfig;
 }
 
@@ -441,3 +426,5 @@ QString ManagerImpl::defaultConfigFile( const QString &family )
   return locateLocal( "config",
                       QString( "kresources/%1/stdrc" ).arg( family ) );
 }
+
+#include "managerimpl.moc"

@@ -23,76 +23,78 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <dcopclient.h>
 #include <ktoolinvocation.h>
+#include "dbus/qdbus.h"
 
+#ifdef __GCC__
+# warning Rename this file after merge
+#endif
 
+static KStaticDeleter<KDBusServiceStarter> dss_sd;
+KDBusServiceStarter* KDBusServiceStarter::s_self;
 
-static KStaticDeleter<KDCOPServiceStarter> dss_sd;
-KDCOPServiceStarter* KDCOPServiceStarter::s_self;
-
-KDCOPServiceStarter* KDCOPServiceStarter::self()
+KDBusServiceStarter* KDBusServiceStarter::self()
 {
     if ( !s_self )
-        dss_sd.setObject( s_self, new KDCOPServiceStarter );
+        dss_sd.setObject( s_self, new KDBusServiceStarter );
     return s_self;
 }
 
-KDCOPServiceStarter::KDCOPServiceStarter()
+KDBusServiceStarter::KDBusServiceStarter()
 {
-    // Set the singleton instance - useful when a derived KDCOPServiceStarter
+    // Set the singleton instance - useful when a derived KDBusServiceStarter
     // was created (before self() was called)
     s_self = this;
 }
 
-KDCOPServiceStarter::~KDCOPServiceStarter()
+KDBusServiceStarter::~KDBusServiceStarter()
 {
 }
 
-int KDCOPServiceStarter::findServiceFor( const QString& serviceType,
+int KDBusServiceStarter::findServiceFor( const QString& serviceType,
                                          const QString& _constraint,
-                                         QString *error, DCOPCString* pDcopService,
+                                         QString *error, QString* pDBusService,
                                          int flags )
 {
     // Ask the trader which service is preferred for this servicetype
-    // We want one that provides a DCOP interface
+    // We want one that provides a DBus interface
     QString constraint = _constraint;
     if ( !constraint.isEmpty() )
         constraint += " and ";
-    constraint += "exist [X-DCOP-ServiceName]";
+    constraint += "exist [X-DBus-ServiceName]";
     const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() ) {
         if ( error )
             *error = i18n("No service implementing %1",  serviceType );
-        kWarning() << "KDCOPServiceStarter: No service implementing " << serviceType << endl;
+        kWarning() << "KDBusServiceStarter: No service implementing " << serviceType << endl;
         return -1;
     }
     KService::Ptr ptr = offers.first();
-    DCOPCString dcopService = ptr->property("X-DCOP-ServiceName").toString().toLatin1();
+    QString dbusService = ptr->property("X-DBUS-ServiceName").toString();
 
-    if ( !KApplication::dcopClient()->isApplicationRegistered( dcopService ) )
+    if ( !QDBus::sessionBus().busService()->nameHasOwner( dbusService ) )
     {
         QString error;
-        if ( startServiceFor( serviceType, constraint, &error, &dcopService, flags ) != 0 )
+        if ( startServiceFor( serviceType, constraint, &error, &dbusService, flags ) != 0 )
         {
-            kDebug() << "KDCOPServiceStarter: Couldn't start service: " << error << endl;
+            kDebug() << "KDBusServiceStarter: Couldn't start service: " << error << endl;
             return -2;
         }
     }
-    kDebug() << "KDCOPServiceStarter: DCOP service is available now, as " << dcopService << endl;
-    if ( pDcopService )
-        *pDcopService = dcopService;
+    kDebug() << "KDBusServiceStarter: DBus service is available now, as " << dbusService << endl;
+    if ( pDBusService )
+        *pDBusService = dbusService;
     return 0;
 }
 
-int KDCOPServiceStarter::startServiceFor( const QString& serviceType,
+int KDBusServiceStarter::startServiceFor( const QString& serviceType,
                                           const QString& constraint,
-                                          QString *error, DCOPCString* dcopService, int /*flags*/ )
+                                          QString *error, QString* dbusService, int /*flags*/ )
 {
     const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();
-    kDebug() << "KDCOPServiceStarter: starting " << ptr->desktopEntryPath() << endl;
-    return KToolInvocation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dcopService );
+    kDebug() << "KDBusServiceStarter: starting " << ptr->desktopEntryPath() << endl;
+    return KToolInvocation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dbusService );
 }

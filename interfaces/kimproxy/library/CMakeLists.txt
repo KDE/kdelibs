@@ -1,26 +1,18 @@
 add_subdirectory( icons )
 
+add_definitions( ${QDBUS_DEFINITIONS} )
+
 include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
 set(kimproxy_LIB_SRCS
-kimproxy.cpp
+  kimproxy.cpp
+  kimadaptor.cpp
+  kimiface.cpp
 )
 
 kde4_automoc(${kimproxy_LIB_SRCS})
-
-set( kimproxy_DCOP_SKEL_SRCS
-kimproxyiface.h
-)
-
-kde4_add_dcop_skels(kimproxy_LIB_SRCS ${kimproxy_DCOP_SKEL_SRCS})
-
-set( kimproxy_DCOP_STUB_SRCS
-${CMAKE_SOURCE_DIR}/interfaces/kimproxy/interface/kimiface.h
-)
-
-kde4_add_dcop_stubs(kimproxy_LIB_SRCS ${kimproxy_DCOP_STUB_SRCS})
 
 kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
 

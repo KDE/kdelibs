@@ -51,7 +51,6 @@ extern "C" {
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kmessagebox.h>
-#include <kdatastream.h>
 #include <kde_file.h>
 
 #include <errno.h>
@@ -68,9 +67,8 @@ extern "C" {
 
 #include "kssl/ksslcsessioncache.h"
 
-#include <kdirnotify_stub.h>
+#include <kdirnotify.h>
 #include <ktempfile.h>
-#include <dcopclient.h>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -529,12 +527,11 @@ void SimpleJob::slotFinished( )
     {
         if ( !error() && (m_command == CMD_MKDIR || m_command == CMD_RENAME ) )
         {
-            KDirNotify_stub allDirNotify( "*", "KDirNotify*" );
             if ( m_command == CMD_MKDIR )
             {
                 KUrl urlDir( url() );
                 urlDir.setPath( urlDir.directory() );
-                allDirNotify.FilesAdded( urlDir );
+                org::kde::KDirNotify::emitFilesAdded( urlDir.url() );
             }
             else /*if ( m_command == CMD_RENAME )*/
             {
@@ -542,7 +539,7 @@ void SimpleJob::slotFinished( )
                 QDataStream str( m_packedArgs );
                 str >> src >> dst;
                 if ( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
-                    allDirNotify.FileRenamed( src, dst );
+                    org::kde::KDirNotify::emitFileRenamed( src.url(), dst.url() );
             }
         }
         emitResult();
@@ -852,7 +849,7 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
 {
     assert( (url.protocol() == "http") || (url.protocol() == "https") );
     // Send http update_cache command (2)
-    KIO_ARGS << (int)2 << url << no_cache << expireDate;
+    KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
     SimpleJob * job = new SimpleJob( url, CMD_SPECIAL, packedArgs, false );
     Scheduler::scheduleJob(job);
     return job;
@@ -3364,16 +3361,15 @@ void CopyJob::setNextDirAttribute()
         // Finished - tell the world
         if ( !m_bOnlyRenames )
         {
-            KDirNotify_stub allDirNotify("*", "KDirNotify*");
             KUrl url( d->m_globalDest );
             if ( d->m_globalDestinationState != DEST_IS_DIR || m_asMethod )
                 url.setPath( url.directory() );
             //kDebug(7007) << "KDirNotify'ing FilesAdded " << url << endl;
-            allDirNotify.FilesAdded( url );
+            org::kde::KDirNotify::emitFilesAdded( url.url() );
 
             if ( m_mode == Move && !m_srcList.isEmpty() ) {
                 //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList() << endl;
-                allDirNotify.FilesRemoved( m_srcList );
+                org::kde::KDirNotify::emitFilesRemoved( m_srcList.toStringList() );
             }
         }
         if (m_reportTimer)
@@ -4007,9 +4003,8 @@ void DeleteJob::deleteNextDir()
     // Finished - tell the world
     if ( !m_srcList.isEmpty() )
     {
-        KDirNotify_stub allDirNotify("*", "KDirNotify*");
         //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList() << endl;
-        allDirNotify.FilesRemoved( m_srcList );
+        org::kde::KDirNotify::emitFilesRemoved( m_srcList.toStringList() );
     }
     if (m_reportTimer!=0)
        m_reportTimer->stop();

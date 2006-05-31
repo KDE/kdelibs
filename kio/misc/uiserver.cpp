@@ -35,7 +35,6 @@
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <dcopclient.h>
 #include <kstatusbar.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
@@ -48,7 +47,6 @@
 #include <kdialogbase.h>
 #include <kstdaction.h>
 
-#include "observer_stub.h"
 #include "observer.h" // for static methods only
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
@@ -62,6 +60,7 @@
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
 
+#include "uiserveradaptor_p.h"
 
 // pointer for main instance of UIServer
 UIServer* uiserver;
@@ -586,7 +585,6 @@ void ListProgress::writeSettings() {
 
 UIServer::UIServer()
 :KMainWindow(0, "")
-,DCOPObject("UIServer")
 ,m_shuttingDown(false)
 ,m_configDialog(0)
 ,m_contextMenu(0)
@@ -643,6 +641,9 @@ UIServer::UIServer()
   }
   else*/
   hide();
+
+  (void)new UIServerAdaptor(this);
+  QDBus::sessionBus().registerObject(QLatin1String("/UIServer"), this);
 }
 
 UIServer::~UIServer() {
@@ -828,10 +829,7 @@ void UIServer::jobFinished( int id )
 }
 
 
-void UIServer::totalSize( int id, unsigned long size )
-{ totalSize64(id, size); }
-
-void UIServer::totalSize64( int id, KIO::filesize_t size )
+void UIServer::totalSize( int id, KIO::filesize_t size )
 {
 //  kDebug(7024) << "UIServer::totalSize " << id << " " << KIO::number(size) << endl;
 
@@ -861,10 +859,7 @@ void UIServer::totalDirs( int id, unsigned long dirs )
   }
 }
 
-void UIServer::processedSize( int id, unsigned long size )
-{ processedSize64(id, size); }
-
-void UIServer::processedSize64( int id, KIO::filesize_t size )
+void UIServer::processedSize( int id, KIO::filesize_t size )
 {
   //kDebug(7024) << "UIServer::processedSize " << id << " " << KIO::number(size) << endl;
 
@@ -924,10 +919,7 @@ void UIServer::infoMessage( int id, const QString & msg )
   }
 }
 
-void UIServer::canResume( int id, unsigned long offset )
-{ canResume64(id, offset); }
-
-void UIServer::canResume64( int id, KIO::filesize_t offset )
+void UIServer::canResume( int id, KIO::filesize_t offset )
 {
   //kDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
 
@@ -1017,12 +1009,12 @@ void UIServer::unmounting( int id, QString point )
   }
 }
 
-void UIServer::killJob( QByteArray observerAppId, int progressId )
+void UIServer::killJob( const QString &observerAppId, int progressId )
 {
     // Contact the object "KIO::Observer" in the application <appId>
-    Observer_stub observer( observerAppId, "KIO::Observer" );
+    QDBusInterfacePtr observer( observerAppId, "/KIO.Observer", "org.kde.KIO.Observer" );
     // Tell it to kill the job
-    observer.killJob( progressId );
+    observer->call("killJob", progressId );
 }
 
 void UIServer::slotJobCanceled( ProgressItem *item ) {
@@ -1381,7 +1373,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     // This app is started automatically, no need for session management
     app.disableSessionManagement();
     app.setQuitOnLastWindowClosed( false );
-    app.dcopClient()->setDaemonMode( true );
+    //app.dcopClient()->setDaemonMode( true );
 
     uiserver = UIServer::createInstance();
 

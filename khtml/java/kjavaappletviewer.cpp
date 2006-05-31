@@ -28,6 +28,7 @@
 #include <qtimer.h>
 #include <qpointer.h>
 #include <qlabel.h>
+#include <dbus/qdbus.h>
 
 #include <kauthorized.h>
 #include <klibloader.h>
@@ -40,7 +41,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kio/authinfo.h>
-#include <dcopclient.h>
 
 #include "kjavaappletwidget.h"
 #include "kjavaappletviewer.h"
@@ -318,23 +318,21 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     if (!server->usingKIO ()) {
         /* if this page needs authentication */
         KIO::AuthInfo info;
-        QString errorMsg;
-        DCOPCString replyType;
-        QByteArray params;
-        QByteArray reply;
-        KIO::AuthInfo authResult;
-
-        //(void) dcopClient(); // Make sure to have a dcop client.
         info.url = baseurl;
         info.verifyPath = true;
+        QByteArray params;
+        { QDataStream stream(&params, QIODevice::WriteOnly); stream << info; }
 
-        QDataStream stream(&params, QIODevice::WriteOnly);
-        stream << info << m_view->topLevelWidget()->winId();
+        // make the call
+        QDBusReply<QByteArray> reply =
+            QDBusInterfacePtr ("org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer")->
+            call ("checkAuthInfo", params, qlonglong(m_view->topLevelWidget()->winId()));
 
-        if (!KApplication::dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
+        if (reply.isError()) {
             kWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
-        } else if ( replyType == "KIO::AuthInfo" ) {
-            QDataStream stream2( reply );
+        } else {
+            KIO::AuthInfo authResult;
+            QDataStream stream2(reply.value());
             stream2 >> authResult;
             applet->setUser (authResult.username);
             applet->setPassword (authResult.password);

@@ -19,13 +19,13 @@
 
 #include "module.h"
 
-KDETrayModule::KDETrayModule( const QByteArray& obj )
+KDETrayModule::KDETrayModule( const QString& obj )
     : KDEDModule( obj )
     {
     }
 
 extern "C" 
-KDE_EXPORT KDEDModule *create_kdetrayproxy( const QByteArray& obj )
+KDE_EXPORT KDEDModule *create_kdetrayproxy( const QString& obj )
     {
     return new KDETrayModule( obj );
     }

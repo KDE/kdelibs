@@ -34,16 +34,15 @@
 #include <kbuildservicegroupfactory.h>
 #include <kbuildprotocolinfofactory.h>
 #include <kctimefactory.h>
-#include <kdatastream.h>
 #include <ktempfile.h>
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qtimer.h>
+#include <dbus/qdbus.h>
 #include <errno.h>
 
 #include <assert.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
@@ -727,6 +726,7 @@ static KCmdLineOptions options[] = {
    KCmdLineLastOption
 };
 
+static const char appFullName[] = "org.kde.kbuildsycoca";
 static const char appName[] = "kbuildsycoca";
 static const char appVersion[] = "1.1";
 
@@ -751,7 +751,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      setenv("KDEROOTHOME", "-", 1);
    }
 
-   KApplication::disableAutoDcopRegistration();
+   //KApplication::disableAutoDcopRegistration();
 #ifdef KBUILDSYCOCA_GUI
    KApplication k;
 #else
@@ -785,31 +785,22 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    KGlobal::locale();
    KGlobal::dirs()->addResourceType("app-reg", "share/application-registry" );
 
-   DCOPClient *dcopClient = new DCOPClient();
-
    while(true)
    {
-     QByteArray registeredName = dcopClient->registerAs(appName, false);
-     if (registeredName.isEmpty())
-     {
-       fprintf(stderr, "Warning: %s is unable to register with DCOP.\n", appName);
-       break;
-     }
-     else if (registeredName == appName)
+     QDBusBusService *bus = QDBus::sessionBus().busService();
+     if (bus->requestName(appFullName, QDBusBusService::ReplaceExistingName) == QDBusBusService::PrimaryOwnerReply)
      {
        break; // Go
      }
      fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
 
-     dcopClient->setNotifications( true );
-     while (dcopClient->isApplicationRegistered(appName))
-     {
-       QEventLoop eventLoop;
-       QObject::connect(dcopClient, SIGNAL(applicationRemoved(const QByteArray &)),
-                        &eventLoop, SLOT(quit()));
-       eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
-     }
-     dcopClient->setNotifications( false );
+#ifdef __GNUC__
+# warning This may fire on the signal for the unique connection name. Check!
+#endif
+
+     QEventLoop eventLoop;
+     QObject::connect(bus, SIGNAL(nameAcquired(QString)), &eventLoop, SLOT(quit()));
+     eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
    }
    fprintf(stderr, "%s running...\n", appName);
 
@@ -953,11 +944,10 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    if (args->isSet("signal"))
    {
-     // Notify ALL applications that have a ksycoca object, using a broadcast
-     QByteArray data;
-     QDataStream stream(&data, QIODevice::WriteOnly);
-     stream << *g_changeList;
-     dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged(QStringList)", data );
+     // Notify ALL applications that have a ksycoca object, using a signal
+     QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KSycoca", "notifyDatabaseChanged");
+     signal << *g_changeList;
+     QDBus::sessionBus().send(signal);
    }
 
 #ifdef KBUILDSYCOCA_GUI

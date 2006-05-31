@@ -22,8 +22,6 @@
 #include <qglobal.h>
 #include <qfile.h>
 
-#include <dcopclient.h>
-
 #include <kdebug.h>
 #include <kprocess.h>
 #include "kcookie.h"
@@ -34,17 +32,6 @@ KCookie::KCookie()
 #ifdef Q_WS_X11
     getXCookie();
 #endif
-    setDcopTransport("local");
-}
-
-void KCookie::setDcopTransport(const QByteArray &dcopTransport)
-{
-    m_dcopTransport = dcopTransport;
-    m_bHaveDCOPCookies = false;
-    m_bHaveICECookies = false;
-    m_DCOPSrv = "";
-    m_DCOPAuth = "";
-    m_ICEAuth = "";
 }
 
 void KCookie::blockSigChild()
@@ -113,95 +100,4 @@ void KCookie::getXCookie()
     }
     m_DisplayAuth = (lst[1] + ' ' + lst[2]);
 #endif
-}
-
-void KCookie::getICECookie()
-{
-    FILE *f;
-    char buf[1024];
-
-    QByteArray dcopsrv = getenv("DCOPSERVER");
-    if (dcopsrv.isEmpty())
-    {
-	QByteArray dcopFile = DCOPClient::dcopServerFile();
-	if (!(f = fopen(dcopFile, "r")))
-	{
-	    kWarning(900) << k_lineinfo << "Cannot open " << dcopFile << ".\n";
-	    return;
-	}
-	dcopsrv = fgets(buf, 1024, f);
-	dcopsrv = dcopsrv.trimmed();
-	fclose(f);
-    }
-    const QList<QByteArray> dcopServerList = dcopsrv.split(',');
-    if (dcopServerList.isEmpty())
-    {
-	kError(900) << k_lineinfo << "No DCOP servers found.\n";
-	return;
-    }
-
-    for (int i = 0; i < dcopServerList.count(); ++i)
-    {
-        QByteArray srv = dcopServerList.at(i);
-        if (srv != m_dcopTransport)
-            continue;
-        m_DCOPSrv = srv;
-	QByteArray cmd = DCOPClient::iceauthPath()+" list netid="+QFile::encodeName(KProcess::quote(m_DCOPSrv));
-	blockSigChild();
-	if (!(f = popen(cmd, "r")))
-	{
-	    kError(900) << k_lineinfo << "popen(): " << perror << "\n";
-	    unblockSigChild();
-	    break;
-	}
-	QList<QByteArray> output;
-	while (fgets(buf, 1024, f) > 0)
-	    output += buf;
-	if (pclose(f) < 0)
-	{
-	    kError(900) << k_lineinfo << "Could not run iceauth.\n";
-	    unblockSigChild();
-	    break;
-	}
-	unblockSigChild();
-        for (int i2 = 0; i2 < output.count(); ++i2)
-	{
-	    QList<QByteArray> lst = output.at(i2).trimmed().split(' ');
-	    if (lst.count() != 5)
-	    {
-		kError(900) << "parse error.\n";
-		break;
-	    }
-	    if (lst[0] == "DCOP")
-		m_DCOPAuth = (lst[3] + ' ' + lst[4]);
-	    else if (lst[0] == "ICE")
-		m_ICEAuth = (lst[3] + ' ' + lst[4]);
-	    else
-		kError(900) << k_lineinfo << "unknown protocol: " << lst[0] << "\n";
-	}
-	break;
-    }
-    m_bHaveDCOPCookies = true;
-    m_bHaveICECookies = true;
-}
-
-QByteArray KCookie::dcopServer()
-{
-   if (!m_bHaveDCOPCookies)
-      getICECookie();
-   return m_DCOPSrv;
-}
-
-QByteArray KCookie::dcopAuth()
-{
-   if (!m_bHaveDCOPCookies)
-      getICECookie();
-   return m_DCOPAuth;
-}
-
-QByteArray KCookie::iceAuth()
-{
-   if (!m_bHaveICECookies)
-      getICECookie();
-   return m_ICEAuth;
 }

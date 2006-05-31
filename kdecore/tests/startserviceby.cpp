@@ -33,7 +33,7 @@ main(int argc, char *argv[])
    KApplication a;
 
    QString error;
-   QByteArray dcopService;
+   QString dcopService;
    int pid;
    KToolInvocation::startServiceByDesktopName( "kaddressbook", QString(), &error, &dcopService, &pid );
    kDebug() << "Started. error=" << error << " dcopService=" << dcopService << " pid=" << pid << endl;

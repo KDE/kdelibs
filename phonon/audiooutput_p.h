@@ -23,6 +23,7 @@
 #include "audiooutput.h"
 #include "abstractaudiooutput_p.h"
 #include "ifaces/audiooutput.h"
+#include "mixeradaptor.h"
 #include <kaboutdata.h>
 #include <kglobal.h>
 #include <kinstance.h>
@@ -38,12 +39,14 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 			: volume( 1.0 )
 			, category( Phonon::UnspecifiedCategory )
 			, outputDeviceIndex( -1 )
-		{ 
+		{
 			const KAboutData* ad = KGlobal::instance()->aboutData();
 			if( ad )
 				name = ad->programName();
 			else
 				name = KGlobal::instance()->instanceName();
+
+            new MixerIfaceAdaptor(q_func());
 		}
 
 	private:

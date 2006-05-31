@@ -27,8 +27,6 @@
 
 #include <kmessageboxwrapper.h>
 
-#include <dcopclient.h>
-#include <dcopref.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kiconloader.h>
@@ -41,6 +39,7 @@
 #include <qset.h>
 #include <qstring.h>
 #include <qfile.h>
+#include <dbus/qdbus.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -510,12 +509,9 @@ QString KMimeType::favIconForURL( const KUrl& url )
          || !useFavIcons )
         return QString();
 
-    DCOPRef kded( "kded", "favicons" );
-    DCOPReply result = kded.call( "iconForURL(KUrl)", url );
-    if ( result.isValid() )
-        return result;
-
-    return QString();
+    QDBusInterfacePtr kded( "org.kde.kded", "/modules/favicons" );
+    QDBusReply<QString> result = kded->call( "iconForURL", url.url() );
+    return result;              // default is QString()
 }
 
 QString KMimeType::parentMimeType() const

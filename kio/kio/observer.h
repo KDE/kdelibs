@@ -20,7 +20,6 @@
 #define __kio_observer_h__
 
 #include <qobject.h>
-#include <dcopobject.h>
 #include <qmap.h>
 
 #include <kio/global.h>
@@ -29,7 +28,7 @@
 #include "kio/skipdlg.h"
 #include "kio/renamedlg.h"
 
-class UIServer_stub;
+class OrgKdeKIOUIServerInterface;
 class KUrl;
 
 namespace KIO {
@@ -52,10 +51,10 @@ namespace KIO {
  * @short Observer for KIO::Job progress information
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT Observer : public QObject, public DCOPObject {
+class KIO_EXPORT Observer : public QObject {
 
-  K_DCOP
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.kde.KIO.Observer")
 
 public:
 
@@ -152,18 +151,18 @@ public:
                                     bool multi,
                                     const QString & error_text );
 
-k_dcop:
+public Q_SLOTS:
   /**
    * Called by the UI Server (using DCOP) if the user presses cancel.
    * @param progressId the progress ID of the job, as returned by newJob()
    */
-  void killJob( int progressId );
+  Q_SCRIPTABLE void killJob( int progressId );
 
   /**
    * Called by the UI Server (using DCOP) to get all the metadata of the job
    * @param progressId the progress IDof the job, as returned by newJob()
    */
-  KIO::MetaData metadata( int progressId );
+  Q_SCRIPTABLE QVariantMap metadata( int progressId );
 
 protected:
 
@@ -171,7 +170,7 @@ protected:
   Observer();
   ~Observer() {}
 
-  UIServer_stub * m_uiserver;
+  OrgKdeKIOUIServerInterface * m_uiserver;
 
   QMap< int, KIO::Job* > m_dctJobs;
 

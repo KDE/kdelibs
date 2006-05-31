@@ -47,8 +47,8 @@
 #endif
 
 #include <klocale.h>
-#include <dcopclient.h>
 #include <qdatastream.h>
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <ktoolinvocation.h>
@@ -74,7 +74,6 @@ public:
   QString realHost;
   QString ip;
   KNetwork::KStreamSocket socket;
-  DCOPClient *dcc;
   KSSLPKCS12 *pkcs;
 
   int status;
@@ -131,7 +130,6 @@ void TCPSlaveBase::init()
     d->ip = "";
     d->cc = 0L;
     d->usingTLS = false;
-    d->dcc = 0L;
     d->pkcs = 0L;
     d->status = -1;
     d->timeout = KProtocolManager::connectTimeout();
@@ -143,7 +141,6 @@ TCPSlaveBase::~TCPSlaveBase()
 {
     cleanSSL();
     if (d->usingTLS) delete d->kssl;
-    delete d->dcc;
     delete d->pkcs;
     delete d;
 }
@@ -626,25 +623,19 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
-    if (!d->dcc) {
-        d->dcc = new DCOPClient;
-        d->dcc->attach();
-        if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-           KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+    if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver")) {
+        KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                    QStringList() );
-        }
     }
 
-     DCOPRef uis("kio_uiserver", "UIServer");
-     uis.setDCOPClient(d->dcc);
+    QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
 
-     DCOPReply retVal = uis.call("showSSLCertDialog", ourHost, certs, metaData("window-id").toInt());
-     KSSLCertDlgRet drc;
-     if (retVal.get(drc, "KSSLCertDlgRet")) {
-        if (drc.ok) {
-           send = drc.send;
-           save = drc.save;
-           certname = drc.choice;
+    QDBusMessage retVal = uis->call("showSSLCertDialog", ourHost, certs, metaData("window-id").toLongLong());
+    if (retVal.type() == QDBusMessage::ReplyMessage) {
+        if (retVal.at(0).toBool()) {
+           send = retVal.at(1).toBool();
+           save = retVal.at(2).toBool();
+           certname = retVal.at(3).toString();
         }
      }
   }
@@ -874,20 +865,17 @@ int TCPSlaveBase::verifyCertificate()
                 }
 
                 if (result == KMessageBox::Yes) {
-                   if (!d->dcc) {
-                      d->dcc = new DCOPClient;
-                      d->dcc->attach();
-                      if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                         KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
-                         QStringList() );
-                      }
+                  if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver"))
+                      KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                                 QStringList() );
 
-                   }
-
-                  DCOPRef uis("kio_uiserver", "UIServer");
-                  uis.setDCOPClient(d->dcc);
-                  uis.call("showSSLInfoDialog(QString,KIO::MetaData,int)",
-                    theurl, mOutgoingMetaData, metaData("window-id").toInt());
+                  QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+                  QVariantMap adjusted;
+                  for (MetaData::ConstIterator it = mOutgoingMetaData.constBegin();
+                       it != mOutgoingMetaData.constEnd(); ++it)
+                     adjusted.insert(it.key(), it.value());
+                  uis->call("showSSLInfoDialog",
+                    theurl, adjusted, metaData("window-id").toLongLong());
                 }
              } while (result == KMessageBox::Yes);
 
@@ -999,20 +987,17 @@ int TCPSlaveBase::verifyCertificate()
                                  i18n("&Details"),
                                  i18n("Co&nnect"));
                 if (result == KMessageBox::Yes) {
-                   if (!d->dcc) {
-                      d->dcc = new DCOPClient;
-                      d->dcc->attach();
-                      if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                         KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
-                         QStringList() );
-                      }
-                   }
+                  if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver"))
+                      KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                                 QStringList() );
 
-
-                  DCOPRef uis("kio_uiserver", "UIServer");
-                  uis.setDCOPClient(d->dcc);
-                  uis.call("showSSLInfoDialog(QString,KIO::MetaData,int)",
-                    theurl, mOutgoingMetaData, metaData("window-id").toInt());
+                  QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+                  QVariantMap adjusted;
+                  for (MetaData::ConstIterator it = mOutgoingMetaData.constBegin();
+                       it != mOutgoingMetaData.constEnd(); ++it)
+                     adjusted.insert(it.key(), it.value());
+                  uis->call("showSSLInfoDialog",
+                    theurl, adjusted, metaData("window-id").toLongLong());
                 }
           } while (result == KMessageBox::Yes);
 
@@ -1081,19 +1066,17 @@ int TCPSlaveBase::verifyCertificate()
 
       if ( result == KMessageBox::Yes )
       {
-          if (!d->dcc) {
-             d->dcc = new DCOPClient;
-             d->dcc->attach();
-             if (!d->dcc->isApplicationRegistered("kio_uiserver")) {
-                KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
-                QStringList() );
-             }
-          }
+          if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver"))
+              KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
+                                                         QStringList() );
 
-          DCOPRef uis("kio_uiserver", "UIServer");
-          uis.setDCOPClient(d->dcc);
-          uis.call("showSSLInfoDialog(QString,KIO::MetaData,int)",
-                   theurl, mOutgoingMetaData, metaData("window-id").toInt());
+          QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+          QVariantMap adjusted;
+          for (MetaData::ConstIterator it = mOutgoingMetaData.constBegin();
+               it != mOutgoingMetaData.constEnd(); ++it)
+              adjusted.insert(it.key(), it.value());
+          uis->call("showSSLInfoDialog",
+                    theurl, adjusted, metaData("window-id").toLongLong());
       }
       } while (result != KMessageBox::No);
    }

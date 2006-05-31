@@ -26,8 +26,6 @@
 #include <qtextstream.h>
 #include <qregexp.h>
 
-#include <dcopclient.h>
-
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -35,7 +33,9 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
+#include <ktoolinvocation.h>
 #include <kde_file.h>
+#include <dbus/qdbus.h>
 
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname"), 0 },
@@ -52,7 +52,6 @@ public:
    KHostName();
 
    void changeX();
-   void changeDcop();
    void changeStdDirs(const QByteArray &type);
    void changeSessionManager();
 
@@ -173,113 +172,6 @@ void KHostName::changeX()
    }
 }
 
-void KHostName::changeDcop()
-{
-   DCOPCString fname = DCOPClient::dcopServerFile(oldName);
-   DCOPCString origFName = fname;
-   FILE *dcopFile = fopen(fname.data(), "r");
-   if (!dcopFile)
-   {
-      fprintf(stderr, "Warning: Can't open '%s' for reading.\n", fname.data());
-      return;
-   }
-
-   QByteArray line1, line2;
-   {
-     char buf[1024+1];
-     line1 = fgets(buf, 1024, dcopFile);
-     if (line1.length())
-            line1.truncate(line1.length()-1); // Strip LF.
-
-     line2 = fgets(buf, 1024, dcopFile);
-     if (line2.length())
-            line2.truncate(line2.length()-1); // Strip LF.
-   }
-   fclose(dcopFile);
-
-   QByteArray oldNetId = line1;
-
-   if (!newName.isEmpty())
-   {
-      int i = line1.lastIndexOf(':');
-      if (i == -1)
-      {
-         fprintf(stderr, "Warning: File '%s' has unexpected format.\n", fname.data());
-         return;
-      }
-      line1 = "local/"+newName+line1.mid(i);
-      QByteArray newNetId = line1;
-      fname = DCOPClient::dcopServerFile(newName);
-      unlink(fname.data());
-      dcopFile = fopen(fname.data(), "w");
-      if (!dcopFile)
-      {
-         fprintf(stderr, "Warning: Can't open '%s' for writing.\n", fname.data());
-         return;
-      }
-
-      fputs(line1.data(), dcopFile);
-      fputc('\n', dcopFile);
-      fputs(line2.data(), dcopFile);
-      fputc('\n', dcopFile);
-
-      fclose(dcopFile);
-
-      // Update .ICEauthority
-      QString cmd = "iceauth list "+KProcess::quote("netid="+oldNetId);
-      FILE *iceFile = popen(QFile::encodeName(cmd), "r");
-      if (!iceFile)
-      {
-         fprintf(stderr, "Warning: Can't run iceauth.\n");
-         return;
-      }
-      QList<QByteArray> lines;
-      {
-         char buf[1024+1];
-         while (!feof(iceFile))
-         {
-            QByteArray line = fgets(buf, 1024, iceFile);
-            if (line.length())
-               line.truncate(line.length()-1); // Strip LF.
-            if (!line.isEmpty())
-               lines.append(line);
-         }
-      }
-      pclose(iceFile);
-
-	  foreach ( QByteArray it, lines )
-      {
-         QList<QByteArray> entries = split(it);
-         if (entries.count() != 5)
-            continue;
-
-         QByteArray protName = entries[0];
-         QByteArray netId = entries[2];
-         QByteArray authName = entries[3];
-         QByteArray authKey = entries[4];
-         if (netId != oldNetId)
-            continue;
-
-         cmd = "iceauth add ";
-         cmd += KProcess::quote(protName);
-         cmd += " '' ";
-         cmd += KProcess::quote(newNetId);
-         cmd += ' ';
-         cmd += KProcess::quote(authName);
-         cmd += ' ';
-         cmd += KProcess::quote(authKey);
-         system(QFile::encodeName(cmd));
-      }
-   }
-
-   // Remove old entries
-   {
-      QString cmd = "iceauth remove "+KProcess::quote("netid="+oldNetId);
-      system(QFile::encodeName(cmd));
-      unlink(origFName.data());
-   }
-}
-
 void KHostName::changeStdDirs(const QByteArray &type)
 {
    // We make links to the old dirs cause we can't delete the old dirs.
@@ -318,7 +210,7 @@ void KHostName::changeStdDirs(const QByteArray &type)
 
 void KHostName::changeSessionManager()
 {
-   DCOPCString sm = ::getenv("SESSION_MANAGER");
+   QByteArray sm = qgetenv("SESSION_MANAGER");
    if (sm.isEmpty())
    {
       fprintf(stderr, "Warning: No session management specified.\n");
@@ -327,24 +219,11 @@ void KHostName::changeSessionManager()
    int i = sm.lastIndexOf(':');
    if ((i == -1) || (sm.left(6) != "local/"))
    {
-      fprintf(stderr, "Warning: Session Management socket '%s' has unexpected format.\n", sm.data());
+      fprintf(stderr, "Warning: Session Management socket '%s' has unexpected format.\n", sm.constData());
       return;
    }
    sm = "local/"+newName+sm.mid(i);
-   DCOPCString name = "SESSION_MANAGER";
-   QByteArray params;
-   QDataStream stream(&params, QIODevice::WriteOnly);
-   stream << name << sm;
-   DCOPClient *client = new DCOPClient();
-   if (!client->attach())
-   {
-      fprintf(stderr, "Warning: DCOP communication problem, can't fix Session Management.\n");
-      delete client;
-      return;
-   }
-   DCOPCString launcher = KApplication::launcher();
-   client->send(launcher, launcher, "setLaunchEnv(QCString,QCString)", params);
-   delete client;
+   KToolInvocation::klauncher()->call(QDBusInterface::NoWaitForReply, "setLaunchEnv", QByteArray("SESSION_MANAGER"), sm);
 }
 
 int main(int argc, char **argv)
@@ -363,7 +242,6 @@ int main(int argc, char **argv)
    KHostName hn;
 
    hn.changeX();
-   hn.changeDcop();
    hn.changeStdDirs("socket");
    hn.changeStdDirs("tmp");
    hn.changeSessionManager();

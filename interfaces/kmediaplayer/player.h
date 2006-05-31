@@ -25,7 +25,6 @@
 #define KMEDIAPLAYERPLAYER_H
 
 #include <kparts/part.h>
-#include <kmediaplayer/playerdcopobject.h>
 #include <kmediaplayer/view.h>
 
 /** KMediaPlayer contains an interface to reusable media player components.
@@ -43,9 +42,15 @@ namespace KMediaPlayer
  * the user interface facets, for those who wish to provide their own
  * interface.
  */
-class KDE_EXPORT Player : public KParts::ReadOnlyPart, public PlayerDCOPObject
+class KDE_EXPORT Player : public KParts::ReadOnlyPart
 {
 Q_OBJECT
+Q_PROPERTY(bool hasLength READ hasLength)
+Q_PROPERTY(qlonglong length READ length)
+Q_PROPERTY(bool looping READ isLooping WRITE setLooping)
+Q_PROPERTY(qlonglong position READ position)
+Q_PROPERTY(bool seekable READ isSeekable)
+Q_PROPERTY(int state READ state WRITE setState)
 
 public:
 	/** This constructor is what to use when no GUI is required, as in the
@@ -79,20 +84,20 @@ public Q_SLOTS:
 	 * milliseconds, if the track is seekable.  Some streams may not be
 	 * seeked.
 	 */
-	virtual void seek(unsigned long msec) = 0;
+	virtual void seek(qlonglong msec) = 0;
 public:
 	/** Returns whether the current track honors seek requests.*/
 	virtual bool isSeekable(void) const = 0;
 
 	/** Returns the current playback position in the track.*/
-	virtual unsigned long position(void) const = 0;
+	virtual qlonglong position(void) const = 0;
 
 	/** Returns whether the current track has a length.  Some streams are
 	 * endless, and do not have one. */
 	virtual bool hasLength(void) const = 0;
 
 	/** Returns the length of the current track.*/
-	virtual unsigned long length(void) const = 0;
+	virtual qlonglong length(void) const = 0;
 
 public Q_SLOTS:
 	/** Set whether the Player should continue playing at the beginning of

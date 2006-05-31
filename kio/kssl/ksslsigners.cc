@@ -21,22 +21,18 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <dbus/qdbus.h>
 #include "ksslcertificate.h"
 #include "ksslsigners.h"
 #include <stdlib.h>
 #include <kdebug.h>
-#include <dcopclient.h>
-#include <kdatastream.h>
 
 
 KSSLSigners::KSSLSigners() {
-	dcc = new DCOPClient;
-	dcc->attach();
 }
 
 
 KSSLSigners::~KSSLSigners() {
-	delete dcc;
 }
 
 bool KSSLSigners::addCA(KSSLCertificate& cert,
@@ -51,42 +47,14 @@ bool KSSLSigners::addCA(const QString &cert,
                         bool ssl,
                         bool email,
                         bool code) const {
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << cert;
-     arg << ssl << email << code;
-     bool rc = dcc->call("kded", "kssld",
-                         "caAdd(QString,bool,bool,bool)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caAdd", cert, ssl, email, code));
 }
 
 
 bool KSSLSigners::regenerate() {
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     bool rc = dcc->call("kded", "kssld",
-                         "caRegenerate()",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caRegenerate"));
 }
 
 
@@ -96,22 +64,8 @@ bool KSSLSigners::useForSSL(KSSLCertificate& cert) const {
 
 
 bool KSSLSigners::useForSSL(const QString &subject) const{
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << subject;
-     bool rc = dcc->call("kded", "kssld",
-                         "caUseForSSL(QString)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caUseForSSL", subject));
 }
 
 
@@ -121,22 +75,8 @@ bool KSSLSigners::useForEmail(KSSLCertificate& cert) const{
 
 
 bool KSSLSigners::useForEmail(const QString &subject) const{
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << subject;
-     bool rc = dcc->call("kded", "kssld",
-                         "caUseForEmail(QString)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caUseForEmail", subject));
 }
 
 
@@ -146,22 +86,8 @@ bool KSSLSigners::useForCode(KSSLCertificate& cert) const{
 
 
 bool KSSLSigners::useForCode(const QString &subject) const{
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << subject;
-     bool rc = dcc->call("kded", "kssld",
-                         "caUseForCode(QString)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caUseForCode", subject));
 }
 
 
@@ -171,79 +97,26 @@ bool KSSLSigners::remove(KSSLCertificate& cert) {
 
 
 bool KSSLSigners::remove(const QString &subject) {
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << subject;
-     bool rc = dcc->call("kded", "kssld",
-                         "caRemove(QString)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caRemove", subject));
 }
 
 
 QStringList KSSLSigners::list() {
-     QStringList drc;
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     bool rc = dcc->call("kded", "kssld",
-                         "caList()",
-                         data, rettype, retval);
-
-     if (rc && rettype == "QStringList") {
-        QDataStream retStream(retval);
-        retStream >> drc;
-     }
-
-return drc;
+     return QDBusReply<QStringList>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                                    call("caList"));
 }
 
 
 QString KSSLSigners::getCert(const QString &subject) {
-     QString drc;
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << subject;
-     bool rc = dcc->call("kded", "kssld",
-                         "caGetCert(QString)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "QString") {
-        QDataStream retStream(retval);
-        retStream >> drc;
-     }
-
-return drc;
+     return QDBusReply<QString>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                                call("caGetCert", subject));
 }
 
 
 bool KSSLSigners::setUse(const QString &subject, bool ssl, bool email, bool code) {
-     QByteArray data, retval;
-     DCOPCString rettype;
-     QDataStream arg(&data, QIODevice::WriteOnly);
-     arg << subject << ssl << email << code;
-     bool rc = dcc->call("kded", "kssld",
-                         "caSetUse(QString,bool,bool,bool)",
-                         data, rettype, retval);
-
-     if (rc && rettype == "bool") {
-        QDataStream retStream(retval);
-        bool drc;
-        retStream >> drc;
-        return drc;
-     }
-
-return false;
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("caSetUse", subject, ssl, email, code));
 }
 
 

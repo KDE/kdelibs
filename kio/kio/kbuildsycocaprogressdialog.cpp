@@ -1,7 +1,7 @@
 #include "kbuildsycocaprogressdialog.h"
 #include <klocale.h>
 #include <kapplication.h>
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 
 void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
 {
@@ -10,13 +10,11 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
                                  i18n("Updating system configuration."));
 
   QByteArray data;
-  DCOPClient *client = KApplication::dcopClient();
-
-  int result = client->callAsync("kded", "kbuildsycoca", "recreate()",
-               data, &dlg, SLOT(slotFinished()));
-
-  if (result)
+  QDBusInterfacePtr kbuildsycoca("org.kde.kded", "/modules/kbuildsycoca",
+                                 "org.kde.kbuildsycoca");
+  if (kbuildsycoca->isValid())
   {
+     kbuildsycoca->callWithArgs("recreate", &dlg, SLOT(slotFinished()));
      dlg.exec();
   }
 }

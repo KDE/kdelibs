@@ -22,7 +22,6 @@
 #include <qevent.h>
 #include <qtimer.h>
 #include <kdebug.h>
-#include <kdirnotify_stub.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>
 #include <kfileview.h>

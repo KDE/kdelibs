@@ -3,6 +3,7 @@ project(kcmshell)
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kutils )
+add_definitions( ${QDBUS_DEFINITIONS} )
 
 
 ########### next target ###############
@@ -10,10 +11,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kutils )
 set(kcmshell_KDEINIT_SRCS main.cpp )
 
 kde4_automoc(${kcmshell_KDEINIT_SRCS})
-
-set( kcmshell_DCOP_SKEL_SRCS main.h )
-
-kde4_add_dcop_skels(kcmshell_KDEINIT_SRCS ${kcmshell_DCOP_SKEL_SRCS})
 
 kde4_add_kdeinit_executable( kcmshell ${kcmshell_KDEINIT_SRCS})
 

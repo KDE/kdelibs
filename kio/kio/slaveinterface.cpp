@@ -28,9 +28,9 @@
 #include <signal.h>
 #include <kio/observer.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <time.h>
 #include <qtimer.h>
+#include <dbus/qdbus.h>
 
 using namespace KIO;
 
@@ -256,7 +256,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case MSG_SLAVE_STATUS:
         {
            pid_t pid;
-           DCOPCString protocol;
+           QByteArray protocol;
            stream >> pid >> protocol >> str1 >> b;
            emit slaveStatus(pid, protocol, str1, (b != 0));
         }
@@ -440,7 +440,10 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     QString caption( _caption );
     if ( type == KIO::SlaveBase::SSLMessageBox )
-        caption = QString::fromUtf8(KApplication::dcopClient()->appId()); // hack, see observer.cpp
+#ifdef __GNUC__
+# warning FIXME This will never work
+#endif
+        caption = QDBus::sessionBus().baseService(); // hack, see observer.cpp
 
     emit needProgressId();
     kDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;

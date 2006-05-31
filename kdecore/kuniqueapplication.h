@@ -22,8 +22,6 @@
 #define KUNIQUEAPP_H
 
 #include <kapplication.h>
-#include <dcopobject.h>
-
 
 /**
  * Maintains only a single
@@ -44,9 +42,10 @@
  * @see KApplication DCOPObject
  * @author Preston Brown <pbrown@kde.org>
  */
-class KDECORE_EXPORT KUniqueApplication : public KApplication, public DCOPObject
+class KDECORE_EXPORT KUniqueApplication : public KApplication
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.kde.KUniqueApplication")
 public:
   /**
    * Constructor. Takes command line arguments from KCmdLineArgs
@@ -92,9 +91,9 @@ public:
   static void addCmdLineOptions();
 
   /**
-   * Forks and registers with dcop.
+   * Forks and registers with D-Bus.
    *
-   * The command line arguments are being sent via DCOP to newInstance()
+   * The command line arguments are being sent via D-Bus to newInstance()
    * and will be received once the application enters the event loop.
    *
    * Typically this is used like:
@@ -130,21 +129,7 @@ public:
    */
   virtual ~KUniqueApplication();
 
-  /**
-   * Dispatches any incoming DCOP message for a new instance.
-   *
-   * If it is not a request for a new instance, return false.
-   * Overloaded from DCOPObject to make sure that the application
-   * stays unique.
-   * @param fun DCOP function signature
-   * @param data the data for the arguments
-   * @param replyType the type of the reply value
-   * @param replyData the reply
-   * @see DCOPObject
-   */
-  bool process(const DCOPCString &fun, const QByteArray &data,
-	       DCOPCString &replyType, QByteArray &replyData);
-
+public Q_SLOTS:
   /**
    * Creates a new "instance" of the application.
    *
@@ -165,8 +150,9 @@ public:
    *
    * @return An exit value. The calling process will exit with this value.
    */
-  virtual int newInstance();
+  virtual Q_SCRIPTABLE int newInstance();
 
+public:
   /**
    * Returns whether newInstance() is being called while session
    * restoration is in progress.
@@ -178,23 +164,12 @@ public:
    */
   static void setHandleAutoStarted();
 
-private:
-  /**
-   * Delays the processing of a DCOP request.
-   */
-  void delayRequest(const QByteArray &fun, const QByteArray &data);
-
 private Q_SLOTS:
-  /**
-   * Delayed processing of DCOP requests.
-   */
-  void processDelayed();
-
   void newInstanceNoFork();
 
+private:
   static KInstance* initHack( bool configUnique );
 
-private:
   static bool s_nofork;
   static bool s_multipleInstances;
   static bool s_uniqueTestDone;

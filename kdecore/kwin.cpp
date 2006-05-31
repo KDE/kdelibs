@@ -34,15 +34,13 @@
 #include <qdialog.h>
 #include <qpixmap.h>
 #include <qstring.h>
+#include <dbus/qdbus.h>
 
 #include "kapplication.h"
 #include "kglobal.h"
 #include "kiconloader.h"
 #include "kdebug.h"
-#include "kdatastream.h"
 #include "klocale.h"
-#include "dcopclient.h"
-#include "dcopref.h"
 #ifdef Q_WS_X11
 #include "kstartupinfo.h"
 #include "kxerrorhandler.h"
@@ -218,8 +216,8 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
     info.setKDESystemTrayWinFor( forWin );
     NETRootInfo rootinfo( QX11Info::display(), NET::Supported );
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
-        DCOPRef ref( "kded", "kded" );
-        if( !ref.send( "loadModule", DCOPCString( "kdetrayproxy" )))
+        QDBusInterfacePtr iface(QLatin1String("org.kde.kded"), "/kded", QLatin1String("org.kde.kded"));
+        if( iface->call( "loadModule", QByteArray( "kdetrayproxy" )).type() != QDBusMessage::ReplyMessage)
             kWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
     }
 #endif

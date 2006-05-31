@@ -26,12 +26,12 @@
 #include <kdebug.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
-#include <dcopclient.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qstring.h>
 #include <qtextcodec.h>
 #include <qset.h>
+#include <dbus/qdbus.h>
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -86,34 +86,21 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
 
 QStringList KCrashBookmarkImporterImpl::getCrashLogs()
 {
-    QMap<QString, bool> activeLogs;
+    QSet<QString> activeLogs;
 
-    DCOPClient* dcop = KApplication::dcopClient();
-
-    DCOPCStringList apps = dcop->registeredApplications();
-    foreach ( DCOPCString clientId, apps )
+    QStringList apps = QDBus::sessionBus().busService()->listNames();
+    foreach ( QString clientId, apps )
     {
-        if ( qstrncmp(clientId, "konqueror", 9) != 0 )
+        if ( !clientId.startsWith( QLatin1String("org.kde.konqueror") ) )
             continue;
 
-        QByteArray data, replyData;
-        DCOPCString replyType;
-        QDataStream arg( &data, QIODevice::WriteOnly );
+        QDBusReply<QString> reply =
+            QDBusInterfacePtr(clientId, "/Konqueror", "org.kde.Konqueror")->call("crashLogfile");
 
-        if ( !dcop->call( clientId, "KonquerorIface",
-                          "crashLogFile()", data, replyType, replyData) )
-        {
-            kWarning() << "can't find dcop function KonquerorIface::crashLogFile()" << endl;
-            continue;
-        }
-
-        if ( replyType != "QString" )
+        if ( reply.isError() )
             continue;
 
-        QDataStream reply( replyData );
-        QString ret;
-        reply >> ret;
-        activeLogs[ret] = true;
+        activeLogs += reply;
     }
 
     QDir d( KCrashBookmarkImporterImpl().findDefaultLocation() );

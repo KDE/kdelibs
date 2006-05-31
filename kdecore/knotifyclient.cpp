@@ -22,17 +22,17 @@
 #include "ktoolinvocation.h"
 
 #include <qdatastream.h>
-#include <QStack>
+#include <qstack.h>
+#include <dbus/qdbus.h>
 
 #include <krandom.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kconfig.h>
-#include <dcopclient.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-static const char daemonName[] = "knotify";
+static const char daemonName[] = "org.kde.knotify";
 
 static bool canAvoidStartupEvent( const QString& event, const QString& appname, int present )
 {
@@ -69,14 +69,6 @@ static int sendNotifyEvent(const QString &message, const QString &text,
 {
   if (!kapp) return 0;
 
-  DCOPClient *client=KApplication::dcopClient();
-  if (!client->isAttached())
-  {
-    client->attach();
-    if (!client->isAttached())
-      return 0;
-  }
-
   QString appname = KNotifyClient::Instance::current()->instanceName();
 
   if( canAvoidStartupEvent( message, appname, present ))
@@ -92,13 +84,10 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   if ( !KNotifyClient::startDaemon() )
       return 0;
 
-  if ( DCOPRef(daemonName, "Notify").send("notify", message, appname, text, sound, file,
-                present, winId, uniqueId) )
-  {
-      return uniqueId;
-  }
-
-  return 0;
+  QDBusInterfacePtr iface(QLatin1String(daemonName), "/Notify", "org.kde.KNotify");
+  QDBusReply<void> r = iface->call("notify", message, appname, text, sound, file, present,
+                                   qlonglong(winId), uniqueId);
+  return r.isSuccess() ? uniqueId : 0;
 }
 
 int KNotifyClient::event( StandardEvent type, const QString& text )
@@ -222,7 +211,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 bool KNotifyClient::startDaemon()
 {
   static bool firstTry = true;
-  if (!KApplication::dcopClient()->isApplicationRegistered(daemonName)) {
+  if (!QDBus::sessionBus().busService()->nameHasOwner(QLatin1String(daemonName))) {
     if( firstTry ) {
       firstTry = false;
       return KToolInvocation::startServiceByDesktopName(daemonName) == 0;
@@ -240,18 +229,8 @@ void KNotifyClient::beep(const QString& reason)
     return;
   }
 
-  DCOPClient *client=KApplication::dcopClient();
-  if (!client->isAttached())
-  {
-    client->attach();
-    if (!client->isAttached() || !client->isApplicationRegistered(daemonName))
-    {
-      QApplication::beep();
-      return;
-    }
-  }
   // The kaccess daemon handles visual and other audible beeps
-  if ( client->isApplicationRegistered( "kaccess" ) )
+  if ( QDBus::sessionBus().busService()->nameHasOwner( QLatin1String("org.kde.kaccess") ) )
   {
       QApplication::beep();
       return;

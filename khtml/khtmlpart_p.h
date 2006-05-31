@@ -45,7 +45,6 @@
 #include "khtml_factory.h"
 #include "khtml_events.h"
 #include "khtml_ext.h"
-#include "khtml_iface.h"
 #include "khtml_settings.h"
 #include "misc/decoder.h"
 #include "ecma/kjs_proxy.h"
@@ -228,7 +227,6 @@ public:
     m_opener = 0;
     m_openedByJS = false;
     m_newJSInterpreterExists = false;
-    m_dcopobject = 0;
     m_jobspeed = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
     m_statusBarWalletLabel = 0L;
@@ -241,7 +239,6 @@ public:
   }
   ~KHTMLPartPrivate()
   {
-    delete m_dcopobject;
     delete m_statusBarExtension;
     delete m_extension;
     delete m_settings;
@@ -271,7 +268,7 @@ public:
   khtml::Decoder *m_decoder;
   QString m_encoding;
   QString m_sheetUsed;
-  long m_cacheId;
+  qlonglong m_cacheId;
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
 
@@ -299,7 +296,6 @@ public:
   bool m_urlSelectedOpenedURL:1; // KDE4: remove
   int m_frameNameId;
   int m_dcop_counter;
-  DCOPObject *m_dcopobject;
 
 #ifndef Q_WS_QWS
   KJavaAppletContext *m_javaContext;

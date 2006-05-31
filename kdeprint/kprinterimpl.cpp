@@ -31,18 +31,17 @@
 
 #include <qfile.h>
 #include <qregexp.h>
+#include <dbus/qdbus.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <dcopclient.h>
-#include <kapplication.h>
 #include <krandom.h>
 #include <kstandarddirs.h>
-#include <kdatastream.h>
 #include <kdebug.h>
 #include <kmimemagic.h>
 #include <kmessagebox.h>
 #include <kprocess.h>
 #include <kconfig.h>
+#include <kapplication.h>
 
 #include <stdlib.h>
 
@@ -195,28 +194,9 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 {
 	kDebug(500) << "kdeprint: print command: " << cmd << endl;
 
-	int result = 0;
-	DCOPClient	*dclient = KApplication::dcopClient();
-	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
-	{
-		return result;
-	}
-
-	QByteArray data, replyData;
-	DCOPCString replyType;
-	QDataStream arg( &data, QIODevice::WriteOnly );
-	arg << cmd;
-	arg << files;
-	arg << removeflag;
-	if (dclient->call( "kded", "kdeprintd", "print(QString,QStringList,bool)", data, replyType, replyData ))
-	{
-		if (replyType == "int")
-		{
-			QDataStream _reply_stream( replyData );
-			_reply_stream >> result;
-		}
-	}
-	return result;
+    QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+    QDBusReply<int> reply = kdeprintd->call( "print", cmd, files, removeflag );
+	return reply;               // default is 0
 }
 
 void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
@@ -231,18 +211,8 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	if (printer && !msg.isEmpty())
 		message.prepend(i18n("Printing document: %1", printer->docName())+"\n");
 
-	DCOPClient	*dclient = KApplication::dcopClient();
-	if (!dclient || (!dclient->isAttached() && !dclient->attach()))
-	{
-		return;
-	}
-
-	QByteArray data;
-	QDataStream arg( &data, QIODevice::WriteOnly );
-	arg << message;
-	arg << (int)getpid();
-	arg << kapp->caption();
-	dclient->send( "kded", "kdeprintd", "statusMessage(QString,int,QString)", data );
+    QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+    (void)kdeprintd->call( "statusMessage", msg, int(getpid()), kapp->caption() );
 }
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)

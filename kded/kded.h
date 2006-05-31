@@ -26,8 +26,7 @@
 #include <qhash.h>
 #include <qset.h>
 
-#include <dcopclient.h>
-#include <dcopobject.h>
+#include <dbus/qdbus.h>
 
 #include <ksycoca.h>
 #include <ksycocatype.h>
@@ -38,7 +37,7 @@
 class KDirWatch;
 
 // No need for this in libkio - apps only get readonly access
-class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
+class Kded : public QObject
 {
   Q_OBJECT
 public:
@@ -46,31 +45,18 @@ public:
    virtual ~Kded();
 
    static Kded *self() { return _self;}
-   /**
-    * Catch calls to unknown objects.
-    */
-   bool process(const DCOPCString &obj, const DCOPCString &fun,
-                const QByteArray &data,
-		DCOPCString &replyType, QByteArray &replyData);
-
-   /**
-    * process DCOP message.  Only calls to "recreate" are supported at
-    * this time.
-    */
-   bool process(const DCOPCString &fun, const QByteArray &data,
-		DCOPCString &replyType, QByteArray &replyData);
-
-   virtual DCOPCStringList functions();
+   static void messageFilter(const QDBusMessage &);
 
    void noDemandLoad(const QString &obj); // Don't load obj on demand
 
-   KDEDModule *loadModule(const DCOPCString &obj, bool onDemand);
+   KDEDModule *loadModule(const QString &obj, bool onDemand);
    KDEDModule *loadModule(const KService::Ptr& service, bool onDemand);
-   DCOPCStringList loadedModules();
-   bool unloadModule(const DCOPCString &obj);
-   //bool isWindowRegistered(long windowId) const;
-   void registerWindowId(long windowId);
-   void unregisterWindowId(long windowId);
+   QStringList loadedModules();
+   bool unloadModule(const QString &obj);
+   //bool isWindowRegistered(qlonglong windowId) const;
+   void registerWindowId(qlonglong windowId, const QString &sender);
+   void unregisterWindowId(qlonglong windowId, const QString &sender);
+   void recreate(const QDBusMessage&);
    void recreate(bool initial);
    void loadSecondPhase();
 
@@ -101,9 +87,9 @@ public Q_SLOTS:
    void updateResourceList();
 
    /**
-    * An application unregistered itself with DCOP
+    * An application unregistered itself from DBus
     */
-   void slotApplicationRemoved(const QByteArray &appId);
+   void slotApplicationRemoved(const QString&, const QString&, const QString&);
 
    /**
     * A KDEDModule is about to get destroyed.
@@ -154,20 +140,50 @@ protected:
     */
    QTimer* m_pTimer;
 
-   QList<DCOPClientTransaction *> m_recreateRequests;
+   QList<QDBusMessage> m_recreateRequests;
    int m_recreateCount;
    bool m_recreateBusy;
 
-   QHash<QByteArray,KDEDModule *> m_modules;
-   QHash<QByteArray,KLibrary *> m_libs;
-   QHash<QByteArray,QObject *> m_dontLoad;
-   QHash<QByteArray,QList<long> > m_windowIdList;
+   QHash<QString,KDEDModule *> m_modules;
+   QHash<QString,KLibrary *> m_libs;
+   QHash<QString,QObject *> m_dontLoad;
+   QHash<QString,QList<qlonglong> > m_windowIdList;
 
    QSet<long> m_globalWindowIdList;
    QStringList m_allResourceDirs;
    bool m_needDelayedCheck;
 
    static Kded *_self;
+};
+
+class KBuildsycocaAdaptor: public QDBusAbstractAdaptor
+{
+   Q_OBJECT
+   Q_CLASSINFO("D-Bus Interface", "org.kde.kbuildsycoca")
+public:
+   KBuildsycocaAdaptor(QObject *parent);
+
+public Q_SLOTS:
+   Q_ASYNC void recreate(const QDBusMessage&);
+};
+   
+class KdedAdaptor: public QDBusAbstractAdaptor
+{
+   Q_OBJECT
+   Q_CLASSINFO("D-Bus Interface", "org.kde.kded")
+public:
+   KdedAdaptor(QObject *parent);
+
+public Q_SLOTS:
+   bool loadModule(const QString &obj);
+   QStringList loadedModules();
+   bool unloadModule(const QString &obj);
+   //bool isWindowRegistered(qlonglong windowId) const;
+   void registerWindowId(qlonglong windowId, const QDBusMessage&);
+   void unregisterWindowId(qlonglong windowId, const QDBusMessage&);
+   void reconfigure();
+   void loadSecondPhase();
+   void quit();
 };
 
 class KUpdateD : public QObject
@@ -212,7 +228,7 @@ private:
     * Timer for interval hostname checking.
     */
    QTimer m_Timer;
-   DCOPCString m_hostname;
+   QByteArray m_hostname;
 };
 
 #endif

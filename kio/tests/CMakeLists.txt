@@ -203,17 +203,6 @@ target_link_libraries(kionetrctest ${KDE4_KIO_LIBS})
 
 ########### next target ###############
 
-set(kdcopcheck_SRCS kdcopcheck.cpp)
-
-kde4_automoc(${kdcopcheck_SRCS})
-
-kde4_add_executable(kdcopcheck RUN_UNINSTALLED ${kdcopcheck_SRCS})
-
-target_link_libraries(kdcopcheck ${KDE4_KIO_LIBS})
-
-
-########### next target ###############
-
 set(metatest_SRCS metatest.cpp)
 
 kde4_automoc(${metatest_SRCS})

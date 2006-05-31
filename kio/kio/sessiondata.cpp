@@ -30,7 +30,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
-#include <dcopclient.h>
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
 

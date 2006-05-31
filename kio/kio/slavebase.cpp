@@ -38,9 +38,8 @@
 #include <time.h>
 
 #include <qfile.h>
-#include <QList>
-
-#include <dcopclient.h>
+#include <qlist.h>
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <kcrash.h>
@@ -69,7 +68,7 @@ using namespace KIO;
 typedef QList<QByteArray> AuthKeysList;
 typedef QMap<QString,QByteArray> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
-#define KIO_FILESIZE_T(x) (unsigned long)(x & 0xffffffff) << (unsigned long)(x >> 32)
+#define KIO_FILESIZE_T(x) qulonglong(x)
 
 namespace KIO {
 
@@ -122,7 +121,6 @@ public:
     struct timeval last_tv;
     KIO::filesize_t totalSize;
     KIO::filesize_t sentListEntries;
-    DCOPClient *dcopClient;
     KRemoteEncoding *remotefile;
     time_t timeout;
     QByteArray timeoutData;
@@ -131,7 +129,7 @@ public:
 }
 
 static SlaveBase *globalSlave;
-long SlaveBase::s_seqNr;
+qlonglong SlaveBase::s_seqNr;
 
 static volatile bool slaveWriteError = false;
 
@@ -227,7 +225,6 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->timeout = 0;
     connectSlave(mAppSocket);
 
-    d->dcopClient = 0;
     d->remotefile = 0;
 }
 
@@ -235,17 +232,6 @@ SlaveBase::~SlaveBase()
 {
     delete d;
     s_protocol = "";
-}
-
-DCOPClient *SlaveBase::dcopClient()
-{
-    if (!d->dcopClient)
-    {
-       d->dcopClient = KApplication::dcopClient();
-       if (!d->dcopClient->isAttached())
-          d->dcopClient->attach();
-    }
-    return d->dcopClient;
 }
 
 void SlaveBase::dispatchLoop()
@@ -798,39 +784,29 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     kDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
 
-    (void) dcopClient(); // Make sure to have a dcop client.
+    QDBusInterfacePtr kps( "org.kde.kded", "/modules/kpasswdserver" );
 
-    DCOPRef kps( "kded", "kpasswdserver" );
-    kps.setDCOPClient( d->dcopClient );
-
-    DCOPReply reply;
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream << info;
+    QDBusMessage reply;
 
     if (metaData("no-auth-prompt").toLower() == "true")
-       reply = kps.call("queryAuthInfo(KIO::AuthInfo, QString, long int, long int)", info,
-                QString("<NoAuthPrompt>"), windowId, s_seqNr);
+       reply = kps->call("queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
+                         qlonglong(windowId), s_seqNr);
     else
-       reply = kps.call("queryAuthInfo(KIO::AuthInfo, QString, long int, long int)", info,
-                errorMsg, windowId, s_seqNr);
+       reply = kps->call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr);
 
 
-    if ( !reply.isValid() )
+    if ( !reply.type() == QDBusMessage::ReplyMessage )
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
 
-    if ( reply.type == "KIO::AuthInfo" )
-    {
-       QDataStream stream2( reply.data );
-       stream2.setVersion(QDataStream::Qt_3_1);
-       stream2 >> authResult >> s_seqNr;
-    }
-    else
-    {
-       kError(7019) << "DCOP function queryAuthInfo(...) returns "
-                     << reply.type << ", expected KIO::AuthInfo" << endl;
-       return false;
-    }
+    QDataStream stream2( reply[0].toByteArray() );
+    stream2 >> authResult;
+    s_seqNr = reply[1].toLongLong();
 
     if (!authResult.isModified())
        return false;
@@ -1097,25 +1073,25 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
-    (void) dcopClient(); // Make sure to have a dcop client.
+    QDBusInterfacePtr kps( "org.kde.kded", "/modules/kpasswdserver" );
 
-    DCOPRef kps( "kded", "kpasswdserver" );
-    kps.setDCOPClient( d->dcopClient );
+    QByteArray data;
+    {
+       QDataStream stream(&data, QIODevice::WriteOnly);
+       stream << info;
+    }
+    QDBusReply<QByteArray> reply = kps->call("checkAuthInfo", data, qlonglong(windowId));
 
-    DCOPReply reply = kps.call("checkAuthInfo(KIO::AuthInfo, long int)",
-      info, windowId);
-
-    if ( !reply.isValid() )
+    if ( !reply.isSuccess() )
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
     }
 
-    if (!reply.get(authResult, "KIO::AuthInfo" ) )
+    data = reply.value();
     {
-       kError(7019) << "DCOP function checkAuthInfo(...) returns "
-                     << reply.type << ", expected KIO::AuthInfo" << endl;
-       return false;
+       QDataStream stream2(&data, QIODevice::ReadOnly);
+       stream2 >> authResult;
     }
     if (!authResult.isModified())
     {
@@ -1129,14 +1105,13 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )
 {
     QByteArray params;
-    long windowId = metaData("window-id").toLong();
-
-    (void) dcopClient(); // Make sure to have a dcop client.
+    qlonglong windowId = metaData("window-id").toLongLong();
 
     QDataStream stream(&params, QIODevice::WriteOnly);
-    stream << info << windowId;
+    stream << info;
 
-    d->dcopClient->send( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo, long int)", params );
+    QDBusInterfacePtr( "org.kde.kded", "/modules/kpasswdserver" )->
+       call("addAuthInfo", params, windowId);
 
     return true;
 }

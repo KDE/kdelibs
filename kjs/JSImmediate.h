@@ -205,7 +205,7 @@ private:
         if (JSImmediate::is32bit())
             return NaN32AsBits;
         else if (JSImmediate::is64bit())
-            return NaN64AsBits;
+            return (uintptr_t)NaN64AsBits;
         else {
             abort();
             return 0;

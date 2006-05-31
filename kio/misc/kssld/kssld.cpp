@@ -53,7 +53,7 @@
 // See design notes at end
 
 extern "C" {
-	KDE_EXPORT KDEDModule *create_kssld(const QByteArray &name) {
+	KDE_EXPORT KDEDModule *create_kssld(const QString &name) {
 		return new KSSLD(name);
 	}
 
@@ -62,8 +62,8 @@ extern "C" {
 
 template <> inline
 void KConfigBase::writeEntry( const char *pKey,
-                              const KSSLCertificateCache::KSSLCertificatePolicy& aValue,
-                              KConfigBase::WriteConfigFlags flags)
+							  const KSSLCertificateCache::KSSLCertificatePolicy& aValue,
+							  KConfigBase::WriteConfigFlags flags)
 {
   writeEntry(pKey, int(aValue), flags);
 }
@@ -80,14 +80,14 @@ static void updatePoliciesConfig(KConfig *cfg) {
 
 		// remove it if it has expired
 		if (!cfg->readEntry("Permanent", false) &&
-                     cfg->readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
+					 cfg->readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
 		}
 
 		QString encodedCertStr = cfg->readEntry("Certificate");
 		QByteArray encodedCert = encodedCertStr.toLocal8Bit();
-	       	KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
+			KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
 		if (!newCert) {
 			cfg->deleteGroup(*i);
 			continue;
@@ -117,7 +117,7 @@ static void updatePoliciesConfig(KConfig *cfg) {
 }
 
 
-KSSLD::KSSLD(const QByteArray &name) : KDEDModule(name)
+KSSLD::KSSLD(const QString &name) : KDEDModule(name)
 {
 // ----------------------- FOR THE CACHE ------------------------------------	
 	cfg = new KSimpleConfig("ksslpolicies", false);
@@ -190,7 +190,7 @@ KSSLCNode *node;
 							c != 0;
 							c = cl.next()) {
 				//kDebug() << "Certificate in chain: "
-				//	    <<  c->toString() << endl;
+				//		<<	c->toString() << endl;
 				qsl << c->toString();
 			}
 
@@ -255,10 +255,10 @@ QStringList groups = cfg->groupList();
 		KSSLCertificate *newCert;
 
 		encodedCert = cfg->readEntry("Certificate").toLocal8Bit();
-	       	newCert = KSSLCertificate::fromString(encodedCert);
+			newCert = KSSLCertificate::fromString(encodedCert);
 
 		if (!newCert) {
-		       continue;
+			   continue;
 		}
 
 		KSSLCNode *n = new KSSLCNode;
@@ -273,6 +273,12 @@ QStringList groups = cfg->groupList();
 	}
 }
 
+void KSSLD::cacheAddCertificate(QByteArray certData, int policy, bool permanent) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	cacheAddCertificate(cert, KSSLCertificateCache::KSSLCertificatePolicy(policy), permanent);
+}
 
 void KSSLD::cacheAddCertificate(KSSLCertificate cert, 
 			KSSLCertificateCache::KSSLCertificatePolicy policy,
@@ -312,7 +318,7 @@ KSSLCNode *node;
 }
 
 
-KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCN(QString cn) {
+int KSSLD::cacheGetPolicyByCN(QString cn) {
 KSSLCNode *node;
 	Q_FOREACH( node , certList ) {
 		if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
@@ -336,7 +342,13 @@ KSSLCNode *node;
 return KSSLCertificateCache::Unknown;
 }
 
-
+int KSSLD::cacheGetPolicyByCertificate(QByteArray certData) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheGetPolicyByCertificate(cert);
+}
+	
 KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCertificate(KSSLCertificate cert) {
 KSSLCNode *node;
 	Q_FOREACH( node , certList ) {
@@ -382,6 +394,12 @@ KSSLCNode *node;
 return false;
 }
 
+bool KSSLD::cacheSeenCertificate(QByteArray certData) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheSeenCertificate(cert);
+}
 
 bool KSSLD::cacheSeenCertificate(KSSLCertificate cert) {
 KSSLCNode *node;
@@ -405,6 +423,12 @@ KSSLCNode *node;
 return false;
 }
 
+bool KSSLD::cacheIsPermanent(QByteArray certData) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheIsPermanent(cert);
+}
 
 bool KSSLD::cacheIsPermanent(KSSLCertificate cert) {
 KSSLCNode *node;
@@ -466,6 +490,12 @@ bool gotOne = false;
 return gotOne;
 }
 
+bool KSSLD::cacheRemoveByCertificate(QByteArray certData) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheRemoveByCertificate(cert);
+}
 
 bool KSSLD::cacheRemoveByCertificate(KSSLCertificate cert) {
 KSSLCNode *node;
@@ -484,10 +514,15 @@ KSSLCNode *node;
 return false;
 }
 
+bool KSSLD::cacheModifyByCN(QString cn, int policy, bool permanent, qlonglong expires) {
+	QDateTime dt;
+	dt.setTime_t(expires);
+	return cacheModifyByCN(cn, KSSLCertificateCache::KSSLCertificatePolicy(policy), permanent, dt);
+}
 
 bool KSSLD::cacheModifyByCN(QString cn,
-                            KSSLCertificateCache::KSSLCertificatePolicy policy,                             bool permanent,
-                            QDateTime expires) {
+							KSSLCertificateCache::KSSLCertificatePolicy policy,								bool permanent,
+							QDateTime expires) {
 KSSLCNode *node;
 	Q_FOREACH( node , certList ) {
 		if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
@@ -504,11 +539,20 @@ KSSLCNode *node;
 return false;
 }
 
+bool KSSLD::cacheModifyByCertificate(QByteArray certData, int policy, bool permanent, qlonglong expires) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	QDateTime dt;
+	dt.setTime_t(expires);
+	return cacheModifyByCertificate(cert, KSSLCertificateCache::KSSLCertificatePolicy(policy),
+									permanent, dt);
+}
 
 bool KSSLD::cacheModifyByCertificate(KSSLCertificate cert,
-                             KSSLCertificateCache::KSSLCertificatePolicy policy,
-			     bool permanent,
-			     QDateTime expires) {
+							 KSSLCertificateCache::KSSLCertificatePolicy policy,
+				 bool permanent,
+				 QDateTime expires) {
 KSSLCNode *node;
 
 	Q_FOREACH( node , certList ) {
@@ -526,6 +570,12 @@ KSSLCNode *node;
 return false;
 }
 
+QStringList KSSLD::cacheGetHostList(QByteArray certData) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheGetHostList(cert);
+}
 
 QStringList KSSLD::cacheGetHostList(KSSLCertificate cert) {
 KSSLCNode *node;
@@ -533,7 +583,7 @@ KSSLCNode *node;
 	Q_FOREACH( node , certList ) {
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
-				       QDateTime::currentDateTime()) {
+					   QDateTime::currentDateTime()) {
 				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
@@ -551,6 +601,12 @@ KSSLCNode *node;
 return QStringList();
 }
 
+bool KSSLD::cacheAddHost(QByteArray certData, QString host) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheAddHost(cert, host);
+}
 
 bool KSSLD::cacheAddHost(KSSLCertificate cert, QString host) {
 KSSLCNode *node;
@@ -561,7 +617,7 @@ KSSLCNode *node;
 	Q_FOREACH( node , certList ) {
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
-				       	QDateTime::currentDateTime()) {
+						QDateTime::currentDateTime()) {
 				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
@@ -585,13 +641,20 @@ return false;
 }
 
 
+bool KSSLD::cacheRemoveHost(QByteArray certData, QString host) {
+	QDataStream stream(&certData, QIODevice::ReadOnly);
+	KSSLCertificate cert;
+	stream >> cert;
+	return cacheRemoveHost(cert, host);
+}
+
 bool KSSLD::cacheRemoveHost(KSSLCertificate cert, QString host) {
 KSSLCNode *node;
 
 	Q_FOREACH( node , certList ) {
 		if (cert == *(node->cert)) {
 			if (!node->permanent && node->expires <
-				       	QDateTime::currentDateTime()) {
+						QDateTime::currentDateTime()) {
 				certList.removeAll(node);
 				cfg->deleteGroup(node->cert->getMD5Digest());
 				searchRemoveCert(node->cert);
@@ -699,7 +762,7 @@ static QStringList caReadCerticatesFromFile(QString filename) {
 	QStringList certificates;
 	QString certificate;
 	QFile file(filename);
-        QByteArray temp(1000, 0);
+		QByteArray temp(1000, 0);
 
 	if (!file.open(QIODevice::ReadOnly))
 		return certificates;
@@ -889,7 +952,7 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 		QMap<QString, QVector<KSSLCertificate*> >::iterator it = skEmail.find(static_cast<const QString &>(*iter).toLower());
 
 		if (it == skEmail.end())
-		       break;
+			   break;
 
 		QVector<KSSLCertificate*> &elem = *it;
 
@@ -939,7 +1002,7 @@ KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
 ///////////////////////////////////////////////////////////////////////////
 
 //
-//  Certificate Home methods
+//	Certificate Home methods
 //
 
 QStringList KSSLD::getHomeCertificateList() {

@@ -178,31 +178,31 @@ target_link_libraries(kmemtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(kidlservertest_SRCS KIDLTest.cpp )
+#set(kidlservertest_SRCS KIDLTest.cpp )
 
-kde4_automoc(${kidlservertest_SRCS})
+#kde4_automoc(${kidlservertest_SRCS})
 
-kde4_add_dcop_skels(kidlservertest_SRCS KIDLTest.h)
+#kde4_add_dcop_skels(kidlservertest_SRCS KIDLTest.h)
 
-kde4_add_executable(kidlservertest NOGUI RUN_UNINSTALLED ${kidlservertest_SRCS})
+#kde4_add_executable(kidlservertest NOGUI RUN_UNINSTALLED ${kidlservertest_SRCS})
 
-target_link_libraries(kidlservertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+#target_link_libraries(kidlservertest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 #add_test(kdecore-kidlservertest ${EXECUTABLE_OUTPUT_PATH}/kidlservertest)
 
 ########### next target ###############
 
-set(kidlclienttest_SRCS KIDLTestClient.cpp )
+#set(kidlclienttest_SRCS KIDLTestClient.cpp )
 
-kde4_automoc(${kidlclienttest_SRCS})
+#kde4_automoc(${kidlclienttest_SRCS})
 
-set( kidlclienttest_DCOP_STUB_SRCS KIDLTest.h )
+#set( kidlclienttest_DCOP_STUB_SRCS KIDLTest.h )
 
-kde4_add_dcop_stubs(kidlclienttest_SRCS ${kidlclienttest_DCOP_STUB_SRCS})
+#kde4_add_dcop_stubs(kidlclienttest_SRCS ${kidlclienttest_DCOP_STUB_SRCS})
 
-kde4_add_executable(kidlclienttest NOGUI RUN_UNINSTALLED ${kidlclienttest_SRCS})
+#kde4_add_executable(kidlclienttest NOGUI RUN_UNINSTALLED ${kidlclienttest_SRCS})
 
-target_link_libraries(kidlclienttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+#target_link_libraries(kidlclienttest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 # add_test(kdecore-kidlclienttest ${EXECUTABLE_OUTPUT_PATH}/kidlclienttest)
 

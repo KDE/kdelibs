@@ -8,9 +8,7 @@ kwallet.cc
 
 kde4_automoc(${kwalletclient_LIB_SRCS})
 
-set( kwalletclient_DCOP_SKEL_SRCS
-kwallet.h
-)
+add_definitions(${QDBUS_DEFINITIONS})
 
 kde4_add_dcop_skels(kwalletclient_LIB_SRCS ${kwalletclient_DCOP_SKEL_SRCS})
 
@@ -23,7 +21,7 @@ install_targets(${LIB_INSTALL_DIR} kwalletclient )
 
 
 ########### install files ###############
-install_files( /include FILES kwallet.h kwallettypes.h )
+install_files( /include FILES kwallet.h )
 
 
 

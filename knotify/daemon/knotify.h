@@ -22,13 +22,13 @@
 #define KNOTIFY_H
 
 #include <QObject>
-#include <dcopobject.h>
 #include <QPixmap>
 #include <QHash>
 #include <QString>
 #include <QList>
 #include <QPair>
 
+#include <dbus/qdbus.h>
 
 typedef QHash<QString,QString> Dict;
 typedef QList< QPair<QString,QString> > ContextList;
@@ -36,25 +36,23 @@ typedef QList< QPair<QString,QString> > ContextList;
 class KNotifyPlugin;
 
 
-class KNotify : public QObject, public DCOPObject
+class KNotify : public QObject
 {
 	Q_OBJECT
-	K_DCOP
 
 	public:
 		KNotify(QObject *parent=0l);
 		~KNotify();
 		void addPlugin( KNotifyPlugin *p );
 
-	protected:
-	k_dcop:
+	public Q_SLOTS:
 	
 		void reconfigure();
 		void closeNotification( int id);
 		
 		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
-	k_dcop_signals: protected Q_SLOTS: 
+	Q_SIGNALS:
 		void notificatonClosed( int id);
 		void actionInvoked(int id,int action);
 		
@@ -75,6 +73,24 @@ class KNotify : public QObject, public DCOPObject
 		void loadConfig();
 };
 
+class KNotifyAdaptor : public QDBusAbstractAdaptor
+{
+	Q_OBJECT
+	Q_CLASSINFO("D-Bus Interface", "org.kde.KNotify")
+	public:
+		KNotifyAdaptor(QObject *parent);
+
+	public Q_SLOTS:
+	
+		void reconfigure();
+		void closeNotification( int id);
+		
+		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
+				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
+	Q_SIGNALS:
+		void notificatonClosed( int id);
+		void actionInvoked(int id,int action);
+};
 
 #endif
 

@@ -30,11 +30,11 @@
 #include <kurl.h>
 #include <kio/global.h>
 #include <kdirwatch.h>
-#include <dcopclient.h>
 
 class QTimer;
 class KDirLister;
 namespace KIO { class Job; class ListJob; }
+class OrgKdeKDirNotifyInterface;
 
 
 class KDirLister::KDirListerPrivate
@@ -123,7 +123,7 @@ public:
  * a URL -> dirlister holding that URL (urlsCurrentlyHeld)
  * a URL -> dirlister currently listing that URL (urlsCurrentlyListed)
  */
-class KDirListerCache : public QObject, KDirNotify
+class KDirListerCache : public QObject
 {
   friend class KDirLister;
 
@@ -136,13 +136,14 @@ public:
   KFileItem *itemForURL( const KUrl& url ) const;
   KFileItemList *itemsForDir( const KUrl& dir ) const;
 
+public slots:
   /**
    * Notify that files have been added in @p directory
    * The receiver will list that directory again to find
    * the new items (since it needs more than just the names anyway).
    * Reimplemented from KDirNotify.
    */
-  virtual void FilesAdded( const KUrl& directory );
+  void FilesAdded( const KUrl& directory );
 
   /**
    * Notify that files have been deleted.
@@ -151,7 +152,7 @@ public:
    * or be closed (if its current dir was deleted)
    * Reimplemented from KDirNotify.
    */
-  virtual void FilesRemoved( const KUrl::List& fileList );
+  void FilesRemoved( const KUrl::List& fileList );
 
   /**
    * Notify that files have been changed.
@@ -159,9 +160,10 @@ public:
    * used for size etc. as well.
    * Note: this is ASYNC so that it can be used with a broadcast
    */
-  virtual void FilesChanged( const KUrl::List& fileList );
-  virtual void FileRenamed( const KUrl& src, const KUrl& dst );
+  void FilesChanged( const KUrl::List& fileList );
+  void FileRenamed( const KUrl& src, const KUrl& dst );
 
+public:
   static KDirListerCache *self();
 
 protected:
@@ -252,13 +254,10 @@ private:
 
     void sendSignal( bool entering, const KUrl& url )
     {
-      DCOPClient *client = DCOPClient::mainClient();
-      if ( !client )
-        return;
-      QByteArray data;
-      QDataStream arg( &data, QIODevice::WriteOnly );
-      arg << url;
-      client->emitDCOPSignal( "KDirNotify", entering ? "enteredDirectory(KUrl)" : "leftDirectory(KUrl)", data );
+      if (entering)
+        org::kde::KDirNotify::emitEnteredDirectory( url.url() );
+      else
+        org::kde::KDirNotify::emitLeftDirectory( url.url() );
     }
 
     void redirect( const KUrl& newUrl )
@@ -343,6 +342,9 @@ private:
 
   // running timers for the delayed update
   Q3Dict<QTimer> pendingUpdates;
+
+  // the KDirNotify signals
+  OrgKdeKDirNotifyInterface *kdirnotify;
 
   static KDirListerCache *s_pSelf;
 };

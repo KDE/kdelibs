@@ -24,7 +24,6 @@
 #include <qwidget.h>
 #include <qstringlist.h>
 
-#include <dcopclient.h>
 #include <kservice.h>
 #include <kdelibs_export.h>
 
@@ -222,7 +221,8 @@ public:
 	 * Returns the DCOP the module's DCOPClient
 	 * and DCOPObject has(they are identical).
 	 */
-	QByteArray dcopName() const;
+	QString dbusService() const;
+	QString dbusPath() const;
 
 public Q_SLOTS:
 
@@ -299,7 +299,7 @@ private Q_SLOTS:
 	*
 	* @param function the function signature of the function to call.
 	*/
-	void callRootModule( const QByteArray& function );
+	void callRootModule( const QString& function );
 
 	/**
 	 * This is called when the module exits from root mode. It zeroes
@@ -322,7 +322,7 @@ private Q_SLOTS:
 	 * Is used to (try to) reload a KCM which previously
 	 * was loaded.
 	 */
-	void applicationRemoved( const QByteArray& app );
+	void ownerChanged( const QString &service, const QString &oldOwner, const QString &newOwner );
 
 private:
 

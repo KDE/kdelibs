@@ -26,10 +26,10 @@
 
 #include <kdedmodule.h>
 #include <kurl.h>
+#include <dbus/qdbus.h>
 
 #include <time.h>
 
-class DCOPClientTransaction;
 class KInstance;
 
 namespace KPAC
@@ -40,15 +40,15 @@ namespace KPAC
     class ProxyScout : public KDEDModule
     {
         Q_OBJECT
-        K_DCOP
+        Q_CLASSINFO("D-Bus Interface", "org.kde.KPAC.ProxyScout")
     public:
-        ProxyScout( const QByteArray& );
+        ProxyScout( const QString& );
         virtual ~ProxyScout();
 
-    k_dcop:
-        QString proxyForURL( const KUrl& url );
-        ASYNC blackListProxy( const QString& proxy );
-        ASYNC reset();
+    public Q_SLOTS:
+        Q_SCRIPTABLE QString proxyForURL( const KUrl& url, const QDBusMessage & );
+        Q_SCRIPTABLE Q_ASYNC void blackListProxy( const QString& proxy );
+        Q_SCRIPTABLE Q_ASYNC void reset();
 
     private Q_SLOTS:
         void downloadResult( bool );
@@ -63,10 +63,10 @@ namespace KPAC
 
         struct QueuedRequest
         {
-            QueuedRequest() : transaction( 0 ) {}
-            QueuedRequest( const KUrl& );
+            QueuedRequest() {}
+            QueuedRequest( const QDBusMessage&, const KUrl& );
 
-            DCOPClientTransaction* transaction;
+            QDBusMessage transaction;
             KUrl url;
         };
         typedef QList< QueuedRequest > RequestQueue;

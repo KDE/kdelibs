@@ -15,10 +15,6 @@ set(kded_proxyscout_PART_SRCS
 
 kde4_automoc(${kded_proxyscout_PART_SRCS})
 
-set( kded_proxyscout_DCOP_SKEL_SRCS proxyscout.h )
-
-kde4_add_dcop_skels(kded_proxyscout_PART_SRCS ${kded_proxyscout_DCOP_SKEL_SRCS})
-
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
 target_link_libraries(kded_proxyscout  ${KDE4_KDECORE_LIBS} kio kjs )

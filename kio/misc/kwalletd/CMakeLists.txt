@@ -18,10 +18,6 @@ kde4_add_ui_files(kded_kwalletd_PART_SRCS
    kbetterthankdialogbase.ui
 )
 
-set( kded_kwalletd_DCOP_SKEL_SRCS kwalletd.h )
-
-kde4_add_dcop_skels(kded_kwalletd_PART_SRCS ${kded_kwalletd_DCOP_SKEL_SRCS})
-
 kde4_add_plugin(kded_kwalletd ${kded_kwalletd_PART_SRCS})
 
 target_link_libraries(kded_kwalletd  ${KDE4_KDECORE_LIBS} kio kwalletbackend kwalletclient )

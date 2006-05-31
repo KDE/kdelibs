@@ -43,7 +43,6 @@
 #include "rendering/render_object.h"
 #include "dom/dom_exception.h"
 
-#include <dcopclient.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kurl.h>
@@ -51,6 +50,7 @@
 #include <kcharsets.h>
 #include <kglobalsettings.h>
 #include <ktoolinvocation.h>
+#include <dbus/qdbus.h>
 
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
@@ -114,24 +114,18 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    DCOPRef   kcookiejar("kcookiejar", "kcookiejar");
-    DCOPReply reply = kcookiejar.call("findDOMCookies(QString,long int)",
-                  URL().url(), windowId);
+    QDBusInterfacePtr kcookiejar("org.kde.kded", "/modules/kcookiejar",
+                                 "org.kde.KCookieServer");
+    QDBusReply<QString> reply = kcookiejar->call("findDOMCookies",
+                                                 URL().url(), qlonglong(windowId));
 
-    if ( !reply.isValid() )
+    if ( !reply.isSuccess() )
     {
        kWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
     }
 
-    QString result;
-    if ( !reply.get(result, "QString") ) {
-         kError(6010) << "DCOP function findDOMCookies(...) returns "
-                       << reply.type << ", expected QString" << endl;
-         return DOMString();
-    }
-
-    return DOMString(result);
+    return DOMString(reply.value());
 }
 
 void HTMLDocumentImpl::setCookie( const DOMString & value )
@@ -142,21 +136,24 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    QByteArray params;
-    QDataStream stream(&params, QIODevice::WriteOnly);
-    QByteArray fake_header("Set-Cookie: ");
+    QString fake_header("Set-Cookie: ");
     fake_header.append(value.string().toLatin1().constData());
     fake_header.append("\n");
-    stream << URL().url() << fake_header << windowId;
-    if (!KApplication::dcopClient()->send("kcookiejar", "kcookiejar",
-                                  "addCookies(QString,QCString,long int)", params))
+    QDBusInterface *kcookiejar =
+        QDBus::sessionBus().findInterface("org.kde.kded", "/modules/kcookiejar",
+                                          "org.kde.KCookieServer");
+    if (!kcookiejar->isValid())
     {
          // Maybe it wasn't running (e.g. we're opening local html files)
          KToolInvocation::startServiceByDesktopName( "kcookiejar");
-         if (!KApplication::dcopClient()->send("kcookiejar", "kcookiejar",
-                                       "addCookies(QString,QCString,long int)", params))
-             kWarning(6010) << "Can't communicate with cookiejar!" << endl;
+         kcookiejar = QDBus::sessionBus().findInterface("org.kde.kded", "/modules/kcookiejar",
+                                                        "org.kde.KCookieServer");
     }
+
+    kcookiejar->call(QDBusInterface::NoWaitForReply, "addCookies",
+                     URL().url(), fake_header, qlonglong(windowId));
+
+    delete kcookiejar;
 }
 
 

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002 Andreas Beckermann (b_mann@gmx.de)
+    Copyright (C) 2006 Thiago Macieira <thiago@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,34 +18,29 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDEBUGDCOPIFACE_H
-#define KDEBUGDCOPIFACE_H
+#include "kdebugdbusiface_p.h"
+#include <dbus/qdbus.h>
+#include "kdebug.h"
 
-#include <dcopobject.h>
-#include <kdelibs_export.h>
-
-/**
- * @short DCOP interface to KDebug.
- **/
-class KDECORE_EXPORT KDebugDCOPIface : virtual public DCOPObject
+KDebugDBusIface::KDebugDBusIface()
 {
-	K_DCOP
-public:
-	KDebugDCOPIface();
-	~KDebugDCOPIface();
+    QDBus::sessionBus().registerObject("/KDebug", this, QDBusConnection::ExportSlots);
+    QDBus::sessionBus().connect(QString(), QString(), "org.kde.KDebug",
+                                "configChanged", this, SLOT(notifyKDebugConfigChanged));
+}
 
-k_dcop:
-	/**
-	 * The kdebugrc has been changed and should be reparsed now.
-	 * This will simply call kClearDebugConfig
-	 **/
-	void notifyKDebugConfigChanged();
+KDebugDBusIface::~KDebugDBusIface()
+{
+}
 
-	/**
-	 * Print out a kBacktrace. Useful when trying to understand why
-	 * a dialog is popping up, without having to launch gdb
-	 */
-	void printBacktrace();
-};
+void KDebugDBusIface::notifyKDebugConfigChanged()
+{
+    kClearDebugConfig();
+}
 
-#endif
+void KDebugDBusIface::printBacktrace()
+{
+    kDebug() << kBacktrace() << endl;
+}
+
+#include "kdebugdbusiface_p.moc"

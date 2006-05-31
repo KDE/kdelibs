@@ -15,11 +15,9 @@
 #include <unistd.h>
 
 #include <qglobal.h>
-#include <kdatastream.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
-#include <dcopclient.h>
 
 #include "stub.h"
 #include "kcookie.h"
@@ -32,7 +30,6 @@ StubProcess::StubProcess()
     m_Priority = 50;
     m_pCookie = new KCookie;
     m_bXOnly = true;
-    m_bDCOPForwarding = false;
 }
 
 
@@ -65,7 +62,7 @@ QByteArray StubProcess::commaSeparatedList(const QList<QByteArray> &lst)
 
 /*
  * Conversation with kdesu_stub. This is how we pass the authentication
- * tokens (X11, DCOP) and other stuff to kdesu_stub.
+ * tokens (X11) and other stuff to kdesu_stub.
  * return values: -1 = error, 0 = ok, 1 = kill me
  */
 
@@ -92,21 +89,6 @@ int StubProcess::ConverseStub(int check)
 #else
 	    writeLine("");
 #endif
-	} else if (line == "dcopserver") {
-	    if (m_bDCOPForwarding)
-	       writeLine(dcopServer());
-	    else
-	       writeLine("no");
-	} else if (line == "dcop_auth") {
-	    if (m_bDCOPForwarding)
-	       writeLine(dcopAuth());
-	    else
-	       writeLine("no");
-	} else if (line == "ice_auth") {
-	    if (m_bDCOPForwarding)
-	       writeLine(iceAuth());
-	    else
-	       writeLine("no");
 	} else if (line == "command") {
 	    writeLine(m_Command);
 	} else if (line == "path") {

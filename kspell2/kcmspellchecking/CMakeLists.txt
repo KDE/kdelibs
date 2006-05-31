@@ -1,5 +1,5 @@
 
-
+add_definitions( ${QDBUS_DEFINITIONS} )
 
 ########### next target ###############
 

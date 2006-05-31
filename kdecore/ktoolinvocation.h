@@ -26,11 +26,10 @@
 #include "kdelibs_export.h"
 
 #include "kurl.h"
-#include <QObject>
-#include <QByteArray>
-#include <QStringList>
-
-class DCOPClient;
+#include "klauncher_iface.h"
+#include <QtCore/QObject>
+#include <QtCore/QByteArray>
+#include <QtCore/QStringList>
 
 /**
  *The static members (exception is the self() member, have to be called from the QApplication main thread.
@@ -47,8 +46,6 @@ private:
 	KToolInvocation(QObject *parent);
 	~KToolInvocation();
 	static KToolInvocation *s_self;
-	DCOPClient *m_dcopClient;
-	static DCOPClient *dcopClient();
 public:
 	static KToolInvocation *self();
 public Q_SLOTS:
@@ -123,11 +120,10 @@ public Q_SLOTS:
 
 public:
   /**
-   * Returns the DCOP name of the service launcher. This will be something like
-   * klaucher_$host_$uid.
-   * @return the name of the service launcher
+   * Returns the DBus interface of the service launcher.
+   * The returned object is owned by KApplication, do not delete it!
    */
-  static QByteArray launcher();
+  static org::kde::KLauncher *klauncher();
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -138,7 +134,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name
+   * @param serviceName On success, @p serviceName contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -150,7 +146,8 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QString &URL,
-                QString *error=0, QByteArray *dcopService=0, int *pid=0, const QByteArray &startup_id = "", bool noWait = false );
+                                 QString *error=0, QString *serviceNAme=0, int *pid=0,
+                                 const QByteArray &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -161,7 +158,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name
+   * @param serviceName On success, @p serviceName contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -173,7 +170,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QByteArray *dcopService=0, int *pid=0, const QByteArray &startup_id = "", bool noWait = false );
+                QString *error=0, QString *serviceName=0, int *pid=0, const QByteArray &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -184,7 +181,7 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name
+   * @param serviceName On success, @p serviceName contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -196,7 +193,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
-                QString *error=0, QByteArray *dcopService=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
+                QString *error=0, QString *serviceName=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop path of the service.
@@ -206,7 +203,7 @@ public:
    * @param URLs if not empty these URLs will be passed to the service
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
-   *         ignored   * @param dcopService On success, @p dcopService contains the DCOP name
+   *         ignored   * @param serviceName On success, @p serviceName contains the DCOP name
    *         under which this service is available. If empty, the service does
    *         not provide DCOP services. If the pointer is 0 the argument
    *         will be ignored
@@ -218,7 +215,7 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QByteArray *dcopService=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
+                QString *error=0, QString *serviceName=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -229,9 +226,9 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name
+   * @param serviceName On success, @p serviceName contains the D-Bus service name
    *         under which this service is available. If empty, the service does
-   *         not provide DCOP services. If the pointer is 0 the argument
+   *         not provide D-Bus services. If the pointer is 0 the argument
    *         will be ignored
    * @param pid On success, the process id of the new service will be written
    *        here. If the pointer is 0, the argument will be ignored.
@@ -241,7 +238,8 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
-                QString *error=0, QByteArray *dcopService=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
+                                        QString *error=0, QString *serviceName=0, int *pid = 0,
+                                        const QByteArray &startup_id = "", bool noWait = false );
 
   /**
    * Starts a service based on the desktop name of the service.
@@ -252,9 +250,9 @@ public:
    * @param error On failure, @p error contains a description of the error
    *         that occurred. If the pointer is 0, the argument will be
    *         ignored
-   * @param dcopService On success, @p dcopService contains the DCOP name
+   * @param serviceName On success, @p serviceName contains the D-Bus service name
    *         under which this service is available. If empty, the service does
-   *         not provide DCOP services. If the pointer is 0 the argument
+   *         not provide D-Bus services. If the pointer is 0 the argument
    *         will be ignored
    * @param pid On success, the process id of the new service will be written
    *        here. If the pointer is 0, the argument will be ignored.
@@ -264,7 +262,8 @@ public:
    * @return an error code indicating success (== 0) or failure (> 0).
    */
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
-                QString *error=0, QByteArray *dcopService=0, int *pid = 0, const QByteArray &startup_id = "", bool noWait = false );
+                                        QString *error=0, QString *serviceName=0, int *pid = 0,
+                                        const QByteArray &startup_id = "", bool noWait = false );
 
   /**
    * Starts a program via kdeinit.

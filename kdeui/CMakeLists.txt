@@ -3,6 +3,7 @@ project(kdeui)
 
 include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces )
 include_directories( ${KDE4_KDECORE_INCLUDES} )
+add_definitions(${QDBUS_DEFINITIONS})
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
@@ -95,7 +96,6 @@ set(kdeui_LIB_SRCS
  krootpixmap.cpp
  kaboutkde.cpp
  kaboutapplication.cpp
- kdcopactionproxy.cpp
  kcolorcombo.cpp
  kpushbutton.cpp
  kcompletionbox.cpp
@@ -170,8 +170,6 @@ set( kdeui_UI
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
-kde4_add_dcop_skels(kdeui_LIB_SRCS kmainwindowiface.h knotificationmanager.h )
-
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
@@ -197,7 +195,6 @@ install_files( /include FILES
  ktabctl.h
  kstatusbar.h
  kmainwindow.h
- kmainwindowiface.h
  ktoolbar.h
  kmenubar.h
  knuminput.h
@@ -264,7 +261,6 @@ install_files( /include FILES
  kaboutkde.h
  kaboutapplication.h
  kpushbutton.h
- kdcopactionproxy.h
  kcolorcombo.h
  kcompletionbox.h
  ksqueezedtextlabel.h

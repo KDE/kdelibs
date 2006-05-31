@@ -56,7 +56,7 @@ void debug(const char *format, const char *txt)
 //
 int main(int argc, char *argv[])
 {
-   KApplication::disableAutoDcopRegistration();
+   //KApplication::disableAutoDcopRegistration();
    KCmdLineArgs::init(argc,argv,"ksycocatest", 0, 0, 0, 0);
    KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 

@@ -17,7 +17,7 @@
 */
 #include "kdrawutil.h"
 #include <qdrawutil.h>
-#include <QPolygon>
+#include <QtGui/QPolygon>
 
 KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,
                      const QPalette &pal, bool sunken,

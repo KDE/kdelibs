@@ -20,9 +20,10 @@
 
 */
 
-#include <qtimer.h>
-
 #include "kdedmodule.h"
+#include <qtimer.h>
+#include <dbus/qdbus.h>
+
 #include "kconfigdata.h"
 
 #if 0 // KDED_OBJECTS
@@ -32,6 +33,7 @@ typedef QMap<KEntryKey, KSharedPtr<KShared> > KDEDObjectMap;
 class KDEDModulePrivate
 {
 public:
+  QString moduleName;
 #if 0 // KDED_OBJECTS
   KDEDObjectMap *objMap;
   int timeout;
@@ -39,7 +41,8 @@ public:
 #endif
 };
 
-KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name),d(new KDEDModulePrivate)
+KDEDModule::KDEDModule(const QString &moduleName)
+    : d(new KDEDModulePrivate)
 {
 #if 0 // KDED_OBJECTS
    d->objMap = 0;
@@ -47,12 +50,20 @@ KDEDModule::KDEDModule(const DCOPCString &name) : QObject(), DCOPObject(name),d(
    d->timer.setSingleShot( true );
    connect(&(d->timer), SIGNAL(timeout()), this, SLOT(idle()));
 #endif
+   QString realPath = d->moduleName = moduleName;
+   realPath.prepend("/modules/");
+   QDBus::sessionBus().registerObject(realPath, this, QDBusConnection::ExportContents | QDBusConnection::ExportAdaptors);
 }
 
 KDEDModule::~KDEDModule()
 {
    emit moduleDeleted(this);
    delete d; 
+}
+
+QString KDEDModule::moduleName() const
+{
+   return d->moduleName;
 }
 
 #if 0 // see header (grep keyword: KDED_OBJECTS)

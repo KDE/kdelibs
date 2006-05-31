@@ -23,7 +23,6 @@
 
 #include "kio/job.h"
 
-#include <kdirnotify_stub.h>
 #include <kglobal.h>
 
 #include <klocale.h>

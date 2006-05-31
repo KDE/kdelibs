@@ -18,20 +18,22 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "kwallettypes.h"
 #include "kwallet.h"
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdeversion.h>
-#include <dcopclient.h>
-#include <dcopref.h>
 #include <qapplication.h>
 #include <qwidget.h>
+#include <dbus/qdbus.h>
 
 #include <assert.h>
 
 using namespace KWallet;
 
+static QDBusInterface* findWallet()
+{
+	return QDBus::sessionBus().findInterface("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
+}
 
 const QString Wallet::LocalWallet() {
 	KConfig cfg("kwalletrc", true);
@@ -73,31 +75,27 @@ const QString Wallet::FormDataFolder() {
 
 
 Wallet::Wallet(int handle, const QString& name)
-: QObject(0L), DCOPObject(), d(0L), _name(name), _handle(handle) {
+: QObject(0L), d(0L), _name(name), _handle(handle) {
 
-	_dcopRef = new DCOPRef("kded", "kwalletd");
+	_wallet = findWallet();
+	_wallet->setParent(this);
 
-	_dcopRef->dcopClient()->setNotifications(true);
-	connect(_dcopRef->dcopClient(),
-			SIGNAL(applicationRemoved(const QByteArray&)),
+	connect(QDBus::sessionBus().busService(),
+			SIGNAL(nameLost(QString)),
 			this,
-			SLOT(slotAppUnregistered(const QByteArray&)));
+			SLOT(slotAppUnregistered(QString)));
 
-	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "walletClosed(int)", "slotWalletClosed(int)", false);
-	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderListUpdated(QString)", "slotFolderListUpdated(QString)", false);
-	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "folderUpdated(QString, QString)", "slotFolderUpdated(QString, QString)", false);
-	connectDCOPSignal(_dcopRef->app(), _dcopRef->obj(), "applicationDisconnected(QString, QCString)", "slotApplicationDisconnected(QString, QCString)", false);
+	connect(_wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
+	connect(_wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
+	connect(_wallet, SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
+	connect(_wallet, SIGNAL(applicationDisconnected(QString, QCString)), SLOT(slotApplicationDisconnected(QString, QCString)));
 
 	// Verify that the wallet is still open
 	if (_handle != -1) {
-		DCOPReply r = _dcopRef->call("isOpen", _handle);
-		if (r.isValid()) {
-			bool rc = false;
-			r.get(rc);
-			if (!rc) {
-				_handle = -1;
-				_name.clear();
-			}
+		QDBusReply<bool> r = _wallet->call("isOpen", _handle);
+		if (r.isSuccess() && !r) {
+			_handle = -1;
+			_name.clear();
 		}
 	}
 }
@@ -105,67 +103,58 @@ Wallet::Wallet(int handle, const QString& name)
 
 Wallet::~Wallet() {
 	if (_handle != -1) {
-		_dcopRef->call("close", _handle, false);
+		_wallet->call("close", _handle, false);
 		_handle = -1;
 		_folder.clear();
 		_name.clear();
 	}
-
-	delete _dcopRef;
-	_dcopRef = 0L;
 }
 
 
 QStringList Wallet::walletList() {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("wallets");
-	QStringList rc;
-	if (r.isValid()) {
-		r.get(rc);
-	}
-	return rc;
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<QStringList> r = wallet->call("wallets");
+	return r;					// default is QStringList()
 }
 
 
 void Wallet::changePassword(const QString& name, WId w) {
-	DCOPRef("kded", "kwalletd").send("changePassword", name, uint(w));
+	QDBusInterfacePtr wallet(findWallet());
+	wallet->call("changePassword", name, qlonglong(w));
 }
 
 
 bool Wallet::isEnabled() {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("isEnabled");
-	bool rc = false;
-	if (r.isValid()) {
-		r.get(rc);
-	}
-	return rc;
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<bool> r = wallet->call("isEnabled");
+	return r;					// default is false
 }
 
 
 bool Wallet::isOpen(const QString& name) {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("isOpen", name);
-	bool rc = false;
-	if (r.isValid()) {
-		r.get(rc);
-	}
-	return rc;
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<bool> r = wallet->call("isOpen", name);
+	return r;					// default is false
 }
 
 
 int Wallet::closeWallet(const QString& name, bool force) {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("close", name, force);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<int> r = wallet->call("close", name, force);
 	int rc = -1;
-	if (r.isValid()) {
-		r.get(rc);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 	return rc;
 }
 
 
 int Wallet::deleteWallet(const QString& name) {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("deleteWallet", name);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<int> r = wallet->call("deleteWallet", name);
 	int rc = -1;
-	if (r.isValid()) {
-		r.get(rc);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 	return rc;
 }
@@ -174,26 +163,25 @@ int Wallet::deleteWallet(const QString& name) {
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 	if (ot == Asynchronous) {
 		Wallet *wallet = new Wallet(-1, name);
-		DCOPRef("kded", "kwalletd").send("openAsynchronous", name, wallet->objId(), uint(w));
+
+		// place an asynchronous call
+		QVariantList args;
+		args << name << qlonglong(w);
+		wallet->_wallet->callWithArgs("open", wallet, SLOT(walletOpenResult(int)), args);
+
 		return wallet;
 	}
 
-        // avoid deadlock if the app has some popup open (#65978/#71048)
-        while( QWidget* widget = qApp->activePopupWidget())
-            widget->close();
+		// avoid deadlock if the app has some popup open (#65978/#71048)
+		while( QWidget* widget = qApp->activePopupWidget())
+			widget->close();
 
 	bool isPath = ot == Path;
-	DCOPReply r;
-
-	if (isPath) {
-		r = DCOPRef("kded", "kwalletd").call("openPath", name, uint(w));
-	} else {
-		r = DCOPRef("kded", "kwalletd").call("open", name, uint(w));
-	}
-
-	if (r.isValid()) {
-		int drc = -1;
-		r.get(drc);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<int> r = wallet->call(isPath ? "openPath" : "open",
+									 name, qlonglong(w));
+	if (r.isSuccess()) {
+		int drc = r;
 		if (drc != -1) {
 			return new Wallet(drc, name);
 		}
@@ -203,23 +191,17 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 }
 
 
-bool Wallet::disconnectApplication(const QString& wallet, const DCOPCString& app) {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("disconnectApplication", wallet, app);
-	bool rc = false;
-	if (r.isValid()) {
-		r.get(rc);
-	}
-	return rc;
+bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
+	QDBusInterfacePtr w(findWallet());
+	QDBusReply<bool> r = w->call("disconnectApplication", wallet, app);
+	return r;					// default is false
 }
 
 
 QStringList Wallet::users(const QString& name) {
-	DCOPReply r = DCOPRef("kded", "kwalletd").call("users", name);
-	QStringList drc;
-	if (r.isValid()) {
-		r.get(drc);
-	}
-	return drc;
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<QStringList> r = wallet->call("users", name);
+	return r;				  // default is QStringList()
 }
 
 
@@ -228,7 +210,7 @@ int Wallet::sync() {
 		return -1;
 	}
 
-	_dcopRef->call("sync", _handle);
+	_wallet->call("sync", _handle);
 	return 0;
 }
 
@@ -238,14 +220,12 @@ int Wallet::lockWallet() {
 		return -1;
 	}
 
-	DCOPReply r = _dcopRef->call("close", _handle, true);
+	QDBusReply<int> r = _wallet->call("close", _handle, true);
 	_handle = -1;
 	_folder.clear();
 	_name.clear();
-	if (r.isValid()) {
-		int drc = -1;
-		r.get(drc);
-		return drc;
+	if (r.isSuccess()) {
+		return r;
 	}
 	return -1;
 }
@@ -266,7 +246,7 @@ void Wallet::requestChangePassword(WId w) {
 		return;
 	}
 
-	_dcopRef->send("changePassword", _name, uint(w));
+	_wallet->call("changePassword", _name, qlonglong(w));
 }
 
 
@@ -281,68 +261,46 @@ void Wallet::slotWalletClosed(int handle) {
 
 
 QStringList Wallet::folderList() {
-	QStringList rc;
-
 	if (_handle == -1) {
-		return rc;
+		return QStringList();
 	}
 
-	DCOPReply r = _dcopRef->call("folderList", _handle);
-	if (r.isValid()) {
-		r.get(rc);
-	}
-
-	return rc;
+	QDBusReply<QStringList> r = _wallet->call("folderList", _handle);
+	return r;
 }
 
 
 QStringList Wallet::entryList() {
-	QStringList rc;
-
 	if (_handle == -1) {
-		return rc;
+		return QStringList();
 	}
 
-	DCOPReply r = _dcopRef->call("entryList", _handle, _folder);
-	if (r.isValid()) {
-		r.get(rc);
-	}
-
-	return rc;
+	QDBusReply<QStringList> r = _wallet->call("entryList", _handle, _folder);
+	return r;
 }
 
 
 bool Wallet::hasFolder(const QString& f) {
-	bool rc = false;
-
 	if (_handle == -1) {
-		return rc;
+		return false;
 	}
 
-	DCOPReply r = _dcopRef->call("hasFolder", _handle, f);
-	if (r.isValid()) {
-		r.get(rc);
-	}
-
-	return rc;
+	QDBusReply<bool> r = _wallet->call("hasFolder", _handle, f);
+	return r;					// default is false
 }
 
 
 bool Wallet::createFolder(const QString& f) {
-	bool rc = true;
-
 	if (_handle == -1) {
 		return false;
 	}
 
 	if (!hasFolder(f)) {
-		DCOPReply r = _dcopRef->call("createFolder", _handle, f);
-		if (r.isValid()) {
-			r.get(rc);
-		}
+		QDBusReply<bool> r = _wallet->call("createFolder", _handle, f);
+		return r;
 	}
 
-	return rc;
+	return true;				// folder already exists
 }
 
 
@@ -370,22 +328,16 @@ bool Wallet::setFolder(const QString& f) {
 
 
 bool Wallet::removeFolder(const QString& f) {
-	bool rc = false;
-
 	if (_handle == -1) {
-		return rc;
+		return false;
 	}
 
-	DCOPReply r = _dcopRef->call("removeFolder", _handle, f);
-	if (r.isValid()) {
-		r.get(rc);
-	}
-
+	QDBusReply<bool> r = _wallet->call("removeFolder", _handle, f);
 	if (_folder == f) {
 		setFolder(QString());
 	}
 
-	return rc;
+	return r;					// default is false
 }
 
 
@@ -401,9 +353,9 @@ int Wallet::readEntry(const QString& key, QByteArray& value) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("readEntry", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(value);
+	QDBusReply<QByteArray> r = _wallet->call("readEntry", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value = r;
 		rc = 0;
 	}
 
@@ -418,10 +370,15 @@ int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) 
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("readEntryList", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(value);
+	QDBusReply<QVariantMap> r = _wallet->call("readEntryList", _handle, _folder, key);
+	if (r.isSuccess()) {
 		rc = 0;
+		value.clear();
+
+		// convert QMap<QString, QVariant> to QMap<QString, QByteArray>
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it)
+			value.insert(it.key(), it.value().toByteArray());
 	}
 
 	return rc;
@@ -435,9 +392,9 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("renameEntry", _handle, _folder, oldName, newName);
-	if (r.isValid()) {
-		r.get(rc);
+	QDBusReply<int> r = _wallet->call("renameEntry", _handle, _folder, oldName, newName);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return rc;
@@ -451,14 +408,14 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("readMap", _handle, _folder, key);
-	if (r.isValid()) {
-		QByteArray v;
-		r.get(v);
-		if (!v.isEmpty()) {
-			QDataStream ds(v);
-			ds >> value;
-		}
+	QDBusReply<QVariantMap> r = _wallet->call("readMap", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value.clear();
+		// convert QMap<QString, QVariant> to QMap<QString, QString>
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it)
+			value.insert(it.key(), it.value().toString());
+
 		rc = 0;
 	}
 
@@ -473,17 +430,18 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("readMapList", _handle, _folder, key);
-	if (r.isValid()) {
-		QMap<QString,QByteArray> unparsed;
-		r.get(unparsed);
-		for (QMap<QString,QByteArray>::ConstIterator i = unparsed.begin(); i != unparsed.end(); ++i) {
-			if (!i.value().isEmpty()) {
-				QDataStream ds(i.value());
-				QMap<QString,QString> v;
-				ds >> v;
-				value.insert(i.key(), v);
-			}
+	QDBusReply<QVariantMap> r = _wallet->call("readMapList", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value.clear();
+		// convert QMap<QString, QVariant> to QMap<QString, QMap<QString, QString> >
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it) {
+			QMap<QString, QString> entry;
+			const QVariantMap &raw = it.value().toMap();
+			QVariantMap::ConstIterator it2 = raw.constBegin();
+			for ( ; it != raw.constEnd(); ++it)
+				entry.insert(it2.key(), it2.value().toString());
+			value.insert(it.key(), entry);
 		}
 		rc = 0;
 	}
@@ -499,9 +457,9 @@ int Wallet::readPassword(const QString& key, QString& value) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("readPassword", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(value);
+	QDBusReply<QString> r = _wallet->call("readPassword", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value = r;
 		rc = 0;
 	}
 
@@ -516,9 +474,13 @@ int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) 
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("readPasswordList", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(value);
+	QDBusReply<QVariantMap> r = _wallet->call("readPasswordList", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value.clear();
+		// convert QMap<QString, QVariant> to QMap<QString, QString>
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it)
+			value.insert(it.key(), it.value().toString());
 		rc = 0;
 	}
 
@@ -533,9 +495,9 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value, EntryType en
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value, int(entryType));
-	if (r.isValid()) {
-		r.get(rc);
+	QDBusReply<int> r = _wallet->call("writeEntry", _handle, _folder, key, value, int(entryType));
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return rc;
@@ -549,9 +511,9 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value);
-	if (r.isValid()) {
-		r.get(rc);
+	QDBusReply<int> r = _wallet->call("writeEntry", _handle, _folder, key, value);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return rc;
@@ -565,12 +527,14 @@ int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
 		return rc;
 	}
 
-	QByteArray a;
-	QDataStream ds(&a, QIODevice::WriteOnly);
-	ds << value;
-	DCOPReply r = _dcopRef->call("writeMap", _handle, _folder, key, a);
-	if (r.isValid()) {
-		r.get(rc);
+	// convert QMap<QString,QString> to QVariantMap
+	QVariantMap map;
+	QMap<QString, QString>::ConstIterator it;
+	for (it = value.constBegin(); it != value.constEnd(); ++it)
+		map.insert(it.key(), it.value());
+	QDBusReply<int> r = _wallet->call("writeMap.issa{ss}", _handle, _folder, key, map);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return rc;
@@ -584,9 +548,9 @@ int Wallet::writePassword(const QString& key, const QString& value) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("writePassword", _handle, _folder, key, value);
-	if (r.isValid()) {
-		r.get(rc);
+	QDBusReply<int> r = _wallet->call("writePassword", _handle, _folder, key, value);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return rc;
@@ -594,18 +558,12 @@ int Wallet::writePassword(const QString& key, const QString& value) {
 
 
 bool Wallet::hasEntry(const QString& key) {
-	bool rc = false;
-
 	if (_handle == -1) {
-		return rc;
+		return false;
 	}
 
-	DCOPReply r = _dcopRef->call("hasEntry", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(rc);
-	}
-
-	return rc;
+	QDBusReply<bool> r = _wallet->call("hasEntry", _handle, _folder, key);
+	return r;					// default is false
 }
 
 
@@ -616,9 +574,9 @@ int Wallet::removeEntry(const QString& key) {
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("removeEntry", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(rc);
+	QDBusReply<int> r = _wallet->call("removeEntry", _handle, _folder, key);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return rc;
@@ -632,17 +590,17 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 		return Wallet::Unknown;
 	}
 
-	DCOPReply r = _dcopRef->call("entryType", _handle, _folder, key);
-	if (r.isValid()) {
-		r.get(rc);
+	QDBusReply<int> r = _wallet->call("entryType", _handle, _folder, key);
+	if (r.isSuccess()) {
+		rc = r;
 	}
 
 	return static_cast<EntryType>(rc);
 }
 
 
-void Wallet::slotAppUnregistered(const QByteArray& app) {
-	if (_handle >= 0 && app == "kded") {
+void Wallet::slotAppUnregistered(const QString& app) {
+	if (_handle >= 0 && app == "org.kde.kded") {
 		slotWalletClosed(_handle);
 	}
 }
@@ -662,10 +620,10 @@ void Wallet::slotFolderListUpdated(const QString& wallet) {
 }
 
 
-void Wallet::slotApplicationDisconnected(const QString& wallet, const DCOPCString& application) {
+void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& application) {
 	if (_handle >= 0
 			&& _name == wallet
-			&& application == _dcopRef->dcopClient()->appId()) {
+			&& application == QDBus::sessionBus().baseService()) {
 		slotWalletClosed(_handle);
 	}
 }
@@ -685,26 +643,20 @@ void Wallet::walletOpenResult(int id) {
 	} // id == 0 => wait
 }
 
-
-bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder) {
-DCOPReply r = DCOPRef("kded", "kwalletd").call("folderDoesNotExist", wallet, folder);
-bool rc = true;
-	if (r.isValid()) {
-		r.get(rc);
-	}
-return rc;
+bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)
+{
+	QDBusInterfacePtr w(findWallet());
+	QDBusReply<bool> r = w->call("folderDoesNotExist", wallet, folder);
+	return r;
 }
 
 
-bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key) {
-DCOPReply r = DCOPRef("kded", "kwalletd").call("keyDoesNotExist", wallet, folder, key);
-bool rc = true;
-	if (r.isValid()) {
-		r.get(rc);
-	}
-return rc;
+bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key)
+{
+	QDBusInterfacePtr w(findWallet());
+	QDBusReply<bool> r = w->call("keyDoesNotExist", wallet, folder, key);
+	return r;
 }
-
 
 void Wallet::virtual_hook(int, void*) {
 	//BASE::virtual_hook( id, data );

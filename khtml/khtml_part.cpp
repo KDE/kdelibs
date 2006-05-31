@@ -72,8 +72,6 @@ using namespace DOM;
 
 #include <config.h>
 
-#include <dcopclient.h>
-#include <dcopref.h>
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kio/job.h>
@@ -88,7 +86,6 @@ using namespace DOM;
 #include <kstdaction.h>
 #include <kfiledialog.h>
 #include <kmimetypetrader.h>
-#include <kdatastream.h>
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
@@ -117,6 +114,7 @@ using namespace DOM;
 #include <QTextDocument>
 
 #include "khtmlpart_p.h"
+#include "khtmlpartadaptor.h"
 #include "kpassivepopup.h"
 #include "kmenu.h"
 #include "rendering/render_form.h"
@@ -474,7 +472,12 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
 
-  d->m_dcopobject = new KHTMLPartIface(this);
+  (void)new KHTMLPartAdaptor(this);
+  for (int i = 1; ; ++i)
+    if (QDBus::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
+      break;
+    else if (i == 0xffff)
+      kFatal() << "Something is very wrong in KHTMLPart!" << endl;
 
   // TODO KDE4 - load plugins now (see also the constructors)
   //if ( prof == BrowserViewGUI && !parentPart() )
@@ -1134,7 +1137,7 @@ void KHTMLPart::disableJSErrorExtension() {
   // right now.  It makes me wonder if there should be a more clean way to
   // contact all running "KHTML" instance as opposed to Konqueror instances too.
   d->m_settings->setJSErrorsEnabled(false);
-  DCOPClient::mainClient()->send("konqueror*", "KonquerorIface", "reparseConfiguration()", QByteArray());
+  emit configurationChanged();
 }
 
 void KHTMLPart::jsErrorDialogContextMenu() {
@@ -6961,11 +6964,6 @@ void KHTMLPart::preloadScript(const QString &url, const QString &script)
     khtml::Cache::preloadScript(url, script);
 }
 
-DCOPCString KHTMLPart::dcopObjectId() const
-{
-  return QByteArray( "html-widget" ) + QByteArray::number( d->m_dcop_counter );
-}
-
 long KHTMLPart::cacheId() const
 {
   return d->m_cacheId;
@@ -7282,12 +7280,13 @@ void KHTMLPart::slotWalletClosed()
 void KHTMLPart::launchWalletManager()
 {
 #ifndef KHTML_NO_WALLET
-  if (!DCOPClient::mainClient()->isApplicationRegistered("kwalletmanager")) {
+  QDBusInterfacePtr r("org.kde.kwalletmanager", "/kwalletmanager-mainwindow/1",
+                      "org.kde.KMainWindow");
+  if (!r->isValid()) {
     KToolInvocation::startServiceByDesktopName("kwalletmanager_show");
   } else {
-    DCOPRef r("kwalletmanager", "kwalletmanager-mainwindow#1");
-    r.send("show");
-    r.send("raise");
+    r->call(QDBusInterface::NoWaitForReply, "show");
+    r->call(QDBusInterface::NoWaitForReply, "raise");
   }
 #endif // KHTML_NO_WALLET
 }
@@ -7405,7 +7404,7 @@ void KHTMLPart::suppressedPopupMenu() {
 void KHTMLPart::togglePopupPassivePopup() {
   // Same hack as in disableJSErrorExtension()
   d->m_settings->setJSPopupBlockerPassivePopup( !d->m_settings->jsPopupBlockerPassivePopup() );
-  DCOPClient::mainClient()->send("konqueror*", "KonquerorIface", "reparseConfiguration()", QByteArray());
+  emit configurationChanged();
 }
 
 void KHTMLPart::showSuppressedPopups() {

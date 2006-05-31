@@ -29,13 +29,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qdir.h>
 #include <qstring.h>
+#include <dbus/qdbus.h>
 
 #include <kinstance.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <dcopclient.h>
 #include <kprotocolmanager.h>
 
 #include <unistd.h>
@@ -46,6 +46,7 @@ time_t currentDate;
 int m_maxCacheAge;
 int m_maxCacheSize;
 
+static const char appFullName[] = "org.kde.kio_http_cache_cleaner";
 static const char appName[] = "kio_http_cache_cleaner";
 
 static const char description[] = I18N_NOOP("KDE HTTP cache maintenance tool");
@@ -202,11 +203,18 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    if (!deleteAll)
    {
-      DCOPClient *dcop = new DCOPClient();
-      DCOPCString name = dcop->registerAs(appName, false);
-      if (!name.isEmpty() && (name != appName))
+      QDBusBusService *bus = QDBus::sessionBus().busService();
+      if (!bus)
       {
-         fprintf(stderr, "%s: Already running! (%s)\n", appName, name.data());
+         QDBusError error(QDBus::sessionBus().lastError());
+         fprintf(stderr, "%s: Could not connect to D-Bus! (%s: %s)\n", appName,
+                 qPrintable(error.name()), qPrintable(error.message()));
+         return 1;
+      }
+
+      if (bus->requestName(appFullName, 0) != QDBusBusService::PrimaryOwnerReply)
+      {
+         fprintf(stderr, "%s: Already running!\n", appName);
          return 0;
       }
    }

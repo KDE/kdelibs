@@ -32,7 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <q3ptrlist.h>
 #include <qfile.h>
 
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -43,9 +43,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 #include "kcookieserver.h"
+#include "kcookiejaradaptor.h"
 
 extern "C" {
-    KDE_EXPORT KDEDModule *create_kcookiejar(const DCOPCString &name)
+    KDE_EXPORT KDEDModule *create_kcookiejar(const QString &name)
     {
        return new KCookieServer(name);
     }
@@ -59,11 +60,10 @@ enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
 
 class CookieRequest {
 public:
-   DCOPClient *client;
-   DCOPClientTransaction *transaction;
+   QDBusMessage reply;
    QString url;
    bool DOM;
-   long windowId;
+   qlonglong windowId;
 };
 
 template class  Q3PtrList<CookieRequest>;
@@ -74,12 +74,10 @@ public:
    RequestList() : Q3PtrList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer(const DCOPCString &name)
+KCookieServer::KCookieServer(const QString &name)
               :KDEDModule(name)
 {
-   mOldCookieServer = new DCOPClient(); // backwards compatibility.
-   mOldCookieServer->registerAs("kcookiejar", false);
-   mOldCookieServer->setDaemonMode( true );
+   (void)new KCookieServerAdaptor(this);
    mCookieJar = new KCookieJar;
    mPendingCookies = new KHttpCookieList;
    mPendingCookies->setAutoDelete(true);
@@ -105,15 +103,14 @@ KCookieServer::KCookieServer(const DCOPCString &name)
    {
       mCookieJar->loadCookies( filename);
    }
-   connect(this, SIGNAL(windowUnregistered(long)),
-           this, SLOT(slotDeleteSessionCookies(long)));
+   connect(this, SIGNAL(windowUnregistered(qlonglong)),
+           this, SLOT(slotDeleteSessionCookies(qlonglong)));
 }
 
 KCookieServer::~KCookieServer()
 {
    if (mCookieJar->changed())
       slotSave();
-   delete mOldCookieServer;
    delete mCookieJar;
    delete mTimer;
    delete mPendingCookies;
@@ -149,7 +146,7 @@ bool KCookieServer::cookiesPending( const QString &url, KHttpCookieList *cookieL
 }
 
 void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHeader,
-                               long windowId, bool useDOMFormat )
+                               qlonglong windowId, bool useDOMFormat )
 {
     KHttpCookieList cookieList;
     if (useDOMFormat)
@@ -272,15 +269,10 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     {
         if (!cookiesPending( request->url ))
         {
-           DCOPCString replyType;
-           QByteArray replyData;
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
-           QDataStream stream2(&replyData, QIODevice::WriteOnly);
-           stream2 << res;
-           replyType = "QString";
-           request->client->endTransaction( request->transaction,
-                                            replyType, replyData);
+           request->reply << res;
+           QDBus::sessionBus().send(request->reply);
            CookieRequest *tmp = request;
            request = mRequestList->next();
            mRequestList->removeRef( tmp );
@@ -368,20 +360,12 @@ bool KCookieServer::cookieMatches( KHttpCookiePtr c,
 
 // DCOP function
 QString
-KCookieServer::findCookies(QString url)
-{
-  return findCookies(url, 0);
-}
-
-// DCOP function
-QString
-KCookieServer::findCookies(QString url, long windowId)
+KCookieServer::findCookies(QString url, qlonglong windowId, const QDBusMessage &msg)
 {
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
-      request->client = callingDcopClient();
-      request->transaction = request->client->beginTransaction();
+      request->reply = QDBusMessage::methodReply(msg);
       request->url = url;
       request->DOM = false;
       request->windowId = windowId;
@@ -456,7 +440,7 @@ KCookieServer::findDOMCookies(QString url)
 
 // DCOP function
 QString
-KCookieServer::findDOMCookies(QString url, long windowId)
+KCookieServer::findDOMCookies(QString url, qlonglong windowId)
 {
    // We don't wait for pending cookies because it locks up konqueror 
    // which can cause a deadlock if it happens to have a popup-menu up.
@@ -469,7 +453,7 @@ KCookieServer::findDOMCookies(QString url, long windowId)
 
 // DCOP function
 void
-KCookieServer::addCookies(QString arg1, DCOPCString arg2, long arg3)
+KCookieServer::addCookies(QString arg1, QByteArray arg2, qlonglong arg3)
 {
    addCookies(arg1, arg2, arg3, false);
 }
@@ -508,14 +492,14 @@ KCookieServer::deleteCookiesFromDomain(QString domain)
 
 // Qt function
 void
-KCookieServer::slotDeleteSessionCookies( long windowId )
+KCookieServer::slotDeleteSessionCookies( qlonglong windowId )
 {
    deleteSessionCookies(windowId);
 }
 
 // DCOP function
 void
-KCookieServer::deleteSessionCookies( long windowId )
+KCookieServer::deleteSessionCookies( qlonglong windowId )
 {
   mCookieJar->eatSessionCookies( windowId );
   if(!mTimer)
@@ -523,7 +507,7 @@ KCookieServer::deleteSessionCookies( long windowId )
 }
 
 void
-KCookieServer::deleteSessionCookiesFor(QString fqdn, long windowId)
+KCookieServer::deleteSessionCookiesFor(QString fqdn, qlonglong windowId)
 {
   mCookieJar->eatSessionCookies( fqdn, windowId );
   if(!mTimer)
@@ -541,7 +525,7 @@ KCookieServer::deleteAllCookies()
 
 // DCOP function
 void
-KCookieServer::addDOMCookies(QString arg1, DCOPCString arg2, long arg3)
+KCookieServer::addDOMCookies(QString arg1, QByteArray arg2, qlonglong arg3)
 {
    addCookies(arg1, arg2, arg3, true);
 }

@@ -8,6 +8,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 add_subdirectory( ksettings )
 add_subdirectory( tests )
 
+add_definitions( ${QDBUS_DEFINITIONS} )
+
 # kutils/ksettings/Makefile.am: ksettings
 
 set(ksettings_STAT_SRCS
@@ -32,13 +34,12 @@ kplugininfo.cpp
 kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
+kcmoduleproxyIface.cpp
 kcmoduleproxyIfaceImpl.cpp
 ${ksettings_STAT_SRCS}
 )
 
 kde4_automoc(${kutils_LIB_SRCS})
-
-kde4_add_dcop_skels(kutils_LIB_SRCS kcmoduleproxyIface.h)
 
 kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 

@@ -16,15 +16,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "knotificationmanager.h"
+#include "knotificationmanager_p.h"
 #include "knotification.h"
 
 #include <QHash>
 #include <QWidget>
+#include <dbus/qdbus.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
-#include <dcopclient.h>
 #include <kapplication.h>
 #include <kiconloader.h>
 #include <kconfig.h>
@@ -34,113 +34,110 @@ typedef QHash<QString,QString> Dict;
 
 struct KNotificationManager::Private
 {
-	QHash<int , KNotification*> notifications;
+    QHash<int , KNotification*> notifications;
+    QDBusInterface *knotify;
 };
 
 KNotificationManager * KNotificationManager::s_self = 0L;
 
 KNotificationManager * KNotificationManager::self()
 {
-	static KStaticDeleter<KNotificationManager> deleter;
-	if(!s_self)
-		deleter.setObject( s_self, new KNotificationManager() );
-	return s_self;
+    static KStaticDeleter<KNotificationManager> deleter;
+    if(!s_self)
+        deleter.setObject( s_self, new KNotificationManager() );
+    return s_self;
 }
 
 
-
-KNotificationManager::KNotificationManager() : DCOPObject("KNotification") , d(new Private)
+KNotificationManager::KNotificationManager()
+    : d(new Private)
 {
-
-	bool b1=connectDCOPSignal("knotify", "Notify",
-					  "notificationClosed(int,int)",
-					  "notificationClosed(int,int)", false);
-	bool b2=connectDCOPSignal("knotify", "Notify",
-					  "actionInvoked (int,int)",
-					  "notificationActivated(int,int)", false);
-
-	kDebug() << k_funcinfo << b1 << " " << b2 << endl;
+    d->knotify =
+        QDBus::sessionBus().findInterface(QLatin1String("org.kde.knotify"),
+                                          QLatin1String("/Notify"));
+    QObject::connect(d->knotify, SIGNAL(notificationClosed(int,int)),
+                     this, SLOT(notificationClosed(int,int)));
+    QObject::connect(d->knotify, SIGNAL(notificationActivated(int,int)),
+                     this, SLOT(notificationActivated(int,int)));
 }
 
 
 KNotificationManager::~KNotificationManager()
 {
-	s_self = 0L;
-	delete d;
+    s_self = 0L;
+    delete d->knotify;
+    delete d;
+}
+
+void KNotificationManager::notificationActivated( int id, int action )
+{
+    kDebug() << k_funcinfo << id << " " << action << endl;
+    if(d->notifications.contains(id))
+    {
+        KNotification *n = d->notifications[id];
+        d->notifications.remove(id);
+        n->activate( action );
+    }
+}
+
+void KNotificationManager::notificationClosed( int id )
+{
+    if(d->notifications.contains(id))
+    {
+        KNotification *n = d->notifications[id];
+        d->notifications.remove(id);
+        n->close();
+    }
 }
 
 
-ASYNC KNotificationManager::notificationActivated( int id, int action )
+void KNotificationManager::close( int id )
 {
-	kDebug() << k_funcinfo << id << " " << action << endl;
-	if(d->notifications.contains(id))
-	{
-		KNotification *n = d->notifications[id];
-		d->notifications.remove(id);
-		n->activate( action );
-	}
+    QDBusReply<void> reply = d->knotify->call("closeNotification", id);
+    if (reply.isError())
+    {
+        kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
+    }
 }
 
-ASYNC KNotificationManager::notificationClosed( int id )
+unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
+                                           const QStringList &actions,
+                                           const KNotification::ContextList & contexts,
+                                           const QString &appname)
 {
-	if(d->notifications.contains(id))
-	{
-		KNotification *n = d->notifications[id];
-		d->notifications.remove(id);
-		n->close();
-	}
-}
+    kDebug() << k_funcinfo << endl;
+    WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
+    QByteArray pixmapData;
+    QDataStream arg(&pixmapData, QIODevice::WriteOnly);
+    arg << pix;
 
-void KNotificationManager::close( int id)
-{
-	DCOPClient *client=KApplication::dcopClient();
-	QByteArray data;
-	QDataStream arg(&data, QIODevice::WriteOnly);
-	arg << id;
-	if (!client->send("knotify", "Notify", "closeNotification( int)", data))
-	{
-		kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
-	}
-}
-
-unsigned int KNotificationManager::notify( KNotification* n , const QPixmap &pix , const QStringList &actions ,
-										   const KNotification::ContextList & contexts , const QString &appname)
-{
-	kDebug() << k_funcinfo << endl;
-	WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
-
-	DCOPClient *client=KApplication::dcopClient();
-	QByteArray data, replyData;
-	DCOPCString replyType;
-	QDataStream arg(&data, QIODevice::WriteOnly);
-	arg << n->eventId() << 	(appname.isEmpty() ? kapp->instanceName() : appname) << contexts << n->text() << pix << actions << winId  ;
-	if (!client->call("knotify", "Notify", "event(QString,QString,ContextList,QString,QPixmap,QStringList,int)" ,
-		 	 data, replyType, replyData))
-	{
-		kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
-	}
-	else
-	{
-		QDataStream reply(&replyData, QIODevice::ReadOnly);
-		if (replyType == "int")
-		{
-			int result;
-			reply >> result;
-			d->notifications.insert(result, n);
-			kDebug() << k_funcinfo << "got id " << result << endl;
-			return result;
-		}
-		else
-			kDebug() << k_funcinfo << "bad reply from server" << endl;
-	}
-	return 0;
+    QVariantList contextList;
+    typedef QPair<QString,QString> Context;
+    foreach (const Context& ctx, contexts)
+        contextList << (QVariantList() << ctx.first << ctx.second);
+    
+    QDBusReply<int> reply =
+        d->knotify->call("event.ssa(ss)ayasx", n->eventId(),
+                         (appname.isEmpty() ? kapp->instanceName() : appname),
+                         contextList, n->text(), pixmapData, actions, qlonglong(winId));
+    if (reply.isError())
+    {
+        kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
+    }
+    else
+    {
+        d->notifications.insert(reply, n);
+        kDebug() << k_funcinfo << "got id " << reply.value() << endl;
+        return reply;
+    }
+    return 0;
 }
 
 
 void KNotificationManager::remove( int id)
 {
-	d->notifications.remove(id);
+    d->notifications.remove(id);
 }
 
-
+#include "knotificationmanager_p.moc"

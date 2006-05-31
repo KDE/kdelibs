@@ -22,10 +22,11 @@
 #ifndef __KDEDMODULE_H__
 #define __KDEDMODULE_H__
 
-#include <qobject.h>
-#include <dcopobject.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qbytearray.h>
 //#include <ksharedptr.h>
-#include <QByteArray>
+
+#include "kdelibs_export.h"
 
 class KDEDModulePrivate;
 class Kded;
@@ -52,21 +53,22 @@ class Kded;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-
-class KDECORE_EXPORT KDEDModule : public QObject, public DCOPObject
+class KDECORE_EXPORT KDEDModule: public QObject
 {
   Q_OBJECT
-  K_DCOP
+  Q_CLASSINFO("D-Bus Interface", "org.kde.KDEDModule")
 
   friend class Kded;
 public:
 
   /**
-   * Create a DCOPObject named @p name
+   * Create a KDED module with the given module name.
    */
-  KDEDModule(const DCOPCString &name);
+  KDEDModule(const QString &moduleName);
 
   virtual ~KDEDModule();
+
+  QString moduleName() const;
 
 #if 0 // does anyone really use this? I found no kdedmodule using it.
      // and since KShared is deprecated, this would have to be ported to something else.

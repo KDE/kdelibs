@@ -32,8 +32,6 @@
 #undef kBacktrace
 #endif
 
-#include "kdebugdcopiface.h"
-
 #include "kapplication.h"
 #include "kglobal.h"
 #include "kinstance.h"
@@ -71,6 +69,8 @@
 #ifdef HAVE_BACKTRACE
 #include <execinfo.h>
 #endif
+
+#include "kdebugdbusiface_p.h"
 
 struct KDebugEntry
 {
@@ -171,8 +171,8 @@ struct kDebugPrivate {
 
 static kDebugPrivate *kDebug_data = 0;
 static KStaticDeleter<kDebugPrivate> pcd;
-static KStaticDeleter<KDebugDCOPIface> dcopsd;
-static KDebugDCOPIface* kDebugDCOPIface = 0;
+static KStaticDeleter<KDebugDBusIface> dbussd;
+static KDebugDBusIface* kDebugDBusIface = 0;
 
 // ######## KDE4: kDebug is not threadsafe!  Races and crashes apps that call
 //                it from both threads.  Let's rework this altogether, and
@@ -186,9 +186,9 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       KGlobal::unregisterStaticDeleter(&pcd);
 
       // create the dcop interface if it has not been created yet
-      if (!kDebugDCOPIface)
+      if (!kDebugDBusIface)
       {
-          kDebugDCOPIface = dcopsd.setObject(kDebugDCOPIface, new KDebugDCOPIface);
+          kDebugDBusIface = dbussd.setObject(kDebugDBusIface, new KDebugDBusIface);
       }
   }
 

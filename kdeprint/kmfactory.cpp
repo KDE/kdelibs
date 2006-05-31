@@ -41,11 +41,12 @@
 #include <ksimpleconfig.h>
 #include <kstaticdeleter.h>
 #include <kapplication.h>
-#include <dcopclient.h>
-#include <dcopref.h>
 #include <kio/authinfo.h>
 
 #include <unistd.h>
+
+#include "kmfactoryadaptor.h"
+#include "kmfactoryiface.h"
 
 #define	UNLOAD_OBJECT(x) if (x != 0) { delete x; x = 0; }
 
@@ -105,11 +106,14 @@ KMFactory::KMFactory()
 		settings.setValue( "/qt/embedFonts", true );
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
-        KGlobal::locale()->insertCatalog("kdeprint");
+	KGlobal::locale()->insertCatalog("kdeprint");
 
-	// create DCOP signal connection
-	connectDCOPSignal(0, 0, "pluginChanged(pid_t)", "slot_pluginChanged(pid_t)", false);
-	connectDCOPSignal(0, 0, "configChanged()", "slot_configChanged()", false);
+	// create D-Bus signal connection
+	(void)new KMFactoryAdaptor(this);
+	QObject* iface = QDBus::sessionBus().findInterface<org::kde::KDEPrint::KMFactory>(QString(), QString());
+	iface->setParent(this);
+	connect(iface, SIGNAL(pluginChanged(int)), SLOT(slot_pluginChanged(int)));
+	connect(iface, SIGNAL(configChanged()), SLOT(slot_configChanged()));
 }
 
 KMFactory::~KMFactory()
@@ -371,7 +375,7 @@ QString KMFactory::autoDetect()
 	return (pluginIndex == -1 ? QLatin1String("lpdunix") : plugins[pluginIndex].name);
 }
 
-void KMFactory::slot_pluginChanged(pid_t pid)
+void KMFactory::slot_pluginChanged(int pid)
 {
 	// only do something if the notification comes from another process
 	if (pid != getpid())
@@ -419,15 +423,15 @@ void KMFactory::saveConfig()
 
 QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& user, const QString& host, int port )
 {
-	DCOPRef kdeprintd( "kded", "kdeprintd" );
+	QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
 	/**
 	 * We do not use an internal event loop for 2 potential problems:
 	 *  - the MessageWindow modality (appearing afterwards, it pops up on top
 	 *    of the password dialog)
 	 *  - KMTimer should be stopped, but it's unavailable from this object
 	 */
-	DCOPReply reply = kdeprintd.call( "requestPassword", user, host, port, seqNbr );
-	if ( reply.isValid() )
+	QDBusReply<QString> reply = kdeprintd->call( "requestPassword", user, host, port, seqNbr );
+	if ( reply.isSuccess() )
 	{
 		QString replyString = reply;
 		if ( replyString != "::" )
@@ -445,14 +449,14 @@ QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& u
 
 void KMFactory::initPassword( const QString& user, const QString& password, const QString& host, int port )
 {
-	DCOPRef kdeprintd( "kded", "kdeprintd" );
+	QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
 	/**
 	 * We do not use an internal event loop for 2 potential problems:
 	 *  - the MessageWindow modality (appearing afterwards, it pops up on top
 	 *    of the password dialog)
 	 *  - KMTimer should be stopped, but it's unavailable from this object
 	 */
-	kdeprintd.call( "initPassword", user, password, host, port );
+	kdeprintd->call( "initPassword", user, password, host, port );
 }
 
 #include "kmfactory.moc"

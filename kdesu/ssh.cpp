@@ -129,48 +129,6 @@ int SshProcess::exec(const char *password, int check)
     return ret;
 }
 
-/*
-* Create a port forwarding for DCOP. For the remote port, we take a pseudo
-* random number between 10k and 50k. This is not ok, of course, but I see
-* no other way. There is, afaik, no security issue involved here. If the port
-* happens to be occupied, ssh will refuse to start.
-*
-* 14/SEP/2000: DCOP forwarding is not used anymore.
-*/
-
-QByteArray SshProcess::dcopForward()
-{
-    QByteArray result;
-
-    setDcopTransport("tcp");
-
-    QByteArray srv = StubProcess::dcopServer();
-    if (srv.isEmpty())
-        return result;
-
-    int i = srv.indexOf('/');
-    if (i == -1)
-        return result;
-    if (srv.left(i) != "tcp")
-        return result;
-    int j = srv.indexOf(':', ++i);
-    if (j == -1)
-        return result;
-    QByteArray host = srv.mid(i, j-i);
-    bool ok;
-    int port = srv.mid(++j).toInt(&ok);
-    if (!ok)
-        return result;
-
-    m_dcopPort = 10000 + (int) ((40000.0 * rand()) / (1.0 + RAND_MAX));
-    result = QByteArray::number(m_dcopPort);
-    result += ":";
-    result += host;
-    result += ":";
-    result += QByteArray::number(port);
-    return result;
-}
-
 
 /*
 * Conversation with ssh.
@@ -262,13 +220,6 @@ QByteArray SshProcess::display()
 QByteArray SshProcess::displayAuth()
 {
     return "no";
-}
-
-
-// Return the remote end of the forwarded connection.
-QByteArray SshProcess::dcopServer()
-{
-    return QByteArray("tcp/localhost:").append(QByteArray::number(m_dcopPort));
 }
 
 void SshProcess::virtual_hook( int id, void* data )

@@ -56,10 +56,6 @@ class KPARTS_EXPORT MainWindow : public KMainWindow, virtual public PartBase
    */
   MainWindow( const char *name = 0L, Qt::WFlags f = Qt::WDestructiveClose );
   /**
-   * Constructor with creation flags, see KMainWindow.
-   */
-  MainWindow( int cflags, QWidget* parent,  const char *name = 0L, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
-  /**
    * Destructor.
    */
   virtual ~MainWindow();

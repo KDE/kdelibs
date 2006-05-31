@@ -20,8 +20,8 @@
 
 #include <string.h>
 #include <sys/utsname.h>
+#include <dbus/qdbus.h>
 
-#include <dcopref.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -262,7 +262,12 @@ QString KProtocolManager::proxyForURL( const KUrl &url )
             }
 
             if ( p.startsWith("http") || p == "ftp" || p == "gopher" )
-              DCOPRef( "kded", "proxyscout" ).call( "proxyForURL", u ).get( proxy );
+            {
+              QDBusReply<QString> reply =
+                  QDBusInterfacePtr( "org.kde.kded", "/modules/proxyscout", "org.kde.KPAC.ProxyScout" )->
+                  call( "proxyForURL", u.url() );
+              proxy = reply;
+            }
           }
           break;
       case EnvVarProxy:
@@ -281,7 +286,8 @@ QString KProtocolManager::proxyForURL( const KUrl &url )
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-  DCOPRef( "kded", "proxyscout" ).send( "blackListProxy", proxy );
+  QDBusInterfacePtr( "org.kde.kded", "/modules/proxyscout" )->
+      call( "blackListProxy", proxy );
 }
 
 /*

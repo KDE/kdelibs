@@ -25,7 +25,6 @@
 
 #include <qbytearray.h>
 
-class DCOPClient;
 class KConfigBase;
 class KRemoteEncoding;
 class KUrl;
@@ -724,11 +723,6 @@ public:
     void dropNetwork(const QString& host = QString());
 
     /**
-     * Return the dcop client used by this slave.
-     */
-    DCOPClient *dcopClient();
-
-    /**
      * Wait for an answer to our request, until we get @p expected1 or @p expected2
      * @return the result from readData, as well as the cmd in *pCmd if set, and the data in @p data
      */
@@ -769,7 +763,7 @@ protected:
     QString mPoolSocket;
     QString mAppSocket;
     bool mConnectedToApp;
-    static long s_seqNr;
+    static qlonglong s_seqNr;
     virtual void virtual_hook( int id, void* data );
 
 private:

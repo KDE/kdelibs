@@ -22,14 +22,12 @@
 #define KMFACTORY_H
 
 #include <qstring.h>
-
 #include <qstringlist.h>
-#include <QList>
+#include <qlist.h>
 #include <qobject.h>
 #include <qpair.h>
-#include <dcopobject.h>
 
-#include <sys/types.h>
+#include <kdelibs_export.h>
 
 class KMManager;
 class KMJobManager;
@@ -42,10 +40,9 @@ class KLibFactory;
 class KConfig;
 class KPReloadObject;
 
-class KDEPRINT_EXPORT KMFactory : public QObject, public DCOPObject
+class KDEPRINT_EXPORT KMFactory : public QObject
 {
 	Q_OBJECT
-	K_DCOP
 
 public:
 	struct PluginInfo
@@ -95,12 +92,12 @@ public:
 	QPair<QString,QString> requestPassword( int& seqNbr, const QString& user, const QString& host = QLatin1String( "localhost" ), int port = 0 );
 	void initPassword( const QString& user, const QString& password, const QString& host = QLatin1String( "localhsot" ), int port = 0 );
 
-k_dcop:
-	ASYNC slot_pluginChanged(pid_t);
-	ASYNC slot_configChanged();
+private Q_SLOTS:
+	void slot_pluginChanged(int);
+	void slot_configChanged();
 
-k_dcop_signals:
-	void pluginChanged(pid_t);
+Q_SIGNALS:
+	void pluginChanged(int);
 	void configChanged();
 
 private:

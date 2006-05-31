@@ -11,6 +11,7 @@ if (NOT JPEG_FOUND)
 endif (NOT JPEG_FOUND)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
+add_definitions( ${QDBUS_DEFINITIONS} )
 
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
 
@@ -278,8 +279,9 @@ set(khtml_LIB_SRCS
    khtml_events.cpp
    khtml_ext.cpp
    khtml_pagecache.cpp
-   khtml_iface.cc
    khtml_printsettings.cpp
+   khtmlpartadaptor.cpp
+   #khtmlpartiface.cpp
    khtmlimage.cpp
    kjserrordlg.cpp
    ${khtmlxml_STAT_SRCS}
@@ -297,8 +299,6 @@ set(khtml_LIB_SRCS
 kde4_automoc(${khtml_LIB_SRCS})
 
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
-
-kde4_add_dcop_skels(khtml_LIB_SRCS khtml_iface.h )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 

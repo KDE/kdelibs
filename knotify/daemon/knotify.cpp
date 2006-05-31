@@ -21,7 +21,6 @@
 
 // KDE headers
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -40,10 +39,12 @@
 
 
 KNotify::KNotify( QObject *parent )
-    : QObject( parent ), DCOPObject("Notify") ,
+    : QObject( parent ),
     m_counter(0)
 {
 	loadConfig();
+	(void)new KNotifyAdaptor(this);
+	QDBus::sessionBus().registerObject("/Notify", this, QDBusConnection::ExportAdaptors);
 }
 
 KNotify::~KNotify()
@@ -144,6 +145,27 @@ void KNotify::slotPluginFinished( int id )
 		closeNotification( id );
 }
 
+KNotifyAdaptor::KNotifyAdaptor(QObject *parent)
+	: QDBusAbstractAdaptor(parent)
+{
+	setAutoRelaySignals(true);
+}
+
+void KNotifyAdaptor::reconfigure()
+{
+	static_cast<KNotify *>(object())->reconfigure();
+}
+
+void KNotifyAdaptor::closeNotification(int id)
+{
+	static_cast<KNotify *>(object())->closeNotification(id);
+}
+
+int KNotifyAdaptor::event(const QString &event, const QString &fromApp, const ContextList& contexts,
+                          const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId)
+{
+	return static_cast<KNotify *>(object())->event(event, fromApp, contexts, text, pixmap, actions, winId);
+}
 
 #include "knotify.moc"
 

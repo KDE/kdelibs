@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2002 Andreas Beckermann (b_mann@gmx.de)
+    Copyright (C) 2006 Thiago Macieira <thiago@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,24 +18,35 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kdebugdcopiface.h"
-#include "kdebug.h"
+#ifndef KDEBUGDBUSIFACE_H
+#define KDEBUGDBUSIFACE_H
 
-KDebugDCOPIface::KDebugDCOPIface() : DCOPObject("KDebug")
+#include <kdelibs_export.h>
+#include <QtCore/qobject.h>
+
+/**
+ * @short D-Bus interface to KDebug.
+ **/
+class KDebugDBusIface: public QObject
 {
-}
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KDebug");
+public:
+    KDebugDBusIface();
+    ~KDebugDBusIface();
 
-KDebugDCOPIface::~KDebugDCOPIface()
-{
-}
+public slots:
+	/**
+	 * The kdebugrc has been changed and should be reparsed now.
+	 * This will simply call kClearDebugConfig
+	 **/
+	Q_SCRIPTABLE void notifyKDebugConfigChanged();
 
-void KDebugDCOPIface::notifyKDebugConfigChanged()
-{
- kClearDebugConfig();
-}
+	/**
+	 * Print out a kBacktrace. Useful when trying to understand why
+	 * a dialog is popping up, without having to launch gdb
+	 */
+	Q_SCRIPTABLE void printBacktrace();
+};
 
-void KDebugDCOPIface::printBacktrace()
-{
-  kDebug() << kBacktrace() << endl;
-}
-
+#endif

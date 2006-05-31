@@ -27,7 +27,6 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <kdebug.h>
 #include <kstringhandler.h>
 

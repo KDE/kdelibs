@@ -23,12 +23,10 @@
 #include <qdatetime.h>
 #include <qtimer.h>
 
-#include <dcopobject.h>
 #include <kio/global.h>
 #include <kio/authinfo.h>
 #include <kurl.h>
 #include <kmainwindow.h>
-#include <kdatastream.h>
 #include <k3listview.h>
 #include <ksslcertdlg.h>
 #include <ktoolbar.h>
@@ -215,9 +213,8 @@ class UIServerSystemTray;
  *
  * @internal
  */
-class KIO_EXPORT UIServer : public KMainWindow, public DCOPObject {
+class KIO_EXPORT UIServer : public KMainWindow {
 
-  K_DCOP
   Q_OBJECT
 
   UIServer();
@@ -225,8 +222,6 @@ class KIO_EXPORT UIServer : public KMainWindow, public DCOPObject {
 
 public:
    static UIServer* createInstance();
-
-k_dcop:
 
   /**
    * Signal a new job
@@ -239,34 +234,31 @@ k_dcop:
    */
   int newJob( QByteArray appId, bool showProgress );
 
-  ASYNC jobFinished( int id );
+  void jobFinished( int id );
 
-  ASYNC totalSize( int id, unsigned long size );
-  ASYNC totalSize64( int id, KIO::filesize_t size );
-  ASYNC totalFiles( int id, unsigned long files );
-  ASYNC totalDirs( int id, unsigned long dirs );
+  void totalSize( int id, KIO::filesize_t size );
+  void totalFiles( int id, unsigned long files );
+  void totalDirs( int id, unsigned long dirs );
 
-  ASYNC processedSize( int id, unsigned long bytes );
-  ASYNC processedSize64( int id, KIO::filesize_t bytes );
-  ASYNC processedFiles( int id, unsigned long files );
-  ASYNC processedDirs( int id, unsigned long dirs );
+  void processedSize( int id, KIO::filesize_t bytes );
+  void processedFiles( int id, unsigned long files );
+  void processedDirs( int id, unsigned long dirs );
 
-  ASYNC percent( int id, unsigned long ipercent );
-  ASYNC speed( int id, unsigned long bytes_per_second );
-  ASYNC infoMessage( int id, const QString & msg );
+  void percent( int id, unsigned long ipercent );
+  void speed( int id, unsigned long bytes_per_second );
+  void infoMessage( int id, const QString & msg );
 
-  ASYNC copying( int id, KUrl from, KUrl to );
-  ASYNC moving( int id, KUrl from, KUrl to );
-  ASYNC deleting( int id, KUrl url );
-  ASYNC transferring( int id, KUrl url );
-  ASYNC creatingDir( int id, KUrl dir );
-  ASYNC stating( int id, KUrl url );
+  void copying( int id, KUrl from, KUrl to );
+  void moving( int id, KUrl from, KUrl to );
+  void deleting( int id, KUrl url );
+  void transferring( int id, KUrl url );
+  void creatingDir( int id, KUrl dir );
+  void stating( int id, KUrl url );
 
-  ASYNC mounting( int id, QString dev, QString point );
-  ASYNC unmounting( int id, QString point );
+  void mounting( int id, QString dev, QString point );
+  void unmounting( int id, QString point );
 
-  ASYNC canResume( int id, unsigned long offset );
-  ASYNC canResume64( int id, KIO::filesize_t offset );
+  void canResume( int id, KIO::filesize_t offset );
 
 
   /**
@@ -398,7 +390,7 @@ protected:
   void writeSettings();
 private:
 
-  void killJob( QByteArray observerAppId, int progressId );
+  void killJob( const QString &observerAppId, int progressId );
 
   int m_initWidth;
   int m_initHeight;

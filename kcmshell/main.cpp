@@ -22,8 +22,7 @@
 #include <iostream>
 
 #include <qfile.h>
-#include <QIcon>
-#include <dcopclient.h>
+#include <qicon.h>
 
 #ifdef Q_WS_X11
 /*
@@ -34,6 +33,8 @@
 #endif
 
 #include <QVBoxLayout>
+
+#include <dbus/qdbus.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -123,22 +124,16 @@ static KService::Ptr locateModule(const QByteArray& module)
 
 bool KCMShell::isRunning()
 {
-    if( dcopClient()->appId() == m_dcopName )
+    QString owner = QDBus::sessionBus().busService()->nameOwner(m_serviceName);
+    if( owner == QDBus::sessionBus().baseService() )
         return false; // We are the one and only.
 
     kDebug(780) << "kcmshell with modules '" <<
-        m_dcopName << "' is already running." << endl;
+        m_serviceName << "' is already running." << endl;
 
-    dcopClient()->attach(); // Reregister as anonymous
-    dcopClient()->setNotifications(true);
-
-    QByteArray data;
-    QDataStream str( &data, QIODevice::WriteOnly );
-    str << kapp->startupId();
-    DCOPCString replyType;
-    QByteArray replyData;
-    if (!dcopClient()->call(m_dcopName, "dialog", "activate(QCString)",
-                data, replyType, replyData))
+    QDBusInterfacePtr iface(m_serviceName, "/KCModule/dialog", "org.kde.KCMShellMultiDialog");
+    QDBusReply<void> reply = iface->call("activate", kapp->startupId());
+    if (reply.isError())
     {
         kDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
         return false; // Error, we have to do it ourselves.
@@ -149,12 +144,12 @@ bool KCMShell::isRunning()
 
 KCMShellMultiDialog::KCMShellMultiDialog( int dialogFace, const QString& caption,
         QWidget *parent, const char *name, bool modal)
-    : KCMultiDialog( dialogFace, caption, parent, name, modal ),
-        DCOPObject("dialog")
+    : KCMultiDialog( dialogFace, caption, parent, name, modal )
 {
+    QDBus::sessionBus().registerObject("/KCModule/dialog", this, QDBusConnection::ExportSlots);
 }
 
-void KCMShellMultiDialog::activate( QByteArray asn_id )
+void KCMShellMultiDialog::activate( const QByteArray& asn_id )
 {
     kDebug(780) << k_funcinfo << endl;
 
@@ -163,31 +158,32 @@ void KCMShellMultiDialog::activate( QByteArray asn_id )
 #endif
 }
 
-void KCMShell::setDCOPName(const DCOPCString &dcopName, bool rootMode )
+void KCMShell::setServiceName(const QString &dcopName, bool rootMode )
 {
-    m_dcopName = "kcmshell_";
+    m_serviceName = "org.kde.kcmshell_";
     if( rootMode )
-        m_dcopName += "rootMode_";
+        m_serviceName += "rootMode_";
 
-    m_dcopName += dcopName;
+    m_serviceName += dcopName;
 
-    dcopClient()->registerAs(m_dcopName, false);
+    QDBus::sessionBus().busService()->requestName(m_serviceName, QDBusBusService::DoNotQueueName);
 }
 
 void KCMShell::waitForExit()
 {
     kDebug(780) << k_funcinfo << endl;
 
-    connect(dcopClient(), SIGNAL(applicationRemoved(const QByteArray&)),
-            SLOT( appExit(const QByteArray&) ));
+    connect(QDBus::sessionBus().busService(), SIGNAL(nameOwnerChanged(QString,QString,QString)),
+            SLOT(appExit(QString,QString,QString)));
     exec();
 }
 
-void KCMShell::appExit(const QByteArray &appId)
+void KCMShell::appExit(const QString &appId, const QString &oldName, const QString &newName)
 {
+    Q_UNUSED(newName);
     kDebug(780) << k_funcinfo << endl;
 
-    if( appId == m_dcopName )
+    if( appId == m_serviceName && !oldName.isEmpty() )
     {
         kDebug(780) << "'" << appId << "' closed, dereferencing." << endl;
         KGlobal::deref();
@@ -217,7 +213,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    const DCOPCString lang = args->getOption("lang");
+    const QByteArray lang = args->getOption("lang");
     if( !lang.isNull() )
         KGlobal::locale()->setLanguage(lang);
 
@@ -255,7 +251,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         return -1;
     }
 
-    DCOPCString dcopName;
+    QString serviceName;
     KService::List modules;
     for (int i = 0; i < args->count(); i++)
     {
@@ -263,16 +259,16 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         if( service )
         {
             modules.append(service);
-            if( !dcopName.isEmpty() )
-                dcopName += "_";
+            if( !serviceName.isEmpty() )
+                serviceName += "_";
 
-            dcopName += args->arg(i);
+            serviceName += args->arg(i);
         }
     }
 
     /* Check if this particular module combination is already running, but
      * allow the same module to run when embedding(root mode) */
-    app.setDCOPName(dcopName,
+    app.setServiceName(serviceName, 
             ( args->isSet( "embed-proxy" ) || args->isSet( "embed" )));
     if( app.isRunning() )
     {

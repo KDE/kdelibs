@@ -33,7 +33,7 @@
 #include <qpoint.h>
 #include <qtextstream.h>
 
-#include <kdirnotify_stub.h>
+#include <kdirnotify.h>
 #include <kfiledialog.h>
 #include <kinstance.h>
 #include <kio/job.h>
@@ -657,10 +657,9 @@ void ReadWritePart::slotUploadFinished( KJob * )
   }
   else
   {
-    KDirNotify_stub allDirNotify("*", "KDirNotify*");
     KUrl dirUrl( m_url );
     dirUrl.setPath( dirUrl.directory() );
-    allDirNotify.FilesAdded( dirUrl );
+    ::org::kde::KDirNotify::emitFilesAdded( dirUrl.url() );
 
     d->m_uploadJob = 0;
     setModified( false );

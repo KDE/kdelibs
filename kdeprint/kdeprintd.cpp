@@ -25,7 +25,6 @@
 #include <knotification.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <dcopclient.h>
 #include <kio/passdlg.h>
 #include <kio/authinfo.h>
 #include <qlabel.h>
@@ -37,12 +36,13 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qregexp.h>
+#include <dbus/qdbus.h>
 
 #include <unistd.h>
 
 extern "C"
 {
-	KDE_EXPORT KDEDModule *create_kdeprintd(const QByteArray& name)
+	KDE_EXPORT KDEDModule *create_kdeprintd(const QString& name)
 	{
 		return new KDEPrintd(name);
 	}
@@ -102,7 +102,7 @@ void StatusWindow::setMessage(const QString& msg)
 
 //*****************************************************************************************************
 
-KDEPrintd::KDEPrintd(const QByteArray& obj)
+KDEPrintd::KDEPrintd(const QString& obj)
 : KDEDModule(obj)
 {
 }
@@ -232,19 +232,19 @@ void KDEPrintd::slotClosed()
 class KDEPrintd::Request
 {
 public:
-	DCOPClientTransaction *transaction;
 	QString user;
 	QString uri;
+	QDBusMessage reply;
 	int seqNbr;
 };
 
-QString KDEPrintd::requestPassword( const QString& user, const QString& host, int port, int seqNbr )
+QString KDEPrintd::requestPassword( const QString& user, const QString& host, int port, int seqNbr , const QDBusMessage& msg)
 {
 	Request *req = new Request;
 	req->user = user;
 	req->uri = "print://" + user + "@" + host + ":" + QString::number(port);
 	req->seqNbr = seqNbr;
-	req->transaction = callingDcopClient()->beginTransaction();
+	req->reply = QDBusMessage::methodReply(msg);
 	m_requestsPending.append( req );
 	if ( m_requestsPending.count() == 1 )
 		QTimer::singleShot( 0, this, SLOT( processRequest() ) );
@@ -258,8 +258,7 @@ void KDEPrintd::processRequest()
 
 	Request *req = m_requestsPending.first();
 	KIO::AuthInfo info;
-	QByteArray params, reply;
-	DCOPCString replyType;
+	QByteArray params;
 	QString authString( "::" );
 
 	info.username = req->user;
@@ -268,34 +267,31 @@ void KDEPrintd::processRequest()
 	info.comment = i18n( "Printing system" );
 
 	QDataStream input( &params, QIODevice::WriteOnly );
-	input.setVersion ( QDataStream::Qt_3_1 );
-	input << info << i18n( "Authentication failed (user name=%1)" ,  info.username ) << 0 << req->seqNbr;
-	if ( callingDcopClient()->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo,QString,long int,long int)",
-				params, replyType, reply ) )
+	input << info;
+	QDBusMessage reply =
+		QDBusInterfacePtr( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" )->
+		call("queryAuthInfo", params, i18n( "Authentication failed (user name=%1)",	 info.username ),
+		     0, req->seqNbr);
+	if ( reply.type() == QDBusMessage::ReplyMessage )
 	{
-		if ( replyType == "KIO::AuthInfo" )
+		if ( reply.count() == 2 )
 		{
-			QDataStream output( reply );
-			output.setVersion ( QDataStream::Qt_3_1 );
+			QDataStream output( reply.at(0).toByteArray() );
+			int seqNbr = reply.at(1).toInt();
 			KIO::AuthInfo result;
-			int seqNbr;
-			output >> result >> seqNbr;
+			output >> result;
 
 			if ( result.isModified() )
 				authString = result.username + ":" + result.password + ":" + QString::number( seqNbr );
 		}
 		else
-			kWarning( 500 ) << "DCOP returned type error, expected KIO::AuthInfo, received " << replyType << endl;
+			kWarning( 500 ) << "D-BUS returned invalid reply" << endl;
 	}
 	else
 		kWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
 
-	QByteArray outputData;
-	QDataStream output( &outputData, QIODevice::WriteOnly );
-	output.setVersion ( QDataStream::Qt_3_1 );
-	output << authString;
-	replyType = "QString";
-	callingDcopClient()->endTransaction( req->transaction, replyType, outputData );
+	req->reply << authString;
+	req->reply.connection().send(req->reply);
 
 	m_requestsPending.removeAll( ( unsigned int )0 );
 	if ( m_requestsPending.count() > 0 )
@@ -304,8 +300,7 @@ void KDEPrintd::processRequest()
 
 void KDEPrintd::initPassword( const QString& user, const QString& passwd, const QString& host, int port )
 {
-	QByteArray params, reply;
-	DCOPCString replyType;
+	QByteArray params;
 	KIO::AuthInfo info;
 
 	info.username = user;
@@ -313,11 +308,12 @@ void KDEPrintd::initPassword( const QString& user, const QString& passwd, const 
 	info.url = "print://" + user + "@" + host + ":" + QString::number(port);
 
 	QDataStream input( &params, QIODevice::WriteOnly );
-	input.setVersion ( QDataStream::Qt_3_1 );
-	input << info << ( long int )0;
+	input << info;
 
-	if ( !callingDcopClient()->call( "kded", "kpasswdserver", "addAuthInfo(KIO::AuthInfo,long int)",
-			params, replyType, reply ) )
+	QDBusMessage reply =
+		QDBusInterfacePtr( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" )->
+		call("addAuthInfo", params, qlonglong(0));
+	if ( reply.type() != QDBusMessage::ReplyMessage )
 		kWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver" << endl;
 }
 

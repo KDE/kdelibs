@@ -3,7 +3,7 @@ project(kio)
 
 macro_optional_find_package(FAM)
 
-add_definitions(-D_LARGEFILE64_SOURCE)
+add_definitions(-D_LARGEFILE64_SOURCE ${QDBUS_DEFINITIONS})
 
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
@@ -16,6 +16,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
    ${CMAKE_CURRENT_SOURCE_DIR}/kssl
+   ${CMAKE_CURRENT_SOURCE_DIR}/misc
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
@@ -102,7 +103,6 @@ set(kiocore_STAT_SRCS
   kio/defaultprogress.cpp
   kio/statusbarprogress.cpp
   kio/kdirnotify.cpp
-  kio/kdirnotify_stub.cpp
   kio/observer.cpp
   kio/kemailsettings.cpp
   kio/renamedlg.cpp
@@ -113,7 +113,10 @@ set(kiocore_STAT_SRCS
 )
 
 if(UNIX)
-    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp )
+    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
+    ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp 
+    ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp
+)
 endif(UNIX)
 
 
@@ -124,6 +127,8 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkbar.cc
   bookmarks/kbookmarkimporter.cc
   bookmarks/kbookmarkmanager.cc
+  bookmarks/kbookmarkmanageradaptor.cc
+  bookmarks/kbookmarknotifier.cc
   bookmarks/kbookmarkmenu.cc
   bookmarks/kbookmarkimporter_crash.cc
   bookmarks/kbookmarkimporter_opera.cc
@@ -211,23 +216,6 @@ set(kio_LIB_SRCS
    ${kfile_STAT_SRCS}
    ${kssl_STAT_SRCS}
 )
-
-set(kio_STUB_HEADERS
-   misc/uiserver.h
-   kio/observer.h
-)
-
-kde4_add_dcop_stubs(kio_LIB_SRCS ${kio_STUB_HEADERS} )
-
-set(kio_SKEL_HEADERS
-   #misc/uiserver.h
-   kio/observer.h
-   kio/kdirnotify.h
-   bookmarks/kbookmarkmanager.h
-   bookmarks/kbookmarknotifier.h
-)
-
-kde4_add_dcop_skels(kio_LIB_SRCS ${kio_SKEL_HEADERS} )
 
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui

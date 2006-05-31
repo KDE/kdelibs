@@ -10,7 +10,6 @@ install_files( /include/kio FILES
   slaveinterface.h
   slave.h
   slaveconfig.h
-  ../uiserver_stub.h
   sessiondata.h
   global.h
   passdlg.h
@@ -59,7 +58,6 @@ install_files( /include FILES
   kdirlister.h
   kservicegroup.h
   kdirnotify.h
-  kdirnotify_stub.h
   kurlpixmapprovider.h
   kprotocolmanager.h
   kemailsettings.h

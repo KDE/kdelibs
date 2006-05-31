@@ -23,7 +23,6 @@
 #define _INCLUDE_KSSLSIGNERS_H
 
 class KSSLCertificate;
-class DCOPClient;
 
 #include <qstringlist.h>
 
@@ -164,8 +163,6 @@ public:
 private:
 	class KSSLSignersPrivate;
 	KSSLSignersPrivate *d;
-
-	DCOPClient *dcc;
 };
 
 

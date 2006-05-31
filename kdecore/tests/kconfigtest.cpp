@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     KAboutData aboutData( "qttest", "qttest", "version" );
     KCmdLineArgs::init( argc, argv, &aboutData );
     KDEMainFlags mainFlags( NoGUI );
-    KApplication::disableAutoDcopRegistration();
+    //KApplication::disableAutoDcopRegistration();
     KApplication app( (mainFlags & GUI) != 0 );
     KConfigTest tc;
     return QTest::qExec( &tc, argc, argv );

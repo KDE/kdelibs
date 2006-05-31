@@ -20,7 +20,6 @@
 #include "backendselection.h"
 
 #include <kservicetypeprofile.h>
-#include <dcopclient.h>
 #include <kservicetypetrader.h>
 #include <ksimpleconfig.h>
 #include <QStringList>
@@ -28,6 +27,7 @@
 #include <kapplication.h>
 #include <kicon.h>
 #include <QList>
+#include <dbus/qdbus.h>
 
 BackendSelection::BackendSelection( QWidget* parent )
 	: QWidget( parent )
@@ -90,7 +90,9 @@ void BackendSelection::save()
 	config.sync();
 	KServiceTypeProfile::clear();
 
-	kapp->dcopClient()->emitDCOPSignal( "phononBackendChanged()", QByteArray() );
+	QDBusMessage signal = QDBusMessage::signal( "/", "org.kde.Phonon.Factory",
+						    "phononBackendChanged" );
+	QDBus::sessionBus().send(signal);
 }
 
 void BackendSelection::defaults()

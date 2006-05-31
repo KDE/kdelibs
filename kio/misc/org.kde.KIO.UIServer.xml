@@ -1,0 +1,142 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.KIO.UIServer">
+    <method name="newJob">
+      <arg name="appServiceName" type="s" direction="in"/>
+      <arg name="showProgress" type="b" direction="in"/>
+      <arg name="jobId" type="i" direction="out"/>
+    </method>
+    <method name="jobFinished">
+      <arg name="id" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="totalSize">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="size" type="t" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="totalFiles">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="files" type="u" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="totalDirs">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="dirs" type="u" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="processedSize">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="size" type="t" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="processedFiles">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="files" type="u" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="processedDirs">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="dirs" type="u" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="percent">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="ipercent" type="u" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="speed">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="bytesPerSecond" type="u" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="infoMessage">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="msg" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="copying">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="from" type="s" direction="in"/>
+      <arg name="to" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="moving">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="from" type="s" direction="in"/>
+      <arg name="to" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="deleting">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="url" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="transferring">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="url" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="creatingDir">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="url" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="stating">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="url" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="mounting">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="dev" type="s" direction="in"/>
+      <arg name="point" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="unmounting">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="point" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="canResume">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="offset" type="t" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="messageBox">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="type" type="i" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+      <arg name="caption" type="s" direction="in"/>
+      <arg name="buttonYes" type="s" direction="in"/>
+      <arg name="buttonNo" type="s" direction="in"/>
+      <arg name="buttonCode" type="i" direction="out"/>
+    </method>
+    <method name="setListMode">
+      <arg name="enable" type="b" direction="in"/>
+    </method>
+    <method name="setJobVisible">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="enable" type="b" direction="in"/>
+    </method>
+    <method name="showSSLInfoDialog">
+      <arg name="url" type="s" direction="in"/>
+      <arg name="data" type="a{ss}" direction="in"/>
+      <arg name="mainwindow" type="x" direction="in"/>
+      <arg name="ok" type="b" direction="out"/>
+      <arg name="send" type="b" direction="out"/>
+      <arg name="save" type="b" direction="out"/>
+      <arg name="choice" type="s" direction="out"/>
+    </method>
+    <method name="showSSLCertDialog">
+      <arg name="host" type="s" direction="in"/>
+      <arg name="certList" type="as" direction="in"/>
+      <arg name="mainwindow" type="x" direction="in"/>
+      <arg name="ok" type="b" direction="out"/>
+      <arg name="send" type="b" direction="out"/>
+      <arg name="save" type="b" direction="out"/>
+      <arg name="choice" type="s" direction="out"/>
+    </method>
+  </interface>
+</node>

@@ -13,7 +13,10 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/network )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kservice )
 
 include_directories( ${ZLIB_INCLUDE_DIR} )
-include_directories( ${KDE4_DCOP_INCLUDES} )
+include_directories( ${QT_INCLUDES} )
+include_directories( ${QDBUS_INCLUDE_DIRS} )
+#include_directories( ${KDE4_DCOP_INCLUDES} )
+add_definitions( ${QDBUS_DEFINITIONS} )
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
@@ -158,11 +161,11 @@ set(kdecore_LIB_SRCS
    kcmdlineargs.cpp
    kaboutdata.cpp
    knotifyclient.cpp
-   kdcoppropertyproxy.cpp
    kprocio.cpp
    krandom.cpp
    kpixmapprovider.cpp
    ktoolinvocation.cpp
+   klauncher_iface.cpp
    kcodecs.cpp
    ksycoca.cpp
    ksycocadict.cpp
@@ -171,11 +174,10 @@ set(kdecore_LIB_SRCS
    kstartupinfo.cpp
    kcatalog.cpp
    kstaticdeleter.cpp
-   kappdcopiface.cpp
    kclipboard.cpp
    kcheckaccelerators.cpp
    kdeversion.cpp
-   kdebugdcopiface.cpp
+   kdebugdbusiface.cpp
    kcalendarsystem.cpp
    kcalendarsystemgregorian.cpp
    kcalendarsystemhijri.cpp
@@ -231,22 +233,13 @@ set(kdecore_LIB_SRCS
 
 kde4_automoc(${kdecore_LIB_SRCS})
 
-set( kdecore_DCOP_SKEL_SRCS
-   ksycoca.h
-   kappdcopiface.h
-   kdebugdcopiface.h
-   kdedmodule.h
-)
-
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-kde4_add_dcop_skels(kdecore_LIB_SRCS ${kdecore_DCOP_SKEL_SRCS})
-
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} DCOP ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} ${QDBUS_LIBRARIES} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install_targets(${LIB_INSTALL_DIR} kdecore )
@@ -312,6 +305,7 @@ install_files( /include FILES
    kconfigbackend.h
    kapplication.h
    kauthorized.h
+   klauncher_iface.h
    ktoolinvocation.h
    kuniqueapplication.h
    kcharsets.h
@@ -347,7 +341,6 @@ install_files( /include FILES
    krandomsequence.h
    knotifyclient.h
    kiconeffect.h
-   kdcoppropertyproxy.h
    netwm.h
    kacceleratormanager.h
    netwm_def.h

@@ -308,7 +308,10 @@ int main( int argc, char **argv )
 	                    "1.0" );
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );
 
-	KApplication::disableAutoDcopRegistration();
+#if defined(Q_CC_GNU)
+//	KApplication::disableAutoDcopRegistration();
+#warning this needs porting to plain KInstance...
+#endif
 	KApplication app( false );
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

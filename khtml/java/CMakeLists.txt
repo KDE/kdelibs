@@ -1,6 +1,7 @@
 
 add_subdirectory( tests ) 
 
+add_definitions( ${QDBUS_DEFINITIONS} )
 include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/kssl )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 

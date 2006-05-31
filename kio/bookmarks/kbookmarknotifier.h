@@ -22,23 +22,27 @@
 #ifndef __kbookmarknotifier_h__
 #define __kbookmarknotifier_h__
 
-#include <dcopobject.h>
+#include "kdelibs_export.h"
+
+class QString;
 
 /**
  * DCOP interface for a bookmark notifier (an object which emits signals
- * upon changes to the bookmarks)
+ * upon changes to the bookmarks).
+ *
+ * D-BUS Port: this is a temporary class. It should be cleaned up with proper
+ * signal semantics: DCOP made signals public, which is wrong.
  */
-class KIO_EXPORT KBookmarkNotifier : virtual public DCOPObject
+class KIO_EXPORT KBookmarkNotifier
 {
-  K_DCOP
+    KBookmarkNotifier();
 
 public:
-  KBookmarkNotifier(const DCOPCString& objId = "KBookmarkNotifier") : DCOPObject(objId) {}
-
-k_dcop_signals:
-  void addedBookmark( QString filename, QString url, QString text, QString address, QString icon );
-  void createdNewFolder( QString filename, QString text, QString address );
-  void updatedAccessMetadata( QString filename, QString url );
+    static void addedBookmark(const QString &filename, const QString &url, const QString &text,
+                              const QString &address, const QString &icon);
+    static void createdNewFolder(const QString &filename, const QString &text,
+                                 const QString &address);
+    static void updatedAccessMetadata(const QString &filename, const QString &url);
 };
 
 #endif

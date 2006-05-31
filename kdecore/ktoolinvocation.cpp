@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2005 Brad Hards
+    Copyright (C) 2006 Thiago Macieira <thiago@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,5 +17,18 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+
+#include "ktoolinvocation.h"
+
+Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher *, klauncherIface,
+                          (QDBus::sessionBus().findInterface<org::kde::KLauncher>("org.kde.klauncher",
+                                                             "/KLauncher")
+                          ));
+
+org::kde::KLauncher *KToolInvocation::klauncher()
+{
+   return *::klauncherIface();
+}
+
 // this seems a bit silly, but equally seems to be required.
 #include "ktoolinvocation.moc"

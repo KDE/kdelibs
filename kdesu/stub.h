@@ -11,8 +11,8 @@
 #ifndef __Stub_h_Included__
 #define __Stub_h_Included__
 
-#include <qbytearray.h>
-#include <QList>
+#include <QtCore/qbytearray.h>
+#include <QtCore/qlist.h>
 
 #include "process.h"
 #include "kcookie.h"
@@ -32,12 +32,6 @@ public:
     ~StubProcess();
 
     /**
-     * Specify dcop transport
-     */
-    void setDcopTransport(const QByteArray &dcopTransport)
-       { m_pCookie->setDcopTransport(dcopTransport); }
-
-    /**
      * Set the command.
      */
     void setCommand(const QByteArray &command) { m_Command = command; }
@@ -51,11 +45,6 @@ public:
      * Set to "X only mode": Sycoca is not built and kdeinit is not launched.
      */
     void setXOnly(bool xonly) { m_bXOnly = xonly; }
-
-    /**
-     * Enable DCOP forwarding.
-     */
-    void setDCOPForwarding(bool dcopForwarding) { m_bDCOPForwarding = dcopForwarding; }
 
     /**
      * Set the priority of the process. The priority value must be between 0
@@ -93,24 +82,9 @@ protected:
      */
     virtual QByteArray displayAuth() { return m_pCookie->displayAuth(); }
 #endif
-    /**
-     * See display.
-     */
-    virtual QByteArray dcopServer() { return m_pCookie->dcopServer(); }
-    /**
-     * See display.
-     */
-    virtual QByteArray dcopAuth() { return m_pCookie->dcopAuth(); }
-    /**
-     * See display.
-     */
-    virtual QByteArray iceAuth() { return m_pCookie->iceAuth(); }
-
     bool m_bXOnly;
-    bool m_bDCOPForwarding;
     int m_Priority;
     int  m_Scheduler;
-    QByteArray m_dcopTransport;
     QByteArray m_Command;
     QByteArray m_User;
     KCookie *m_pCookie;

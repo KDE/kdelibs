@@ -3,6 +3,8 @@ project(kabc)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
+add_definitions(${QDBUS_DEFINITIONS})
+
 # these apply also for all subdirs
 include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}
@@ -82,8 +84,6 @@ set(kabc_LIB_SRCS
 )
 
 kde4_automoc(${kabc_LIB_SRCS})
-
-kde4_add_dcop_skels(kabc_LIB_SRCS addresseehelper.h)
 
 kde4_add_library(kabc SHARED ${kabc_LIB_SRCS})
 

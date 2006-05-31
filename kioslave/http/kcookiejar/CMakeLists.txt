@@ -7,7 +7,10 @@ add_subdirectory( tests )
 
 ########### next target ###############
 
-set(kcookiejar_SRCS main.cpp)
+set(kcookiejar_SRCS
+main.cpp
+kcookiejariface.cpp
+)
 
 kde4_automoc(${kcookiejar_SRCS})
 
@@ -23,13 +26,10 @@ set(kded_kcookiejar_PART_SRCS
    kcookiejar.cpp
    kcookieserver.cpp
    kcookiewin.cpp
+   kcookiejaradaptor.cpp
 )
 
 kde4_automoc(${kded_kcookiejar_PART_SRCS})
-
-set( kded_kcookiejar_DCOP_SKEL_SRCS kcookieserver.h )
-
-kde4_add_dcop_skels(kded_kcookiejar_PART_SRCS ${kded_kcookiejar_DCOP_SKEL_SRCS})
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 

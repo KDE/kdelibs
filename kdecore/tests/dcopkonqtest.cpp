@@ -2,7 +2,8 @@
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <dcopclient.h>
+#include <dbus/qdbusinterface.h>
+#include <dbus/qdbusreply.h>
 
 int main( int argc, char** argv )
 {
@@ -10,19 +11,25 @@ int main( int argc, char** argv )
    KCmdLineArgs::init(argc, argv, &about);
    KApplication app(false);
 
-    KApplication::dcopClient()->attach();
+    //KApplication::dcopClient()->attach();
     // KApplication::dcopClient()->registerAs( "kidlclienttest" );
 
     QByteArray data;
 
     kDebug() << "sending reparseConfiguration to object KonquerorIface in konqueror" << endl;
+    QDBusInterfacePtr kded("org.kde.konqueror", "/KonquerorIface", "org.kde.KonquerorIface");
+    QDBusReply<void> reply = kded->call("reparceConfiguration");
+
+    if ( reply.isError() ) kDebug() << "void expected, " << reply.error().name() << " returned" << endl;
+
+    /*
        QByteArray snd;
        QByteArray rcv;
        DCOPCString _type_;
        KApplication::dcopClient()->call( "konqueror", "KonquerorIface", "reparseConfiguration()", snd, _type_, rcv );
        kDebug() << _type_ << endl;
        if( _type_ != "void" ) kDebug() << "void expected, " << _type_.data() << " returned" << endl;
-
+    */
 /*
 debug("sending configure to object KonquerorIface in konqueror");
     if (KApplication::dcopClient()->send( "konqueror", "KonquerorIface", "configure()", data ))

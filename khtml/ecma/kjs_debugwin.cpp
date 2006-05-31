@@ -40,6 +40,7 @@
 #include <qdatastream.h>
 #include <qpainter.h>
 #include <qscrollbar.h>
+#include <qlist.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -56,7 +57,6 @@
 #include <kconfig.h>
 #include <kconfigbase.h>
 #include <kapplication.h>
-#include <dcop/dcopclient.h>
 #include <kstringhandler.h>
 
 #include "kjs_dom.h"
@@ -72,7 +72,9 @@
 #include <kjs/function.h>
 #include <kjs/interpreter.h>
 #include <kjs/value.h>
-#include <QList>
+
+#define QT_NO_KEYWORDS
+#include <dbus/qdbus.h>
 
 using namespace KJS;
 using namespace khtml;
@@ -875,8 +877,12 @@ bool KJSDebugWin::exception(ExecState *exec, ValueImp *value, bool inTryCatch)
     KConfigGroup cg(KGlobal::config(), QLatin1String("Java/JavaScript Settings"));
     cg.writeEntry("ReportJavaScriptErrors",false);
     cg.sync();
+#if 0
     QByteArray data;
     KApplication::dcopClient()->send( "konqueror*", "KonquerorIface", "reparseConfiguration()", data );
+#elif defined __GNUC__
+#warning KJS should have an interface
+#endif
   }
 
   return (m_mode != Stop);

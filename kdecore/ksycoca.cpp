@@ -22,7 +22,6 @@
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
 #include "kapplication.h"
-#include "dcopclient.h"
 #include "kglobal.h"
 #include "kdebug.h"
 #include "kprocess.h"
@@ -31,6 +30,7 @@
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qbuffer.h>
+#include <dbus/qdbus.h>
 
 #include <stdlib.h>
 #include <fcntl.h>
@@ -84,18 +84,17 @@ int KSycoca::version()
 
 // Read-only constructor
 KSycoca::KSycoca()
-  : DCOPObject("ksycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
+  : m_lstFactories(0), m_str(0), bNoDatabase(false),
     m_sycoca_size(0), m_sycoca_mmap(0), m_timeStamp(0), d(new Private)
 {
-   // Register app as able to receive DCOP messages
-   if (kapp && !KApplication::dcopClient()->isAttached())
-   {
-      KApplication::dcopClient()->attach();
-   }
-   // We register with DCOP _before_ we try to open the database.
+   QDBus::sessionBus().connect(QString(), QString(), "org.kde.KSycoca", "notifyDatabaseChanged",
+                               this, SLOT(notifyDatabaseChanged(QStringList)));
+   // We register with D-Bus _before_ we try to open the database.
    // This way we can be relatively sure that the KDE framework is
    // up and running (kdeinit, dcopserver, klauncher, kded) and
    // that the database is up to date.
+
+   //   -> huh? -thiago
    openDatabase();
    _self = this;
 }
@@ -193,9 +192,10 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 
 // Read-write constructor - only for KBuildSycoca
 KSycoca::KSycoca( bool /* dummy */ )
-  : DCOPObject("ksycoca_building"), m_lstFactories(0), m_str(0), bNoDatabase(false),
+  : m_lstFactories(0), m_str(0), bNoDatabase(false),
     m_sycoca_size(0), m_sycoca_mmap(0), d(new Private)
 {
+   QDBus::sessionBus().registerObject("/ksycoca_building", this, QDBusConnection::ExportSlots);
    m_lstFactories = new KSycocaFactoryList;
    _self = this;
 }
@@ -523,8 +523,8 @@ void KSycocaEntry::read( QDataStream &s, QStringList &list )
   }
 }
 
-void KSycoca::virtual_hook( int id, void* data )
-{ DCOPObject::virtual_hook( id, data ); }
+void KSycoca::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 void KSycocaEntry::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

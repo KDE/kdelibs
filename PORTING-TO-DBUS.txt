@@ -1,0 +1,236 @@
+!Guidelines to using QtDBus in KDE 4
+{maketoc}
+
+!!Compiling DBUS
+The KDE libraries require an unreleased version of DBUS. You need to download it from the freedesktop.org CVS server:
+
+~pp~ cvs -d :pserver:anoncvs@anoncvs.freedesktop.org:/cvs/dbus login
+cvs -d :pserver:anoncvs@anoncvs.freedesktop.org:/cvs/dbus co dbus 
+./autogen.sh --disable-qt --disable-qt3 --prefix=$DBUSDIR
+make
+make install~/pp~
+
+!!Compiling QtDBus
+QtDBus now lives in kdesupport and uses cmake. It also requires you to
+have Qt 4.1.3 in order to compile (qt-copy has it). To compile it:
+
+~pp~svn co $SVNROOT/trunk/kdesupport
+cd $your_preferred_objdir
+cmake $OLDPWD/kdesupport
+make~/pp~
+
+DBUS is found using pkg-config, so if you did not install it to a
+standard path in the previous step, set the PKG_CONFIG_PATH:
+
+~pp~PKG_CONFIG_PATH=$DBUSDIR/lib/pkgconfig; 
+export PKG_CONFIG_PATH~/pp~
+
+Hint: you may want to install QtDBUS to $DBUSDIR too.
+
+!!Compiling kdelibs
+The current code is in /branches/work/kdelibs4-dbus.
+
+Remember to set PKG_CONFIG_PATH to where you installed DBUS to
+($DBUSDIR/lib/pkgconfig), where you installed QtDBUS and where Qt is
+installed ($QTDIR/lib). This is necessary because QtDBUS depends on Qt
+and is found using pkg-config.
+
+Commands:
+
+~pp~cd kdelibs
+svn sw $SVNROOT/branches/work/kdelibs4-dbus
+export PKG_CONFIG_PATH=$QTDIR/lib:$DBUSDIR/lib/pkgconfig
+cd $objdir
+cmake $OLDPWD
+make~/pp~
+
+Hint for Trolls: pass cmake the flags -DCMAKE_C_COMPILER=/opt/teambuilder2/bin/gcc -DCMAKE_CXX_COMPILER=/opt/teambuilder2/bin/g++ if you want to build with Teambuilder.
+
+!!Porting existing DCOP code
+!!!Usage of DCOPClient
+The most direct replacement of DCOPClient are [http://developer.kde.org/~thiago/QtDBus/qdbusconnection.html|QDBusConnection] and [http://developer.kde.org/~thiago/QtDBus/qdbusbusservice.html|QDBusBusService]. The convenience method QDBus::sessionBus() usually replaces all occurrences of KApplication::dcopClient().
+
+The methods in DCOPClient that are related to listing existing applications on the bus are in QDBusBusService (which you can access with QDBus::sessionBus().busService()).
+
+!!!Hand-written calls using DCOPClient
+DCOPClient has a "call" method that takes two QByteArrays containing the data to be transmitted and the data that was received. The most direct replacement for this is using [http://developer.kde.org/~thiago/QtDBus/qdbusmessage.html|QDBusMessage] and QDBusConnection::send or sendWithReply. You most likely don't want to use that.
+
+Instead, drop the QByteArray and QDataStream variables and use the dynamic call mode (see next section).
+
+!!!Calls using DCOPRef and DCOPReply
+The direct replacement for DCOPRef is QDBusInterfacePtr, which is just a wrapper around [http://developer.kde.org/~thiago/QtDBus/qdbusinterface.html|QDBusInterface]. The replacement for [http://developer.kde.org/~thiago/QtDBus/qdbusreply.html|QDBusReply].
+
+However, there are some important differences to be noticed:
+* QDBusInterface is not "cheap": it constructs an entire QObject. So, if you can, store the value somewhere for later reuse.
+* QDBusReply is a template class, so you must know ahead of time what your reply type is.
+* If you create a QDBusInterface without specifying the third argument (the interface name), this will generate a round-trip to the remote application and will allocate non-shared memory. So, wherever possible, use the interface name to make it cached.
+
+Sample code in DCOP:
+~pp~
+    DCOPRef kded("kded", "favicons")
+    DCOPReply reply = kded.call("iconForURL(KUrl)", url);
+    QString icon;
+    if (reply.isValid())
+        reply.get(icon);
+    return icon;
+~/pp~
+
+Sample code in DBUS:
+~pp~
+    QDBusInterfacePtr kded("org.kde.kded", "/modules/favicons", "org.kde.FaviconsModule");
+    QDBusReply<QString> reply = kded->call("iconForURL", url.url());
+    return reply;
+~/pp~
+
+Things to note in the code:
+# use the 3-argument for in QDBusInterfacePtr. The interface name you can usually obtain by calling "interfaces" on the existing DCOP object (in this case, "dcop kded favicons interfaces").
+# the "application id" becomes a "service name" and it should start with "org.kde"
+# the "object id" becomes an "object path" and must start with a slash
+# it's "kded->call", not "kded.call"
+# you don't write the function signature: just the function name
+# custom types are not supported (nor ever will be), so you need to convert them to basic types
+
+DBUS also supports multiple return values. You will normally not find this kind of construct in DCOP, since it didn't support that functionality. However, this may show up in the form of a struct being returned. In this case, you may want to use the functionality of multiple return arguments. You'll need to use QDBusMessage in this case:
+
+Sample;
+~pp~
+    QDBusInterfacePtr interface("org.kde.myapp", "/MyObject", "org.kde.MyInterface");
+    QDBusMessage reply = interface->call("myFunction", argument1, argument2);
+    if (reply.type() == QDBusMessage::ReplyMessage) {
+        returnvalue1 = reply.at(0).toString();
+        returnvalue2 = reply.at(1).toInt();
+        /* etc. */
+    }
+~/pp~
+
+!!!Usage of DCOPObject
+There is no direct replacement of DCOPObject. It's replaced by normal QObject, with or without an adaptor, with explicit registering. So, in order to port, you need to follow these steps:
+
+# Remove the "virtual public DCOPObject" from the class declaration
+# Replace the K_DCOP macro with Q_CLASSINFO("D-Bus Interface", "<interfacename>") where <interfacename> is the name of the interface you're declaring (generally, it'll be "org.kde" followed by the class name itself)
+# Remove the k_dcop method references.
+# Make the methods that were DCOP-accessible scriptable slots. That is, you must make it:
+~pp~
+  public Q_SLOTS:
+    Q_SCRIPTABLE void methodName();
+~/pp~
+# Change "ASYNC" to "Q_ASYNC void"
+# Remove the call to the DCOPObject constructor in the class' constructor.
+# Add the registering to the constructor.
+
+Note that the Q_CLASSINFO macro is case-sensitive. Do not misspell "D-Bus Interface" (that's capital I and D-Bus has a dash).
+
+In order to register the object, you'll need to do:
+~pp~
+    QDBus::sessionBus().registerObject("<object-path>", this, QDBusConnection::ExportSlots);
+~/pp~
+
+Normally, "<object-path>" will be the argument the class was passing to the DCOPObject constructor. Don't forget the leading slash. Another useful option to the third argument is QDBusConnection::ExportProperties, which will export the scriptable properties.
+
+!!!Signals
+DCOP had a broken support for signals. They were public methods, while normal signals in QObject are protected methods. The correct way to port is to refactor the code to support signals correctly.
+
+On the current version of QtDBus, you cannot use QDBusConnection::ExportSignals. This is a known limitation and will be fixed in the future. In order to use signals, you'll need to write an adaptor.
+
+Adaptors are a special QObject that you attach to your normal QObject and whose sole purpose is to relay things to and from the bus. You'll generally use it to export more than one interface or when you need to translate the call arguments in any way.
+
+You'll declare it as:
+~pp~
+class MyAdaptor: public QDBusAbstractAdaptor
+{
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.MyAdaptor")
+public:
+    MyAdaptor(QObject *parent);
+
+signals:
+    void signal1();
+    void signal2(const QString &argument);
+};
+~/pp~
+
+And the .cpp file will have:
+~pp~
+MyAdaptor::MyAdaptor(QObject *parent)
+    : QDBusAbstractAdaptor(parent)
+{
+    setAutoRelaySignals(true);
+    /* alternative syntax:
+    connect(parent, SIGNAL(signal1()), SIGNAL(signal1()));
+    connect(parent, SIGNAL(signal2(QString)), SIGNAL(QString()));
+    */
+}
+~/pp~
+
+In the class using the adaptor, do this:
+~pp~
+    new MyAdaptor(this);
+    QDBus::sessionBus().registerObject("/<object-path>", this, QDBusConnection::ExportAdaptors);
+~/pp~
+
+Things to notice:
+* MyAdaptor is not exported. This is a private class and the .h file should be a _p.h as well.
+* There's no need to mark the signals Q_SCRIPTABLE. The same goes for slots and properties.
+* The "setAutoRelaySignals" function just connects all signals in "parent" to the signals of the same name and arguments in the adaptor.
+* There's no need to store the adaptor pointer, it'll be deleted automatically when needed. Therefore, do not delete it and, especially, do NOT reparent it.
+* You can create more adaptors later, if you need. There's no need to
+re-register the object.
+
+!!!DCOP Transactions
+DCOP had the capability of doing transactions: that is, delay the reply from a called method until later on. QtDBus has the same functionality, under a different name.
+
+Unlike DCOP, with QtDBus, you need a special parameter to your slot in order to receive the information about the call and set up the delayed reply. This parameter is of type "QDBusMessage" and must appear after the last input parameter. You declare that you want a delayed reply by creating a reply. You will be responsible for sending it later.
+
+Sample DCOP code:
+~pp~
+class MyClass: public QObject, public DCOPObject
+{
+    DCOPTransaction *xact;
+    DCOPClient *client;
+
+k_dcop:
+    QString myMethod(const QString &arg1)
+    {
+        client = callingDcopClient();
+        xact = client->beginTransaction();
+        QTimer::singleShot(0, this, SLOT(processLater());
+        return QString();       // reply will be ignored
+    }
+
+public Q_SLOTS:
+    void processLater()
+    {
+        QByteArray replyData;
+        QDataStream stream(&replyData, QIODevice::WriteOnly);
+        stream << QString(QLatin1String("foo"));
+        client->endTransaction(xact, "QString", replyData);
+    }
+};
+~/pp~
+
+The equivalent code with QtDBus would be:
+~pp~
+class MyClass: public QObject
+{
+    QDBusMessage reply;
+
+public Q_SLOTS:
+    Q_SCRIPTABLE QString myMethod(const QString &arg1, const QDBusMessage &msg)
+    {
+        reply = QDBusMessage::methodReply(msg);
+        QTimer::singleShot(0, this, SLOT(processLater());
+        return QString();       // reply will be ignored
+    }
+
+    void processLater()
+    {
+        reply << QString(QLatin1String("foo"));
+        reply.connection().send(reply);
+    }
+};
+~/pp~	
+
+!!Caveats when porting
+
+* You cannot pass "long" arguments, so remember to cast any WId parameters to qlonglong.
+* KSSL object paths should start with "/modules/" (i.e., /modules/kssld, /modules/favicons, etc.)

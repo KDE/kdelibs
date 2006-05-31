@@ -31,20 +31,19 @@
 #include <q3cstring.h>
 #include <qpixmap.h>
 
+#include "kdelibs_export.h"
+
 #define IM_SERVICE_TYPE "DCOP/InstantMessenger"
 #define IM_CLIENT_PREFERENCES_FILE "default_components"
 #define IM_CLIENT_PREFERENCES_SECTION "InstantMessenger"
 #define IM_CLIENT_PREFERENCES_ENTRY "imClient"
 
-#include "kimproxyiface.h"
-
-class DCOPClient;
-class KIMIface_stub;
 class KUrl;
 class ContactPresenceListCurrent;
+class OrgKdeKIMInterface;
 
 /** FIXME: remove for KDE4, binary compability again. */
-typedef QMap<DCOPCString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
+typedef QMap<QString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
 typedef QHash<QString, AppPresence*> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
 /** FIXME: remove presenceMap and call this presenceMap in KDE4.  This hack is for binary compatibility */
 typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
@@ -68,7 +67,7 @@ typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
  *
  * @author Will Stephenson <lists@stevello.free-online.co.uk>
  */
-class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
+class KIMPROXY_EXPORT KIMProxy : public QObject
 {
 	Q_OBJECT
 	struct Private;
@@ -79,14 +78,9 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 	public:
 		/**
 		 * Obtain an instance of KIMProxy.
-		 * Note, if you share this DCOPClient with your own app,
-		 * that kimproxy uses DCOPClient::setNotifications() to make sure
-		 * it updates its information when the IM application it is interfacing to
-		 * exits.
-		 * @param client your app's DCOP client.
 		 * @return The singleton instance of this class.
 		 */
-		static KIMProxy * instance( DCOPClient * client );
+		static KIMProxy * instance();
 
 		/**
 		 * Get the proxy ready to connect
@@ -95,6 +89,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		 */
 		bool initialize();
 
+        protected Q_SLOTS:
 		/**
 		 * Obtain a list of IM-contactable entries in the KDE
 		 * address book.
@@ -211,7 +206,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		 * @param altFileName an alternate filename describing the file
 		 * @param fileSize file size in bytes
 		 */
-		void sendFile(const QString &uid, const KUrl &sourceURL, const QString &altFileName = QString(), uint fileSize = 0);
+		void sendFile(const QString &uid, const QString &sourceURL, const QString &altFileName = QString(), uint fileSize = 0);
 
 		/**
 		 * Add a contact to the contact list
@@ -236,11 +231,10 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Just exists to let the idl compiler make the DCOP signal for this
 		 */
-		void contactPresenceChanged( QString uid, DCOPCString appId, int presence );
+		void contactPresenceChanged( QString uid, QString appId, int presence );
 
-	public Q_SLOTS:
-		void registeredToDCOP( const QByteArray& appId );
-        void unregisteredFromDCOP( const QByteArray& appId );
+        private Q_SLOTS:
+                void nameOwnerChanged( const QString &name, const QString &oldOwner, const QString &newOwner);
 	Q_SIGNALS:
 		/**
 		 * Indicates that the specified UID's presence changed
@@ -257,7 +251,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Bootstrap our presence data for a newly registered app
 		 */
-		void pollApp( const DCOPCString & appId );
+		void pollApp( const QString & appId );
 		/**
 		 * Bootstrap our presence data by polling all known apps
 		 */
@@ -266,7 +260,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Update our records with the given data
 		 */
-		bool updatePresence( const QString &uid, const DCOPCString &appId, int presence );
+		bool updatePresence( const QString &uid, const QString &appId, int presence );
 
 		/**
 		 * Get the name of the user's IM weapon of choice
@@ -276,18 +270,18 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Get the app stub best able to reach this uid
 		 */
-		KIMIface_stub * stubForUid( const QString &uid );
+		OrgKdeKIMInterface * stubForUid( const QString &uid );
 
 		/**
 		 * Get the app stub for this protocol.
 		 * Take the preferred app first, then any other.
 		 */
-		KIMIface_stub * stubForProtocol( const QString &protocol );
+		OrgKdeKIMInterface * stubForProtocol( const QString &protocol );
 
 	private:
 		// client stubs used to get presence
 		// appId (from DCOP) -> KIMIface_stub
-		QHash<QString, KIMIface_stub*> m_im_client_stubs;
+		QHash<QString, OrgKdeKIMInterface*> m_im_client_stubs;
 		// map containing numeric presence and the originating application ID for each KABC uid we know of
 		// KABC Uid -> (appId, numeric presence )(AppPresence)
 		PresenceMap m_presence_map;
@@ -301,7 +295,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject, virtual public KIMProxyIface
 		/**
 		 * Construct an instance of the proxy library.
 		 */
-		KIMProxy( DCOPClient * client);
+		KIMProxy();
 		static KIMProxy * s_instance;
 };
 

@@ -20,8 +20,6 @@
 #ifndef __khtml_Iface_h__
 #define __khtml_Iface_h__
 
-#include <dcopobject.h>
-#include <dcopref.h>
 #include <kurl.h>
 
 class KHTMLPart;

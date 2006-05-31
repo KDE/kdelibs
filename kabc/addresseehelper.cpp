@@ -22,6 +22,8 @@
 #include <kconfig.h>
 #include <klocale.h>
 
+#include <dbus/qdbus.h>
+
 #include "addresseehelper.h"
 
 using namespace KABC;
@@ -38,13 +40,12 @@ AddresseeHelper *AddresseeHelper::self()
 }
 
 AddresseeHelper::AddresseeHelper()
-  : QObject( qApp ),
-    DCOPObject( "KABC::AddresseeHelper" )
+  : QObject( qApp )
 {
   initSettings();
 
-  connectDCOPSignal( "kaddressbook", "KABC::AddressBookConfig",
-                     "changed()", "initSettings()", false );
+  QDBus::sessionBus().connect(QString(), QString(), "org.kde.kabc.AddressBookConfig", "changed",
+          this, SLOT(initSettings()));
 }
 
 // static
@@ -109,3 +110,5 @@ bool AddresseeHelper::tradeAsFamilyName() const
 {
   return mTradeAsFamilyName;
 }
+
+#include "addresseehelper.moc"

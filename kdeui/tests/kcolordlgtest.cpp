@@ -30,7 +30,7 @@ int main( int argc, char *argv[] )
 	QApplication::setColorSpec( QApplication::CustomColor );
 	KAboutData about("KColorDialogTest", "KColorDialogTest", "version");
 	KCmdLineArgs::init(argc, argv, &about);
-	KApplication::disableAutoDcopRegistration();
+	//KApplication::disableAutoDcopRegistration();
 
 	KApplication a;
 

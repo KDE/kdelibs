@@ -21,11 +21,11 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <dcopclient.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <knotification.h>
 #include <kprotocolmanager.h>
+#include <dbus/qdbus.h>
 
 #include "proxyscout.moc"
 #include "discovery.h"
@@ -33,13 +33,12 @@
 
 namespace KPAC
 {
-    ProxyScout::QueuedRequest::QueuedRequest( const KUrl& u )
-        : transaction( KApplication::dcopClient()->beginTransaction() ),
-          url( u )
+    ProxyScout::QueuedRequest::QueuedRequest( const QDBusMessage &reply, const KUrl& u )
+        : transaction( reply ), url( u )
     {
     }
 
-    ProxyScout::ProxyScout( const QByteArray& name )
+    ProxyScout::ProxyScout( const QString& name )
         : KDEDModule( name ),
           m_instance( new KInstance( "proxyscout" ) ),
           m_downloader( 0 ),
@@ -54,7 +53,7 @@ namespace KPAC
         delete m_instance;
     }
 
-    QString ProxyScout::proxyForURL( const KUrl& url )
+    QString ProxyScout::proxyForURL( const KUrl& url, const QDBusMessage &msg )
     {
         if ( m_suspendTime )
         {
@@ -69,18 +68,18 @@ namespace KPAC
 
         if ( m_downloader || startDownload() )
         {
-            m_requestQueue.append( url );
-            return QString();
+            m_requestQueue.append( QueuedRequest( QDBusMessage::methodReply(msg), url ) );
+            return QString();   // return value will be ignored
         }
         else return "DIRECT";
     }
 
-    ASYNC ProxyScout::blackListProxy( const QString& proxy )
+    void ProxyScout::blackListProxy( const QString& proxy )
     {
         m_blackList[ proxy ] = std::time( 0 );
     }
 
-    ASYNC ProxyScout::reset()
+    void ProxyScout::reset()
     {
         delete m_script;
         m_script = 0;
@@ -133,15 +132,14 @@ namespace KPAC
 		notify->sendEvent();
         }
 
-        for ( RequestQueue::ConstIterator it = m_requestQueue.begin();
+        for ( RequestQueue::Iterator it = m_requestQueue.begin();
               it != m_requestQueue.end(); ++it )
         {
-            DCOPCString type = "QString";
-            QByteArray data;
-            QDataStream ds( &data, QIODevice::WriteOnly );
-            if ( success ) ds << handleRequest( ( *it ).url );
-            else ds << QString( "DIRECT" );
-            KApplication::dcopClient()->endTransaction( ( *it ).transaction, type, data );
+            if ( success )
+                ( *it ).transaction << handleRequest( ( *it ).url );
+            else
+                ( *it ).transaction << QString( "DIRECT" );
+            QDBus::sessionBus().send( ( *it ).transaction );
         }
         m_requestQueue.clear();
         m_downloader->deleteLater();
@@ -193,7 +191,7 @@ namespace KPAC
         return "DIRECT";
     }
 
-    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const QByteArray& name )
+    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const QString& name )
     {
         return new ProxyScout( name );
     }

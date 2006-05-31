@@ -24,7 +24,7 @@
 #include <QStringList>
 #include <QSet>
 
-#include <dcopobject.h>
+#include <kdelibs_export.h>
 
 namespace KABC {
 
@@ -51,10 +51,10 @@ namespace KABC {
  * tradeAsFamilyName()). The corresponding configuration
  * field is @c TradeAsFamilyName.
  */
-class KABC_EXPORT AddresseeHelper : public QObject, public DCOPObject
+class KABC_EXPORT AddresseeHelper : public QObject
 {
-  K_DCOP
-        
+  Q_OBJECT
+
   public:
     /**
      * Singleton interface to this class
@@ -99,11 +99,11 @@ class KABC_EXPORT AddresseeHelper : public QObject, public DCOPObject
      */
     bool tradeAsFamilyName() const;
 
-  k_dcop:
+  public Q_SLOTS:
     /**
      * Recreates the static data and reparses the configuration.
      */
-    ASYNC initSettings();
+    void initSettings();
 
   private:
     AddresseeHelper();

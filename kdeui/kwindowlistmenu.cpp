@@ -38,9 +38,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstringhandler.h>
 
 #include <netwm.h>
-#include <QApplication>
+#include <qapplication.h>
 #include <kstyle.h>
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 
 #undef Bool
 #include "kwindowlistmenu.h"
@@ -221,12 +221,12 @@ void KWindowListMenu::selectActiveWindow()
 
 void KWindowListMenu::slotUnclutterWindows()
 {
-    DCOPRef("kwin", "KWinInterface").send("unclutterDesktop()");
+    QDBusInterfacePtr("org.kde.kwin", "/KWin")->call("unclutterDesktop");
 }
 
 void KWindowListMenu::slotCascadeWindows()
 {
-    DCOPRef("kwin", "KWinInterface").send("cascadeDesktop()");
+    QDBusInterfacePtr("org.kde.kwin", "/KWin")->call("cascadeDesktop");
 }
 
 void KWindowListMenu::virtual_hook( int id, void* data )

@@ -16,8 +16,6 @@
   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include <dcopclient.h>
-
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -48,7 +46,8 @@
 #include <qtooltip.h>
 #include <qtimer.h>
 #include <kvbox.h>
-#include <QHelpEvent>
+#include <qevent.h>
+#include <dbus/qdbus.h>
 
 using namespace KNotify;
 
@@ -816,9 +815,8 @@ void KNotifyWidget::save()
 
     if ( kapp )
     {
-        if ( !KApplication::dcopClient()->isAttached() )
-            KApplication::dcopClient()->attach();
-        DCOPRef("knotify", "").send("reconfigure()");
+        QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KNotify", "reconfigure");
+        QDBus::sessionBus().send(signal);
     }
 
     emit changed( false );

@@ -28,11 +28,10 @@
 #include "kpastetextaction.h"
 
 #include <QClipboard>
+#include <dbus/qdbus.h>
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <dcopclient.h>
-#include <dcopref.h>
 #include <kapplication.h>
 #include <kstringhandler.h>
 
@@ -95,11 +94,10 @@ void KPasteTextAction::menuAboutToShow()
 {
     m_popup->clear();
     QStringList list;
-    DCOPClient *client = KApplication::dcopClient();
-    if (client->isAttached() && client->isApplicationRegistered("klipper")) {
-      DCOPRef klipper("klipper","klipper");
-      DCOPReply reply = klipper.call("getClipboardHistoryMenu");
-      if (reply.isValid())
+    QDBusInterfacePtr klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
+    if (klipper->isValid()) {
+      QDBusReply<QStringList> reply = klipper->call("getClipboardHistoryMenu");
+      if (reply.isSuccess())
         list = reply;
     }
     QString clipboardText = qApp->clipboard()->text(QClipboard::Clipboard);
@@ -121,16 +119,15 @@ void KPasteTextAction::menuAboutToShow()
 
 void KPasteTextAction::slotTriggered(QAction* action)
 {
-    DCOPClient *client = KApplication::dcopClient();
-    if (client->isAttached() && client->isApplicationRegistered("klipper")) {
-      DCOPRef klipper("klipper","klipper");
-
-     DCOPReply reply = klipper.call("getClipboardHistoryItem(int)", m_popup->actions().indexOf(action));
-      if (!reply.isValid())
+    QDBusInterfacePtr klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
+    if (klipper->isValid()) {
+      QDBusReply<QString> reply = klipper->call("getClipboardHistoryItem",
+                                                m_popup->actions().indexOf(action));
+      if (!reply.isSuccess())
         return;
       QString clipboardText = reply;
-      reply = klipper.call("setClipboardContents(QString)", clipboardText);
-      if (reply.isValid())
+      reply = klipper->call("setClipboardContents", clipboardText);
+      if (reply.isSuccess())
         kDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;
     }
 }

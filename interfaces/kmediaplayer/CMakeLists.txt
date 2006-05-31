@@ -1,5 +1,7 @@
 add_subdirectory( kfileaudiopreview )
 
+add_definitions( ${QDBUS_DEFINITIONS} )
+
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
 ########### next target ###############
@@ -7,15 +9,10 @@ include_directories( ${KDE4_KPARTS_INCLUDES} )
 set(kmediaplayer_LIB_SRCS
 player.cpp
 view.cpp
+kmediaplayeradaptor.cpp
 )
 
 kde4_automoc(${kmediaplayer_LIB_SRCS})
-
-set( kmediaplayer_DCOP_SKEL_SRCS
-playerdcopobject.h
-)
-
-kde4_add_dcop_skels(kmediaplayer_LIB_SRCS ${kmediaplayer_DCOP_SKEL_SRCS})
 
 kde4_add_library(kmediaplayer SHARED ${kmediaplayer_LIB_SRCS})
 
@@ -28,4 +25,4 @@ install_targets(${LIB_INSTALL_DIR} kmediaplayer )
 ########### install files ###############
 
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kmediaplayerengine.desktop kmediaplayer.desktop )
-install_files( /include/kmediaplayer FILES player.h playerdcopobject.h view.h )
+install_files( /include/kmediaplayer FILES player.h view.h )

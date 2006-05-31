@@ -24,8 +24,9 @@
  */
 #include "config.h"
 
+#include "kactioncollection.h"
 #include "kmainwindow.h"
-#include "kmainwindowiface.h"
+#include "kmainwindowiface_p.h"
 #include "ktoolbarhandler.h"
 #include "kwhatsthismanager_p.h"
 #include "kxmlguifactory.h"
@@ -77,7 +78,6 @@ public:
     bool care_about_geometry:1;
     bool shuttingDown:1;
     QString autoSaveGroup;
-    KMainWindowInterface *m_interface;
     KDEPrivate::ToolBarHandler *toolBarHandler;
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
@@ -176,16 +176,10 @@ static bool being_first = true;
 KMainWindow::KMainWindow( QWidget* parent, const char *name, Qt::WFlags f )
     : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
-    initKMainWindow(name, 0);
+    initKMainWindow(name);
 }
 
-KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, Qt::WFlags f )
-    : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
-{
-    initKMainWindow(name, cflags);
-}
-
-void KMainWindow::initKMainWindow(const char *name, int cflags)
+void KMainWindow::initKMainWindow(const char *name)
 {
     KWhatsThisManager::init ();
 
@@ -197,27 +191,12 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManaged());
     // set a unique object name. Required by session management.
-    QByteArray objname;
-    QByteArray s;
+    QString objname;
+    QString s;
     int unusedNumber;
-    if ( !name )
-        { // no name given
-        objname = (qApp->applicationName() + "-mainwindow#").toLatin1();
-        s = objname + '1'; // start adding number immediately
-        unusedNumber = 1;
-        }
-    else if( name[0] != '\0' && name[ strlen( name ) - 1 ] == '#' )
-        { // trailing # - always add a number
-        objname = name;
-        s = objname + '1'; // start adding number immediately
-        unusedNumber = 1;
-        }
-    else
-        {
-        objname = name;
-        s = objname;
-        unusedNumber = 0; // add numbers only when needed
-        }
+    objname = qApp->applicationName() + "/MainWindow-";
+    s = objname + QLatin1Char('1'); // start adding number immediately
+    unusedNumber = 1;
     for(;;) {
         QList<QWidget*> list = qApp->topLevelWidgets();
         bool found = false;
@@ -263,10 +242,15 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
     }
 
     setCaption( kapp->caption() );
-    if ( cflags & NoDCOPObject)
-        d->m_interface = 0;
-    else
-        d->m_interface = new KMainWindowInterface(this);
+    new KMainWindowInterface(this);
+    QString pathname = "/" + objectName();
+    QDBus::sessionBus().registerObject(pathname, this, QDBusConnection::ExportAllSlots |
+                                       QDBusConnection::ExportAllProperties |
+                                       QDBusConnection::ExportAdaptors);
+    QDBus::sessionBus().registerObject(pathname + "/actions", actionCollection(),
+                                       QDBusConnection::ExportAllSlots |
+                                       QDBusConnection::ExportAllProperties |
+                                       QDBusConnection::ExportChildObjects);
 
     // Get notified when settings change
     connect( this, SIGNAL( iconSizeChanged(const QSize&) ), SLOT( setSettingsDirty() ) );
@@ -334,7 +318,6 @@ KMainWindow::~KMainWindow()
     delete d->settingsTimer;
     QMenuBar* mb = internalMenuBar();
     delete mb;
-    delete d->m_interface;
     delete d;
     sMemberList.removeAll( this );
 }

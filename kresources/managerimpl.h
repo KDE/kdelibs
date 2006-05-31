@@ -25,7 +25,6 @@
 
 #include <qstring.h>
 
-#include "manageriface.h"
 #include <kresources/resource.h>
 
 class KConfig;
@@ -41,8 +40,9 @@ class ManagerNotifier;
 
   Do not use this class directly. Use ResourceManager instead
 */
-class KRESOURCES_EXPORT ManagerImpl : virtual public ManagerIface
+class KRESOURCES_EXPORT ManagerImpl : public QObject
 {
+    Q_OBJECT
   public:
     ManagerImpl( ManagerNotifier *, const QString &family );
     ~ManagerImpl();
@@ -70,7 +70,12 @@ class KRESOURCES_EXPORT ManagerImpl : virtual public ManagerIface
 
     static QString defaultConfigFile( const QString &family );
 
-  private:
+  Q_SIGNALS:
+    void signalKResourceAdded(QString managerId, QString resourceId);
+    void signalKResourceModified(QString managerId, QString resourceId);
+    void signalKResourceDeleted(QString managerId, QString resourceId);
+
+  private Q_SLOTS:
     // dcop calls
     void dcopKResourceAdded( QString managerId, QString resourceId );
     void dcopKResourceModified( QString managerId, QString resourceId );

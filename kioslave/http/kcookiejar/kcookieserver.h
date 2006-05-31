@@ -26,37 +26,35 @@
 
 #include <qstringlist.h>
 #include <kdedmodule.h>
+#include <dbus/qdbus.h>
 
 class KHttpCookieList;
 class KCookieJar;
 class KHttpCookie;
 class QTimer;
 class RequestList;
-class DCOPClient;
 class KConfig;
 
 class KCookieServer : public KDEDModule
 {
   Q_OBJECT
-  K_DCOP
 public:
-  KCookieServer(const DCOPCString &);
+  KCookieServer(const QString &);
   ~KCookieServer();
 
-k_dcop:
-  QString findCookies(QString);
-  QString findCookies(QString, long);
+public Q_SLOTS:
+  QString findCookies(QString, qlonglong, const QDBusMessage &msg);
   QStringList findDomains();
   QStringList findCookies(QList<int>,QString,QString,QString,QString);
   QString findDOMCookies(QString);
-  QString findDOMCookies(QString, long);
-  void addCookies(QString, DCOPCString, long);
+  QString findDOMCookies(QString, qlonglong);
+  void addCookies(QString, QByteArray, qlonglong);
   void deleteCookie(QString, QString, QString, QString);
   void deleteCookiesFromDomain(QString);
-  void deleteSessionCookies(long);
-  void deleteSessionCookiesFor(QString, long);
+  void deleteSessionCookies(qlonglong);
+  void deleteSessionCookiesFor(QString, qlonglong);
   void deleteAllCookies();
-  void addDOMCookies(QString, DCOPCString, long);
+  void addDOMCookies(QString, QByteArray, qlonglong);
   /**
    * Sets the cookie policy for the domain associated with the specified URL.
    */
@@ -71,12 +69,12 @@ k_dcop:
 public:
   bool cookiesPending(const QString &url, KHttpCookieList *cookieList=0);
   void addCookies(const QString &url, const QByteArray &cookieHeader,
-                  long windowId, bool useDOMFormat);
+                  qlonglong windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);
 
 public Q_SLOTS:
   void slotSave();
-  void slotDeleteSessionCookies(long);
+  void slotDeleteSessionCookies(qlonglong);
 
 protected:
   KCookieJar *mCookieJar;
@@ -84,7 +82,6 @@ protected:
   RequestList *mRequestList;
   QTimer *mTimer;
   bool mAdvicePending;
-  DCOPClient *mOldCookieServer;
   KConfig *mConfig;
 
 private:

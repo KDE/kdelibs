@@ -28,8 +28,6 @@
 #include <qmap.h>
 #include <qwindowdefs.h>
 
-#include <dcopobject.h>
-
 namespace KIO {
 
     class Slave;
@@ -108,7 +106,8 @@ namespace KIO {
      * @see KIO::Job
      **/
 
-    class KIO_EXPORT Scheduler : public QObject, virtual public DCOPObject {
+    class KIO_EXPORT Scheduler : public QObject
+    {
         Q_OBJECT
 
     public:
@@ -280,15 +279,14 @@ namespace KIO {
 
         void debug_info();
 
-        virtual bool process(const DCOPCString &fun, const QByteArray &data,
-                             DCOPCString& replyType, QByteArray &replyData);
-
-        virtual DCOPCStringList functions();
-
     public Q_SLOTS:
         void slotSlaveDied(KIO::Slave *slave);
         void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                              const QString &host, bool connected);
+
+        // D-Bus:
+        Q_SCRIPTABLE void reparseSlaveConfiguration(const QString &);
+
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);

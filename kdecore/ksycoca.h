@@ -23,7 +23,6 @@
 #include <qstringlist.h>
 
 #include <kdelibs_export.h>
-#include <dcopobject.h>
 #include <ksycocatype.h>
 
 class QDataStream;
@@ -41,10 +40,10 @@ class KSycocaFactoryList;
  * @internal
  * Read-only SYstem COnfiguration CAche
  */
-class KDECORE_EXPORT KSycoca : public QObject, public DCOPObject
+class KDECORE_EXPORT KSycoca : public QObject
 {
   Q_OBJECT
-  K_DCOP
+  //Q_CLASSINFO("D-Bus Interface", "org.kde.KSycoca")
 
 protected:
    /**
@@ -160,7 +159,7 @@ public:
     */
    static bool readError();
 
-k_dcop:
+private Q_SLOTS:
    /**
     * internal function for receiving kded/kbuildsycoca's signal, when the sycoca file changes
     */

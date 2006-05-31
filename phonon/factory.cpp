@@ -45,6 +45,8 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
+#include <dbus/qdbus.h>
+
 static KStaticDeleter<Phonon::Factory> sd;
 
 #define PHONON_LOAD_BACKEND_GLOBAL 1
@@ -147,10 +149,10 @@ Factory * Factory::self()
 }
 
 Factory::Factory()
-	: DCOPObject( "PhononFactory" )
-	, d( new Private )
+	: d( new Private )
 {
-	connectDCOPSignal( 0, 0, "phononBackendChanged()", "phononBackendChanged()", false);
+	QDBus::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",
+			"phononBackendChanged", this, SLOT(phononBackendChanged()));
 }
 
 Factory::~Factory()
@@ -159,11 +161,7 @@ Factory::~Factory()
 	emit deleteYourObjects();
 	foreach( BasePrivate* bp, d->basePrivateList )
 		bp->deleteIface();
-	foreach( QObject* o, d->objects )
-	{
-		//kDebug( 600 ) << "delete " << o << endl;
-		delete o;
-	}
+	qDeleteAll(d->objects);
 	delete d->backend;
 	delete d;
 }

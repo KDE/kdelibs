@@ -22,11 +22,7 @@
 // in this Software without prior written authorization from the author(s).
 
 #include <kmediaplayer/player.h>
-
-KMediaPlayer::PlayerDCOPObject::PlayerDCOPObject(void)
-	: DCOPObject("KMediaPlayer")
-{
-}
+#include <kmediaplayer/kmediaplayeradaptor_p.h>
 
 KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent)
 	: KParts::ReadOnlyPart(parent)
@@ -34,6 +30,7 @@ KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent)
 	, currentState(Empty)
 	, d(0)
 {
+	(void)new KMediaPlayerAdaptor(this);
 }
 
 KMediaPlayer::Player::Player(QObject *parent )
@@ -42,6 +39,7 @@ KMediaPlayer::Player::Player(QObject *parent )
 	, currentState(Empty)
 	, d(0)
 {
+	(void)new KMediaPlayerAdaptor(this);
 }
 
 KMediaPlayer::Player::~Player(void)

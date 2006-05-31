@@ -20,14 +20,13 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #endif
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <kimageeffect.h>
 #include <kwin.h>
 #include <kdebug.h>
 #include <netwm.h>
-#include <dcopclient.h>
-#include <dcopref.h>
 
 #include <ksharedpixmap.h>
 #include <krootpixmap.h>
@@ -35,7 +34,9 @@
 
 static QString wallpaperForDesktop(int desktop)
 {
-    return DCOPRef("kdesktop", "KBackgroundIface").call("currentWallpaper", desktop);
+    QDBusInterfacePtr kdesktop("org.kde.kdesktop", "/KBackground", "org.kde.KBackground");
+    QDBusReply<QString> retval = kdesktop->call("currentWallpaper", desktop);
+    return retval;
 }
 
 class KRootPixmapData
@@ -267,19 +268,13 @@ void KRootPixmap::enableExports()
 {
 #ifdef Q_WS_X11
     kDebug(270) << k_lineinfo << "activating background exports.\n";
-    DCOPClient *client = KApplication::dcopClient();
-    if (!client->isAttached())
-	client->attach();
-    QByteArray data;
-    QDataStream args( &data, QIODevice::WriteOnly );
-    args << 1;
 
-    DCOPCString appname( "kdesktop" );
+    QString appname( QLatin1String("org.kde.kdesktop") );
     int screen_number = DefaultScreen(QX11Info::display());
     if ( screen_number )
-        appname = DCOPCString("kdesktop-screen-") + QByteArray::number( screen_number );
+        appname += QLatin1String("-screen-") + QString::number( screen_number );
 
-    client->send( appname, "KBackgroundIface", "setExport(int)", data );
+    QDBusInterfacePtr(appname, "/KBackground", "org.kde.KBackground")->call( "setExport(int)", 1 );
 #endif
 }
 

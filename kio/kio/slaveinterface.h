@@ -27,7 +27,6 @@
 
 #include <kio/global.h>
 #include <kio/authinfo.h>
-#include <kdatastream.h>
 
 class KUrl;
 

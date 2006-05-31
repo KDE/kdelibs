@@ -40,6 +40,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 #include <qdatetime.h>
+#include <dbus/qdbus.h>
 
 #include <kurl.h>
 #include <kidna.h>
@@ -53,8 +54,6 @@
 #include <kinstance.h>
 #include <kresolver.h>
 #include <kmimemagic.h>
-#include <dcopclient.h>
-#include <kdatastream.h>
 #include <krandom.h>
 #include <ktoolinvocation.h>
 #include <kstreamsocket.h>
@@ -1704,19 +1703,14 @@ bool HTTPProtocol::isOffline(const KUrl &url)
 {
   const int NetWorkStatusUnknown = 1;
   const int NetWorkStatusOnline = 8;
-  DCOPCString replyType;
-  QByteArray params;
-  QByteArray reply;
 
-  QDataStream stream(&params, QIODevice::WriteOnly);
-  stream << url.url();
+  QDBusReply<int> reply =
+    QDBusInterfacePtr( "org.kde.kded", "/modules/networkstatus", "org.kde.NetworkStatusModule" )->
+    call( "status", url.url() );
 
-  if ( dcopClient()->call( "kded", "networkstatus", "status(QString)",
-                           params, replyType, reply ) && (replyType == "int") )
+  if ( reply.isSuccess() )
   {
-     int result;
-     QDataStream stream2( reply );
-     stream2 >> result;
+     int result = reply;
      kDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
      return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
   }
@@ -3951,9 +3945,9 @@ void HTTPProtocol::special( const QByteArray &data )
     {
       KUrl url;
       bool no_cache;
-      time_t expireDate;
+      qlonglong expireDate;
       stream >> url >> no_cache >> expireDate;
-      cacheUpdate( url, no_cache, expireDate );
+      cacheUpdate( url, no_cache, time_t(expireDate) );
       break;
     }
     case 5: // WebDAV lock
@@ -4453,50 +4447,24 @@ void HTTPProtocol::error( int _err, const QString &_text )
 
 void HTTPProtocol::addCookies( const QString &url, const QByteArray &cookieHeader )
 {
-   long windowId = m_request.window.toLong();
-   QByteArray params;
-   QDataStream stream(&params, QIODevice::WriteOnly);
-   stream << url << cookieHeader << windowId;
-
-   kDebug(7113) << "(" << m_pid << ") " << cookieHeader << endl;
-   kDebug(7113) << "(" << m_pid << ") " << "Window ID: "
-                 << windowId << ", for host = " << url << endl;
-
-   if ( !dcopClient()->send( "kded", "kcookiejar", "addCookies(QString,QCString,long int)", params ) )
-   {
-      kWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
-   }
+   qlonglong windowId = m_request.window.toLongLong();
+   QDBusInterfacePtr kcookiejar( "org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer" );
+   (void)kcookiejar->call( QDBusInterface::NoWaitForReply, "addCookies", url,
+                           cookieHeader, windowId );
 }
 
 QString HTTPProtocol::findCookies( const QString &url)
 {
-  DCOPCString replyType;
-  QByteArray params;
-  QByteArray reply;
-  QString result;
+  qlonglong windowId = m_request.window.toLongLong();
+  QDBusInterfacePtr kcookiejar( "org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer" );
+  QDBusReply<QString> reply = kcookiejar->call( "findCookies", url, windowId );
 
-  long windowId = m_request.window.toLong();
-  result.clear();
-  QDataStream stream(&params, QIODevice::WriteOnly);
-  stream << url << windowId;
-
-  if ( !dcopClient()->call( "kded", "kcookiejar", "findCookies(QString,long int)",
-                            params, replyType, reply ) )
+  if ( reply.isError() )
   {
      kWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
-     return result;
+     return QString();
   }
-  if ( replyType == "QString" )
-  {
-     QDataStream stream2( reply );
-     stream2 >> result;
-  }
-  else
-  {
-     kError(7113) << "(" << m_pid << ") DCOP function findCookies(...) returns "
-                          << replyType << ", expected QString" << endl;
-  }
-  return result;
+  return reply;
 }
 
 /******************************* CACHING CODE ****************************/

@@ -5,12 +5,14 @@ add_subdirectory( tests )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
+add_definitions(${QDBUS_DEFINITIONS})
 
 ########### next target ###############
 
 set(kresources_LIB_SRCS
    resource.cpp
    factory.cpp
+   manageradaptor.cpp
    managerimpl.cpp
    configwidget.cpp
    configdialog.cpp
@@ -20,14 +22,6 @@ set(kresources_LIB_SRCS
    )
 
 kde4_automoc(${kresources_LIB_SRCS})
-
-set( kresources_DCOP_SKEL_SRCS manageriface.h )
-
-kde4_add_dcop_skels(kresources_LIB_SRCS ${kresources_DCOP_SKEL_SRCS})
-
-set( kresources_DCOP_STUB_SRCS manageriface.h )
-
-kde4_add_dcop_stubs(kresources_LIB_SRCS ${kresources_DCOP_STUB_SRCS})
 
 kde4_add_library(kresources SHARED ${kresources_LIB_SRCS})
 
@@ -54,7 +48,7 @@ install_targets(${PLUGIN_INSTALL_DIR} kcm_kresources )
 
 install_files( ${XDG_APPS_DIR} FILES kresources.desktop )
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kresources_plugin.desktop kresources_manager.desktop )
-install_files( /include/kresources FILES resource.h    configwidget.h    factory.h    manageriface.h    managerimpl.h    manager.h    selectdialog.h    configdialog.h    configpage.h idmapper.h )
+install_files( /include/kresources FILES resource.h    configwidget.h    factory.h     managerimpl.h    manager.h    selectdialog.h    configdialog.h    configpage.h idmapper.h )
 
 
 

@@ -15,7 +15,7 @@
 
 /**
  * Utility class to access the authentication tokens needed to run a KDE
- * program (X11 and DCOP cookies).
+ * program (X11 cookies on X11, for instance).
  */
 
 class KDESU_EXPORT KCookie
@@ -35,27 +35,6 @@ public:
     QByteArray displayAuth() const { return m_DisplayAuth; }
 #endif
 
-    /**
-     * Select the DCOP transport to look for. Default: "local"
-     */
-    void setDcopTransport(const QByteArray &dcopTransport);
-
-    /**
-     * Returns the netid where the dcopserver is running
-     */
-    QByteArray dcopServer();
-
-    /**
-     * Returns a list of magic cookies for DCOP protocol authentication.
-     * The order is the same as in dcopServer().
-     */
-    QByteArray dcopAuth();
-
-    /**
-     * Returns a list of magic cookies for the ICE protocol.
-     */
-    QByteArray iceAuth();
-
 private:
     void getXCookie();
     void getICECookie();
@@ -63,17 +42,13 @@ private:
     void blockSigChild();
     void unblockSigChild();
 
-    bool m_bHaveDCOPCookies;
     bool m_bHaveICECookies;
 
     QByteArray m_Display;
 #ifdef Q_WS_X11
     QByteArray m_DisplayAuth;
 #endif
-    QByteArray m_DCOPSrv;
-    QByteArray m_DCOPAuth;
     QByteArray m_ICEAuth;
-    QByteArray m_dcopTransport;
 
     class KCookiePrivate;
     KCookiePrivate *d;

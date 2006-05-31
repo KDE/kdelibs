@@ -100,8 +100,4 @@ private:
 
 };
 
-
-KIO_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertificateCache::KSSLCertificatePolicy& p);
-KIO_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertificateCache::KSSLCertificatePolicy& p);
-
 #endif

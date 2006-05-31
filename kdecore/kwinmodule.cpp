@@ -27,9 +27,9 @@
 #include "kapplication.h"
 #include <QHash>
 #include <klocale.h>
-#include <dcopclient.h>
 #include <QDesktopWidget>
 #include "netwm.h"
+#include <dbus/qdbus.h>
 
 static KWinModulePrivate* static_d = 0;
 
@@ -422,10 +422,7 @@ void KWinModule::setDesktopName( int desktop, const QString& name )
 
 void KWinModule::doNotManage( const QString& title )
 {
-    if ( !KApplication::dcopClient()->isAttached() )
-	KApplication::dcopClient()->attach();
-
-    DCOPRef("kwin", "").call("doNotManage", title);
+    QDBusInterfacePtr("org.kde.kwin", "/kwin", "org.kde.KWinInterface")->call("doNotManage", title);
 }
 
 #include "kwinmodule.moc"

@@ -53,9 +53,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
       return 1;
    }
 
-   QByteArray cname = KApplication::launcher();
-   char *name = cname.data();
-   KCmdLineArgs::init(argc, argv, name, "KLauncher", "A service launcher.",
+   KCmdLineArgs::init(argc, argv, "klauncher", "KLauncher", "A service launcher.",
                        "v1.0");
 
    //KLauncher::addCmdLineOptions(); already done by kcmdlineargs
@@ -69,14 +67,17 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    int maxTry = 3;
    while(true)
    {
-      DCOPCString dcopName = KApplication::dcopClient()->registerAs(name, false);
-      if (dcopName.isEmpty())
+      QString service(QLatin1String("org.kde.klauncher")); // same as ktoolinvocation.cpp
+      QDBusReply<QDBusBusService::RequestNameReply> reply =
+          QDBus::sessionBus().busService()->requestName(service, QDBusBusService::DoNotQueueName);
+      if (reply.isError())
       {
-         kWarning() << "DCOP communication problem!" << endl;
+         kWarning() << "DBUS communication problem!" << endl;
          return 1;
       }
-      if (dcopName == cname)
-         break; // Good!
+      if (reply == QDBusBusService::PrimaryOwnerReply ||
+          reply == QDBusBusService::AlreadyOwnerReply)
+          break;
 
       if (--maxTry == 0)
       {
@@ -92,8 +93,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    }
    
    KLauncher *launcher = new KLauncher(LAUNCHER_FD);
-   launcher->dcopClient()->setDefaultObject( name );
-   launcher->dcopClient()->setDaemonMode( true );
+   QDBus::sessionBus().registerObject("/", launcher);
 
    KCrash::setEmergencySaveFunction(sig_handler);
    signal( SIGHUP, sig_handler);
@@ -103,4 +103,3 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    launcher->exec();
    return 0;
 }
-

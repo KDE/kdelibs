@@ -21,10 +21,11 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <dcopclient.h>
+#include <dbus/qdbus.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kapplication.h>
+#include "kcookiejariface.h"
 
 static const char description[] =
 	I18N_NOOP("HTTP Cookie Daemon");
@@ -50,43 +51,31 @@ int main(int argc, char *argv[])
 
    KInstance a("kcookiejar");
    
-   KApplication::dcopClient()->attach();
-
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-   DCOPCString replyType;
-   QByteArray replyData;
+
+   org::kde::KCookieServer *kcookiejar = QDBus::sessionBus().findInterface<org::kde::KCookieServer>("org.kde.kded", "/modules/kcookiejar");
    if (args->isSet("remove-all"))
    {
-      KApplication::dcopClient()->call( "kded", "kcookiejar", "deleteAllCookies()", QByteArray(), replyType, replyData);
+      kcookiejar->deleteAllCookies();
    }
    if (args->isSet("remove"))
    {
       QString domain = args->getOption("remove");
-      DCOPCString params;
-      QDataStream stream(&params, QIODevice::WriteOnly);
-      stream << domain;
-      KApplication::dcopClient()->call( "kded", "kcookiejar", "deleteCookiesFromDomain(QString)", params, replyType, replyData);
+      kcookiejar->deleteCookiesFromDomain(domain);
    }
    if (args->isSet("shutdown"))
    {
-      DCOPCString module = "kcookiejar";
-      QByteArray params;
-      QDataStream stream(&params, QIODevice::WriteOnly);
-      stream << module;
-      KApplication::dcopClient()->call( "kded", "kded", "unloadModule(QCString)", params, replyType, replyData);
+      QDBusInterfacePtr("org.kded.kded", "/kded", "org.kde.kded")->call("unloadModule", QByteArray("kcookiejar"));
    }
    else if(args->isSet("reload-config"))
    {
-      KApplication::dcopClient()->call( "kded", "kcookiejar", "reloadPolicy()", QByteArray(), replyType, replyData);
+      kcookiejar->reloadPolicy();
    }
    else
    {
-      DCOPCString module = "kcookiejar";
-      QByteArray params;
-      QDataStream stream(&params, QIODevice::WriteOnly);
-      stream << module;
-      KApplication::dcopClient()->call( "kded", "kded", "loadModule(QCString)", params, replyType, replyData);
+      QDBusInterfacePtr("org.kded.kded", "/kded", "org.kde.kded")->call("loadModule", QByteArray("kcookiejar"));
    }
+   delete kcookiejar;
 
    return 0;
 }

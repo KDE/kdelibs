@@ -117,7 +117,7 @@ void AudioOutput::setupIface()
 	Q_ASSERT( d->iface() );
 	AbstractAudioOutput::setupIface();
 
-	connect( d->iface()->qobject(), SIGNAL( volumeChanged( float ) ), SIGNAL( volumeChanged( float ) ) );
+	connect( d->iface()->qobject(), SIGNAL(volumeChanged(float)), SIGNAL(volumeChanged(float)) );
 
 	// set up attributes
 	d->iface()->setVolume( d->volume );

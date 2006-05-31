@@ -42,7 +42,6 @@
 #include "kfile/krecentdocument.h"
 #include "kdedesktopmimetype.h"
 
-#include <kdatastream.h>
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kglobal.h>
@@ -53,7 +52,6 @@
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
-#include <dcopclient.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>

@@ -38,95 +38,110 @@ class KOpenSSLProxy;
 class KSSLD : public KDEDModule
 {
   Q_OBJECT
-  K_DCOP
+  Q_CLASSINFO("D-Bus Interface", "org.kde.KSSLD")
 
 public:
   
-  KSSLD(const QByteArray &name);
+  KSSLD(const QString &name);
   
   virtual ~KSSLD();
 
-k_dcop:
   //
   //  Certificate Cache methods
   //
   void cacheAddCertificate(KSSLCertificate cert, 
 		           KSSLCertificateCache::KSSLCertificatePolicy policy,
 		           bool permanent = true);
-  KSSLCertificateCache::KSSLCertificatePolicy cacheGetPolicyByCN(QString cn);
-
   KSSLCertificateCache::KSSLCertificatePolicy cacheGetPolicyByCertificate(KSSLCertificate cert);
-
-  bool cacheSeenCN(QString cn);
   bool cacheSeenCertificate(KSSLCertificate cert);
-
-  bool cacheRemoveByCN(QString cn);
-  bool cacheRemoveBySubject(QString subject);
   bool cacheRemoveByCertificate(KSSLCertificate cert);
-	       
   bool cacheIsPermanent(KSSLCertificate cert);
-
-  void cacheReload();
-
   bool cacheModifyByCN(QString cn,
                        KSSLCertificateCache::KSSLCertificatePolicy policy,
                        bool permanent,
                        QDateTime expires);
-
   bool cacheModifyByCertificate(KSSLCertificate cert,
-                           KSSLCertificateCache::KSSLCertificatePolicy policy,
+                                KSSLCertificateCache::KSSLCertificatePolicy policy,
                                 bool permanent,
                                 QDateTime expires);
-
   QStringList cacheGetHostList(KSSLCertificate cert);
-
   bool cacheAddHost(KSSLCertificate cert, QString host);
-
   bool cacheRemoveHost(KSSLCertificate cert, QString host);
 
+public Q_SLOTS:
+  Q_SCRIPTABLE void cacheAddCertificate(QByteArray certData, int policy, bool permanent);
+  Q_SCRIPTABLE int cacheGetPolicyByCN(QString cn);
+  Q_SCRIPTABLE int cacheGetPolicyByCertificate(QByteArray certData);
+  Q_SCRIPTABLE bool cacheSeenCN(QString cn);
+  Q_SCRIPTABLE bool cacheSeenCertificate(QByteArray certData);
+
+  Q_SCRIPTABLE bool cacheRemoveByCN(QString cn);
+  Q_SCRIPTABLE bool cacheRemoveBySubject(QString subject);
+  Q_SCRIPTABLE bool cacheRemoveByCertificate(QByteArray cert);
+	       
+  Q_SCRIPTABLE bool cacheIsPermanent(QByteArray cert);
+
+  Q_SCRIPTABLE void cacheReload();
+
+  Q_SCRIPTABLE bool cacheModifyByCN(QString cn,
+                                    int policy,
+                                    bool permanent,
+                                    qlonglong expires);
+
+  Q_SCRIPTABLE bool cacheModifyByCertificate(QByteArray certData,
+                                             int policy,
+                                             bool permanent,
+                                             qlonglong expires);
+
+  Q_SCRIPTABLE QStringList cacheGetHostList(QByteArray certData);
+
+  Q_SCRIPTABLE bool cacheAddHost(QByteArray cert, QString host);
+
+  Q_SCRIPTABLE bool cacheRemoveHost(QByteArray cert, QString host);
+
   /* Certificate Authorities */
-  void caVerifyUpdate();
-  bool caRegenerate();
+  Q_SCRIPTABLE void caVerifyUpdate();
+  Q_SCRIPTABLE bool caRegenerate();
 
-  QStringList caList();
+  Q_SCRIPTABLE QStringList caList();
 
-  bool caUseForSSL(QString subject);
+  Q_SCRIPTABLE bool caUseForSSL(QString subject);
 
-  bool caUseForEmail(QString subject);
+  Q_SCRIPTABLE bool caUseForEmail(QString subject);
   
-  bool caUseForCode(QString subject);
+  Q_SCRIPTABLE bool caUseForCode(QString subject);
 
-  bool caAdd(QString certificate, bool ssl, bool email, bool code);
+  Q_SCRIPTABLE bool caAdd(QString certificate, bool ssl, bool email, bool code);
 
-  bool caAddFromFile(QString filename, bool ssl, bool email, bool code);
+  Q_SCRIPTABLE bool caAddFromFile(QString filename, bool ssl, bool email, bool code);
 
-  bool caRemove(QString subject);
+  Q_SCRIPTABLE bool caRemove(QString subject);
 
-  bool caRemoveFromFile(QString filename);
+  Q_SCRIPTABLE bool caRemoveFromFile(QString filename);
 
-  QString caGetCert(QString subject);
+  Q_SCRIPTABLE QString caGetCert(QString subject);
 
-  bool caSetUse(QString subject, bool ssl, bool email, bool code);
+  Q_SCRIPTABLE bool caSetUse(QString subject, bool ssl, bool email, bool code);
 
-  QStringList getKDEKeyByEmail(const QString &email);
+  Q_SCRIPTABLE QStringList getKDEKeyByEmail(const QString &email);
 
-  KSSLCertificate getCertByMD5Digest(const QString &key);
+  Q_SCRIPTABLE KSSLCertificate getCertByMD5Digest(const QString &key);
 
   //
   //  Certificate Home methods
   //
 
-  QStringList getHomeCertificateList();
+  Q_SCRIPTABLE QStringList getHomeCertificateList();
 
-  bool addHomeCertificateFile(QString filename, QString password, bool storePass /*=false*/);
+  Q_SCRIPTABLE bool addHomeCertificateFile(QString filename, QString password, bool storePass /*=false*/);
 
-  bool addHomeCertificatePKCS12(QString base64cert, QString passToStore);
+  Q_SCRIPTABLE bool addHomeCertificatePKCS12(QString base64cert, QString passToStore);
 
-  bool deleteHomeCertificateByFile(QString filename, QString password);
+  Q_SCRIPTABLE bool deleteHomeCertificateByFile(QString filename, QString password);
 
-  bool deleteHomeCertificateByPKCS12(QString base64cert, QString password);
+  Q_SCRIPTABLE bool deleteHomeCertificateByPKCS12(QString base64cert, QString password);
 
-  bool deleteHomeCertificateByName(QString name);
+  Q_SCRIPTABLE bool deleteHomeCertificateByName(QString name);
 
 private:
 
