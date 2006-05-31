@@ -139,6 +139,11 @@ const int RELATIVE = WRELATIVE;
 # undef CreateEvent
 #endif	// CreateEvent
 
+#ifdef interface
+#define FIXWINH_interface __STRUCT__
+#undef interface 
+#endif
+
 }
 using namespace W;
 
