@@ -9,6 +9,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/modules")
 
 find_package(Qt4 REQUIRED)
 
+add_subdirectory( examples)
+
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${QT_INCLUDES} )
 
 # find the headers
@@ -68,6 +70,7 @@ set(win_LIB_SRCS
    src/unistd.c
    src/win32_utils.c
    src/win32_utils2.cpp
+   src/io.c
    )
 
 
