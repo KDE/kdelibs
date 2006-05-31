@@ -97,20 +97,21 @@ void KXYSelector::setValues( int _xPos, int _yPos )
 
 QRect KXYSelector::contentsRect() const
 {
-  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-  if (w < 5) {
-    w = 5;
-  }
-  QRect contents(rect());
-  contents.adjust(w, w, -w, -w);
-  return contents;
+  int w = qMax( style()->pixelMetric(QStyle::PM_DefaultFrameWidth), 5 );
+  return rect().adjusted(w, w, -w, -w);
+}
+
+QSize KXYSelector::minimumSizeHint() const
+{
+  int w = qMax( style()->pixelMetric(QStyle::PM_DefaultFrameWidth), 5 );
+  return QSize( 2 * w, 2 * w );
 }
 
 void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
 {
   QStyleOptionFrame opt;
   opt.initFrom(this);
- 
+
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
   if ( w < 5 ) {
     w = 5 - w;
@@ -307,10 +308,10 @@ void KSelector::moveArrow( const QPoint &pos )
   int iw = (w < 5) ? 5 : w;
 
   if ( orientation() == Qt::Vertical )
-    val = ( maximum() - minimum() ) * (height() - pos.y() - 5 + w) 
+    val = ( maximum() - minimum() ) * (height() - pos.y() - 5 + w)
             / (height() - iw * 2) + minimum();
   else
-    val = ( maximum() - minimum() ) * (width() - pos.x() - 5 + w) 
+    val = ( maximum() - minimum() ) * (width() - pos.x() - 5 + w)
             / (width() - iw * 2) + minimum();
 
   setValue( val );

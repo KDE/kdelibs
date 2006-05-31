@@ -95,6 +95,11 @@ public:
    */
   QRect contentsRect() const;
 
+  /**
+   * Reimplemented to give the widget a minimum size
+   */
+  virtual QSize minimumSizeHint() const;
+
 Q_SIGNALS:
   /**
    * This signal is emitted whenever the user chooses a value,
