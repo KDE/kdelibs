@@ -22,7 +22,6 @@
 
 #include <QObject>
 
-#include <dcopobject.h>
 #include <kstaticdeleter.h>
 #include <kdelibs_export.h>
 
@@ -42,7 +41,7 @@ namespace Phonon
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
+class PHONONCORE_EXPORT Factory : public QObject
 {
 	friend void ::KStaticDeleter<Factory>::destructObject();
 	friend class Phonon::BasePrivate;
@@ -82,7 +81,7 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * \return a pointer to the Ifaces::ByteStream the backend provides
 		 */
 		QObject* createByteStream( QObject* parent = 0 );
-		
+
 		/**
 		 * Create a new Ifaces::AudioPath.
 		 *
@@ -154,7 +153,7 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		 * \copydoc Phonon::Ifaces::Backend::uiSymbol()
 		 */
 		const char* uiSymbol();
-		
+
 		/**
 		 * Get the name of the Backend. It's the name from the .desktop file.
 		 */
@@ -233,24 +232,23 @@ class PHONONCORE_EXPORT Factory : public QObject, public DCOPObject
 		class Private;
 		Private * d;
 
-	K_DCOP
-	k_dcop:
+	private Q_SLOTS:
 		/**
 		 * \internal
 		 * This is called via DCOP when the user changes the Phonon Backend.
 		 */
 		void phononBackendChanged();
 
-//X 		It is probably better if we can get away with internal handling of
-//X 		freeing the soundcard device when it's not needed anymore and
-//X 		providing an IPC method to stop all MediaProducers -> free all
-//X 		devices
-//X 		/**
-//X 		 * \internal
-//X 		 * This is called when the application needs to free the soundcard
-//X 		 * device(s).
-//X 		 */
-//X 		void freeSoundcardDevices();
+//X		It is probably better if we can get away with internal handling of
+//X		freeing the soundcard device when it's not needed anymore and
+//X		providing an IPC method to stop all MediaProducers -> free all
+//X		devices
+//X		/**
+//X		 * \internal
+//X		 * This is called when the application needs to free the soundcard
+//X		 * device(s).
+//X		 */
+//X		void freeSoundcardDevices();
 };
 } // namespace Phonon
 

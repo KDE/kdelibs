@@ -20,7 +20,6 @@
 #define Phonon_AUDIOOUTPUT_H
 
 #include "abstractaudiooutput.h"
-#include "mixeriface.h"
 #include <kdelibs_export.h>
 #include "phonondefs.h"
 #include "phononnamespace.h"
@@ -49,7 +48,7 @@ namespace Phonon
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \see Phonon::Ui::VolumeSlider
 	 */
-	class PHONONCORE_EXPORT AudioOutput : public AbstractAudioOutput, public MixerIface
+	class PHONONCORE_EXPORT AudioOutput : public AbstractAudioOutput
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioOutput )
@@ -67,7 +66,7 @@ namespace Phonon
 		 *
 		 * \see volumeDecibel
 		 */
-		Q_PROPERTY( float volume READ volume WRITE setVolume )
+		Q_PROPERTY( float volume READ volume WRITE setVolume NOTIFY volumeChanged )
 		/**
 		 * This is the current volume of the output in decibel.
 		 *
@@ -108,7 +107,6 @@ namespace Phonon
 		PHONON_HEIR( AudioOutput )
 		public:
 			QString name() const;
-			float volume() const;
 			double volumeDecibel() const;
 			Phonon::Category category() const;
 			AudioOutputDevice outputDevice() const;
@@ -118,6 +116,7 @@ namespace Phonon
 
 		public Q_SLOTS:
 			void setName( const QString& newName );
+			float volume() const;
 			void setVolume( float newVolume );
 			void setVolumeDecibel( double newVolumeDecibel );
 			void setCategory( Phonon::Category category );

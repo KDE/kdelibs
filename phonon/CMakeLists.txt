@@ -1,4 +1,6 @@
 
+add_definitions(${QDBUS_DEFINITIONS})
+
 # Those apply to all subdirs
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
@@ -49,6 +51,7 @@ set(phononcore_LIB_SRCS
 	audioeffect.cpp
 	volumefadereffect.cpp
 	videoeffect.cpp
+	mixeradaptor.cpp
 	brightnesscontrol.cpp
 	abstractaudiooutput.cpp
 	audiooutput.cpp
@@ -62,8 +65,6 @@ set(phononcore_LIB_SRCS
 	)
 
 kde4_automoc(${phononcore_LIB_SRCS})
-
-kde4_add_dcop_skels(phononcore_LIB_SRCS factory.h mixeriface.h )
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 
@@ -103,8 +104,8 @@ install_files( /include/phonon FILES
 	audioeffect.h
 	volumefadereffect.h
 	videoeffect.h
+	mixeradaptor.h
 	brightnesscontrol.h
-	mixeriface.h
 	abstractaudiooutput.h
 	audiooutput.h
 	audiodataoutput.h
