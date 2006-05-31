@@ -677,7 +677,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 
             QString entryName;
 
-		    if ( name.endsWith( "/" ) ) // Entries with a trailing slash are directories
+            if ( name.endsWith( "/" ) ) // Entries with a trailing slash are directories
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
@@ -852,7 +852,7 @@ bool KZip::closeArchive()
             return false;
     }
     device()->seek( atbackup );
-    
+
     it.toFront();
     while (it.hasNext())
     {

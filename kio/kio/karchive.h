@@ -173,7 +173,7 @@ public:
      */
     virtual bool writeSymLink(const QString &name, const QString &target,
                               const QString &user, const QString &group,
-                              mode_t perm = 040755, time_t atime = UnknownTime,
+                              mode_t perm = 0120755, time_t atime = UnknownTime,
                               time_t mtime = UnknownTime, time_t ctime = UnknownTime );
 
     /**
@@ -197,7 +197,7 @@ public:
      */
     virtual bool writeFile( const QString& name, const QString& user, const QString& group,
                             const char* data, qint64 size,
-                            mode_t perm = 040755, time_t atime = UnknownTime,
+                            mode_t perm = 0100644, time_t atime = UnknownTime,
                             time_t mtime = UnknownTime, time_t ctime = UnknownTime );
 
     /**
