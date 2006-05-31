@@ -28,7 +28,8 @@ set(solid_LIB_SRCS
    predicate.cpp 
    predicateparse.cpp 
    predicate_lexer.c 
-   predicate_parser.c )
+   predicate_parser.c
+   powermanager.cpp )
 
 kde4_automoc(${solid_LIB_SRCS})
 
@@ -42,8 +43,8 @@ install_targets(${LIB_INSTALL_DIR} solid )
 
 ########### install files ###############
 
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES  soliddevicemanager.desktop )
-install_files( /include/solid FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h )
+install_files( ${SERVICETYPES_INSTALL_DIR} FILES  soliddevicemanager.desktop solidpowermanager.desktop )
+install_files( /include/solid FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h )
 
 ########### parser build ###############
 

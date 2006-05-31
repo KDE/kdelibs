@@ -351,6 +351,77 @@ namespace Enums
         Q_DECLARE_FLAGS( AudioIfaceTypes, AudioIfaceType )
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( AudioIface::AudioIfaceTypes )
+
+
+    /**
+     * This struct holds the enumerations used by Solid::PowerManager
+     * and Solid::Ifaces::PowerManager. You shouldn't use it directly.
+     */
+    struct PowerManager
+    {
+        /**
+         * This enum type defines the different states of the system battery.
+         *
+         * - NoBatteryState: No battery available
+         * - Normal: The battery is at its normal charge level
+         * - Warning: The battery is at its warning charge level
+         * - Low: The battery is at its low charge level
+         * - Critical: The battery is at its critical charge level
+         */
+        enum BatteryState{ NoBatteryState, Normal, Warning, Low, Critical };
+
+        /**
+         * This enum type defines the different states of the AC adapter.
+         *
+         * - UnknownAcAdapterState: The AC adapter has an unknown state
+         * - Plugged: The AC adapter is plugged
+         * - Unplugged: The AC adapter is unplugged
+         */
+        enum AcAdapterState{ UnknownAcAdapterState, Plugged, Unplugged };
+
+        /**
+         * This enum type defines the types of system button events.
+         *
+         * - UnknownButtonType: An unknown button
+         * - PowerButton: A power button pressed event, generally used to turn on or off the system
+         * - SleepButton: A sleep button pressed event, generally used to make the system asleep
+         * - LidOpen: A laptop lid open event
+         * - LidClose: A laptop lid close event
+         */
+        enum ButtonType{ UnknownButtonType, PowerButton, SleepButton, LidOpen, LidClose };
+
+        /**
+         * This enum type defines the different suspend methods.
+         *
+         * - UnknownSuspendMethod: The name says it all
+         * - Standby: Processes are stopped, some hardware is deactivated (ACPI S1)
+         * - ToRam: Most devices are deactivated, only RAM is powered (ACPI S3)
+         * - ToDisk: State of the machine is saved to disk, and it's powered down (ACPI S4)
+         */
+        enum SuspendMethod{ UnknownSuspendMethod = 0, Standby = 1, ToRam = 2, ToDisk = 4};
+
+        /**
+         * This type stores an OR combination of SuspendMethod values.
+         */
+        Q_DECLARE_FLAGS( SuspendMethods, SuspendMethod )
+
+        /**
+         * This enum type defines the different CPU frequency policies.
+         *
+         * - UnknownCpuFreqPolicy: The name says it all
+         * - Dynamic: Frequency is changed depending on the processor load
+         * - Powersave: Frequency is always set to the lowest available
+         * - Performance: Frequency is always set to the highest available
+         */
+        enum CpuFreqPolicy{ UnknownCpuFreqPolicy = 0, Dynamic = 1, Powersave = 2, Performance = 4 };
+
+        /**
+         * This type stores an OR combination of CpuFreqPolicy values.
+         */
+        Q_DECLARE_FLAGS( CpuFreqPolicies, CpuFreqPolicy )
+    };
+    Q_DECLARE_OPERATORS_FOR_FLAGS( PowerManager::SuspendMethods )
+    Q_DECLARE_OPERATORS_FOR_FLAGS( PowerManager::CpuFreqPolicies )
 }
 }
 }
