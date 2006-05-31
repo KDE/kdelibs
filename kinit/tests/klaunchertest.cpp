@@ -20,7 +20,6 @@
 
 #include <qstring.h>
 #include <kapplication.h>
-#include <dcopclient.h>
 #include <stdio.h>
 #include <kservice.h>
 #include <ktoolinvocation.h>
@@ -33,7 +32,7 @@ int main(int argc, char *argv[])
    KCmdLineArgs::init( argc, argv, "klaunchertest", 0, 0, 0, 0);
    KApplication k;
 
-   KApplication::dcopClient()->registerAs( kapp->objectName().toLatin1()) ;
+   //KApplication::dcopClient()->registerAs( kapp->objectName().toLatin1()) ;
 
 #if 0
    QString error;
