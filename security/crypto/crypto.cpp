@@ -71,7 +71,7 @@
 #include <kurlrequester.h>
 #include <kvbox.h>
 
-#include <config.h>
+#include <config-crypto.h>
 #ifdef HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
