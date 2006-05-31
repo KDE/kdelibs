@@ -92,7 +92,7 @@ void BackendCapabilitiesTest::checkSignals()
 {
 	QSignalSpy spy( BackendCapabilities::self(), SIGNAL( capabilitiesChanged() ) );
 	QCOMPARE( spy.size(), 0 );
-	Factory::self()->phononBackendChanged();
+	QMetaObject::invokeMethod( Factory::self(), "phononBackendChanged", Qt::DirectConnection );
 	QCOMPARE( spy.size(), 1 );
 }
 
