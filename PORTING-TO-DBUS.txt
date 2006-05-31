@@ -39,7 +39,6 @@ and is found using pkg-config.
 Commands:
 
 	cd kdelibs
-	svn sw $SVNROOT/branches/work/kdelibs4-dbus
 	export PKG_CONFIG_PATH=$QTDIR/lib:$DBUSDIR/lib/pkgconfig
 	cd $objdir
 	cmake $OLDPWD
