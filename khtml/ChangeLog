@@ -1,3 +1,15 @@
+2006-05-31  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge WC bug-fixes and clean-up for positioned box-model
+
+        * rendering/Render_box.{h,cpp}:
+            (RenderBox::calcAbsoluteHorizontal):
+            (RenderBox::calcAbsoluteHorizontalValues):
+            (RenderBox::calcAbsoluteVertical):
+            (RenderBox::calcAbsoluteVerticalValues): 
+            (RenderBox::calcAbsoluteHorizontalReplaced): Handle replaced case separately.
+            (RenderBox::calcAbsoluteVerticalReplaced): ditto.
+
 2006-04-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement full support for CSS updates on dynamic DOM and user-interaction
