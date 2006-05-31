@@ -28,12 +28,12 @@ using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
-    KApplication::disableAutoDcopRegistration();
+    //KApplication::disableAutoDcopRegistration();
     KCmdLineArgs::init( argc, argv, "test_configdialog", 0, 0, 0, 0 );
     KApplication app; // with GUI
 
     Broker::Ptr broker = Broker::openBroker();
-    ConfigDialog *dialog = new ConfigDialog( broker.data(), 0 );
+    ConfigDialog *dialog = new ConfigDialog( broker, 0 );
 
     dialog->show();
 

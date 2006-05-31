@@ -17,14 +17,6 @@ set(kspell2base_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kspell2/defaultdictionary.cpp
 )
 
-# kspell2/ui/Makefile.am: kspell2_noinst
-
-set(kspell2_noinst_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kspell2/ui/configwidget.cpp
-  ${CMAKE_SOURCE_DIR}/kspell2/ui/highlighter.cpp
-  ${CMAKE_SOURCE_DIR}/kspell2/ui/configdialog.cpp
-)
-
 # for the subdirs
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 

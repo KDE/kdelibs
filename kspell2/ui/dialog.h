@@ -22,7 +22,7 @@
 #ifndef KSPELL_DIALOG_H
 #define KSPELL_DIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class Q3ListViewItem;
 
@@ -30,12 +30,12 @@ namespace KSpell2
 {
     class Filter;
     class BackgroundChecker;
-    class KSPELL2_EXPORT Dialog : public KDialogBase
+    class KSPELL2_EXPORT Dialog : public KDialog
     {
         Q_OBJECT
     public:
         Dialog( BackgroundChecker *checker,
-                QWidget *parent, const char *name=0 );
+                QWidget *parent );
         ~Dialog();
 
         QString originalBuffer() const;

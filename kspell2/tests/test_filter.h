@@ -1,7 +1,5 @@
 /**
- * configdialog.h
- *
- * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2006 David Faure <faure@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,33 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_CONFIGDIALOG_H
-#define KSPELL_CONFIGDIALOG_H
 
-#include <kdialog.h>
-#include "broker.h"
+#ifndef TEST_FILTER_H
+#define TEST_FILTER_H
 
-namespace KSpell2
+#include <QObject>
+
+class KSpell2FilterTest : public QObject
 {
-    class Broker;
-    class KSPELL2_EXPORT ConfigDialog : public KDialog
-    {
-        Q_OBJECT
-    public:
-        ConfigDialog( Broker::Ptr broker,
-                      QWidget *parent );
-        ~ConfigDialog();
-
-    protected Q_SLOTS:
-        virtual void slotOk();
-        virtual void slotApply();
-
-    private:
-        void init( Broker::Ptr broker );
-    private:
-        class Private;
-        Private* const d;
-    };
-}
+    Q_OBJECT
+private Q_SLOTS:
+    void testFilter();
+};
 
 #endif

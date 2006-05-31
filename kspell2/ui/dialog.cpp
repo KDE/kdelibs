@@ -58,13 +58,14 @@ public:
 };
 
 Dialog::Dialog( BackgroundChecker *checker,
-                QWidget *parent, const char *name )
-    : KDialogBase( Swallow, 0, parent, name, true,
-                   i18n( "Check Spelling" ),
-                   Help|Cancel|User1, Cancel,  true,
-                   i18n( "&Finished" ) ),d(new Private)
+                QWidget *parent )
+    : KDialog( parent,
+               i18n( "Check Spelling" ),
+               Help|Cancel|User1, 0,
+               i18n( "&Finished" ) ),d(new Private)
 {
 
+    setDefaultButton( Cancel );
     d->checker = checker;
 
     initGui();
@@ -197,7 +198,7 @@ void Dialog::show()
 
 void Dialog::slotAddWord()
 {
-   d->checker->addWord( d->currentWord.word ); 
+   d->checker->addWord( d->currentWord.word );
    d->checker->continueChecking();
 }
 
@@ -266,7 +267,7 @@ void Dialog::slotMisspelling(const QString& word, int start )
     } else {
         updateDialog( word );
     }
-    KDialogBase::show();
+    KDialog::show();
 }
 
 void Dialog::slotDone()

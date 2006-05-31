@@ -4,9 +4,11 @@
 ########### next target ###############
 
 set(kspell2_LIB_SRCS
-dialog.cpp
-${kspell2base_STAT_SRCS}
-${kspell2_noinst_STAT_SRCS}
+ dialog.cpp
+ ${kspell2base_STAT_SRCS}
+ configwidget.cpp
+ highlighter.cpp
+ configdialog.cpp
 )
 
 kde4_automoc(${kspell2_LIB_SRCS})

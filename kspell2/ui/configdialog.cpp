@@ -34,10 +34,9 @@ public:
 };
 
 ConfigDialog::ConfigDialog( Broker::Ptr broker, QWidget *parent )
-    : KDialogBase( Swallow, 0, parent, "KSpell2ConfigDialog", true,
-                   i18n( "KSpell2 Configuration" ),
-                   KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
-                   KDialogBase::Ok, true ),d(new Private)
+    : KDialog( parent,
+               i18n( "KSpell2 Configuration" ),
+               KDialog::Ok|KDialog::Apply|KDialog::Cancel ),d(new Private)
 {
     init( broker );
 }
@@ -49,8 +48,8 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::init( Broker::Ptr broker )
 {
-    KVBox *page = makeVBoxMainWidget();
-    d->ui = new ConfigWidget( broker, page );
+    d->ui = new ConfigWidget( broker, this );
+    setMainWidget( d->ui );
 }
 
 void ConfigDialog::slotOk()

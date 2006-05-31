@@ -19,34 +19,50 @@
  * 02110-1301  USA
  */
 #include "filter.h"
+#include "test_filter.h"
 
-
-#include <kapplication.h>
+#include <qtest_kde.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
+
+QTEST_KDEMAIN( KSpell2FilterTest, NoGUI )
+
 using namespace KSpell2;
 
-int main( int argc, char** argv )
+struct Hit {
+    Hit( const QString& w, int s ) : word( w ), start( s ) {}
+    QString word;
+    int start;
+};
+
+void KSpell2FilterTest::testFilter()
 {
-    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
-
-    KApplication app;
-
-    QString buffer = QString( "This is     a sample buffer.      Please test me." );
+    QString buffer( "This is     a sample buffer.      Please test me." );
+    QList<Hit> hits;
+    hits.append( Hit( "This", 0 ) );
+    hits.append( Hit( "is", 5 ) );
+    hits.append( Hit( "a", 12 ) );
+    hits.append( Hit( "sample", 14 ) );
+    hits.append( Hit( "buffer", 21 ) );
+    hits.append( Hit( "Please", 34 ) );
+    hits.append( Hit( "test", 41 ) );
+    hits.append( Hit( "me", 46 ) );
 
     Filter filter;
     filter.setBuffer( buffer );
 
     Word w;
-
+    int hitNumber = 0;
     while ( ! (w=filter.nextWord()).end ) {
-        kDebug()<< "Found word \""<< w.word << "\" which starts at position "
-                 << w.start <<endl;
+        QCOMPARE( w.word, hits[hitNumber].word );
+        QCOMPARE( w.start, hits[hitNumber].start );
+        //kDebug()<< "Found word \""<< w.word << "\" which starts at position "
+        //         << w.start <<endl;
+        ++hitNumber;
     }
+    QCOMPARE( hitNumber, hits.count()+1 );
 
-    filter.setBuffer( buffer );
-
-
-
-    return 0;
+    // ? filter.setBuffer( buffer );
 }
+
+#include "test_filter.moc"
