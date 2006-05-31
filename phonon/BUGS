@@ -1,3 +1,0 @@
-When the backend changes there's a drop in the playback. When it's in
-PlayingState it could time how long it takes until the playback resumes and add
-that time to the seek.

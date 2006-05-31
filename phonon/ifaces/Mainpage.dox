@@ -1,5 +1,0 @@
-/** @mainpage ./phonon/ifaces
- * 
- * Not much to say.
-*/
-// DOXYGEN_REFERENCES = dcop kdecore kio phonon phonon/ui/ifaces
