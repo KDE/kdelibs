@@ -160,165 +160,16 @@
 #cmakedefine HAVE_DLERROR 1
 #cmakedefine HAVE_DLD 1
 
-/********** HAVE_XXX_PROTO *******************/
-
-#cmakedefine HAVE_STRLCAT_PROTO 1
-#cmakedefine HAVE_STRLCPY_PROTO 1
-#cmakedefine HAVE_RANDOM_PROTO 1
-#cmakedefine HAVE_SRANDOM_PROTO 1
-#cmakedefine HAVE_SETENV_PROTO 1
-#cmakedefine HAVE_UNSETENV_PROTO 1
-#cmakedefine HAVE_USLEEP_PROTO 1
-#cmakedefine HAVE_INITGROUPS_PROTO 1
-#cmakedefine HAVE_MKSTEMPS_PROTO 1
-#cmakedefine HAVE_MKDTEMP_PROTO 1
-#cmakedefine HAVE_MKSTEMP_PROTO 1
-
 /********* structs ******************/
 
 #cmakedefine HAVE_STRUCT_UCRED 1
 
 /*********************/
 
-#if !defined(HAVE_INITGROUPS_PROTO)
-#include <unistd.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
-int initgroups(const char *, gid_t);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_MKDTEMP_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-char *mkdtemp(char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_MKSTEMPS_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int mkstemps(char *, int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_MKSTEMP_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int mkstemp(char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_RANDOM_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-long int random(void);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-
-#if !defined(HAVE_SETENV_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int setenv (const char *, const char *, int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_SRANDOM_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-void srandom(unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_STRLCAT_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-unsigned long strlcat(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_STRLCPY_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-unsigned long strlcpy(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_UNSETENV_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int unsetenv (const char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
-#if !defined(HAVE_USLEEP_PROTO)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int usleep (unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-
-
 #ifndef HAVE_S_ISSOCK
 #define HAVE_S_ISSOCK
 #define S_ISSOCK(mode) (1==0)
 #endif
-
 
 /*
  * Steven Schultz <sms at to.gd-es.com> tells us :
@@ -366,3 +217,5 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 
 /* Defined to 1 if you have a tm_zone member in struct tm */
 #cmakedefine HAVE_STRUCT_TM_TM_ZONE 1
+
+#include "kdecore/kdefakes.h"

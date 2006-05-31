@@ -1,5 +1,8 @@
 project(kdecore)
 
+# Generate kdefakes.h
+configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
+
 # Configure checks for network/ but also for netsupp.*
 include(network/ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
@@ -385,5 +388,6 @@ install_files( /include FILES
    kdedmodule.h
    kautostart.h
    kprotocolinfo.h
+   kdefakes.h
 )
 
