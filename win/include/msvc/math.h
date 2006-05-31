@@ -27,6 +27,9 @@
 #define _USE_MATH_DEFINES
 #include <../include/math.h>
 
+#include <../include/float.h>
+#define isnan _isnan
+
 // some functions which aren't available with msvc
 // float rintf( float x )
 // double rint( double x )
