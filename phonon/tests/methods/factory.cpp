@@ -1,0 +1,16 @@
+addMethod( "QObject*", "createByteStream(QObject*)", true );
+addMethod( "const char*", "uiLibrary()" );
+addMethod( "QObject*", "createAudioDataOutput(QObject*)", true );
+addMethod( "QObject*", "createAudioOutput(QObject*)", true );
+addMethod( "QObject*", "createAudioEffect(int,QObject*)", true );
+addMethod( "QObject*", "createMediaObject(QObject*)", true );
+addMethod( "QObject*", "createVideoEffect(int,QObject*)", true );
+addMethod( "QObject*", "createVideoPath(QObject*)", true );
+addMethod( "QObject*", "createBrightnessControl(QObject*)", true );
+addMethod( "const char*", "uiSymbol()", true );
+addMethod( "QObject*", "createVolumeFaderEffect(QObject*)", true );
+addMethod( "QObject*", "createAvCapture(QObject*)", true );
+addMethod( "QObject*", "createVisualization(QObject*)", true );
+addMethod( "QObject*", "createMediaQueue(QObject*)", true );
+addMethod( "QObject*", "createVideoDataOutput(QObject*)", true );
+addMethod( "QObject*", "createAudioPath(QObject*)", true );
