@@ -417,6 +417,9 @@ extern HRESULT WINAPI GetDeviceID(LPCGUID lpGuidSrc, LPGUID lpGuidDest);
 /*****************************************************************************
  * IDirectSound interface
  */
+#ifdef INTERFACE
+#undef INTERFACE
+#endif
 #define INTERFACE IDirectSound
 DECLARE_INTERFACE_(IDirectSound,IUnknown)
 {
