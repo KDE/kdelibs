@@ -66,8 +66,8 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 		void stateChanged( Phonon::State );
 		void mediaDestroyed();
 		void seek( int );
-		void tick( long );
-		void length( long );
+		void tick( qint64 );
+		void length( qint64 );
 
 	protected:
 		SeekSlider( SeekSliderPrivate& d, QWidget* parent );

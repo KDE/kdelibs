@@ -68,8 +68,8 @@ void SeekSlider::setMediaProducer( AbstractMediaProducer* media )
 	connect( media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
 			SLOT( stateChanged( Phonon::State ) ) );
 	connect( &d->slider, SIGNAL( valueChanged( int ) ), SLOT( seek( int ) ) );
-	connect( media, SIGNAL( length( long ) ), SLOT( length( long ) ) );
-	connect( media, SIGNAL( tick( long ) ), SLOT( tick( long ) ) );
+	connect( media, SIGNAL( length( qint64 ) ), SLOT( length( qint64 ) ) );
+	connect( media, SIGNAL( tick( qint64 ) ), SLOT( tick( qint64 ) ) );
 	stateChanged( media->state() );
 }
 
@@ -80,7 +80,7 @@ void SeekSlider::seek( int msec )
 		d->media->seek( msec );
 }
 
-void SeekSlider::tick( long msec )
+void SeekSlider::tick( qint64 msec )
 {
 	Q_D( SeekSlider );
 	d->ticking = true;
@@ -88,7 +88,7 @@ void SeekSlider::tick( long msec )
 	d->ticking = false;
 }
 
-void SeekSlider::length( long msec )
+void SeekSlider::length( qint64 msec )
 {
 	Q_D( SeekSlider );
 	d->slider.setRange( 0, msec );

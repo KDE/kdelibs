@@ -133,7 +133,7 @@ void TestWidget::slotVolumeChanged( float v )
 		m_volslider->setValue( ( int )( 100 * v ) );
 }
 
-void TestWidget::tick( long t )
+void TestWidget::tick( qint64 t )
 {
 	m_ticking = true;
 	m_seekslider->setValue( t );
@@ -173,7 +173,7 @@ void TestWidget::seek( int ms )
 		m_media->seek( ms );
 }
 
-void TestWidget::length( long ms )
+void TestWidget::length( qint64 ms )
 {
 	m_length = ms;
 	m_seekslider->setRange( 0, ms );
@@ -206,8 +206,8 @@ void TestWidget::loadFile( const QString & file )
 	connect( m_play, SIGNAL( clicked() ), m_media, SLOT( play() ) );
 	connect( m_stop, SIGNAL( clicked() ), m_media, SLOT( stop() ) );
 
-	connect( m_media, SIGNAL(   tick( long ) ), SLOT(   tick( long ) ) );
-	connect( m_media, SIGNAL( length( long ) ), SLOT( length( long ) ) );
+	connect( m_media, SIGNAL(   tick( qint64 ) ), SLOT(   tick( qint64 ) ) );
+	connect( m_media, SIGNAL( length( qint64 ) ), SLOT( length( qint64 ) ) );
 	length( m_media->totalTime() );
 	connect( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
 			SLOT( stateChanged( Phonon::State ) ) );

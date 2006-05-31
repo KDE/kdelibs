@@ -47,10 +47,10 @@ class TestWidget : public QWidget
 	private Q_SLOTS:
 		void volchanged( int );
 		void slotVolumeChanged( float );
-		void tick( long );
+		void tick( qint64 );
 		void stateChanged( Phonon::State );
 		void seek( int );
-		void length( long );
+		void length( qint64 );
 		void loadFile( const QString& );
 
 	private:
@@ -64,7 +64,7 @@ class TestWidget : public QWidget
 		VideoWidget* vout;
 		bool m_ticking;
 		bool m_ignoreVolumeChange;
-		long m_length;
+		qint64 m_length;
 };
 
 #endif // TESTWIDGET_H
