@@ -21,10 +21,7 @@
 #ifndef _CRYPTO_H
 #define _CRYPTO_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <config-crypto.h>
+#include <ksslconfig.h>
 #include <QCheckBox>
 #include <QDateTime>
 #include <QLineEdit>
@@ -228,7 +225,7 @@ public:
   void save();
   void defaults();
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
   bool loadCiphers();
 #endif
 

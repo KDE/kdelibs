@@ -1,10 +1,5 @@
 macro_optional_find_package(OpenSSL)
 
-macro_bool_to_01(OPENSSL_FOUND HAVE_SSL) # kcontrol/crypto (config-crypto.h)
-
-configure_file (config-crypto.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-crypto.h )
-
-
 
 ########### next target ###############
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
