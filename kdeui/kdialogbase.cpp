@@ -428,7 +428,7 @@ void KDialogBase::printMakeMainWidgetError()
 {
   if( mJanus )
   {
-    kDebug() << "makeMainWidget: Illegal mode (wrong constructor)" << endl;
+    kWarning(240) << "KDialogBase::makeMainWidget: Illegal mode (wrong constructor)" << endl;
   }
 }
 
