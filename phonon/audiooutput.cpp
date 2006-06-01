@@ -20,6 +20,7 @@
 #include "audiooutput_p.h"
 #include "factory.h"
 #include "audiooutputdevice.h"
+#include "mixeradaptor.h"
 
 #include <kglobal.h>
 #include <kinstance.h>
@@ -28,7 +29,28 @@
 
 namespace Phonon
 {
-PHONON_HEIR_IMPL( AudioOutput, AbstractAudioOutput )
+AudioOutput::AudioOutput( QObject* parent )
+	: AbstractAudioOutput( *new AudioOutputPrivate, parent )
+{
+	K_D( AudioOutput );
+	d->createIface();
+	new MixerIfaceAdaptor( this );
+}
+
+AudioOutput::AudioOutput( AudioOutputPrivate& dd, QObject* parent )
+	: AbstractAudioOutput( dd, parent )
+{
+}
+
+void AudioOutputPrivate::createIface()
+{
+	if( backendObject )
+		return;
+	K_Q( AudioOutput );
+	backendObject = Factory::self()->createAudioOutput( q );
+	if( backendObject )
+		q->setupIface();
+}
 
 QString AudioOutput::name() const
 {
