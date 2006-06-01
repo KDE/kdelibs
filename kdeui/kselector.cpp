@@ -311,7 +311,7 @@ void KSelector::moveArrow( const QPoint &pos )
     val = ( maximum() - minimum() ) * (height() - pos.y() - 5 + w)
             / (height() - iw * 2) + minimum();
   else
-    val = ( maximum() - minimum() ) * (width() - pos.x() - 5 + w)
+    val = ( maximum() - minimum() ) * ( pos.x() - 5 + w)
             / (width() - iw * 2) + minimum();
 
   setValue( val );
@@ -330,8 +330,8 @@ QPoint KSelector::calcArrowPos( int val )
   }
   else
   {
-    p.setX( width() - ( (width() - 2 * iw) * val
-        / ( maximum() - minimum() ) + 5 ) );
+    p.setX( (width() - 2 * iw) * val
+        / ( maximum() - minimum() ) + 5  );
     p.setY( height() - 5 );
   }
 
