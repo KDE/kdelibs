@@ -19,7 +19,7 @@
 #define KHE_BYTESEDITINTERFACE_H
 
 // kde specific
-#include <kparts/componentfactory.h>
+#include <kservicetypetrader.h>
 
 class QWidget;
 
@@ -211,7 +211,7 @@ inline BytesEditInterface *bytesEditInterface( T *t )
   */
 inline QWidget *createBytesEditWidget( QWidget *Parent = 0 )
 {
-  return KParts::ComponentFactory::createInstanceFromQuery<QWidget>
+  return KServiceTypeTrader::createInstanceFromQuery<QWidget>
       ( QLatin1String("KHexEdit/KBytesEdit"), QString(), Parent );
 }
 

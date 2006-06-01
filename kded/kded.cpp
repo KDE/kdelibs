@@ -106,26 +106,15 @@ Kded::Kded(bool checkUpdates)
     m_needDelayedCheck(false)
 {
   _self = this;
-  
+
   new KBuildsycocaAdaptor(this);
   new KdedAdaptor(this);
-  
+
   QDBusConnection &session = QDBus::sessionBus();
   session.registerObject(MODULES_PATH "kbuildsycoca", this);
   session.registerObject(MODULES_PATH "kded", this);
 
   qDBusSetSpyHook(messageFilter);
-
-#ifdef __GNUC__
-# warning "Dead code (vars cPath and ksycoca_env)"
-#elif 0
-  QByteArray cPath;
-  QByteArray ksycoca_env = getenv("KDESYCOCA");
-  if (ksycoca_env.isEmpty())
-     cPath = QFile::encodeName(KGlobal::dirs()->saveLocation("tmp")+"ksycoca");
-  else
-     cPath = ksycoca_env;
-#endif
 
   m_pTimer = new QTimer(this);
   m_pTimer->setSingleShot( true );

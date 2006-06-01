@@ -26,7 +26,7 @@
 #include "dictionary.h"
 
 #include <klocale.h>
-#include <kparts/componentfactory.h>
+#include <kservicetypetrader.h>
 
 #include <kplugininfo.h>
 #include <kservicetypetrader.h>
@@ -299,7 +299,7 @@ void Broker::loadPlugin( const QString& pluginId )
 
     kDebug()<<"Loading plugin " << pluginId << endl;
 
-    Client *client = KParts::ComponentFactory::createInstanceFromQuery<Client>(
+    Client *client = KServiceTypeTrader::createInstanceFromQuery<Client>(
         QLatin1String( "KSpell/Client" ),
         QString::fromLatin1( "[X-KDE-PluginInfo-Name]=='%1'" ).arg( pluginId ),
         this, QStringList(), &error );

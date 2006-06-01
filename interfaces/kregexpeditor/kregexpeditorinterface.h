@@ -22,7 +22,7 @@
  * regular expression dialog:
  *
  * \code
- * QDialog *editorDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
+ * QDialog *editorDialog = KServiceTypeTrader::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
  * if ( editorDialog ) {
  *   // kdeutils was installed, so the dialog was found fetch the editor interface
  *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorDialog->qt_cast( "KRegExpEditorInterface" ) );
@@ -49,7 +49,7 @@
  *
  * \code
  * QWidget *editorWidget =
- * KParts::ComponentFactory::createInstanceFromQuery<QWidget>( 
+ * KServiceTypeTrader::createInstanceFromQuery<QWidget>( 
  *     "KRegExpEditor/KRegExpEditor", QString(), parent );
  * if ( editorWidget ) {
  *   // kdeutils was installed, so the widget was found fetch the editor interface

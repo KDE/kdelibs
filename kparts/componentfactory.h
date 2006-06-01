@@ -135,47 +135,6 @@ namespace KParts
         }
 
         /**
-         * This method creates and returns a plugin, from the trader query for a given serviceType.
-         *
-         * Example:
-         * \code
-         * KMyAppPlugin* plugin = KParts::ComponentFactory::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString(), parentObject );
-         * if ( plugin ) {
-         *     ....
-         * }
-         * \endcode
-         *
-         * @param serviceType the type of service for which to find a plugin
-         * @param constraint an optionnal constraint to pass to the trader (see KTrader)
-         * @param parent the parent object for the part itself
-         * @param args A list of string arguments, passed to the factory and possibly
-         *             to the component (see KLibFactory)
-         * @param error The int passed here will receive an error code in case of errors.
-         *              (See enum KLibLoader::ComponentLoadingError)
-         * @return A pointer to the newly created object or a null pointer if the
-         *         factory was unable to create an object of the given type.
-         */
-        template <class T>
-        static T *createInstanceFromQuery( const QString &serviceType,
-                                           const QString &constraint = QString(),
-                                           QObject *parent = 0,
-                                           const QStringList &args = QStringList(),
-                                           int *error = 0 )
-        {
-            const KService::List offers = KServiceTypeTrader::self()->query( serviceType, constraint );
-            if ( offers.isEmpty() )
-            {
-                if ( error )
-                    *error = KLibLoader::ErrNoServiceFound;
-                return 0;
-            }
-
-            return KService::createInstance<T>( offers.begin(),
-                                                offers.end(),
-                                                parent, args, error );
-        }
-
-        /**
          * This method creates and returns a KParts part from a serviceType (e.g. a mimetype).
          *
          * You can use this method to create a generic viewer - that can display any

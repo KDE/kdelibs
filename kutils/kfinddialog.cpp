@@ -34,7 +34,7 @@
 #include <assert.h>
 #include <kfind.h>
 #include <kregexpeditorinterface.h>
-#include <kparts/componentfactory.h>
+#include <kservicetypetrader.h>
 
 class KFindDialog::KFindDialogPrivate
 {
@@ -419,7 +419,7 @@ void KFindDialog::showPatterns()
 {
     if ( !d->m_regexpDialogQueryDone )
     {
-        d->m_regexpDialog = KParts::ComponentFactory::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString(), this );
+        d->m_regexpDialog = KServiceTypeTrader::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString(), this );
         d->m_regexpDialogQueryDone = true;
     }
 

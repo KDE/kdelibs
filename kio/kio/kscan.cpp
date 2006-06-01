@@ -21,14 +21,14 @@
 #include <qfile.h>
 
 #include <klocale.h>
-#include <kparts/componentfactory.h>
+#include <kservicetypetrader.h>
 
 #include "kscan.h"
 
 // static factory method
 KScanDialog * KScanDialog::getScanDialog( QWidget *parent )
 {
-    return KParts::ComponentFactory::createInstanceFromQuery<KScanDialog>( "KScan/KScanDialog", QString(), parent );
+    return KServiceTypeTrader::createInstanceFromQuery<KScanDialog>( "KScan/KScanDialog", QString(), parent );
 }
 
 
@@ -55,7 +55,7 @@ bool KScanDialog::setup()
 // static factory method
 KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent )
 {
-    return KParts::ComponentFactory::createInstanceFromQuery<KOCRDialog>( "KScan/KOCRDialog", QString(), parent );
+    return KServiceTypeTrader::createInstanceFromQuery<KOCRDialog>( "KScan/KOCRDialog", QString(), parent );
 }
 
 
