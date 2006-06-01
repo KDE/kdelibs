@@ -1261,6 +1261,8 @@ bool KHTMLParser::isResidualStyleTag(int _id)
         case ID_VAR:
         case ID_DEL:
         case ID_INS:
+        case ID_WBR:
+        case ID_NOBR:
             return true;
         default:
             return false;
