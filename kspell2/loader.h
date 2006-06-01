@@ -1,6 +1,6 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * broker.h
+ * loader.h
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -44,36 +44,36 @@ namespace KSpell2
      * KSpell2 class, you can think of it as the kernel or manager
      * of the KSpell2 architecture.
      */
-    class KSPELL2_EXPORT Broker : public QObject,
+    class KSPELL2_EXPORT Loader : public QObject,
                    public KShared
     {
         Q_OBJECT
     public:
-        typedef KSharedPtr<Broker> Ptr;
+        typedef KSharedPtr<Loader> Ptr;
         /**
-         * Constructs the broker.
+         * Constructs the loader.
          *
-         * It's very important that you leave the return value in a Broker::Ptr.
-         * Broker is reference counted so if you don't want to have it deleted
-         * under you simply have to hold it in a Broker::Ptr for as long as
+         * It's very important that you leave the return value in a Loader::Ptr.
+         * Loader is reference counted so if you don't want to have it deleted
+         * under you simply have to hold it in a Loader::Ptr for as long as
          * you're using it.
          *
          * @param config is the name of config file which
-         *        broker should use to read default language
+         *        loader should use to read default language
          *        and default client values. If no value will
-         *        be passed Broker will use global kspellrc file.
+         *        be passed Loader will use global kspellrc file.
          */
-        static Broker::Ptr openBroker( KSharedConfig::Ptr config = KSharedConfig::Ptr() );
+        static Loader::Ptr openLoader( KSharedConfig::Ptr config = KSharedConfig::Ptr() );
 
     public:
-        ~Broker();
+        ~Loader();
 
         /**
          * Function returns the so-called DefaultDictionary. It's a
          * special form a dictionary which automatically mutates
          * according to changes tot the KSpell2::Settings object.
          * You also can't delete it like other dictionaries since
-         * it's owned by the Broker and it will take care of it.
+         * it's owned by the Loader and it will take care of it.
          */
         DefaultDictionary *defaultDictionary() const;
 
@@ -111,13 +111,13 @@ namespace KSpell2
         QStringList languagesName() const;
 
         /**
-         * Returns the Settings object used by the broker.
+         * Returns the Settings object used by the loader.
          */
         Settings *settings() const;
     Q_SIGNALS:
         /**
          * Signal is emitted whenever the Settings object
-         * associated with this Broker changes.
+         * associated with this Loader changes.
          */
         void configurationChanged();
 
@@ -125,7 +125,7 @@ namespace KSpell2
         friend class Settings;
         void changed();
     private:
-        Broker( KSharedConfig::Ptr config );
+        Loader( KSharedConfig::Ptr config );
         void loadPlugins();
         void loadPlugin( const KSharedPtr<KService>& );
         mutable QStringList languagesNameCache;

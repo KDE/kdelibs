@@ -33,12 +33,12 @@ public:
     ConfigWidget *ui;
 };
 
-ConfigDialog::ConfigDialog( Broker::Ptr broker, QWidget *parent )
+ConfigDialog::ConfigDialog( Loader::Ptr loader, QWidget *parent )
     : KDialog( parent,
                i18n( "KSpell2 Configuration" ),
                KDialog::Ok|KDialog::Apply|KDialog::Cancel ),d(new Private)
 {
-    init( broker );
+    init( loader );
 }
 
 ConfigDialog::~ConfigDialog()
@@ -46,9 +46,9 @@ ConfigDialog::~ConfigDialog()
     delete d;
 }
 
-void ConfigDialog::init( Broker::Ptr broker )
+void ConfigDialog::init( Loader::Ptr loader )
 {
-    d->ui = new ConfigWidget( broker, this );
+    d->ui = new ConfigWidget( loader, this );
     setMainWidget( d->ui );
 }
 

@@ -22,7 +22,7 @@
  */
 #include "settings.h"
 
-#include "broker.h"
+#include "loader.h"
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -37,7 +37,7 @@ namespace KSpell2
 class Settings::Private
 {
 public:
-    Broker*  broker; //can't be a Ptr since we don't want to hold a ref on it
+    Loader*  loader; //can't be a Ptr since we don't want to hold a ref on it
     KSharedConfig::Ptr config;
     bool     modified;
 
@@ -54,10 +54,10 @@ public:
     QMap<QString, bool> ignore;
 };
 
-Settings::Settings( Broker *broker, KSharedConfig::Ptr config )
+Settings::Settings( Loader *loader, KSharedConfig::Ptr config )
 	:d(new Private)
 {
-    d->broker = broker;
+    d->loader = loader;
 
     Q_ASSERT( config );
     d->config = config;
@@ -78,13 +78,13 @@ KSharedConfig *Settings::sharedConfig() const
 
 void Settings::setDefaultLanguage( const QString& lang )
 {
-    QStringList cs = d->broker->languages();
+    QStringList cs = d->loader->languages();
     if ( cs.indexOf( lang ) != -1 &&
          d->defaultLanguage != lang ) {
         d->defaultLanguage = lang;
         readIgnoreList();
         d->modified = true;
-        d->broker->changed();
+        d->loader->changed();
     }
 }
 
@@ -98,10 +98,10 @@ void Settings::setDefaultClient( const QString& client )
     //Different from setDefaultLanguage because
     //the number of clients can't be even close
     //as big as the number of languages
-    if ( d->broker->clients().contains( client ) ) {
+    if ( d->loader->clients().contains( client ) ) {
         d->defaultClient = client;
         d->modified = true;
-        d->broker->changed();
+        d->loader->changed();
     }
 }
 

@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 #include "configdialog.h"
-#include "broker.h"
+#include "loader.h"
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -32,8 +32,8 @@ int main( int argc, char** argv )
     KCmdLineArgs::init( argc, argv, "test_configdialog", 0, 0, 0, 0 );
     KApplication app; // with GUI
 
-    Broker::Ptr broker = Broker::openBroker();
-    ConfigDialog *dialog = new ConfigDialog( broker, 0 );
+    Loader::Ptr loader = Loader::openLoader();
+    ConfigDialog *dialog = new ConfigDialog( loader, 0 );
 
     dialog->show();
 

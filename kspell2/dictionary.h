@@ -28,7 +28,7 @@
 namespace KSpell2
 {
     /**
-     * Class is returned by from Broker. It acts
+     * Class is returned by from Loader. It acts
      * as the actual spellchecker.
      *
      * @author Zack Rusin <zack@kde.org>
@@ -98,7 +98,7 @@ namespace KSpell2
         Dictionary( const QString& lang, bool def = false )
             : m_language( lang ), m_default( def ) {}
     protected:
-        friend class Broker;
+        friend class Loader;
         QString m_language;
         bool    m_default;
     private:

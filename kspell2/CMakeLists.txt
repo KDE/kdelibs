@@ -8,7 +8,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/kutils )
 
 set(kspell2base_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kspell2/settings.cpp
-  ${CMAKE_SOURCE_DIR}/kspell2/broker.cpp
+  ${CMAKE_SOURCE_DIR}/kspell2/loader.cpp
   ${CMAKE_SOURCE_DIR}/kspell2/client.cpp
   ${CMAKE_SOURCE_DIR}/kspell2/filter.cpp
   ${CMAKE_SOURCE_DIR}/kspell2/backgroundchecker.cpp
@@ -29,7 +29,7 @@ add_subdirectory( kcmspellchecking )
 ########### install files ###############
 
 install_files( ${SERVICETYPES_INSTALL_DIR} FILES kspellclient.desktop )
-install_files( /include/kspell2 FILES settings.h filter.h   dictionary.h broker.h   backgroundchecker.h defaultdictionary.h  )
+install_files( /include/kspell2 FILES settings.h filter.h   dictionary.h loader.h   backgroundchecker.h defaultdictionary.h  )
 
 
 
@@ -47,10 +47,10 @@ install_files( /include/kspell2 FILES settings.h filter.h   dictionary.h broker.
 #kspell2baseincludedir = $(includedir)/kspell2
 #
 #kspell2baseinclude_HEADERS = settings.h filter.h \
-#	dictionary.h broker.h \
+#	dictionary.h loader.h \
 #	backgroundchecker.h defaultdictionary.h
 #
-#libkspell2base_la_SOURCES = settings.cpp broker.cpp \
+#libkspell2base_la_SOURCES = settings.cpp loader.cpp \
 #	client.cpp filter.cpp backgroundchecker.cpp \
 #	backgroundthread.cpp backgroundengine.cpp \
 #	defaultdictionary.cpp

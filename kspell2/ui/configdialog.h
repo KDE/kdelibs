@@ -22,16 +22,16 @@
 #define KSPELL_CONFIGDIALOG_H
 
 #include <kdialog.h>
-#include "broker.h"
+#include "loader.h"
 
 namespace KSpell2
 {
-    class Broker;
+    class Loader;
     class KSPELL2_EXPORT ConfigDialog : public KDialog
     {
         Q_OBJECT
     public:
-        ConfigDialog( Broker::Ptr broker,
+        ConfigDialog( Loader::Ptr loader,
                       QWidget *parent );
         ~ConfigDialog();
 
@@ -40,7 +40,7 @@ namespace KSpell2
         virtual void slotApply();
 
     private:
-        void init( Broker::Ptr broker );
+        void init( Loader::Ptr loader );
     private:
         class Private;
         Private* const d;

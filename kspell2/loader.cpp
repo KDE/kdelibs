@@ -1,6 +1,6 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * broker.cpp
+ * loader.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "broker.h"
+#include "loader.h"
 #include "settings.h"
 #include "client.h"
 #include "defaultdictionary.h"
@@ -40,7 +40,7 @@
 namespace KSpell2
 {
 
-class Broker::Private
+class Loader::Private
 {
 public:
     KService::List plugins;
@@ -52,32 +52,32 @@ public:
     DefaultDictionary *defaultDictionary;
 };
 
-typedef QHash<KSharedConfig*, Broker*> BrokerConfigHash;
-static KStaticDeleter<BrokerConfigHash> s_brokerDeleter;
-static BrokerConfigHash *s_brokers = 0;
+typedef QHash<KSharedConfig*, Loader*> LoaderConfigHash;
+static KStaticDeleter<LoaderConfigHash> s_loaderDeleter;
+static LoaderConfigHash *s_loaders = 0;
 
-Broker::Ptr Broker::openBroker( KSharedConfig::Ptr config )
+Loader::Ptr Loader::openLoader( KSharedConfig::Ptr config )
 {
     if ( !config )
         config = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
 
-    if ( s_brokers ) {
-        Broker *broker = s_brokers->value( config.data() );
-        if ( broker )
-            return Ptr( broker );
+    if ( s_loaders ) {
+        Loader *loader = s_loaders->value( config.data() );
+        if ( loader )
+            return Ptr( loader );
     }
 
-    Broker *broker = new Broker( config );
-    return Ptr( broker );
+    Loader *loader = new Loader( config );
+    return Ptr( loader );
 }
 
-Broker::Broker( KSharedConfig::Ptr config )
+Loader::Loader( KSharedConfig::Ptr config )
 	:d(new Private)
 {
-    if ( !s_brokers ) {
-        s_brokerDeleter.setObject( s_brokers, new BrokerConfigHash );
+    if ( !s_loaders ) {
+        s_loaderDeleter.setObject( s_loaders, new LoaderConfigHash );
     }
-    s_brokers->insert( config.data(), this );
+    s_loaders->insert( config.data(), this );
 
     d->settings = new Settings( this, config );
     loadPlugins();
@@ -86,21 +86,21 @@ Broker::Broker( KSharedConfig::Ptr config )
                                                   this );
 }
 
-Broker::~Broker()
+Loader::~Loader()
 {
-    kDebug()<<"Removing broker : "<< this << endl;
-    s_brokers->remove( d->settings->sharedConfig() );
+    kDebug()<<"Removing loader : "<< this << endl;
+    s_loaders->remove( d->settings->sharedConfig() );
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
 }
 
-DefaultDictionary* Broker::defaultDictionary() const
+DefaultDictionary* Loader::defaultDictionary() const
 {
     return d->defaultDictionary;
 }
 
-Dictionary* Broker::dictionary( const QString& language, const QString& clientName ) const
+Dictionary* Loader::dictionary( const QString& language, const QString& clientName ) const
 {
     QString pclient = clientName;
     QString plang   = language;
@@ -145,17 +145,17 @@ Dictionary* Broker::dictionary( const QString& language, const QString& clientNa
     return 0;
 }
 
-QStringList Broker::clients() const
+QStringList Loader::clients() const
 {
     return d->clients;
 }
 
-QStringList Broker::languages() const
+QStringList Loader::languages() const
 {
     return d->languageClients.keys();
 }
 
-QStringList Broker::languagesName() const
+QStringList Loader::languagesName() const
 {
     /* For whatever reason languages() might change. So,
      * to be in sync with it let's do the following check.
@@ -269,12 +269,12 @@ QStringList Broker::languagesName() const
     return allLocalizedDictionaries;
 }
 
-Settings* Broker::settings() const
+Settings* Loader::settings() const
 {
     return d->settings;
 }
 
-void Broker::loadPlugins()
+void Loader::loadPlugins()
 {
     d->plugins = KServiceTypeTrader::self()->query( "KSpell/Client" );
 
@@ -284,7 +284,7 @@ void Broker::loadPlugins()
     }
 }
 
-void Broker::loadPlugin( const KSharedPtr<KService>& service )
+void Loader::loadPlugin( const KSharedPtr<KService>& service )
 {
     int error = 0;
 
@@ -339,11 +339,11 @@ void Broker::loadPlugin( const KSharedPtr<KService>& service )
     }
 }
 
-void Broker::changed()
+void Loader::changed()
 {
     emit configurationChanged();
 }
 
 }
 
-#include "broker.moc"
+#include "loader.moc"

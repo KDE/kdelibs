@@ -29,7 +29,7 @@
 
 namespace KSpell2
 {
-    class Broker;
+    class Loader;
 
     class KSPELL2_EXPORT Settings
     {
@@ -70,8 +70,8 @@ namespace KSpell2
         void setQuietIgnoreList( const QStringList& ignores );
 
     private:
-        friend class Broker;
-        Settings( Broker *broker, KSharedConfig::Ptr config );
+        friend class Loader;
+        Settings( Loader *loader, KSharedConfig::Ptr config );
     private:
         class Private;
         Private* const d;

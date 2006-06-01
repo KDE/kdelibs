@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "broker.h"
+#include "loader.h"
 #include "dictionary.h"
 
 #include <kapplication.h>
@@ -33,12 +33,12 @@ int main( int argc, char** argv )
     KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
     KApplication app;
 
-    Broker::Ptr broker = Broker::openBroker();
+    Loader::Ptr loader = Loader::openLoader();
 
-    kDebug()<< "Clients are "   << broker->clients()   << endl;
-    kDebug()<< "Languages are " << broker->languages() << endl;
+    kDebug()<< "Clients are "   << loader->clients()   << endl;
+    kDebug()<< "Languages are " << loader->languages() << endl;
 
-    Dictionary *dict = broker->dictionary( "en_US" );
+    Dictionary *dict = loader->dictionary( "en_US" );
 
     QStringList words;
 

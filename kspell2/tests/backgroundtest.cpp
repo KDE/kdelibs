@@ -21,7 +21,7 @@
 #include "backgroundtest.h"
 #include "backgroundtest.moc"
 
-#include "broker.h"
+#include "loader.h"
 using namespace KSpell2;
 
 #include <kapplication.h>
@@ -133,7 +133,7 @@ If you want to talk about this code feel free to mail us.";
 BackgroundTest::BackgroundTest()
     : QObject( 0 )
 {
-    m_checker = new BackgroundChecker( Broker::openBroker(), this );
+    m_checker = new BackgroundChecker( Loader::openLoader(), this );
     connect( m_checker, SIGNAL(done()),
              SLOT(slotDone()) );
     connect( m_checker, SIGNAL(misspelling(const QString&, int)),

@@ -42,12 +42,12 @@ BackgroundEngine::~BackgroundEngine()
     delete m_dict; m_dict = 0;
 }
 
-void BackgroundEngine::setBroker( const Broker::Ptr& broker )
+void BackgroundEngine::setLoader( const Loader::Ptr& loader )
 {
-    m_broker = broker;
+    m_loader = loader;
     delete m_dict;
-    m_defaultDict = m_broker->defaultDictionary();
-    m_filter->setSettings( m_broker->settings() );
+    m_defaultDict = m_loader->defaultDictionary();
+    m_filter->setSettings( m_loader->settings() );
 }
 
 void BackgroundEngine::setText( const QString& text )
@@ -66,7 +66,7 @@ void BackgroundEngine::changeLanguage( const QString& lang )
     if ( lang.isEmpty() ) {
         m_dict = 0;
     } else {
-        m_dict = m_broker->dictionary( lang );
+        m_dict = m_loader->dictionary( lang );
     }
 }
 

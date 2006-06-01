@@ -21,7 +21,7 @@
 #include "backgroundthread.h"
 
 #include "threadevents.h"
-#include "broker.h"
+#include "loader.h"
 #include "filter.h"
 #include "dictionary.h"
 
@@ -31,7 +31,7 @@
 using namespace KSpell2;
 
 BackgroundThread::BackgroundThread()
-    : QThread(), m_broker( 0 ), m_dict( 0 )
+    : QThread(), m_loader( 0 ), m_dict( 0 )
 {
     m_recv   = 0;
     m_filter = Filter::defaultFilter();
@@ -43,12 +43,12 @@ void BackgroundThread::setReceiver( QObject *recv )
     m_recv = recv;
 }
 
-void BackgroundThread::setBroker( const Broker::Ptr& broker )
+void BackgroundThread::setLoader( const Loader::Ptr& loader )
 {
     stop();
-    m_broker = broker;
+    m_loader = loader;
     delete m_dict;
-    m_dict   = m_broker->dictionary();
+    m_dict   = m_loader->dictionary();
     m_filter->restart();
 }
 
@@ -101,7 +101,7 @@ void BackgroundThread::changeLanguage( const QString& lang )
     stop();
     m_mutex.lock();
     delete m_dict;
-    m_dict = m_broker->dictionary( lang );
+    m_dict = m_loader->dictionary( lang );
     m_filter->restart();
     m_mutex.unlock();
     start();

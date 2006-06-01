@@ -21,7 +21,7 @@
 #ifndef KSPELL_BACKGROUNDENGINE_H
 #define KSPELL_BACKGROUNDENGINE_H
 
-#include "broker.h"
+#include "loader.h"
 
 #include <qobject.h>
 #include <qstringlist.h>
@@ -29,7 +29,7 @@
 namespace KSpell2
 {
     class Filter;
-    class Broker;
+    class Loader;
     class Dictionary;
     class BackgroundEngine : public QObject
     {
@@ -38,8 +38,8 @@ namespace KSpell2
         BackgroundEngine( QObject *parent );
         ~BackgroundEngine();
 
-        void setBroker( const Broker::Ptr& broker );
-        Broker *broker() { return m_broker.data(); }
+        void setLoader( const Loader::Ptr& loader );
+        Loader *loader() { return m_loader.data(); }
 
         void setText( const QString& );
         QString text() const;
@@ -73,7 +73,7 @@ namespace KSpell2
         void checkNext();
     private:
         Filter            *m_filter;
-        Broker::Ptr        m_broker;
+        Loader::Ptr        m_loader;
         Dictionary        *m_dict;
         DefaultDictionary *m_defaultDict;
     };

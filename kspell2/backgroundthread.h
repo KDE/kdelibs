@@ -21,7 +21,7 @@
 #ifndef KSPELL_BACKGROUNDTHREAD_H
 #define KSPELL_BACKGROUNDTHREAD_H
 
-#include "broker.h"
+#include "loader.h"
 
 #include <qthread.h>
 #include <qmutex.h>
@@ -31,7 +31,7 @@ class QObject;
 namespace KSpell2
 {
     class Filter;
-    class Broker;
+    class Loader;
     class Dictionary;
     class BackgroundThread : public QThread
     {
@@ -40,8 +40,8 @@ namespace KSpell2
         void setReceiver( QObject *parent );
         QObject *receiver() const { return m_recv; }
 
-        void setBroker( const Broker::Ptr& broker );
-        Broker *broker() { return m_broker.data(); }
+        void setLoader( const Loader::Ptr& loader );
+        Loader *loader() { return m_loader.data(); }
 
         void setText( const QString& );
         QString text() const;
@@ -60,7 +60,7 @@ namespace KSpell2
         QObject    *m_recv;
         QMutex      m_mutex;
         Filter     *m_filter;
-        Broker::Ptr m_broker;
+        Loader::Ptr m_loader;
         Dictionary *m_dict;
         bool        m_done;
     };

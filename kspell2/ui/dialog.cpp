@@ -22,7 +22,7 @@
 #include "ui_kspell2ui.h"
 
 #include "backgroundchecker.h"
-#include "broker.h"
+#include "loader.h"
 #include "filter.h"
 #include "dictionary.h"
 #include "settings.h"
@@ -121,9 +121,9 @@ void Dialog::initGui()
 
     d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui.m_language->clear();
-    d->ui.m_language->insertItems( 0, d->checker->broker()->languagesName() );
-    d->ui.m_language->setCurrentIndex( d->checker->broker()->languages().indexOf(
-                                 d->checker->broker()->settings()->defaultLanguage() ) );
+    d->ui.m_language->insertItems( 0, d->checker->loader()->languagesName() );
+    d->ui.m_language->setCurrentIndex( d->checker->loader()->languages().indexOf(
+                                 d->checker->loader()->settings()->defaultLanguage() ) );
 }
 
 void Dialog::activeAutoCorrect( bool _active )
@@ -225,7 +225,7 @@ void Dialog::slotSkip()
 void Dialog::slotSkipAll()
 {
     //### do we want that or should we have a d->ignoreAll list?
-    d->checker->broker()->settings()->addWordToIgnore( d->ui.m_replacement->text() );
+    d->checker->loader()->settings()->addWordToIgnore( d->ui.m_replacement->text() );
     d->checker->continueChecking();
 }
 
@@ -238,8 +238,8 @@ void Dialog::slotSuggest()
 void Dialog::slotChangeLanguage( const QString& lang )
 {
     d->checker->changeLanguage(
-        d->checker->broker()->languages()[
-            d->checker->broker()->languagesName().indexOf( lang ) ] );
+        d->checker->loader()->languages()[
+            d->checker->loader()->languagesName().indexOf( lang ) ] );
     slotSuggest();
 }
 

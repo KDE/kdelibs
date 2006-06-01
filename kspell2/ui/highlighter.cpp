@@ -22,7 +22,7 @@
 
 #include "highlighter.h"
 #include "highlighter.moc"
-#include "broker.h"
+#include "loader.h"
 #include "dictionary.h"
 #include "settings.h"
 
@@ -44,7 +44,7 @@ class Highlighter::Private
 {
 public:
     Filter     *filter;
-    Broker::Ptr broker;
+    Loader::Ptr loader;
     Dictionary *dict;
     QHash<QString, Dictionary*>dictCache;
     QTextEdit *edit;
@@ -79,19 +79,19 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     textEdit->viewport()->installEventFilter( this );
 
     if ( !configFile.isEmpty() )
-        d->broker = Broker::openBroker( KSharedConfig::openConfig( configFile ) );
+        d->loader = Loader::openLoader( KSharedConfig::openConfig( configFile ) );
     else
-        d->broker = Broker::openBroker();
+        d->loader = Loader::openLoader();
 
-    d->filter->setSettings( d->broker->settings() );
-    d->dict   = d->broker->dictionary();
+    d->filter->setSettings( d->loader->settings() );
+    d->dict   = d->loader->dictionary();
     Q_ASSERT( d->dict );
-    d->dictCache.insert( d->broker->settings()->defaultLanguage(),
+    d->dictCache.insert( d->loader->settings()->defaultLanguage(),
                          d->dict );
 
-    d->disablePercentage = d->broker->settings()->disablePercentageWordError();
+    d->disablePercentage = d->loader->settings()->disablePercentageWordError();
 
-    d->disableWordCount = d->broker->settings()->disableWordErrorCount();
+    d->disableWordCount = d->loader->settings()->disableWordErrorCount();
 
     //Add kde personal word
     const QStringList l = Highlighter::personalWords();
@@ -254,7 +254,7 @@ Filter *Highlighter::currentFilter() const
 void Highlighter::setCurrentFilter( Filter *filter )
 {
     d->filter = filter;
-    d->filter->setSettings( d->broker->settings() );
+    d->filter->setSettings( d->loader->settings() );
 }
 
 QString Highlighter::currentLanguage() const
@@ -265,7 +265,7 @@ QString Highlighter::currentLanguage() const
 void Highlighter::setCurrentLanguage( const QString& lang )
 {
     if ( !d->dictCache.find( lang ) ) {
-        Dictionary *dict = d->broker->dictionary( lang );
+        Dictionary *dict = d->loader->dictionary( lang );
         if ( dict ) {
             d->dictCache.insert( lang, dict );
         } else {

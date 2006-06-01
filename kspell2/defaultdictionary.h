@@ -28,13 +28,13 @@
 
 namespace KSpell2
 {
-    class Broker;
+    class Loader;
     class DefaultDictionary : public QObject,
                               public Dictionary
     {
         Q_OBJECT
     public:
-        DefaultDictionary( const QString& lang, Broker *broker );
+        DefaultDictionary( const QString& lang, Loader *loader );
         ~DefaultDictionary();
     public:
         /**

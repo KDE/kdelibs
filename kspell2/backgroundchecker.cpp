@@ -20,7 +20,7 @@
  */
 #include "backgroundchecker.h"
 
-#include "broker.h"
+#include "loader.h"
 #include "backgroundengine.h"
 //#include "backgroundthread.h"
 //#include "threadevents.h"
@@ -37,13 +37,13 @@ public:
     QString currentText;
 };
 
-BackgroundChecker::BackgroundChecker( const Broker::Ptr& broker, QObject* parent )
+BackgroundChecker::BackgroundChecker( const Loader::Ptr& loader, QObject* parent )
     : QObject( parent ),d(new Private)
 {
     //d->thread.setReceiver( this );
-    //d->thread.setBroker( broker );
+    //d->thread.setLoader( loader );
     d->engine = new BackgroundEngine( this );
-    d->engine->setBroker( broker );
+    d->engine->setLoader( loader );
     connect( d->engine, SIGNAL(misspelling( const QString&, int )),
              SIGNAL(misspelling( const QString&, int )) );
     connect( d->engine, SIGNAL(done()),
@@ -100,10 +100,10 @@ Filter *BackgroundChecker::filter() const
     return d->engine->filter();
 }
 
-Broker *BackgroundChecker::broker() const
+Loader *BackgroundChecker::loader() const
 {
-    //return d->thread.broker();
-    return d->engine->broker();
+    //return d->thread.loader();
+    return d->engine->loader();
 }
 
 bool BackgroundChecker::checkWord( const QString& word )

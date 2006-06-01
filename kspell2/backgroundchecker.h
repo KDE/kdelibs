@@ -21,7 +21,7 @@
 #ifndef KSPELL_BACKGROUNDCHECKER_H
 #define KSPELL_BACKGROUNDCHECKER_H
 
-#include "broker.h"
+#include "loader.h"
 
 class QCustomEvent;
 
@@ -50,7 +50,7 @@ namespace KSpell2
     {
         Q_OBJECT
     public:
-        BackgroundChecker( const Broker::Ptr& broker, QObject *parent =0 );
+        BackgroundChecker( const Loader::Ptr& loader, QObject *parent =0 );
         ~BackgroundChecker();
 
         /**
@@ -63,7 +63,7 @@ namespace KSpell2
 
         Filter *filter() const;
 
-        Broker *broker() const;
+        Loader *loader() const;
         void changeLanguage( const QString& lang );
 
         bool checkWord( const QString& word );

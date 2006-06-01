@@ -20,7 +20,7 @@
  */
 #include "defaultdictionary.h"
 
-#include "broker.h"
+#include "loader.h"
 
 using namespace KSpell2;
 
@@ -29,16 +29,16 @@ class DefaultDictionary::Private
 {
 public:
     Dictionary *dict;
-    Broker     *broker; //not a Ptr because Broker holds DefaultDictionary
+    Loader     *loader; //not a Ptr because Loader holds DefaultDictionary
                         //we need it only to switch the dics
 };
 
-DefaultDictionary::DefaultDictionary( const QString& lang, Broker *broker )
-    : QObject( broker ), Dictionary( lang, true ),d(new Private)
+DefaultDictionary::DefaultDictionary( const QString& lang, Loader *loader )
+    : QObject( loader ), Dictionary( lang, true ),d(new Private)
 {
-    d->dict = broker->dictionary();
-    d->broker = broker;
-    connect( broker, SIGNAL(configurationChanged()),
+    d->dict = loader->dictionary();
+    d->loader = loader;
+    connect( loader, SIGNAL(configurationChanged()),
              SLOT(defaultConfigurationChanged()) );
 }
 
@@ -107,7 +107,7 @@ bool DefaultDictionary::addToSession( const QString& word )
 void DefaultDictionary::defaultConfigurationChanged()
 {
     delete d->dict;
-    d->dict = d->broker->dictionary();
+    d->dict = d->loader->dictionary();
     if ( d->dict )
         m_language = d->dict->language();
     else

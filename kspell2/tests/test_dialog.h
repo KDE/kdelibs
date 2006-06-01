@@ -22,7 +22,7 @@
 #define TEST_DIALOG_H
 
 #include "dialog.h"
-#include "broker.h"
+#include "loader.h"
 
 #include <qobject.h>
 
@@ -36,7 +36,7 @@ public Q_SLOTS:
     void check( const QString& buffer );
     void doneChecking( const QString& );
 private:
-    KSpell2::Broker *m_broker;
+    KSpell2::Loader *m_loader;
 };
 
 #endif

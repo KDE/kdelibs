@@ -21,7 +21,7 @@
 #include "configwidget.h"
 #include "ui_configui.h"
 
-#include "broker.h"
+#include "loader.h"
 #include "settings.h"
 
 #include <keditlistbox.h>
@@ -36,15 +36,15 @@ using namespace KSpell2;
 class ConfigWidget::Private
 {
 public:
-    Broker::Ptr broker;
+    Loader::Ptr loader;
     Ui_KSpell2ConfigUI ui;
     QWidget *wdg;
 };
 
-ConfigWidget::ConfigWidget( Broker::Ptr broker, QWidget *parent )
+ConfigWidget::ConfigWidget( Loader::Ptr loader, QWidget *parent )
     : QWidget( parent ),d(new Private)
 {
-    init( broker );
+    init( loader );
 }
 
 ConfigWidget::~ConfigWidget()
@@ -52,9 +52,9 @@ ConfigWidget::~ConfigWidget()
     delete d;
 }
 
-void ConfigWidget::init( Broker::Ptr broker )
+void ConfigWidget::init( Loader::Ptr loader )
 {
-    d->broker = broker;
+    d->loader = loader;
 
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setMargin( 0 );
@@ -63,16 +63,16 @@ void ConfigWidget::init( Broker::Ptr broker )
     d->wdg = new QWidget( this );
     d->ui.setupUi( d->wdg );
 
-    //QStringList clients = d->broker->clients();
-    d->ui.m_langCombo->insertItems( 0, d->broker->languagesName() );
-    setCorrectLanguage( d->broker->languages() );
+    //QStringList clients = d->loader->clients();
+    d->ui.m_langCombo->insertItems( 0, d->loader->languagesName() );
+    setCorrectLanguage( d->loader->languages() );
     //d->ui->m_clientCombo->insertStringList( clients );
-    d->ui.m_skipUpperCB->setChecked( !d->broker->settings()->checkUppercase() );
-    d->ui.m_skipRunTogetherCB->setChecked( d->broker->settings()->skipRunTogether() );
-    QStringList ignoreList = d->broker->settings()->currentIgnoreList();
+    d->ui.m_skipUpperCB->setChecked( !d->loader->settings()->checkUppercase() );
+    d->ui.m_skipRunTogetherCB->setChecked( d->loader->settings()->skipRunTogether() );
+    QStringList ignoreList = d->loader->settings()->currentIgnoreList();
     ignoreList.sort();
     d->ui.m_ignoreListBox->insertStringList( ignoreList );
-    d->ui.m_bgSpellCB->setChecked( d->broker->settings()->backgroundCheckerEnabled() );
+    d->ui.m_bgSpellCB->setChecked( d->loader->settings()->backgroundCheckerEnabled() );
     d->ui.m_bgSpellCB->hide();//hidden by default
     connect( d->ui.m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
 
@@ -82,26 +82,26 @@ void ConfigWidget::init( Broker::Ptr broker )
 void KSpell2::ConfigWidget::save()
 {
     setFromGUI();
-    d->broker->settings()->save();
+    d->loader->settings()->save();
 }
 
 void ConfigWidget::setFromGUI()
 {
-    d->broker->settings()->setDefaultLanguage(
-        d->broker->languages()[
-            d->broker->languagesName().indexOf(
+    d->loader->settings()->setDefaultLanguage(
+        d->loader->languages()[
+            d->loader->languagesName().indexOf(
                 d->ui.m_langCombo->currentText() ) ] );
-    d->broker->settings()->setCheckUppercase(
+    d->loader->settings()->setCheckUppercase(
         !d->ui.m_skipUpperCB->isChecked() );
-    d->broker->settings()->setSkipRunTogether(
+    d->loader->settings()->setSkipRunTogether(
         d->ui.m_skipRunTogetherCB->isChecked() );
-    d->broker->settings()->setBackgroundCheckerEnabled(
+    d->loader->settings()->setBackgroundCheckerEnabled(
         d->ui.m_bgSpellCB->isChecked() );
 }
 
 void ConfigWidget::slotChanged()
 {
-    d->broker->settings()->setCurrentIgnoreList(
+    d->loader->settings()->setCurrentIgnoreList(
         d->ui.m_ignoreListBox->items() );
 }
 
@@ -110,7 +110,7 @@ void ConfigWidget::setCorrectLanguage( const QStringList& langs)
     int idx = 0;
     for ( QStringList::const_iterator itr = langs.begin();
           itr != langs.end(); ++itr, ++idx ) {
-        if ( *itr == d->broker->settings()->defaultLanguage() )
+        if ( *itr == d->loader->settings()->defaultLanguage() )
             d->ui.m_langCombo->setCurrentIndex( idx );
     }
 }
