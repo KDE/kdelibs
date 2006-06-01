@@ -370,6 +370,7 @@ typedef WORD    TRANSITION_TYPE, *LPTRANSITION_TYPE;
  * Enumerations
  */
 /* typedef definitions */
+#ifndef __MINGW32__
 typedef enum enumDMUS_STYLET_TYPES       DMUS_STYLET_TYPES;
 typedef enum enumDMUS_COMMANDT_TYPES     DMUS_COMMANDT_TYPES;
 typedef enum enumDMUS_SHAPET_TYPES       DMUS_SHAPET_TYPES;
@@ -382,8 +383,7 @@ typedef enum enumDMUS_CHORDKEYF_FLAGS    DMUS_CHORDKEYF_FLAGS;
 typedef enum enumDMUS_NOTEF_FLAGS        DMUS_NOTEF_FLAGS;
 typedef enum enumDMUS_PLAYMODE_FLAGS     DMUS_PLAYMODE_FLAGS;
 typedef enum enumDMUS_CURVE_FLAGS        DMUS_CURVE_FLAGS;
-
-
+#endif
 
 /* actual enumerations */
 enum enumDMUS_STYLET_TYPES {
@@ -540,6 +540,21 @@ enum {
 	DMUS_CURVES_SINE    = 0x4
 };
 
+/* typedef definitions */
+#ifdef __MINGW32__
+typedef enum enumDMUS_STYLET_TYPES       DMUS_STYLET_TYPES;
+typedef enum enumDMUS_COMMANDT_TYPES     DMUS_COMMANDT_TYPES;
+typedef enum enumDMUS_SHAPET_TYPES       DMUS_SHAPET_TYPES;
+typedef enum enumDMUS_COMPOSEF_FLAGS     DMUS_COMPOSEF_FLAGS;
+typedef enum enumDMUS_PMSGF_FLAGS        DMUS_PMSGF_FLAGS;
+typedef enum enumDMUS_PMSGT_TYPES        DMUS_PMSGT_TYPES;
+typedef enum enumDMUS_SEGF_FLAGS         DMUS_SEGF_FLAGS;
+typedef enum enumDMUS_TIME_RESOLVE_FLAGS DMUS_TIME_RESOLVE_FLAGS;
+typedef enum enumDMUS_CHORDKEYF_FLAGS    DMUS_CHORDKEYF_FLAGS;
+typedef enum enumDMUS_NOTEF_FLAGS        DMUS_NOTEF_FLAGS;
+typedef enum enumDMUS_PLAYMODE_FLAGS     DMUS_PLAYMODE_FLAGS;
+typedef enum enumDMUS_CURVE_FLAGS        DMUS_CURVE_FLAGS;
+#endif
 
 /*****************************************************************************
  * Structures

@@ -112,7 +112,11 @@ struct _DMUS_REGION {
 	ULONG    ulFirstExtCkIdx;
 	WAVELINK WaveLink;
 	WSMPL    WSMP;
+#ifdef __MINGW32__
+	WLOOP    WLoop[1];
+#else
 	WLOOP    WLOOP[1];
+#endif
 };
 
 struct _DMUS_LFOPARAMS {
