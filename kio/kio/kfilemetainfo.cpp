@@ -26,7 +26,6 @@
 #include <kservicetypetrader.h>
 #include <kmimetypetrader.h>
 #include <kstaticdeleter.h>
-#include <kparts/componentfactory.h>
 #include <kservicetypeprofile.h>
 #include <kdebug.h>
 #include <kmimetype.h>
@@ -935,8 +934,7 @@ KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const Q
     if ( !service || !service->isValid() )
         return 0;
 
-    KFilePlugin* plugin = KParts::ComponentFactory::createInstanceFromService<KFilePlugin>
-                          ( service, this );
+    KFilePlugin* plugin = KService::createInstance<KFilePlugin>( service, this );
     if (!plugin)
         kWarning(7033) << "error loading the plugin from " << service->desktopEntryPath() << endl;
     else

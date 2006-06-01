@@ -26,7 +26,6 @@
 #include <kmimetype.h>
 #include <klibloader.h>
 #include <kstaticdeleter.h>
-#include <kparts/componentfactory.h>
 
 #include "kurifilter.h"
 
@@ -318,7 +317,7 @@ void KURIFilter::loadPlugins()
 
     for (; it != end; ++it )
     {
-      KURIFilterPlugin *plugin = KParts::ComponentFactory::createInstanceFromService<KURIFilterPlugin>( *it );
+      KURIFilterPlugin *plugin = KService::createInstance<KURIFilterPlugin>( *it );
 
       if ( plugin ) {
         plugin->setObjectName( (*it)->desktopEntryName() );

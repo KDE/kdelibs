@@ -30,7 +30,6 @@
 #include <kactionmenu.h>
 
 #include <kservicetypetrader.h>
-#include <kparts/componentfactory.h>
 
 #include <qpixmap.h>
 #include <qfile.h>
@@ -152,7 +151,7 @@ KDataTool* KDataToolInfo::createTool( QObject* parent ) const
     if ( !m_service )
         return 0;
 
-    KDataTool* tool = KParts::ComponentFactory::createInstanceFromService<KDataTool>( m_service, parent );
+    KDataTool* tool = KService::createInstance<KDataTool>( m_service, parent );
     if ( tool )
         tool->setInstance( m_instance );
     return tool;

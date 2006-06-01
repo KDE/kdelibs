@@ -12,31 +12,6 @@ namespace KParts
     class ComponentFactory
     {
     public:
-
-        /**
-         * This enum type defines the possible error cases that can happen
-         * when loading a component.
-         *
-         * <ul>
-         *  <li><code>ErrNoServiceFound</code> - no service implementing the
-         *      given mimetype and fullfilling the given constraint expression
-         *      can be found.</li>
-         *  <li><code>ErrServiceProvidesNoLibrary</code> - the specified service
-         *      provides no shared library</li>
-         *  <li><code>ErrNoLibrary</code> - the specified library could not be
-         *      loaded. Use KLibLoader::lastErrorMessage for details.</li>
-         *  <li><code>ErrNoFactory</code> - the library does not export a factory
-         *      for creating components</li>
-         *  <li><code>ErrNoComponent</code> - the factory does not support creating
-         *      components of the specified type</li>
-         * </ul>
-         */
-        enum ComponentLoadingError { ErrNoLibrary = KLibLoader::ErrNoLibrary,
-                                     ErrNoFactory = KLibLoader::ErrNoFactory,
-                                     ErrNoComponent = KLibLoader::ErrNoComponent,
-                                     ErrNoServiceFound,
-                                     ErrServiceProvidesNoLibrary };
-
         /**
          * This template function allows to ask the given kparts factory to create an
          * instance of the given template type.
@@ -82,7 +57,7 @@ namespace KParts
             if ( !library )
             {
                 if ( error )
-                    *error = ErrNoLibrary;
+                    *error = KLibLoader::ErrNoLibrary;
                 return 0;
             }
             KLibFactory *factory = library->factory();
@@ -90,7 +65,7 @@ namespace KParts
             {
                 library->unload();
                 if ( error )
-                    *error = ErrNoFactory;
+                    *error = KLibLoader::ErrNoFactory;
                 return 0;
             }
             KParts::Factory *partFactory = dynamic_cast<KParts::Factory *>( factory );
@@ -98,7 +73,7 @@ namespace KParts
             {
                 library->unload();
                 if ( error )
-                    *error = ErrNoFactory;
+                    *error = KLibLoader::ErrNoFactory;
                 return 0;
             }
             T *res = createPartInstanceFromFactory<T>( partFactory, parentWidget,
@@ -107,27 +82,9 @@ namespace KParts
             {
                 library->unload();
                 if ( error )
-                    *error = ErrNoComponent;
+                    *error = KLibLoader::ErrNoComponent;
             }
             return res;
-        }
-
-        template <class T>
-        static T *createInstanceFromService( const KService::Ptr &service,
-                                             QObject *parent = 0,
-                                             const QStringList &args = QStringList(),
-                                             int *error = 0 )
-        {
-            QString library = service->library();
-            if ( library.isEmpty() )
-            {
-                if ( error )
-                    *error = ErrServiceProvidesNoLibrary;
-                return 0;
-            }
-
-            return KLibLoader::createInstance<T>( library.toLocal8Bit().data(), parent,
-	    					 args, error );
         }
 
         template <class T>
@@ -141,38 +98,12 @@ namespace KParts
             if ( library.isEmpty() )
             {
                 if ( error )
-                    *error = ErrServiceProvidesNoLibrary;
+                    *error = KLibLoader::ErrServiceProvidesNoLibrary;
                 return 0;
             }
 
             return createPartInstanceFromLibrary<T>( library.toLocal8Bit().data(), parentWidget,
                                                      parent, args, error );
-        }
-
-        template <class T, class ServiceIterator>
-        static T *createInstanceFromServices( ServiceIterator begin, ServiceIterator end,
-                                              QObject *parent = 0,
-                                              const QStringList &args = QStringList(),
-                                              int *error = 0 )
-        {
-            for (; begin != end; ++begin )
-            {
-                KService::Ptr service = *begin;
-
-                if ( error )
-                    *error = 0;
-
-                T *component = createInstanceFromService<T>( service, parent,
-                                                             args, error );
-                if ( component )
-                    return component;
-            }
-
-            if ( error )
-                *error = ErrNoServiceFound;
-
-            return 0;
-
         }
 
         template <class T, class ServiceIterator>
@@ -197,7 +128,7 @@ namespace KParts
             }
 
             if ( error )
-                *error = ErrNoServiceFound;
+                *error = KLibLoader::ErrNoServiceFound;
 
             return 0;
 
@@ -220,7 +151,7 @@ namespace KParts
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @param error The int passed here will receive an error code in case of errors.
-         *              (See enum ComponentLoadingError)
+         *              (See enum KLibLoader::ComponentLoadingError)
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
@@ -235,13 +166,13 @@ namespace KParts
             if ( offers.isEmpty() )
             {
                 if ( error )
-                    *error = ErrNoServiceFound;
+                    *error = KLibLoader::ErrNoServiceFound;
                 return 0;
             }
 
-            return createInstanceFromServices<T>( offers.begin(),
-                                                  offers.end(),
-                                                  parent, args, error );
+            return KService::createInstance<T>( offers.begin(),
+                                                offers.end(),
+                                                parent, args, error );
         }
 
         /**
@@ -266,7 +197,7 @@ namespace KParts
          * @param args A list of string arguments, passed to the factory and possibly
          *             to the component (see KLibFactory)
          * @param error The int passed here will receive an error code in case of errors.
-         *              (See enum ComponentLoadingError)
+         *              (See enum KLibLoader::ComponentLoadingError)
          * @return A pointer to the newly created object or a null pointer if the
          *         factory was unable to create an object of the given type.
          */
@@ -282,7 +213,7 @@ namespace KParts
             if ( offers.isEmpty() )
             {
                 if ( error )
-                    *error = ErrNoServiceFound;
+                    *error = KLibLoader::ErrNoServiceFound;
                 return 0;
             }
 

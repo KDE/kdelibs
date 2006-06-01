@@ -26,7 +26,6 @@
 #include "dictionary.h"
 
 #include <klocale.h>
-#include <kparts/plugin.h>
 #include <kparts/componentfactory.h>
 
 #include <kplugininfo.h>
@@ -326,22 +325,22 @@ void Broker::loadPlugin( const QString& pluginId )
     {
         switch( error )
         {
-        case KParts::ComponentFactory::ErrNoServiceFound:
+        case KLibLoader::ErrNoServiceFound:
             kDebug() << k_funcinfo << "No service implementing the given mimetype "
                       << "and fullfilling the given constraint expression can be found."
                       << endl;
             break;
-        case KParts::ComponentFactory::ErrServiceProvidesNoLibrary:
+        case KLibLoader::ErrServiceProvidesNoLibrary:
             kDebug() << "the specified service provides no shared library." << endl;
             break;
-        case KParts::ComponentFactory::ErrNoLibrary:
+        case KLibLoader::ErrNoLibrary:
             kDebug() << "the specified library could not be loaded." << endl;
             break;
-        case KParts::ComponentFactory::ErrNoFactory:
+        case KLibLoader::ErrNoFactory:
             kDebug() << "the library does not export a factory for creating components."
                       << endl;
             break;
-        case KParts::ComponentFactory::ErrNoComponent:
+        case KLibLoader::ErrNoComponent:
             kDebug() << "the factory does not support creating "
                       << "components of the specified type."
                       << endl;

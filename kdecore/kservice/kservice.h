@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
 
@@ -24,6 +25,7 @@
 #include <qmap.h>
 #include <qvariant.h>
 #include <kicontheme.h>
+#include <klibloader.h>
 
 #include "kservicetype.h"
 
@@ -504,6 +506,66 @@ public:
                                 QString *menuId = 0,
                                 const QStringList *reservedMenuIds = 0);
 
+  /**
+   * This template allows to load the library for the specified service and ask the
+   * factory to create an instance of the given template type.
+   *
+   * @param service The service describing the library to open
+   * @param parent The parent object (see QObject constructor)
+   * @param args A list of string arguments, passed to the factory and possibly
+   *             to the component (see KLibFactory)
+   * @param error see KLibLoader
+   * @return A pointer to the newly created object or a null pointer if the
+   *         factory was unable to create an object of the given type.
+   */
+  template <class T>
+  static T *createInstance( const KService::Ptr &service,
+                            QObject *parent = 0,
+                            const QStringList &args = QStringList(),
+                            int *error = 0 )
+  {
+    const QString library = service->library();
+    if ( library.isEmpty() ) {
+      if ( error )
+        *error = KLibLoader::ErrServiceProvidesNoLibrary;
+      return 0;
+    }
+
+    return KLibLoader::createInstance<T>( library.toLocal8Bit().constData(), parent,
+                                          args, error );
+  }
+
+  /**
+   * This template allows to create a component from a list of services,
+   * usually coming from a trader query. You probably want to use KServiceTypeTrader instead.
+   *
+   * @param service The service describing the library to open
+   * @param parent The parent object (see QObject constructor)
+   * @param args A list of string arguments, passed to the factory and possibly
+   *             to the component (see KLibFactory)
+   * @param error see KLibLoader
+   * @return A pointer to the newly created object or a null pointer if the
+   *         factory was unable to create an object of the given type.
+   */
+  template <class T, class ServiceIterator>
+  static T *createInstance( ServiceIterator begin, ServiceIterator end,
+                            QObject *parent = 0,
+                            const QStringList &args = QStringList(),
+                            int *error = 0 )
+  {
+    for (; begin != end; ++begin ) {
+      KService::Ptr service = *begin;
+      if ( error )
+        *error = 0;
+
+      T *component = createInstance<T>( service, parent, args, error );
+      if ( component )
+        return component;
+    }
+    if ( error )
+      *error = KLibLoader::ErrNoServiceFound;
+    return 0;
+  }
 
 protected:
 

@@ -422,11 +422,18 @@ public:
      *      for creating components</li>
      *  <li><code>ErrNoComponent</code> - the factory does not support creating
      *      components of the specified type</li>
+     *  <li><code>ErrServiceProvidesNoLibrary</code> - the specified service
+     *      provides no shared library (when using KService)</li>
+     *  <li><code>ErrNoServiceFound</code> - no service implementing the
+     *      given servicetype and fullfilling the given constraint expression
+     *      can be found (when using KServiceTypeTrader).</li>
      * </ul>
      */
     enum ComponentLoadingError { ErrNoLibrary = 1,
                                  ErrNoFactory,
-                                 ErrNoComponent };
+                                 ErrNoComponent,
+                                 ErrServiceProvidesNoLibrary,
+                                 ErrNoServiceFound };
 
     /**
      * This template allows to load the specified library and ask the
