@@ -27,6 +27,8 @@ kde4_add_executable(test_filter NOGUI RUN_UNINSTALLED ${test_filter_SRCS})
 
 target_link_libraries(test_filter ${KDE4_KDECORE_LIBS} kspell2  ${QT_QTTEST_LIBRARY})
 
+add_test(kspell2_test_filter ${EXECUTABLE_OUTPUT_PATH}/test_filter)
+
 
 ########### next target ###############
 

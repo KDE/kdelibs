@@ -56,11 +56,10 @@ void KSpell2FilterTest::testFilter()
     while ( ! (w=filter.nextWord()).end ) {
         QCOMPARE( w.word, hits[hitNumber].word );
         QCOMPARE( w.start, hits[hitNumber].start );
-        //kDebug()<< "Found word \""<< w.word << "\" which starts at position "
-        //         << w.start <<endl;
+        //kDebug()<< "Found word \""<< w.word << "\" which starts at position " << w.start <<endl;
         ++hitNumber;
     }
-    QCOMPARE( hitNumber, hits.count()+1 );
+    QCOMPARE( hitNumber, hits.count() );
 
     // ? filter.setBuffer( buffer );
 }
