@@ -11,6 +11,9 @@ from the freedesktop.org CVS server:
 	make
 	make install
 
+To run the dbus daemon type that command:
+	eval `$DBUSDIR/bin/dbus-launch --auto-syntax`
+
 !!Compiling QtDBus
 QtDBus now lives in kdesupport and uses cmake. It also requires you to
 have Qt 4.1.3 in order to compile (qt-copy has it). To compile it:
