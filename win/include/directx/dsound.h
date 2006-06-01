@@ -27,6 +27,11 @@
 #include <objbase.h>
 #include <float.h>
 
+#ifdef __MINGW32__
+#ifdef INTERFACE
+#undef INTERFACE
+#endif
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif /* defined(__cplusplus) */
@@ -417,9 +422,6 @@ extern HRESULT WINAPI GetDeviceID(LPCGUID lpGuidSrc, LPGUID lpGuidDest);
 /*****************************************************************************
  * IDirectSound interface
  */
-#ifdef INTERFACE
-#undef INTERFACE
-#endif
 #define INTERFACE IDirectSound
 DECLARE_INTERFACE_(IDirectSound,IUnknown)
 {
