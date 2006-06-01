@@ -17,7 +17,7 @@ kde4_add_ui_files(kspell2_LIB_SRCS kspell2ui.ui configui.ui)
 
 kde4_add_library(kspell2 SHARED ${kspell2_LIB_SRCS})
 
-target_link_libraries(kspell2  ${KDE4_KDECORE_LIBS} kdeui kio kutils)
+target_link_libraries(kspell2  ${KDE4_KDECORE_LIBS} kdeui)
 
 set_target_properties(kspell2 PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install_targets(${LIB_INSTALL_DIR} kspell2 )

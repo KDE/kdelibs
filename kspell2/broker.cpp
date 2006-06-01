@@ -28,8 +28,6 @@
 #include <klocale.h>
 #include <kservicetypetrader.h>
 
-#include <kplugininfo.h>
-#include <kservicetypetrader.h>
 #include <kconfig.h>
 #include <kstaticdeleter.h>
 #include <kdebug.h>
@@ -45,7 +43,7 @@ namespace KSpell2
 class Broker::Private
 {
 public:
-    KPluginInfo::List plugins;
+    KService::List plugins;
     Settings *settings;
 
     // <language, Clients with that language >
@@ -92,13 +90,7 @@ Broker::~Broker()
 {
     kDebug()<<"Removing broker : "<< this << endl;
     s_brokers->remove( d->settings->sharedConfig() );
-    KPluginInfo::List::iterator it = d->plugins.begin();
-    while ( it != d->plugins.end() ) {
-        KPluginInfo *pluginInfo = *it;
-        it = d->plugins.erase( it );
-        delete pluginInfo;
-    }
-
+    d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
 }
@@ -284,32 +276,26 @@ Settings* Broker::settings() const
 
 void Broker::loadPlugins()
 {
-    d->plugins = KPluginInfo::fromServices(
-        KServiceTypeTrader::self()->query( "KSpell/Client" ) );
+    d->plugins = KServiceTypeTrader::self()->query( "KSpell/Client" );
 
-    for ( KPluginInfo::List::Iterator itr = d->plugins.begin();
+    for ( KService::List::const_iterator itr = d->plugins.begin();
           itr != d->plugins.end(); ++itr ) {
-        loadPlugin( ( *itr )->pluginName() );
+        loadPlugin( (*itr) );
     }
 }
 
-void Broker::loadPlugin( const QString& pluginId )
+void Broker::loadPlugin( const KSharedPtr<KService>& service )
 {
     int error = 0;
 
-    kDebug()<<"Loading plugin " << pluginId << endl;
-
-    Client *client = KServiceTypeTrader::createInstanceFromQuery<Client>(
-        QLatin1String( "KSpell/Client" ),
-        QString::fromLatin1( "[X-KDE-PluginInfo-Name]=='%1'" ).arg( pluginId ),
-        this, QStringList(), &error );
+    Client *client = KService::createInstance<Client>( service, this, QStringList(), &error );
 
     if ( client )
     {
-        QStringList languages = client->languages();
+        const QStringList languages = client->languages();
         d->clients.append( client->name() );
 
-        for ( QStringList::Iterator itr = languages.begin();
+        for ( QStringList::const_iterator itr = languages.begin();
               itr != languages.end(); ++itr ) {
             if ( !d->languageClients[ *itr ].isEmpty() &&
                  client->reliability() < d->languageClients[ *itr ].first()->reliability() )
@@ -319,7 +305,7 @@ void Broker::loadPlugin( const QString& pluginId )
         }
 
         kDebug() << k_funcinfo << "Successfully loaded plugin '"
-                  << pluginId << "'" << endl;
+                  << service->desktopEntryPath() << "'" << endl;
     }
     else
     {
@@ -347,7 +333,7 @@ void Broker::loadPlugin( const QString& pluginId )
             break;
         }
 
-        kDebug() << k_funcinfo << "Loading plugin '" << pluginId
+        kDebug() << k_funcinfo << "Loading plugin '" << service->desktopEntryPath()
                   << "' failed, KLibLoader reported error: '" << endl
                   << KLibLoader::self()->lastErrorMessage() << "'" << endl;
     }

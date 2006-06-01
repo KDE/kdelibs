@@ -30,6 +30,7 @@
 #include <qstring.h>
 #include <kconfig.h>
 
+class KService;
 namespace KSpell2
 {
     class Settings;
@@ -126,7 +127,7 @@ namespace KSpell2
     private:
         Broker( KSharedConfig::Ptr config );
         void loadPlugins();
-        void loadPlugin( const QString& );
+        void loadPlugin( const KSharedPtr<KService>& );
         mutable QStringList languagesNameCache;
     private:
         class Private;
