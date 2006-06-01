@@ -22,7 +22,6 @@
 #include "downloaddialog.moc"
 
 #include <klocale.h>
-#include <ktabctl.h>
 #include <klistview.h>
 #include <kdebug.h>
 #include <kio/job.h>
@@ -42,6 +41,7 @@
 #include <qdom.h>
 #include <qlabel.h>
 #include <qtextbrowser.h>
+#include <qtabwidget.h>
 #include <qtimer.h> // hack
 
 using namespace KNS;
@@ -209,7 +209,7 @@ void DownloadDialog::slotProviders(Provider::List *list)
 void DownloadDialog::addProvider(Provider *p)
 {
   QFrame *frame;
-  KTabCtl *ctl;
+  QTabWidget *ctl;
   QWidget *w_d, *w_r, *w_l;
   QWidget *w2;
   QTextBrowser *rt;
@@ -249,7 +249,7 @@ void DownloadDialog::addProvider(Provider *p)
   w_r = new QWidget(frame);
   w_l = new QWidget(frame);
 
-  ctl = new KTabCtl(frame);
+  ctl = new QTabWidget(frame);
   ctl->addTab(w_r, i18n("Highest Rated"));
   ctl->addTab(w_d, i18n("Most Downloads"));
   ctl->addTab(w_l, i18n("Latest"));
