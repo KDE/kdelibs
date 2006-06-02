@@ -1372,7 +1372,7 @@ static bool expandEnv( QString &text )
 
 		// Skip escaped '$'
 		//
-		if ( text.at(pos-1) == QLatin1Char('\\') ) {
+		if ( pos >= 0 && text.at(pos-1) == QLatin1Char('\\') ) {
 			pos++;
 		}
 		// Variable found => expand
