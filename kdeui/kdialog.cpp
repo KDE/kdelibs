@@ -124,8 +124,9 @@ KDialog::KDialog( QWidget *parent, const QString &caption  ,
 
   connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
   connect( & d->buttonSignalMap , SIGNAL(mapped(int)) , this , SLOT(slotButtonClicked(int) ) );
-
+  
   setButtonMask( buttonMask, user1, user2, user3 );
+  setDefaultButton( Ok );
 }
 
 
