@@ -645,9 +645,8 @@ QString KFolderType::comment( const KUrl& _url ) const
   KUrl u( _url );
   u.addPath( ".directory" );
 
-  KSimpleConfig cfg( u.path(), true );
-  cfg.setDesktopGroup();
-  QString comment = cfg.readEntry( "Comment" );
+  KDesktopFile cfg( u.path(), true );
+  QString comment = cfg.readComment();
   if ( comment.isEmpty() )
     return KMimeType::comment( _url );
 
