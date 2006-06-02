@@ -157,7 +157,7 @@ void srandom(unsigned int seed)
 #ifndef HAVE_SETEUID
 int seteuid(uid_t euid)
 {
-    setreuid(-1, euid); /* Well, if you have neither you are in trouble :) */
+    return setreuid(-1, euid); /* Well, if you have neither you are in trouble :) */
 }
 #endif
 
