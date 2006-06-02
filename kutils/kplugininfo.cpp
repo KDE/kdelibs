@@ -24,6 +24,7 @@
 #include <kconfigbase.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <kdesktopfile.h>
 #include <kservice.h>
 #include <QList>
 
@@ -70,7 +71,7 @@ class KPluginInfo::KPluginInfoPrivate
 KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
 : d( new KPluginInfoPrivate )
 {
-    KConfig file( filename, true, true, resource );
+    KDesktopFile file( filename, true, resource );
 
     d->specfile = filename;
 
@@ -81,8 +82,8 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
         if( d->hidden )
             return;
 
-        d->name = file.readEntry( "Name" );
-        d->comment = file.readEntry( "Comment" );
+        d->name = file.readName();
+        d->comment = file.readComment();
         d->icon = file.readEntry( "Icon" );
         d->author = file.readEntry( "X-KDE-PluginInfo-Author" );
         d->email = file.readEntry( "X-KDE-PluginInfo-Email" );
@@ -98,8 +99,8 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
     else if( filename.endsWith( QString::fromAscii( ".plugin" ) ) )
     { // provided for noatun style .plugin files compatibility
 
-        d->name = file.readEntry( "Name" );
-        d->comment = file.readEntry( "Comment" );
+        d->name = file.readName();
+        d->comment = file.readComment();
         d->icon = file.readEntry( "Icon" );
         d->author = file.readEntry( "Author" );
         d->email = file.readEntry( "Email" );
