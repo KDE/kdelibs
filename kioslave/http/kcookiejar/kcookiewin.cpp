@@ -37,7 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 
-
+#include <QButtonGroup>
 #include <qlabel.h>
 #include <qwidget.h>
 #include <qlayout.h>
@@ -144,40 +144,43 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     m_showDetails ? m_detailView->show():m_detailView->hide();
 
     // Cookie policy choice...
-    m_btnGrp = new Q3VButtonGroup( i18n("Apply Choice To"), this );
-    m_btnGrp->setRadioButtonExclusive( true );
-
+    QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"));
+    QVBoxLayout *vbox = new QVBoxLayout;
     txt = (count == 1)? i18n("&Only this cookie") : i18n("&Only these cookies");
-    QRadioButton* rb = new QRadioButton( txt, m_btnGrp );
+    m_onlyCookies = new QRadioButton( txt );
+    vbox->addWidget(m_onlyCookies);
 #ifndef QT_NO_WHATSTHIS
-    rb->setWhatsThis(i18n("Select this option to accept/reject only this cookie. "
+    m_onlyCookies->setWhatsThis(i18n("Select this option to accept/reject only this cookie. "
                               "You will be prompted if another cookie is received. "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
 #endif
-    m_btnGrp->insert( rb );
-    rb = new QRadioButton( i18n("All cookies from this do&main"), m_btnGrp );
+    m_allCookiesDomain = new QRadioButton( i18n("All cookies from this do&main") );
+    vbox->addWidget(m_allCookiesDomain);
 #ifndef QT_NO_WHATSTHIS
-    rb->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
+    m_allCookiesDomain->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
                               "the site this cookie originated from. This policy will be "
                               "permanent until you manually change it from the Control Center "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif
-    m_btnGrp->insert( rb );
-    rb = new QRadioButton( i18n("All &cookies"), m_btnGrp );
+    m_allCookies = new QRadioButton( i18n("All &cookies"));
+    vbox->addWidget(m_allCookies);
 #ifndef QT_NO_WHATSTHIS
-    rb->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
+    m_allCookies->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
                               "anywhere. Choosing this option will change the global "
                               "cookie policy set in the Control Center for all cookies "
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>.") );
 #endif
-    m_btnGrp->insert( rb );
+    m_btnGrp->setLayout(vbox);
     vlayout->addWidget( m_btnGrp );
-
-    if ( defaultButton > -1 && defaultButton < 3 )
-        m_btnGrp->setButton( defaultButton );
+    if (defaultButton == 0 )
+	m_onlyCookies->setChecked(true);
+    else if(defaultButton==1)
+	m_allCookiesDomain->setChecked(true);
+    else if(defaultButton==2)
+	m_allCookies->setChecked(true);
     else
-        m_btnGrp->setButton( 1 );
+	m_onlyCookies->setChecked(true);
 
     // Accept/Reject buttons
     QWidget* bbox = new QWidget( this );
@@ -239,21 +242,21 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
     
     KCookieAdvice advice = (result==QDialog::Accepted) ? KCookieAccept:KCookieReject;
     
-    int preferredPolicy = m_btnGrp->id( m_btnGrp->selected() );
-    cookiejar->setPreferredDefaultPolicy( preferredPolicy );
-    
-    switch ( preferredPolicy )
+    int preferredPolicy=-1;
+    if( m_onlyCookies->isChecked())
+	preferredPolicy = 0;
+    else if( m_allCookiesDomain->isChecked())
     {
-        case 2:
-            cookiejar->setGlobalAdvice( advice );
-            break;
-        case 1:
-            cookiejar->setDomainAdvice( cookie, advice );
-            break;
-        case 0:
-        default:
-            break;
+	preferredPolicy = 1;
+	cookiejar->setDomainAdvice( cookie, advice );
     }
+    else if( m_allCookies->isChecked())
+    {
+	preferredPolicy = 2;
+	cookiejar->setGlobalAdvice( advice );
+    }
+    cookiejar->setPreferredDefaultPolicy( preferredPolicy );
+     
     return advice;
 }
 

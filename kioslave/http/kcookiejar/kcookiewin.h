@@ -27,7 +27,7 @@
 #define _KCOOKIEWIN_H_
 
 #include <qgroupbox.h>
-
+#include <QRadioButton>
 #include <kdialog.h>
 #include "kcookiejar.h"
 
@@ -71,7 +71,7 @@ public :
 
 private :
     QPushButton*   m_button;
-    Q3VButtonGroup* m_btnGrp;
+    QRadioButton* m_onlyCookies, *m_allCookies, *m_allCookiesDomain;
     KCookieDetail* m_detailView;
     bool m_showDetails;
 
