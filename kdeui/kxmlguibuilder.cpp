@@ -309,21 +309,10 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
     if ( QMenu *menu = qobject_cast<QMenu*>( parent ) )
     {
       // Don't insert multiple separators in a row
-      QList<QAction*> mactions = menu->actions();
-      int count = mactions.count();
-      if (count)
-      {
-         QAction* previousA = 0;
-         if ((index == -1) || (index > count))
-            previousA = mactions[index-1];
-         else if (index > 0)
-            previousA = mactions[index-1];
-
-         if (previousA && previousA->isSeparator())
-             return 0;
-      }
+      if ( before && before->isSeparator() )
+        return 0;
       // Don't insert a separator at the top of the menu
-      if(count == 0)
+      if ( menu->actions().count() == 0 )
         return 0;
 
       return menu->insertSeparator( before );
