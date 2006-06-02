@@ -67,8 +67,7 @@ void KNotify::addPlugin( KNotifyPlugin * p )
 {
 	m_plugins[p->optionName()]=p;
 	connect(p,SIGNAL(finished( int )) , this , SLOT(slotPluginFinished( int ) ));
-	connect(p,SIGNAL(actionInvoked( int , int )) , this , SLOT(actionInvoked( int , int ) ));
-
+	connect(p,SIGNAL(actionInvoked( int , int )) , this , SIGNAL(actionInvoked( int , int ) ));
 }
 
 
