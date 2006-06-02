@@ -232,8 +232,6 @@ protected:
 private:
   void init();
   KEditToolbarWidget *m_widget;
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   KEditToolbarPrivate *d;
 
@@ -417,8 +415,6 @@ private:
   QToolButton *m_insertAction;
   QToolButton *m_downAction;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   KEditToolbarWidgetPrivate *d;
 };

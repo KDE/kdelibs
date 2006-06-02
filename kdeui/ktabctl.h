@@ -78,8 +78,6 @@ protected:
     QVector<QWidget*> pages;
     int bh;
     bool blBorder;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KTabCtrlPrivate* d;
 };

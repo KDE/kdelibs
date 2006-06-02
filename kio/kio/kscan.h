@@ -163,8 +163,6 @@ Q_SIGNALS:
 private:
     int m_currentId;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KScanDialogPrivate;
     KScanDialogPrivate *d;
@@ -292,8 +290,6 @@ Q_SIGNALS:
 private:
     int m_currentId;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KOCRDialogPrivate;
     KOCRDialogPrivate *d;

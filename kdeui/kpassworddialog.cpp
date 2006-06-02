@@ -561,8 +561,6 @@ void KPasswordDialog::disableCoreDumps()
     setrlimit(RLIMIT_CORE, &rlim);
 }
 
-void KPasswordDialog::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
 
 void KPasswordDialog::enableOkBtn()
 {

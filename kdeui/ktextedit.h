@@ -131,8 +131,6 @@ protected:
      */
     virtual void contextMenuEvent( QContextMenuEvent *e );
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 
 private Q_SLOTS:
     void slotSpellCheckReady( KSpell *s );

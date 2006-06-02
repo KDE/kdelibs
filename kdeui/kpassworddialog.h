@@ -371,8 +371,6 @@ private:
     QWidget *m_pMain;
     KPasswordEdit *m_pEdit, *m_pEdit2;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KPasswordDialogPrivate;
     KPasswordDialogPrivate* const d;

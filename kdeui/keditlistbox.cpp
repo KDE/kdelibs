@@ -451,8 +451,6 @@ KEditListBox::Buttons KEditListBox::buttons() const
   return d->buttons;
 }
 
-void KEditListBox::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 
 ///////////////////////////////////////////////////////////////////

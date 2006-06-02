@@ -272,7 +272,5 @@ void KDualColorButton::mouseReleaseEvent(QMouseEvent *ev)
         miniCtlFlag = false;
 }
 
-void KDualColorButton::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kdualcolorbutton.moc"

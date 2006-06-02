@@ -50,8 +50,6 @@ public Q_SLOTS:
 private:
     KIntNumInput *lineNum;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KEdGotoLinePrivate;
     KEdGotoLinePrivate *d;
@@ -97,8 +95,6 @@ Q_SIGNALS:
 
     void search();
     void done();
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KEdFindPrivate;
     KEdFindPrivate *d;
@@ -149,8 +145,6 @@ Q_SIGNALS:
     void find();
     void replaceAll();
     void done();
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
     class KEdReplacePrivate;
     KEdReplacePrivate *d;
@@ -403,8 +397,6 @@ private:
     bool        word_wrap_is_set;
     int         fill_column_value;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KEditPrivate;
     KEditPrivate *d;

@@ -455,9 +455,5 @@ void KTipDialog::showMultiTip(QWidget *parent, const QStringList &tipFiles, bool
 	return QWidget::eventFilter( o, e );
 }
 
-void KTipDialog::virtual_hook( int id, void* data )
-{
-	KDialog::virtual_hook( id, data );
-}
 
 #include "ktip.moc"

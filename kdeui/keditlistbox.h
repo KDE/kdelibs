@@ -253,8 +253,6 @@ public:
       void init( bool checkAtEntering, Buttons buttons,
                  QWidget *representationWidget = 0 );
 
-   protected:
-      virtual void virtual_hook( int id, void* data );
    private:
       //our lovely private d-pointer
       KEditListBoxPrivate* const d;

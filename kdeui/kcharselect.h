@@ -110,9 +110,6 @@ private Q_SLOTS:
     
 private:
     virtual void setFont(const QFont &f) { QTableView::setFont(f); }
-protected:
-    /** Standard hack to add virtuals later. @internal */
-    virtual void virtual_hook( int id, void* data );
 private:
     KCharSelectItemModel *m_model;
     KCharSelectTablePrivate* const d;
@@ -265,8 +262,6 @@ Q_SIGNALS:
 
 private:
     virtual void setFont(const QFont &f) { KVBox::setFont(f); }
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KCharSelectPrivate;
     KCharSelectPrivate* const d;

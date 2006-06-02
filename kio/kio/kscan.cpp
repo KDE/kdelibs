@@ -132,14 +132,8 @@ QObject *KOCRDialogFactory::createObject( QObject *parent,
     return createDialog( static_cast<QWidget *>( parent ) );
 }
 
-void KScanDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
-
 void KScanDialogFactory::virtual_hook( int id, void* data )
 { KLibFactory::virtual_hook( id, data ); }
-
-void KOCRDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
 
 void KOCRDialogFactory::virtual_hook( int id, void* data )
 { KLibFactory::virtual_hook( id, data ); }

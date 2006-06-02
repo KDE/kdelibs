@@ -84,8 +84,6 @@ private:
   void updateContents();
   QPixmap pixmap;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KHSSelectorPrivate;
   KHSSelectorPrivate *d;
@@ -143,8 +141,6 @@ private:
   int _sat;
   QPixmap pixmap;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KValueSelectorPrivate;
   KValueSelectorPrivate *d;
@@ -233,8 +229,6 @@ protected:
 private:
 
   virtual void setPalette(const QPalette& p) { QWidget::setPalette(p); }
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KPaletteTablePrivate;
   KPaletteTablePrivate *d;
@@ -289,8 +283,6 @@ protected:
   bool shade;
   bool acceptDrags;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KColorCellsPrivate;
   KColorCellsPrivate *d;
@@ -326,8 +318,6 @@ private:
   QColor color;
   uint pixel;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KColorPatchPrivate;
   KColorPatchPrivate *d;
@@ -478,8 +468,6 @@ class KDEUI_EXPORT KColorDialog : public KDialog
     virtual void keyPressEvent( QKeyEvent * );
     virtual bool eventFilter( QObject *obj, QEvent *ev );
 
-  protected:
-    virtual void virtual_hook( int id, void* data );
   private:
     class KColorDialogPrivate;
     KColorDialogPrivate *d;

@@ -80,8 +80,6 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	*/
 	void paintEvent( QPaintEvent* pe );
 
- protected:
-	virtual void virtual_hook( int id, void* data );
  private:
 	class KKeyButtonPrivate* d;
 };

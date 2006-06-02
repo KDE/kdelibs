@@ -1185,8 +1185,4 @@ void KDialog::saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags
 }
 
 
-
-void KDialog::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kdialog.moc"

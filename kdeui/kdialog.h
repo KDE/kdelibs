@@ -766,8 +766,6 @@ class KDEUI_EXPORT KDialog : public QDialog
 	 */
 	KPushButton *appendButton( ButtonCode code , const KGuiItem &item );
 
-  protected:
-    virtual void virtual_hook( int id, void* data );
   private:
     struct Private;
     Private* const d;

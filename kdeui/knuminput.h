@@ -138,8 +138,6 @@ protected:
 private:
     void init();
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KNumInputPrivate;
     KNumInputPrivate *d;
@@ -371,8 +369,6 @@ protected:
 private:
     void init(int value, int _base);
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KIntNumInputPrivate;
     KIntNumInputPrivate *d;
@@ -621,8 +617,6 @@ private:
     QString  m_specialvalue;
     // ### end remove when BIC allowed
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KDoubleNumInputPrivate;
     KDoubleNumInputPrivate *d;
@@ -706,8 +700,6 @@ protected:
 
 private:
     int val_base;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KIntSpinBoxPrivate;
     KIntSpinBoxPrivate *d;
@@ -878,8 +870,6 @@ protected:
 protected Q_SLOTS:
   void slotValueChanged( int value );
 
-protected:
- virtual void virtual_hook( int id, void* data );
 private:
   typedef QSpinBox base;
   void updateValidator();

@@ -1368,12 +1368,6 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
   d->m_kdialogProcess = 0;
 }
 
-void KEditToolbar::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
-
-void KEditToolbarWidget::virtual_hook( int id, void* data )
-{ KXMLGUIClient::virtual_hook( id, data ); }
-
 void KEditToolbar::showEvent( QShowEvent * event )
 {
   // The dialog has been shown, enable toolbar editing

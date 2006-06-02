@@ -183,9 +183,6 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         void slotAutoShow();
         void slotAutoActions(int percentage);
 
-    protected:
-        virtual void virtual_hook( int id, void* data );
-
     private:
         struct KProgressDialogPrivate;
         KProgressDialogPrivate *d;

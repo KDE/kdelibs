@@ -411,8 +411,6 @@ private Q_SLOTS:
   void slotStatResult( KJob * ); // No longer used
 Q_SIGNALS:
   void leaveModality();
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KPropertiesDialogPrivate;
   KPropertiesDialogPrivate* const d;
@@ -478,8 +476,6 @@ protected:
   KPropertiesDialog *properties;
 
   int fontHeight;
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KPropsDlgPluginPrivate;
   KPropsDlgPluginPrivate* const d;

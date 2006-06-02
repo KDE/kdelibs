@@ -319,7 +319,5 @@ void KSystemTray::setWindowTitle( const QString& s )
     QLabel::setWindowTitle( s );
 }
 
-void KSystemTray::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "ksystemtray.moc"

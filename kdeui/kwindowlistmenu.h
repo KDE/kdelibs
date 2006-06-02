@@ -59,8 +59,6 @@ protected Q_SLOTS:
 
 private:
     KWinModule*         kwin_module;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     KWindowListMenuPrivate *d;
 };

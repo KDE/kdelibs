@@ -555,8 +555,6 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     void insertTreeListItem(const QStringList &items, const QPixmap &pixmap, QFrame *page);
     QWidget *findParent();
 
-  protected:
-    virtual void virtual_hook( int id, void* data );
 
   private:
     class KJanusWidgetPrivate* const d;

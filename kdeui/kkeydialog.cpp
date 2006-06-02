@@ -927,11 +927,6 @@ int KKeyDialog::configure( KActionCollection* coll, KKeyChooser::LetterShortcuts
 	return dlg.configure( bSaveSettings );
 }
 
-void KKeyChooser::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KKeyDialog::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
 
 const KShortcut& KKeyChooserItem::shortcut( ) const
 {

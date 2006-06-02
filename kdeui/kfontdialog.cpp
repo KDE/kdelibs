@@ -814,8 +814,3 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
   return result;
 }
 
-void KFontChooser::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KFontDialog::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }

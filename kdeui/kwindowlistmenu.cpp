@@ -229,8 +229,5 @@ void KWindowListMenu::slotCascadeWindows()
     QDBusInterfacePtr("org.kde.kwin", "/KWin")->call("cascadeDesktop");
 }
 
-void KWindowListMenu::virtual_hook( int id, void* data )
-{ KMenu::virtual_hook( id, data ); }
-
 #endif // Q_WS_X11
 

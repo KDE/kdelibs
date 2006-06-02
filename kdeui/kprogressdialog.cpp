@@ -240,7 +240,4 @@ void KProgressDialog::slotAutoActions(int percentage)
     }
 }
 
-void KProgressDialog::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
-
 #include "kprogressdialog.moc"

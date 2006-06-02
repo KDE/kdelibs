@@ -186,8 +186,6 @@ private:
     void minimizeRestore( bool restore );
     KMenu* menu;
     uint hasQuit :1;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     KSystemTrayPrivate* d;
 };

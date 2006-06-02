@@ -106,8 +106,6 @@ private:
     bool dragFlag;
     void initStyleOption(QStyleOptionButton* opt) const;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KColorButtonPrivate;
     KColorButtonPrivate *d;

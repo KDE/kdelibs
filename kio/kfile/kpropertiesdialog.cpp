@@ -3509,12 +3509,6 @@ bool KDesktopPropsPlugin::supports( KFileItemList _items )
   return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
 }
 
-void KPropertiesDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
-
-void KPropsDlgPlugin::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 
 
 

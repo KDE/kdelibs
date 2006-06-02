@@ -991,8 +991,6 @@ class KDEUI_EXPORT KDialogBase : public KDialog
     static KDialogBaseTile *mTile;
     bool   mShowTile;
 
-  protected:
-    virtual void virtual_hook( int id, void* data );
   private:
     class KDialogBasePrivate;
     KDialogBasePrivate* const d;

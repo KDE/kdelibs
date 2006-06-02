@@ -1101,8 +1101,6 @@ const QPixmap &IconListItem::defaultPixmap()
   return *pix;
 }
 
-void KJanusWidget::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 // TODO: In TreeList, if the last child of a node is removed, and there is no corrsponding widget for that node, allow the caller to
 // delete the node.

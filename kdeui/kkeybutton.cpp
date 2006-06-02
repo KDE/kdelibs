@@ -167,7 +167,5 @@ void KKeyButton::paintEvent( QPaintEvent* )
 
 }
 
-void KKeyButton::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kkeybutton.moc"

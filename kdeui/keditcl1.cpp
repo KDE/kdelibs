@@ -629,15 +629,3 @@ void KEdit::viewportPaintEvent( QPaintEvent*pe )
 }
 
 
-void KEdGotoLine::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
-
-void KEdFind::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
-
-void KEdReplace::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
-
-void KEdit::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-

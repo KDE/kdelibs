@@ -322,8 +322,5 @@ void KHelpMenu::contextHelpActivated()
 #endif
 }
 
-void KHelpMenu::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 
 #include "khelpmenu.moc"

@@ -387,9 +387,6 @@ void KTextEdit::setReadOnly( bool readOnly )
     QTextEdit::setReadOnly( readOnly );
 }
 
-void KTextEdit::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 void KTextEdit::checkSpelling()
 {
 #if 0

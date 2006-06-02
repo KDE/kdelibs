@@ -327,8 +327,6 @@ protected:
 private:
 
   int _btn;
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   KCModulePrivate *const d;
 

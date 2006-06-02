@@ -103,7 +103,6 @@ protected:
   QPushButton * m_configureEmail;
 
 protected:
-  virtual void virtual_hook( int id, void* data );
   virtual void closeEvent( QCloseEvent * e);
 private:
   KBugReportPrivate *d;

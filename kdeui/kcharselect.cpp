@@ -435,9 +435,4 @@ void KCharSelect::slotUpdateUnicode( const QChar &c )
     d->unicodeLine->setText(s);
 }
 
-void KCharSelectTable::virtual_hook( int, void*)
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KCharSelect::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 

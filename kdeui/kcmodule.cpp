@@ -217,7 +217,5 @@ const QList<KConfigDialogManager*>& KCModule::configs() const
     return d->managers;
 }
 
-void KCModule::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 // vim: sw=4 et sts=4

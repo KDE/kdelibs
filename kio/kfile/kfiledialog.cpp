@@ -2286,8 +2286,6 @@ void KFileDialog::setNonExtSelection()
     }
 }
 
-void KFileDialog::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
 
 
 #include "kfiledialog.moc"

@@ -103,10 +103,10 @@ bool KSSLCertificateHome::deleteCertificateByName(const QString &name) {
 
 KSimpleConfig cfg("ksslcertificates", false);
 
-   bool ok = cfg.deleteGroup(name);
+   cfg.deleteGroup(name);
    cfg.sync();
 
-return ok;
+return true;
 }
 
 KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name, const QString &password) {

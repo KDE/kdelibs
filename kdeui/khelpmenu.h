@@ -248,8 +248,6 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      */
     void showAboutApplication();
 
-  protected:
-    virtual void virtual_hook( int id, void* data );
   private:
     KHelpMenuPrivate *const d;
 };

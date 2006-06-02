@@ -883,8 +883,6 @@ protected:
 
     KUrl::List& parseSelectedURLs() const;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     KFileDialogPrivate *d;
 };

@@ -545,7 +545,5 @@ bool KBugReport::sendBugReport()
   return true;
 }
 
-void KBugReport::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
 
 #include "kbugreport.moc"

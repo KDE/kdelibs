@@ -708,10 +708,4 @@ void KIconButton::newIconName(const QString& name)
     emit iconChanged(name);
 }
 
-void KIconCanvas::virtual_hook( int id, void* data )
-{ K3IconView::virtual_hook( id, data ); }
-
-void KIconDialog::virtual_hook( int id, void* data )
-{ KDialogBase::virtual_hook( id, data ); }
-
 #include "kicondialog.moc"

@@ -640,9 +640,6 @@ void KDialogBaseTile::cleanup()
 }
 
 
-void KDialogBase::virtual_hook( int id, void* data )
-{ KDialog::virtual_hook( id, data ); }
-
 
 //This is done in order to keep the same behavior as in KDE3:
 //  slotOk may call accept,  so we need to call slotOk only if accept() is called because the button Ok has been pressed

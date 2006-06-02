@@ -208,10 +208,6 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveURLAndEncoding(const QS
 
 
 
-void KEncodingFileDialog::virtual_hook( int id, void* data )
-{
- KFileDialog::virtual_hook( id, data );
-}
 
 
 #include "kencodingfiledialog.moc"

@@ -210,8 +210,6 @@ private:
 private Q_SLOTS:
 	void captureCurrentItem();
 
-protected:
-	virtual void virtual_hook( int id, void* data );
 
 private:
 	class KKeyChooserPrivate* const d;
@@ -293,9 +291,6 @@ public:
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
 	static int configure( KActionCollection* coll, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true );
-
-protected:
-	virtual void virtual_hook( int id, void* data );
 
 private:
 	class KKeyDialogPrivate* d;
