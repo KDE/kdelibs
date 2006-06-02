@@ -42,7 +42,7 @@ void NotifyByLogfile::notify( int id, KNotifyConfig * config )
 {
 	QString file=config->readEntry( "logfile" );
 
-	kDebug() << k_funcinfo  << file << endl;
+	kDebug(300) << k_funcinfo  << file << endl;
 	
     // ignore empty messages
 	if ( config->text.isEmpty() || file.isEmpty() )

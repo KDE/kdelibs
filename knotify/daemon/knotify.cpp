@@ -115,7 +115,7 @@ int KNotify::event( const QString & event, const QString & appname, const Contex
 	QString presentstring=config.readEntry("Action");
 	QStringList presents=presentstring.split ("|");
 	
-    kDebug() << k_funcinfo << event << " ("<< m_counter  << ") : " << presents << endl;
+    kDebug(300) << k_funcinfo << event << " ("<< m_counter  << ") : " << presents << endl;
 	
 	foreach(const QString & action , presents)
 	{

@@ -71,7 +71,7 @@ KNotificationManager::~KNotificationManager()
 
 void KNotificationManager::notificationActivated( int id, int action )
 {
-    kDebug() << k_funcinfo << id << " " << action << endl;
+    kDebug(299) << k_funcinfo << id << " " << action << endl;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -96,7 +96,7 @@ void KNotificationManager::close( int id )
     QDBusReply<void> reply = d->knotify->call("closeNotification", id);
     if (reply.isError())
     {
-        kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
+        kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
     }
 }
 
@@ -105,7 +105,7 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
                                            const KNotification::ContextList & contexts,
                                            const QString &appname)
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug(299) << k_funcinfo << endl;
     WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
     QByteArray pixmapData;
@@ -123,12 +123,12 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
                          contextList, n->text(), pixmapData, actions, qlonglong(winId));
     if (reply.isError())
     {
-        kDebug() << k_funcinfo << "error while contacting knotify server" << endl;
+        kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
     }
     else
     {
         d->notifications.insert(reply, n);
-        kDebug() << k_funcinfo << "got id " << reply.value() << endl;
+        kDebug(299) << k_funcinfo << "got id " << reply.value() << endl;
         return reply;
     }
     return 0;

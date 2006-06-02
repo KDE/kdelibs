@@ -136,7 +136,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		return;
 	}
 	
-	kDebug() << k_funcinfo << " going to play " << soundFile << endl;
+	kDebug(300) << k_funcinfo << " going to play " << soundFile << endl;
 
 	if(!d->useExternal || d->externalPlayer.isEmpty())
 	{
@@ -176,7 +176,7 @@ void NotifyBySound::setVolume( int volume )
 
 void NotifyBySound::slotSoundFinished(int id)
 {
-	kDebug() << k_funcinfo << id << endl;
+	kDebug(300) << k_funcinfo << id << endl;
 	if(d->mediaobjects.contains(id))
 	{
 		d->mediaobjects[id]->deleteLater();

@@ -39,7 +39,10 @@
 294        kdeui (KEdit)
 295        kdeui (KMenuBar)
 296        kdeui (KMenu)
+297        kdeui (KNotificationRestrictions)
 298        kdeui (KDatePicker)
+299        kdeui (KNotification)
+300        knotify
 399        kimgio
 400        artskde
 500        kdeprint

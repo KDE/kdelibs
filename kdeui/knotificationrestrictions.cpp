@@ -76,9 +76,9 @@ KNotificationRestrictions::~KNotificationRestrictions()
 
 void KNotificationRestrictions::screensaverFakeKeyEvent()
 {
-    kDebug() << "KNotificationRestrictions::screensaverFakeKeyEvent()" << endl;
+    kDebug(297) << "KNotificationRestrictions::screensaverFakeKeyEvent()" << endl;
 #ifdef HAVE_XTEST
-    kDebug() << "---- using XTestFakeKeyEvent" << endl;
+    kDebug(297) << "---- using XTestFakeKeyEvent" << endl;
     Display* display = QX11Info::display();
     XTestFakeKeyEvent(display, d->XTestKeyCode, true, CurrentTime);
     XTestFakeKeyEvent(display, d->XTestKeyCode, false, CurrentTime);
@@ -88,7 +88,7 @@ void KNotificationRestrictions::screensaverFakeKeyEvent()
 
 void KNotificationRestrictions::startScreenSaverPrevention()
 {
-    kDebug() << "KNotificationRestrictions::startScreenSaverPrevention()" << endl;
+    kDebug(297) << "KNotificationRestrictions::startScreenSaverPrevention()" << endl;
 #ifdef HAVE_XTEST
     if (!d->haveXTest)
     {
@@ -97,7 +97,7 @@ void KNotificationRestrictions::startScreenSaverPrevention()
 
         if (!d->haveXTest)
         {
-            kDebug() << "--- No XTEST!" << endl;
+            kDebug(297) << "--- No XTEST!" << endl;
             return;
         }
     }
@@ -108,7 +108,7 @@ void KNotificationRestrictions::startScreenSaverPrevention()
 
         if (!d->XTestKeyCode)
         {
-            kDebug() << "--- No XKeyCode for XK_Shift_L!" << endl;
+            kDebug(297) << "--- No XKeyCode for XK_Shift_L!" << endl;
             return;
         }
     }
@@ -120,7 +120,7 @@ void KNotificationRestrictions::startScreenSaverPrevention()
                 this, SLOT(screensaverFakeKeyEvent()));
     }
 
-    kDebug() << "---- using XTest" << endl;
+    kDebug(297) << "---- using XTest" << endl;
     // send a fake event right away in case this got started after a period of
     // innactivity leading to the screensaver set to activate in <55s
     screensaverFakeKeyEvent();

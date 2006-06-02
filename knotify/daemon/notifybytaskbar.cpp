@@ -38,7 +38,7 @@ NotifyByTaskbar::~NotifyByTaskbar()
 
 void NotifyByTaskbar::notify( int id, KNotifyConfig * config )
 {
-	kDebug() << k_funcinfo << endl;
+	kDebug(300) << k_funcinfo << endl;
 	
 	WId win = config->winId;
 #ifndef Q_OS_WIN
