@@ -70,7 +70,7 @@ set(win_LIB_SRCS
    src/unistd.c
    src/win32_utils.c
    src/win32_utils2.cpp
-   src/io.c
+#   src/io.c
    )
 
 
