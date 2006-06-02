@@ -99,7 +99,7 @@ KService::init( const KDesktopFile *config )
     return;
   }
 
-  m_strName = config->readEntry( "Name" );
+  m_strName = config->readName();
   entryMap.remove("Name");
   if ( m_strName.isEmpty() )
   {
@@ -188,9 +188,9 @@ KService::init( const KDesktopFile *config )
   entryMap.remove("TerminalOptions");
   m_strPath = config->readPathEntry( "Path" );
   entryMap.remove("Path");
-  m_strComment = config->readEntry( "Comment" );
+  m_strComment = config->readComment();
   entryMap.remove("Comment");
-  m_strGenName = config->readEntry( "GenericName" );
+  m_strGenName = config->readGenericName();
   entryMap.remove("GenericName");
   QString _untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
   entryMap.insert("UntranslatedGenericName", _untranslatedGenericName);
