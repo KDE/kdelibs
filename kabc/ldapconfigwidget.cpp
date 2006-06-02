@@ -69,6 +69,7 @@ void LdapConfigWidget::initWidget()
   mPort = mVer = mTimeLimit = mSizeLimit = 0;
   mAnonymous = mSimple = mSASL = mSecNO = mSecTLS = mSecSSL = 0;
   mEditButton =  mQueryMech = 0;
+  mPageSize = 0;
   mMech = 0;
   int row = 0;
   int col;
