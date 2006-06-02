@@ -44,6 +44,7 @@ class Factory::Private
 		Private()
 			: backend( 0 )
 		{
+			qRegisterMetaType<qint64>( "qint64" );
 		}
 
 		void createBackend()
