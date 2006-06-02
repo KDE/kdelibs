@@ -7,6 +7,9 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 include(network/ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 
+if(WIN32)
+  include_directories( ${KDEWIN32_INCLUDES} )
+endif(WIN32)
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 # hack for kacceleratormanager
 include_directories( ${CMAKE_SOURCE_DIR}/kdeui )
