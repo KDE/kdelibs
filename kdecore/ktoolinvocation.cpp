@@ -23,7 +23,7 @@
 Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher *, klauncherIface,
                           (QDBus::sessionBus().findInterface<org::kde::KLauncher>("org.kde.klauncher",
                                                              "/KLauncher")
-                          ));
+                          ))
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
