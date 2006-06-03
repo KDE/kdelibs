@@ -112,7 +112,7 @@ public:
     virtual bool isImportRule() const { return true; }
 
     // from CachedObjectClient
-    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset);
     virtual void error(int err, const QString &text);
 
     bool isLoading();

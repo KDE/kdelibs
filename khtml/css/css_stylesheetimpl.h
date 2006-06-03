@@ -104,6 +104,9 @@ public:
     void determineNamespace(Q_UINT32& id, const DOM::DOMString& prefix);
     Q_UINT32 defaultNamespace() { return m_defaultNamespace; };
 
+    void setCharset(const DOMString &charset) { m_charset = charset; }
+    const DOMString& charset() const { return m_charset; }
+
     virtual bool parseString( const DOMString &string, bool strict = true );
 
     bool isLoading() const;
@@ -122,6 +125,7 @@ protected:
     bool m_implicit;
     Q_UINT32 m_defaultNamespace;
     CSSNamespace* m_namespaces;
+    DOMString m_charset;
 };
 
 // ----------------------------------------------------------------------------

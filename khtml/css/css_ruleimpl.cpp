@@ -130,13 +130,14 @@ CSSImportRuleImpl::~CSSImportRuleImpl()
     if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
-void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset)
 {
     if ( m_styleSheet ) {
         m_styleSheet->setParent(0);
         m_styleSheet->deref();
     }
     m_styleSheet = new CSSStyleSheetImpl(this, url);
+    m_styleSheet->setCharset(charset);
     m_styleSheet->ref();
 
     CSSStyleSheetImpl *parent = parentStyleSheet();
@@ -199,8 +200,7 @@ void CSSImportRuleImpl::init()
         if ( absHref == parent->baseURL().url() )
             return;
 
-    // ### pass correct charset here!!
-    m_cachedSheet = docLoader->requestStyleSheet(absHref, QString::null);
+    m_cachedSheet = docLoader->requestStyleSheet(absHref, parentStyleSheet()->charset().string());
 
     if (m_cachedSheet)
     {
