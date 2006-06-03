@@ -182,6 +182,7 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
     uchar* d = ( uchar* ) buffer.data();
     int s = buffer.size();
 
+    // BOM
     if ( s >= 3 &&
          d[0] == 0xef && d[1] == 0xbb && d[2] == 0xbf)
          return QTextCodec::codecForMib( 106 ); // UTF-8
@@ -190,6 +191,7 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
                     (d[0] == 0xfe && d[1] == 0xff)))
         return QTextCodec::codecForMib( 1000 ); // UCS-2
 
+    // Link or @charset
     if(!charset.isEmpty())
     {
 	QTextCodec* c = KGlobal::charsets()->codecForName(charset);
@@ -200,7 +202,13 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
         return c;
     }
 
-    return QTextCodec::codecForMib(4); // latin-1
+    // Default
+    return defaultCodec();
+}
+
+QTextCodec* CachedObject::defaultCodec( ) const
+{
+    return QTextCodec::codecForMib( 4 ); // latin 1
 }
 
 // -------------------------------------------------------------------------------------------
@@ -283,6 +291,11 @@ void CachedCSSStyleSheet::error( int err, const char* text )
     // this avoids skipping an item when setStyleSheet deletes the "current" one.
     for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->error( m_err, m_errText );
+}
+
+QTextCodec* CachedCSSStyleSheet::defaultCodec( ) const
+{
+    return QTextCodec::codecForMib( 106 ); // utf-8
 }
 
 // -------------------------------------------------------------------------------------------

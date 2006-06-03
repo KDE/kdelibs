@@ -131,6 +131,7 @@ namespace khtml
 	Status status() const { return m_status; }
 
         QTextCodec* codecForBuffer( const QString& charset, const QByteArray& buffer ) const;
+        virtual QTextCodec* defaultCodec() const;
 
 	int size() const { return m_size; }
 
@@ -204,6 +205,8 @@ namespace khtml
 
         virtual bool schedule() const { return true; }
         void setCharset( const QString& charset ) { m_charset = charset; }
+
+        virtual QTextCodec* defaultCodec() const;
 
     protected:
         void checkNotify();
