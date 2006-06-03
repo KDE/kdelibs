@@ -367,6 +367,10 @@ public Q_SLOTS:
    */
   Q_SCRIPTABLE void updateUserTimestamp( int time = 0 );
 
+  // D-Bus slots:
+  Q_SCRIPTABLE void reparseConfiguration();
+  Q_SCRIPTABLE void quit();
+
 public:
   /**
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
@@ -403,10 +407,6 @@ public:
     return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString();
   };
 #endif
-
-  // D-Bus slots:
-  Q_SCRIPTABLE void reparseConfiguration();
-  Q_SCRIPTABLE void quit();
 
 protected:
   /**
