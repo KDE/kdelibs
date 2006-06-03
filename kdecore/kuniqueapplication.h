@@ -45,7 +45,6 @@
 class KDECORE_EXPORT KUniqueApplication : public KApplication
 {
   Q_OBJECT
-  Q_CLASSINFO("D-Bus Interface", "org.kde.KUniqueApplication")
 public:
   /**
    * Constructor. Takes command line arguments from KCmdLineArgs
@@ -129,7 +128,6 @@ public:
    */
   virtual ~KUniqueApplication();
 
-public Q_SLOTS:
   /**
    * Creates a new "instance" of the application.
    *
@@ -150,7 +148,7 @@ public Q_SLOTS:
    *
    * @return An exit value. The calling process will exit with this value.
    */
-  virtual Q_SCRIPTABLE int newInstance();
+  virtual int newInstance();
 
 public:
   /**

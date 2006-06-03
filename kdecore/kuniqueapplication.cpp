@@ -49,6 +49,7 @@
 #include <kconfig.h>
 #include "kdebug.h"
 #include "kuniqueapplication.h"
+#include "kuniqueapplication_p.h"
 
 #if defined Q_WS_X11
 #include <netwm.h>
@@ -105,10 +106,10 @@ KUniqueApplication::start()
   QDBusBusService* dbusService = 0;
   if (!QDBus::sessionBus().isConnected() || !(dbusService = QDBus::sessionBus().busService()))
   {
-     kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
-     ::exit(255);
-  }
-
+    kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
+    ::exit(255);
+  }        
+  
   QString appName = QString::fromLatin1(KCmdLineArgs::about->appName());
   QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
   if (parts.isEmpty())
@@ -163,6 +164,7 @@ KUniqueApplication::start()
         ::close(fd[0]);
         if (s_multipleInstances)
            appName.append("-").append(QString::number(getpid()));
+
         QDBusReply<QDBusBusService::RequestNameReply> reply =
             dbusService->requestName(appName, QDBusBusService::DoNotQueueName);
         if (reply.isError())
@@ -191,12 +193,12 @@ KUniqueApplication::start()
          { // notice about pid change
             Display* disp = XOpenDisplay( NULL );
             if( disp != NULL ) // use extra X connection
-               {
+            {
                KStartupInfoData data;
                data.addPid( getpid());
                KStartupInfo::sendChangeX( disp, id, data );
                XCloseDisplay( disp );
-               }
+            }
          }
 #else //FIXME(E): Implement
 #endif
@@ -210,6 +212,16 @@ KUniqueApplication::start()
      if (s_multipleInstances)
         appName.append("-").append(QString::number(fork_result));
      ::close(fd[1]);
+
+     // Create a secondary connection to the D-BUS server
+     // The primary one (QDBus::sessionBus()) belongs to the child
+     QDBusConnection con = QDBusConnection::addConnection(QDBusConnection::SessionBus, "kuniqueapplication");
+     dbusService = 0;
+     if (!con.isConnected() || !(dbusService = con.busService()))
+     {
+       kError() << "KUniqueApplication: Cannot create secondary connection to the D-BUS server" << endl;
+       ::exit(255);
+     }
      forever     
      {
        int n = ::read(fd[0], &result, 1);
@@ -230,7 +242,8 @@ KUniqueApplication::start()
      if (result != 0)
         ::exit(result); // Error occurred in child.
 
-     if (!QDBus::sessionBus().busService()->nameHasOwner(appName)) {
+     if (!dbusService->nameHasOwner(appName))
+     {
         kError() << "KUniqueApplication: Registering failed!" << endl;
      }
 
@@ -245,18 +258,14 @@ KUniqueApplication::start()
          new_asn_id = id.id();
 #endif
 
-     QByteArray data;
-     QDataStream ds(&data, QIODevice::WriteOnly);
-
-     KCmdLineArgs::saveAppArgs(ds);
-     ds << new_asn_id;
-
-     QDBusInterface *iface = QDBus::sessionBus().findInterface(appName, "/UniqueApplication",
-                                                               "org.kde.KUniqueApplication");
+     QDBusInterface *iface = con.findInterface(appName, "/UniqueApplication",
+                                               "org.kde.KUniqueApplication");
      QDBusReply<int> reply;
-     if (!iface || (reply = iface->call("newInstance", data)).isError())
+     if (!iface || (reply = iface->call("newInstance", new_asn_id)).isError())
      {
-        kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
+       QDBusError err = iface->lastError();
+        kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl
+                 << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
      }
      delete iface;
@@ -275,7 +284,10 @@ KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
   d->firstInstance = true;
 
   // the sanity checking happened in initHack
-  QDBus::sessionBus().registerObject("/UniqueApplication", this, QDBusConnection::ExportSlots);
+  new KUniqueApplicationAdaptor(this);
+  QDBus::sessionBus().registerObject("/UniqueApplication", this,
+                                     QDBusConnection::ExportSlots |
+                                     QDBusConnection::ExportAdaptors);
 
   if (s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
@@ -374,3 +386,4 @@ void KUniqueApplication::virtual_hook( int id, void* data )
 { KApplication::virtual_hook( id, data ); }
 
 #include "kuniqueapplication.moc"
+#include "kuniqueapplication_p.moc"
