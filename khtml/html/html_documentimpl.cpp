@@ -399,7 +399,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
 
         // We need to trim whitespace off the public identifier.
         publicID = buffer.mid(publicIDStart, publicIDEnd - publicIDStart);
-        publicID = publicID.stripWhiteSpace();
+        publicID = publicID.simplifyWhiteSpace();
         *resultFlags |= PARSEMODE_HAVE_PUBLIC_ID;
     } else {
         if (containsString("system", buffer, index)) {
@@ -475,8 +475,9 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
             // Look up the entry in our gperf-generated table.
             const PubIDInfo* doctypeEntry = findDoctypeEntry(pubIDStr, publicID.length());
             if (!doctypeEntry) {
-                // The DOCTYPE is not in the list.  Assume compatible mode.
-                pMode = Compat;
+                // The DOCTYPE is not in the list.  Assume strict mode.
+                // ### Doesn't make any sense, but it's what Mozilla does.
+                pMode = Strict;
                 hMode = Html4;
                 return;
             }
