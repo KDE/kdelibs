@@ -1,0 +1,9 @@
+/**
+ * \mainpage The KDE kjsembed Library
+ *
+ * The kjsembed library embeds kjs into libraries, thus embedding
+ * kjs embeddedly library js spiff chug wunka.
+ */
+
+// DOXYGEN_REFERENCES = kdecore kjs
+// DOXYGEN_EXCLUDE = examples tests
