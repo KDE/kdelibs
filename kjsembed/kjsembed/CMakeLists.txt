@@ -32,6 +32,7 @@ set(kjsembed_LIB_SRCS
    filedialog_binding.cpp
    brush.cpp color.cpp dom.cpp font.cpp image.cpp pen.cpp
    pixmap.cpp point.cpp rect.cpp size.cpp url.cpp
+   bind_qlcdnumber.cpp bind_qtimer.cpp
    )
 
 kde4_automoc(${kjsembed_LIB_SRCS})
@@ -46,7 +47,7 @@ install_targets(${LIB_INSTALL_DIR} kjsembed )
 
 ########### install files ###############
 
-install_files( /include/kjsembed FILES global.h binding_support.h static_binding.h value_binding.h                            object_binding.h builtins.h fileio.h jseventmapper.h                            eventproxy.h slotproxy.h jseventutils.h qobject_binding.h                            kjsembed.h scalar_binding.h iosupport.h qwidget_binding.h                            widgetfactory.h qformbuilder_binding.h qpainter_binding.h                            settings.h svg_binding.h filedialog_binding.h                            brush.h color.h dom.h font.h image.h pen.h                            pixmap.h point.h rect.h size.h url.h pointer.h )
+install_files( /include/kjsembed FILES global.h binding_support.h static_binding.h value_binding.h                            object_binding.h builtins.h fileio.h jseventmapper.h                            eventproxy.h slotproxy.h jseventutils.h qobject_binding.h                            kjsembed.h scalar_binding.h iosupport.h qwidget_binding.h                            widgetfactory.h qformbuilder_binding.h qpainter_binding.h                            settings.h svg_binding.h filedialog_binding.h                            brush.h color.h dom.h font.h image.h pen.h                            pixmap.h point.h rect.h size.h url.h pointer.h bind_qlcdnumber.h bind_qtimer.h )
 
 
 
