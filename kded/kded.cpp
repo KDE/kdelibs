@@ -63,7 +63,7 @@ Kded *Kded::_self = 0;
 static bool checkStamps = true;
 static bool delayedCheck = false;
 
-extern QDBUS_EXPORT void qDBusSetSpyHook(void (*)(const QDBusMessage&));
+extern QDBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage&));
 
 static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 {
@@ -114,7 +114,7 @@ Kded::Kded(bool checkUpdates)
   session.registerObject(MODULES_PATH "kbuildsycoca", this);
   session.registerObject(MODULES_PATH "kded", this);
 
-  qDBusSetSpyHook(messageFilter);
+  qDBusAddSpyHook(messageFilter);
 
   m_pTimer = new QTimer(this);
   m_pTimer->setSingleShot( true );
