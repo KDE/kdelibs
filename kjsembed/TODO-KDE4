@@ -13,3 +13,25 @@ Ian's List:
 * Bindings for DCOP (dbus or what ever it is this week)
 * Handle QPixmap and Image gracefully in QPainter bindings.
 
+Rich's List:
+
+* Automatic binding generator.
+
+  This is needed at the very least to make it easy for people to be
+  able to bind their own classes into the interpreter when embedding.
+
+* A good example of how to embed the interpreter.
+
+  The editor example is a good start for this.
+
+* Get the bindings like bind_qworkspace I did in Malaga into the main
+  tree (they're in editor at the moment).
+
+* Improve the documentation so people can use this stuff!
+
+* Get f'ing QListWidget working so we can port the docviewer properly.
+
+* Check the design of the JS-side APIs to ensure they're what we
+  really want rather than just "because that's how did it when we
+  we're trying to get stuff working".
+
