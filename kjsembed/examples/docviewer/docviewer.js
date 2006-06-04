@@ -2,25 +2,33 @@
 // Load the view
 var viewer = new Form('docviewer.ui', this);
 var text = viewer.findChild('textBrowser');
-var list = viewer.findChild('listWidget');
 
-var html = '<h1>Text View</h1><ul>';
-for( i in text ) {
-    html += '<li>' + i;
-}
-html += '</ul>';
+var html = '<h1>KJSEmbed Documentation</h1>';
 
-html += '<h1>List Widget</h1><ul>';
-for( i in list ) {
-    html += '<li>' + i;
-}
-html += '</ul>';
-
-html += '<h1>Globals</h1><ul>';
+// Generate TOC
+html += '<h2>Contents</h2><ul>'
 for( i in this ) {
-    html += '<li>' + i;
+    html += '<li><a href="' + i + '">' + i + '</a>';
 }
 html += '</ul>';
+
+// Object Docs
+for( i in this ) {
+    html += '<a name="' + i + '"><h2>' + i + '</h2></a><ul>';
+
+    // Create an instance
+    try {
+      var inst = eval( 'new ' + i + '()' );
+    
+      for( j in inst ) {
+	html += '<li>' + j;
+      }
+      html += '</ul>';
+    }
+    catch( err ) {
+      html += '<li>Could not create</ul>';
+    }
+}
 
 text.html = html;
 
