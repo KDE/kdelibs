@@ -137,7 +137,7 @@ namespace khtml {
         {
             if ( m_cachedSheet ) m_cachedSheet->deref(this);
         }
-        virtual void setStyleSheet(const DOM::DOMString&, const DOM::DOMString &sheet)
+        virtual void setStyleSheet(const DOM::DOMString&, const DOM::DOMString &sheet, const DOM::DOMString &)
         {
           if ( m_part )
             m_part->setUserStyleSheet( sheet.string() );
