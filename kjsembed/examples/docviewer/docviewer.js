@@ -3,6 +3,19 @@
 var viewer = new Form('docviewer.ui', this);
 var text = viewer.findChild('textBrowser');
 
+// Uncommenting pretty much any bit of this crashes it...
+// doLink = function(url) {
+//   workaround = url.toString();
+//   workaround = workaround.slice( workaround.lastIndexOf('#') );
+//   println('XXX'+workaround);
+//   text.scrollToAnchor( workaround );
+// }
+
+//url = new QUrl(''); // Even just this line alone can crash...
+//println('OK' + url);
+//text.setSource(url);
+//text.connect(text, 'anchorClicked(const QUrl &)', this, 'doLink()');
+
 var html = '<h1>KJSEmbed Documentation</h1>';
 
 // Generate TOC
