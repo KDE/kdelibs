@@ -30,6 +30,7 @@ function Calculator(ui)
   ui.connect( ui.findChild('zero'), 'clicked()', this, 'zero()' );
 
   this.val = 0;
+  this.display.intValue = 0;
   this.lastop = function() {}
 
   this.plus = function()
