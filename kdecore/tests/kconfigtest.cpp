@@ -31,8 +31,8 @@ private:
     void revertEntries();
 };
 
-KUNITTEST_MODULE( kunittest_kconfig, "KConfigTest" );
-KUNITTEST_MODULE_REGISTER_TESTER( KConfigTest );
+KUNITTEST_MODULE( kunittest_kconfig, "KConfigTest" )
+KUNITTEST_MODULE_REGISTER_TESTER( KConfigTest )
 
 // test data
 #define BOOLENTRY1 true

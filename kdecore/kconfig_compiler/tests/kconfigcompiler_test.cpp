@@ -21,8 +21,8 @@
 
 using namespace KUnitTest;
 
-KUNITTEST_MODULE( kunittest_kconfigcompiler_test, "KConfigXT");
-KUNITTEST_MODULE_REGISTER_TESTER( KConfigCompiler_Test );
+KUNITTEST_MODULE( kunittest_kconfigcompiler_test, "KConfigXT")
+KUNITTEST_MODULE_REGISTER_TESTER( KConfigCompiler_Test )
 
 typedef const char * CompilerTestSet[];
 
