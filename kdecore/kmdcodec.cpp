@@ -480,6 +480,9 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
             data[count] == '\t' || data[count] == ' ') )
         count++;
 
+    if ( count == len )
+        return;
+
     if ( strncasecmp(data+count, "begin", 5) == 0 )
     {
         count += 5;
@@ -495,8 +498,8 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
 
     // Find the tail end of the actual encoded data even if
     // there is/are trailing CR and/or LF.
-    while ( data[tail-1] == '=' || data[tail-1] == '\n' ||
-            data[tail-1] == '\r' )
+    while ( tail > 0
+            && ( data[tail-1] == '=' || data[tail-1] == '\n' || data[tail-1] == '\r' ) )
         if ( data[--tail] != '=' ) len = tail;
 
     unsigned int outIdx = 0;
