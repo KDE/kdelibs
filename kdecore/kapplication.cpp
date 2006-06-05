@@ -176,7 +176,10 @@ class KApplication::Private
 {
 public:
   Private()
-    :   oldIceIOErrorHandler( 0 ),
+    :
+#ifdef Q_WS_X11
+	oldIceIOErrorHandler( 0 ),
+#endif
 	checkAccelerators( 0 ),
 	overrideStyle( QString() ),
 	startup_id( "0" ),
@@ -194,7 +197,9 @@ public:
   }
 
 
+#ifdef Q_WS_X11
   IceIOErrorHandler oldIceIOErrorHandler;
+#endif
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
   QByteArray startup_id;
