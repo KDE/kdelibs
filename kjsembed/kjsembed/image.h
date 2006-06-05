@@ -28,6 +28,7 @@ class QImage;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the bniding for QImage. */
     class ImageBinding : public ValueBinding
     {
         public:

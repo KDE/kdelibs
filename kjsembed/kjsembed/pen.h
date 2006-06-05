@@ -29,6 +29,7 @@ class QPen;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QPen. */
     class PenBinding : public ValueBinding
     {
         public:

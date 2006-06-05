@@ -27,6 +27,7 @@ class QSize;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QSize. */
     class SizeBinding : public ValueBinding
     {
         public:

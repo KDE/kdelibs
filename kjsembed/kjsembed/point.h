@@ -29,6 +29,7 @@ class QPoint;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QPoint. */
     class PointBinding : public ValueBinding
     {
         public:

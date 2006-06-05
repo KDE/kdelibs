@@ -29,6 +29,7 @@ class QUrl;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QUrl. */
     class UrlBinding : public ValueBinding
     {
         public:

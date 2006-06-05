@@ -29,6 +29,7 @@ class QFont;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QFont. */
     class FontBinding : public ValueBinding
     {
         public:

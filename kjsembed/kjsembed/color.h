@@ -28,6 +28,7 @@ class QColor;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QColor. */
     class ColorBinding : public ValueBinding
     {
         public:

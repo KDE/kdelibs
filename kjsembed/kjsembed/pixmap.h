@@ -28,6 +28,7 @@ class QPixmap;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QPixmap. */
     class PixmapBinding : public ValueBinding
     {
         public:

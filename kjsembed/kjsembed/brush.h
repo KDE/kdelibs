@@ -29,6 +29,7 @@ class QBrush;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QBrush. */
     class BrushBinding : public ValueBinding
     {
         public:
