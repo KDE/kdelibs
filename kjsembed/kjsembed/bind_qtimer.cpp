@@ -28,7 +28,7 @@
 using namespace KJSEmbed;
 
 namespace TimerNS {
-};
+}
 
 NO_ENUMS( Timer )
 NO_METHODS( Timer )
