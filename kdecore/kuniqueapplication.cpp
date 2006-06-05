@@ -258,7 +258,7 @@ KUniqueApplication::start()
          new_asn_id = id.id();
 #endif
 
-     QDBusInterface *iface = con.findInterface(appName, "/UniqueApplication",
+     QDBusInterface *iface = con.findInterface(appName, "/MainApplication",
                                                "org.kde.KUniqueApplication");
      QDBusReply<int> reply;
      if (!iface || (reply = iface->call("newInstance", new_asn_id)).isError())
@@ -285,9 +285,6 @@ KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
 
   // the sanity checking happened in initHack
   new KUniqueApplicationAdaptor(this);
-  QDBus::sessionBus().registerObject("/UniqueApplication", this,
-                                     QDBusConnection::ExportSlots |
-                                     QDBusConnection::ExportAdaptors);
 
   if (s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
@@ -305,7 +302,7 @@ KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
   d->firstInstance = true;
 
   // the sanity checking happened in initHack
-  QDBus::sessionBus().registerObject("/UniqueApplication", this, QDBusConnection::ExportSlots);
+  new KUniqueApplicationAdaptor(this);
 
   if (s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
