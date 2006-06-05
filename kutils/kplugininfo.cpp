@@ -75,42 +75,24 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
 
     d->specfile = filename;
 
-    if( filename.endsWith( QString::fromAscii( ".desktop" ) ) )
-    {
-        file.setDesktopGroup();
-        d->hidden = file.readEntry("Hidden", false);
-        if( d->hidden )
-            return;
+    file.setDesktopGroup();
+    d->hidden = file.readEntry("Hidden", false);
+    if( d->hidden )
+        return;
 
-        d->name = file.readName();
-        d->comment = file.readComment();
-        d->icon = file.readEntry( "Icon" );
-        d->author = file.readEntry( "X-KDE-PluginInfo-Author" );
-        d->email = file.readEntry( "X-KDE-PluginInfo-Email" );
-        d->pluginName = file.readEntry( "X-KDE-PluginInfo-Name" );
-        d->version = file.readEntry( "X-KDE-PluginInfo-Version" );
-        d->website = file.readEntry( "X-KDE-PluginInfo-Website" );
-        d->category = file.readEntry( "X-KDE-PluginInfo-Category" );
-        d->license = file.readEntry( "X-KDE-PluginInfo-License" );
-        d->dependencies = file.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
-        d->enabledbydefault = file.readEntry(
-                "X-KDE-PluginInfo-EnabledByDefault", false);
-    }
-    else if( filename.endsWith( QString::fromAscii( ".plugin" ) ) )
-    { // provided for noatun style .plugin files compatibility
-
-        d->name = file.readName();
-        d->comment = file.readComment();
-        d->icon = file.readEntry( "Icon" );
-        d->author = file.readEntry( "Author" );
-        d->email = file.readEntry( "Email" );
-        d->pluginName = file.readPathEntry( "Filename" );
-        // no version
-        d->website = file.readEntry( "Site" );
-        d->category = file.readEntry( "Type" );
-        d->license = file.readEntry( "License" );
-        d->dependencies = file.readEntry( "Require", QStringList() );
-    }
+    d->name = file.readName();
+    d->comment = file.readComment();
+    d->icon = file.readEntry( "Icon" );
+    d->author = file.readEntry( "X-KDE-PluginInfo-Author" );
+    d->email = file.readEntry( "X-KDE-PluginInfo-Email" );
+    d->pluginName = file.readEntry( "X-KDE-PluginInfo-Name" );
+    d->version = file.readEntry( "X-KDE-PluginInfo-Version" );
+    d->website = file.readEntry( "X-KDE-PluginInfo-Website" );
+    d->category = file.readEntry( "X-KDE-PluginInfo-Category" );
+    d->license = file.readEntry( "X-KDE-PluginInfo-License" );
+    d->dependencies = file.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
+    d->enabledbydefault = file.readEntry(
+            "X-KDE-PluginInfo-EnabledByDefault", false);
 }
 
 KPluginInfo::KPluginInfo( const KService::Ptr service )
