@@ -1642,11 +1642,21 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
     bool topIsAuto = top.isVariable();
     bool bottomIsAuto = bottom.isVariable();
 
-    // Height is never unsolved for tables.
     if (isTable() && heightIsAuto) {
-        height.setValue(Fixed, contentHeight);
+         // Height is never unsolved for tables. "auto" means shrink to fit.
+         // Use our height instead.
+        heightValue = contentHeight;
         heightIsAuto = false;
+    } else if (!heightIsAuto) {
+        heightValue = calcContentHeight(height.width(containerHeight));
+        if (contentHeight > heightValue) {
+            if (!isTable())
+                contentHeight = heightValue;
+            else
+                heightValue = contentHeight;
+        }
     }
+
 
     if (!topIsAuto && !heightIsAuto && !bottomIsAuto) {
         /*-----------------------------------------------------------------------*\
@@ -1660,7 +1670,6 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
         // NOTE:  It is not necessary to solve for 'bottom' in the over constrained
         // case because the value is not used for any further calculations.
 
-        heightValue = calcContentHeight(height.width(containerHeight));
         topValue = top.width(containerHeight);
 
         const int availableSpace = containerHeight - (topValue + heightValue + bottom.width(containerHeight) + bordersPlusPadding);
@@ -1721,13 +1730,16 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
             // RULE 1: (height is content based, solve of top)
             heightValue = contentHeight;
             topValue = availableSpace - (heightValue + bottom.width(containerHeight));
-        } else if (!topIsAuto && heightIsAuto && bottomIsAuto) {
+        } 
+        else if (!topIsAuto && heightIsAuto && !bottomIsAuto) {
+            // RULE 2: (shouldn't happen)
+        }
+        else if (!topIsAuto && heightIsAuto && bottomIsAuto) {
             // RULE 3: (height is content based, no need solve of bottom)
-            topValue = top.width(containerHeight);
             heightValue = contentHeight;
+            topValue = top.width(containerHeight);
         } else if (topIsAuto && !heightIsAuto && !bottomIsAuto) {
             // RULE 4: (solve of top)
-            heightValue = calcContentHeight(height.width(containerHeight));
             topValue = availableSpace - (heightValue + bottom.width(containerHeight));
         } else if (!topIsAuto && heightIsAuto && !bottomIsAuto) {
             // RULE 5: (solve of height)
@@ -1735,7 +1747,6 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
             heightValue = kMax(0, availableSpace - (topValue + bottom.width(containerHeight)));
         } else if (!topIsAuto && !heightIsAuto && bottomIsAuto) {
             // RULE 6: (no need solve of bottom)
-            heightValue = calcContentHeight(height.width(containerHeight));
             topValue = top.width(containerHeight);
         }
     }
