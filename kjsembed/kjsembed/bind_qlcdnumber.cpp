@@ -93,7 +93,7 @@ START_QOBJECT_METHOD( display, QLCDNumber )
     }
 END_QOBJECT_METHOD
 
-};
+}
 
 NO_ENUMS( LCDNumber )
 
