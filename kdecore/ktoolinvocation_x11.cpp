@@ -21,6 +21,7 @@
 #include "config.h"
 
 #include "ktoolinvocation.h"
+#include "klauncher_iface.h"
 #include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kcodecs.h"

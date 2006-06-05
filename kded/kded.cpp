@@ -49,6 +49,7 @@
 #include <kio/global.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
+#include "klauncher_iface.h"
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>

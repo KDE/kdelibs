@@ -34,6 +34,7 @@
 #include <kstandarddirs.h>
 #include <kprocess.h>
 #include <ktoolinvocation.h>
+#include <klauncher_iface.h>
 #include <kde_file.h>
 #include <dbus/qdbus.h>
 

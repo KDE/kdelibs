@@ -31,6 +31,7 @@
 #include "kservicegroup.h"
 #include "kstandarddirs.h"
 #include "ktoolinvocation.h"
+#include "klauncher_iface.h"
 
 static KCmdLineOptions options[] = {
    { "utf8", I18N_NOOP("Output data in UTF-8 instead of local encoding"), 0 },

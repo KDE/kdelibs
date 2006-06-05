@@ -19,6 +19,7 @@
 */
 
 #include "ktoolinvocation.h"
+#include "klauncher_iface.h"
 
 Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher *, klauncherIface,
                           (QDBus::sessionBus().findInterface<org::kde::KLauncher>("org.kde.klauncher",

@@ -18,18 +18,19 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KTOOLSINVOKATION_H
-#define _KTOOLSINVOKATION_H
+#ifndef _KTOOLINVOCATION_H
+#define _KTOOLINVOCATION_H
 
 // Version macros. Never put this further down.
 #include "kdeversion.h"
 #include "kdelibs_export.h"
 
 #include "kurl.h"
-#include "klauncher_iface.h"
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
+
+class OrgKdeKLauncherInterface;
 
 /**
  *The static members (exception is the self() member, have to be called from the QApplication main thread.
@@ -123,7 +124,7 @@ public:
    * Returns the DBus interface of the service launcher.
    * The returned object is owned by KApplication, do not delete it!
    */
-  static org::kde::KLauncher *klauncher();
+  static OrgKdeKLauncherInterface *klauncher();
 
   /**
    * Starts a service based on the (translated) name of the service.

@@ -41,6 +41,7 @@
 #include <kprocess.h>
 #include <klibloader.h>
 #include <ktoolinvocation.h>
+#include <klauncher_iface.h>
 
 #include "kio/dataprotocol.h"
 #include "kio/slave.h"
