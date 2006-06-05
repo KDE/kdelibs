@@ -125,7 +125,7 @@ START_CTOR( LCDNumber, QLCDNumber, 0 )
     {
         uint arg0 = KJSEmbed::extractInt( exec, args, 0 );
         QWidget *parent = KJSEmbed::extractObject<QWidget>( exec, args, 1, 0 );
-        QLCDNumber *lcd = new QLCDNumber( 0, parent );
+        QLCDNumber *lcd = new QLCDNumber( arg0, parent );
         obj = new KJSEmbed::QObjectBinding( exec, lcd );
     }
 
