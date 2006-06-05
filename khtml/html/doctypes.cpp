@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.0.1 */
-/* Command-line: gperf -CEot -L ANSI-C -k '*' -N findDoctypeEntry -F ,PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards ./doctypes.gperf  */
+/* Command-line: gperf -CEot -L ANSI-C -k '*' -N findDoctypeEntry -F ,PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards /opt/src/kde/kdelibs/khtml/html/doctypes.gperf  */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
       && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
@@ -28,19 +28,20 @@
 #error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
 #endif
 
-#line 1 "./doctypes.gperf"
+#line 1 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
 struct PubIDInfo {
     enum eMode { 
-        eQuirks,         
-        eQuirks3,       
-        eAlmostStandards
+        eQuirks,        /* always quirks mode, unless there's an internal subset */
+        eQuirks3,       /* ditto, but but pre-HTML4 (no tbody) */
+        eAlmostStandards,
+        eFullStandards
     };
 
     const char* name;
     eMode mode_if_no_sysid;
     eMode mode_if_sysid;
 };
-/* maximum key range = 178, duplicates = 0 */
+/* maximum key range = 727, duplicates = 0 */
 
 #ifdef __GNUC__
 __inline
@@ -52,34 +53,34 @@ inline
 static unsigned int
 hash (register const char *str, register unsigned int len)
 {
-  static const unsigned char asso_values[] =
+  static const unsigned short asso_values[] =
     {
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241,   0, 241, 241, 241, 241, 241, 241,   0,
-      241, 241, 241,   0, 241,   0,   0,   0,  10,   0,
-        5,   0,   0,   0,   0,   0, 241,   0,   0, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241,   5,   0,   0,
-       10,   0,  10,   0,   0,   0, 241, 241,   0,  15,
-        5,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-       10,   0,   0, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241, 241, 241, 241, 241,
-      241, 241, 241, 241, 241, 241
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731,   0, 731, 731, 731, 731, 731, 731,   0,
+      731, 731, 731,   0, 731,   0,  15,   0,  10,  25,
+        5,   0,   5,  15,   5,   5, 731,   5,   0, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731,  10,   5,   0,
+       40,   0,  20,  10,   0,   0,   0, 731,   0,   0,
+       10,  45,   0,   0,   0,   0,   0,   0,   0,   0,
+       10,   0,   5, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731, 731, 731, 731, 731,
+      731, 731, 731, 731, 731, 731
     };
   register int hval = len;
 
@@ -337,11 +338,11 @@ findDoctypeEntry (register const char *str, register unsigned int len)
 {
   enum
     {
-      TOTAL_KEYWORDS = 41,
-      MIN_WORD_LENGTH = 21,
+      TOTAL_KEYWORDS = 78,
+      MIN_WORD_LENGTH = 4,
       MAX_WORD_LENGTH = 80,
-      MIN_HASH_VALUE = 63,
-      MAX_HASH_VALUE = 240
+      MIN_HASH_VALUE = 4,
+      MAX_HASH_VALUE = 730
     };
 
   static const struct PubIDInfo wordlist[] =
@@ -350,6 +351,8 @@ findDoctypeEntry (register const char *str, register unsigned int len)
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 91 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"html", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
@@ -409,121 +412,299 @@ findDoctypeEntry (register const char *str, register unsigned int len)
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 48 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 81 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w3c//dtd w3 html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 40 "./doctypes.gperf"
-      {"-//w3c//dtd html 3.2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 27 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 48 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//ietf//dtd html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 26 "./doctypes.gperf"
+#line 28 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//ietf//dtd html 3//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 73 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 3.2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 51 "./doctypes.gperf"
-      {"-//w3o//dtd w3 html 3.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 45 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 35 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 3//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 52 "./doctypes.gperf"
-      {"-//w3o//dtd w3 html 3.0//en//", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 25 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 33 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 43 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 3//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 29 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 41 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 27 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//ietf//dtd html 3.2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 21 "./doctypes.gperf"
-      {"-//ietf//dtd html 2.1e//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 22 "./doctypes.gperf"
-      {"-//ietf//dtd html 3.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 29 "./doctypes.gperf"
-      {"-//ietf//dtd html//en//3.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 23 "./doctypes.gperf"
-      {"-//ietf//dtd html 3.0//en//", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 37 "./doctypes.gperf"
-      {"-//w3c//dtd html 3 1995-03-24//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 20 "./doctypes.gperf"
-      {"-//ietf//dtd html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 28 "./doctypes.gperf"
-      {"-//ietf//dtd html//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 36 "./doctypes.gperf"
+#line 37 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 69 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w30//dtd w3 html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 39 "./doctypes.gperf"
-      {"-//w3c//dtd html 3.2 final//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 24 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 3.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 50 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html//en//3.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 25 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 3.0//en//", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 19 "./doctypes.gperf"
+#line 31 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 1//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 22 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 49 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 47 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict//en//3.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 36 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 3//en//3.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 39 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 1//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 21 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//ietf//dtd html 2.0 strict//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 15 "./doctypes.gperf"
-      {"-//ietf//dtd html 2.0 level 1//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 46 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 38 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 44 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 3//en//3.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 18 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 2.0 level 2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 34 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 2//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 72 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 3.2 final//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 23 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 2.1e//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 75 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 4.0 frameset//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
+#line 30 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 0//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 20 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 2.0 strict level 2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 42 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 2//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 85 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3o//dtd w3 html 3.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 89 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//webtechs//dtd mozilla html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 86 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3o//dtd w3 html 3.0//en//", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 84 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd xhtml 1.1//en", PubIDInfo::eAlmostStandards, PubIDInfo::eAlmostStandards},
+#line 38 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 0//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 70 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 3 1995-03-24//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 87 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3o//dtd w3 html strict 3.0//en//", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 17 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 2.0 level 1//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 32 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html level 1//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 26 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 3.2 final//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 19 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html 2.0 strict level 1//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 40 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//ietf//dtd html strict level 1//en//2.0", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 77 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 4.01 frameset//en", PubIDInfo::eQuirks, PubIDInfo::eAlmostStandards},
+#line 71 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w3c//dtd html 3.2 draft//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 41 "./doctypes.gperf"
+#line 74 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w3c//dtd html 3.2s draft//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 16 "./doctypes.gperf"
-      {"-//ietf//dtd html 2.0 level 2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 17 "./doctypes.gperf"
-      {"-//ietf//dtd html 2.0 strict level 1//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 24 "./doctypes.gperf"
-      {"-//ietf//dtd html 3.2 final//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 43 "./doctypes.gperf"
-      {"-//w3c//dtd html 4.0 transitional//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
-#line 45 "./doctypes.gperf"
-      {"-//w3c//dtd html 4.01 transitional//en", PubIDInfo::eQuirks, PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 18 "./doctypes.gperf"
-      {"-//ietf//dtd html 2.0 strict level 2//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 53 "./doctypes.gperf"
-      {"-//webtechs//dtd mozilla html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 42 "./doctypes.gperf"
-      {"-//w3c//dtd html 4.0 frameset//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
-#line 44 "./doctypes.gperf"
-      {"-//w3c//dtd html 4.01 frameset//en", PubIDInfo::eQuirks, PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 30 "./doctypes.gperf"
-      {"-//netscape comm. corp.//dtd html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 50 "./doctypes.gperf"
-      {"-//w3c//dtd xhtml 1.0 transitional//en", PubIDInfo::eAlmostStandards, PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 49 "./doctypes.gperf"
+#line 82 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w3c//dtd xhtml 1.0 frameset//en", PubIDInfo::eAlmostStandards, PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 31 "./doctypes.gperf"
-      {"-//o'reilly and associates//dtd html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 47 "./doctypes.gperf"
+#line 80 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w3c//dtd html experimental 970421//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 46 "./doctypes.gperf"
+#line 51 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//metrius//dtd metrius presentational//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 88 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//webtechs//dtd mozilla html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 90 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-/w3c/dtd html 4.0 transitional/en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 76 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 4.0 transitional//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 79 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//w3c//dtd html experimental 19960712//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 34 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 58 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//netscape comm. corp.//dtd html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 78 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd html 4.01 transitional//en", PubIDInfo::eQuirks, PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 83 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//w3c//dtd xhtml 1.0 transitional//en", PubIDInfo::eAlmostStandards, PubIDInfo::eAlmostStandards},
+#line 59 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//netscape comm. corp.//dtd strict html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 65 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//spyglass//dtd html 2.0 extended//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-#line 14 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 16 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//as//dtd html 3.0 aswedit + extensions//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 35 "./doctypes.gperf"
+#line 66 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//sq//dtd html 2.0 hotmetal + extensions//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
@@ -546,6 +727,70 @@ findDoctypeEntry (register const char *str, register unsigned int len)
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 67 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//sun microsystems corp.//dtd hotjava html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 68 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//sun microsystems corp.//dtd hotjava strict html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 60 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//o'reilly and associates//dtd html 2.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 56 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//microsoft//dtd internet explorer 3.0 html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 53 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//microsoft//dtd internet explorer 2.0 html//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 55 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//microsoft//dtd internet explorer 3.0 html strict//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 14 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"+//silmaril//dtd html pro v0r11 19970101//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+#line 52 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//microsoft//dtd internet explorer 2.0 html strict//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 57 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//microsoft//dtd internet explorer 3.0 tables//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 54 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//microsoft//dtd internet explorer 2.0 tables//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
@@ -563,11 +808,84 @@ findDoctypeEntry (register const char *str, register unsigned int len)
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 13 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 15 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//advasoft ltd//dtd html 3.0 aswedit + extensions//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 61 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//o'reilly and associates//dtd html extended 1.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
@@ -601,7 +919,177 @@ findDoctypeEntry (register const char *str, register unsigned int len)
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 33 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 62 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
+      {"-//o'reilly and associates//dtd html extended relaxed 1.0//en", PubIDInfo::eQuirks3, PubIDInfo::eQuirks3},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 64 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//softquad//dtd hotmetal pro 4.0::19971010::extensions to html 4.0//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
@@ -626,7 +1114,47 @@ findDoctypeEntry (register const char *str, register unsigned int len)
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
       {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
-#line 32 "./doctypes.gperf"
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+      {"",PubIDInfo::eAlmostStandards,PubIDInfo::eAlmostStandards},
+#line 63 "/opt/src/kde/kdelibs/khtml/html/doctypes.gperf"
       {"-//softquad software//dtd hotmetal pro 6.0::19990601::extensions to html 4.0//en", PubIDInfo::eQuirks, PubIDInfo::eQuirks}
     };
 

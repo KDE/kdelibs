@@ -1829,7 +1829,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 // Optimize for a common case. If we can't find whitespace after the list
                 // item, then this is all moot. -dwh
                 RenderObject* next = Bidinext( start.par, o, bidi );
-                if (!m_pre && next && next->isText() && static_cast<RenderText*>(next)->stringLength() > 0 &&
+                if (!style()->preserveWS() && next && next->isText() && static_cast<RenderText*>(next)->stringLength() > 0 &&
                      (static_cast<RenderText*>(next)->text()[0].category() == QChar::Separator_Space ||
                       static_cast<RenderText*>(next)->text()[0] == '\n')) {
                     currentCharacterIsSpace = true;
@@ -2026,27 +2026,28 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             KHTMLAssert( false );
 
         RenderObject* next = Bidinext(start.par, o, bidi);
-        bool isNormal = o->style()->autoWrap();
-        bool checkForBreak = isNormal;
+        bool autoWrap = o->style()->autoWrap();
+        bool checkForBreak = autoWrap;
         if (w && w + tmpW > width && lBreak.obj && !o->style()->preserveLF())
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {
-            if (isNormal || next->style()->autoWrap()) {
+            if (autoWrap || next->style()->autoWrap()) {
                 if (currentCharacterIsSpace)
                     checkForBreak = true;
                 else {
+                    checkForBreak = false;
                     RenderText* nextText = static_cast<RenderText*>(next);
-                    int strlen = nextText->stringLength();
-                    QChar *str = nextText->text();
-                    if (strlen && str[0] == ' ')
-                        // If the next item on the line is text, and if we did not end with
-                        // a space, then the next text run continues our word (and so it needs to
-                        // keep adding to |tmpW|.  Just update and continue.
-                        checkForBreak = true;
-                    else
-                        checkForBreak = false;
+                    if (nextText->stringLength() != 0) {
+                        QChar c = nextText->text()[0];
+                        if (c == ' ' || c == '\t' || (c == '\n' && !next->style()->preserveLF())) {
+                            // If the next item on the line is text, and if we did not end with
+                            // a space, then the next text run continues our word (and so it needs to
+                            // keep adding to |tmpW|.  Just update and continue.
+                            checkForBreak = true;
+                        }
+                    }
 
-                    bool canPlaceOnLine = (w + tmpW <= width+1) || !isNormal;
+                    bool canPlaceOnLine = (w + tmpW <= width+1) || !autoWrap;
                     if (canPlaceOnLine && checkForBreak) {
                         w += tmpW;
                         tmpW = 0;
@@ -2120,7 +2121,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
     if( lBreak == start && !lBreak.obj->isBR() ) {
         // we just add as much as possible
-        if ( m_pre ) {
+        if ( style()->whiteSpace() == PRE ) {
+            // FIXME: Don't really understand this case.
             if(pos != 0) {
                 lBreak.obj = o;
                 lBreak.pos = pos - 1;

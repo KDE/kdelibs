@@ -134,6 +134,8 @@ namespace khtml
 	void setStatus(Status s) { m_status = s; }
 	Status status() const { return m_status; }
 
+        virtual void setCharset( const QString& /*charset*/ ) {}
+
         QTextCodec* codecForBuffer( const QString& charset, const QByteArray& buffer ) const;
 
 	int size() const { return m_size; }
@@ -207,6 +209,7 @@ namespace khtml
 	virtual void error( int err, const char *text );
 
         virtual bool schedule() const { return true; }
+        void setCharsetHint( const QString& charset ) { m_charsetHint = charset; }
         void setCharset( const QString& charset ) { m_charset = charset; }
 
     protected:
@@ -214,6 +217,7 @@ namespace khtml
 
 	DOM::DOMString m_sheet;
         QString m_charset;
+        QString m_charsetHint;
 	int m_err;
 	QString m_errText;
     };
@@ -351,7 +355,7 @@ namespace khtml
  	~DocLoader();
 
 	CachedImage *requestImage( const DOM::DOMString &url);
-	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const QString& charset,
+	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const QString& charsetHint,
 						const char *accept = "text/css", bool userSheet = false );
         CachedScript *requestScript( const DOM::DOMString &url, const QString& charset);
 

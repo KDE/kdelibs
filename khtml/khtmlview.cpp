@@ -4411,6 +4411,7 @@ void KHTMLView::placeCaretOnChar(CaretBox *hintBox)
 void KHTMLView::moveCaretByPage(bool next)
 {
   Node &caretNodeRef = m_part->d->caretNode();
+  if (caretNodeRef.isNull()) return;
 
   NodeImpl *caretNode = caretNodeRef.handle();
 //  kDebug(6200) << ": caretNode=" << caretNode << endl;

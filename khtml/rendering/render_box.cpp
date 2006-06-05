@@ -5,6 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2006 Samuel Weinig (sam.weinig@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -433,8 +434,10 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
                 cw = pixw;
                 int xp = bgLayer->backgroundXPosition().minWidth(pw-pixw);
-                if ( xp >= 0 )
+                if ( xp >= 0 ) {
                     cx = _tx + xp;
+                    cw = qMin(cw, pw - xp);
+                }
                 else {
                     cx = _tx;
                     if (pixw > 0) {
@@ -461,8 +464,10 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
                 ch = pixh;
                 int yp = bgLayer->backgroundYPosition().minWidth(ph-pixh);
-                if ( yp >= 0 )
+                if ( yp >= 0 ) {
                     cy = _ty + yp;
+                    ch = qMin(ch, ph - yp);
+                }
                 else {
                     cy = _ty;
                     if (pixh > 0) {
@@ -525,7 +530,16 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             sy+=b.y()-cy;
             cx=b.x();cy=b.y();cw=b.width();ch=b.height();
         }
+        // restrict painting to repaint-clip
+        if (cy < clipy) {
+            ch -= (clipy - cy);
+            sy += (clipy - cy);
+            cy = clipy;
+        }
+        ch = qMin(ch, cliph);
 
+// 	kdDebug() << " clipy, cliph: " << clipy << ", " << cliph << endl;
+//         kdDebug() << " drawTiledPixmap(" << cx << ", " << cy << ", " << cw << ", " << ch << ", " << sx << ", " << sy << ")" << endl;
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
 
@@ -985,6 +999,18 @@ int RenderBox::calcHeightUsing(const Length& h)
     return height;
 }
 
+int RenderBox::calcImplicitHeight() const {
+    assert(hasImplicitHeight());
+
+    RenderBlock* cb = containingBlock();
+    // padding-box height
+    int ch = cb->height() - cb->borderTop() + cb->borderBottom();
+    int top = style()->top().width(ch);
+    int bottom = style()->bottom().width(ch);
+
+    return ch - top - bottom;
+}
+
 int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) const
 {
     int result = -1;
@@ -1024,6 +1050,10 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         // IE quirk.
         result = cb->calcPercentageHeight(cb->style()->height(), treatAsReplaced);
     }
+    else if (cb->hasImplicitHeight()) {
+        result = cb->calcImplicitHeight();
+    }
+
     if (result != -1) {
         result = height.width(result);
         if (cb->isTableCell() && style()->boxSizing() != BORDER_BOX) {
@@ -1143,6 +1173,10 @@ int RenderBox::availableHeightUsing(const Length& h) const
     if (h.isPercent())
        return calcContentHeight(h.width(containingBlock()->availableHeight()));
 
+    // Check for implicit height 
+    if (hasImplicitHeight())
+        return calcImplicitHeight();
+
     return containingBlock()->availableHeight();
 }
 
@@ -1176,398 +1210,837 @@ void RenderBox::setStaticY(int staticY)
     m_staticY = staticY;
 }
 
+
 void RenderBox::calcAbsoluteHorizontal()
 {
-    const int AUTO = -666666;
-    int l, r, cw;
-
-    RenderObject* cb = container();
-    int pab = (style()->boxSizing() == BORDER_BOX) ? 0 :
-        borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
-
-    l = r = AUTO;
-    cw = containingBlockWidth() + cb->paddingLeft() + cb->paddingRight();
-
-    if (!style()->left().isVariable())
-        l = style()->left().width(cw);
-    if (!style()->right().isVariable())
-        r = style()->right().width(cw);
-
-    int static_distance=0;
-    if (parent()->style()->direction()==LTR && (l==AUTO && r==AUTO ))
-    {
-        // calc hypothetical location in the normal flow
-        // used for 1) left=static-position
-        //          2) left, right, width are all auto -> calc top -> 3.
-        //          3) precalc for case 2 below
-
-        // all positioned elements are blocks, so that
-        // would be at the left edge
-
-        RenderObject* po = parent();
-        static_distance = m_staticX - cb->borderLeft(); // Should already have been set through layout of the parent().
-        for (; po && po != cb; po = po->parent())
-            static_distance += po->xPos();
-
-        l = static_distance;
+   if (isReplaced()) {
+        calcAbsoluteHorizontalReplaced();
+        return; 
     }
 
-    else if (parent()->style()->direction()==RTL && (l==AUTO && r==AUTO ))
-    {
-        RenderObject* po = parent();
-        static_distance = m_staticX + cw + cb->borderRight() - po->width(); // Should already have been set through layout of the parent().
-        for (; po && po != cb; po = po->parent())
-            static_distance -= po->xPos();
+    // QUESTIONS
+    // FIXME 1: Which RenderObject's 'direction' property should used: the
+    // containing block (cb) as the spec seems to imply, the parent (parent()) as
+    // was previously done in calculating the static distances, or ourself, which
+    // was also previously done for deciding what to override when you had
+    // over-constrained margins?  Also note that the container block is used
+    // in similar situations in other parts of the RenderBox class (see calcWidth()
+    // and calcHorizontalMargins()). For now we are using the parent for quirks
+    // mode and the containing block for strict mode.
 
-        r = static_distance;
+    // FIXME 2: Should we still deal with these the cases of 'left' or 'right' having
+    // the type 'static' in determining whether to calculate the static distance?
+    // NOTE: 'static' is not a legal value for 'left' or 'right' as of CSS 2.1.
+
+    // FIXME 3: Can perhaps optimize out cases when max-width/min-width are greater
+    // than or less than the computed m_width.  Be careful of box-sizing and
+    // percentage issues.
+
+    // The following is based off of the W3C Working Draft from April 11, 2006 of
+    // CSS 2.1: Section 10.3.7 "Absolutely positioned, non-replaced elements"
+    // <http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width>
+    // (block-style-comments in this function and in calcAbsoluteHorizontalValues()
+    // correspond to text from the spec)
+
+
+    // We don't use containingBlock(), since we may be positioned by an enclosing
+    // relative positioned inline.
+    const RenderObject* containerBlock = container();
+
+    // FIXME: This is incorrect for cases where the container block is a relatively
+    // positioned inline.
+    const int containerWidth = containingBlockWidth() + containerBlock->paddingLeft() + containerBlock->paddingRight();
+
+    // To match WinIE, in quirks mode use the parent's 'direction' property
+    // instead of the the container block's.
+    EDirection containerDirection = (style()->htmlHacks()) ? parent()->style()->direction() : containerBlock->style()->direction();
+
+    const int bordersPlusPadding = borderLeft() + borderRight() + paddingLeft() + paddingRight();
+    const Length marginLeft = style()->marginLeft();
+    const Length marginRight = style()->marginRight();
+    Length left = style()->left();
+    Length right = style()->right();
+
+    /*---------------------------------------------------------------------------*\
+     * For the purposes of this section and the next, the term "static position"
+     * (of an element) refers, roughly, to the position an element would have had
+     * in the normal flow. More precisely:
+     *
+     * * The static position for 'left' is the distance from the left edge of the
+     *   containing block to the left margin edge of a hypothetical box that would
+     *   have been the first box of the element if its 'position' property had
+     *   been 'static' and 'float' had been 'none'. The value is negative if the
+     *   hypothetical box is to the left of the containing block.
+     * * The static position for 'right' is the distance from the right edge of the
+     *   containing block to the right margin edge of the same hypothetical box as
+     *   above. The value is positive if the hypothetical box is to the left of the
+     *   containing block's edge.
+     *
+     * But rather than actually calculating the dimensions of that hypothetical box,
+     * user agents are free to make a guess at its probable position.
+     *
+     * For the purposes of calculating the static position, the containing block of
+     * fixed positioned elements is the initial containing block instead of the
+     * viewport, and all scrollable boxes should be assumed to be scrolled to their
+     * origin.
+    \*---------------------------------------------------------------------------*/
+
+    // see FIXME 2
+    // Calculate the static distance if needed.
+    if (left.isVariable() && right.isVariable()) {
+        if (containerDirection == LTR) {
+            // 'm_staticX' should already have been set through layout of the parent.
+            int staticPosition = m_staticX - containerBlock->borderLeft();
+            for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent())
+                staticPosition += po->xPos();
+            left = Length(staticPosition, Fixed);
+        } else {
+            RenderObject* po = parent();
+            // 'm_staticX' should already have been set through layout of the parent.
+            int staticPosition = m_staticX + containerWidth + containerBlock->borderRight() - po->width();
+            for (; po && po != containerBlock; po = po->parent())
+                staticPosition -= po->xPos();
+            right = Length(staticPosition, Fixed);
+        }
     }
 
-    int w = m_width, ml, mr, x;
-    calcAbsoluteHorizontalValues(Width, cb, cw, pab, static_distance, l, r, w, ml, mr, x);
+    // Calculate constraint equation values for 'width' case.
+    calcAbsoluteHorizontalValues(style()->width(), containerBlock, containerDirection,
+                                 containerWidth, bordersPlusPadding,
+                                 left, right, marginLeft, marginRight,
+                                 m_width, m_marginLeft, m_marginRight, m_x);
+    // Calculate constraint equation values for 'max-width' case.calcContentWidth(width.width(containerWidth));
+    if (style()->maxWidth().value() != UNDEFINED) {
+        short maxWidth;
+        short maxMarginLeft;
+        short maxMarginRight;
+        short maxXPos;
 
-    m_width = w;
-    m_marginLeft = ml;
-    m_marginRight = mr;
-    m_x = x;
+        calcAbsoluteHorizontalValues(style()->maxWidth(), containerBlock, containerDirection,
+                                     containerWidth, bordersPlusPadding,
+                                     left, right, marginLeft, marginRight,
+                                     maxWidth, maxMarginLeft, maxMarginRight, maxXPos);
 
-    // Avoid doing any work in the common case (where the values of min-width and max-width are their defaults).
-    int minW = m_width, minML, minMR, minX;
-    calcAbsoluteHorizontalValues(MinWidth, cb, cw, pab, static_distance, l, r, minW, minML, minMR, minX);
-
-    int maxW = m_width, maxML, maxMR, maxX;
-    if (style()->maxWidth().value() != UNDEFINED)
-        calcAbsoluteHorizontalValues(MaxWidth, cb, cw, static_distance, pab, l, r, maxW, maxML, maxMR, maxX);
-
-    if (m_width > maxW) {
-        m_width = maxW;
-        m_marginLeft = maxML;
-        m_marginRight = maxMR;
-        m_x = maxX;
+        if (m_width > maxWidth) {
+            m_width = maxWidth;
+            m_marginLeft = maxMarginLeft;
+            m_marginRight = maxMarginRight;
+            m_x = maxXPos;
+        }
     }
 
-    if (m_width < minW) {
-        m_width = minW;
-        m_marginLeft = minML;
-        m_marginRight = minMR;
-        m_x = minX;
+    // Calculate constraint equation values for 'min-width' case.
+    if (style()->minWidth().value()) {
+        short minWidth;
+        short minMarginLeft;
+        short minMarginRight;
+        short minXPos;
+
+        calcAbsoluteHorizontalValues(style()->minWidth(), containerBlock, containerDirection, 
+                                     containerWidth, bordersPlusPadding,
+                                     left, right, marginLeft, marginRight,
+                                     minWidth, minMarginLeft, minMarginRight, minXPos);
+
+        if (m_width < minWidth) {
+            m_width = minWidth;
+            m_marginLeft = minMarginLeft;
+            m_marginRight = minMarginRight;
+            m_x = minXPos;
+        }
     }
+
+    // Put m_width into correct form.
+    m_width += bordersPlusPadding;
 }
 
-void RenderBox::calcAbsoluteHorizontalValues(WidthType widthType, RenderObject* cb, int cw, int pab, int static_distance,
-                                             int l, int r, int& w, int& ml, int& mr, int& x)
+void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* containerBlock, EDirection containerDirection,
+                                             const int containerWidth, const int bordersPlusPadding,
+                                             const Length left, const Length right, const Length marginLeft, const Length marginRight,
+                                             short& widthValue, short& marginLeftValue, short& marginRightValue, short& xPos)
 {
-    const int AUTO = -666666;
+    // 'left' and 'right' cannot both be 'auto' because one would of been
+    // converted to the static postion already
+    assert(!(left.isVariable() && right.isVariable()));
 
-    w = ml = mr = AUTO;
+    int leftValue = 0;
 
-    if (!style()->marginLeft().isVariable())
-        ml = style()->marginLeft().width(cw);
-    if (!style()->marginRight().isVariable())
-        mr = style()->marginRight().width(cw);
+    bool widthIsAuto = width.isVariable();
+    bool leftIsAuto = left.isVariable();
+    bool rightIsAuto = right.isVariable();
 
-    Length width;
-    if (widthType == Width)
-        width = style()->width();
-    else if (widthType == MinWidth)
-        width = style()->minWidth();
-    else
-        width = style()->maxWidth();
+    if (!leftIsAuto && !widthIsAuto && !rightIsAuto) {
+        /*-----------------------------------------------------------------------*\
+         * If none of the three is 'auto': If both 'margin-left' and 'margin-
+         * right' are 'auto', solve the equation under the extra constraint that
+         * the two margins get equal values, unless this would make them negative,
+         * in which case when direction of the containing block is 'ltr' ('rtl'),
+         * set 'margin-left' ('margin-right') to zero and solve for 'margin-right'
+         * ('margin-left'). If one of 'margin-left' or 'margin-right' is 'auto',
+         * solve the equation for that value. If the values are over-constrained,
+         * ignore the value for 'left' (in case the 'direction' property of the
+         * containing block is 'rtl') or 'right' (in case 'direction' is 'ltr')
+         * and solve for that value.
+        \*-----------------------------------------------------------------------*/
+        // NOTE:  It is not necessary to solve for 'right' in the over constrained
+        // case because the value is not used for any further calculations.
 
-    if (!width.isVariable())
-        w = width.width(cw);
-    else if (isReplaced())
-        w = intrinsicWidth();
+        leftValue = left.width(containerWidth);
+        widthValue = calcContentWidth(width.width(containerWidth));
 
-    if (l != AUTO && w != AUTO && r != AUTO) {
-        // left, width, right all given, play with margins
-        int ot = l + w + r + pab;
+        const int availableSpace = containerWidth - (leftValue + widthValue + right.width(containerWidth) + bordersPlusPadding);
 
-        if (ml==AUTO && mr==AUTO)
-        {
-            // both margins auto, solve for equality
-            ml = (cw - ot)/2;
-            mr = cw - ot - ml;
+        // Margins are now the only unknown
+        if (marginLeft.isVariable() && marginRight.isVariable()) {
+            // Both margins auto, solve for equality
+            if (availableSpace >= 0) {
+                marginLeftValue = availableSpace / 2; // split the diference
+                marginRightValue = availableSpace - marginLeftValue;  // account for odd valued differences
+            } else {
+                // see FIXME 1
+                if (containerDirection == LTR) {
+                    marginLeftValue = 0;
+                    marginRightValue = availableSpace; // will be negative
+                } else {
+                    marginLeftValue = availableSpace; // will be negative
+                    marginRightValue = 0;
+                }
+            }
+        } else if (marginLeft.isVariable()) {
+            // Solve for left margin
+            marginRightValue = marginRight.width(containerWidth);
+            marginLeftValue = availableSpace - marginRightValue;
+        } else if (marginRight.isVariable()) {
+            // Solve for right margin
+            marginLeftValue = marginLeft.width(containerWidth);
+            marginRightValue = availableSpace - marginLeftValue;
+        } else {
+            // Over-constrained, solve for left if direction is RTL
+            marginLeftValue = marginLeft.width(containerWidth);
+            marginRightValue = marginRight.width(containerWidth);
+
+            // see FIXME 1 -- used to be "this->style()->direction()"
+            if (containerDirection == RTL)
+                leftValue = (availableSpace + leftValue) - marginLeftValue - marginRightValue;
         }
-        else if (ml==AUTO)
-            // solve for left margin
-            ml = cw - ot - mr;
-        else if (mr==AUTO)
-            // solve for right margin
-            mr = cw - ot - ml;
-        else
-        {
-            // overconstrained, solve according to dir
-            if (style()->direction()==LTR)
-                r = cw - ( l + w + ml + mr + pab);
-            else
-                l = cw - ( r + w + ml + mr + pab);
+    } else {
+        /*--------------------------------------------------------------------*\
+         * Otherwise, set 'auto' values for 'margin-left' and 'margin-right'
+         * to 0, and pick the one of the following six rules that applies.
+         *
+         * 1. 'left' and 'width' are 'auto' and 'right' is not 'auto', then the
+         *    width is shrink-to-fit. Then solve for 'left'
+         *
+         *              OMIT RULE 2 AS IT SHOULD NEVER BE HIT
+         * ------------------------------------------------------------------
+         * 2. 'left' and 'right' are 'auto' and 'width' is not 'auto', then if
+         *    the 'direction' property of the containing block is 'ltr' set
+         *    'left' to the static position, otherwise set 'right' to the
+         *    static position. Then solve for 'left' (if 'direction is 'rtl')
+         *    or 'right' (if 'direction' is 'ltr').
+         * ------------------------------------------------------------------
+         *
+         * 3. 'width' and 'right' are 'auto' and 'left' is not 'auto', then the
+         *    width is shrink-to-fit . Then solve for 'right'
+         * 4. 'left' is 'auto', 'width' and 'right' are not 'auto', then solve
+         *    for 'left'
+         * 5. 'width' is 'auto', 'left' and 'right' are not 'auto', then solve
+         *    for 'width'
+         * 6. 'right' is 'auto', 'left' and 'width' are not 'auto', then solve
+         *    for 'right'
+         *
+         * Calculation of the shrink-to-fit width is similar to calculating the
+         * width of a table cell using the automatic table layout algorithm.
+         * Roughly: calculate the preferred width by formatting the content
+         * without breaking lines other than where explicit line breaks occur,
+         * and also calculate the preferred minimum width, e.g., by trying all
+         * possible line breaks. CSS 2.1 does not define the exact algorithm.
+         * Thirdly, calculate the available width: this is found by solving
+         * for 'width' after setting 'left' (in case 1) or 'right' (in case 3)
+         * to 0.
+         *
+         * Then the shrink-to-fit width is:
+         * min(max(preferred minimum width, available width), preferred width).
+        \*--------------------------------------------------------------------*/
+        // NOTE: For rules 3 and 6 it is not necessary to solve for 'right'
+        // because the value is not used for any further calculations.
+
+        // Calculate margins, 'auto' margins are ignored.
+        marginLeftValue = marginLeft.minWidth(containerWidth);
+        marginRightValue = marginRight.minWidth(containerWidth);
+
+        const int availableSpace = containerWidth - (marginLeftValue + marginRightValue + bordersPlusPadding);
+
+        // FIXME: Is there a faster way to find the correct case?
+        // Use rule/case that applies.
+        if (leftIsAuto && widthIsAuto && !rightIsAuto) {
+            // RULE 1: (use shrink-to-fit for width, and solve of left)
+            int rightValue = right.width(containerWidth);
+
+            // FIXME: would it be better to have shrink-to-fit in one step?
+            int preferredWidth = m_maxWidth - bordersPlusPadding;
+            int preferredMinWidth = m_minWidth - bordersPlusPadding;
+            int availableWidth = availableSpace - rightValue;
+            widthValue = qMin(qMax(preferredMinWidth, availableWidth), preferredWidth);
+            leftValue = availableSpace - (widthValue + rightValue);
+        } else if (!leftIsAuto && widthIsAuto && rightIsAuto) {
+            // RULE 3: (use shrink-to-fit for width, and no need solve of right)
+            leftValue = left.width(containerWidth);
+
+            // FIXME: would it be better to have shrink-to-fit in one step?
+            int preferredWidth = m_maxWidth - bordersPlusPadding;
+            int preferredMinWidth = m_minWidth - bordersPlusPadding;
+            int availableWidth = availableSpace - leftValue;
+            widthValue = qMin(qMax(preferredMinWidth, availableWidth), preferredWidth);
+        } else if (leftIsAuto && !width.isVariable() && !rightIsAuto) {
+            // RULE 4: (solve for left)
+            widthValue = calcContentWidth(width.width(containerWidth));
+            leftValue = availableSpace - (widthValue + right.width(containerWidth));
+        } else if (!leftIsAuto && widthIsAuto && !rightIsAuto) {
+            // RULE 5: (solve for width)
+            leftValue = left.width(containerWidth);
+            widthValue = availableSpace - (leftValue + right.width(containerWidth));
+        } else if (!leftIsAuto&& !widthIsAuto && rightIsAuto) {
+            // RULE 6: (no need solve for right)
+            leftValue = left.width(containerWidth);
+            widthValue = calcContentWidth(width.width(containerWidth));
         }
     }
-    else
-    {
-        // one or two of (left, width, right) missing, solve
 
-        // auto margins are ignored
-        if (ml==AUTO) ml = 0;
-        if (mr==AUTO) mr = 0;
-
-        //1. solve left & width.
-        if (l==AUTO && w==AUTO && r!=AUTO) {
-            w = qMin(qMax(m_minWidth - pab, cw - (r + ml + mr + pab)), m_maxWidth - pab);
-            l = cw - ( r + w + ml + mr + pab);
-        }
-        else
-        //2. solve left & right. use static positioning.
-        if (l==AUTO && w!=AUTO && r==AUTO) {
-            if (style()->direction()==RTL) {
-                r = static_distance;
-                l = cw - ( r + w + ml + mr + pab);
-            }
-            else {
-                l = static_distance;
-                r = cw - ( l + w + ml + mr + pab);
-            }
-        }
-        else
-        //3. solve width & right.
-        if (l!=AUTO && w==AUTO && r==AUTO) {
-            w = qMin(qMax(m_minWidth - pab, cw - (l + ml + mr + pab)), m_maxWidth - pab);
-            r = cw - ( l + w + ml + mr + pab);
-        }
-        else
-
-        //4. solve left
-        if (l==AUTO && w!=AUTO && r!=AUTO)
-            l = cw - ( r + w + ml + mr + pab);
-        else
-
-        //5. solve width
-        if (l!=AUTO && w==AUTO && r!=AUTO)
-            w = cw - ( r + l + ml + mr + pab);
-        else
-
-        //6. solve right
-        if (l!=AUTO && w!=AUTO && r==AUTO)
-            r = cw - ( l + w + ml + mr + pab);
-    }
-
-    w += pab;
-    x = l + ml + cb->borderLeft();
+    // Use computed values to calculate the horizontal position.
+    xPos = leftValue + marginLeftValue + containerBlock->borderLeft();
 }
-
 
 void RenderBox::calcAbsoluteVertical()
 {
-    // css2 spec 10.6.4 & 10.6.5
-
-    // based on
-    // http://www.w3.org/Style/css2-updates/REC-CSS2-19980512-errata
-    // (actually updated 2000-10-24)
-    // that introduces static-position value for top, left & right
-
-    const int AUTO = -666666;
-    int t, b, ch;
-
-    t = b = AUTO;
-
-    int pab = (style()->boxSizing() == BORDER_BOX) ? 0 :
-        borderTop()+borderBottom()+paddingTop()+paddingBottom();
-
-    RenderObject* cb = container();
-
-    Length hl = cb->style()->height();
-    if (hl.isFixed()) {
-        if (cb->style()->boxSizing() == BORDER_BOX)
-            ch = qMax(0, hl.value() - cb->borderTop() - cb->borderBottom());
-        else
-            ch = hl.value() + cb->paddingTop() + cb->paddingBottom();
-    }
-    else if (cb->isCanvas() || cb->isRoot())
-        ch = cb->availableHeight();
-    else
-        ch = cb->height() - cb->borderTop() - cb->borderBottom();
-
-
-    if(!style()->top().isVariable())
-        t = style()->top().width(ch);
-    if(!style()->bottom().isVariable())
-        b = style()->bottom().width(ch);
-
-    int h, mt, mb, y;
-    calcAbsoluteVerticalValues(Height, cb, ch, pab, t, b, h, mt, mb, y);
-
-    // Avoid doing any work in the common case (where the values of min-height and max-height are their defaults).
-    int minH = h, minMT, minMB, minY;
-    calcAbsoluteVerticalValues(MinHeight, cb, ch, pab, t, b, minH, minMT, minMB, minY);
-
-    int maxH = h, maxMT, maxMB, maxY;
-    if (style()->maxHeight().value() != UNDEFINED)
-        calcAbsoluteVerticalValues(MaxHeight, cb, ch, pab, t, b, maxH, maxMT, maxMB, maxY);
-
-    if (h > maxH) {
-        h = maxH;
-        mt = maxMT;
-        mb = maxMB;
-        y = maxY;
+    if (isReplaced()) {
+        calcAbsoluteVerticalReplaced();
+        return;
     }
 
-    if (h < minH) {
-        h = minH;
-        mt = minMT;
-        mb = minMB;
-        y = minY;
+    // The following is based off of the W3C Working Draft from April 11, 2006 of
+    // CSS 2.1: Section 10.6.4 "Absolutely positioned, non-replaced elements"
+    // <http://www.w3.org/TR/2005/WD-CSS21-20050613/visudet.html#abs-non-replaced-height>
+    // (block-style-comments in this function and in calcAbsoluteVerticalValues()
+    // correspond to text from the spec)
+
+
+    // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
+    const RenderObject* containerBlock = container();
+
+    // Even in strict mode (where we don't grow the root to fill the viewport) other browsers
+    // position as though the root fills the viewport.
+    const int containerHeight = containerBlock->isRoot() ? containerBlock->availableHeight() : (containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom());
+    
+    const int bordersPlusPadding = borderTop() + borderBottom() + paddingTop() + paddingBottom();
+    const Length marginTop = style()->marginTop();
+    const Length marginBottom = style()->marginBottom();
+    Length top = style()->top();
+    Length bottom = style()->bottom();
+
+    /*---------------------------------------------------------------------------*\
+     * For the purposes of this section and the next, the term "static position"
+     * (of an element) refers, roughly, to the position an element would have had
+     * in the normal flow. More precisely, the static position for 'top' is the
+     * distance from the top edge of the containing block to the top margin edge
+     * of a hypothetical box that would have been the first box of the element if
+     * its 'position' property had been 'static' and 'float' had been 'none'. The
+     * value is negative if the hypothetical box is above the containing block.
+     *
+     * But rather than actually calculating the dimensions of that hypothetical
+     * box, user agents are free to make a guess at its probable position.
+     *
+     * For the purposes of calculating the static position, the containing block
+     * of fixed positioned elements is the initial containing block instead of
+     * the viewport.
+    \*---------------------------------------------------------------------------*/
+
+    // see FIXME 2
+    // Calculate the static distance if needed.
+    if (top.isVariable() && bottom.isVariable()) {
+        // m_staticY should already have been set through layout of the parent()
+        int staticTop = m_staticY - containerBlock->borderTop();
+        for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent()) {
+            if (!po->isTableRow())
+                staticTop += po->yPos();
+        }
+        top.setValue(Fixed, staticTop);
     }
 
-#ifdef APPLE_CHANGES
-    // If our natural height exceeds the new height once we've set it, then we need to make sure to update
-    // overflow to track the spillout.
-    if (m_height > h)
-        setOverflowHeight(m_height);
-#endif
 
-    // Set our final values.
-    m_height = h;
-    m_marginTop = mt;
-    m_marginBottom = mb;
-    m_y = y;
+    int height; // Needed to compute overflow.
+
+    // Calculate constraint equation values for 'height' case.
+    calcAbsoluteVerticalValues(style()->height(), containerBlock, containerHeight, bordersPlusPadding,
+                               top, bottom, marginTop, marginBottom,
+                               height, m_marginTop, m_marginBottom, m_y);
+
+    // Avoid doing any work in the common case (where the values of min-height and max-height are their defaults).    
+    // see FIXME 3
+
+    // Calculate constraint equation values for 'max-height' case.
+    if (style()->maxHeight().value() != UNDEFINED) {
+        int maxHeight;
+        short maxMarginTop;
+        short maxMarginBottom;
+        int maxYPos;
+
+        calcAbsoluteVerticalValues(style()->maxHeight(), containerBlock, containerHeight, bordersPlusPadding,
+                                   top, bottom, marginTop, marginBottom,
+                                   maxHeight, maxMarginTop, maxMarginBottom, maxYPos);
+
+        if (height > maxHeight) {
+            height = maxHeight;
+            m_marginTop = maxMarginTop;
+            m_marginBottom = maxMarginBottom;
+            m_y = maxYPos;
+        }
+    }
+
+    // Calculate constraint equation values for 'min-height' case.
+    if (style()->minHeight().value()) {
+        int minHeight;
+        short minMarginTop;
+        short minMarginBottom;
+        int minYPos;
+
+        calcAbsoluteVerticalValues(style()->minHeight(), containerBlock, containerHeight, bordersPlusPadding,
+                                   top, bottom, marginTop, marginBottom,
+                                   minHeight, minMarginTop, minMarginBottom, minYPos);
+
+        if (height < minHeight) {
+            height = minHeight;
+            m_marginTop = minMarginTop;
+            m_marginBottom = minMarginBottom;
+            m_y = minYPos;
+        }
+    }
+
+    height += bordersPlusPadding;
+
+    // If our natural/content height exceeds the new height once we've set it, then we
+    // need to make sure to update overflow to track the spillout.
+    if (m_height > height && isRenderBlock())
+        static_cast<RenderBlock*>(this)->setOverflowHeight(m_height);
+    // Set final height value.
+    m_height = height;
 }
 
-void RenderBox::calcAbsoluteVerticalValues(HeightType heightType, RenderObject* cb, int ch, int pab,
-                                           int t, int b, int& h, int& mt, int& mb, int& y)
+void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* containerBlock,
+                                           const int containerHeight, const int bordersPlusPadding,
+                                           const Length top, const Length bottom, const Length marginTop, const Length marginBottom,
+                                           int& heightValue, short& marginTopValue, short& marginBottomValue, int& yPos)
 {
-    const int AUTO = -666666;
-    h = mt = mb = AUTO;
+    // 'top' and 'bottom' cannot both be 'auto' because 'top would of been
+    // converted to the static position in calcAbsoluteVertical()
+    assert(!(top.isVariable() && bottom.isVariable()));
 
-    if (!style()->marginTop().isVariable())
-        mt = style()->marginTop().width(ch);
-    if (!style()->marginBottom().isVariable())
-        mb = style()->marginBottom().width(ch);
+    int contentHeight = m_height - bordersPlusPadding;    
 
-    Length height;
-    if (heightType == Height)
-        height = style()->height();
-    else if (heightType == MinHeight)
-        height = style()->minHeight();
-    else
-        height = style()->maxHeight();
+    int topValue = 0;
 
-    int ourHeight = m_height;
+    bool heightIsAuto = height.isVariable();
+    bool topIsAuto = top.isVariable();
+    bool bottomIsAuto = bottom.isVariable();
 
-    if (isTable() && height.isVariable())
-         // Height is never unsolved for tables. "auto" means shrink to fit.  Use our
-         // height instead.
-        h = ourHeight - pab;
-    else if (!height.isVariable())
-    {
-        h = height.width(ch);
-        if (ourHeight - pab > h) {
-            if (!isTable())
-                ourHeight = h + pab;
-            else
-                h = ourHeight - pab;
-        }
-    }
-    else if (isReplaced())
-        h = intrinsicHeight();
-
-    int static_top=0;
-    if (t==AUTO && b==AUTO)
-    {
-        // calc hypothetical location in the normal flow
-        // used for 1) top=static-position
-        //          2) top, bottom, height are all auto -> calc top -> 3.
-        //          3) precalc for case 2 below
-        static_top = m_staticY -cb->borderTop(); // Should already have been set through layout of the parent().
-        RenderObject* po = parent();
-        for (; po && po != cb; po = po->parent())
-            static_top += po->yPos();
-
-        if (h==AUTO)
-            t = static_top;
+    // Height is never unsolved for tables.
+    if (isTable() && heightIsAuto) {
+        height.setValue(Fixed, contentHeight);
+        heightIsAuto = false;
     }
 
-    if (t!=AUTO && h!=AUTO && b!=AUTO)
-    {
-        // top, height, bottom all given, play with margins
-        int ot = h + t + b + pab;
+    if (!topIsAuto && !heightIsAuto && !bottomIsAuto) {
+        /*-----------------------------------------------------------------------*\
+         * If none of the three are 'auto': If both 'margin-top' and 'margin-
+         * bottom' are 'auto', solve the equation under the extra constraint that
+         * the two margins get equal values. If one of 'margin-top' or 'margin-
+         * bottom' is 'auto', solve the equation for that value. If the values
+         * are over-constrained, ignore the value for 'bottom' and solve for that
+         * value.
+        \*-----------------------------------------------------------------------*/
+        // NOTE:  It is not necessary to solve for 'bottom' in the over constrained
+        // case because the value is not used for any further calculations.
 
-        if (mt==AUTO && mb==AUTO)
-        {
-            // both margins auto, solve for equality
-            mt = (ch - ot)/2;
-            mb = ch - ot - mt;
+        heightValue = calcContentHeight(height.width(containerHeight));
+        topValue = top.width(containerHeight);
+
+        const int availableSpace = containerHeight - (topValue + heightValue + bottom.width(containerHeight) + bordersPlusPadding);
+
+        // Margins are now the only unknown
+        if (marginTop.isVariable() && marginBottom.isVariable()) {
+            // Both margins auto, solve for equality
+            // NOTE: This may result in negative values.
+            marginTopValue = availableSpace / 2; // split the diference
+            marginBottomValue = availableSpace - marginTopValue; // account for odd valued differences
+        } else if (marginTop.isVariable()) {
+            // Solve for top margin
+            marginBottomValue = marginBottom.width(containerHeight);
+            marginTopValue = availableSpace - marginBottomValue;
+        } else if (marginBottom.isVariable()) {
+            // Solve for bottom margin
+            marginTopValue = marginTop.width(containerHeight);
+            marginBottomValue = availableSpace - marginTopValue;
+        } else {
+            // Over-constrained, (no need solve for bottom)
+            marginTopValue = marginTop.width(containerHeight);
+            marginBottomValue = marginBottom.width(containerHeight);
         }
-        else if (mt==AUTO)
-            // solve for top margin
-            mt = ch - ot - mb;
-        else if (mb==AUTO)
-            // solve for bottom margin
-            mb = ch - ot - mt;
-        else
-            // overconstrained, solve for bottom
-            b = ch - ( h+t+mt+mb+pab);
+    } else {
+        /*--------------------------------------------------------------------*\
+         * Otherwise, set 'auto' values for 'margin-top' and 'margin-bottom'
+         * to 0, and pick the one of the following six rules that applies.
+         *
+         * 1. 'top' and 'height' are 'auto' and 'bottom' is not 'auto', then 
+         *    the height is based on the content, and solve for 'top'.
+         *
+         *              OMIT RULE 2 AS IT SHOULD NEVER BE HIT
+         * ------------------------------------------------------------------
+         * 2. 'top' and 'bottom' are 'auto' and 'height' is not 'auto', then
+         *    set 'top' to the static position, and solve for 'bottom'.
+         * ------------------------------------------------------------------
+         *
+         * 3. 'height' and 'bottom' are 'auto' and 'top' is not 'auto', then
+         *    the height is based on the content, and solve for 'bottom'.
+         * 4. 'top' is 'auto', 'height' and 'bottom' are not 'auto', and
+         *    solve for 'top'.
+         * 5. 'height' is 'auto', 'top' and 'bottom' are not 'auto', and
+         *    solve for 'height'.
+         * 6. 'bottom' is 'auto', 'top' and 'height' are not 'auto', and
+         *    solve for 'bottom'.
+        \*--------------------------------------------------------------------*/
+        // NOTE: For rules 3 and 6 it is not necessary to solve for 'bottom'
+        // because the value is not used for any further calculations.
+
+        // Calculate margins, 'auto' margins are ignored.
+        marginTopValue = marginTop.minWidth(containerHeight);
+        marginBottomValue = marginBottom.minWidth(containerHeight);
+
+        const int availableSpace = containerHeight - (marginTopValue + marginBottomValue + bordersPlusPadding);
+
+        // Use rule/case that applies.
+        if (topIsAuto && heightIsAuto && !bottomIsAuto) {
+            // RULE 1: (height is content based, solve of top)
+            heightValue = contentHeight;
+            topValue = availableSpace - (heightValue + bottom.width(containerHeight));
+        } else if (!topIsAuto && heightIsAuto && bottomIsAuto) {
+            // RULE 3: (height is content based, no need solve of bottom)
+            topValue = top.width(containerHeight);
+            heightValue = contentHeight;
+        } else if (topIsAuto && !heightIsAuto && !bottomIsAuto) {
+            // RULE 4: (solve of top)
+            heightValue = calcContentHeight(height.width(containerHeight));
+            topValue = availableSpace - (heightValue + bottom.width(containerHeight));
+        } else if (!topIsAuto && heightIsAuto && !bottomIsAuto) {
+            // RULE 5: (solve of height)
+            topValue = top.width(containerHeight);
+            heightValue = qMax(0, availableSpace - (topValue + bottom.width(containerHeight)));
+        } else if (!topIsAuto && !heightIsAuto && bottomIsAuto) {
+            // RULE 6: (no need solve of bottom)
+            heightValue = calcContentHeight(height.width(containerHeight));
+            topValue = top.width(containerHeight);
+        }
     }
-    else
-    {
-        // one or two of (top, height, bottom) missing, solve
 
-        // auto margins are ignored
-        if (mt==AUTO) mt = 0;
-        if (mb==AUTO) mb = 0;
-
-        //1. solve top & height. use content height.
-        if (t==AUTO && h==AUTO && b!=AUTO)
-        {
-            h = ourHeight - pab;
-            t = ch - ( h+b+mt+mb+pab);
-        }
-        else
-
-        //2. solve top & bottom. use static positioning.
-        if (t==AUTO && h!=AUTO && b==AUTO)
-        {
-            t = static_top;
-            b = ch - ( h+t+mt+mb+pab);
-        }
-        else
-
-        //3. solve height & bottom. use content height.
-        if (t!=AUTO && h==AUTO && b==AUTO)
-        {
-            h = ourHeight - pab;
-            b = ch - ( h+t+mt+mb+pab);
-        }
-        else
-
-        //4. solve top
-        if (t==AUTO && h!=AUTO && b!=AUTO)
-            t = ch - ( h+b+mt+mb+pab);
-        else
-
-        //5. solve height
-        if (t!=AUTO && h==AUTO && b!=AUTO)
-            h = ch - ( t+b+mt+mb+pab);
-        else
-
-        //6. solve bottom
-        if (t!=AUTO && h!=AUTO && b==AUTO)
-            b = ch - ( h+t+mt+mb+pab);
-    }
-
-    if (ourHeight < h + pab) //content must still fit
-        ourHeight = h + pab;
-
-    if (hasOverflowClip() && ourHeight > h + pab)
-        ourHeight = h + pab;
-
-     // Do not allow the height to be negative.  This can happen when someone specifies both top and bottom
-     // but the containing block height is less than top, e.g., top:20px, bottom:0, containing block height 16.
-    ourHeight = qMax(0, ourHeight);
-
-    h = ourHeight;
-    y = t + mt + cb->borderTop();
+    // Use computed values to calculate the vertical position.
+    yPos = topValue + marginTopValue + containerBlock->borderTop();
 }
 
+void RenderBox::calcAbsoluteHorizontalReplaced()
+{   
+    // The following is based off of the W3C Working Draft from April 11, 2006 of
+    // CSS 2.1: Section 10.3.8 "Absolutly positioned, replaced elements"
+    // <http://www.w3.org/TR/2005/WD-CSS21-20050613/visudet.html#abs-replaced-width>
+    // (block-style-comments in this function correspond to text from the spec and
+    // the numbers correspond to numbers in spec)
+
+    // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
+    const RenderObject* containerBlock = container();
+
+    // FIXME: This is incorrect for cases where the container block is a relatively
+    // positioned inline.
+    const int containerWidth = containingBlockWidth() + containerBlock->paddingLeft() + containerBlock->paddingRight();
+    
+    // To match WinIE, in quirks mode use the parent's 'direction' property 
+    // instead of the the container block's.
+    EDirection containerDirection = (style()->htmlHacks()) ? parent()->style()->direction() : containerBlock->style()->direction();
+
+    // Variables to solve.
+    Length left = style()->left();
+    Length right = style()->right();
+    Length marginLeft = style()->marginLeft();
+    Length marginRight = style()->marginRight();
+
+
+    /*-----------------------------------------------------------------------*\
+     * 1. The used value of 'width' is determined as for inline replaced
+     *    elements.
+    \*-----------------------------------------------------------------------*/
+    // NOTE: This value of width is FINAL in that the min/max width calculations
+    // are dealt with in calcReplacedWidth().  This means that the steps to produce
+    // correct max/min in the non-replaced version, are not necessary.
+    m_width = calcReplacedWidth() + borderLeft() + borderRight() + paddingLeft() + paddingRight();
+    const int availableSpace = containerWidth - m_width;
+
+    /*-----------------------------------------------------------------------*\
+     * 2. If both 'left' and 'right' have the value 'auto', then if 'direction'
+     *    of the containing block is 'ltr', set 'left' to the static position;
+     *    else if 'direction' is 'rtl', set 'right' to the static position.
+    \*-----------------------------------------------------------------------*/
+    // see FIXME 2
+    if (left.isVariable() && right.isVariable()) {
+        // see FIXME 1
+        if (containerDirection == LTR) {
+            // 'm_staticX' should already have been set through layout of the parent.
+            int staticPosition = m_staticX - containerBlock->borderLeft();
+            for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent())
+                staticPosition += po->xPos();
+            left.setValue(Fixed, staticPosition);
+        } else {
+            RenderObject* po = parent();
+            // 'm_staticX' should already have been set through layout of the parent.
+            int staticPosition = m_staticX + containerWidth + containerBlock->borderRight() - po->width();
+            for (; po && po != containerBlock; po = po->parent())
+                staticPosition -= po->xPos();
+            right.setValue(Fixed, staticPosition);
+        }
+    }
+
+    /*-----------------------------------------------------------------------*\
+     * 3. If 'left' or 'right' are 'auto', replace any 'auto' on 'margin-left'
+     *    or 'margin-right' with '0'.
+    \*-----------------------------------------------------------------------*/
+    if (left.isVariable() || right.isVariable()) {
+        if (marginLeft.isVariable())
+            marginLeft.setValue(Fixed, 0);
+        if (marginRight.isVariable())
+            marginRight.setValue(Fixed, 0);
+    }
+
+    /*-----------------------------------------------------------------------*\
+     * 4. If at this point both 'margin-left' and 'margin-right' are still
+     *    'auto', solve the equation under the extra constraint that the two
+     *    margins must get equal values, unless this would make them negative,
+     *    in which case when the direction of the containing block is 'ltr'
+     *    ('rtl'), set 'margin-left' ('margin-right') to zero and solve for
+     *    'margin-right' ('margin-left').
+    \*-----------------------------------------------------------------------*/
+    int leftValue = 0;
+    int rightValue = 0;
+
+    if (marginLeft.isVariable() && marginRight.isVariable()) {
+        // 'left' and 'right' cannot be 'auto' due to step 3
+        assert(!(left.isVariable() && right.isVariable()));
+
+        leftValue = left.width(containerWidth);
+        rightValue = right.width(containerWidth);
+
+        int difference = availableSpace - (leftValue + rightValue);
+        if (difference > 0) {
+            m_marginLeft = difference / 2; // split the diference
+            m_marginRight = difference - m_marginLeft; // account for odd valued differences
+        } else {
+            // see FIXME 1
+            if (containerDirection == LTR) {
+                m_marginLeft = 0;
+                m_marginRight = difference;  // will be negative
+            } else {
+                m_marginLeft = difference;  // will be negative
+                m_marginRight = 0;
+            }
+        }
+
+    /*-----------------------------------------------------------------------*\
+     * 5. If at this point there is an 'auto' left, solve the equation for
+     *    that value.
+    \*-----------------------------------------------------------------------*/
+    } else if (left.isVariable()) {
+        m_marginLeft = marginLeft.width(containerWidth);
+        m_marginRight = marginRight.width(containerWidth);
+        rightValue = right.width(containerWidth);
+
+        // Solve for 'left'
+        leftValue = availableSpace - (rightValue + m_marginLeft + m_marginRight);
+    } else if (right.isVariable()) {
+        m_marginLeft = marginLeft.width(containerWidth);
+        m_marginRight = marginRight.width(containerWidth);
+        leftValue = left.width(containerWidth);
+
+        // Solve for 'right'
+        rightValue = availableSpace - (leftValue + m_marginLeft + m_marginRight);
+    } else if (marginLeft.isVariable()) {
+        m_marginRight = marginRight.width(containerWidth);
+        leftValue = left.width(containerWidth);
+        rightValue = right.width(containerWidth);
+
+        // Solve for 'margin-left'
+        m_marginLeft = availableSpace - (leftValue + rightValue + m_marginRight);
+    } else if (marginRight.isVariable()) {
+        m_marginLeft = marginLeft.width(containerWidth);
+        leftValue = left.width(containerWidth);
+        rightValue = right.width(containerWidth);
+
+        // Solve for 'margin-right'
+        m_marginRight = availableSpace - (leftValue + rightValue + m_marginLeft);
+    }
+
+    /*-----------------------------------------------------------------------*\
+     * 6. If at this point the values are over-constrained, ignore the value
+     *    for either 'left' (in case the 'direction' property of the
+     *    containing block is 'rtl') or 'right' (in case 'direction' is
+     *    'ltr') and solve for that value.
+    \*-----------------------------------------------------------------------*/
+    else  {
+        m_marginLeft = marginLeft.width(containerWidth);
+        m_marginRight = marginRight.width(containerWidth);
+        if (containerDirection  == LTR) {
+            leftValue = left.width(containerWidth);
+            rightValue = availableSpace - (leftValue + m_marginLeft + m_marginRight);
+        } 
+        else {
+            rightValue = right.width(containerWidth);
+            leftValue = availableSpace - (rightValue + m_marginLeft + m_marginRight);
+        }
+    }
+
+    int totalWidth = m_width + leftValue + rightValue +  m_marginLeft + m_marginRight;
+    if (totalWidth > containerWidth && (containerDirection == RTL))
+        leftValue = containerWidth - (totalWidth - leftValue);
+
+    // Use computed values to calculate the horizontal position.
+    m_x = leftValue + m_marginLeft + containerBlock->borderLeft();
+}
+
+void RenderBox::calcAbsoluteVerticalReplaced()
+{
+    // The following is based off of the W3C Working Draft from April 11, 2006 of
+    // CSS 2.1: Section 10.6.5 "Absolutly positioned, replaced elements"
+    // <http://www.w3.org/TR/2005/WD-CSS21-20050613/visudet.html#abs-replaced-height>
+    // (block-style-comments in this function correspond to text from the spec and
+    // the numbers correspond to numbers in spec)
+
+    // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
+    const RenderObject* containerBlock = container();
+
+    // Even in strict mode (where we don't grow the root to fill the viewport)
+    // other browsers position as though the root fills the viewport.
+    const int containerHeight = containerBlock->isRoot() ? containerBlock->availableHeight() : (containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom());
+
+    // Variables to solve.
+    Length top = style()->top();
+    Length bottom = style()->bottom();
+    Length marginTop = style()->marginTop();
+    Length marginBottom = style()->marginBottom();
+
+
+    /*-----------------------------------------------------------------------*\
+     * 1. The used value of 'height' is determined as for inline replaced
+     *    elements.
+    \*-----------------------------------------------------------------------*/
+    // NOTE: This value of height is FINAL in that the min/max height calculations
+    // are dealt with in calcReplacedHeight().  This means that the steps to produce
+    // correct max/min in the non-replaced version, are not necessary.
+    m_height = calcReplacedHeight() + borderTop() + borderBottom() + paddingTop() + paddingBottom();
+    const int availableSpace = containerHeight - m_height;
+
+    /*-----------------------------------------------------------------------*\
+     * 2. If both 'top' and 'bottom' have the value 'auto', replace 'top'
+     *    with the element's static position.
+    \*-----------------------------------------------------------------------*/
+    // see FIXME 2
+    if (top.isVariable() && bottom.isVariable()) {
+        // m_staticY should already have been set through layout of the parent().
+        int staticTop = m_staticY - containerBlock->borderTop();
+        for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent()) {
+            if (!po->isTableRow())
+                staticTop += po->yPos();
+        }
+        top.setValue(Fixed, staticTop);
+    }
+
+    /*-----------------------------------------------------------------------*\
+     * 3. If 'bottom' is 'auto', replace any 'auto' on 'margin-top' or
+     *    'margin-bottom' with '0'.
+    \*-----------------------------------------------------------------------*/
+    // FIXME: The spec. says that this step should only be taken when bottom is
+    // auto, but if only top is auto, this makes step 4 impossible.
+    if (top.isVariable() || bottom.isVariable()) {
+        if (marginTop.isVariable())
+            marginTop.setValue(Fixed, 0);
+        if (marginBottom.isVariable())
+            marginBottom.setValue(Fixed, 0);
+    }
+
+    /*-----------------------------------------------------------------------*\
+     * 4. If at this point both 'margin-top' and 'margin-bottom' are still
+     *    'auto', solve the equation under the extra constraint that the two
+     *    margins must get equal values.
+    \*-----------------------------------------------------------------------*/
+    int topValue = 0;
+    int bottomValue = 0;
+
+    if (marginTop.isVariable() && marginBottom.isVariable()) {
+        // 'top' and 'bottom' cannot be 'auto' due to step 2 and 3 combinded.
+        assert(!(top.isVariable() || bottom.isVariable()));
+
+        topValue = top.width(containerHeight);
+        bottomValue = bottom.width(containerHeight);
+
+        int difference = availableSpace - (topValue + bottomValue);
+        // NOTE: This may result in negative values.
+        m_marginTop =  difference / 2; // split the difference
+        m_marginBottom = difference - m_marginTop; // account for odd valued differences
+
+    /*-----------------------------------------------------------------------*\
+     * 5. If at this point there is only one 'auto' left, solve the equation
+     *    for that value.
+    \*-----------------------------------------------------------------------*/
+    } else if (top.isVariable()) {
+        m_marginTop = marginTop.width(containerHeight);
+        m_marginBottom = marginBottom.width(containerHeight);
+        bottomValue = bottom.width(containerHeight);
+
+        // Solve for 'top'
+        topValue = availableSpace - (bottomValue + m_marginTop + m_marginBottom);
+    } else if (bottom.isVariable()) {
+        m_marginTop = marginTop.width(containerHeight);
+        m_marginBottom = marginBottom.width(containerHeight);
+        topValue = top.width(containerHeight);
+
+        // Solve for 'bottom'
+        // NOTE: It is not necessary to solve for 'bottom' because we don't ever
+        // use the value.
+    } else if (marginTop.isVariable()) {
+        m_marginBottom = marginBottom.width(containerHeight);
+        topValue = top.width(containerHeight);
+        bottomValue = bottom.width(containerHeight);
+
+        // Solve for 'margin-top'
+        m_marginTop = availableSpace - (topValue + bottomValue + m_marginBottom);
+    } else if (marginBottom.isVariable()) {
+        m_marginTop = marginTop.width(containerHeight);
+        topValue = top.width(containerHeight);
+        bottomValue = bottom.width(containerHeight);
+
+        // Solve for 'margin-bottom'
+        m_marginBottom = availableSpace - (topValue + bottomValue + m_marginTop);
+    } 
+
+    /*-----------------------------------------------------------------------*\
+     * 6. If at this point the values are over-constrained, ignore the value
+     *    for 'bottom' and solve for that value.
+    \*-----------------------------------------------------------------------*/
+    else {
+        m_marginTop = marginTop.width(containerHeight);
+        m_marginBottom = marginBottom.width(containerHeight);
+        topValue = top.width(containerHeight);
+
+        // Solve for 'bottom'
+        // NOTE: It is not necessary to solve for 'bottom' because we don't ever
+        // use the value.
+    }
+
+    // Use computed values to calculate the vertical position.
+    m_y = topValue + m_marginTop + containerBlock->borderTop();
+}
 
 int RenderBox::lowestPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {

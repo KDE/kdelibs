@@ -645,7 +645,7 @@ int main(int argc, char *argv[])
         xvfb = fork();
         if ( !xvfb ) {
             char buffer[1000];
-            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1", (const char *)baseDir );
+            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1,/usr/share/fonts/X11/misc,/usr/share/fonts/X11/75dpi:unscaled,/usr/share/fonts/X11/Type1", (const char *)baseDir );
             execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-once", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", (char*)NULL );
         }
 

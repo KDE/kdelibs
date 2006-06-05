@@ -384,6 +384,7 @@ static const ushort tag_list_1[] = {
     ID_BUTTON,
     ID_COMMENT,
     ID_LI,
+    ID_DD,
     ID_XMP,
     ID_INS,
     ID_DEL,
@@ -429,6 +430,7 @@ static const ushort tag_list_3[] = {
     ID_ADDRESS,
     ID_COMMENT,
     ID_LI,
+    ID_DD,
     ID_XMP,
     ID_MARQUEE,
     0
@@ -507,6 +509,7 @@ static const ushort tag_list_4[] = {
     ID_BUTTON,
     ID_COMMENT,
     ID_LI,
+    ID_DD,
     ID_XMP,
     ID_MARQUEE,
     0
@@ -610,7 +613,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_H5:
     case ID_H6:
         // _0 *
-        return check_array(childID, tag_list_0) || 
+        return check_array(childID, tag_list_0) ||
                (!strict && check_array(childID, tag_list_3) && (childID < ID_H1 || childID > ID_H6));
     case ID_BASEFONT:
     case ID_BR:

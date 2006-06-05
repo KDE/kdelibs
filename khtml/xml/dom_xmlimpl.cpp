@@ -430,12 +430,13 @@ StyleSheetImpl *ProcessingInstructionImpl::sheet() const
     return m_sheet;
 }
 
-void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
+void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset)
 {
     if (m_sheet)
 	m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(getDocument(), url);
     m_sheet->ref();
+    m_sheet->setCharset(charset);
     m_sheet->parseString(sheet);
     if (m_cachedSheet)
 	m_cachedSheet->deref(this);

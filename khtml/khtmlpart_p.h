@@ -276,24 +276,24 @@ public:
   KWallet::Wallet* m_wallet;
 #endif
   int m_runningScripts;
-  bool m_bOpenMiddleClick :1;
-  bool m_bBackRightClick :1;
-  bool m_bJScriptEnabled :1;
-  bool m_bJScriptDebugEnabled :1;
-  bool m_bJavaEnabled :1;
-  bool m_bPluginsEnabled :1;
-  bool m_bJScriptForce :1;
-  bool m_bJScriptOverride :1;
-  bool m_bJavaForce :1;
-  bool m_bJavaOverride :1;
-  bool m_bPluginsForce :1;
-  bool m_metaRefreshEnabled :1;
-  bool m_bPluginsOverride :1;
-  bool m_restored :1;
-  bool m_restoreScrollPosition :1;
-  bool m_statusMessagesEnabled :1;
-  bool m_bWalletOpened :1;
-  bool m_urlSelectedOpenedURL:1; // KDE4: remove
+  bool m_bOpenMiddleClick;
+  bool m_bBackRightClick;
+  bool m_bJScriptEnabled;
+  bool m_bJScriptDebugEnabled;
+  bool m_bJavaEnabled;
+  bool m_bPluginsEnabled;
+  bool m_bJScriptForce;
+  bool m_bJScriptOverride;
+  bool m_bJavaForce;
+  bool m_bJavaOverride;
+  bool m_bPluginsForce;
+  bool m_metaRefreshEnabled;
+  bool m_bPluginsOverride;
+  bool m_restored;
+  bool m_restoreScrollPosition;
+  bool m_statusMessagesEnabled;
+  bool m_bWalletOpened;
+  bool m_urlSelectedOpenedURL; // KDE4: remove
   int m_frameNameId;
   int m_dcop_counter;
 
@@ -326,11 +326,11 @@ public:
           m_ssl_parent_ip,
           m_ssl_parent_cert;
 
-  bool m_bComplete:1;
-  bool m_bLoadEventEmitted:1;
-  bool m_haveEncoding:1;
-  bool m_onlyLocalReferences :1;
-  bool m_redirectLockHistory:1;
+  bool m_bComplete;
+  bool m_bLoadEventEmitted;
+  bool m_haveEncoding;
+  bool m_onlyLocalReferences;
+  bool m_redirectLockHistory;
 
   KUrl m_workingURL;
 
@@ -410,14 +410,14 @@ public:
   QString m_overURL;
   QString m_overURLTarget;
 
-  bool m_startBeforeEnd:1;
-  bool m_extendAtEnd:1;		// true if selection is to be extended at its end
-  enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode:2;
-  bool m_bDnd:1;
-  bool m_bFirstData:1;
-  bool m_bClearing:1;
-  bool m_bCleared:1;
-  bool m_focusNodeRestored:1;
+  bool m_startBeforeEnd;
+  bool m_extendAtEnd;		// true if selection is to be extended at its end
+  enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode;
+  bool m_bDnd;
+  bool m_bFirstData;
+  bool m_bClearing;
+  bool m_bCleared;
+  bool m_focusNodeRestored;
 
   int m_focusNodeNumber;
 

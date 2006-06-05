@@ -186,6 +186,7 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
     uchar* d = ( uchar* ) buffer.data();
     int s = buffer.size();
 
+    // BOM
     if ( s >= 3 &&
          d[0] == 0xef && d[1] == 0xbb && d[2] == 0xbf)
          return QTextCodec::codecForMib( 106 ); // UTF-8
@@ -194,6 +195,7 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
                     (d[0] == 0xfe && d[1] == 0xff)))
         return QTextCodec::codecForMib( 1000 ); // UCS-2
 
+    // Link or @charset
     if(!charset.isEmpty())
     {
 	QTextCodec* c = KGlobal::charsets()->codecForName(charset);
@@ -204,7 +206,8 @@ QTextCodec* CachedObject::codecForBuffer( const QString& charset, const QByteArr
         return c;
     }
 
-    return QTextCodec::codecForMib(4); // latin-1
+    // Default
+    return QTextCodec::codecForMib( 4 ); // latin 1
 }
 
 // -------------------------------------------------------------------------------------------
@@ -244,7 +247,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 	if (m_hadError)
 	    c->error( m_err, m_errText );
 	else
-	    c->setStyleSheet( m_url, m_sheet );
+	    c->setStyleSheet( m_url, m_sheet, m_charset );
     }
 }
 
@@ -254,7 +257,16 @@ void CachedCSSStyleSheet::data( QBuffer &buffer, bool eof )
     buffer.close();
     setSize(buffer.buffer().size());
 
-    QTextCodec* c = codecForBuffer( m_charset, buffer.buffer() );
+//     QString charset = checkCharset( buffer.buffer() );
+    QTextCodec* c = 0;
+    if (!m_charset.isEmpty()) {
+        c = KGlobal::charsets()->codecForName(m_charset);
+        if(c->mibEnum() == 11)  c = QTextCodec::codecForName("iso8859-8-i");
+    }
+    else {
+        c = codecForBuffer( m_charsetHint, buffer.buffer() );
+        m_charset = c->name();
+    }
     QString data = c->toUnicode( buffer.buffer().data(), m_size );
     // workaround Qt bugs
     m_sheet = static_cast<QChar>(data[0]) == QChar::ByteOrderMark ? DOMString(data.mid( 1 ) ) : DOMString(data);
@@ -272,7 +284,7 @@ void CachedCSSStyleSheet::checkNotify()
     // it() first increments, then returnes the current item.
     // this avoids skipping an item when setStyleSheet deletes the "current" one.
     for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
-        it()->setStyleSheet( m_url, m_sheet );
+        it()->setStyleSheet( m_url, m_sheet, m_charset );
 }
 
 
@@ -288,6 +300,28 @@ void CachedCSSStyleSheet::error( int err, const char* text )
     for (Q3PtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->error( m_err, m_errText );
 }
+
+#if 0
+QString CachedCSSStyleSheet::checkCharset(const QByteArray& buffer ) const
+{
+    int s = buffer.size();
+    if (s <= 12) return m_charset;
+
+    // @charset has to be first or directly after BOM.
+    // CSS 2.1 says @charset should win over BOM, but since more browsers support BOM
+    // than @charset, we default to that.
+    const char* d = (const char*) buffer.data();
+    if (strncmp(d, "@charset \"",10) == 0)
+    {
+        // the string until "; is the charset name
+        char *p = strchr(d+10, '"');
+        if (p == 0) return m_charset;
+        QString charset = QString::fromAscii(d+10, p-(d+10));
+	return charset;
+    }
+    return m_charset;
+}
+#endif
 
 // -------------------------------------------------------------------------------------------
 
@@ -415,7 +449,6 @@ void CachedImage::deref( CachedObjectClient *c )
 
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
-
 
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
@@ -948,7 +981,7 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 
     CachedCSSStyleSheet* s = Cache::requestObject<CachedCSSStyleSheet, CachedObject::CSSStyleSheet>( this, fullURL, accept );
     if ( s && !charset.isEmpty() ) {
-        s->setCharset( charset );
+        s->setCharsetHint( charset );
     }
     return s;
 }
@@ -1087,6 +1120,8 @@ void Loader::slotFinished( KJob* job )
   }
   else
   {
+      QString cs = j->queryMetaData("charset");
+      if (!cs.isEmpty()) r->object->setCharset(cs);
       r->object->data(r->m_buffer, true);
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
@@ -1531,7 +1566,7 @@ void Cache::insertInLRUList(CachedObject *object)
 // --------------------------------------
 
 void CachedObjectClient::updatePixmap(const QRect&, CachedImage *) {}
-void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/) {}
+void CachedObjectClient::setStyleSheet(const DOM::DOMString &/*url*/, const DOM::DOMString &/*sheet*/, const DOM::DOMString &/*charset*/) {}
 void CachedObjectClient::notifyFinished(CachedObject * /*finishedObj*/) {}
 void CachedObjectClient::error(int /*err*/, const QString &/*text*/) {}
 

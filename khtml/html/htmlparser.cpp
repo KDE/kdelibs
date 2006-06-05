@@ -367,6 +367,22 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         HTMLElementImpl *e;
         bool handled = false;
 
+        // first switch on current element for a elements with optional end-tag
+        switch(current->id())
+        {
+        case ID_P:
+        case ID_DD:
+        case ID_LI:
+            if(!n->isInline())
+            {
+                popBlock(current->id());
+                return insertNode(n);
+            }
+            break;
+        default:
+            break;
+        }
+
         // switch according to the element to insert
         switch(id)
         {
@@ -513,6 +529,13 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 e = new HTMLGenericElementImpl( document, ID_DD );
                 insertNode( e );
                 handled = true;
+            }
+            break;
+        case ID_DT:
+            e = new HTMLDListElementImpl(document);
+            if ( insertNode(e) ) {
+                insertNode(n);
+                return true;
             }
             break;
         case ID_AREA:
@@ -1184,8 +1207,6 @@ void KHTMLParser::processCloseTag(Token *t)
     {
     case ID_HTML+ID_CLOSE_TAG:
     case ID_BODY+ID_CLOSE_TAG:
-    case ID_DT+ID_CLOSE_TAG:
-    case ID_DD+ID_CLOSE_TAG:
         // we never trust those close tags, since stupid webpages close
         // them prematurely
         return;
@@ -1245,6 +1266,8 @@ bool KHTMLParser::isResidualStyleTag(int _id)
         case ID_VAR:
         case ID_DEL:
         case ID_INS:
+        case ID_WBR:
+        case ID_NOBR:
             return true;
         default:
             return false;

@@ -119,8 +119,15 @@ public:
      * @param slen total length of string
      * @param pos zero-based position in string where to start measuring
      * @param len count of characters up to which the width should be determined
+     * @param start starting position of inline text box within str, only
+     * used when toAdd is specified.
+     * @param end ending position of inline text box within str, only
+     * used when toAdd is specified.
+     * @param toAdd amount of pixels to distribute evenly among all spaces of
+     * str. Note that toAdd applies to all spaces within str, but only those
+     * within [pos, pos+len) are counted towards the width.
      */
-    int width( QChar *str, int slen, int pos, int len ) const;
+    int width( QChar *str, int slen, int pos, int len, int start = 0, int end = 0, int toAdd = 0 ) const;
     /** return the width of the given char in pixels.
      *
      * The method also considers various styles like text-align and font-variant

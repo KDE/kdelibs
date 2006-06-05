@@ -196,6 +196,9 @@ void HTMLLinkElementImpl::process()
                 getDocument()->addPendingSheet();
 
             QString chset = getAttribute( ATTR_CHARSET ).string();
+            // set chset to charset of referring document when attribute CHARSET is absent.
+            // http://www.w3.org/TR/CSS21/syndata.html(4.4)
+            if (chset.isEmpty() && part) chset = part->encoding();
             if (m_cachedSheet)
 		m_cachedSheet->deref(this);
             m_cachedSheet = getDocument()->docLoader()->requestStyleSheet(m_url, chset);
@@ -230,12 +233,13 @@ void HTMLLinkElementImpl::removedFromDocument()
     getDocument()->updateStyleSelector();
 }
 
-void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr)
+void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr, const DOM::DOMString &charset)
 {
     if (m_sheet)
         m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
+    m_sheet->setCharset(charset);
     m_sheet->parseString( sheetStr, !getDocument()->inCompatMode() );
 
     MediaListImpl *media = new MediaListImpl( m_sheet, m_media );

@@ -92,7 +92,6 @@ RenderBlock::RenderBlock(DOM::NodeImpl* node)
     m_childrenInline = true;
     m_floatingObjects = 0;
     m_positionedObjects = 0;
-    m_pre = false;
     m_firstLine = false;
     m_avoidPageBreak = false;
     m_clearStatus = CNONE;
@@ -114,8 +113,6 @@ void RenderBlock::setStyle(RenderStyle* _style)
     setReplaced(_style->isDisplayReplacedType());
 
     RenderFlow::setStyle(_style);
-
-    m_pre = ( _style->whiteSpace() == PRE );
 
     // ### we could save this call when the change only affected
     // non inherited properties
@@ -143,39 +140,60 @@ void RenderBlock::setStyle(RenderStyle* _style)
 
 void RenderBlock::updateFirstLetter()
 {
-    // FIXME: We need to destroy the first-letter object if it is no longer the first child.  Need to find
-    // an efficient way to check for that situation though before implementing anything.
+    // Only blocks with inline-children can generate a first-letter
+    if (!childrenInline() || !firstChild()) return;
 
-    RenderStyle * pseudoStyle;
-    if ( isTable() || !(pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LETTER)) )
+    // Don't recurse
+    if (style()->styleType() == RenderStyle::FIRST_LETTER) return;
+
+    // The first-letter style is inheritable. 
+    RenderStyle *pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LETTER);
+    RenderObject *o = this;
+    while (o && !pseudoStyle) {
+        // ### We should ignore empty preceding siblings
+        if (o->parent() && o->parent()->firstChild() == this)
+            o = o->parent();
+        else
+            break;
+        pseudoStyle = o->style()->getPseudoStyle(RenderStyle::FIRST_LETTER);
+    };
+
+    // FIXME: Currently we don't delete first-letters, this is
+    // handled instead in NodeImpl::diff by issuing Detach on first-letter changes.
+    if (!pseudoStyle) {
         return;
+    }
 
     // Drill into inlines looking for our first text child.
-    RenderObject* currChild = firstChild();
-    while (currChild && currChild->needsLayout() && !currChild->isReplaced() && !currChild->isText())
-        currChild = currChild->firstChild();
+    RenderObject* firstText = firstChild();
+    while (firstText && firstText->needsLayout() && !firstText->isFloating() && !firstText->isRenderBlock() && !firstText->isReplaced() && !firstText->isText())
+        // ### We should skip first children with only white-space and punctuation
+        firstText = firstText->firstChild();
 
-   if (currChild && currChild->isText() && !currChild->isBR()) {
-
-        bool update = (currChild->parent()->style()->styleType() == RenderStyle::FIRST_LETTER);
-        RenderObject* firstLetterContainer = update ? currChild->parent()->parent() : currChild->parent();
-        RenderText* textObj = static_cast<RenderText*>(currChild);
+    if (firstText && firstText->isText() && !firstText->isBR()) {
+        RenderObject* firstLetterObject = 0;
+        // Find the old first-letter
+        if (firstText->parent()->style()->styleType() == RenderStyle::FIRST_LETTER)
+            firstLetterObject = firstText->parent();
 
         // Force inline display (except for floating first-letters)
         pseudoStyle->setDisplay( pseudoStyle->isFloating() ? BLOCK : INLINE);
         pseudoStyle->setPosition( STATIC ); // CSS2 says first-letter can't be positioned.
 
-        if (update) {
-            firstLetterContainer->firstChild()->setStyle( pseudoStyle );
+        if (firstLetterObject != 0) {
+            firstLetterObject->setStyle( pseudoStyle );
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom( pseudoStyle );
-            currChild->setStyle( newStyle );
+            firstText->setStyle( newStyle );
             return;
         }
 
-        RenderObject* firstLetter = RenderFlow::createFlow(element(), pseudoStyle, renderArena() );
-        firstLetter->setIsAnonymous( true );
-        firstLetterContainer->addChild(firstLetter, firstLetterContainer->firstChild());
+        RenderText* textObj = static_cast<RenderText*>(firstText);
+        RenderObject* firstLetterContainer = firstText->parent();
+
+        firstLetterObject = RenderFlow::createFlow(node(), pseudoStyle, renderArena() );
+        firstLetterObject->setIsAnonymous( true );
+        firstLetterContainer->addChild(firstLetterObject, firstLetterContainer->firstChild());
 
         // if this object is the result of a :begin, then the text may have not been
         // generated yet if it is a counter
@@ -188,7 +206,8 @@ void RenderBlock::updateFirstLetter()
         DOMStringImpl* oldText = textObj->originalString();
         if (!oldText)
             oldText = textObj->string();
-
+        // ### In theory a first-letter can stretch across multiple text objects, if they only contain
+        // punctuation and white-space
         if(oldText->l >= 1) {
             oldText->ref();
             unsigned int length = 0;
@@ -200,7 +219,9 @@ void RenderBlock::updateFirstLetter()
                 length++;
             while ( length < oldText->l && (oldText->s+length)->isMark() )
                 length++;
-            RenderTextFragment* remainingText =
+            // we need to generated a remainingText object even if no text is left
+            // because it holds the place and style for the old textObj
+            RenderTextFragment* remainingText = 
                 new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
             remainingText->setIsAnonymous( textObj->isAnonymous() );
             remainingText->setStyle(textObj->style());
@@ -208,7 +229,7 @@ void RenderBlock::updateFirstLetter()
                 remainingText->element()->setRenderer(remainingText);
 
             RenderObject* nextObj = textObj->nextSibling();
-            firstLetterContainer->removeChild(textObj);
+            textObj->detach();
             firstLetterContainer->addChild(remainingText, nextObj);
 
             RenderTextFragment* letter =
@@ -217,10 +238,10 @@ void RenderBlock::updateFirstLetter()
             RenderStyle* newStyle = new RenderStyle();
             newStyle->inheritFrom(pseudoStyle);
             letter->setStyle(newStyle);
-            firstLetter->addChild(letter);
+            firstLetterObject->addChild(letter);
             oldText->deref();
         }
-        firstLetter->close();
+        firstLetterObject->close();
     }
 }
 
@@ -1085,7 +1106,8 @@ void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInf
         child->setPos(child->xPos(), child->yPos() + heightIncrease);
 
         // Increase our height by the amount we had to clear.
-        if (!child->isSelfCollapsingBlock())
+        bool selfCollapsing = child->isSelfCollapsingBlock();
+        if (!selfCollapsing)
             m_height += heightIncrease;
         else {
             // For self-collapsing blocks that clear, they may end up collapsing
@@ -1110,13 +1132,13 @@ void RenderBlock::clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInf
         // If our value of clear caused us to be repositioned vertically to be
         // underneath a float, we might have to do another layout to take into account
         // the extra space we now have available.
-        if (!child->style()->width().isFixed()  && child->usesLineWidth())
+        if (!selfCollapsing && !child->style()->width().isFixed() && child->usesLineWidth())
             // The child's width is a percentage of the line width.
             // When the child shifts to clear an item, its width can
             // change (because it has more available line width).
             // So go ahead and mark the item as dirty.
             child->setChildNeedsLayout(true);
-        if (child->hasFloats())
+        if (!child->flowAroundFloats() && child->hasFloats())
             child->markAllDescendantsWithFloatsForLayout();
         child->layoutIfNeeded();
     }
@@ -1569,7 +1591,10 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
             r->layoutIfNeeded();
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
                 if (r->effectiveXPos() + r->effectiveWidth() > m_overflowWidth)
-                    m_overflowWidth = r->xPos() + r->effectiveWidth();
+                {
+                    m_overflowWidth = r->xPos() + r->overflowWidth();
+                    m_negativeOverflowWidth = r->negativeOverflowWidth();
+                }
                 if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
                     m_overflowHeight = r->yPos() + r->effectiveHeight();
             }
@@ -2497,7 +2522,7 @@ void RenderBlock::calcMinMaxWidth()
     m_minWidth = 0;
     m_maxWidth = 0;
 
-    bool preOrNowrap = style()->whiteSpace() != NORMAL;
+    bool noWrap = !style()->autoWrap();
     if (childrenInline())
         calcInlineMinMaxWidth();
     else
@@ -2505,7 +2530,7 @@ void RenderBlock::calcMinMaxWidth()
 
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
-    if (preOrNowrap && childrenInline()) {
+    if (noWrap && childrenInline()) {
          m_minWidth = m_maxWidth;
 
         // A horizontal marquee with inline children has no minimum width.
@@ -2640,11 +2665,11 @@ static int getBorderPaddingMargin(RenderObject* child, bool endOfInline)
 }
 #endif
 
-static void stripTrailingSpace(bool pre,
+static void stripTrailingSpace(bool preserveWS,
                                int& inlineMax, int& inlineMin,
                                RenderObject* trailingSpaceChild)
 {
-    if (!pre && trailingSpaceChild && trailingSpaceChild->isText()) {
+    if (!preserveWS && trailingSpaceChild && trailingSpaceChild->isText()) {
         // Collapse away the trailing space at the end of a block.
         RenderText* t = static_cast<RenderText *>(trailingSpaceChild);
         const Font *f = t->htmlFont( false );
@@ -2895,7 +2920,7 @@ void RenderBlock::calcInlineMinMaxWidth()
         oldAutoWrap = autoWrap;
     }
 
-    stripTrailingSpace(m_pre, inlineMax, inlineMin, trailingSpaceChild);
+    stripTrailingSpace(style()->preserveWS(), inlineMax, inlineMin, trailingSpaceChild);
 
     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
     if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
@@ -2908,7 +2933,7 @@ void RenderBlock::calcInlineMinMaxWidth()
 
 void RenderBlock::calcBlockMinMaxWidth()
 {
-    bool nowrap = style()->whiteSpace() == NOWRAP;
+    bool nowrap = !style()->autoWrap();
 
     RenderObject *child = firstChild();
     RenderObject* prevFloat = 0;
@@ -3099,7 +3124,8 @@ void RenderBlock::dump(QTextStream &stream, const QString &ind) const
     RenderFlow::dump(stream,ind);
 
     if (m_childrenInline) { stream << QLatin1String(" childrenInline"); }
-    if (m_pre) { stream << (" pre"); }
+    // FIXME: currently only print pre to not mess up regression
+    if (style()->preserveWS()) { stream << " pre"; }
     if (m_firstLine) { stream << QLatin1String(" firstLine"); }
 
     if (m_floatingObjects && !m_floatingObjects->isEmpty())

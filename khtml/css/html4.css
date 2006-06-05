@@ -271,6 +271,9 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 dd {
 	display: block;
+}
+
+dl > dd {
 	-khtml-margin-start: 40px;
 }
 
@@ -526,7 +529,6 @@ frame {
 }
 
 nobr {
-        display: inline;
         white-space: nowrap;
 }
 

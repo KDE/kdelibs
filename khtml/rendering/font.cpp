@@ -296,7 +296,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 }
 
 
-int Font::width( QChar *chs, int, int pos, int len ) const
+int Font::width( QChar *chs, int, int pos, int len, int start, int end, int toAdd ) const
 {
     int w = 0;
 
@@ -325,6 +325,23 @@ int Font::width( QChar *chs, int, int pos, int len ) const
 	    if( chs[i+pos].category() == QChar::Separator_Space )
 		w += wordSpacing;
 	}
+
+    if ( toAdd ) {
+        // first gather count of spaces
+        int numSpaces = 0;
+        for( int i = start; i != end; ++i )
+            if ( chs[i].category() == QChar::Separator_Space )
+                ++numSpaces;
+        // distribute pixels evenly among spaces, but count only those within
+        // [pos, pos+len)
+        for ( int i = start; numSpaces && i != pos + len; i++ )
+            if ( chs[i].category() == QChar::Separator_Space ) {
+                const int a = toAdd/numSpaces;
+                if ( i >= pos ) w += a;
+                toAdd -= a;
+                --numSpaces;
+            }
+    }
 
     return w;
 }

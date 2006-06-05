@@ -1,3 +1,15 @@
+2006-05-31  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Merge WC bug-fixes and clean-up for positioned box-model
+
+        * rendering/Render_box.{h,cpp}:
+            (RenderBox::calcAbsoluteHorizontal):
+            (RenderBox::calcAbsoluteHorizontalValues):
+            (RenderBox::calcAbsoluteVertical):
+            (RenderBox::calcAbsoluteVerticalValues): 
+            (RenderBox::calcAbsoluteHorizontalReplaced): Handle replaced case separately.
+            (RenderBox::calcAbsoluteVerticalReplaced): ditto.
+
 2006-04-20  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement full support for CSS updates on dynamic DOM and user-interaction
@@ -132,7 +144,6 @@
 
 2006-02-28  Germain Garand  <germain@ebooksfrance.org>
 
-        * rendering/render_object.cpp (dirtyFormattingContext): be more efficient with inlineflow objects.
         * rendering/render_block.cpp (layoutBlockChildren): be more efficient with regard to positioned objects relayout.
         Merge WC margin-collapse regression fix (WC/#3508).
         (layoutPositionedObjects) Objects with staticX() need a relayout too.

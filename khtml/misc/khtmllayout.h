@@ -51,7 +51,9 @@ namespace khtml
         { return _length == o._length; }
         bool operator!=(const Length& o) const
         { return _length != o._length; }
-
+        void setValue(LengthType t, int v) {
+            _length = 0; l.value = v; l.type = t; l.quirk = false;
+        }
 	/*
 	 * works only for Fixed and Percent, returns -1 otherwise
 	 */

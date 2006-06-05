@@ -753,6 +753,10 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
     }
   }
   else {
+    // Ensure that each source file to be displayed is associated with
+    // an appropriate interpreter
+    if (!sourceFile->interpreter)
+      sourceFile->interpreter = exec->interpreter();
     for (index = 0; index < m_sourceSel->count(); index++) {
       if (m_sourceSelFiles.at(index) == sourceFile)
 	break;

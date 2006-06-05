@@ -196,8 +196,12 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
 
 RenderObject::~RenderObject()
 {
-    if(m_style->backgroundImage())
-        m_style->backgroundImage()->deref(this);
+    const BackgroundLayer* bgLayer = m_style->backgroundLayers();
+    while (bgLayer) {
+        if(bgLayer->backgroundImage())
+            bgLayer->backgroundImage()->deref(this);
+        bgLayer = bgLayer->next();
+    }
 
     m_style->deref();
 }
@@ -503,8 +507,7 @@ void RenderObject::updatePixmap(const QRect& /*r*/, CachedImage* image)
 #warning "FIXME: Check if complete!"
 #endif
     //repaint bg when it finished loading
-    if(image && parent() && style() && style()->backgroundImage() == image
-       /* && image->valid_rect().size() == image->pixmap_size()*/ ) {
+    if(image && parent() && style() && style()->backgroundLayers()->containsImage(image)) {
         isBody() ? canvas()->repaint() : repaint();
     }
 }
@@ -1328,17 +1331,9 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
     m_markedForRepaint = true;
     if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
         return;
-    if (m_parent) {
-         if (isInlineFlow()) {
-             if (!checkContainer && !m_parent->isInline())
-                 return;
-             else
-                 m_parent->dirtyFormattingContext(false);
-         } 
-         else if (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
-                     !(isFloating() || flowAroundFloats() || isTableCell()))
-             m_parent->dirtyFormattingContext(false);
-    }
+    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
+                    !(isFloating() || flowAroundFloats() || isTableCell())))
+        m_parent->dirtyFormattingContext(false);
 }
 
 void RenderObject::repaintDuringLayout()

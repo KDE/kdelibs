@@ -393,7 +393,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
 
         // We need to trim whitespace off the public identifier.
         publicID = buffer.mid(publicIDStart, publicIDEnd - publicIDStart);
-        publicID = publicID.trimmed();
+        publicID = publicID.simplified();
         *resultFlags |= PARSEMODE_HAVE_PUBLIC_ID;
     } else {
         if (containsString("system", buffer, index)) {
@@ -470,6 +470,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
             const PubIDInfo* doctypeEntry = findDoctypeEntry(pubIDStr.constData(), publicID.length());
             if (!doctypeEntry) {
                 // The DOCTYPE is not in the list.  Assume strict mode.
+                // ### Doesn't make any sense, but it's what Mozilla does.
                 pMode = Strict;
                 hMode = Html4;
                 return;
