@@ -194,7 +194,7 @@ void KMainWindow::initKMainWindow(const char *name)
     QString objname;
     QString s;
     int unusedNumber;
-    objname = qApp->applicationName() + "/MainWindow-";
+    objname = qApp->applicationName() + "/MainWindow_";
     s = objname + QLatin1Char('1'); // start adding number immediately
     unusedNumber = 1;
     for(;;) {
