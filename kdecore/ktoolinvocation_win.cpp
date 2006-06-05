@@ -66,7 +66,11 @@
 #include <qglobal.h>
 #ifdef __GNUC__
 #warning used non public api for now
+#warning Implement the commented methods!
 #endif
+Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
+
+class DCOPClient;
 
 KToolInvocation* KToolInvocation::s_self = 0L;
 
@@ -74,22 +78,25 @@ KToolInvocation::KToolInvocation(QObject *parent):QObject(parent) {
 }
 
 KToolInvocation *KToolInvocation::self() {
-	if (s_self==0) {
-		Q_ASSERT(qApp);
-		if (!qApp) qFatal("KToolInvocation::self():No application object");
-		s_self=new KToolInvocation(qApp);
-	}
-	return s_self;
+    QMutexLocker locker(mutex());
+    if (s_self==0) {
+        Q_ASSERT(qApp);
+        if (!qApp)
+            qFatal("KToolInvocation::self(): No application object");
+        s_self = new KToolInvocation(qApp);
+    }
+    return s_self;
 }
 
 KToolInvocation::~KToolInvocation() {
-	s_self=0;
+    QMutexLocker locker(mutex());
+    s_self=0;
 }
-
+/*
 DCOPClient *KToolInvocation::dcopClient() {
 	return 0;
 }
-
+*/
 static int
 startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
               const QString& _name, const QStringList &URLs,
@@ -165,8 +172,10 @@ startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
 
 int
 KToolInvocation::startServiceByName( const QString& _name, const QString &URL,
-                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+                                 QString *error, QString *serviceNAme, int *pid,
+                                 const QByteArray &startup_id, bool noWait )
 {
+/*
    THREADGUARD;
    QStringList URLs;
    if (!URL.isEmpty())
@@ -174,22 +183,28 @@ KToolInvocation::startServiceByName( const QString& _name, const QString &URL,
    return startServiceInternal(dcopClient(),
                       "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
+*/
+	return 0;
 }
 
 int
 KToolInvocation::startServiceByName( const QString& _name, const QStringList &URLs,
-                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+                QString *error, QString *serviceName, int *pid, const QByteArray &startup_id, bool noWait )
 {
+/*
    THREADGUARD;
    return startServiceInternal(dcopClient(),
                       "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
+*/
+	return 0;
 }
 
 int
 KToolInvocation::startServiceByDesktopPath( const QString& _name, const QString &URL,
-                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+                QString *error, QString *serviceName, int *pid, const QByteArray &startup_id, bool noWait )
 {
+/*
    THREADGUARD;
    QStringList URLs;
    if (!URL.isEmpty())
@@ -197,22 +212,28 @@ KToolInvocation::startServiceByDesktopPath( const QString& _name, const QString 
    return startServiceInternal(dcopClient(),
                       "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
+*/
+	return 0;
 }
 
 int
 KToolInvocation::startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
-                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+                QString *error, QString *serviceName, int *pid, const QByteArray &startup_id, bool noWait )
 {
+/*
    THREADGUARD;
    return startServiceInternal(dcopClient(),
                       "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
+*/
+	return 0;
 }
 
 int
 KToolInvocation::startServiceByDesktopName( const QString& _name, const QString &URL,
-                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+                  QString *error, QString *serviceName, int *pid, const QByteArray& startup_id, bool noWait )
 {
+/*
    THREADGUARD;
    QStringList URLs;
    if (!URL.isEmpty())
@@ -220,16 +241,21 @@ KToolInvocation::startServiceByDesktopName( const QString& _name, const QString 
    return startServiceInternal(dcopClient(),
                       "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
+*/
+	return 0;
 }
 
 int
 KToolInvocation::startServiceByDesktopName( const QString& _name, const QStringList &URLs,
-                  QString *error, QByteArray *dcopService, int *pid, const QByteArray& startup_id, bool noWait )
+                  QString *error, QString *serviceName, int *pid, const QByteArray& startup_id, bool noWait )
 {
+/*
    THREADGUARD;
    return startServiceInternal(dcopClient(),
                       "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)",
                       _name, URLs, error, dcopService, pid, startup_id, noWait);
+*/
+	return 0;
 }
 
 
@@ -237,9 +263,12 @@ int
 KToolInvocation::kdeinitExec( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
+/*
    THREADGUARD;
    return startServiceInternal(dcopClient(),"kdeinit_exec(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
+*/
+	return 0;
 }
 
 
@@ -247,9 +276,12 @@ int
 KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
                            QString *error, int *pid, const QByteArray& startup_id )
 {
+/*
    THREADGUARD;
    return startServiceInternal(dcopClient(),"kdeinit_exec_wait(QString,QStringList,QValueList<QCString>,QCString)",
         name, args, error, 0, pid, startup_id, false);
+*/
+	return 0;
 }
 
 
@@ -272,6 +304,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                const QString& _appname,
                                const QByteArray& startup_id )
 {
+/*
    QString url;
    QString appname;
 
@@ -287,23 +320,29 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
    QString error;
    startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false);
+*/
 }
 
 
 void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
 {
+/*
    QString sOpen( "open" );
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.utf16(), 0, 0, SW_NORMAL);
+*/
 }
 
 void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
 {
+/*
    invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null,
        QStringList(), startup_id );
+*/
 }
 
 void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
+/*
    QString address = KUrl::fromPercentEncoding(mailtoURL.path().toLatin1()), subject, cc, bcc, body;
    QStringList queries = mailtoURL.query().mid(1).split( '&');
    QStringList attachURLs;
@@ -333,6 +372,7 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
    }
 
    invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
+*/
 }
 
 void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
@@ -340,6 +380,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QByteArray& startup_id )
 {
+/*
 	KUrl url("mailto:"+_to);
 	url.setQuery("?subject="+subject);
 	url.addQueryItem("cc", _cc);
@@ -350,5 +391,6 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
    QString sOpen( "open" );
    ShellExecuteW(0, ( LPCWSTR )sOpen.utf16(), ( LPCWSTR )url.url().utf16(), 0, 0, SW_NORMAL);
+*/
 }
 #endif

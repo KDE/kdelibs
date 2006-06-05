@@ -35,6 +35,10 @@ set(kdecore_OPTIONAL_LIBS)
 remove_definitions(-DQT3_SUPPORT_WARNINGS)
 remove_definitions(-DQT3_SUPPORT)
 
+if(WIN32)
+   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${KDEWIN32_LIBRARIES})
+endif(WIN32)
+
 # compile bzip2 support if available
 if(BZIP2_FOUND)
    include_directories(${BZIP2_INCLUDE_DIR})
