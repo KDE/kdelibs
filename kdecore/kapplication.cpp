@@ -569,7 +569,10 @@ void KApplication::init()
           reversedDomain.prepend(s);
       }
   bus->requestName(reversedDomain + applicationName(), QDBusBusService::AllowReplacingName);
-  QDBus::sessionBus().registerObject("/MainApplication", this, QDBusConnection::ExportSlots);
+  QDBus::sessionBus().registerObject("/MainApplication", this,
+                                     QDBusConnection::ExportSlots |
+                                     QDBusConnection::ExportProperties |
+                                     QDBusConnection::ExportAdaptors);
 
   smw = 0;
 
