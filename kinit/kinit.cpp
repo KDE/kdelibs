@@ -1657,7 +1657,6 @@ int main(int argc, char **argv, char **envp)
 {
    int i;
    pid_t pid;
-   int launch_dcop = 1;
    int launch_klauncher = 1;
    int launch_kded = 1;
    int keep_running = 1;
@@ -1668,8 +1667,6 @@ int main(int argc, char **argv, char **envp)
    for(i = 0; i < argc; i++)
    {
       safe_argv[i] = strcpy((char*)malloc(strlen(argv[i])+1), argv[i]);
-      if (strcmp(safe_argv[i], "--no-dcop") == 0)
-         launch_dcop = 0;
       if (strcmp(safe_argv[i], "--no-klauncher") == 0)
          launch_klauncher = 0;
       if (strcmp(safe_argv[i], "--no-kded") == 0)
@@ -1752,22 +1749,6 @@ int main(int argc, char **argv, char **envp)
       init_kdeinit_socket();
    }
 
-   if (launch_dcop)
-   {
-      if (d.suicide)
-         pid = launch( 3, "dcopserver", "--nosid\0--suicide" );
-      else
-         pid = launch( 2, "dcopserver", "--nosid" );
-#ifndef NDEBUG
-      fprintf(stderr, "kdeinit: Launched DCOPServer, pid = %ld result = %d\n", (long) pid, d.result);
-#endif
-      WaitPid(pid);
-      if (!WIFEXITED(d.exit_status) || (WEXITSTATUS(d.exit_status) != 0))
-      {
-         fprintf(stderr, "kdeinit: DCOPServer could not be started, aborting.\n");
-         exit(1);
-      }
-   }
 #ifndef __CYGWIN__
    if (!d.suicide && !getenv("KDE_IS_PRELINKED"))
    {
