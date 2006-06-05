@@ -104,7 +104,7 @@ namespace KJSEmbed
             }
 
             /**
-            * Set the internal value..
+            * Set the internal value.
             */
             template< typename T>
             void setValue( const T &val )

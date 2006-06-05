@@ -29,6 +29,7 @@ class QRect;
 
 namespace KJSEmbed
 {
+    /** @internal Implements the binding for QRect. */
     class RectBinding : public ValueBinding
     {
         public:
