@@ -419,7 +419,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
        proc << locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
-       
+
        proc.start(KProcess::DontCare);
 
 #ifndef Q_WS_WIN
@@ -429,10 +429,11 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
        return slave;
     }
 
+    org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
-    QDBusReply<int> reply = KToolInvocation::klauncher()->requestSlave(protocol, url.host(), sockname, errorStr);
+    QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), sockname, errorStr);
     if (reply.isError()) {
-	error_text = i18n("Cannot talk to klauncher");
+	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
         return 0;
