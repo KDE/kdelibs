@@ -66,8 +66,10 @@ Observer::Observer()
     else
         kDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
 
+#ifndef Q_OS_WIN
     m_uiserver = QDBus::sessionBus().findInterface<org::kde::KIO::UIServer>("org.kde.kio.uiserver",
                                                                             "/UIServer");
+#endif
 }
 
 int Observer::newJob( KIO::Job * job, bool showProgress )
