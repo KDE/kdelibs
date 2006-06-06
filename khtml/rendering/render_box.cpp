@@ -1731,7 +1731,7 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
             heightValue = contentHeight;
             topValue = availableSpace - (heightValue + bottom.width(containerHeight));
         } 
-        else if (!topIsAuto && heightIsAuto && !bottomIsAuto) {
+        else if (topIsAuto && !heightIsAuto && bottomIsAuto) {
             // RULE 2: (shouldn't happen)
         }
         else if (!topIsAuto && heightIsAuto && bottomIsAuto) {
