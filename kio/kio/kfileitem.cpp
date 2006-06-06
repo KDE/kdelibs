@@ -52,11 +52,6 @@
 #include <krun.h>
 #include <kde_file.h>
 
-class KFileItem::KFileItemPrivate {
-	public:
-		QString iconName;
-};
-
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KUrl& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
@@ -116,18 +111,18 @@ KFileItem::KFileItem( const KUrl &url, const QString &mimeType, mode_t mode )
 KFileItem::KFileItem( const KFileItem & item ) :
   d(0)
 {
-    assign( item );
+  assign( item );
 }
 
 KFileItem& KFileItem::operator=( const KFileItem & item )
 {
-    assign( item );
-    return *this;
+  assign( item );
+  return *this;
 }
 
 KFileItem::~KFileItem()
 {
-  delete d;
+  //delete d;
 }
 
 void KFileItem::init( bool _determineMimeTypeOnDemand )
@@ -472,7 +467,7 @@ QString KFileItem::mimeComment()
 
 QString KFileItem::iconName()
 {
-  if (d && (!d->iconName.isEmpty())) return d->iconName;
+  if (!m_iconName.isEmpty()) return m_iconName;
 
   bool isLocalURL;
   KUrl url = mostLocalURL(isLocalURL);
@@ -511,8 +506,8 @@ int KFileItem::overlays() const
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
-  if (d && (!d->iconName.isEmpty()))
-     return DesktopIcon(d->iconName,_size,_state);
+  if ( !m_iconName.isEmpty() )
+     return DesktopIcon(m_iconName, _size, _state);
 
   if ( !m_pMimeType )
   {
@@ -777,7 +772,7 @@ bool KFileItem::cmp( const KFileItem & item )
              && m_hidden == item.m_hidden
              && size() == item.size()
              && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
-             && (!d || !item.d || d->iconName == item.d->iconName) );
+             && m_iconName == m_iconName );
 
     // Don't compare the mimetypes here. They might not be known, and we don't want to
     // do the slow operation of determining them here.
@@ -813,14 +808,7 @@ void KFileItem::assign( const KFileItem & item )
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
 
-    if ( item.d ) {
-        if ( !d )
-            d = new KFileItemPrivate;
-        d->iconName = item.d->iconName;
-    } else {
-        delete d;
-        d = 0;
-    }
+    m_iconName = m_iconName;
 }
 
 void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
@@ -843,9 +831,7 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
   m_hidden = Auto;
   m_guessedMimeType.clear();
   m_metaInfo = KFileMetaInfo();
-
-  if ( d )
-    d->iconName.clear();
+  m_iconName.clear();
 
   readUDSEntry( _urlIsDirectory );
   init( _determineMimeTypeOnDemand );
