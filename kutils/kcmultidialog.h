@@ -161,11 +161,11 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT( d, void slotCurrentPageChanged( KPageWidgetItem* ) );
-    Q_PRIVATE_SLOT( d, void clientChanged( bool ) );
-    Q_PRIVATE_SLOT( d, void disableRModeButton() );
-    Q_PRIVATE_SLOT( d, void rootExit() );
-    Q_PRIVATE_SLOT( d, void dialogClosed() );
+    Q_PRIVATE_SLOT( d, void slotCurrentPageChanged( KPageWidgetItem* ) )
+    Q_PRIVATE_SLOT( d, void clientChanged( bool ) )
+    Q_PRIVATE_SLOT( d, void disableRModeButton() )
+    Q_PRIVATE_SLOT( d, void rootExit() )
+    Q_PRIVATE_SLOT( d, void dialogClosed() )
 };
 
 #endif

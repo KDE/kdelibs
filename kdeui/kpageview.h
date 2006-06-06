@@ -164,7 +164,7 @@ class KDEUI_EXPORT KPageView : public QWidget
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT( d, void rebuildGui() );
+    Q_PRIVATE_SLOT( d, void rebuildGui() )
 };
 
 #endif
