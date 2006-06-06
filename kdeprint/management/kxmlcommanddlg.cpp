@@ -39,7 +39,7 @@
 #include <k3listview.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kseparator.h>
 #include <klistbox.h>
 #include <kmimetype.h>
@@ -816,10 +816,16 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 	if (!xmlcmd)
 		return false;
 
-	KDialogBase	dlg(KDialogBase::Swallow, 0, parent, 0, true, i18n("Command Edit for %1", xmlcmd->name()), KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, false);
+	KDialog dlg( parent );
+  dlg.setModal( true );
+  dlg.setCaption( i18n("Command Edit for %1", xmlcmd->name()) );
+  dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+  dlg.setDefaultButton( KDialog::Ok );
+  dlg.enableButtonSeparator( false );
+
 	KXmlCommandAdvancedDlg	*xmldlg = new KXmlCommandAdvancedDlg(&dlg);
 	dlg.setMainWidget(xmldlg);
-	//dlg.enableButton(KDialogBase::Ok, false);
+	//dlg.enableButton(KDialog::Ok, false);
 	xmldlg->setCommand(xmlcmd);
 	if (dlg.exec())
 	{
@@ -852,8 +858,14 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 //-----------------------------------------------------------------------------------------------------
 
 KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
-: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel|Details, Ok, true)
+: KDialog( parent )
 {
+  setObjectName( name );
+  setModal( true );
+  setButtons( Ok | Cancel | Details );
+  setDefaultButton( Ok );
+  enableButtonSeparator( true );
+
 	setButtonText(Details, i18n("&Mime Type Settings"));
 	m_cmd = 0;
 
@@ -1029,7 +1041,7 @@ void KXmlCommandDlg::slotOk()
 			l << m_selectedmime->text(i);
 		m_cmd->setInputMimeTypes(l);
 	}
-	KDialogBase::slotOk();
+	KDialog::accept();
 }
 
 bool KXmlCommandDlg::editCommand(KXmlCommand *xmlCmd, QWidget *parent)

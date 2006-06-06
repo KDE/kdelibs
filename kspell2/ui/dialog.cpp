@@ -59,11 +59,14 @@ public:
 
 Dialog::Dialog( BackgroundChecker *checker,
                 QWidget *parent )
-    : KDialog( parent,
-               i18n( "Check Spelling" ),
-               Help|Cancel|User1, 0,
-               i18n( "&Finished" ) ),d(new Private)
+    : KDialog( parent ),d(new Private)
 {
+    setModal( true );
+    setCaption( i18n( "Check Spelling" ) );
+    setButtons( Help | Cancel | User1 );
+    setButtonGuiItem( User1, i18n( "&Finished" ) );
+    setDefaultButton( Cancel );
+    enableButtonSeparator( true );
 
     setDefaultButton( Cancel );
     d->checker = checker;

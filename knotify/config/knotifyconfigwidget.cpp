@@ -22,7 +22,7 @@
 #include "knotifyconfigelement.h"
 
 #include <kapplication.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 struct KNotifyConfigWidget::Private
 {
@@ -88,7 +88,7 @@ void KNotifyConfigWidget::save( )
 
 KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QString & appname )
 {
-	KDialogBase *dialog=new KDialogBase(parent);
+	KDialog *dialog=new KDialog(parent);
 	KNotifyConfigWidget *w=new KNotifyConfigWidget(dialog);
 	dialog->setMainWidget(w);
 	

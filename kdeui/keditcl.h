@@ -24,7 +24,7 @@
 
 #include <Q3MultiLineEdit>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QDropEvent;
 class QPushButton;

@@ -43,11 +43,17 @@
 using namespace KNS;
 
 UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
-  KDialogBase( Plain, i18n("Share Hot New Stuff"), Ok | Cancel, Cancel,
-               parent, 0, false, true ),
+  KDialog( parent ),
   mEngine( engine )
 {
-  QFrame *topPage = plainPage();
+  setCaption( i18n("Share Hot New Stuff") );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Cancel );
+  setModal( false );
+  enableButtonSeparator( true );
+
+  QFrame *topPage = new QFrame( this );
+  setMainWidget( topPage );
 
   QGridLayout *topLayout = new QGridLayout( topPage );
   topLayout->setSpacing( spacingHint() );

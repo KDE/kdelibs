@@ -20,12 +20,12 @@
 #ifndef KMDRIVERDIALOG_H
 #define KMDRIVERDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class DriverView;
 class DrMain;
 
-class KMDriverDialog : public KDialogBase
+class KMDriverDialog : public KDialog
 {
 	Q_OBJECT
 public:

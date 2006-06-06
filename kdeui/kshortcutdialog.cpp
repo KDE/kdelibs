@@ -63,9 +63,11 @@ public:
 };
 
 KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
-	: KDialog( parent, i18n("Configure Shortcut"), KDialog::Details|KDialog::Ok|KDialog::Cancel )
+	: KDialog( parent )
 	, d(new KShortcutDialogPrivate)
 {
+  setCaption( i18n("Configure Shortcut") );
+  setButtons( KDialog::Details|KDialog::Ok|KDialog::Cancel );
 	enableButtonSeparator( true );
 	setModal(true);
 

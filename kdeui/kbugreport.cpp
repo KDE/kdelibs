@@ -75,13 +75,11 @@ public:
     }
 };
 
-KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
-  : KDialog( parentw,
-                 i18n("Submit Bug Report"),
-                 Ok | Cancel
-                 )
+KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutData )
+  : KDialog( _parent ), d( new KBugReportPrivate )
 {
-  d = new KBugReportPrivate;
+  setCaption( i18n("Submit Bug Report") );
+  setButtons( Ok | Cancel );
   enableButtonSeparator(true);
   setModal(modal);
 

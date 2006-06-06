@@ -45,7 +45,8 @@ KPreviewPropsPlugin::KPreviewPropsPlugin(KPropertiesDialog* props)
 void KPreviewPropsPlugin::createLayout()
 {
     // let the dialog create the page frame
-    QFrame* topframe = properties->addPage(i18n("P&review"));
+    QFrame* topframe = new QFrame();
+    properties->addPage(topframe, i18n("P&review"));
     topframe->setFrameStyle(QFrame::NoFrame);
 
     QVBoxLayout* tmp = new QVBoxLayout(topframe);

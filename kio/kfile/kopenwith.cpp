@@ -323,11 +323,12 @@ public:
 };
 
 KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
-             :QDialog( parent ),d(new KOpenWithDlgPrivate)
+             :KDialog( parent ),d(new KOpenWithDlgPrivate)
 {
     setObjectName( QLatin1String( "openwith" ) );
     setModal( true );
-	setWindowTitle( i18n( "Open With" ) );
+    setCaption( i18n( "Open With" ) );
+
     QString text;
     if( _urls.count() == 1 )
     {
@@ -344,25 +345,25 @@ KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, QWidget* parent )
 
 KOpenWithDlg::KOpenWithDlg( const KUrl::List& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-             :QDialog( parent ),d(new KOpenWithDlgPrivate)
+             :KDialog( parent ),d(new KOpenWithDlgPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
   QString caption = KStringHandler::csqueeze( _urls.first().prettyUrl() );
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
-  setWindowTitle(caption);
+  setCaption(caption);
   setMimeType( _urls );
   init( _text, _value );
 }
 
 KOpenWithDlg::KOpenWithDlg( const QString &mimeType, const QString& value,
                             QWidget *parent)
-             :QDialog( parent ),d(new KOpenWithDlgPrivate)
+             :KDialog( parent ),d(new KOpenWithDlgPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  setWindowTitle(i18n("Choose Application for %1", mimeType));
+  setCaption(i18n("Choose Application for %1", mimeType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>", mimeType);
@@ -373,11 +374,11 @@ KOpenWithDlg::KOpenWithDlg( const QString &mimeType, const QString& value,
 }
 
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
-             :QDialog( parent ),d(new KOpenWithDlgPrivate)
+             :KDialog( parent ),d(new KOpenWithDlgPrivate)
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  setWindowTitle(i18n("Choose Application"));
+  setCaption(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>");
@@ -405,7 +406,13 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   m_pService = 0L;
   d->curService = 0L;
 
-  QBoxLayout *topLayout = new QVBoxLayout( this );
+  setButtons( Ok | Cancel );
+
+
+  QWidget *mainWidget = new QWidget( this );
+  setMainWidget( mainWidget );
+
+  QBoxLayout *topLayout = new QVBoxLayout( mainWidget );
   topLayout->setMargin( KDialog::marginHint() );
   topLayout->setSpacing( KDialog::spacingHint() );
   label = new QLabel( _text, this );
@@ -414,7 +421,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   QHBoxLayout* hbox = new QHBoxLayout();
   topLayout->addLayout( hbox );
 
-  QToolButton *clearButton = new QToolButton( this );
+  QToolButton *clearButton = new QToolButton( mainWidget );
   clearButton->setIcon( BarIcon( "locationbar_erase" ) );
   clearButton->setFixedSize( clearButton->sizeHint() );
   connect( clearButton, SIGNAL( clicked() ), SLOT( slotClear() ) );
@@ -435,12 +442,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
     QStringList list = cg.readEntry( QString::fromLatin1("History"), QStringList() );
     combo->setHistoryItems( list, true );
-    edit = new KUrlRequester( combo, this );
+    edit = new KUrlRequester( combo, mainWidget );
   }
   else
   {
     clearButton->hide();
-    edit = new KUrlRequester( this );
+    edit = new KUrlRequester( mainWidget );
     edit->lineEdit()->setReadOnly(true);
     edit->button()->hide();
   }
@@ -470,7 +477,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect ( edit, SIGNAL(returnPressed()), SLOT(slotOK()) );
   connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
-  m_pTree = new KApplicationTree( this );
+  m_pTree = new KApplicationTree( mainWidget );
   topLayout->addWidget(m_pTree);
 
   connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ),
@@ -480,7 +487,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect( m_pTree, SIGNAL( doubleClicked(Q3ListViewItem*) ),
            SLOT( slotDbClick() ) );
 
-  terminal = new QCheckBox( i18n("Run in &terminal"), this );
+  terminal = new QCheckBox( i18n("Run in &terminal"), mainWidget );
   if (bReadOnly)
      terminal->hide();
   connect(terminal, SIGNAL(toggled(bool)), SLOT(slotTerminalToggled(bool)));
@@ -493,7 +500,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   QSpacerItem* spacer = new QSpacerItem( 20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum );
   nocloseonexitLayout->addItem( spacer );
 
-  nocloseonexit = new QCheckBox( i18n("&Do not close when command exits"), this );
+  nocloseonexit = new QCheckBox( i18n("&Do not close when command exits"), mainWidget );
   nocloseonexit->setChecked( false );
   nocloseonexit->setDisabled( true );
 
@@ -510,26 +517,12 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   if (!qMimeType.isNull())
   {
-    remember = new QCheckBox(i18n("&Remember application association for this type of file"), this);
+    remember = new QCheckBox(i18n("&Remember application association for this type of file"), mainWidget);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
   }
   else
     remember = 0L;
-
-  // Use KButtonBox for the aligning pushbuttons nicely
-  KButtonBox* b = new KButtonBox( this );
-  b->addStretch( 2 );
-
-  d->ok = b->addButton( KStdGuiItem::ok() );
-  d->ok->setDefault( true );
-  connect(  d->ok, SIGNAL( clicked() ), SLOT( slotOK() ) );
-
-  QPushButton* cancel = b->addButton(  KStdGuiItem::cancel() );
-  connect(  cancel, SIGNAL( clicked() ), SLOT( reject() ) );
-
-  b->layout();
-  topLayout->addWidget( b );
 
   //edit->setText( _value );
   // This is what caused "can't click on items before clicking on Name header".

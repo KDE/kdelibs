@@ -1,0 +1,216 @@
+/*
+ *  This file is part of the KDE Libraries
+ *  Copyright (C) 1999-2001 Mirko Boehm (mirko@kde.org) and
+ *                          Espen Sand (espen@kde.org)
+ *                          Holger Freyther <freyther@kde.org>
+ *                2005-2006 Olivier Goffart <ogoffart at kde.org>
+ *                     2006 Tobias Koenig <tokoe@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
+ *
+ */
+#ifndef KPAGEDIALOG_H
+#define KPAGEDIALOG_H
+
+#include <kdialog.h>
+#include <kguiitem.h>
+#include <kpagewidget.h>
+#include <kstdguiitem.h>
+
+/**
+ * @short A dialog base class with predefined layouts.
+ *
+ * Provides basic functionality needed by nearly all dialogs.
+ *
+ * You can define a main widget that contains your specific
+ * dialog layout or you can use a predefined layout. Currently,
+ * @p Plain, @p List, @p Tree, and @p Tabbed mode layouts (faces)
+ * are available (@see KPageView).
+ *
+ * <b>Example:</b>\n
+ *
+ * \code
+ * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
+ *                 const QString& urltext)
+ *   : KPageDialog( parent )
+ * {
+ *   setCaption( caption );
+ *   setButtons( Ok | Cancel );
+ *   setDefaultButton( Ok );
+ *   setModal( true );
+ *
+ *   QLabel *label = new QLabel( caption );
+ *
+ *   addPage( label, i18n( "My Page" );
+ * }
+ * \endcode
+ *
+ * This class can be used in many ways. Note that most KDE ui widgets
+ * and many of KDE core applications use the KPageDialog so for more
+ * inspiration you should study the code for these.
+ *
+ * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
+ */
+class KDEUI_EXPORT KPageDialog : public KDialog
+{
+  Q_OBJECT
+
+  public:
+
+    /**
+     *  @li @p Plain  - A normal dialog.
+     *  @li @p List   - A dialog with an icon list on the left side and a
+     *                  representation of the contents on the right side.
+     *  @li @p Tree   - A dialog with a tree on the left side and a
+     *                  representation of the contents on the right side.
+     *  @li @p Tabbed - A dialog with a tab bar above the representation
+     *                  of the contents.
+     */
+    enum FaceType
+    {
+      Plain  = KPageWidget::Plain,
+      List   = KPageWidget::List,
+      Tree   = KPageWidget::Tree,
+      Tabbed = KPageWidget::Tabbed
+    };
+
+  public:
+    /**
+     * Creates a new page dialog.
+     */
+    KPageDialog( QWidget *parent = 0, Qt::WFlags flags = 0 );
+
+    /**
+     * Destroys the page dialog.
+     */
+    ~KPageDialog();
+
+    /**
+     * Sets the face type of the dialog.
+     */
+    void setFaceType( FaceType faceType );
+
+    /**
+     * Adds a new top level page to the dialog.
+     *
+     * @param widget The widget of the page.
+     * @param name The name which is displayed in the navigation view.
+     *
+     * @returns The associated @see KPageWidgetItem.
+     */
+    KPageWidgetItem* addPage( QWidget *widget, const QString &name );
+
+    /**
+     * Adds a new top level page to the dialog.
+     *
+     * @param item The @see KPageWidgetItem which describes the page.
+     */
+    void addPage( KPageWidgetItem *item );
+
+    /**
+     * Inserts a new page in the dialog.
+     *
+     * @param before The new page will be insert before this @see KPageWidgetItem
+     *               on the same level in hierarchy.
+     * @param widget The widget of the page.
+     * @param name The name which is displayed in the navigation view.
+     *
+     * @returns The associated @see KPageWidgetItem.
+     */
+    KPageWidgetItem* insertPage( KPageWidgetItem *before, QWidget *widget, const QString &name );
+
+    /**
+     * Inserts a new page in the dialog.
+     *
+     * @param before The new page will be insert before this @see KPageWidgetItem
+     *               on the same level in hierarchy.
+     *
+     * @param item The @see KPageWidgetItem which describes the page.
+     */
+    void insertPage( KPageWidgetItem *before, KPageWidgetItem *item );
+
+    /**
+     * Inserts a new sub page in the dialog.
+     *
+     * @param parent The new page will be insert as child of this @see KPageWidgetItem.
+     * @param widget The widget of the page.
+     * @param name The name which is displayed in the navigation view.
+     *
+     * @returns The associated @see KPageWidgetItem.
+     */
+    KPageWidgetItem* addSubPage( KPageWidgetItem *parent, QWidget *widget, const QString &name );
+
+    /**
+     * Inserts a new sub page in the dialog.
+     *
+     * @param parent The new page will be insert as child of this @see KPageWidgetItem.
+     *
+     * @param item The @see KPageWidgetItem which describes the page.
+     */
+    void addSubPage( KPageWidgetItem *parent, KPageWidgetItem *item );
+
+    /**
+     * Removes the page associated with the given @see KPageWidgetItem.
+     */
+    void removePage( KPageWidgetItem *item );
+
+    /**
+     * Sets the page which is associated with the given @see KPageWidgetItem to
+     * be the current page and emits the currentPageChanged() signal.
+     */
+    void setCurrentPage( KPageWidgetItem *item );
+
+    /**
+     * Returns the @see KPageWidgetItem for the current page or 0 if there is no
+     * current page.
+     */
+    KPageWidgetItem* currentPage() const;
+
+  Q_SIGNALS:
+    /**
+     * This signal is emitted whenever the current page has changed.
+     *
+     * @param item The new current page or 0 if no current page is available.
+     */
+    void currentPageChanged( KPageWidgetItem *current, KPageWidgetItem *before );
+
+
+  public Q_SLOTS:
+    /**
+     * Destruct the dialog delayed.
+     *
+     * You can call this function from slots like closeClicked() and hidden().
+     * You should not use the dialog any more after calling this function.
+     */
+    void delayedDestruct();
+
+
+  protected Q_SLOTS:
+    /**
+     * Deletes the dialog immediately. If you want to delete the dialog
+     * delayed use delayedDestruct() or QObject::deleteLater().
+     *
+     * Attention: Do no use connect this slot to signals from user
+     * actions!
+     */
+    void slotDelayedDestruct();
+
+  private:
+    class Private;
+    Private* const d;
+};
+
+#endif

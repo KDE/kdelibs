@@ -27,7 +27,7 @@
 #include <sys/acl.h>
 #include <kacl.h>
 #include <kfileitem.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <qpixmap.h>
 #include <qcombobox.h>
 #include <q3listview.h>
@@ -127,7 +127,7 @@ private:
     QPixmap* m_yesPartialPixmap;
 };
 
-class EditACLEntryDialog : public KDialogBase
+class EditACLEntryDialog : public KDialog
 {
     Q_OBJECT
 public:

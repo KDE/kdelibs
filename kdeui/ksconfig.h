@@ -69,7 +69,7 @@ enum KSpellClients {
  * It contains all of the options settings.The options are set to default
  * values by the constructor and can be reset either by using the
  * public interface or by using KSpellConfig as a widget in a dialog
- * (or, preferably a tabbed dialog using KDialogBase) and letting
+ * (or, preferably a tabbed dialog using KPageDialog) and letting
  * the user change the settings. This way an application that uses
  * KSpell can either rely on the default settings (in the simplest
  * case), offer a dialog to configure KSpell, or offer a dialog to

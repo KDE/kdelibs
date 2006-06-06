@@ -32,7 +32,7 @@
 
 #include <QFrame>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QLabel;
 class QVBoxLayout;
@@ -366,7 +366,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
    *
    * If you reimplement this method make sure you run it
    * in the new method (e.g., show()). Reimplemented
-   * from KDialogBase.
+   * from KDialog.
    */
   virtual void show( void );
 

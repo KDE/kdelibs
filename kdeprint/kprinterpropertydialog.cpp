@@ -31,9 +31,11 @@
 #include <QTabWidget>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
-: KDialog(parent, QString(), KDialog::Ok|KDialog::Cancel|KDialog::User1, Qt::Dialog, KStdGuiItem::save()),
+: KDialog(parent, Qt::Dialog ),
   m_printer(p), m_driver(0), m_current(0)
 {
+  setButtons( KDialog::Ok | KDialog::Cancel | KDialog::User1 );
+  setButtonGuiItem( KDialog::User1, KStdGuiItem::save() );
 	setModal(true);
 	enableButtonSeparator(false);
 	setDefaultButton(KDialog::Ok);

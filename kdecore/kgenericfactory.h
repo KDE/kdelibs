@@ -245,7 +245,7 @@ protected:
  *         ...
  *     };
  *
- *     class MyDialogComponent : public KDialogBase
+ *     class MyDialogComponent : public KDialog
  *     {
  *         Q_ OBJECT
  *     public:
@@ -337,7 +337,7 @@ protected:
  *         ...
  *     };
  *
- *     class MyDialogComponent : public KDialogBase
+ *     class MyDialogComponent : public KDialog
  *     {
  *         Q_ OBJECT
  *     public:

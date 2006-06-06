@@ -22,7 +22,7 @@
 #ifndef KRESOURCES_CONFIGDIALOG_H
 #define KRESOURCES_CONFIGDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KLineEdit;
 class QCheckBox;
@@ -32,7 +32,7 @@ namespace KRES {
   class Resource;
   class ConfigWidget;
 
-class KRESOURCES_EXPORT ConfigDialog : public KDialogBase
+class KRESOURCES_EXPORT ConfigDialog : public KDialog
 {
     Q_OBJECT
   public:

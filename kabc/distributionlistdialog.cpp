@@ -42,8 +42,14 @@
 using namespace KABC;
 
 DistributionListDialog::DistributionListDialog( AddressBook *addressBook, QWidget *parent)
-    : KDialogBase( parent, "", true, i18n("Configure Distribution Lists"), Ok, Ok, true)
+    : KDialog( parent )
 {
+  setModal( true );
+  setCaption( i18n("Configure Distribution Lists") );
+  setButtons( Ok );
+  setDefaultButton( Ok );
+  enableButtonSeparator( true );
+
   mEditor = new DistributionListEditorWidget( addressBook, this );
   setMainWidget( mEditor );
 
@@ -59,12 +65,18 @@ static QMap<QWidget*,QString> *sEmailMap = 0;
 
 EmailSelector::EmailSelector( const QStringList &emails, const QString &current,
                                       QWidget *parent ) :
-  KDialogBase( KDialogBase::Plain, i18n("Select Email Address"), Ok, Ok,
-               parent )
+  KDialog( parent )
 {
+  setCaption( i18n("Select Email Address") );
+  setButtons( Ok );
+  setDefaultButton( Ok );
+              
   if (!sEmailMap)
      sEmailMap = new QMap<QWidget*,QString>();
-  QFrame *topFrame = plainPage();
+
+  QFrame *topFrame = new QFrame( this );
+  setMainWidget( topFrame );
+
   QBoxLayout *topLayout = new QVBoxLayout( topFrame );
 
   QGroupBox *box = new QGroupBox( i18n("Email Addresses") );

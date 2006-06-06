@@ -34,8 +34,9 @@
 #include <kdemacros.h>
 #include <kurl.h>
 #include <kfileitem.h>
-#include <kdialogbase.h>
+#include <kpagedialog.h>
 
+class QLabel;
 class QLineEdit;
 class QCheckBox;
 class QPushButton;
@@ -69,7 +70,7 @@ namespace KIO { class Job; }
  * If you are looking for more flexibility, see KFileMetaInfo and
  * KFileMetaInfoWidget.
  */
-class KIO_EXPORT KPropertiesDialog : public KDialogBase
+class KIO_EXPORT KPropertiesDialog : public KPageDialog
 {
   Q_OBJECT
 
@@ -266,17 +267,6 @@ public:
   KFileItemList items() const { return m_items; }
 
   /**
-   * @return a pointer to the dialog
-   * @deprecated KPropertiesDialog directly inherits from KDialogBase, so use \a this instead
-   */
-  KDE_DEPRECATED KDialogBase* dialog() { return this; }
-  /**
-   * @return a pointer to the dialog
-   * @deprecated KPropertiesDialog directly inherits from KDialogBase, so use \a this instead
-   */
-  KDE_DEPRECATED const KDialogBase* dialog() const { return this; }
-
-  /**
    * If the dialog is being built from a template, this method
    * returns the current directory. If no template, it returns QString().
    * See the template form of the constructor.
@@ -437,7 +427,7 @@ public:
   /**
    * Constructor
    * To insert tabs into the properties dialog, use the add methods provided by
-   * KDialogBase (the properties dialog is a KDialogBase).
+   * KPageDialog (the properties dialog is a KPageDialog).
    */
   KPropsDlgPlugin( KPropertiesDialog *_props );
   virtual ~KPropsDlgPlugin();

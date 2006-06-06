@@ -31,8 +31,10 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
                                const QString &value, const QStringList& items,
                                QWidget *parent,
                                bool clipboard )
-    : KDialog( parent, caption, Ok|Cancel )
+    : KDialog( parent )
 {
+    setCaption( caption );
+    setButtons( Ok | Cancel );
     setModal( true );
     enableButtonSeparator( true );
     setDefaultButton( Ok );

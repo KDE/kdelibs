@@ -51,34 +51,52 @@ public:
 };
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
-    KDialogBase(parent, name, true, i18n("Find Text"), Ok | Cancel, Ok),
+    KDialog(parent),
     m_findExtension (0),
     m_replaceExtension (0),
 	d(new KFindDialogPrivate)
 {
+    setObjectName( name );
+    setModal( true );
+    setCaption( i18n("Find Text") );
+    setButtons( Ok | Cancel );
+    setDefaultButton( Ok );
+
     init(false, findStrings, hasSelection);
     setOptions(options);
-    setButtonGuiItem( KDialogBase::Cancel, KStdGuiItem::close() );
+    setButtonGuiItem( KDialog::Cancel, KStdGuiItem::close() );
 }
 
 KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
-    KDialogBase(parent, name, modal, i18n("Find Text"), Ok | Cancel, Ok),
+    KDialog(parent),
     m_findExtension (0),
     m_replaceExtension (0),
 	d(new KFindDialogPrivate)
 {
+    setObjectName( name );
+    setModal( modal );
+    setCaption( i18n("Find Text") );
+    setButtons( Ok | Cancel );
+    setDefaultButton( Ok );
+
     init(false, findStrings, hasSelection);
     setOptions(options);
-    setButtonGuiItem( KDialogBase::Cancel, KStdGuiItem::close() );
+    setButtonGuiItem( KDialog::Cancel, KStdGuiItem::close() );
 }
 
 KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
-    KDialogBase(parent, name, true, i18n("Replace Text"), Ok | Cancel, Ok),
+    KDialog(parent),
     m_findExtension (0),
     m_replaceExtension (0),
 	d(new KFindDialogPrivate)
 {
-    setButtonGuiItem( KDialogBase::Cancel,  KStdGuiItem::close() );
+    setObjectName( name );
+    setModal( true );
+    setCaption( i18n("Replace Text") );
+    setButtons( Ok | Cancel );
+    setDefaultButton( Ok );
+
+    setButtonGuiItem( KDialog::Cancel,  KStdGuiItem::close() );
 }
 
 KFindDialog::~KFindDialog()
@@ -224,7 +242,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     enableButtonOK( !pattern().isEmpty() );
     if (forReplace)
     {
-      setButtonGuiItem( KDialogBase::Ok, KGuiItem( i18n("&Replace"), QString(),
+      setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Replace"), QString(),
                     i18n("Start replace"),
                     i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
                          "above is searched for within the document and any occurrence is "
@@ -232,7 +250,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     }
     else
     {
-      setButtonGuiItem( KDialogBase::Ok, KGuiItem( i18n("&Find"), "find",
+      setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Find"), "find",
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
                          "above is searched for within the document.</qt>")));
@@ -292,7 +310,7 @@ void KFindDialog::showEvent( QShowEvent *e )
             d->pattern.clear();
         }
     }
-    KDialogBase::showEvent(e);
+    KDialog::showEvent(e);
 }
 
 long KFindDialog::options() const

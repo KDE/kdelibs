@@ -228,8 +228,9 @@ void KHelpMenu::aboutApplication()
   {
     if( !d->mAboutApp )
     {
-      d->mAboutApp = new KDialog( d->mParent, i18n("About %1", kapp->caption()),
-                   KDialog::Yes, Qt::Dialog );
+      d->mAboutApp = new KDialog( d->mParent, Qt::Dialog );
+      d->mAboutApp->setCaption( i18n("About %1", kapp->caption() ) );
+      d->mAboutApp->setButtons( KDialog::Yes );
       d->mAboutApp->setObjectName( "about" );
       d->mAboutApp->enableButtonSeparator( true );
       d->mAboutApp->setButtonText( KDialog::Yes, KStdGuiItem::ok().text() );

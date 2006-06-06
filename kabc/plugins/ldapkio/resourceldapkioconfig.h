@@ -29,7 +29,7 @@
 
 #include <kabc/ldapconfigwidget.h>
 #include <kabc/ldif.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kresources/configwidget.h>
 
 class QCheckBox;
@@ -66,7 +66,7 @@ class KABC_LDAPKIO_EXPORT ResourceLDAPKIOConfig : public KRES::ConfigWidget
     QString mCacheDst;
 };
 
-class AttributesDialog : public KDialogBase
+class AttributesDialog : public KDialog
 {
   Q_OBJECT
 
@@ -91,7 +91,7 @@ class AttributesDialog : public KDialogBase
     QHash<QString, QString> mNameDict;
 };
 
-class OfflineDialog : public KDialogBase
+class OfflineDialog : public KDialog
 {
   Q_OBJECT
 

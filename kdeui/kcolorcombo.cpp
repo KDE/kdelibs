@@ -20,7 +20,7 @@
 // KDE color selection dialog.
 //
 // 1999-09-27 Espen Sand <espensa@online.no>
-// KColorDialog is now subclassed from KDialogBase. I have also extended
+// KColorDialog is now subclassed from KDialog. I have also extended
 // KColorDialog::getColor() so that in contains a parent argument. This
 // improves centering capability.
 //

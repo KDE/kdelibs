@@ -49,7 +49,6 @@
 #include <kbufferedsocket.h>
 #include <kmessagebox.h>
 #include <kaction.h>
-#include <kdialogbase.h>
 #include <kprocess.h>
 #include <kfilterdev.h>
 #include <cups/cups.h>

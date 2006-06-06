@@ -56,10 +56,14 @@ QString AddresseeItem::key( int column, bool ) const
 }
 
 AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
-  KDialogBase( KDialogBase::Plain, i18n("Select Addressee"),
-               Ok|Cancel, Ok, parent ), mMultiple( multiple )
+  KDialog( parent ), mMultiple( multiple )
 {
-  QWidget *topWidget = plainPage();
+  setCaption( i18n("Select Addressee") );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+
+  QWidget *topWidget = new QWidget( this );
+  setMainWidget( topWidget );
 
   QBoxLayout *topLayout = new QHBoxLayout( topWidget );
   QBoxLayout *listLayout = new QVBoxLayout;

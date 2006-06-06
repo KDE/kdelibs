@@ -20,7 +20,7 @@
 #ifndef KSCAN_H
 #define KSCAN_H
 
-#include <kdialogbase.h>
+#include <kpagedialog.h>
 #include <kinstance.h>
 #include <klibloader.h>
 
@@ -61,7 +61,7 @@ class QImage;
  * @short A baseclass and accessor for Scanning Dialogs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KScanDialog : public KDialogBase
+class KIO_EXPORT KScanDialog : public KPageDialog
 {
     Q_OBJECT
 
@@ -93,14 +93,14 @@ public:
 protected:
     /**
      * Constructs the scan dialog. If you implement an own dialog, you can
-     * customize it with the usual KDialogBase flags.
+     * customize it with the usual KPageDialog flags.
      *
-     * @param dialogFace the KDialogBase::DialogType
+     * @param dialogFace the KPageDialog::FaceType
      * @param buttonMask a ORed mask of all buttons (see
-     * KDialogBase::ButtonCode)
+     * KDialog::ButtonCode)
      * @param parent the QWidget's parent, or 0
      * @param modal if true the dialog is model
-     * @see KDialogBase
+     * @see KPageDialog
      */
     KScanDialog( int dialogFace = Tabbed, int buttonMask = Close|Help,
 		 QWidget *parent = 0 );
@@ -225,7 +225,7 @@ private:
 /**
  * Base class for OCR Dialogs.
  */
-class KIO_EXPORT KOCRDialog : public KDialogBase
+class KIO_EXPORT KOCRDialog : public KPageDialog
 {
     Q_OBJECT
 
@@ -244,11 +244,11 @@ public:
 protected:
     /**
      * Constructs the OCR dialog. If you implement an own dialog, you can
-     * customize it with the usual KDialogBase flags.
+     * customize it with the usual KPageDialog flags.
      *
-     * @param dialogFace the KDialogBase::DialogType
+     * @param dialogFace the KPageDialog::FaceType
      * @param buttonMask a ORed mask of all buttons (see
-     * KDialogBase::ButtonCode)
+     * KDialog::ButtonCode)
      * @param parent the QWidget's parent, or 0
      * @param modal if true the dialog is model
      */

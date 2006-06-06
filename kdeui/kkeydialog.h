@@ -22,13 +22,14 @@
 #ifndef KKEYDIALOG_H
 #define KKEYDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kshortcut.h>
 
 class QCheckBox;
 class QLabel;
 class QLineEdit;
 class QRadioButton;
+class QTreeWidgetItem;
 class KActionCollection;
 class KConfigBase;
 class KGlobalAccel;

@@ -21,7 +21,7 @@
 #ifndef KURLREQUESTERDIALOG_H
 #define KURLREQUESTERDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kurl.h>
 
 class KUrlCompletion;

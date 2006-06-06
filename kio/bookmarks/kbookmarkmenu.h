@@ -27,7 +27,6 @@
 #include <qobject.h>
 #include <QStack>
 
-#include <kdialogbase.h>
 #include <klocale.h>
 #include <kaction.h>
 

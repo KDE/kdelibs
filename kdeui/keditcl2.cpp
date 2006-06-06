@@ -701,10 +701,13 @@ public:
 
 
 KEdFind::KEdFind( QWidget *parent, bool modal )
-  :KDialog( parent, i18n("Find"), modal ? User1|Cancel : User1|Close, 0 , KStdGuiItem::find() )
+  : KDialog( parent )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
+  setCaption(i18n("Find"));
+  setButtons( modal ? User1|Cancel : User1|Close );
+  setButtonGuiItem( User1, KStdGuiItem::find() );
   setModal(modal);
   enableButtonSeparator(false);
   setDefaultButton(User1);
@@ -742,7 +745,7 @@ KEdFind::KEdFind( QWidget *parent, bool modal )
   direction->setObjectName( QLatin1String( "direction" ) );
 
 
-  enableButton( KDialogBase::User1, !d->combo->currentText().isEmpty() );
+  enableButton( KDialog::User1, !d->combo->currentText().isEmpty() );
 
   connect( this, SIGNAL( user1Clicked() ), this, SLOT( slotUser1() ) );
   connect( this, SIGNAL( cancelClicked() ), this, SIGNAL( done() ) );
@@ -758,7 +761,7 @@ KEdFind::~KEdFind()
 
 void KEdFind::textSearchChanged ( const QString &text )
 {
-   enableButton( KDialogBase::User1, !text.isEmpty() );
+   enableButton( KDialog::User1, !text.isEmpty() );
 }
 
 void KEdFind::slotUser1( void )
@@ -834,15 +837,18 @@ public:
 };
 
 KEdReplace::KEdReplace( QWidget *parent, bool modal )
-  :KDialog( parent, i18n("Replace"),
-		modal ? User3|User2|User1|Cancel : User3|User2|User1|Close, 0 ,
-		i18n("Replace &All"), i18n("&Replace"), KStdGuiItem::find() )
+  : KDialog( parent )
 {
 // is this really needed at all ?
 //  setWFlags( Qt::WType_TopLevel );
+  setCaption(i18n("Replace"));
+  setButtons( modal ? User3|User2|User1|Cancel : User3|User2|User1|Close );
+  setButtonGuiItem( User1, i18n("Replace &All") );
+  setButtonGuiItem( User2, i18n("&Replace") );
+  setButtonGuiItem( User3, KStdGuiItem::find() );
   setModal(modal);
   setDefaultButton(User3);
-  setButtonBoxOrientation( Qt::Vertical );
+  setButtonsOrientation( Qt::Vertical );
   enableButtonSeparator(false);
   QWidget *page = new QWidget(this);
   setMainWidget(page);
@@ -905,9 +911,9 @@ KEdReplace::~KEdReplace()
 void KEdReplace::textSearchChanged ( const QString &text )
 {
     bool state=text.isEmpty();
-    enableButton( KDialogBase::User1, !state );
-    enableButton( KDialogBase::User2, !state );
-    enableButton( KDialogBase::User3, !state );
+    enableButton( KDialog::User1, !state );
+    enableButton( KDialog::User2, !state );
+    enableButton( KDialog::User3, !state );
 }
 
 void KEdReplace::slotCancel( void )
@@ -990,8 +996,10 @@ KHistoryCombo * KEdReplace::replaceCombo() const
 
 
 KEdGotoLine::KEdGotoLine( QWidget *parent, bool modal )
-  :KDialog( parent, i18n("Go to Line"), modal ? Ok|Cancel : Ok|Close )
+  : KDialog( parent )
 {
+  setCaption( i18n("Go to Line") );
+  setButtons( modal ? Ok|Cancel : Ok|Close );
   setModal(modal);
   setDefaultButton(User3);
   enableButtonSeparator(false);

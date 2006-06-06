@@ -876,12 +876,14 @@ void KKeyChooserItem::commitChanges()
 /* Substantially revised by Mark Donohoe <donohoe@kde.org>              */
 /*                                                                      */
 /* And by Espen Sand <espen@kde.org> 1999-10-19                         */
-/* (by using KDialogBase there is almost no code left ;)                */
+/* (by using KDialog there is almost no code left ;)                    */
 /*                                                                      */
 /************************************************************************/
 KKeyDialog::KKeyDialog( KKeyChooser::ActionTypes types, KKeyChooser::LetterShortcuts allowLetterShortcuts, QWidget *parent )
-: KDialog( parent, i18n("Configure Shortcuts"), Default|Ok|Cancel )
+: KDialog( parent )
 {
+  setCaption(i18n("Configure Shortcuts"));
+  setButtons(Default|Ok|Cancel);
 	setModal(true);
 	m_keyChooser = new KKeyChooser( this, types, allowLetterShortcuts );
 	setMainWidget( m_keyChooser );

@@ -29,7 +29,6 @@
 #include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kdialogbase.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -263,7 +262,7 @@ void RMB::slotProperties()
   KBookmarkEditDialog dlg( bookmark.fullText(), folder,
                            m_pManager, KBookmarkEditDialog::ModifyMode, 0,
                            0, 0, i18n("Bookmark Properties") );
-  if ( dlg.exec() != KDialogBase::Accepted )
+  if ( dlg.exec() != KDialog::Accepted )
     return;
 
   makeTextNodeMod(bookmark, "title", dlg.finalTitle());
@@ -757,11 +756,19 @@ QString KBookmarkTreeItem::address()
 
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType, const QString& address,
                                          QWidget * parent, const char * name, const QString& caption )
-  : KDialog(parent, caption, (editType == InsertionMode) ? (User1|Ok|Cancel) : (Ok|Cancel)),
+  : KDialog(parent),
     m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
+  setCaption( caption );
 
-  setButtonGuiItem(KDialog::Ok, (editType == InsertionMode) ? KGuiItem( i18n( "&Add" ), "bookmark_add") : i18n( "&Update" ) );
+  if ( editType == InsertionMode ) {
+    setButtons( User1 | Ok | Cancel );
+    setButtonGuiItem( KDialog::Ok,  KGuiItem( i18n( "&Add" ), "bookmark_add") );
+  } else {
+    setButtons( Ok | Cancel );
+    setButtonGuiItem( KDialog::Ok, i18n( "&Update" ) );
+  }
+
   setDefaultButton( KDialog::Ok );
   if (editType == InsertionMode) {
     setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder_new") );

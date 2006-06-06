@@ -39,14 +39,20 @@
 
 
 KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, QWidget *parent)
-    :   KDialog( parent, QString(), Ok|Cancel|User1,0,KStdGuiItem::clear() )
+    :   KDialog( parent )
 {
+  setButtons( Ok | Cancel | User1 );
+  setButtonGuiItem( User1, KStdGuiItem::clear() );
+
   initDialog(i18n( "Location:" ), urlName);
 }
 
 KUrlRequesterDlg::KUrlRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent)
-    :   KDialog( parent, QString(), Ok|Cancel|User1,0,KStdGuiItem::clear() )
+    :   KDialog( parent )
 {
+  setButtons( Ok | Cancel | User1 );
+  setButtonGuiItem( User1, KStdGuiItem::clear() );
+
   initDialog(_text, urlName);
 }
 

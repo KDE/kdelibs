@@ -20,13 +20,13 @@
 #ifndef	CUPSDDIALOG_H
 #define	CUPSDDIALOG_H
 
-#include <kdialogbase.h>
+#include <kpagedialog.h>
 #include <QList>
 
 class CupsdPage;
 struct CupsdConf;
 
-class CupsdDialog : public KDialogBase
+class CupsdDialog : public KPageDialog
 {
 	Q_OBJECT
 public:

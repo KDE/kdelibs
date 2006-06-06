@@ -86,9 +86,11 @@ public:
 };
 
 KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
-  : KDialog(parent, i18n("Menu Editor"), Ok|Cancel),
+  : KDialog(parent),
     m_listView(0),d(new KCustomMenuEditorPrivate)
 {
+   setCaption( i18n("Menu Editor") );
+   setButtons( Ok | Cancel );
    setDefaultButton(Ok);
    enableButtonSeparator(true);
    KHBox *page = new KHBox(this);

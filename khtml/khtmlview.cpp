@@ -66,7 +66,7 @@
 #include <kapplication.h>
 #include <kcursor.h>
 #include <kdebug.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <knotification.h>
@@ -858,7 +858,7 @@ void KHTMLView::closeChildDialogs()
     QList<QDialog *> dlgs = findChildren<QDialog *>();
     foreach (QDialog *dlg, dlgs)
     {
-        KDialogBase* dlgbase = dynamic_cast<KDialogBase *>( dlg );
+        KDialog* dlgbase = dynamic_cast<KDialog*>( dlg );
         if ( dlgbase ) {
             if ( dlgbase->testAttribute( Qt::WA_ShowModal ) ) {
                 kDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase << endl;
@@ -869,7 +869,7 @@ void KHTMLView::closeChildDialogs()
         }
         else
         {
-            kWarning() << "closeChildDialogs: not a KDialogBase! Don't use QDialogs in KDE! " << static_cast<QWidget*>(dlg) << endl;
+            kWarning() << "closeChildDialogs: not a KDialog! Don't use QDialogs in KDE! " << static_cast<QWidget*>(dlg) << endl;
             static_cast<QWidget*>(dlg)->hide();
         }
     }

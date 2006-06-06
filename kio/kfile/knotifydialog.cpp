@@ -122,10 +122,17 @@ int KNotifyDialog::configure( QWidget *parent, const char *name,
 
 KNotifyDialog::KNotifyDialog( QWidget *parent, const char *name, bool modal,
                               const KAboutData *aboutData )
-    : KDialogBase( parent, name, modal, i18n("Notification Settings"),
-                  Ok | Apply | Cancel | Default, Ok, true )
+    : KDialog( parent )
 {
-    KVBox *box = makeVBoxMainWidget();
+    setObjectName( name );
+    setModal( modal );
+    setCaption( i18n("Notification Settings") );
+    setButtons( Ok | Apply | Cancel | Default );
+    setDefaultButton( Ok );
+    enableButtonSeparator( true );
+
+    KVBox *box = new KVBox( this );
+    setMainWidget( box );
 
     m_notifyWidget = new KNotifyWidget( box, "knotify widget" );
 

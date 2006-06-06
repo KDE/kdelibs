@@ -23,10 +23,11 @@
 #include <qwidget.h>
 #include <qmap.h>
 #include <qstringlist.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class K3ListView;
 class Q3ListViewItem;
+class QLabel;
 class QLineEdit;
 class QComboBox;
 class QToolButton;
@@ -91,7 +92,7 @@ private:
 	QMap<QString, DrBase*>	m_opts;
 };
 
-class KXmlCommandDlg : public KDialogBase
+class KXmlCommandDlg : public KDialog
 {
 	Q_OBJECT
 public:

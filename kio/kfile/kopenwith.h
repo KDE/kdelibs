@@ -20,8 +20,7 @@
 #ifndef __open_with_h__
 #define __open_with_h__
 
-#include <qdialog.h>
-
+#include <kdialog.h>
 #include <kurl.h>
 #include <krun.h>
 #include <kservice.h>
@@ -41,7 +40,7 @@ class KOpenWithDlgPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KOpenWithDlg : public QDialog //#TODO: Use KDialogBase for KDE4
+class KIO_EXPORT KOpenWithDlg : public KDialog
 {
     Q_OBJECT
 public:

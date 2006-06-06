@@ -309,8 +309,14 @@ bool NetworkScanner::checkPrinter( const QString& host, int port )
 }
 
 NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *name)
-	: KDialogBase(Swallow, 0, scanner, name, true, QString(), Ok|Cancel, Ok, true)
+	: KDialog( scanner )
 {
+  setObjectName( name );
+  setModal( true );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  enableButtonSeparator( true );
+
 	scanner_ = scanner;
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
@@ -400,7 +406,7 @@ void NetworkScannerConfig::slotOk()
 	scanner_->setSubnet( mask_->text() );
 	scanner_->setPort( port_->currentText().toInt() );
 
-	KDialogBase::slotOk();
+	KDialog::accept();
 }
 
 #include "networkscanner.moc"

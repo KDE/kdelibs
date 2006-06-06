@@ -50,11 +50,17 @@ class ProviderItem : public QTreeWidgetItem
 };
 
 ProviderDialog::ProviderDialog( Engine *engine, QWidget *parent ) :
-  KDialogBase( Plain, i18n("Hot New Stuff Providers"), Ok | Cancel, Cancel,
-               parent, 0, false, true ),
+  KDialog( parent ),
   mEngine( engine )
 {
-  QFrame *topPage = plainPage();
+  setCaption( i18n("Hot New Stuff Providers") );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Cancel );
+  setModal( false );
+  enableButtonSeparator( true );
+
+  QFrame *topPage = new QFrame( this );
+  setMainWidget( topPage );
 
   QBoxLayout *topLayout = new QVBoxLayout( topPage );
 

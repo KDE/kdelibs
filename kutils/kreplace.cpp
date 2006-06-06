@@ -31,7 +31,7 @@
 //#define DEBUG_REPLACE
 #define INDEX_NOMATCH -1
 
-class KReplaceNextDialog : public KDialogBase
+class KReplaceNextDialog : public KDialog
 {
 public:
     KReplaceNextDialog( QWidget *parent );
@@ -41,13 +41,17 @@ private:
 };
 
 KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
-    KDialogBase(parent, 0, false,  // non-modal!
-        i18n("Replace"),
-        User3 | User2 | User1 | Close,
-        User3,
-        false,
-        i18n("&All"), i18n("&Skip"), i18n("Replace"))
+    KDialog(parent)
 {
+    setModal( false );
+    setCaption( i18n("Replace") );
+    setButtons( User3 | User2 | User1 | Close );
+    setButtonGuiItem( User1, i18n("&All") );
+    setButtonGuiItem( User2, i18n("&Skip") );
+    setButtonGuiItem( User3, i18n("Replace") );
+    setDefaultButton( User3 );
+    enableButtonSeparator( false );
+
     m_mainLabel = new QLabel( this );
     setMainWidget( m_mainLabel );
     resize(minimumSize());
@@ -79,7 +83,7 @@ KReplace::~KReplace()
     // KFind::~KFind will delete m_dialog
 }
 
-KDialogBase* KReplace::replaceNextDialog( bool create )
+KDialog* KReplace::replaceNextDialog( bool create )
 {
     if ( m_dialog || create )
         return dialog();

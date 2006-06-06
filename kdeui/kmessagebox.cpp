@@ -286,7 +286,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
         KDialog::Yes,
         KDialog::Details };
     for( unsigned int i = 0; i < sizeof( buttons )/sizeof( buttons[ 0 ] ); ++i )
-        if( QPushButton* btn = dialog->actionButton( buttons[ i ] ))
+        if( QPushButton* btn = dialog->button( buttons[ i ] ))
             if( btn->isDefault())
                 btn->setFocus();
 
@@ -427,8 +427,9 @@ KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
         return res;
 
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Question") : caption,
-      KDialog::Yes | KDialog::No, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Question") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::No );
     dialog->setObjectName( "questionYesNo" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -481,8 +482,9 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
         return res;
 
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Question") : caption,
-      KDialog::Yes | KDialog::No | KDialog::Cancel, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Question") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
     dialog->setObjectName( "questionYesNoCancel" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -565,8 +567,9 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
         return res;
 
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Warning") : caption,
-      KDialog::Yes | KDialog::No, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::No );
     dialog->setObjectName( "warningYesNoList" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -640,8 +643,9 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
         return Continue;
 
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Warning") : caption,
-      KDialog::Yes | KDialog::No, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::No );
     dialog->setObjectName( "warningYesNo" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -719,8 +723,9 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
         return res;
 
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Warning") : caption,
-      KDialog::Yes | KDialog::No | KDialog::Cancel, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Warning") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
     dialog->setObjectName( "warningYesNoCancel" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -772,8 +777,9 @@ KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList
                    const QString &caption, Options options)
 {
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Error") : caption,
-      KDialog::Yes, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
+    dialog->setButtons( KDialog::Yes );
     dialog->setObjectName( "error" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -804,8 +810,9 @@ KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
                    const QString &caption, Options options)
 {
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Error") : caption,
-      KDialog::Yes | KDialog::Details, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Error") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::Details );
     dialog->setObjectName( "error" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -853,8 +860,9 @@ KMessageBox::sorryWId(WId parent_id, const QString &text,
                    const QString &caption, Options options)
 {
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Sorry") : caption,
-      KDialog::Yes, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
+    dialog->setButtons( KDialog::Yes );
     dialog->setObjectName( "sorry" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -885,8 +893,9 @@ KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
                    const QString &caption, Options options)
 {
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Sorry") : caption,
-      KDialog::Yes | KDialog::Details, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Sorry") : caption );
+    dialog->setButtons( KDialog::Yes | KDialog::Details );
     dialog->setObjectName( "sorry" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -933,8 +942,9 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
         return;
 
     QWidget* parent = QWidget::find( parent_id );
-    KDialog *dialog= new KDialog(parent, caption.isEmpty() ? i18n("Information") : caption,
-      KDialog::Yes, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption.isEmpty() ? i18n("Information") : caption );
+    dialog->setButtons( KDialog::Yes );
     dialog->setObjectName( "information" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );
@@ -1002,8 +1012,9 @@ KMessageBox::about(QWidget *parent, const QString &text,
     if (_caption.isEmpty())
         _caption = i18n("About %1", kapp->caption());
 
-    KDialog *dialog= new KDialog(parent, caption,
-      KDialog::Yes, Qt::Dialog);
+    KDialog *dialog= new KDialog(parent, Qt::Dialog);
+    dialog->setCaption( caption );
+    dialog->setButtons( KDialog::Yes );
     dialog->setObjectName( "about" );
     dialog->setModal( true );
     dialog->enableButtonSeparator( true );

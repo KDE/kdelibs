@@ -30,13 +30,13 @@ class QLineEdit;
 class QCheckBox;
 class QLabel;
 class QPushButton;
-class KDialogBase;
+class KDialog;
 
 class KDEPRINT_MANAGEMENT_EXPORT KXmlCommandSelector : public QWidget
 {
 	Q_OBJECT
 public:
-	KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, KDialogBase *dlg = 0);
+	KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, KDialog *dlg = 0);
 
 	void setCommand(const QString&);
 	QString command() const;

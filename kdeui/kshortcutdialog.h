@@ -23,7 +23,7 @@
 
 #include <kshortcut.h>
 
-#include "kdialogbase.h"
+#include "kdialog.h"
 
 class QStackedWidget;
 class KPushButton;

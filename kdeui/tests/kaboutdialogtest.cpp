@@ -7,6 +7,9 @@
  * requires:   recent C++-compiler, at least Qt 1.4
  */
 
+#include <QImage>
+#include <QPixmap>
+
 #include "kaboutdialog.h"
 
 #include <kaboutdata.h>

@@ -1,7 +1,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 #include <QTextBrowser>
 #include <QLabel>
@@ -40,7 +40,8 @@ int main(int argc, char** argv)
      If you want to derive it, you still can, moving all code shown here
      inside of your new class. */
   KDialog dialog;
-  dialog.setButtonMask( KDialog::Ok | KDialog::Cancel | KDialog::Details | KDialog::User1 | KDialog::Help , KGuiItem("Test") );
+  dialog.setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Details | KDialog::User1 | KDialog::Help );
+  dialog.setButtonGuiItem( KDialog::User1 , KGuiItem("Test") );
   dialog.enableButtonSeparator(true);
   dialog.setCaption("dialog!");
   /* Set a help chapter. If you do not set one, the link is not shown, and the

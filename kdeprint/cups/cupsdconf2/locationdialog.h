@@ -20,7 +20,7 @@
 #ifndef LOCATIONDIALOG_H
 #define LOCATIONDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QComboBox;
 class QLineEdit;
@@ -28,7 +28,7 @@ class EditList;
 struct CupsdConf;
 struct CupsLocation;
 
-class LocationDialog : public KDialogBase
+class LocationDialog : public KDialog
 {
 	Q_OBJECT
 public:

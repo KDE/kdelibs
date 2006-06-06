@@ -31,14 +31,21 @@
 
 #include <qlayout.h>
 #include <klocale.h>
-#include <kiconloader.h>
-#include <kinstance.h>
 #include <kconfig.h>
+#include <kicon.h>
 #include <QFrame>
 
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
-: KDialogBase(IconList,i18n("KDE Print Configuration"),Ok|Cancel,Ok,parent,name,true,true)
+: KPageDialog( parent )
 {
+  setFaceType( List );
+  setCaption( i18n("KDE Print Configuration") );
+  setButtons( Ok|Cancel );
+  setDefaultButton( Ok );
+  setObjectName( name );
+  setModal( true );
+  enableButtonSeparator( true );
+
 	addConfigPage(new KMConfigGeneral(this));
 	addConfigPage(new KMConfigPreview(this));
 	addConfigPage(new KMConfigFonts(this));
@@ -61,19 +68,17 @@ void KMConfigDialog::addConfigPage(KMConfigPage *page)
 {
 	if (page)
 	{
-		QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
-		                                                           page->pagePixmap(),
-		                                                           K3Icon::NoGroup,
-                        	                                           K3Icon::SizeMedium
-		                                                          );
-
-		QFrame	*frame = addPage(page->pageName(),page->pageHeader(),icon);
+		QFrame	*frame = new QFrame( this );
 		page->setParent(frame);
 		QVBoxLayout	*lay = new QVBoxLayout(frame);
 		lay->setMargin(0);
 		lay->setSpacing(0);
 		lay->addWidget(page);
 		m_pages.append(page);
+
+    KPageWidgetItem *item = new KPageWidgetItem( frame, page->pageName() );
+    item->setHeader( page->pageHeader() );
+    item->setIcon( KIcon( page->pagePixmap() ) );
 	}
 }
 
@@ -87,6 +92,6 @@ void KMConfigDialog::slotOk()
 	KMFactory::self()->saveConfig();
 
 	// close the dialog
-	KDialogBase::slotOk();
+	KPageDialog::accept();
 }
 #include "kmconfigdialog.moc"

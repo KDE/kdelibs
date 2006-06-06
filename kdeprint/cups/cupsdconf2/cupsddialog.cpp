@@ -111,26 +111,28 @@ const char* getPassword(const char*)
 //---------------------------------------------------
 
 CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
-	: KDialogBase(IconList, "", Ok|Cancel|User1, Ok, parent, name, true, true, KGuiItem(i18n("Short Help"), "help"))
+	: KPageDialog( parent )
 {
+  setFaceType( List );
+  setCaption(i18n("CUPS Server Configuration"));
+  setButtons( Ok | Cancel | User1 );
+  setButtonGuiItem( User1, KGuiItem(i18n("Short Help"), "help") );
+  setDefaultButton( Ok );
+  setObjectName( name );
+  setModal( true );
+  enableButtonSeparator( true );
+
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalog("cupsdconf");
-
-	setShowIconsInTreeList(true);
-	setRootIsDecorated(false);
 
 	filename_ = "";
 	conf_ = 0;
 	constructDialog();
-
-        setCaption(i18n("CUPS Server Configuration"));
-
-        //resize(500, 400);
 }
 
 CupsdDialog::~CupsdDialog()
 {
-        delete conf_;
+  delete conf_;
 }
 
 void CupsdDialog::addConfPage(CupsdPage *page)
@@ -141,9 +143,13 @@ void CupsdDialog::addConfPage(CupsdPage *page)
                                                                    K3Icon::SizeMedium
 	                                                          );
 
-	KVBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
+	KVBox	*box = new KVBox( this );
 	page->setParent(box);
 	pagelist_.append(page);
+
+  KPageWidgetItem *item = addPage( box, page->pageLabel() );
+  item->setHeader( page->header() );
+  item->setIcon( icon );
 }
 
 void CupsdDialog::constructDialog()
@@ -315,7 +321,7 @@ void CupsdDialog::slotOk()
 			KMessageBox::error(this, msg.prepend("<qt>").append("</qt>"), i18n("CUPS Configuration Error"));
 		}
 		else
-			KDialogBase::slotOk();
+			KPageDialog::accept();
 	}
 }
 

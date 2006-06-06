@@ -21,7 +21,7 @@
 #ifndef KFIND_H
 #define KFIND_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <qrect.h>
 
 /**
@@ -276,7 +276,7 @@ public:
      * menu item while a find operation is under way. In that case, the
      * program may want to call setActiveWindow() on that dialog.
      */
-    KDialogBase* findNextDialog( bool create = false );
+    KDialog* findNextDialog( bool create = false );
 
     /**
      * Close the "find next?" dialog. The application should do this when
@@ -370,7 +370,7 @@ private:
 
     QString m_pattern;
     QRegExp *m_regExp;
-    KDialogBase* m_dialog;
+    KDialog* m_dialog;
     long m_options;
     unsigned m_matches;
 

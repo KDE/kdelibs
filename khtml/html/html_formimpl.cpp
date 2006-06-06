@@ -623,11 +623,17 @@ void HTMLFormElementImpl::submit(  )
 
             if ( doesnotexist || !w || login_changed ) {
                 // TODO use KMessageBox::questionYesNoCancel() again, if you can pass a KGuiItem for Cancel
-                KDialogBase* const dialog = new KDialogBase(i18n("Save Login Information"),
-                                                          KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
-                                                          KDialogBase::Yes, KDialogBase::Cancel,
-                                                          0, "questionYesNoCancel", true, true,
-                                                          i18n("Store"), KGuiItem(i18n("Ne&ver for This Site")), i18n("Do Not Store"));
+                KDialog* const dialog = new KDialog();
+                dialog->setObjectName( "questionYesNoCancel" );
+                dialog->setCaption( i18n("Save Login Information") );
+                dialog->setButtons( KDialog::Yes | KDialog::No | KDialog::Cancel );
+                dialog->setButtonGuiItem( KDialog::User1, i18n("Store") );
+                dialog->setButtonGuiItem( KDialog::User2, KGuiItem(i18n("Ne&ver for This Site")) );
+                dialog->setButtonGuiItem( KDialog::User3, i18n("Do Not Store") );
+                dialog->setDefaultButton( KDialog::Yes );
+                dialog->setEscapeButton( KDialog::Cancel );
+                dialog->setModal( true );
+                dialog->enableButtonSeparator( true );
 
                 bool checkboxResult = false;
                 const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,
@@ -644,7 +650,7 @@ void HTMLFormElementImpl::submit(  )
                                                                                  "the information now?", formUrl.host()),
                                                                             QStringList(), QString(), &checkboxResult, KMessageBox::Notify);
 
-                if ( savePassword == KDialogBase::Yes ) {
+                if ( savePassword == KDialog::Yes ) {
                     // ensure that we have the user / password inside the url
                     // otherwise we might have a potential security problem
                     // by saving passwords under wrong lookup key.
@@ -652,7 +658,7 @@ void HTMLFormElementImpl::submit(  )
                     if (view->part()) {
                         view->part()->saveToWallet(key, m_walletMap);
                     }
-                } else if ( savePassword == KDialogBase::No ) {
+                } else if ( savePassword == KDialog::No ) {
                     view->addNonPasswordStorableSite(formUrl.host());
                 }
             }

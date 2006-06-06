@@ -42,9 +42,11 @@ public:
 };
 
 KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
-  : KDialog(parent, i18n("Check Spelling"), Help|Cancel|User1)
+  : KDialog(parent)
     , d(0),progressbar( false )
 {
+  setCaption( i18n("Check Spelling") );
+  setButtons( Help|Cancel|User1 );
   setModal( _modal );
   setDefaultButton( Cancel );
   enableButtonSeparator( true );

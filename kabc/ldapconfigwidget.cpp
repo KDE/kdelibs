@@ -31,7 +31,6 @@
 #include <kacceleratormanager.h>
 #include <kcombobox.h>
 #include <kdebug.h>
-#include <kdialogbase.h>
 #include <klocale.h>
 #include <klineedit.h>
 #include <kmessagebox.h>

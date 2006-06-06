@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF_UPLOADDIALOG_H
 #define KNEWSTUFF_UPLOADDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QLineEdit;
 class QSpinBox;
@@ -44,7 +44,7 @@ class Entry;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class UploadDialog : public KDialogBase
+class UploadDialog : public KDialog
 {
     Q_OBJECT
   public:

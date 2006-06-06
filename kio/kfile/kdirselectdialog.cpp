@@ -88,11 +88,12 @@ static KUrl rootUrl(const KUrl &url)
 
 KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
                                    QWidget *parent)
-    : KDialog( parent, i18n("Select Folder"),
-                   Ok|Cancel|User1,0,
-                   KGuiItem( i18n("New Folder..."), "folder_new" ) ),
+    : KDialog( parent ),
       m_localOnly( localOnly ),d(new KDirSelectDialogPrivate)
 {
+    setCaption( i18n("Select Folder") );
+    setButtons( Ok | Cancel | User1 );
+    setButtonGuiItem( User1, KGuiItem( i18n("New Folder..."), "folder_new" ) );
     enableButtonSeparator(false);
     setDefaultButton(Ok);
     d->branch = 0L;

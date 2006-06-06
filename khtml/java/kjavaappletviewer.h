@@ -28,7 +28,7 @@
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>
 #include <kparts/factory.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kurl.h>
 #include <qobject.h>
 #include <qstringlist.h>
@@ -131,7 +131,7 @@ private:
     static KInstance * s_instance;
 };
 
-class AppletParameterDialog : public KDialogBase {
+class AppletParameterDialog : public KDialog {
     Q_OBJECT
 public:
     AppletParameterDialog (KJavaAppletWidget * parent);

@@ -40,8 +40,12 @@
 #include <kseparator.h>
 
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
-: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel, Ok)
+: KDialog( parent )
 {
+  setObjectName( name );
+  setModal( true );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
 	setCaption(i18n("Add Special Printer"));
 
 	QWidget	*dummy = new QWidget(this);
@@ -163,7 +167,7 @@ void KMSpecialPrinterDlg::slotOk()
 {
 	if (!checkSettings())
 		return;
-	KDialogBase::slotOk();
+	KDialog::accept();
 }
 
 bool KMSpecialPrinterDlg::checkSettings()

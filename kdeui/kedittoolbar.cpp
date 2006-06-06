@@ -385,7 +385,7 @@ void KEditToolbar::init()
     d->m_factory = 0;
 
     setCaption(i18n("Configure Toolbars"));
-    setButtonMask(Default|Ok|Apply|Cancel);
+    setButtons(Default|Ok|Apply|Cancel);
     setDefaultButton(Ok);
 
     setModal(false);

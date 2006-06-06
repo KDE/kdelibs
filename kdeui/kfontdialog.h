@@ -26,7 +26,7 @@
 
 #include <QLineEdit>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QComboBox;
 class QCheckBox;

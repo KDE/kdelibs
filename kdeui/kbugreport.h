@@ -19,9 +19,10 @@
 #ifndef KBUGREPORT_H
 #define KBUGREPORT_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QTextEdit;
+class QLabel;
 class QLineEdit;
 class QGroupBox;
 class KProcess;

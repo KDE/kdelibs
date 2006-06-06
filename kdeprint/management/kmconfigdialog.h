@@ -20,12 +20,12 @@
 #ifndef KMCONFIGDIALOG_H
 #define KMCONFIGDIALOG_H
 
-#include <kdialogbase.h>
+#include <kpagedialog.h>
 #include <qlist.h>
 
 #include "kmconfigpage.h"
 
-class KDEPRINT_MANAGEMENT_EXPORT KMConfigDialog : public KDialogBase
+class KDEPRINT_MANAGEMENT_EXPORT KMConfigDialog : public KPageDialog
 {
 	Q_OBJECT
 public:

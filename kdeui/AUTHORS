@@ -95,3 +95,6 @@ contributes for the Dockwidget class set
 Holger Freyther <freyther@yahoo.com>
 KDialogBase, KGuiItem, KStdGuiItem, KAction,
 added KMessageBox::questionYesNoCancel( )
+
+Tobias Koenig <tokoe@kde.org>
+KPageModel/View/Widget/Dialog

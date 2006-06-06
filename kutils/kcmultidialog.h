@@ -23,85 +23,26 @@
 #ifndef KCMULTIDIALOG_H
 #define KCMULTIDIALOG_H
 
-#include <kdialogbase.h>
-#include <klocale.h>
-#include <kservice.h>
-#include <QList>
-#include <qhash.h>
-
-class KCModuleProxy;
-class KCModuleInfo;
+#include <kpagedialog.h>
 
 /**
- * @short A method that offers a KDialogBase containing arbitrary
+ * @short A method that offers a KPageDialog containing arbitrary
  *        KControl Modules.
  *
  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>
  */
-class KUTILS_EXPORT KCMultiDialog : public KDialogBase
+class KUTILS_EXPORT KCMultiDialog : public KPageDialog
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
+  public:
     /**
      * Constructs a new KCMultiDialog
      *
      * @param parent The parent widget
-     * @param name The widget name
-     * @param modal If you pass true here, the dialog will be modal
      **/
-    KCMultiDialog( QWidget *parent=0, const char *name=0, bool modal=false );
+    KCMultiDialog( QWidget *parent = 0 );
 
-    /**
-     * Construct a personalized KCMultiDialog.
-     *
-     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
-     *        IconList.
-     * @param caption The dialog caption. Do not specify the application name
-     *        here. The class will take care of that.
-     * @param parent Parent of the dialog.
-     * @param name Dialog name (for internal use only).
-     * @param modal Controls dialog modality. If @p false, the rest of the
-     *        program interface (example: other dialogs) is accessible while
-     *        the dialog is open.
-     */
-    KCMultiDialog( int dialogFace, const QString & caption, QWidget * parent = 0,
-            const char * name = 0, bool modal = false );
-
-
-   /**
-     * Constructor for the predefined layout mode where you specify the
-     * kind of layout (face) and also add buttons. Note that the User1 button
-     * of KDialogBase is already used to provide a "Reset" button so only
-     * two more buttons are available to users of KCMultiDialog. When clicked
-     * they trigger slotUser2() and slotUser3().
-     *
-     * @note If any root modules are added to the dialog when this constructor is
-     * used, it will not be able to run them with root privileges. Since that will
-     * render them useless, it is a good idea to use another constructor. In KDE 4
-     * the argument @p user3 will be removed.
-     *
-     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or
-     *        IconList.
-     * @param user2 User button2 text item.
-     * @param user3 User button3 text item.
-     * @param buttonMask Specifies which buttons will be visible. If zero
-     *        (0) no extra buttons will be added. You can only use the User2 and
-     *        User3 buttons. The User1 button is already used internally.  See
-     *        KDialogBase for more information on this.
-     * @param caption The dialog caption. Do not specify the application name
-     *        here. The class will take care of that.
-     * @param parent Parent of the dialog.
-     * @param name Dialog name (for internal use only).
-     * @param modal Controls dialog modality. If @p false, the rest of the
-     *        program interface (example: other dialogs) is accessible while
-     *        the dialog is open.
-     */
-    KDE_CONSTRUCTOR_DEPRECATED KCMultiDialog( int dialogFace, const KGuiItem &user2,
-            const KGuiItem &user3=KGuiItem(), int buttonMask=User2,
-            const QString &caption=i18n("Configure"), QWidget *parent=0,
-            const char *name=0, bool modal=false );
-    // KDE4 remove the user3 argument, and instead initialize it to KStdGuiItem::adminMode.
 
     /**
      * Destructor
@@ -116,8 +57,10 @@ public:
      *
      * @param withfallback Try harder to load the module. Might result
      *                     in the module appearing outside the dialog.
+     *
+     * @returns The @see KPageWidgetItem associated with the new dialog page.
      **/
-    void addModule(const QString& module, bool withfallback=true);
+    KPageWidgetItem* addModule( const QString& module, bool withfallback = true );
 
     /**
      * Add a module.
@@ -126,29 +69,21 @@ public:
      *                   used for creating the module. It will be added
      *                   to the list of modules the dialog will show.
      *
-     * @param parentmodulenames The names of the modules that should appear as
-     *                          parents in the TreeList. Look at the
-     *                          KDialogBase::addPage documentation for more info
-     *                          on this.
+     * @param parent The @see KPageWidgetItem that should appear as parents
+     *               in the tree view or a 0 pointer if there is no parent.
      *
      * @param withfallback Try harder to load the module. Might result
      *                     in the module appearing outside the dialog.
      **/
-    void addModule(const KCModuleInfo& moduleinfo, QStringList
-            parentmodulenames = QStringList(), bool withfallback=false);
+    KPageWidgetItem* addModule( const KCModuleInfo& moduleinfo, KPageWidgetItem *parent = 0,
+                                bool withfallback = false );
 
     /**
-     * Remove all modules from the dialog.
+     * Removes all modules from the dialog.
      */
-    void removeAllModules();
+    void clear();
 
-    /**
-     * @internal
-     * Re-implemented for internal reasons.
-     */
-    void show();
-
-Q_SIGNALS:
+  Q_SIGNALS:
     /**
      * Emitted after all KCModules have been told to save their configuration.
      *
@@ -174,7 +109,7 @@ Q_SIGNALS:
      */
     void configCommitted( const QByteArray & instanceName );
 
-protected Q_SLOTS:
+  protected Q_SLOTS:
     /**
      * This slot is called when the user presses the "Default" Button.
      * You can reimplement it if needed.
@@ -219,58 +154,18 @@ protected Q_SLOTS:
      **/
     void slotHelpClicked();
 
-private Q_SLOTS:
-
-    void slotCurrentPageChanged(QWidget *);
-
-    void clientChanged(bool state);
-
-    /**
-     * Called when entering root mode, and disables
-     * the Admin Mode button such that the user doesn't do it
-     * twice.
-     */
-    void disableRModeButton();
-
-    /**
-     * Called when the current module exits from root
-     * mode. Enables the Administrator Mode button, again.
-     */
-    void rootExit();
-
-    /**
-     *
-     * Called when the dialog is hidden. It unregisters the modules,
-     * such that they don't hinder the same modules to be opened in
-     * another application.
-     */
-    void dialogClosed();
-
-private:
-
+  private:
     void init();
     void apply();
 
-    struct CreatedModule
-    {
-        KCModuleProxy * kcm;
-        KService::Ptr service;
-        /* KDE 4 Move to Private class */
-    };
-    typedef QList<CreatedModule> ModuleList;
-    ModuleList m_modules;
+    class Private;
+    Private* const d;
 
-    typedef QMap<KService::Ptr, KCModuleProxy*> OrphanMap;
-    OrphanMap m_orphanModules;
-
-    QHash<KCModuleProxy *, QStringList> moduleParentComponents;
-    QString _docPath;
-    int dialogface;
-
-    class KCMultiDialogPrivate;
-    KCMultiDialogPrivate *d;
+    Q_PRIVATE_SLOT( d, void slotCurrentPageChanged( KPageWidgetItem* ) );
+    Q_PRIVATE_SLOT( d, void clientChanged( bool ) );
+    Q_PRIVATE_SLOT( d, void disableRModeButton() );
+    Q_PRIVATE_SLOT( d, void rootExit() );
+    Q_PRIVATE_SLOT( d, void dialogClosed() );
 };
 
-#endif //KCMULTIDIALOG_H
-
-// vim: sw=4 sts=4 et
+#endif

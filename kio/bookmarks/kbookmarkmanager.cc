@@ -507,7 +507,7 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
     if ( KBookmarkSettings::self()->m_advancedaddbookmark)
     {
         KBookmarkEditDialog dlg( title, url, this, KBookmarkEditDialog::InsertionMode, parentBookmarkAddress );
-        if ( dlg.exec() != KDialogBase::Accepted )
+        if ( dlg.exec() != KDialog::Accepted )
             return KBookmarkGroup();
         title = dlg.finalTitle();
         url = dlg.finalUrl();

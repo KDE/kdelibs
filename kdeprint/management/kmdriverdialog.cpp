@@ -24,8 +24,15 @@
 #include <kmessagebox.h>
 
 KMDriverDialog::KMDriverDialog(QWidget *parent, const char *name)
-: KDialogBase(KDialogBase::Swallow,i18n("Configure"),KDialogBase::Ok|KDialogBase::Cancel,KDialogBase::Ok,parent,name,true,false)
+: KDialog( parent )
 {
+  setCaption( i18n("Configure") );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  setObjectName( name );
+  setModal( true );
+  enableButtonSeparator( false );
+
 	m_view = new DriverView(0);
 	setMainWidget(m_view);
 
@@ -49,7 +56,7 @@ void KMDriverDialog::slotOk()
 		                                     "before continuing.")+"</qt>");
 		return;
 	}
-	KDialogBase::slotOk();
+	KDialog::accept();
 }
 
 #include "kmdriverdialog.moc"

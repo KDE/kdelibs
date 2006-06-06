@@ -30,7 +30,7 @@
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <klibloader.h>
 #include <kseparator.h>
 #include <kdebug.h>
@@ -42,7 +42,11 @@ public:
 protected:
 	QObject* createObject(QObject *parent = 0, const char * /*classname*/ = "QObject", const QStringList& args = QStringList())
 	{
-		KDialogBase	*dlg = new KDialogBase(KDialogBase::Swallow, 0, static_cast<QWidget*>(parent), 0/*name*/, true, i18n("EPSON InkJet Printer Utilities"), KDialogBase::Close);
+		KDialog *dlg = new KDialog( static_cast<QWidget*>(parent) );
+    dlg->setModal( true );
+    dlg->setCaption( i18n("EPSON InkJet Printer Utilities") );
+    dlg->setButtons( KDialog::Close );
+
 		EscpWidget	*w = new EscpWidget(dlg);
 		if (args.count() > 0)
 			w->setDevice(args[0]);

@@ -20,13 +20,13 @@
 #ifndef BROWSEDIALOG_H
 #define BROWSEDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QLineEdit;
 class QComboBox;
 struct CupsdConf;
 
-class BrowseDialog : public KDialogBase
+class BrowseDialog : public KDialog
 {
 	Q_OBJECT
 

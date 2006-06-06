@@ -52,8 +52,10 @@ struct PasswordDialog::PasswordDialogPrivate
 
 PasswordDialog::PasswordDialog( const QString& prompt, const QString& user,
                                 bool enableKeep, bool modal, QWidget* parent )
-               :KDialog( parent, i18n("Password"), Ok|Cancel ),d(new PasswordDialogPrivate)
+   :KDialog( parent ),d(new PasswordDialogPrivate)
 {
+    setCaption( i18n("Password") );
+    setButtons( Ok | Cancel );
     setModal( modal );
     enableButtonSeparator( true );
     setDefaultButton( Ok );

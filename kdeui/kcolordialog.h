@@ -30,7 +30,7 @@
 #include <qcolordialog.h>
 #define KColorDialog QColorDialog
 #else //UNIX, WIN32
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <qpixmap.h>
 #include <q3gridview.h>
 #include <qscrollarea.h>

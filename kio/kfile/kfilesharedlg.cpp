@@ -52,7 +52,9 @@ public:
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
     : KPropsDlgPlugin( _props ),d(new Private)
 {
-    d->m_vBox = _props->addVBoxPage( i18n("&Share") );
+    d->m_vBox = new KVBox();
+    _props->addPage( d->m_vBox, i18n("&Share") );
+
     d->m_configProc = 0;
     properties->setFileSharingPage(d->m_vBox);
     m_widget = 0L;

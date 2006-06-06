@@ -23,7 +23,7 @@
 #include <QList>
 #include <QString>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 struct SocketInfo
 {
@@ -37,7 +37,7 @@ class QLineEdit;
 class QComboBox;
 class KMWSocketUtil;
 
-class SocketConfig : public KDialogBase
+class SocketConfig : public KDialog
 {
 	friend class KMWSocketUtil;
 	Q_OBJECT

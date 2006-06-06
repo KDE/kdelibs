@@ -816,7 +816,9 @@ bool KXmlCommandManager::configure(KXmlCommand *xmlCmd, QWidget *parent)
 {
 	if (xmlCmd->driver())
 	{
-		KDialog dlg(parent, xmlCmd->description(), KDialog::Ok);
+		KDialog dlg(parent);
+    dlg.setCaption(xmlCmd->description());
+    dlg.setButtons(KDialog::Ok);
 		DriverView	view(&dlg);
 
 		dlg.setMainWidget(&view);

@@ -20,12 +20,12 @@
 #ifndef ADDRESSDIALOG_H
 #define ADDRESSDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QComboBox;
 class QLineEdit;
 
-class AddressDialog : public KDialogBase
+class AddressDialog : public KDialog
 {
 public:
 	AddressDialog(QWidget *parent = 0, const char *name = 0);

@@ -52,11 +52,15 @@ KInputDialogPrivate::KInputDialogPrivate()
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent,
     QValidator *validator, const QString &mask )
-    : KDialog( parent, caption, Ok|Cancel|User1 , 0 , KStdGuiItem::clear() ),
+    : KDialog( parent ),
     d( new KInputDialogPrivate() )
 {
+  setCaption( caption );
+  setButtons( Ok | Cancel | User1 );
+  setButtonGuiItem( User1, KStdGuiItem::clear() );
   enableButtonSeparator( true );
   setModal(true);
+
   QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame );
   layout->setSpacing( spacingHint() );
@@ -89,9 +93,12 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QString &value, QWidget *parent )
-    : KDialog( parent, caption, Ok|Cancel|User1 , 0, KStdGuiItem::clear() ),
+    : KDialog( parent ),
     d( new KInputDialogPrivate() )
 {
+  setCaption( caption );
+  setButtons( Ok | Cancel | User1 );
+  setButtonGuiItem( User1, KStdGuiItem::clear() );
   enableButtonSeparator( false );
   setModal(true);
   QWidget *frame = new QWidget( this );
@@ -116,9 +123,11 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base,
     QWidget *parent )
-    : KDialog( parent, caption, Ok|Cancel ),
+    : KDialog( parent ),
     d( new KInputDialogPrivate() )
 {
+  setCaption( caption );
+  setButtons( Ok | Cancel );
   enableButtonSeparator( true );
   setModal(true);
 
@@ -143,9 +152,11 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, double step, int decimals,
     QWidget *parent )
-    : KDialog( parent, caption, Ok|Cancel),
+    : KDialog( parent ),
     d( new KInputDialogPrivate() )
 {
+  setCaption( caption );
+  setButtons( Ok | Cancel );
   enableButtonSeparator( true );
   setModal(true);
 
@@ -169,9 +180,12 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, int current, bool editable, QWidget *parent )
-    : KDialog( parent, caption, Ok|Cancel|User1, 0 , KStdGuiItem::clear() ),
+    : KDialog( parent ),
     d( new KInputDialogPrivate() )
 {
+  setCaption( caption );
+  setButtons( Ok | Cancel | User1 );
+  setButtonGuiItem( User1, KStdGuiItem::clear() );
   enableButtonSeparator( true );
   setModal(true);
 
@@ -219,9 +233,11 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
     const QStringList &list, const QStringList &select, bool multiple,
     QWidget *parent )
-    : KDialog( parent, caption, Ok|Cancel),
+    : KDialog( parent ),
     d( new KInputDialogPrivate() )
 {
+  setCaption( caption );
+  setButtons( Ok | Cancel );
   enableButtonSeparator( true );
   setModal(true);
 

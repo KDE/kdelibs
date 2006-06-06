@@ -20,7 +20,7 @@
 #ifndef KMSPECIALPRINTERDLG_H
 #define KMSPECIALPRINTERDLG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KMPrinter;
 class QLineEdit;
@@ -29,7 +29,7 @@ class QComboBox;
 class KIconButton;
 class KXmlCommandSelector;
 
-class KMSpecialPrinterDlg : public KDialogBase
+class KMSpecialPrinterDlg : public KDialog
 {
 	Q_OBJECT
 public:

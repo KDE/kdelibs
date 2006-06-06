@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QTreeWidget;
 class QComboBox;
@@ -52,7 +52,7 @@ class DistributionListManager;
   dlg->exec();
   \endcode
 */
-class KABC_EXPORT DistributionListDialog : public KDialogBase
+class KABC_EXPORT DistributionListDialog : public KDialog
 {
     Q_OBJECT
 
@@ -80,7 +80,7 @@ class KABC_EXPORT DistributionListDialog : public KDialogBase
 /**
   @short Helper class
 */
-class KABC_EXPORT EmailSelector : public KDialogBase
+class KABC_EXPORT EmailSelector : public KDialog
 {
   public:
     EmailSelector( const QStringList &emails, const QString &current,

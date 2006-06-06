@@ -742,8 +742,10 @@ KFontDialog::KFontDialog( QWidget *parent,
 			  bool onlyFixed, bool modal,
 			  const QStringList &fontList, bool makeFrame, bool diff,
                           Qt::CheckState *sizeIsRelativeState )
-  : KDialog( parent, i18n("Select Font"), Ok|Cancel )
+  : KDialog( parent )
 {
+  setCaption( i18n("Select Font") );
+  setButtons( Ok | Cancel );
   setModal( modal);
   chooser = new KFontChooser( this,
                               onlyFixed, fontList, makeFrame, 8,

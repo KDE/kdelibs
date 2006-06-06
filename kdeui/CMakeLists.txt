@@ -72,8 +72,12 @@ set(kdeui_LIB_SRCS
  kcolormimedata.cpp
  knumvalidator.cpp
  kdialog.cpp
- kdialogbase.cpp
- kjanuswidget.cpp
+ kpagedialog.cpp
+ kpagemodel.cpp
+ kpageview.cpp
+ kpageview_p.cpp
+ kpagewidget.cpp
+ kpagewidgetmodel.cpp
  kaboutdialog.cpp
  kauthicon.cpp
  kmessagebox.cpp
@@ -219,8 +223,11 @@ install_files( /include FILES
  kcolormimedata.h
  knumvalidator.h
  kdialog.h
- kdialogbase.h
- kjanuswidget.h
+ kpagedialog.h
+ kpagemodel.h
+ kpageview.h
+ kpagewidget.h
+ kpagewidgetmodel.h
  kaboutdialog.h
  kauthicon.h
  kmessagebox.h
@@ -405,7 +412,7 @@ install(PROGRAMS preparetips DESTINATION bin)
 #	kconfigdialogmanager.cpp knotification.cpp knotificationmanager.cpp knotificationmanager.skel
 #
 #noinst_HEADERS = k3listviewlineedit.h \
-#		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
+#		kaboutdialog_private.h kcursor_private.h \
 #		kdepackages.h kxmlguifactory_p.h \
 #		kstdaction_p.h kwhatsthismanager_p.h knotificationmanager.h
 #

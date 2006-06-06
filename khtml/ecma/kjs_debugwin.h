@@ -33,7 +33,7 @@
 #include <q3ptrlist.h>
 #include <q3ptrstack.h>
 #include <qcheckbox.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kinstance.h>
 #include <kmainwindow.h>
 #include <q3scrollview.h>
@@ -97,7 +97,7 @@ namespace KJS {
     SourceFragment& operator = (const SourceFragment& other);
   };
 
-  class KJSErrorDialog : public KDialogBase {
+  class KJSErrorDialog : public KDialog {
     Q_OBJECT
   public:
     KJSErrorDialog(QWidget *parent, const QString& errorMessage, bool showDebug);

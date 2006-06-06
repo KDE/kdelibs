@@ -20,7 +20,7 @@
 // KDE color selection dialog.
 //
 // 1999-09-27 Espen Sand <espensa@online.no>
-// KColorDialog is now subclassed from KDialogBase. I have also extended
+// KColorDialog is now subclassed from KDialog. I have also extended
 // KColorDialog::getColor() so that it contains a parent argument. This
 // improves centering capability.
 //
@@ -954,11 +954,13 @@ public:
 
 
 KColorDialog::KColorDialog( QWidget *parent, bool modal )
-  :KDialog( parent, i18n("Select Color"),
-		modal ? Ok|Cancel : Close )
+  :KDialog( parent )
 {
+  setCaption( i18n("Select Color") );
+  setButtons( modal ? Ok|Cancel : Close );
   enableButtonSeparator(true);
   setModal(modal);
+
   d = new KColorDialogPrivate;
   d->bRecursion = true;
   d->bColorPicking = false;

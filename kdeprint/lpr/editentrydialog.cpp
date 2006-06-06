@@ -32,8 +32,12 @@
 #include <kiconloader.h>
 
 EditEntryDialog::EditEntryDialog(PrintcapEntry *entry, QWidget *parent, const char *name)
-: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel)
+: KDialog( parent )
 {
+  setObjectName( name );
+  setModal( true );
+  setButtons( Ok | Cancel );
+
 	QWidget	*w = new QWidget(this);
 	setMainWidget(w);
 

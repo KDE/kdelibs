@@ -229,15 +229,27 @@ class KIconDialog::KIconDialogPrivate
  */
 
 KIconDialog::KIconDialog(QWidget *parent)
-    : KDialogBase(Swallow, 0, parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
+    : KDialog( parent ), d(new KIconDialogPrivate)
 {
+    setObjectName( "icondialog" );
+    setModal( true );
+    setCaption( i18n("Select Icon") );
+    setButtons( Ok | Cancel );
+    setDefaultButton( Ok );
+
     mpLoader = KGlobal::iconLoader();
     init();
 }
 
 KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
-    : KDialogBase(Swallow, 0, parent, "icondialog", true, i18n("Select Icon"), Ok|Cancel, Ok),d(new KIconDialogPrivate)
+    : KDialog( parent ), d(new KIconDialogPrivate)
 {
+    setObjectName( "icondialog" );
+    setModal( true );
+    setCaption( i18n("Select Icon") );
+    setButtons( Ok | Cancel );
+    setDefaultButton( Ok );
+
     mpLoader = loader;
     init();
 }
@@ -329,7 +341,7 @@ void KIconDialog::init()
     mpBrowseBut->setFixedWidth(mpCombo->width());
 
     // Make the dialog a little taller
-    incInitialSize(QSize(0,100));
+    incrementInitialSize(QSize(0,100));
 }
 
 
@@ -487,7 +499,7 @@ void KIconDialog::slotOk()
     }
 
     emit newIconName(name);
-    KDialogBase::slotOk();
+    KDialog::accept();
 }
 
 QString KIconDialog::getIcon(K3Icon::Group group, K3Icon::Context context,

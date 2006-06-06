@@ -34,10 +34,13 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent )
 
 KScanDialog::KScanDialog( int dialogFace, int buttonMask,
 			  QWidget *parent )
-    : KDialogBase( dialogFace, i18n("Acquire Image"), buttonMask, Close,
-		   parent ),
+    : KPageDialog( parent ),
       m_currentId( 1 )
 {
+  setFaceType( (KPageDialog::FaceType)dialogFace );
+  setCaption( i18n("Acquire Image") );
+  setButtons( (KDialog::ButtonCodes)buttonMask );
+  setDefaultButton( Close );
 }
 
 KScanDialog::~KScanDialog()
@@ -61,11 +64,15 @@ KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent )
 
 KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
 			  QWidget *parent, bool modal )
-    : KDialogBase( dialogFace, i18n("OCR Image"), buttonMask, Close,
-		   parent, 0, modal, true ),
+    : KPageDialog( parent ),
       m_currentId( 1 )
 {
-
+  setFaceType( (KPageDialog::FaceType)dialogFace );
+  setCaption( i18n("OCR Image") );
+  setButtons( (KDialog::ButtonCodes)buttonMask );
+  setDefaultButton( Close );
+  setModal( modal );
+  enableButtonSeparator( true );
 }
 
 KOCRDialog::~KOCRDialog()

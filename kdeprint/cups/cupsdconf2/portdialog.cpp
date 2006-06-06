@@ -30,8 +30,14 @@
 #include <klocale.h>
 
 PortDialog::PortDialog(QWidget *parent, const char *name)
-	: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel, Ok, true)
+	: KDialog( parent )
 {
+  setObjectName( name );
+  setModal( true );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  enableButtonSeparator( true );
+
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
 	address_ = new QLineEdit(dummy);

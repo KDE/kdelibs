@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <kservicetypetrader.h>
 #include <kplugininfo.h>
 #include "ksettings/dispatcher.h"
@@ -35,8 +36,6 @@
 #include <qlabel.h>
 #include <QList>
 #include "kcmoduleinfo.h"
-
-#include "q3valuelist.h"
 
 namespace KSettings
 {
@@ -72,6 +71,7 @@ class PageNode
 		PageNode * m_parent;
 		bool m_visible;
 		bool m_dirty;
+		KPageWidgetItem * m_pageWidgetItem;
 
 	protected:
 		PageNode( KCModuleInfo * info, PageNode * parent )
@@ -196,16 +196,18 @@ class PageNode
 				: m_value.group->name;
 		}
 
-		QStringList parentNames() const
+		void setPageWidgetItem( KPageWidgetItem *item )
 		{
-			QStringList ret;
+			m_pageWidgetItem = item;
+		}
+
+		KPageWidgetItem* parentPageWidgetItem() const
+		{
 			PageNode * node = m_parent;
-			while( node && node->m_type != Root )
-			{
-				ret.prepend( node->name() );
-				node = node->m_parent;
-			}
-			return ret;
+			if ( node->m_type == Root )
+				return 0;
+			else
+				return node->m_pageWidgetItem;
 		}
 
 		void addToDialog( KCMultiDialog * dlg )
@@ -216,20 +218,18 @@ class PageNode
 
 			if( KCM == m_type )
 			{
-				dlg->addModule( *m_value.kcm, parentNames() );
+				m_pageWidgetItem = dlg->addModule( *m_value.kcm, parentPageWidgetItem() );
 				return;
 			}
 			if( Group == m_type && 0 == m_value.group->page )
 			{
-				QPixmap icon;
-				if( ! m_value.group->icon.isNull() )
-					icon = SmallIcon( m_value.group->icon,
-							IconSize( K3Icon::Small ) );
-				KVBox * page = dlg->addVBoxPage( m_value.group->name,
-						QString(), icon );
+				KVBox * page = new KVBox();
 				QLabel * comment = new QLabel( m_value.group->comment, page );
 				comment->setTextFormat( Qt::RichText );
 				m_value.group->page = page;
+
+				m_pageWidgetItem = dlg->addPage( page, m_value.group->name );
+				m_pageWidgetItem->setIcon( KIcon( m_value.group->icon ) );
 			}
 			List::Iterator end = m_children.end();
 			for( List::Iterator it = m_children.begin(); it != end; ++it )
@@ -242,7 +242,7 @@ class PageNode
 			if( KCM == m_type )
 				return;
 			if( Root == m_type )
-				dlg->removeAllModules();
+				dlg->clear();
 			List::Iterator end = m_children.end();
 			for( List::Iterator it = m_children.begin(); it != end; ++it )
 				( *it )->removeFromDialog( dlg );
@@ -556,18 +556,15 @@ void Dialog::createDialogFromServices()
 	// to show. It's not going to change anymore so we can sort it now.
 	d->pagetree.sort();
 
-	int dialogface = KJanusWidget::IconList;
+	KPageDialog::FaceType faceType = KPageDialog::List;
 	if( d->pagetree.needTree() )
-		dialogface = KJanusWidget::TreeList;
+		faceType = KPageDialog::Tree;
 	else if( d->pagetree.singleChild() )
-		dialogface = KJanusWidget::Plain;
+		faceType = KPageDialog::Plain;
 
 	kDebug( 700 ) << "creating KCMultiDialog" << endl;
-	d->dlg = new KCMultiDialog( dialogface, i18n( "Configure" ),
-			d->parentwidget );
-
-	if( dialogface == KJanusWidget::TreeList )
-		d->dlg->setShowIconsInTreeList( true );
+	d->dlg = new KCMultiDialog( d->parentwidget );
+	d->dlg->setFaceType( faceType );
 
 	// TODO: Don't show the reset button until the issue with the
 	// KPluginSelector::load() method is solved.
@@ -579,12 +576,13 @@ void Dialog::createDialogFromServices()
 	// KPluginSelector to only reset the current visible plugin KCM and not
 	// touch the plugin selections.
 	// I have no idea how to check that in KPluginSelector::load()...
-	//d->dlg->showButton( KDialogBase::User1, true );
+	//d->dlg->showButton( KDialog::User1, true );
 
+/** tokoe: FIXME
 	if( ! d->staticlistview )
 		d->dlg->addButtonBelowList( i18n( "Select Components..." ), this,
 			SLOT( configureTree() ) );
-
+*/
 	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(),
 		SLOT( syncConfiguration() ) );
 	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(),
@@ -593,9 +591,6 @@ void Dialog::createDialogFromServices()
 		Dispatcher::self(), SLOT( reparseConfiguration( const QByteArray & ) ) );
 
 	d->pagetree.addToDialog( d->dlg );
-
-	if( dialogface == KJanusWidget::TreeList )
-		d->dlg->unfoldTreeList();
 }
 
 void Dialog::configureTree()
@@ -625,9 +620,6 @@ void Dialog::updateTreeList()
 
 	d->pagetree.removeFromDialog( d->dlg );
 	d->pagetree.addToDialog( d->dlg );
-
-	if( d->pagetree.needTree() )
-		d->dlg->unfoldTreeList( true );
 }
 
 } //namespace

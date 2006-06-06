@@ -21,7 +21,7 @@
 #ifndef KFINDDIALOG_H
 #define KFINDDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class KHistoryCombo;
 class QPushButton;
@@ -38,7 +38,7 @@ class QGroupBox;
  *
  * \b Detail:
  *
- * This widget inherits from KDialogBase and implements
+ * This widget inherits from KDialog and implements
  * the following additional functionalities:  a find string
  * object and an area for a user-defined widget to extend the dialog.
  *
@@ -71,7 +71,7 @@ class QGroupBox;
  *
  */
 class KUTILS_EXPORT KFindDialog:
-    public KDialogBase
+    public KDialog
 {
     Q_OBJECT
 

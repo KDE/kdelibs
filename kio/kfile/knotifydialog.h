@@ -20,7 +20,7 @@
 #define KNOTIFYDIALOG_H
 
 #include <k3listview.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kinstance.h>
 #include <kglobal.h>
 
@@ -48,7 +48,7 @@ namespace KNotify
  * @deprecated use KNotifyConfigWidget,  or KNotifyConfigWidget::configure()  (which is in kdelibs/knotify/config)
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT_DEPRECATED KNotifyDialog : public KDialogBase
+class KIO_EXPORT_DEPRECATED KNotifyDialog : public KDialog
 {
     Q_OBJECT
 

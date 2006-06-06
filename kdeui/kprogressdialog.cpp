@@ -55,14 +55,16 @@ struct KProgressDialog::KProgressDialogPrivate
 
 KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
                                  const QString& text, bool modal)
-  : KDialog(parent, caption, KDialog::Cancel),
+  : KDialog(parent),
     d(new KProgressDialogPrivate)
 {
+    setCaption( caption );
+    setButtons( KDialog::Cancel );
     setModal(modal);
 
     d->mShowTimer = new QTimer(this);
 
-    d->mCancelText = actionButton(KDialog::Cancel)->text();
+    d->mCancelText = button(KDialog::Cancel)->text();
 
     QWidget *mainWidget = new QWidget(this);
     QVBoxLayout* layout = new QVBoxLayout(mainWidget);

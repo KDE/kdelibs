@@ -20,7 +20,7 @@
 #ifndef EDITENTRYDIALOG_H
 #define EDITENTRYDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include "printcapentry.h"
 
 class QLineEdit;
@@ -32,7 +32,7 @@ class Q3ListViewItem;
 class QListviewItem;
 class QStackedWidget;
 
-class EditEntryDialog : public KDialogBase
+class EditEntryDialog : public KDialog
 {
 	Q_OBJECT
 public:

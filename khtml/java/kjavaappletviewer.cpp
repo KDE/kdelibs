@@ -120,9 +120,15 @@ static KStaticDeleter <KJavaServerMaintainer> serverMaintainerDeleter;
 //-----------------------------------------------------------------------------
 
 AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
-    : KDialogBase (parent, "paramdialog", true, i18n ("Applet Parameters"),
-                   KDialogBase::Close, KDialogBase::Close, true),
-      m_appletWidget (parent) {
+    : KDialog(parent), m_appletWidget (parent)
+{
+    setObjectName( "paramdialog" );
+    setCaption( i18n ("Applet Parameters") );
+    setButtons( KDialog::Close );
+    setDefaultButton( KDialog::Close );
+    enableButtonSeparator( true );
+    setModal( true );
+
     KJavaApplet* const applet = parent->applet ();
     table = new Q3Table (30, 2, this);
     table->setMinimumSize (QSize (600, 400));

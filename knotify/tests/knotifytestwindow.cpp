@@ -13,7 +13,7 @@
 #include <kaction.h>
 #include <kstdaccel.h>
 #include <kxmlguifactory.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 // ------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ void KNotifyTestWindow::slotConfigureG( )
 
 void KNotifyTestWindow::slotConfigureC( )
 {
-	KDialogBase dialog(this);
+	KDialog dialog(this);
 	KNotifyConfigWidget *w=new KNotifyConfigWidget(&dialog);
 	w->setApplication(QString::null , "group", view.c_group->currentText());
 	dialog.setMainWidget(w);

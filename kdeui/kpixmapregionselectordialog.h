@@ -22,7 +22,7 @@
 
 #include <QImage>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kpixmapregionselectorwidget.h>
 
 /**

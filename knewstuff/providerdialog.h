@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF_PROVIDERDIALOG_H
 #define KNEWSTUFF_PROVIDERDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QTreeWidget;
 
@@ -40,7 +40,7 @@ class Engine;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class ProviderDialog : public KDialogBase
+class ProviderDialog : public KDialog
 {
     Q_OBJECT
   public:

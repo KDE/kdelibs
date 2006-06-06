@@ -19,7 +19,7 @@
 #include <qpushbutton.h>
 
 #include <kicontheme.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <k3iconview.h>
 
 class QComboBox;
@@ -85,7 +85,7 @@ private:
  *
  * @short An icon selection dialog.
  */
-class KIO_EXPORT KIconDialog: public KDialogBase
+class KIO_EXPORT KIconDialog: public KDialog
 {
     Q_OBJECT
 

@@ -28,7 +28,6 @@
 #include <kacceleratormanager.h>
 #include <kcombobox.h>
 #include <kdebug.h>
-#include <kdialogbase.h>
 #include <kio/netaccess.h>
 #include <klocale.h>
 #include <klineedit.h>
@@ -182,9 +181,15 @@ void ResourceLDAPKIOConfig::editCache()
 AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
                                     int rdnprefix,
                                     QWidget *parent, const char *name )
-  : KDialogBase( Plain, i18n( "Attributes Configuration" ), Ok | Cancel,
-                 Ok, parent, name, true, true )
+  : KDialog( parent )
 {
+  setCaption( i18n( "Attributes Configuration" ) );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  setObjectName( name );
+  setModal( true );
+  enableButtonSeparator( true );
+
   mNameDict.insert( "objectClass", i18n( "Object classes" ) );
   mNameDict.insert( "commonName",  i18n( "Common name" ) );
   mNameDict.insert( "formattedName", i18n( "Formatted name" ) );
@@ -246,7 +251,8 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mMapList.append( evolutionMap );
   mMapList.append( outlookMap );
 
-  QFrame *page = plainPage();
+  QFrame *page = new QFrame( this );
+  setMainWidget( page );
   QGridLayout *layout = new QGridLayout( page );
 
   QLabel *label = new QLabel( i18n( "Template:" ), page );
@@ -350,10 +356,17 @@ void AttributesDialog::mapChanged( int pos )
 
 OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
   const QString &dst, QWidget *parent, const char *name )
-  : KDialogBase( Plain, i18n( "Offline Configuration" ), Ok | Cancel,
-                 Ok, parent, name, true, true )
+  : KDialog( parent )
 {
-  QFrame *page = plainPage();
+  setCaption( i18n( "Offline Configuration" ) );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  setObjectName( name );
+  setModal( true );
+  enableButtonSeparator( true );
+
+  QFrame *page = new QFrame( this );
+  setMainWidget( page );
   QVBoxLayout *layout = new QVBoxLayout( page );
 
   mSrc = src; mDst = dst;

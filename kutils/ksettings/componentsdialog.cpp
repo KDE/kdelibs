@@ -46,9 +46,12 @@ class ComponentsDialog::ComponentsDialogPrivate
 };
 
 ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
-    : KDialogBase( parent, name, false, i18n( "Select Components" ) )
-, d( new ComponentsDialogPrivate )
+    : KDialog( parent ), d( new ComponentsDialogPrivate )
 {
+    setObjectName( name );
+    setModal( false );
+    setCaption( i18n( "Select Components" ) );
+
     QWidget * page = new QWidget( this );
     setMainWidget( page );
     QHBoxLayout *hbox = new QHBoxLayout( page );
@@ -125,7 +128,7 @@ void ComponentsDialog::show()
         item->setCheckState( 0, ( *it )->isPluginEnabled() ? Qt::Checked : Qt::Unchecked );
         d->plugininfomap[ item ] = ( *it );
     }
-    KDialogBase::show();
+    KDialog::show();
 }
 
 void ComponentsDialog::executed( QTreeWidgetItem * item, int )
@@ -164,13 +167,13 @@ void ComponentsDialog::savePluginInfos()
 void ComponentsDialog::slotOk()
 {
     savePluginInfos();
-    KDialogBase::slotOk();
+    KDialog::slotButtonClicked( Ok );
 }
 
 void ComponentsDialog::slotApply()
 {
     savePluginInfos();
-    KDialogBase::slotApply();
+    KDialog::slotButtonClicked( Apply );
 }
 
 } //namespace

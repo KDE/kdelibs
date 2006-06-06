@@ -141,9 +141,11 @@ static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly
 //*******************************************************************************************
 
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
-: KDialog(parent, i18n("Print Preview")),
+: KDialog(parent),
   d(new KPrintPreviewPrivate(this))
 {
+  setCaption( i18n("Print Preview") );
+
 	kDebug(500) << "kdeprint: creating preview dialog" << endl;
 	d->previewonly_ = previewOnly;
 

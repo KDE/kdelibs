@@ -35,7 +35,7 @@
  *  David Faure <faure@kde.org>
  * More layout, cleanups, and fixes by
  *  Preston Brown <pbrown@kde.org>
- * Plugin capability, cleanups and port to KDialogBase by
+ * Plugin capability, cleanups and port to KDialog by
  *  Simon Hausmann <hausmann@kde.org>
  * KDesktopPropsPlugin by
  *  Waldo Bastian <bastian@kde.org>
@@ -171,10 +171,14 @@ public:
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed, i18n( "Properties for %1" , KIO::decodeFileName(item->url().fileName())),
-                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),d(new KPropertiesDialogPrivate)
+  : KPageDialog ( parent ),d(new KPropertiesDialogPrivate)
 {
+  setFaceType( KPageDialog::Tabbed );
+  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item->url().fileName())) );
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( name );
+
   assert( item );
   m_items.append( new KFileItem(*item) ); // deep copy
 
@@ -186,10 +190,13 @@ KPropertiesDialog::KPropertiesDialog (KFileItem* item,
 
 KPropertiesDialog::KPropertiesDialog (const QString& title,
                                       QWidget* parent, const char* name, bool modal)
-  : KDialogBase (KDialogBase::Tabbed, i18n ("Properties for %1", title),
-                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),d(new KPropertiesDialogPrivate)
+  : KPageDialog( parent ),d(new KPropertiesDialogPrivate)
 {
+  setFaceType( KPageDialog::Tabbed );
+  setCaption( i18n( "Properties for %1", title ) );
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( name );
 
   init (modal, false);
 }
@@ -197,14 +204,18 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
 KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed,
-                 // TODO: replace <never used> with "Properties for 1 item". It's very confusing how it has to be translated otherwise
-                 // (empty translation before the "\n" is not allowed by msgfmt...)
-		 _items.count()>1 ? i18np( "<never used>","Properties for %n Selected Items",_items.count()) :
-		 i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())),
-                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),d(new KPropertiesDialogPrivate)
+  : KPageDialog( parent ),d(new KPropertiesDialogPrivate)
 {
+  setFaceType( KPageDialog::Tabbed );
+
+  if ( _items.count() > 1 )
+    setCaption( i18np( "Properties for 1 item", "Properties for %n Selected Items", _items.count() ) );
+  else
+    setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())) );
+
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( name );
 
   assert( !_items.isEmpty() );
   m_singleUrl = _items.first()->url();
@@ -224,12 +235,14 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
 KPropertiesDialog::KPropertiesDialog (const KUrl& _url, mode_t /* _mode is now unused */,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed,
-		 i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName())),
-                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),
-  m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
+  : KPageDialog( parent ),
+    m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
 {
+  setFaceType( KPageDialog::Tabbed );
+  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName()))  );
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( name );
 
   KIO::UDSEntry entry;
 
@@ -243,12 +256,14 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _url, mode_t /* _mode is now u
 KPropertiesDialog::KPropertiesDialog (const KUrl& _url,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed,
-		 i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName())),
-                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),
-  m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
+  : KPageDialog( parent ),
+    m_singleUrl( _url ),d(new KPropertiesDialogPrivate)
 {
+  setFaceType( KPageDialog::Tabbed );
+  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName()))  );
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( name );
 
   KIO::UDSEntry entry;
 
@@ -262,15 +277,17 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _current
                                       const QString& _defaultName,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
-  : KDialogBase (KDialogBase::Tabbed,
-		 i18n( "Properties for %1" , KIO::decodeFileName(_tempUrl.fileName())),
-                 KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
-                 parent, name, modal),
+  : KPageDialog( parent ),
 
   m_singleUrl( _tempUrl ),
   m_defaultName( _defaultName ),
   m_currentDir( _currentDir ),d(new KPropertiesDialogPrivate)
 {
+  setFaceType( KPageDialog::Tabbed );
+  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_tempUrl.fileName()))  );
+  setButtons( KDialog::Ok | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( name );
 
   assert(!m_singleUrl.isEmpty());
 
@@ -329,7 +346,8 @@ void KPropertiesDialog::init(bool modal, bool autoShow)
 void KPropertiesDialog::showFileSharingPage()
 {
   if (d->fileSharePage) {
-     showPage( pageIndex( d->fileSharePage));
+    // FIXME: this showFileSharingPage thingy looks broken! (tokoe)
+    // showPage( pageIndex( d->fileSharePage));
   }
 }
 
@@ -722,7 +740,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   uint iDirCount = hasDirs ? 1 : 0;
   uint iFileCount = 1-iDirCount;
 
-  d->m_frame = properties->addPage (i18n("&General"));
+  d->m_frame = new QFrame();
+  properties->addPage(d->m_frame, i18n("&General"));
 
   QVBoxLayout *vbl = new QVBoxLayout( d->m_frame );
   vbl->setMargin( 0 );
@@ -1091,7 +1110,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
     if (ro)
     {
        // Don't put the initial focus on the line edit when it is ro
-       QPushButton *button = properties->actionButton(KDialogBase::Ok);
+       QPushButton *button = properties->button(KDialog::Ok);
        if (button)
           button->setFocus();
     }
@@ -1590,7 +1609,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   // create GUI
 
-  d->m_frame = properties->addPage(i18n("&Permissions"));
+  d->m_frame = new QFrame();
+  properties->addPage( d->m_frame, i18n("&Permissions") );
 
   QBoxLayout *box = new QVBoxLayout( d->m_frame );
   box->setMargin( 0 );
@@ -1850,8 +1870,10 @@ static bool fileSystemSupportsACL( const QByteArray& path )
 void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   bool isDir = (d->pmode == PermissionsOnlyDirs) || (d->pmode == PermissionsMixed);
-  KDialogBase dlg(KDialogBase::Swallow, 0, properties, 0, true, i18n("Advanced Permissions"),
-		  KDialogBase::Ok|KDialogBase::Cancel);
+  KDialog dlg( properties );
+  dlg.setModal( true );
+  dlg.setCaption( i18n("Advanced Permissions") );
+	dlg.setButtons( KDialog::Ok | KDialog::Cancel );
 
   QLabel *l, *cl[3];
   Q3GroupBox *gb;
@@ -2073,7 +2095,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   }
 #endif  
   dlg.setMainWidget( mainw );
-  if (dlg.exec() != KDialogBase::Accepted)
+  if (dlg.exec() != KDialog::Accepted)
     return;
 
   mode_t andPermissions = mode_t(~0);
@@ -2509,7 +2531,8 @@ public:
 KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props ),d(new KUrlPropsPluginPrivate)
 {
-  d->m_frame = properties->addPage(i18n("U&RL"));
+  d->m_frame = new QFrame();
+  properties->addPage(d->m_frame, i18n("U&RL"));
   QVBoxLayout *layout = new QVBoxLayout(d->m_frame);
   layout->setMargin(0);
   layout->setSpacing(KDialog::spacingHint());
@@ -2616,7 +2639,8 @@ public:
 
 KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props ),d(new KBindingPropsPluginPrivate)
 {
-  d->m_frame = properties->addPage(i18n("A&ssociation"));
+  d->m_frame = new QFrame();
+  properties->addPage(d->m_frame, i18n("A&ssociation"));
   patternEdit = new KLineEdit( d->m_frame);
   commentEdit = new KLineEdit( d->m_frame);
   mimeEdit = new KLineEdit( d->m_frame);
@@ -2782,7 +2806,8 @@ public:
 
 KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props ),d(new KDevicePropsPluginPrivate)
 {
-  d->m_frame = properties->addPage(i18n("De&vice"));
+  d->m_frame = new QFrame();
+  properties->addPage(d->m_frame, i18n("De&vice"));
 
   QStringList devices;
   KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
@@ -3054,7 +3079,8 @@ void KDevicePropsPlugin::applyChanges()
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
-  m_frame = properties->addPage(i18n("&Application"));
+  m_frame = new QFrame();
+  properties->addPage(m_frame, i18n("&Application"));
 
   w = new Ui_KPropertiesDesktopBase;
   w->setupUi(m_frame);
@@ -3175,14 +3201,17 @@ void KDesktopPropsPlugin::slotSelectMimetype()
 
 void KDesktopPropsPlugin::slotAddFiletype()
 {
-  KDialogBase dlg(KDialogBase::Swallow, 0, m_frame, "KPropertiesMimetypes", true,
-                  i18n("Add File Type for %1", properties->kurl().fileName()),
-                  KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
+  KDialog dlg( m_frame );
+  dlg.setObjectName( "KPropertiesMimetypes" );
+  dlg.setModal( true );
+  dlg.setCaption( i18n("Add File Type for %1", properties->kurl().fileName()) );
+  dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+  dlg.setDefaultButton( KDialog::Ok );
 
   KGuiItem okItem(i18n("&Add"), QString() /* no icon */,
                   i18n("Add the selected file types to\nthe list of supported file types."),
                   i18n("Add the selected file types to\nthe list of supported file types."));
-  dlg.setButtonGuiItem(KDialogBase::Ok,okItem);
+  dlg.setButtonGuiItem(KDialog::Ok,okItem);
 
   Ui_KPropertiesMimetypeBase mw;
   mw.setupUi(&dlg);
@@ -3234,7 +3263,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
      }
   }
 
-  if (dlg.exec() == KDialogBase::Accepted)
+  if (dlg.exec() == KDialog::Accepted)
   {
      KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
      Q3ListViewItem *majorItem = mw.listView->firstChild();
@@ -3382,9 +3411,12 @@ void KDesktopPropsPlugin::slotBrowseExec()
 
 void KDesktopPropsPlugin::slotAdvanced()
 {
-  KDialogBase dlg(KDialogBase::Swallow, 0, m_frame, "KPropertiesDesktopAdv", true,
-      i18n("Advanced Options for %1", properties->kurl().fileName()),
-      KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok);
+  KDialog dlg( m_frame );
+  dlg.setObjectName( "KPropertiesDesktopAdv" );
+  dlg.setModal( true );
+  dlg.setCaption( i18n("Advanced Options for %1", properties->kurl().fileName()) );
+  dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+  dlg.setDefaultButton( KDialog::Ok );
 
   Ui_KPropertiesDesktopAdvBase w;
   w.setupUi(&dlg);
@@ -3535,7 +3567,8 @@ public:
 KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props ),d(new KExecPropsPluginPrivate)
 {
-  d->m_frame = properties->addPage(i18n("E&xecute"));
+  d->m_frame = new QFrame();
+  properties->addPage(d->m_frame, i18n("E&xecute"));
   QVBoxLayout * mainlayout = new QVBoxLayout( d->m_frame );
   mainlayout->setMargin( 0 );
   mainlayout->setSpacing( KDialog::spacingHint() );
@@ -3854,7 +3887,8 @@ public:
 KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props ),d(new KApplicationPropsPluginPrivate)
 {
-  d->m_frame = properties->addPage(i18n("&Application"));
+  d->m_frame = new QFrame();
+  properties->addPage(d->m_frame, i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame );
   toplayout->setMargin( 0 );
   toplayout->setSpacing( KDialog::spacingHint() );

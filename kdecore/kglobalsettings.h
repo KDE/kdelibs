@@ -489,7 +489,7 @@ class KDECORE_EXPORT KGlobalSettings
      * The layout scheme to use for dialog buttons
      * 
      * @return Returns the number of the scheme to use.
-     * @see KDialogBase::setButtonStyle
+     * @see KDialog::setButtonStyle
      */
     static int buttonLayout();
 

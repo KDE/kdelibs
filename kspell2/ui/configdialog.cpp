@@ -34,10 +34,15 @@ public:
 };
 
 ConfigDialog::ConfigDialog( Loader::Ptr loader, QWidget *parent )
-    : KDialog( parent,
-               i18n( "KSpell2 Configuration" ),
-               KDialog::Ok|KDialog::Apply|KDialog::Cancel ),d(new Private)
+    : KDialog( parent ),d(new Private)
 {
+    setObjectName( "KSpell2ConfigDialog" );
+    setModal( true );
+    setCaption( i18n( "KSpell2 Configuration" ) );
+    setButtons( Ok | Apply | Cancel );
+    setDefaultButton( Ok );
+    enableButtonSeparator( true );
+
     init( loader );
 }
 

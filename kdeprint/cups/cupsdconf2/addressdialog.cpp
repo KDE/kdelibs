@@ -27,8 +27,15 @@
 #include <klocale.h>
 
 AddressDialog::AddressDialog(QWidget *parent, const char *name)
-	: KDialogBase(Swallow, i18n("ACL Address"), Ok|Cancel, Ok, parent, name, true, true)
+	: KDialog( parent )
 {
+  setCaption( i18n("ACL Address") );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  setObjectName( name );
+  setModal( true );
+  enableButtonSeparator( true );
+
 	QWidget *w = new QWidget(this);
 	type_ = new QComboBox(w);
 	address_ = new QLineEdit(w);

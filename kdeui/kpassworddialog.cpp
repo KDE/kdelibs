@@ -285,9 +285,10 @@ int KPasswordEdit::maxPasswordLength() const
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn,
                                  QWidget *parent)
-    : KDialog(parent, QString(), Ok|Cancel|extraBttn, Qt::Dialog)
+    : KDialog(parent, Qt::Dialog)
       , m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
+    setButtons( Ok|Cancel|extraBttn );
     setModal( true );
     enableButtonSeparator( true );
     setDefaultButton( Ok );
@@ -297,9 +298,10 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraB
 
 KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, ButtonCodes extraBttn, const QString& icon,
 				  QWidget *parent)
-    : KDialog(parent, QString(), Ok|Cancel|extraBttn, Qt::Dialog)
+    : KDialog(parent, Qt::Dialog)
       , m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {
+    setButtons( Ok|Cancel|extraBttn );
     setModal( true );
     enableButtonSeparator( true );
     setDefaultButton( Ok );

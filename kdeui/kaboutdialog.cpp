@@ -1508,9 +1508,10 @@ KAboutWidget::resizeEvent(QResizeEvent*)
 }
 
 KAboutDialog::KAboutDialog(QWidget *_parent, bool modal)
-  : KDialog(_parent, QString(), Ok ),
+  : KDialog(_parent),
     about(new KAboutWidget(this)), mContainerBase(0), d(0)
 {
+  setButtons( Ok );
   setModal(modal);
   setMainWidget(about);
   connect(about, SIGNAL(sendEmail(const QString&, const QString&)),
@@ -1526,9 +1527,13 @@ KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
 			    QWidget *_parent, bool modal,
 			    bool separator, const QString &user1,
 			    const QString &user2, const QString &user3 )
-  :KDialog( _parent, QString(), buttonMask, 0 , user1, user2, user3 ),
+  :KDialog( _parent ),
    about(0), d(0)
 {
+  setButtons( buttonMask );
+  setButtonGuiItem( User1, user1 );
+  setButtonGuiItem( User2, user2 );
+  setButtonGuiItem( User3, user3 );
   setModal(modal);
   enableButtonSeparator( separator );
   setDefaultButton(defaultButton);

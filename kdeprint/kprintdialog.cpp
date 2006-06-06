@@ -86,7 +86,7 @@ public:
 };
 
 KPrintDialog::KPrintDialog(QWidget *parent)
-: KDialog(parent, QString::null), d(new KPrintDialogPrivate)
+: KDialog(parent), d(new KPrintDialogPrivate)
 {
 	setModal(true);
 		//WhatsThis strings.... (added by pfeifle@kde.org)

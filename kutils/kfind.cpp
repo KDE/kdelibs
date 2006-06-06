@@ -37,7 +37,7 @@
 
 #define INDEX_NOMATCH -1
 
-class KFindNextDialog : public KDialogBase
+class KFindNextDialog : public KDialog
 {
 public:
     KFindNextDialog(const QString &pattern, QWidget *parent);
@@ -45,13 +45,15 @@ public:
 
 // Create the dialog.
 KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
-    KDialogBase(parent, 0, false,  // non-modal!
-        i18n("Find Next"),
-        User1 | Close,
-        User1,
-        false,
-        KStdGuiItem::find())
+    KDialog(parent)
 {
+    setModal( false );
+    setCaption( i18n("Find Next") );
+    setButtons( User1 | Close );
+    setButtonGuiItem( User1, KStdGuiItem::find() );
+    setDefaultButton( User1 );
+    enableButtonSeparator( false );
+
     setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>", pattern), this ) );
 }
 
@@ -211,7 +213,7 @@ void KFind::setData( int id, const QString& data, int startPos )
     }
 }
 
-KDialogBase* KFind::findNextDialog( bool create )
+KDialog* KFind::findNextDialog( bool create )
 {
     if ( !m_dialog && create )
     {

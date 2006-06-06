@@ -37,26 +37,31 @@ QHash<QString,KConfigDialog *> KConfigDialog::openDialogs;
 class KConfigDialog::KConfigDialogPrivate
 {
 public:
-  KConfigDialogPrivate(KDialogBase::DialogType t)
+  KConfigDialogPrivate(KPageDialog::FaceType t)
   : shown(false), type(t), manager(0) { }
 
   bool shown;
-  KDialogBase::DialogType type;
+  KPageDialog::FaceType type;
   KConfigDialogManager *manager;
   QMap<QWidget *, KConfigDialogManager *> managerForPage;
 };
 
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           KConfigSkeleton *config,
-          DialogType dialogType,
+          FaceType faceType,
           ButtonCodes dialogButtons,
           ButtonCode defaultButton,
           bool modal ) :
-    KDialogBase( dialogType, Qt::MSWindowsFixedSizeDialogHint,
-          parent, 0 /*name*/, modal, i18n("Configure"), dialogButtons, defaultButton ),
-    d(new KConfigDialogPrivate(dialogType))
+    KPageDialog( parent, Qt::MSWindowsFixedSizeDialogHint ),
+    d(new KConfigDialogPrivate(faceType))
 {
+  setCaption( i18n("Configure") );
+  setFaceType( faceType );
+  setButtons( dialogButtons );
+  setDefaultButton( defaultButton );
   setObjectName( name );
+  setModal( modal );
+
   if ( !name.isEmpty() ) {
     openDialogs.insert(name, this);
   } else {
@@ -118,31 +123,36 @@ void KConfigDialog::addPageInternal(QWidget *page,
   }
   switch(d->type)
   {
-    case TreeList:
-    case IconList:
+    case List:
+    case Tree:
     case Tabbed: {
-      KVBox *frame = addVBoxPage(itemName, header, SmallIcon(pixmapName, 32));
+      KVBox *frame = new KVBox();
       frame->setSpacing( 0 );
       frame->setMargin( 0 );
       page->setParent(((QWidget*)frame));
-    }
-    break;
 
-    case Swallow:
-    {
-      page->setParent(this);
-      setMainWidget(page);
+      KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
+      item->setHeader( header );
+      item->setIcon( SmallIcon(pixmapName, 32) );
+
+      KPageDialog::addPage( item );
     }
     break;
 
     case Plain:
     {
-      QFrame *main = plainPage();
+      QFrame *main = new QFrame();
       QVBoxLayout *topLayout = new QVBoxLayout(main);
       topLayout->setMargin(0);
       topLayout->setSpacing(0);
       page->setParent(((QWidget*)main));
       topLayout->addWidget( page );
+
+      KPageWidgetItem *item = new KPageWidgetItem( main, itemName );
+      item->setHeader( header );
+      item->setIcon( SmallIcon(pixmapName, 32) );
+
+      KPageDialog::addPage( item );
     }
     break;
 
@@ -248,7 +258,7 @@ void KConfigDialog::showEvent(QShowEvent *e)
     enableButton(Default, !is_default);
     d->shown = true;
   }
-  KDialogBase::showEvent(e);
+  KPageDialog::showEvent(e);
 }
 
 void KConfigDialog::updateSettings()

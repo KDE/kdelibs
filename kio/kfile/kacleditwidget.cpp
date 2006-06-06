@@ -42,7 +42,6 @@
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kdialogbase.h>
 #include <kvbox.h>
 #include <khbox.h>
 
@@ -391,14 +390,19 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
                                         const QStringList &defaultGroups,
                                         int allowedTypes, int allowedDefaultTypes,
                                         bool allowDefaults )
-      : KDialogBase( listView, "edit_entry_dialog", true,
-              i18n( "Edit ACL Entry" ), KDialogBase::Ok|KDialogBase::Cancel,
-              KDialogBase::Ok, false ),
+      : KDialog( listView ),
         m_listView( listView ), m_item( item ), m_users( users ), m_groups( groups ),
         m_defaultUsers( defaultUsers ), m_defaultGroups( defaultGroups ),
         m_allowedTypes( allowedTypes ), m_allowedDefaultTypes( allowedDefaultTypes ),
         m_defaultCB( 0 )
 {
+    setObjectName( "edit_entry_dialog" );
+    setModal( true );
+    setCaption( i18n( "Edit ACL Entry" ) );
+    setButtons( KDialog::Ok | KDialog::Cancel );
+    setDefaultButton( KDialog::Ok );
+    enableButtonSeparator( false );
+
     QWidget *page = new QWidget(  this );
     setMainWidget( page );
     QVBoxLayout *mainLayout = new QVBoxLayout( page );
@@ -495,7 +499,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
         slotSelectionChanged( m_buttonIds.key( KACLListView::NamedUser ) );
         slotUpdateAllowedUsersAndGroups();
     }
-    incInitialSize(  QSize( 100, 0 ) );
+    incrementInitialSize(  QSize( 100, 0 ) );
 }
 
 void EditACLEntryDialog::slotUpdateAllowedTypes()
@@ -556,7 +560,7 @@ void EditACLEntryDialog::slotOk()
         m_item->isDefault = m_defaultCB->isChecked();
     m_item->repaint();
 
-    KDialogBase::slotOk();
+    KDialog::accept();
 }
 
 void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )

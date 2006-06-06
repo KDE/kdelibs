@@ -22,7 +22,7 @@
 
 #include <QWidget>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QTreeWidget;
 class QComboBox;
@@ -33,7 +33,7 @@ namespace KABC {
 class AddressBook;
 class DistributionListManager;
 
-class KABC_EXPORT EmailSelectDialog : public KDialogBase
+class KABC_EXPORT EmailSelectDialog : public KDialog
 {
   public:
     EmailSelectDialog( const QStringList &emails, const QString &current,

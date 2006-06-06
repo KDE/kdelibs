@@ -655,23 +655,34 @@ cg.readXXX("entry name");
 
 <H4>KJanusWidget</H4>
 <ul>
-<li>Q3[HV]Box -&gt; K[HV]Box</li>
-<li>usage of QFrame, instead of Q3Frame</li>
-<li>Signal aboutToChangePage(QWidget*) is no longer possible with the new QStackedWidget; it has been replaced with currentPageChanged(QWidget*), the only difference being that it is emitted after the page has changed.</li>
-<li>Removed name argument from the constructor.  Use setObjectName() instead, if needed.</li>
+<li>Deprecated. Use KPageWidget instead</li>
 </ul>
 
 <H4>KDialogBase</H4>
 <ul>
-<li>Most of useful features have been moved to KDialog, KDialog is now probably enough for your need. Use KDialogBase only if you use the KJanusWidget</li>
-<li>setButtonOKText, setButtonApplyText , setButtonCancelText  -&gt; setButtonGuiItem</li>
-<li>getBackgroundTile -&gt; backgroundTile</li>
-<li>getContentsRect -&gt; gone</li>
-<li>getBorderWidths -&gt; gone</li>
-<li>Q3[HV]Box -&gt; K[HV]Box</li>
-<li>Signal aboutToChangePage(QWidget*) is no longer possible with the new QStackedWidget; it has been replaced with currentPageChanged(QWidget*), the only difference being that it is emitted after the page has changed.  If you need such a notification, you will have to subclass the QWidgets you add to the stack, and override show().</li>
-<li>don't overide anymore slotFoo().  You now need to connect to FooClicked signal.   Or reimplement accept() and reject() to intercept the Ok and Cancel button</li>
-<li>configDialogSize() -&gt; restoreDialogSize()  to be consistant with KMainWindow.  saveDialogSize() take now a KConfigBase* parametter
+<li>Deprecated. Use KDialog instead or KPageDialog if you need the face feature.</li>
+</ul>
+
+<H4>KDialog</H4>
+<ul>
+<li>Simplified ctor.</li>
+<pre>
+The following ctor
+
+  KDialog dlg( parent, i18n("my caption"), modal, Ok | Cancel | User1, Ok, false, i18n("Share File"))
+
+should be rewritten as
+
+  KDialog dlg( parent );
+  dlg.setCaption( i18n("my caption") );
+  dlg.setModal( modal );
+  dlg.setButtons( Ok | Cancel | User1 );
+  dlg.setButtonGuiItem( User1, i18n("Share File") );
+  dlg.setDefaultButton( Ok );
+  dlg.enableButtonSeparator( false );
+</pre>
+<li>setButtonMask() -&gt; setButtons() and setButtonGuiItem()</li>
+<li>setButtonBoxOrientation() -&gt; setButtonsOrientation()</li>
 </ul>
 
 <H4>KDatePicker</H4>

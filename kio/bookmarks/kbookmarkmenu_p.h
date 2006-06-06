@@ -26,10 +26,11 @@
 
 #include <qobject.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
+#include <QBoxLayout>
 #include <QModelIndex>
 #include <QTreeWidget>
 

@@ -37,12 +37,19 @@ using namespace KRES;
 
 ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
     /*const QString& type,*/ Resource* resource, /*KConfig *config, */const char *name )
-  : KDialogBase( parent, name, true, i18n( "Resource Configuration" ),
-    Ok|Cancel, Ok, false )/*, mConfig( config )*/, mResource( resource )
+  : KDialog( parent )/*, mConfig( config )*/, mResource( resource )
 {
+  setObjectName( name );
+  setModal( true );
+  setCaption( i18n( "Resource Configuration" ) );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  enableButtonSeparator( false );
+
   Factory *factory = Factory::self( resourceFamily );
 
-  QFrame *main = makeMainWidget();
+  QFrame *main = new QFrame( this );
+  setMainWidget( main );
 
   QVBoxLayout *mainLayout = new QVBoxLayout( main );
   mainLayout->setSpacing( spacingHint() );

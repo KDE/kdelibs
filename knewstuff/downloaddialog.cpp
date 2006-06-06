@@ -94,10 +94,18 @@ class DateSortListViewItem : public QTreeWidgetItem
 };
 
 
-DownloadDialog::DownloadDialog(Engine *engine, QWidget *, const QString& caption)
-: KDialogBase(KDialogBase::IconList, (caption.isNull() ? i18n("Get Hot New Stuff") : caption),
-  KDialogBase::Close, KDialogBase::Close),d(new Private())
+DownloadDialog::DownloadDialog(Engine *engine, QWidget *parent, const QString& caption)
+: KPageDialog(parent),d(new Private())
 {
+  setFaceType( KPageDialog::List );
+  if ( caption.isEmpty() )
+    setCaption( i18n("Get Hot New Stuff") );
+  else
+    setCaption( caption );
+
+  setButtons( KDialog::Close );
+  setDefaultButton( KDialog::Close );
+
   init(engine);
 }
 
@@ -180,8 +188,8 @@ void DownloadDialog::addProvider(Provider *p)
 
   if(m_map.count() == 0)
   {
-    frame = addPage(i18n("Welcome"), i18n("Welcome"), QPixmap(""));
-    delete frame;
+    KPageWidgetItem *item = addPage( new QWidget(), i18n("Welcome") );
+    item->setHeader( i18n("Welcome") );
   }
 
   kDebug() << "addProvider()/begin" << endl;
@@ -202,7 +210,11 @@ void DownloadDialog::addProvider(Provider *p)
     }
   }
   if(!ret) pix = KGlobal::iconLoader()->loadIcon("knewstuff", K3Icon::Panel);
-  frame = addPage(p->name(), p->name(), pix);
+
+  frame = new QFrame( this );
+  KPageWidgetItem *item = addPage(frame, p->name());
+  item->setHeader( p->name() );
+  //FIXME: set icon: item->setIcon(pix);
   m_frame = frame;
 
   w2 = new QWidget(frame);
@@ -842,8 +854,7 @@ void DownloadDialog::open(const QString& category, const QString& caption)
 
 void DownloadDialog::slotFinish()
 {
-  showPage(1);
-  //updateBackground();
+// tokoe:  showPage(1);
 }
 
 QList<Entry*> DownloadDialog::installedEntries()

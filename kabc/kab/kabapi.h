@@ -17,7 +17,7 @@
 #define KABAPI_H
 
 #include "kabaddressbook.h"
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class QPushButton;
 class KListBox;
@@ -29,7 +29,7 @@ class Q3ListBoxItem;
   * functionality regarding database operations provided by kab is
   * available using an object of this class.
   *
-  * The class is derived from the class KDialogBase, thus objects
+  * The class is derived from the class KDialog, thus objects
   * can be used as a KDE dialog where the user may select a person
   * out of the entries in his personal database.
   * The following code may be used to let the user select an address:
@@ -60,10 +60,10 @@ class Q3ListBoxItem;
   * long the kab API is not completely finished.</tt>
   * @short The class KabAPI defines the API to access user address databases.
   * @author Mirko Boehm <mirko@kde.org>
-  * @see AddressBook #KDialogBase
+  * @see AddressBook #KDialog
   */
 
-class KabAPI : public KDialogBase
+class KabAPI : public KDialog
 {
   // ############################################################################
   Q_OBJECT

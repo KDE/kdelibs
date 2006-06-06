@@ -165,7 +165,7 @@ static KStaticDeleter<KUrl> ldd;
 
 KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
                          QWidget *parent, QWidget* widget)
-    : KDialog( parent, QString(), 0 )
+    : KDialog( parent )
 {
     init( startDir, filter, widget );
 }
@@ -1729,7 +1729,7 @@ KUrlBar * KFileDialog::speedBar()
 void KFileDialog::slotCancel()
 {
     ops->close();
-    reject(); //KDialogBase::slotCancel();
+    reject(); //KDialog::slotCancel();
 
     KConfig *config = KGlobal::config();
     config->setForceGlobal( true );

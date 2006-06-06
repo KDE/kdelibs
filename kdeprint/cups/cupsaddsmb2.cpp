@@ -41,8 +41,9 @@
 #include <ctype.h>
 
 CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
-: KDialog(parent, name)
+: KDialog(parent)
 {
+  setObjectName( name );
 	m_state = None;
 	m_status = false;
 	m_actionindex = 0;

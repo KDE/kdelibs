@@ -250,8 +250,10 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &groupsToShow,
                          int visuals,
                          QWidget *parent )
-    : KDialog(parent, caption, Cancel|Ok)
+    : KDialog( parent )
 {
+  setCaption( caption );
+  setButtons( Cancel | Ok );
   setModal( true );
   setDefaultButton( Ok );
 
@@ -267,8 +269,10 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &selMimeTypes,
                          const QString &defaultGroup,
                          QWidget *parent )
-    : KDialog(parent, caption, Cancel|Ok)
+    : KDialog( parent )
 {
+  setCaption( caption );
+  setButtons( Cancel | Ok );
   setModal( true );
   setDefaultButton( Ok );
 

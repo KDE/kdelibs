@@ -42,7 +42,6 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
   KDialog ( parent)
 {
   setModal(_modal);
-  // TODO : port to KDialogBase
   modal = _modal;
 
   // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,

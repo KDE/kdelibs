@@ -32,14 +32,16 @@
 using namespace std;
 
 KabAPI::KabAPI(QWidget* parent, const char* name)
-  : KDialogBase(parent, name),
+  : KDialog(parent),
     book(0),
     listbox(new KListBox(this)),
     selection(-1)
 {
+  setObjectName(name);
+
   Q_CHECK_PTR(listbox);
   setMainWidget(listbox);
-  showButton(KDialogBase::Apply, false);
+  showButton(KDialog::Apply, false);
   enableButtonSeparator(true);
   connect(listbox, SIGNAL(highlighted(int)), SLOT(entrySelected(int)));
   connect(listbox, SIGNAL(doubleClicked ( Q3ListBoxItem * )),SLOT(slotDoubleClicked ( Q3ListBoxItem * )));
@@ -73,7 +75,7 @@ int KabAPI::exec()
 	  listbox->setMinimumSize(listbox->sizeHint());
 	  adjustSize();
 	  resize(minimumSize());
-	  return KDialogBase::exec();
+	  return KDialog::exec();
 	} else {
 	  kDebug(KAB_KDEBUG_AREA) << "KabAPI::exec: error creating interface."
 				   << endl;

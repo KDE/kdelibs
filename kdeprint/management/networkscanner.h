@@ -20,7 +20,7 @@
 #ifndef NETWORKSCANNER_H
 #define NETWORKSCANNER_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 #include <QList>
 #include <QWidget>
@@ -78,7 +78,7 @@ private:
 class QLineEdit;
 class QComboBox;
 
-class NetworkScannerConfig : public KDialogBase
+class NetworkScannerConfig : public KDialog
 {
 	Q_OBJECT
 

@@ -8,7 +8,6 @@
 #include <ktreewidgetsearchline.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kdialogbase.h>
 #include <khbox.h>
 
 KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()

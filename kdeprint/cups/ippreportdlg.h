@@ -20,12 +20,12 @@
 #ifndef IPPREPORTDLG_H
 #define IPPREPORTDLG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 class IppRequest;
 class KTextEdit;
 
-class IppReportDlg : public KDialogBase
+class IppReportDlg : public KDialog
 {
 	Q_OBJECT
 public:

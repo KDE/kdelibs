@@ -173,7 +173,7 @@ void KMWDriverTest::slotSettings()
 	{
 		KMDriverDialog	dlg(this);
 		dlg.setDriver(m_driver);
-		dlg.showButton( KDialogBase::Cancel, false );	// only OK button
+		dlg.showButton( KDialog::Cancel, false );	// only OK button
 		dlg.exec();
 	}
 }

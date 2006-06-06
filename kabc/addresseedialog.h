@@ -25,7 +25,7 @@
 #include <QString>
 #include <QTreeWidgetItem>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <klineedit.h>
 
 #include "addressbook.h"
@@ -82,7 +82,7 @@ class KABC_EXPORT AddresseeItem : public QTreeWidgetItem
   return or pressing the ok button to return the selected addressee to the
   application.
 */
-class KABC_EXPORT AddresseeDialog : public KDialogBase
+class KABC_EXPORT AddresseeDialog : public KDialog
 {
     Q_OBJECT
 

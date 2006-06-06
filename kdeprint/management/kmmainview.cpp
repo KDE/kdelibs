@@ -48,7 +48,7 @@
 #include <kdebug.h>
 #include <kmenu.h>
 #include <klibloader.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
@@ -897,7 +897,7 @@ void KMMainView::slotToolSelected(QAction *action)
 		{
 			QStringList	args;
 			args << m_current->device() << m_current->printerName();
-			KDialogBase	*dlg = static_cast<KDialogBase*>(factory->create(this, 0, args));
+			KDialog *dlg = static_cast<KDialog*>(factory->create(this, 0, args));
 			if (dlg)
 				dlg->exec();
 			delete dlg;

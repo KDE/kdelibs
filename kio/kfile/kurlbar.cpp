@@ -937,9 +937,10 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                                       QString icon, bool appLocal,
                                       int iconSize,
                                       QWidget *parent)
-    : KDialog( parent,
-                   i18n("Edit Quick Access Entry"), Ok | Cancel)
+    : KDialog( parent )
 {
+    setCaption( i18n("Edit Quick Access Entry") );
+    setButtons( Ok | Cancel );
     setModal(true);
     setDefaultButton(Ok);
     enableButtonSeparator(true);

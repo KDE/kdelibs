@@ -2,7 +2,8 @@
  *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
  *  Additions 1999-2000 by Espen Sand (espen@kde.org)
  *                      and Holger Freyther <freyther@kde.org>
- *             2005-2006   Olivier Goffart <ogoffart @ kde.org>
+ *            2005-2006   Olivier Goffart <ogoffart @ kde.org>
+ *            2006      Tobias Koenig <tokoe@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,43 +24,15 @@
 #ifndef KDIALOG_H
 #define KDIALOG_H
 
-class QLayoutItem;
-
 class KPushButton;
-class KSeparator;
-class KUrlLabel;
-class QBoxLayout;
-class QPixmap;
-class KDialogBase;
 
-#include <QDialog>
-#include <Qt>
+#include <QtGui/QDialog>
 
 #include <kdelibs_export.h>
+
 #include <kconfigbase.h>
 #include <kguiitem.h>
 #include <kstdguiitem.h>
-
-/**
- * Used internally by KDialog.
- * @internal
- */
-class KDialogButton;
-
-/**
- * Used internally by KDialog.
- * @internal
- */
-class KDialogTile;
-
-/* TODO: the old KDialog had this property:
-
- * If the dialog is non-modal and has a parent, the default keybindings
- * (@p escape = @p reject(), @p enter = @p accept(), etc.) are disabled.
-
- */
-
-
 
 /**
  * @short A dialog base class with standard buttons and predefined layouts.
@@ -89,18 +62,16 @@ class KDialogTile;
  * The default action of the Help button will open the help system if you have
  * provided a path to the help text.
  * The default action of Ok and Cancel will run QDialog::accept() and QDialog::reject()
- * that you can overide.   The default action of the Close button will close the dialog.
+ * that you can overide. The default action of the Close button will close the dialog.
  *
- * If you don't want any buttons at all because your dialog is special
- * in some way, then set the buttonMask argument in the constructor to zero
- * (0). The optional button box separator line should not be enabled
- * in this case. Note that the KDialog will animate a button press
+ * Note that the KDialog will animate a button press
  * when the user press Escape. The button that is enabled is either Cancel,
- * Close or the button that is defined by setEscapeButton() The
- * animation will not take place when the buttonMask is zero. Your
- * custom dialog code should reimplement the keyPressEvent and
+ * Close or the button that is defined by setEscapeButton().
+ * Your custom dialog code should reimplement the keyPressEvent and
  * animate the cancel button so that the dialog behaves like regular
- * dialogs. NOTE: None of the regular slots (like slotOk() ) or
+ * dialogs.
+ *
+ * NOTE: None of the regular slots (like slotOk() ) or
  * signals that are related to the standard action buttons will be used
  * when you don't use these buttons.
  *
@@ -111,10 +82,9 @@ class KDialogTile;
  * the built-in dialog face or your own widget in the middle and by default
  * a button box at the bottom. The button box can also be placed at the
  * right edge (to the right of the main widget). Use
- * setButtonBoxOrientation() to control this behavior. A separator
+ * setButtonsOrientation() to control this behavior. A separator
  * can be placed above the button box (or to the left when the button box
- * is at the right edge). Normally you specify that you want a separator
- * in the constructor, but you can use enableButtonSeparator() as well.
+ * is at the right edge).
  *
  * <b>Standard compliance:</b>\n
  *
@@ -130,14 +100,17 @@ class KDialogTile;
  * <b>Example:</b>\n
  *
  * \code
- *   KDialog *dialog=new KDialog( this , i18n( "foo" )  ,
- *                                 KDialog::Ok | KDialog::Cancel | KDialog::Apply );
- *   FooWidget wid=new FooWidget( dialog );
- *   dialog->setMainWidget( wid );
- *   connect( dialog , SIGNAL(applyClicked()) , wid , SLOT(save()) );
- *   connect( dialog , SIGNAL(okClicked()) , wid , SLOT(save()) );
- *   connect( wid , SIGNAL(changed(bool)) , wid , SLOT(enabledButtonApply(bool)) );
- *   enableButtonApply(false);
+ *   KDialog *dialog = new KDialog( this );
+ *   dialog->setCaption( "My title" );
+ *   dialog->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Apply );
+ *
+ *   FooWidget widget = new FooWidget( dialog );
+ *   dialog->setMainWidget( widget );
+ *   connect( dialog, SIGNAL( applyClicked() ), widget, SLOT( save() ) );
+ *   connect( dialog, SIGNAL( okClicked() ), widget, SLOT( save() ) );
+ *   connect( widget, SIGNAL( changed( bool ) ), dialog, SLOT( enabledButtonApply( bool ) ) );
+ *
+ *   dialog->enableButtonApply( false );
  *   dialog->show();
  * \endcode
  *
@@ -147,11 +120,12 @@ class KDialogTile;
  * inspiration you should study the code for these.
  *
  *
- * @see KDialogBase
+ * @see KPageDialog
  * @author Thomas Tanghus <tanghus@earthling.net>
  * @author Espen Sand <espensa@online.no>
  * @author Mirko Boehm <mirko@kde.org> 
  * @author Olivier Goffart <ogoffart at kde.org>
+ * @author Tobias Koenig <tokoe@kde.org>
  */
 class KDEUI_EXPORT KDialog : public QDialog
 {
@@ -191,41 +165,27 @@ class KDEUI_EXPORT KDialog : public QDialog
     };
 
   public:
-
-#ifdef KDE3_SUPPORT
     /**
-     * Constructor.
+     * Creates a dialog.
      *
-     * Takes the same arguments as QDialog.
+     * @param parent The parent of the dialog.
+     * @param flags  The widget flags passed to the QDialog constructor
      */
-    KDialog(QWidget *parent = 0, const char *name = 0,
-	    bool modal = false, Qt::WFlags f = 0) KDE_DEPRECATED;
-#endif
+    KDialog( QWidget *parent = 0, Qt::WFlags flags = 0 );
 
     /**
-     * Constructor for the predefined layout mode where you specify the
-     * kind of layout (face).
-     *
-     * @param parent Parent of the dialog.
-     * @param caption The dialog caption. Do not specify the application name
-     *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible. If zero
-     *        (0) no button box will be made.
-     * @param flags  the Widget flags passed to the QDialog constructor
-     * @param user1 User button1 text item.
-     * @param user2 User button2 text item.
-     * @param user3 User button3 text item.
-     */
-    KDialog( QWidget *parent=0, const QString &caption = QString() ,
-			 ButtonCodes buttonMask= 0, Qt::WFlags flags = 0 ,
-			 const KGuiItem &user1=KGuiItem(),
-			 const KGuiItem &user2=KGuiItem(),
-			 const KGuiItem &user3=KGuiItem() );
-
-    /**
-     * Destructor.
+     * Destroys the dialog.
      */
     ~KDialog();
+
+    /**
+     * Creates (or recreates) the button box and all the buttons in it. 
+     *
+     * This will reset all default KGuiItem of all button.
+     *
+     * @param buttonMask Specifies what buttons will be made.
+     */
+    void setButtons( ButtonCodes buttonMask );
 
     /**
      * Sets the orientation of the button box.
@@ -237,7 +197,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * @param orientation The button box orientation.
      */
-    void setButtonBoxOrientation( Qt::Orientation orientation );
+    void setButtonsOrientation( Qt::Orientation orientation );
 
     /**
      * Sets the button that will be activated when the Escape key
@@ -262,28 +222,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setDefaultButton( ButtonCode id );
 
-	
-	/**
-	 * @brief set the button mask
-	 *
-	 * Makes (or re-make) the button box and all the buttons in it. 
-	 *
-	 * This will reset all default KGuiItem of all button. 
-	 * Should be called only once if you haven't set the mask in the constructor
-	 *
-	 * @param buttonMask Specifies what buttons will be made.
-	 * @param user1 User button1 item.
-	 * @param user2 User button2 item.
-	 * @param user3 User button3 item.
-	*/
-	void setButtonMask( ButtonCodes buttonMask ,
-						const KGuiItem &user1 = KGuiItem(),
-						const KGuiItem &user2 = KGuiItem(),
-						const KGuiItem &user3 = KGuiItem() );
-
-
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
 
     /**
      * Hide or display the a separator line drawn between the action
@@ -302,121 +240,108 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param state true display the button(s).
      */
     void showButton( ButtonCode id, bool state );
-	
-	    /**
-	 * Sets the text of any button.
-	 *
-	 * @param id The button identifier.
-	 * @param text Button text.
-		 */
-	void setButtonText( ButtonCode id, const QString &text );
 
     /**
-	 * Sets the tooltip text of any button.
-	 *
-	 * @param id The button identifier.
-	 * @param text Button text.
-	 */
-	void setButtonTip( ButtonCode id, const QString &text );
-
-    /**
-	 * Sets the "What's this?" text of any button.
-	 *
-	 * @param id The button identifier.
-	 * @param text Button text.
-	 */
-	void setButtonWhatsThis( ButtonCode id, const QString &text );
-
-    /**
-	 * Sets the KGuiItem directly for the button instead of using 3 methods to
-	 * set the text, tooltip and whatsthis strings. This also allows to set an
-	 * icon for the button which is otherwise not possible for the extra
-	 * buttons beside Ok, Cancel and Apply.
-	 *
-	 * @param id The button identifier.
-	 * @param item The KGuiItem for the button.
-	 */
-	void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
-
- 
-    /**
-	 * Returns the action button that corresponds to the @p id.
-	 *
-	 * Normally
-	 * you should not use this function. @em Never delete the object returned
-	 * by this function. See also enableButton(), showButton(),
-	 * setButtonTip(), setButtonWhatsThis(), and setButtonText().
-	 *
-	 * @param id Integer identifier of the button.
-	 * @return The action button or 0 if the button does not exists.
-	 *
-	 */
-	KPushButton *actionButton( ButtonCode id );
-
-    /**
-     * Sets the main user definable widget.
+     * Sets the text of any button.
      *
-     * If the dialog is using the predefined Swallow mode, the widget will
-     * be reparented to the internal swallow control widget. If the dialog
-     * is being used in the standard mode then the @p widget must have the
-     * dialog as parent.
-     *
-     * @param widget The widget to be displayed as main widget. If it
-     * is 0, then the dialog will show an empty space of 100x100 pixels
-     * instead.
+     * @param id The button identifier.
+     * @param text Button text.
      */
-    void setMainWidget( QWidget *widget );
+    void setButtonText( ButtonCode id, const QString &text );
 
     /**
-     * Returns the main widget if any.
+     * Sets the icon of any button.
      *
-     * @return The current main widget. Can be 0 if no widget has been defined.
+     * @param id The button identifier.
+     * @param icon Button icon.
      */
-    QWidget *mainWidget();
+    void setButtonIcon( ButtonCode id, const QIcon &icon );
+
+    /**
+     * Sets the tooltip text of any button.
+     *
+     * @param id The button identifier.
+     * @param text Button text.
+     */
+    void setButtonToolTip( ButtonCode id, const QString &text );
+
+    /**
+     * Sets the "What's this?" text of any button.
+     *
+     * @param id The button identifier.
+     * @param text Button text.
+     */
+    void setButtonWhatsThis( ButtonCode id, const QString &text );
+
+    /**
+     * Sets the KGuiItem directly for the button instead of using 3 methods to
+     * set the text, tooltip and whatsthis strings. This also allows to set an
+     * icon for the button which is otherwise not possible for the extra
+     * buttons beside Ok, Cancel and Apply.
+     *
+     * @param id The button identifier.
+     * @param item The KGuiItem for the button.
+     */
+    void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
+
+
+    /**
+     * Returns the button that corresponds to the @p id.
+     *
+     * Normally
+     * you should not use this function. @em Never delete the object returned
+     * by this function. See also enableButton(), showButton(),
+     * setButtonTip(), setButtonWhatsThis(), and setButtonText().
+     *
+     * @param id Integer identifier of the button.
+     * @return The action button or 0 if the button does not exists.
+     *
+     */
+    KPushButton *button( ButtonCode id );
+
 
     /**
      * Convenience method. Sets the initial dialog size.
      *
-     *  This method should
-     * only be called right before show() or exec(). The initial
-     * size will be
-     * ignored if smaller than the dialog's minimum size.
+     * This method should only be called right before show() or exec().
+     * The initial size will be ignored if smaller than
+     * the dialog's minimum size.
      *
      * @param s Startup size.
      */
-    void setInitialSize( const QSize &s );
+    void setInitialSize( const QSize &size );
 
     /**
      * Convenience method. Add a size to the default minimum size of a
      * dialog.
      *
-     * This method should only be called right before show() or
-     * exec().
+     * This method should only be called right before show() or exec().
      *
      * @param s  Size added to minimum size.
      */
-    void incInitialSize( const QSize &s );
+    void incrementInitialSize( const QSize &size );
 
- 
-   /**
-    * read the dialogs size from the configuration according to the screen size.
-    *
-	* @note the group must be set before calling
-	*
-    * @param config The object to read from. That may be a KConfigGroup
-    */
+
+    /**
+     * Restores the dialogs size from the configuration according to
+     * the screen size.
+     *
+     * @note the group must be set before calling
+     *
+     * @param config The object to read from. That may be a KConfigGroup
+     */
    void restoreDialogSize( KConfigBase* config ) ;
 
    /**
-    * save the dialogs size dependant on the screen dimension either to the
+    * Saves the dialogs size dependant on the screen dimension either to the
     * global or application config file.
     *
-	* @note the group must be set before calling
-	*
+    * @note the group must be set before calling
+    *
     * @param config The object to read from. That is recommended to use a KConfigGroup
     * @param options passed to KConfigBase::writeEntry
     */
-   void saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options=0 ) const;
+   void saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options = 0 ) const;
 
 
     /**
@@ -433,7 +358,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     /**
      * Return the number of pixels you shall use between a
      * dialog edge and the outermost widget(s) according to the KDE standard.
-     **/
+     */
     static int marginHint();
 
     /**
@@ -481,6 +406,26 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     static bool avoidArea( QWidget *widget, const QRect& area, int screen = -1 );
 
+    /**
+     * Sets the main widget of the dialog.
+     */
+    void setMainWidget( QWidget *widget );
+
+    /**
+     * @return The current main widget. Can be 0 if no widget has been defined.
+     */
+    QWidget *mainWidget();
+
+    /**
+     * Reimplemented from QDialog.
+     */
+    virtual QSize sizeHint() const;
+
+    /**
+     * Reimplemented from QDialog.
+     */
+    virtual QSize minimumSizeHint() const;
+
   public Q_SLOTS:
     /**
      * Make a KDE compliant caption.
@@ -505,7 +450,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @internal
      */
     virtual void keyPressEvent(QKeyEvent*);
-	
+
    Q_SIGNALS:
     /**
      * Emitted when the margin size and/or spacing size
@@ -576,13 +521,12 @@ class KDEUI_EXPORT KDialog : public QDialog
      * function for Dialogs of that type.  See
      * KCMultiDialog::slotHelp() for more information.
      */
-    void setHelp( const QString &anchor,
-		  const QString &appname = QString() );
+    void setHelp( const QString &anchor, const QString &appname = QString() );
 
     /**
      * Sets the status of the Details button.
      */
-    void setDetails(bool showDetails);
+    void setDetails( bool showDetails );
 
     /**
      * Sets the widget that gets shown when "Details" is enabled.
@@ -590,7 +534,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * The dialog takes over ownership of the widget.
      * Any previously set widget gets deleted.
      */
-    void setDetailsWidget(QWidget *detailsWidget);
+    void setDetailsWidget( QWidget *detailsWidget );
 
 
   Q_SIGNALS:
@@ -605,7 +549,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * slotButtonClicked() is not replaced
      */
     void defaultClicked();
-
 
     /**
      * The User3 button was pressed. This signal is only emitted if
@@ -706,7 +649,6 @@ class KDEUI_EXPORT KDialog : public QDialog
     void aboutToShowDetails();
 
   protected:
-
     /**
      * Emits the #hidden signal. You can connect to that signal to
      * detect when a dialog has been closed.
@@ -733,11 +675,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void updateGeometry();
 
-
   private:
-    static const int mMarginSize;
-    static const int mSpacingSize;
-
     /**
      * Sets the action button order according to the 'style'.
      *
@@ -750,7 +688,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setupLayout();
 
-
     /**
      * Sets the action button that is marked as default and has focus.
      *
@@ -759,12 +696,12 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param isFocus If true, give the button focus.
      */
     void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
-	
-	/**
-	 * @internal
-	 * create a new button
-	 */
-	KPushButton *appendButton( ButtonCode code , const KGuiItem &item );
+
+    /**
+     * @internal
+     * create a new button
+     */
+    KPushButton *appendButton( ButtonCode code , const KGuiItem &item );
 
   private:
     struct Private;
@@ -774,41 +711,41 @@ class KDEUI_EXPORT KDialog : public QDialog
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)
 
 
- /**
-  * \brief Queue for showing modal dialogs one after the other.
-  *
-  * This is useful if you want to show a modal dialog but are not in the
-  * position to start a new event loop at that point in your code.
-  *
-  * The disadvantage is that you will not be able to get any information from
-  * the dialog, so it can currently only be used for simple dialogs.
-  *
-  * You probably want to use KMessageBox::queueMessageBox() instead
-  * of this class directly.
-  *
-  * @author Waldo Bastian <bastian@kde.org>
-  */
-class KDialogQueuePrivate;
+/**
+ * \brief Queue for showing modal dialogs one after the other.
+ *
+ * This is useful if you want to show a modal dialog but are not in the
+ * position to start a new event loop at that point in your code.
+ *
+ * The disadvantage is that you will not be able to get any information from
+ * the dialog, so it can currently only be used for simple dialogs.
+ *
+ * You probably want to use KMessageBox::queueMessageBox() instead
+ * of this class directly.
+ *
+ * @author Waldo Bastian <bastian@kde.org>
+ */
 class KDEUI_EXPORT KDialogQueue : public QObject
 {
-      Q_OBJECT
+  Q_OBJECT
 
-public:
+  public:
+    static void queueDialog(QDialog *);
 
-      static void queueDialog(QDialog *);
+    ~KDialogQueue();
 
-      ~KDialogQueue();
+  protected:
+    KDialogQueue();
+    static KDialogQueue *self();
 
-protected:
-      KDialogQueue();
-      static KDialogQueue *self();
+  private Q_SLOTS:
+    void slotShowQueuedDialog();
 
-private Q_SLOTS:
-      void slotShowQueuedDialog();
+  protected:
+    class Private;
+    Private* const d;
 
-protected:
-      KDialogQueuePrivate* const d;
-      static KDialogQueue *_self;
+    static KDialogQueue *_self;
 };
 
 #endif // KDIALOG_H

@@ -726,7 +726,9 @@ void KMJobViewer::slotConfigure()
 {
 	KMTimer::self()->hold();
 
-	KDialog	dlg(this, i18n("Print Job Settings"), KDialog::Ok|KDialog::Cancel);
+	KDialog	dlg(this);
+  dlg.setCaption( i18n("Print Job Settings") );
+  dlg.setButtons( KDialog::Ok|KDialog::Cancel );
 	KMConfigJobs	*w = new KMConfigJobs(&dlg);
 	dlg.setMainWidget(w);
 	dlg.resize(300, 10);

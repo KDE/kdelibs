@@ -18,7 +18,6 @@
 */
 
 #include "kpixmapregionselectordialog.h"
-#include <kdialogbase.h>
 #include <qdialog.h>
 #include <qdesktopwidget.h>
 #include <klocale.h>
@@ -26,8 +25,11 @@
 #include <kvbox.h>
 
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,
-     bool modal ) : KDialog(parent, i18n("Select Region of Image"), Help|Ok|Cancel )
+     bool modal )
+  : KDialog(parent)
 {
+  setCaption( i18n("Select Region of Image") );
+  setButtons( Help|Ok|Cancel );
   enableButtonSeparator( true );
   setModal( modal );
 

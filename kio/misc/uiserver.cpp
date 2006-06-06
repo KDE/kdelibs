@@ -44,7 +44,7 @@
 #include <ksystemtray.h>
 #include <kmenu.h>
 #include <kaction.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <kstdaction.h>
 
 #include "observer.h" // for static methods only
@@ -100,7 +100,7 @@ class UIServerSystemTray:public KSystemTray
       }
 };
 
-class ProgressConfigDialog:public KDialogBase
+class ProgressConfigDialog:public KDialog
 {
    public:
       ProgressConfigDialog(QWidget* parent);
@@ -120,19 +120,27 @@ class ProgressConfigDialog:public KDialogBase
 };
 
 ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
-:KDialogBase(KDialogBase::Plain,i18n("Configure Network Operation Window"),KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
-             KDialogBase::Ok, parent, "configprog", false)
+:KDialog( parent )
 {
-   QVBoxLayout *layout=new QVBoxLayout(plainPage());
+  setCaption( i18n("Configure Network Operation Window") );
+  setButtons( KDialog::Ok | KDialog::Apply | KDialog::Cancel );
+  setDefaultButton( KDialog::Ok );
+  setObjectName( "configprog" );
+  enableButtonSeparator( false );
+
+  QFrame *page = new QFrame( this );
+  setMainWidget( page );
+
+   QVBoxLayout *layout=new QVBoxLayout(page);
    layout->setSpacing(spacingHint());
-   m_showSystemTrayCb=new QCheckBox(i18n("Show system tray icon"), plainPage());
-   m_keepOpenCb=new QCheckBox(i18n("Keep network operation window always open"), plainPage());
-   m_headerCb=new QCheckBox(i18n("Show column headers"), plainPage());
-   m_toolBarCb=new QCheckBox(i18n("Show toolbar"), plainPage());
-   m_statusBarCb=new QCheckBox(i18n("Show statusbar"), plainPage());
-   m_fixedWidthCb=new QCheckBox(i18n("Column widths are user adjustable"), plainPage());
-   QLabel *label=new QLabel(i18n("Show information:"), plainPage());
-   m_columns=new K3ListView(plainPage());
+   m_showSystemTrayCb=new QCheckBox(i18n("Show system tray icon"), page);
+   m_keepOpenCb=new QCheckBox(i18n("Keep network operation window always open"), page);
+   m_headerCb=new QCheckBox(i18n("Show column headers"), page);
+   m_toolBarCb=new QCheckBox(i18n("Show toolbar"), page);
+   m_statusBarCb=new QCheckBox(i18n("Show statusbar"), page);
+   m_fixedWidthCb=new QCheckBox(i18n("Column widths are user adjustable"), page);
+   QLabel *label=new QLabel(i18n("Show information:"), page);
+   m_columns=new K3ListView(page);
 
    m_columns->addColumn("info");
    m_columns->setSorting(-1);

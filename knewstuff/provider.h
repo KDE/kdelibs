@@ -137,7 +137,7 @@ class KNEWSTUFF_EXPORT Provider
     /**
      * Sets the URL for an icon for this provider.
      * The icon should be in 32x32 format. If not set, the default icon
-     * of KDialogBase is used.
+     * of KDialog is used.
      */
     void setIcon( const KUrl & );
 

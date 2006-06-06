@@ -292,10 +292,15 @@ SourceFragment::~SourceFragment()
 //-------------------------------------------------------------------------
 
 KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, bool showDebug)
-  : KDialogBase(parent,0,true,i18n("JavaScript Error"),
-		showDebug ? KDialogBase::Ok|KDialogBase::User1 : KDialogBase::Ok,
-		KDialogBase::Ok,false,KGuiItem("&Debug","gear"))
+  : KDialog( parent )
 {
+  setCaption( i18n("JavaScript Error") );
+  setModal( true );
+  setButtons( showDebug ? KDialog::Ok | KDialog::User1 : KDialog::Ok );
+  setButtonGuiItem( KDialog::User1, KGuiItem("&Debug","gear") );
+  setDefaultButton( KDialog::Ok );
+  enableButtonSeparator( false );
+
   QWidget *page = new QWidget(this);
   setMainWidget(page);
 

@@ -38,9 +38,9 @@
 #include <kguiitem.h>
 #include <kactivelabel.h>
 #include <kdatetable.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 
-KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialogBase *dlg)
+KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialog *dlg)
     : QWidget(parent)
 {
 	m_cmd = new QComboBox(this);

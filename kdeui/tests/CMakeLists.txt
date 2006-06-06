@@ -153,19 +153,6 @@ target_link_libraries(kdatewidgettest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kdialogbasetest_SRCS
-kdialogbasetest.cpp
-)
-
-kde4_automoc(${kdialogbasetest_SRCS})
-
-kde4_add_executable(kdialogbasetest RUN_UNINSTALLED ${kdialogbasetest_SRCS})
-
-target_link_libraries(kdialogbasetest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(kdualcolortest_SRCS
 kdualcolortest.cpp
 )
@@ -671,19 +658,6 @@ target_link_libraries(kpixmapregionselectordialogtest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kjanuswidgettest_SRCS
-kjanuswidgettest.cpp
-)
-
-kde4_automoc(${kjanuswidgettest_SRCS})
-
-kde4_add_executable(kjanuswidgettest RUN_UNINSTALLED ${kjanuswidgettest_SRCS})
-
-target_link_libraries(kjanuswidgettest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(ktoolbarlabelactiontest_SRCS
 ktoolbarlabelactiontest.cpp
 )
@@ -771,6 +745,18 @@ kde4_automoc(${knotificationrestrictionstest_SRCS})
 kde4_add_executable(knotificationrestrictionstest RUN_UNINSTALLED ${knotificationrestrictionstest_SRCS})
 
 target_link_libraries(knotificationrestrictionstest  ${KDE4_KDEUI_LIBS})
+
+########### next target ###############
+
+set(kpagewidgettest_SRCS
+kpagewidgettest.cpp
+)
+
+kde4_automoc(${kpagewidgettest_SRCS})
+
+kde4_add_executable(kpagewidgettest RUN_UNINSTALLED ${kpagewidgettest_SRCS})
+
+target_link_libraries(kpagewidgettest  ${KDE4_KDEUI_LIBS})
 
 
 endif(KDE4_BUILD_TESTS)

@@ -34,7 +34,6 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kdialogbase.h>
 #include <kdirlister.h>
 #include <kinputdialog.h>
 #include <klocale.h>

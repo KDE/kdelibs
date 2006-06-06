@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF_DOWNLOADDIALOG_H
 #define KNEWSTUFF_DOWNLOADDIALOG_H
 
-#include <kdialogbase.h>
+#include <kpagedialog.h>
 #include <knewstuff/provider.h>
 
 #include <qmap.h>
@@ -60,7 +60,7 @@ class Engine;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class KNEWSTUFF_EXPORT DownloadDialog : public KDialogBase
+class KNEWSTUFF_EXPORT DownloadDialog : public KPageDialog
 {
     Q_OBJECT
     struct Private;

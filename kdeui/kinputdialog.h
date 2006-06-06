@@ -30,7 +30,7 @@ class KTextEdit;
 class KInputDialogPrivate;
 class KListBox;
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 /**
  * The KInputDialog class provides a simple dialog to get a single value

@@ -48,8 +48,14 @@ QString localRootIP();
 //----------------------------------------------------------------------------------------
 
 SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *name)
-: KDialogBase(Swallow, 0, parent, name, true, QString(), Ok|Cancel, Ok, true)
+: KDialog( parent )
 {
+  setObjectName( name );
+  setModal( true );
+  setButtons( Ok | Cancel );
+  setDefaultButton( Ok );
+  enableButtonSeparator( true );
+
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);
         KIntValidator *val = new KIntValidator( this );
@@ -134,7 +140,7 @@ void SocketConfig::slotOk()
 		return;
 	}
 
-	KDialogBase::slotOk();
+	KDialog::accept();
 }
 
 //----------------------------------------------------------------------------------------

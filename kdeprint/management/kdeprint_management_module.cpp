@@ -27,7 +27,7 @@
 #include "kmmainview.h"
 
 #include <kmessagebox.h>
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <klocale.h>
 
 extern "C"
@@ -45,7 +45,11 @@ extern "C"
 
 	KDEPRINT_MANAGEMENT_MODULE_EXPORT QString select_command( QWidget* parent )
 	{
-		KDialogBase dlg( KDialogBase::Swallow, 0, parent, 0, true, i18n( "Select Command" ), KDialogBase::Ok|KDialogBase::Cancel );
+		KDialog dlg( parent );
+    dlg.setModal( true );
+    dlg.setCaption( i18n( "Select Command" ) );
+    dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+
 		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg, &dlg );
                 xmlSel->setObjectName( "CommandSelector" );
 		dlg.setMainWidget( xmlSel );

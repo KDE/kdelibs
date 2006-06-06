@@ -28,7 +28,7 @@
 
 KAboutKDE::KAboutKDE( QWidget *parent, bool modal )
   :KAboutDialog( KAboutDialog::AbtKDEStandard, QLatin1String("KDE"),
-		 KDialogBase::Help|KDialogBase::Close, KDialogBase::Close,
+		 KDialog::Help|KDialog::Close, KDialog::Close,
 		 parent, modal )
 {
   const QString text1 = i18n(""

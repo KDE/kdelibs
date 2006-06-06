@@ -21,7 +21,7 @@
 #ifndef KCONFIGDIALOG_H
 #define KCONFIGDIALOG_H
 
-#include <kdialogbase.h>
+#include <kpagedialog.h>
 
 class KConfig;
 class KConfigSkeleton;
@@ -31,7 +31,7 @@ class KConfigDialogManager;
  * \short Standard %KDE configuration dialog class
  *
  * The KConfigDialog class provides an easy and uniform means of displaying
- * a settings dialog using KDialogBase, KConfigDialogManager and a
+ * a settings dialog using KPageDialog, KConfigDialogManager and a
  * KConfigSkeleton derived settings class.
  *
  * KConfigDialog handles the enabling and disabling of buttons, creation
@@ -49,7 +49,7 @@ class KConfigDialogManager;
  * void KCoolApp::showSettings(){
  *   if(KConfigDialog::showDialog("settings"))
  *     return;
- *   KConfigDialog *dialog = new KConfigDialog(this, "settings", MySettings::self(), KDialogBase::IconList);
+ *   KConfigDialog *dialog = new KConfigDialog(this, "settings", MySettings::self(), KPageDialog::IconList);
  *   dialog->addPage(new General(0, "General"), i18n("General") );
  *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance") );
  *   connect(dialog, SIGNAL(settingsChanged(const QString&)), mainWidget, SLOT(loadSettings()));
@@ -62,13 +62,13 @@ class KConfigDialogManager;
  * have a loadSettings() type slot to read settings and perform any
  * necessary changes.
  *
- * Please note that using the setMainWidget method inherited from KDialogBase
+ * Please note that using the setMainWidget method inherited from KPageDialog
  * currently yields broken behaviour at runtime; use @ref addPage() instead.
  *
  * @see KConfigSkeleton
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDEUI_EXPORT KConfigDialog : public KDialogBase {
+class KDEUI_EXPORT KConfigDialog : public KPageDialog {
 Q_OBJECT
 
 Q_SIGNALS:
@@ -95,7 +95,7 @@ public:
    * "Font Settings" or "Color Settings" and not just "Settings" in
    * applications where there is more than one dialog.
    *
-   * @param dialogType - Type used in creating the dialog.  @see KDialogBase
+   * @param faceType - Type used in creating the dialog.  @see KPageDialog
    *
    * @param config - Config object containing settings.
    *
@@ -108,11 +108,12 @@ public:
    * used in determining if the settings dialog already exists before creating
    * a new KConfigDialog object.
    */
-  // KDE4: Add the "separator" parameter as in KDialogBase
+  // KDE4: Add the "separator" parameter as in KPageDialog
   //       Make "dialogType" an int - or a real qt4 enum
+  //   tokoe: No!!! strip down the ctor instead of making it more complex...
   KConfigDialog( QWidget *parent, const QString& name,
                  KConfigSkeleton *config,
-                 DialogType dialogType = IconList,
+                 FaceType faceType = List,
                  ButtonCodes dialogButtons = Default|Ok|Apply|Cancel|Help,
                  ButtonCode defaultButton = Ok,
                  bool modal=false );
