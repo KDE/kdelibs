@@ -69,5 +69,5 @@ Hidden=false
 MimeType=application/x-bittorrent
 Icon=bt
 Type=MimeType
-Patterns=*.torrent
+Patterns=*.torrent;*.tor
 X-KDE-AutoEmbed=false
