@@ -49,8 +49,8 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		void _k_bytestreamNeedData();
 		void _k_bytestreamEnoughData();
 		void _k_bytestreamData( KIO::Job*, const QByteArray& );
-		void _k_bytestreamResult( KIO::Job* );
-		void _k_bytestreamTotalSize( KIO::Job*, KIO::filesize_t );
+		void _k_bytestreamResult( KJob* );
+		void _k_bytestreamTotalSize( KJob*, qulonglong );
 		void _k_cleanupByteStream();
 
 		KUrl url;

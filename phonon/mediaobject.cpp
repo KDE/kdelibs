@@ -40,6 +40,9 @@ void MediaObject::setUrl( const KUrl& url )
 		BACKEND_CALL( "stop" ); // first call stop as that often is the expected state
 		                    // for setting a new URL
 		BACKEND_CALL1( "setUrl", KUrl, url );
+		//FIXME: the stateChanged signal will be emitted. Perhaps it should be
+		//disabled for the setUrl call and then replayed when it didn't go into
+		//ErrorState
 		if( state() == Phonon::ErrorState )
 		{
 			d->deleteIface();
@@ -68,10 +71,10 @@ void MediaObjectPrivate::setupKioStreaming()
 		kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
 		QObject::connect( kiojob, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
 				q, SLOT( _k_bytestreamData( KIO::Job*, const QByteArray& ) ) );
-		QObject::connect( kiojob, SIGNAL( result( KIO::Job* ) ),
-				q, SLOT( _k_bytestreamResult( KIO::Job* ) ) );
-		QObject::connect( kiojob, SIGNAL( totalSize( KIO::Job*, KIO::filesize_t ) ),
-				q, SLOT( _k_bytestreamTotalSize( KIO::Job*, KIO::filesize_t ) ) );
+		QObject::connect( kiojob, SIGNAL( result( KJob* ) ),
+				q, SLOT( _k_bytestreamResult( KJob* ) ) );
+		QObject::connect( kiojob, SIGNAL( totalSize( KJob*, KIO::filesize_t ) ),
+				q, SLOT( _k_bytestreamTotalSize( KJob*, qulonglong ) ) );
 
 		QObject::connect( backendObject, SIGNAL( finished() ), q, SIGNAL( finished() ) );
 		QObject::connect( backendObject, SIGNAL( aboutToFinish( qint32 ) ), q, SIGNAL( aboutToFinish( qint32 ) ) );
@@ -104,7 +107,7 @@ void MediaObjectPrivate::_k_bytestreamData( KIO::Job*, const QByteArray& data )
 	pBACKEND_CALL1( "writeData", QByteArray, data );
 }
 
-void MediaObjectPrivate::_k_bytestreamResult( KIO::Job* job )
+void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 {
 	pBACKEND_CALL( "endOfData" );
 	kiojob = 0;
@@ -115,9 +118,9 @@ void MediaObjectPrivate::_k_bytestreamResult( KIO::Job* job )
 	}
 }
 
-void MediaObjectPrivate::_k_bytestreamTotalSize( KIO::Job*, KIO::filesize_t size )
+void MediaObjectPrivate::_k_bytestreamTotalSize( KJob*, qulonglong size )
 {
-	pBACKEND_CALL1( "setStreamSize", qint64, size );
+	pBACKEND_CALL1( "setStreamSize", quint64, size );
 }
 
 void MediaObjectPrivate::_k_cleanupByteStream()
