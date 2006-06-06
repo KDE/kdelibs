@@ -152,7 +152,7 @@ namespace khtml
 	    with given relationships matches the given Element */
 	void checkSelector(int selector, DOM::ElementImpl *e);
 	/* checks if the selector matches the given Element */
-	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, bool isAncestor);
+	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector=false);
 
 #ifdef APPLE_CHANGES
 	/* This function fixes up the default font size if it detects that the
