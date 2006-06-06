@@ -592,7 +592,7 @@ void ListProgress::writeSettings() {
 
 
 UIServer::UIServer()
-:KMainWindow(0, "")
+:KMainWindow(0)
 ,m_shuttingDown(false)
 ,m_configDialog(0)
 ,m_contextMenu(0)
