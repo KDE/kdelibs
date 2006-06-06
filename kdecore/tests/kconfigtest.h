@@ -23,6 +23,9 @@ private Q_SLOTS:
     void testDelete();
     void initTestCase();
     void cleanupTestCase();
+
+    // unrelated
+    void testKAboutDataOrganizationDomain();
 private:
     void revertEntries();
 };

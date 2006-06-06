@@ -238,7 +238,7 @@ KAboutData::KAboutData( const char* _appName,
        const QByteArray addr = homePageAddress;
        const int dot = addr.indexOf( '.' );
        if ( dot > -1 )
-           d->organizationDomain = addr.mid( dot + 1 );
+           d->organizationDomain = homePageAddress + dot + 1;
        else
            d->organizationDomain = "kde.org";
    } else

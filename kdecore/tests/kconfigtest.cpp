@@ -28,19 +28,7 @@
 KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)
 
-int main(int argc, char *argv[])
-{
-    setenv("LC_ALL", "C", 1);
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-kconfigtest" ), 1);
-
-    KAboutData aboutData( "qttest", "qttest", "version" );
-    KCmdLineArgs::init( argc, argv, &aboutData );
-    KDEMainFlags mainFlags( NoGUI );
-    //KApplication::disableAutoDcopRegistration();
-    KApplication app( (mainFlags & GUI) != 0 );
-    KConfigTest tc;
-    return QTest::qExec( &tc, argc, argv );
-}
+QTEST_KDEMAIN( KConfigTest, NoGUI );
 
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
@@ -145,7 +133,7 @@ void KConfigTest::initTestCase()
 
 void KConfigTest::cleanupTestCase()
 {
-  QDir local = QDir::homePath() + "/.kde-kconfigtest/share/config";
+  QDir local = QDir::homePath() + "/.kde-unit-test/share/config";
 
   foreach(QString file, local.entryList(QDir::Files))
     if(!local.remove(file))
@@ -387,4 +375,11 @@ void KConfigTest::testDelete()
   QVERIFY( sc.entryMap("AAA").isEmpty() );
   QVERIFY( !sc.entryMap("Hello").isEmpty() ); //not deleted group
   QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
+}
+
+void KConfigTest::testKAboutDataOrganizationDomain()
+{
+    KAboutData data( "app", "program", "version", 0, KAboutData::License_LGPL,
+                     0, "hello world", "http://www.koffice.org" );
+    QCOMPARE( data.organizationDomain(), QString::fromLatin1( "koffice.org" ) );
 }
