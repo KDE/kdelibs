@@ -306,6 +306,11 @@ public:
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0, const QByteArray& startup_id = "" );
 
+private:
+  /**
+   * @internal
+   */
+  static void startKdeinit();
 };
 
 #endif

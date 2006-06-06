@@ -698,27 +698,6 @@ void KApplication::init()
 #endif
 }
 
-static int my_system (const char *command) {
-   int pid, status;
-
-   QApplication::flush();
-   pid = fork();
-   if (pid == -1)
-      return -1;
-   if (pid == 0) {
-      const char* shell = "/bin/sh";
-      execl(shell, shell, "-c", command, (void *)0);
-      ::_exit(127);
-   }
-   do {
-      if (waitpid(pid, &status, 0) == -1) {
-         if (errno != EINTR)
-            return -1;
-       } else
-            return status;
-   } while(1);
-}
-
 KConfig* KApplication::sessionConfig()
 {
     if (!pSessionConfig) // create an instance specific config object
@@ -917,23 +896,6 @@ void KApplication::saveState( QSessionManager& sm )
 bool KApplication::sessionSaving() const
 {
     return d->session_save;
-}
-
-void KApplication::startKdeinit()
-{
-#ifndef Q_WS_WIN //TODO
-  // Try to launch kdeinit.
-  QString srv = KStandardDirs::findExe(QLatin1String("kdeinit"));
-  if (srv.isEmpty())
-     srv = KStandardDirs::findExe(QLatin1String("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
-  if (srv.isEmpty())
-     return;
-  if (kapp && (Tty != kapp->type()))
-    setOverrideCursor( Qt::WaitCursor );
-  my_system(QFile::encodeName(srv)+" --suicide");
-  if (kapp && (Tty != kapp->type()))
-    restoreOverrideCursor();
-#endif
 }
 
 void KApplication::parseCommandLine( )

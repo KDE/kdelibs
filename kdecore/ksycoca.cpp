@@ -21,13 +21,14 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
-#include "kapplication.h"
+#include "ktoolinvocation.h"
 #include "kglobal.h"
 #include "kdebug.h"
 #include "kprocess.h"
 #include "kstandarddirs.h"
 
 #include <qdatastream.h>
+#include <qcoreapplication.h>
 #include <qfile.h>
 #include <qbuffer.h>
 #include <dbus/qdbus.h>
@@ -95,6 +96,8 @@ KSycoca::KSycoca()
    // that the database is up to date.
 
    //   -> huh? -thiago
+   //   This is because dcopserver was autostarted (via kdeinit) when trying to register to dcop. - David
+   //   But the "launching kdeinit" case below takes care of it.
    openDatabase();
    _self = this;
 }
@@ -333,7 +336,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
          {
            triedLaunchingKdeinit = true;
            kDebug(7011) << "findFactory: we have no database.... launching kdeinit" << endl;
-           KApplication::startKdeinit();
+           KToolInvocation::klauncher(); // this calls startKdeinit
            // Ok, the new database should be here now, open it.
          }
          if (!openDatabase(false))

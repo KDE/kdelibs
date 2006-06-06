@@ -78,6 +78,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <qglobal.h>
+#include "kstandarddirs.h"
+#include <QFile>
 #ifdef __GNUC__
 #warning used non public api for now
 #endif
@@ -630,3 +632,40 @@ KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
                                 name, args, error, 0, pid, startup_id, false);
 }
 
+static int my_system (const char *command) {
+   int pid, status;
+
+   QApplication::flush();
+   pid = fork();
+   if (pid == -1)
+      return -1;
+   if (pid == 0) {
+      const char* shell = "/bin/sh";
+      execl(shell, shell, "-c", command, (void *)0);
+      ::_exit(127);
+   }
+   do {
+      if (waitpid(pid, &status, 0) == -1) {
+         if (errno != EINTR)
+            return -1;
+       } else
+            return status;
+   } while(1);
+}
+
+
+void KToolInvocation::startKdeinit()
+{
+  // Try to launch kdeinit.
+  QString srv = KStandardDirs::findExe(QLatin1String("kdeinit"));
+  if (srv.isEmpty())
+     srv = KStandardDirs::findExe(QLatin1String("kdeinit"), KGlobal::dirs()->kfsstnd_defaultbindir());
+  if (srv.isEmpty())
+     return;
+  const bool gui = qApp && qApp->type() != QApplication::Tty;
+  if ( gui )
+    qApp->setOverrideCursor( Qt::WaitCursor );
+  my_system(QFile::encodeName(srv)+" --suicide");
+  if ( gui )
+    qApp->restoreOverrideCursor();
+}
