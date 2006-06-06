@@ -926,6 +926,17 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QCOMPARE( waba1.url(), QString("https://waldo%2Fbastian:pass@web.com:881/foo/?bla") );
   waba1.setDirectory( "/foo/" );
   QCOMPARE( waba1.url(), QString("https://waldo%2Fbastian:pass@web.com:881/foo/?bla") );
+
+  QUrl sadEagleTest;
+  sadEagleTest.setEncodedUrl( "http://www.calorieking.com/foo.php?P0=[2006-3-8]", QUrl::TolerantMode );
+  QVERIFY( sadEagleTest.isValid() );
+  KUrl sadEagleExpectedResult( "http://www.calorieking.com/personal/diary/rpc.php?C=jsrs1&F=getDiaryDay&P0=[2006-3-8]&U=1141858921458" );
+  QVERIFY( sadEagleExpectedResult.isValid() );
+  KUrl sadEagleBase( "http://www.calorieking.com/personal/diary/" );
+  QVERIFY( sadEagleBase.isValid() );
+  KUrl sadEagleCombined( sadEagleBase, "/personal/diary/rpc.php?C=jsrs1&F=getDiaryDay&P0=[2006-3-8]&U=1141858921458" );
+  QCOMPARE( sadEagleCombined.url(), sadEagleExpectedResult.url() );
+
 #else
   QSKIP( "QUrl::setFragment(\"\") doesn't make hasFragment return true", SkipSingle ); // TT task 105559 (Thiago, Andreas)
 #endif
