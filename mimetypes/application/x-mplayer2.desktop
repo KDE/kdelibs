@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-mplayer2
+Icon=video
+Patterns=*.avi;*.AVI;*.asf;*.wmv;*.ASF;*.WMV;*.asx;*.ASX;*.wma;*.WMA;*.wmx;*.WMX
+Comment=Microsoft Media
+Comment[de]=Microsoft Medien
