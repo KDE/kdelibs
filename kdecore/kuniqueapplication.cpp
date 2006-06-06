@@ -108,10 +108,10 @@ KUniqueApplication::start()
   {
     kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
     ::exit(255);
-  }        
-  
+  }
+
   QString appName = QString::fromLatin1(KCmdLineArgs::about->appName());
-  QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
+  const QStringList parts = KCmdLineArgs::about->organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
   if (parts.isEmpty())
      appName.prepend(QLatin1String("local."));
   else
@@ -222,7 +222,7 @@ KUniqueApplication::start()
        kError() << "KUniqueApplication: Cannot create secondary connection to the D-BUS server" << endl;
        ::exit(255);
      }
-     forever     
+     forever
      {
        int n = ::read(fd[0], &result, 1);
        if (n == 1) break;

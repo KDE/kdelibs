@@ -200,6 +200,7 @@ public:
     QString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
     const char *mTranslatedProgramName;
+    const char *organizationDomain;
 };
 
 
@@ -233,6 +234,15 @@ KAboutData::KAboutData( const char* _appName,
    mOtherText = text;
    mHomepageAddress = homePageAddress;
    mBugEmailAddress = bugsEmailAddress;
+   if ( homePageAddress && strncmp( homePageAddress, "http://", 7 ) == 0 ) {
+       const QByteArray addr = homePageAddress;
+       const int dot = addr.indexOf( '.' );
+       if ( dot > -1 )
+           d->organizationDomain = addr.mid( dot + 1 );
+       else
+           d->organizationDomain = "kde.org";
+   } else
+       d->organizationDomain = "kde.org";
 }
 
 KAboutData::~KAboutData()
@@ -245,7 +255,7 @@ KAboutData::KAboutData(const KAboutData& other): d(new Private)
     *d = *other.d;
 }
 
-KAboutData& 
+KAboutData&
 KAboutData::operator=(const KAboutData& other)
 {
     *d = *other.d;
@@ -340,6 +350,12 @@ void
 KAboutData::setBugAddress( const char* _bugAddress )
 {
   mBugEmailAddress = _bugAddress;
+}
+
+void
+KAboutData::setOrganizationDomain( const char *domain )
+{
+  d->organizationDomain = domain;
 }
 
 void
@@ -445,6 +461,13 @@ KAboutData::bugAddress() const
 {
    return QLatin1String(mBugEmailAddress);
 }
+
+QString
+KAboutData::organizationDomain() const
+{
+    return QLatin1String(d->organizationDomain);
+}
+
 
 /// @internal
 /// Return the untranslated and uninterpreted (to UTF8) string

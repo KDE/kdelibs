@@ -148,7 +148,7 @@ kde4_automoc(${kcmdlineargstest_SRCS})
 
 kde4_add_executable(kcmdlineargstest NOGUI RUN_UNINSTALLED ${kcmdlineargstest_SRCS})
 
-target_link_libraries(kcmdlineargstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kcmdlineargstest  ${KDE4_KDECORE_LIBS})
 
 # add_test(kdecore-kcmdlineargstest ${EXECUTABLE_OUTPUT_PATH}/kcmdlineargstest)
 
@@ -160,7 +160,7 @@ kde4_automoc(${kapptest_SRCS})
 
 kde4_add_executable(kapptest NOGUI RUN_UNINSTALLED ${kapptest_SRCS})
 
-target_link_libraries(kapptest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kapptest  ${KDE4_KDECORE_LIBS})
 
 # add_test(kdecore-kapptest ${EXECUTABLE_OUTPUT_PATH}/kapptest)
 
@@ -322,7 +322,7 @@ kde4_automoc(${testqtargs_SRCS})
 
 kde4_add_executable(testqtargs NOGUI RUN_UNINSTALLED ${testqtargs_SRCS})
 
-target_link_libraries(testqtargs  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(testqtargs  ${KDE4_KDECORE_LIBS})
 
 # add_test(kdecore-testqtargs ${EXECUTABLE_OUTPUT_PATH}/testqtargs)
 

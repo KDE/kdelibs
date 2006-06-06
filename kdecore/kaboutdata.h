@@ -454,6 +454,17 @@ class KDECORE_EXPORT KAboutData
     void setBugAddress( const char *bugAddress );
 
     /**
+     * Defines the Internet domain of the organization that wrote this application.
+     * The domain is set to kde.org by default (or the domain of the homePageAddress argument).
+     *
+     * Make sure to call setOrganizationDomain if your product is developed out of the
+     * kde.org version-control system.
+     *
+     * @param domain the domain name, for instance kde.org, koffice.org, kdevelop.org, etc.
+     */
+    void setOrganizationDomain( const char *domain );
+
+    /**
      * Defines the product name which will be used in the KBugReport dialog.
      * By default it's the appName, but you can overwrite it here to provide
      * support for special components e.g. 'product/component' like
@@ -483,6 +494,12 @@ class KDECORE_EXPORT KAboutData
      * @return the program name (translated).
      */
     QString programName() const;
+
+    /**
+     * Returns the domain name of the organization that wrote this application.
+     * Used by KUniqueApplication's registration to DBus.
+     */
+    QString organizationDomain() const;
 
     /**
      * @internal
@@ -534,7 +551,7 @@ class KDECORE_EXPORT KAboutData
      * @return the email address where to report bugs.
      */
     QString bugAddress() const;
-    
+
     /**
      * @internal
      * Provided for use by KCrash

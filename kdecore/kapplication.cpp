@@ -392,6 +392,7 @@ KApplication::KApplication( bool GUIenabled ) :
 
     read_app_startup_id();
     setApplicationName(instanceName());
+    setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -405,6 +406,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 {
     read_app_startup_id();
     setApplicationName(instanceName());
+    setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -418,6 +420,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
 {
     read_app_startup_id();
     setApplicationName(instanceName());
+    setOrganizationDomain( aboutData()->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
     init();
@@ -431,6 +434,7 @@ KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
 {
     read_app_startup_id();
     setApplicationName(instanceName());
+    setOrganizationDomain( aboutData()->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
     init();
