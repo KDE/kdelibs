@@ -62,6 +62,7 @@
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
+#include <kstartupinfo.h>
 #endif
 
 #include <stdlib.h>
@@ -173,46 +174,36 @@ public:
 
 static bool being_first = true;
 
-KMainWindow::KMainWindow( QWidget* parent, const char *name, Qt::WFlags f )
+KMainWindow::KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f )
     : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
-    initKMainWindow(name);
+    setObjectName( name );
+    initKMainWindow();
 }
 
-void KMainWindow::initKMainWindow(const char *name)
+KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
+    : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+{
+    initKMainWindow();
+}
+
+void KMainWindow::initKMainWindow()
 {
     KWhatsThisManager::init ();
 
     mHelpMenu = 0;
-    kapp->setTopWidget( this );
+
+#if defined Q_WS_X11
+    // set the app startup notification window property
+    if ( kapp )
+        KStartupInfo::setWindowStartupId( winId(), kapp->startupId() );
+#endif
+
     //actionCollection()->setWidget( this );
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
 
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManaged());
-    // set a unique object name. Required by session management.
-    QString objname;
-    QString s;
-    int unusedNumber;
-    objname = qApp->applicationName() + "/MainWindow_";
-    s = objname + QLatin1Char('1'); // start adding number immediately
-    unusedNumber = 1;
-    for(;;) {
-        QList<QWidget*> list = qApp->topLevelWidgets();
-        bool found = false;
-		foreach ( QWidget* w, list ) {
-			if( w != this && w->objectName() == s )
-			{
-				found = true;
-				break;
-			}
-		}
-        if( !found )
-            break;
-        s.setNum( ++unusedNumber );
-        s = objname + s;
-    }
-    setObjectName( s );
 
     sMemberList.append( this );
 
@@ -235,15 +226,73 @@ void KMainWindow::initKMainWindow(const char *name)
         if (args && args->isSet("geometry"))
             geometry = args->getOption("geometry");
 
-        if ( geometry.isNull() ) // if there is no geometry, it doesn't mater
+        if ( geometry.isNull() ) // if there is no geometry, it doesn't matter
             d->care_about_geometry = false;
         else
             parseGeometry(false);
     }
 
-    setCaption( kapp->caption() );
+    if ( kapp )
+        setWindowTitle( kapp->caption() );
     new KMainWindowInterface(this);
-    QString pathname = "/" + objectName();
+
+    // Get notified when settings change
+    connect( this, SIGNAL( iconSizeChanged(const QSize&) ), SLOT( setSettingsDirty() ) );
+    connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), SLOT( setSettingsDirty() ) );
+}
+
+void KMainWindow::setUniqueName()
+{
+    // Set a unique object name. Required by session management, window management, and for the dbus interface.
+    QString objname;
+    QString s;
+    int unusedNumber = 1;
+    const QString name = objectName();
+    bool startNumberingImmediately = true;
+    if ( name.isEmpty() )
+    {   // no name given
+        objname = "MainWindow_";
+    }
+    else if( name.endsWith( QLatin1Char( '#' ) ) )
+    {   // trailing # - always add a number
+        objname = name.left( name.length() - 1 ); // lose the hash
+    }
+    else
+    {
+        objname = name;
+        startNumberingImmediately = false;
+    }
+
+    // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
+    const int len = objname.length();
+    for ( int i = 0; i < len; ++i ) {
+        if ( !objname[i].isLetterOrNumber() )
+            objname[i] = QLatin1Char('_');
+    }
+
+    objname.prepend( qApp->applicationName() + '/' );
+    s = objname;
+    if ( startNumberingImmediately )
+        s += '1';
+
+    for(;;) {
+        QList<QWidget*> list = qApp->topLevelWidgets();
+        bool found = false;
+        foreach ( QWidget* w, list ) {
+            if( w != this && w->objectName() == s )
+            {
+                found = true;
+                break;
+            }
+        }
+        if( !found )
+            break;
+        s.setNum( ++unusedNumber );
+        s = objname + s;
+    }
+    setObjectName( s );
+
+    const QString pathname = "/" + objectName();
     QDBus::sessionBus().registerObject(pathname, this, QDBusConnection::ExportAllSlots |
                                        QDBusConnection::ExportAllProperties |
                                        QDBusConnection::ExportAdaptors);
@@ -252,9 +301,6 @@ void KMainWindow::initKMainWindow(const char *name)
                                        QDBusConnection::ExportAllProperties |
                                        QDBusConnection::ExportChildObjects);
 
-    // Get notified when settings change
-    connect( this, SIGNAL( iconSizeChanged(const QSize&) ), SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), SLOT( setSettingsDirty() ) );
 }
 
 KAction *KMainWindow::toolBarMenuAction()
@@ -993,10 +1039,20 @@ void KMainWindow::saveAutoSaveSettings()
         d->settingsTimer->stop();
 }
 
-void KMainWindow::resizeEvent( QResizeEvent * )
+bool KMainWindow::event( QEvent* ev )
 {
-    if ( d->autoSaveWindowSize )
-        setSettingsDirty();
+    switch( ev->type() ) {
+    case QEvent::Resize:
+        if ( d->autoSaveWindowSize )
+            setSettingsDirty();
+        break;
+    case QEvent::Polish:
+        setUniqueName();
+        break;
+    default:
+        break;
+    }
+    return QMainWindow::event( ev );
 }
 
 bool KMainWindow::hasMenuBar()
@@ -1097,7 +1153,6 @@ void KMainWindow::finalizeGUI( KXMLGUIClient *client )
 void KMainWindow::virtual_hook( int id, void* data )
 { KXMLGUIBuilder::virtual_hook( id, data );
   KXMLGUIClient::virtual_hook( id, data ); }
-
 
 
 #include "kmainwindow.moc"

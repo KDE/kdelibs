@@ -123,7 +123,17 @@ target_link_libraries(kcompletiontest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
 add_test(kcompletiontest ${EXECUTABLE_OUTPUT_PATH}/kcompletiontest)
 
+########### kmainwindow_unittest ###############
 
+set(kmainwindow_unittest_SRCS kmainwindow_unittest.cpp )
+
+kde4_automoc(${kmainwindow_unittest_SRCS})
+
+kde4_add_executable(kmainwindow_unittest RUN_UNINSTALLED ${kmainwindow_unittest_SRCS})
+
+target_link_libraries(kmainwindow_unittest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kmainwindow_unittest ${EXECUTABLE_OUTPUT_PATH}/kmainwindow_unittest)
 
 ########### next target ###############
 

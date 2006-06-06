@@ -114,17 +114,6 @@ public:
      * group leader. In that case, the KMainWindow becomes sort of a
      * secondary window.
      *
-     * @param name The object name. For session management and window management to work
-     * properly, all main windows in the application should have a
-     * different name. When passing 0 (the default), KMainWindow will create
-     * a unique name, but it's recommended to explicitly pass a window name that will
-     * also describe the type of the window. If there can be several windows of the same
-     * type, append '#' (hash) to the name, and KMainWindow will append numbers to make
-     * the names unique. For example, for a mail client which has one main window showing
-     * the mails and folders, and which can also have one or more windows for composing
-     * mails, the name for the folders window should be e.g. "mainwindow" and
-     * for the composer windows "composer#".
-     *
      * @param f Specify the widget flags. The default is
      * WType_TopLevel and WDestructiveClose.  TopLevel indicates that a
      * main window is a toplevel window, regardless of whether it has a
@@ -136,10 +125,26 @@ public:
      *
      * KMainWindows must be created on the heap with 'new', like:
      * \code
-     * KMainWindow *kmw = new KMainWindow (...);
+     * KMainWindow *kmw = new KMainWindow(...);
+     * kmw->setObjectName(...);
      * \endcode
-     **/
-    KMainWindow( QWidget* parent = 0, const char* name = 0, Qt::WindowFlags f = 0 );
+     *
+     * IMPORTANT: For session management and window management to work
+     * properly, all main windows in the application should have a
+     * different name. If you don't do it, KMainWindow will create
+     * a unique name, but it's recommended to explicitly pass a window name that will
+     * also describe the type of the window. If there can be several windows of the same
+     * type, append '#' (hash) to the name, and KMainWindow will replace it with numbers to make
+     * the names unique. For example, for a mail client which has one main window showing
+     * the mails and folders, and which can also have one or more windows for composing
+     * mails, the name for the folders window should be e.g. "mainwindow" and
+     * for the composer windows "composer#".
+     *
+     */
+    KMainWindow( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+
+    /// @deprecated, remove the name argument and use setObjectName instead
+    KDE_CONSTRUCTOR_DEPRECATED KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f = 0 );
 
     /**
      * \brief Destructor.
@@ -520,7 +525,7 @@ public:
          * taken care of.  @see createGUI
          */
         Create = 16,
- 
+
         /**
          * All the above option
          * (this is the default)
@@ -674,7 +679,12 @@ public Q_SLOTS:
     void setSettingsDirty();
 
 protected:
-    virtual void resizeEvent( QResizeEvent* e);
+    /**
+     * Reimplemented to catch QEvent::Polish in order to adjust the object name
+     * if needed, once all constructor code for the main window has run.
+     */
+    virtual bool event( QEvent * event );
+
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
      *
@@ -835,7 +845,7 @@ protected Q_SLOTS:
     * Rebuilds the GUI after KEditToolbar changed the toolbar layout.
     * @see configureToolbars()
     */
-   void saveNewToolbarConfig(); // TODO KDE4: make virtual and reimplement in KParts::MainWindow
+   virtual void saveNewToolbarConfig(); // TODO KDE4: reimplement in KParts::MainWindow
 
     /**
     * This slot does nothing.
@@ -895,17 +905,17 @@ private Q_SLOTS:
 private:
     KMenuBar *internalMenuBar();
     KStatusBar *internalStatusBar();
+    void initKMainWindow();
+    void setUniqueName();
+
+    // TODO move to d pointer
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    /**
-     * List of members of KMainWindow class.
-     */
     static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
     KMainWindowPrivate *d;
-    void initKMainWindow(const char *name);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KMainWindow::StandardWindowOptions)
