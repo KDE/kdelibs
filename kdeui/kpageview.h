@@ -29,6 +29,29 @@
 
 #include "kpagemodel.h"
 
+/**
+ * @short A base class which can handle multiple pages.
+ *
+ * This class provides a widget base class which handles multiple
+ * pages and allows the user to switch between these pages in
+ * different ways.
+ *
+ * Currently, @p Auto, @p Plain, @p List, @p Tree and @p Tabbed face
+ * types are available (@see KPageView).
+ *
+ * <b>Example:</b>\n
+ *
+ * \code
+ *  KPageModel *model = new MyPageModel();
+ *
+ *  KPageView *view = new KPageView( this );
+ *  view->setModel( model );
+ *
+ *  view->setFaceType( KPageView::List );
+ * \endcode
+ *
+ * @author Tobias Koenig (tokoe@kde.org)
+ */
 class KDEUI_EXPORT KPageView : public QWidget
 {
   Q_OBJECT
@@ -41,6 +64,7 @@ class KDEUI_EXPORT KPageView : public QWidget
      * @li Auto   - Depending on the number of pages in the model,
      *              the Plain (one page), the List (several pages)
      *              or the Tree face (nested pages) will be used.
+     *              This is the default face type.
      * @li Plain  - No navigation view will be visible and only the
      *              first page of the model will be shown.
      *

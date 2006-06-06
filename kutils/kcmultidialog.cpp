@@ -246,8 +246,7 @@ void KCMultiDialog::apply()
 
 void KCMultiDialog::slotApplyClicked()
 {
-  if ( button( Apply ) )
-    button( Apply )->setFocus();
+  setButtonFocus( Apply );
 
   apply();
 }
@@ -255,8 +254,7 @@ void KCMultiDialog::slotApplyClicked()
 
 void KCMultiDialog::slotOkClicked()
 {
-  if ( button( Ok ) )
-    button( Ok )->setFocus();
+  setButtonFocus( Ok );
 
   apply();
   accept();

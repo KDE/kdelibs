@@ -1110,9 +1110,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
     if (ro)
     {
        // Don't put the initial focus on the line edit when it is ro
-       QPushButton *button = properties->button(KDialog::Ok);
-       if (button)
-          button->setFocus();
+       properties->setButtonFocus(KDialog::Ok);
     }
   }
 }

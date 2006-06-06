@@ -57,8 +57,18 @@
 
 struct KDialog::Private
 {
-  Private()
-    : mDetails( false ), mSettingDetails( false ), mDetailsWidget( 0 ),
+  enum ActionButtonStyle
+  {
+    ActionStyle0=0, // KDE std
+    ActionStyle1,
+    ActionStyle2,
+    ActionStyle3,
+    ActionStyle4,
+    ActionStyleMAX
+  };
+
+  Private( KDialog *parent )
+    : mParent( parent ), mDetails( false ), mSettingDetails( false ), mDetailsWidget( 0 ),
       mTopLayout( 0 ), mMainWidget( 0 ), mUrlHelp( 0 ), mActionSeparator( 0 ),
       mButtonOrientation( Qt::Horizontal ),
       mButtonBox( 0 ), mButtonMask( 0 ), mButtonStyle( 0 )
@@ -66,7 +76,14 @@ struct KDialog::Private
   }
 
   void resizeButton( bool sameWidth, int margin, int spacing, int orientation );
+  void setButtonStyle( int style );
+  void setupLayout();
+  void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
+  KPushButton *appendButton( ButtonCode code , const KGuiItem &item );
+  KPushButton *button( ButtonCode code ) const;
 
+
+  KDialog* mParent;
   bool mDetails;
   bool mSettingDetails;
   QWidget *mDetailsWidget;
@@ -99,17 +116,197 @@ struct KDialog::Private
 int KDialog::Private::mMarginSize = 11;
 int KDialog::Private::mSpacingSize = 6;
 
+void KDialog::Private::resizeButton( bool sameWidth, int margin,
+    int spacing, int orientation )
+{
+  KPushButton *p;
+  int h = 0;
+  int w = 0;
+  int t = 0;
+
+  foreach ( p, mButtonList )
+  {
+    const QSize s( p->sizeHint() );
+    if( s.height() > h ) { h = s.height(); }
+    if( s.width() > w ) { w = s.width(); }
+  }
+
+  if( orientation == Qt::Horizontal )
+  {
+    foreach ( p, mButtonList )
+    {
+      QSize s( p->sizeHint() );
+      if( sameWidth ) { s.setWidth( w ); }
+      p->setFixedWidth( s.width() );
+      t += s.width() + spacing;
+    }
+
+    mButtonBox->setMinimumHeight( margin*2 + h );
+    mButtonBox->setMinimumWidth( margin*2 + t - spacing );
+  }
+  else
+  {
+    // sameWidth has no effect here
+    foreach ( p, mButtonList )
+    {
+      QSize s( p->sizeHint() );
+      s.setWidth( w );
+      p->setFixedSize( s );
+      t += s.height() + spacing;
+    }
+    mButtonBox->setMinimumHeight( margin*2 + t - spacing );
+    mButtonBox->setMinimumWidth( margin*2 + w );
+  }
+}
+
+
+void KDialog::Private::setButtonStyle( int style )
+{
+  if ( !mButtonBox )
+    return;
+
+  if ( style < 0 || style >= ActionStyleMAX )
+    style = ActionStyle0;
+
+  mButtonStyle = style;
+
+  const int *layout;
+  if ( mButtonOrientation == Qt::Horizontal ) {
+    static const int layoutRule[5][13] =
+    {
+      {Details,Help,Default,Stretch,Yes,No,User3,User2,User1,Ok,Apply|Try,Cancel|Close,0},
+      {Details,Help,Default,Stretch,Yes,No,User3,User2,User1,Cancel|Close,Apply|Try,Ok,0},
+      {Details,Help,Default,Stretch,Yes,No,User3,User2,User1,Apply|Try,Cancel|Close,Ok,0},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,No,Yes,Stretch,Default,Help,Details,0},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,No,Yes,Stretch,Default,Help,Details,0}
+    };
+    layout = layoutRule[ mButtonStyle ];
+  } else {
+    static const int layoutRule[5][13] =
+    {
+      {Ok,Apply|Try,User1,User2,User3,Yes,No,Stretch,Default,Cancel|Close,Help,Details,0},
+      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Stretch, Default,Help, Details},
+      {Details,Help,Default,Stretch,User3,User2,User1,No,Yes,Cancel|Close,Apply|Try,Ok,0},
+      {Details,Help,Default,Stretch,User3,User2,User1,No,Yes,Apply|Try,Cancel|Close,Ok,0},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Yes,No,Stretch,Default,Help,Details,0},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Yes,No,Stretch,Default,Help,Details,0}
+    };
+    layout = layoutRule[ mButtonStyle ];
+  }
+
+  delete mButtonBox->layout();
+
+  QBoxLayout *lay;
+  lay = new QBoxLayout( (mButtonOrientation == Qt::Horizontal) ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom , mButtonBox );
+  lay->setMargin( 0 );
+  lay->setSpacing( KDialog::spacingHint() );
+
+  int numButton = 0;
+  QPushButton *prevButton = 0;
+  QPushButton *newButton;
+
+  for( int i=0; layout[i]; ++i )
+  {
+    if(((ButtonCode) layout[i]) == Stretch) // Unconditional Stretch
+    {
+      lay->addStretch(1);
+      continue;
+    }
+    else if (layout[i] & Filler) // Conditional space
+    {
+      if (mButtonMask & layout[i])
+      {
+        newButton = button( (ButtonCode) (layout[i] & ~(Stretch | Filler)));
+        if (newButton)
+          lay->addSpacing(newButton->sizeHint().width());
+      }
+      else
+        continue;
+    }
+    else if( mButtonMask & layout[i] )
+    {
+      newButton = button( (ButtonCode)(mButtonMask & layout[i] & ~(Stretch | Filler)));
+      lay->addWidget( newButton );
+      ++numButton;
+    }
+    else
+      continue;
+
+    // Add conditional stretch (Only added if a button was added)
+    if(layout[i] & Stretch)
+      lay->addStretch(1);
+
+    if( prevButton )
+    {
+      mParent->setTabOrder( prevButton, newButton );
+    }
+      prevButton = newButton;
+  }
+
+  resizeButton( false, 0, KDialog::spacingHint(), mButtonOrientation );
+  setupLayout();
+}
+
+void KDialog::Private::setupLayout()
+{
+  delete mTopLayout;
+
+  if ( mButtonOrientation == Qt::Horizontal )
+    mTopLayout = new QVBoxLayout( mParent );
+  else
+    mTopLayout = new QHBoxLayout( mParent );
+
+  mTopLayout->setMargin( KDialog::marginHint() );
+  mTopLayout->setSpacing( KDialog::spacingHint() );
+
+  if( mUrlHelp )
+    mTopLayout->addWidget( mUrlHelp, 0, Qt::AlignRight );
+
+  if( mMainWidget )
+    mTopLayout->addWidget( mMainWidget, 10 );
+
+  if ( mDetailsWidget )
+    mTopLayout->addWidget( mDetailsWidget );
+
+  if( mActionSeparator )
+    mTopLayout->addWidget( mActionSeparator );
+
+  if( mButtonBox )
+    mTopLayout->addWidget( mButtonBox );
+}
+
+void KDialog::Private::setButtonFocus( QPushButton *button, bool isDefault, bool isFocus )
+{
+  button->setDefault( isDefault );
+  if ( isFocus )
+      button->setFocus();
+}
+
+KPushButton *KDialog::Private::appendButton( ButtonCode key, const KGuiItem &item )
+{
+  KPushButton *p = new KPushButton( item, mButtonBox );
+  mButtonList.insert( key, p );
+  mButtonSignalMapper.setMapping( p , key );
+  connect( p, SIGNAL(clicked()), &mButtonSignalMapper, SLOT(map()) );
+  return p;
+}
+
+KPushButton *KDialog::Private::button( ButtonCode id ) const
+{
+  return mButtonList.contains( id ) ? mButtonList[ id ] : 0;
+}
+
 
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
   : QDialog( parent, flags | Qt::MSWindowsFixedSizeDialogHint ),
-    d( new Private )
+    d( new Private( this ) )
 {
   setModal( true );
   KWhatsThisManager::init();
 
   setButtons( Ok | Cancel );
   setDefaultButton( Ok );
-  
+
   connect( this, SIGNAL( layoutHintChanged() ), SLOT( updateGeometry() ) );
   connect( &d->mButtonSignalMapper , SIGNAL( mapped( int ) ),
            this, SLOT( slotButtonClicked( int ) ) );
@@ -119,7 +316,6 @@ KDialog::~KDialog()
 {
   delete d;
 }
-
 
 void KDialog::setButtons( ButtonCodes buttonMask )
 {
@@ -139,132 +335,43 @@ void KDialog::setButtons( ButtonCodes buttonMask )
 
   d->mButtonMask = buttonMask;
 
-  if ( buttonMask == 0 ) {
+  if ( buttonMask == 0 )
     return; // When we want no button box
-    setupLayout();
-  }
 
   d->mEscapeButton = (buttonMask & Cancel) ? Cancel : Close;
   d->mButtonBox = new QWidget( this );
 
   if ( d->mButtonMask & Help )
-    appendButton( Help, KStdGuiItem::help() );
+    d->appendButton( Help, KStdGuiItem::help() );
   if ( d->mButtonMask & Default )
-    appendButton( Default, KStdGuiItem::defaults() );
+    d->appendButton( Default, KStdGuiItem::defaults() );
   if ( d->mButtonMask & User3 )
-    appendButton( User3, KGuiItem() );
+    d->appendButton( User3, KGuiItem() );
   if ( d->mButtonMask & User2 )
-    appendButton( User2, KGuiItem() );
+    d->appendButton( User2, KGuiItem() );
   if ( d->mButtonMask & User1 )
-    appendButton( User1, KGuiItem() );
+    d->appendButton( User1, KGuiItem() );
   if ( d->mButtonMask & Ok )
-    appendButton( Ok, KStdGuiItem::ok() );
+    d->appendButton( Ok, KStdGuiItem::ok() );
   if ( d->mButtonMask & Apply )
-    appendButton( Apply, KStdGuiItem::apply() );
+    d->appendButton( Apply, KStdGuiItem::apply() );
   if ( d->mButtonMask & Try )
-    appendButton( Try, i18n( "&Try" ) );
+    d->appendButton( Try, i18n( "&Try" ) );
   if ( d->mButtonMask & Cancel )
-    appendButton( Cancel, KStdGuiItem::cancel() );
+    d->appendButton( Cancel, KStdGuiItem::cancel() );
   if ( d->mButtonMask & Close )
-    appendButton( Close, KStdGuiItem::close() );
+    d->appendButton( Close, KStdGuiItem::close() );
   if ( d->mButtonMask & Yes )
-    appendButton( Yes, KStdGuiItem::yes() );
+    d->appendButton( Yes, KStdGuiItem::yes() );
   if ( d->mButtonMask & No )
-    appendButton( No, KStdGuiItem::no() );
+    d->appendButton( No, KStdGuiItem::no() );
   if ( d->mButtonMask & Details ) {
-    appendButton( Details, QString() );
+    d->appendButton( Details, QString() );
     setDetails( false );
   }
 
-  setButtonStyle( KGlobalSettings::buttonLayout() );
+  d->setButtonStyle( KGlobalSettings::buttonLayout() );
 }
-
-void KDialog::setButtonStyle( int style )
-{
-  if ( !d->mButtonBox )
-    return;
-
-  if ( style < 0 || style >= ActionStyleMAX )
-    style = ActionStyle0;
-
-  d->mButtonStyle = style;
-
-  const int *layout;
-  if ( d->mButtonOrientation == Qt::Horizontal ) {
-    static const int layoutRule[5][13] =
-    {
-      {Details,Help,Default,Stretch,Yes,No,User3,User2,User1,Ok,Apply|Try,Cancel|Close,0},
-      {Details,Help,Default,Stretch,Yes,No,User3,User2,User1,Cancel|Close,Apply|Try,Ok,0},
-      {Details,Help,Default,Stretch,Yes,No,User3,User2,User1,Apply|Try,Cancel|Close,Ok,0},
-      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,No,Yes,Stretch,Default,Help,Details,0},
-      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,No,Yes,Stretch,Default,Help,Details,0}
-    };
-    layout = layoutRule[ d->mButtonStyle ];
-  } else {
-    static const int layoutRule[5][13] =
-    {
-      {Ok,Apply|Try,User1,User2,User3,Yes,No,Stretch,Default,Cancel|Close,Help,Details,0},
-      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Stretch, Default,Help, Details},
-      {Details,Help,Default,Stretch,User3,User2,User1,No,Yes,Cancel|Close,Apply|Try,Ok,0},
-      {Details,Help,Default,Stretch,User3,User2,User1,No,Yes,Apply|Try,Cancel|Close,Ok,0},
-      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Yes,No,Stretch,Default,Help,Details,0},
-      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Yes,No,Stretch,Default,Help,Details,0}
-    };
-    layout = layoutRule[ d->mButtonStyle ];
-  }
-
-  delete d->mButtonBox->layout();
-
-  QBoxLayout *lay;
-  lay = new QBoxLayout( (d->mButtonOrientation == Qt::Horizontal) ? QBoxLayout::LeftToRight : QBoxLayout::TopToBottom , d->mButtonBox );
-  lay->setMargin( 0 );
-  lay->setSpacing( spacingHint() );
-
-  int numButton = 0;
-  QPushButton *prevButton = 0;
-  QPushButton *newButton;
-
-  for( int i=0; layout[i]; ++i )
-  {
-    if(((ButtonCode) layout[i]) == Stretch) // Unconditional Stretch
-    {
-      lay->addStretch(1);
-      continue;
-    }
-    else if (layout[i] & Filler) // Conditional space
-    {
-      if (d->mButtonMask & layout[i])
-      {
-        newButton = button( (ButtonCode) (layout[i] & ~(Stretch | Filler)));
-        if (newButton)
-          lay->addSpacing(newButton->sizeHint().width());
-      }
-      else
-        continue;
-    }
-    else if( d->mButtonMask & layout[i] )
-    {
-      newButton = button( (ButtonCode)(d->mButtonMask & layout[i] & ~(Stretch | Filler)));
-      lay->addWidget( newButton );
-      ++numButton;
-    }
-    else
-      continue;
-
-    // Add conditional stretch (Only added if a button was added)
-    if(layout[i] & Stretch)
-      lay->addStretch(1);
-
-    if( prevButton )
-    {
-      setTabOrder( prevButton, newButton );
-    }
-      prevButton = newButton;
-    }
-  d->resizeButton( false, 0, spacingHint(), d->mButtonOrientation );
-  setupLayout();
-}
-
 
 
 void KDialog::setButtonsOrientation( Qt::Orientation orientation )
@@ -281,10 +388,9 @@ void KDialog::setButtonsOrientation( Qt::Orientation orientation )
     {
       enableLinkedHelp(false); // 2000-06-18 Espen: No support for this yet.
     }
-    setButtonStyle( d->mButtonStyle );
+    d->setButtonStyle( d->mButtonStyle );
   }
 }
-
 
 void KDialog::setEscapeButton( ButtonCode id )
 {
@@ -295,19 +401,30 @@ void KDialog::setDefaultButton( ButtonCode defaultButton )
 {
   if( defaultButton != NoDefault )
   {
-    QPushButton *pb = button( defaultButton );
+    QPushButton *pb = d->button( defaultButton );
     if( pb )
     {
-      setButtonFocus( pb, true, false );
+      d->setButtonFocus( pb, true, false );
     }
   }
 }
 
+KDialog::ButtonCode KDialog::defaultButton() const
+{
+  QHashIterator<int, KPushButton*> it( d->mButtonList );
+  while ( it.hasNext() ) {
+    it.next();
+    if ( it.value()->isDefault() )
+      return (ButtonCode)it.key();
+  }
+
+  return NoDefault;
+}
 
 void KDialog::setMainWidget( QWidget *widget )
 {
   d->mMainWidget = widget;
-  setupLayout();
+  d->setupLayout();
 }
 
 QWidget *KDialog::mainWidget()
@@ -413,22 +530,22 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   {
     if( e->key() == Qt::Key_F1 )
     {
-      QPushButton *pb = button( Help );
+      QPushButton *pb = d->button( Help );
       if( pb )
       {
-  pb->animateClick();
-  e->accept();
-  return;
+        pb->animateClick();
+        e->accept();
+        return;
       }
     }
     if( e->key() == Qt::Key_Escape )
     {
-      QPushButton *pb = button( d->mEscapeButton );
+      QPushButton *pb = d->button( d->mEscapeButton );
       if( pb )
       {
-  pb->animateClick();
-  e->accept();
-  return;
+        pb->animateClick();
+        e->accept();
+        return;
       }
 
     }
@@ -444,7 +561,7 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   else if ( e->modifiers() == Qt::ControlModifier &&
             (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) )
   {
-    QPushButton *pb = button( Ok );
+    QPushButton *pb = d->button( Ok );
     if ( pb )
     {
       pb->animateClick();
@@ -456,25 +573,21 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   QDialog::keyPressEvent(e);
 }
 
-
 int KDialog::marginHint()
 {
   return Private::mMarginSize;
 }
-
 
 int KDialog::spacingHint()
 {
   return Private::mSpacingSize;
 }
 
-
 void KDialog::setCaption( const QString &_caption )
 {
   QString caption = kapp ? kapp->makeStdCaption( _caption ) : _caption;
   setPlainCaption( caption );
 }
-
 
 void KDialog::setPlainCaption( const QString &caption )
 {
@@ -485,7 +598,6 @@ void KDialog::setPlainCaption( const QString &caption )
   info.setName( caption.toUtf8().data() );
 #endif
 }
-
 
 void KDialog::resizeLayout( QWidget *w, int margin, int spacing ) //static
 {
@@ -505,7 +617,6 @@ void KDialog::resizeLayout( QWidget *w, int margin, int spacing ) //static
     }
   }
 }
-
 
 void KDialog::resizeLayout( QLayout *lay, int margin, int spacing ) //static
 {
@@ -611,84 +722,6 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
 
 
 
-KPushButton *KDialog::appendButton( ButtonCode key, const KGuiItem &item )
-{
-  KPushButton *p = new KPushButton( item, d->mButtonBox );
-  d->mButtonList.insert( key, p );
-  d->mButtonSignalMapper.setMapping( p , key );
-  connect( p, SIGNAL(clicked()), &d->mButtonSignalMapper, SLOT(map()) );
-  return p;
-}
-
-void KDialog::Private::resizeButton( bool sameWidth, int margin,
-    int spacing, int orientation )
-{
-  KPushButton *p;
-  int h = 0;
-  int w = 0;
-  int t = 0;
-
-  foreach ( p, mButtonList )
-  {
-    const QSize s( p->sizeHint() );
-    if( s.height() > h ) { h = s.height(); }
-    if( s.width() > w ) { w = s.width(); }
-  }
-
-  if( orientation == Qt::Horizontal )
-  {
-    foreach ( p, mButtonList )
-    {
-      QSize s( p->sizeHint() );
-      if( sameWidth ) { s.setWidth( w ); }
-      p->setFixedWidth( s.width() );
-      t += s.width() + spacing;
-    }
-
-    mButtonBox->setMinimumHeight( margin*2 + h );
-    mButtonBox->setMinimumWidth( margin*2 + t - spacing );
-  }
-  else
-  {
-    // sameWidth has no effect here
-    foreach ( p, mButtonList )
-    {
-      QSize s( p->sizeHint() );
-      s.setWidth( w );
-      p->setFixedSize( s );
-      t += s.height() + spacing;
-    }
-    mButtonBox->setMinimumHeight( margin*2 + t - spacing );
-    mButtonBox->setMinimumWidth( margin*2 + w );
-  }
-}
-
-void KDialog::setupLayout()
-{
-  delete d->mTopLayout;
-
-  d->mTopLayout = (d->mButtonOrientation == Qt::Horizontal) ?
-      (QBoxLayout*)new QVBoxLayout( this ) : (QBoxLayout*)new QHBoxLayout( this );
-
-  d->mTopLayout->setMargin(marginHint());
-  d->mTopLayout->setSpacing(spacingHint());
-
-  if( d->mUrlHelp )
-    d->mTopLayout->addWidget( d->mUrlHelp, 0, Qt::AlignRight );
-
-  if( d->mMainWidget )
-    d->mTopLayout->addWidget( d->mMainWidget, 10 );
-
-  if ( d->mDetailsWidget )
-    d->mTopLayout->addWidget( d->mDetailsWidget );
-
-  if( d->mActionSeparator )
-    d->mTopLayout->addWidget( d->mActionSeparator );
-
-  if( d->mButtonBox )
-    d->mTopLayout->addWidget( d->mButtonBox );
-}
-
 
 void KDialog::enableButtonSeparator( bool state )
 {
@@ -709,7 +742,7 @@ void KDialog::enableButtonSeparator( bool state )
     d->mActionSeparator = 0;
   }
 
-  setupLayout();
+  d->setupLayout();
 }
 
 void KDialog::setInitialSize( const QSize &s )
@@ -718,21 +751,16 @@ void KDialog::setInitialSize( const QSize &s )
   adjustSize();
 }
 
-
 void KDialog::incrementInitialSize( const QSize &s )
 {
   d->mIncSize = s;
   adjustSize();
 }
 
-KPushButton *KDialog::button( ButtonCode id )
-{
-  return d->mButtonList.contains(id) ? d->mButtonList[id] : 0l;
-}
 
 void KDialog::enableButton( ButtonCode id, bool state )
 {
-  QPushButton *pb = button( id );
+  QPushButton *pb = d->button( id );
   if( pb )
   {
     pb->setEnabled( state );
@@ -756,7 +784,7 @@ void KDialog::enableButtonCancel( bool state )
 
 void KDialog::showButton( ButtonCode id, bool state )
 {
-  QPushButton *pb = button( id );
+  QPushButton *pb = d->button( id );
   if( pb )
   {
     state ? pb->show() : pb->hide();
@@ -765,7 +793,7 @@ void KDialog::showButton( ButtonCode id, bool state )
 
 void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
 {
-  KPushButton *pb = static_cast<KPushButton *>( button( id ) );
+  KPushButton *pb = static_cast<KPushButton *>( d->button( id ) );
   if( !pb )
     return;
 
@@ -782,7 +810,7 @@ void KDialog::setButtonText( ButtonCode id, const QString &text )
     setDetails(d->mDetails);
     return;
   }
-  QPushButton *pb = button( id );
+  QPushButton *pb = d->button( id );
   if( pb )
   {
     pb->setText( text );
@@ -790,16 +818,34 @@ void KDialog::setButtonText( ButtonCode id, const QString &text )
   }
 }
 
+QString KDialog::buttonText( ButtonCode id ) const
+{
+  QPushButton *button = d->button( id );
+  if ( button )
+    return button->text();
+  else
+    return QString();
+}
+
 void KDialog::setButtonIcon( ButtonCode id, const QIcon &icon )
 {
-  QPushButton *pb = button( id );
+  QPushButton *pb = d->button( id );
   if( pb )
     pb->setIcon( icon );
 }
 
+QIcon KDialog::buttonIcon( ButtonCode id ) const
+{
+  QPushButton *button = d->button( id );
+  if ( button )
+    return button->icon();
+  else
+    return QIcon();
+}
+
 void KDialog::setButtonToolTip( ButtonCode id, const QString &text )
 {
-  QPushButton *pb = button( id );
+  QPushButton *pb = d->button( id );
   if( pb )
   {
     if (text.isEmpty())
@@ -809,10 +855,18 @@ void KDialog::setButtonToolTip( ButtonCode id, const QString &text )
   }
 }
 
+QString KDialog::buttonToolTip( ButtonCode id ) const
+{
+  QPushButton *button = d->button( id );
+  if ( button )
+    return button->toolTip();
+  else
+    return QString();
+}
 
 void KDialog::setButtonWhatsThis( ButtonCode id, const QString &text )
 {
-  QPushButton *pb = button( id );
+  QPushButton *pb = d->button( id );
   if( pb )
   {
     if (text.isEmpty())
@@ -822,12 +876,20 @@ void KDialog::setButtonWhatsThis( ButtonCode id, const QString &text )
   }
 }
 
-
-void KDialog::setButtonFocus( QPushButton *p,bool isDefault, bool isFocus )
+QString KDialog::buttonWhatsThis( ButtonCode id ) const
 {
-  p->setDefault( isDefault );
-  if( isFocus )
-      p->setFocus();
+  QPushButton *button = d->button( id );
+  if ( button )
+    return button->whatsThis();
+  else
+    return QString();
+}
+
+void KDialog::setButtonFocus( ButtonCode id )
+{
+  QPushButton *pb = d->button( id );
+  if ( pb )
+    d->setButtonFocus( pb, false, true );
 }
 
 
@@ -835,10 +897,13 @@ void KDialog::setDetailsWidget(QWidget *detailsWidget)
 {
   delete d->mDetailsWidget;
   d->mDetailsWidget = detailsWidget;
+
   if (d->mDetailsWidget->parentWidget() != this)
      d->mDetailsWidget->setParent(this);
+
   d->mDetailsWidget->hide();
-    setupLayout();
+  d->setupLayout();
+
   if (!d->mSettingDetails)
     setDetails(d->mDetails);
 }
@@ -963,7 +1028,7 @@ void KDialog::enableLinkedHelp( bool state )
     delete d->mUrlHelp; d->mUrlHelp = 0;
   }
 
-    setupLayout();
+  d->setupLayout();
 }
 
 
@@ -1007,7 +1072,7 @@ void KDialog::hideEvent( QHideEvent *ev )
 
 void KDialog::closeEvent( QCloseEvent *e )
 {
-  QPushButton *pb = button( d->mEscapeButton );
+  QPushButton *pb = d->button( d->mEscapeButton );
   if( pb && !isHidden() ) {
     pb->animateClick();
   } else {

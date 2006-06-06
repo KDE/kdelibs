@@ -64,7 +64,7 @@ KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
 
     d->mShowTimer = new QTimer(this);
 
-    d->mCancelText = button(KDialog::Cancel)->text();
+    d->mCancelText = KDialog::buttonText(KDialog::Cancel);
 
     QWidget *mainWidget = new QWidget(this);
     QVBoxLayout* layout = new QVBoxLayout(mainWidget);

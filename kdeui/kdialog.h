@@ -154,16 +154,6 @@ class KDEUI_EXPORT KDialog : public QDialog
     };
     Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
 
-    enum ActionButtonStyle
-    {
-      ActionStyle0=0, // KDE std
-      ActionStyle1,
-      ActionStyle2,
-      ActionStyle3,
-      ActionStyle4,
-      ActionStyleMAX
-    };
-
   public:
     /**
      * Creates a dialog.
@@ -222,6 +212,11 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setDefaultButton( ButtonCode id );
 
+    /**
+     * Returns the button code of the default button.
+     */
+    ButtonCode defaultButton() const;
+
 
     /**
      * Hide or display the a separator line drawn between the action
@@ -250,12 +245,22 @@ class KDEUI_EXPORT KDialog : public QDialog
     void setButtonText( ButtonCode id, const QString &text );
 
     /**
+     * Returns the text of any button.
+     */
+    QString buttonText( ButtonCode id ) const;
+
+    /**
      * Sets the icon of any button.
      *
      * @param id The button identifier.
      * @param icon Button icon.
      */
     void setButtonIcon( ButtonCode id, const QIcon &icon );
+
+    /**
+     * Returns the icon of any button.
+     */
+    QIcon buttonIcon( ButtonCode id ) const;
 
     /**
      * Sets the tooltip text of any button.
@@ -266,12 +271,22 @@ class KDEUI_EXPORT KDialog : public QDialog
     void setButtonToolTip( ButtonCode id, const QString &text );
 
     /**
+     * Returns the tooltip of any button.
+     */
+    QString buttonToolTip( ButtonCode id ) const;
+
+    /**
      * Sets the "What's this?" text of any button.
      *
      * @param id The button identifier.
      * @param text Button text.
      */
     void setButtonWhatsThis( ButtonCode id, const QString &text );
+
+    /**
+     * Returns the "What's this?" text of any button.
+     */
+    QString buttonWhatsThis( ButtonCode id ) const;
 
     /**
      * Sets the KGuiItem directly for the button instead of using 3 methods to
@@ -284,21 +299,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
 
-
     /**
-     * Returns the button that corresponds to the @p id.
-     *
-     * Normally
-     * you should not use this function. @em Never delete the object returned
-     * by this function. See also enableButton(), showButton(),
-     * setButtonTip(), setButtonWhatsThis(), and setButtonText().
-     *
-     * @param id Integer identifier of the button.
-     * @return The action button or 0 if the button does not exists.
-     *
+     * Sets the focus to the button of the passed @param id.
      */
-    KPushButton *button( ButtonCode id );
-
+    void setButtonFocus( ButtonCode id );
 
     /**
      * Convenience method. Sets the initial dialog size.
@@ -674,34 +678,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Updates the margins and spacings.
      */
     void updateGeometry();
-
-  private:
-    /**
-     * Sets the action button order according to the 'style'.
-     *
-     * @param style The style index.
-     */
-    void setButtonStyle( int style );
-
-    /**
-     * Prepares the layout that manages the widgets of the dialog
-     */
-    void setupLayout();
-
-    /**
-     * Sets the action button that is marked as default and has focus.
-     *
-     * @param p The action button.
-     * @param isDefault If true, make the button default
-     * @param isFocus If true, give the button focus.
-     */
-    void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
-
-    /**
-     * @internal
-     * create a new button
-     */
-    KPushButton *appendButton( ButtonCode code , const KGuiItem &item );
 
   private:
     struct Private;

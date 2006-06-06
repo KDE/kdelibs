@@ -85,7 +85,8 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
     // Calling slotReplace directly would lead to infinite loop anyway (Match never returned,
     // so slotReplaceNext never returns)
     if ( m_replace->options() & KReplaceDialog::PromptOnReplace ) {
-        m_replace->replaceNextDialog( false )->button( (KDialog::ButtonCode)m_button )->animateClick();
+//  FIXME: find another way for these kind of test
+//  m_replace->replaceNextDialog( false )->button( (KDialog::ButtonCode)m_button )->animateClick();
         m_needEventLoop = true;
     }
 }

@@ -271,24 +271,9 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     if (!listbox)
         dialog->setFixedSize( dialog->sizeHint() );
 
-    const KDialog::ButtonCode buttons[] = {
-        KDialog::Help,
-        KDialog::Default,
-        KDialog::Ok,
-        KDialog::Apply,
-        KDialog::Try,
-        KDialog::Cancel,
-        KDialog::Close,
-        KDialog::User1,
-        KDialog::User2,
-        KDialog::User3,
-        KDialog::No,
-        KDialog::Yes,
-        KDialog::Details };
-    for( unsigned int i = 0; i < sizeof( buttons )/sizeof( buttons[ 0 ] ); ++i )
-        if( QPushButton* btn = dialog->button( buttons[ i ] ))
-            if( btn->isDefault())
-                btn->setFocus();
+    KDialog::ButtonCode defaultCode = dialog->defaultButton();
+    if ( defaultCode != KDialog::NoDefault )
+      dialog->setButtonFocus( defaultCode );
 
     if ( (options & KMessageBox::Notify) )
         sendNotification( text, strlist, notifyType, dialog->topLevelWidget()->winId());

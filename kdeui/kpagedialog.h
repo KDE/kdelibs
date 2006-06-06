@@ -26,43 +26,39 @@
 #define KPAGEDIALOG_H
 
 #include <kdialog.h>
-#include <kguiitem.h>
 #include <kpagewidget.h>
-#include <kstdguiitem.h>
 
 /**
- * @short A dialog base class with predefined layouts.
+ * @short A dialog base class which can handle multiple pages.
  *
- * Provides basic functionality needed by nearly all dialogs.
+ * This class provides a dialog base class which handles multiple
+ * pages and allows the user to switch between these pages in
+ * different ways.
  *
- * You can define a main widget that contains your specific
- * dialog layout or you can use a predefined layout. Currently,
- * @p Plain, @p List, @p Tree, and @p Tabbed mode layouts (faces)
- * are available (@see KPageView).
+ * Currently, @p Auto, @p Plain, @p List, @p Tree and @p Tabbed face
+ * types are available (@see KPageView).
  *
  * <b>Example:</b>\n
  *
  * \code
- * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
- *                 const QString& urltext)
+ * UrlDlg::UrlDlg( QWidget *parent )
  *   : KPageDialog( parent )
  * {
- *   setCaption( caption );
- *   setButtons( Ok | Cancel );
- *   setDefaultButton( Ok );
- *   setModal( true );
+ *   setFaceType( List );
  *
- *   QLabel *label = new QLabel( caption );
+ *   QLabel *label = new QLabel( "Test Page" );
+ *   addPage( label, i18n( "My Test Page" );
  *
- *   addPage( label, i18n( "My Page" );
+ *   label = new QLabel( "Second Test Page" );
+ *   KPageWidgetItem *page = new KPageWidgetItem( label, i18n( "My Second Test Page" ) );
+ *   page->setHeader( i18n( "My header string" ) );
+ *   page->setIcon( KIcon( "file" ) );
+ *
+ *   addPage( page );
  * }
  * \endcode
  *
- * This class can be used in many ways. Note that most KDE ui widgets
- * and many of KDE core applications use the KPageDialog so for more
- * inspiration you should study the code for these.
- *
- * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espen@kde.org)
+ * @author Tobias Koenig (tokoe@kde.org)
  */
 class KDEUI_EXPORT KPageDialog : public KDialog
 {
@@ -71,6 +67,12 @@ class KDEUI_EXPORT KPageDialog : public KDialog
   public:
 
     /**
+     *  @li @p Auto   - A dialog with a face based on the structure of the
+     *                  available pages.
+     *                  If only a single page is added, the dialog behaves like
+     *                  in @p Plain mode, with multiple pages whithout sub pages
+     *                  it behaves like in @p List mode and like in @p Tree mode
+     *                  otherwise.
      *  @li @p Plain  - A normal dialog.
      *  @li @p List   - A dialog with an icon list on the left side and a
      *                  representation of the contents on the right side.
@@ -81,6 +83,7 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      */
     enum FaceType
     {
+      Auto   = KPageWidget::Auto,
       Plain  = KPageWidget::Plain,
       List   = KPageWidget::List,
       Tree   = KPageWidget::Tree,
