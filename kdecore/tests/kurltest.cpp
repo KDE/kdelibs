@@ -858,9 +858,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/relative.html#with_reference") );
   }
 
-  // ### to be fixed in QUrl:
-  QSKIP( "QUrl::setFragment(\"\") doesn't make hasFragment return true", SkipSingle ); // TT task 105559 (Thiago, Andreas)
-
+#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
   {
      KUrl waba2( waba1, "#");
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#") );
@@ -928,6 +926,10 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QCOMPARE( waba1.url(), QString("https://waldo%2Fbastian:pass@web.com:881/foo/?bla") );
   waba1.setDirectory( "/foo/" );
   QCOMPARE( waba1.url(), QString("https://waldo%2Fbastian:pass@web.com:881/foo/?bla") );
+#else
+  QSKIP( "QUrl::setFragment(\"\") doesn't make hasFragment return true", SkipSingle ); // TT task 105559 (Thiago, Andreas)
+#endif
+
 #else
   QSKIP( "QUrl::setPort(-1) doesn't remove the port; breaks base url tests", SkipSingle );
 #endif
