@@ -30,7 +30,6 @@ kcmoduleinfo.cpp
 kcmoduleloader.cpp
 kcmultidialog.cpp
 kmultitabbar.cpp
-kplugininfo.cpp
 kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
@@ -51,10 +50,19 @@ install_targets(${LIB_INSTALL_DIR} kutils )
 
 ########### install files ###############
 
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES kplugininfo.desktop )
-install_files( /include FILES kfind.h kfinddialog.h kreplace.h kreplacedialog.h                    kcmoduleinfo.h kcmoduleloader.h kcmultidialog.h                    kmultitabbar.h kplugininfo.h kcmoduleproxy.h                    kpluginselector.h kcmodulecontainer.h )
-
-
+install_files( /include FILES
+ kfind.h
+ kfinddialog.h
+ kreplace.h
+ kreplacedialog.h
+ kcmoduleinfo.h
+ kcmoduleloader.h
+ kcmultidialog.h
+ kmultitabbar.h 
+ kcmoduleproxy.h
+ kpluginselector.h
+ kcmodulecontainer.h
+)
 
 
 #original Makefile.am contents follow:

@@ -237,6 +237,7 @@ set(kdecore_LIB_SRCS
    kservice/ktraderparsetree.cpp
    kservice/yacc.c
    kservice/lex.c
+   kservice/kplugininfo.cpp
    malloc/malloc.c
    ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
 )
