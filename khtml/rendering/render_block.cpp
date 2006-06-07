@@ -1366,8 +1366,11 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // make sure we relayout children if we need it.
         if (!child->isPositioned() && (relayoutChildren ||
              (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
-             (child->isRenderBlock() && child->style()->height().isPercent())))
+             (child->isRenderBlock() && child->style()->height().isPercent()) || 
+             (child->isBody() && child->style()->htmlHacks())))
+        {
             child->setChildNeedsLayout(true);
+        }
 
         // Handle the four types of special elements first.  These include positioned content, floating content, compacts and
         // run-ins.  When we encounter these four types of objects, we don't actually lay them out as normal flow blocks.
