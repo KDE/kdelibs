@@ -98,7 +98,7 @@
  *  A "Find Previous" action can simply switch temporarily the value of
  *  FindBackwards and call slotFindNext() - and reset the value afterwards.
  */
-class KUTILS_EXPORT KFind :
+class KDEUI_EXPORT KFind :
     public QObject
 {
     Q_OBJECT

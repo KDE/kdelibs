@@ -70,7 +70,7 @@ class QGroupBox;
  * To use your own extensions: see findExtension().
  *
  */
-class KUTILS_EXPORT KFindDialog:
+class KDEUI_EXPORT KFindDialog:
     public KDialog
 {
     Q_OBJECT

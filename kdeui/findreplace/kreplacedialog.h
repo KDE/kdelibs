@@ -52,7 +52,7 @@ class QRect;
  * \code
  * \endcode
  */
-class KUTILS_EXPORT KReplaceDialog:
+class KDEUI_EXPORT KReplaceDialog:
     public KFindDialog
 {
     Q_OBJECT
