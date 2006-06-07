@@ -6,7 +6,6 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 
 add_subdirectory( ksettings )
-add_subdirectory( tests )
 
 add_definitions( ${QDBUS_DEFINITIONS} )
 
@@ -22,10 +21,6 @@ set(ksettings_STAT_SRCS
 ########### next target ###############
 
 set(kutils_LIB_SRCS
-kfind.cpp
-kfinddialog.cpp
-kreplace.cpp
-kreplacedialog.cpp
 kcmoduleinfo.cpp
 kcmoduleloader.cpp
 kcmultidialog.cpp
@@ -51,10 +46,6 @@ install_targets(${LIB_INSTALL_DIR} kutils )
 ########### install files ###############
 
 install_files( /include FILES
- kfind.h
- kfinddialog.h
- kreplace.h
- kreplacedialog.h
  kcmoduleinfo.h
  kcmoduleloader.h
  kcmultidialog.h

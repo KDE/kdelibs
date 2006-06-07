@@ -93,8 +93,8 @@ using namespace DOM;
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
 #include <kde_file.h>
-#include "../kutils/kfinddialog.h"
-#include "../kutils/kfind.h"
+#include "kfinddialog.h"
+#include "kfind.h"
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
 #include <kseparatoraction.h>

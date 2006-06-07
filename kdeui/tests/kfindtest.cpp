@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "../kfind.h"
-#include "../kfinddialog.h"
+#include "kfind.h"
+#include "kfinddialog.h"
 #include "kfindtest.h"
 
 #include <kapplication.h>

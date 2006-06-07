@@ -70,7 +70,7 @@ set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore
 ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network
 ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${QDBUS_INCLUDE_DIRS} ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore
-set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${KDE4_KDECORE_INCLUDES})
+set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kdeui/findreplace ${KDE4_KDECORE_INCLUDES})
 # kio depends on kdeui
 set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAKE_SOURCE_DIR}/kio/kfile ${CMAKE_SOURCE_DIR}/kio/bookmarks ${KDE4_KDEUI_INCLUDES})
 # kparts depends on kio

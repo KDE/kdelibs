@@ -23,8 +23,8 @@
 #include <kapplication.h>
 #include <qeventloop.h>
 #include <kpushbutton.h>
-#include "../kreplace.h"
-#include "../kreplacedialog.h"
+#include "kreplace.h"
+#include "kreplacedialog.h"
 
 #include "kreplacetest.h"
 #include <kdebug.h>

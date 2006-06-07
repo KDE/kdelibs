@@ -9,9 +9,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 ########### next target ###############
 
-set(kaboutdialogtest_SRCS
-kaboutdialogtest.cpp
-)
+set(kaboutdialogtest_SRCS kaboutdialogtest.cpp)
 
 kde4_automoc(${kaboutdialogtest_SRCS})
 
@@ -22,9 +20,7 @@ target_link_libraries(kaboutdialogtest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kblendtest_SRCS
-kblendtest.cpp
-)
+set(kblendtest_SRCS kblendtest.cpp)
 
 kde4_automoc(${kblendtest_SRCS})
 
@@ -768,6 +764,26 @@ kde4_add_executable(kpagewidgettest RUN_UNINSTALLED ${kpagewidgettest_SRCS})
 
 target_link_libraries(kpagewidgettest  ${KDE4_KDEUI_LIBS})
 
+
+   ########### next target ###############
+   
+   set(kfindtest_SRCS kfindtest.cpp )
+   
+   kde4_automoc(${kfindtest_SRCS})
+   
+   kde4_add_executable(kfindtest ${kfindtest_SRCS})
+   
+   target_link_libraries(kfindtest ${KDE4_KDEUI_LIBS} )
+   
+   ########### next target ###############
+   
+   set(kreplacetest_SRCS kreplacetest.cpp )
+   
+   kde4_automoc(${kreplacetest_SRCS})
+   
+   kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
+   
+   target_link_libraries(kreplacetest  ${KDE4_KDEUI_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 

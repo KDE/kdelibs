@@ -1,16 +1,22 @@
 
 project(kdeui)
 
-include_directories( ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/interfaces )
-include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories(
+ ${CMAKE_SOURCE_DIR}/kdefx
+ ${CMAKE_SOURCE_DIR}/interfaces
+ ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
+ ${KDE4_KDECORE_INCLUDES}
+ ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+)
 add_definitions(${QDBUS_DEFINITIONS})
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
-if (UNIX AND NOT APPLE)
+if (Q_WS_X11)
    add_subdirectory( kdetrayproxy )
-endif (UNIX AND NOT APPLE)
+endif (Q_WS_X11)
 
+add_subdirectory( findreplace )
 add_subdirectory( tests )
 add_subdirectory( about )
 
@@ -150,6 +156,10 @@ set(kdeui_LIB_SRCS
  kkeyserver.cpp
  kcompletionbase.cpp
  kcompletion.cpp
+ findreplace/kfind.cpp
+ findreplace/kreplace.cpp
+ findreplace/kfinddialog.cpp
+ findreplace/kreplacedialog.cpp
 )
 
 if (Q_WS_X11)
