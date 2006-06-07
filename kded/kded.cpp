@@ -695,9 +695,11 @@ static KCmdLineOptions options[] =
   KCmdLineLastOption
 };
 
-#ifdef __GNUC__
-# warning "I have no idea what the following class is here for"
-#elif 0
+#if 0
+// Thiago: I have no idea what the following class is here for
+// David: the commit log was:
+//       Disable DCOP-Qt bridge but make sure that "dcopquit kded" continues to work.
+//       (see the setQtBridgeEnabled below)
 class KDEDQtDCOPObject : public DCOPObject
 {
 public:
