@@ -37,7 +37,7 @@ class KConfigGroup;
  *
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KUTILS_EXPORT KPluginInfo
+class KDECORE_EXPORT KPluginInfo
 {
     public:
         typedef QList<KPluginInfo*> List;
