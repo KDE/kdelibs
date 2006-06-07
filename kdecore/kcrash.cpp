@@ -354,9 +354,12 @@ void KCrash::startDirectly( const char* argv[], int )
   pid_t pid = fork();
   if (pid <= 0)
   {
-    setgid(getgid());
-    setuid(getuid());
+    if(!geteuid() && setgid(getgid()) < 0)
+      _exit(253);
+    if(!geteuid() && setuid(getuid()) < 0)
+      _exit(253);
     execvp("drkonqi", const_cast< char** >( argv ));
+    _exit(errno);
   }
   else
   {
