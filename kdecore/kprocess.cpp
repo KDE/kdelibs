@@ -387,7 +387,10 @@ bool KProcess::start(RunMode runmode, Communication comm)
            if (pw)
               initgroups(pw->pw_name, pw->pw_gid);
 #endif
-           setuid(getuid());
+	   if (geteuid() != getuid())
+	       setuid(getuid());
+	   if (geteuid() != getuid())
+	       _exit(1);
         }
 
         setupEnvironment();
