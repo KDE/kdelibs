@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2005 David Faure <faure@kde.org>
+    Copyright (c) 2005-2006 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -38,6 +38,9 @@ void KLibLoaderTest::testNonWorking()
     QObject* obj = KLibLoader::createInstance<QObject>( "idontexist", this, QStringList(), &error );
     QCOMPARE( obj, (QObject*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoLibrary );
+    QString errorString = KLibLoader::errorString( error );
+    kdDebug() << errorString << endl;
+    QVERIFY( !errorString.isEmpty() );
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
@@ -68,5 +71,7 @@ void KLibLoaderTest::testWrongClass()
     KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, QStringList(), &error );
     QCOMPARE( obj, (KLibLoaderTest*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
+    QString errorString = KLibLoader::errorString( error );
+    kdDebug() << errorString << endl;
+    QVERIFY( !errorString.isEmpty() );
 }
-

@@ -436,6 +436,14 @@ public:
                                  ErrNoServiceFound };
 
     /**
+     * Returns a translated error message for @p componentLoadingError
+     * @param componentLoadingError the error code, as returned in the "error"
+     * output parameter of createInstance.
+     */
+    static QString errorString( int componentLoadingError );
+
+
+    /**
      * This template allows to load the specified library and ask the
      * factory to create an instance of the given template type.
      *

@@ -568,6 +568,24 @@ void KLibLoader::close_pending(KLibWrapPrivate *wrap)
   }
 }
 
+QString KLibLoader::errorString( int componentLoadingError )
+{
+    switch ( componentLoadingError ) {
+    case ErrNoServiceFound:
+        return i18n( "No service matching the requirements was found" );
+    case ErrServiceProvidesNoLibrary:
+        return i18n( "The service provides no library, the Library key is missing in the .desktop file" );
+    case ErrNoLibrary:
+        return KLibLoader::self()->lastErrorMessage();
+    case ErrNoFactory:
+        return i18n( "The library does not export a factory for creating components" );
+    case ErrNoComponent:
+        return i18n( "The factory does not support creating components of the specified type" );
+    default:
+        return i18n( "KLibLoader: Unknown error" );
+    }
+}
+
 void KLibLoader::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
