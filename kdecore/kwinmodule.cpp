@@ -422,7 +422,7 @@ void KWinModule::setDesktopName( int desktop, const QString& name )
 
 void KWinModule::doNotManage( const QString& title )
 {
-    QDBusInterfacePtr("org.kde.kwin", "/kwin", "org.kde.KWinInterface")->call("doNotManage", title);
+    QDBusInterfacePtr("org.kde.kwin", "/kwin", "org.kde.KWin")->call("doNotManage", title);
 }
 
 #include "kwinmodule.moc"
