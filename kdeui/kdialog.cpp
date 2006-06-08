@@ -945,6 +945,14 @@ void KDialog::setDetails(bool showDetails)
   d->mSettingDetails = false;
 }
 
+void KDialog::delayedDestruct()
+{
+  if ( isVisible() )
+    hide();
+
+  deleteLater();
+}
+
 
 void KDialog::slotButtonClicked(int button)
 {
@@ -1105,6 +1113,7 @@ void KDialog::saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags
    config->writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),  sizeToSave.width(), options   );
    config->writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),  sizeToSave.height(), options );
 }
+
 
 class KDialogQueue::Private
 {

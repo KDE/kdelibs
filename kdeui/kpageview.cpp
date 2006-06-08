@@ -211,8 +211,6 @@ KPageView::KPageView( QWidget *parent )
   // stack should use most space
   d->layout->setColumnStretch( 1, 1 );
   d->layout->setRowStretch( 3, 1 );
-
-  d->rebuildGui();
 }
 
 KPageView::~KPageView()

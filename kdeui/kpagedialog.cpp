@@ -29,24 +29,39 @@
 class KPageDialog::Private
 {
   public:
-    Private()
-      : mPageWidget( 0 )
+    Private( KPageDialog *parent )
+      : mParent( parent ), mPageWidget( 0 )
     {
     }
 
+    KPageDialog *mParent;
     KPageWidget *mPageWidget;
+
+    void init()
+    {
+      connect( mPageWidget, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
+               mParent, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
+
+      mParent->setMainWidget( mPageWidget );
+    }
 };
 
 KPageDialog::KPageDialog( QWidget *parent, Qt::WFlags flags )
   : KDialog( parent, flags ),
-    d( new Private )
+    d( new Private( this ) )
 {
   d->mPageWidget = new KPageWidget( this );
 
-  connect( d->mPageWidget, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
-           this, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
+  d->init();
+}
 
-  KDialog::setMainWidget( d->mPageWidget );
+KPageDialog::KPageDialog( KPageWidget *widget, QWidget *parent, Qt::WFlags flags )
+  : KDialog( parent, flags ),
+    d( new Private( this ) )
+{
+  d->mPageWidget = widget;
+
+  d->init();
 }
 
 KPageDialog::~KPageDialog()
@@ -102,19 +117,6 @@ void KPageDialog::setCurrentPage( KPageWidgetItem *item )
 KPageWidgetItem* KPageDialog::currentPage() const
 {
   return d->mPageWidget->currentPage();
-}
-
-void KPageDialog::delayedDestruct()
-{
-  if ( isVisible() )
-    hide();
-
-  QTimer::singleShot( 0, this, SLOT( slotDelayedDestruct() ) );
-}
-
-void KPageDialog::slotDelayedDestruct()
-{
-  delete this;
 }
 
 #include "kpagedialog.moc"

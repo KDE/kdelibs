@@ -190,26 +190,11 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      */
     void currentPageChanged( KPageWidgetItem *current, KPageWidgetItem *before );
 
-
-  public Q_SLOTS:
+  protected:
     /**
-     * Destruct the dialog delayed.
-     *
-     * You can call this function from slots like closeClicked() and hidden().
-     * You should not use the dialog any more after calling this function.
+     * This constructor can be used by subclasses to provide a custom page widget.
      */
-    void delayedDestruct();
-
-
-  protected Q_SLOTS:
-    /**
-     * Deletes the dialog immediately. If you want to delete the dialog
-     * delayed use delayedDestruct() or QObject::deleteLater().
-     *
-     * Attention: Do no use connect this slot to signals from user
-     * actions!
-     */
-    void slotDelayedDestruct();
+    KPageDialog( KPageWidget *widget, QWidget *parent = 0, Qt::WFlags flags = 0 );
 
   private:
     class Private;

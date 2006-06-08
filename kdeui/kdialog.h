@@ -201,7 +201,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setEscapeButton( ButtonCode id );
 
-
     /**
      * Sets the button that will be activated when the Enter key
      * is pressed.
@@ -216,7 +215,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Returns the button code of the default button.
      */
     ButtonCode defaultButton() const;
-
 
     /**
      * Hide or display the a separator line drawn between the action
@@ -325,7 +323,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void incrementInitialSize( const QSize &size );
 
-
     /**
      * Restores the dialogs size from the configuration according to
      * the screen size.
@@ -334,19 +331,18 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * @param config The object to read from. That may be a KConfigGroup
      */
-   void restoreDialogSize( KConfigBase* config ) ;
+    void restoreDialogSize( KConfigBase* config ) ;
 
-   /**
-    * Saves the dialogs size dependant on the screen dimension either to the
-    * global or application config file.
-    *
-    * @note the group must be set before calling
-    *
-    * @param config The object to read from. That is recommended to use a KConfigGroup
-    * @param options passed to KConfigBase::writeEntry
-    */
-   void saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options = 0 ) const;
-
+    /**
+     * Saves the dialogs size dependant on the screen dimension either to the
+     * global or application config file.
+     *
+     * @note the group must be set before calling
+     *
+     * @param config The object to read from. That is recommended to use a KConfigGroup
+     * @param options passed to KConfigBase::writeEntry
+     */
+    void saveDialogSize( KConfigBase* config, KConfigBase::WriteConfigFlags options = 0 ) const;
 
     /**
      * Returns the help link text.
@@ -357,7 +353,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @return The help link text.
      */
     QString helpLinkText() const;
-
 
     /**
      * Return the number of pixels you shall use between a
@@ -448,25 +443,6 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     virtual void setPlainCaption( const QString &caption );
 
-
-  protected:
-    /**
-     * @internal
-     */
-    virtual void keyPressEvent(QKeyEvent*);
-
-   Q_SIGNALS:
-    /**
-     * Emitted when the margin size and/or spacing size
-     * have changed.
-     *
-     * Use marginHint() and spacingHint() in your slot
-     * to get the new values.
-     */
-    void layoutHintChanged();
-
-
-  public Q_SLOTS:
     /**
      * Enable or disable (gray out) a general action button.
      *
@@ -540,8 +516,24 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void setDetailsWidget( QWidget *detailsWidget );
 
+    /**
+     * Destruct the dialog delayed.
+     *
+     * You can call this function from slots like closeClicked() and hidden().
+     * You should not use the dialog any more after calling this function.
+     */
+    void delayedDestruct();
 
   Q_SIGNALS:
+    /**
+     * Emitted when the margin size and/or spacing size
+     * have changed.
+     *
+     * Use marginHint() and spacingHint() in your slot
+     * to get the new values.
+     */
+    void layoutHintChanged();
+
     /**
      * The Help button was pressed. This signal is only emitted if
      * slotButtonClicked() is not replaced
@@ -666,6 +658,11 @@ class KDEUI_EXPORT KDialog : public QDialog
      * will take place.
      */
     virtual void closeEvent( QCloseEvent *e );
+
+    /**
+     * @internal
+     */
+    virtual void keyPressEvent( QKeyEvent* );
 
   protected Q_SLOTS:
     /**
