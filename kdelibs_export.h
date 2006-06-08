@@ -28,8 +28,8 @@
 # include <QtCore/qglobal.h>
 #endif
 
-
-#if defined _WIN32 || defined _WIN64
+/* Qt macros aren't known in a non C++ project */
+#if defined _WIN32 || defined _WIN64 
 # include <kdelibs_export_win.h>
 #else /* UNIX */
 
