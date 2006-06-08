@@ -28,8 +28,18 @@ PHONON_HEIR_IMPL( MediaObject, AbstractMediaProducer )
 
 PHONON_GETTER( MediaObject, KUrl, url, d->url )
 PHONON_GETTER( MediaObject, qint64, totalTime, -1 )
-PHONON_GETTER( MediaObject, qint64, remainingTime, -1 )
 PHONON_GETTER( MediaObject, qint32, aboutToFinishTime, d->aboutToFinishTime )
+
+qint64 MediaObject::remainingTime() const
+{
+	K_D( const MediaObject );
+	if( !d->backendObject )
+		return -1;
+	qint64 ret;
+	if( BACKEND_GET( qint64, ret, "remainingTime" ) )
+		return ret;
+	return totalTime() - currentTime();
+}
 
 void MediaObject::setUrl( const KUrl& url )
 {

@@ -26,10 +26,20 @@ namespace Phonon
 PHONON_HEIR_IMPL( ByteStream, AbstractMediaProducer )
 
 PHONON_GETTER( ByteStream, qint64, totalTime, -1 )
-PHONON_GETTER( ByteStream, qint64, remainingTime, -1 )
 PHONON_GETTER( ByteStream, qint32, aboutToFinishTime, d->aboutToFinishTime )
 PHONON_GETTER( ByteStream, qint64, streamSize, d->streamSize )
 PHONON_GETTER( ByteStream, bool, streamSeekable, d->streamSeekable )
+
+qint64 ByteStream::remainingTime() const
+{
+	K_D( const ByteStream );
+	if( !d->backendObject )
+		return -1;
+	qint64 ret;
+	if( BACKEND_GET( qint64, ret, "remainingTime" ) )
+		return ret;
+	return totalTime() - currentTime();
+}
 
 PHONON_SETTER( ByteStream, setStreamSeekable, streamSeekable, bool )
 PHONON_SETTER( ByteStream, setStreamSize, streamSize, qint64 )
