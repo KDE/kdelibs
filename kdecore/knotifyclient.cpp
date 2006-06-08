@@ -84,7 +84,7 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   if ( !KNotifyClient::startDaemon() )
       return 0;
 
-  QDBusInterfacePtr iface(QLatin1String(daemonName), "/Notify", "org.kde.KNotify");
+  QDBusInterfacePtr iface(QString::fromLatin1(daemonName), "/Notify", "org.kde.KNotify");
   QDBusReply<void> r = iface->call("notify", message, appname, text, sound, file, present,
                                    qlonglong(winId), uniqueId);
   return r.isSuccess() ? uniqueId : 0;
