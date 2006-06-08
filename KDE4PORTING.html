@@ -1007,6 +1007,8 @@ a listDir result.</li>
     <li>KMimeType::pixmapForURL &gt; KIO::pixmapForURL</li>
     <li>KMimeType::comment(KUrl,bool) &gt; KIO::comment(KUrl)</li>
     <li>KMimeType::diagnoseFileName has been replaced with KMimeType::extractKnownExtension which returns the extension only, not the pattern</li>
+    <li>KMimeType::mimeType(someName) now behaves like KServiceType::serviceType(someName), i.e. it returns 0 if that name doesn't exist,
+       instead of returning the application/octet-stream mimetype. Test for null!</li>
 </ul>
 
 <H4>KIO::Job</H4>

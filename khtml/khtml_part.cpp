@@ -1897,7 +1897,8 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   m_url = url;
 
   bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
-  bool servedAsXML = KMimeType::mimeType(args.serviceType)->is( "text/xml" );
+  KMimeType::Ptr mime = KMimeType::mimeType( args.serviceType );
+  bool servedAsXML = mime && mime->is( "text/xml" );
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
