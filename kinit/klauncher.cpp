@@ -1272,12 +1272,12 @@ KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
 {
     foreach (IdleSlave *slave, mSlaveList)
     {
-        if (slave->pid() == *reinterpret_cast<pid_t *>(pid))
+        if (slave->pid() == static_cast<pid_t>(pid))
            return; // Already here.
     }
     SlaveWaitRequest *waitRequest = new SlaveWaitRequest;
     waitRequest->transaction = QDBusMessage::methodReply(msg);
-    waitRequest->pid = *reinterpret_cast<pid_t *>(pid);
+    waitRequest->pid = static_cast<pid_t>(pid);
     mSlaveWaitRequest.append(waitRequest);
 }
 

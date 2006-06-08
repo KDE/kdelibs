@@ -1029,17 +1029,6 @@ static int read_socket(int sock, char *buffer, int len)
   return 0;
 }
 
-static void WaitPid( pid_t waitForPid)
-{
-  int result;
-  while(1)
-  {
-    result = waitpid(waitForPid, &d.exit_status, 0);
-    if ((result == -1) && (errno == ECHILD))
-       return;
-  }
-}
-
 static void launcher_died()
 {
    if (!d.launcher_ok)
@@ -1109,7 +1098,7 @@ static void handle_launcher_request(int sock = -1)
    {
       d.launcher_ok = true;
    }
-   else if (request_header.arg_length && 
+   else if (request_header.arg_length &&
       ((request_header.cmd == LAUNCHER_EXEC) ||
        (request_header.cmd == LAUNCHER_EXT_EXEC) ||
        (request_header.cmd == LAUNCHER_SHELL ) ||
@@ -1756,7 +1745,7 @@ int main(int argc, char **argv, char **envp)
       if (!konq.isEmpty())
 	  (void) lt_dlopen(QFile::encodeName(konq).data());
    }
-#endif 
+#endif
    if (launch_klauncher)
    {
       pid = launch( 1, "klauncher", 0 );
@@ -1765,7 +1754,7 @@ int main(int argc, char **argv, char **envp)
 #endif
       handle_requests(pid); // Wait for klauncher to be ready
    }
-   
+
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
 //#ifdef Q_WS_X11
    X11fd = initXconnection();
