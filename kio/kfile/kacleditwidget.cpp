@@ -274,7 +274,7 @@ void KACLListViewItem::repaint()
           idx = KACLListView::OWNER_IDX;
             break;
     }
-    setText( 0, s_itemAttributes[idx].label );
+    setText( 0, i18n(s_itemAttributes[idx].label) );
     setPixmap( 0, *s_itemAttributes[idx].pixmap );
     if ( isDefault )
         setText( 0, text( 0 ) + i18n( " (Default)" ) );
