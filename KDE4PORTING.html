@@ -683,6 +683,9 @@ should be rewritten as
 </pre>
 <li>setButtonMask() -&gt; setButtons() and setButtonGuiItem()</li>
 <li>setButtonBoxOrientation() -&gt; setButtonsOrientation()</li>
+<li>setButtonOKText, setButtonApplyText , setButtonCancelText  -&gt; setButtonText( ButtonCode, const QString&amp; )</li>
+<li>don't overide anymore slotFoo(). You now need to connect to FooClicked signal.
+    Or reimplement accept() and reject() to intercept the Ok and Cancel button</li>
 </ul>
 
 <H4>KDatePicker</H4>
