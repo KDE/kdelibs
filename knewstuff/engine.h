@@ -48,7 +48,7 @@ class ProviderDialog;
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT Engine : public QObject
+class KNEWSTUFF_EXPORT Engine : public QObject
 {
     Q_OBJECT
     struct Private;

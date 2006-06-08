@@ -41,7 +41,7 @@ namespace KNS {
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT Entry
+class KNEWSTUFF_EXPORT Entry
 {
   public:
     Entry();
