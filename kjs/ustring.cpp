@@ -131,18 +131,20 @@ static int statBufferSize = 0;
 UChar UChar::toLower() const
 {
   // ### properly support unicode tolower
-  if (uc >= 256 || islower(uc))
+  if (uc >= 256)
     return *this;
 
-  return (unsigned char)tolower(uc);
+  // tolower is locale-dependent, don't use it.
+  return static_cast<unsigned char>( ( ( uc >= 'A' ) && ( uc <= 'Z' ) ) ? ( (int)uc + 'a' - 'A' ) : uc );
 }
 
 UChar UChar::toUpper() const
 {
-  if (uc >= 256 || isupper(uc))
+  if (uc >= 256)
     return *this;
 
-  return (unsigned char)toupper(uc);
+  // toupper is locale-dependent, don't use it.
+  return static_cast<unsigned char>( ( ( uc >= 'a' ) && ( uc <= 'z' ) ) ? ( (int)uc + 'A' - 'a' ) : uc );
 }
 
 UCharReference& UCharReference::operator=(UChar c)
