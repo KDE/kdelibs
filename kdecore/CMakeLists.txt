@@ -229,6 +229,7 @@ set(kdecore_LIB_SRCS
    ${kdecore_OPTIONAL_SRCS}
    kservice/kservice.cpp
    kservice/kservicefactory.cpp
+   kservice/kserviceoffer.cpp
    kservice/kservicetype.cpp
    kservice/kservicetypefactory.cpp
    kservice/kservicetypeprofile.cpp
