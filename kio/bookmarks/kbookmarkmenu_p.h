@@ -138,7 +138,7 @@ public:
   typedef enum { ModifyMode, InsertionMode } BookmarkEditType;
 
   KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType, const QString& address = QString(),
-                       QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
+                       QWidget * = 0, const QString& caption = i18n( "Add Bookmark" ) );
 
   QString finalUrl() const;
   QString finalTitle() const;

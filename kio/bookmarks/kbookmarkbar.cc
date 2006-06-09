@@ -254,7 +254,7 @@ void KBookmarkBar::slotBookmarkSelected()
 
     if (const KAction* action = qobject_cast<const KAction*>(sender()))
     {
-        const QString & url = sender()->property("url").toString();
+        const QString & url = action->property("url").toString();
         m_pOwner->openBookmarkURL(url);
         emit openBookmark( url, QApplication::mouseButtons(), QApplication::keyboardModifiers() );
     }
@@ -296,7 +296,7 @@ bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KActi
         return true;
     }
 
-    // else find the toolbar button 
+    // else find the toolbar button
     for(int i = 0; i < d->widgetPositions.count(); ++i)
     {
         if( rtl ^ (pos <= d->widgetPositions[i]) )
@@ -355,7 +355,7 @@ void KBookmarkBar::contextMenu(const QPoint & pos)
     if(!action)
         return;
     QString addr = action->property("address").toString();
-    delete d->m_rmb; 
+    delete d->m_rmb;
     d->m_rmb = new RMB(parentAddress(), addr, m_pManager, m_pOwner);
     d->m_rmb->fillContextMenu( addr);
     emit aboutToShowContextMenu( m_pManager->findByAddress( addr ), d->m_rmb->contextMenu() );

@@ -511,7 +511,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
                   addItem(sorted, (*it_s).value(), needSeparator);
                   it_s++;
                }
-               else if ((*it_g).index() < (*it_s).index())
+               else if ((*it_g).key() < (*it_s).key())
                {
                   // Insert sub-menu first
                   addItem(sorted, (*it_g).value(), needSeparator);

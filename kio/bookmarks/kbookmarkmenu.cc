@@ -261,7 +261,7 @@ void RMB::slotProperties()
   QString folder = bookmark.isGroup() ? QString() : bookmark.url().pathOrUrl();
   KBookmarkEditDialog dlg( bookmark.fullText(), folder,
                            m_pManager, KBookmarkEditDialog::ModifyMode, 0,
-                           0, 0, i18n("Bookmark Properties") );
+                           0, i18n("Bookmark Properties") );
   if ( dlg.exec() != KDialog::Accepted )
     return;
 
@@ -755,7 +755,7 @@ QString KBookmarkTreeItem::address()
 }
 
 KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType, const QString& address,
-                                         QWidget * parent, const char * name, const QString& caption )
+                                         QWidget * parent, const QString& caption )
   : KDialog(parent),
     m_folderTree(0), m_mgr(mgr), m_editType(editType)
 {
@@ -875,7 +875,7 @@ void KBookmarkEditDialog::fillGroup( QTreeWidget* view, QTreeWidgetItem * parent
       KBookmarkGroup childGrp = bk.toGroup();
       QTreeWidgetItem* item = new KBookmarkTreeItem(parentItem, view, childGrp );
       fillGroup( view, item, childGrp , address );
-      if (childGrp.address() == address) 
+      if (childGrp.address() == address)
       {
         view->setCurrentItem( item );
         view->scrollToItem( item );
