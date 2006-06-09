@@ -308,6 +308,11 @@ khtml::Length* DOMStringImpl::toLengthArray(int& len) const
     str = str.simplifyWhiteSpace();
 
     len = str.contains(',') + 1;
+
+    // If we have no commas, we have no array.
+    if( len == 1 )
+        return 0L;
+
     khtml::Length* r = new khtml::Length[len];
 
     int i = 0;
