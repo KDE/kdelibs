@@ -137,17 +137,12 @@ QString KAboutTranslator::emailAddress() const
     return d->_email;
 }
 
-
-#ifdef __GNUC__
-# warning KAboutData use the KDE3 trick for translating the data of the translators instead of using correctly i18nc( "context", "text" );
-#endif
-
 class KAboutData::Private
 {
 public:
     Private()
-        : translatorName(I18N_NOOP("NAME OF TRANSLATORS\004Your names"))
-        , translatorEmail(I18N_NOOP("EMAIL OF TRANSLATORS\004Your emails"))
+        : translatorName(I18N_NOOP2("NAME OF TRANSLATORS", "Your names"))
+        , translatorEmail(I18N_NOOP2("EMAIL OF TRANSLATORS", "Your emails"))
         , productName(0)
         , programLogo(0)
         , customAuthorTextEnabled(false)
@@ -480,7 +475,7 @@ KAboutData::translators() const
     QStringList nameList;
     QStringList emailList;
 
-    QString names = i18n(d->translatorName);
+    QString names = i18nc("NAME OF TRANSLATORS", d->translatorName);
     if(names != QString::fromUtf8(d->translatorName))
     {
         nameList = names.split( ',');
@@ -489,7 +484,7 @@ KAboutData::translators() const
 
     if(d->translatorEmail)
     {
-        QString emails = i18n(d->translatorEmail);
+        QString emails = i18nc("EMAIL OF TRANSLATORS", d->translatorEmail);
 
         if(emails != QString::fromUtf8(d->translatorEmail))
         {
