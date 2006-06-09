@@ -32,8 +32,6 @@ standard path in the previous step, set the PKG_CONFIG_PATH:
 Hint: you may want to install QtDBUS to $DBUSDIR too.
 
 !!Compiling kdelibs
-The current code is in /branches/work/kdelibs4-dbus.
-
 Remember to set PKG_CONFIG_PATH to where you installed DBUS to
 ($DBUSDIR/lib/pkgconfig), where you installed QtDBUS and where Qt is
 installed ($QTDIR/lib). This is necessary because QtDBUS depends on Qt
