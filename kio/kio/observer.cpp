@@ -48,7 +48,7 @@ Observer::Observer()
 {
     QDBus::sessionBus().registerObject("/KIO/Observer", this, QDBusConnection::ExportSlots);
 
-    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio.uiserver" ) )
+    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio_uiserver" ) )
     {
         kDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
         QString error;
@@ -61,15 +61,13 @@ Observer::Observer()
             kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
-    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio.uiserver" ) )
+    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio_uiserver" ) )
         kDebug(KDEBUG_OBSERVER) << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
     else
         kDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
 
-#ifndef Q_OS_WIN
-    m_uiserver = QDBus::sessionBus().findInterface<org::kde::KIO::UIServer>("org.kde.kio.uiserver",
+    m_uiserver = QDBus::sessionBus().findInterface<org::kde::KIO::UIServer>("org.kde.kio_uiserver",
                                                                             "/UIServer");
-#endif
 }
 
 int Observer::newJob( KIO::Job * job, bool showProgress )
