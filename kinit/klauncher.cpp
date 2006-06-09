@@ -472,7 +472,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       requestResult.result = 0;
       requestResult.dcopName = request->dcop_name;
-      requestResult.error.clear();
+      requestResult.error = "";
       requestResult.pid = request->pid;
    }
    else
@@ -514,6 +514,9 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
+      if ( requestResult.dcopName.isNull() ) // null strings can't be sent
+          requestResult.dcopName = "";
+      Q_ASSERT( !requestResult.error.isNull() );
       request->transaction << requestResult.result << requestResult.dcopName << requestResult.error << requestResult.pid;
       QDBus::sessionBus().send(request->transaction);
    }
