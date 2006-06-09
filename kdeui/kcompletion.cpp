@@ -202,7 +202,7 @@ QString KCompletion::makeCompletion( const QString& string )
         // Don't use d->matches since calling postProcessMatches()
         // on d->matches here would interfere with call to
         // postProcessMatch() during rotation
-    
+
         findAllCompletions( string, &d->matches, myHasMultipleMatches );
         QStringList l = d->matches.list();
         postProcessMatches( &l );
@@ -210,7 +210,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
         if ( l.isEmpty() )
             doBeep( NoMatch );
-    
+
         return QString();
     }
 
@@ -437,7 +437,7 @@ QString KCompletion::findCompletion( const QString& string )
     // -> find the first complete match
     if ( node && node->childrenCount() > 1 ) {
         myHasMultipleMatches = true;
-    
+
         if ( myCompletionMode == KGlobalSettings::CompletionAuto ) {
             myRotationIndex = 1;
             if (myOrder != Weighted) {
@@ -451,7 +451,7 @@ QString KCompletion::findCompletion( const QString& string )
             else {
                 // don't just find the "first" match, but the one with the
                 // highest priority
-        
+
                 const KCompTreeNode* temp_node = 0L;
                 while(1) {
                     int count = node->childrenCount();
@@ -512,7 +512,7 @@ void KCompletion::findAllCompletions(const QString& string,
         else
             return; // no completion -> return empty list
     }
-    
+
     // Now we have the last node of the to be completed string.
     // Follow it as long as it has exactly one child (= longest possible
     // completion)
@@ -719,7 +719,7 @@ void KCompTreeNode::remove( const QString& str )
     KCompTreeNode *child = 0L;
     KCompTreeNode *parent = this;
     deletables.replace( 0, parent );
-    
+
     int i = 0;
     for ( ; i < string.length(); i++ )
     {
@@ -741,7 +741,7 @@ void KCompTreeNode::remove( const QString& str )
     }
 }
 
-QStringList KCompletionMatchesWrapper::list() const 
+QStringList KCompletionMatchesWrapper::list() const
 {
     if ( sortedList && dirty ) {
         sortedList->sort();
@@ -799,7 +799,7 @@ void KCompletionMatches::removeDuplicates()
         for ( (it2 = it1), ++it2; it2 != end();) {
             if( (*it1).value() == (*it2).value()) {
                 // use the max height
-                (*it1).first = qMax( (*it1).index(), (*it2).index());
+                (*it1).first = qMax( (*it1).key(), (*it2).key());
                 it2 = erase( it2 );
                 continue;
             }
