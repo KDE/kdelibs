@@ -825,23 +825,13 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // Parse command line before checking DCOP
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-     // Check DCOP communication.
-     {
-        QDBusBusService *bus = QDBus::sessionBus().busService();
-        if (!QDBus::sessionBus().isConnected() || !bus->isValid() ||
-            bus->requestName("org.kde.kded", QDBusBusService::DoNotQueueName) !=
-            QDBusBusService::PrimaryOwnerReply)
-        {
-           kFatal() << "D-Bus communication problem!" << endl;
-           return 1;
-        }
-     }
-
      KInstance *instance = new KInstance(&aboutData);
      KConfig *config = instance->config(); // Enable translations.
 
      if (args->isSet("check"))
      {
+        // KUniqueApplication not wanted here.
+        KApplication app;
         config->setGroup("General");
         checkStamps = config->readEntry("CheckFileStamps", true);
         runBuildSycoca();
