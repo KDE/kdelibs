@@ -501,8 +501,9 @@ startServiceInternal(const char *_function,
     msg << envs;
 #if defined Q_WS_X11
     // make sure there is id, so that user timestamp exists
-    msg << ( startup_id.isEmpty() ? QByteArray(KStartupInfo::createNewStartupId()) :
-             startup_id );
+    msg << QString( startup_id.isEmpty() ? KStartupInfo::createNewStartupId() : startup_id );
+#else
+    msg << QString();
 #endif
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )
         msg << noWait;

@@ -165,10 +165,8 @@ public Q_SLOTS: // remote slots
     { kdeinit_exec(app, args, env, QString(), false, msg); }
     inline void kdeinit_exec(const QString &app, const QStringList &args, const QDBusMessage &msg)
     { kdeinit_exec(app, args, QStringList(), QString(), false, msg); }
-    inline void kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QDBusMessage &msg)
-    { kdeinit_exec(app, args, env, QString(), true, msg); }
-    inline void kdeinit_exec_wait(const QString &app, const QStringList &args, const QDBusMessage &msg)
-    { kdeinit_exec(app, args, QStringList(), QString(), true, msg); }
+    inline void kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg)
+    { kdeinit_exec(app, args, env, startup_id, true, msg); }
 
     void reparseConfiguration();
     inline int requestHoldSlave(const QString &url, const QString &app_socket)

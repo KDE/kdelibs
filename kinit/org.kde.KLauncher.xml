@@ -41,14 +41,6 @@
       <arg type="i" direction="out"/>
       <arg name="app" type="s" direction="in"/>
       <arg name="args" type="as" direction="in"/>
-      <arg name="dbusServiceName" type="s" direction="out"/>
-      <arg name="error" type="s" direction="out"/>
-      <arg name="pid" type="i" direction="out"/>
-    </method>
-    <method name="kdeinit_exec_wait">
-      <arg type="i" direction="out"/>
-      <arg name="app" type="s" direction="in"/>
-      <arg name="args" type="as" direction="in"/>
       <arg name="env" type="as" direction="in"/>
       <arg name="dbusServiceName" type="s" direction="out"/>
       <arg name="error" type="s" direction="out"/>

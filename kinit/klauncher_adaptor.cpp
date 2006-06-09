@@ -66,17 +66,10 @@ int KLauncherAdaptor::kdeinit_exec(const QString &app, const QStringList &args, 
     return 0;                   // delayed reply
 }
 
-int KLauncherAdaptor::kdeinit_exec_wait(const QString &app, const QStringList &args, const QDBusMessage &msg, QString &, QString &, int &)
+int KLauncherAdaptor::kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &, QString &, int &)
 {
     // handle method call org.kde.KLauncher.kdeinit_exec_wait
-    static_cast<KLauncher *>(parent())->kdeinit_exec_wait(app, args, msg);
-    return 0;                   // delayed reply
-}
-
-int KLauncherAdaptor::kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QDBusMessage &msg, QString &, QString &, int &)
-{
-    // handle method call org.kde.KLauncher.kdeinit_exec_wait
-    static_cast<KLauncher *>(parent())->kdeinit_exec_wait(app, args, env, msg);
+    static_cast<KLauncher *>(parent())->kdeinit_exec_wait(app, args, env, startup_id, msg);
     return 0;                   // delayed reply
 }
 
