@@ -425,7 +425,8 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     while (curCol - startcol < len)
     {
       // make sure curPos is updated correctly.
-      Q_ASSERT(curPos == textLine->cursorX(curCol, m_tabWidth));
+      // ### if uncommented, causes an O(n^2) behaviour
+      //Q_ASSERT(curPos == textLine->cursorX(curCol, m_tabWidth));
 
       QChar curChar = textLine->string()[curCol];
       // Decide if this character is a tab - we treat the spacing differently
@@ -497,7 +498,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
           || (superRanges.count() && superRanges.currentBoundary() && *(superRanges.currentBoundary()) == KateTextCursor(line, nextCol))
 
           // it is the end of the line OR
-          || (curCol >= len - 1)
+          || (curCol - startcol >= len - 1)
 
           // the rest of the line is trailing whitespace OR
           || (curCol + 1 >= trailingWhitespaceColumn)
