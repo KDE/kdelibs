@@ -504,7 +504,7 @@ startServiceInternal(const char *_function,
     msg << ( startup_id.isEmpty() ? QByteArray(KStartupInfo::createNewStartupId()) :
              startup_id );
 #endif
-    if( function.startsWith( QLatin1String("kdeinit_exec") ) )
+    if( !function.startsWith( QLatin1String("kdeinit_exec") ) )
         msg << noWait;
 
     QDBusMessage reply = QDBus::sessionBus().sendWithReply(msg);
