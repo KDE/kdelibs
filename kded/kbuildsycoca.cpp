@@ -787,22 +787,15 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    while(true)
    {
-     // Because kapp registered already, with AllowReplacingName, we need to re-register without it,
-     // and we also can't use the name-queueing mechanism [race condition with another kbuildsycoca
-     // which is in the AllowReplacingName phase]
-     // TODO reevaluate this; kapp should use the pid, shouldn't use AllowReplacingName,
-     // but in here we would request the name without the pid and use the queueing mechanism.
+     // kapp registered already, but with the PID in the name.
+     // We need to re-register without it, to detect already-running kbuildsycoca instances.
      QDBusBusService *bus = QDBus::sessionBus().busService();
-     QDBusBusService::RequestNameReply reply = bus->requestName(appFullName, QDBusBusService::ReplaceExistingName);
+     QDBusBusService::RequestNameReply reply = bus->requestName(appFullName, 0);
      if (reply == QDBusBusService::PrimaryOwnerReply || reply == QDBusBusService::AlreadyOwnerReply)
      {
        break; // Go
      }
      fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
-
-#ifdef __GNUC__
-# warning This may fire on the signal for the unique connection name. Check!
-#endif
 
      QEventLoop eventLoop;
      QObject::connect(bus, SIGNAL(nameAcquired(QString)), &eventLoop, SLOT(quit()));

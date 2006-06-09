@@ -572,7 +572,12 @@ void KApplication::init()
           reversedDomain.prepend(QLatin1Char('.'));
           reversedDomain.prepend(s);
       }
-  bus->requestName(reversedDomain + applicationName(), QDBusBusService::AllowReplacingName);
+  const QString pidSuffix = QString::number( getpid() ).prepend( '_' );
+  const QString serviceName = reversedDomain + applicationName() + pidSuffix;
+  if ( bus->requestName(serviceName, QDBusBusService::DoNotQueueName) == QDBusBusService::NameExistsReply ) {
+      kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
+     ::exit(126);
+  }
   QDBus::sessionBus().registerObject("/MainApplication", this,
                                      QDBusConnection::ExportSlots |
                                      QDBusConnection::ExportProperties |
