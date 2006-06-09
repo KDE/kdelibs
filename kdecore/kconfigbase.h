@@ -1113,9 +1113,8 @@ public:
    *
    * @param group The name of the group
    * @param pFlags       The flags to use when writing this entry.
-   * @return Whether the group was deleted.
    */
-  bool deleteGroup( const QString& group, WriteConfigFlags pFlags = Normal );
+  void deleteGroup( const QString& group, WriteConfigFlags pFlags = Normal );
 
   /**
    * Turns on or off "dollar  expansion" (see KConfigBase introduction)
@@ -1676,11 +1675,9 @@ public:
 
    /**
     * Delete all entries in the entire group
-    * @param bGlobal     If @p bGlobal is true, the entries are not removed
-    *        from the application specific config file, but from the global
-    *        KDE config file.
+    * @param bFlags flags passed to KConfigBase::deleteGroup
     */
-   void deleteGroup(bool bGlobal = false);
+   void deleteGroup(WriteConfigFlags pFlags=Normal);
 
    /**
    * Checks whether it is possible to change this group.

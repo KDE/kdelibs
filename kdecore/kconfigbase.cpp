@@ -856,7 +856,7 @@ void KConfigBase::deleteEntry( const char *pKey, WriteConfigFlags pFlags)
   putData(entryKey, aEntryData, true);
 }
 
-bool KConfigBase::deleteGroup( const QString& _group, WriteConfigFlags pFlags )
+void KConfigBase::deleteGroup( const QString& _group, WriteConfigFlags pFlags )
 {
   KEntryMap aEntryMap = internalEntryMap(_group);
 
@@ -879,7 +879,6 @@ bool KConfigBase::deleteGroup( const QString& _group, WriteConfigFlags pFlags )
   }
   if (dirty)
      setDirty(true);
-  return true;
 }
 
 void KConfigBase::writeEntry ( const char *pKey, const QVariant &prop,
@@ -1226,10 +1225,9 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
   setReadDefaults(mMaster->readDefaults());
 }
 
-void KConfigGroup::deleteGroup(bool bGlobal)
+void KConfigGroup::deleteGroup(WriteConfigFlags pFlags)
 {
-  mMaster->deleteGroup(KConfigBase::group(),
-                   KConfigBase::WriteConfigFlags(bGlobal?Global:0));
+  mMaster->deleteGroup(KConfigBase::group(), pFlags);
 }
 
 bool KConfigGroup::groupIsImmutable() const
