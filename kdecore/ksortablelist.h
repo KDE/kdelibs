@@ -34,8 +34,8 @@ template<typename T, typename Key = int> class KSortableItem : public QPair<Key,
 public:
     /**
      * Creates a new KSortableItem with the given values.
-     * @param i the first value
-     * @param t the second value
+     * @param i the first value (the key)
+     * @param t the second value (the item)
      */
     KSortableItem( Key i, const T& t ) : QPair<Key, T>( i, t ) {}
     /**
@@ -104,19 +104,24 @@ public:
     }
 
     /**
-     * @return the second value
+     * @return the second value (the item)
      */
     T& value() { return this->second; }
 
     /**
-     * Returns the second value.
+     * @return the second value (the item)
      */
     const T& value() const { return this->second; }
 
     /**
+     * @return the first value (the key)
+     * @deprecated use key()
+     */
+    KDE_DEPRECATED Key index() const { return this->first; }
+    /**
      * @return the first value.
      */
-    Key index() const { return this->first; }
+    Key key() const { return this->first; }
 };
 
 
