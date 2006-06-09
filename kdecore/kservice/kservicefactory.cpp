@@ -251,33 +251,66 @@ KService::List KServiceFactory::allInitServices()
    return list;
 }
 
-QMap<KService::Ptr,int> KServiceFactory::offers( int serviceTypeOffset, int serviceOffersOffset )
+QList<KServiceOffer> KServiceFactory::offers( int serviceTypeOffset, int serviceOffersOffset )
 {
-   QMap<KService::Ptr,int> list;
+   QList<KServiceOffer> list;
 
-   QDataStream *str = m_str;
    // Jump to the offer list
-   str->device()->seek( m_offerListOffset + serviceOffersOffset );
+   m_str->device()->seek( m_offerListOffset + serviceOffersOffset );
 
    qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
    while (true)
    {
-      (*str) >> aServiceTypeOffset;
+      (*m_str) >> aServiceTypeOffset;
       if ( aServiceTypeOffset )
       {
-         (*str) >> aServiceOffset;
-         (*str) >> initialPreference;
+         (*m_str) >> aServiceOffset;
+         (*m_str) >> initialPreference;
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
             // Save stream position !
-            const int savedPos = str->device()->pos();
+            const int savedPos = m_str->device()->pos();
             // Create Service
             KService * serv = createEntry( aServiceOffset );
             if (serv) {
-                list.insert( KService::Ptr( serv ), initialPreference );
+                list.append( KServiceOffer( KService::Ptr( serv ), initialPreference ) );
             }
             // Restore position
-            str->device()->seek( savedPos );
+            m_str->device()->seek( savedPos );
+         } else
+            break; // too far
+      }
+      else
+         break; // 0 => end of list
+   }
+   return list;
+}
+
+KService::List KServiceFactory::serviceOffers( int serviceTypeOffset, int serviceOffersOffset )
+{
+   KService::List list;
+
+   // Jump to the offer list
+   m_str->device()->seek( m_offerListOffset + serviceOffersOffset );
+
+   qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
+   while (true)
+   {
+      (*m_str) >> aServiceTypeOffset;
+      if ( aServiceTypeOffset )
+      {
+         (*m_str) >> aServiceOffset;
+         (*m_str) >> initialPreference;
+         if ( aServiceTypeOffset == serviceTypeOffset )
+         {
+            // Save stream position !
+            const int savedPos = m_str->device()->pos();
+            // Create service
+            KService * serv = createEntry( aServiceOffset );
+            if (serv)
+                list.append( KService::Ptr( serv ) );
+            // Restore position
+            m_str->device()->seek( savedPos );
          } else
             break; // too far
       }
@@ -292,18 +325,17 @@ bool KServiceFactory::hasOffer( int serviceTypeOffset, int serviceOffersOffset, 
    // Save stream position
    const int savedPos = m_str->device()->pos();
 
-   QDataStream *str = m_str;
    // Jump to the offer list
-   str->device()->seek( m_offerListOffset + serviceOffersOffset );
+   m_str->device()->seek( m_offerListOffset + serviceOffersOffset );
    bool found = false;
    qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
    while (!found)
    {
-      (*str) >> aServiceTypeOffset;
+      (*m_str) >> aServiceTypeOffset;
       if ( aServiceTypeOffset )
       {
-         (*str) >> aServiceOffset;
-         (*str) >> initialPreference;
+         (*m_str) >> aServiceOffset;
+         (*m_str) >> initialPreference;
          if ( aServiceTypeOffset == serviceTypeOffset )
          {
             if( aServiceOffset == testedServiceOffset )
@@ -315,7 +347,7 @@ bool KServiceFactory::hasOffer( int serviceTypeOffset, int serviceOffersOffset, 
          break; // 0 => end of list
    }
    // Restore position
-   str->device()->seek( savedPos );
+   m_str->device()->seek( savedPos );
    return found;
 }
 

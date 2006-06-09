@@ -48,34 +48,44 @@ KMimeTypeTrader::KMimeTypeTrader()
 {
 }
 
-static void addUnique(QMap<KService::Ptr,int> &lst, const QMap<KService::Ptr,int> &newLst, bool lowPrio)
+// slow - but only used for all/all and all/allfiles. TODO: write them into ksycoca, in kbuildservicefactory.cpp
+static void addUnique( KServiceOfferList &lst, const KServiceOfferList &newLst, bool lowPrio )
 {
-  QMap<KService::Ptr,int>::const_iterator it = newLst.begin();
-  const QMap<KService::Ptr,int>::const_iterator end = newLst.end();
-  for( ; it != end; ++it )
-  {
-     KService::Ptr service = it.key();
-     if (lst.contains(service))
-        continue;
-     lst.insert(service, it.value());
-     if (lowPrio)
-        service->setInitialPreference( 0 );
-  }
+    KServiceOfferList::const_iterator it = newLst.begin();
+    const KServiceOfferList::const_iterator end = newLst.end();
+    const KServiceOfferList::const_iterator exisend = lst.end();
+    for( ; it != end; ++it )
+    {
+        KServiceOffer offer = *it;
+        KService::Ptr service = offer.service();
+        KServiceOfferList::const_iterator exisit = lst.begin();
+        bool alreadyThere = false;
+        for( ; exisit != exisend && !alreadyThere; ++exisit )
+        {
+            if ( (*exisit).service() == service )
+                alreadyThere = true;
+        }
+        if ( alreadyThere )
+            continue;
+        if ( lowPrio )
+            offer.setPreference( 0 ); // if you remove this code before kde4, remove KServiceOffer::setPreference too.
+        lst.append( offer );
+    }
 }
 
 // helper method for weightedOffers
-static QMap<KService::Ptr,int> mimeTypeSycocaOffers( const QString& mimeType )
+static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
 {
-    QMap<KService::Ptr,int> lst;
+    KServiceOfferList lst;
 
     // Services associated directly with this mimetype (the normal case)
     KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType );
     if ( !mime ) {
         kWarning(7014) << "KMimeTypeTrader: mimeType " << mimeType << " not found" << endl;
-        return lst;
+        return lst; // empty
     }
     if ( mime->serviceOffersOffset() > -1 ) {
-        addUnique(lst, KServiceFactory::self()->offers( mime->offset(), mime->serviceOffersOffset() ), false);
+        lst = KServiceFactory::self()->offers( mime->offset(), mime->serviceOffersOffset() );
     }
 
     //debug
@@ -120,7 +130,7 @@ KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
     Q_ASSERT( !genericServiceType.isEmpty() );
 
     // First, get all offers known to ksycoca.
-    const QMap<KService::Ptr,int> offers = mimeTypeSycocaOffers( mimeType );
+    const KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
 
     // Assign preferences from the profile to those offers - and filter for genericServiceType
     return KServiceTypeProfile::sortMimeTypeOffers( offers, mimeType, genericServiceType );

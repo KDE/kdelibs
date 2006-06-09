@@ -29,6 +29,10 @@
 
 void KServiceTest::initTestCase()
 {
+    QString profilerc = locateLocal( "config", "profilerc" );
+    if ( !profilerc.isEmpty() )
+        QFile::remove( profilerc );
+
     if ( !KSycoca::isAvailable() ) {
         // Create ksycoca in ~/.kde-unit-test
         KProcess proc;
@@ -165,6 +169,24 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
     QVERIFY( offerListHasService( offers, "kjavaappletviewer.desktop" ) );
     QVERIFY( offerListHasService( offers, "kcertpart.desktop" ) );
+
+    // Check ordering according to InitialPreference
+    int lastPreference = -1;
+    bool lastAllowedAsDefault = true;
+    KService::List::const_iterator it = offers.begin();
+    for ( ; it != offers.end() ; it++ ) {
+        const QString path = (*it)->desktopEntryPath();
+        const int preference = (*it)->initialPreference(); // ## might be wrong if we use per-servicetype preferences...
+        qDebug( "%s has preference %d, allowAsDefault=%d", qPrintable( path ), preference, (*it)->allowAsDefault() );
+        if ( lastAllowedAsDefault && !(*it)->allowAsDefault() ) {
+            // first "not allowed as default" offer
+            lastAllowedAsDefault = false;
+            lastPreference = -1; // restart
+        }
+        if ( lastPreference != -1 )
+            QVERIFY( preference <= lastPreference );
+        lastPreference = preference;
+    }
 
     // Now look for any KTextEditor/Plugin
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");

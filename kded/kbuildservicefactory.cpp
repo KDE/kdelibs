@@ -138,6 +138,7 @@ void KBuildServiceFactory::populateServiceTypes()
 {
    kDebug() << k_funcinfo << endl;
    bool isNumber;
+   // For every service...
    KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
    const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
    for( ; itserv != endserv ; ++itserv )
@@ -147,14 +148,29 @@ void KBuildServiceFactory::populateServiceTypes()
       //kDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList << endl;
       QMap<KServiceType::Ptr,int> serviceTypes; // with preference number
       QListIterator<QString> it( serviceTypeList );
+      //bool hasAllAll = false;
+      //bool hasAllFiles = false;
       while ( it.hasNext() )
       {
          QString str = it.next();
          KServiceType::Ptr serviceType = KServiceType::serviceType(str);
-         if (!serviceType) {
-            // Note: don't ever use KMimeType::mimeType() in kbuildsycoca, since it falls back to application/octet-stream
+         if (!serviceType)
             serviceType = KServiceType::Ptr::staticCast( m_mimeTypeFactory->findMimeTypeByName( str ) );
+         // TODO. But maybe we should rename all/all to */*, to also support image/*?
+         // Not sure how to model all/allfiles then, though
+         // Also this kind of thing isn't in the XDG standards...
+#if 0
+         if (!serviceType) {
+            if ( str == QLatin1String( "all/all" ) ) {
+               hasAllAll = true;
+               continue;
+            } else if ( str == QLatin1String( "all/allfiles" ) ) {
+               hasAllFiles = true;
+               continue;
+            }
          }
+#endif
+
          if (!serviceType)
          {
            kWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< str << "'" << endl;
@@ -187,7 +203,7 @@ void KBuildServiceFactory::populateServiceTypes()
             serviceTypes.insert(parentType, initialPreference);
 
          //kDebug(7021) << "Adding service " << service->desktopEntryPath() << " to " << serviceType->name() << endl;
-         addServiceOffer( serviceTypeName, service, initialPreference );
+         addServiceOffer( serviceTypeName, KServiceOffer( service, initialPreference, service->allowAsDefault() ) );
       }
    }
 
@@ -205,11 +221,11 @@ void KBuildServiceFactory::populateServiceTypes()
       {
          const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
          if ( parentMimeType ) {
-            const QMap<KService::Ptr,int>& lst = m_serviceTypeData[parent].data;
-            QMap<KService::Ptr,int>::const_iterator itserv = lst.begin();
-            const QMap<KService::Ptr,int>::const_iterator endserv = lst.end();
+            const QList<KServiceOffer>& offers = m_serviceTypeData[parent].offers;
+            QList<KServiceOffer>::const_iterator itserv = offers.begin();
+            const QList<KServiceOffer>::const_iterator endserv = offers.end();
             for ( ; itserv != endserv; ++itserv ) {
-               addServiceOffer( mimeTypeName, itserv.key(), itserv.value() );
+               addServiceOffer( mimeTypeName, (*itserv) );
             }
             parent = parentMimeType->parentMimeType();
          } else {
@@ -229,7 +245,7 @@ void KBuildServiceFactory::populateServiceTypes()
    const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->end();
    for( ; itstf != endstf; ++itstf ) {
       KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
-      const int numOffers = m_serviceTypeData[entry->name()].data.count();
+      const int numOffers = m_serviceTypeData[entry->name()].offers.count();
       if ( numOffers ) {
          entry->setServiceOffersOffset( offersOffset );
          offersOffset += offerEntrySize * numOffers;
@@ -240,7 +256,7 @@ void KBuildServiceFactory::populateServiceTypes()
    for( ; itmtf != endmtf; ++itmtf )
    {
       KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
-      const int numOffers = m_serviceTypeData[entry->name()].data.count();
+      const int numOffers = m_serviceTypeData[entry->name()].offers.count();
       if ( numOffers ) {
          entry->setServiceOffersOffset( offersOffset );
          offersOffset += offerEntrySize * numOffers;
@@ -261,16 +277,17 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
       const KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
       Q_ASSERT( entry );
 
-      const QMap<KService::Ptr,int> services = m_serviceTypeData[entry->name()].data;
+      QList<KServiceOffer>& offers = m_serviceTypeData[entry->name()].offers;
+      qStableSort( offers ); // by initial preference
 
-      for(QMap<KService::Ptr,int>::const_iterator it2 = services.begin();
-          it2 != services.end(); ++it2)
+      for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
+          it2 != offers.end(); ++it2)
       {
-         //kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << it2.key()->desktopEntryPath() << endl;
+         kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath() << endl;
 
          str << (qint32) entry->offset();
-         str << (qint32) it2.key()->offset(); // service offset
-         str << (qint32) it2.value(); // initial preference
+         str << (qint32) (*it2).service()->offset();
+         str << (qint32) (*it2).preference();
       }
    }
 
@@ -282,16 +299,17 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
       // export associated services
       const KMimeType::Ptr entry = KMimeType::Ptr::staticCast( *itmtf );
       Q_ASSERT( entry );
-      const QMap<KService::Ptr,int> services = m_serviceTypeData[entry->name()].data;
+      QList<KServiceOffer>& offers = m_serviceTypeData[entry->name()].offers;
+      qStableSort( offers ); // by initial preference
 
-      for(QMap<KService::Ptr,int>::const_iterator it2 = services.begin();
-          it2 != services.end(); ++it2)
+      for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
+          it2 != offers.end(); ++it2)
       {
-         //kDebug(7021) << "mimetype offers list: " << entry->name() << " -> " << it2.key()->desktopEntryPath() << endl;
+         //kDebug(7021) << "mimetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath() << endl;
 
          str << (qint32) entry->offset();
-         str << (qint32) it2.key()->offset(); // service offset
-         str << (qint32) it2.value(); // initial preference
+         str << (qint32) (*it2).service()->offset();
+         str << (qint32) (*it2).preference();
       }
    }
 
@@ -354,15 +372,18 @@ KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
       m_menuIdDict->add( menuId, newEntry );
 }
 
-void KBuildServiceFactory::addServiceOffer( const QString& serviceType, const KService::Ptr& service, int initialPreference )
+void KBuildServiceFactory::addServiceOffer( const QString& serviceType, const KServiceOffer& offer )
 {
-   //kDebug(7021) << "Adding " << service.data() << " to " << serviceType << endl;
-   QMap<KService::Ptr,int>& data = m_serviceTypeData[serviceType].data;
-   if ( data.find( service ) == data.end() ) {
-      int c = data.count();
-      data.insert( service, initialPreference );
-      Q_ASSERT( data.count() == c + 1 );
+   //kDebug(7021) << "Adding " << offer.service->desktopEntryPath() << " to " << serviceType << endl;
+   ServiceTypeOffersData& data = m_serviceTypeData[serviceType]; // find or create
+   QList<KServiceOffer>& offers = data.offers;
+   QSet<KService::Ptr>& offerSet = data.offerSet;
+   if ( !offerSet.contains( offer.service() ) ) {
+      offers.append( offer );
+      offerSet.insert( offer.service() );
+   } else {
+      // kDebug(7021) << service.offers() << " " << service->desktopEntryPath() << " already in " << serviceType << endl;
+      // TODO we probably want to set the initialPreference to qMax(existing offer, new offer)?
+      // This case would happen if a service is associated with a mimetype (with low pref) and its parent mimetype (with higher pref).
    }
-   //else
-   //   kDebug(7021) << service.data() << " " << service->desktopEntryPath() << " already in " << serviceType << endl;
 }

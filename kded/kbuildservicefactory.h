@@ -27,6 +27,7 @@
 // We export the services to the service group factory!
 #include <kbuildservicegroupfactory.h>
 #include <QSet>
+#include <kserviceoffer.h>
 class KBuildMimeTypeFactory;
 
 /**
@@ -83,13 +84,14 @@ public:
 private:
   void saveOfferList(QDataStream &str);
   void saveInitList(QDataStream &str);
-  void addServiceOffer( const QString& serviceType, const KService::Ptr& service, int initialPreference );
+  void addServiceOffer( const QString& serviceType, const KServiceOffer& offer );
 
   QHash<QString, KService::Ptr> m_serviceDict;
   QSet<KSycocaEntry::Ptr> m_dupeDict;
 
   struct ServiceTypeOffersData {
-    QMap<KService::Ptr,int> data;
+      QList<KServiceOffer> offers; // service + initial preference + allow as default
+      QSet<KService::Ptr> offerSet; // for quick contains() check
   };
   QHash<QString, ServiceTypeOffersData> m_serviceTypeData;
 

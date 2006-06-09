@@ -12,11 +12,18 @@ KServiceOffer::KServiceOffer( const KServiceOffer& _o )
   m_bAllowAsDefault = _o.m_bAllowAsDefault;
 }
 
-KServiceOffer::KServiceOffer( KService::Ptr _service, int _pref, bool _default )
+KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref, bool _default )
 {
   m_pService = _service;
   m_iPreference = _pref;
   m_bAllowAsDefault = _default;
+}
+
+KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref )
+{
+  m_pService = _service;
+  m_iPreference = _pref;
+  m_bAllowAsDefault = _service->allowAsDefault();
 }
 
 bool KServiceOffer::operator< ( const KServiceOffer& _o ) const

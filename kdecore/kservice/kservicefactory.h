@@ -23,7 +23,7 @@
 
 #include <qstringlist.h>
 
-#include "kservice.h"
+#include "kserviceoffer.h"
 #include "ksycocafactory.h"
 #include <assert.h>
 
@@ -76,7 +76,13 @@ public:
    * @return the services supporting the given service type
    * The @p serviceOffersOffset allows to jump to the right entries directly.
    */
-  QMap<KService::Ptr,int> offers( int serviceTypeOffset, int serviceOffersOffset );
+  KServiceOfferList offers( int serviceTypeOffset, int serviceOffersOffset );
+
+  /**
+   * @return the services supporting the given service type; without information about initialPreference
+   * The @p serviceOffersOffset allows to jump to the right entries directly.
+   */
+  KService::List serviceOffers( int serviceTypeOffset, int serviceOffersOffset );
 
   /**
    * Test if a specific service is associated with a specific servicetype

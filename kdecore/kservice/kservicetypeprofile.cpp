@@ -135,7 +135,7 @@ void KServiceTypeProfile::addService( const QString& _service,
     m_mapServices[ _service ].m_bAllowAsDefault = _allow_as_default;
 }
 
-KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const QMap<KService::Ptr,int>& list, const QString& serviceType )
+KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOfferList& list, const QString& serviceType )
 {
     initStatic();
 
@@ -148,11 +148,11 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const QMap<KServic
 
     KServiceOfferList offers;
 
-    QMap<KService::Ptr,int>::const_iterator it = list.begin();
-    const QMap<KService::Ptr,int>::const_iterator end = list.end();
+    KServiceOfferList::const_iterator it = list.begin();
+    const KServiceOfferList::const_iterator end = list.end();
     for( ; it != end; ++it )
     {
-        const KService::Ptr servPtr = it.key();
+        const KService::Ptr servPtr = (*it).service();
         //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->name() << endl;
         // Look into the profile (if there's one), to find this service's preference.
         bool foundInProfile = false;
@@ -180,7 +180,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const QMap<KServic
 
             // If there's a profile, we use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
             offers.append( KServiceOffer( servPtr,
-                                          profile ? 0 : it.value(),
+                                          profile ? 0 : (*it).preference(),
                                           servPtr->allowAsDefault() ) );
         }
     }
@@ -191,7 +191,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const QMap<KServic
     return offers;
 }
 
-KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const QMap<KService::Ptr,int>& list, const QString& mimeType, const QString& genericServiceType )
+KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString& genericServiceType )
 {
     initStatic();
 
@@ -206,11 +206,11 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const QMap<KService::
     }
 
     // Assign preferences from profilerc to those offers.
-    QMap<KService::Ptr,int>::const_iterator it = list.begin();
-    const QMap<KService::Ptr,int>::const_iterator end = list.end();
+    KServiceOfferList::const_iterator it = list.begin();
+    const KServiceOfferList::const_iterator end = list.end();
     for( ; it != end; ++it )
     {
-        const KService::Ptr servPtr = it.key();
+        const KService::Ptr servPtr = (*it).service();
         //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->name() << endl;
         if ( genericServiceTypePtr ||
              // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
@@ -244,7 +244,7 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const QMap<KService::
 
                 // If there's a profile, we use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
                 offers.append( KServiceOffer( servPtr,
-                                              profile ? 0 : it.value(),
+                                              profile ? 0 : (*it).preference(),
                                               servPtr->allowAsDefault() ) );
             }
         }/* else

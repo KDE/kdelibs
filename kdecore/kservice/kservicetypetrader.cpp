@@ -101,7 +101,7 @@ KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType
         return KServiceOfferList();
 
     // First, get all offers known to ksycoca.
-    const QMap<KService::Ptr,int> services = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
+    const KServiceOfferList services = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
 
     const KServiceOfferList offers = KServiceTypeProfile::sortServiceTypeOffers( services, serviceType );
     //kDebug(7014) << "Found profile: " << offers.count() << " offers" << endl;
@@ -121,6 +121,7 @@ KService::List KServiceTypeTrader::query( const QString& serviceType,
     if ( !KServiceTypeProfile::findProfile( serviceType, QString::null ) )
     {
         // Fast path: skip the profile stuff if there's none (to avoid kservice->serviceoffer->kservice)
+        // The ordering according to initial preferences is done by kbuildsycoca
         KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
         if ( !servTypePtr ) {
             kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
@@ -128,7 +129,7 @@ KService::List KServiceTypeTrader::query( const QString& serviceType,
         }
         if ( servTypePtr->serviceOffersOffset() == -1 )
             return KService::List();
-        lst = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() ).keys();
+        lst = KServiceFactory::self()->serviceOffers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
     }
     else
     {
