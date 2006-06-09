@@ -40,11 +40,6 @@
 #include <ktempfile.h>
 #include <kurl.h>
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kstartupinfo.h> // schroder
-#endif
-
-
 #include "kio/global.h"
 #include "kio/connection.h"
 #include "kio/slaveinterface.h"
@@ -53,10 +48,9 @@
 #include "klauncher_cmds.h"
 #include "klauncher_adaptor.h"
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
-//#undef K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
+#include <kstartupinfo.h>
+#include <X11/Xlib.h>
 #endif
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
@@ -235,8 +229,7 @@ void KLauncher::close()
       const QByteArray filename = QFile::encodeName(mPoolSocketName);
       unlink(filename.data());
    }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
    if( mCached_dpy != NULL )
        XCloseDisplay( mCached_dpy );
 #endif
@@ -732,8 +725,7 @@ KLauncher::requestDone(KLaunchRequest *request)
          requestResult.error += ":\n" + request->errorMsg;
       requestResult.pid = 0;
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
       if (!request->startup_dpy.isEmpty())
       {
          Display* dpy = NULL;
@@ -985,8 +977,7 @@ void
 KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QString& startup_id,
     const QStringList &envs )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
+#ifdef Q_WS_X11
     request->startup_id = "0";
     if( startup_id == "0" )
         return;
@@ -1039,8 +1030,7 @@ void
 KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QString& startup_id,
     const QStringList &envs )
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
+#ifdef Q_WS_X11
     if( request != NULL )
         request->startup_id = "0";
     if( !startup_id.isEmpty() && startup_id != "0" )

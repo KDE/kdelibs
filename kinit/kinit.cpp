@@ -64,21 +64,16 @@
 #endif
 #endif
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kstartupinfo.h> // schroder
-#endif
-
 #include <kdeversion.h>
 
 #include "ltdl.h"
 #include "klauncher_cmds.h"
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
-//#undef K_WS_QTONLY
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <fixx11h.h>
+#include <kstartupinfo.h>
 #endif
 
 #ifdef HAVE_DLFCN_H
@@ -98,7 +93,6 @@
 extern char **environ;
 
 extern int lt_dlopen_flag;
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
 static int X11fd = -1;
 static Display *X11display = 0;
@@ -110,15 +104,12 @@ static const KInstance *s_instance = 0;
 static char sock_file[MAX_SOCK_FILE];
 static char sock_file_old[MAX_SOCK_FILE];
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
 #elif defined(Q_WS_QWS)
 #define DISPLAY "QWS_DISPLAY"
 #elif defined(Q_WS_MACX)
 #define DISPLAY "MAC_DISPLAY"
-#elif defined(K_WS_QTONLY)
-#define DISPLAY "QT_DISPLAY"
 #elif defined(Q_WS_WIN)
 #define DISPLAY "WIN_DISPLAY"
 #else
@@ -152,7 +143,6 @@ static struct {
   bool suicide;
 } d;
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
@@ -212,8 +202,7 @@ static void close_fds()
       close(d.wrapper_old);
       d.wrapper_old = 0;
    }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
    if (X11fd >= 0)
    {
       close(X11fd);
@@ -272,8 +261,7 @@ static void setup_tty( const char* tty )
 static int get_current_desktop( Display* disp )
 {
     int desktop = 0; // no desktop by default
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // Only X11 supports multiple desktops
+#ifdef Q_WS_X11 // Only X11 supports multiple desktops
     Atom net_current_desktop = XInternAtom( disp, "_NET_CURRENT_DESKTOP", False );
     Atom type_ret;
     int format_ret;
@@ -310,8 +298,7 @@ const char* get_env_var( const char* var, int envc, const char* envs )
     return NULL;
 }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11 // FIXME(E): Implement for Qt/Embedded
+#ifdef Q_WS_X11
 static void init_startup_info( KStartupInfoId& id, const char* bin,
     int envc, const char* envs )
 {
@@ -442,8 +429,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      return d.fork;
   }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
   KStartupInfoId startup_id;
   startup_id.initId( startup_id_str );
   if( !startup_id.none())
@@ -506,8 +492,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         envs++;
      }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
       if( startup_id.none())
           KStartupInfo::resetStartupEnv();
       else
@@ -719,8 +704,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         d.launcher_pid = d.fork;
      }
   }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
   if( !startup_id.none())
   {
      if( d.fork && d.result == 0 ) // launched successfully
@@ -1291,8 +1275,7 @@ static void handle_requests(pid_t waitForPid)
       max_sock = d.wrapper_old;
    if (d.launcher_pid && (d.launcher[0] > max_sock))
       max_sock = d.launcher[0];
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef _WS_X11
+#ifdef Q_WS_X11
    if (X11fd > max_sock)
       max_sock = X11fd;
 #endif
@@ -1351,8 +1334,7 @@ static void handle_requests(pid_t waitForPid)
          FD_SET(d.wrapper_old, &rd_set);
       }
       FD_SET(d.deadpipe[0], &rd_set);
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
       if(X11fd >= 0) FD_SET(X11fd, &rd_set);
 #endif
 
@@ -1400,7 +1382,6 @@ static void handle_requests(pid_t waitForPid)
             return;
       }
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
       /* Look for incoming X11 events */
       if((result > 0) && (X11fd >= 0))
@@ -1571,7 +1552,6 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
 }
 #endif
 
-//#if defined Q_WS_X11 && ! defined K_WS_QTONLY
 #ifdef Q_WS_X11
 // needs to be done sooner than initXconnection() because of also opening
 // another X connection for startup notification purposes
@@ -1755,8 +1735,7 @@ int main(int argc, char **argv, char **envp)
       handle_requests(pid); // Wait for klauncher to be ready
    }
 
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-//#ifdef Q_WS_X11
+#ifdef Q_WS_X11
    X11fd = initXconnection();
 #endif
 
