@@ -562,21 +562,25 @@ void KApplication::init()
   QDBusBusService *bus = 0;
   if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().busService()))
       kFatal(101) << "Session bus not found" << endl;
-  QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
-  QString reversedDomain;
-  if (parts.isEmpty())
-      reversedDomain = QLatin1String("local.");
-  else
-      foreach (const QString& s, parts)
-      {
-          reversedDomain.prepend(QLatin1Char('.'));
-          reversedDomain.prepend(s);
+
+  if ( QStringList(bus->listNames()).isEmpty() ) // don't register again if KUniqueApplication did so already
+  {
+      QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
+      QString reversedDomain;
+      if (parts.isEmpty())
+          reversedDomain = QLatin1String("local.");
+      else
+          foreach (const QString& s, parts)
+          {
+              reversedDomain.prepend(QLatin1Char('.'));
+              reversedDomain.prepend(s);
+          }
+      const QString pidSuffix = QString::number( getpid() ).prepend( '_' );
+      const QString serviceName = reversedDomain + applicationName() + pidSuffix;
+      if ( bus->requestName(serviceName, QDBusBusService::DoNotQueueName) == QDBusBusService::NameExistsReply ) {
+          kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
+          ::exit(126);
       }
-  const QString pidSuffix = QString::number( getpid() ).prepend( '_' );
-  const QString serviceName = reversedDomain + applicationName() + pidSuffix;
-  if ( bus->requestName(serviceName, QDBusBusService::DoNotQueueName) == QDBusBusService::NameExistsReply ) {
-      kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
-     ::exit(126);
   }
   QDBus::sessionBus().registerObject("/MainApplication", this,
                                      QDBusConnection::ExportSlots |
