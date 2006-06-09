@@ -787,8 +787,14 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    while(true)
    {
+     // Because kapp registered already, with AllowReplacingName, we need to re-register without it,
+     // and we also can't use the name-queueing mechanism [race condition with another kbuildsycoca
+     // which is in the AllowReplacingName phase]
+     // TODO reevaluate this; kapp should use the pid, shouldn't use AllowReplacingName,
+     // but in here we would request the name without the pid and use the queueing mechanism.
      QDBusBusService *bus = QDBus::sessionBus().busService();
-     if (bus->requestName(appFullName, QDBusBusService::ReplaceExistingName) == QDBusBusService::PrimaryOwnerReply)
+     QDBusBusService::RequestNameReply reply = bus->requestName(appFullName, QDBusBusService::ReplaceExistingName);
+     if (reply == QDBusBusService::PrimaryOwnerReply || reply == QDBusBusService::AlreadyOwnerReply)
      {
        break; // Go
      }
