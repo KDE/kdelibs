@@ -170,7 +170,6 @@ private:
 
   static bool s_nofork;
   static bool s_multipleInstances;
-  static bool s_uniqueTestDone;
   static bool s_handleAutoStarted;
 
 protected:

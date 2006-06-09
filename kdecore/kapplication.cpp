@@ -563,7 +563,8 @@ void KApplication::init()
   if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().busService()))
       kFatal(101) << "Session bus not found" << endl;
 
-  if ( QStringList(bus->listNames()).isEmpty() ) // don't register again if KUniqueApplication did so already
+  extern bool s_kuniqueapplication_startCalled;
+  if ( !s_kuniqueapplication_startCalled ) // don't register again if KUniqueApplication did so already
   {
       QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
       QString reversedDomain;

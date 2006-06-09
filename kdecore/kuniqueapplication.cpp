@@ -65,7 +65,7 @@
 
 bool KUniqueApplication::s_nofork = false;
 bool KUniqueApplication::s_multipleInstances = false;
-bool KUniqueApplication::s_uniqueTestDone = false;
+bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::s_handleAutoStarted = false;
 
 static KCmdLineOptions kunique_options[] =
@@ -90,9 +90,9 @@ KUniqueApplication::addCmdLineOptions()
 bool
 KUniqueApplication::start()
 {
-  if( s_uniqueTestDone )
+  if( s_kuniqueapplication_startCalled )
     return true;
-  s_uniqueTestDone = true;
+  s_kuniqueapplication_startCalled = true;
   addCmdLineOptions(); // Make sure to add cmd line options
 #ifdef Q_WS_WIN
   s_nofork = true;
