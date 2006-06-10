@@ -210,9 +210,11 @@ int KateTextLine::cursorX(uint pos, uint tabChars) const
   uint x = 0;
 
   const uint n = kMin (pos, m_text.length());
+  const QChar *unicode = m_text.unicode();
+  const QChar tab('\t');
   for ( uint z = 0; z < n; z++)
   {
-    if (m_text.unicode()[z] == QChar('\t'))
+    if (unicode[z] == tab)
       x += tabChars - (x % tabChars);
     else
       x++;
