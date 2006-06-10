@@ -734,21 +734,20 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
   if (!textLine)
     return 0;
 
-  const uint len = textLine->length();
+  const int len = textLine->length();
 
-  if (cursorCol < 0)
+  if (cursorCol < 0 || cursorCol > len)
     cursorCol = len;
 
   KateFontStruct *fs = config()->fontStruct();
 
-  const uchar *attributes = textLine->attributes();
   const QChar *unicode = textLine->text();
   const QString &textString = textLine->string();
 
   int x = 0;
   int width;
   for (int z = 0; z < cursorCol; z++) {
-    KateAttribute* a = attribute(attributes[z]);
+    KateAttribute* a = attribute(textLine->attribute(z));
 
     if (z < len) {
       width = a->width(*fs, textString, z, m_tabWidth);
@@ -784,14 +783,13 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
   *needWrap = false;
 
   const uint len = textLine->length();
-  const uchar *attributes = textLine->attributes();
   const QChar *unicode = textLine->text();
   const QString &textString = textLine->string();
 
   uint z = startcol;
   for (; z < len; z++)
   {
-    KateAttribute* a = attribute(attributes[z]);
+    KateAttribute* a = attribute(textLine->attribute(z));
     int width = a->width(*fs, textString, z, m_tabWidth);
     Q_ASSERT(width);
     x += width;
@@ -886,7 +884,6 @@ uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
 
   const uint len = textLine->length();
   const QChar *unicode = textLine->text();
-  const uchar *attributes = textLine->attributes();
   const QString &textString = textLine->string();
 
   x = oldX = 0;
@@ -894,7 +891,7 @@ uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
   while (x < xPos && (!wrapCursor || z < len)) {
     oldX = x;
 
-    KateAttribute* a = attribute(attributes[z]);
+    KateAttribute* a = attribute(textLine->attribute(z));
 
     int width = 0;
 
@@ -947,12 +944,11 @@ uint KateRenderer::textPos(const KateTextLine::Ptr &textLine, int xPos, uint sta
   uint z = startCol;
   const uint len = textLine->length();
   const QString &textString = textLine->string();
-  const uchar *attributes = textLine->attributes();
 
   while ( (x < xPos)  && (z < len)) {
     oldX = x;
 
-    KateAttribute* a = attribute(attributes[z]);
+    KateAttribute* a = attribute(textLine->attribute(z));
     x += a->width(*fs, textString, z, m_tabWidth);
 
     z++;
