@@ -58,7 +58,7 @@ static void internalMessageFallback(KMessage::MessageType messageType, const QSt
     message += prefix + text;
 
     // Show a message to the developer to setup a KMessageHandler
-    std:cerr << "WARNING: Please setup an KMessageHandler with KMessage::setMessageHandler to display message propertly." << std::endl;
+    std::cerr << "WARNING: Please setup an KMessageHandler with KMessage::setMessageHandler to display message propertly." << std::endl;
     // Show message to stdout
     std::cerr << message.data() << std::endl;
 }
