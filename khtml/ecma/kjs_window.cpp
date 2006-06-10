@@ -2545,8 +2545,10 @@ ValueImp *LocationFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, cons
     break;
   case Location::Reload: {
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
-    if (part)
+    if (khtmlpart)
       khtmlpart->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
+    else
+      part->openURL(part->url());
     break;
   }
   case Location::ToString:
