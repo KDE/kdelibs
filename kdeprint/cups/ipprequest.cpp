@@ -107,7 +107,7 @@ QString errorString(int status)
 	switch (status)
 	{
 		case IPP_FORBIDDEN:
-			str = i18n("You don't have access to the requested resource.");
+			str = i18n("You do not have access to the requested resource.");
 			break;
 		case IPP_NOT_AUTHORIZED:
 			str = i18n("You are not authorized to access the requested resource.");

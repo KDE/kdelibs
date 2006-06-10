@@ -959,7 +959,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
 
     if (it.tagName() == tagActionList)
     {
-      ToolbarItem *act = new ToolbarItem(m_activeList, tagActionList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you won't be able to re-add it.") );
+      ToolbarItem *act = new ToolbarItem(m_activeList, tagActionList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you will not be able to re-add it.") );
       act->setText(1, i18n("ActionList: %1", it.attribute(attrName)));
       continue;
     }

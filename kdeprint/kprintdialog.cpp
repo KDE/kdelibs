@@ -767,7 +767,7 @@ bool KPrintDialog::checkOutputFile()
 				}
 			}
 			else
-				KMessageBox::error(this,i18n("You don't have write permissions to this file."));
+				KMessageBox::error(this,i18n("You do not have write permissions to this file."));
 		}
 		else
 		{
@@ -775,7 +775,7 @@ bool KPrintDialog::checkOutputFile()
 			if ( !d.exists() )
 				KMessageBox::error( this, i18n( "The output directory does not exist." ) );
 			else if ( !d.isWritable() )
-				KMessageBox::error(this,i18n("You don't have write permissions in that directory."));
+				KMessageBox::error(this,i18n("You do not have write permissions in that directory."));
 			else
 				value = true;
 		}

@@ -352,7 +352,7 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 	QString	sd = LprSettings::self()->baseSpoolDir();
 	if (sd.isEmpty())
 	{
-		setErrorMsg(i18n("Couldn't determine spool directory. See options dialog."));
+		setErrorMsg(i18n("Could not determine spool directory. See options dialog."));
 		return false;
 	}
 	sd.append("/").append(prt->printerName());

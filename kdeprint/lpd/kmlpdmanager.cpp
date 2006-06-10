@@ -373,7 +373,7 @@ PrinttoolEntry* KMLpdManager::findPrinttoolEntry(const QString& name)
 		loadPrinttoolDb(driverDirectory()+"/printerdb");
 	PrinttoolEntry	*ent = m_ptentries.value(name, 0);
 	if (!ent)
-		setErrorMsg(i18n("Couldn't find driver <b>%1</b> in printtool database.", name));
+		setErrorMsg(i18n("Could not find driver <b>%1</b> in printtool database.", name));
 	return ent;
 }
 
@@ -412,7 +412,7 @@ PrintcapEntry* KMLpdManager::findPrintcapEntry(const QString& name)
 {
 	PrintcapEntry	*ent = m_entries.value(name, 0);
 	if (!ent)
-		setErrorMsg(i18n("Couldn't find printer <b>%1</b> in printcap file.", name));
+		setErrorMsg(i18n("Could not find printer <b>%1</b> in printcap file.", name));
 	return ent;
 }
 

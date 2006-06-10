@@ -336,7 +336,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 	}
 
 	if (!result)
-		manager()->setErrorMsg(i18n("You probably don't have the required permissions "
+		manager()->setErrorMsg(i18n("You probably do not have the required permissions "
 		                            "to perform that operation."));
 	QFile::remove(tmpFile.fileName());
 	if (!result || entry->field("ppdfile").isEmpty())

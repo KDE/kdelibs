@@ -471,7 +471,7 @@ bool KMManager::createSpecialPrinter(KMPrinter *p)
 		KMPrinter	*old = findPrinter(p->name());
 		if (old && !old->isSpecial())
 		{
-			setErrorMsg(i18n("Can't overwrite regular printer with special printer settings."));
+			setErrorMsg(i18n("Can not overwrite regular printer with special printer settings."));
 			return false;
 		}
 		// if the special printer already exists, it will be overwritten

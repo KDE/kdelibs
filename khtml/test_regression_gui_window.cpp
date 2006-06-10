@@ -626,7 +626,7 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 	{
 		if(!QFileInfo(program2).exists())
 		{
-			KMessageBox::error(0, i18n("Can't find testregression executable."));
+			KMessageBox::error(0, i18n("Can not find testregression executable."));
 			return;
 		}
 		else
