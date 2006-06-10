@@ -27,6 +27,8 @@
 
 #include <qregexp.h>
 
+static const QChar tabChar('\t');
+
 KateTextLine::KateTextLine ()
   : m_flags(0)
 {
@@ -109,9 +111,12 @@ void KateTextLine::truncate(uint newLen)
 
 int KateTextLine::nextNonSpaceChar(uint pos) const
 {
-  for(int i = pos; i < (int)m_text.length(); i++)
+  const uint len = m_text.length();
+  const QChar *unicode = m_text.unicode();
+
+  for(uint i = pos; i < len; i++)
   {
-    if(!m_text[i].isSpace())
+    if(!unicode[i].isSpace())
       return i;
   }
 
@@ -120,12 +125,16 @@ int KateTextLine::nextNonSpaceChar(uint pos) const
 
 int KateTextLine::previousNonSpaceChar(uint pos) const
 {
-  if (pos >= m_text.length())
-    pos = m_text.length() - 1;
+  const int len = m_text.length();
+
+  if (pos >= (uint)len)
+    pos = len - 1;
+
+  const QChar *unicode = m_text.unicode();
 
   for(int i = pos; i >= 0; i--)
   {
-    if(!m_text[i].isSpace())
+    if(!unicode[i].isSpace())
       return i;
   }
 
@@ -151,12 +160,14 @@ const QChar *KateTextLine::firstNonSpace() const
 uint KateTextLine::indentDepth (uint tabwidth) const
 {
   uint d = 0;
+  const uint len = m_text.length();
+  const QChar *unicode = m_text.unicode();
 
-  for(uint i = 0; i < m_text.length(); i++)
+  for(uint i = 0; i < len; i++)
   {
-    if(m_text[i].isSpace())
+    if(unicode[i].isSpace())
     {
-      if (m_text[i] == QChar('\t'))
+      if (unicode[i] == tabChar)
         d += tabwidth - (d % tabwidth);
       else
         d++;
@@ -170,11 +181,16 @@ uint KateTextLine::indentDepth (uint tabwidth) const
 
 bool KateTextLine::stringAtPos(uint pos, const QString& match) const
 {
-  if ((pos+match.length()) > m_text.length())
+  const uint matchlen = match.length();
+
+  if ((pos+matchlen) > m_text.length())
     return false;
 
-  for (uint i=0; i < match.length(); i++)
-    if (m_text[i+pos] != match[i])
+  const QChar *unicode = m_text.unicode();
+  const QChar *matchUnicode = match.unicode();
+
+  for (uint i=0; i < matchlen; i++)
+    if (unicode[i+pos] != matchUnicode[i])
       return false;
 
   return true;
@@ -182,11 +198,16 @@ bool KateTextLine::stringAtPos(uint pos, const QString& match) const
 
 bool KateTextLine::startingWith(const QString& match) const
 {
-  if (match.length() > m_text.length())
+  const uint matchlen = match.length();
+
+  if (matchlen > m_text.length())
     return false;
 
-  for (uint i=0; i < match.length(); i++)
-    if (m_text[i] != match[i])
+  const QChar *unicode = m_text.unicode();
+  const QChar *matchUnicode = match.unicode();
+
+  for (uint i=0; i < matchlen; i++)
+    if (unicode[i] != matchUnicode[i])
       return false;
 
   return true;
@@ -194,12 +215,17 @@ bool KateTextLine::startingWith(const QString& match) const
 
 bool KateTextLine::endingWith(const QString& match) const
 {
-  if (match.length() > m_text.length())
+  const uint matchlen = match.length();
+
+  if (matchlen > m_text.length())
     return false;
 
-  uint start = m_text.length() - match.length();
-  for (uint i=0; i < match.length(); i++)
-    if (m_text[start+i] != match[i])
+  const QChar *unicode = m_text.unicode();
+  const QChar *matchUnicode = match.unicode();
+
+  uint start = m_text.length() - matchlen;
+  for (uint i=0; i < matchlen; i++)
+    if (unicode[start+i] != matchUnicode[i])
       return false;
 
   return true;
@@ -211,10 +237,10 @@ int KateTextLine::cursorX(uint pos, uint tabChars) const
 
   const uint n = kMin (pos, m_text.length());
   const QChar *unicode = m_text.unicode();
-  const QChar tab('\t');
+
   for ( uint z = 0; z < n; z++)
   {
-    if (unicode[z] == tab)
+    if (unicode[z] == tabChar)
       x += tabChars - (x % tabChars);
     else
       x++;
@@ -227,10 +253,12 @@ int KateTextLine::cursorX(uint pos, uint tabChars) const
 uint KateTextLine::lengthWithTabs (uint tabChars) const
 {
   uint x = 0;
+  const uint len = m_text.length();
+  const QChar *unicode = m_text.unicode();
 
-  for ( uint z = 0; z < m_text.length(); z++)
+  for ( uint z = 0; z < len; z++)
   {
-    if (m_text[z] == QChar('\t'))
+    if (unicode[z] == tabChar)
       x += tabChars - (x % tabChars);
     else
       x++;
