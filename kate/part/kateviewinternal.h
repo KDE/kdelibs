@@ -190,7 +190,6 @@ class KateViewInternal : public QWidget
 
   private:
     void moveChar( Bias bias, bool sel );
-    void moveWord( Bias bias, bool sel );
     void moveEdge( Bias bias, bool sel );
     KateTextCursor maxStartPos(bool changed = false);
     void scrollPos(KateTextCursor& c, bool force = false, bool calledExternally = false);
