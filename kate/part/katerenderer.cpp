@@ -734,20 +734,24 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
   if (!textLine)
     return 0;
 
-  int len = textLine->length();
+  const uint len = textLine->length();
 
   if (cursorCol < 0)
     cursorCol = len;
 
   KateFontStruct *fs = config()->fontStruct();
 
+  const uchar *attributes = textLine->attributes();
+  const QChar *unicode = textLine->text();
+  const QString &textString = textLine->string();
+
   int x = 0;
   int width;
   for (int z = 0; z < cursorCol; z++) {
-    KateAttribute* a = attribute(textLine->attribute(z));
+    KateAttribute* a = attribute(attributes[z]);
 
     if (z < len) {
-      width = a->width(*fs, textLine->string(), z, m_tabWidth);
+      width = a->width(*fs, textString, z, m_tabWidth);
     } else {
       // DF: commented out. It happens all the time.
       //Q_ASSERT(!m_doc->wrapCursor());
@@ -756,7 +760,7 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
 
     x += width;
 
-    if (textLine->getChar(z) == tabChar)
+    if (unicode[z] == tabChar)
       x -= x % width;
   }
 
@@ -779,15 +783,20 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
 
   *needWrap = false;
 
+  const uint len = textLine->length();
+  const uchar *attributes = textLine->attributes();
+  const QChar *unicode = textLine->text();
+  const QString &textString = textLine->string();
+
   uint z = startcol;
-  for (; z < textLine->length(); z++)
+  for (; z < len; z++)
   {
-    KateAttribute* a = attribute(textLine->attribute(z));
-    int width = a->width(*fs, textLine->string(), z, m_tabWidth);
+    KateAttribute* a = attribute(attributes[z]);
+    int width = a->width(*fs, textString, z, m_tabWidth);
     Q_ASSERT(width);
     x += width;
 
-    if (textLine->getChar(z).isSpace())
+    if (unicode[z].isSpace())
     {
       lastWhiteSpace = z+1;
       lastWhiteSpaceX = x;
@@ -807,7 +816,7 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
 
     // How should tabs be treated when they word-wrap on a print-out?
     // if startcol != 0, this messes up (then again, word wrapping messes up anyway)
-    if (textLine->getChar(z) == tabChar)
+    if (unicode[z] == tabChar)
       x -= x % width;
 
     if (x <= maxwidth)
@@ -865,7 +874,6 @@ uint KateRenderer::textWidth(const KateTextCursor &cursor)
 uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
 {
   bool wrapCursor = m_view->wrapCursor();
-  int len;
   int x, oldX;
 
   KateFontStruct *fs = config()->fontStruct();
@@ -876,25 +884,28 @@ uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
 
   if (!textLine) return 0;
 
-  len = textLine->length();
+  const uint len = textLine->length();
+  const QChar *unicode = textLine->text();
+  const uchar *attributes = textLine->attributes();
+  const QString &textString = textLine->string();
 
   x = oldX = 0;
-  int z = startCol;
+  uint z = startCol;
   while (x < xPos && (!wrapCursor || z < len)) {
     oldX = x;
 
-    KateAttribute* a = attribute(textLine->attribute(z));
+    KateAttribute* a = attribute(attributes[z]);
 
     int width = 0;
 
     if (z < len)
-      width = a->width(*fs, textLine->string(), z, m_tabWidth);
+      width = a->width(*fs, textString, z, m_tabWidth);
     else
       width = a->width(*fs, spaceChar, m_tabWidth);
 
     x += width;
 
-    if (textLine->getChar(z) == tabChar)
+    if (unicode[z] == tabChar)
       x -= x % width;
 
     z++;
@@ -934,12 +945,15 @@ uint KateRenderer::textPos(const KateTextLine::Ptr &textLine, int xPos, uint sta
   x = oldX = 0;
 
   uint z = startCol;
-  uint len= textLine->length();
+  const uint len = textLine->length();
+  const QString &textString = textLine->string();
+  const uchar *attributes = textLine->attributes();
+
   while ( (x < xPos)  && (z < len)) {
     oldX = x;
 
-    KateAttribute* a = attribute(textLine->attribute(z));
-    x += a->width(*fs, textLine->string(), z, m_tabWidth);
+    KateAttribute* a = attribute(attributes[z]);
+    x += a->width(*fs, textString, z, m_tabWidth);
 
     z++;
   }
