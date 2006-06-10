@@ -212,6 +212,7 @@ set(kdecore_LIB_SRCS
    kfilterdev.cpp
    kdedmodule.cpp
    kgzipfilter.cpp
+   kmessage.cpp
    network/kresolver.cpp
    network/kresolvermanager.cpp
    network/kresolverworkerbase.cpp
@@ -398,5 +399,6 @@ install_files( /include FILES
    kautostart.h
    kprotocolinfo.h
    kdefakes.h
+   kmessage.h
 )
 

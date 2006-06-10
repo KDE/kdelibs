@@ -156,6 +156,8 @@ set(kdeui_LIB_SRCS
  kkeyserver.cpp
  kcompletionbase.cpp
  kcompletion.cpp
+ kmessageboxmessagehandler.cpp
+ kpassivepopupmessagehandler.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -323,6 +325,8 @@ install_files( /include FILES
  kkeyserver_x11.h
  kkeyserver.h
  kcompletion.h
+ kmessageboxmessagehandler.h
+ kpassivepopupmessagehandler.h
 )
 
 install(PROGRAMS preparetips DESTINATION bin)
