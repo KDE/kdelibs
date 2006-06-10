@@ -2464,8 +2464,10 @@ Value LocationFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     break;
   case Location::Reload: {
     KHTMLPart *khtmlpart = ::qt_cast<KHTMLPart *>(part);
-    if (part)
+    if (khtmlpart)
       khtmlpart->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
+    else
+      part->openURL(part->url());
     break;
   }
   case Location::ToString:
