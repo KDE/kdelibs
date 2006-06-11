@@ -35,19 +35,11 @@ class KDEUI_EXPORT KActiveLabel : public KTextBrowser
 public:
     /**
      * Constructor.
-     *
-     * It connects the "anchorClicked(const QUrl &)" signal to the
-     * "openLink(const QUrl &)" slot. You will need to disconnect
-     * this if you want to process anchorClicked() yourself.
      */
     KActiveLabel(QWidget * parent);
 
     /**
      * Constructor.
-     *
-     * It connects the "anchorClicked(const QUrl &)" signal to the
-     * "openLink(const QUrl &)" slot. You will need to disconnect
-     * this if you want to process anchorClicked() yourself.
      */
     KActiveLabel(const QString & text, QWidget * parent);
 
