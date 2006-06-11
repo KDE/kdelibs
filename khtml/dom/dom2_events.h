@@ -1,8 +1,8 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *           (C) 2003 Apple Computer, Inc.
+ * Copyright 2001 Peter Kelly (pmk@post.com)
+ * Copyright 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

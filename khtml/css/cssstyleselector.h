@@ -1,8 +1,8 @@
 /*
  * This file is part of the CSS implementation for KDE.
  *
- * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

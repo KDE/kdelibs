@@ -1,9 +1,9 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2002 Apple Computer, Inc.
- *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright 2002 Apple Computer, Inc.
+ * Copyright 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

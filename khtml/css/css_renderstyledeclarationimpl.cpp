@@ -1,8 +1,8 @@
 /**
  * css_renderstyledeclarationimpl.cpp
  *
- * Copyright (C)  2004  Zack Rusin <zack@kde.org>
- * Copyright (C)  2004,2005 Apple Computer, Inc.
+ * Copyright 2004  Zack Rusin <zack@kde.org>
+ * Copyright 2004,2005 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

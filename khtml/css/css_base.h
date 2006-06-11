@@ -1,10 +1,10 @@
 /*
  * This file is part of the CSS implementation for KDE.
  *
- * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *               1999 Waldo Bastian (bastian@kde.org)
- *               2002 Apple Computer, Inc.
- *               2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright 1999-2003 Lars Knoll (knoll@kde.org)
+ * Copyright 1999 Waldo Bastian (bastian@kde.org)
+ * Copyright 2002 Apple Computer, Inc.
+ * Copyright 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
