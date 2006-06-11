@@ -97,7 +97,7 @@ public:
 
 private:
     KMessage();
-    Q_DISABLE_COPY(KMessage);
+    Q_DISABLE_COPY(KMessage)
 };
 
 /**
