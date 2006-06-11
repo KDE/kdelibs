@@ -179,6 +179,8 @@ KListViewLineEdit::KListViewLineEdit(KListView *parent)
         setFrame( false );
         hide();
         connect( parent, SIGNAL( selectionChanged() ), SLOT( slotSelectionChanged() ));
+        connect( parent, SIGNAL( itemRemoved( QListViewItem * ) ),
+                         SLOT( slotItemRemoved( QListViewItem * ) ));
 }
 
 KListViewLineEdit::~KListViewLineEdit()
@@ -402,6 +404,18 @@ void KListViewLineEdit::paintEvent( QPaintEvent *e )
 // a dangling pointer to "item".
 void KListViewLineEdit::slotSelectionChanged()
 {
+    item = 0;
+    col = 0;
+    hide();
+}
+
+// if the current item was removed -> terminate.  Can't call terminate(false)
+// due to same reason as slotSelectionChanged().
+void KListViewLineEdit::slotItemRemoved(QListViewItem *i)
+{
+    if (currentItem() != i)
+        return;
+
     item = 0;
     col = 0;
     hide();

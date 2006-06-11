@@ -57,6 +57,9 @@ protected:
 protected slots:
 	void slotSelectionChanged();
 
+	/// @since 3.5.4
+	void slotItemRemoved(QListViewItem *i);
+
 };
 
 #endif
