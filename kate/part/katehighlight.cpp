@@ -1522,7 +1522,7 @@ void KateHighlighting::doHighlight ( KateTextLine *prevLine,
         // even set attributes ;)
         memset ( textLine->attributes()+offset
                , item->onlyConsume ? context->attr : item->attr
-               , len-offset);
+               , offset2-offset);
 
         offset = offset2;
         lastChar = text[offset-1];
