@@ -34,9 +34,6 @@
 #include <qpainter.h>
 #include <qpopupmenu.h>
 
-static const QChar tabChar('\t');
-static const QChar spaceChar(' ');
-
 KateRenderer::KateRenderer(KateDocument* doc, KateView *view)
   : m_doc(doc), m_view (view), m_caretStyle(KateRenderer::Insert)
     , m_drawCaret(true)
@@ -376,7 +373,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     if (showCursor && (cursor->col() >= int(startcol)))
     {
       cursorVisible = true;
-      cursorXPos = xPos + cursor->col() * fs->myFontMetrics.width(spaceChar);
+      cursorXPos = xPos + cursor->col() * fs->myFontMetrics.width(QChar(' '));
     }
   }
   else
@@ -417,7 +414,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     const uint lastIndentColumn = textLine->firstChar();
 
     // Could be precomputed.
-    const uint spaceWidth = fs->width (spaceChar, false, false, m_tabWidth);
+    const uint spaceWidth = fs->width (QChar(' '), false, false, m_tabWidth);
 
     // Get current x position.
     int curPos = textLine->cursorX(curCol, m_tabWidth);
@@ -431,7 +428,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       QChar curChar = textLine->string()[curCol];
       // Decide if this character is a tab - we treat the spacing differently
       // TODO: move tab width calculation elsewhere?
-      bool isTab = curChar == tabChar;
+      bool isTab = curChar == QChar('\t');
 
       // Determine current syntax highlighting attribute
       // A bit legacy but doesn't need to change
@@ -517,7 +514,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
 
           // the next char is a tab (removed the "and this isn't" because that's dealt with above)
           // i.e. we have to draw the current text so the tab can be rendered as above.
-          || (textLine->string()[nextCol] == tabChar)
+          || (textLine->string()[nextCol] == QChar('\t'))
 
           // input method edit area
           || ( m_view && (isIMEdit != m_view->isIMEdit( line, nextCol )) )
@@ -703,7 +700,7 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
     if (showCursor && (cursor->col() >= int(curCol)))
     {
       cursorVisible = true;
-      cursorXPos = xPos + (cursor->col() - int(curCol)) * fs->myFontMetrics.width(spaceChar);
+      cursorXPos = xPos + (cursor->col() - int(curCol)) * fs->myFontMetrics.width(QChar(' '));
       cursorMaxWidth = xPosAfter - xPos;
       cursorColor = &oldAt->textColor();
     }
@@ -754,12 +751,12 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, int cursorCol)
     } else {
       // DF: commented out. It happens all the time.
       //Q_ASSERT(!m_doc->wrapCursor());
-      width = a->width(*fs, spaceChar, m_tabWidth);
+      width = a->width(*fs, QChar(' '), m_tabWidth);
     }
 
     x += width;
 
-    if (unicode[z] == tabChar)
+    if (unicode[z] == QChar('\t'))
       x -= x % width;
   }
 
@@ -814,7 +811,7 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
 
     // How should tabs be treated when they word-wrap on a print-out?
     // if startcol != 0, this messes up (then again, word wrapping messes up anyway)
-    if (unicode[z] == tabChar)
+    if (unicode[z] == QChar('\t'))
       x -= x % width;
 
     if (x <= maxwidth)
@@ -898,11 +895,11 @@ uint KateRenderer::textWidth( KateTextCursor &cursor, int xPos, uint startCol)
     if (z < len)
       width = a->width(*fs, textString, z, m_tabWidth);
     else
-      width = a->width(*fs, spaceChar, m_tabWidth);
+      width = a->width(*fs, QChar(' '), m_tabWidth);
 
     x += width;
 
-    if (unicode[z] == tabChar)
+    if (unicode[z] == QChar('\t'))
       x -= x % width;
 
     z++;
@@ -1022,7 +1019,7 @@ void KateRenderer::updateConfig ()
 
 uint KateRenderer::spaceWidth()
 {
-  return attribute(0)->width(*config()->fontStruct(), spaceChar, m_tabWidth);
+  return attribute(0)->width(*config()->fontStruct(), QChar(' '), m_tabWidth);
 }
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

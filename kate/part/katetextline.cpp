@@ -27,8 +27,6 @@
 
 #include <qregexp.h>
 
-static const QChar tabChar('\t');
-
 KateTextLine::KateTextLine ()
   : m_flags(0)
 {
@@ -167,7 +165,7 @@ uint KateTextLine::indentDepth (uint tabwidth) const
   {
     if(unicode[i].isSpace())
     {
-      if (unicode[i] == tabChar)
+      if (unicode[i] == QChar('\t'))
         d += tabwidth - (d % tabwidth);
       else
         d++;
@@ -240,7 +238,7 @@ int KateTextLine::cursorX(uint pos, uint tabChars) const
 
   for ( uint z = 0; z < n; z++)
   {
-    if (unicode[z] == tabChar)
+    if (unicode[z] == QChar('\t'))
       x += tabChars - (x % tabChars);
     else
       x++;
@@ -258,7 +256,7 @@ uint KateTextLine::lengthWithTabs (uint tabChars) const
 
   for ( uint z = 0; z < len; z++)
   {
-    if (unicode[z] == tabChar)
+    if (unicode[z] == QChar('\t'))
       x += tabChars - (x % tabChars);
     else
       x++;
