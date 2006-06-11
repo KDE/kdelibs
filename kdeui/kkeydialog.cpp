@@ -201,7 +201,7 @@ void KKeyChooser::save()
 void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcuts )
 {
 	d->type = type;
-	d->allowLetterShortcuts = allowLetterShortcuts;
+	d->allowLetterShortcuts = (allowLetterShortcuts == LetterShortcutsAllowed);
 
 	d->ui->setupUi(this);
 

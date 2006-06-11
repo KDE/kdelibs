@@ -72,8 +72,8 @@ public:
 	Q_DECLARE_FLAGS(ActionTypes, ActionType)
 	
 	enum LetterShortcuts {
-		LetterShortcutsAllowed,
-		LetterShortcutsDisallowed
+		LetterShortcutsDisallowed = 0,
+		LetterShortcutsAllowed
 	};
 
 	/**
