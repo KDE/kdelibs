@@ -170,9 +170,9 @@ public Q_SLOTS: // remote slots
 
     void reparseConfiguration();
     inline int requestHoldSlave(const QString &url, const QString &app_socket)
-    { return *reinterpret_cast<int *>(requestHoldSlave(KUrl(url), app_socket)); }
+    { return requestHoldSlave(KUrl(url), app_socket); }
     inline int requestSlave(const QString &protocol, const QString &host, const QString &app_socket)
-    { return *reinterpret_cast<int *>(requestSlave(protocol, host, app_socket)); }
+    { return requestSlave(protocol, host, app_socket); }
     void setLaunchEnv(const QString &name, const QString &value);
     bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
     inline bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg)
