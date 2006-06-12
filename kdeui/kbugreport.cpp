@@ -87,8 +87,8 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
   m_aboutData = aboutData
     ? aboutData
-    : ( KGlobal::_activeInstance ? KGlobal::_activeInstance->aboutData()
-                                 : KGlobal::instance()->aboutData() );
+    : ( KGlobal::activeInstance() ? KGlobal::activeInstance()->aboutData()
+                                  : KGlobal::instance()->aboutData() );
   m_process = 0;
   QWidget * parent = new QWidget(this);
   d->submitBugButton = 0;
