@@ -39,7 +39,7 @@ void KLibLoaderTest::testNonWorking()
     QCOMPARE( obj, (QObject*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoLibrary );
     QString errorString = KLibLoader::errorString( error );
-    kdDebug() << errorString << endl;
+    kDebug() << errorString << endl;
     QVERIFY( !errorString.isEmpty() );
 }
 
@@ -72,6 +72,6 @@ void KLibLoaderTest::testWrongClass()
     QCOMPARE( obj, (KLibLoaderTest*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
     QString errorString = KLibLoader::errorString( error );
-    kdDebug() << errorString << endl;
+    kDebug() << errorString << endl;
     QVERIFY( !errorString.isEmpty() );
 }

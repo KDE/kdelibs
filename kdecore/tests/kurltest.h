@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef ktempfiletest_h
-#define ktempfiletest_h
+#ifndef kurltest_h
+#define kurltest_h
 
 #include <qobject.h>
 
