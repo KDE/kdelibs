@@ -103,23 +103,23 @@ void KMimeType::checkEssentialMimeTypes()
     return; // no point in going any further
   }
 
-  if ( KMimeType::mimeType( "inode/directory" ) == 0 )
+  if ( !KMimeType::mimeType( "inode/directory" ) )
     errorMissingMimeType( "inode/directory" );
-  if ( KMimeType::mimeType( "inode/directory-locked" ) == 0 )
+  if ( !KMimeType::mimeType( "inode/directory-locked" ) )
     errorMissingMimeType( "inode/directory-locked" );
-  if ( KMimeType::mimeType( "inode/blockdevice" ) == 0 )
+  if ( !KMimeType::mimeType( "inode/blockdevice" ) )
     errorMissingMimeType( "inode/blockdevice" );
-  if ( KMimeType::mimeType( "inode/chardevice" ) == 0 )
+  if ( !KMimeType::mimeType( "inode/chardevice" ) )
     errorMissingMimeType( "inode/chardevice" );
-  if ( KMimeType::mimeType( "inode/socket" ) == 0 )
+  if ( !KMimeType::mimeType( "inode/socket" ) )
     errorMissingMimeType( "inode/socket" );
-  if ( KMimeType::mimeType( "inode/fifo" ) == 0 )
+  if ( !KMimeType::mimeType( "inode/fifo" ) )
     errorMissingMimeType( "inode/fifo" );
-  if ( KMimeType::mimeType( "application/x-shellscript" ) == 0 )
+  if ( !KMimeType::mimeType( "application/x-shellscript" ) )
     errorMissingMimeType( "application/x-shellscript" );
-  if ( KMimeType::mimeType( "application/x-executable" ) == 0 )
+  if ( !KMimeType::mimeType( "application/x-executable" ) )
     errorMissingMimeType( "application/x-executable" );
-  if ( KMimeType::mimeType( "application/x-desktop" ) == 0 )
+  if ( !KMimeType::mimeType( "application/x-desktop" ) )
     errorMissingMimeType( "application/x-desktop" );
 }
 
