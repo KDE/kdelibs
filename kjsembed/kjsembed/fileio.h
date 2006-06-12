@@ -29,6 +29,7 @@ class QFile;
 
 namespace KJSEmbed
 {
+    /** @internal Implementation of an IO API for scripts. */
     class FileIOBinding : public ObjectBinding
     {
         public:
