@@ -180,7 +180,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   kDebug(7001) << "Available methods: " << available << endl;
 }
 
-/* This should never be called, but doesn't harm */
+/* This is called on app exit (KStaticDeleter) */
 KDirWatchPrivate::~KDirWatchPrivate()
 {
   timer.stop();
@@ -191,7 +191,6 @@ KDirWatchPrivate::~KDirWatchPrivate()
 #ifdef HAVE_FAM
   if (use_fam) {
     FAMClose(&fc);
-    kDebug(7001) << "KDirWatch deleted (FAM closed)" << endl;
   }
 #endif
 #ifdef HAVE_SYS_INOTIFY_H
