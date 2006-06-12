@@ -1,3 +1,9 @@
+2006-06-08  George Staikos <staikos@kde.org>
+
+        Fix <a><label><img not in a form not being clickable
+
+        * html/html_formimpl.cpp: let the event bubble
+
 2006-05-31  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge WC bug-fixes and clean-up for positioned box-model

@@ -1025,7 +1025,7 @@ DOM::NodeImpl* CSSStyleSelector::checkSubSelectors(DOM::CSSSelector *sel, DOM::N
         //kDebug() << "CSSOrderedRule::checkSelector" << endl;
         ElementImpl *elem = static_cast<ElementImpl *>(n);
 
-        if(!checkOneSelector(sel, elem, isAncestor)) return 0;
+        if(!checkOneSelector(sel, elem, isAncestor, true)) return 0;
         //kDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
         break;
     }
@@ -1058,7 +1058,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
     return;
 }
 
-bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor)
+bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
 {
     if(!e)
         return false;
@@ -1437,7 +1437,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then *:active should only match focusable elements, and never
 	    // unfocusable anchors.
-	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
+	    if (strictParsing || ((sel->tag != anyQName || isSubSelector) && e->id() != ID_A) || e->isFocusable()) {
                 doc->dynamicDomRestyler().addDependency(element, e, HoverDependency);
 
                 if (e->hovered())
@@ -1447,7 +1447,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             }
 	case CSSSelector::PseudoActive:
 	    // If we're in quirks mode, then *:active should only match focusable elements
-	    if (strictParsing || (sel->tag != anyQName && e->id() != ID_A) || e->isFocusable()) {
+	    if (strictParsing || ((sel->tag != anyQName || isSubSelector) && e->id() != ID_A) || e->isFocusable()) {
                 doc->dynamicDomRestyler().addDependency(element, e, ActiveDependency);
 
 		if (e->active())
