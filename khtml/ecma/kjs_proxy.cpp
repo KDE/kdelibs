@@ -34,7 +34,8 @@
 
 #include "kjs_window.h"
 #include "kjs_events.h"
-#include "kjs_debugwin.h"
+//#include "kjs_debugwin.h"
+#include "debugger/debugwindow.h"
 #include "xml/dom_nodeimpl.h"
 #include "khtmlpart_p.h"
 #include <khtml_part.h>
@@ -107,7 +108,7 @@ KJSProxyImpl::~KJSProxyImpl()
     // This allows to delete the global-object properties, like all the protos
     m_script->globalObject()->clearProperties();
     //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
-    
+
     JSLock::lock();
     while (Interpreter::collect())
 	    ;
@@ -148,16 +149,17 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   //kDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
 
 #ifdef KJS_DEBUGGER
-  if (inlineCode)
-    filename = "(unknown file)";
-  if (KJSDebugWin::debugWindow()) {
-    KJSDebugWin::debugWindow()->attach(m_script);
-    //M.O: seems to be not needed anymore?
-    KJSDebugWin::debugWindow()->setNextSourceInfo(filename,baseLine);
-  //    KJSDebugWin::debugWindow()->setMode(KJSDebugWin::Step);
-  }
+    if (inlineCode)
+        filename = "(unknown file)";
+    if (DebugWindow::window())
+    {
+        DebugWindow::window()->attach(m_script);
+        // M.O: seems to be not needed anymore?
+        DebugWindow::window()->setNextSourceInfo(filename, baseLine);
+        // KJSDebugWin::debugWindow()->setMode(KJSDebugWin::Step);
+    }
 #else
-  Q_UNUSED(baseLine);
+    Q_UNUSED(baseLine);
 #endif
 
   m_script->setInlineCode(inlineCode);
@@ -214,27 +216,31 @@ void KJSProxyImpl::clear() {
   // clear resources allocated by the interpreter, and make it ready to be used by another page
   // We have to keep it, so that the Window object for the part remains the same.
   // (we used to delete and re-create it, previously)
-  if (m_script) {
+    if (m_script) {
 #ifdef KJS_DEBUGGER
-    // ###
-    KJSDebugWin *debugWin = KJSDebugWin::debugWindow();
-    if (debugWin) {
-      if (debugWin->getExecState() &&
-          debugWin->getExecState()->interpreter() == m_script)
-        debugWin->slotStop();
-      debugWin->clearInterpreter(m_script);
-    }
+        DebugWindow *debugWin = DebugWindow::window();
+        if (debugWin)
+        {
+/*
+            if (debugWin->getExecState() &&
+                debugWin->getExecState()->interpreter() == m_script)
+            {
+                debugWin->stopExecution();
+                debugWin->clearInterpreter(m_script);
+            }
+*/
+        }
 #endif
-    m_script->clear();
+        m_script->clear();
 
-    Window *win = static_cast<Window *>(m_script->globalObject());
-    if (win) {
-      win->clear( m_script->globalExec() );
-      // re-add "debug", clear() removed it
-      m_script->globalObject()->put(m_script->globalExec(),
-                                   "debug", new TestFunctionImp(), Internal);
-      if ( win->part() )
-        applyUserAgent();
+        Window *win = static_cast<Window *>(m_script->globalObject());
+        if (win) {
+            win->clear( m_script->globalExec() );
+            // re-add "debug", clear() removed it
+            m_script->globalObject()->put(m_script->globalExec(),
+                                        "debug", new TestFunctionImp(), Internal);
+            if ( win->part() )
+            applyUserAgent();
     }
 
     // Really delete everything that can be, so that the DOM nodes get deref'ed
@@ -251,12 +257,13 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   initScript();
 
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow()) {
-    KJSDebugWin::debugWindow()->attach(m_script);
-    KJSDebugWin::debugWindow()->setNextSourceInfo(sourceUrl,m_handlerLineno);
-  }
+    if (DebugWindow::window())
+    {
+        DebugWindow::window()->attach(m_script);
+        DebugWindow::window()->setNextSourceInfo(sourceUrl, m_handlerLineno);
+    }
 #else
-  Q_UNUSED(sourceUrl);
+    Q_UNUSED(sourceUrl);
 #endif
 
   return KJS::Window::retrieveWindow(m_frame->m_part)->getJSLazyEventListener(code,name,node);
@@ -286,43 +293,45 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
   //    m_script->setDebuggingEnabled(enabled);
   // NOTE: this is consistent across all KJSProxyImpl instances, as we only
   // ever have 1 debug window
-  if (!enabled && KJSDebugWin::debugWindow()) {
-    KJSDebugWin::destroyInstance();
-  }
-  else if (enabled && !KJSDebugWin::debugWindow()) {
-    KJSDebugWin::createInstance();
-    initScript();
-    KJSDebugWin::debugWindow()->attach(m_script);
-  }
+    if (!enabled && DebugWindow::window())
+    {
+        DebugWindow::destroyInstance();
+    }
+    else if (enabled && !DebugWindow::window())
+    {
+        DebugWindow::createInstance();
+        initScript();
+        DebugWindow::window()->attach(m_script);
+    }
 #else
-  Q_UNUSED(enabled);
+    Q_UNUSED(enabled);
 #endif
 }
 
 void KJSProxyImpl::showDebugWindow(bool /*show*/)
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow())
-    KJSDebugWin::debugWindow()->show();
+    if (DebugWindow::window())
+        DebugWindow::window()->show();
 #else
-  //Q_UNUSED(show);
+    //Q_UNUSED(show);
 #endif
 }
 
 bool KJSProxyImpl::paused() const
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow())
-    return KJSDebugWin::debugWindow()->inSession();
+    // if (DebugWindow::window())
+    //     return DebugWindow::window()->inSession();
 #endif
-  return false;
+    return false;
 }
 
 void KJSProxyImpl::dataReceived()
 {
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow() && m_frame->m_part)
-    KJSDebugWin::debugWindow()->sourceChanged(m_script,m_frame->m_part->url().url());
+    // if (DebugWindow::window() && m_frame->m_part)
+    //    DebugWindow::window()->sourceChanged(m_script, m_frame->m_part->url().url());
 #endif
 }
 

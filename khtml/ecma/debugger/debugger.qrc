@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>images/continue.png</file>
+        <file>images/step-into.png</file>
+        <file>images/step-out.png</file>
+        <file>images/step-over.png</file>
+        <file>images/stop.png</file>
+    </qresource>
+</RCC>

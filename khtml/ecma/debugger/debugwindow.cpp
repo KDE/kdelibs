@@ -1,0 +1,239 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+#include "kjs_proxy.h"
+
+#include <ktoolbar.h>
+#include <kstatusbar.h>
+#include <klocale.h>
+#include <kdebug.h>
+#include <kiconloader.h>
+#include <kglobal.h>
+#include <kmessagebox.h>
+#include <kguiitem.h>
+#include <kmenu.h>
+#include <kmenubar.h>
+#include <kaction.h>
+#include <kactioncollection.h>
+#include <kglobalsettings.h>
+#include <kshortcut.h>
+#include <kconfig.h>
+#include <kconfigbase.h>
+#include <kapplication.h>
+#include <dcop/dcopclient.h>
+#include <kstringhandler.h>
+
+#include "kjs_dom.h"
+#include "kjs_binding.h"
+#include "khtml_part.h"
+#include "khtmlview.h"
+#include "khtml_pagecache.h"
+#include "khtml_settings.h"
+#include "khtml_factory.h"
+#include "misc/decoder.h"
+#include <kjs/ustring.h>
+#include <kjs/object.h>
+#include <kjs/function.h>
+#include <kjs/interpreter.h>
+#include <kjs/value.h>
+
+#include <QVBoxLayout>
+#include <QSplitter>
+#include <QDebug>
+
+#include "numberedtextview.h"
+#include "breakpointsdock.h"
+#include "consoledock.h"
+#include "localvariabledock.h"
+#include "watchesdock.h"
+#include "callstackdock.h"
+#include "scriptsdock.h"
+
+#include "debugwindow.h"
+#include "debugwindow.moc"
+
+
+using namespace KJS;
+
+DebugWindow* DebugWindow::m_debugger = 0;
+
+DebugWindow *DebugWindow::createInstance()
+{
+    Q_ASSERT(!m_debugger);
+    m_debugger = new DebugWindow();
+    return m_debugger;
+}
+
+void DebugWindow::destroyInstance()
+{
+    Q_ASSERT(m_debugger);
+    m_debugger->hide();
+    delete m_debugger;
+}
+
+DebugWindow * DebugWindow::window()
+{
+    return m_debugger;
+}
+
+
+// ----------------------------------------------
+// Stubs
+void DebugWindow::setNextSourceInfo(const QString &string, int line)
+{
+    qDebug() << string << " and " << line;
+}
+
+
+
+
+// ----------------------------------------------
+
+DebugWindow::DebugWindow(QWidget *parent)
+  : KMainWindow(parent, "DebugWindow", Qt::WType_TopLevel),
+    KInstance("kjs_debugger")
+{
+    setCaption(i18n("JavaScript Debugger"));
+    qDebug() << "creating DebugWindow";
+
+    m_sourceEdit = new NumberedTextView;
+    m_watches = new WatchesDock;
+    m_localVariables = new LocalVariablesDock;
+    m_scripts = new ScriptsDock;
+    m_callStack = new CallStackDock;
+    m_breakpoints = new BreakpointsDock;
+    m_console = new ConsoleDock;
+
+    addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
+    addDockWidget(Qt::LeftDockWidgetArea, m_localVariables);
+    addDockWidget(Qt::LeftDockWidgetArea, m_callStack);
+    addDockWidget(Qt::LeftDockWidgetArea, m_breakpoints);
+    addDockWidget(Qt::LeftDockWidgetArea, m_watches);
+
+    QFrame *mainFrame = new QFrame;
+    QVBoxLayout *layout = new QVBoxLayout(mainFrame);
+    layout->setSpacing(0);
+    QSplitter *splitter = new QSplitter(Qt::Vertical);
+    splitter->addWidget(m_sourceEdit);
+    splitter->addWidget(m_console);
+    layout->addWidget(splitter);
+
+    setCentralWidget(mainFrame);
+    resize(800, 500);
+
+    createActions();
+    createMenus();
+    createToolBars();
+    createStatusBar();
+}
+
+void DebugWindow::createActions()
+{
+    // Standard actions
+    m_exitAct = new KAction(i18n("E&xit"), actionCollection(), "exit");
+    m_exitAct->setShortcut(i18n("Ctrl+Q"));
+    m_exitAct->setStatusTip(i18n("Exit the application"));
+    connect(m_exitAct, SIGNAL(triggered()), this, SLOT(close()));
+
+    // Flow control actions
+    m_continueAct = new KAction(KIcon(":/images/continue.png"), i18n("Continue"), actionCollection(), "continue");
+    m_continueAct->setStatusTip(i18n("Continue script execution"));
+    m_continueAct->setToolTip(i18n("Continue script execution"));
+    connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));
+
+    m_stopAct = new KAction(KIcon(":/images/stop.png"), i18n("Stop"), actionCollection(), "stop");
+    m_stopAct->setStatusTip(i18n("Stop script execution"));
+    m_stopAct->setToolTip(i18n("Stop script execution"));
+    connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopExecution()));
+
+    m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), actionCollection(), "stepInto");
+    m_stepIntoAct->setStatusTip(i18n("Step Into"));
+    m_stepIntoAct->setToolTip(i18n("Step Into"));
+    connect(m_stepIntoAct, SIGNAL(triggered(bool)), this, SLOT(stepInto()));
+
+    m_stepOutAct = new KAction(KIcon(":/images/step-out.png"), i18n("Step Out"), actionCollection(), "stepOut");
+    m_stepOutAct->setStatusTip(i18n("Step Out"));
+    m_stepOutAct->setToolTip(i18n("Step Out"));
+    connect(m_stepOutAct, SIGNAL(triggered(bool)), this, SLOT(stepOut()) );
+
+    m_stepOverAct = new KAction(KIcon(":/images/step-over.png"), i18n("Step Over"), actionCollection(), "stepOver");
+    m_stepOverAct->setStatusTip(i18n("Step Over"));
+    m_stepOverAct->setToolTip(i18n("Step Over"));
+    connect(m_stepOverAct, SIGNAL(triggered(bool)), this, SLOT(stepOver()) );
+}
+
+void DebugWindow::createMenus()
+{
+/*
+    KMenu *debugMenu = new KMenu(this);
+    debugMenu->addAction(m_nextAction);
+    debugMenu->addAction(m_stepAction);
+    debugMenu->addAction(m_continueAction);
+    debugMenu->addAction(m_breakAction);
+
+    menuBar()->insertItem("&Debug", debugMenu);
+*/
+    KMenu *fileMenu = new KMenu(this);
+    fileMenu->addAction(m_exitAct);
+    menuBar()->insertItem("F&ile", fileMenu);
+}
+
+void DebugWindow::createToolBars()
+{
+    toolBar()->addAction(m_stopAct);
+    toolBar()->addSeparator();
+    toolBar()->addAction(m_continueAct);
+    toolBar()->addAction(m_stepIntoAct);
+    toolBar()->addAction(m_stepOutAct);
+    toolBar()->addAction(m_stepOverAct);
+}
+
+void DebugWindow::createStatusBar()
+{
+    statusBar()->showMessage(i18n("Ready"));
+}
+
+void DebugWindow::stopExecution()
+{
+    KMessageBox::information(this, "Stop!");
+}
+
+void DebugWindow::continueExecution()
+{
+    KMessageBox::information(this, "Continue!");
+}
+
+void DebugWindow::stepInto()
+{
+    KMessageBox::information(this, "Step Into!");
+}
+
+void DebugWindow::stepOut()
+{
+    KMessageBox::information(this, "Step Out Of!");
+}
+
+void DebugWindow::stepOver()
+{
+    KMessageBox::information(this, "Step Over!");
+}
+
+DebugWindow::~DebugWindow()
+{
+}
