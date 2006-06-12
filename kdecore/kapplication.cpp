@@ -688,9 +688,6 @@ void KApplication::init()
       rtl = !rtl;
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
-  // install appdata resource type
-  KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
-                                   + applicationName() + '/');
   pSessionConfig = 0L;
   bSessionManagement = true;
 

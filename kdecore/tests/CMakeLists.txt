@@ -70,15 +70,15 @@ target_link_libraries(ksimpleconfigtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRAR
 
 ########### next target ###############
 
-set(kstddirstest_SRCS kstddirstest.cpp )
+set(kstandarddirstest_SRCS kstandarddirstest.cpp )
 
-kde4_automoc(${kstddirstest_SRCS})
+kde4_automoc(${kstandarddirstest_SRCS})
 
-kde4_add_executable(kstddirstest NOGUI RUN_UNINSTALLED ${kstddirstest_SRCS})
+kde4_add_executable(kstandarddirstest NOGUI RUN_UNINSTALLED ${kstandarddirstest_SRCS})
 
-target_link_libraries(kstddirstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kstandarddirstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kstddirstest ${EXECUTABLE_OUTPUT_PATH}/kstddirstest)
+add_test(kdecore-kstandarddirstest ${EXECUTABLE_OUTPUT_PATH}/kstandarddirstest)
 
 ########### next target ###############
 

@@ -130,6 +130,12 @@ void KGlobal::setActiveInstance(KInstance *i)
 	_locale->setActiveCatalog(QString::fromUtf8(i->instanceName()));
 }
 
+void KGlobal::setMainInstance( KInstance* i )
+{
+    _instance = i;
+    setActiveInstance( i );
+}
+
 /**
  * Create a static QString
  *

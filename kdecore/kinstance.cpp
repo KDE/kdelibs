@@ -112,10 +112,7 @@ KInstance::KInstance( const QByteArray& name) : d(new Private)
     DEBUG_ADD
     Q_ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
-    {
-      KGlobal::_instance = this;
-      KGlobal::setActiveInstance(this);
-    }
+      KGlobal::setMainInstance(this);
 
     _name = name;
     _aboutData = new KAboutData(name, "", 0);
@@ -133,10 +130,7 @@ KInstance::KInstance( const KAboutData * aboutData ) : d(new Private)
     Q_ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance)
-    {
-      KGlobal::_instance = this;
-      KGlobal::setActiveInstance(this);
-    }
+      KGlobal::setMainInstance(this);
 }
 
 KInstance::KInstance( KInstance* src ) : d(src->d)
@@ -145,10 +139,7 @@ KInstance::KInstance( KInstance* src ) : d(src->d)
     Q_ASSERT(!_name.isEmpty());
 
     if (!KGlobal::_instance || KGlobal::_instance == src )
-    {
-      KGlobal::_instance = this;
-      KGlobal::setActiveInstance(this);
-    }
+      KGlobal::setMainInstance(this);
 
     src->d = 0;
     delete src;
@@ -174,6 +165,10 @@ KStandardDirs *KInstance::dirs() const
     DEBUG_CHECK_ALIVE
     if( _dirs == 0 ) {
 	_dirs = new KStandardDirs;
+        // install appdata resource type
+        _dirs->addResourceType("appdata", KStandardDirs::kde_default("data")
+                               + _name + '/');
+
         if (_config)
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();

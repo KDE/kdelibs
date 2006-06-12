@@ -193,7 +193,11 @@ public:
      */
     static void setActiveInstance(KInstance *d);
 
-    /** Data which ought to be private but isn't. @internal */
+private:
+    friend class KInstance;
+    ///@internal
+    static void setMainInstance( KInstance* i );
+
     static  KInstance           *_activeInstance;
 };
 
