@@ -7,6 +7,7 @@ Patterns=*.avi;*.AVI;*.asf;*.wmv;*.ASF;*.WMV;*.asx;*.ASX;*.wma;*.WMA;*.wmx;*.WMX
 Comment=Microsoft Media
 Comment[da]=Microsoft video
 Comment[el]=Μέσο της Microsoft
+Comment[es]=Media de Microsoft
 Comment[ja]=Microsoft メディア
 Comment[nds]=Microsoft-Medium
 Comment[nl]=Microsoft media
