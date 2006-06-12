@@ -340,7 +340,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   kdDebug(7001) << "Available methods: " << available << endl;
 }
 
-/* This should never be called, but doesn't harm */
+/* This is called on app exit (KStaticDeleter) */
 KDirWatchPrivate::~KDirWatchPrivate()
 {
   timer->stop();
