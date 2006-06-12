@@ -87,7 +87,7 @@ QIcon KPageWidgetItem::icon() const
   return d->icon;
 }
 
-void KPageWidgetItem::setIsCheckable( bool checkable )
+void KPageWidgetItem::setCheckable( bool checkable )
 {
   d->checkable = checkable;
 }

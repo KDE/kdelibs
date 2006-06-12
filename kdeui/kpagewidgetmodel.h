@@ -46,7 +46,7 @@ class KDEUI_EXPORT KPageWidgetItem
     void setIcon( const QIcon &icon );
     QIcon icon() const;
 
-    void setIsCheckable( bool checkable );
+    void setCheckable( bool checkable );
     bool isCheckable() const;
 
   private:
