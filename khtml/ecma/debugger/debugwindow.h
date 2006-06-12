@@ -21,7 +21,7 @@
 #ifndef DEBUGWINDOW_H
 #define DEBUGWINDOW_H
 
-#define KJS_DEBUGGER
+//#define KJS_DEBUGGER
 
 #include <kinstance.h>
 #include <kmainwindow.h>
