@@ -54,7 +54,7 @@ QTEST_KDEMAIN( JobTest, GUI )
 
 QString JobTest::homeTmpDir() const
 {
-    return QDir::homePath() + "/.kde/jobtest/";
+    return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest/";
 }
 
 QString JobTest::otherTmpDir() const
@@ -65,12 +65,12 @@ QString JobTest::otherTmpDir() const
 
 KUrl JobTest::systemTmpDir() const
 {
-    return KUrl( "system:/home/.kde/jobtest-system/" );
+    return KUrl( "system:/home/.kde-unit-test/jobtest-system/" );
 }
 
 QString JobTest::realSystemPath() const
 {
-    return QDir::homePath() + "/.kde/jobtest-system/";
+    return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest-system/";
 }
 
 void JobTest::initTestCase()
