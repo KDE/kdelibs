@@ -96,7 +96,7 @@ void Slave::accept()
     KStreamSocket *socket = serv->accept();
     slaveconn.init(socket);
 #endif
-    delete serv;
+    serv->deleteLater();
     serv = 0;
     slaveconn.connect(this, SLOT(gotInput()));
     unlinkSocket();
