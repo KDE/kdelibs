@@ -2,17 +2,17 @@
 {maketoc}
 
 <h2>Compiling DBUS</h2>
-The KDE libraries require an unreleased version of DBUS. You need to download it 
-from the freedesktop.org CVS server:
+The KDE libraries require D-BUS version 0.62 at least. See
+http://www.freedesktop.org/wiki/Software_2fdbus for the latest
+release.
 
-	cvs -d :pserver:anoncvs@anoncvs.freedesktop.org:/cvs/dbus login
-	cvs -d :pserver:anoncvs@anoncvs.freedesktop.org:/cvs/dbus co dbus 
-	./autogen.sh --disable-qt --disable-qt3 --prefix=$DBUSDIR
+To compile:
+	./configure --disable-qt --disable-qt3 --prefix=$DBUSDIR
 	make
 	make install
 
-To run the dbus daemon type that command:
-	eval `$DBUSDIR/bin/dbus-launch --auto-syntax`
+To run the dbus daemon, type the command:
+	eval `PATH=$DBUSDIR/bin $DBUSDIR/bin/dbus-launch --auto-syntax`
 
 <h2>Compiling QtDBus</h2>
 QtDBus depends on DBUS.
