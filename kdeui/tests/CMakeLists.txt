@@ -765,6 +765,17 @@ kde4_add_executable(kmessagetest RUN_UNINSTALLED ${kmessagetest_SRCS})
 target_link_libraries(kmessagetest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
+set(kpagedialogtest_SRCS
+kpagedialogtest.cpp
+)
+
+kde4_automoc(${kpagedialogtest_SRCS})
+
+kde4_add_executable(kpagedialogtest RUN_UNINSTALLED ${kpagedialogtest_SRCS})
+
+target_link_libraries(kpagedialogtest  ${KDE4_KDEUI_LIBS})
+
+########### next target ###############
 set(kpagewidgettest_SRCS
 kpagewidgettest.cpp
 )
@@ -774,7 +785,6 @@ kde4_automoc(${kpagewidgettest_SRCS})
 kde4_add_executable(kpagewidgettest RUN_UNINSTALLED ${kpagewidgettest_SRCS})
 
 target_link_libraries(kpagewidgettest  ${KDE4_KDEUI_LIBS})
-
 
 ########### next target ###############
    

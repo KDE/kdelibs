@@ -36,6 +36,8 @@ KPageWidgetTest::KPageWidgetTest( QWidget *parent )
 
   connect( mWidget, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
            this, SLOT( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
+  connect( mWidget, SIGNAL( pageToggled( KPageWidgetItem*, bool ) ),
+           this, SLOT( pageToggled( KPageWidgetItem*, bool ) ) );
 
   int rowCount = 0;
   QPushButton *button = new QPushButton( "Auto", this );
@@ -128,6 +130,7 @@ void KPageWidgetTest::addPage()
   KPageWidgetItem *item = mWidget->addPage( new QPushButton( title ) , title );
   item->setIcon( QIcon( "folder" ) );
   item->setHeader( QString( "Header Test No. %1" ).arg( QString::number( counter ) ) );
+  item->setCheckable( true );
 
   counter++;
 }
@@ -171,7 +174,6 @@ void KPageWidgetTest::deletePage()
 
 void KPageWidgetTest::currentPageChanged( KPageWidgetItem *current, KPageWidgetItem *before )
 {
-  /*
   if ( current )
     qDebug( "Current item: %s", qPrintable( current->name() ) );
   else
@@ -181,7 +183,11 @@ void KPageWidgetTest::currentPageChanged( KPageWidgetItem *current, KPageWidgetI
     qDebug( "Item before: %s", qPrintable( before->name() ) );
   else
     qDebug( "No item before" );
-  */
+}
+
+void KPageWidgetTest::pageToggled( KPageWidgetItem *item, bool checked )
+{
+  qDebug( "Item %s changed check state to: %s", qPrintable( item->name() ), checked ? "checked" : "unchecked" );
 }
 
 int main( int argc, char **argv )

@@ -19,38 +19,18 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KPAGEWIDGETTEST_H
-#define KPAGEWIDGETTEST_H
+#ifndef KPAGEDIALOGTEST_H
+#define KPAGEDIALOGTEST_H
 
-#include <QWidget>
+#include "kpagedialog.h"
 
-#include "kpagewidget.h"
-
-class KPageWidgetTest : public QWidget
+class KPageDialogTest : public KPageDialog
 {
   Q_OBJECT
 
   public:
-    KPageWidgetTest( QWidget *parent = 0 );
-    ~KPageWidgetTest();
-
-  private Q_SLOTS:
-    void setAutoFace();
-    void setPlainFace();
-    void setListFace();
-    void setTreeFace();
-    void setTabbedFace();
-
-    void addPage();
-    void addSubPage();
-    void insertPage();
-    void deletePage();
-
-    void currentPageChanged( KPageWidgetItem*, KPageWidgetItem* );
-    void pageToggled( KPageWidgetItem*, bool );
-
-  private:
-    KPageWidget *mWidget;
+    KPageDialogTest( QWidget *parent = 0 );
+    ~KPageDialogTest();
 };
 
 #endif

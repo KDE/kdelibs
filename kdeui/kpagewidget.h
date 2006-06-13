@@ -120,6 +120,12 @@ class KDEUI_EXPORT KPageWidget : public KPageView
      */
     void currentPageChanged( KPageWidgetItem *current, KPageWidgetItem *before );
 
+    /**
+     * This signal is emitted whenever a checkable page changes its state. @param checked is true
+     * when the @param page is checked, or false if the @param page is unchecked.
+     */
+    void pageToggled( KPageWidgetItem *page, bool checked );
+
   private:
     class Private;
     Private* const d;

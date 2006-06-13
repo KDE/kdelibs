@@ -28,7 +28,7 @@ class KPageWidgetItem::Private
 {
   public:
     Private()
-      : checkable( false )
+      : checkable( false ), checked( false )
     {
     }
 
@@ -43,10 +43,11 @@ class KPageWidgetItem::Private
     QIcon icon;
     QPointer<QWidget> widget;
     bool checkable;
+    bool checked;
 };
 
 KPageWidgetItem::KPageWidgetItem( QWidget *widget, const QString &name )
-  : d( new Private )
+  : QObject( 0 ), d( new Private )
 {
   d->widget = widget;
   d->name = name;
@@ -78,6 +79,8 @@ QString KPageWidgetItem::name() const
 void KPageWidgetItem::setHeader( const QString &header )
 {
   d->header = header;
+
+  emit changed();
 }
 
 QString KPageWidgetItem::header() const
@@ -88,6 +91,8 @@ QString KPageWidgetItem::header() const
 void KPageWidgetItem::setIcon( const QIcon &icon )
 {
   d->icon = icon;
+
+  emit changed();
 }
 
 QIcon KPageWidgetItem::icon() const
@@ -98,6 +103,8 @@ QIcon KPageWidgetItem::icon() const
 void KPageWidgetItem::setCheckable( bool checkable )
 {
   d->checkable = checkable;
+
+  emit changed();
 }
 
 bool KPageWidgetItem::isCheckable() const
@@ -105,6 +112,18 @@ bool KPageWidgetItem::isCheckable() const
   return d->checkable;
 }
 
+void KPageWidgetItem::setChecked( bool checked )
+{
+  d->checked = checked;
+
+  emit toggled( checked );
+  emit changed();
+}
+
+bool KPageWidgetItem::isChecked() const
+{
+  return d->checked;
+}
 
 class PageItem
 {
@@ -226,7 +245,8 @@ void PageItem::dump( int indent )
 class KPageWidgetModel::Private
 {
   public:
-    Private()
+    Private( KPageWidgetModel *_parent )
+      : parent( _parent )
     {
       rootItem = new PageItem( 0, 0 );
     }
@@ -237,12 +257,35 @@ class KPageWidgetModel::Private
       rootItem = 0;
     }
 
+    KPageWidgetModel *parent;
     PageItem *rootItem;
+
+    void itemChanged()
+    {
+      KPageWidgetItem *item = static_cast<KPageWidgetItem*>( parent->sender() );
+      if ( !item )
+        return;
+
+      const QModelIndex index = parent->index( item );
+      if ( !index.isValid() )
+        return;
+
+      emit parent->dataChanged( index, index );
+    }
+
+    void itemToggled( bool checked )
+    {
+      KPageWidgetItem *item = static_cast<KPageWidgetItem*>( parent->sender() );
+      if ( !item )
+        return;
+
+      emit parent->toggled( item, checked );
+    }
 };
 
 KPageWidgetModel::KPageWidgetModel( QObject *parent )
   : KPageModel( parent ),
-    d( new Private )
+    d( new Private( this ) )
 {
 }
 
@@ -273,11 +316,34 @@ QVariant KPageWidgetModel::data( const QModelIndex &index, int role ) const
     return QVariant::fromValue( item->pageWidgetItem()->widget() );
   else if ( role == Qt::CheckStateRole ) {
     if ( item->pageWidgetItem()->isCheckable() ) {
-      return Qt::Checked; // TODO
+      return ( item->pageWidgetItem()->isChecked() ? Qt::Checked : Qt::Unchecked );
     } else
       return QVariant();
   } else
     return QVariant();
+}
+
+bool KPageWidgetModel::setData( const QModelIndex &index, const QVariant &value, int role )
+{
+  if ( !index.isValid() )
+    return false;
+
+  if ( role != Qt::CheckStateRole )
+    return false;
+
+  PageItem *item = static_cast<PageItem*>( index.internalPointer() );
+  if ( !item )
+    return false;
+
+  if ( !item->pageWidgetItem()->isCheckable() )
+    return false;
+
+  if ( value.toInt() == Qt::Checked )
+    item->pageWidgetItem()->setChecked( true );
+  else
+    item->pageWidgetItem()->setChecked( false );
+
+  return true;
 }
 
 Qt::ItemFlags KPageWidgetModel::flags( const QModelIndex &index ) const
@@ -347,6 +413,9 @@ KPageWidgetItem* KPageWidgetModel::addPage( QWidget *widget, const QString &name
 
 void KPageWidgetModel::addPage( KPageWidgetItem *item )
 {
+  connect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
+  connect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
+
   PageItem *pageItem = new PageItem( item, d->rootItem );
   d->rootItem->appendChild( pageItem );
 
@@ -369,6 +438,9 @@ void KPageWidgetModel::insertPage( KPageWidgetItem *before, KPageWidgetItem *ite
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
+
+  connect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
+  connect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
 
   PageItem *parent = beforePageItem->parent();
 
@@ -395,6 +467,9 @@ void KPageWidgetModel::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *ite
     return;
   }
 
+  connect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
+  connect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
+
   PageItem *newPageItem = new PageItem( item, parentPageItem );
   parentPageItem->appendChild( newPageItem );
 
@@ -411,6 +486,9 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
+
+  disconnect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
+  disconnect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
 
   PageItem *parentPageItem = pageItem->parent();
   int row = parentPageItem->row();
@@ -453,3 +531,5 @@ QModelIndex KPageWidgetModel::index( const KPageWidgetItem *item ) const
 
   return createIndex( pageItem->row(), 0, (void*)pageItem );
 }
+
+#include "kpagewidgetmodel.moc"

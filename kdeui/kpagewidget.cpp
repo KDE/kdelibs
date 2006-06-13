@@ -57,6 +57,9 @@ KPageWidget::KPageWidget( QWidget *parent )
   connect( this, SIGNAL( currentPageChanged( const QModelIndex&, const QModelIndex& ) ),
            this, SLOT( slotCurrentPageChanged( const QModelIndex&, const QModelIndex& ) ) );
 
+  connect( d->model, SIGNAL( toggled( KPageWidgetItem*, bool ) ),
+           this, SIGNAL( pageToggled( KPageWidgetItem*, bool ) ) );
+
   setModel( d->model );
 }
 

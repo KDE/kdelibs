@@ -30,8 +30,10 @@
 
 class QWidget;
 
-class KDEUI_EXPORT KPageWidgetItem
+class KDEUI_EXPORT KPageWidgetItem : public QObject
 {
+  Q_OBJECT
+
   public:
     KPageWidgetItem( QWidget *widget, const QString &name );
     ~KPageWidgetItem();
@@ -49,6 +51,13 @@ class KDEUI_EXPORT KPageWidgetItem
     void setCheckable( bool checkable );
     bool isCheckable() const;
 
+    void setChecked( bool checked );
+    bool isChecked() const;
+
+  Q_SIGNALS:
+    void changed();
+    void toggled( bool checked );
+
   private:
     class Private;
     Private* const d;
@@ -56,6 +65,8 @@ class KDEUI_EXPORT KPageWidgetItem
 
 class KDEUI_EXPORT KPageWidgetModel : public KPageModel
 {
+  Q_OBJECT
+
   public:
     KPageWidgetModel( QObject *parent = 0 );
     ~KPageWidgetModel();
@@ -129,6 +140,7 @@ class KDEUI_EXPORT KPageWidgetModel : public KPageModel
      */
     virtual int columnCount( const QModelIndex &parent = QModelIndex() ) const;
     virtual QVariant data( const QModelIndex &index, int role = Qt::DisplayRole ) const;
+    virtual bool setData( const QModelIndex &index, const QVariant &value, int role = Qt::EditRole );
     virtual Qt::ItemFlags flags( const QModelIndex &index ) const;
     virtual QModelIndex index( int row, int column, const QModelIndex &parent = QModelIndex() ) const;
     virtual QModelIndex parent( const QModelIndex &index ) const;
@@ -145,9 +157,19 @@ class KDEUI_EXPORT KPageWidgetModel : public KPageModel
      */
     QModelIndex index( const KPageWidgetItem *item ) const;
 
+  Q_SIGNALS:
+    /**
+     * This signal is emitted whenever a checkable page changes its state. @param checked is true
+     * when the @param page is checked, or false if the @param page is unchecked.
+     */
+    void toggled( KPageWidgetItem *page, bool checked );
+
   private:
     class Private;
     Private* const d;
+
+    Q_PRIVATE_SLOT( d, void itemChanged() )
+    Q_PRIVATE_SLOT( d, void itemToggled( bool ) )
 };
 
 #endif
