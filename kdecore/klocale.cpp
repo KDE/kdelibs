@@ -1981,7 +1981,7 @@ QString KLocale::defaultCountry()
   return QString::fromLatin1("C");
 }
 
-const char * KLocale::encoding() const
+const QByteArray KLocale::encoding() const
 {
 #ifdef Q_WS_WIN
   if (0==qstrcmp("System", codecForEncoding()->name()))

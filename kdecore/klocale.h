@@ -421,7 +421,7 @@ public:
    * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
   QString formatByteSize( double size ) const;
-  
+
   /**
    * Use this to determine whether nouns are declined in
    * locale's language. This property should remain
@@ -665,7 +665,7 @@ public:
    * @see codecForEncoding
    * @see encodingMib
    */
-  const char * encoding() const;
+  const QByteArray encoding() const;
 
   /**
    * Returns the user's preferred encoding.
