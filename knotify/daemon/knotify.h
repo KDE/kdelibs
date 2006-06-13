@@ -90,7 +90,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 		Q_SCRIPTABLE void closeNotification( int id);
 		
 		Q_SCRIPTABLE void event(const QString &event, const QString &fromApp, const QVariantList& contexts ,
-								const QString &text, const QByteArray& pixmap,  const QStringList& actions , int winId ,
+								const QString &text, const QByteArray& pixmap,  const QStringList& actions , int winId );
 				   //const QDBusMessage & , int _return );
 	Q_SIGNALS:
 		void notificatonClosed( int id);
