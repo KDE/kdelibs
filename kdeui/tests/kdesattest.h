@@ -1,8 +1,8 @@
 //
 // Simple little hack to show off blending effects.
 //
-// (C) KDE Artistic Cristian Tibirna <tibirna@kde.org>
-//
+// Copyright Cristian Tibirna <tibirna@kde.org>
+// Licensed under the Artistic License.
 
 #ifndef KBLEND_TEST_H
 #define KBLEND_TEST_H

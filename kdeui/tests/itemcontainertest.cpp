@@ -1,9 +1,9 @@
 /*
 * Tests the item container widgets K3IconView, K3ListView, KListBox
 *
-* Copyright (c) 2000 by Michael Reiher <michael.reiher@gmx.de>
+* Copyright 2000 by Michael Reiher <michael.reiher@gmx.de>
 *
-* License: GPL, version 2
+* Licensed under the GNU General Public License version 2
 */
 
 // remove when Q3IconView is ported

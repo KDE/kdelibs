@@ -1,3 +1,7 @@
+//
+// Copyright Daniel M. Duley <mosfet@kde.org>
+// Licensed under the Artistic License.
+
 #include "kunbalancedgrdtest.h"
 #include <kapplication.h>
 #include <kcmdlineargs.h>

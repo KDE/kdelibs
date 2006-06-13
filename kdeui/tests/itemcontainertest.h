@@ -1,3 +1,10 @@
+/*
+* Tests the item container widgets K3IconView, K3ListView, KListBox
+*
+* Copyright 2000 by Michael Reiher <michael.reiher@gmx.de>
+*
+* Licensed under the GNU General Public License version 2
+*/
 #ifndef _ITEMCONTAINERTEST_H
 #define _ITEMCONTAINERTEST_H
 

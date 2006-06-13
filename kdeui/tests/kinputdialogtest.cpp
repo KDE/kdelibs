@@ -1,6 +1,6 @@
 /*
- * Author:  Nadeem Hasan <nhasan@kde.org>
- * License: GPL V2
+ * Copyright Nadeem Hasan <nhasan@kde.org>
+ * Licensed under the GNU General Public License version 2
  */
 
 #include <QApplication>

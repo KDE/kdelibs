@@ -1,8 +1,8 @@
 /* -*- C++ -*-
  * This file shows an example for the KDE about dialog.
  *
- * copyright:  (C) Mirko Boehm, 1999
- * license:    GNU Public License, Version 2
+ * Copyright 1999 Mirko Boehm <mirko@kde.org>
+ * Licensed under the GNU General Public License version 2
  * mail to:    Mirko Boehm <mirko@kde.org>
  * requires:   recent C++-compiler, at least Qt 1.4
  */

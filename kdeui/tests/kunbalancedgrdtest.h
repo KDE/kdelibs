@@ -1,8 +1,8 @@
 //
 // Simple little hack to show off new diagonal gradients.
 //
-// (C) KDE Artistic Daniel M. Duley <mosfet@kde.org>
-//
+// Copyright Daniel M. Duley <mosfet@kde.org>
+// Licensed under the Artistic License.
 
 #ifndef KGRADIENT_TEST_H
 #define KGRADIENT_TEST_H

@@ -1,9 +1,9 @@
 /*
 * Tests the KActiveLabel Widget class
 *
-* Copyright (c) 2006 by Tobias Koenig <tokoe@kde.org>
+* Copyright 2006 by Tobias Koenig <tokoe@kde.org>
 *
-* License: GPL, version 2
+* Licensed under the GNU General Public License version 2
 */
 
 #include <QLayout>

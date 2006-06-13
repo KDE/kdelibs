@@ -3,8 +3,7 @@
 //
 //  version 0.2, Aug 2nd 1997
 //
-//  (C) Christian Czezatke
-//  e9025461@student.tuwien.ac.at
+//  Copyright 1997 Christian Czezatke <e9025461@student.tuwien.ac.at>
 //
 
 

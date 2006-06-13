@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1996 Martynas Kunigelis
-   Copyright (C) 2006 Urs Wolfer <uwolfer @ fwo.ch>
+   Copyright (C) 2006 Urs Wolfer <uwolfer at fwo.ch>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public

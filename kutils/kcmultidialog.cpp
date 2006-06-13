@@ -2,7 +2,7 @@
    Copyright (c) 2000 Matthias Elter <elter@kde.org>
    Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
    Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
-   Copyright (c) 2004 Frans Englich <frans.erglich.com>
+   Copyright (c) 2004 Frans Englich <frans.englich@telia.com>
    Copyright (c) 2006 Tobias Koenig <tokoe@kde.org>
 
    This library is free software; you can redistribute it and/or

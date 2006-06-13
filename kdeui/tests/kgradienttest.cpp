@@ -1,3 +1,6 @@
+//
+// Copyright Daniel M. Duley <mosfet@kde.org>
+// Licensed under the Artistic License
 #include "kgradienttest.h"
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

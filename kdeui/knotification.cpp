@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2005 Olivier Goffart <ogoffart @ kde.org>
+   Copyright (C) 2005 Olivier Goffart <ogoffart at kde.org>
 
    code from KNotify/KNotifyClient
    Copyright (c) 1997 Christian Esken (esken@kde.org)

@@ -1,9 +1,9 @@
 /*
 * Tests the KNumInput Widget class
 *
-* Copyright (c) 1999 by Dirk A. Mueller <dmuell@gmx.net>
+* Copyright 1999 by Dirk A. Mueller <dmuell@gmx.net>
 *
-* License: GPL, version 2
+* Licensed under the GNU General Public License version 2
 */
 
 #include <QLayout>

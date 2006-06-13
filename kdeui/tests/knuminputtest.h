@@ -1,3 +1,10 @@
+/*
+* Tests the KNumInput Widget class
+*
+* Copyright 1999 by Dirk A. Mueller <dmuell@gmx.net>
+*
+* Licensed under the GNU General Public License version 2
+*/
 #ifndef _KNUMINPUTTEST_H
 #define _KNUMINPUTTEST_H
 
