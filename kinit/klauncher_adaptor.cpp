@@ -82,7 +82,7 @@ void KLauncherAdaptor::reparseConfiguration()
 int KLauncherAdaptor::requestHoldSlave(const QString &url, const QString &app_socket)
 {
     // handle method call org.kde.KLauncher.requestHoldSlave
-    return static_cast<KLauncher *>(parent())->requestHoldSlave(url, app_socket);
+    return static_cast<KLauncher *>(parent())->requestHoldSlave(KUrl(url), app_socket);
 }
 
 int KLauncherAdaptor::requestSlave(const QString &protocol, const QString &host, const QString &app_socket, QString &error)

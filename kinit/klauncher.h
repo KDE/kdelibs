@@ -144,8 +144,6 @@ protected:
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
                     const QStringList &url);
 
-   pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
-
    void queueRequest(KLaunchRequest *);
 
    void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QString &startup_id,
@@ -156,7 +154,7 @@ protected:
 Q_SIGNALS:
     void autoStartDone(int phase);
 
-public Q_SLOTS: // remote slots
+public: // remote methods, called by KLauncherAdaptor
     void autoStart(int phase = 1);
     void exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id);
     inline void exec_blind(const QString &name, const QStringList &arg_list)
@@ -169,10 +167,6 @@ public Q_SLOTS: // remote slots
     { kdeinit_exec(app, args, env, startup_id, true, msg); }
 
     void reparseConfiguration();
-    inline int requestHoldSlave(const QString &url, const QString &app_socket)
-    { return requestHoldSlave(KUrl(url), app_socket); }
-    inline int requestSlave(const QString &protocol, const QString &host, const QString &app_socket)
-    { return requestSlave(protocol, host, app_socket); }
     void setLaunchEnv(const QString &name, const QString &value);
     bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
     inline bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg)
@@ -183,6 +177,8 @@ public Q_SLOTS: // remote slots
     bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
     inline bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg)
     { return start_service_by_name(serviceName, urls, QStringList(), QString(), false, msg); }
+    pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
+
     pid_t requestSlave(const QString &protocol, const QString &host,
                        const QString &app_socket, QString &error);
     void waitForSlave(int pid, const QDBusMessage &msg);
