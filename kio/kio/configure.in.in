@@ -107,7 +107,7 @@ dnl Try to find if we have Linux Inode based Dir Notification
 dnl ------------------------------------------------------------------------
 
 AC_ARG_ENABLE(inotify,
-AC_HELP_STRING([--enable-inotify],[enable use of Linux inode notifications]),
+AC_HELP_STRING([--disable-inotify],[enable use of Linux inode notifications]),
 [ kde_enable_inotify=$enableval ], [kde_enable_inotify=yes])dnl
 
 AC_CHECK_GNU_EXTENSIONS
