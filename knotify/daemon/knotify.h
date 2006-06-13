@@ -39,22 +39,21 @@ class KNotifyPlugin;
 class KNotify : public QObject
 {
 	Q_OBJECT
-
+	Q_CLASSINFO("D-Bus Interface", "org.kde.KNotify")
 	public:
 		KNotify(QObject *parent=0l);
 		~KNotify();
 		void addPlugin( KNotifyPlugin *p );
 
-	public Q_SLOTS:
-	
-		void reconfigure();
-		void closeNotification( int id);
+	public slots:
+		Q_SCRIPTABLE void reconfigure();
+		Q_SCRIPTABLE void closeNotification( int id);
 		
-		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
+		Q_SCRIPTABLE int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
 	Q_SIGNALS:
-		void notificatonClosed( int id);
-		void actionInvoked(int id,int action);
+		Q_SCRIPTABLE void notificatonClosed( int id);
+		Q_SCRIPTABLE void actionInvoked(int id,int action);
 		
 	private Q_SLOTS:
 		void slotPluginFinished(int id);
@@ -71,6 +70,11 @@ class KNotify : public QObject
 		QHash<QString, KNotifyPlugin *> m_plugins;
 		QHash<int , Event > m_notifications;
 		void loadConfig();
+		/**
+		 * we can't use this as parent for "plugins"  because otherwise it will messup the
+		 * dbus interface
+		 */
+		QObject parent_workaround; 
 };
 
 class KNotifyAdaptor : public QDBusAbstractAdaptor
@@ -82,11 +86,12 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 
 	public Q_SLOTS:
 	
-		void reconfigure();
-		void closeNotification( int id);
+		Q_SCRIPTABLE void reconfigure();
+		Q_SCRIPTABLE void closeNotification( int id);
 		
-		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
-				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
+		Q_SCRIPTABLE void event(const QString &event, const QString &fromApp, const QVariantList& contexts ,
+								const QString &text, const QByteArray& pixmap,  const QStringList& actions , int winId ,
+				   //const QDBusMessage & , int _return );
 	Q_SIGNALS:
 		void notificatonClosed( int id);
 		void actionInvoked(int id,int action);

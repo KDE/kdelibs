@@ -44,7 +44,8 @@ KNotify::KNotify( QObject *parent )
 {
 	loadConfig();
 	(void)new KNotifyAdaptor(this);
-	QDBus::sessionBus().registerObject("/Notify", this, QDBusConnection::ExportAdaptors);
+	QDBus::sessionBus().registerObject("/Notify", this, QDBusConnection::ExportAdaptors 
+	 /*|  QDBusConnection::ExportSlots |  QDBusConnection::ExportSignals*/ );
 }
 
 KNotify::~KNotify()
@@ -56,11 +57,11 @@ void KNotify::loadConfig()
 {
 	qDeleteAll(m_plugins);
 	m_plugins.clear();
-	addPlugin(new NotifyBySound(this));
-	addPlugin(new NotifyByPopup(this));
-	addPlugin(new NotifyByExecute(this));
-	addPlugin(new NotifyByLogfile(this));
-	addPlugin(new NotifyByTaskbar(this));
+	addPlugin(new NotifyBySound(&parent_workaround));
+	addPlugin(new NotifyByPopup(&parent_workaround));
+	addPlugin(new NotifyByExecute(&parent_workaround));
+	addPlugin(new NotifyByLogfile(&parent_workaround));
+	addPlugin(new NotifyByTaskbar(&parent_workaround));
 }
 
 void KNotify::addPlugin( KNotifyPlugin * p )
@@ -160,10 +161,26 @@ void KNotifyAdaptor::closeNotification(int id)
 	static_cast<KNotify *>(object())->closeNotification(id);
 }
 
-int KNotifyAdaptor::event(const QString &event, const QString &fromApp, const ContextList& contexts,
-                          const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId)
+void KNotifyAdaptor::event(const QString &event, const QString &fromApp, const QVariantList& contexts,
+						   const QString &text, const QByteArray& image,  const QStringList& actions , int winId)
+//						  const QDBusMessage & , int _return )
+								  
 {
-	return static_cast<KNotify *>(object())->event(event, fromApp, contexts, text, pixmap, actions, winId);
+	ContextList contextlist;
+	foreach( QVariant v , contexts)
+	{
+		QVariantList vl=v.toList();
+		if(vl.count() != 2)
+		{
+			kWarning(300) << k_funcinfo << "Bad structure passed as argument" << endl;
+			continue;
+		}
+		contextlist << qMakePair(vl[0].toString() , vl[1].toString());
+	}
+	
+	QPixmap pixmap;
+	pixmap.loadFromData(image);
+	 static_cast<KNotify *>(object())->event(event, fromApp, contextlist, text, pixmap, actions, winId);
 }
 
 #include "knotify.moc"
