@@ -283,7 +283,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
       for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
           it2 != offers.end(); ++it2)
       {
-         kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath() << endl;
+         //kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath() << endl;
 
          str << (qint32) entry->offset();
          str << (qint32) (*it2).service()->offset();
