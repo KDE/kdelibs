@@ -76,6 +76,9 @@ class KPageTreeView : public QTreeView
 
   private Q_SLOTS:
     void updateWidth();
+
+  private:
+    void expandItems( const QModelIndex &index = QModelIndex() );
 };
 
 class KPageTabbedView : public QAbstractItemView

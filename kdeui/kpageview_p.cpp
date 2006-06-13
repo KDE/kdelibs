@@ -168,6 +168,17 @@ void KPageTreeView::updateWidth()
   }
 
   setFixedWidth( width + 20 );
+
+  expandItems();
+}
+
+void KPageTreeView::expandItems( const QModelIndex &index )
+{
+  setExpanded( index, true );
+
+  const int count = model()->rowCount( index );
+  for ( int i = 0; i < count; ++i )
+    expandItems( model()->index( i, 0, index ) );
 }
 
 
