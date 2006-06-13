@@ -660,7 +660,54 @@ cg.readXXX("entry name");
 
 <H4>KDialogBase</H4>
 <ul>
-<li>Deprecated. Use KDialog instead or KPageDialog if you need the face feature.</li>
+<li>Deprecated. Use KDialog or KPageDialog instead.</li>
+<p>If the KDialogBase is Swallow or Plain mode you should replace it with KDialog, for
+all other modes use KPageDialog</p>
+<pre>
+Replace
+
+  QWidget *page = plainPage();
+
+with
+
+  QWidget *page = new QWidget( this );
+  setMainWidget( page );
+
+All makeXXXMainWidget() methods can be replaced by the following schema:
+
+  KVBox *mainWidget = makeVBoxMainWidget();
+
+replace with
+
+  KVBox *mainWidget = new KVBox( this );
+  setMainWidget( mainWidget );
+</pre>
+<p>If you use a KPageDialog, the following steps must be taken...</p>
+<pre>
+Replace ctor
+
+  KDialogBase dlg( Tabbed, 0, parent, name, modal, i18n( "my caption" ), ... )
+
+with
+
+  KPageDialog dlg( parent );
+  dlg.setFaceType( KPageDialog::Tabbed );
+  dlg.setObjectName( name );
+  dlg.setModal( modal );
+  dlg.setCaption( i18n( "my caption" ) );
+  ...
+
+All addXXXPage() methods can be replaced by the following schema:
+
+  KVBox *page = addVBoxPage( i18n( "My Title" ), i18n( "My Header" ), QPixmap( "image" ) );
+
+replace with
+
+  KVBox *page = new KVBox();
+  KPageWidgetItem *item = addPage( page, i18n( "My Title" ) );
+  item-&gt;setHeader( i18n( "My Header" ) );
+  item-&gt;setIcon( KIcon( "image" ) );
+</pre>
 </ul>
 
 <H4>KDialog</H4>
