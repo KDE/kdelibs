@@ -1332,8 +1332,6 @@ KLauncher::requestSlave(const QString &protocol,
     if (!pid)
     {
        error = i18n("Error loading '%1'.\n").arg(name);
-       if (!request->errorMsg.isEmpty())
-         error += ":\n" + request->errorMsg;
     }
     return pid;
 }
