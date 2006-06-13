@@ -27,19 +27,19 @@
 #include <QWidget>
 #include <QAction>
 #include <QLayout>
+#include <QtUiTools/QUiLoader>
 
-#include "widgetfactory.h"
 #include <QFile>
 
 namespace KJSEmbed
 {
-    static WidgetFactory *gWidgetFactory = 0L;
+    static QUiLoader *gUiLoader = 0L;
 
-    WidgetFactory *widgetFactory()
+    QUiLoader *uiLoader()
     {
-        if( gWidgetFactory == 0 )
-            gWidgetFactory = new WidgetFactory;
-        return gWidgetFactory;
+        if( gUiLoader == 0 )
+	  gUiLoader = new QUiLoader();
+        return gUiLoader;
     }
 }
 
@@ -147,7 +147,7 @@ START_CTOR( Widget, Widget, 0 )
             parentWidget = parentImp->object<QWidget>();
         }
 
-        QWidget *widget = widgetFactory()->widget(widgetName, parentWidget, "QWidget");
+        QWidget *widget = uiLoader()->createWidget(widgetName, parentWidget, "QWidget");
         if( widget )
         {
             KJS::JSObject *widgetObject = KJSEmbed::createQObject(exec, widget);
@@ -199,7 +199,7 @@ START_CTOR( Layout, Layout, 0 )
             parentObject = parentImp->object<QObject>();
         }
 
-        QLayout *layout = widgetFactory()->layout(layoutName, parentObject, "QLayout");
+        QLayout *layout = uiLoader()->createLayout(layoutName, parentObject, "QLayout");
         if( layout )
         {
             KJS::JSObject *layoutObject = KJSEmbed::createQObject(exec, layout);
@@ -225,7 +225,7 @@ START_CTOR( Action, Action, 0 )
         QObject *parent = KJSEmbed::extractObject<QObject>(exec, args, 0, 0);
         QString actionName = KJSEmbed::extractQString(exec, args, 1);
 
-        QAction *action = widgetFactory()->action(parent, actionName);
+        QAction *action = uiLoader()->createAction(parent, actionName);
         if( action )
         {
             KJS::JSObject *actionObject = KJSEmbed::createQObject( exec, action );
