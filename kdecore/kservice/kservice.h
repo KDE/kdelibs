@@ -1,6 +1,7 @@
 // -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright     1999-2006  David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -34,16 +35,19 @@ class KDesktopFile;
 class QWidget;
 
 /**
- * Represent a service, i.e. an application bound to one or several mimetypes
- * (or servicetypes) as written in its desktop entry file.
+ * Represent a service, i.e. an application or plugin
+ * bound to one or several mimetypes (or servicetypes) as written
+ * in its desktop entry file.
  *
- * A service may be a library, too.
  * The starting point you need is often the static methods.
  * Service types are stored as desktop files in the "service" resource..
  *
+ * For a tutorial on how to build a plugin-loading mechanism and how to write plugins
+ * in general, see http://developer.kde.org/documentation/tutorials/developing-a-plugin-structure/index.html#developing_plugins
+ *
  * @see KServiceType
  * @see KServiceGroup
- * @author Torben Weis <weis@kde.org>
+ * @author Torben Weis
  */
 class KDECORE_EXPORT KService : public KSycocaEntry
 {
