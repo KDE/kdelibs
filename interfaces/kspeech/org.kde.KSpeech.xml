@@ -42,7 +42,7 @@
         <method name="setText">
             <arg name="text" type="s" direction="in"/>
             <arg name="talker" type="s" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+            <arg type="u" direction="out"/>
         </method>
 
         <method name="sayText">
