@@ -23,6 +23,7 @@
 #ifndef KCMULTIDIALOG_H
 #define KCMULTIDIALOG_H
 
+#include <kcmoduleinfo.h>
 #include <kpagedialog.h>
 
 /**
