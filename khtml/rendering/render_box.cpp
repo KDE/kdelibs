@@ -159,6 +159,8 @@ void RenderBox::setStyle(RenderStyle *_style)
         if (!m_layer) {
             m_layer = new (renderArena()) RenderLayer(this);
             m_layer->insertOnlyThisLayer();
+            if (parent() && containingBlock())
+                m_layer->updateLayerPosition();
         }
     }
     else if (m_layer && !isCanvas()) {
