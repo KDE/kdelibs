@@ -994,7 +994,7 @@ KLauncher::requestSlave(const QString &protocol,
        if (!mSlaveValgrindSkin.isEmpty()) {
            arg_list.prepend(QLatin1String("--tool=") + mSlaveValgrindSkin);
        } else
-	   arg_list.prepend(QLatin1String("--tool=addrcheck"));
+	   arg_list.prepend(QLatin1String("--tool=memcheck")); // ######### should be addrcheck, but it's not available at the moment
     }
 
     KLaunchRequest *request = new KLaunchRequest;
