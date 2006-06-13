@@ -19,15 +19,15 @@
 
 #include "module.h"
 
-KDETrayModule::KDETrayModule( const QString& obj )
-    : KDEDModule( obj )
+KDETrayModule::KDETrayModule()
+    : KDEDModule()
     {
     }
 
-extern "C" 
-KDE_EXPORT KDEDModule *create_kdetrayproxy( const QString& obj )
+extern "C"
+KDE_EXPORT KDEDModule *create_kdetrayproxy()
     {
-    return new KDETrayModule( obj );
+    return new KDETrayModule();
     }
 
 #include "module.moc"

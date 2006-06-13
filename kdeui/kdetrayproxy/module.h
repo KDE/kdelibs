@@ -29,7 +29,7 @@ class KDETrayModule
     {
     Q_OBJECT
     public:
-        KDETrayModule( const QString& obj );
+        KDETrayModule();
     private:
         KDETrayProxy proxy;
     };

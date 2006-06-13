@@ -41,15 +41,15 @@ class KSSLD : public KDEDModule
   Q_CLASSINFO("D-Bus Interface", "org.kde.KSSLD")
 
 public:
-  
-  KSSLD(const QString &name);
-  
+
+  KSSLD();
+
   virtual ~KSSLD();
 
   //
   //  Certificate Cache methods
   //
-  void cacheAddCertificate(KSSLCertificate cert, 
+  void cacheAddCertificate(KSSLCertificate cert,
 		           KSSLCertificateCache::KSSLCertificatePolicy policy,
 		           bool permanent = true);
   KSSLCertificateCache::KSSLCertificatePolicy cacheGetPolicyByCertificate(KSSLCertificate cert);
@@ -78,7 +78,7 @@ public Q_SLOTS:
   Q_SCRIPTABLE bool cacheRemoveByCN(QString cn);
   Q_SCRIPTABLE bool cacheRemoveBySubject(QString subject);
   Q_SCRIPTABLE bool cacheRemoveByCertificate(QByteArray cert);
-	       
+
   Q_SCRIPTABLE bool cacheIsPermanent(QByteArray cert);
 
   Q_SCRIPTABLE void cacheReload();
@@ -108,7 +108,7 @@ public Q_SLOTS:
   Q_SCRIPTABLE bool caUseForSSL(QString subject);
 
   Q_SCRIPTABLE bool caUseForEmail(QString subject);
-  
+
   Q_SCRIPTABLE bool caUseForCode(QString subject);
 
   Q_SCRIPTABLE bool caAdd(QString certificate, bool ssl, bool email, bool code);
@@ -156,7 +156,7 @@ private:
   // Our pointer to OpenSSL
   KOpenSSLProxy *kossl;
 
-  // 
+  //
   void searchAddCert(KSSLCertificate *cert);
   void searchRemoveCert(KSSLCertificate *cert);
 

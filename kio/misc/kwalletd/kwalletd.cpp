@@ -56,8 +56,8 @@
 #include "kwalletdadaptor.h"
 
 extern "C" {
-   KDE_EXPORT KDEDModule *create_kwalletd(const QString &name) {
-	   return new KWalletD(name);
+   KDE_EXPORT KDEDModule *create_kwalletd() {
+	   return new KWalletD();
    }
 }
 
@@ -78,8 +78,8 @@ class KWalletTransaction {
 		QString wallet;
 };
 
-KWalletD::KWalletD(const QString &name)
-: KDEDModule(name), _failed(0) {
+KWalletD::KWalletD()
+: KDEDModule(), _failed(0) {
 	srand(time(0));
 	_showingFailureNotify = false;
 	_transactions.setAutoDelete(true);

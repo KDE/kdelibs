@@ -42,9 +42,9 @@
 
 extern "C"
 {
-	KDE_EXPORT KDEDModule *create_kdeprintd(const QString& name)
+	KDE_EXPORT KDEDModule *create_kdeprintd()
 	{
-		return new KDEPrintd(name);
+		return new KDEPrintd();
 	}
 }
 
@@ -102,8 +102,8 @@ void StatusWindow::setMessage(const QString& msg)
 
 //*****************************************************************************************************
 
-KDEPrintd::KDEPrintd(const QString& obj)
-: KDEDModule(obj)
+KDEPrintd::KDEPrintd()
+: KDEDModule()
 {
 }
 

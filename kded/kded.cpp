@@ -303,11 +303,12 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
       if (create)
       {
         // create the module
-        KDEDModule* (*func)(const QString &);
-        func = (KDEDModule* (*)(const QString &)) create;
-        module = func(obj);
+        KDEDModule* (*func)();
+        func = (KDEDModule* (*)()) create;
+        module = func();
         if (module)
         {
+          module->setModuleName(obj);
           m_modules.insert(obj, module);
           m_libs.insert(obj, lib);
           connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));

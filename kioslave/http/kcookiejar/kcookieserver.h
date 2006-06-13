@@ -39,7 +39,7 @@ class KCookieServer : public KDEDModule
 {
   Q_OBJECT
 public:
-  KCookieServer(const QString &);
+  KCookieServer();
   ~KCookieServer();
 
 public Q_SLOTS:
@@ -59,7 +59,7 @@ public Q_SLOTS:
    * Sets the cookie policy for the domain associated with the specified URL.
    */
   void setDomainAdvice(QString url, QString advice);
-  /** 
+  /**
    * Returns the cookie policy in effect for the specified URL.
    */
   QString getDomainAdvice(QString url);

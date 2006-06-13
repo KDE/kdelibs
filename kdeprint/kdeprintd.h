@@ -38,7 +38,7 @@ class KDEPrintd : public KDEDModule
 	Q_CLASSINFO("D-Bus Interface", "org.kde.KDEPrintd")
 
 public:
-	KDEPrintd(const QString& obj);
+	KDEPrintd();
 	~KDEPrintd();
 
 public Q_SLOTS:

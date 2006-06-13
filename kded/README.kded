@@ -122,7 +122,7 @@ Further it should contain:
 	X-KDE-FactoryName=foo
 
 Which means that kded_foo.la is the name of the library that contains 
-the module and KDEDModule *create_foo(const QCString &) is the factory 
+the module and KDEDModule *create_foo() is the factory 
 function that should be called.
 
 The .desktop file should be installed to ${kde_servicesdir}/kded

@@ -6,14 +6,14 @@ class TestObject : public KShared
 public:
    TestObject(const DCOPCString &_app) : app(_app)
      { qWarning("Creating TestObject belonging to '%s'", app.data()); }
-   ~TestObject() 
+   ~TestObject()
      { qWarning("Destructing TestObject belonging to '%s'", app.data()); }
 protected:
    DCOPCString app;
 };
 #endif
 
-TestModule::TestModule(const DCOPCString &obj) : KDEDModule(obj)
+TestModule::TestModule() : KDEDModule()
 {
 #if 0
   // Do stuff here
@@ -23,7 +23,7 @@ TestModule::TestModule(const DCOPCString &obj) : KDEDModule(obj)
 
 QString TestModule::world()
 {
-  return "Hello World!";  
+  return "Hello World!";
 }
 
 void TestModule::idle()
@@ -39,10 +39,10 @@ void TestModule::registerMe(const DCOPCString &app)
 #endif
 }
 
-extern "C" { 
-  KDE_EXPORT KDEDModule *create_test(const DCOPCString &obj)
+extern "C" {
+  KDE_EXPORT KDEDModule *create_test()
   {
-     return new TestModule(obj);
+     return new TestModule();
   }
 };
 

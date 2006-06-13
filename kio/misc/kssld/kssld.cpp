@@ -53,8 +53,8 @@
 // See design notes at end
 
 extern "C" {
-	KDE_EXPORT KDEDModule *create_kssld(const QString &name) {
-		return new KSSLD(name);
+	KDE_EXPORT KDEDModule *create_kssld() {
+		return new KSSLD();
 	}
 
 	KDE_EXPORT void *__kde_do_unload;
@@ -117,9 +117,9 @@ static void updatePoliciesConfig(KConfig *cfg) {
 }
 
 
-KSSLD::KSSLD(const QString &name) : KDEDModule(name)
+KSSLD::KSSLD() : KDEDModule()
 {
-// ----------------------- FOR THE CACHE ------------------------------------	
+// ----------------------- FOR THE CACHE ------------------------------------
 	cfg = new KSimpleConfig("ksslpolicies", false);
 	cfg->setGroup("General");
 	if (2 != cfg->readEntry("policies version", 0)) {
@@ -132,18 +132,18 @@ KSSLD::KSSLD(const QString &name) : KDEDModule(name)
 
 // ----------------------- FOR THE HOME -------------------------------------
 }
-  
+
 
 KSSLD::~KSSLD()
 {
-// ----------------------- FOR THE CACHE ------------------------------------	
+// ----------------------- FOR THE CACHE ------------------------------------
 	cacheClearList();
 	delete cfg;
 
 // ----------------------- FOR THE HOME -------------------------------------
 }
 
-  
+
 
 
 // A node in the cache
@@ -155,7 +155,7 @@ class KSSLCNode {
 		QDateTime expires;
 		QStringList hosts;
 		KSSLCNode() { cert = 0L;
-				policy = KSSLCertificateCache::Unknown; 
+				policy = KSSLCertificateCache::Unknown;
 				permanent = true;
 			}
 		~KSSLCNode() { delete cert; }
@@ -197,7 +197,7 @@ KSSLCNode *node;
 			cl.setAutoDelete(true);
 			cfg->writeEntry("Chain", qsl);
 		}
-	}  
+	}
 
 	cfg->sync();
 
@@ -268,7 +268,7 @@ QStringList groups = cfg->groupList();
 		n->expires = cfg->readEntry("Expires", QDateTime());
 		n->hosts = cfg->readEntry("Hosts", QStringList());
 		newCert->chain().setCertChain(cfg->readEntry("Chain", QStringList()));
-		certList.append(n); 
+		certList.append(n);
 		searchAddCert(newCert);
 	}
 }
@@ -280,7 +280,7 @@ void KSSLD::cacheAddCertificate(QByteArray certData, int policy, bool permanent)
 	cacheAddCertificate(cert, KSSLCertificateCache::KSSLCertificatePolicy(policy), permanent);
 }
 
-void KSSLD::cacheAddCertificate(KSSLCertificate cert, 
+void KSSLD::cacheAddCertificate(KSSLCertificate cert,
 			KSSLCertificateCache::KSSLCertificatePolicy policy,
 			bool permanent) {
 KSSLCNode *node;
@@ -306,7 +306,7 @@ KSSLCNode *node;
 	n->permanent = permanent;
 	// remove the old one
 	cacheRemoveByCertificate(*(n->cert));
-	certList.prepend(n); 
+	certList.prepend(n);
 
 	if (!permanent) {
 		n->expires = QDateTime::currentDateTime();
@@ -348,11 +348,11 @@ int KSSLD::cacheGetPolicyByCertificate(QByteArray certData) {
 	stream >> cert;
 	return cacheGetPolicyByCertificate(cert);
 }
-	
+
 KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCertificate(KSSLCertificate cert) {
 KSSLCNode *node;
 	Q_FOREACH( node , certList ) {
-		if (cert == *(node->cert)) {  
+		if (cert == *(node->cert)) {
 			if (!node->permanent &&
 				node->expires < QDateTime::currentDateTime()) {
 				certList.removeAll(node);
@@ -682,7 +682,7 @@ void KSSLD::caVerifyUpdate() {
 	QString path = KGlobal::dirs()->saveLocation("kssl") + "/ca-bundle.crt";
 	if (!QFile::exists(path))
 		return;
-	
+
 	cfg->setGroup(QString());
 	quint32 newStamp = KGlobal::dirs()->calcResourceHash("config", "ksslcalist", true);
 	quint32 oldStamp = cfg->readEntry("ksslcalistStamp", 0);
@@ -925,7 +925,7 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 			it = skEmail.insert(email, QVector<KSSLCertificate*>());
 
 		QVector<KSSLCertificate*> &elem = *it;
-		
+
 		if (elem.indexOf(cert) == -1) {
 			int n = 0;
 			for(; n < elem.size(); n++) {
@@ -939,7 +939,7 @@ void KSSLD::searchAddCert(KSSLCertificate *cert) {
 				elem.insert(n, cert);
 			}
 		}
-	}	
+	}
 }
 
 
@@ -960,7 +960,7 @@ void KSSLD::searchRemoveCert(KSSLCertificate *cert) {
 		if (n != -1)
 			elem.remove(n);
 	}
-}	
+}
 
 
 QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
@@ -987,16 +987,16 @@ QStringList KSSLD::getKDEKeyByEmail(const QString &email) {
 
 KSSLCertificate KSSLD::getCertByMD5Digest(const QString &key) {
 	QMap<QString, KSSLCertificate *>::iterator iter = skMD5Digest.find(key);
-	
+
 	kDebug() << "Searching cert for " << key.toLatin1() << endl;
 
 	if (iter != skMD5Digest.end())
 		return **iter;
-	
+
 	KSSLCertificate rc; // FIXME: Better way to return a not found condition?
 	kDebug() << "Not found: " << rc.toString().toLatin1() << endl;
 	return rc;
-}	
+}
 
 
 ///////////////////////////////////////////////////////////////////////////

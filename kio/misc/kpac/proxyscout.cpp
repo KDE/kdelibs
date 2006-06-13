@@ -38,8 +38,8 @@ namespace KPAC
     {
     }
 
-    ProxyScout::ProxyScout( const QString& name )
-        : KDEDModule( name ),
+    ProxyScout::ProxyScout()
+        : KDEDModule(),
           m_instance( new KInstance( "proxyscout" ) ),
           m_downloader( 0 ),
           m_script( 0 ),
@@ -124,7 +124,7 @@ namespace KPAC
                 notify->sendEvent();
                 success = false;
             }
-        else 
+        else
         {
 		KNotification *notify = new KNotification ("download-error");
 		notify->setText( m_downloader->error() );
@@ -191,9 +191,9 @@ namespace KPAC
         return "DIRECT";
     }
 
-    extern "C" KDE_EXPORT KDEDModule* create_proxyscout( const QString& name )
+    extern "C" KDE_EXPORT KDEDModule* create_proxyscout()
     {
-        return new ProxyScout( name );
+        return new ProxyScout();
     }
 }
 

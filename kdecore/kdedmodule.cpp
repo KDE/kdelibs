@@ -41,7 +41,7 @@ public:
 #endif
 };
 
-KDEDModule::KDEDModule(const QString &moduleName)
+KDEDModule::KDEDModule()
     : d(new KDEDModulePrivate)
 {
 #if 0 // KDED_OBJECTS
@@ -50,15 +50,19 @@ KDEDModule::KDEDModule(const QString &moduleName)
    d->timer.setSingleShot( true );
    connect(&(d->timer), SIGNAL(timeout()), this, SLOT(idle()));
 #endif
-   QString realPath = d->moduleName = moduleName;
-   realPath.prepend("/modules/");
-   QDBus::sessionBus().registerObject(realPath, this, QDBusConnection::ExportContents | QDBusConnection::ExportAdaptors);
 }
 
 KDEDModule::~KDEDModule()
 {
    emit moduleDeleted(this);
-   delete d; 
+   delete d;
+}
+
+void KDEDModule::setModuleName( const QString& name )
+{
+   QString realPath = d->moduleName = name;
+   realPath.prepend("/modules/");
+   QDBus::sessionBus().registerObject(realPath, this, QDBusConnection::ExportContents | QDBusConnection::ExportAdaptors);
 }
 
 QString KDEDModule::moduleName() const

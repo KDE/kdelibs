@@ -24,7 +24,6 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qbytearray.h>
-//#include <ksharedptr.h>
 
 #include "kdelibs_export.h"
 
@@ -42,9 +41,9 @@ class Kded;
  *
  * \code
  *   extern "C" {
- *     KDE_EXPORT KDEDModule *create_xyz(DCOPCString *name)
+ *     KDE_EXPORT KDEDModule *create_xyz()
  *     {
- *       return new XYZ(name);
+ *       return new XYZ();
  *     }
  *   }
  * \endcode
@@ -62,18 +61,22 @@ class KDECORE_EXPORT KDEDModule: public QObject
 public:
 
   /**
-   * Create a KDED module with the given module name.
+   * Constructor
    */
-  KDEDModule(const QString &moduleName);
+  KDEDModule();
 
   virtual ~KDEDModule();
+
+  /**
+   * @internal called by kded after loading a module
+   * The module name is set from the path of the desktop file, and is
+   * used to register the module to dbus.
+   */
+  void setModuleName( const QString& name );
 
   QString moduleName() const;
 
 #if 0 // does anyone really use this? I found no kdedmodule using it.
-     // and since KShared is deprecated, this would have to be ported to something else.
-     // For instance a KDEDObject base class (doing nothing, just an interface),
-     // and saying that the kdedmodule gets ownership; no need for kshared[ptr] here, right?
 
      // Same for setIdleTimeout/resetIdle - no hit in lxr.kde.org
      // Grep for KDED_OBJECTS if you re-enable the feature.

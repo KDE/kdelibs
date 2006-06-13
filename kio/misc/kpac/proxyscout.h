@@ -1,4 +1,4 @@
-/* 
+/*
    Copyright (c) 2003 Malte Starostik <malte@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ namespace KPAC
         Q_OBJECT
         Q_CLASSINFO("D-Bus Interface", "org.kde.KPAC.ProxyScout")
     public:
-        ProxyScout( const QString& );
+        ProxyScout();
         virtual ~ProxyScout();
 
     public Q_SLOTS:

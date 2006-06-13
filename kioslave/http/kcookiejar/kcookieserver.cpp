@@ -46,9 +46,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejaradaptor.h"
 
 extern "C" {
-    KDE_EXPORT KDEDModule *create_kcookiejar(const QString &name)
+    KDE_EXPORT KDEDModule *create_kcookiejar()
     {
-       return new KCookieServer(name);
+       return new KCookieServer();
     }
 }
 
@@ -74,8 +74,8 @@ public:
    RequestList() : Q3PtrList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer(const QString &name)
-              :KDEDModule(name)
+KCookieServer::KCookieServer()
+              :KDEDModule()
 {
    (void)new KCookieServerAdaptor(this);
    mCookieJar = new KCookieJar;
@@ -155,7 +155,7 @@ void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHead
        cookieList = mCookieJar->makeCookies(url, cookieHeader, windowId);
 
     checkCookies(&cookieList);
-    
+
     for(KHttpCookiePtr cookie = cookieList.first(); cookie; cookie = cookieList.first())
        mPendingCookies->append(cookieList.take());
 
@@ -173,7 +173,7 @@ void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHead
 void KCookieServer::checkCookies( KHttpCookieList *cookieList)
 {
     KHttpCookieList *list;
-    
+
     if (cookieList)
        list = cookieList;
     else
@@ -202,12 +202,12 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
             break;
         }
     }
-    
+
     if (cookieList || list->isEmpty())
        return;
-       
+
     KHttpCookiePtr currentCookie = mPendingCookies->first();
-    
+
     KHttpCookieList currentList;
     currentList.append(currentCookie);
     QString currentHost = currentCookie->host();
@@ -229,7 +229,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     delete kw;
     // Save the cookie config if it has changed
     mCookieJar->saveConfig( mConfig );
-    
+
     // Apply the user's choice to all cookies that are currently
     // queued for this host.
     cookie = mPendingCookies->first();
@@ -372,12 +372,12 @@ KCookieServer::findCookies(QString url, qlonglong windowId, const QDBusMessage &
       mRequestList->append( request );
       return QString(); // Talk to you later :-)
    }
-   
+
    QString cookies = mCookieJar->findCookies(url, false, windowId);
-   
+
    if (mCookieJar->changed() && !mTimer)
       saveCookieJar();
-   
+
    return cookies;
 }
 
@@ -442,7 +442,7 @@ KCookieServer::findDOMCookies(QString url)
 QString
 KCookieServer::findDOMCookies(QString url, qlonglong windowId)
 {
-   // We don't wait for pending cookies because it locks up konqueror 
+   // We don't wait for pending cookies because it locks up konqueror
    // which can cause a deadlock if it happens to have a popup-menu up.
    // Instead we just return pending cookies as if they had been accepted already.
    KHttpCookieList pendingCookies;
@@ -540,7 +540,7 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
-      
+
       mCookieJar->setDomainAdvice(domains[domains.count() > 3 ? 3 : 0],
                                   KCookieJar::strToAdvice(advice));
       // Save the cookie config if it has changed
