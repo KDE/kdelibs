@@ -298,6 +298,9 @@ kde4_add_executable(jobtest RUN_UNINSTALLED ${jobtest_SRCS})
 
 target_link_libraries(jobtest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
 
+# Seems to trigger a ctest problem; jobtest finishes and ctest waits for ever
+#add_test(kio-jobtest ${EXECUTABLE_OUTPUT_PATH}/jobtest)
+
 
 ########### next target ###############
 
