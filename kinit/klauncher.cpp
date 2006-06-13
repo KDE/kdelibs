@@ -1307,7 +1307,7 @@ KLauncher::requestSlave(const QString &protocol,
        if (!mSlaveValgrindSkin.isEmpty()) {
            arg_list.prepend(QCString("--tool=") + mSlaveValgrindSkin);
        } else
-	   arg_list.prepend("--tool=addrcheck");
+	   arg_list.prepend("--tool=memcheck");
     }
 
     KLaunchRequest *request = new KLaunchRequest;
@@ -1332,6 +1332,8 @@ KLauncher::requestSlave(const QString &protocol,
     if (!pid)
     {
        error = i18n("Error loading '%1'.\n").arg(name);
+       if (!request->errorMsg.isEmpty())
+         error += ":\n" + request->errorMsg;
     }
     return pid;
 }
