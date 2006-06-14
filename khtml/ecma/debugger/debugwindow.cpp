@@ -94,9 +94,9 @@ DebugWindow * DebugWindow::window()
 // STUB
 void DebugWindow::setNextSourceInfo(QString url, int baseLine)
 {
-    kDebug() << "setNextSourceInfo:";
-    kDebug() << "url: " << url;
-    kDebug() << "baseLine: " << baseLine;
+    kDebug() << "setNextSourceInfo:" << endl
+             << "url: " << url << endl
+             << "baseLine: " << baseLine  << endl;
 }
 
 // ----------------------------------------------
@@ -106,7 +106,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     KInstance("kjs_debugger")
 {
     setCaption(i18n("JavaScript Debugger"));
-    qDebug() << "creating DebugWindow";
+    kDebug() << "creating DebugWindow" << endl;
 
     m_sourceEdit = new NumberedTextView;
     m_watches = new WatchesDock;
@@ -240,17 +240,13 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
                                const UString &source, int errorLine)
 {
     Q_UNUSED(exec);
-    Q_UNUSED(sourceId);
-    Q_UNUSED(sourceURL);
-    Q_UNUSED(source);
-    Q_UNUSED(errorLine);
 
-    qDebug() << "*************************************************** sourceParsed **************************************************";
-    qDebug() << " sourceId: " << sourceId;
-    qDebug() << "sourceURL: " << sourceURL.ascii();
-    qDebug() << "   source: " << source.ascii();
-    qDebug() << "errorLine: " << errorLine;
-    qDebug() << "*******************************************************************************************************************";
+    kDebug() << "***************************** sourceParsed **************************************************" << endl
+             << " sourceId: " << sourceId << endl
+             << "sourceURL: " << sourceURL.qstring() << endl
+             << "   source: " << source.qstring() << endl
+             << "errorLine: " << errorLine << endl
+             << "*********************************************************************************************" << endl;
 
     return true;
 }
@@ -260,7 +256,7 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
     Q_UNUSED(exec);
     Q_UNUSED(sourceId);
 
-    kDebug() << "sourceUnused";
+    kDebug() << "sourceUnused" << endl;
 
     return true;
 }
@@ -272,7 +268,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject 
     Q_UNUSED(lineno);
     Q_UNUSED(exceptionObj);
 
-    kDebug() << "exception";
+    kDebug() << "exception" << endl;
 
     return true;
 }
@@ -284,7 +280,7 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
     Q_UNUSED(firstLine);
     Q_UNUSED(lastLine);
 
-    kDebug() << "atStatement";
+    kDebug() << "atStatement" << endl;
 
     return true;
 }
@@ -297,7 +293,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
     Q_UNUSED(function);
     Q_UNUSED(args);
 
-    kDebug() << "callEvent";
+    kDebug() << "callEvent" << endl;
 
     return true;
 }
@@ -309,7 +305,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     Q_UNUSED(lineno);
     Q_UNUSED(function);
 
-    kDebug() << "returnEvent";
+    kDebug() << "returnEvent" << endl;
 
     return true;
 }
