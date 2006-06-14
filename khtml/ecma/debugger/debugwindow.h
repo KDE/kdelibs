@@ -65,6 +65,8 @@ public:
     static void destroyInstance();
     static DebugWindow *window();
 
+    void setNextSourceInfo(QString url, int baseLine);
+
 public:
     // KJS Debugger Methods
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
