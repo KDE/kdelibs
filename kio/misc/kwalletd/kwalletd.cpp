@@ -1,3 +1,4 @@
+// -*- indent-tabs-mode: t; tab-width: 4; c-basic-offset: 4; -*-
 /*
    This file is part of the KDE libraries
 
@@ -87,6 +88,12 @@ KWalletD::KWalletD()
 	_closeIdle = false;
 	_idleTime = 0;
 	connect(_timeouts, SIGNAL(timedOut(int)), this, SLOT(timedOut(int)));
+
+	(void)new KWalletDAdaptor(this);
+	// register another name
+	QDBus::sessionBus().busService()->requestName("org.kde.kwalletd", QDBusBusService::ReplaceExistingName);
+	kdesktop = QDBus::sessionBus().findInterface("org.kde.kdesktop", "/KScreensaver", "org.kde.KScreensaverIface");
+
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 		connect(QDBus::sessionBus().busService(), SIGNAL(nameOwnerChanged(QString,QString,QString)),
@@ -96,18 +103,15 @@ KWalletD::KWalletD()
 	_dw->addDir(KGlobal::dirs()->saveLocation("kwallet"));
 	_dw->startScan(true);
 	connect(_dw, SIGNAL(dirty(const QString&)), this, SLOT(emitWalletListDirty()));
-
-	(void)new KWalletDAdaptor(this);
-	// register another name
-	QDBus::sessionBus().busService()->requestName("org.kde.kwalletd", QDBusBusService::ReplaceExistingName);
-	kdesktop = QDBus::sessionBus().findInterface("org.kde.kdesktop", "/KScreensaver",
-												 "org.kde.KScreensaverIface");
 }
 
 
 KWalletD::~KWalletD() {
 	delete _timeouts;
 	_timeouts = 0;
+
+	delete kdesktop;
+	kdesktop = 0;
 
 	closeAllWallets();
 	_transactions.clear();
@@ -1199,10 +1203,12 @@ void KWalletD::reconfigure() {
 	// in minutes!
 	_idleTime = cfg.readEntry("Idle Timeout", 10) * 60 * 1000;
 
-	if (cfg.readEntry("Close on Screensaver", false)) {
-		connect(kdesktop, SIGNAL(KDE_start_screensaver()), SLOT(closeAllWallets()));
-	} else {
-		kdesktop->disconnect(SIGNAL(KDE_start_screensaver()), this, SLOT(closeAllWallets()));
+	if ( kdesktop->isValid() ) {
+		if (cfg.readEntry("Close on Screensaver", false)) {
+			connect(kdesktop, SIGNAL(KDE_start_screensaver()), SLOT(closeAllWallets()));
+		} else {
+			kdesktop->disconnect(SIGNAL(KDE_start_screensaver()), this, SLOT(closeAllWallets()));
+		}
 	}
 
 	// Handle idle changes

@@ -1,3 +1,4 @@
+// -*- indent-tabs-mode: t; tab-width: 4; c-basic-offset: 4; -*-
 /*
    This file is part of the KDE libraries
 
