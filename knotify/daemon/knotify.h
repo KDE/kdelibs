@@ -105,7 +105,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 							"<arg name=\"actions\" type=\"as\" direction=\"in\"/>"
 							"<arg name=\"winId\" type=\"x\" direction=\"in\"/>"
 						"</method>"
-					"</interface>" );
+					"</interface>" )
 
 	public:
 		KNotifyAdaptor(QObject *parent);
