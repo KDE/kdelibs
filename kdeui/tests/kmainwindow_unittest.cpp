@@ -20,6 +20,7 @@
 #include "kmainwindow_unittest.h"
 #include "kmainwindow_unittest.moc"
 #include <kmainwindow.h>
+#include <kglobal.h>
 
 QTEST_KDEMAIN( KMainWindow_UnitTest, GUI )
 
@@ -67,4 +68,45 @@ void KMainWindow_UnitTest::testNameWithSpecialChars()
     mw2.setObjectName( "a#@_test/" );
     mw2.ensurePolished();
     QCOMPARE( mw2.objectName(), QString::fromLatin1( "qttest/a___test_2" ) );
+}
+
+static bool s_mainWindowDeleted;
+class MyMainWindow : public KMainWindow
+{
+public:
+    MyMainWindow() : KMainWindow(),
+                     m_queryClosedCalled( false ),
+                     m_queryExitCalled( false )
+    {
+    }
+    /*reimp*/ bool queryClose() {
+        m_queryClosedCalled = true;
+        return true;
+    }
+    /*reimp*/ bool queryExit() {
+        m_queryExitCalled = true;
+        return true;
+    }
+    ~MyMainWindow() {
+        s_mainWindowDeleted = true;
+    }
+    bool m_queryClosedCalled;
+    bool m_queryExitCalled;
+};
+
+// Here we test
+// - that queryClose is called
+// - that queryExit is called
+// - that autodeletion happens
+void KMainWindow_UnitTest::testDeleteOnClose()
+{
+    KGlobal::ref(); // don't let the deref in KMainWindow quit the app.
+    s_mainWindowDeleted = false;
+    MyMainWindow* mw = new MyMainWindow;
+    QVERIFY( mw->testAttribute( Qt::WA_DeleteOnClose ) );
+    mw->close();
+    QVERIFY( mw->m_queryClosedCalled );
+    QVERIFY( mw->m_queryExitCalled );
+    qApp->sendPostedEvents( mw, QEvent::DeferredDelete );
+    QVERIFY( s_mainWindowDeleted );
 }

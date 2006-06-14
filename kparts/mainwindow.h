@@ -50,11 +50,9 @@ class KPARTS_EXPORT MainWindow : public KMainWindow, virtual public PartBase
   /**
    * Constructor, same signature as KMainWindow.
    */
-  MainWindow( QWidget* parent,  const char *name = 0L, Qt::WFlags f = Qt::WType_TopLevel | Qt::WDestructiveClose );
-  /**
-   * Compatibility Constructor
-   */
-  MainWindow( const char *name = 0L, Qt::WFlags f = Qt::WDestructiveClose );
+  MainWindow( QWidget* parent = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
+  /// @deprecated, remove the name argument and use setObjectName instead
+  KDE_CONSTRUCTOR_DEPRECATED MainWindow( QWidget* parent, const char *name = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
   /**
    * Destructor.
    */

@@ -48,7 +48,7 @@ class KToolBar;
 class KToolBarMenuAction;
 class DCOPObject;
 
-#define KDE_DEFAULT_WINDOWFLAGS Qt::WType_TopLevel | Qt::WDestructiveClose
+#define KDE_DEFAULT_WINDOWFLAGS 0
 
 /**
  * @short %KDE top level main window
@@ -141,10 +141,10 @@ public:
      * for the composer windows "composer#".
      *
      */
-    KMainWindow( QWidget* parent = 0, Qt::WindowFlags f = 0 );
+    KMainWindow( QWidget* parent = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
 
     /// @deprecated, remove the name argument and use setObjectName instead
-    KDE_CONSTRUCTOR_DEPRECATED KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f = 0 );
+    KDE_CONSTRUCTOR_DEPRECATED KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
 
     /**
      * \brief Destructor.

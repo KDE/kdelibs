@@ -189,6 +189,8 @@ KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
 
 void KMainWindow::initKMainWindow()
 {
+    setAttribute( Qt::WA_DeleteOnClose );
+
     KWhatsThisManager::init ();
 
     mHelpMenu = 0;
@@ -631,11 +633,12 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         }
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
-            if ( queryExit() && !kapp->sessionSaving() && !d->shuttingDown ) { // Yes, Quit app?
+            if ( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown ) { // Yes, Quit app?
                 // don't call queryExit() twice
                 disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
                 d->shuttingDown = true;
                 KGlobal::deref();             // ...and quit application.
+                // ###### what if this doesn't quit?
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
                 e->ignore();

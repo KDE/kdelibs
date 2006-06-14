@@ -22,10 +22,12 @@
 #include <kapplication.h>
 
 #include "historyprovider.h"
+#include <kstaticdeleter.h>
 
 using namespace KParts;
 
 HistoryProvider * HistoryProvider::s_self = 0L;
+static KStaticDeleter<HistoryProvider> historyProviderSd;
 
 class HistoryProvider::HistoryProviderPrivate
 {
@@ -36,7 +38,7 @@ public:
 HistoryProvider * HistoryProvider::self()
 {
     if ( !s_self ) {
-	s_self = new HistoryProvider( kapp );
+        historyProviderSd.setObject( s_self, new HistoryProvider() );
         s_self->setObjectName( "history provider" );
     }
     return s_self;

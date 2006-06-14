@@ -56,15 +56,16 @@ public:
 };
 }
 
-MainWindow::MainWindow( QWidget* parent,  const char *name, Qt::WFlags f )
-    : KMainWindow( parent, name, f ),d(new MainWindowPrivate())
+MainWindow::MainWindow( QWidget* parent, Qt::WindowFlags f )
+    : KMainWindow( parent, f ), d(new MainWindowPrivate())
 {
   PartBase::setPartObject( this );
 }
 
-MainWindow::MainWindow( const char *name, Qt::WFlags f )
-  : KMainWindow( 0L, name, f ),d(new MainWindowPrivate())
+MainWindow::MainWindow( QWidget* parent, const char *name, Qt::WindowFlags f )
+  : KMainWindow( parent, f ),d(new MainWindowPrivate())
 {
+  setObjectName( name );
   PartBase::setPartObject( this );
 }
 
