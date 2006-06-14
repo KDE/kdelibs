@@ -65,15 +65,22 @@ public:
     static void destroyInstance();
     static DebugWindow *window();
 
+public:
+    // KJS Debugger Methods
+    bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
+                      const UString &source, int errorLine);
+    bool sourceUnused(ExecState *exec, int sourceId);
+    bool exception(ExecState *exec, int sourceId, int lineno, JSObject *exceptionObj);
+    bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);
+    bool callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args);
+    bool returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function);
+
 public slots:
     void stopExecution();
     void continueExecution();
     void stepInto();
     void stepOut();
     void stepOver();
-
-    // stubs
-    void setNextSourceInfo(const QString &, int);
 
 protected:
 /*
@@ -104,6 +111,8 @@ private:
     CallStackDock *m_callStack;
     BreakpointsDock *m_breakpoints;
     ConsoleDock *m_console;
+
+
 
     static DebugWindow *m_debugger;
 };

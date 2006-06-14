@@ -36,6 +36,7 @@
 #include <kconfig.h>
 #include <kconfigbase.h>
 #include <kapplication.h>
+#include <dcop/dcopclient.h>
 #include <kstringhandler.h>
 
 #include "kjs_dom.h"
@@ -90,17 +91,6 @@ DebugWindow * DebugWindow::window()
 {
     return m_debugger;
 }
-
-
-// ----------------------------------------------
-// Stubs
-void DebugWindow::setNextSourceInfo(const QString &string, int line)
-{
-    qDebug() << string << " and " << line;
-}
-
-
-
 
 // ----------------------------------------------
 
@@ -203,6 +193,7 @@ void DebugWindow::createToolBars()
     toolBar()->addAction(m_stepOverAct);
 }
 
+// -------------------------------------------------------------
 void DebugWindow::createStatusBar()
 {
     statusBar()->showMessage(i18n("Ready"));
@@ -236,3 +227,83 @@ void DebugWindow::stepOver()
 DebugWindow::~DebugWindow()
 {
 }
+
+// -------------------------------------------------------------
+bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
+                               const UString &source, int errorLine)
+{
+    Q_UNUSED(exec);
+    Q_UNUSED(sourceId);
+    Q_UNUSED(sourceURL);
+    Q_UNUSED(source);
+    Q_UNUSED(errorLine);
+
+    qDebug() << "*************************************************** sourceParsed **************************************************";
+    qDebug() << " sourceId: " << sourceId;
+    qDebug() << "sourceURL: " << sourceURL.ascii();
+    qDebug() << "   source: " << source.ascii();
+    qDebug() << "errorLine: " << errorLine;
+    qDebug() << "*******************************************************************************************************************";
+
+    return true;
+}
+
+bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
+{
+    Q_UNUSED(exec);
+    Q_UNUSED(sourceId);
+
+    kDebug() << "sourceUnused";
+
+    return true;
+}
+
+bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject *exceptionObj)
+{
+    Q_UNUSED(exec);
+    Q_UNUSED(sourceId);
+    Q_UNUSED(lineno);
+    Q_UNUSED(exceptionObj);
+
+    kDebug() << "exception";
+
+    return true;
+}
+
+bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
+{
+    Q_UNUSED(exec);
+    Q_UNUSED(sourceId);
+    Q_UNUSED(firstLine);
+    Q_UNUSED(lastLine);
+
+    kDebug() << "atStatement";
+
+    return true;
+}
+
+bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
+{
+    Q_UNUSED(exec);
+    Q_UNUSED(sourceId);
+    Q_UNUSED(lineno);
+    Q_UNUSED(function);
+    Q_UNUSED(args);
+
+    kDebug() << "callEvent";
+
+    return true;
+}
+
+bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
+{
+    Q_UNUSED(exec);
+    Q_UNUSED(sourceId);
+    Q_UNUSED(lineno);
+    Q_UNUSED(function);
+
+    kDebug() << "returnEvent";
+
+    return true;
+}
+
