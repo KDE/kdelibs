@@ -35,12 +35,13 @@ class KDesktopFile;
 class QWidget;
 
 /**
- * Represent a service, i.e. an application or plugin
+ * Represent a service, like an application or plugin
  * bound to one or several mimetypes (or servicetypes) as written
  * in its desktop entry file.
  *
- * The starting point you need is often the static methods.
- * Service types are stored as desktop files in the "service" resource..
+ * The starting point you need is often the static methods, like createInstance().
+ * The types of service a plugin provides is taken from the accompanying desktop file
+ * where the 'ServiceTypes=' field is used.
  *
  * For a tutorial on how to build a plugin-loading mechanism and how to write plugins
  * in general, see http://developer.kde.org/documentation/tutorials/developing-a-plugin-structure/index.html#developing_plugins

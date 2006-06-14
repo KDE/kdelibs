@@ -37,7 +37,7 @@ class KDesktopFile;
  * instead of a type of file.
  * For instance, KOfficeFilter is a service type.
  * It is associated to services according to the user profile (kservicetypeprofile.h).
- * Service types are stored as desktop files in $KDEHOME/share/servicetypes.
+ * Service types are stored as desktop files in $KDEDIR/share/servicetypes.
  * @see KService
  */
 class KDECORE_EXPORT KServiceType : public KSycocaEntry
