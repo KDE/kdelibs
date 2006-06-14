@@ -46,14 +46,14 @@ class KNotify : public QObject
 		void addPlugin( KNotifyPlugin *p );
 
 	public slots:
-		Q_SCRIPTABLE void reconfigure();
-		Q_SCRIPTABLE void closeNotification( int id);
+		void reconfigure();
+		void closeNotification( int id);
 		
-		Q_SCRIPTABLE int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
+		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
 	Q_SIGNALS:
-		Q_SCRIPTABLE void notificationClosed( int id);
-		Q_SCRIPTABLE void actionInvoked(int id,int action);
+		void notificationClosed( int id);
+		void actionInvoked(int id,int action);
 		
 	private Q_SLOTS:
 		void slotPluginFinished(int id);
@@ -81,15 +81,41 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 {
 	Q_OBJECT
 	Q_CLASSINFO("D-Bus Interface", "org.kde.KNotify")
+	Q_CLASSINFO("D-Bus Introspection", ""
+					"<interface name=\"org.kde.KNotify\">"
+						"<signal name=\"notificationClosed\">"
+							"<arg name=\"id\" type=\"i\" direction=\"out\"/>"
+						"</signal>"
+						"<signal name=\"actionInvoked\">"
+							"<arg name=\"id\" type=\"i\" direction=\"out\"/>"
+							"<arg name=\"action\" type=\"i\" direction=\"out\"/>"
+						"</signal>"
+						"<method name=\"reconfigure\">"
+						"</method>"
+						"<method name=\"closeNotification\">"
+							"<arg name=\"id\" type=\"i\" direction=\"in\"/>"
+						"</method>"
+						"<method name=\"event\">"
+							"<arg type=\"i\" direction=\"out\"/>"
+							"<arg name=\"event\" type=\"s\" direction=\"in\"/>"
+							"<arg name=\"fromApp\" type=\"s\" direction=\"in\"/>"
+							"<arg name=\"contexts\" type=\"a(ss)\" direction=\"in\"/>"
+							"<arg name=\"text\" type=\"s\" direction=\"in\"/>"
+							"<arg name=\"pixmap\" type=\"ay\" direction=\"in\"/>"
+							"<arg name=\"actions\" type=\"as\" direction=\"in\"/>"
+							"<arg name=\"winId\" type=\"i\" direction=\"in\"/>"
+						"</method>"
+					"</interface>" );
+
 	public:
 		KNotifyAdaptor(QObject *parent);
 
 	public Q_SLOTS:
 	
-		Q_SCRIPTABLE void reconfigure();
-		Q_SCRIPTABLE void closeNotification( int id);
+		void reconfigure();
+		void closeNotification( int id);
 		
-		Q_SCRIPTABLE void event(const QString &event, const QString &fromApp, const QVariantList& contexts ,
+		int event(const QString &event, const QString &fromApp, const QVariantList& contexts ,
 								const QString &text, const QByteArray& pixmap,  const QStringList& actions , int winId );
 				   //const QDBusMessage & , int _return );
 	Q_SIGNALS:
