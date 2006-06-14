@@ -52,7 +52,7 @@ class KNotify : public QObject
 		Q_SCRIPTABLE int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
 	Q_SIGNALS:
-		Q_SCRIPTABLE void notificatonClosed( int id);
+		Q_SCRIPTABLE void notificationClosed( int id);
 		Q_SCRIPTABLE void actionInvoked(int id,int action);
 		
 	private Q_SLOTS:
@@ -93,7 +93,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 								const QString &text, const QByteArray& pixmap,  const QStringList& actions , int winId );
 				   //const QDBusMessage & , int _return );
 	Q_SIGNALS:
-		void notificatonClosed( int id);
+		void notificationClosed( int id);
 		void actionInvoked(int id,int action);
 };
 

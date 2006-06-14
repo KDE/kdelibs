@@ -94,7 +94,7 @@ void KNotify::closeNotification(int id)
 		}
 	}
 	
-	notificatonClosed(id);
+	notificationClosed(id);
 	m_notifications.remove(id);
 
 }
