@@ -68,6 +68,10 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    while(true)
    {
       QString service(QLatin1String("org.kde.klauncher")); // same as ktoolinvocation.cpp
+      if (!QDBus::sessionBus().isConnected()) {
+         kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server." << endl;
+         return 1;
+      } 
       QDBusReply<QDBusBusService::RequestNameReply> reply =
           QDBus::sessionBus().busService()->requestName(service, QDBusBusService::DoNotQueueName);
       if (reply.isError())
