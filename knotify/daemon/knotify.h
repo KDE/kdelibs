@@ -53,7 +53,7 @@ class KNotify : public QObject
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , WId winId = 0);
 	Q_SIGNALS:
 		void notificationClosed( int id);
-		void actionInvoked(int id,int action);
+		void notificationActivated(int id,int action);
 		
 	private Q_SLOTS:
 		void slotPluginFinished(int id);
@@ -86,7 +86,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 						"<signal name=\"notificationClosed\">"
 							"<arg name=\"id\" type=\"i\" direction=\"out\"/>"
 						"</signal>"
-						"<signal name=\"actionInvoked\">"
+						"<signal name=\"notificationActivated\">"
 							"<arg name=\"id\" type=\"i\" direction=\"out\"/>"
 							"<arg name=\"action\" type=\"i\" direction=\"out\"/>"
 						"</signal>"
@@ -120,7 +120,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 				   //const QDBusMessage & , int _return );
 	Q_SIGNALS:
 		void notificationClosed( int id);
-		void actionInvoked(int id,int action);
+		void notificationActivated( int id,int action);
 };
 
 #endif
