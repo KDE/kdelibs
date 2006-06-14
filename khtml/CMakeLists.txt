@@ -95,13 +95,24 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_traversal.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_events.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_views.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_debugwin.cpp
+#  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_debugwin.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_mozilla.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlhttprequest.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/xmlserializer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/domparser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_context2d.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/jshighlighter.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/numberedtextview.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/watchesdock.cpp
 )
+
+qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
 
 # khtml/rendering/Makefile.am: khtmlrender
 

@@ -36,7 +36,6 @@
 #include <kconfig.h>
 #include <kconfigbase.h>
 #include <kapplication.h>
-#include <dcop/dcopclient.h>
 #include <kstringhandler.h>
 
 #include "kjs_dom.h"
