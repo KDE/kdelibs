@@ -89,7 +89,7 @@ void KBookmarkMap::visit(const KBookmark &bk)
 }
 
 
-KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, bool bImportDesktopFiles )
+KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, const QString& dbusObjectName, bool bImportDesktopFiles )
 {
     if ( !s_pSelf ) {
         sdbm.setObject( s_pSelf, new KBookmarkManagerList );
@@ -99,7 +99,7 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
         if ( (*bmit)->path() == bookmarksFile )
             return *bmit;
 
-    KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, bImportDesktopFiles );
+    KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, dbusObjectName, bImportDesktopFiles );
     s_pSelf->append( mgr );
     return mgr;
 }
@@ -117,15 +117,12 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
-KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles )
+KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName, bool bImportDesktopFiles )
     : m_doc("xbel"), m_docIsLoaded(false)
 {
-    new KBookmarkManagerAdaptor(this);
-    QDBus::sessionBus().registerObject("KBookmarkManager-"+bookmarksFile, this);
-    m_toolbarDoc.clear();
+    init( "/KBookmarkManager/"+dbusObjectName );
 
     m_update = true;
-    m_showNSBookmarks = true;
 
     Q_ASSERT( !bookmarksFile.isEmpty() );
     m_bookmarksFile = bookmarksFile;
@@ -139,33 +136,35 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
             importDesktopFiles();
         m_docIsLoaded = true;
     }
-
-    QDBus::sessionBus().connect(QString(), QString(), "org.kde.KIO.KBookmarkManager",
-                                "bookmarksChanged", this, SLOT(notifyChanged(QString,QDBusMessage)));
-    QDBus::sessionBus().connect(QString(), QString(), "org.kde.KIO.KBookmarkManager",
-                                "bookmarkConfigChanged", this, SLOT(notifyConfigChanged()));
 }
 
 KBookmarkManager::KBookmarkManager( )
     : m_doc("xbel"), m_docIsLoaded(true)
 {
-    new KBookmarkManagerAdaptor(this);
-    QDBus::sessionBus().registerObject("/KBookmarkManager-generated", this);
+    init( "/KBookmarkManager/generated" );
     m_update = false; // TODO - make it read/write
-    m_showNSBookmarks = true;
 
     QDomElement topLevel = m_doc.createElement("xbel");
     m_doc.appendChild( topLevel );
     m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
+}
 
-    QDBus::sessionBus().connect(QString(), "/KBookmarkManager-generated",
-                                "org.kde.KIO.KBookmarkManager",
-                                "bookmarksChanged",
-                                this, SLOT(notifyChanged(QString)));
-    QDBus::sessionBus().connect(QString(), "/KBookmarkManager-generated",
-                                "org.kde.KIO.KBookmarkManager",
-                                "bookmarkConfigChanged",
-                                this, SLOT(notifyConfigChanged(QString)));
+void KBookmarkManager::init( const QString& dbusPath )
+{
+    // A KBookmarkManager without a dbus name is a temporary one, like those used by importers;
+    // no need to register them to dbus
+    if ( dbusPath != "/KBookmarkManager/" )
+    {
+        new KBookmarkManagerAdaptor(this);
+        QDBus::sessionBus().registerObject( dbusPath, this );
+
+        QDBus::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
+                                    "bookmarksChanged", this, SLOT(notifyChanged(QString,QDBusMessage)));
+        QDBus::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
+                                    "bookmarkConfigChanged", this, SLOT(notifyConfigChanged()));
+    }
+
+    m_showNSBookmarks = true;
 }
 
 KBookmarkManager::~KBookmarkManager()
@@ -682,7 +681,7 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
    QString bookmarksFile = locateLocal("data", QLatin1String("konqueror/bookmarks.xml"));
-   return KBookmarkManager::managerForFile( bookmarksFile );
+   return KBookmarkManager::managerForFile( bookmarksFile, "konqueror" );
 }
 
 KBookmarkSettings* KBookmarkSettings::s_self = 0;

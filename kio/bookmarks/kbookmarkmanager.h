@@ -1,7 +1,7 @@
 //  -*- c-basic-offset:4; indent-tabs-mode:nil -*-
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000, 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -69,10 +69,16 @@ protected:
      * @param bookmarksFile full path to the bookmarks file,
      * Use ~/.kde/share/apps/konqueror/bookmarks.xml for the konqueror bookmarks
      *
+     * @param dbusObjectName a unique name that represents this bookmark collection,
+     * usually your kinstance (e.g. kapplication) name. This is "konqueror" for the
+     * konqueror bookmarks, "kfile" for KFileDialog bookmarks, etc.
+     * The final DBus object path is /KBookmarkManager/dbusObjectName
+     * An empty dbusObjectName disables the registration to dbus (used for temporary managers)
+     *
      * @param bImportDesktopFiles if true, and if the bookmarksFile
      * doesn't already exist, import bookmarks from desktop files
      */
-    KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles = true );
+    KBookmarkManager( const QString & bookmarksFile, const QString& dbusObjectName, bool bImportDesktopFiles = true );
 
     KBookmarkManager();
 
@@ -89,7 +95,7 @@ public:
     void setUpdate( bool update );
 
     /**
-     * Save the bookmarks to the default konqueror XML file on disk.
+     * Save the bookmarks to an XML file on disk.
      * You should use emitChanged() instead of this function, it saves
      * and notifies everyone that the file has changed.
      * @param toolbarCache iff true save a cache of the toolbar folder, too
@@ -199,18 +205,25 @@ public:
      * @param bookmarksFile full path to the bookmarks file,
      * Use ~/.kde/share/apps/konqueror/bookmarks.xml for the konqueror bookmarks
      *
+     * @param dbusObjectName a unique name that represents this bookmark collection,
+     * usually your kinstance (e.g. kapplication) name. This is "konqueror" for the
+     * konqueror bookmarks, "kfile" for KFileDialog bookmarks, etc.
+     * The final DBus object path is /KBookmarkManager/dbusObjectName
+     * An empty dbusObjectName disables the registration to dbus (used for temporary managers)
+     *
      * @param bImportDesktopFiles if true, and if the bookmarksFile
      * doesn't already exist, import bookmarks from desktop files
      * @return a pointer to an instance of the KBookmarkManager.
      */
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
-                                   bool bImportDesktopFiles = true );
+                                             const QString& dbusObjectName,
+                                             bool bImportDesktopFiles = true );
 
 
     static KBookmarkManager* createTempManager();
 
     /**
-     * Returns a pointer to the users main bookmark collection.
+     * Returns a pointer to the user's main (konqueror) bookmark collection.
      */
     static KBookmarkManager* userBookmarksManager();
 
@@ -234,7 +247,7 @@ public Q_SLOTS:
     /**
      * Emit the changed signal for the group whose address is given
      * @see KBookmark::address()
-     * Called by the instance of konqueror that saved the file after
+     * Called by the process that saved the file after
      * a small change (new bookmark or new folder).
      */
     void notifyChanged( QString groupAddress, const QDBusMessage &msg );
@@ -263,6 +276,8 @@ protected:
     static void convertAttribute( QDomElement elem, const QString & oldName, const QString & newName );
 
 private:
+    void init( const QString& dbusPath );
+
     QString m_bookmarksFile;
     mutable QDomDocument m_doc;
     mutable QDomDocument m_toolbarDoc;

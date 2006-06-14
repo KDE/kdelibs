@@ -42,7 +42,7 @@
 void KXBELBookmarkImporterImpl::parse()
 {
   //kDebug() << "KXBELBookmarkImporterImpl::parse()" << endl;
-  KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName);
+  KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName, QString());
   KBookmarkGroup root = manager->root();
   traverse(root);
   // FIXME delete it!
