@@ -1,3 +1,24 @@
+2006-06-14  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement replaced CSS(3) content, and fix various details in generated pseudo elements for CSS 2.1
+
+        * rendering/render_style.{h,cpp}: Add REPLACED and MARKER pseudo styles
+        * rendering/render_container.{h,cpp}: 
+            (updatePseudoChild) Allow display: block as per CSS 2.1 standard
+            (updateReplacedContent) Handle changes in Replaced content.
+            (childrenAllowed) forbid children when generated content is used, this prevents
+                 their render-objects from being attached.
+        * rendering/render_block.cpp: Postpone updatePseudoChilden to attachment because block 
+            children might need the elements parents.
+        * rendering/render_inline.cpp: ditto
+        * rendering/render_generated.{h,cpp}: Add new class RenderGlyph to render list-style glyphs (square, disc, etc.)
+        * xml/dom_nodeimpl.cpp:
+            (NodeImpl::diff) detect changes in content and return Detach
+        * css/css_base.{h,cpp}: Add marker and replaced pseudo-styles
+        * css/cssstyleselector.cpp: 
+            (checkOneSelector) Allow content on more elements 
+            (precomputeAttributeDependencies) Track attributes inside :not elements as well
+
 2006-06-08  George Staikos <staikos@kde.org>
 
         Fix <a><label><img not in a form not being clickable

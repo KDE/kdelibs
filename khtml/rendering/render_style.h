@@ -746,6 +746,17 @@ enum EListStyleType {
      LNONE
 };
 
+inline bool isListStyleCounted(EListStyleType type)
+{
+    switch(type) {
+    case LDISC: case LCIRCLE: case LSQUARE: case LBOX: case LDIAMOND:
+    case LNONE:
+        return false;
+    default:
+        return true;
+    }
+}
+
 enum EListStylePosition { OUTSIDE, INSIDE };
 
 enum EVisibility { VISIBLE, HIDDEN, COLLAPSE };
@@ -776,8 +787,11 @@ class RenderStyle : public Shared<RenderStyle>
 public:
     KDE_EXPORT static void cleanup();
 
-    // static pseudo styles. Dynamic ones are produced on the fly.
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION };
+    // pseudo elements 
+    enum PseudoId { 
+        NOPSEUDO, FIRST_LINE, FIRST_LETTER, SELECTION,
+        BEFORE, AFTER, REPLACED, MARKER
+    };
 
 protected:
 
@@ -845,10 +859,10 @@ protected:
 
                 PseudoId _styleType : 4;
                 bool _hasClip : 1;
-                unsigned _pseudoBits : 6;
+                unsigned _pseudoBits : 8;
                 EUnicodeBidi _unicodeBidi : 2;
 
-                unsigned int unused : 18;
+                unsigned int unused : 16;
             } f;
             Q_UINT64 _niflags;
         };
@@ -929,7 +943,14 @@ public:
 
     void inheritFrom(const RenderStyle* inheritParent);
 
-    PseudoId styleType() { return  noninherited_flags.f._styleType; }
+    PseudoId styleType() const { return  noninherited_flags.f._styleType; }
+    void setStyleType(PseudoId pi) { noninherited_flags.f._styleType = pi; }
+    bool isGenerated() const {
+        if (styleType() == AFTER || styleType() == BEFORE || styleType() == MARKER || styleType() == REPLACED)
+            return true;
+        else
+            return false;
+    }
 
     bool hasPseudoStyle(PseudoId pi) const;
     void setHasPseudoStyle(PseudoId pi, bool b=true);
@@ -1280,6 +1301,7 @@ public:
         const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();
     }
 
+    bool useNormalContent() const { return generated->content == 0; }
     ContentData* contentData() const { return generated->content; }
     bool contentDataEquivalent(const RenderStyle* otherStyle) const 
     { 
@@ -1291,6 +1313,7 @@ public:
     void addContent(EQuoteContent q);
     void setContentNone();
     void setContentNormal();
+    void setContentData(ContentData* content);
 
     DOM::CSSValueListImpl* counterReset() const { return generated->counter_reset; }
     DOM::CSSValueListImpl* counterIncrement() const { return generated->counter_increment; }

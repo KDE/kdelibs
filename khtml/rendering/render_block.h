@@ -92,6 +92,7 @@ public:
     virtual void removeChild(RenderObject *oldChild);
 
     virtual void setStyle(RenderStyle* _style);
+    virtual void attach();
     void updateFirstLetter();
 
     virtual void layout();

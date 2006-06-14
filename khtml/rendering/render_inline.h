@@ -52,6 +52,7 @@ public:
                    RenderObject* newChild, RenderFlow* oldCont);
 
     virtual void setStyle(RenderStyle* _style);
+    virtual void attach();
 
     virtual void layout() {} // Do nothing for layout()
 

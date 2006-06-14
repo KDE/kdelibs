@@ -56,7 +56,20 @@ void RenderInline::setStyle(RenderStyle* _style)
         currCont = currCont->continuation();
     }
 
-    // Update pseudos for ::before and ::after now.
+    if (attached()) {
+        // Update replaced content
+        updateReplacedContent();
+        // Update pseudos for ::before and ::after
+        updatePseudoChildren();
+    }
+}
+
+// Attach handles initial setStyle that requires parent nodes
+void RenderInline::attach() 
+{
+    RenderFlow::attach();
+
+    updateReplacedContent();
     updatePseudoChildren();
 }
 
@@ -89,7 +102,7 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
         // has to move into the inline continuation.  Call updatePseudoChild to ensure that our :after
         // content gets properly destroyed.
         bool isLastChild = (beforeChild == lastChild());
-        updatePseudoChild(RenderStyle::AFTER, lastChild());
+        updatePseudoChild(RenderStyle::AFTER);
         if (isLastChild && beforeChild != lastChild())
             beforeChild = 0; // We destroyed the last child, so now we need to update our insertion
                              // point to be 0.  It's just a straight append now.

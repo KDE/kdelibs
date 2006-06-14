@@ -558,8 +558,11 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             inherited == o.inherited);
 }
 
-enum EPseudoBit { NO_BIT = 0x0, BEFORE_BIT = 0x1, AFTER_BIT = 0x2, FIRST_LINE_BIT = 0x4,
-                  FIRST_LETTER_BIT = 0x8, SELECTION_BIT = 0x10 };
+enum EPseudoBit { NO_BIT = 0x0, 
+                  FIRST_LINE_BIT = 0x1, FIRST_LETTER_BIT = 0x2, SELECTION_BIT = 0x4, 
+                  BEFORE_BIT = 0x8, AFTER_BIT = 0x10, MARKER_BIT = 0x20,
+                  REPLACED_BIT = 0x40
+                  };
 
 static int pseudoBit(RenderStyle::PseudoId pseudo)
 {
@@ -568,6 +571,10 @@ static int pseudoBit(RenderStyle::PseudoId pseudo)
             return BEFORE_BIT;
         case RenderStyle::AFTER:
             return AFTER_BIT;
+        case RenderStyle::MARKER:
+            return MARKER_BIT;
+        case RenderStyle::REPLACED:
+            return REPLACED_BIT;
         case RenderStyle::FIRST_LINE:
             return FIRST_LINE_BIT;
         case RenderStyle::FIRST_LETTER:
@@ -961,14 +968,25 @@ void RenderStyle::addContent(EQuoteContent q)
 
 // content: normal is the same as having no content at all
 void RenderStyle::setContentNormal() {
-    delete generated->content;
-    generated.access()->content = 0;
+    if (generated->content != 0) {
+        delete generated->content;
+        generated.access()->content = 0;
+    }
 }
 
 // content: none, add an empty content node
 void RenderStyle::setContentNone() {
     setContentNormal();
     generated.access()->content = new ContentData;
+}
+
+void RenderStyle::setContentData(ContentData *data) {
+    if (data != generated->content) {
+        if (data)
+            generated.access()->content = new ContentData(*data);
+        else
+            generated.access()->content = 0;
+    }
 }
 
 ContentData::ContentData(const ContentData& o) : _contentType(o._contentType)

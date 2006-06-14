@@ -247,6 +247,7 @@ public:
     virtual bool isBox() const { return false; }
     virtual bool isRenderReplaced() const { return false; }
 
+    virtual bool isGlyph() const { return false; }
     virtual bool isCounter() const { return false; }
     virtual bool isQuote() const { return false; }
     virtual bool isListItem() const { return false; }
@@ -417,6 +418,9 @@ public:
     // repaint and do not need a relayout
     virtual void updateFromElement() {}
 
+    // Called immediately after render-object is inserted
+    virtual void attach() { m_attached = true; }
+    bool attached() { return m_attached; }
     // The corresponding closing element has been parsed. ### remove me
     virtual void close() { }
 
@@ -782,6 +786,7 @@ private:
     bool m_recalcMinMax 	     : 1;
     bool m_isText                    : 1;
     bool m_inline                    : 1;
+    bool m_attached                  : 1;
 
     bool m_replaced                  : 1;
     bool m_mouseInside               : 1;
@@ -796,7 +801,7 @@ private:
     bool m_needsPageClear            : 1;
     bool m_containsPageBreak         : 1;
 
-    // ### we have 16 + 23 bits. Cut 4 and save 32
+    // ### we have 16 + 24 bits. Cut 8 and save 32
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);

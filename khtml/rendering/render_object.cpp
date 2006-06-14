@@ -178,6 +178,7 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_recalcMinMax( false ),
       m_isText( false ),
       m_inline( true ),
+      m_attached( false ),
 
       m_replaced( false ),
       m_mouseInside( false ),

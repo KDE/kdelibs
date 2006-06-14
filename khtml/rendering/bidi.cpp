@@ -274,7 +274,7 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current, B
 
         if (!next) break;
 
-        if (next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned()
+        if (next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned() || next->isGlyph()
             || ((!skipInlines || !next->firstChild()) // Always return EMPTY inlines.
                 && next->isInlineFlow()))
             break;
@@ -295,7 +295,7 @@ static RenderObject *first( RenderObject *par, BidiState &bidi, bool skipInlines
             return o; // Never skip empty inlines.
     }
 
-    if (o && !o->isText() && !o->isBR() && !o->isReplaced() && !o->isFloating() && !o->isPositioned())
+    if (o && !o->isText() && !o->isBR() && !o->isReplaced() && !o->isFloating() && !o->isPositioned() && !o->isGlyph())
         o = Bidinext( par, o, bidi, skipInlines );
     return o;
 }
@@ -1780,7 +1780,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             KHTMLAssert(!o->firstChild());
             tmpW += o->marginLeft()+o->borderLeft()+o->paddingLeft()+
                     o->marginRight()+o->borderRight()+o->paddingRight();
-        } else if ( o->isReplaced() ) {
+        } else if ( o->isReplaced() || o->isGlyph() ) {
             EWhiteSpace currWS = o->style()->whiteSpace();
             EWhiteSpace lastWS = last->style()->whiteSpace();
 

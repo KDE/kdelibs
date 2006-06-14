@@ -129,13 +129,27 @@ void RenderBlock::setStyle(RenderStyle* _style)
         child = child->nextSibling();
     }
 
-    // Update pseudos for :before and :after now.
-    updatePseudoChildren();
+    if (attached()) {
+        // Update generated content and ::inside
+        updateReplacedContent();
+        // Update pseudos for :before and :after
+        updatePseudoChildren();
+    }
 
     // handled by close() during parsing
+    // ### remove close move upto updatePseudo
     if (!document()->parsing()) {
         updateFirstLetter();
     }
+}
+
+// Attach handles initial setStyle that requires parent nodes
+void RenderBlock::attach()
+{
+    RenderFlow::attach();
+
+    updateReplacedContent();
+    updatePseudoChildren();
 }
 
 void RenderBlock::updateFirstLetter()

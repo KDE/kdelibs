@@ -79,7 +79,7 @@ QString RenderCounter::toListStyleType(int value, int total, EListStyleType type
     {
     case LNONE:
         break;
-// Glyphs:
+// Glyphs: (these values are not really used and instead handled by RenderGlyph)
     case LDISC:
         item = QChar(0x2022);
         break;
@@ -226,6 +226,8 @@ void RenderCounter::generateContent()
 
 }
 
+// -------------------------------------------------------------------------
+
 RenderQuote::RenderQuote(DOM::NodeImpl* node, EQuoteContent type)
     : RenderCounterBase(node), m_quoteType(type)
 {
@@ -274,3 +276,117 @@ void RenderQuote::generateContent()
             m_item = QString();
     }
 }
+
+// -------------------------------------------------------------------------
+
+RenderGlyph::RenderGlyph(DOM::NodeImpl* node, EListStyleType type)
+    : RenderBox(node), m_type(type)
+{
+    setInline(true);
+//     setReplaced(true);
+}
+
+void RenderGlyph::setStyle(RenderStyle *_style)
+{
+    RenderBox::setStyle(_style);
+
+    const QFontMetrics &fm = style()->fontMetrics();
+    QRect xSize= fm.boundingRect('x');
+    m_height = xSize.height();
+    m_width = xSize.width();;
+
+    switch(m_type) {
+    // Glyphs:
+        case LDISC:
+        case LCIRCLE:
+        case LSQUARE:
+        case LBOX:
+        case LDIAMOND:
+        case LNONE:
+            break;
+        default:
+            // not a glyph !
+            assert(false); 
+            break;
+    }
+}
+
+void RenderGlyph::calcMinMaxWidth() 
+{
+    m_minWidth = m_width;
+    m_maxWidth = m_width;
+
+    setMinMaxKnown();
+}
+
+short RenderGlyph::lineHeight(bool /*b*/) const
+{
+    return height();
+}
+
+short RenderGlyph::baselinePosition(bool /*b*/) const
+{
+    return height();
+}
+
+void RenderGlyph::paint(PaintInfo& paintInfo, int _tx, int _ty)
+{
+    if (paintInfo.phase != PaintActionForeground)
+        return;
+
+    if (style()->visibility() != VISIBLE)  return;
+
+    _tx += m_x;
+    _ty += m_y;
+
+    if((_ty > paintInfo.r.bottom()) || (_ty + m_height <= paintInfo.r.top()))
+        return;
+
+    QPainter* p = paintInfo.p;
+
+    const QColor color( style()->color() );
+    p->setPen( color );
+
+    int xHeight = m_height;
+    int bulletWidth = (xHeight+1)/2;
+    int yoff = (xHeight - 1)/4;
+    QRect marker(_tx, _ty + yoff, bulletWidth, bulletWidth);
+
+    switch(m_type) {
+    case LDISC:
+        p->setBrush( color );
+        p->drawEllipse( marker );
+        return;
+    case LCIRCLE:
+        p->setBrush( Qt::NoBrush );
+        p->drawEllipse( marker );
+        return;
+    case LSQUARE:
+        p->setBrush( color );
+        p->drawRect( marker );
+        return;
+    case LBOX:
+        p->setBrush( Qt::NoBrush );
+        p->drawRect( marker );
+        return;
+    case LDIAMOND: {
+        static QPointArray diamond(4);
+        int x = marker.x();
+        int y = marker.y();
+        int s = bulletWidth/2;
+        diamond[0] = QPoint(x+s,   y);
+        diamond[1] = QPoint(x+2*s, y+s);
+        diamond[2] = QPoint(x+s,   y+2*s);
+        diamond[3] = QPoint(x,     y+s);
+        p->setBrush( color );
+        p->drawConvexPolygon( diamond, 0, 4 );
+        return;
+    }
+    case LNONE:
+        return;
+    default:
+        // not a glyph
+        assert(false);
+    }
+}
+

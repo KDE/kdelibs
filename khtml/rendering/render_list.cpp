@@ -537,13 +537,7 @@ void RenderListMarker::calcMinMaxWidth()
     case TRAD_CHINESE_INFORMAL:
         m_item = toTradChineseInformal( value );
         break;
-// Quotes:
-    case OPEN_QUOTE:
-        m_item = style()->openQuote( value );
-        break;
-    case CLOSE_QUOTE:
-        m_item = style()->closeQuote( value );
-        break;
+// special:
     case LNONE:
         break;
     default:

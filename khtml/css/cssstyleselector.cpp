@@ -912,7 +912,16 @@ static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSS
         else
             doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
     }
-
+    if(sel->match == CSSSelector::PseudoClass)
+    {
+	switch (sel->pseudoType()) {
+            case CSSSelector::PseudoNot:
+                precomputeAttributeDependenciesAux(doc, sel->simpleSelector, isAncestor, true);
+                break;
+            default:
+                break;
+        }
+    }
     CSSSelector::Relation relation = sel->relation;
     sel = sel->tagHistory;
     if (!sel) return;
@@ -1565,6 +1574,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoSelection:
 	case CSSSelector::PseudoBefore:
 	case CSSSelector::PseudoAfter:
+	case CSSSelector::PseudoMarker:
+	case CSSSelector::PseudoReplaced:
 	    // Pseudo-elements can only apply to subject
 	    if ( e == element ) {
                 // Pseudo-elements has to be the last sub-selector on subject
@@ -1587,6 +1598,12 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
                     break;
                 case CSSSelector::PseudoAfter:
                     dynamicPseudo = RenderStyle::AFTER;
+                    break;
+                case CSSSelector::PseudoMarker:
+                    dynamicPseudo = RenderStyle::MARKER;
+                    break;
+                case CSSSelector::PseudoReplaced:
+                    dynamicPseudo = RenderStyle::REPLACED;
                     break;
                 default:
                     assert(false);
@@ -3273,8 +3290,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         // FIXME: In CSS3, it will be possible to inherit content.  In CSS2 it is not.  This
         // note is a reminder that eventually "inherit" needs to be supported.
-        if (!(style->styleType()==RenderStyle::BEFORE ||
-                style->styleType()==RenderStyle::AFTER))
+
+        // not allowed on non-generated pseudo-elements:
+        if ( style->styleType()==RenderStyle::FIRST_LETTER ||
+             style->styleType()==RenderStyle::FIRST_LINE ||
+             style->styleType()==RenderStyle::SELECTION )
             break;
 
         if (isInitial) {
