@@ -50,7 +50,7 @@ class KNotify : public QObject
 		void closeNotification( int id);
 		
 		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
-				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , int winId = 0);
+				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , WId winId = 0);
 	Q_SIGNALS:
 		void notificationClosed( int id);
 		void actionInvoked(int id,int action);
@@ -103,7 +103,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 							"<arg name=\"text\" type=\"s\" direction=\"in\"/>"
 							"<arg name=\"pixmap\" type=\"ay\" direction=\"in\"/>"
 							"<arg name=\"actions\" type=\"as\" direction=\"in\"/>"
-							"<arg name=\"winId\" type=\"i\" direction=\"in\"/>"
+							"<arg name=\"winId\" type=\"x\" direction=\"in\"/>"
 						"</method>"
 					"</interface>" );
 
@@ -116,7 +116,7 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 		void closeNotification( int id);
 		
 		int event(const QString &event, const QString &fromApp, const QVariantList& contexts ,
-								const QString &text, const QByteArray& pixmap,  const QStringList& actions , int winId );
+								const QString &text, const QByteArray& pixmap,  const QStringList& actions , qlonglong winId );
 				   //const QDBusMessage & , int _return );
 	Q_SIGNALS:
 		void notificationClosed( int id);

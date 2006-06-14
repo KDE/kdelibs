@@ -99,7 +99,7 @@ void KNotify::closeNotification(int id)
 
 }
 
-int KNotify::event( const QString & event, const QString & appname, const ContextList & contexts, const QString & text, const QPixmap & pixmap, const QStringList & actions, int winId )
+int KNotify::event( const QString & event, const QString & appname, const ContextList & contexts, const QString & text, const QPixmap & pixmap, const QStringList & actions, WId winId )
 {
 	m_counter++;
 	KNotifyConfig config(appname , contexts , event );
@@ -153,16 +153,16 @@ KNotifyAdaptor::KNotifyAdaptor(QObject *parent)
 
 void KNotifyAdaptor::reconfigure()
 {
-	static_cast<KNotify *>(sender())->reconfigure();
+	static_cast<KNotify *>(parent())->reconfigure();
 }
 
 void KNotifyAdaptor::closeNotification(int id)
 {
-	static_cast<KNotify *>(sender())->closeNotification(id);
+	static_cast<KNotify *>(parent())->closeNotification(id);
 }
 
 int KNotifyAdaptor::event(const QString &event, const QString &fromApp, const QVariantList& contexts,
-						   const QString &text, const QByteArray& image,  const QStringList& actions , int winId)
+						   const QString &text, const QByteArray& image,  const QStringList& actions , qlonglong winId)
 //						  const QDBusMessage & , int _return )
 								  
 {
@@ -180,7 +180,7 @@ int KNotifyAdaptor::event(const QString &event, const QString &fromApp, const QV
 	
 	QPixmap pixmap;
 	pixmap.loadFromData(image);
-	return static_cast<KNotify *>(sender())->event(event, fromApp, contextlist, text, pixmap, actions, winId);
+	return static_cast<KNotify *>(parent())->event(event, fromApp, contextlist, text, pixmap, actions, winId);
 }
 
 #include "knotify.moc"
