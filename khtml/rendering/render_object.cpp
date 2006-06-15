@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2004 Apple Computer, Inc.
+ *           (C) 2002-2006 Apple Computer, Inc.
  *           (C) 2006 Germain Garand <germain@ebooksfrance.org>
  *
  * This library is free software; you can redistribute it and/or

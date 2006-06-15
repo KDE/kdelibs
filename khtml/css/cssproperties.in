@@ -19,6 +19,10 @@ background-position
 # IE Extensions
 background-position-x
 background-position-y
+# CSS3 Extensions
+-khtml-background-clip
+-khtml-background-origin
+-khtml-background-size
 
 border-collapse
 border-spacing

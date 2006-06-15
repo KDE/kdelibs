@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2004 Apple Computer, Inc.
+ *           (C) 2004, 2005, 2006 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -293,7 +293,7 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
 	CSSProperty *current;
 	for ( lstValuesIt.toFirst(); (current = lstValuesIt.current()); ++lstValuesIt ) {
 	    if( propertyID == current->m_id )
-		return current->m_bImportant;
+		return current->m_important;
 	}
     }
     return false;
@@ -511,6 +511,15 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(QRgb color)
     m_type = CSSPrimitiveValue::CSS_RGBCOLOR;
 }
 
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(PairImpl *p)
+{
+    m_value.pair = p;
+    if (m_value.pair)
+	m_value.pair->ref();
+    m_type = CSSPrimitiveValue::CSS_PAIR;
+}
+
+
 CSSPrimitiveValueImpl::~CSSPrimitiveValueImpl()
 {
     cleanup();
@@ -529,6 +538,10 @@ void CSSPrimitiveValueImpl::cleanup()
         break;
     case CSSPrimitiveValue::CSS_RECT:
 	m_value.rect->deref();
+        break;
+    case CSSPrimitiveValue::CSS_PAIR:
+        m_value.pair->deref();
+        break;
     default:
         break;
     }
@@ -739,11 +752,16 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
             text += rectVal->right()->cssText() + " ";
             text += rectVal->bottom()->cssText() + " ";
             text += rectVal->left()->cssText() + ")";
+            break;
         }
-        break;
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
 	    text = QColor(m_value.rgbcolor).name();
 	    break;
+        case CSSPrimitiveValue::CSS_PAIR:
+            text = m_value.pair->first()->cssText();
+            text += " ";
+            text += m_value.pair->second()->cssText();
+            break;
 	default:
 	    break;
     }
@@ -794,6 +812,29 @@ void RectImpl::setLeft( CSSPrimitiveValueImpl *left )
     if( left ) left->ref();
     if ( m_left ) m_left->deref();
     m_left = left;
+}
+
+// -----------------------------------------------------------------
+
+PairImpl::~PairImpl()
+{
+    if (m_first) m_first->deref(); if (m_second) m_second->deref();
+}
+
+void PairImpl::setFirst(CSSPrimitiveValueImpl* first)
+{
+    if (first == m_first) return;
+    if (m_first) m_first->deref();
+    m_first = first;
+    if (m_first) m_first->ref();
+}
+
+void PairImpl::setSecond(CSSPrimitiveValueImpl* second)
+{
+    if (second == m_second) return;
+    if (m_second) m_second->deref();
+    m_second = second;
+    if (m_second) m_second->ref();
 }
 
 // -----------------------------------------------------------------
@@ -1016,5 +1057,5 @@ DOMString CounterActImpl::cssText() const
 
 DOMString CSSProperty::cssText() const
 {
-    return getPropertyName(m_id) + DOMString(": ") + m_value->cssText() + (m_bImportant ? DOMString(" !important") : DOMString()) + DOMString("; ");
+    return getPropertyName(m_id) + DOMString(": ") + m_value->cssText() + (m_important ? DOMString(" !important") : DOMString()) + DOMString("; ");
 }

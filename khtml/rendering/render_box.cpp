@@ -396,15 +396,72 @@ void RenderBox::paintBackgrounds(QPainter *p, const QColor& c, const BackgroundL
 void RenderBox::paintBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, int clipy, int cliph, int _tx, int _ty, int w, int height)
 {
     paintBackgroundExtended(p, c, bgLayer, clipy, cliph, _tx, _ty, w, height,
-                            borderLeft(), borderRight());
+                            borderLeft(), borderRight(), paddingLeft(), paddingRight());
+}
+
+static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledWidth, int& scaledHeight)
+{
+    CachedImage* bg = bgLayer->backgroundImage();
+
+    if (bgLayer->isBackgroundSizeSet()) {
+        Length bgWidth = bgLayer->backgroundSize().width;
+        Length bgHeight = bgLayer->backgroundSize().height;
+
+        if (bgWidth.isPercent())
+            scaledWidth = scaledWidth * bgWidth.value() / 100;
+        else if (bgWidth.isFixed())
+            scaledWidth = bgWidth.value();
+        else if (bgWidth.isVariable()) {
+            // If the width is auto and the height is not, we have to use the appropriate
+            // scale to maintain our aspect ratio.
+            if (bgHeight.isPercent()) {
+                int scaledH = scaledHeight * bgHeight.value() / 100;
+                scaledWidth = bg->pixmap_size().width() * scaledH / bg->pixmap_size().height();
+            } else if (bgHeight.isFixed())
+                scaledWidth = bg->pixmap_size().width() * bgHeight.value() / bg->pixmap_size().height();
+        }
+
+        if (bgHeight.isPercent())
+            scaledHeight = scaledHeight * bgHeight.value() / 100;
+        else if (bgHeight.isFixed())
+            scaledHeight = bgHeight.value();
+        else if (bgHeight.isVariable()) {
+            // If the height is auto and the width is not, we have to use the appropriate
+            // scale to maintain our aspect ratio.
+            if (bgWidth.isPercent())
+                scaledHeight = bg->pixmap_size().height() * scaledWidth / bg->pixmap_size().width();
+            else if (bgWidth.isFixed())
+                scaledHeight = bg->pixmap_size().height() * bgWidth.value() / bg->pixmap_size().width();
+            else if (bgWidth.isVariable()) {
+                // If both width and height are auto, we just want to use the image's
+                // intrinsic size.
+                scaledWidth = bg->pixmap_size().width();
+                scaledHeight = bg->pixmap_size().height();
+            }
+        }
+    } else {
+        scaledWidth = bg->pixmap_size().width();
+        scaledHeight = bg->pixmap_size().height();
+    }
 }
 
 void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const BackgroundLayer* bgLayer, int clipy, int cliph,
                                         int _tx, int _ty, int w, int h,
-                                        int bleft, int bright)
+                                        int bleft, int bright, int pleft, int pright)
 {
     if ( cliph < 0 )
 	return;
+
+    if (bgLayer->backgroundClip() != BGBORDER) {
+        // Clip to the padding or content boxes as necessary.
+        bool includePadding = bgLayer->backgroundClip() == BGCONTENT;
+        int x = _tx + bleft + (includePadding ? pleft : 0);
+        int y = _ty + borderTop() + (includePadding ? paddingTop() : 0);
+        int width = w - bleft - bright - (includePadding ? pleft + pright : 0);
+        int height = h - borderTop() - borderBottom() - (includePadding ? paddingTop() + paddingBottom() : 0);
+        p->save();
+        p->setClipRect(QRect(x, y, width, height));
+    }
 
     CachedImage* bg = bgLayer->backgroundImage();
     bool shouldPaintBackgroundImage = bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent() && !bg->isErrorImage();
@@ -420,31 +477,45 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         int sy = 0;
         int cw,ch;
         int cx,cy;
-        int vpab = bleft + bright;
-        int hpab = borderTop() + borderBottom();
+        int scaledImageWidth, scaledImageHeight;
 
         // CSS2 chapter 14.2.1
 
-	int pixw = bg->pixmap_size().width();
-	int pixh = bg->pixmap_size().height();
-        if (bgLayer->backgroundAttachment())
-        {
+        if (bgLayer->backgroundAttachment()) {
             //scroll
-            int pw = w - vpab;
-            int ph = h - hpab;
+            int hpab = 0, vpab = 0, left = 0, top = 0; // Init to 0 for background-origin of 'border'
+            if (bgLayer->backgroundOrigin() != BGBORDER) {
+                hpab += bleft + bright;
+                vpab += borderTop() + borderBottom();
+                left += bleft;
+                top += borderTop();
+                if (bgLayer->backgroundOrigin() == BGCONTENT) {
+                    hpab += pleft + pright;
+                    vpab += paddingTop() + paddingBottom();
+                    left += pleft;
+                    top += paddingTop();
+                }
+            }
+
+            int pw = w - hpab;
+            int ph = h - vpab;
+            scaledImageWidth = pw;
+            scaledImageHeight = ph;
+            calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
+
             EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
-            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
-                cw = pixw;
-                int xp = bgLayer->backgroundXPosition().minWidth(pw-pixw);
-                if ( xp >= 0 ) {
-                    cx = _tx + xp;
-                    cw = kMin(cw, pw - xp);
+            if ((bgr == NO_REPEAT || bgr == REPEAT_Y) && w > scaledImageWidth) {
+                cw = scaledImageWidth;
+                int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+                if ( xPosition >= 0 ) {
+                    cx = _tx + xPosition;
+                    cw = kMin(cw, pw - xPosition);
                 }
                 else {
                     cx = _tx;
-                    if (pixw > 0) {
-                        sx = -xp;
-                        cw += xp;
+                    if (scaledImageWidth > 0) {
+                        sx = -xPosition;
+                        cw += xPosition;
                     }
                 }
                 cx += bleft;
@@ -452,29 +523,29 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 // repeat over x or background is wider than box
                 cw = w;
                 cx = _tx;
-                if (pixw > 0) {
-                    int xp = bgLayer->backgroundXPosition().minWidth(pw-pixw);
-                    if ((xp > 0) && (bgr == NO_REPEAT)) {
-                        cx += xp;
-                        cw -= xp;
+                if (scaledImageWidth > 0) {
+                    int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
+                    if ((xPosition > 0) && (bgr == NO_REPEAT)) {
+                        cx += xPosition;
+                        cw -= xPosition;
                     } else {
-                        sx =  pixw - (xp % pixw );
-                        sx -= bleft % pixw;
+                        sx = scaledImageWidth - (xPosition % scaledImageWidth);
+                        sx -= bleft % scaledImageWidth;
                     }
                 }
             }
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
-                ch = pixh;
-                int yp = bgLayer->backgroundYPosition().minWidth(ph-pixh);
-                if ( yp >= 0 ) {
-                    cy = _ty + yp;
-                    ch = kMin(ch, ph - yp);
+            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > scaledImageHeight ) {
+                ch = scaledImageHeight;
+                int yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
+                if ( yPosition >= 0 ) {
+                    cy = _ty + yPosition;
+                    ch = kMin(ch, ph - yPosition);
                 }
                 else {
                     cy = _ty;
-                    if (pixh > 0) {
-                        sy = -yp;
-                        ch += yp;
+                    if (scaledImageHeight > 0) {
+                        sy = -yPosition;
+                        ch += yPosition;
                     }
                 }
 
@@ -483,14 +554,14 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                 // repeat over y or background is taller than box
                 ch = h;
                 cy = _ty;
-                if (pixh > 0) {
-                    int yPosition = bgLayer->backgroundYPosition().minWidth(ph-pixh);
+                if (scaledImageHeight > 0) {
+                    int yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
                     if ((yPosition > 0) && (bgr == NO_REPEAT)) {
                         cy += yPosition;
                         ch -= yPosition;
                     } else {
-                        sy = pixh - (yPosition % pixh );
-                        sy -= borderTop() % pixh;
+                        sy = scaledImageHeight - (yPosition % scaledImageHeight);
+                        sy -= top % scaledImageHeight;
                     }
                 }
             }
@@ -503,28 +574,33 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             QRect vr = viewRect();
             int pw = vr.width();
             int ph = vr.height();
-
+            scaledImageWidth = pw;
+            scaledImageHeight = ph;
+            calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
             EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
-            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > pixw ) {
-                cw = pixw;
-                cx = vr.x() + bgLayer->backgroundXPosition().minWidth(pw-pixw);
+
+            if( (bgr == NO_REPEAT || bgr == REPEAT_Y) && pw > scaledImageWidth ) {
+                cw = scaledImageWidth;
+                cx = vr.x() + bgLayer->backgroundXPosition().minWidth(pw - scaledImageWidth);
             } else {
                 cw = pw;
                 cx = vr.x();
-                sx =  pixw ? pixw - ((bgLayer->backgroundXPosition().minWidth(pw-pixw)) % pixw ) : 0;
+                if (scaledImageWidth > 0)
+                    sx = scaledImageWidth - bgLayer->backgroundXPosition().minWidth(pw - scaledImageWidth) % scaledImageWidth;
             }
 
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > pixh ) {
-                ch = pixh;
-                cy = vr.y() + bgLayer->backgroundYPosition().minWidth(ph-pixh);
+            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > scaledImageHeight ) {
+                ch = scaledImageHeight;
+                cy = vr.y() + bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
             } else {
                 ch = ph;
                 cy = vr.y();
-                sy = pixh ? pixh - ((bgLayer->backgroundYPosition().minWidth(ph-pixh)) % pixh ) : 0;
+                if (scaledImageHeight > 0)
+                    sy = scaledImageHeight - bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight) % scaledImageHeight;
             }
 
-            QRect fix(cx,cy,cw,ch);
-            QRect ele(_tx+bleft,_ty+borderTop(),w-vpab,h-hpab);
+            QRect fix(cx, cy, cw, ch);
+            QRect ele(_tx, _ty, w, h);
             QRect b = fix.intersect(ele);
 
             //kdDebug() <<" ele is " << ele << " b is " << b << " fix is " << fix << endl;
@@ -543,9 +619,13 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
 // 	kdDebug() << " clipy, cliph: " << clipy << ", " << cliph << endl;
 //         kdDebug() << " drawTiledPixmap(" << cx << ", " << cy << ", " << cw << ", " << ch << ", " << sx << ", " << sy << ")" << endl;
         if (cw>0 && ch>0)
-            p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c), sx, sy);
+            p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight), sx, sy);
 
     }
+
+    if (bgLayer->backgroundClip() != BGBORDER)
+        p->restore(); // Undo the background clip
+
 }
 
 void RenderBox::outlineBox(QPainter *p, int _tx, int _ty, const char *color)
@@ -654,7 +734,7 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
                 o->layer()->subtractScrollOffset( xPos, yPos );
             if (isPositioned())
                 o->layer()->checkInlineRelOffset(this, xPos, yPos);
-        }            
+        }
 
         if(!isInline() || isReplaced())
             xPos += m_x, yPos += m_y;
@@ -1175,7 +1255,7 @@ int RenderBox::availableHeightUsing(const Length& h) const
     if (h.isPercent())
        return calcContentHeight(h.width(containingBlock()->availableHeight()));
 
-    // Check for implicit height 
+    // Check for implicit height
     if (hasImplicitHeight())
         return calcImplicitHeight();
 
@@ -1216,7 +1296,7 @@ void RenderBox::calcAbsoluteHorizontal()
 {
    if (isReplaced()) {
         calcAbsoluteHorizontalReplaced();
-        return; 
+        return;
     }
 
     // QUESTIONS
@@ -1337,7 +1417,7 @@ void RenderBox::calcAbsoluteHorizontal()
         short minMarginRight;
         short minXPos;
 
-        calcAbsoluteHorizontalValues(style()->minWidth(), containerBlock, containerDirection, 
+        calcAbsoluteHorizontalValues(style()->minWidth(), containerBlock, containerDirection,
                                      containerWidth, bordersPlusPadding,
                                      left, right, marginLeft, marginRight,
                                      minWidth, minMarginLeft, minMarginRight, minXPos);
@@ -1532,7 +1612,7 @@ void RenderBox::calcAbsoluteVertical()
     // Even in strict mode (where we don't grow the root to fill the viewport) other browsers
     // position as though the root fills the viewport.
     const int containerHeight = containerBlock->isRoot() ? containerBlock->availableHeight() : (containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom());
-    
+
     const int bordersPlusPadding = borderTop() + borderBottom() + paddingTop() + paddingBottom();
     const Length marginTop = style()->marginTop();
     const Length marginBottom = style()->marginBottom();
@@ -1576,7 +1656,7 @@ void RenderBox::calcAbsoluteVertical()
                                top, bottom, marginTop, marginBottom,
                                height, m_marginTop, m_marginBottom, m_y);
 
-    // Avoid doing any work in the common case (where the values of min-height and max-height are their defaults).    
+    // Avoid doing any work in the common case (where the values of min-height and max-height are their defaults).
     // see FIXME 3
 
     // Calculate constraint equation values for 'max-height' case.
@@ -1636,7 +1716,7 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
     // converted to the static position in calcAbsoluteVertical()
     assert(!(top.isVariable() && bottom.isVariable()));
 
-    int contentHeight = m_height - bordersPlusPadding;    
+    int contentHeight = m_height - bordersPlusPadding;
 
     int topValue = 0;
 
@@ -1700,7 +1780,7 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
          * Otherwise, set 'auto' values for 'margin-top' and 'margin-bottom'
          * to 0, and pick the one of the following six rules that applies.
          *
-         * 1. 'top' and 'height' are 'auto' and 'bottom' is not 'auto', then 
+         * 1. 'top' and 'height' are 'auto' and 'bottom' is not 'auto', then
          *    the height is based on the content, and solve for 'top'.
          *
          *              OMIT RULE 2 AS IT SHOULD NEVER BE HIT
@@ -1732,7 +1812,7 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
             // RULE 1: (height is content based, solve of top)
             heightValue = contentHeight;
             topValue = availableSpace - (heightValue + bottom.width(containerHeight));
-        } 
+        }
         else if (topIsAuto && !heightIsAuto && bottomIsAuto) {
             // RULE 2: (shouldn't happen)
         }
@@ -1758,7 +1838,7 @@ void RenderBox::calcAbsoluteVerticalValues(Length height, const RenderObject* co
 }
 
 void RenderBox::calcAbsoluteHorizontalReplaced()
-{   
+{
     // The following is based off of the W3C Working Draft from April 11, 2006 of
     // CSS 2.1: Section 10.3.8 "Absolutly positioned, replaced elements"
     // <http://www.w3.org/TR/2005/WD-CSS21-20050613/visudet.html#abs-replaced-width>
@@ -1771,8 +1851,8 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
     // FIXME: This is incorrect for cases where the container block is a relatively
     // positioned inline.
     const int containerWidth = containingBlockWidth() + containerBlock->paddingLeft() + containerBlock->paddingRight();
-    
-    // To match WinIE, in quirks mode use the parent's 'direction' property 
+
+    // To match WinIE, in quirks mode use the parent's 'direction' property
     // instead of the the container block's.
     EDirection containerDirection = (style()->htmlHacks()) ? parent()->style()->direction() : containerBlock->style()->direction();
 
@@ -1907,7 +1987,7 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
         if (containerDirection  == LTR) {
             leftValue = left.width(containerWidth);
             rightValue = availableSpace - (leftValue + m_marginLeft + m_marginRight);
-        } 
+        }
         else {
             rightValue = right.width(containerWidth);
             leftValue = availableSpace - (rightValue + m_marginLeft + m_marginRight);
@@ -2035,7 +2115,7 @@ void RenderBox::calcAbsoluteVerticalReplaced()
 
         // Solve for 'margin-bottom'
         m_marginBottom = availableSpace - (topValue + bottomValue + m_marginTop);
-    } 
+    }
 
     /*-----------------------------------------------------------------------*\
      * 6. If at this point the values are over-constrained, ignore the value

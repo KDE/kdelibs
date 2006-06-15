@@ -5,6 +5,7 @@
  *           (C) 2003-2004 Apple Computer, Inc.
  *           (C) 2004-2006 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -741,7 +742,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
         CSSProperty *prop = values->at(i >= firstLen ? i - firstLen : i);
 	Source source = Inline;
 
-        if( prop->m_bImportant ) source = InlineImportant;
+        if( prop->m_important ) source = InlineImportant;
 	if( prop->nonCSSHint ) source = NonCSSHint;
 
 	bool first;
@@ -1881,7 +1882,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         CSSProperty *prop = values->at(i);
 	Source source = regular;
 
-	if( prop->m_bImportant ) source = important;
+	if( prop->m_important ) source = important;
 	if( prop->nonCSSHint ) source = NonCSSHint;
 
 	bool first = false;
@@ -2110,7 +2111,7 @@ static inline int nextFontSize(const QValueVector<int>& a, int v, bool smaller)
 
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
-//      kdDebug( 6080 ) << "applying property " << id << endl;
+//     kdDebug( 6080 ) << "applying property " << getPropertyName(id) << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -2137,8 +2138,17 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BACKGROUND_ATTACHMENT:
         HANDLE_BACKGROUND_VALUE(backgroundAttachment, BackgroundAttachment, value)
         break;
+    case CSS_PROP__KHTML_BACKGROUND_CLIP:
+        HANDLE_BACKGROUND_VALUE(backgroundClip, BackgroundClip, value)
+        break;
+    case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
+        HANDLE_BACKGROUND_VALUE(backgroundOrigin, BackgroundOrigin, value)
+        break;
     case CSS_PROP_BACKGROUND_REPEAT:
         HANDLE_BACKGROUND_VALUE(backgroundRepeat, BackgroundRepeat, value)
+        break;
+    case CSS_PROP__KHTML_BACKGROUND_SIZE:
+        HANDLE_BACKGROUND_VALUE(backgroundSize, BackgroundSize, value)
         break;
     case CSS_PROP_BORDER_COLLAPSE:
         HANDLE_INHERIT_AND_INITIAL(borderCollapse, BorderCollapse)
@@ -3910,6 +3920,50 @@ void CSSStyleSelector::mapBackgroundAttachment(BackgroundLayer* layer, DOM::CSSV
     }
 }
 
+void CSSStyleSelector::mapBackgroundClip(BackgroundLayer* layer, CSSValueImpl* value)
+{
+    if (value->cssValueType() == CSSValue::CSS_INITIAL) {
+        layer->setBackgroundClip(RenderStyle::initialBackgroundClip());
+        return;
+    }
+
+    if (!value->isPrimitiveValue()) return;
+    CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
+    switch (primitiveValue->getIdent()) {
+        case CSS_VAL_BORDER:
+            layer->setBackgroundClip(BGBORDER);
+            break;
+        case CSS_VAL_PADDING:
+            layer->setBackgroundClip(BGPADDING);
+            break;
+        default: // CSS_VAL_CONTENT
+            layer->setBackgroundClip(BGCONTENT);
+            break;
+    }
+}
+
+void CSSStyleSelector::mapBackgroundOrigin(BackgroundLayer* layer, CSSValueImpl* value)
+{
+    if (value->cssValueType() == CSSValue::CSS_INITIAL) {
+        layer->setBackgroundOrigin(RenderStyle::initialBackgroundOrigin());
+        return;
+    }
+
+    if (!value->isPrimitiveValue()) return;
+    CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
+    switch (primitiveValue->getIdent()) {
+        case CSS_VAL_BORDER:
+            layer->setBackgroundOrigin(BGBORDER);
+            break;
+        case CSS_VAL_PADDING:
+            layer->setBackgroundOrigin(BGPADDING);
+            break;
+        default: // CSS_VAL_CONTENT
+            layer->setBackgroundOrigin(BGCONTENT);
+            break;
+    }
+}
+
 void CSSStyleSelector::mapBackgroundImage(BackgroundLayer* layer, DOM::CSSValueImpl* value)
 {
     if (value->cssValueType() == CSSValue::CSS_INITIAL) {
@@ -3947,6 +4001,57 @@ void CSSStyleSelector::mapBackgroundRepeat(BackgroundLayer* layer, DOM::CSSValue
 	default:
 	    return;
     }
+}
+
+
+void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* value)
+{
+    LengthSize b = RenderStyle::initialBackgroundSize();
+
+    if (value->cssValueType() == CSSValue::CSS_INITIAL) {
+        layer->setBackgroundSize(b);
+        return;
+    }
+
+    if (!value->isPrimitiveValue())
+        return;
+
+    CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
+    PairImpl* pair = primitiveValue->getPairValue();
+    if (!pair)
+        return;
+
+    CSSPrimitiveValueImpl* first = static_cast<CSSPrimitiveValueImpl*>(pair->first());
+    CSSPrimitiveValueImpl* second = static_cast<CSSPrimitiveValueImpl*>(pair->second());
+
+    if (!first || !second)
+        return;
+
+    Length firstLength, secondLength;
+    int firstType = first->primitiveType();
+    int secondType = second->primitiveType();
+
+    if (firstType == CSSPrimitiveValue::CSS_UNKNOWN)
+        firstLength = Length(Variable);
+    else if (firstType > CSSPrimitiveValue::CSS_PERCENTAGE && firstType < CSSPrimitiveValue::CSS_DEG)
+        firstLength = Length(first->computeLength(style, paintDeviceMetrics), Fixed);
+    else if (firstType == CSSPrimitiveValue::CSS_PERCENTAGE)
+        firstLength = Length((int)first->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+    else
+        return;
+
+    if (secondType == CSSPrimitiveValue::CSS_UNKNOWN)
+        secondLength = Length(Variable);
+    else if (secondType > CSSPrimitiveValue::CSS_PERCENTAGE && secondType < CSSPrimitiveValue::CSS_DEG)
+        secondLength = Length(second->computeLength(style, paintDeviceMetrics), Fixed);
+    else if (secondType == CSSPrimitiveValue::CSS_PERCENTAGE)
+        secondLength = Length((int)second->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
+    else
+        return;
+
+    b.width = firstLength;
+    b.height = secondLength;
+    layer->setBackgroundSize(b);
 }
 
 void CSSStyleSelector::mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value)

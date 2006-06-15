@@ -183,9 +183,10 @@ bool InlineFlowBox::onEndChain(RenderObject* endObject)
 
     RenderObject* curr = endObject;
     RenderObject* parent = curr->parent();
-    while (parent && !parent->isRenderBlock()) {
+    while (parent && !parent->isRenderBlock() || parent == object()) {
         if (parent->lastChild() != curr)
             return false;
+
         curr = parent;
         parent = curr->parent();
     }
@@ -544,7 +545,7 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
     bool hasBackgroundImage = bg && (bg->pixmap_size() == bg->valid_rect().size()) &&
                               !bg->isTransparent() && !bg->isErrorImage();
     if (!hasBackgroundImage || (!prevLineBox() && !nextLineBox()) || !parent())
-        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight());
+        object()->paintBackgroundExtended(p, c, bgLayer, my, mh, _tx, _ty, w, h, borderLeft(), borderRight(), paddingLeft(), paddingRight());
     else {
         // We have a background image that spans multiple lines.
         // We need to adjust _tx and _ty by the width of all previous lines.
@@ -552,16 +553,19 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
         // strip.  Even though that strip has been broken up across multiple lines, you still paint it
         // as though you had one single line.  This means each line has to pick up the background where
         // the previous line left off.
+        // FIXME: What the heck do we do with RTL here? The math we're using is obviously not right,
+        // but it isn't even clear how this should work at all.
+        int xOffsetOnLine = 0;
+        for (InlineRunBox* curr = prevLineBox(); curr; curr = curr->prevLineBox())
+            xOffsetOnLine += curr->width();
         int startX = _tx - xOffsetOnLine;
         int totalWidth = xOffsetOnLine;
         for (InlineRunBox* curr = this; curr; curr = curr->nextLineBox())
             totalWidth += curr->width();
-        QRect clipRect(_tx, _ty, width(), height());
-        clipRect = p->xForm(clipRect);
         p->save();
-        p->setClipRect( clipRect );
+        p->setClipRect(QRect(_tx, _ty, width(), height()), QPainter::CoordPainter);
         object()->paintBackgroundExtended(p, c, bgLayer, my, mh, startX, _ty,
-                                          totalWidth, h, borderLeft(), borderRight());
+                                          totalWidth, h, borderLeft(), borderRight(), paddingLeft(), paddingRight());
         p->restore();
     }
 }

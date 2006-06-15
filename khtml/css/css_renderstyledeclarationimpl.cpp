@@ -309,13 +309,13 @@ static CSSValueImpl *getPositionOffsetValue(RenderObject *renderer, int property
 
     if (renderer->isPositioned())
         return valueForLength(l, renderer->contentWidth());
-    
+
     if (renderer->isRelPositioned())
         // FIXME: It's not enough to simply return "auto" values for one offset if the other side is defined.
         // In other words if left is auto and right is not auto, then left's computed value is negative right.
         // So we should get the opposite length unit and see if it is auto.
         return valueForLength(l, renderer->contentWidth());
-    
+
     return new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
  }
 
@@ -1112,7 +1112,7 @@ CSSProperty RenderStyleDeclarationImpl::property( int id ) const
 {
     CSSProperty prop;
     prop.m_id = id;
-    prop.m_bImportant = false;
+    prop.m_important = false;
     prop.nonCSSHint = false;
 
     CSSValueImpl* v = getPropertyCSSValue( id );

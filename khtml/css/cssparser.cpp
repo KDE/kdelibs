@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
+ * Copyright (C) 2004, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,8 +21,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-//#define CSS_DEBUG
-//#define TOKEN_DEBUG
+#define CSS_DEBUG
+// #define TOKEN_DEBUG
 #define YYDEBUG 0
 
 #include <kdebug.h>
@@ -49,37 +50,32 @@ using namespace DOM;
         skip_next = false; \
     }
 
-ValueList::ValueList()
-{
-    values = (Value *) malloc( 16 * sizeof ( Value ) );
-    numValues = 0;
-    currentValue = 0;
-    maxValues = 16;
-}
-
 ValueList::~ValueList()
 {
-    for ( int i = 0; i < numValues; i++ ) {
-#ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "       value: (unit=" << values[i].unit <<")"<< endl;
-#endif
-        if ( values[i].unit == Value::Function ) {
-            delete values[i].function->args;
-            delete values[i].function;
+     unsigned numValues = m_values.size();
+     for (unsigned i = 0; i < numValues; i++)
+         if (m_values[i].unit == Value::Function)
+             delete m_values[i].function;
+}
+
+namespace {
+    class ShorthandScope {
+    public:
+        ShorthandScope(CSSParser* parser, int propId) : m_parser(parser)
+        {
+            if (!(m_parser->m_inParseShorthand++))
+                m_parser->m_currentShorthand = propId;
         }
-    }
-    free( values );
-}
+        ~ShorthandScope()
+        {
+            if (!(--m_parser->m_inParseShorthand))
+                m_parser->m_currentShorthand = 0;
+        }
 
-void ValueList::addValue( const Value &val )
-{
-    if ( numValues >= maxValues ) {
-        maxValues += 16;
-        values = (Value *) realloc( values, maxValues*sizeof( Value ) );
-    }
-    values[numValues++] = val;
+    private:
+        CSSParser* m_parser;
+    };
 }
-
 
 using namespace DOM;
 
@@ -108,7 +104,10 @@ CSSParser::CSSParser( bool strictParsing )
     id = 0;
     important = false;
     nonCSSHint = false;
-    inParseShortHand = false;
+
+    m_inParseShorthand = 0;
+    m_currentShorthand = 0;
+    m_implicitShorthand = false;
 
     yy_start = 1;
 
@@ -289,7 +288,7 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
     CSSProperty *prop = new CSSProperty;
     prop->m_id = propId;
     prop->setValue( value );
-    prop->m_bImportant = important;
+    prop->m_important = important;
     prop->nonCSSHint = nonCSSHint;
 
     if ( numParsedProperties >= maxParsedProperties ) {
@@ -392,7 +391,7 @@ static bool validUnit( Value *value, int unitflags, bool strict )
     return b;
 }
 
-bool CSSParser::parseValue( int propId, bool important, int expected )
+bool CSSParser::parseValue( int propId, bool important )
 {
     if ( !valueList ) return false;
 
@@ -403,13 +402,20 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
 
     int id = value->id;
 
-    if ( id == CSS_VAL_INHERIT && expected == 1 ) {
+    int num = inShorthand() ? 1 : valueList->size();
+
+    if ( id == CSS_VAL_INHERIT ) {
+        if (num != 1)
+            return false;
         addProperty( propId, new CSSInheritedValueImpl(), important );
         return true;
-    } else if (id == CSS_VAL_INITIAL && expected == 1 ) {
+    } else if (id == CSS_VAL_INITIAL ) {
+        if (num != 1)
+            return false;
         addProperty(propId, new CSSInitialValueImpl(), important);
         return true;
     }
+
     bool valid_primitive = false;
     CSSValueImpl *parsedValue = 0;
 
@@ -631,16 +637,17 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     {
         const int properties[2] = { CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING,
                                     CSS_PROP__KHTML_BORDER_VERTICAL_SPACING };
-        int num = valueList->numValues;
         if (num == 1) {
+            ShorthandScope scope(this, CSS_PROP_BORDER_SPACING);
             if (!parseValue(properties[0], important)) return false;
             CSSValueImpl* value = parsedProperties[numParsedProperties-1]->value();
             addProperty(properties[1], value, important);
             return true;
         }
         else if (num == 2) {
-            if (!parseValue(properties[0], important, 2)) return false;
-            if (!parseValue(properties[1], important, 1)) return false;
+            ShorthandScope scope(this, CSS_PROP_BORDER_SPACING);
+            if (!parseValue(properties[0], important)) return false;
+            if (!parseValue(properties[1], important)) return false;
             return true;
         }
         return false;
@@ -699,10 +706,13 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         break;
 
     case CSS_PROP_BACKGROUND_ATTACHMENT:
+    case CSS_PROP__KHTML_BACKGROUND_CLIP:
     case CSS_PROP_BACKGROUND_IMAGE:
+    case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
     case CSS_PROP_BACKGROUND_POSITION:
     case CSS_PROP_BACKGROUND_POSITION_X:
     case CSS_PROP_BACKGROUND_POSITION_Y:
+    case CSS_PROP__KHTML_BACKGROUND_SIZE:
     case CSS_PROP_BACKGROUND_REPEAT: {
         CSSValueImpl *val1 = 0, *val2 = 0;
         int propId1, propId2;
@@ -932,7 +942,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         const int properties[5] = { CSS_PROP__KHTML_MARQUEE_DIRECTION, CSS_PROP__KHTML_MARQUEE_INCREMENT,
                                     CSS_PROP__KHTML_MARQUEE_REPETITION,
                                     CSS_PROP__KHTML_MARQUEE_STYLE, CSS_PROP__KHTML_MARQUEE_SPEED };
-        return parseShortHand(properties, 5, important);
+        return parseShortHand(propId, properties, 5, important);
     }
     case CSS_PROP__KHTML_MARQUEE_DIRECTION:
         if (id == CSS_VAL_FORWARDS || id == CSS_VAL_BACKWARDS || id == CSS_VAL_AHEAD ||
@@ -975,77 +985,77 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     {
         const int properties[3] = { CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE,
                                     CSS_PROP_BORDER_COLOR };
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     case CSS_PROP_BORDER_TOP:
             // [ 'border-top-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_TOP_STYLE,
                                     CSS_PROP_BORDER_TOP_COLOR};
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     case CSS_PROP_BORDER_RIGHT:
             // [ 'border-right-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE,
                                     CSS_PROP_BORDER_RIGHT_COLOR };
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     case CSS_PROP_BORDER_BOTTOM:
             // [ 'border-bottom-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_BOTTOM_STYLE,
                                     CSS_PROP_BORDER_BOTTOM_COLOR };
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     case CSS_PROP_BORDER_LEFT:
             // [ 'border-left-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE,
                                     CSS_PROP_BORDER_LEFT_COLOR };
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     case CSS_PROP_OUTLINE:
             // [ 'outline-color' || 'outline-style' || 'outline-width' ] | inherit
     {
         const int properties[3] = { CSS_PROP_OUTLINE_WIDTH, CSS_PROP_OUTLINE_STYLE,
                                     CSS_PROP_OUTLINE_COLOR };
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     case CSS_PROP_BORDER_COLOR:
             // <color>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_COLOR, CSS_PROP_BORDER_RIGHT_COLOR,
                                     CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
-        return parse4Values(properties, important);
+        return parse4Values(propId, properties, important);
     }
     case CSS_PROP_BORDER_WIDTH:
             // <border-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_RIGHT_WIDTH,
                                     CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_LEFT_WIDTH };
-        return parse4Values(properties, important);
+        return parse4Values(propId, properties, important);
     }
     case CSS_PROP_BORDER_STYLE:
             // <border-style>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_STYLE, CSS_PROP_BORDER_RIGHT_STYLE,
                                     CSS_PROP_BORDER_BOTTOM_STYLE, CSS_PROP_BORDER_LEFT_STYLE };
-        return parse4Values(properties, important);
+        return parse4Values(propId, properties, important);
     }
     case CSS_PROP_MARGIN:
             // <margin-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_MARGIN_TOP, CSS_PROP_MARGIN_RIGHT,
                                     CSS_PROP_MARGIN_BOTTOM, CSS_PROP_MARGIN_LEFT };
-        return parse4Values(properties, important);
+        return parse4Values(propId, properties, important);
     }
     case CSS_PROP_PADDING:
             // <padding-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_PADDING_TOP, CSS_PROP_PADDING_RIGHT,
                                     CSS_PROP_PADDING_BOTTOM, CSS_PROP_PADDING_LEFT };
-        return parse4Values(properties, important);
+        return parse4Values(propId, properties, important);
     }
     case CSS_PROP_FONT:
             // [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]?
@@ -1059,7 +1069,7 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     {
         const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION,
                                     CSS_PROP_LIST_STYLE_IMAGE };
-        return parseShortHand(properties, 3, important);
+        return parseShortHand(propId, properties, 3, important);
     }
     default:
 // #ifdef CSS_DEBUG
@@ -1071,31 +1081,25 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     if ( valid_primitive ) {
 
         if ( id != 0 ) {
-            // qDebug(" new value: id=%d", id );
             parsedValue = new CSSPrimitiveValueImpl( id );
         } else if ( value->unit == CSSPrimitiveValue::CSS_STRING )
             parsedValue = new CSSPrimitiveValueImpl( domString( value->string ),
                                                      (CSSPrimitiveValue::UnitTypes) value->unit );
         else if ( value->unit >= CSSPrimitiveValue::CSS_NUMBER &&
                   value->unit <= CSSPrimitiveValue::CSS_KHZ ) {
-            // qDebug(" new value: value=%.2f, unit=%d", value->fValue, value->unit );
             parsedValue = new CSSPrimitiveValueImpl( value->fValue,
                                                      (CSSPrimitiveValue::UnitTypes) value->unit );
         } else if ( value->unit >= Value::Q_EMS ) {
-            // qDebug(" new quirks value: value=%.2f, unit=%d", value->fValue, value->unit );
             parsedValue = new CSSQuirkPrimitiveValueImpl( value->fValue, CSSPrimitiveValue::CSS_EMS );
         }
-        --expected;
         valueList->next();
-        if ( valueList->current() && expected == 0)
-        {
-            delete parsedValue;
-            parsedValue = 0;
-        }
     }
     if ( parsedValue ) {
-        addProperty( propId, parsedValue, important );
-        return true;
+        if (!valueList->current() || inShorthand()) {
+            addProperty( propId, parsedValue, important );
+            return true;
+        }
+        delete parsedValue;
     }
     return false;
 }
@@ -1121,11 +1125,13 @@ bool CSSParser::parseBackgroundShorthand(bool important)
 {
     // Position must come before color in this array because a plain old "0" is a legal color
     // in quirks mode but it's usually the X coordinate of a position.
-    const int numProperties = 5;
+    // FIXME: Add CSS_PROP__KHTML_BACKGROUND_SIZE to the shorthand.
+    const int numProperties = 7;
     const int properties[numProperties] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
-        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION, CSS_PROP_BACKGROUND_COLOR };
+        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,  CSS_PROP__KHTML_BACKGROUND_CLIP,
+        CSS_PROP__KHTML_BACKGROUND_ORIGIN, CSS_PROP_BACKGROUND_COLOR };
 
-    inParseShortHand = true;
+    ShorthandScope scope(this, CSS_PROP_BACKGROUND);
 
     bool parsedProperty[numProperties] = { false }; // compiler will repeat false as necessary
     CSSValueImpl* values[numProperties] = { 0 }; // compiler will repeat 0 as necessary
@@ -1193,82 +1199,56 @@ bool CSSParser::parseBackgroundShorthand(bool important)
             addProperty(properties[i], values[i], important);
     }
 
-    inParseShortHand = false;
     return true;
 
 fail:
-    inParseShortHand = false;
     for (int k = 0; k < numProperties; k++)
         delete values[k];
     delete positionYValue;
     return false;
 }
 
-bool CSSParser::parseShortHand( const int *properties, int numProperties, bool important )
+bool CSSParser::parseShortHand(int propId, const int *properties, int numProperties, bool important )
 {
     /* We try to match as many properties as possible
      * We setup an array of booleans to mark which property has been found,
      * and we try to search for properties until it makes no longer any sense
      */
-    inParseShortHand = true;
+    ShorthandScope scope(this, propId);
 
     bool found = false;
-    int oldPropIndex = numParsedProperties;
     bool fnd[6]; //Trust me ;)
     for( int i = 0; i < numProperties; i++ )
-            fnd[i] = false;
-
-#ifdef CSS_DEBUG
-    kdDebug(6080) << "PSH: numProperties=" << numProperties << endl;
-#endif
+        fnd[i] = false;
 
     while ( valueList->current() ) {
         found = false;
-        // qDebug("outer loop" );
         for (int propIndex = 0; !found && propIndex < numProperties; ++propIndex) {
             if (!fnd[propIndex]) {
-#ifdef CSS_DEBUG
-                kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
-#endif
-                if ( parseValue( properties[propIndex], important, numProperties ) ) {
+                if ( parseValue( properties[propIndex], important ) ) {
                     fnd[propIndex] = found = true;
-#ifdef CSS_DEBUG
-                    kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
-#endif
                 }
             }
         }
+
         // if we didn't find at least one match, this is an
         // invalid shorthand and we have to ignore it
-        if (!found) {
-#ifdef CSS_DEBUG
-            qDebug("didn't find anything" );
-#endif
-
-            // need to nuke the already added values
-            for ( int i = oldPropIndex; i < numParsedProperties; ++i )
-                delete parsedProperties[i];
-
-            numParsedProperties = oldPropIndex;
-            inParseShortHand = false;
+        if (!found)
             return false;
-        }
     }
 
     // Fill in any remaining properties with the initial value.
+    m_implicitShorthand = true;
     for (int i = 0; i < numProperties; ++i) {
         if (!fnd[i])
             addProperty(properties[i], new CSSInitialValueImpl(), important);
     }
+    m_implicitShorthand = false;
 
-    inParseShortHand = false;
-#ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "parsed shorthand" << endl;
-#endif
     return true;
 }
 
-bool CSSParser::parse4Values( const int *properties,  bool important )
+bool CSSParser::parse4Values(int propId, const int *properties,  bool important )
 {
     /* From the CSS 2 specs, 8.3
      * If there is only one value, it applies to all sides. If there are two values, the top and
@@ -1278,47 +1258,56 @@ bool CSSParser::parse4Values( const int *properties,  bool important )
      * right, bottom, and left, respectively.
      */
 
-    int num = inParseShortHand ? 1 : valueList->numValues;
+    int num = inShorthand() ? 1 : valueList->size();
     //qDebug("parse4Values: num=%d %d", num,  valueList->numValues );
 
-    // the order is top, right, bottom, left
-    switch( num ) {
-    case 1: {
-        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
-        CSSValueImpl *value = parsedProperties[numParsedProperties-1]->value();
-        addProperty( properties[1], value, important );
-        addProperty( properties[2], value, important );
-        addProperty( properties[3], value, important );
-        return true;
-    }
-    case 2: {
+    ShorthandScope scope(this, propId);
 
-        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
-        if( !parseValue( properties[1], important, valueList->numValues) ) return false;
-        CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
-        addProperty( properties[2], value, important );
-        value = parsedProperties[numParsedProperties-2]->value();
-        addProperty( properties[3], value, important );
-        return true;
+    // the order is top, right, bottom, left
+    switch (num) {
+        case 1: {
+            if (!parseValue(properties[0], important))
+                return false;
+            CSSValueImpl *value = parsedProperties[numParsedProperties-1]->value();
+            m_implicitShorthand = true;
+            addProperty(properties[1], value, important);
+            addProperty(properties[2], value, important);
+            addProperty(properties[3], value, important);
+            m_implicitShorthand = false;
+            break;
+        }
+        case 2: {
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important))
+                return false;
+            CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
+            m_implicitShorthand = true;
+            addProperty(properties[2], value, important);
+            value = parsedProperties[numParsedProperties-2]->value();
+            addProperty(properties[3], value, important);
+            m_implicitShorthand = false;
+            break;
+        }
+        case 3: {
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important) || !parseValue(properties[2], important))
+                return false;
+            CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
+            m_implicitShorthand = true;
+            addProperty(properties[3], value, important);
+            m_implicitShorthand = false;
+            break;
+        }
+        case 4: {
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important) ||
+                !parseValue(properties[2], important) || !parseValue(properties[3], important))
+                return false;
+            break;
+        }
+        default: {
+            return false;
+        }
     }
-    case 3: {
-        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
-        if( !parseValue( properties[1], important, valueList->numValues ) ) return false;
-        if( !parseValue( properties[2], important, valueList->numValues ) ) return false;
-        CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
-        addProperty( properties[3], value, important );
-        return true;
-    }
-    case 4: {
-        if( !parseValue( properties[0], important, valueList->numValues ) ) return false;
-        if( !parseValue( properties[1], important, valueList->numValues ) ) return false;
-        if( !parseValue( properties[2], important, valueList->numValues ) ) return false;
-        if( !parseValue( properties[3], important, valueList->numValues ) ) return false;
-        return true;
-    }
-    default:
-        return false;
-    }
+
+    return true;
 }
 
 // [ <string> | <uri> | <counter> | attr(X) | open-quote | close-quote | no-open-quote | no-close-quote ]+ | inherit
@@ -1345,10 +1334,10 @@ bool CSSParser::parseContent( int propId, bool important )
             QString fname = qString( val->function->name ).lower();
             if (!args) return false;
             if (fname == "attr(") {
-            if ( args->numValues != 1)
-                return false;
-            Value *a = args->current();
-            parsedValue = new CSSPrimitiveValueImpl(domString(a->string), CSSPrimitiveValue::CSS_ATTR);
+                if ( args->size() != 1)
+                    return false;
+                Value *a = args->current();
+                parsedValue = new CSSPrimitiveValueImpl(domString(a->string), CSSPrimitiveValue::CSS_ATTR);
             }
             else
             if (fname == "counter(") {
@@ -1390,8 +1379,8 @@ bool CSSParser::parseContent( int propId, bool important )
 
 CSSValueImpl* CSSParser::parseCounterContent(ValueList *args, bool counters)
 {
-    if (counters || (args->numValues != 1 && args->numValues != 3))
-        if (!counters || (args->numValues != 3 && args->numValues != 5))
+    if (counters || (args->size() != 1 && args->size() != 3))
+        if (!counters || (args->size() != 3 && args->size() != 5))
             return 0;
 
     CounterImpl *counter = new CounterImpl;
@@ -1500,7 +1489,7 @@ void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& va
         if (value2)
             valueList->next();
         else {
-            if (!inParseShortHand) {
+            if (!inShorthand()) {
                 delete value1;
                 value1 = 0;
                 return;
@@ -1523,9 +1512,43 @@ void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& va
     }
 }
 
+CSSValueImpl* CSSParser::parseBackgroundSize()
+{
+    Value* value = valueList->current();
+    CSSPrimitiveValueImpl* parsedValue1;
+
+    if (value->id == CSS_VAL_AUTO)
+        parsedValue1 = new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
+    else {
+        if (!validUnit(value, FLength|FPercent, strict))
+            return 0;
+        parsedValue1 = new CSSPrimitiveValueImpl(value->fValue, (CSSPrimitiveValue::UnitTypes)value->unit);
+    }
+
+    CSSPrimitiveValueImpl* parsedValue2 = parsedValue1;
+    if ((value = valueList->next())) {
+        if (value->id == CSS_VAL_AUTO)
+            parsedValue2 = new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
+        else {
+            if (!validUnit(value, FLength|FPercent, strict)) {
+                delete parsedValue1;
+                return 0;
+            }
+            parsedValue2 = new CSSPrimitiveValueImpl(value->fValue, (CSSPrimitiveValue::UnitTypes)value->unit);
+        }
+    }
+
+    PairImpl* pair = new PairImpl(parsedValue1, parsedValue2);
+    return new CSSPrimitiveValueImpl(pair);
+}
+
 bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                                         CSSValueImpl*& retValue1, CSSValueImpl*& retValue2)
 {
+#ifdef CSS_DEBUG
+    kdDebug(6080) << "parseBackgroundProperty()" << endl;
+    kdDebug(6080) << "LOOKING FOR: " << getPropertyName(propId).string() << endl;
+#endif
     CSSValueListImpl *values = 0, *values2 = 0;
     Value* val;
     CSSValueImpl *value = 0, *value2 = 0;
@@ -1565,6 +1588,13 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                     if (currValue)
                         valueList->next();
                     break;
+                case CSS_PROP__KHTML_BACKGROUND_CLIP:
+                case CSS_PROP__KHTML_BACKGROUND_ORIGIN:
+                    if (val->id == CSS_VAL_BORDER || val->id == CSS_VAL_PADDING || val->id == CSS_VAL_CONTENT) {
+                        currValue = new CSSPrimitiveValueImpl(val->id);
+                        valueList->next();
+                    }
+                    break;
                 case CSS_PROP_BACKGROUND_POSITION:
                     parseBackgroundPosition(currValue, currValue2);
                     // unlike the other functions, parseBackgroundPosition advances the valueList pointer
@@ -1588,6 +1618,11 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                         currValue = new CSSPrimitiveValueImpl(val->id);
                         valueList->next();
                     }
+                    break;
+                case CSS_PROP__KHTML_BACKGROUND_SIZE:
+                    currValue = parseBackgroundSize();
+                    if (currValue)
+                        valueList->next();
                     break;
             }
 
@@ -1621,7 +1656,7 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
 
         // When parsing the 'background' shorthand property, we let it handle building up the lists for all
         // properties.
-        if (inParseShortHand)
+        if (inShorthand())
             break;
     }
 
@@ -1653,7 +1688,7 @@ bool CSSParser::parseShape( int propId, bool important )
         return false;
 
     // rect( t, r, b, l ) || rect( t r b l )
-    if ( args->numValues != 4 && args->numValues != 7 )
+    if ( args->size() != 4 && args->size() != 7 )
         return false;
     RectImpl *rect = new RectImpl();
     bool valid = true;
@@ -1674,7 +1709,7 @@ bool CSSParser::parseShape( int propId, bool important )
         else
             rect->setLeft( length );
         a = args->next();
-        if ( a && args->numValues == 7 ) {
+        if ( a && args->size() == 7 ) {
             if ( a->unit == Value::Operator && a->iValue == ',' ) {
                 a = args->next();
             } else {
@@ -1979,7 +2014,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
     }
     else if ( value->unit == Value::Function &&
 		value->function->args != 0 &&
-                value->function->args->numValues == 5 /* rgb + two commas */ &&
+                value->function->args->size() == 5 /* rgb + two commas */ &&
                 qString( value->function->name ).lower() == "rgb(" ) {
         ValueList *args = value->function->args;
         Value *v = args->current();
@@ -2007,7 +2042,7 @@ CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
     }
     else if ( value->unit == Value::Function &&
               value->function->args != 0 &&
-              value->function->args->numValues == 7 /* rgba + three commas */ &&
+              value->function->args->size() == 7 /* rgba + three commas */ &&
               qString( value->function->name ).lower() == "rgba(" ) {
         ValueList *args = value->function->args;
         Value *v = args->current();
@@ -2157,7 +2192,7 @@ bool CSSParser::parseShadow(int propId, bool important)
                            (val->id >= CSS_VAL_GREY && val->id <= CSS_VAL__KHTML_TEXT && !strict));
 	    if (!context.allowColor)
                 return context.failed();
- 
+
             if (isColor)
                parsedColor = new CSSPrimitiveValueImpl(val->id);
 

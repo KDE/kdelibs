@@ -82,7 +82,7 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
     propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
     while (propIt.current() &&
            ( propIt.current()->m_id != propId || propIt.current()->nonCSSHint != nonCSSHint ||
-             propIt.current()->m_bImportant != important) )
+             propIt.current()->m_important != important) )
         --propIt;
     if (propIt.current())
         propList->removeRef(propIt.current());
@@ -90,14 +90,14 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propId;
     prop->setValue((CSSValueImpl *) parsedValue);
-    prop->m_bImportant = important;
+    prop->m_important = important;
     prop->nonCSSHint = nonCSSHint;
 
     propList->append(prop);
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
                     // non implemented yet << ", value: " << parsedValue->cssText().string()
-                    << " important: " << prop->m_bImportant
+                    << " important: " << prop->m_important
                     << " nonCSS: " << prop->nonCSSHint << endl;
 #endif
 }
@@ -324,7 +324,7 @@ DOMString CSSSelector::selectorText() const
         str = "*";
     else if (tag != anyLocalName)
         str = getTagName( cs->tag );
-          
+
     const CSSSelector* op = 0;
     while (true) {
         if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
@@ -396,12 +396,12 @@ DOMString CSSSelector::selectorText() const
             op=0;
             str += ")";
         }
-            
+
         if ((cs->relation != CSSSelector::SubSelector && !op) || !cs->tagHistory)
             break;
         cs = cs->tagHistory;
     }
-    
+
     if ( cs->tagHistory ) {
         DOMString tagHistoryText = cs->tagHistory->selectorText();
         if ( cs->relation == DirectAdjacent )

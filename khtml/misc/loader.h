@@ -136,6 +136,8 @@ namespace khtml
 
 	int size() const { return m_size; }
 
+        bool isLoaded() const { return !m_loading; }
+
         bool free() const { return m_free; }
 
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }
@@ -259,11 +261,13 @@ namespace khtml
 	virtual ~CachedImage();
 
 	const QPixmap &pixmap() const;
-	const QPixmap &tiled_pixmap(const QColor& bg);
+	const QPixmap &scaled_pixmap(int xWidth, int xHeight);
+	const QPixmap &tiled_pixmap(const QColor& bg, int xWidth = -1, int xHeight = -1);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
         QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already
 
+        bool canRender() const { return !isErrorImage() && pixmap_size().width() > 0 && pixmap_size().height() > 0; }
         void ref(CachedObjectClient *consumer);
 	virtual void deref(CachedObjectClient *consumer);
 
@@ -309,8 +313,10 @@ namespace khtml
 #endif
 	QMovie* m;
         QPixmap* p;
+	QPixmap* scaled;
 	QPixmap* bg;
         QRgb bgColor;
+        QSize bgSize;
         mutable QPixmap* pixPart;
 
         ImageSource* imgSource;

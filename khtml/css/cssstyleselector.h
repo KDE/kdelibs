@@ -2,7 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2003, 2005, 2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -190,8 +190,11 @@ public:
         void init(const KHTMLSettings* settings, DOM::DocumentImpl* doc);
 
         void mapBackgroundAttachment(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundClip(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundOrigin(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundImage(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundRepeat(BackgroundLayer* layer, DOM::CSSValueImpl* value);
+        void mapBackgroundSize(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value);
         void mapBackgroundYPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value);
 

@@ -475,6 +475,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     p = 0;
     pixPart = 0;
     bg = 0;
+    scaled = 0;
     bgColor = qRgba( 0, 0, 0, 0xFF );
     typeChecked = false;
     isFullyTransparent = false;
@@ -523,10 +524,12 @@ void CachedImage::deref( CachedObjectClient *c )
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
 
-const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
+const QPixmap &CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 {
     static QRgb bgTransparent = qRgba( 0, 0, 0, 0xFF );
-    if ( (bgColor != bgTransparent) && (bgColor != newc.rgb()) ) {
+    if ( ( (bgColor != bgTransparent) && (bgColor != newc.rgb()) ) ||
+         ( bgSize != QSize(xWidth, xHeight)) )
+    {
         delete bg; bg = 0;
     }
 
@@ -542,20 +545,30 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 
     bool isvalid = newc.isValid();
     QSize s(pixmap_size());
-    int w = r.width();
-    int h = r.height();
-    assert(s.width() == r.width() && s.height() == s.height());
+    int w = xWidth;
+    int h = xHeight;
+    if (w == -1) xWidth = w = s.width();
+    if (h == -1) xHeight = h = s.height();
 
     const QPixmap* src; //source for pretiling, if any
+
+    //See whether we should scale
+    if (xWidth != s.width() || xHeight != s.height()) {
+        src = &scaled_pixmap(xWidth, xHeight);
+        bgSize = QSize(xWidth, xHeight);
+    } else {
+        src = &r;
+        bgSize = QSize(-1,-1);
+    }
+
     //See whether we can - and should - pre-blend
     if (isvalid && (r.hasAlphaChannel() || r.mask() )) {
-        bg = new QPixmap(w, h, r.depth());
+        bg = new QPixmap(xWidth, xHeight, r.depth());
         bg->fill(newc);
-        bitBlt(bg, 0, 0, &r);
+        bitBlt(bg, 0, 0, src);
         bgColor = newc.rgb();
         src     = bg;
     } else {
-        src     = &r;
         bgColor = bgTransparent;
     }
 
@@ -563,23 +576,23 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if ( w*h < 8192 )
     {
         if ( r.width() < BGMINWIDTH )
-            w = ((BGMINWIDTH-1) / s.width() + 1) * s.width();
+            w = ((BGMINWIDTH-1) / xWidth + 1) * xWidth;
         if ( r.height() < BGMINHEIGHT )
-            h = ((BGMINHEIGHT-1) / s.height() + 1) * s.height();
+            h = ((BGMINHEIGHT-1) / xHeight + 1) * xHeight;
     }
-    if ( w != r.width() || h != r.height() )
+    if ( w != xWidth  || h != xHeight )
     {
 //         kdDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
         QPixmap* oldbg = bg;
         bg = new QPixmap(w, h, r.depth());
 
         //Tile horizontally on the first stripe
-        for (int x = 0; x < w; x += r.width())
-            copyBlt(bg, x, 0, src, 0, 0, r.width(), r.height());
+        for (int x = 0; x < w; x += xWidth)
+            copyBlt(bg, x, 0, src, 0, 0, xWidth, xHeight);
 
         //Copy first stripe down
-        for (int y = r.height(); y < h; y += r.height())
-            copyBlt(bg, 0, y, bg, 0, 0, w, r.height());
+        for (int y = xHeight; y < h; y += xHeight)
+            copyBlt(bg, 0, y, bg, 0, 0, w, xHeight);
 
         if ( src == oldbg )
             delete oldbg;
@@ -588,8 +601,29 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     if (bg)
         return *bg;
 
-    return r;
+    return *src;
 }
+
+const QPixmap &CachedImage::scaled_pixmap( int xWidth, int xHeight )
+{
+    if (scaled) {
+        if (scaled->width() == xWidth && scaled->height() == xHeight)
+            return *scaled;
+        delete scaled;
+    }
+    const QPixmap &r = pixmap();
+    if (r.isNull()) return r;
+
+//     kdDebug() << "scaling " << r.width() << "," << r.height() << " to " << xWidth << "," << xHeight << endl;
+
+    QImage image = r.convertToImage().smoothScale(xWidth, xHeight);
+
+    scaled = new QPixmap(xWidth, xHeight, r.depth());
+    scaled->convertFromImage(image);
+
+    return *scaled;
+}
+
 
 const QPixmap &CachedImage::pixmap( ) const
 {
