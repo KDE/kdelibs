@@ -21,7 +21,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#define CSS_DEBUG
+// #define CSS_DEBUG
 // #define TOKEN_DEBUG
 #define YYDEBUG 0
 
