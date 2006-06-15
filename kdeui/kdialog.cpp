@@ -812,6 +812,14 @@ void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
   d->resizeButton( false, 0, spacingHint(), d->mButtonOrientation );
 }
 
+void KDialog::setButtonMenu( ButtonCode id, QMenu *menu )
+{
+  QPushButton *pb = d->button( id );
+  if( pb )
+  {
+    pb->setMenu( menu );
+  }
+}
 
 void KDialog::setButtonText( ButtonCode id, const QString &text )
 {

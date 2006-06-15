@@ -24,6 +24,7 @@
 #ifndef KDIALOG_H
 #define KDIALOG_H
 
+class QMenu;
 class KPushButton;
 
 #include <QtGui/QDialog>
@@ -296,6 +297,14 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param item The KGuiItem for the button.
      */
     void setButtonGuiItem( ButtonCode id, const KGuiItem &item );
+
+    /**
+     * Sets the menu of any button.
+     *
+     * @param id The button identifier.
+     * @param menu The menu.
+     */
+    void setButtonMenu( ButtonCode id, QMenu *menu );
 
     /**
      * Sets the focus to the button of the passed @param id.
