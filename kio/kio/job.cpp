@@ -2304,12 +2304,15 @@ void CopyJob::slotResultStating( Job *job )
             destinationState = bDir ? DEST_IS_DIR : DEST_IS_FILE;
             //kdDebug(7007) << "CopyJob::slotResultStating dest is dir:" << bDir << endl;
         }
-        if ( m_dest == d->m_globalDest )
+        const bool isGlobalDest = m_dest == d->m_globalDest;
+        if ( isGlobalDest )
             d->m_globalDestinationState = destinationState;
 
         if ( !sLocalPath.isEmpty() && kio_resolve_local_urls ) {
             m_dest = KURL();
             m_dest.setPath(sLocalPath);
+            if ( isGlobalDest )
+                d->m_globalDest = m_dest;
         }
 
         subjobs.remove( job );
@@ -2587,6 +2590,10 @@ void CopyJob::skipSrc()
 
 void CopyJob::statNextSrc()
 {
+    /* Revert to the global destination, the one that applies to all source urls.
+     * Imagine you copy the items a b and c into /d, but /d/b exists so the user uses "Rename" to put it in /foo/b instead.
+     * m_dest is /foo/b for b, but we have to revert to /d for item c and following.
+     */
     m_dest = d->m_globalDest;
     destinationState = d->m_globalDestinationState;
     ++m_currentStatSrc;
