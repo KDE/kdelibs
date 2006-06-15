@@ -310,3 +310,9 @@ IncludeFile=ktabwidget.h
 ToolTip=KDE tab widget container.
 IsContainer=true
 Group=Container (KDE)
+
+[KButtonGroup]
+IncludeFile=kbuttongroup.h
+ToolTip=Group of radio buttons with index selection.
+IsContainer=true
+Group=Container (KDE)
