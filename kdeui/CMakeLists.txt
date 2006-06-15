@@ -158,6 +158,7 @@ set(kdeui_LIB_SRCS
  kcompletion.cpp
  kmessageboxmessagehandler.cpp
  kpassivepopupmessagehandler.cpp
+ kbuttongroup.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -327,6 +328,7 @@ install_files( /include FILES
  kcompletion.h
  kmessageboxmessagehandler.h
  kpassivepopupmessagehandler.h
+ kbuttongroup.h
 )
 
 install(PROGRAMS preparetips DESTINATION bin)

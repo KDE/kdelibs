@@ -806,6 +806,20 @@ kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
    
 target_link_libraries(kreplacetest  ${KDE4_KDEUI_LIBS} )
 
+########### kbuttongrouptest ###############
+
+set(kbuttongrouptest_SRCS kbuttongrouptest.cpp )
+
+kde4_automoc(${kbuttongrouptest_SRCS})
+
+kde4_add_executable(kbuttongrouptest RUN_UNINSTALLED ${kbuttongrouptest_SRCS})
+
+target_link_libraries(kbuttongrouptest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kbuttongrouptest ${EXECUTABLE_OUTPUT_PATH}/kbuttongrouptest)
+
+
+
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############

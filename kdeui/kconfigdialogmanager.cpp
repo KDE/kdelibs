@@ -71,6 +71,7 @@ void KConfigDialogManager::initMaps()
 {
   if ( s_propertyMap == 0 ) {
     s_propertyMapDeleter.setObject( s_propertyMap, new QHash<QString,QByteArray> );
+    s_propertyMap->insert( "KButtonGroup", "current" );
   }
 
   if( s_changedMap == 0 )
@@ -123,6 +124,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KIntNumInput", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));
+    s_changedMap->insert( "KButtonGroup", SIGNAL(changed(int)));
   }
 }
 
