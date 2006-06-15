@@ -460,7 +460,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         int width = w - bleft - bright - (includePadding ? pleft + pright : 0);
         int height = h - borderTop() - borderBottom() - (includePadding ? paddingTop() + paddingBottom() : 0);
         p->save();
-        p->setClipRect(QRect(x, y, width, height));
+        p->setClipRect(QRect(x, y, width, height), QPainter::CoordPainter);
     }
 
     CachedImage* bg = bgLayer->backgroundImage();
@@ -518,7 +518,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                         cw += xPosition;
                     }
                 }
-                cx += bleft;
+                cx += left;
             } else {
                 // repeat over x or background is wider than box
                 cw = w;
@@ -530,7 +530,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                         cw -= xPosition;
                     } else {
                         sx = scaledImageWidth - (xPosition % scaledImageWidth);
-                        sx -= bleft % scaledImageWidth;
+                        sx -= left % scaledImageWidth;
                     }
                 }
             }
@@ -549,7 +549,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                     }
                 }
 
-                cy += borderTop();
+                cy += top;
             } else {
                 // repeat over y or background is taller than box
                 ch = h;
