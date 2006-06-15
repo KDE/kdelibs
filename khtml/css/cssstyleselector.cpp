@@ -1497,10 +1497,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 
             if(langAttr.length() < langSel.length()) return false;
 
-            if (!strictParsing) {
-                langAttr = langAttr.lower();
-                langSel = langSel.lower();
-            }
+            langAttr = langAttr.lower();
+            langSel = langSel.lower();
 //             kdDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
             return (langAttr == langSel || langAttr.startsWith(langSel+"-"));
         }
