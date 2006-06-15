@@ -2614,6 +2614,43 @@ void KDateTimeTest::strings_iso8601()
     QVERIFY(dt.isDateOnly());
     QCOMPARE(dt.date(), QDate(1999,3,1));
 
+    // Check signed years
+    KDateTime dtneg(QDate(-1999,12,11), QTime(3,45,06), KDateTime::ClockTime);
+    s = dtneg.toString(KDateTime::ISODate);
+    QCOMPARE(s, QString("-1999-12-11T03:45:06"));
+    KDateTime dtneg1 = KDateTime::fromString(s, KDateTime::ISODate);
+    QCOMPARE(dtneg1.dateTime(), dtneg.dateTime());
+    QCOMPARE(dtneg1.timeType(), KDateTime::ClockTime);
+    QVERIFY(dtneg1 == dtneg);
+    KDateTime dtneg2 = KDateTime::fromString(QString("-19991211T034506"), KDateTime::ISODate);
+    QVERIFY(dtneg2 == dtneg);
+
+    dtneg.setDateOnly(true);
+    s = dtneg.toString(KDateTime::ISODate);
+    QCOMPARE(s, QString("-1999-12-11"));
+    dtneg1 = KDateTime::fromString(s, KDateTime::ISODate);
+    QVERIFY(dtneg1.isDateOnly());
+    QCOMPARE(dtneg1.timeType(), KDateTime::ClockTime);
+    QCOMPARE(dtneg1.date(), QDate(-1999,12,11));
+    dtneg2 = KDateTime::fromString(QString("-19991211"), KDateTime::ISODate);
+    QVERIFY(dtneg2 == dtneg1);
+
+    s = QString("+1999-12-11T03:45:06");
+    KDateTime dtpos = KDateTime::fromString(s, KDateTime::ISODate);
+    QCOMPARE(dtpos.dateTime(), QDateTime(QDate(1999,12,11), QTime(3,45,06)));
+    QCOMPARE(dtpos.timeType(), KDateTime::ClockTime);
+    KDateTime dtpos2 = KDateTime::fromString(QString("+19991211T034506"), KDateTime::ISODate);
+    QVERIFY(dtpos2 == dtpos);
+
+    dtpos.setDateOnly(true);
+    s = QString("+1999-12-11");
+    dtpos = KDateTime::fromString(s, KDateTime::ISODate);
+    QVERIFY(dtpos.isDateOnly());
+    QCOMPARE(dtpos.timeType(), KDateTime::ClockTime);
+    QCOMPARE(dtpos.date(), QDate(1999,12,11));
+    dtpos2 = KDateTime::fromString(QString("+19991211"), KDateTime::ISODate);
+    QVERIFY(dtpos2 == dtpos);
+
     // Check 24:00:00
     dt = KDateTime::fromString(QString("1999-06-11T24:00:00+03:00"), KDateTime::ISODate);
     QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,6,12), QTime(0,0,0), Qt::LocalTime));
@@ -3095,17 +3132,35 @@ void KDateTimeTest::strings_format()
     QCOMPARE(dt.timeZone(), cairo);
     QCOMPARE(dt.utcOffset(), 3*3600);
 
-    dt = KDateTime::fromString(QLatin1String("110509051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
-    QEXPECT_FAIL( "", "Needs updating after QDateTime range extension", Continue );
+    // Test maximum and minimum date values
+    dt = KDateTime(QDate(-2005,9,5), QTime(0,0,06,1), KDateTime::ClockTime);
+    s = dt.toString(QLatin1String("%Y"));
+    QCOMPARE(s, QString::fromLatin1("-2005"));
+
+    dt = KDateTime::fromString(QLatin1String("-471209051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(-4712,9,5), QTime(14,30,1,300), Qt::LocalTime));
+    QCOMPARE(dt.utcOffset(), 5*3600);
+    QVERIFY(dt.isValid());
+    QVERIFY(!dt.isTooEarly());
+    QVERIFY(!dt.isTooLate());
+
+    dt = KDateTime::fromString(QLatin1String("999909051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(9999,9,5), QTime(14,30,1,300), Qt::LocalTime));
+    QCOMPARE(dt.utcOffset(), 5*3600);
+    QVERIFY(dt.isValid());
+    QVERIFY(!dt.isTooEarly());
+    QVERIFY(!dt.isTooLate());
+
+    dt = KDateTime::fromString(QLatin1String("-471309051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QVERIFY(!dt.isValid());    // too early
-    QEXPECT_FAIL( "", "Needs updating after QDateTime range extension", Continue );
     QVERIFY(dt.isTooEarly());
     QVERIFY(!dt.isTooLate());
 
-    dt = KDateTime::fromString(QLatin1String("910509051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
-    QVERIFY(!dt.isValid());    // too early
-    QVERIFY(!dt.isTooEarly());
-    QVERIFY(dt.isTooLate());
+// Currently, can't ever get isTooLate() since 4 digit year <= QDate max of 9999
+//    dt = KDateTime::fromString(QLatin1String("910509051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
+//    QVERIFY(!dt.isValid());    // too late
+//    QVERIFY(!dt.isTooEarly());
+//    QVERIFY(dt.isTooLate());
 
 
     // Restore the original local time zone

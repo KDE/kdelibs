@@ -50,11 +50,10 @@ class KDateTimeSpecPrivate;
  *
  * The class uses QDateTime internally to represent date/time values, and
  * therefore can only be used for dates in the Gregorian calendar, in the range
- * 1752 - 7999 AD. The Gregorian calendar started in 1582, but adoption was
- * slow. 1752 was when it was adopted by the United Kingdom; the last European
- * country to adopt it, Greece, did so only in 1923. See QDateTime
- * Considerations section below for further discussion of the date range
- * limitations.
+ * -4712 to 9999 (4713 BC to 9999 AD). The Gregorian calendar started in 1582,
+ * but adoption was slow; the last European country to adopt it, Greece, did so
+ * only in 1923. See QDateTime Considerations section below for further
+ * discussion of the date range limitations.
  *
  * The time specification types which KDateTime supports are:
  * - the UTC time zone
@@ -388,13 +387,13 @@ class KDECORE_EXPORT KDateTime
     /** Format for strings representing date/time values. */
     enum TimeFormat
     {
-        ISODate,    /**< ISO 8601 format, i.e. YYYY-MM-DDThh[:mm[:ss[.sss]]]TZ,
+        ISODate,    /**< ISO 8601 format, i.e. [±]YYYY-MM-DDThh[:mm[:ss[.sss]]]TZ,
                      *   where TZ is the time zone offset (blank for local
                      *   time, Z for UTC, or ±hhmm for an offset from UTC).
                      *   When parsing a string, the ISO 8601 basic format,
-                     *   YYYYMMDDThh[mm[ss[.sss]]]TZ, is also accepted. For
-                     *   date-only values, the formats YYYY-MM-DD and
-                     *   YYYYMMDD (without time zone specifier) are used. All
+                     *   [±]YYYYMMDDThh[mm[ss[.sss]]]TZ, is also accepted. For
+                     *   date-only values, the formats [±]YYYY-MM-DD and
+                     *   [±]YYYYMMDD (without time zone specifier) are used. All
                      *   formats may contain a day of the year instead of day
                      *   and month.
                      */
@@ -1019,7 +1018,8 @@ class KDECORE_EXPORT KDateTime
      *
      * \b Date
      *
-     * - %y   2-digit year excluding century (00 - 99)
+     * - %y   2-digit year excluding century (00 - 99). Conversion is undefined
+     *        if year < 0.
      * - %Y   full year number
      * - %:m  month number, without leading zero (1 - 12)
      * - %m   month number, 2 digits (01 - 12)
@@ -1299,11 +1299,11 @@ class KDECORE_EXPORT KDateTime
      * Checks whether the date/time returned by the last call to fromString()
      * was invalid because an otherwise valid date was too early to be
      * represented by QDate. This status only occurs when fromString() read a
-     * valid string containing a date earlier than 1752. On exit from
-     * fromString(), if isTooEarly() returns @c true, isValid() will return
-     * @c false.
+     * valid string containing a year earlier than -4712 (4713 BC). On exit
+     * from fromString(), if isTooEarly() returns @c true, isValid() will
+     * return @c false.
      *
-     * @return @c true if date was earlier than 1752, else @c false
+     * @return @c true if date was earlier than -4712, else @c false
      * @see isValid(), isTooLate(), fromString()
      */
     bool isTooEarly() const;
@@ -1312,11 +1312,11 @@ class KDECORE_EXPORT KDateTime
      * Checks whether the date/time returned by the last call to fromString()
      * was invalid because an otherwise valid date was too late to be
      * represented by QDate. This status only occurs when fromString() read a
-     * valid string containing a date later than 7999. On exit from
+     * valid string containing a date later than 9999. On exit from
      * fromString(), if isTooLate() returns @c true, isValid() will return
      * @c false.
      *
-     * @return @c true if date was later than 7999, else @c false
+     * @return @c true if date was later than 9999, else @c false
      * @see isValid(), isTooEarly(), fromString()
      */
     bool isTooLate() const;

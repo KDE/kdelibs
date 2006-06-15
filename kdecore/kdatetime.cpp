@@ -72,6 +72,10 @@ static bool getNumber(const QString &string, int &offset, int mindigits, int max
 static int findString(const QString &string, const QLatin1String *array, int count, int &offset);
 static QDate checkDate(int year, int month, int day, Status&);
 
+static const int MAX_YEAR = 9999;         // maximum year which QDate allows
+static const int MIN_YEAR = -4712;        // minimum year which QDate allows
+static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
+
 
 /*----------------------------------------------------------------------------*/
 
@@ -1003,7 +1007,7 @@ QString KDateTime::toString(const QString &format) const
     for (int i = 0, end = format.length();  i < end;  ++i)
     {
         zone = TZNone;
-        num = -1;
+        num = NO_NUMBER;
         numLength = 0;    // no leading zeroes
         ushort ch = format[i].unicode();
         if (!escape)
@@ -1026,6 +1030,7 @@ QString KDateTime::toString(const QString &format) const
                     break;
                 case 'Y':     // year
                     num = d->date().year();
+                    numLength = 4;
                     break;
                 case 'y':     // year, 2 digits
                     num = d->date().year() % 100;
@@ -1165,12 +1170,14 @@ QString KDateTime::toString(const QString &format) const
             escape = false;
 
         // Append any required number or time zone information
-        if (num >= 0)
+        if (num != NO_NUMBER)
         {
             if (!numLength)
                 result += QString::number(num);
             else if (numLength == 2)
                 result += s.sprintf("%02d", num);
+            else if (numLength == 4)
+                result += s.sprintf("%04d", num);
         }
         else if (zone != TZNone)
         {
@@ -1245,9 +1252,15 @@ QString KDateTime::toString(TimeFormat format) const
             char seconds[8] = { 0 };
             if (d->dt().time().second())
                 sprintf(seconds, ":%02d", d->dt().time().second());
-            result += s.sprintf("%02d %s %04d %02d:%02d%s ",
-                                d->date().day(), shortMonth[d->date().month() - 1].latin1(),
-                                d->date().year(), d->dt().time().hour(), d->dt().time().minute(), seconds);
+            result += s.sprintf("%02d %s ", d->date().day(), shortMonth[d->date().month() - 1].latin1());
+            int year = d->date().year();
+            if (year < 0)
+            {
+                result += QLatin1Char('-');
+                year = -year;
+            }
+            result += s.sprintf("%04d %02d:%02d%s ",
+                                year, d->dt().time().hour(), d->dt().time().minute(), seconds);
             if (d->spec.type() == ClockTime)
                 tz = KSystemTimeZones::local();
             break;
@@ -1255,9 +1268,15 @@ QString KDateTime::toString(TimeFormat format) const
         case ISODate:
         {
             // QDateTime::toString(Qt::ISODate) doesn't output fractions of a second
+            int year = d->date().year();
+            if (year < 0)
+            {
+                result += QLatin1Char('-');
+                year = -year;
+            }
             QString s;
             result += s.sprintf("%04d-%02d-%02d",
-                                d->date().year(), d->date().month(), d->date().day());
+                                year, d->date().month(), d->date().day());
             if (!d->dateOnly()  ||  d->spec.type() != ClockTime)
             {
                 result += s.sprintf("T%02d:%02d:%02d",
@@ -1488,20 +1507,20 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
              */
             bool dateOnly = false;
             // Check first for the extended format of ISO 8601
-            QRegExp rx("^(\\d\\d\\d\\d)-(\\d\\d\\d|\\d\\d-\\d\\d)[T ](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(?::(\\d\\d))?)?$");
+            QRegExp rx("^([+-])?(\\d\\d\\d\\d)-(\\d\\d\\d|\\d\\d-\\d\\d)[T ](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(?::(\\d\\d))?)?$");
             if (str.indexOf(rx))
             {
                 // It's not the extended format - check for the basic format
-                rx = QRegExp("^(\\d\\d\\d\\d)(\\d{3,4})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
+                rx = QRegExp("^([+-])?(\\d\\d\\d\\d)(\\d{3,4})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
                 if (str.indexOf(rx))
                 {
                     // Check for date-only formats
                     dateOnly = true;
-                    rx = QRegExp("^(\\d\\d\\d\\d)-(\\d\\d\\d|\\d\\d-\\d\\d)$");
+                    rx = QRegExp("^([+-])?(\\d\\d\\d\\d)-(\\d\\d\\d|\\d\\d-\\d\\d)$");
                     if (str.indexOf(rx))
                     {
                         // It's not the extended format - check for the basic format
-                        rx = QRegExp("^(\\d\\d\\d\\d)(\\d{3,4})$");
+                        rx = QRegExp("^([+-])?(\\d\\d\\d\\d)(\\d{3,4})$");
                         if (str.indexOf(rx))
                             break;
                     }
@@ -1515,32 +1534,34 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             int second = 0;
             int msecs  = 0;
             bool leapSecond = false;
-            int year = parts[1].toInt(&ok);
+            int year = parts[2].toInt(&ok);
             if (!ok)
                 break;
+            if (parts[1] == QLatin1String("-"))
+                year = -year;
             if (!dateOnly)
             {
-                hour = parts[3].toInt(&ok);
+                hour = parts[4].toInt(&ok);
                 if (!ok)
                     break;
-                if (!parts[4].isEmpty())
+                if (!parts[5].isEmpty())
                 {
-                    minute = parts[4].toInt(&ok);
+                    minute = parts[5].toInt(&ok);
                     if (!ok)
                         break;
                 }
-                if (!parts[5].isEmpty())
+                if (!parts[6].isEmpty())
                 {
-                    second = parts[5].toInt(&ok);
+                    second = parts[6].toInt(&ok);
                     if (!ok)
                         break;
                 }
                 leapSecond = (second == 60);
                 if (leapSecond)
                     second = 59;   // apparently a leap second - validate below, once time zone is known
-                if (!parts[6].isEmpty())
+                if (!parts[7].isEmpty())
                 {
-                    QString ms = parts[6] + QString::fromLatin1("00");
+                    QString ms = parts[7] + QLatin1String("00");
                     ms.truncate(3);
                     msecs = ms.toInt(&ok);
                     if (!ok)
@@ -1549,10 +1570,10 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             }
             int month, day;
             Status invalid = stValid;
-            if (parts[2].length() == 3)
+            if (parts[3].length() == 3)
             {
                 // A day of the year is specified
-                day = parts[2].toInt(&ok);
+                day = parts[3].toInt(&ok);
                 if (!ok || day < 1 || day > 366)
                     break;
                 d = checkDate(year, 1, 1, invalid).addDays(day - 1);   // convert date, and check for out-of-range
@@ -1564,8 +1585,8 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             else
             {
                 // A month and day are specified
-                month = parts[2].left(2).toInt(&ok);
-                day   = parts[2].right(2).toInt(&ok1);
+                month = parts[3].left(2).toInt(&ok);
+                day   = parts[3].right(2).toInt(&ok1);
                 if (!ok || !ok1)
                     break;
                 d = checkDate(year, month, day, invalid);   // convert date, and check for out-of-range
@@ -1592,7 +1613,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             QTime t(hour, minute, second, msecs);
             if (!t.isValid())
                 break;
-            if (parts[7].isEmpty())
+            if (parts[8].isEmpty())
             {
                 // No UTC offset is specified. Don't try to validate leap seconds.
                 if (invalid)
@@ -1604,19 +1625,19 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 return KDateTime(d, t, KDateTimePrivate::fromStringDefault);
             }
             int offset = 0;
-            SpecType spec = (parts[7] == QLatin1String("Z")) ? UTC : OffsetFromUTC;
+            SpecType spec = (parts[8] == QLatin1String("Z")) ? UTC : OffsetFromUTC;
             if (spec == OffsetFromUTC)
             {
-                offset = parts[9].toInt(&ok) * 3600;
+                offset = parts[10].toInt(&ok) * 3600;
                 if (!ok)
                     break;
-                if (!parts[10].isEmpty())
+                if (!parts[11].isEmpty())
                 {
-                    offset += parts[10].toInt(&ok) * 60;
+                    offset += parts[11].toInt(&ok) * 60;
                     if (!ok)
                         break;
                 }
-                if (parts[8] == QLatin1String("-"))
+                if (parts[9] == QLatin1String("-"))
                 {
                     offset = -offset;
                     if (!offset && negZero)
@@ -1875,7 +1896,6 @@ QDataStream & operator>>(QDataStream &s, KDateTime &kdt)
     return s;
 }
 
-//////-----------------done to here-----------------
 
 /*
  * Extracts a QDateTime from a string, given a format string.
@@ -1888,16 +1908,16 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
 {
     status = stValid;
     QString str = string.simplified();
-    int year      = -1;
-    int month     = -1;
-    int day       = -1;
-    int dayOfWeek = -1;
-    int hour      = -1;
-    int minute    = -1;
-    int second    = -1;
-    int millisec  = -1;
-    int ampm      = -1;
-    int tzoffset  = -99999;
+    int year      = NO_NUMBER;
+    int month     = NO_NUMBER;
+    int day       = NO_NUMBER;
+    int dayOfWeek = NO_NUMBER;
+    int hour      = NO_NUMBER;
+    int minute    = NO_NUMBER;
+    int second    = NO_NUMBER;
+    int millisec  = NO_NUMBER;
+    int ampm      = NO_NUMBER;
+    int tzoffset  = NO_NUMBER;
     zoneName = QString();
     zoneAbbrev = QByteArray();
 
@@ -1940,7 +1960,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     flag = ch;
                     break;
                 case 'Y':     // full year
-                    if (!getNumber(str, s, 4, 4, 0, -1, year))
+                    if (!getNumber(str, s, 4, 4, NO_NUMBER, -1, year))
                         return QDateTime();
                     break;
                 case 'y':     // year, 2 digits
@@ -1956,7 +1976,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'b':     // month name, translated or English
                 {
                     int m = matchMonth(str, s, &calendar);
-                    if (m <= 0  ||  month != -1 && month != m)
+                    if (m <= 0  ||  month != NO_NUMBER && month != m)
                         return QDateTime();
                     month = m;
                     break;
@@ -1970,7 +1990,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'a':     // week day name, translated or English
                 {
                     int dow = matchDay(str, s, &calendar);
-                    if (dow <= 0  ||  dayOfWeek != -1 && dayOfWeek != dow)
+                    if (dow <= 0  ||  dayOfWeek != NO_NUMBER && dayOfWeek != dow)
                         return QDateTime();
                     dayOfWeek = dow;
                     break;
@@ -1997,7 +2017,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'p':     // am/pm
                 {
                     int ap = getAmPm(str, s, locale);
-                    if (!ap  ||  ampm != -1 && ampm != ap)
+                    if (!ap  ||  ampm != NO_NUMBER && ampm != ap)
                         return QDateTime();
                     ampm = ap;
                     break;
@@ -2029,7 +2049,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'a':     // week day name in English
                 {
                     int dow = matchDay(str, s, 0);
-                    if (dow <= 0  ||  dayOfWeek != -1 && dayOfWeek != dow)
+                    if (dow <= 0  ||  dayOfWeek != NO_NUMBER && dayOfWeek != dow)
                         return QDateTime();
                     dayOfWeek = dow;
                     break;
@@ -2038,7 +2058,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'b':     // month name in English
                 {
                     int m = matchMonth(str, s, 0);
-                    if (month != -1 && month != m)
+                    if (m <= 0  ||  month != NO_NUMBER && month != m)
                         return QDateTime();
                     month = m;
                     break;
@@ -2051,7 +2071,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'p':     // am/pm in English
                 {
                     int ap = getAmPm(str, s, 0);
-                    if (!ap  ||  ampm != -1 && ampm != ap)
+                    if (!ap  ||  ampm != NO_NUMBER && ampm != ap)
                         return QDateTime();
                     ampm = ap;
                     break;
@@ -2087,7 +2107,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     val += QLatin1String("00");
                     val.truncate(3);
                     int ms = val.toInt();
-                    if (millisec != -1 && millisec != ms)
+                    if (millisec != NO_NUMBER && millisec != ms)
                         return QDateTime();
                     millisec = ms;
                     s += i;
@@ -2129,7 +2149,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     break;
                 case TZAbbrev:     // time zone abbreviation
                 {
-                    if (tzoffset != -99999 || !zoneName.isEmpty())
+                    if (tzoffset != NO_NUMBER || !zoneName.isEmpty())
                         return QDateTime();
                     int start = s;
                     while (s < send && str[s].isLetterOrNumber())
@@ -2144,7 +2164,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 }
                 case TZName:       // time zone name
                 {
-                    if (tzoffset != -99999 || !zoneAbbrev.isEmpty())
+                    if (tzoffset != NO_NUMBER || !zoneAbbrev.isEmpty())
                         return QDateTime();
                     QString z;
                     if (f + 1 >= fend)
@@ -2180,16 +2200,16 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
         }
     }
 
-    if (year == -1)
+    if (year == NO_NUMBER)
         year = QDate::currentDate().year();
-    if (month == -1)
+    if (month == NO_NUMBER)
         month = 1;
     QDate d = checkDate(year, month, (day > 0 ? day : 1), status);   // convert date, and check for out-of-range
     if (!d.isValid())
         return QDateTime();
-    if (dayOfWeek != -1  &&  !status)
+    if (dayOfWeek != NO_NUMBER  &&  !status)
     {
-        if (day == -1)
+        if (day == NO_NUMBER)
         {
             day = 1 + dayOfWeek - QDate(year, month, 1).dayOfWeek();
             if (day <= 0)
@@ -2201,18 +2221,18 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 return QDateTime();
         }
     }
-    if (day == -1)
+    if (day == NO_NUMBER)
         day = 1;
-    dateOnly = (hour == -1 && minute == -1 && second == -1 && millisec == -1);
-    if (hour == -1)
+    dateOnly = (hour == NO_NUMBER && minute == NO_NUMBER && second == NO_NUMBER && millisec == NO_NUMBER);
+    if (hour == NO_NUMBER)
         hour = 0;
-    if (minute == -1)
+    if (minute == NO_NUMBER)
         minute = 0;
-    if (second == -1)
+    if (second == NO_NUMBER)
         second = 0;
-    if (millisec == -1)
+    if (millisec == NO_NUMBER)
         millisec = 0;
-    if (ampm != -1)
+    if (ampm != NO_NUMBER)
     {
         if (!hour || hour > 12)
             return QDateTime();
@@ -2224,7 +2244,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
 
     QDateTime dt(d, QTime(hour, minute, second, millisec), (tzoffset == 0 ? Qt::UTC : Qt::LocalTime));
 
-    utcOffset = (tzoffset == -99999) ? 0 : tzoffset*60;
+    utcOffset = (tzoffset == NO_NUMBER) ? 0 : tzoffset*60;
 
     return dt;
 }
@@ -2331,8 +2351,8 @@ bool getUTCOffset(const QString &string, int &offset, bool colon, int &result)
         default:
             return false;
     }
-    int tzhour = -1;
-    int tzmin  = -1;
+    int tzhour = NO_NUMBER;
+    int tzmin  = NO_NUMBER;
     if (!getNumber(string, offset, 2, 2, 0, 99, tzhour))
         return false;
     if (colon)
@@ -2348,7 +2368,7 @@ bool getUTCOffset(const QString &string, int &offset, bool colon, int &result)
             return false;
     }
     tzmin += tzhour * 60;
-    if (result != -99999  &&  result != tzmin)
+    if (result != NO_NUMBER  &&  result != tzmin)
         return false;
     result = tzmin;
     return true;
@@ -2402,6 +2422,12 @@ int getAmPm(const QString &string, int &offset, KLocale *locale)
 bool getNumber(const QString& string, int& offset, int mindigits, int maxdigits, int minval, int maxval, int& result)
 {
     int end = string.size();
+    bool neg = false;
+    if (minval == NO_NUMBER  &&  offset < end  &&  string[offset] == QLatin1Char('-'))
+    {
+        neg = true;
+        ++offset;
+    }
     if (offset + maxdigits > end)
         maxdigits = end - offset;
     int ndigits;
@@ -2410,7 +2436,9 @@ bool getNumber(const QString& string, int& offset, int mindigits, int maxdigits,
         return false;
     bool ok;
     int n = string.mid(offset, ndigits).toInt(&ok);
-    if (!ok  ||  result != -1 && n != result  ||  n < minval  ||  (n > maxval && maxval >= 0))
+    if (neg)
+        n = -n;
+    if (!ok  ||  result != NO_NUMBER && n != result  ||  minval != NO_NUMBER && n < minval  ||  (n > maxval && maxval >= 0))
         return false;
     result = n;
     offset += ndigits;
@@ -2440,17 +2468,17 @@ QDate checkDate(int year, int month, int day, Status &status)
 {
     status = stValid;
     QDate qdate(year, month, day);
-    // QDate documentation says that year must be < 8000, although QDate constructor accepts >= 8000
-    if (qdate.isValid()  &&  year < 8000)
+    // QDate documentation says that year must be <= MAX_YEAR, although QDate constructor accepts > MAX_YEAR
+    if (qdate.isValid()  &&  year <= MAX_YEAR)
         return qdate;
 
     // Invalid date - check whether it's simply out of range
-    if (year < 1753  ||  year >= 8000)
+    if (year < MIN_YEAR  ||  year > MAX_YEAR)
     {
         bool leap = (year % 4 == 0) && (year % 100 || year % 400 == 0);
         qdate.setYMD((leap ? 2000 : 2001), month, day);
         if (qdate.isValid())
-            status = (year < 1753) ? stTooEarly : stTooLate;
+            status = (year < MIN_YEAR) ? stTooEarly : stTooLate;
     }
     return qdate;
 }
