@@ -355,6 +355,11 @@ class KDEUI_EXPORT KDialog : public QDialog
     QString helpLinkText() const;
 
     /**
+     * Returns whether any button is enabled.
+     */
+    bool isButtonEnabled( ButtonCode id ) const;
+
+    /**
      * Return the number of pixels you shall use between a
      * dialog edge and the outermost widget(s) according to the KDE standard.
      */

@@ -767,6 +767,17 @@ void KDialog::enableButton( ButtonCode id, bool state )
   }
 }
 
+bool KDialog::isButtonEnabled( ButtonCode id ) const
+{
+  QPushButton *pb = d->button( id );
+  if( pb )
+  {
+    return pb->isEnabled();
+  }
+
+  return false;
+}
+
 void KDialog::enableButtonOK( bool state )
 {
   enableButton( Ok, state );
