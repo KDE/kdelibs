@@ -388,29 +388,29 @@ class KDECORE_EXPORT KDateTime
     /** Format for strings representing date/time values. */
     enum TimeFormat
     {
-        ISODate,    /**< ISO 8601 format, i.e. [±]YYYY-MM-DDThh[:mm[:ss[.sss]]]TZ,
+        ISODate,    /**< ISO 8601 format, i.e. [Â±]YYYY-MM-DDThh[:mm[:ss[.sss]]]TZ,
                      *   where TZ is the time zone offset (blank for local
-                     *   time, Z for UTC, or ±hhmm for an offset from UTC).
+                     *   time, Z for UTC, or hhmm for an offset from UTC).
                      *   When parsing a string, the ISO 8601 basic format,
-                     *   [±]YYYYMMDDThh[mm[ss[.sss]]]TZ, is also accepted. For
-                     *   date-only values, the formats [±]YYYY-MM-DD and
-                     *   [±]YYYYMMDD (without time zone specifier) are used. All
+                     *   [Â±]YYYYMMDDThh[mm[ss[.sss]]]TZ, is also accepted. For
+                     *   date-only values, the formats [Â±]YYYY-MM-DD and
+                     *   [Â±]YYYYMMDD (without time zone specifier) are used. All
                      *   formats may contain a day of the year instead of day
                      *   and month.
 		     *   To allow for years past 9999, the year may optionally
 		     *   contain more than 4 digits. To avoid ambiguity, this is
 		     *   not allowed in the basic format containing a day
-		     *   of the year (i.e. when the date part is [±]YYYYDDD).
+		     *   of the year (i.e. when the date part is [Â±]YYYYDDD).
                      */
         RFCDate,    /**< RFC 2822 format,
-                     *   i.e. "[Wdy,] DD Mon YYYY hh:mm[:ss] ±hhmm". This format
+                     *   i.e. "[Wdy,] DD Mon YYYY hh:mm[:ss] hhmm". This format
                      *   also covers RFCs 822, 850, 1036 and 1123.
                      *   When parsing a string, it also accepts the format
                      *   "Wdy Mon DD HH:MM:SS YYYY" specified by RFCs 850 and
                      *   1036. There is no valid date-only format.
                      */
         RFCDateDay, /**< RFC 2822 format including day of the week,
-                     *   i.e. "Wdy, DD Mon YYYY hh:mm:ss ±hhmm"
+                     *   i.e. "Wdy, DD Mon YYYY hh:mm:ss hhmm"
                      */
         QtTextDate, /**< Same format as Qt::TextDate (i.e. Day Mon DD hh:mm:ss YYYY)
                      *   with, if not local time, the UTC offset appended. The
