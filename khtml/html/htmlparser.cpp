@@ -371,12 +371,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         HTMLElementImpl *e;
         bool handled = false;
 
-        // first switch on current element for a elements with optional end-tag
+        // first switch on current element for elements with optional end-tag and inline-only content
         switch(current->id())
         {
         case ID_P:
-        case ID_DD:
-        case ID_LI:
+        case ID_DT:
             if(!n->isInline())
             {
                 popBlock(current->id());

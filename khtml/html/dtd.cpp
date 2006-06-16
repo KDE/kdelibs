@@ -259,261 +259,111 @@ const tagStatus DOM::endTag[] = {
     REQUIRED   // ID_TEXT
 };
 
-
-static const ushort tag_list_0[] = {
+// This a combination of HTML4.dtd XHTML11.dtd and various extensions
+// and deprecated elements
+static const ushort tag_list_inline[] = {
     ID_TEXT,
+    // %fontstyle
     ID_TT,
     ID_I,
     ID_B,
-    ID_U,
-    ID_S,
-    ID_STRIKE,
     ID_BIG,
     ID_SMALL,
+    ID_U,           // legacy
+    ID_S,           // legacy
+    ID_STRIKE,      // legacy
+    ID_FONT,        // legacy
+    ID_BASEFONT,    // legacy
+    // %phrase
     ID_EM,
     ID_STRONG,
     ID_DFN,
     ID_CODE,
+    ID_Q,
     ID_SAMP,
     ID_KBD,
     ID_VAR,
     ID_CITE,
     ID_ABBR,
     ID_ACRONYM,
-    ID_A,
-    ID_IMG,
-    ID_APPLET,
-    ID_OBJECT,
-    ID_EMBED,
-    ID_FONT,
-    ID_BASEFONT,
-    ID_BR,
-    ID_SCRIPT,
-    ID_MAP,
-    ID_Q,
     ID_SUB,
     ID_SUP,
-    ID_SPAN,
-    ID_BDO,
-    ID_IFRAME,
+    // %inline.forms
     ID_INPUT,
     ID_SELECT,
     ID_TEXTAREA,
     ID_LABEL,
     ID_BUTTON,
+    // %special
+    ID_A,
+    ID_OBJECT,
+    ID_IMG,
+    ID_APPLET,
+    ID_IFRAME,
+    ID_EMBED,       // ?
+    // %special.pre
+    ID_BR,
+    ID_SPAN,
+    ID_BDO,
+    ID_MAP,
+    // %misc.inline
+    ID_SCRIPT,
     ID_INS,
     ID_DEL,
-    ID_COMMENT,
-    ID_NOBR,
-    ID_WBR,
+    // non-standard:
+    ID_ILAYER,      // deprecated
+    ID_NOBR,        // ?
+    ID_WBR,         // ?
     0
 };
 
-static const ushort tag_list_1[] = {
-    ID_TEXT,
+static const ushort tag_list_quirk_inline[] = {
+    ID_NOSCRIPT,    // block, but parsed as inline in Mozilla and MSIE
+    0
+};
+
+static const ushort tag_list_block[] = {
+    ID_TEXT, // white-space is allowed
     ID_P,
+    // %headings
     ID_H1,
     ID_H2,
     ID_H3,
     ID_H4,
     ID_H5,
     ID_H6,
+    // %lists
     ID_UL,
     ID_OL,
-    ID_DIR,
-    ID_MENU,
-    ID_PRE,
-    ID_PLAINTEXT,
     ID_DL,
+    ID_DIR,         // legacy
+    ID_MENU,        // legacy
+    // %blocktext
+    ID_PRE,
+    ID_HR,
+    ID_BLOCKQUOTE,
+    ID_ADDRESS,
+    ID_PLAINTEXT,   // ?
+    ID_XMP,         // ?
+    ID_CENTER,      // legacy
+    // other
     ID_DIV,
-    ID_ILAYER,
-    ID_LAYER,
-    ID_CENTER,
+    ID_FIELDSET,
+    ID_TABLE,
     ID_NOSCRIPT,
     ID_NOFRAMES,
-    ID_BLOCKQUOTE,
     ID_FORM,
-    ID_ISINDEX,
-    ID_HR,
-    ID_TABLE,
-    ID_FIELDSET,
-    ID_ADDRESS,
-    ID_TT,
-    ID_I,
-    ID_B,
-    ID_U,
-    ID_S,
-    ID_STRIKE,
-    ID_BIG,
-    ID_SMALL,
-    ID_EM,
-    ID_STRONG,
-    ID_DFN,
-    ID_CODE,
-    ID_SAMP,
-    ID_KBD,
-    ID_VAR,
-    ID_CITE,
-    ID_ABBR,
-    ID_ACRONYM,
-    ID_A,
-    ID_IMG,
-    ID_APPLET,
-    ID_OBJECT,
-    ID_EMBED,
-    ID_FONT,
-    ID_BASEFONT,
-    ID_BR,
-    ID_SCRIPT,
-    ID_MAP,
-    ID_Q,
-    ID_SUB,
-    ID_SUP,
-    ID_SPAN,
-    ID_BDO,
-    ID_IFRAME,
-    ID_INPUT,
-    ID_KEYGEN,
-    ID_SELECT,
-    ID_TEXTAREA,
-    ID_LABEL,
-    ID_BUTTON,
-    ID_COMMENT,
+    ID_ISINDEX,     // legacy
+    // non-standard:
+    ID_LAYER,       // deprecated
+    ID_MARQUEE,     // extension
+    0
+};
+
+// block elements allowed for quirky error recovery
+static const ushort tag_list_quirk_block[] = {
     ID_LI,
     ID_DD,
-    ID_XMP,
-    ID_INS,
-    ID_DEL,
-    ID_NOBR,
-    ID_WBR,
-    ID_MARQUEE,
-    0
-};
-
-static const ushort tag_list_2[] = {
-    ID_COMMENT,
-    0
-};
-
-static const ushort tag_list_3[] = {
-    ID_TEXT,
-    ID_P,
-    ID_H1,
-    ID_H2,
-    ID_H3,
-    ID_H4,
-    ID_H5,
-    ID_H6,
-    ID_UL,
-    ID_OL,
-    ID_DIR,
-    ID_MENU,
-    ID_PRE,
-    ID_PLAINTEXT,
-    ID_DL,
-    ID_DIV,
-    ID_ILAYER,
-    ID_LAYER,
-    ID_CENTER,
-    ID_NOSCRIPT,
-    ID_NOFRAMES,
-    ID_BLOCKQUOTE,
-    ID_FORM,
-    ID_ISINDEX,
-    ID_HR,
-    ID_TABLE,
-    ID_FIELDSET,
-    ID_ADDRESS,
-    ID_COMMENT,
-    ID_LI,
-    ID_DD,
-    ID_XMP,
-    ID_MARQUEE,
-    0
-};
-
-static const ushort tag_list_4[] = {
-    ID_TEXT,
-    ID_PARAM,
-    ID_P,
-    ID_H1,
-    ID_H2,
-    ID_H3,
-    ID_H4,
-    ID_H5,
-    ID_H6,
-    ID_UL,
-    ID_OL,
-    ID_DIR,
-    ID_MENU,
-    ID_PRE,
-    ID_PLAINTEXT,
-    ID_DL,
-    ID_DIV,
-    ID_ILAYER,
-    ID_LAYER,
-    ID_CENTER,
-    ID_NOSCRIPT,
-    ID_NOFRAMES,
-    ID_BLOCKQUOTE,
-    ID_FORM,
-    ID_ISINDEX,
-    ID_HR,
-    ID_TABLE,
-    ID_FIELDSET,
-    ID_ADDRESS,
-    ID_TEXT,
-    ID_TT,
-    ID_I,
-    ID_B,
-    ID_U,
-    ID_S,
-    ID_STRIKE,
-    ID_BIG,
-    ID_SMALL,
-    ID_EM,
-    ID_STRONG,
-    ID_DFN,
-    ID_CODE,
-    ID_SAMP,
-    ID_KBD,
-    ID_VAR,
-    ID_CITE,
-    ID_ABBR,
-    ID_ACRONYM,
-    ID_A,
-    ID_IMG,
-    ID_APPLET,
-    ID_OBJECT,
-    ID_EMBED,
-    ID_FONT,
-    ID_BASEFONT,
-    ID_BR,
-    ID_SCRIPT,
-    ID_MAP,
-    ID_Q,
-    ID_SUB,
-    ID_SUP,
-    ID_SPAN,
-    ID_BDO,
-    ID_IFRAME,
-    ID_INPUT,
-    ID_SELECT,
-    ID_TEXTAREA,
-    ID_LABEL,
-    ID_BUTTON,
-    ID_COMMENT,
-    ID_LI,
-    ID_DD,
-    ID_XMP,
-    ID_MARQUEE,
-    0
-};
-
-static const ushort tag_list_6[] = {
-    ID_DT,
-    ID_DD,
-    ID_COMMENT,
     0
 };
 
@@ -521,7 +371,6 @@ static const ushort tag_list_7[] = {
     ID_TEXT,
     ID_OPTGROUP,
     ID_OPTION,
-    ID_COMMENT,
     ID_SCRIPT,
     0
 };
@@ -530,19 +379,19 @@ static const ushort tag_list_10[] = {
     ID_FRAMESET,
     ID_FRAME,
     ID_NOFRAMES,
-    ID_COMMENT,
     0
 };
 
+// %head.content
 static const ushort tag_list_11[] = {
     ID_SCRIPT,
     ID_STYLE,
     ID_META,
     ID_LINK,
+    ID_OBJECT,
     ID_TITLE,
-    ID_ISINDEX,
     ID_BASE,
-    ID_COMMENT,
+    ID_ISINDEX,
     0
 };
 
@@ -557,6 +406,22 @@ static bool check_array(ushort child, const ushort *tagList)
     return false;
 }
 
+static bool check_block(ushort childID, bool strict)
+{
+    return check_array(childID, tag_list_block) ||
+           (!strict && check_array(childID, tag_list_quirk_block));
+}
+
+static bool check_inline(ushort childID, bool strict)
+{
+    return check_array(childID, tag_list_inline) ||
+           (!strict && check_array(childID, tag_list_quirk_inline));
+}
+
+static bool check_flow(ushort childID, bool strict)
+{
+    return check_block(childID, strict) || check_inline(childID, strict);
+}
 
 bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
 {
@@ -566,6 +431,8 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
 
     if (tagID >= 1000 || childID >= 1000)
         return true; // one or both of the elements in an XML element; just allow for now
+
+    if (childID == ID_COMMENT) return true;
 
     switch(tagID)
     {
@@ -593,23 +460,27 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_FONT:
     case ID_LEGEND:
     case ID_Q:
-    case ID_A:
     case ID_NOBR:
     case ID_WBR:
-        // _1 *
-        return check_array(childID, tag_list_1) || check_array(childID, tag_list_6);
+        // %inline *
+        return check_inline(childID, strict) ||
+               (!strict && check_block(childID, true));
+    case ID_A:
+        // A: %inline * (but even strict sites expect %flow)
+        return check_flow(childID, true);
     case ID_P:
-        // P: ( _0 | TABLE | NOSCRIPT) *
-        return check_array(childID, tag_list_0) || (!strict && (childID == ID_TABLE || childID == ID_NOSCRIPT));
+        // P: %inline *
+        return check_inline(childID, strict) || 
+               (!strict && childID == ID_TABLE );
     case ID_H1:
     case ID_H2:
     case ID_H3:
     case ID_H4:
     case ID_H5:
     case ID_H6:
-        // _0 *
-        return check_array(childID, tag_list_0) ||
-               (!strict && check_array(childID, tag_list_3) && (childID < ID_H1 || childID > ID_H6));
+        // %inline *
+        return check_inline(childID, strict) ||
+               (!strict && check_block(childID, true) && (childID < ID_H1 || childID > ID_H6));
     case ID_BASEFONT:
     case ID_BR:
     case ID_AREA:
@@ -627,13 +498,16 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         // BASEFONT: EMPTY
         return false;
     case ID_BODY:
-        // BODY: _1 * + _2
-        return check_array(childID, tag_list_1) || check_array(childID, tag_list_2);
+        // BODY: %block | SCRIPT (but even strict sites expect %flow)
+        return check_flow(childID, strict);
     case ID_ADDRESS:
-        // ADDRESS: ( _0 | P ) *
-        return check_array(childID, tag_list_0) || childID == ID_P;
+        // ADDRESS: %inline *
+        return check_inline(childID, strict) || 
+               (!strict && childID == ID_P);
     case ID_DT:
-        if ( childID == ID_DL ) return false;
+        // DT: %inline *
+        return check_inline(childID, strict) || 
+              (!strict && check_block(childID, true) && childID != ID_DL);
     case ID_LI:
     case ID_DIV:
     case ID_SPAN:
@@ -651,47 +525,48 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_NOSCRIPT:
     case ID_CAPTION:
     case ID_MARQUEE:
-        // DIV: _1 *
-        return check_array(childID, tag_list_1);
+        // DIV: %flow *
+        return check_flow(childID, strict);
     case ID_MAP:
-	// We accept SCRIPT in client-side image maps as an extension to the DTD.
-        // MAP: ( _3 + | AREA + | SCRIPT + )
-        return check_array(childID, tag_list_3) ||
-            childID == ID_AREA ||
-            childID == ID_SCRIPT;
+        // MAP: ( %block | AREA ) + 
+        return check_block(childID, true) || childID == ID_AREA ||
+               (!strict && childID == ID_SCRIPT);
     case ID_OBJECT:
     case ID_EMBED:
     case ID_APPLET:
-        // OBJECT: _4 *
-        return check_array(childID, tag_list_4);
+        // OBJECT: %flow | PARAM *
+        return check_flow(childID, true) || childID == ID_PARAM;
     case ID_PRE:
     case ID_XMP:
     case ID_PLAINTEXT:
-        // PRE: _0 * - _5
-        return check_array(childID, tag_list_1);
+        // PRE: %flow * - _5
+        return check_flow(childID, true);
     case ID_DL:
-        // DL: _6 +
-        return check_array(childID, tag_list_6) || check_array(childID, tag_list_1);
+        // DL: DT | DD +
+        return (childID == ID_DT || childID == ID_DD || childID == ID_TEXT) || 
+               (!strict && check_flow(childID, true));
     case ID_OL:
     case ID_UL:
         // OL: LI +
-        return check_array(childID, tag_list_1);
+        return (childID == ID_LI || childID == ID_TEXT) || 
+               (!strict && check_flow(childID, true));
     case ID_DIR:
     case ID_MENU:
         // (DIR|MENU): LI + - _3
         if(childID == ID_LI) return true;
         return false;
     case ID_FORM:
-        // FORM: _1 * - FORM
-        return check_array(childID, tag_list_1);
+        // FORM: %flow * - FORM
+        return check_flow(childID, strict);
     case ID_LABEL:
-        // LABEL: _1 * - LABEL
-        return check_array(childID, tag_list_1);
+        // LABEL: %inline * - LABEL
+        return check_inline(childID, strict) ||
+               (!strict && check_block(childID, true));
+    case ID_KEYGEN:
         // KEYGEN does not really allow any children
         // from outside, just need this to be able
         // to add the keylengths ourself
         // Yes, consider it a hack (Dirk)
-    case ID_KEYGEN:
     case ID_SELECT:
         // SELECT: _7 +
         return check_array(childID, tag_list_7);
@@ -708,13 +583,13 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         if(childID == ID_TEXT) return true;
         return false;
     case ID_FIELDSET:
-        // FIELDSET: ( TEXT , LEGEND , _1 * )
+        // FIELDSET: ( TEXT , LEGEND , %flow * )
         if(childID == ID_TEXT) return true;
         if(childID == ID_LEGEND) return true;
-        return check_array(childID, tag_list_1);
+        return check_flow(childID, strict);
     case ID_BUTTON:
-        // BUTTON: _1 * - _8
-        return check_array(childID, tag_list_1);
+        // BUTTON: %flow * - _8
+        return check_flow(childID, strict);
     case ID_TABLE:
         // TABLE: ( CAPTION ? , ( COL * | COLGROUP * ) , THEAD ? , TFOOT ? , TBODY + )
         switch(childID)
@@ -755,7 +630,6 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         switch(childID)
         {
         case ID_HEAD:
-        case ID_COMMENT:
         case ID_BODY:
         case ID_FRAMESET:
         case ID_NOFRAMES:
