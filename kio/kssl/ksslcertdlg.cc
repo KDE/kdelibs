@@ -42,33 +42,43 @@
 class KSSLCertDlg::KSSLCertDlgPrivate {
 private:
     friend class KSSLCertDlg;
+    QLabel *p_message;
+    QPushButton *p_pb_dontsend;
+    bool p_send_flag;
 };
 
 KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
  : KDialog(parent, name, modal), d(new KSSLCertDlgPrivate) {
-   QGridLayout *grid = new QGridLayout(this, 8, 6, KDialog::marginHint(),
-                                                   KDialog::spacingHint() );
 
-   _send = new QRadioButton(i18n("Send certificate..."), this);
-   grid->addMultiCellWidget(_send, 0, 0, 0, 2);
-   connect(_send, SIGNAL(clicked()), SLOT(slotSend()));
+   QBoxLayout * grid = new QVBoxLayout( this, KDialog::marginHint(),
+                                              KDialog::spacingHint() );
 
-   _dont = new QRadioButton(i18n("Do not send a certificate"), this);
-   grid->addMultiCellWidget(_dont, 1, 1, 0, 2);
-   connect(_dont, SIGNAL(clicked()), SLOT(slotDont()));
+   d->p_message = new QLabel(QString::null, this);
+   grid->addWidget(d->p_message);
+   setHost(_host);
 
    _certs = new QListView(this);
-   grid->addMultiCellWidget(_certs, 0, 4, 3, 5);
    _certs->addColumn(i18n("Certificate"));
+   _certs->setResizeMode(QListView::LastColumn);
+   QFontMetrics fm( KGlobalSettings::generalFont() );
+   _certs->setMinimumHeight(4*fm.height());
+   grid->addWidget(_certs);
 
    _save = new QCheckBox(i18n("Save selection for this host."), this);
-   grid->addMultiCellWidget(_save, 5, 5, 0, 3);
+   grid->addWidget(_save);
 
-   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, this), 6, 6, 0, 5);
+   grid->addWidget(new KSeparator(KSeparator::HLine, this));
 
-   _ok = new KPushButton(KStdGuiItem::cont(), this);
-   grid->addWidget(_ok, 7, 5);
-   connect(_ok, SIGNAL(clicked()), SLOT(accept()));
+   QBoxLayout * h = new QHBoxLayout( grid );
+   h->insertStretch(0);
+
+   _ok = new KPushButton(i18n("Send certificate"), this);
+   h->addWidget(_ok);
+   connect(_ok, SIGNAL(clicked()), SLOT(slotSend()));
+
+   d->p_pb_dontsend = new KPushButton(i18n("Do not send a certificate"), this);
+   h->addWidget(d->p_pb_dontsend);
+   connect(d->p_pb_dontsend, SIGNAL(clicked()), SLOT(slotDont()));
 
 #ifndef QT_NO_WIDGET_TOPEXTRA
    setCaption(i18n("KDE SSL Certificate Dialog"));
@@ -87,9 +97,12 @@ void KSSLCertDlg::setup(QStringList certs, bool saveChecked, bool sendChecked) {
 
 void KSSLCertDlg::setupDialog(const QStringList& certs, bool saveChecked, bool sendChecked) {
   _save->setChecked(saveChecked);
-  _send->setChecked(sendChecked);
-  _dont->setChecked(!sendChecked);
-  _certs->setEnabled(sendChecked);
+  d->p_send_flag = sendChecked;
+
+  if (sendChecked)
+    _ok->setDefault(true); // "do send" is the "default action".
+  else
+    d->p_pb_dontsend->setDefault(true); // "do not send" is the "default action".
 
   for (QStringList::ConstIterator i = certs.begin(); i != certs.end(); ++i) {
     if ((*i).isEmpty())
@@ -108,34 +121,36 @@ bool KSSLCertDlg::saveChoice() {
 
 
 bool KSSLCertDlg::wantsToSend() {
-  return _send->isChecked();
+  return d->p_send_flag;
 }
 
 
 QString KSSLCertDlg::getChoice() {
-   return _certs->selectedItem()->text(0);
+   QListViewItem *selected = _certs->selectedItem();
+   if (selected && d->p_send_flag)
+	return selected->text(0);
+   else
+	return QString::null;
 }
 
 
 void KSSLCertDlg::setHost(const QString& host) {
    _host = host;
-#ifndef QT_NO_WIDGET_TOPEXTRA
-   setCaption(i18n("KDE SSL Certificate Dialog")+" - "+host);
-#endif
+   d->p_message->setText(i18n("The server <b>%1</b> requests a certificate.<p>"
+			     "Select a certificate to use from the list below:")
+			 .arg(_host));
 }
 
 
 void KSSLCertDlg::slotSend() {
-   _dont->setChecked(false);
-   _send->setChecked(true);
-   _certs->setEnabled(true);
+   d->p_send_flag = true;
+   accept();
 }
 
 
 void KSSLCertDlg::slotDont() {
-   _send->setChecked(false);
-   _dont->setChecked(true);
-   _certs->setEnabled(false);
+   d->p_send_flag = false;
+   reject();
 }
 
 
