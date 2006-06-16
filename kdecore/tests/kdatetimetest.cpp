@@ -2565,55 +2565,6 @@ void KDateTimeTest::strings_iso8601()
     s = dtutc.toString(KDateTime::ISODate);
     QCOMPARE(s, QString("1999-12-11T00:00:00Z"));
 
-    // Check basic format strings
-    bool negZero = true;
-    KDateTime dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate, &negZero);
-    QVERIFY(dt.timeType() == KDateTime::ClockTime);
-    QVERIFY(!dt.isDateOnly());
-    QVERIFY(!negZero);
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::LocalTime));
-    dt = KDateTime::fromString(QString("20000301"), KDateTime::ISODate, &negZero);
-    QVERIFY(dt.timeType() == KDateTime::ClockTime);
-    QVERIFY(dt.isDateOnly());
-    QVERIFY(!negZero);
-    QCOMPARE(dt.date(), QDate(2000,3,1));
-    KDateTime::setFromStringDefault(KDateTime::UTC);
-    dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::UTC);
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::UTC));
-    KDateTime::setFromStringDefault(KDateTime::LocalZone);
-    dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate);
-    QVERIFY(dt.timeSpec() == KDateTime::Spec::LocalZone());
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::LocalTime));
-    KDateTime::setFromStringDefault(london);
-    dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::TimeZone);
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::LocalTime));
-    KDateTime::setFromStringDefault(KDateTime::Spec::OffsetFromUTC(5000));  // = +01:23:20
-    dt = KDateTime::fromString(QString("20000601T1213"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
-    QCOMPARE(dt.utcOffset(), 5000);
-    QCOMPARE(dt.toUTC().dateTime(), QDateTime(QDate(2000,6,1), QTime(10,49,40), Qt::UTC));
-    KDateTime::setFromStringDefault(KDateTime::ClockTime);
-
-    // Check strings containing day-of-the-year
-    dt = KDateTime::fromString(QString("1999-060T19:20:21.06-11:20"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
-    QCOMPARE(dt.utcOffset(), -11*3600 - 20*60);
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,3,1), QTime(19,20,21,60), Qt::LocalTime));
-    dt = KDateTime::fromString(QString("1999-060T19:20:21,06-11:20"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
-    QCOMPARE(dt.utcOffset(), -11*3600 - 20*60);
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,3,1), QTime(19,20,21,60), Qt::LocalTime));
-    dt = KDateTime::fromString(QString("1999060T192021.06-1120"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
-    QCOMPARE(dt.utcOffset(), -11*3600 - 20*60);
-    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,3,1), QTime(19,20,21,60), Qt::LocalTime));
-    dt = KDateTime::fromString(QString("1999-060"), KDateTime::ISODate);
-    QVERIFY(dt.timeType() == KDateTime::ClockTime);
-    QVERIFY(dt.isDateOnly());
-    QCOMPARE(dt.date(), QDate(1999,3,1));
-
     // Check signed years
     KDateTime dtneg(QDate(-1999,12,11), QTime(3,45,06), KDateTime::ClockTime);
     s = dtneg.toString(KDateTime::ISODate);
@@ -2650,6 +2601,94 @@ void KDateTimeTest::strings_iso8601()
     QCOMPARE(dtpos.date(), QDate(1999,12,11));
     dtpos2 = KDateTime::fromString(QString("+19991211"), KDateTime::ISODate);
     QVERIFY(dtpos2 == dtpos);
+
+    // Check years with >4 digits
+    KDateTime dtbig(QDate(123456,12,11), QTime(3,45,06), KDateTime::ClockTime);
+    s = dtbig.toString(KDateTime::ISODate);
+    QCOMPARE(s, QString("123456-12-11T03:45:06"));
+    KDateTime dtbig1 = KDateTime::fromString(s, KDateTime::ISODate);
+    QCOMPARE(dtbig1.dateTime(), dtbig.dateTime());
+    QCOMPARE(dtbig1.timeType(), KDateTime::ClockTime);
+    QVERIFY(dtbig1 == dtbig);
+    KDateTime dtbig2 = KDateTime::fromString(QString("1234561211T034506"), KDateTime::ISODate);
+    QVERIFY(dtbig2 == dtbig);
+
+    dtbig.setDateOnly(true);
+    s = dtbig.toString(KDateTime::ISODate);
+    QCOMPARE(s, QString("123456-12-11"));
+    dtbig1 = KDateTime::fromString(s, KDateTime::ISODate);
+    QVERIFY(dtbig1.isDateOnly());
+    QCOMPARE(dtbig1.timeType(), KDateTime::ClockTime);
+    QCOMPARE(dtbig1.date(), QDate(123456,12,11));
+    dtbig2 = KDateTime::fromString(QString("1234561211"), KDateTime::ISODate);
+    QVERIFY(dtbig2 == dtbig1);
+
+    // Check basic format strings
+    bool negZero = true;
+    KDateTime dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate, &negZero);
+    QVERIFY(dt.timeType() == KDateTime::ClockTime);
+    QVERIFY(!dt.isDateOnly());
+    QVERIFY(!negZero);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::LocalTime));
+    dt = KDateTime::fromString(QString("20000301"), KDateTime::ISODate, &negZero);
+    QVERIFY(dt.timeType() == KDateTime::ClockTime);
+    QVERIFY(dt.isDateOnly());
+    QVERIFY(!negZero);
+    QCOMPARE(dt.date(), QDate(2000,3,1));
+    KDateTime::setFromStringDefault(KDateTime::UTC);
+    dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::UTC);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::UTC));
+    KDateTime::setFromStringDefault(KDateTime::LocalZone);
+    dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate);
+    QVERIFY(dt.timeSpec() == KDateTime::Spec::LocalZone());
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::LocalTime));
+    KDateTime::setFromStringDefault(london);
+    dt = KDateTime::fromString(QString("20000301T1213"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::TimeZone);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(2000,3,1), QTime(12,13,0), Qt::LocalTime));
+    KDateTime::setFromStringDefault(KDateTime::Spec::OffsetFromUTC(5000));  // = +01:23:20
+    dt = KDateTime::fromString(QString("20000601T1213"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
+    QCOMPARE(dt.utcOffset(), 5000);
+    QCOMPARE(dt.toUTC().dateTime(), QDateTime(QDate(2000,6,1), QTime(10,49,40), Qt::UTC));
+    KDateTime::setFromStringDefault(KDateTime::ClockTime);
+    dt = KDateTime::fromString(QString("6543210301T1213"), KDateTime::ISODate, &negZero);
+    QVERIFY(dt.timeType() == KDateTime::ClockTime);
+    QVERIFY(!dt.isDateOnly());
+    QVERIFY(!negZero);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(654321,3,1), QTime(12,13,0), Qt::LocalTime));
+    dt = KDateTime::fromString(QString("6543210301"), KDateTime::ISODate, &negZero);
+    QVERIFY(dt.isDateOnly());
+    QVERIFY(!negZero);
+    QCOMPARE(dt.date(), QDate(654321,3,1));
+    dt = KDateTime::fromString(QString("-47120301T1213"), KDateTime::ISODate, &negZero);
+    QVERIFY(dt.timeType() == KDateTime::ClockTime);
+    QVERIFY(!dt.isDateOnly());
+    QVERIFY(!negZero);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(-4712,3,1), QTime(12,13,0), Qt::LocalTime));
+    dt = KDateTime::fromString(QString("-47120301"), KDateTime::ISODate, &negZero);
+    QVERIFY(dt.isDateOnly());
+    QVERIFY(!negZero);
+    QCOMPARE(dt.date(), QDate(-4712,3,1));
+
+    // Check strings containing day-of-the-year
+    dt = KDateTime::fromString(QString("1999-060T19:20:21.06-11:20"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
+    QCOMPARE(dt.utcOffset(), -11*3600 - 20*60);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,3,1), QTime(19,20,21,60), Qt::LocalTime));
+    dt = KDateTime::fromString(QString("1999-060T19:20:21,06-11:20"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
+    QCOMPARE(dt.utcOffset(), -11*3600 - 20*60);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,3,1), QTime(19,20,21,60), Qt::LocalTime));
+    dt = KDateTime::fromString(QString("1999060T192021.06-1120"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::OffsetFromUTC);
+    QCOMPARE(dt.utcOffset(), -11*3600 - 20*60);
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(1999,3,1), QTime(19,20,21,60), Qt::LocalTime));
+    dt = KDateTime::fromString(QString("1999-060"), KDateTime::ISODate);
+    QVERIFY(dt.timeType() == KDateTime::ClockTime);
+    QVERIFY(dt.isDateOnly());
+    QCOMPARE(dt.date(), QDate(1999,3,1));
 
     // Check 24:00:00
     dt = KDateTime::fromString(QString("1999-06-11T24:00:00+03:00"), KDateTime::ISODate);
@@ -3132,7 +3171,7 @@ void KDateTimeTest::strings_format()
     QCOMPARE(dt.timeZone(), cairo);
     QCOMPARE(dt.utcOffset(), 3*3600);
 
-    // Test maximum and minimum date values
+    // Test large and minimum date values
     dt = KDateTime(QDate(-2005,9,5), QTime(0,0,06,1), KDateTime::ClockTime);
     s = dt.toString(QLatin1String("%Y"));
     QCOMPARE(s, QString::fromLatin1("-2005"));
@@ -3141,26 +3180,25 @@ void KDateTimeTest::strings_format()
     QCOMPARE(dt.dateTime(), QDateTime(QDate(-4712,9,5), QTime(14,30,1,300), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 5*3600);
     QVERIFY(dt.isValid());
-    QVERIFY(!dt.isTooEarly());
-    QVERIFY(!dt.isTooLate());
+    QVERIFY(!dt.outOfRange());
 
     dt = KDateTime::fromString(QLatin1String("999909051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(9999,9,5), QTime(14,30,1,300), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 5*3600);
     QVERIFY(dt.isValid());
-    QVERIFY(!dt.isTooEarly());
-    QVERIFY(!dt.isTooLate());
+    QVERIFY(!dt.outOfRange());
+
+    dt = KDateTime::fromString(QLatin1String("123456.09051430:01.3+0500"), QLatin1String("%:Y.%m%d%H%M%:S%:s%z"));
+    QCOMPARE(dt.dateTime(), QDateTime(QDate(123456,9,5), QTime(14,30,1,300), Qt::LocalTime));
+    QCOMPARE(dt.utcOffset(), 5*3600);
+    QVERIFY(dt.isValid());
+    QVERIFY(!dt.outOfRange());
+    s = dt.toString(QLatin1String("%Y"));
+    QCOMPARE(s, QString::fromLatin1("123456"));
 
     dt = KDateTime::fromString(QLatin1String("-471309051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QVERIFY(!dt.isValid());    // too early
-    QVERIFY(dt.isTooEarly());
-    QVERIFY(!dt.isTooLate());
-
-// Currently, can't ever get isTooLate() since 4 digit year <= QDate max of 9999
-//    dt = KDateTime::fromString(QLatin1String("910509051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
-//    QVERIFY(!dt.isValid());    // too late
-//    QVERIFY(!dt.isTooEarly());
-//    QVERIFY(dt.isTooLate());
+    QVERIFY(dt.outOfRange());
 
 
     // Restore the original local time zone

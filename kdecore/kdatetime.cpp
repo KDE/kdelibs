@@ -57,8 +57,7 @@ static const QLatin1String longMonth[] = {
 // The reason for the KDateTime being invalid, returned from KDateTime::fromString()
 enum Status {
     stValid = 0,   // either valid, or really invalid
-    stTooEarly,    // invalid (valid date before QDate range)
-    stTooLate      // invalid (valid date after QDate range)
+    stTooEarly     // invalid (valid date before QDate range)
 };
 
 
@@ -72,7 +71,6 @@ static bool getNumber(const QString &string, int &offset, int mindigits, int max
 static int findString(const QString &string, const QLatin1String *array, int count, int &offset);
 static QDate checkDate(int year, int month, int day, Status&);
 
-static const int MAX_YEAR = 9999;         // maximum year which QDate allows
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
 static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
 
@@ -510,8 +508,7 @@ KDateTime &KDateTime::operator=(const KDateTime &other)
 
 bool      KDateTime::isNull() const          { return d->dt().isNull(); }
 bool      KDateTime::isValid() const         { return d->spec.isValid()  &&  d->dt().isValid(); }
-bool      KDateTime::isTooEarly() const      { return d->status == stTooEarly; }
-bool      KDateTime::isTooLate() const       { return d->status == stTooLate; }
+bool      KDateTime::outOfRange() const      { return d->status == stTooEarly; }
 bool      KDateTime::isDateOnly() const      { return d->dateOnly(); }
 bool      KDateTime::isLocalZone() const     { return d->spec.isLocalZone(); }
 bool      KDateTime::isClockTime() const     { return d->spec.isClockTime(); }
@@ -1491,9 +1488,11 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
         case ISODate:
         {
             /*
-             * Extended format: YYYY-MM-DD[Thh[:mm[:ss.s]][TZ]]
-             * Basic format:    YYYYMMDD[Thh[mm[ss.s]][TZ]]
-             * In either format, the month and day can be replaced by a 3-digit day of the year.
+             * Extended format: [±]YYYY-MM-DD[Thh[:mm[:ss.s]][TZ]]
+             * Basic format:    [±]YYYYMMDD[Thh[mm[ss.s]][TZ]]
+             * Extended format: [±]YYYY-DDD[Thh[:mm[:ss.s]][TZ]]
+             * Basic format:    [±]YYYYDDD[Thh[mm[ss.s]][TZ]]
+             * In the first three formats, the year may be expanded to more than 4 digits.
              *
              * QDateTime::fromString(Qt::ISODate) is a rather limited implementation
              * of parsing ISO 8601 format date/time strings, so it isn't used here.
@@ -1507,22 +1506,30 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
              */
             bool dateOnly = false;
             // Check first for the extended format of ISO 8601
-            QRegExp rx("^([+-])?(\\d\\d\\d\\d)-(\\d\\d\\d|\\d\\d-\\d\\d)[T ](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(?::(\\d\\d))?)?$");
+            QRegExp rx("^([+-])?(\\d{4,})-(\\d\\d\\d|\\d\\d-\\d\\d)[T ](\\d\\d)(?::(\\d\\d)(?::(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(?::(\\d\\d))?)?$");
             if (str.indexOf(rx))
             {
                 // It's not the extended format - check for the basic format
-                rx = QRegExp("^([+-])?(\\d\\d\\d\\d)(\\d{3,4})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
+                rx = QRegExp("^([+-])?(\\d{4,})(\\d{4})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
                 if (str.indexOf(rx))
                 {
-                    // Check for date-only formats
-                    dateOnly = true;
-                    rx = QRegExp("^([+-])?(\\d\\d\\d\\d)-(\\d\\d\\d|\\d\\d-\\d\\d)$");
+                    rx = QRegExp("^([+-])?(\\d{4})(\\d{3})[T ](\\d\\d)(?:(\\d\\d)(?:(\\d\\d)(?:(?:\\.|,)(\\d+))?)?)?(Z|([+-])(\\d\\d)(\\d\\d)?)?$");
                     if (str.indexOf(rx))
                     {
-                        // It's not the extended format - check for the basic format
-                        rx = QRegExp("^([+-])?(\\d\\d\\d\\d)(\\d{3,4})$");
+                        // Check for date-only formats
+                        dateOnly = true;
+                        rx = QRegExp("^([+-])?(\\d{4,})-(\\d\\d\\d|\\d\\d-\\d\\d)$");
                         if (str.indexOf(rx))
-                            break;
+                        {
+                            // It's not the extended format - check for the basic format
+                            rx = QRegExp("^([+-])?(\\d{4,})(\\d{4})$");
+                            if (str.indexOf(rx))
+                            {
+                                rx = QRegExp("^([+-])?(\\d{4})(\\d{3})$");
+                                if (str.indexOf(rx))
+                                    break;
+                            }
+                        }
                     }
                 }
             }
@@ -1959,7 +1966,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case ':':
                     flag = ch;
                     break;
-                case 'Y':     // full year
+                case 'Y':     // full year, 4 digits
                     if (!getNumber(str, s, 4, 4, NO_NUMBER, -1, year))
                         return QDateTime();
                     break;
@@ -2045,6 +2052,10 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
             // It's a "%:" sequence
             switch (ch)
             {
+                case 'Y':     // full year, >= 4 digits
+                    if (!getNumber(str, s, 4, 100, NO_NUMBER, -1, year))
+                        return QDateTime();
+                    break;
                 case 'A':
                 case 'a':     // week day name in English
                 {
@@ -2468,17 +2479,16 @@ QDate checkDate(int year, int month, int day, Status &status)
 {
     status = stValid;
     QDate qdate(year, month, day);
-    // QDate documentation says that year must be <= MAX_YEAR, although QDate constructor accepts > MAX_YEAR
-    if (qdate.isValid()  &&  year <= MAX_YEAR)
+    if (qdate.isValid())
         return qdate;
 
     // Invalid date - check whether it's simply out of range
-    if (year < MIN_YEAR  ||  year > MAX_YEAR)
+    if (year < MIN_YEAR)
     {
         bool leap = (year % 4 == 0) && (year % 100 || year % 400 == 0);
         qdate.setYMD((leap ? 2000 : 2001), month, day);
         if (qdate.isValid())
-            status = (year < MIN_YEAR) ? stTooEarly : stTooLate;
+            status = stTooEarly;
     }
     return qdate;
 }

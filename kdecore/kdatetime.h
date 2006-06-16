@@ -49,11 +49,12 @@ class KDateTimeSpecPrivate;
  * can also be set to represent a date-only value with no associated time.
  *
  * The class uses QDateTime internally to represent date/time values, and
- * therefore can only be used for dates in the Gregorian calendar, in the range
- * -4712 to 9999 (4713 BC to 9999 AD). The Gregorian calendar started in 1582,
- * but adoption was slow; the last European country to adopt it, Greece, did so
- * only in 1923. See QDateTime Considerations section below for further
- * discussion of the date range limitations.
+ * therefore can only be used for dates in the Gregorian calendar, with a year
+ * in the range -4712 (4713 BC) upwards. (The upper limit is actually > 11,000,000,
+ * which seems unlikely to cause problems for the majority of applications!) The
+ * Gregorian calendar started in 1582, but adoption was slow; the last European
+ * country to adopt it, Greece, did so only in 1923. See QDateTime Considerations
+ * section below for further discussion of the date range limitations.
  *
  * The time specification types which KDateTime supports are:
  * - the UTC time zone
@@ -396,6 +397,10 @@ class KDECORE_EXPORT KDateTime
                      *   [±]YYYYMMDD (without time zone specifier) are used. All
                      *   formats may contain a day of the year instead of day
                      *   and month.
+		     *   To allow for years past 9999, the year may optionally
+		     *   contain more than 4 digits. To avoid ambiguity, this is
+		     *   not allowed in the basic format containing a day
+		     *   of the year (i.e. when the date part is [±]YYYYDDD).
                      */
         RFCDate,    /**< RFC 2822 format,
                      *   i.e. "[Wdy,] DD Mon YYYY hh:mm[:ss] ±hhmm". This format
@@ -1128,9 +1133,9 @@ class KDECORE_EXPORT KDateTime
      *
      * For @p format = ISODate or RFCDate[Day], if an invalid KDateTime is
      * returned, you can check why @p format was considered invalid by use of
-     * isTooEarly() or isTooLate(). If either of these methods returns true, it
-     * indicates that @p format was in fact valid, but the date lies outside
-     * the range which can be represented by QDate.
+     * outOfRange(). If that method returns true, it indicates that @p format
+     * was in fact valid, but the date lies outside the range which can be
+     * represented by QDate.
      *
      * @param string string to convert
      * @param format format code. LocalDate cannot be used here.
@@ -1138,7 +1143,7 @@ class KDECORE_EXPORT KDateTime
      *                '-0000' is found or, for RFC 2822 format, an unrecognised
      *                or invalid time zone abbreviation is found, else false.
      * @return KDateTime value, or an invalid KDateTime if either parameter is invalid
-     * @see setFromStringDefault(), toString(), isTooEarly(), isTooLate(), QString::fromString()
+     * @see setFromStringDefault(), toString(), outOfRange(), QString::fromString()
      */
     static KDateTime fromString(const QString &string, TimeFormat format = ISODate, bool *negZero = 0);
 
@@ -1163,7 +1168,8 @@ class KDECORE_EXPORT KDateTime
      *
      * - %y   year excluding century (0 - 99). Years 0 - 50 return 2000 - 2050,
      *        while years 51 - 99 return 1951 - 1999.
-     * - %Y   full year number
+     * - %Y   full year number (4 digits with optional sign)
+     * - %:Y  full year number (>= 4 digits with optional sign)
      * - %:m
      * - %m   month number (1 - 12)
      * - %b
@@ -1260,10 +1266,9 @@ class KDECORE_EXPORT KDateTime
      * not tally with the date, an invalid KDateTime is returned.
      *
      * If an invalid KDateTime is returned, you can check why @p format was
-     * considered invalid by use of isTooEarly() or isTooLate(). If either of
-     * these methods returns true, it indicates that @p format was in fact
-     * valid, but the date lies outside the range which can be represented by
-     * QDate.
+     * considered invalid by use of outOfRange(). If that method returns true,
+     * it indicates that @p format was in fact valid, but the date lies outside
+     * the range which can be represented by QDate.
      *
      * @param string string to convert
      * @param format format string
@@ -1275,7 +1280,7 @@ class KDECORE_EXPORT KDateTime
      *         time zone information doesn't match any in @p zones, or if the
      *         time zone information is ambiguous and @p offsetIfAmbiguous is
      *         false
-     * @see setFromStringDefault(), toString(), isTooEarly(), isTooLate()
+     * @see setFromStringDefault(), toString(), outOfRange()
      */
     static KDateTime fromString(const QString &string, const QString &format,
                                 const KTimeZones *zones = 0, bool offsetIfAmbiguous = true);
@@ -1297,29 +1302,16 @@ class KDECORE_EXPORT KDateTime
 
     /**
      * Checks whether the date/time returned by the last call to fromString()
-     * was invalid because an otherwise valid date was too early to be
-     * represented by QDate. This status only occurs when fromString() read a
-     * valid string containing a year earlier than -4712 (4713 BC). On exit
-     * from fromString(), if isTooEarly() returns @c true, isValid() will
+     * was invalid because an otherwise valid date was outside the range which
+     * can be represented by QDate. This status occurs when fromString() read
+     * a valid string containing a year earlier than -4712 (4713 BC). On exit
+     * from fromString(), if outOfRange() returns @c true, isValid() will
      * return @c false.
      *
      * @return @c true if date was earlier than -4712, else @c false
-     * @see isValid(), isTooLate(), fromString()
+     * @see isValid(), fromString()
      */
-    bool isTooEarly() const;
-
-    /**
-     * Checks whether the date/time returned by the last call to fromString()
-     * was invalid because an otherwise valid date was too late to be
-     * represented by QDate. This status only occurs when fromString() read a
-     * valid string containing a date later than 9999. On exit from
-     * fromString(), if isTooLate() returns @c true, isValid() will return
-     * @c false.
-     *
-     * @return @c true if date was later than 9999, else @c false
-     * @see isValid(), isTooEarly(), fromString()
-     */
-    bool isTooLate() const;
+    bool outOfRange() const;
 
     /**
      * Compare this instance with another to determine whether they are
