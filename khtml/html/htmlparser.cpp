@@ -413,7 +413,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         case ID_BASE:
             if( !head )
                 createHead();
-            if( head ) {
+            if( head && !inBody ) {
                 if ( head->addChild(n) ) {
 #if SPEED_DEBUG < 2
                     if(!n->attached() && HTMLWidget)
