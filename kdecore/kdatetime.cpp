@@ -1335,8 +1335,8 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
 
     switch (format)
     {
-        case RFCDateDay: // format is Wdy, DD Mon YYYY hh:mm:ss hhmm
-        case RFCDate:    // format is [Wdy,] DD Mon YYYY hh:mm[:ss] hhmm
+        case RFCDateDay: // format is Wdy, DD Mon YYYY hh:mm:ss ±hhmm
+        case RFCDate:    // format is [Wdy,] DD Mon YYYY hh:mm[:ss] ±hhmm
         {
             int nyear  = 6;   // indexes within string to values
             int nmonth = 4;
@@ -1345,7 +1345,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             int nhour  = 7;
             int nmin   = 8;
             int nsec   = 9;
-            // Also accept obsolete form "Weekday, DD-Mon-YY HH:MM:SS hhmm"
+            // Also accept obsolete form "Weekday, DD-Mon-YY HH:MM:SS ±hhmm"
             QRegExp rx("^(?:([A-Z][a-z]+),\\s*)?(\\d{1,2})(\\s+|-)([^-\\s]+)(\\s+|-)(\\d{2,4})\\s+(\\d\\d):(\\d\\d)(?::(\\d\\d))?\\s+(\\S+)$");
             QStringList parts;
             if (!str.indexOf(rx))
@@ -1417,7 +1417,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 rx = QRegExp("^([+-])(\\d\\d)(\\d\\d)$");
                 if (!parts[10].indexOf(rx))
                 {
-                    // It's a UTC offset hhmm
+                    // It's a UTC offset ±hhmm
                     parts = rx.capturedTexts();
                     offset = parts[2].toInt(&ok[0]) * 3600;
                     int offsetMin = parts[3].toInt(&ok[1]);
@@ -1488,10 +1488,10 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
         case ISODate:
         {
             /*
-             * Extended format: []YYYY-MM-DD[Thh[:mm[:ss.s]][TZ]]
-             * Basic format:    []YYYYMMDD[Thh[mm[ss.s]][TZ]]
-             * Extended format: []YYYY-DDD[Thh[:mm[:ss.s]][TZ]]
-             * Basic format:    []YYYYDDD[Thh[mm[ss.s]][TZ]]
+             * Extended format: [±]YYYY-MM-DD[Thh[:mm[:ss.s]][TZ]]
+             * Basic format:    [±]YYYYMMDD[Thh[mm[ss.s]][TZ]]
+             * Extended format: [±]YYYY-DDD[Thh[:mm[:ss.s]][TZ]]
+             * Basic format:    [±]YYYYDDD[Thh[mm[ss.s]][TZ]]
              * In the first three formats, the year may be expanded to more than 4 digits.
              *
              * QDateTime::fromString(Qt::ISODate) is a rather limited implementation
@@ -1666,7 +1666,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             }
             return KDateTime(d, t, Spec(spec, offset));
         }
-        case QtTextDate:    // format is Wdy Mth DD [hh:mm:ss] YYYY [hhmm]
+        case QtTextDate:    // format is Wdy Mth DD [hh:mm:ss] YYYY [±hhmm]
         {
             int offset = 0;
             QRegExp rx("^(\\S+\\s+\\S+\\s+\\d\\d\\s+(\\d\\d:\\d\\d:\\d\\d\\s+)?\\d\\d\\d\\d)\\s*(.*)$");
