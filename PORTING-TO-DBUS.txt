@@ -237,4 +237,4 @@ public Q_SLOTS:
 <h2>Caveats when porting</h2>
 
 * You cannot pass "long" arguments, so remember to cast any WId parameters to qlonglong.
-* KSSL object paths should start with "/modules/" (i.e., /modules/kssld, /modules/favicons, etc.)
+* KDED object paths should start with "/modules/" (i.e., /modules/kssld, /modules/favicons, etc.)
