@@ -289,22 +289,8 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
       return getHTMLCollection(exec,doc.layers(), true);
     case Anchors:
       return getHTMLCollection(exec,doc.anchors());
-    case Scripts: // TODO (IE-specific)
-    {
-      // Disable document.scripts unless we try to be IE-compatible
-      // Especially since it's not implemented, so
-      // if (document.scripts) shouldn't return true.
-      if ( exec->interpreter()->compatMode() != Interpreter::IECompat )
-        return Undefined();
-      // To be implemented. Meanwhile, return an object with a length property set to 0
-      // This gets some code going on IE-specific pages.
-      // The script object isn't really simple to implement though
-      // (http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/script.asp)
-      kdDebug(6070) << "WARNING: KJS::HTMLDocument document.scripts called - not implemented" << endl;
-      Object obj( new ObjectImp() );
-      obj.put( exec, lengthPropertyName, Number(0) );
-      return obj;
-    }
+    case Scripts:
+      return getHTMLCollection(exec,doc.scripts());
     case All:
       // Disable document.all when we try to be Netscape-compatible
       if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )

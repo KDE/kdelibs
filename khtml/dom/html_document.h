@@ -178,6 +178,12 @@ public:
     HTMLCollection layers() const;
 
     /**
+     * A collection of all the scripts in the document.
+     *
+     */
+    HTMLCollection scripts() const;
+
+    /**
      * A collection of all the anchor ( \c A ) elements in
      * a document with a value for the \c name attribute.
      * Note. For reasons of backwards compatibility, the returned set

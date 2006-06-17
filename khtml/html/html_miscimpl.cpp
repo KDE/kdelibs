@@ -91,6 +91,10 @@ bool HTMLCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) const
         if(e->id() == ID_IMG)
             check = true;
         break;
+    case DOC_SCRIPTS:
+        if(e->id() == ID_SCRIPT)
+            check = true;
+        break;
     case DOC_FORMS:
         if(e->id() == ID_FORM)
             check = true;
@@ -213,7 +217,7 @@ NodeImpl *HTMLCollectionImpl::item ( unsigned long index ) const
         return NodeListImpl::item(index);
 
     //For table.rows, we first need to check header, then bodies, then footer.
-    //we pack any extra headers/footer with bodies. This matches IE, and 
+    //we pack any extra headers/footer with bodies. This matches IE, and
     //means doing the usual thing with length is right
     const HTMLTableElementImpl* table = static_cast<const HTMLTableElementImpl*>(m_refNode);
 
@@ -396,8 +400,8 @@ NodeImpl *HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
 }
 
 // -------------------------------------------------------------------------
-HTMLMappedNameCollectionImpl::HTMLMappedNameCollectionImpl(NodeImpl* _base, int _type, const DOMString& _name): 
-    HTMLCollectionImpl(_base, NodeListImpl::UNCACHEABLE), name(_name) 
+HTMLMappedNameCollectionImpl::HTMLMappedNameCollectionImpl(NodeImpl* _base, int _type, const DOMString& _name):
+    HTMLCollectionImpl(_base, NodeListImpl::UNCACHEABLE), name(_name)
 {
     type = _type; //We pass uncacheable to collection, but need our own type internally.
 }
@@ -411,7 +415,7 @@ bool HTMLMappedNameCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) co
     }
 
     HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
-    
+
     return matchesName(e, type, name);
 }
 
