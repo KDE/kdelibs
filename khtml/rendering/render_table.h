@@ -289,12 +289,8 @@ public:
 
     virtual void setStyle( RenderStyle* );
     virtual const char *renderName() const { return "RenderTableRow"; }
-
     virtual bool isTableRow() const { return true; }
-
-    // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
-    virtual RenderObject* removeChildNode(RenderObject* child);
 
     virtual short offsetWidth() const;
     virtual int offsetHeight() const;
@@ -310,10 +306,6 @@ public:
 
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()); }
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()); }
-
-#ifdef ENABLE_DUMP
-    virtual void dump(QTextStream &stream, const QString& ind) const;
-#endif
 };
 
 // -------------------------------------------------------------------------
@@ -436,11 +428,6 @@ public:
 
     virtual const char *renderName() const { return "RenderTableCol"; }
 
-    long span() const { return _span; }
-    void setSpan( long s ) { _span = s; }
-
-    virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
-
     virtual bool isTableCol() const { return true; }
 
     virtual short lineHeight( bool ) const { return 0; }
@@ -453,8 +440,11 @@ public:
     virtual void dump(QTextStream &stream, const QString& ind) const;
 #endif
 
-protected:
-    short _span;
+    int span() const { return m_span; }
+    void setSpan( int s ) { m_span = s; }
+
+private:
+    int m_span;
 };
 
 // -------------------------------------------------------------------------

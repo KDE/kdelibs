@@ -34,6 +34,7 @@
 #include "rendering/render_canvas.h"
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
+#include "html/html_formimpl.h"
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "rendering/render_line.h"
@@ -134,70 +135,93 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    RenderObject *o = child;
-
-    if (child->element() && child->element()->id() == ID_FORM) {
-        RenderContainer::addChild(child,beforeChild);
-        return;
-    }
+    bool wrapInAnonymousSection = false;
 
     switch(child->style()->display())
     {
-    case TABLE_CAPTION:
-        tCaption = static_cast<RenderBlock *>(child);
-        break;
-    case TABLE_COLUMN:
-    case TABLE_COLUMN_GROUP:
-	has_col_elems = true;
-        break;
-    case TABLE_HEADER_GROUP:
-	if ( !head )
-	    head = static_cast<RenderTableSection *>(child);
-	else if ( !firstBody )
-            firstBody = static_cast<RenderTableSection *>(child);
-        break;
-    case TABLE_FOOTER_GROUP:
-	if ( !foot ) {
-	    foot = static_cast<RenderTableSection *>(child);
-	    break;
-	}
-	// fall through
-    case TABLE_ROW_GROUP:
-        if(!firstBody)
-            firstBody = static_cast<RenderTableSection *>(child);
-        break;
-    default:
-        if ( !beforeChild && lastChild() &&
-	     lastChild()->isTableSection() && lastChild()->isAnonymous() ) {
-            o = lastChild();
-        } else {
-	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymous() &&
-		    !lastBox->isTableSection() && lastBox->style()->display() != TABLE_CAPTION )
-		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymous() ) {
-		lastBox->addChild( child, beforeChild );
-		return;
-	    } else {
-		if ( beforeChild && !beforeChild->isTableSection() )
-		    beforeChild = 0;
-  		//kdDebug( 6040 ) << this <<" creating anonymous table section beforeChild="<< beforeChild << endl;
-		o = new (renderArena()) RenderTableSection(document() /* anonymous */);
-		RenderStyle *newStyle = new RenderStyle();
-		newStyle->inheritFrom(style());
-                newStyle->setDisplay(TABLE_ROW_GROUP);
-		o->setStyle(newStyle);
-		addChild(o, beforeChild);
-	    }
-        }
-        o->addChild(child);
-        child->setNeedsLayoutAndMinMaxRecalc();
+        case TABLE_CAPTION:
+            if (child->isRenderBlock())
+                tCaption = static_cast<RenderBlock *>(child);
+            break;
+        case TABLE_COLUMN:
+        case TABLE_COLUMN_GROUP:
+            has_col_elems = true;
+            break;
+        case TABLE_HEADER_GROUP:
+            if ( !head )
+                if (child->isTableSection())
+                    head = static_cast<RenderTableSection *>(child);
+            else if ( !firstBody )
+                if (child->isTableSection())
+                    firstBody = static_cast<RenderTableSection *>(child);
+            break;
+        case TABLE_FOOTER_GROUP:
+            if ( !foot ) {
+                if (child->isTableSection())
+                    foot = static_cast<RenderTableSection *>(child);
+                break;
+            }
+            // fall through
+        case TABLE_ROW_GROUP:
+            if(!firstBody)
+                if (child->isTableSection())
+                    firstBody = static_cast<RenderTableSection *>(child);
+            break;
+        case TABLE_CELL:
+        case TABLE_ROW:
+            wrapInAnonymousSection = true;
+            break;
+        case BLOCK:
+//         case BOX:
+        case COMPACT:
+        case INLINE:
+        case INLINE_BLOCK:
+//         case INLINE_BOX:
+        case INLINE_TABLE:
+        case LIST_ITEM:
+        case NONE:
+        case RUN_IN:
+        case TABLE:
+            // The special TABLE > FORM quirk allows the form to sit directly under the table
+            if (child->element() && child->element()->isHTMLElement() && child->element()->id() == ID_FORM)
+                wrapInAnonymousSection = !static_cast<HTMLFormElementImpl*>(child->element())->isMalformed();
+            else
+                wrapInAnonymousSection = true;
+            break;
+    }
+
+    if (!wrapInAnonymousSection) {
+        RenderContainer::addChild(child, beforeChild);
         return;
     }
-    RenderContainer::addChild(child,beforeChild);
+
+    if (!beforeChild && lastChild() && lastChild()->isTableSection() && lastChild()->isAnonymous()) {
+        lastChild()->addChild(child);
+        return;
+    }
+
+    RenderObject *lastBox = beforeChild;
+    RenderObject *nextToLastBox = beforeChild;
+    while (lastBox && lastBox->parent()->isAnonymous() &&
+            !lastBox->isTableSection() && lastBox->style()->display() != TABLE_CAPTION) {
+        nextToLastBox = lastBox;
+        lastBox = lastBox->parent();
+    }
+    if (lastBox && lastBox->isAnonymous()) {
+        lastBox->addChild(child, nextToLastBox);
+        return;
+    }
+
+    if (beforeChild && !beforeChild->isTableSection())
+        beforeChild = 0;
+    RenderTableSection* section = new (renderArena()) RenderTableSection(document() /* anonymous */);
+    RenderStyle* newStyle = new RenderStyle();
+    newStyle->inheritFrom(style());
+    newStyle->setDisplay(TABLE_ROW_GROUP);
+    section->setStyle(newStyle);
+    addChild(section, beforeChild);
+    section->addChild(child);
 }
-
-
 
 void RenderTable::calcWidth()
 {
@@ -280,6 +304,7 @@ void RenderTable::layout()
 
     RenderObject *child = firstChild();
     while( child ) {
+        // FIXME: What about a form that has a display value that makes it a table section?
 	if ( child->needsLayout() && !(child->element() && child->element()->id() == ID_FORM) )
 	    child->layout();
 	if ( child->isTableSection() ) {
@@ -644,7 +669,7 @@ void RenderTable::recalcSections()
     while ( child ) {
 	switch(child->style()->display()) {
 	case TABLE_CAPTION:
-	    if ( !tCaption) {
+	    if ( !tCaption && child->isRenderBlock() ) {
 		tCaption = static_cast<RenderBlock*>(child);
                 tCaption->setNeedsLayout(true);
             }
@@ -653,33 +678,35 @@ void RenderTable::recalcSections()
 	case TABLE_COLUMN_GROUP:
 	    has_col_elems = true;
 	    break;
-	case TABLE_HEADER_GROUP: {
-	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
-	    if ( !head )
-		head = section;
-	    else if ( !firstBody )
-		firstBody = section;
-	    if ( section->needCellRecalc )
-		section->recalcCells();
-	    break;
-	}
-	case TABLE_FOOTER_GROUP: {
-	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
-	    if ( !foot )
-		foot = section;
-	    else if ( !firstBody )
-		firstBody = section;
-	    if ( section->needCellRecalc )
-		section->recalcCells();
-	    break;
-	}
-	case TABLE_ROW_GROUP: {
-	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
-	    if ( !firstBody )
-		firstBody = section;
-	    if ( section->needCellRecalc )
-		section->recalcCells();
-	}
+        case TABLE_HEADER_GROUP:
+            if (child->isTableSection()) {
+                RenderTableSection *section = static_cast<RenderTableSection *>(child);
+                if (!head)
+                    head = section;
+                else if (!firstBody)
+                    firstBody = section;
+                if (section->needCellRecalc)
+                    section->recalcCells();
+            }
+        case TABLE_FOOTER_GROUP:
+            if (child->isTableSection()) {
+                RenderTableSection *section = static_cast<RenderTableSection *>(child);
+                if (!foot)
+                    foot = section;
+                else if (!firstBody)
+                    firstBody = section;
+                if (section->needCellRecalc)
+                    section->recalcCells();
+            }
+        case TABLE_ROW_GROUP:
+            if (child->isTableSection()) {
+                RenderTableSection *section = static_cast<RenderTableSection *>(child);
+                if (!firstBody)
+                    firstBody = section;
+                if (section->needCellRecalc)
+                    section->recalcCells();
+            }
+            break;
 	default:
 	    break;
 	}
@@ -955,39 +982,40 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     kdDebug( 6040 ) << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", beforeChild=" <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    RenderObject *row = child;
-
-    if (child->element() && child->element()->id() == ID_FORM) {
-        RenderContainer::addChild(child,beforeChild);
-        return;
-    }
-
     if ( !child->isTableRow() ) {
-
-        if( !beforeChild )
-            beforeChild = lastChild();
-
-        if( beforeChild && beforeChild->isAnonymous() )
-            row = beforeChild;
-        else {
-	    RenderObject *lastBox = beforeChild;
-	    while ( lastBox && lastBox->parent()->isAnonymous() && !lastBox->isTableRow() )
-		lastBox = lastBox->parent();
-	    if ( lastBox && lastBox->isAnonymous() ) {
-		lastBox->addChild( child, beforeChild );
-		return;
-	    } else {
-		//kdDebug( 6040 ) << "creating anonymous table row" << endl;
-		row = new (renderArena()) RenderTableRow(document() /* anonymous table */);
-		RenderStyle *newStyle = new RenderStyle();
-		newStyle->inheritFrom(style());
-		newStyle->setDisplay( TABLE_ROW );
-		row->setStyle(newStyle);
-		addChild(row, beforeChild);
-	    }
+        // TBODY > FORM quirk (???)
+        if (child->element() && child->element()->isHTMLElement() && child->element()->id() == ID_FORM &&
+            static_cast<HTMLFormElementImpl*>(child->element())->isMalformed())
+        {
+            RenderContainer::addChild(child, beforeChild);
+            return;
         }
+
+        RenderObject* last = beforeChild;
+        if (!last)
+            last = lastChild();
+        if (last && last->isAnonymous()) {
+            last->addChild(child);
+            return;
+        }
+
+        // If beforeChild is inside an anonymous cell/row, insert into the cell or into
+        // the anonymous row containing it, if there is one.
+        RenderObject* lastBox = last;
+        while (lastBox && lastBox->parent()->isAnonymous() && !lastBox->isTableRow())
+            lastBox = lastBox->parent();
+        if (lastBox && lastBox->isAnonymous()) {
+            lastBox->addChild(child, beforeChild);
+            return;
+        }
+
+        RenderObject* row = new (renderArena()) RenderTableRow(document() /* anonymous table */);
+        RenderStyle* newStyle = new RenderStyle();
+        newStyle->inheritFrom(style());
+        newStyle->setDisplay(TABLE_ROW);
+        row->setStyle(newStyle);
+        addChild(row, beforeChild);
         row->addChild(child);
-        child->setNeedsLayoutAndMinMaxRecalc();
         return;
     }
 
@@ -1895,61 +1923,49 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-    if (child->element() && child->element()->id() == ID_FORM) {
-        RenderContainer::addChild(child,beforeChild);
+
+    if ( !child->isTableCell() ) {
+        // TR > FORM quirk (???)
+        if (child->element() && child->element()->isHTMLElement() && child->element()->id() == ID_FORM &&
+            static_cast<HTMLFormElementImpl*>(child->element())->isMalformed())
+        {
+            RenderContainer::addChild(child, beforeChild);
+            return;
+        }
+
+        RenderObject* last = beforeChild;
+        if (!last)
+            last = lastChild();
+        if (last && last->isAnonymous() && last->isTableCell()) {
+            last->addChild(child);
+            return;
+        }
+
+        // If beforeChild is inside an anonymous cell, insert into the cell.
+        if (last && !last->isTableCell() && last->parent() && last->parent()->isAnonymous()) {
+            last->parent()->addChild(child, beforeChild);
+            return;
+        }
+
+        RenderTableCell* cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
+        RenderStyle* newStyle = new RenderStyle();
+        newStyle->inheritFrom(style());
+        newStyle->setDisplay(TABLE_CELL);
+        cell->setStyle(newStyle);
+        addChild(cell, beforeChild);
+        cell->addChild(child);
         return;
     }
 
-    RenderTableCell *cell;
-
-    if ( !child->isTableCell() ) {
-	RenderObject *last = beforeChild;
-        if ( !last )
-            last = lastChild();
-        RenderTableCell *cell = 0;
-        if( last && last->isAnonymous() && last->isTableCell() )
-            cell = static_cast<RenderTableCell *>(last);
-        else {
-            // If beforeChild is inside an anonymous cell, insert into the cell.
-            if (last && !last->isTableCell() && last->parent() && last->parent()->isAnonymous()) {
-                last->parent()->addChild(child, beforeChild);
-                return;
-            }
-            cell = new (renderArena()) RenderTableCell(document() /* anonymous object */);
-	    RenderStyle *newStyle = new RenderStyle();
-	    newStyle->inheritFrom(style());
-	    newStyle->setDisplay( TABLE_CELL );
-	    cell->setStyle(newStyle);
-	    addChild(cell, beforeChild);
-        }
-        cell->addChild(child);
-        child->setNeedsLayoutAndMinMaxRecalc();
-        return;
-    } else
-        cell = static_cast<RenderTableCell *>(child);
+    RenderTableCell* cell = static_cast<RenderTableCell*>(child);
 
     section()->addCell( cell, this );
 
     RenderContainer::addChild(cell,beforeChild);
 
-    if ( ( beforeChild || nextSibling()) && section() )
-	section()->setNeedCellRecalc();
+    if ( beforeChild || nextSibling() )
+        section()->setNeedCellRecalc();
 }
-
-RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
-{
-// RenderTableCell detach should do it
-//     if ( section() )
-// 	section()->setNeedCellRecalc();
-    return RenderContainer::removeChildNode( child );
-}
-
-#ifdef ENABLE_DUMP
-void RenderTableRow::dump(QTextStream &stream, const QString &ind) const
-{
-    RenderContainer::dump(stream,ind);
-}
-#endif
 
 void RenderTableRow::layout()
 {
@@ -2782,12 +2798,10 @@ void RenderTableCell::dump(QTextStream &stream, const QString &ind) const
 // -------------------------------------------------------------------------
 
 RenderTableCol::RenderTableCol(DOM::NodeImpl* node)
-    : RenderContainer(node)
+    : RenderContainer(node), m_span(1)
 {
     // init RenderObject attributes
     setInline(true);   // our object is not Inline
-
-    _span = 1;
     updateFromElement();
 }
 
@@ -2796,29 +2810,16 @@ void RenderTableCol::updateFromElement()
   DOM::NodeImpl *node = element();
   if ( node && (node->id() == ID_COL || node->id() == ID_COLGROUP) ) {
       DOM::HTMLTableColElementImpl *tc = static_cast<DOM::HTMLTableColElementImpl *>(node);
-      _span = tc->span();
+      m_span = tc->span();
   } else
-      _span = ! ( style() && style()->display() == TABLE_COLUMN_GROUP );
-}
-
-void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
-{
-#ifdef DEBUG_LAYOUT
-    //kdDebug( 6040 ) << renderName() << "(Table)::addChild( " << child->renderName() << " )"  << ", " <<
-    //                   (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
-#endif
-
-    KHTMLAssert(child->style()->display() == TABLE_COLUMN);
-
-    // these have to come before the table definition!
-    RenderContainer::addChild(child,beforeChild);
+      m_span = ! ( style() && style()->display() == TABLE_COLUMN_GROUP );
 }
 
 #ifdef ENABLE_DUMP
 void RenderTableCol::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
-    stream << " _span=" << _span;
+    stream << " _span=" << m_span;
 }
 #endif
 

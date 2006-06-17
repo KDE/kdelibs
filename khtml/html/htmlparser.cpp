@@ -329,9 +329,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
-        // We allow TABLE > FORM in dtd.cpp, but do not allow form have children in this case
+        // We allow TABLE > FORM in dtd.cpp, but do not allow the form have children in this case
         if (current->id() == ID_TABLE && id == ID_FORM) {
             flat = true;
+            static_cast<HTMLFormElementImpl*>(n)->setMalformed(true);
         }
 
 	// don't push elements without end tag on the stack
