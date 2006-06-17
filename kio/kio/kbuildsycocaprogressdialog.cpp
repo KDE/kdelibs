@@ -10,7 +10,7 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
                                  i18n("Updating system configuration."));
 
   QByteArray data;
-  QDBusInterfacePtr kbuildsycoca("org.kde.kded", "/modules/kbuildsycoca",
+  QDBusInterfacePtr kbuildsycoca("org.kde.kded", "/kbuildsycoca",
                                  "org.kde.kbuildsycoca");
   if (kbuildsycoca->isValid())
   {
