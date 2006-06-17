@@ -802,7 +802,9 @@ void CachedImage::clear()
     delete m;   m = 0;
     delete p;   p = 0;
     delete bg;  bg = 0;
+    delete scaled;  scaled = 0;
     bgColor = qRgba( 0, 0, 0, 0xff );
+    bgSize = QSize(-1,-1);
     delete pixPart; pixPart = 0;
 
     formatType = 0;
