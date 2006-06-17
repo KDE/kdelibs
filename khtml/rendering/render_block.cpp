@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003,2005 Apple Computer, Inc.
  *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Charles Samuels (charles@kde.org)
@@ -160,7 +160,7 @@ void RenderBlock::updateFirstLetter()
     // Don't recurse
     if (style()->styleType() == RenderStyle::FIRST_LETTER) return;
 
-    // The first-letter style is inheritable. 
+    // The first-letter style is inheritable.
     RenderStyle *pseudoStyle = style()->getPseudoStyle(RenderStyle::FIRST_LETTER);
     RenderObject *o = this;
     while (o && !pseudoStyle) {
@@ -235,7 +235,7 @@ void RenderBlock::updateFirstLetter()
                 length++;
             // we need to generated a remainingText object even if no text is left
             // because it holds the place and style for the old textObj
-            RenderTextFragment* remainingText = 
+            RenderTextFragment* remainingText =
                 new (renderArena()) RenderTextFragment(textObj->node(), oldText, length, oldText->l-length);
             remainingText->setIsAnonymous( textObj->isAnonymous() );
             remainingText->setStyle(textObj->style());
@@ -1380,7 +1380,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // make sure we relayout children if we need it.
         if (!child->isPositioned() && (relayoutChildren ||
              (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
-             (child->isRenderBlock() && child->style()->height().isPercent()) || 
+             (child->isRenderBlock() && child->style()->height().isPercent()) ||
              (child->isBody() && child->style()->htmlHacks())))
         {
             child->setChildNeedsLayout(true);
@@ -2557,12 +2557,12 @@ void RenderBlock::calcMinMaxWidth()
             m_minWidth = 0;
     }
 
-     if (style()->width().isFixed() && style()->width().value() > 0) {
-        if (isTableCell())
-            m_maxWidth = kMax(m_minWidth, (short)calcContentWidth(style()->width().value()));
-        else
-            m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
-    }
+    if (isTableCell()) {
+        Length w = static_cast<RenderTableCell*>(this)->styleOrColWidth();
+        if (w.isFixed() && w.value() > 0)
+            m_maxWidth = kMax((int)m_minWidth, calcContentWidth(w.value()));
+    } else if (style()->width().isFixed() && style()->width().value() > 0)
+        m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
         m_maxWidth = kMax(m_maxWidth, (int)calcContentWidth(style()->minWidth().value()));

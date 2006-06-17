@@ -176,7 +176,7 @@ int FixedTableLayout::calcWidthArray()
 	while ( child ) {
 	    if ( child->isTableCell() ) {
 		RenderTableCell *cell = static_cast<RenderTableCell *>(child);
-		Length w = cell->style()->width();
+		Length w = cell->styleOrColWidth();
 		int span = cell->colSpan();
 		int effWidth = 0;
 		if ( (w.isFixed() || w.isPercent()) && w.value() > 0 ) {
@@ -404,14 +404,13 @@ void AutoTableLayout::recalcColumn( int effCol )
 			maxContributor = cell;
 		    }
 
-		    Length w = cell->style()->width();
+		    Length w = cell->styleOrColWidth();
                     w.l.value = kMin( 32767, kMax( 0, w.value() ) );
 		    switch( w.type() ) {
 		    case Fixed:
 			// ignore width=0
 			if ( w.value() > 0 && !l.width.isPercent() ) {
-                            // ### we should use box'es paddings here I guess.
-                            int wval = w.value() + cell->paddingLeft() + cell->paddingRight();
+                            int wval = cell->calcBoxWidth(w.value());
 			    if ( l.width.isFixed() ) {
                                 // Nav/IE weirdness
 				if ((wval > l.width.value()) ||
@@ -638,7 +637,7 @@ int AutoTableLayout::calcEffectiveWidth()
 	    break;
 	int span = cell->colSpan();
 
-	Length w = cell->style()->width();
+	Length w = cell->styleOrColWidth();
 	if ( !w.isRelative() && w.value() == 0 )
 	    w = Length(); // make it Variable
 

@@ -1562,11 +1562,11 @@ static void findRowCover(unsigned int &startrow, unsigned int &endrow,
         int offset = (endrow - startrow)/2;
         while (endrow - startrow > 1) {
             index = startrow+offset;
-            if (rowPos[index] <= min_y ) 
+            if (rowPos[index] <= min_y )
                 // index is below both min_y and max_y
                 startrow = index;
             else
-            if (rowPos[index] > max_y) 
+            if (rowPos[index] > max_y)
                 // index is above both min_y and max_y
                 endrow = index;
             else
@@ -2079,6 +2079,17 @@ void RenderTableCell::updateFromElement()
   }
 }
 
+Length RenderTableCell::styleOrColWidth()
+{
+    Length w = style()->width();
+    if (colSpan() > 1 || !w.isVariable())
+        return w;
+    RenderTableCol* col = table()->colElement(_col);
+    if (col)
+        w = col->style()->width();
+    return w;
+}
+
 void RenderTableCell::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
@@ -2089,15 +2100,16 @@ void RenderTableCell::calcMinMaxWidth()
     RenderBlock::calcMinMaxWidth();
     if (element() && style()->whiteSpace() == NORMAL) {
         // See if nowrap was set.
+        Length w = styleOrColWidth();
         DOMString nowrap = static_cast<ElementImpl*>(element())->getAttribute(ATTR_NOWRAP);
-        if (!nowrap.isNull() && style()->width().isFixed() &&
-            m_minWidth < style()->width().value() )
+        if (!nowrap.isNull() && w.isFixed() &&
+            m_minWidth < w.value() )
             // Nowrap is set, but we didn't actually use it because of the
             // fixed width set on the cell.  Even so, it is a WinIE/Moz trait
             // to make the minwidth of the cell into the fixed width.  They do this
             // even in strict mode, so do not make this a quirk.  Affected the top
             // of hiptop.com.
-            m_minWidth = style()->width().value();
+            m_minWidth = w.value();
     }
 
     setMinMaxKnown();

@@ -118,12 +118,12 @@ public:
     virtual int pageTopAfter(int y) const;
     virtual int crossesPageBreak(int t, int b) const;
 
-protected:
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
     int calcContentWidth(int w) const;
     int calcContentHeight(int h) const;
 
+protected:
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
     int calcHeightUsing(const Length& height);
     int calcReplacedWidthUsing(WidthType widthType) const;
@@ -154,10 +154,10 @@ protected:
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();
     void calcAbsoluteHorizontalValues(Length width, const RenderObject* cb, EDirection containerDirection,
-                                      const int containerWidth, const int bordersPlusPadding, 
+                                      const int containerWidth, const int bordersPlusPadding,
                                       const Length left, const Length right, const Length marginLeft, const Length marginRight,
                                       short& widthValue, short& marginLeftValue, short& marginRightValue, short& xPos);
-    void calcAbsoluteVerticalValues(Length height, const RenderObject* cb, 
+    void calcAbsoluteVerticalValues(Length height, const RenderObject* cb,
                                     const int containerHeight, const int bordersPlusPadding,
                                     const Length top, const Length bottom, const Length marginTop, const Length marginBottom,
                                     int& heightValue, short& marginTopValue, short& marginBottomValue, int& yPos);
