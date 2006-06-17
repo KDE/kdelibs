@@ -112,8 +112,8 @@ Kded::Kded(bool checkUpdates)
   new KdedAdaptor(this);
 
   QDBusConnection &session = QDBus::sessionBus();
-  session.registerObject(MODULES_PATH "kbuildsycoca", this);
-  session.registerObject(MODULES_PATH "kded", this);
+  session.registerObject("/kbuildsycoca", this);
+  session.registerObject("/kded", this);
 
   qDBusAddSpyHook(messageFilter);
 
@@ -891,7 +891,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // unconditionnally (David)
 
      // FIXME: rename the signal
-     QDBusMessage msg = QDBusMessage::signal(MODULES_PATH "kbuildsycoca", "org.kde.ksycoca",
+     QDBusMessage msg = QDBusMessage::signal("/kbuildsycoca", "org.kde.ksycoca",
                                              "notifyDatabaseChanged");
      QDBus::sessionBus().send(msg);
 
