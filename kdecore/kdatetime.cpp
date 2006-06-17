@@ -29,28 +29,29 @@
 #include <kcalendarsystemgregorian.h>
 #include <kdebug.h>
 #include <kdatetime.h>
+#include "kstaticdeleter.h"
 
 
-static const QLatin1String shortDay[] = {
-    QLatin1String("Mon"), QLatin1String("Tue"), QLatin1String("Wed"),
-    QLatin1String("Thu"), QLatin1String("Fri"), QLatin1String("Sat"),
-    QLatin1String("Sun")
+static const char* shortDay[] = {
+    "Mon", "Tue", "Wed",
+    "Thu", "Fri", "Sat",
+    "Sun"
 };
-static const QLatin1String longDay[] = {
-    QLatin1String("Monday"), QLatin1String("Tuesday"), QLatin1String("Wednesday"),
-    QLatin1String("Thursday"), QLatin1String("Friday"), QLatin1String("Saturday"),
-    QLatin1String("Sunday")
+static const char* longDay[] = {
+    "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday",
+    "Sunday"
 };
-static const QLatin1String shortMonth[] = {
-    QLatin1String("Jan"), QLatin1String("Feb"), QLatin1String("Mar"), QLatin1String("Apr"),
-    QLatin1String("May"), QLatin1String("Jun"), QLatin1String("Jul"), QLatin1String("Aug"),
-    QLatin1String("Sep"), QLatin1String("Oct"), QLatin1String("Nov"), QLatin1String("Dec")
+static const char* shortMonth[] = {
+    "Jan", "Feb", "Mar", "Apr",
+    "May", "Jun", "Jul", "Aug",
+    "Sep", "Oct", "Nov", "Dec"
 };
-static const QLatin1String longMonth[] = {
-    QLatin1String("January"), QLatin1String("February"), QLatin1String("March"),
-    QLatin1String("April"), QLatin1String("May"), QLatin1String("June"),
-    QLatin1String("July"), QLatin1String("August"), QLatin1String("September"),
-    QLatin1String("October"), QLatin1String("November"), QLatin1String("December")
+static const char* longMonth[] = {
+    "January", "February", "March",
+    "April", "May", "June",
+    "July", "August", "September",
+    "October", "November", "December"
 };
 
 
@@ -68,7 +69,7 @@ static int matchMonth(const QString &string, int &offset, KCalendarSystem*);
 static bool getUTCOffset(const QString &string, int &offset, bool colon, int &result);
 static int getAmPm(const QString &string, int &offset, KLocale*);
 static bool getNumber(const QString &string, int &offset, int mindigits, int maxdigits, int minval, int maxval, int &result);
-static int findString(const QString &string, const QLatin1String *array, int count, int &offset);
+static int findString(const QString &string, const char* *array, int count, int &offset);
 static QDate checkDate(int year, int month, int day, Status&);
 
 static const int MIN_YEAR = -4712;        // minimum year which QDate allows
@@ -273,6 +274,8 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
 
 
 /*----------------------------------------------------------------------------*/
+static KDateTime::Spec* s_fromStringDefault = 0;
+static KStaticDeleter<KDateTime::Spec> s_fromStringDefaultStaticDeleter;
 
 class KDateTimePrivate
 {
@@ -312,7 +315,12 @@ class KDateTimePrivate
     void      setDateOnly(bool d);
     QDateTime toUTC(const KTimeZone *local = 0) const;
 
-    static KDateTime::Spec fromStringDefault;   // default time spec used by fromString()
+    // default time spec used by fromString()
+    static KDateTime::Spec& fromStringDefault() {
+        if ( !s_fromStringDefault )
+            s_fromStringDefaultStaticDeleter.setObject( s_fromStringDefault, new KDateTime::Spec( KDateTime::ClockTime ) );
+        return *s_fromStringDefault;
+    }
     static QTime        sod;           // start of day (00:00:00)
 
   private:
@@ -328,7 +336,6 @@ class KDateTimePrivate
     bool                mDateOnly;
 };
 
-KDateTime::Spec KDateTimePrivate::fromStringDefault(KDateTime::ClockTime);
 QTime           KDateTimePrivate::sod(0,0,0);
 
 KDateTimePrivate &KDateTimePrivate::operator=(const KDateTimePrivate &other)
@@ -1249,7 +1256,7 @@ QString KDateTime::toString(TimeFormat format) const
             char seconds[8] = { 0 };
             if (d->dt().time().second())
                 sprintf(seconds, ":%02d", d->dt().time().second());
-            result += s.sprintf("%02d %s ", d->date().day(), shortMonth[d->date().month() - 1].latin1());
+            result += s.sprintf("%02d %s ", d->date().day(), shortMonth[d->date().month() - 1]);
             int year = d->date().year();
             if (year < 0)
             {
@@ -1629,7 +1636,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                     dt.d->status = invalid;  // ... with reason for error
                     return dt;
                 }
-                return KDateTime(d, t, KDateTimePrivate::fromStringDefault);
+                return KDateTime(d, t, KDateTimePrivate::fromStringDefault());
             }
             int offset = 0;
             SpecType spec = (parts[8] == QLatin1String("Z")) ? UTC : OffsetFromUTC;
@@ -1692,11 +1699,11 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             {
                 // No time zone offset specified, so return a local clock time
                 if (dateOnly)
-                    return KDateTime(qd, KDateTimePrivate::fromStringDefault);
+                    return KDateTime(qd, KDateTimePrivate::fromStringDefault());
                 else
                 {
                     // Do it this way to prevent UTC conversions changing the time
-                    return KDateTime(qdt.date(), qdt.time(), KDateTimePrivate::fromStringDefault);
+                    return KDateTime(qdt.date(), qdt.time(), KDateTimePrivate::fromStringDefault());
                 }
             }
             rx = QRegExp("([+-])([\\d][\\d])(?::?([\\d][\\d]))?$");
@@ -1872,7 +1879,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
     else
     {
         result = KDateTime(qdt, Spec(ClockTime));
-        result.setTimeSpec(KDateTimePrivate::fromStringDefault);
+        result.setTimeSpec(KDateTimePrivate::fromStringDefault());
     }
     if (dateOnly)
         result.setDateOnly(true);
@@ -1881,7 +1888,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
 
 void KDateTime::setFromStringDefault(const Spec &spec)
 {
-    KDateTimePrivate::fromStringDefault = spec;
+    KDateTimePrivate::fromStringDefault() = spec;
 }
 
 QDataStream & operator<<(QDataStream &s, const KDateTime &dt)
@@ -2456,13 +2463,13 @@ bool getNumber(const QString& string, int& offset, int mindigits, int maxdigits,
     return true;
 }
 
-int findString(const QString &string, const QLatin1String *array, int count, int &offset)
+int findString(const QString &string, const char* *array, int count, int &offset)
 {
     for (int i = 0;  i < count;  ++i)
     {
         if (string.startsWith(array[i], Qt::CaseInsensitive))
         {
-            offset += QString::fromLatin1(array[i].latin1()).length();
+            offset += qstrlen(array[i]);
             return i;
         }
     }
