@@ -288,8 +288,6 @@ void FixedTableLayout::layout()
 	int base = tableWidth * totalPercent / 100;
 	if ( base > available )
 	    base = available;
-	else
-	    totalPercent = 100;
 
 #ifdef DEBUG_LAYOUT
     qDebug("FixedTableLayout::layout: assigning percent width, base=%d, totalPercent=%d", base, totalPercent);
