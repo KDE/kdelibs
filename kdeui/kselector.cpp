@@ -27,6 +27,7 @@
 #include <kimageeffect.h>
 
 #include "kselector.h"
+#include <stdio.h>
 
 //-----------------------------------------------------------------------------
 /*
@@ -213,27 +214,45 @@ void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
  * See KColorDialog for example.
  */
 
+struct KSelector::Private
+{
+  QPoint m_previousPos;
+  bool m_indent;
+};
 
 KSelector::KSelector( QWidget *parent )
   : QAbstractSlider( parent )
+ , d(new Private)
 {
-  _orientation = Qt::Horizontal;
-  _indent = true;
-  _previousPos = calcArrowPos( 0 );
+    setOrientation(Qt::Horizontal);
+    d->m_indent = true;
+    d->m_previousPos = calcArrowPos( 0 );
 }
 
 KSelector::KSelector( Qt::Orientation o, QWidget *parent )
   : QAbstractSlider( parent )
+ , d(new Private)
 {
-  _orientation = o;
-  _indent = true;
-  _previousPos = calcArrowPos( 0 );
+    setOrientation(o);
+    d->m_indent = true;
+    d->m_previousPos = calcArrowPos( 0 );
 }
 
 
 KSelector::~KSelector()
-{}
+{
+    delete d;
+}
 
+void KSelector::setIndent( bool i )
+{
+    d->m_indent = i;
+}
+
+bool KSelector::indent() const
+{
+    return d->m_indent;
+}
 
 QRect KSelector::contentsRect() const
 {
@@ -270,14 +289,15 @@ void KSelector::paintEvent( QPaintEvent * )
   }
 
   QPoint pos = calcArrowPos( value() );
-  drawArrow( &painter, true, pos );
+  drawArrow( &painter, pos );
 
   painter.end();
 }
 
 void KSelector::mousePressEvent( QMouseEvent *e )
 {
-  moveArrow( e->pos() );
+    setSliderDown(true);
+    moveArrow( e->pos() );
 }
 
 void KSelector::mouseMoveEvent( QMouseEvent *e )
@@ -285,20 +305,18 @@ void KSelector::mouseMoveEvent( QMouseEvent *e )
   moveArrow( e->pos() );
 }
 
-void KSelector::wheelEvent( QWheelEvent *e )
+void KSelector::mouseReleaseEvent( QMouseEvent *e )
 {
-  int val = value() + e->delta()/120;
-  setValue( val );
+    moveArrow( e->pos() );
+    setSliderDown(false);
 }
 
-void KSelector::sliderChange( SliderChange change )
+void KSelector::wheelEvent( QWheelEvent *e )
 {
-  QPoint newPos = calcArrowPos( value() );
-  update(QRect(_previousPos, newPos));
-  _previousPos = newPos;
-
-  if ( change == SliderValueChange )
-    emit valueChanged( value() );
+    int val = value() + e->delta()/120;
+    setSliderDown(true);
+    setValue( val );
+    setSliderDown(false);
 }
 
 void KSelector::moveArrow( const QPoint &pos )
@@ -315,6 +333,7 @@ void KSelector::moveArrow( const QPoint &pos )
             / (width() - iw * 2) + minimum();
 
   setValue( val );
+    update();
 }
 
 QPoint KSelector::calcArrowPos( int val )
@@ -341,10 +360,8 @@ QPoint KSelector::calcArrowPos( int val )
 void KSelector::drawContents( QPainter * )
 {}
 
-void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
+void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 {
-  if ( show )
-  {
     QPolygon array(3);
 
     painter->setPen( QPen() );
@@ -361,18 +378,6 @@ void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
     }
 
     painter->drawPolygon( array );
-  }
-  else
-  {
-    if ( orientation() == Qt::Vertical )
-    {
-       repaint(pos.x(), pos.y() - 5, 6, 11);
-    }
-    else
-    {
-       repaint(pos.x() - 5, pos.y(), 11, 6);
-    }
-  }
 }
 
 //----------------------------------------------------------------------------

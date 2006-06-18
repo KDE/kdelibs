@@ -180,12 +180,6 @@ public:
   ~KSelector();
 
   /**
-   * @return the orientation of the widget.
-   */
-  Qt::Orientation orientation() const
-  {	return _orientation; }
-
-  /**
    * @return the rectangle on which subclasses should draw.
    */
   QRect contentsRect() const;
@@ -194,13 +188,12 @@ public:
    * Sets the indent option of the widget to i.
    * This determines whether a shaded frame is drawn.
    */
-  void setIndent( bool i )
-  {	_indent = i; }
+  void setIndent( bool i );
+
   /**
    * @return whether the indent option is set.
    */
-  bool indent() const
-  {	return _indent; }
+  bool indent() const;
 
 protected:
   /**
@@ -217,25 +210,21 @@ protected:
    * to clear the old cursor, once with argument show=true
    * to draw the new one.
    */
-  virtual void drawArrow( QPainter *painter, bool show, const QPoint &pos );
+  virtual void drawArrow( QPainter *painter, const QPoint &pos );
 
-  virtual void sliderChange( SliderChange change );
   virtual void paintEvent( QPaintEvent * );
   virtual void mousePressEvent( QMouseEvent *e );
   virtual void mouseMoveEvent( QMouseEvent *e );
+  virtual void mouseReleaseEvent( QMouseEvent *e );
   virtual void wheelEvent( QWheelEvent * );
 
 private:
   QPoint calcArrowPos( int val );
   void moveArrow( const QPoint &pos );
 
-  Qt::Orientation _orientation;
-  QPoint _previousPos;
-  bool _indent;
-
 private:
-  class KSelectorPrivate;
-  KSelectorPrivate *d;
+  class Private;
+  Private * const d;
 };
 
 
