@@ -3021,7 +3021,7 @@ void KDateTimeTest::strings_qttextdate()
     QVERIFY(!dtutc2.isValid());
     dtutc2 = KDateTime::fromString(QString("Sun Dec 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(dtutc2.isValid());     // wrong weekday: accepted by Qt!!
-    QWARN("Please ignore the QWARN message ('Parameter out of range') produced by the next statement");
+    QTest::ignoreMessage(QtWarningMsg, "QDateTime::fromString: Parameter out of range");
     dtutc2 = KDateTime::fromString(QString("Satu, Dec 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(!dtutc2.isValid());     // bad weekday
     dtutc2 = KDateTime::fromString(QString("Sat Dece 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
