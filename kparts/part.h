@@ -336,11 +336,14 @@ class BrowserExtension;
  * Base class for any "viewer" part.
  *
  * This class takes care of network transparency for you,
- * in the simplest way (synchronously).
+ * in the simplest way (downloading to a temporary file, then letting the part
+ * load from the temporary file).
  * To use the built-in network transparency, you only need to implement
  * openFile(), not openURL().
- * To prevent network transparency, or to implement it another way
- * (e.g. asynchronously), override openURL().
+ *
+ * To implement network transparency differently (e.g. for progressive loading,
+ * like a web browser does for instance), or to prevent network transparency
+ * (but why would you do that?), you can override openURL().
  *
  * KParts Application can use the signals to show feedback while the URL is being loaded.
  *
@@ -386,7 +389,8 @@ public:
 
 public Q_SLOTS:
   /**
-   * Only reimplement openURL if you don't want synchronous network transparency
+   * Only reimplement openURL if you don't want the network transparency support
+   * to download from the url into a temporary file (when the url isn't local).
    * Otherwise, reimplement openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
