@@ -3167,10 +3167,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 return;
         }
 
-        if(size < 1) return;
+        if (size < 0) return;
 
         // we never want to get smaller than the minimum font size to keep fonts readable
-        if(size < minFontSize ) size = minFontSize;
+        // do not however maximize zero as that is commonly used for fancy layouting purposes
+        if (size && size < minFontSize) size = minFontSize;
 
         //kdDebug( 6080 ) << "computed raw font size: " << size << endl;
 
