@@ -279,7 +279,7 @@ protected:
 	void showEvent( QShowEvent * );
 
 	/**
-	 * Internal intialization function, called by the constructors.
+	 * Internal initialization function, called by the constructors.
 	 *
 	 * @internal
 	 */

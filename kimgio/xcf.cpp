@@ -1066,7 +1066,7 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 		case INDEXED_GIMAGE:
 			// As noted in the table above, there are quite a few combinations
 			// which are possible with indexed images, depending on the
-			// presense of transparency (note: not translucency, which is not
+			// presence of transparency (note: not translucency, which is not
 			// supported by The GIMP for indexed images) and the number of
 			// individual colors.
 

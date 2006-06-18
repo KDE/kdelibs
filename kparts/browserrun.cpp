@@ -309,7 +309,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int /*flags*/ )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
-    // NOTE: Keep this funcion in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
+    // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
     //       FileTypeDetails::updateAskSave()
 
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );

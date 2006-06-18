@@ -30,8 +30,8 @@
 
 /**
  * The fact that this class inherits from QObject makes me
- * hugely unhappy. The reason for as of writting is that
- * I don't really feel like writting my own KLibFactory
+ * hugely unhappy. The reason for as of this writing is that
+ * I don't really feel like writing my own KLibFactory
  * that would load anything else then QObject derivatives.
  */
 namespace KSpell2

@@ -36,7 +36,7 @@ namespace KSpell2
      * the checkText function or subclass it and reimplement
      * getMoreText function.
      *
-     * The misspelling signal is emitted whenever a mispelled word
+     * The misspelling signal is emitted whenever a misspelled word
      * is found. The background checker stops right before emitting
      * the signal. So the parent has to call continueChecking function
      * to resume the checking.

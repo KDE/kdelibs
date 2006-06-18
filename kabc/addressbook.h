@@ -291,7 +291,7 @@ class KABC_EXPORT AddressBook : public QObject
 
     /**
       Saves all addressees of one resource synchronously. If the save is
-      successfull the ticket is deleted.
+      successful the ticket is deleted.
 
       @param ticket The ticket returned by requestSaveTicket().
       @return Whether the saving was successfully.
@@ -300,7 +300,7 @@ class KABC_EXPORT AddressBook : public QObject
 
     /**
       Saves all addressees of one resource asynchronously. If the save is
-      successfull the ticket is deleted.
+      successful the ticket is deleted.
 
       @param ticket The ticket returned by requestSaveTicket().
       @return Whether the synchronous part of saving was successfully.

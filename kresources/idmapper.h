@@ -161,7 +161,7 @@ class KRESOURCES_EXPORT IdMapper
     QMap<QString, QString> remoteIdMap() const;
 
     /**
-      Returns a string representation of the id pairs, that's usefull
+      Returns a string representation of the id pairs, that's useful
       for debugging.
      */
     QString asString() const;

@@ -319,7 +319,7 @@ public:
      * @see KImageEffect::computeDestinationRect, KImageEffect::blendOnLower
      */
     enum Disposition { NoImage = 0, //!< Don't overlay
-		       Centered,    //!< Center top image on botton image
+		       Centered,    //!< Center top image on bottom image
 		       Tiled,       //!< Tile top image on bottom image
 		       CenterTiled, //!< Center and tile top image on bottom image
 		       CenteredMaxpect, //!< Center and scale aspect

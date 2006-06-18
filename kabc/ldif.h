@@ -48,7 +48,7 @@ namespace KABC {
     
     /**
      * Assembles fieldname and value into a valid LDIF line, BASE64 encodes the 
-     * value if neccessary and optionally splits into more lines.
+     * value if necessary and optionally splits into more lines.
      * @param fieldname The name of the entry.
      * @param value The value of the entry.
      * @param linelen Maximum length of the lines in the result.

@@ -1483,7 +1483,7 @@ void K3DockWidget::setWidget( QWidget* mw )
   delete layout;
 
   /*
-   * Qt 4.1 does not fill the background if not asked so explicitely.
+   * Qt 4.1 does not fill the background if not asked so explicitly.
    * However code from Qt3/KDE3 could except that the background is filled.
    */
   widget->setAutoFillBackground( true );

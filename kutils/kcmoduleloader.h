@@ -99,7 +99,7 @@ class KUTILS_EXPORT KCModuleLoader
     static void unloadModule(const KCModuleInfo &mod);
 
     /**
-     * Display a message box explaining an error occured and possible
+     * Display a message box explaining an error occurred and possible
      * reasons to why.
      *
      * @deprecated Use a constructor with ErrorReporting set to Dialog to show a

@@ -33,7 +33,7 @@ struct KeyStruct {
 };
 
 /**
-Handles security releated issues, like signing, verifying.
+Handles security related issues, like signing, verifying.
 It is a private class, not meant to be used by third party applications.
 
 @author Andras Mantia <amantia@kde.org>

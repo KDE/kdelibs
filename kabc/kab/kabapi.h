@@ -139,7 +139,7 @@ public:
 			     bool update=true);
   /**
    * If the preferences of kab say to query before deleting, the user has
-   * to click "yes" on a message box that appeares.
+   * to click "yes" on a message box that appears.
    * If called for a read only database, the method will return
    * PermDenied.
    * @short Deletes an entry in the database by its key.

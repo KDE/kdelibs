@@ -739,7 +739,7 @@ void KonfUpdate::gotScript(const QString &_script)
 
    if (script.isEmpty())
    {
-      log() << currentFilename << ": !! Script fails to specifiy filename in line " << m_lineCount << " : '" << m_line << "'" << endl;
+      log() << currentFilename << ": !! Script fails to specify filename in line " << m_lineCount << " : '" << m_line << "'" << endl;
       skip = true;
       return;
    } 
@@ -835,7 +835,7 @@ void KonfUpdate::gotScript(const QString &_script)
 
    if (result)
    {
-      log() << currentFilename << ": !! An error occured while running '" << cmd << "'" << endl;
+      log() << currentFilename << ": !! An error occurred while running '" << cmd << "'" << endl;
       return;
    }
 

@@ -603,7 +603,7 @@ protected:
             SingleButtonHeight,
             DoubleButtonHeight,
             BarWidth,
-            MinimumSliderHeight, //Note: if the scrollbar is too small to accomodate
+            MinimumSliderHeight, //Note: if the scrollbar is too small to accommodate
                                  //this, this will not be enforced
             ArrowColor,
             ActiveArrowColor

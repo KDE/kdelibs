@@ -479,7 +479,7 @@ protected:
   bool m_bRedirect; // Indicates current request is a redirection
 
   // Processing related
-  bool m_bChunked; // Chunked tranfer encoding
+  bool m_bChunked; // Chunked transfer encoding
   KIO::filesize_t m_iSize; // Expected size of message
   KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   KIO::filesize_t m_iContentLeft; // # of content bytes left

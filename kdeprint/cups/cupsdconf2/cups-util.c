@@ -193,7 +193,7 @@ cupsGetFd(http_t *http, const char *resource, int fd)
         break;
 
      /*
-      * Try again, we passed authentification...
+      * Try again, we passed authentication...
       */
 
       continue;
@@ -299,12 +299,12 @@ cupsPutFd(http_t *http, const char *resource, int fd)
      /*
       * See if we can do authentication...
       */
-#warning original code makes authentification for GET, typo?
+#warning original code makes authentication for GET, typo?
       if(cupsDoAuthentication(http, "PUT", resource))
         break;
 
      /*
-      * Try again, we passed authentification...
+      * Try again, we passed authentication...
       */
 
       continue;

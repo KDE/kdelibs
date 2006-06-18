@@ -46,7 +46,7 @@ KMWIpp::KMWIpp(QWidget *parent)
 
 bool KMWIpp::isValid(QString& msg)
 {
-	// check informations
+	// check information
 	if (text(0).isEmpty())
 	{
 		msg = i18n("Empty server name.");

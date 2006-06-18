@@ -31,7 +31,7 @@ class KMessageHandler;
  * a clean interface for developers to use. 
  * The job is done by the current KMessageHandler set in the class.
  *
- * If no KMessageHandler is currently registred in KMessage, 
+ * If no KMessageHandler is currently registered in KMessage, 
  * the message will be outputed to stderr.
  *
  * Use KMessage::setMessageHandler() to use a KMessageHandler.

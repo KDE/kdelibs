@@ -995,7 +995,7 @@ kDebug(7021) << "processKDELegacyDirs()" << endl;
    (void) KGlobal::dirs()->findAllResources( "apps",
                                              QString(),
                                              true, // Recursive!
-                                             true, // uniq
+                                             true, // unique
                                              relFiles);
    for(QStringList::ConstIterator it = relFiles.begin();
        it != relFiles.end(); ++it)

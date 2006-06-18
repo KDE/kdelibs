@@ -320,7 +320,7 @@ bool KBuildSycoca::build()
      (void) KGlobal::dirs()->findAllResources( g_resource,
                                                QString(),
                                                true, // Recursive!
-                                               true, // uniq
+                                               true, // unique
                                                relFiles);
 
 

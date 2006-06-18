@@ -768,7 +768,7 @@ static bool LoadATI2( QDataStream & s, const DDSHeader & header, QImage & img )
 
 typedef bool (* TextureLoader)( QDataStream & s, const DDSHeader & header, QImage & img );
 
-// Get an appropiate texture loader for the given type.
+// Get an appropriate texture loader for the given type.
 static TextureLoader GetTextureLoader( DDSType type ) {
     switch( type ) {
     case DDS_A8R8G8B8:

@@ -37,7 +37,7 @@
  * that negotiate sessions with weak cryptographic keys and store
  * them for everybody to use - I really don't want that.
  *
- * Retrieval is organized similiar to George's thoughts in the KSSLD
+ * Retrieval is organized similar to George's thoughts in the KSSLD
  * certificate cache: The cache is organised as a list, with the
  * recently fetched (or stored) session first.
  *

@@ -161,7 +161,7 @@ class KPluginSelectionWidget : public QWidget
 
     private:
         /**
-         * Load a KCM from a KCModuleInfo. If successfull connect changed
+         * Load a KCM from a KCModuleInfo. If successful connect changed
          * signal and return the module. If not, create a label showing "Error",
          * show the loaderError and return the label.
          *

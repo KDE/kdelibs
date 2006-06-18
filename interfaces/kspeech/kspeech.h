@@ -37,7 +37,7 @@
  * This class defines the DCOP interface for applications desiring to speak text.
  * Applications may speak text by sending DCOP messages to application "kttsd" object "KSpeech".
  *
- * %KTTSD -- the KDE Text-to-Speech Deamon -- is the program that supplies the services
+ * %KTTSD -- the KDE Text-to-Speech Daemon -- is the program that supplies the services
  * in the KDE Text-to-Speech API.
  *
  * @warning The KSpeech interface is still being developed and is likely to change in the future.
@@ -86,8 +86,8 @@
  *   - Compatible with original %KTTSD API as developed by José Pablo Ezequiel
  *     "Pupeno" Fernández (avoid breaking existing applications).
  *
- * Architecturally, applications interface with %KTTSD, which performs queueing,
- * speech job managment, plugin management and sentence parsing.  %KTTSD interfaces with a
+ * Architecturally, applications interface with %KTTSD, which performs queuing,
+ * speech job management, plugin management and sentence parsing.  %KTTSD interfaces with a
  * %KTTSD speech plugin(s), which then interfaces with the speech engine(s) or driver(s).
  *
    @verbatim
@@ -447,7 +447,7 @@
  * talker will likely still be understandable.
  *
  * An application may specify that one or more of the attributes it gives in a talker
- * code have priority by preceeding each priority attribute with an asterisk.
+ * code have priority by preceding each priority attribute with an asterisk.
  * For example, the following talker code
  *
  *  lang="en" gender="*female" volume="soft"
@@ -551,7 +551,7 @@
  *
  * Note: %Speech Markup is not yet fully implemented in %KTTSD.
  *
- * Each of the five methods for queueing text to be spoken -- sayScreenReaderOutput,
+ * Each of the five methods for queuing text to be spoken -- sayScreenReaderOutput,
  * setText, appendText, sayMessage, and sayWarning -- may contain speech markup,
  * provided that the plugin the user has configured supports that markup.  The markup
  * languages and plugins currently supported are:
@@ -812,9 +812,9 @@ class KSpeech : virtual public DCOPObject {
         * sentence parsing follows the semantics of the markup language.
         *
         * The job is marked speakable.
-        * If there are other speakable jobs preceeding this one in the queue,
+        * If there are other speakable jobs preceding this one in the queue,
         * those jobs continue speaking and when finished, this job will begin speaking.
-        * If there are no other speakable jobs preceeding this one, it begins speaking.
+        * If there are no other speakable jobs preceding this one, it begins speaking.
         *
         * @see getTextCount
         *
@@ -1003,9 +1003,9 @@ class KSpeech : virtual public DCOPObject {
         * Rewinds the job to the beginning.
         *
         * The job is marked speakable.
-        * If there are other speakable jobs preceeding this one in the queue,
+        * If there are other speakable jobs preceding this one in the queue,
         * those jobs continue speaking and when finished, this job will begin speaking.
-        * If there are no other speakable jobs preceeding this one, it begins speaking.
+        * If there are no other speakable jobs preceding this one, it begins speaking.
         *
         * The textStarted signal is emitted when the text job begins speaking.
         * When all the sentences of the job have been spoken, the job is marked for deletion from
@@ -1022,7 +1022,7 @@ class KSpeech : virtual public DCOPObject {
         * The job is marked not speakable and will not be speakable until startText
         * or resumeText is called.
         *
-        * If there are speaking jobs preceeding this one in the queue, they continue speaking.
+        * If there are speaking jobs preceding this one in the queue, they continue speaking.
         *
         * If the job is currently speaking, the textStopped signal is emitted,
         * the job stops speaking, and if the next job in the queue is speakable, it
@@ -1042,7 +1042,7 @@ class KSpeech : virtual public DCOPObject {
         * The job is marked as paused and will not be speakable until resumeText or
         * startText is called.
         *
-        * If there are speaking jobs preceeding this one in the queue, they continue speaking.
+        * If there are speaking jobs preceding this one in the queue, they continue speaking.
         *
         * If the job is currently speaking, the textPaused signal is emitted and the job
         * stops speaking.  Note that if the next job in the queue is speakable, it does
@@ -1069,7 +1069,7 @@ class KSpeech : virtual public DCOPObject {
         * If the job is currently queued, or is finished, it is the same as calling
         * @see startText .
         *
-        * If there are speaking jobs preceeding this one in the queue,
+        * If there are speaking jobs preceding this one in the queue,
         * those jobs continue speaking and when finished this job will begin
         * speaking where it left off.
         *

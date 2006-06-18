@@ -127,7 +127,7 @@ HighContrastStyle::~HighContrastStyle()
 
 void HighContrastStyle::polish( QPalette& pal )
 {
-	//We do not want the disabled widgets to be greyed out, 
+	//We do not want the disabled widgets to be grayed out, 
 	//as that may be hard indeed (and since we use crossed-out text instead),
 	//so we make disabled colors be the same as active foreground and
 	//background colour

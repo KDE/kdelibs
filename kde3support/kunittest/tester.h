@@ -77,7 +77,7 @@
  * application.
  *
  * Now lets see how you would add a new test to KUnitTest. You do that by
- * writting a Tester derived class which has an "allTests()" method:
+ * writing a Tester derived class which has an "allTests()" method:
  *
  * @code
  * class SampleTest : public Tester
@@ -180,7 +180,7 @@ SampleTest - 1 test passed, 1 test failed
  * Most of this Makefile.am will be self-explanatory. After running
  * "make check" the binary "sampletests" will be built. The reason for
  * adding the extra make target "check" is that you probably do not want
- * to rebuild the test suite everytime you run make.
+ * to rebuild the test suite every time you run make.
  *
  * You can run the binary on its own, but you get more functionality if you use
  * the kunittest helper script. The Makefile.am is set up in such
@@ -359,7 +359,7 @@ using namespace std;
 #define SKIP( x ) skip( __FILE__, __LINE__, QLatin1String(#x))
 
 /*!
- * An macro testing that @p expression throws an exception that is catched
+ * An macro testing that @p expression throws an exception that is caught
  * with @p exceptionCatch. Use it to test that an expression, such as a function call,
  * throws a certain exception.
  * 
@@ -677,7 +677,7 @@ namespace KUnitTest
 
     /*! The SlotTester class is a special Tester class, one that will
      * execute all slots that start with the string "test". The method
-     * void allTests() is implemented and should not be overriden.
+     * void allTests() is implemented and should not be overridden.
      */
     class KUNITTEST_EXPORT SlotTester : public Tester
     {

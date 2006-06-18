@@ -41,7 +41,7 @@ class KUrl;
 class ContactPresenceListCurrent;
 class OrgKdeKIMInterface;
 
-/** FIXME: remove for KDE4, binary compability again. */
+/** FIXME: remove for KDE4, binary compatibility again. */
 typedef QMap<QString, int> AppPresence; 		// appId->presence; contains all applications' ideas of a user's presence
 typedef QHash<QString, AppPresence*> PresenceMap;			// uid->AppPresence; contains a AppPresences for all users
 /** FIXME: remove presenceMap and call this presenceMap in KDE4.  This hack is for binary compatibility */

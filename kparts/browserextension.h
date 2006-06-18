@@ -426,7 +426,7 @@ public:
   bool isActionEnabled( const char * name ) const;
 
   /**
-   * @return the text of an action, if it was set explicitely by the part.
+   * @return the text of an action, if it was set explicitly by the part.
    * When the setActionText signal is emitted, the browserextension
    * stores the text of the action internally, so that it's possible
    * to query later for the text of the action, using this method.
@@ -555,7 +555,7 @@ public:  // yes, those signals are public; don't tell moc :)
   /**
    * Asks the hosting browser to open a new window for the given @p url
    * and return a reference to the content part.
-   * The request for a reference to the part is only fullfilled/processed
+   * The request for a reference to the part is only fulfilled/processed
    * if the serviceType is set in the @p args . (otherwise the request cannot be
    * processed synchroniously.
    */

@@ -40,7 +40,7 @@ class Filter::Private
 {
 public:
     // The reason it's not in the class directly is that
-    // i'm not 100% sure that having the settings() here is
+    // I'm not 100% sure that having the settings() here is
     // the way i want to be doing this.
     Settings *settings;
 };
@@ -251,7 +251,7 @@ bool Filter::trySkipLinks() const
     //URL - if so skip
     if ( currentChar == ':' &&
          ( m_buffer[ ++m_currentPosition] == '/' || ( m_currentPosition + 1 ) >= length ) ) {
-        //in both cases url is considered finished at the first whitespace occurence
+        //in both cases url is considered finished at the first whitespace occurrence
         while ( !m_buffer[ m_currentPosition++ ].isSpace() && m_currentPosition < length )
             ;
         return true;

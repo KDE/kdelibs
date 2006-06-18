@@ -97,7 +97,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
 
         /**
          * When this slot is called the KConfig objects of all the registered
-         * instances are sync()ed. This is usefull when some other KConfig
+         * instances are sync()ed. This is useful when some other KConfig
          * objects will read/write from/to the same config file, so that you
          * can first write out the current state of the KConfig objects.
          */

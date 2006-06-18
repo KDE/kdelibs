@@ -142,7 +142,7 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	else
 	{
 		req.setOperation(CUPS_ADD_PRINTER);
-		// only set the device-uri if needed, otherwise you may loose authentification
+		// only set the device-uri if needed, otherwise you may loose authentication
 		// data (login/password in URI's like smb or ipp).
 		KMPrinter	*otherP = findPrinter(p->printerName());
 		if (!otherP || otherP->device() != p->device())
@@ -226,7 +226,7 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 {
 	if (completePrinterShort(p))
 	{
-		// driver informations
+		// driver information
 		QString	ppdname = downloadDriver(p);
 		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.toLocal8Bit()));
 		if (ppd)

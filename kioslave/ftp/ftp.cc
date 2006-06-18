@@ -892,7 +892,7 @@ int Ftp::ftpOpenDataConnection()
 /*
  * ftpOpenPortDataConnection - set up data connection
  *
- * @return 0 if successfull, err code otherwise (but never ERR_INTERNAL
+ * @return 0 if successful, err code otherwise (but never ERR_INTERNAL
  *         because this is the last connection mode that is tried)
  */
 int Ftp::ftpOpenPortDataConnection()
@@ -1779,7 +1779,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   QByteArray array;
   bool mimetypeEmitted = false;
   char buffer[maximumIpcSize];
-  // start whith small data chunks in case of a slow data source (modem)
+  // start with small data chunks in case of a slow data source (modem)
   // - unfortunately this has a negative impact on performance for large
   // - files - so we will increase the block size after a while ...
   int iBlockSize = initialIpcSize;

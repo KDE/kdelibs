@@ -325,7 +325,7 @@ class KABC_EXPORT Resource : public KRES::Resource
       Saves all addressees synchronously.
 
       @param ticket You have to release the ticket later with
-                    releaseSaveTicket() explicitely.
+                    releaseSaveTicket() explicitly.
       @return Whether the saving was successfully.
      */
     virtual bool save( Ticket *ticket ) = 0;
@@ -338,7 +338,7 @@ class KABC_EXPORT Resource : public KRES::Resource
       The default implementation simply calls the synchronous save.
 
       @param ticket You have to release the ticket later with
-                    releaseSaveTicket() explicitely.
+                    releaseSaveTicket() explicitly.
       @return Whether the saving was successfully.
      */
     virtual bool asyncSave( Ticket *ticket );
@@ -398,7 +398,7 @@ class KABC_EXPORT Resource : public KRES::Resource
     void loadingFinished( Resource *resource );
 
     /**
-      This signal is emitted when an error occured during loading the
+      This signal is emitted when an error occurred during loading the
       addressees from the backend to the internal cache.
 
       @param resource The pointer to the resource which emitted this signal.
@@ -415,7 +415,7 @@ class KABC_EXPORT Resource : public KRES::Resource
     void savingFinished( Resource *resource );
 
     /**
-      This signal is emitted when an error occured during saving the
+      This signal is emitted when an error occurred during saving the
       addressees from the internal cache to the backend.
 
       @param resource The pointer to the resource which emitted this signal.

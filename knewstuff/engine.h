@@ -41,7 +41,7 @@ class ProviderDialog;
  * @short Central class combining all possible KNewStuff operations.
  *
  * In most cases, Engine objects are built and used internally.
- * Using this class explicitely does however give fine-grained control about the
+ * Using this class explicitly does however give fine-grained control about the
  * upload and download operations.
  *
  * @author Cornelius Schumacher (schumacher@kde.org)

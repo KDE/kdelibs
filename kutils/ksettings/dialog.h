@@ -146,7 +146,7 @@ class KUTILS_EXPORT Dialog : public QObject
 
     public Q_SLOTS:
         /**
-         * Show the config dialog. The slot immediatly returns since the dialog
+         * Show the config dialog. The slot immediately returns since the dialog
          * is non-modal.
          */
         void show();

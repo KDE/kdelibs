@@ -788,7 +788,7 @@ public:
    * @param service		the service to resolve
    * @param flags		flags to be used
    * @param families		families to be searcheed
-   * @return true if the queueing was successful, false if not
+   * @return true if the queuing was successful, false if not
    * @see KResolverResults for information on how to obtain the error code
    */
   static bool resolveAsync(QObject* userObj, const char *userSlot,

@@ -416,7 +416,7 @@ public:
 
   /**
    * Find a service by name, i.e. the translated Name field. You should
-   * never use this method with a litteral name as argument, since the name
+   * never use this method with a literal name as argument, since the name
    * is translated Name field of the desktop file. See serviceByStorageId instead.
    *
    * @param _name the name to search

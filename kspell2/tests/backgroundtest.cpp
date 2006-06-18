@@ -123,7 +123,7 @@ Notes\
 ===== \
  \
 apidoc                  Duh! It's the docs \
-working                 Stuff that i'm mining for ideas\
+working                 Stuff that I'm mining for ideas\
 \
 Discussion\
 ========== \

@@ -80,7 +80,7 @@ Qt4 events as of Qt 4.0
         DeferredDelete = 52,                    // deferred delete event
         DragEnter = 60,                         // drag moves into widget
         DragMove = 61,                          // drag moves in widget
-        DragLeave = 62,                         // drag leaves or is cancelled
+        DragLeave = 62,                         // drag leaves or is canceled
         Drop = 63,                              // actual drop
         DragResponse = 64,                      // drag accepted/rejected
         ChildAdded = 68,                        // new child widget

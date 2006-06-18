@@ -60,7 +60,7 @@ class ConfigWidget;
 
   Concrete functionality of Resources is specified per family by a subclass of
   Resource. This classes in turn have subclasses which implement the different
-  flavours of the functionality represented by the family.
+  flavors of the functionality represented by the family.
 
   A subclass should reimplement at least the constructor and the
   writeConfig method.

@@ -79,7 +79,7 @@ public:
 	
 	/**
 	Synchrounous publish. Application will be freezed until publishing is complete.
-	@return true if successfull.
+	@return true if successful.
 	 */
 	bool publish();
 	
@@ -131,7 +131,7 @@ public:
 
 Q_SIGNALS:
 	/**
-	Emitted when publishing is complete - parameter is set to true if it was successfull. It will also
+	Emitted when publishing is complete - parameter is set to true if it was successful. It will also
 	emitted when name, port or type of already published service is changed.
 	*/
 	void published(bool);

@@ -670,7 +670,7 @@ public:
    * ° the systems boot-time is after the creation of the lockfile.
    * The problem is that, if there is a process with the pid we have,
    * this does not need to be the process that created the lockfile
-   * the method returns only false if it is shure that no such process
+   * the method returns only false if it is sure that no such process
    * exists.
    * Returns false if the lockfile exists and is definitely stale or there
    * is none, returns true if the lockfile seems to be really valid.

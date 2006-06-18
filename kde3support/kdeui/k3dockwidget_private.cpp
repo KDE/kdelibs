@@ -261,8 +261,8 @@ void K3DockSplitter::resizeEvent(QResizeEvent *ev)
 
     //
     // Check whether this is a real resize event or a pseudo resize event
-    // Real resize events occure if the width() or height() changes. ev != 0L.
-    // Pseudo resize events occure if the dockwidget mode changes (overlaped,
+    // Real resize events occur if the width() or height() changes. ev != 0L.
+    // Pseudo resize events occur if the dockwidget mode changes (overlaped,
     // sticky or closed). ev == 0L.
     //
     if (ev && isVisible() && divider->isVisible()) {

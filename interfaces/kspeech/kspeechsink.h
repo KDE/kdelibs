@@ -23,7 +23,7 @@
  *
  * @since KDE 3.4
  *
- * This defines the interface to sink signals emitted by KTTSD, the KDE Text-to-speech Deamon.
+ * This defines the interface to sink signals emitted by KTTSD, the KDE Text-to-speech Daemon.
  * The DCOP IDL Compiler generates a skeleton file from this interface definition that will
  * marshal the arguments for you.
  *

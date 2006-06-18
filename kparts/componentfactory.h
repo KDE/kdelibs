@@ -150,7 +150,7 @@ namespace KParts
          * \endcode
          *
          * @param mimeType the mimetype which this part is associated with
-         * @param constraint an optionnal constraint to pass to the trader (see KTrader)
+         * @param constraint an optional constraint to pass to the trader (see KTrader)
          * @param parentWidget the parent widget, will be set as the parent of the part's widget
          * @param parent the parent object for the part itself
          * @param args A list of string arguments, passed to the factory and possibly
