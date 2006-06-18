@@ -1242,21 +1242,37 @@ void RenderObject::setStyle(RenderStyle *style)
 
     //qDebug("m_style: %p new style, diff=%d", m_style,  d);
 
-    if ( d == RenderStyle::Visible && m_parent && m_style &&
-         m_style->outlineWidth() > style->outlineWidth() )
-        repaint();
+    if (m_style) {
+        if ( d >= RenderStyle::Visible && !isText() && m_parent &&
+             ( m_style->outlineWidth() > style->outlineWidth() ||
+               ( m_style->hasClip() && !(m_style->clip() == style->clip()) ) ) ) {
+            // schedule a repaint with the old style
+            if (layer() && !isInlineFlow())
+                layer()->repaint();
+            else
+                repaint();
+        }
 
-    if ( m_style &&
-         ( ( isFloating() && m_style->floating() != style->floating() ) ||
-           ( isPositioned() && m_style->position() != style->position() &&
-             style->position() != ABSOLUTE && style->position() != FIXED ) ) )
-        removeFromObjectLists();
+        if ( ( isFloating() && m_style->floating() != style->floating() ) ||
+               ( isPositioned() && m_style->position() != style->position() &&
+                 style->position() != ABSOLUTE && style->position() != FIXED ) )
+            removeFromObjectLists();
 
-    // reset style flags
-    m_floating = false;
-    m_positioned = false;
-    m_relPositioned = false;
-    m_paintBackground = false;
+        if ( layer() ) {
+            if ( ( m_style->hasAutoZIndex() != style->hasAutoZIndex() ||
+                   m_style->zIndex() != style->zIndex() ||
+                   m_style->visibility() != style->visibility() ) ) {
+                layer()->stackingContext()->dirtyZOrderLists();
+                layer()->dirtyZOrderLists();
+            }
+        }
+
+        // reset style flags
+        m_floating = false;
+        m_positioned = false;
+        m_relPositioned = false;
+        m_paintBackground = false;
+    }
 
     // only honour z-index for non-static objects
     // ### and objects with opacity
@@ -1265,15 +1281,6 @@ void RenderObject::setStyle(RenderStyle *style)
             style->setZIndex( 0 );
         else
             style->setHasAutoZIndex();
-    }
-
-    if ( layer() && style && m_style ) {
-        if ( ( m_style->hasAutoZIndex() != style->hasAutoZIndex() ||
-               m_style->zIndex() != style->zIndex() ||
-               m_style->visibility() != style->visibility() ) ) {
-            layer()->stackingContext()->dirtyZOrderLists();
-            layer()->dirtyZOrderLists();
-        }
     }
 
     RenderStyle *oldStyle = m_style;

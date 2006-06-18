@@ -1089,6 +1089,7 @@ public:
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
     Length clipBottom() const { return visual->clip.bottom; }
+    LengthBox clip() const { return visual->clip; }
     bool hasClip() const { return noninherited_flags.f._hasClip; }
 
     EUnicodeBidi unicodeBidi() const { return noninherited_flags.f._unicodeBidi; }
