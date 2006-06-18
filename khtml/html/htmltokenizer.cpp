@@ -388,9 +388,10 @@ void HTMLTokenizer::scriptHandler()
 
     // Scripts following a frameset element should not be executed or even loaded in the case of extern scripts.
     bool followingFrameset = (parser->doc()->body() && parser->doc()->body()->id() == ID_FRAMESET);
+    bool effectiveScript = !parser->skipMode() && !followingFrameset;
     bool deferredScript = false;
 
-    if ( !parser->skipMode() && !followingFrameset) {
+    if ( effectiveScript ) {
         CachedScript* cs = 0;
 
         // forget what we just got, load from src url instead
@@ -419,7 +420,7 @@ void HTMLTokenizer::scriptHandler()
     script = false;
     scriptCodeSize = scriptCodeResync = 0;
 
-    if (parser->skipMode() || followingFrameset)
+    if ( !effectiveScript )
         return;
 
     if ( !m_executingScript && cachedScript.isEmpty() ) {
