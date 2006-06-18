@@ -33,7 +33,6 @@
 #include <unistd.h>
 #include <kxmlguifactory.h>
 #include <qtimer.h>
-#include <Q3GArray>
 #include <kvbox.h>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part

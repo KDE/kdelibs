@@ -29,7 +29,6 @@
 #include <qcolor.h>
 #include <qrect.h>
 #include <assert.h>
-#include <q3valuelist.h>
 
 #include <kdebug.h>
 #include <kglobal.h>

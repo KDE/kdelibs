@@ -40,7 +40,6 @@
 
 #include <qtimer.h>
 #include <qpointer.h>
-#include <q3valuelist.h>
 #include <q3ptrlist.h>
 #include <qdir.h>
 #include <qeventloop.h>

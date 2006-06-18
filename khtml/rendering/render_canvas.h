@@ -26,7 +26,6 @@
 #include "render_block.h"
 
 class KHTMLView;
-class Q3ScrollView;
 
 namespace khtml {
 

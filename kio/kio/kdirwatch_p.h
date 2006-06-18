@@ -4,10 +4,8 @@
  * because KDirWatchPrivate has signals and slots
  */
 
-#ifndef _KDIRWATCH_P_H
-#define _KDIRWATCH_P_H
-
-#include <q3intdict.h>
+#ifndef KDIRWATCH_P_H
+#define KDIRWATCH_P_H
 
 #ifdef HAVE_FAM
 #include <limits.h>

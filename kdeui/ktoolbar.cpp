@@ -26,11 +26,6 @@
 
 #include <config.h>
 
-#ifdef KDE_USE_FINAL
-#undef Always
-#include <q3dockwindow.h>
-#endif
-
 #include <string.h>
 
 #include <QMouseEvent>

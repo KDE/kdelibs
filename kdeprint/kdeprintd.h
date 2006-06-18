@@ -23,7 +23,6 @@
 #include <kdedmodule.h>
 #include <qlist.h>
 #include <qstringlist.h>
-#include <q3ptrdict.h>
 #include <qpointer.h>
 #include <qhash.h>
 #include <dbus/qdbus.h>

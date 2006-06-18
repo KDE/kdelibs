@@ -26,7 +26,7 @@
 #include "rendering/enumerate.h"
 
 #include <qstring.h>
-#include <q3valuelist.h>
+#include <qlist.h>
 
 namespace khtml {
 

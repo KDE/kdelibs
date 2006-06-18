@@ -10,7 +10,6 @@
 #include "helpwindow.h"
 #include <kapplication.h>
 #include <qwindowsstyle.h>
-#include <q3stylesheet.h>
 #include <stdlib.h>
 #include <QDesktopWidget>
 #include <kcmdlineargs.h>

@@ -11,7 +11,6 @@
 #include "richpage.h"
 #include <qstatusbar.h>
 #include <qpixmap.h>
-#include <q3popupmenu.h>
 #include <kmenubar.h>
 #include <ktoolbar.h>
 #include <kstatusbar.h>

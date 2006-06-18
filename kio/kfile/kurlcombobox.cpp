@@ -17,7 +17,6 @@
 */
 
 #include <qdir.h>
-#include <q3listbox.h>
 
 #include <kdebug.h>
 #include <kglobal.h>

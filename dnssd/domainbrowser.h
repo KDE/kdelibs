@@ -22,7 +22,6 @@
 #define DNSSDDOMAINBROWSER_H
 
 #include <qobject.h>
-#include <q3dict.h>
 #include <dnssd/remoteservice.h>
 
 // KIPC message ID used by kcm module to signal change in browsing domains list

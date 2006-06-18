@@ -26,7 +26,6 @@
 
 #include <kdelibs_export.h>
 #include <kprocess.h>
-#include <q3cstring.h>
 
 /**
  * @short A class for invoking a Java VM

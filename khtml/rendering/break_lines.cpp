@@ -1,7 +1,6 @@
 #include <break_lines.h>
 #include <klibloader.h>
 #include <qtextcodec.h>
-#include <q3cleanuphandler.h>
 #include <stdio.h>
 #include <config.h>
 

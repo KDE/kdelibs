@@ -37,7 +37,6 @@
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qtimer.h>
-#include <q3dict.h>
 
 namespace KSpell2
 {

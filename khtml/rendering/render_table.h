@@ -28,7 +28,6 @@
 #define RENDER_TABLE_H
 
 #include <qcolor.h>
-#include <q3ptrvector.h>
 #include <QVector>
 
 #include "rendering/render_box.h"

@@ -30,7 +30,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <q3ptrlist.h>
 
 class KJavaProcessPrivate
 {

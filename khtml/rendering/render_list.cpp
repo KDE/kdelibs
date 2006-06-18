@@ -37,7 +37,6 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <q3valuelist.h>
 
 //#define BOX_DEBUG
 

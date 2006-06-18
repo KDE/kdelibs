@@ -19,7 +19,6 @@
 
 #include "ksettings/dispatcher.h"
 
-#include <q3strlist.h>
 #include <q3signal.h>
 
 #include <kstaticdeleter.h>

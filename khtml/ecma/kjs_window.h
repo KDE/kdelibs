@@ -26,7 +26,6 @@
 #include <qpointer.h>
 #include <qmap.h>
 #include <q3ptrlist.h>
-#include <q3valuelist.h>
 #include <QList>
 #include <qdatetime.h>
 

@@ -29,10 +29,7 @@
 #include "html/html_imageimpl.h"
 #include "dom/html_element.h"
 
-#include <q3valuelist.h>
 #include <q3ptrlist.h>
-#include <q3cstring.h>
-
 
 class KHTMLView;
 class QTextCodec;

@@ -28,7 +28,6 @@
 #include <qmap.h>
 #include <q3ptrdict.h>
 #include <qstringlist.h>
-#include <q3cstring.h>
 #include <qpixmap.h>
 
 #include "kdelibs_export.h"

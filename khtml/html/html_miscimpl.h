@@ -23,7 +23,6 @@
 #ifndef HTML_MISCIMPL_H
 #define HTML_MISCIMPL_H
 
-#include <q3valuelist.h>
 #include "html_elementimpl.h"
 #include "misc/shared.h"
 

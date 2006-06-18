@@ -26,7 +26,6 @@
 class KMIconView;
 class KMListView;
 class KMPrinter;
-class Q3IconViewItem;
 
 class KMPrinterView : public QStackedWidget
 {

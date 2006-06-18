@@ -45,7 +45,6 @@
 #include <qregion.h>
 #include <q3ptrstack.h>
 #include <qimage.h>
-#include <q3pointarray.h>
 
 using namespace DOM;
 using namespace khtml;

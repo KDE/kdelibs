@@ -47,7 +47,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qpushbutton.h>
 #include <qradiobutton.h>
 #include <qshortcut.h>
-#include <Q3VButtonGroup>
 
 #ifndef QT_NO_TOOLTIP
 #include <qtooltip.h>

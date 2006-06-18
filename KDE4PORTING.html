@@ -661,8 +661,8 @@ cg.readXXX("entry name");
 <H4>KDialogBase</H4>
 <ul>
 <li>Deprecated. Use KDialog or KPageDialog instead.</li>
-<p>If the KDialogBase is Swallow or Plain mode you should replace it with KDialog, for
-all other modes use KPageDialog</p>
+<li>If the KDialogBase is Swallow or Plain mode you should replace it with KDialog, for
+all other modes use KPageDialog
 <pre>
 Replace
 
@@ -682,7 +682,8 @@ replace with
   KVBox *mainWidget = new KVBox( this );
   setMainWidget( mainWidget );
 </pre>
-<p>If you use a KPageDialog, the following steps must be taken...</p>
+</li>
+<li>If you use a KPageDialog, the following steps must be taken...
 <pre>
 Replace ctor
 
@@ -708,11 +709,12 @@ replace with
   item-&gt;setHeader( i18n( "My Header" ) );
   item-&gt;setIcon( KIcon( "image" ) );
 </pre>
+</li>
 </ul>
 
 <H4>KDialog</H4>
 <ul>
-<li>Simplified ctor.</li>
+<li>Simplified ctor.
 <pre>
 The following ctor
 
@@ -728,6 +730,7 @@ should be rewritten as
   dlg.setDefaultButton( Ok );
   dlg.enableButtonSeparator( false );
 </pre>
+</li>
 <li>setButtonMask() -&gt; setButtons() and setButtonGuiItem()</li>
 <li>setButtonBoxOrientation() -&gt; setButtonsOrientation()</li>
 <li>setButtonOKText, setButtonApplyText , setButtonCancelText  -&gt; setButtonText( ButtonCode, const QString&amp; )</li>
@@ -1006,7 +1009,6 @@ There's no need to do anything in mousePressEvent/mouseReleaseEvent/keyPressEven
 <h4>KGradientSelector</h4>
 <ul>
 <li>Reversed the value range, if orientation is horizontal. Now minimum is on the left and maximum on the right side.</li>
-</li>
 </ul>
 
 <H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
@@ -1093,8 +1095,8 @@ so that kprotocolinfo itself could be moved to kdecore:
     <li>etc.</li>
   </ul>
 </li>
-The deprecated methods taking a QString protocol as input have been removed, make sure
-to pass a KUrl to most methods instead.
+<li>The deprecated methods taking a QString protocol as input have been removed, make sure
+to pass a KUrl to most methods instead.</li>
 </ul>
 
 <H4>KRun</H4>

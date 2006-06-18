@@ -26,7 +26,6 @@
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
-#include <q3ptrlist.h>
 #include <kstaticdeleter.h>
 #include <kapplication.h>
 #include <kconfig.h>
