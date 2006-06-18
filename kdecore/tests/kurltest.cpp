@@ -1240,6 +1240,12 @@ void KUrlTest::testBrokenStuff()
   weird = "http://[strange;hostname]/";
   QVERIFY( !weird.isValid() );
 
+  weird = "ssh://user@machine?cmd='echo $HOSTNAME'";
+  QVERIFY( weird.isValid() );
+  QVERIFY( weird.host() == QString("machine") );
+  //qDebug("%s",qPrintable( weird.query() ) );
+  QVERIFY( weird.queryItem("cmd") == QString("'echo $HOSTNAME'") );
+
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
 #if QT_VERSION < 0x040200
