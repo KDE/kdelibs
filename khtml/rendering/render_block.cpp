@@ -1221,7 +1221,7 @@ void RenderBlock::clearPageBreak(RenderObject* child, int pageBottom)
         // change (because it has more available line width).
         // So go ahead and mark the item as dirty.
         child->setChildNeedsLayout(true);
-    if (child->hasFloats())
+    if (!child->flowAroundFloats() && child->hasFloats())
         child->markAllDescendantsWithFloatsForLayout();
     if (child->containsPageBreak())
         child->setNeedsLayout(true);
@@ -2420,7 +2420,7 @@ bool RenderBlock::containsFloat(RenderObject* o) const
 
 void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove)
 {
-    setNeedsLayout(true);
+    setChildNeedsLayout(true);
 
     if (floatToRemove)
         removeFloatingObject(floatToRemove);
