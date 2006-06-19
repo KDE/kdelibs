@@ -753,7 +753,7 @@ void UIServer::slotApplyConfig()
    listProgress->writeSettings();
 }
 
-int UIServer::newJob( QByteArray observerAppId, bool showProgress )
+int UIServer::newJob( const QString &observerAppId, bool showProgress )
 {
   kDebug(7024) << "UIServer::newJob observerAppId=" << observerAppId << ". "
             << "Giving id=" << s_jobId+1 << endl;
@@ -770,7 +770,7 @@ int UIServer::newJob( QByteArray observerAppId, bool showProgress )
 
   bool show = !m_bShowList && showProgress;
 
-  ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId, s_jobId, show );
+  ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId.toLatin1(), s_jobId, show );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
            SLOT( slotJobCanceled( ProgressItem* ) ) );
 

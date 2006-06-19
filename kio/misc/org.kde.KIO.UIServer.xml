@@ -124,10 +124,7 @@
       <arg name="url" type="s" direction="in"/>
       <arg name="data" type="a{ss}" direction="in"/>
       <arg name="mainwindow" type="x" direction="in"/>
-      <arg name="ok" type="b" direction="out"/>
-      <arg name="send" type="b" direction="out"/>
-      <arg name="save" type="b" direction="out"/>
-      <arg name="choice" type="s" direction="out"/>
+      <annotation name="com.trolltech.QtDBus.QtTypeName.In1" value="QMap&lt;QString,QString>"/>
     </method>
     <method name="showSSLCertDialog">
       <arg name="host" type="s" direction="in"/>

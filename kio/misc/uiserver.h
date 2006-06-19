@@ -232,7 +232,7 @@ public:
    *   other things, like SSL dialogs.
    * @return the job id
    */
-  int newJob( QByteArray appId, bool showProgress );
+  int newJob( const QString &appId, bool showProgress );
 
   void jobFinished( int id );
 
