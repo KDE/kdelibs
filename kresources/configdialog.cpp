@@ -110,7 +110,7 @@ void ConfigDialog::setInEditMode( bool value )
 
 void ConfigDialog::slotNameChanged( const QString &text)
 {
-  enableButtonOK( !text.isEmpty() );
+  enableButtonOk( !text.isEmpty() );
 }
 
 void ConfigDialog::setReadOnly( bool value )

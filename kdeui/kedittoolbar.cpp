@@ -407,7 +407,7 @@ KEditToolbar::~KEditToolbar()
 
 void KEditToolbar::acceptOK(bool b)
 {
-    enableButtonOK(b);
+    enableButtonOk(b);
     d->m_accept = b;
 }
 

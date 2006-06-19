@@ -575,9 +575,9 @@ void KPasswordDialog::enableOkBtn()
       const int minPasswordLength = minimumPasswordLength();
 
       if ((int) pass.length() < minPasswordLength) {
-          enableButtonOK(false);
+          enableButtonOk(false);
       } else {
-          enableButtonOK( match );
+          enableButtonOk( match );
       }
 
       if ( match && d->allowEmptyPasswords && m_pEdit->password()[0] == 0 ) {

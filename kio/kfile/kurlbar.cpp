@@ -1013,7 +1013,7 @@ KUrlBarItemDialog::~KUrlBarItemDialog()
 
 void KUrlBarItemDialog::urlChanged(const QString & text )
 {
-    enableButtonOK( !text.isEmpty() );
+    enableButtonOk( !text.isEmpty() );
 }
 
 KUrl KUrlBarItemDialog::url() const

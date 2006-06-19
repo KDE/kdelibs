@@ -125,7 +125,7 @@ KXmlCommandSelector::KXmlCommandSelector(bool canBeNull, QWidget *parent, KDialo
 	l3->addWidget(m_edit);
 
 	if ( dlg )
-		connect( this, SIGNAL( commandValid( bool ) ), dlg, SLOT( enableButtonOK( bool ) ) );
+		connect( this, SIGNAL( commandValid( bool ) ), dlg, SLOT( enableButtonOk( bool ) ) );
 
 	loadCommands();
 }

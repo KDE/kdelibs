@@ -470,7 +470,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * @param state @p true enables the button.
      */
-    void enableButtonOK( bool state );
+    void enableButtonOk( bool state );
 
     /**
      * Enable or disable (gray out) the Apply button.

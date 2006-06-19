@@ -80,7 +80,7 @@ void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
     connect( urlRequester_->lineEdit(), SIGNAL(textChanged(const QString&)),
              SLOT(slotTextChanged(const QString&)) );
     bool state = !urlName.isEmpty();
-    enableButtonOK( state );
+    enableButtonOk( state );
     enableButton( KDialog::User1, state );
     /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
@@ -94,7 +94,7 @@ void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
 void KUrlRequesterDlg::slotTextChanged(const QString & text)
 {
     bool state = !text.trimmed().isEmpty();
-    enableButtonOK( state );
+    enableButtonOk( state );
     enableButton( KDialog::User1, state );
 }
 

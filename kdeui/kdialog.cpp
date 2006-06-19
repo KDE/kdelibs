@@ -778,7 +778,7 @@ bool KDialog::isButtonEnabled( ButtonCode id ) const
   return false;
 }
 
-void KDialog::enableButtonOK( bool state )
+void KDialog::enableButtonOk( bool state )
 {
   enableButton( Ok, state );
 }

@@ -239,7 +239,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 
     d->findStrings = findStrings;
     m_find->setFocus();
-    enableButtonOK( !pattern().isEmpty() );
+    enableButtonOk( !pattern().isEmpty() );
     if (forReplace)
     {
       setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Replace"), QString(),
@@ -292,7 +292,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 
 void KFindDialog::textSearchChanged( const QString & text)
 {
-    enableButtonOK( !text.isEmpty() );
+    enableButtonOk( !text.isEmpty() );
 }
 
 void KFindDialog::showEvent( QShowEvent *e )

@@ -1145,7 +1145,7 @@ void KFilePropsPlugin::slotIconChanged()
 
 void KFilePropsPlugin::nameFileChanged(const QString &text )
 {
-  properties->enableButtonOK(!text.isEmpty());
+  properties->enableButtonOk(!text.isEmpty());
   emit changed();
 }
 

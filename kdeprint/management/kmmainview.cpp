@@ -633,7 +633,7 @@ void KMMainView::slotConfigure()
 				dlg.setDriver(driver);
 				// disable OK button for remote printer (read-only dialog)
 				if (m_current->isRemote())
-					dlg.enableButtonOK(false);
+					dlg.enableButtonOk(false);
 				if (dlg.exec())
 					if (!m_manager->savePrinterDriver(m_current,driver))
 						showErrorMsg(i18n("Unable to modify settings of printer %1.", m_current->printerName()));
