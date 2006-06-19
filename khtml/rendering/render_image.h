@@ -56,7 +56,7 @@ public:
 
     bool complete() const;
 
-    CachedObject *contentObject() { return image; }
+    CachedObject *contentObject() { return m_cachedImage; }
     void setContentObject( CachedObject* );
 
     // hook to keep RendeObject::m_inline() up to date
@@ -91,8 +91,8 @@ private:
     // text to display as long as the image isn't available
     DOM::DOMString alt;
 
-    CachedImage *image;
-    CachedImage *oimage;
+    CachedImage *m_cachedImage;
+    CachedImage *m_oldImage;
 
     bool berrorPic : 1;
     bool bUnfinishedImageFrame :1;
