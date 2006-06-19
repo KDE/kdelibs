@@ -23,7 +23,7 @@
 
 namespace
 {
-    // Global header
+    // Global header (see http://www.daubnet.com/formats/ICO.html)
     struct IcoHeader
     {
         enum Type { Icon = 1, Cursor };
@@ -400,19 +400,11 @@ bool ICOHandler::canRead(QIODevice *device)
         return false;
     }
 
-    qint64 oldPos = device->pos();
+    const qint64 oldPos = device->pos();
 
     char head[8];
     qint64 readBytes = device->read(head, sizeof(head));
-    if (readBytes != sizeof(head)) {
-        if (device->isSequential()) {
-            while (readBytes > 0)
-                device->ungetChar(head[readBytes-- - 1]);
-        } else {
-            device->seek(oldPos);
-        }
-        return false;
-    }
+    const bool readOk = readBytes == sizeof(head);
 
     if (device->isSequential()) {
         while (readBytes > 0)
@@ -421,8 +413,12 @@ bool ICOHandler::canRead(QIODevice *device)
         device->seek(oldPos);
     }
 
-    return (qstrncmp(head, "\001\001\001\001", 8) == 0 ||
-            qstrncmp(head, "\001\001\002\001", 8) == 0);
+    if ( !readOk )
+        return false;
+
+    return head[2] == '\001' && head[3] == '\000' && // type should be 1
+        ( head[6] == 16 || head[6] == 32 || head[6] == 64 ) && // width can only be one of those
+        ( head[7] == 16 || head[7] == 32 || head[7] == 64 );   // same for height
 }
 
 class ICOPlugin : public QImageIOPlugin
