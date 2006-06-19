@@ -20,6 +20,9 @@
 #include <QtCore/QVariant>
 #include <dbus/qdbus.h>
 
+// HAND_EDIT:
+Q_DECLARE_METATYPE(QList<int>)
+
 /*
  * Proxy class for interface org.kde.KCookieServer
  */
