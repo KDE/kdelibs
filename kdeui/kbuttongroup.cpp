@@ -30,7 +30,7 @@ class KButtonGroup::Private
 {
   public:
     Private( KButtonGroup* q )
-      : clickedMapper( q ), pressedMapper( q ), releasedMapper( q ),
+      : clickedMapper(), pressedMapper(), releasedMapper(),
         currentId( -1 ), nextId( 0 )
     {
       connect( &clickedMapper, SIGNAL( mapped( int ) ), q, SLOT( slotClicked( int ) ) );
@@ -59,6 +59,9 @@ KButtonGroup::~KButtonGroup()
 
 void KButtonGroup::setSelected( int id )
 {
+  if ( !testAttribute( Qt::WA_WState_Polished ) )
+    ensurePolished();
+  
   QHash<QObject*, int>::Iterator it = d->btnMap.begin();
   QHash<QObject*, int>::Iterator itEnd = d->btnMap.end();
   QRadioButton* radio = 0;
