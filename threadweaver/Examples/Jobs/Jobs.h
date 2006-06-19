@@ -18,6 +18,8 @@ $Id: Jobs.h 30 2005-08-16 16:16:04Z mirko $
 #define Jobs_H
 
 #include <QWidget>
+
+#include <Job.h>
 #include <ThreadWeaver.h>
 
 #include "ui_JobsBase.h"

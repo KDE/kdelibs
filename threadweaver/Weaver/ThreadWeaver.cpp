@@ -245,8 +245,6 @@ namespace ThreadWeaver {
       dependencies.</p>
     */
 
-    Weaver* Weaver::m_instance;
-
     Weaver::Weaver ( QObject* parent, int inventoryMin, int inventoryMax ) :
         WeaverInterface( parent ) { m_weaverinterface = makeWeaverImpl (
         inventoryMin, inventoryMax ); connect ( m_weaverinterface, SIGNAL (
@@ -277,16 +275,22 @@ namespace ThreadWeaver {
 
     Weaver* Weaver::instance()
     {
-	if (m_instance == 0)
+        /** The application-global Weaver instance.
+
+        This  instance will only be created if this method is actually called
+        in the lifetime of the application. */
+	static Weaver* s_instance;
+
+	if ( s_instance == 0 )
 	{   // we try to avoid the expensive mutex-lock operation if possible:
             static QMutex mutex;
             QMutexLocker l(&mutex);
-            if ( m_instance == 0 )
+            if ( s_instance == 0 )
             {
-                m_instance = new Weaver();
+                s_instance = new Weaver();
             }
         }
-	return m_instance;
+	return s_instance;
     }
 
     void Weaver::enqueue (Job* j)

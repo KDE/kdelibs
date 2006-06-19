@@ -19,11 +19,14 @@ extern "C" {
 #include <unistd.h>
 }
 
-#include <QCoreApplication>
-#include <ThreadWeaver.h>
-#include <Thread.h>
-#include <DebuggingAids.h>
 #include <QtDebug>
+#include <QCoreApplication>
+
+#include <Job.h>
+#include <Thread.h>
+#include <ThreadWeaver.h>
+
+#include <DebuggingAids.h>
 
 using namespace ThreadWeaver;
 

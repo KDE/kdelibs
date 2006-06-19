@@ -18,15 +18,17 @@
 #ifndef THREADWEAVER_H
 #define THREADWEAVER_H
 
-#include <QObject>
+// #include <Job.h>
+// #include <State.h>
+// #include <DebuggingAids.h>
 
-#include <Job.h>
-#include <State.h>
-#include <DebuggingAids.h>
+#include <QObject>
 #include "WeaverInterface.h"
 
 namespace ThreadWeaver {
 
+    class Job;
+    class State;
     class WeaverObserver;
 
     /** The Weaver class acts as a facade to the WeaverImpl class.
@@ -80,11 +82,6 @@ namespace ThreadWeaver {
         void requestAbort();
     protected:
         WeaverInterface *m_weaverinterface;
-	/** The application-global Weaver instance.
-
-	    This  instance will only be created if this method is actually called
-	    in the lifetime of the application. */
-	static Weaver *m_instance;
         /** The factory method to create the actual Weaver implementation.
             Overload this method to use a different or adapted implementation.
             */
