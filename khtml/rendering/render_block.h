@@ -130,6 +130,9 @@ public:
     int getClearDelta(RenderObject *child);
     virtual void markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove = 0);
 
+    // FIXME: containsFloats() should not return true if the floating objects list
+    // is empty. However, layoutInlineChildren() relies on the current behavior.
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=7395#c3
     virtual bool hasFloats() const { return m_floatingObjects!=0; }
     virtual bool containsFloat(RenderObject* o) const;
 
@@ -148,7 +151,7 @@ public:
     int lowestAbsolutePosition() const;
     int leftmostAbsolutePosition() const;
     int rightmostAbsolutePosition() const;
-    
+
     virtual bool absolutePosition(int &xPos, int &yPos, bool=false);
 
     int rightOffset() const;

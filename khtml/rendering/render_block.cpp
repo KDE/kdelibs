@@ -2429,7 +2429,7 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
     if (!childrenInline()) {
         for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
             if (isBlockFlow() && !child->isFloatingOrPositioned() &&
-                (floatToRemove ? child->containsFloat(floatToRemove) : child->hasFloats()))
+                ((floatToRemove ? child->containsFloat(floatToRemove) : child->hasFloats()) || child->usesLineWidth()))
                 child->markAllDescendantsWithFloatsForLayout(floatToRemove);
         }
     }
