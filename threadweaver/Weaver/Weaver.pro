@@ -24,9 +24,6 @@ CONFIG += dll warn_on thread release debug
 VERSION = 0.4.0
 TARGET = ThreadWeaver
 
-# CONFIG(debug, debug|release) {
-# 	DEFINES += DEBUG
-# } else {
-#         DEFINES += RELEASE
-# }
-
+test.target=test
+test.commands= cd .. && make test
+QMAKE_EXTRA_TARGETS += test
