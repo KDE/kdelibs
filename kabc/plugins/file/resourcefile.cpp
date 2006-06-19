@@ -36,9 +36,6 @@
 #include <klocale.h>
 #include <ksavefile.h>
 #include <kstandarddirs.h>
-#include <kurl.h>
-#include <jobclasses.h>
-#include <kio/netaccess.h>
 
 #include "formatfactory.h"
 #include "resourcefileconfig.h"
@@ -175,23 +172,30 @@ bool ResourceFile::doOpen()
         if ( backup.size() != 0 )
         {
           kdDebug() << "Restoring backup " << i << endl;
-          KURL src, dest;
-          src.setPath( mFileName + "__" + QString::number(i) );
-          dest.setPath( mFileName );
+          const QString src = mFileName + "__" + QString::number(i);
+          const QString dest = mFileName;
 
-          KIO::DeleteJob* job = KIO::del( dest, false, false ); 
-          KIO::NetAccess::synchronousRun( job, 0);
+          // remove dest
+          QFile::remove( dest );
 
-          KIO::CopyJob* job2 = KIO::copy( src, dest, false ); 
-          KIO::NetAccess::synchronousRun( job2, 0);
+          // copy src to dest
+          if ( backup.open( IO_ReadOnly ) ) {
+            const QByteArray data = backup.readAll();
 
-          backup.close();
+            QFile out( dest );
+            if ( out.open( IO_WriteOnly ) ) {
+              out.writeBlock( data );
+              out.close();
+            }
+
+            backup.close();
+          }
           return true; 
         }
-        backup.close();
       }
       return true;
     }
+
     bool ok = mFormat->checkFormat( &file );
     file.close();
 
@@ -243,20 +247,33 @@ bool ResourceFile::save( Ticket * )
   // Only do the logrotate dance when the __0 file is not 0 bytes.
   QFile file( mFileName + "__0" );
   if ( file.size() != 0 ) {
-    KURL last;
-    last.setPath( mFileName + "__20" );
+    const QString last = mFileName + "__20";
     kdDebug() << "deleting " << last << endl;
-    KIO::DeleteJob* job = KIO::del( last, false, false ); 
-    KIO::NetAccess::synchronousRun( job, 0);
+
+    QFile::remove( last );
 
     for (int i=19; i>=0; i--)
     {
-      KURL src, dest;
-      src.setPath( mFileName + "__" + QString::number(i) );
-      dest.setPath( mFileName + "__" + QString::number(i+1) );
+      const QString src = mFileName + "__" + QString::number(i);
+      const QString dest = mFileName + "__" + QString::number(i+1);
       kdDebug() << "moving " << src << " -> " << dest << endl;
-      KIO::SimpleJob* job = KIO::rename( src, dest, false ); 
-      KIO::NetAccess::synchronousRun( job, 0);
+
+      // copy src to dest
+      QFile in( src );
+      if ( in.open( IO_ReadOnly ) ) {
+        const QByteArray data = in.readAll();
+
+        QFile out( dest );
+        if ( out.open( IO_WriteOnly ) ) {
+          out.writeBlock( data );
+          out.close();
+        }
+
+        in.close();
+      }
+
+      // remove src
+      QFile::remove( src );
     }
   } else
     kdDebug() << "Not starting logrotate __0 is 0 bytes." << endl;
