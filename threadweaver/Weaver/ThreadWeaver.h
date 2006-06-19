@@ -18,10 +18,6 @@
 #ifndef THREADWEAVER_H
 #define THREADWEAVER_H
 
-// #include <Job.h>
-// #include <State.h>
-// #include <DebuggingAids.h>
-
 #include <QObject>
 #include "WeaverInterface.h"
 

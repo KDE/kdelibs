@@ -245,13 +245,14 @@ namespace ThreadWeaver {
       dependencies.</p>
     */
 
-    Weaver::Weaver ( QObject* parent, int inventoryMin, int inventoryMax ) :
-        WeaverInterface( parent ) { m_weaverinterface = makeWeaverImpl (
-        inventoryMin, inventoryMax ); connect ( m_weaverinterface, SIGNAL (
-        finished() ), SIGNAL ( finished() ) ); connect ( m_weaverinterface,
-        SIGNAL ( suspended() ), SIGNAL ( suspended() ) ); connect (
-        m_weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job*
-        ) ) ); }
+    Weaver::Weaver ( QObject* parent, int inventoryMin, int inventoryMax )
+        : WeaverInterface( parent )
+    {
+        m_weaverinterface = makeWeaverImpl ( inventoryMin, inventoryMax );
+        connect ( m_weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
+        connect ( m_weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
+        connect ( m_weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
+    }
 
     Weaver::~Weaver()
     {
