@@ -1346,10 +1346,34 @@ void Cache::clear()
     cache->setAutoDelete( true );
 
 #ifndef NDEBUG
-    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
-        assert(it.current()->canDelete());
-    for (freeList->first(); freeList->current(); freeList->next())
-        assert(freeList->current()->canDelete());
+    bool crash = false;
+    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it) {
+        if (!it.current()->canDelete()) {
+            kdDebug( 6060 ) << " Object in cache still linked to" << endl;
+            kdDebug( 6060 ) << " -> URL: " << it.current()->url() << endl;
+            kdDebug( 6060 ) << " -> #clients: " << it.current()->count() << endl;
+            crash = true;
+//         assert(it.current()->canDelete());
+        }
+    }
+    for (freeList->first(); freeList->current(); freeList->next()) {
+        if (!freeList->current()->canDelete()) {
+            kdDebug( 6060 ) << " Object in freelist still linked to" << endl;
+            kdDebug( 6060 ) << " -> URL: " << freeList->current()->url() << endl;
+            kdDebug( 6060 ) << " -> #clients: " << freeList->current()->count() << endl;
+            crash = true;
+            /*
+            QPtrDictIterator<CachedObjectClient> it(freeList->current()->m_clients);
+            for(;it.current(); ++it) {
+                if (dynamic_cast<RenderObject*>(it.current())) {
+                    kdDebug( 6060 ) << " --> RenderObject" << endl;
+                } else
+                    kdDebug( 6060 ) << " --> Something else" << endl;
+            }*/
+        }
+//         assert(freeList->current()->canDelete());
+    }
+    assert(!crash);
 #endif
 
     delete cache; cache = 0;
