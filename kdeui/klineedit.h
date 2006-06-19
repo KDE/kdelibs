@@ -151,6 +151,8 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
     Q_PROPERTY( bool enableSqueezedText READ isSqueezedTextEnabled WRITE setEnableSqueezedText )
+    // @since 3.5.4
+    Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
 public:
 
@@ -325,6 +327,20 @@ public:
      * @since 3.4
     */
     void setCompletionBox( KCompletionBox *box );
+
+    /**
+     * This makes the line edit display a grayed-out hinting text as long as
+     * the user didn't enter any text. It is often used as indication about
+     * the purpose of the line edit.
+     * @since 3.5.4
+    */
+    void setClickMessage( const QString &msg );
+
+    /**
+     * @return the message set with setClickMessage
+     * @since 3.5.4
+    */
+    QString clickMessage() const;
 
 signals:
 
@@ -524,6 +540,13 @@ protected:
     virtual QPopupMenu *createPopupMenu();
 
     /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See QFrame::drawContents().
+    */
+    virtual void drawContents( QPainter *p );
+
+    /**
     * Re-implemented to handle URI drops.
     *
     * See QLineEdit::dropEvent().
@@ -559,6 +582,13 @@ protected:
     * See QLineEdit::focusInEvent().
     */
     virtual void focusInEvent( QFocusEvent* );
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See QLineEdit::focusOutEvent().
+    */
+    virtual void focusOutEvent( QFocusEvent* );
 
     /**
      * Whether in current state text should be auto-suggested

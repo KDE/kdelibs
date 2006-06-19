@@ -26,6 +26,7 @@
 */
 
 #include <qclipboard.h>
+#include <qpainter.h>
 #include <qtimer.h>
 
 #include <kconfig.h>
@@ -93,6 +94,9 @@ public:
     BackgroundMode bgMode;
     QString squeezedText;
     KCompletionBox *completionBox;
+
+    QString clickMessage;
+    bool drawClickMsg:1;
 };
 
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
@@ -139,6 +143,8 @@ void KLineEdit::init()
       d->previousHighlightedTextColor=p.color(QPalette::Normal,QColorGroup::HighlightedText);
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QColorGroup::Highlight);
+
+    d->drawClickMsg = false;
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -303,6 +309,9 @@ bool KLineEdit::isSqueezedTextEnabled() const
 
 void KLineEdit::setText( const QString& text )
 {
+    d->drawClickMsg = text.isEmpty() && !d->clickMessage.isEmpty();
+    update();
+
     if( d->enableSqueezedText && isReadOnly() )
     {
         d->squeezedText = text;
@@ -939,8 +948,25 @@ void KLineEdit::completionMenuActivated( int id )
     }
 }
 
+void KLineEdit::drawContents( QPainter *p )
+{
+    QLineEdit::drawContents( p );
+
+    if ( d->drawClickMsg && !hasFocus() ) {
+        QPen tmp = p->pen();
+        p->setPen( palette().color( QPalette::Disabled, QColorGroup::Text ) );
+        QRect cr = contentsRect();
+
+        // Add two pixel margin on the left side
+        cr.rLeft() += 3;
+        p->drawText( cr, AlignAuto | AlignVCenter, d->clickMessage );
+        p->setPen( tmp );
+    }
+}
+
 void KLineEdit::dropEvent(QDropEvent *e)
 {
+    d->drawClickMsg = false;
     KURL::List urlList;
     if( d->handleURLDrops && KURLDrag::decode( e, urlList ) )
     {
@@ -1298,6 +1324,11 @@ QString KLineEdit::originalText() const
 
 void KLineEdit::focusInEvent( QFocusEvent* ev)
 {
+    if ( d->drawClickMsg ) {
+        d->drawClickMsg = false;
+        update();
+    }
+
     // Don't selectAll() in QLineEdit::focusInEvent if selection exists
     if ( ev->reason() == QFocusEvent::Tab && inputMask().isNull() && hasSelectedText() )
         return;
@@ -1305,10 +1336,31 @@ void KLineEdit::focusInEvent( QFocusEvent* ev)
     QLineEdit::focusInEvent(ev);
 }
 
+void KLineEdit::focusOutEvent( QFocusEvent* ev)
+{
+    if ( text().isEmpty() && !d->clickMessage.isEmpty() ) {
+        d->drawClickMsg = true;
+        update();
+    }
+    QLineEdit::focusOutEvent( ev );
+}
+
 bool KLineEdit::autoSuggest() const
 {
     return d->autoSuggest;
 }
+
+void KLineEdit::setClickMessage( const QString &msg )
+{
+    d->clickMessage = msg;
+    update();
+}
+
+QString KLineEdit::clickMessage() const
+{
+    return d->clickMessage;
+}
+
 
 void KLineEdit::virtual_hook( int id, void* data )
 { KCompletionBase::virtual_hook( id, data ); }
