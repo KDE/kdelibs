@@ -60,6 +60,7 @@ Comment[uz]=OASIS OpenDocument электрон жадвал намунаси
 Comment[vi]=Biểu mẫu bảng tính OpenDocument OASIS
 Comment[zh_CN]=OASIS OpenDocument 电子表格模板
 Comment[zh_HK]=OASIS OpenDocument 試算表範本
+Comment[zh_TW]=OASIS OpenDocument 試算表樣本
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.ots

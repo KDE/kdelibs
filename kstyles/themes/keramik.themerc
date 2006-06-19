@@ -73,6 +73,7 @@ Comment[uz]=Алфаблендингли услуб
 Comment[vi]=Kiểu dáng hợp nhau anfa.
 Comment[zh_CN]=使用 alpha 混和的风格
 Comment[zh_HK]=一個使用漸變色的佈景
+Comment[zh_TW]=使用 alphablending 的預設風格
 
 [KDE]
 WidgetStyle=Keramik

@@ -60,6 +60,7 @@ Comment[uz]=OpenOffice.org электрон жадвал намунаси
 Comment[vi]=Biểu mẫu bảng tính OpenOffice.org
 Comment[zh_CN]=OpenOffice.org 电子表格模板
 Comment[zh_HK]=OpenOffice.org 試算表範本
+Comment[zh_TW]=OpenOffice.org 試算表樣本
 Icon=spreadsheet
 Type=MimeType
 Patterns=*.stc;*.STC;

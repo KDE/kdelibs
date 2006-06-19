@@ -128,6 +128,7 @@ Comment[tt]=Cıyılu belän beryulı ezli
 Comment[uk]=Також відомий як "Пошук за вводом"
 Comment[vi]=Cũng được biết như là « Tìm kiếm trong khi gõ ».
 Comment[zh_CN]=也称为“即输即搜”
+Comment[zh_TW]=也稱做「即時搜尋」
 X-KDE-Library=ktexteditor_isearch
 ServiceTypes=KTextEditor/Plugin
 Type=Service

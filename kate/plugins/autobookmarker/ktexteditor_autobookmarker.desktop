@@ -110,6 +110,7 @@ Comment[tt]=İstälek açqan çaqta sözgeçkä kileşkän yullarına bitbilgel�
 Comment[uk]=Встановлює закладки на рядках, що відповідають взірцю, під час завантаження документів
 Comment[vi]=Đặt đánh dấu trên các dòng khớp một mẫu nào đó khi tải tài liệu.
 Comment[zh_CN]=文档装入时根据匹配模式自动设置书签
+Comment[zh_TW]=文件載入時以字串比對演算法來設定書籤。
 X-KDE-Library=ktexteditor_autobookmarker
 ServiceTypes=KTextEditor/Plugin
 Type=Service

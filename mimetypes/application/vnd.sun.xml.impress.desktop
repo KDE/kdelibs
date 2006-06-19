@@ -67,6 +67,7 @@ Comment[vi]=Trình diễn OpenOffice.org
 Comment[wa]=Documint di prezintaedje OpenOffice.org
 Comment[zh_CN]=OpenOffice.org 演示文稿
 Comment[zh_HK]=OpenOffice.org 簡報
+Comment[zh_TW]=OpenOffice.org 簡報
 MimeType=application/vnd.sun.xml.impress
 Type=MimeType
 Icon=presentation

@@ -138,6 +138,7 @@ Name[uk]=Смітник: спорожнено
 Name[uz]=Чиқиндилар қутиси бўшатилди
 Name[vi]=Rác: đã đổ
 Name[zh_CN]=回收站：已清空
+Name[zh_TW]=垃圾桶已清空
 Comment=The trash has been emptied
 Comment[af]=Die gemors is leeggemaak
 Comment[bg]=Съдържанието а кошчето е изтрито
@@ -194,6 +195,7 @@ Comment[uk]=Смітник було спорожнено
 Comment[uz]=Чиқиндилар қутиси бўшатилди
 Comment[vi]=Rác đã được đổ.
 Comment[zh_CN]=回收站已被清空
+Comment[zh_TW]=垃圾桶已清空。
 default_presentation=1
 
 [Textcompletion: rotation]
@@ -331,6 +333,7 @@ Comment[uk]=Досягнуто кінець списку співпадань
 Comment[uz]=Мос келадиган элементлар рўйхатининг охири
 Comment[vi]=Mới tới kết thúc của danh sách từ khớp.
 Comment[zh_CN]=已到达匹配项列表的最后
+Comment[zh_TW]=符合條件的列表已經到結尾了。
 default_presentation=1
 
 [Textcompletion: no match]
@@ -469,6 +472,7 @@ Comment[uz]=Мос келадиган тугатиш топилмади
 Comment[vi]=Không tìm thấy.
 Comment[zh_CN]=没有找到匹配的补全项
 Comment[zh_HK]=找不到完全匹配的項目
+Comment[zh_TW]=找不到完全匹配的項目。
 default_presentation=1
 
 [Textcompletion: partial match]
@@ -607,6 +611,7 @@ Comment[uz]=Биттадан кўп мослик топилди
 Comment[vi]=Khớp nhiều từ.
 Comment[zh_CN]=有多于一个的可能匹配项
 Comment[zh_HK]=匹配的可能性多於一個
+Comment[zh_TW]=有多於一個的可能匹配項。
 default_presentation=1
 
 [cannotopenfile]
@@ -909,6 +914,7 @@ Comment[uz]=Дастурнинг ишини якунланишига сабаб�
 Comment[vi]=Gặp lỗi nghiêm trong mà gây ra chương trình thoát.
 Comment[zh_CN]=有一个严重的错误导致程序退出
 Comment[zh_HK]=發生了嚴重的錯誤，導致程式結束
+Comment[zh_TW]=發生了一個嚴重的錯誤導致結束該程式。
 default_presentation=2
 level=4
 
@@ -1050,6 +1056,7 @@ Comment[uz]=Дастурда қандайдир одатдан ташқари ҳ
 Comment[vi]=Có gì đặc biệt đã xảy ra trong chương trình.
 Comment[zh_CN]=程序中发生了特殊情况
 Comment[zh_HK]=程式發生了特殊情況
+Comment[zh_TW]=程式中發生了特殊的情況
 default_presentation=1
 default_sound=KDE_Beep.ogg
 level=1
@@ -1193,6 +1200,7 @@ Comment[uk]=Сталася серйозна помилка, яка може ви
 Comment[uz]=Дастурда муаммоларга олиб келиши мумкин бўлган хато рўй берди
 Comment[vi]=Gặp lỗi trong chương trình, mà có thể gây ra vấn đề.
 Comment[zh_CN]=程序中发生了可能导致问题的错误
+Comment[zh_TW]=程式中發生了一個可能會導致發生問題的錯誤。
 default_presentation=2
 level=2
 
@@ -1342,6 +1350,7 @@ Comment[uz]=Дастурнинг ишини якунланишига сабаб�
 Comment[vi]=Gặp lỗi rất nghiêm trọng mà ít nhất đã gây ra chương trình thoát.
 Comment[zh_CN]=出现了一个非常严重的错误，至少使程序退出
 Comment[zh_HK]=發生了一個很嚴重的錯誤，令程式必須結束
+Comment[zh_TW]=因為發生了一個很嚴重的錯誤，所以該程式必須要結束
 default_presentation=2
 level=8
 [startkde]
@@ -1479,6 +1488,7 @@ Comment[uz]=KDE ишга тушмоқда
 Comment[vi]=KDE đang khởi chạy.
 Comment[zh_CN]=KDE 正在启动
 Comment[zh_HK]=KDE 正在啟動
+Comment[zh_TW]=KDE 正在啟動
 default_presentation=1
 default_sound=KDE_Startup_1.ogg
 
@@ -1619,6 +1629,7 @@ Comment[uz]=KDE ишини якунламоқда
 Comment[vi]=KDE đang thoát.
 Comment[zh_CN]=KDE 正在退出
 Comment[zh_HK]=KDE 正在結束
+Comment[zh_TW]=KDE 正在結束
 default_presentation=1
 default_sound=KDE_Logout_3.ogg
 
@@ -1847,6 +1858,7 @@ Name[vi]=Thông điệp thông tin
 Name[wa]=Messaedje d' informåcion
 Name[zh_CN]=信息性消息
 Name[zh_HK]=一般訊息
+Name[zh_TW]=資訊訊息
 Comment=An information message is being shown
 Comment[af]='n Informasie boodskap word vertoon
 Comment[ar]=تظهر الآن رسالة معلوماتية
@@ -1916,6 +1928,7 @@ Comment[vi]=Một thông điệp thông in đang được hiển thị.
 Comment[wa]=On messaedje d' informåcion est håyné
 Comment[zh_CN]=正在显示信息性消息
 Comment[zh_HK]=顯示一般訊息
+Comment[zh_TW]=資訊訊息已顯示
 default_sound=KDE_Chimes_2.ogg
 default_presentation=65
 nopresentation=18
@@ -1991,6 +2004,7 @@ Name[vi]=Thông điệp cảnh báo
 Name[wa]=Messaedje d' adviertixhmint
 Name[zh_CN]=警告消息
 Name[zh_HK]=警告訊息
+Name[zh_TW]=警告訊息
 Comment=A warning message is being shown
 Comment[af]='n Waarskuwing boodskap word vertoon
 Comment[ar]=تظهر الآن رسالة تحذيرية
@@ -2135,6 +2149,7 @@ Name[vi]=Thông điệp tới hạn
 Name[wa]=Messaedje critike
 Name[zh_CN]=关键消息
 Name[zh_HK]=嚴重警告訊息
+Name[zh_TW]=嚴重警告訊息
 Comment=A critical message is being shown
 Comment[af]='n Kritiese boodskap word vertoon
 Comment[ar]=تظهر الآن رسالة مهمَة
@@ -2280,6 +2295,7 @@ Name[vi]=Câu hỏi
 Name[wa]=Kesse
 Name[zh_CN]=问题
 Name[zh_HK]=提問
+Name[zh_TW]=問題
 Comment=A question is being asked
 Comment[af]='n Vraag word gevra
 Comment[ar]=هناك سؤال يتم سؤاله
@@ -2350,7 +2366,7 @@ Comment[vi]=Một câu đang được hỏi.
 Comment[wa]=Ene kesse est dmandêye
 Comment[zh_CN]=正在提问
 Comment[zh_HK]=顯示提問訊息
-Comment[zh_TW]=問題已經在詢問中
+Comment[zh_TW]=問題詢問中
 default_sound=KDE_Vox_Ahem.ogg
 default_presentation=65
 nopresentation=18

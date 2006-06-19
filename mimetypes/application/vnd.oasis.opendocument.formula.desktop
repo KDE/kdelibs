@@ -60,6 +60,7 @@ Comment[uz]=OASIS OpenDocument формула
 Comment[vi]=Công thức OpenDocument OASIS
 Comment[zh_CN]=OASIS OpenDocument 公式
 Comment[zh_HK]=OASIS OpenDocument 算式
+Comment[zh_TW]=OASIS OpenDocument 公式
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.odf

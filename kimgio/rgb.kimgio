@@ -64,6 +64,7 @@ Name[uz]=SGI-расм (RGB)
 Name[vi]=Ảnh SGI (RGB)
 Name[zh_CN]=SGI 图像(RGB)
 Name[zh_HK]=SGI 圖檔 (RGB)
+Name[zh_TW]=SGI 影像（RGB）
 Read=true
 Write=true
 Suffices=rgb,RGB,rgba,RGBA,bw,BW,sgi,SGI

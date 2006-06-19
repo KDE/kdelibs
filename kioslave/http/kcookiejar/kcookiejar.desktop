@@ -126,6 +126,7 @@ Comment[uk]=Стежить за всіма куками в системі
 Comment[uz]=Тизимдаги ҳамма кукиларни кузатади
 Comment[vi]=Theo dõi các tập tin cookie trong hệ thống.
 Comment[zh_CN]=将全部 cookies 的记录保存在系统中
+Comment[zh_TW]=追蹤系統所有的 cookies
 ServiceTypes=KDEDModule
 Exec=kcookiejar
 X-DCOP-ServiceType=Unique

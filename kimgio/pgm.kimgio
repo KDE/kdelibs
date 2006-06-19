@@ -69,6 +69,7 @@ Name[vi]=Ảnh sơ đồ xám di động
 Name[wa]=Imådje PGM
 Name[zh_CN]=便携灰度图像
 Name[zh_HK]=PGM 圖檔
+Name[zh_TW]=可攜式灰階檔案格式
 Read=true
 Write=true
 Suffices=pgm,PGM,pgmraw,PGMRAW

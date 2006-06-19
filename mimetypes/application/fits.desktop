@@ -46,6 +46,7 @@ Comment[uk]=Дані FITS
 Comment[uz]=FITS маълумот
 Comment[zh_CN]=FITs 数据
 Comment[zh_HK]=FITS 資料
+Comment[zh_TW]=FITS 資料
 Icon=binary
 # Note: application/fits is for any kind of FITS, so also for non-images
 ### TODO: what file pattern, especially that image/fits has the same

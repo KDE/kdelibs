@@ -60,6 +60,7 @@ Comment[uz]=OASIS OpenDocument графика намунаси
 Comment[vi]=Biểu mẩu đồ họa OpenDocument OASIS
 Comment[zh_CN]=OASIS OpenDocument 图形模板
 Comment[zh_HK]=OASIS OpenDocument 繪圖範本
+Comment[zh_TW]=OASIS OpenDocument 圖形樣本
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.otg

@@ -57,6 +57,7 @@ Comment[uz]=ABC аудио-файл
 Comment[vi]=Tập tin âm nhạc ABC
 Comment[zh_CN]=ABC 音乐文件
 Comment[zh_HK]=ABC 音樂原始檔
+Comment[zh_TW]=ABC 音樂檔
 Icon=sound
 Type=MimeType
 MimeType=text/vnd.abc

@@ -60,6 +60,7 @@ Name[uz]=MNG-расм
 Name[vi]=Ảnh MNG
 Name[zh_CN]=MNG 图像
 Name[zh_HK]=MNG 圖檔
+Name[zh_TW]=MNG 影像
 Read=true
 Write=false
 Suffices=mng,MNG

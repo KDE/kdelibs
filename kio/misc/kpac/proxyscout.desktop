@@ -105,6 +105,7 @@ Comment[uz]=Проксини автоматик равишда мослаш
 Comment[vi]=Cấu hình ủy nhiệm tự động.
 Comment[zh_CN]=自动代理配置
 Comment[zh_HK]=自動代理伺服器組態
+Comment[zh_TW]=自動代理組態
 ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library
 X-KDE-Library=proxyscout

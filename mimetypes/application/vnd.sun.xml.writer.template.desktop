@@ -61,6 +61,7 @@ Comment[uz]=OpenOffice.org матн ҳужжати намунаси
 Comment[vi]=Biểu mẫu tài liệu văn bản OpenOffice.org
 Comment[zh_CN]=OpenOffice.org 文本文档模板
 Comment[zh_HK]=OpenOffice.org 文字文件範本
+Comment[zh_TW]=OpenOffice.org Text 文件樣本
 MimeType=application/vnd.sun.xml.writer.template
 Type=MimeType
 Icon=wordprocessing

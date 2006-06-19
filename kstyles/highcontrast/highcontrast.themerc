@@ -102,5 +102,6 @@ Comment[uk]=Стиль, який підходить до схем кольорі
 Comment[vi]=Kiểu dáng thích hợp với lược đồ màu có độ tương phản cao.
 Comment[zh_CN]=在高对比度配色方案中适用的样式
 Comment[zh_HK]=適用於高反差色彩的佈景
+Comment[zh_TW]=在高彩度下可以使用的風格
 [KDE]
 WidgetStyle=HighContrast

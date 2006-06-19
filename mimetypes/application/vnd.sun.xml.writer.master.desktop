@@ -58,6 +58,7 @@ Comment[uz]=OpenOffice.org бош матн ҳужжати
 Comment[vi]=Tài liệu văn bản cái OpenOffice.org
 Comment[zh_CN]=OpenOffice.org 主文本文档
 Comment[zh_HK]=OpenOffice.org 主控文字文件
+Comment[zh_TW]=OpenOffice.org Master Text 文件
 MimeType=application/vnd.sun.xml.writer.master
 Type=MimeType
 Icon=wordprocessing

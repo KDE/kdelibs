@@ -54,6 +54,7 @@ Comment[tt]=Web beteneñ Mime-Tuplaması
 Comment[uk]=Архів Тенет з інформацією про mine
 Comment[vi]=Bản nén Mạng đã bao bọc MIME
 Comment[zh_CN]=MIME 封装的 Web 归档
+Comment[zh_TW]=Mime 封裝 Web 壓縮
 
 [Property::X-KDE-LocalProtocol]
 Type=QString

@@ -62,6 +62,7 @@ Name[uz]=Bash шелл скриптини ишга тушурувчи
 Name[vi]=Bộ chạy tập lệnh hệ vỏ Bash
 Name[wa]=Enondeu di scripes shell bash
 Name[zh_CN]=Bash Shell 脚本运行程序
+Name[zh_TW]=Bash Shell Script 執行器
 Type=Service
 X-KDE-Library=libshellscript
 X-KDE-Script-Runner=ShellScript/bash

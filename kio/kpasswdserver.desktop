@@ -131,6 +131,7 @@ Comment[uz]=Махфий сўзларни кэшда сақлаш
 Comment[vi]=Cách hỗ trợ khả năng lưu tạm mật khẩu.
 Comment[zh_CN]=密码缓存支持
 Comment[zh_HK]=密碼暫存支援
+Comment[zh_TW]=密碼暫存(cache)支援
 ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library
 X-KDE-Library=kpasswdserver

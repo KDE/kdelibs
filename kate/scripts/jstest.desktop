@@ -94,5 +94,6 @@ Comment[tt]=Kate Part'nıñ ämerleklären sınawçı qoral
 Comment[uk]=Скрипт для перевірки підтримки скриптів в компоненті Kate
 Comment[vi]=Tập lệnh để thử ra khả năng điều khiển bằng tập lệnh của phần Kate.
 Comment[zh_CN]=测试 kate 部件脚本的脚本
+Comment[zh_TW]=測試 kate part 的文稿
 X-Kate-Command=jstest
 X-Kate-Help=<p>Usage: <code>jstest</code></p>

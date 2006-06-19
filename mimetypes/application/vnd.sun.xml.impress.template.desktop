@@ -61,6 +61,7 @@ Comment[uz]=OpenOffice.org намойиш намунаси
 Comment[vi]=Biểu mẫu trình diễn OpenOffice.org
 Comment[zh_CN]=OpenOffice.org 演示文稿模板
 Comment[zh_HK]=OpenOffice.org 簡報範本
+Comment[zh_TW]=OpenOffice.org 簡報樣本
 MimeType=application/vnd.sun.xml.impress.template
 Type=MimeType
 Icon=presentation

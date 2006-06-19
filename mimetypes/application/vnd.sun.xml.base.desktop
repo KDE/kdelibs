@@ -55,6 +55,7 @@ Comment[uz]=OpenOffice.org маълумот база
 Comment[vi]=Cơ sở dữ liệu OpenOffice.org
 Comment[zh_CN]=OpenOffice.org 数据库
 Comment[zh_HK]=OpenOffice.org 資料庫
+Comment[zh_TW]=OpenOffice.org 資料庫
 Icon=spreadsheet
 Type=MimeType
 Patterns=*.odb;*.ODB;

@@ -64,6 +64,7 @@ Comment[uz]=StarOffice чизмаси
 Comment[vi]=Bản vẽ StarOffice
 Comment[zh_CN]=StarOffice 绘图
 Comment[zh_HK]=StarOffice 繪圖
+Comment[zh_TW]=StarOffice 繪圖
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.sda

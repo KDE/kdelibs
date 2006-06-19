@@ -58,5 +58,6 @@ Name[uz]=Multipart/mixed учун ичига ўрнатиб бўладиган �
 Name[vi]=Thành phần có khả năng nhúng cho dạng thức thư đa phần/đã trộn (multipart/mixed).
 Name[zh_CN]=可嵌入的 multipart/mixed 组件
 Name[zh_HK]=multipart/mixed 的可嵌入元件
+Name[zh_TW]=multipart/mixed 的可嵌入元件
 ServiceTypes=KParts/ReadOnlyPart
 X-KDE-Library=libkmultipart

@@ -131,6 +131,7 @@ Comment[uz]=Ҳар қандай ўқиб бўладиган файлни кур�
 Comment[vi]=Chèn bất kỳ tập tin có khả năng đọc tại vị trí của con chạy.
 Comment[zh_CN]=在光标位置插入任何可读文件
 Comment[zh_HK]=在游標處插入任意的檔案
+Comment[zh_TW]=在游標處插入任意的可讀檔案
 X-KDE-Library=ktexteditor_insertfile
 ServiceTypes=KTextEditor/Plugin
 Type=Service

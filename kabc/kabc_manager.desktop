@@ -58,6 +58,7 @@ Name[uz]=Алоқалар
 Name[vi]=Liên lạc
 Name[zh_CN]=联系人
 Name[zh_HK]=聯絡人
+Name[zh_TW]=聯絡人
 Type=Service
 ServiceTypes=KResources/Manager
 

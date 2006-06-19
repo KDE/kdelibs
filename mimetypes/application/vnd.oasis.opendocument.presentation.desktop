@@ -60,6 +60,7 @@ Comment[uz]=OASIS OpenDocument намойиш
 Comment[vi]=Trình diễn OpenDocument OASIS
 Comment[zh_CN]=OASIS OpenDocument 演示文稿
 Comment[zh_HK]=OASIS OpenDocument 簡報
+Comment[zh_TW]=OASIS OpenDocument 簡報
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.odp

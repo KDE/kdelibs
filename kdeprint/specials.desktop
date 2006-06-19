@@ -925,6 +925,7 @@ Name[uz]=PDF-файли сифатида хат орқали жўнатиш
 Name[vi]=Gởi tập tin PDF trong thư
 Name[zh_CN]=邮寄 PDF 文件
 Name[zh_HK]=郵寄 PDF 文件
+Name[zh_TW]=郵寄 PDF 文件
 Require=exec:/ps2pdf,exec:/kmail
 
 [Printer 4]
