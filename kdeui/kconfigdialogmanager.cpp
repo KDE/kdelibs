@@ -72,6 +72,7 @@ void KConfigDialogManager::initMaps()
   if ( s_propertyMap == 0 ) {
     s_propertyMapDeleter.setObject( s_propertyMap, new QHash<QString,QByteArray> );
     s_propertyMap->insert( "KButtonGroup", "current" );
+    s_propertyMap->insert( "KColorButton", "color" );
   }
 
   if( s_changedMap == 0 )
