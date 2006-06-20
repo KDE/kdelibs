@@ -24,7 +24,6 @@
 #include "ktoolinvocation.h"
 #include "kglobal.h"
 #include "kdebug.h"
-#include "kprocess.h"
 #include "kstandarddirs.h"
 
 #include <qdatastream.h>
@@ -111,7 +110,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    QString path;
    QByteArray ksycoca_env = getenv("KDESYCOCA");
    if (ksycoca_env.isEmpty())
-      path = KGlobal::dirs()->saveLocation("cache") + "ksycoca";
+      path = KGlobal::dirs()->saveLocation("cache") + KSYCOCA_FILENAME;
    else
       path = QFile::decodeName(ksycoca_env);
 
@@ -120,7 +119,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    bool bOpen = database->open( QIODevice::ReadOnly );
    if (!bOpen)
    {
-     path = locate("services", "ksycoca");
+     path = locate("services", KSYCOCA_FILENAME);
      if (!path.isEmpty())
      {
        kDebug(7011) << "Trying to open global ksycoca from " << path << endl;

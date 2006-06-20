@@ -102,7 +102,7 @@ static Display *X11_startup_notify_display = 0;
 static const KInstance *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
-static char sock_file_old[MAX_SOCK_FILE];
+//static char sock_file_old[MAX_SOCK_FILE];
 
 #ifdef Q_WS_X11
 #define DISPLAY "DISPLAY"
@@ -812,6 +812,7 @@ static void init_kdeinit_socket()
           exit(255);
        }
      }
+#if 0 // obsolete in kde4. Should we check writing to another file instead?
      path = getenv("ICEAUTHORITY");
      if (path.isEmpty())
      {
@@ -823,6 +824,7 @@ static void init_kdeinit_socket()
        fprintf(stderr, "kdeinit: Aborting. No write access to '%s'.\n", path.data());
        exit(255);
      }
+#endif
   }
 
   /** Test if socket file is already present
@@ -862,7 +864,7 @@ static void init_kdeinit_socket()
 
   /** Delete any stale socket file (and symlink) **/
   unlink(sock_file);
-  unlink(sock_file_old);
+//  unlink(sock_file_old);
 
   /** create socket **/
   d.wrapper = socket(PF_UNIX, SOCK_STREAM, 0);
@@ -924,6 +926,7 @@ static void init_kdeinit_socket()
      exit(255);
   }
 
+#if 0
   /** create compatibility socket **/
   d.wrapper_old = socket(PF_UNIX, SOCK_STREAM, 0);
   if (d.wrapper_old < 0)
@@ -987,6 +990,7 @@ static void init_kdeinit_socket()
      close(d.wrapper_old);
      d.wrapper_old = 0;
   }
+#endif
 }
 
 /*
@@ -1463,6 +1467,11 @@ static void kdeinit_library_path()
    if((i = display.lastIndexOf('.')) > display.lastIndexOf(':') && i >= 0)
      display.truncate(i);
 
+   // Was kdeinit-display initially,
+   // then at some point in KDE-3.x it became kdeinit_display_with_underscores
+   // And for KDE4 it became kdeinit4_display_with_underscores, to avoid messing up the kde3 kdeinit.
+   // Compat code needed just in case we need it later for something else.
+#if 0
    QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(QLatin1String(display)), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
@@ -1471,9 +1480,10 @@ static void kdeinit_library_path()
      exit(255);
    }
    strcpy(sock_file_old, socketName.data());
+#endif
 
    display.replace(":","_");
-   socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit_%1").arg(QLatin1String(display)), s_instance));
+   QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");
@@ -1495,11 +1505,13 @@ int kdeinit_xio_errhandler( Display *disp )
       /** Delete any stale socket file **/
       unlink(sock_file);
     }
+#if 0
     if (sock_file_old[0])
     {
       /** Delete any stale socket file **/
       unlink(sock_file_old);
     }
+#endif
 
     // Don't kill our children in suicide mode, they may still be in use
     if (d.suicide)

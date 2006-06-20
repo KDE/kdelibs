@@ -105,27 +105,18 @@ static QString sycocaPath()
 
   if (bGlobalDatabase)
   {
-     path = KGlobal::dirs()->saveLocation("services")+"ksycoca";
+     path = KGlobal::dirs()->saveLocation("services")+KSYCOCA_FILENAME;
   }
   else
   {
      QByteArray ksycoca_env = getenv("KDESYCOCA");
      if (ksycoca_env.isEmpty())
-        path = KGlobal::dirs()->saveLocation("cache")+"ksycoca";
+        path = KGlobal::dirs()->saveLocation("cache")+KSYCOCA_FILENAME;
      else
         path = QFile::decodeName(ksycoca_env);
   }
 
   return path;
-}
-
-static QString oldSycocaPath()
-{
-  QByteArray ksycoca_env = getenv("KDESYCOCA");
-  if (ksycoca_env.isEmpty())
-     return KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
-
-  return QString();
 }
 
 KBuildSycoca::KBuildSycoca()
@@ -922,23 +913,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
         QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString(), false);
         ::rmdir(QFile::encodeName(servicetypesDir));
       }
-   }
-
-   if (!bGlobalDatabase)
-   {
-     // Recreate compatibility symlink
-     QString oldPath = oldSycocaPath();
-     if (!oldPath.isEmpty())
-     {
-       KTempFile tmp;
-       if (tmp.status() == 0)
-       {
-         QString tmpFile = tmp.name();
-         tmp.unlink();
-         symlink(QFile::encodeName(sycocaPath()), QFile::encodeName(tmpFile));
-         rename(QFile::encodeName(tmpFile), QFile::encodeName(oldPath));
-       }
-     }
    }
 
    if (args->isSet("signal"))
