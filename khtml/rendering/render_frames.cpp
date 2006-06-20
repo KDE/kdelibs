@@ -656,7 +656,7 @@ short RenderPart::intrinsicWidth() const
 
 int RenderPart::intrinsicHeight() const
 {
-    return 200;
+    return 150;
 }
 
 void RenderPart::slotViewCleared()
