@@ -2420,6 +2420,7 @@ bool RenderBlock::containsFloat(RenderObject* o) const
 
 void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRemove)
 {
+    dirtyFormattingContext(false);
     setChildNeedsLayout(true);
 
     if (floatToRemove)

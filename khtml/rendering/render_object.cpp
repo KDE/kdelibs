@@ -1531,10 +1531,8 @@ void RenderObject::removeFromObjectLists()
             p = p->containingBlock();
         }
 
-        if (outermostBlock) {
-            outermostBlock->setNeedsLayout(true);
+        if (outermostBlock)
             outermostBlock->markAllDescendantsWithFloatsForLayout(this);
-        }
     }
 
     if (isPositioned()) {
