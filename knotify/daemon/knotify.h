@@ -70,11 +70,6 @@ class KNotify : public QObject
 		QHash<QString, KNotifyPlugin *> m_plugins;
 		QHash<int , Event > m_notifications;
 		void loadConfig();
-		/**
-		 * we can't use this as parent for "plugins"  because otherwise it will messup the
-		 * dbus interface
-		 */
-		QObject parent_workaround; 
 };
 
 class KNotifyAdaptor : public QDBusAbstractAdaptor

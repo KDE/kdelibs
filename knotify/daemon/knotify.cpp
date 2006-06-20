@@ -57,11 +57,11 @@ void KNotify::loadConfig()
 {
 	qDeleteAll(m_plugins);
 	m_plugins.clear();
-	addPlugin(new NotifyBySound(&parent_workaround));
-	addPlugin(new NotifyByPopup(&parent_workaround));
-	addPlugin(new NotifyByExecute(&parent_workaround));
-	addPlugin(new NotifyByLogfile(&parent_workaround));
-	addPlugin(new NotifyByTaskbar(&parent_workaround));
+	addPlugin(new NotifyBySound(this));
+	addPlugin(new NotifyByPopup(this));
+	addPlugin(new NotifyByExecute(this));
+	addPlugin(new NotifyByLogfile(this));
+	addPlugin(new NotifyByTaskbar(this));
 }
 
 void KNotify::addPlugin( KNotifyPlugin * p )
