@@ -34,7 +34,7 @@
 
 static QString wallpaperForDesktop(int desktop)
 {
-    QDBusInterfacePtr kdesktop("org.kde.kdesktop", "/KBackground", "org.kde.KBackground");
+    QDBusInterfacePtr kdesktop("org.kde.kdesktop", "/Background", "org.kde.kdesktop.KBackground");
     QDBusReply<QString> retval = kdesktop->call("currentWallpaper", desktop);
     return retval;
 }
@@ -274,7 +274,7 @@ void KRootPixmap::enableExports()
     if ( screen_number )
         appname += QLatin1String("-screen-") + QString::number( screen_number );
 
-    QDBusInterfacePtr(appname, "/KBackground", "org.kde.KBackground")->call( "setExport(int)", 1 );
+    QDBusInterfacePtr(appname, "/Background", "org.kde.kdesktop.KBackground")->call( "setExport(int)", 1 );
 #endif
 }
 
