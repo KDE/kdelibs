@@ -48,8 +48,7 @@
 #include <kpagedialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kservice.h>
-#include <kservicegroup.h>
+#include <kservicetypetrader.h>
 #include <kstartupinfo.h>
 #include <kwin.h>
 #include <kglobal.h>
@@ -73,29 +72,16 @@ static KCmdLineOptions options[] =
 };
 
 
-static void listModules(const QString &baseGroup)
+static void listModules()
 {
-
-  KServiceGroup::Ptr group = KServiceGroup::group(baseGroup);
-
-  if (!group || !group->isValid())
-      return;
-
-  KServiceGroup::List list = group->entries(true, true);
-
-  for( KServiceGroup::List::ConstIterator it = list.begin();
-       it != list.end(); it++)
+  const KService::List services = KServiceTypeTrader::self()->query( "Application", "[X-KDE-ParentApp] == 'kcontrol' or [X-KDE-ParentApp] == 'kinfocenter'" );
+  for( KService::List::const_iterator it = services.begin();
+       it != services.end(); it++)
   {
-     KSycocaEntry::Ptr p = (*it);
-     if (p->isType(KST_KService))
-     {
-        KService::Ptr s = KService::Ptr::staticCast( p );
-        if (!KAuthorized::authorizeControlModule(s->menuId()))
-           continue;
-        m_modules.append(s);
-     }
-     else if (p->isType(KST_KServiceGroup))
-        listModules(p->entryPath());
+      const KService::Ptr s = (*it);
+      if (!KAuthorized::authorizeControlModule(s->menuId()))
+          continue;
+      m_modules.append(s);
   }
 }
 
@@ -226,7 +212,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     {
         cout << i18n("The following modules are available:").toLocal8Bit().data() << endl;
 
-        listModules( "Settings/" );
+        listModules();
 
         int maxLen=0;
 
@@ -273,7 +259,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     /* Check if this particular module combination is already running, but
      * allow the same module to run when embedding(root mode) */
-    app.setServiceName(serviceName, 
+    app.setServiceName(serviceName,
             ( args->isSet( "embed-proxy" ) || args->isSet( "embed" )));
     if( app.isRunning() )
     {
