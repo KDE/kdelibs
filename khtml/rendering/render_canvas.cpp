@@ -151,22 +151,6 @@ void RenderCanvas::layout()
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
         c->setChildNeedsLayout(true);
 
-#ifdef SPEED_DEBUG
-    QTime qt;
-    qt.start();
-#endif
-    if ( recalcMinMax() )
-	recalcMinMaxWidths();
-
-#ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
-    qt.start();
-#endif
-
-#ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
-    qt.start();
-#endif
     int oldWidth = m_width;
     int oldHeight = m_height;
 
@@ -180,9 +164,27 @@ void RenderCanvas::layout()
         m_viewportHeight = m_height = m_view->visibleHeight();
     }
 
+#ifdef SPEED_DEBUG
+    QTime qt;
+    qt.start();
+#endif
+
+    if ( recalcMinMax() )
+	recalcMinMaxWidths();
+
+#ifdef SPEED_DEBUG
+    kdDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed() << endl;
+    qt.start();
+#endif
+
     bool relayoutChildren = (oldWidth != m_width) || (oldHeight != m_height);
 
     RenderBlock::layoutBlock( relayoutChildren );
+
+#ifdef SPEED_DEBUG
+    kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
+    qt.start();
+#endif
 
     int docW = docWidth();
     int docH = docHeight();

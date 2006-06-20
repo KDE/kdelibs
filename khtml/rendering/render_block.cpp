@@ -2704,7 +2704,8 @@ void RenderBlock::calcInlineMinMaxWidth()
     int inlineMin=0;
 
     int cw = containingBlock()->contentWidth();
-
+    int floatMaxWidth = 0;
+    
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
@@ -2808,12 +2809,15 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // go ahead and terminate maxwidth as well.
                 if (child->isFloating()) {
                     if (prevFloat &&
-                        (((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
+                        ((inlineMax + childMax > floatMaxWidth) ||
+                         ((prevFloat->style()->floating() & FLEFT) && (child->style()->clear() & CLEFT)) ||
                          ((prevFloat->style()->floating() & FRIGHT) && (child->style()->clear() & CRIGHT)))) {
                         m_maxWidth = kMax(inlineMax, (int)m_maxWidth);
                         inlineMax = 0;
                     }
                     prevFloat = child;
+                    if (!floatMaxWidth)
+                        floatMaxWidth = availableWidth();
                 }
 
                 // Add in text-indent.  This is added in only once.
@@ -2955,6 +2959,8 @@ void RenderBlock::calcBlockMinMaxWidth()
     RenderObject *child = firstChild();
     RenderObject* prevFloat = 0;
     int floatWidths = 0;
+    int floatMaxWidth = 0;
+
     while(child != 0)
     {
         // positioned children don't affect the minmaxwidth
@@ -3008,9 +3014,13 @@ void RenderBlock::calcBlockMinMaxWidth()
 
         if(m_maxWidth < w) m_maxWidth = w;
 
-        if (child->isFloating())
-            floatWidths += w;
-        else if (m_maxWidth < w)
+        if (child->isFloating()) {
+            if (prevFloat && (floatWidths + w > floatMaxWidth)) {
+               m_maxWidth = kMax(floatWidths, m_maxWidth);
+               floatWidths = w;
+            } else                        
+               floatWidths += w;
+        } else if (m_maxWidth < w)
             m_maxWidth = w;
 
         // A very specific WinIE quirk.
@@ -3034,8 +3044,11 @@ void RenderBlock::calcBlockMinMaxWidth()
             if (!cb->isTableCell())
                 m_maxWidth = BLOCK_MAX_WIDTH;
         }
-        if (child->isFloating())
+        if (child->isFloating()) {
             prevFloat = child;
+            if (!floatMaxWidth)
+                floatMaxWidth = availableWidth();
+        }
         child = child->nextSibling();
     }
     m_maxWidth = kMax(floatWidths, m_maxWidth);

@@ -1262,6 +1262,25 @@ int RenderBox::availableHeightUsing(const Length& h) const
     return containingBlock()->availableHeight();
 }
 
+int RenderBox::availableWidth() const
+{
+    return availableWidthUsing(style()->width());
+}
+
+int RenderBox::availableWidthUsing(const Length& w) const
+{
+    if (w.isFixed())
+        return calcContentWidth(w.value());
+
+    if (isCanvas())
+        return static_cast<const RenderCanvas*>(this)->viewportWidth();
+
+    if (w.isPercent())
+       return calcContentWidth(w.width(containingBlock()->availableWidth()));
+
+    return containingBlock()->availableWidth();
+}
+
 void RenderBox::calcVerticalMargins()
 {
     if( isTableCell() ) {

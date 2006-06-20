@@ -100,6 +100,7 @@ public:
     virtual int   calcReplacedHeight() const;
 
     virtual int availableHeight() const;
+    virtual int availableWidth() const;
 
     void calcVerticalMargins();
 
@@ -130,6 +131,7 @@ protected:
     int calcReplacedHeightUsing(HeightType heightType) const;
     int calcPercentageHeight(const Length& height, bool treatAsReplaced = false) const;
     int availableHeightUsing(const Length& h) const;
+    int availableWidthUsing(const Length& w) const;
     int calcImplicitHeight() const;
     bool hasImplicitHeight() const {
         return isPositioned() && !style()->top().isVariable() && !style()->bottom().isVariable();

@@ -1,3 +1,13 @@
+2006-06-20  Germain Garand  <germain@ebooksfrance.org>
+
+        Don't let a float serie grow an object's maxwidth beyond the available width
+
+        * rendering/render_block.cpp (calcInlineMinMaxWidth/calcBlockMinMaxWidth): lazzily check available width
+        so floats don't overflow it if they can break line.
+        * rendering/render_box.{h,cpp} (availableWidth{,Using}): new. Like availableHeight{,Using}
+        * rendering/render_canvas.cpp (RenderCanvas::layout): set m_viewportWidth before recalculating minmax, as 
+        availableWidth needs it.
+
 2006-06-15  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge CSS3 properties background-size, background-origin and background-clip from WebCore
