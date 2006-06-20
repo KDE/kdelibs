@@ -1,6 +1,7 @@
 
 if(KDE4_BUILD_TESTS)
 
+include_directories(${KDE4_KDECORE_INCLUDES})
 
 #test5.cpp test5.h: $(srcdir)/test5.kcfg ../kconfig_compiler $(srcdir)/test5.kcfgc
 #	../kconfig_compiler $(srcdir)/test5.kcfg $(srcdir)/test5.kcfgc
