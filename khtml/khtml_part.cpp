@@ -6703,38 +6703,19 @@ void KHTMLPart::runAdFilter()
 
             if ( node->id() == ID_IMG ||
                  node->id() == ID_IFRAME ||
-                 (node->id() == ID_INPUT && !strcasecmp( static_cast<ElementImpl *>(node)->getAttribute(ATTR_TYPE), "image")) )
+                 (node->id() == ID_INPUT && static_cast<HTMLInputElementImpl *>(node)->inputType() == HTMLInputElementImpl::IMAGE ))
             {
                 if ( KHTMLFactory::defaultHTMLSettings()->isAdFiltered( d->m_doc->completeURL( static_cast<ElementImpl *>(node)->getAttribute(ATTR_SRC).string() ) ) )
                 {
-                    // We found an IMG, IFRAME or INPUT (of type "image") matching a filter.
-
-                    // Detach the node from the document and rendering trees.
-                    node->detach();
-
-                    // Connect its siblings to each other instead.
-                    NodeImpl *next = node->nextSibling();
-                    NodeImpl *prev = node->previousSibling();
-
-                    if( next ) next->setPreviousSibling( prev );
-                    if( prev ) prev->setNextSibling( next );
-
-                    // If it's the first or last child of its parent, we cut it off there too.
+                    // We found an IMG, IFRAME or INPUT (of type IMAGE) matching a filter.
+                    node->ref();
                     NodeImpl *parent = node->parent();
                     if( parent )
                     {
-                        if( node == parent->firstChild() )
-                            parent->setFirstChild( next );
-
-                        if( node == parent->lastChild() )
-                            parent->setLastChild( prev );
+                        int exception = 0;
+                        parent->removeChild(node, exception);
                     }
-
-                    node->removedFromDocument();
-
-                    // If nobody needs this node, we can safely delete it.
-                    if( !node->refCount() )
-                        delete node;
+                    node->deref();
                 }
             }
         }
