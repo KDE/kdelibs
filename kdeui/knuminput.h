@@ -173,7 +173,7 @@ private:
 class KDEUI_EXPORT KIntNumInput : public KNumInput
 {
     Q_OBJECT
-    Q_PROPERTY( int value READ value WRITE setValue )
+    Q_PROPERTY( int value READ value WRITE setValue USER true )
     Q_PROPERTY( int minimum READ minimum WRITE setMinimum )
     Q_PROPERTY( int maximum READ maximum WRITE setMaximum )
     Q_PROPERTY( int referencePoint READ referencePoint WRITE setReferencePoint )
@@ -409,7 +409,7 @@ class KDoubleLine;
 class KDEUI_EXPORT KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
-    Q_PROPERTY( double value READ value WRITE setValue )
+    Q_PROPERTY( double value READ value WRITE setValue USER true )
     Q_PROPERTY( double minimum READ minimum WRITE setMinimum )
     Q_PROPERTY( double maximum READ maximum WRITE setMaximum )
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
