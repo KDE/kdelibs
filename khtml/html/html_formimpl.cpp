@@ -633,7 +633,7 @@ void HTMLFormElementImpl::submit(  )
                 dialog->setDefaultButton( KDialog::Yes );
                 dialog->setEscapeButton( KDialog::Cancel );
                 dialog->setModal( true );
-                dialog->enableButtonSeparator( true );
+                dialog->showButtonSeparator( true );
 
                 bool checkboxResult = false;
                 const int savePassword = KMessageBox::createKMessageBox(dialog, QMessageBox::Information,

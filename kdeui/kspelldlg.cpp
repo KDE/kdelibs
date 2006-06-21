@@ -49,7 +49,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   setButtons( Help|Cancel|User1 );
   setModal( _modal );
   setDefaultButton( Cancel );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setButtonText( Cancel, i18n("&Finished") );
 
   KConfigGroup cg( KGlobal::config(),"KSpell" );

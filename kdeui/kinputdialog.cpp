@@ -58,7 +58,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStdGuiItem::clear() );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setModal(true);
 
   QWidget *frame = new QWidget( this );
@@ -99,7 +99,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStdGuiItem::clear() );
-  enableButtonSeparator( false );
+  showButtonSeparator( false );
   setModal(true);
   QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame );
@@ -128,7 +128,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setModal(true);
 
   QWidget *frame = new QWidget( this );
@@ -157,7 +157,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setModal(true);
 
   QWidget *frame = new QWidget( this );
@@ -186,7 +186,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStdGuiItem::clear() );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setModal(true);
 
   showButton( User1, editable );
@@ -238,7 +238,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 {
   setCaption( caption );
   setButtons( Ok | Cancel );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setModal(true);
 
   QWidget *frame = new QWidget(this);

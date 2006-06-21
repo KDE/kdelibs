@@ -72,7 +72,7 @@ KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
   setButtons( (KDialog::ButtonCodes)buttonMask );
   setDefaultButton( Close );
   setModal( modal );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 }
 
 KOCRDialog::~KOCRDialog()

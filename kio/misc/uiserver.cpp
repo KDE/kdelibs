@@ -126,7 +126,7 @@ ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
   setButtons( KDialog::Ok | KDialog::Apply | KDialog::Cancel );
   setDefaultButton( KDialog::Ok );
   setObjectName( "configprog" );
-  enableButtonSeparator( false );
+  showButtonSeparator( false );
 
   QFrame *page = new QFrame( this );
   setMainWidget( page );

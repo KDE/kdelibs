@@ -48,7 +48,7 @@ DistributionListDialog::DistributionListDialog( AddressBook *addressBook, QWidge
   setCaption( i18n("Configure Distribution Lists") );
   setButtons( Ok );
   setDefaultButton( Ok );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
   mEditor = new DistributionListEditorWidget( addressBook, this );
   setMainWidget( mEditor );

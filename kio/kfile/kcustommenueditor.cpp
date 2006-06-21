@@ -92,7 +92,7 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
    setCaption( i18n("Menu Editor") );
    setButtons( Ok | Cancel );
    setDefaultButton(Ok);
-   enableButtonSeparator(true);
+   showButtonSeparator(true);
    KHBox *page = new KHBox(this);
    setMainWidget(page);
    m_listView = new K3ListView(page);

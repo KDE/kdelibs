@@ -31,7 +31,7 @@ KMDriverDialog::KMDriverDialog(QWidget *parent, const char *name)
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );
-  enableButtonSeparator( false );
+  showButtonSeparator( false );
 
 	m_view = new DriverView(0);
 	setMainWidget(m_view);

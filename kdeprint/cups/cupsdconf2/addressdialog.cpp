@@ -34,7 +34,7 @@ AddressDialog::AddressDialog(QWidget *parent, const char *name)
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	QWidget *w = new QWidget(this);
 	type_ = new QComboBox(w);

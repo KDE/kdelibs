@@ -709,7 +709,7 @@ KEdFind::KEdFind( QWidget *parent, bool modal )
   setButtons( modal ? User1|Cancel : User1|Close );
   setButtonGuiItem( User1, KStdGuiItem::find() );
   setModal(modal);
-  enableButtonSeparator(false);
+  showButtonSeparator(false);
   setDefaultButton(User1);
   QWidget *page = new QWidget( this );
   setMainWidget(page);
@@ -849,7 +849,7 @@ KEdReplace::KEdReplace( QWidget *parent, bool modal )
   setModal(modal);
   setDefaultButton(User3);
   setButtonsOrientation( Qt::Vertical );
-  enableButtonSeparator(false);
+  showButtonSeparator(false);
   QWidget *page = new QWidget(this);
   setMainWidget(page);
   QVBoxLayout *topLayout = new QVBoxLayout( page );
@@ -1002,7 +1002,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, bool modal )
   setButtons( modal ? Ok|Cancel : Ok|Close );
   setModal(modal);
   setDefaultButton(User3);
-  enableButtonSeparator(false);
+  showButtonSeparator(false);
 
   QWidget *page = new QWidget( this );
   setMainWidget(page);

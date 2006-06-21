@@ -68,7 +68,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, QWidget* parent )
 {
   setCaption( i18n("Configure Shortcut") );
   setButtons( KDialog::Details|KDialog::Ok|KDialog::Cancel );
-	enableButtonSeparator( true );
+	showButtonSeparator( true );
 	setModal(true);
 
 	setButtonText(Details, i18n("Advanced"));

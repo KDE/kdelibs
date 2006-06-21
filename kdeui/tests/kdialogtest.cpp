@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   KDialog dialog;
   dialog.setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Details | KDialog::User1 | KDialog::Help );
   dialog.setButtonGuiItem( KDialog::User1 , KGuiItem("Test") );
-  dialog.enableButtonSeparator(true);
+  dialog.showButtonSeparator(true);
   dialog.setCaption("dialog!");
   /* Set a help chapter. If you do not set one, the link is not shown, and the
      upper part of the frame shrinks as much as possible. The help window "

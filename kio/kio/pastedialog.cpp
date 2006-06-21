@@ -36,7 +36,7 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
     setCaption( caption );
     setButtons( Ok | Cancel );
     setModal( true );
-    enableButtonSeparator( true );
+    showButtonSeparator( true );
     setDefaultButton( Ok );
 
     QFrame *frame = new QFrame;

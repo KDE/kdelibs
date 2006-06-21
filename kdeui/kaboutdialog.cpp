@@ -1535,7 +1535,7 @@ KAboutDialog::KAboutDialog( int layoutType, const QString &_caption,
   setButtonGuiItem( User2, user2 );
   setButtonGuiItem( User3, user3 );
   setModal(modal);
-  enableButtonSeparator( separator );
+  showButtonSeparator( separator );
   setDefaultButton(defaultButton);
   setPlainCaption( i18n("About %1", _caption) );
 

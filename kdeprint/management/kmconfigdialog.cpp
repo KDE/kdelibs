@@ -44,7 +44,7 @@ KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	addConfigPage(new KMConfigGeneral(this));
 	addConfigPage(new KMConfigPreview(this));

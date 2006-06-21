@@ -30,7 +30,7 @@ KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,
 {
   setCaption( i18n("Select Region of Image") );
   setButtons( Help|Ok|Cancel );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
   setModal( modal );
 
   KVBox *vbox=new KVBox(this);

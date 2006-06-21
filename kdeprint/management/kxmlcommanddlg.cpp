@@ -821,7 +821,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
   dlg.setCaption( i18n("Command Edit for %1", xmlcmd->name()) );
   dlg.setButtons( KDialog::Ok | KDialog::Cancel );
   dlg.setDefaultButton( KDialog::Ok );
-  dlg.enableButtonSeparator( false );
+  dlg.showButtonSeparator( false );
 
 	KXmlCommandAdvancedDlg	*xmldlg = new KXmlCommandAdvancedDlg(&dlg);
 	dlg.setMainWidget(xmldlg);
@@ -864,7 +864,7 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
   setModal( true );
   setButtons( Ok | Cancel | Details );
   setDefaultButton( Ok );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	setButtonText(Details, i18n("&Mime Type Settings"));
 	m_cmd = 0;

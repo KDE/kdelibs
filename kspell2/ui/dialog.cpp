@@ -65,7 +65,7 @@ Dialog::Dialog( BackgroundChecker *checker,
     setButtons( Help | Cancel | User1 );
     setButtonGuiItem( User1, i18n( "&Finished" ) );
     setDefaultButton( Cancel );
-    enableButtonSeparator( true );
+    showButtonSeparator( true );
 
     setDefaultButton( Cancel );
     d->checker = checker;

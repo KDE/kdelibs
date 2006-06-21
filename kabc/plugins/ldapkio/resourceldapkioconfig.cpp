@@ -188,7 +188,7 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
   mNameDict.insert( "objectClass", i18n( "Object classes" ) );
   mNameDict.insert( "commonName",  i18n( "Common name" ) );
@@ -363,7 +363,7 @@ OfflineDialog::OfflineDialog( bool autoCache, int cachePolicy, const KUrl &src,
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
   QFrame *page = new QFrame( this );
   setMainWidget( page );

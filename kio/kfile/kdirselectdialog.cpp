@@ -94,7 +94,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
     setCaption( i18n("Select Folder") );
     setButtons( Ok | Cancel | User1 );
     setButtonGuiItem( User1, KGuiItem( i18n("New Folder..."), "folder_new" ) );
-    enableButtonSeparator(false);
+    showButtonSeparator(false);
     setDefaultButton(Ok);
     d->branch = 0L;
 

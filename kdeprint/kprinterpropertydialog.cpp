@@ -37,7 +37,7 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
   setButtons( KDialog::Ok | KDialog::Cancel | KDialog::User1 );
   setButtonGuiItem( KDialog::User1, KStdGuiItem::save() );
 	setModal(true);
-	enableButtonSeparator(false);
+	showButtonSeparator(false);
 	setDefaultButton(KDialog::Ok);
 	// set a margin
 	m_tw = new QTabWidget(this);

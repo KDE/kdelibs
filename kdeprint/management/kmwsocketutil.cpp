@@ -54,7 +54,7 @@ SocketConfig::SocketConfig(KMWSocketUtil *util, QWidget *parent, const char *nam
   setModal( true );
   setButtons( Ok | Cancel );
   setDefaultButton( Ok );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);

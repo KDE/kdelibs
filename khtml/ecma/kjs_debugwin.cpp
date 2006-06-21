@@ -299,7 +299,7 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
   setButtons( showDebug ? KDialog::Ok | KDialog::User1 : KDialog::Ok );
   setButtonGuiItem( KDialog::User1, KGuiItem("&Debug","gear") );
   setDefaultButton( KDialog::Ok );
-  enableButtonSeparator( false );
+  showButtonSeparator( false );
 
   QWidget *page = new QWidget(this);
   setMainWidget(page);

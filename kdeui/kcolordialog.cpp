@@ -958,7 +958,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
 {
   setCaption( i18n("Select Color") );
   setButtons( modal ? Ok|Cancel : Close );
-  enableButtonSeparator(true);
+  showButtonSeparator(true);
   setModal(modal);
 
   d = new KColorDialogPrivate;

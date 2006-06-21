@@ -42,7 +42,7 @@ KabAPI::KabAPI(QWidget* parent, const char* name)
   Q_CHECK_PTR(listbox);
   setMainWidget(listbox);
   showButton(KDialog::Apply, false);
-  enableButtonSeparator(true);
+  showButtonSeparator(true);
   connect(listbox, SIGNAL(highlighted(int)), SLOT(entrySelected(int)));
   connect(listbox, SIGNAL(doubleClicked ( Q3ListBoxItem * )),SLOT(slotDoubleClicked ( Q3ListBoxItem * )));
 }

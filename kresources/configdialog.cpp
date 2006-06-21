@@ -44,7 +44,7 @@ ConfigDialog::ConfigDialog( QWidget *parent, const QString& resourceFamily,
   setCaption( i18n( "Resource Configuration" ) );
   setButtons( Ok | Cancel );
   setDefaultButton( Ok );
-  enableButtonSeparator( false );
+  showButtonSeparator( false );
 
   Factory *factory = Factory::self( resourceFamily );
 

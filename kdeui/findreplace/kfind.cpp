@@ -52,7 +52,7 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
     setButtons( User1 | Close );
     setButtonGuiItem( User1, KStdGuiItem::find() );
     setDefaultButton( User1 );
-    enableButtonSeparator( false );
+    showButtonSeparator( false );
 
     setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>", pattern), this ) );
 }

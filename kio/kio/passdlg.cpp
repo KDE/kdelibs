@@ -57,7 +57,7 @@ PasswordDialog::PasswordDialog( const QString& prompt, const QString& user,
     setCaption( i18n("Password") );
     setButtons( Ok | Cancel );
     setModal( modal );
-    enableButtonSeparator( true );
+    showButtonSeparator( true );
     setDefaultButton( Ok );
     init ( prompt, user, enableKeep );
 }

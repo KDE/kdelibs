@@ -36,7 +36,7 @@ PortDialog::PortDialog(QWidget *parent, const char *name)
   setModal( true );
   setButtons( Ok | Cancel );
   setDefaultButton( Ok );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	QWidget	*dummy = new QWidget(this);
 	setMainWidget(dummy);

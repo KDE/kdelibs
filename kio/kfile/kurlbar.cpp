@@ -943,7 +943,7 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
     setButtons( Ok | Cancel );
     setModal(true);
     setDefaultButton(Ok);
-    enableButtonSeparator(true);
+    showButtonSeparator(true);
     KVBox *box = new KVBox( this );
     QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );

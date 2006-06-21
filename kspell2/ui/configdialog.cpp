@@ -41,7 +41,7 @@ ConfigDialog::ConfigDialog( Loader::Ptr loader, QWidget *parent )
     setCaption( i18n( "KSpell2 Configuration" ) );
     setButtons( Ok | Apply | Cancel );
     setDefaultButton( Ok );
-    enableButtonSeparator( true );
+    showButtonSeparator( true );
 
     init( loader );
 }

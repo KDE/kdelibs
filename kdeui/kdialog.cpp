@@ -723,7 +723,7 @@ bool KDialog::avoidArea( QWidget *w, const QRect& area, int screen )
 
 
 
-void KDialog::enableButtonSeparator( bool state )
+void KDialog::showButtonSeparator( bool state )
 {
   if( state )
   {

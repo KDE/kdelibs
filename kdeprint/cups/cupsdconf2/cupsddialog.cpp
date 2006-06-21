@@ -120,7 +120,7 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
   setDefaultButton( Ok );
   setObjectName( name );
   setModal( true );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 	KGlobal::locale()->insertCatalog("cupsdconf");

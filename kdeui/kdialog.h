@@ -221,7 +221,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Hide or display the a separator line drawn between the action
      * buttons an the main widget.
      */
-    void enableButtonSeparator( bool state );
+    void showButtonSeparator( bool state );
 
     /**
      * Hide or display a general action button.

@@ -157,7 +157,7 @@ KCMultiDialog::KCMultiDialog( QWidget *parent )
   setButtonGuiItem( User2, KStdGuiItem::adminMode() );
   setDefaultButton( Ok );
   setModal( false );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
   connect( this, SIGNAL( finished() ), SLOT( dialogClosed() ) );
 

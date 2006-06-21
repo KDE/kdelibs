@@ -315,7 +315,7 @@ NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *
   setModal( true );
   setButtons( Ok | Cancel );
   setDefaultButton( Ok );
-  enableButtonSeparator( true );
+  showButtonSeparator( true );
 
 	scanner_ = scanner;
 	QWidget	*dummy = new QWidget(this);

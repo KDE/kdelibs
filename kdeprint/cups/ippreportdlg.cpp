@@ -38,7 +38,7 @@ IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
   setButtons( Close | User1 );
   setButtonGuiItem( User1, KGuiItem(i18n("&Print"), "fileprint" ) );
   setDefaultButton( Close );
-  enableButtonSeparator( false );
+  showButtonSeparator( false );
 
 	m_edit = new KTextEdit(this);
 	m_edit->setReadOnly(true);

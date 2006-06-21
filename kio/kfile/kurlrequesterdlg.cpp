@@ -63,7 +63,7 @@ KUrlRequesterDlg::~KUrlRequesterDlg()
 void KUrlRequesterDlg::initDialog(const QString &text,const QString &urlName)
 {
   setDefaultButton(Ok);
-  enableButtonSeparator(true);
+  showButtonSeparator(true);
    QFrame *plainPage=new QFrame(this);
    setMainWidget(plainPage);
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
