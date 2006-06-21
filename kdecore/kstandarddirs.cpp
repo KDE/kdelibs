@@ -430,7 +430,7 @@ QString KStandardDirs::findResourceDir( const char *type,
     }
 
 #ifndef NDEBUG
-    if(false && type != "locale")
+    if(false && strcmp(type, "locale"))
       kDebug() << "KStdDirs::findResDir(): can't find \"" << filename << "\" in type \"" << type << "\"." << endl;
 #endif
 
