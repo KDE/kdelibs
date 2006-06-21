@@ -97,9 +97,8 @@ RenderBlock::RenderBlock(DOM::NodeImpl* node)
     m_clearStatus = CNONE;
     m_maxTopPosMargin = m_maxTopNegMargin = m_maxBottomPosMargin = m_maxBottomNegMargin = 0;
     m_topMarginQuirk = m_bottomMarginQuirk = false;
-    m_overflowHeight = 0;
-    m_overflowWidth = 0;
-    m_negativeOverflowWidth = 0;
+    m_overflowHeight = m_overflowWidth = 0;
+    m_overflowLeft = m_overflowTop = 0;
 }
 
 RenderBlock::~RenderBlock()
@@ -631,15 +630,13 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     calcWidth();
     m_overflowWidth = m_width;
-    m_negativeOverflowWidth = 0;
+    m_overflowLeft = 0;
     if (style()->direction() == LTR )
     {
         int cw=0;
         if (style()->textIndent().isPercent())
             cw = containingBlock()->contentWidth();
-        m_negativeOverflowWidth = -style()->textIndent().minWidth(cw);
-        if (m_negativeOverflowWidth < 0)
-            m_negativeOverflowWidth = 0;
+        m_overflowLeft = kMin(0, style()->textIndent().minWidth(cw));
     }
 
     if ( oldWidth != m_width )
@@ -1456,30 +1453,17 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         }
 
         // See if this child has made our overflow need to grow.
-        // ### --dwh Work with left overflow as well as right overflow.
-        int overflowDelta = - child->height() ;
-        if ( child->isBlockFlow () && !child->isTable() && child->style()->hidesOverflow() )
-            overflowDelta += child->height();
-        else
-            overflowDelta += child->overflowHeight();
-
-        // See if this child has made our overflow need to grow.
-        int rightChildPos = child->effectiveXPos() + kMax(child->effectiveWidth(), (int)child->width());
+        int effX = child->effectiveXPos();
+        int effY = child->effectiveYPos();
         if (child->isRelPositioned() && (hasOverflowClip() || !isTableCell())) {
             // CSS 2.1-9.4.3 - allow access to relatively positioned content
-            // ### left overflow support
-            int xoff = 0, yoff = 0;
-            static_cast<RenderBox*>(child)->relativePositionOffset(xoff, yoff);
-            if (xoff>0)
-               rightChildPos += xoff;
-            if (yoff>0)
-               overflowDelta += yoff;
+            static_cast<RenderBox*>(child)->relativePositionOffset(effX, effY);
         }
+        m_overflowWidth = kMax(effX + child->effectiveWidth(), m_overflowWidth);
+        m_overflowLeft = kMin(effX, m_overflowLeft);
 
-        m_overflowHeight = kMax(m_height + overflowDelta, m_overflowHeight);
-        m_overflowWidth = kMax(rightChildPos, m_overflowWidth);
-
-        m_negativeOverflowWidth = kMax(m_negativeOverflowWidth, child->negativeOverflowWidth());
+        m_overflowHeight = kMax(effY + child->effectiveHeight(), m_overflowHeight);
+        m_overflowTop = kMin(effY, m_overflowTop);
 
         // Insert our compact into the block margin if we have one.
         insertCompactIfNeeded(child, compactInfo);
@@ -1606,14 +1590,13 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->dirtyFormattingContext(false);
             }
             r->layoutIfNeeded();
+
+            // Update overflow
             if (adjOverflow && r->style()->position() == ABSOLUTE) {
-                if (r->effectiveXPos() + r->effectiveWidth() > m_overflowWidth)
-                {
-                    m_overflowWidth = r->xPos() + r->overflowWidth();
-                    m_negativeOverflowWidth = r->negativeOverflowWidth();
-                }
-                if (r->yPos() + r->effectiveHeight() > m_overflowHeight)
-                    m_overflowHeight = r->yPos() + r->effectiveHeight();
+                m_overflowWidth = kMax(r->xPos() + r->overflowWidth(), m_overflowWidth);
+                m_overflowLeft = kMin(r->effectiveXPos(), m_overflowLeft);
+                m_overflowHeight = kMax(r->yPos() + r->overflowHeight(), m_overflowHeight);
+                m_overflowTop = kMin(r->effectiveYPos(), m_overflowTop);
             }
         }
     }
@@ -1632,11 +1615,7 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
         if (m_floatingObjects && floatBottom() > h)
             h = floatBottom();
 
-        // Sanity check the first line
-        // to see if it extended a little above our box. Overflow out the bottom is already handled via
-        // overflowHeight(), so we don't need to check that.
-        if (m_firstLineBox && m_firstLineBox->topOverflow() < 0)
-            yPos += m_firstLineBox->topOverflow();
+        yPos += topOverflow();
 
         int os = 2*maximalOutlineSize(pI.phase);
         if( (yPos > pI.r.bottom() + os) || (_ty + h <= pI.r.y() - os))
@@ -2200,7 +2179,8 @@ int RenderBlock::leftmostPosition(bool includeOverflowInterior, bool includeSelf
     if (!includeOverflowInterior && style()->hidesOverflow())
         return left;
 
-    // FIXME: Check left overflow when we eventually support it.
+    if (includeSelf && m_overflowLeft < left)
+        left = m_overflowLeft;
 
     if (m_floatingObjects) {
         FloatingObject* r;
@@ -2706,7 +2686,7 @@ void RenderBlock::calcInlineMinMaxWidth()
 
     int cw = containingBlock()->contentWidth();
     int floatMaxWidth = 0;
-    
+
     // If we are at the start of a line, we want to ignore all white-space.
     // Also strip spaces if we previously had text that ended in a trailing space.
     bool stripFrontSpaces = true;
@@ -3019,7 +2999,7 @@ void RenderBlock::calcBlockMinMaxWidth()
             if (prevFloat && (floatWidths + w > floatMaxWidth)) {
                m_maxWidth = kMax(floatWidths, m_maxWidth);
                floatWidths = w;
-            } else                        
+            } else
                floatWidths += w;
         } else if (m_maxWidth < w)
             m_maxWidth = w;

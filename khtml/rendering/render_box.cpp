@@ -616,7 +616,7 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
         }
         ch = kMin(ch, cliph);
 
-// 	kdDebug() << " clipy, cliph: " << clipy << ", " << cliph << endl;
+//         kdDebug() << " clipy, cliph: " << clipy << ", " << cliph << endl;
 //         kdDebug() << " drawTiledPixmap(" << cx << ", " << cy << ", " << cw << ", " << ch << ", " << sx << ", " << sy << ")" << endl;
         if (cw>0 && ch>0)
             p->drawTiledPixmap(cx, cy, cw, ch, bg->tiled_pixmap(c, scaledImageWidth, scaledImageHeight), sx, sy);
@@ -783,13 +783,15 @@ void RenderBox::repaint(bool immediate)
         Q_ASSERT(p);
         while( p->isInline() && !p->isReplaced() )
             p = p->parent();
-        int off = p->hasOverflowClip() ? 0 : p->negativeOverflowWidth();
-        p->repaintRectangle( -ow - off, -ow, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
+        int xoff = p->hasOverflowClip() ? 0 : p->overflowLeft();
+        int yoff = p->hasOverflowClip() ? 0 : p->overflowTop();
+        p->repaintRectangle( -ow + xoff, -ow + yoff, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
     }
     else
     {
-        int off = hasOverflowClip() ? 0 : negativeOverflowWidth();
-        repaintRectangle( -ow - off, -ow, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
+        int xoff = hasOverflowClip() ? 0 : overflowLeft();
+        int yoff = hasOverflowClip() ? 0 : overflowTop();
+        repaintRectangle( -ow + xoff, -ow + yoff, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
     }
 }
 

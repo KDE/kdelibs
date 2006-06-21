@@ -56,7 +56,8 @@ public:
     // it would have an overflow height of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const  { return m_overflowHeight; }
     virtual int overflowWidth() const   { return m_overflowWidth; }
-    virtual int negativeOverflowWidth() const { return m_negativeOverflowWidth; }
+    virtual int overflowLeft() const { return m_overflowLeft; }
+    virtual int overflowTop() const  { return m_overflowTop; }
     virtual void setOverflowHeight(int h) { m_overflowHeight = h; }
     virtual void setOverflowWidth(int w) { m_overflowWidth = w; }
 
@@ -115,6 +116,7 @@ public:
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiState &bidi);
     void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
     bool clearLineOfPageBreaks(InlineFlowBox* lineBox);
+    void checkLinesForOverflow();
     // end bidi.cpp functions
 
     virtual void paint(PaintInfo& i, int tx, int ty);
@@ -341,10 +343,12 @@ protected:
 protected:
     // How much content overflows out of our block vertically or horizontally (all we support
     // for now is spillage out of the bottom and the right, which are the common cases).
-    // XXX Generalize to work with top and left as well.
     int m_overflowHeight;
     int m_overflowWidth;
-    int m_negativeOverflowWidth;
+
+    // Left and top overflow.
+    int m_overflowTop;
+    int m_overflowLeft;
 
 private:
     QPtrList<FloatingObject>* m_floatingObjects;

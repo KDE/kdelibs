@@ -72,7 +72,7 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
     m_selectionEnd = 0;
     m_selectionStartPos = -1;
     m_selectionEndPos = -1;
-    
+
     m_needsWidgetMasks = false;
 
     // Create a new root layer for our layer hierarchy.
@@ -232,7 +232,7 @@ void RenderCanvas::layout()
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
-    
+
     if (!m_pagedMode && m_needsWidgetMasks)
         layer()->updateWidgetMasks(layer());
 
@@ -380,9 +380,11 @@ static QRect enclosingPositionedRect (RenderObject *n)
         int ox, oy;
         enclosingParent->absolutePosition(ox, oy);
         int off = 0;
-        if (!enclosingParent->hasOverflowClip())
-            off = enclosingParent->negativeOverflowWidth();
-        rect.setX(ox - off);
+        if (!enclosingParent->hasOverflowClip()) {
+            ox += enclosingParent->overflowLeft();
+            oy += enclosingParent->overflowTop();
+        }
+        rect.setX(ox);
         rect.setY(oy);
         rect.setWidth(enclosingParent->effectiveWidth());
         rect.setHeight(enclosingParent->effectiveHeight());

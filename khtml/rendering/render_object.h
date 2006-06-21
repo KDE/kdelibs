@@ -545,7 +545,12 @@ public:
     /** the position of the object from where it begins drawing, including
      * its negative overflow
      */
-    int effectiveXPos() const { return xPos() - (hasOverflowClip() ? 0 : negativeOverflowWidth()); }
+    int effectiveXPos() const { return xPos() + (hasOverflowClip() ? 0 : overflowLeft()); }
+
+    /** the position of the object from where it begins drawing, including
+     * its negative overflow
+     */
+    int effectiveYPos() const { return yPos() + (hasOverflowClip() ? 0 : overflowTop()); }
 
     /** Leftmost coordinate of this inline element relative to containing
      * block. Always zero for non-inline elements.
@@ -569,19 +574,20 @@ public:
     // of borderTop() + paddingTop() + 100px.
     virtual int overflowHeight() const { return height(); }
     virtual int overflowWidth() const { return width(); }
-    // how much goes over the left hand side (0 or a positive number)
-    virtual int negativeOverflowWidth() const { return 0; }
+    // how much goes over the left hand side (0 or a negative number)
+    virtual int overflowTop() const { return 0; }
+    virtual int overflowLeft() const { return 0; }
 
     /**
      * Returns the height that is effectively considered when contemplating the
      * object as a whole -- usually the overflow height, or the height if clipped.
      */
-    int effectiveHeight() const { return hasOverflowClip() ? height() : overflowHeight(); }
+    int effectiveHeight() const { return hasOverflowClip() ? height() : overflowHeight() - overflowTop(); }
     /**
      * Returns the width that is effectively considered when contemplating the
      * object as a whole -- usually the overflow width, or the width if clipped.
      */
-    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() + negativeOverflowWidth(); }
+    int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() - overflowLeft(); }
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }
@@ -744,7 +750,7 @@ public:
     virtual long maxOffset() const { return 0; }
 
     virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *);
-    
+
     QRegion visibleFlowRegion(int x, int y) const;
 
 protected:

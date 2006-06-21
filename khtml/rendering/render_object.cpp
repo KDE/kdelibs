@@ -485,12 +485,12 @@ int RenderObject::clientHeight() const
 // scrollWidth/scrollHeight is the size including the overflow area
 short RenderObject::scrollWidth() const
 {
-    return (style()->hidesOverflow() && layer()) ? layer()->scrollWidth() : overflowWidth();
+    return (style()->hidesOverflow() && layer()) ? layer()->scrollWidth() : overflowWidth() - overflowLeft();
 }
 
 int RenderObject::scrollHeight() const
 {
-    return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : overflowHeight();
+    return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : overflowHeight() - overflowTop();
 }
 
 bool RenderObject::hasStaticX() const
@@ -1683,8 +1683,9 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
                 (_y >= ty) && (_y < ty + height()) && (_x >= tx) && (_x < tx + width())) || isRoot() || isBody();
     bool inOverflowRect = inside;
     if ( !inOverflowRect ) {
-        int no = negativeOverflowWidth();
-        QRect overflowRect( tx-no, ty, overflowWidth()+no, overflowHeight() );
+        int ol = overflowLeft();
+        int ot = overflowTop();
+        QRect overflowRect( tx+ol, ty+ot, overflowWidth()-ol, overflowHeight()-ot );
         inOverflowRect = overflowRect.contains( _x, _y );
     }
 

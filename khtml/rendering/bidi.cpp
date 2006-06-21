@@ -2,7 +2,7 @@
  * This file is part of the html renderer for KDE.
  *
  * Copyright (C) 2000-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2003-2004 Apple Computer, Inc.
+ *           (C) 2003-2005 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -774,7 +774,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
     if (rightPos > m_overflowWidth)
         m_overflowWidth = rightPos; // FIXME: Work for rtl overflow also.
     if (x < 0)
-        m_negativeOverflowWidth = kMax(m_negativeOverflowWidth, -x);
+        m_overflowLeft = kMin(m_overflowLeft, x);
 }
 
 void RenderBlock::computeVerticalPositionsForLine(InlineFlowBox* lineBox)
@@ -1596,8 +1596,10 @@ redo_linebreak:
     m_height += toAdd;
 
     // Always make sure this is at least our height.
-    if (m_overflowHeight < m_height)
-        m_overflowHeight = m_height;
+    m_overflowHeight = kMax(m_height, m_overflowHeight);
+
+    // See if any lines spill out of the block.  If so, we need to update our overflow width.
+    checkLinesForOverflow();
 
 #if BIDI_DEBUG > 1
     kdDebug(6041) << " ------- bidi end " << this << " -------" << endl;
@@ -2186,6 +2188,16 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     }
 
     return lBreak;
+}
+
+void RenderBlock::checkLinesForOverflow()
+{
+    for (RootInlineBox* curr = static_cast<khtml::RootInlineBox*>(firstLineBox()); curr; curr = static_cast<khtml::RootInlineBox*>(curr->nextLineBox())) {
+//         m_overflowLeft = min(curr->leftOverflow(), m_overflowLeft);
+        m_overflowTop = kMin(curr->topOverflow(), m_overflowTop);
+//         m_overflowWidth = max(curr->rightOverflow(), m_overflowWidth);
+        m_overflowHeight = kMax(curr->bottomOverflow(), m_overflowHeight);
+    }
 }
 
 // For --enable-final
