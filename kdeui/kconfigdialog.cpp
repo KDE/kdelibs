@@ -37,11 +37,10 @@ QHash<QString,KConfigDialog *> KConfigDialog::openDialogs;
 class KConfigDialog::KConfigDialogPrivate
 {
 public:
-  KConfigDialogPrivate(KPageDialog::FaceType t)
-  : shown(false), type(t), manager(0) { }
+  KConfigDialogPrivate()
+  : shown(false), manager(0) { }
 
   bool shown;
-  KPageDialog::FaceType type;
   KConfigDialogManager *manager;
   QMap<QWidget *, KConfigDialogManager *> managerForPage;
 };
@@ -53,7 +52,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           ButtonCode defaultButton,
           bool modal ) :
     KPageDialog( parent, Qt::MSWindowsFixedSizeDialogHint ),
-    d(new KConfigDialogPrivate(faceType))
+    d(new KConfigDialogPrivate)
 {
   setCaption( i18n("Configure") );
   setFaceType( faceType );
@@ -121,44 +120,17 @@ void KConfigDialog::addPageInternal(QWidget *page,
     kDebug(240) << "KConfigDialog::addPage: can not add a page after the dialog has been shown.";
     return;
   }
-  switch(d->type)
-  {
-    case List:
-    case Tree:
-    case Tabbed: {
-      KVBox *frame = new KVBox();
-      frame->setSpacing( 0 );
-      frame->setMargin( 0 );
-      page->setParent(((QWidget*)frame));
 
-      KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
-      item->setHeader( header );
-      item->setIcon( SmallIcon(pixmapName, 32) );
+  KVBox *frame = new KVBox();
+  frame->setSpacing( 0 );
+  frame->setMargin( 0 );
+  page->setParent(((QWidget*)frame));
 
-      KPageDialog::addPage( item );
-    }
-    break;
+  KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
+  item->setHeader( header );
+  item->setIcon( SmallIcon(pixmapName, 32) );
 
-    case Plain:
-    {
-      QFrame *main = new QFrame();
-      QVBoxLayout *topLayout = new QVBoxLayout(main);
-      topLayout->setMargin(0);
-      topLayout->setSpacing(0);
-      page->setParent(((QWidget*)main));
-      topLayout->addWidget( page );
-
-      KPageWidgetItem *item = new KPageWidgetItem( main, itemName );
-      item->setHeader( header );
-      item->setIcon( SmallIcon(pixmapName, 32) );
-
-      KPageDialog::addPage( item );
-    }
-    break;
-
-    default:
-      kDebug(240) << "KConfigDialog::addpage: unknown type.";
-  }
+  KPageDialog::addPage( item );
 }
 
 void KConfigDialog::setupManagerConnections(KConfigDialogManager *manager)
