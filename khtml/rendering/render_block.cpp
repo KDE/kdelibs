@@ -1615,7 +1615,7 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
         if (m_floatingObjects && floatBottom() > h)
             h = floatBottom();
 
-        yPos += topOverflow();
+        yPos += overflowTop();
 
         int os = 2*maximalOutlineSize(pI.phase);
         if( (yPos > pI.r.bottom() + os) || (_ty + h <= pI.r.y() - os))
