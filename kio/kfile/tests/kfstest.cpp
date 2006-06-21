@@ -65,7 +65,6 @@ int main(int argc, char **argv)
 	op->setViewConfig(&grp);
 	op->setView(KFile::Simple);
 	op->show();
-	a.setMainWidget(op);
 	a.exec();
     }
 

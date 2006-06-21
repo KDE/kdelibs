@@ -49,7 +49,6 @@ int main(int argc, char **argv)
     wiz->setFinishEnabled(p, (i==10));
   }
 
-  a.setMainWidget(wiz);
   wiz->show();
   return a.exec();
 }

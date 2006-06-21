@@ -38,7 +38,6 @@ main(int argc, char**argv)
   edit->setText( "Just to see focus changes");
   QXEmbed *embed = new QXEmbed(main);
   embed->setProtocol(QXEmbed::XPLAIN);
-  a.setMainWidget(main);
   main->show();
 
   WId wid = strtol(argv[1], NULL, 0);

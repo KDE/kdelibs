@@ -8,7 +8,6 @@ int main( int argc, char **argv )
 //    KIconDialog::getIcon(); 
 
     KIconButton button;
-    app.setMainWidget( &button );
     button.show();
  
 

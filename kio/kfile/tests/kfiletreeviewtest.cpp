@@ -142,7 +142,6 @@ int main(int argc, char **argv)
     testFrame *tf;
 
     tf =  new testFrame();
-    a.setMainWidget( tf );
 
     if (argc > 1)
     {

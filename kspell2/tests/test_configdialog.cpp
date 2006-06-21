@@ -37,7 +37,5 @@ int main( int argc, char** argv )
 
     dialog->show();
 
-    app.setMainWidget( dialog );
-
     return app.exec();
 }
