@@ -891,9 +891,10 @@ uint KateCSmartIndent::calcContinue(KateDocCursor &start, KateDocCursor &end)
   {
     cur.setCol(cur.col() + 4);
     needsBalanced = false;
-    if (textLine->stringAtPos(textLine->nextNonSpaceChar(cur.col()), "if"))
+    int next = textLine->nextNonSpaceChar(cur.col());
+    if (next >= 0 && textLine->stringAtPos(next, "if"))
     {
-      cur.setCol(textLine->nextNonSpaceChar(cur.col()) + 2);
+      cur.setCol(next + 2);
       needsBalanced = true;
     }
   }
