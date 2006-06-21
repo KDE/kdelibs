@@ -179,15 +179,16 @@ uint KateTextLine::indentDepth (uint tabwidth) const
 
 bool KateTextLine::stringAtPos(uint pos, const QString& match) const
 {
+  const uint len = m_text.length();
   const uint matchlen = match.length();
 
-  if ((pos+matchlen) > m_text.length())
+  if ((pos+matchlen) > len)
     return false;
 
   const QChar *unicode = m_text.unicode();
   const QChar *matchUnicode = match.unicode();
 
-  for (uint i=0; i < matchlen; i++)
+  for (uint i=0; i < matchlen && i < len; i++)
     if (unicode[i+pos] != matchUnicode[i])
       return false;
 
