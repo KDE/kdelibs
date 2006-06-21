@@ -414,6 +414,9 @@ void HTMLTokenizer::scriptHandler()
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
             scriptExecution( exScript, QString::null, tagStartLineno /*scriptStartLineno*/ );
+        } else {
+            // script was filtered or disallowed
+            effectiveScript = false;
         }
     }
 
@@ -428,8 +431,8 @@ void HTMLTokenizer::scriptHandler()
     } else if ( cachedScript.isEmpty() ) {
         write( pendingQueue.pop(), false );
     } else if ( !deferredScript && pendingQueue.count() > 1) {
-       TokenizerString t = pendingQueue.pop();
-       pendingQueue.top().prepend( t );
+        TokenizerString t = pendingQueue.pop();
+        pendingQueue.top().prepend( t );
     }
 }
 
@@ -1318,7 +1321,10 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         return;
     }
 
-    setSrc(str);
+    if (!src.isEmpty())
+        src.append(str);
+    else
+        setSrc(str);
     m_abort = false;
 
 //     if (Entity)
