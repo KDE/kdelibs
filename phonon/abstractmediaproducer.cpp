@@ -195,13 +195,13 @@ void AbstractMediaProducer::setupIface()
 	{
 		BACKEND_GET1( bool, success, "addAudioPath", QObject*, a->iface() );
 		if( !success )
-			d->audioPaths.remove( a );
+			d->audioPaths.removeAll( a );
 	}
 	foreach( VideoPath* v, d->videoPaths )
 	{
 		BACKEND_GET1( bool, success, "addVideoPath", QObject*, v->iface() );
 		if( !success )
-			d->videoPaths.remove( v );
+			d->videoPaths.removeAll( v );
 	}
 
 	switch( d->state )
