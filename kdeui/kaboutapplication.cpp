@@ -34,8 +34,13 @@
 #include <kurllabel.h>
 
 KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
-  :KAboutDialog( AbtTabbed|AbtProduct, aboutData->programName(), Close, Close, parent, modal )
+  :KAboutDialog( Tabbed|Product, aboutData->programName(), parent ),
+   d( 0 )
 {
+  setButtons( Close );
+  setDefaultButton( Close );
+  setModal( modal );
+
   if( aboutData == 0 )
     aboutData = KGlobal::instance()->aboutData();
 

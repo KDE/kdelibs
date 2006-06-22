@@ -814,6 +814,26 @@ Use KSystemTray instead.</li>
 
 <H4>KAboutDialog</H4>
 <ul>
+<li>changed enum names</li>
+<pre>
+  AbtPlain         -&gt; Plain
+  AbtTabbed        -&gt; Tabbed
+  AbtTitle         -&gt; Title
+  AbtImageLeft     -&gt; ImageLeft
+  AbtImageRight    -&gt; ImageRight
+  AbtImageOnly     -&gt; ImageOnly
+  AbtProduct       -&gt; Product
+  AbtKDEStandard   -&gt; KDEStandard
+  AbtAppStandard   -&gt; AppStandard
+  AbtImageAndTitle -&gt; ImageAndTitle
+</pre>
+<li>Constructor: KAboutDialog( QWidget *parent = 0, bool modal = true ) -&gt; KAboutDialog( QWidget *parent = 0 )</li>
+<li>Constructor: KAboutDialog( int dialogLayout, const QString &amp;caption, ButtonCodes buttonMask,
+                               ButtonCode defaultButton, QWidget *parent=0, bool modal=false, bool separator = false,
+                               const QString &amp;user1 = QString(),
+                               const QString &amp;user2 = QString(),
+                               const QString &amp;user3 = QString() ) -&gt;
+                 KAboutDialog( int dialogLayout, const QString &amp;caption, QWidget *parent = 0 ) (see KDialog how to port)</li>
 <li>void setIcon( const QString &amp;fileName ) which was deprecated has been removed</li>
 <li>addContainerPage int args are now Qt::Alignment args</li>
 <li>addScrolledContainerPage int args are now Qt::Alignment args</li>
@@ -825,6 +845,15 @@ Use KSystemTray instead.</li>
 <li>KAboutContainer constructor int args have been replaced by Qt::Alignment</li>
 <li>addTitle int args replaced by Qt::Alignment</li>
 <li>addImage int args replaced by Qt::Alignment</li>
+</ul>
+
+<h4>KAboutContributor</h4>
+<ul>
+<li>void setURL( const QString&amp; ) -&gt; void setUrl( const QString&amp; )</li>
+<li>QString getName( void ) const -&gt; QString name() const</li>
+<li>QString getEmail( void ) const -&gt; QString email() const</li>
+<li>QString getURL( void ) const -&gt; QString url() const</li>
+<li>QString getWork( void ) const -&gt; QString work() const</li>
 </ul>
 
 <H4>KRecentFilesAction</H4>

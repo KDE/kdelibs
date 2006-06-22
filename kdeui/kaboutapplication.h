@@ -58,6 +58,12 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      *        modal and must be made visible using QWidget::exec().
      */
     KAboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, bool modal=true );
+
+  private:
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KAboutApplication );
 };
 
 #endif
