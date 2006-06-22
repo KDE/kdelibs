@@ -94,7 +94,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
 
     setSupportedMimeTypes( BackendCapabilities::self()->knownMimeTypes() );
 
-    d->audioOutput = new AudioOutput( this );
+    d->audioOutput = new AudioOutput( Phonon::VideoCategory, this );
     d->audioPath = new AudioPath( this );
     d->audioPath->addOutput( d->audioOutput );
 
