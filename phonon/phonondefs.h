@@ -178,14 +178,10 @@ protected: \
 	 * \internal
 	 * After construction of the Iface object this method is called
 	 * throughout the complete class hierarchy in order to set up the
-	 * properties that were already set on the public interface.
+	 * properties that were already set on the frontend objects.
 	 *
-	 * An example implementation could look like this:
-	 * \code
-	 * ParentClass::setupIface();
-	 * m_iface->setPropertyA( d->propertyA );
-	 * m_iface->setPropertyB( d->propertyB );
-	 * \endcode
+	 * In the implementation don't forget to call the parent implementation
+	 * of this method.
 	 */ \
 	void setupIface();
 
