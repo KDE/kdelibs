@@ -1,66 +1,73 @@
-#include "kdualcolortest.h"
-#include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include <QHBoxLayout>
+#include <kcmdlineargs.h>
 
-KDualColorWidget::KDualColorWidget(QWidget *parent)
-    : QWidget(parent)
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QLabel>
+
+#include "kdualcolortest.h"
+
+KDualColorWidget::KDualColorWidget( QWidget *parent )
+  : QWidget(parent)
 {
-    lbl = new QLabel("Testing, testing, 1, 2, 3...", this);
-    KDualColorButton *colorBtn =
-        new KDualColorButton(lbl->palette().color(QPalette::Text),
-                             lbl->palette().color(QPalette::Background), this);
-    connect(colorBtn, SIGNAL(fgChanged(const QColor &)),
-            SLOT(slotFgChanged(const QColor &)));
-    connect(colorBtn, SIGNAL(bgChanged(const QColor &)),
-            SLOT(slotBgChanged(const QColor &)));
-    connect(colorBtn, SIGNAL(currentChanged(KDualColorButton::DualColor)),
-            SLOT(slotCurrentChanged(KDualColorButton::DualColor)));
+  mLabel = new QLabel( "<qt>Testing, testing, 1, 2, 3...</qt>", this );
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setMargin(5);
-    layout->addWidget(colorBtn, 0);
-    layout->addWidget(lbl, 1);
-    layout->activate();
-    resize(sizeHint());
+  KDualColorButton *colorButton;
+  colorButton = new KDualColorButton( mLabel->palette().color( QPalette::Text ),
+                                      mLabel->palette().color( QPalette::Background ), this );
+
+  connect( colorButton, SIGNAL( foregroundColorChanged( const QColor& ) ),
+           this, SLOT( slotForegroundColorChanged( const QColor& ) ) );
+  connect( colorButton, SIGNAL( backgroundColorChanged( const QColor& ) ),
+           this, SLOT( slotBackgroundColorChanged( const QColor& ) ) );
+  connect( colorButton, SIGNAL( selectionChanged( KDualColorButton::Selection ) ),
+           this, SLOT( slotSelectionChanged( KDualColorButton::Selection ) ) );
+
+  QHBoxLayout *layout = new QHBoxLayout( this );
+  layout->setMargin( 5 );
+  layout->addWidget( colorButton, 0 );
+  layout->addWidget( mLabel, 1 );
+
+  resize( sizeHint() );
 }
 
-void KDualColorWidget::slotFgChanged(const QColor &c)
+void KDualColorWidget::slotForegroundColorChanged( const QColor &color )
 {
-    QPalette p = lbl->palette();
-    p.setColor(QPalette::Text, c);
-    lbl->setPalette(p);
+  qDebug( "Foreground Color Changed." );
+
+  QPalette palette = mLabel->palette();
+  palette.setColor( QPalette::Text, color );
+  mLabel->setPalette( palette );
 }
 
-void KDualColorWidget::slotBgChanged(const QColor &c)
+void KDualColorWidget::slotBackgroundColorChanged( const QColor &color )
 {
-    QPalette p = lbl->palette();
-    QBrush b(c, Qt::SolidPattern);
-    p.setBrush(QPalette::Background, b);
-    setPalette(p);
+  qDebug( "Background Color Changed." );
+
+  QPalette palette = mLabel->palette();
+  palette.setColor( QPalette::Background, color );
+  setPalette( palette );
 }
 
-void KDualColorWidget::slotCurrentChanged(KDualColorButton::DualColor current)
+void KDualColorWidget::slotSelectionChanged( KDualColorButton::Selection selection )
 {
-    if(current == KDualColorButton::Foreground)
-        qDebug("Foreground Button Selected.");
-    else
-        qDebug("Background Button Selected.");
+  if ( selection == KDualColorButton::Foreground )
+    qDebug( "Foreground Button Selected." );
+  else
+    qDebug( "Background Button Selected." );
 }
 
-int main(int argc, char **argv)
+int main( int argc, char **argv )
 {
-    KAboutData about("KDualColorTest", "KDualColorTest", "version");
-    KCmdLineArgs::init(argc, argv, &about);
+  KAboutData about( "KDualColorTest", "KDualColorTest", "version" );
+  KCmdLineArgs::init( argc, argv, &about );
 
-    KApplication *app=new KApplication();
+  KApplication app;
 
-    KDualColorWidget w;
-    w.show();
-    return(app->exec());
+  KDualColorWidget widget;
+  widget.show();
+
+  return app.exec();
 }
 
 #include "kdualcolortest.moc"
-
-

@@ -1,5 +1,7 @@
 /* This file is part of the KDE libraries
+
    Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+                 2006 Tobias Koenig <tokoe@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -15,15 +17,13 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KDUALCOLORBTN_H
-#define KDUALCOLORBTN_H
 
-class QBitmap;
-#include <QBrush>
-#include <QWidget>
-#include <QBitmap>
+#ifndef KDUALCOLORBUTTON_H
+#define KDUALCOLORBUTTON_H
 
 #include <kdelibs_export.h>
+
+#include <QtGui/QWidget>
 
 /**
  * @short A widget for selecting two related colors.
@@ -34,9 +34,9 @@ class QBitmap;
  * swap colors control.
  *
  * When the user clicks on the foreground or background rectangle the
- * rectangle is first sunken and the currentChanged() signal is emitted.
- * Further clicks will present a color dialog and emit either the fgChanged()
- * or bgChanged() if a new color is selected.
+ * rectangle is first sunken and the selectionChanged() signal is emitted.
+ * Further clicks will present a color dialog and emit either the foregroundColorChanged()
+ * or backgroundColorChanged() if a new color is selected.
  *
  * Note: With drag and drop when dropping a color the current selected color
  * will be set, while when dragging a color it will use whatever color
@@ -49,84 +49,118 @@ class QBitmap;
 class KDEUI_EXPORT KDualColorButton : public QWidget
 {
     Q_OBJECT
-    Q_ENUMS( DualColor )
-    Q_PROPERTY( QColor foreground READ foreground WRITE setForeground )
-    Q_PROPERTY( QColor background READ background WRITE setBackground )
-    Q_PROPERTY( QColor currentColor READ currentColor WRITE setCurrentColor STORED false DESIGNABLE false )
-    Q_PROPERTY( DualColor current READ current WRITE setCurrent )
+    Q_ENUMS( Selection )
+    Q_PROPERTY( QColor foregroundColor READ foregroundColor WRITE setForegroundColor )
+    Q_PROPERTY( QColor backgroundColor READ backgroundColor WRITE setBackgroundColor )
+    Q_PROPERTY( QColor currentColor READ currentColor WRITE setCurrentColor )
+    Q_PROPERTY( Selection selection READ selection WRITE setSelection STORED false DESIGNABLE false )
 
-public:
 
-    enum DualColor { Foreground, Background };
+  public:
+    enum Selection {
+      Foreground,
+      Background
+    };
+
     /**
      * Constructs a new KDualColorButton using the default black and white
      * colors.
      *
+     * @param parent The parent widget of the KDualColorButton.
+     * @param dialogParent The parent widget of the color selection dialog.
      */
-    KDualColorButton(QWidget *parent=0, QWidget* dialogParent=0);
+    KDualColorButton( QWidget *parent = 0, QWidget* dialogParent = 0 );
 
     /**
      * Constructs a new KDualColorButton with the supplied foreground and
      * background colors.
+     *
+     * @param parent The parent widget of the KDualColorButton.
+     * @param dialogParent The parent widget of the color selection dialog.
      */
-    KDualColorButton(const QColor &fgColor, const QColor &bgColor,
-                     QWidget *parent=0, QWidget* dialogParent=0);
+    KDualColorButton( const QColor &foregroundColor, const QColor &backgroundColor,
+                      QWidget *parent = 0, QWidget* dialogParent = 0 );
 
+    /**
+     * Destroys the KDualColorButton.
+     */
     ~KDualColorButton();
+
     /**
      * Returns the current foreground color.
      */
-    QColor foreground() const;
+    QColor foregroundColor() const;
+
     /**
      * Returns the current background color.
      */
-    QColor background() const;
+    QColor backgroundColor() const;
+
     /**
-     * Returns the current color item selected by the user.
-     */
-    DualColor current() const;
-    /**
-     * Returns the color of the selected item.
+     * Returns the current color depending on the
+     * selection.
+     *
+     * This is equal to
+     *
+     * \code
+     *  if ( selection() == Foreground )
+     *    return foregroundColor();
+     *  else
+     *    return backgroundColor();
+     * \endcode
      */
     QColor currentColor() const;
+
+    /**
+     * Returns whether the foreground or background item
+     * is selected.
+     */
+    Selection selection() const;
+
     /**
      * Returns the minimum size needed to display the widget and all its
      * controls.
      */
     virtual QSize sizeHint() const;
 
-public Q_SLOTS:
+  public Q_SLOTS:
     /**
      * Sets the foreground color.
      */
-    void setForeground(const QColor &c);
+    void setForegroundColor( const QColor &color );
+
     /**
      * Sets the background color.
      */
-    void setBackground(const QColor &c);
-    /**
-     * Sets the current selected color item.
-     */
-    void setCurrent(DualColor s);
+    void setBackgroundColor( const QColor &color );
+
     /**
      * Sets the color of the selected item.
      */
-    void setCurrentColor(const QColor &c);
+    void setCurrentColor( const QColor &color );
 
-Q_SIGNALS:
+    /**
+     * Sets the current selected color item.
+     */
+    void setSelection( Selection selection );
+
+  Q_SIGNALS:
     /**
      * Emitted when the foreground color is changed.
      */
-    void fgChanged(const QColor &c);
+    void foregroundColorChanged( const QColor &color );
+
     /**
      * Emitted when the background color is changed.
      */
-    void bgChanged(const QColor &c);
+    void backgroundColorChanged( const QColor &color );
+
     /**
      * Emitted when the user changes the current color selection.
      */
-    void currentChanged(KDualColorButton::DualColor s);
-protected:
+    void selectionChanged( KDualColorButton::Selection selection );
+
+  protected:
     /**
      * Sets the supplied rectangles to the proper size and position for the
      * current widget size. You can reimplement this to change the layout
@@ -134,26 +168,18 @@ protected:
      * be at the top right, the reset control will always be at the bottom
      * left, and you must leave at least a 14x14 space in those corners.
      */
-    virtual void metrics(QRect &fgRect, QRect &bgRect);
-    virtual void paintEvent(QPaintEvent *ev);
-    virtual void mousePressEvent(QMouseEvent *ev);
-    virtual void mouseMoveEvent(QMouseEvent *ev);
-    virtual void mouseReleaseEvent(QMouseEvent *ev);
-    // Dnd
-    virtual void dragEnterEvent(QDragEnterEvent *ev);
-    virtual void dropEvent(QDropEvent *ev);
+    virtual void metrics( QRect &foregroundRect, QRect &backgroundRect );
 
-private:
-    QBitmap arrowBitmap;
-    QPixmap *resetPixmap;
-    QBrush fg, bg;
-    QPoint mPos;
-    bool dragFlag, miniCtlFlag;
-    DualColor curColor, tmpColor;
+    virtual void paintEvent( QPaintEvent *event );
+    virtual void mousePressEvent( QMouseEvent *event );
+    virtual void mouseMoveEvent( QMouseEvent *event );
+    virtual void mouseReleaseEvent( QMouseEvent *event );
+    virtual void dragEnterEvent( QDragEnterEvent *event );
+    virtual void dropEvent( QDropEvent *event );
 
-private:
-    class KDualColorPrivate;
-    KDualColorPrivate *const d;
+  private:
+    class Private;
+    Private *const d;
 };
 
 #endif

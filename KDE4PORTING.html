@@ -653,6 +653,20 @@ cg.readXXX("entry name");
     <li>signal void settingsChanged(); has dissapeared use the signal with the parameter instead. If you don't need the parameter don't connect it, e.g <pre>connect(myDialog, SIGNAL(settingsChanged(const QString&amp;)), this, SLOT(mySlot()));</pre></li>
 </ul>
 
+<H4>KDualColorButton</H4>
+<ul>
+<li>enum DualColor -&gt; enum Selection</li>
+<li>void setForeground( const QColor&amp; ) -&gt; void setForegroundColor( const QColor&amp; )</li>
+<li>void setBackground( const QColor&amp; ) -&gt; void setBackgroundColor( const QColor&amp; )</li>
+<li>void setCurrent( DualColor ) -&gt; void setSelection( Selection )</li>
+<li>QColor foreground() const -&gt; QColor foregroundColor() const</li>
+<li>QColor background() const -&gt; QColor backgroundColor() const</li>
+<li>DualColor current() const -&gt; Selection selection() const</li>
+<li>signal void fgChanged( const QColor&amp; ) -&gt; signal void foregroundColorChanged( const QColor&amp; )</li>
+<li>signal void bgChanged( const QColor&amp; ) -&gt; signal void backgroundColorChanged( const QColor&amp; )</li>
+<li>signal void currentChanged( DualoColor ) -&gt; signal void selectionChanged( Selection )</li>
+</ul>
+
 <H4>KJanusWidget</H4>
 <ul>
 <li>Deprecated. Use KPageWidget instead</li>
