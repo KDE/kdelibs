@@ -23,8 +23,9 @@
 #ifndef KABOUT_APPLICATION_H
 #define KABOUT_APPLICATION_H
 
-#include <kaboutdata.h>
 #include <kaboutdialog.h>
+
+class KAboutData;
 
 /**
  * @short Standard "About Application" dialog box.
@@ -57,13 +58,13 @@ class KDEUI_EXPORT KAboutApplication : public KAboutDialog
      *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec().
      */
-    KAboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, bool modal=true );
+    explicit KAboutApplication( const KAboutData *aboutData=0, QWidget *parent=0, bool modal=true );
 
   private:
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( KAboutApplication );
+    Q_DISABLE_COPY( KAboutApplication )
 };
 
 #endif
