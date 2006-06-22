@@ -57,8 +57,9 @@ int main(int argc, char** argv)
 
      It is important that your main widget is created with the dialog object
      as its parent! */
-  QTextBrowser view( &dialog);
- view.setHtml( text );
+  QTextBrowser view;
+  view.setHtml( text );
+  dialog.setMainWidget( &view );
 
   QLabel label("this is a place for some advanced settings" ,&dialog);
   dialog.setDetailsWidget( &label);
