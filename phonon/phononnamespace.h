@@ -93,10 +93,6 @@ namespace Phonon
 	enum Category
 	{
 		/**
-		 * No application should use that category - it's the default, though.
-		 */
-		UnspecifiedCategory,
-		/**
 		 * If the sounds produced are notifications (bing, beep and such) you
 		 * should use this category.
 		 */

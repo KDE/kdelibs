@@ -27,8 +27,6 @@ namespace Phonon
 	{
 		switch( c )
 		{
-			case Phonon::UnspecifiedCategory:
-				return i18n( "Unspecified" );
 			case Phonon::NotificationCategory:
 				return i18n( "Notifications" );
 			case Phonon::MusicCategory:

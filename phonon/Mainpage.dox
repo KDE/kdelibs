@@ -27,11 +27,11 @@ between producer and output.
  - \ref Phonon::Ui "The Phonon::Ui namespace"
  - \ref Phonon::MediaObject "The central class for playback functionality (MediaObject)"
 
-\section phonon_backend Backend Development
-If you want to write a new backend for %Phonon this is for you:
+\section phonon_back-end Back-end Development
+If you want to write a new back-end for %Phonon this is for you:
  - \ref Phonon::Ifaces
  - \ref Phonon::Ui::Ifaces
- - \ref Phonon::Ifaces::Backend
+ - \ref Phonon::Ifaces::Back-end
 
 \page phonon_tut1 Phonon Tutorial Part 1: a simple audio player
 \code
@@ -65,6 +65,15 @@ void Player::play( const KUrl& url )
   m_media->play();
 }
 \endcode
+
+\page phonon_backenddev Phonon Back-end Development
+The back-end is the most important part in Phonon to provide functionality. This
+document will get you started how back-ends work, how to start development of a
+new back-end and how to understand existing back-end code.
+
+The first step is to understand how the Phonon front-end calls the back-end
+
 */
 // DOXYGEN_REFERENCES = dcop kdecore kio phonon/ui
 // DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR
+// vim: tw=80

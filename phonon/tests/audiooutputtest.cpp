@@ -32,7 +32,7 @@ void AudioOutputTest::initTestCase()
 
 void AudioOutputTest::checkName()
 {
-	AudioOutput ao( this );
+	AudioOutput ao( Phonon::NotificationCategory, this );
 	QCOMPARE( ao.name(), QLatin1String( "qttest" ) );
 	QString n( "lsdf" );
 	ao.setName( n );
@@ -41,7 +41,7 @@ void AudioOutputTest::checkName()
 
 void AudioOutputTest::checkVolume()
 {
-	AudioOutput ao( this );
+	AudioOutput ao( Phonon::NotificationCategory, this );
 	QSignalSpy volumeSignalSpy( &ao, SIGNAL( volumeChanged( float ) ) );
 	float v = 1.0;
 	QCOMPARE( ao.volume(), v );
@@ -57,25 +57,25 @@ void AudioOutputTest::checkVolume()
 
 void AudioOutputTest::checkCategory()
 {
-	AudioOutput ao( this );
-	ao.setCategory( Phonon::UnspecifiedCategory );
-	QCOMPARE( ao.category(), Phonon::UnspecifiedCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Unspecified" ) );
-	ao.setCategory( Phonon::NotificationCategory );
-	QCOMPARE( ao.category(), Phonon::NotificationCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Notifications" ) );
-	ao.setCategory( Phonon::MusicCategory );
-	QCOMPARE( ao.category(), Phonon::MusicCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Music" ) );
-	ao.setCategory( Phonon::VideoCategory );
-	QCOMPARE( ao.category(), Phonon::VideoCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Video" ) );
-	ao.setCategory( Phonon::CommunicationCategory );
-	QCOMPARE( ao.category(), Phonon::CommunicationCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Communication" ) );
-	ao.setCategory( Phonon::GameCategory );
-	QCOMPARE( ao.category(), Phonon::GameCategory );
-	QCOMPARE( Phonon::categoryToString( ao.category() ), QLatin1String( "Games" ) );
+	AudioOutput* ao = new AudioOutput( Phonon::NotificationCategory, this );
+	QCOMPARE( ao->category(), Phonon::NotificationCategory );
+	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Notifications" ) );
+	delete ao;
+	ao = new AudioOutput( Phonon::MusicCategory, this );
+	QCOMPARE( ao->category(), Phonon::MusicCategory );
+	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Music" ) );
+	delete ao;
+	ao = new AudioOutput( Phonon::VideoCategory, this );
+	QCOMPARE( ao->category(), Phonon::VideoCategory );
+	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Video" ) );
+	delete ao;
+	ao = new AudioOutput( Phonon::CommunicationCategory, this );
+	QCOMPARE( ao->category(), Phonon::CommunicationCategory );
+	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Communication" ) );
+	delete ao;
+	ao = new AudioOutput( Phonon::GameCategory, this );
+	QCOMPARE( ao->category(), Phonon::GameCategory );
+	QCOMPARE( Phonon::categoryToString( ao->category() ), QLatin1String( "Games" ) );
 }
 
 void AudioOutputTest::cleanupTestCase()

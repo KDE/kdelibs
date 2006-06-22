@@ -37,7 +37,7 @@ void AudioPathTest::initTestCase()
 
 	//m_media = new MediaObject( this );
 	m_path = new AudioPath( this );
-	m_output = new AudioOutput( this );
+	m_output = new AudioOutput( Phonon::NotificationCategory, this );
 
 	//m_media->setUrl( m_url );
 }
@@ -54,7 +54,7 @@ void AudioPathTest::addOutputs()
 	QCOMPARE( m_path->addOutput( m_output ), true );
 	QCOMPARE( m_path->outputs().size(), 1 );
 	QVERIFY( m_path->outputs().contains( m_output ) );
-	AudioOutput* o2 = new AudioOutput( this );
+	AudioOutput* o2 = new AudioOutput( Phonon::NotificationCategory, this );
 	if( m_path->addOutput( o2 ) )
 	{
 		QCOMPARE( m_path->outputs().size(), 2 );

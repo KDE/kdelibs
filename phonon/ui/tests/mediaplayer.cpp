@@ -41,7 +41,7 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 
 	m_vpath = new VideoPath( this );
 
-	m_aoutput = new AudioOutput( this );
+	m_aoutput = new AudioOutput( Phonon::VideoCategory, this );
 	m_apath = new AudioPath( this );
 
 	m_media = new MediaObject( this );

@@ -35,7 +35,6 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
 	protected:
 		AudioOutputPrivate()
 			: volume( 1.0 )
-			, category( Phonon::UnspecifiedCategory )
 			, outputDeviceIndex( -1 )
 		{
 			const KAboutData* ad = KGlobal::instance()->aboutData();

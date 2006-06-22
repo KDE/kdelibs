@@ -52,10 +52,15 @@ SimplePlayer::SimplePlayer( Phonon::Category category, QObject* parent )
 	: QObject( parent )
 	, d( new Private )
 {
-	d->output = new AudioOutput( this );
-	d->output->setCategory( category );
+	d->output = new AudioOutput( category, this );
 	d->path = new AudioPath( this );
 	d->path->addOutput( d->output );
+	d->player = new MediaObject( this );
+	d->player->addAudioPath( d->path );
+
+	connect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
+			SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
+	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
 }
 
 SimplePlayer::~SimplePlayer()
@@ -67,36 +72,27 @@ SimplePlayer::~SimplePlayer()
 
 void SimplePlayer::play( const KUrl & url )
 {
-	if( d->player )
+	if( url == d->url )
 	{
-		if( url == d->url )
-		{
-			if( !isPlaying() )
-				d->player->play();
-			return;
-		}
-		else
-			delete d->player;
-	}
-	d->player = new MediaObject( this );
-	d->player->setUrl( url );
-	d->player->addAudioPath( d->path );
-		
-	if( ErrorState == d->player->state() )
-	{
-		delete d->player;
-		d->player = 0;
+		if( !isPlaying() )
+			d->player->play();
 		return;
 	}
+	// new URL
+	d->player->setUrl( url );
+		
+	if( ErrorState == d->player->state() )
+		return;
 
 	d->url = url;
 
-	connect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
-			SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
-	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
-
 	if( StoppedState == d->player->state() )
 		d->player->play();
+}
+
+void SimplePlayer::play()
+{
+	play( d->url );
 }
 
 void SimplePlayer::pause()

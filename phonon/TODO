@@ -1,6 +1,3 @@
-- check whether the Category can be required through the ctor of AudioOutput, this way
-  Phonon can get rid of the UnspecifiedCategory
-
 - Add MIME types to the backends desktop file that give the types the backend
   can support in the best case. Those can then be used in places where the
   backend is only conditionally loaded if it can decode the MIME type at hand.

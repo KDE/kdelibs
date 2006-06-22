@@ -51,7 +51,7 @@ set(phononcore_LIB_SRCS
 	audioeffect.cpp
 	volumefadereffect.cpp
 	videoeffect.cpp
-	mixeradaptor.cpp
+	audiooutputadaptor.cpp
 	brightnesscontrol.cpp
 	abstractaudiooutput.cpp
 	audiooutput.cpp
@@ -104,7 +104,6 @@ install_files( /include/phonon FILES
 	audioeffect.h
 	volumefadereffect.h
 	videoeffect.h
-	mixeradaptor.h
 	brightnesscontrol.h
 	abstractaudiooutput.h
 	audiooutput.h

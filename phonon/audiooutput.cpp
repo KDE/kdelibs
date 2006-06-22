@@ -20,7 +20,7 @@
 #include "audiooutput_p.h"
 #include "factory.h"
 #include "audiooutputdevice.h"
-#include "mixeradaptor.h"
+#include "audiooutputadaptor.h"
 
 #include <kglobal.h>
 #include <kinstance.h>
@@ -29,12 +29,15 @@
 
 namespace Phonon
 {
-AudioOutput::AudioOutput( QObject* parent )
+AudioOutput::AudioOutput( Phonon::Category category, QObject* parent )
 	: AbstractAudioOutput( *new AudioOutputPrivate, parent )
 {
 	K_D( AudioOutput );
+	d->category = category;
+	// TODO: select hardware device according to the category
 	d->createIface();
-	new MixerIfaceAdaptor( this );
+	new AudioOutputAdaptor( this );
+	for( int i = 0; !QDBus::sessionBus().registerObject( "/AudioOutputs/" + QString::number( i ), this ); ++i );
 }
 
 AudioOutput::AudioOutput( AudioOutputPrivate& dd, QObject* parent )
@@ -89,13 +92,6 @@ QString AudioOutput::categoryName() const
 {
 	K_D( const AudioOutput );
 	return Phonon::categoryToString( d->category );
-}
-
-void AudioOutput::setCategory( Category c )
-{
-	K_D( AudioOutput );
-	d->category = c;
-	//TODO: select the according AudioOutputDevice
 }
 
 AudioOutputDevice AudioOutput::outputDevice() const

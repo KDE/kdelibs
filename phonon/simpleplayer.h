@@ -36,19 +36,21 @@ class PHONONCORE_EXPORT SimplePlayer : public QObject
 		SimplePlayer( Phonon::Category category, QObject * parent = 0 );
 		~SimplePlayer();
 
-		void play( const KUrl & url );
-		void pause();
-		void stop();
-
 		long totalTime() const;
 		long currentTime() const;
-		void seek( long ms );
-
 		float volume() const;
-		void setVolume( float volume );
 
 		bool isPlaying() const;
 		bool isPaused() const;
+
+	public Q_SLOTS:
+		void play( const KUrl & url );
+		void play();
+		void pause();
+		void stop();
+
+		void seek( long ms );
+		void setVolume( float volume );
 
 	Q_SIGNALS:
 		void finished();

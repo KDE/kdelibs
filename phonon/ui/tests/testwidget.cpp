@@ -50,7 +50,7 @@ TestWidget::TestWidget()
 	, m_ignoreVolumeChange( false )
 	, m_length( -1 )
 {
-	m_output = new AudioOutput( this );
+	m_output = new AudioOutput( Phonon::VideoCategory, this );
 	if( ! m_output )
 		exit( 1 );
 	m_output->setName( "GUI-Test" );

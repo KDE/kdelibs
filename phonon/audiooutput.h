@@ -26,6 +26,7 @@
 
 class QString;
 
+class AudioOutputAdaptor;
 namespace Phonon
 {
 	class AudioOutputPrivate;
@@ -40,8 +41,7 @@ namespace Phonon
 	 *
 	 * Use this class to define the audio output. Example:
 	 * \code
-	 * m_audioOutput = new AudioOutput( this );
-	 * m_audioOutput->setCategory( Phonon::MusicCategory );
+	 * m_audioOutput = new AudioOutput( Phonon::MusicCategory, this );
 	 * m_audioPath->addOutput( m_audioOutput );
 	 * \endcode
 	 *
@@ -50,6 +50,7 @@ namespace Phonon
 	 */
 	class PHONONCORE_EXPORT AudioOutput : public AbstractAudioOutput
 	{
+		friend class ::AudioOutputAdaptor;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioOutput )
 		/**
@@ -78,21 +79,6 @@ namespace Phonon
 		 */
 		Q_PROPERTY( double volumeDecibel READ volumeDecibel WRITE setVolumeDecibel )
 		/**
-		 * The category can be used by mixer applications to control the
-		 * volume of a whole category instead of the user having to identify
-		 * all programs by name.
-		 *
-		 * The category is also used for the default output device that is
-		 * configured centrally. As an example: often users want to have the
-		 * audio signal of a VoIP application go to their USB headset while
-		 * all other sounds should go to the internal soundcard. The
-		 * category defaults to Phonon::UnspecifiedCategory.
-		 *
-		 * \see Phonon::categoryToString
-		 * \see outputDevice
-		 */
-		Q_PROPERTY( Category category READ category WRITE setCategory )
-		/**
 		 * This property holds the (hardware) destination for the output.
 		 *
 		 * The default device is determined by the category and the global
@@ -104,13 +90,49 @@ namespace Phonon
 		 * \see outputDeviceChanged
 		 */
 		Q_PROPERTY( AudioOutputDevice outputDevice READ outputDevice WRITE setOutputDevice )
-		PHONON_HEIR( AudioOutput )
 		public:
+			/**
+			 * Creates a new AudioOutput that defines output to a physical
+			 * device.
+			 *
+			 * \param category The category can be used by mixer applications to group volume
+			 * controls of applications into categories. That makes it easier for
+			 * the user to identify the programs.
+			 * The category is also used for the default output device that is
+			 * configured centrally. As an example: often users want to have the
+			 * audio signal of a VoIP application go to their USB headset while
+			 * all other sounds should go to the internal soundcard.
+			 *
+			 * \param parent QObject parent
+			 *
+			 * \see Phonon::categoryToString
+			 * \see outputDevice
+			 */
+			AudioOutput( Phonon::Category category, QObject* parent = 0 );
 			QString name() const;
 			double volumeDecibel() const;
+
+			/**
+			 * Returns the category of this output.
+			 *
+			 * \see AudioOutput( Phonon::Category, QObject* )
+			 */
 			Phonon::Category category() const;
 			AudioOutputDevice outputDevice() const;
 
+		protected:
+			/**
+			 * \internal
+			 */
+			AudioOutput( AudioOutputPrivate& dd, QObject* parent );
+
+			/**
+			 * \internal
+			 * After construction of the Iface object this method is called
+			 * throughout the complete class hierarchy in order to set up the
+			 * properties that were already set on the frontend objects.
+			 */
+			void setupIface();
 		private:
 			QString categoryName() const;
 
@@ -119,7 +141,6 @@ namespace Phonon
 			float volume() const;
 			void setVolume( float newVolume );
 			void setVolumeDecibel( double newVolumeDecibel );
-			void setCategory( Phonon::Category category );
 			void setOutputDevice( const AudioOutputDevice& newAudioOutputDevice );
 
 		Q_SIGNALS:
@@ -135,9 +156,8 @@ namespace Phonon
 			 * This signal is emitted when the (hardware) device for the output
 			 * has changed.
 			 *
-			 * The change can happen either through setOutputDevice, if the
-			 * global configuration for the used category has changed or if
-			 * changing the category via setCategory needs another device.
+			 * The change can happen either through setOutputDevice or if the
+			 * global configuration for the used category has changed.
 			 *
 			 * \see outputDevice
 			 */
