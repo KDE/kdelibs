@@ -30,6 +30,7 @@
 #include <QEvent>
 
 #include <kdebug.h>
+#include <kicon.h>
 #include <klocale.h>
 
 KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, const QString& name )

@@ -50,7 +50,7 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		 * @param parent This button's parent
 		 * @param arrow The direction the arrrow should be pointing in
 		 */
-		KArrowButton(QWidget *parent = 0, Qt::ArrowType arrow = Qt::UpArrow);
+		explicit KArrowButton(QWidget *parent = 0, Qt::ArrowType arrow = Qt::UpArrow);
 
 		/**
 		 * Destructor.

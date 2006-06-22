@@ -31,11 +31,9 @@
 #include <kdelibs_export.h>
 #include <kshortcut.h>
 
-#include "kguiitem.h"
-#include "kicon.h"
-
 class KActionCollection;
 class KGuiItem;
+class KIcon;
 class KInstance;
 
 /**

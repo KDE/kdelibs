@@ -24,6 +24,7 @@
 #include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qlineedit.h>
 #include <qmenu.h>
 #include <qpushbutton.h>
 #include <qregexp.h>

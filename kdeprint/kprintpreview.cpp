@@ -31,6 +31,7 @@
 #include <krun.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>

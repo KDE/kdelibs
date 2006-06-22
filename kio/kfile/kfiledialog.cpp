@@ -31,6 +31,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QFileDialog>
 
 
@@ -44,6 +45,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kimageio.h>
 #include <kio/job.h>

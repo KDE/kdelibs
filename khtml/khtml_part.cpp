@@ -79,6 +79,7 @@ using namespace DOM;
 #include <kio/netaccess.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kcharsets.h>

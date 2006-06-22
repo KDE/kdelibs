@@ -23,6 +23,7 @@
 #include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <kinstance.h>
 #include <kseparatoraction.h>
 #include <ktoggleaction.h>

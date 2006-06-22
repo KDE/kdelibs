@@ -21,11 +21,13 @@
 #ifndef _KCOLORMIMEDATA_H
 #define _KCOLORMIMEDATA_H
 
-#include <qcolor.h>
 #include <kdelibs_export.h>
 
-class QMimeData;
+class QColor;
 class QDrag;
+class QMimeData;
+class QWidget;
+
 /**
  * Drag-and-drop and clipboard mimedata manipulation for QColor objects. The according MIME type
  * is set to application/x-color.

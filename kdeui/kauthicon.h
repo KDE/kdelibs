@@ -50,7 +50,7 @@ public:
   /**
    * Constructor.
    */
-  KAuthIcon(QWidget *parent = 0);
+  explicit KAuthIcon(QWidget *parent = 0);
   ~KAuthIcon();
 
   virtual QSize sizeHint() const;
@@ -103,7 +103,7 @@ class KDEUI_EXPORT KRootPermsIcon : public KAuthIcon
   Q_OBJECT
 
 public:
-  KRootPermsIcon(QWidget *parent = 0);
+  explicit KRootPermsIcon(QWidget *parent = 0);
   ~KRootPermsIcon();
 
   /**
@@ -136,7 +136,7 @@ class KDEUI_EXPORT KWritePermsIcon : public KAuthIcon
   Q_PROPERTY( QString fileName READ fileName WRITE setFileName )
 
 public:
-  KWritePermsIcon(const QString & fileName, QWidget *parent = 0);
+  explicit KWritePermsIcon(const QString & fileName, QWidget *parent = 0);
   ~KWritePermsIcon();
   /**
    * @return whether or not the monitored file is writable.

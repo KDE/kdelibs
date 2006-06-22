@@ -54,7 +54,7 @@ public:
      * The parent widget is used to give the focus back when pressing the
      * up-button on the very first item.
      */
-    KCompletionBox( QWidget *parent );
+    explicit KCompletionBox( QWidget *parent = 0 );
 
     /**
      * Destroys the box

@@ -32,6 +32,8 @@
 
 #include "kactioncollection.h"
 #include "kglobalaccel.h"
+#include "kguiitem.h"
+#include "kicon.h"
 
 //---------------------------------------------------------------------
 // KActionPrivate

@@ -23,6 +23,7 @@
 #include <kstatusbar.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <kmessagebox.h>

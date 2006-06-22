@@ -23,6 +23,7 @@
 #include <kstdaccel.h>
 #include <kstdaction.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
 

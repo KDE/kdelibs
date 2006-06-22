@@ -38,6 +38,7 @@
 #include <kmenu.h>
 #include <kaction.h>
 #include <kstdaction.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kcursor.h>

@@ -23,6 +23,7 @@
 #include <kstdaccel.h>
 #include <qapplication.h>
 #include <kaction.h>
+#include <kicon.h>
 
 namespace KStdAction
 {

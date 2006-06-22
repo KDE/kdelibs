@@ -45,6 +45,7 @@
 #include <kdebug.h>
 #include <kedittoolbar.h>
 #include <kglobal.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kipc.h>
 #include <klineedit.h>

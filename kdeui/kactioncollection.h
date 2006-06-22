@@ -30,14 +30,13 @@
 
 #include <kdelibs_export.h>
 
-class QString;
-
-class QAction;
 class KAction;
 class KConfigBase;
 class KInstance;
 class KXMLGUIClient;
+
 class QActionGroup;
+class QString;
 
 /**
  * \short A container for a set of KAction objects.
@@ -64,7 +63,7 @@ public:
    * Constructor.  Allows specification of a KInstance other than the default
    * global instance, where needed.
    */
-  KActionCollection( QObject *parent, KInstance *instance = 0 );
+  explicit KActionCollection( QObject *parent, KInstance *instance = 0 );
 
   /**
    * Destructor.

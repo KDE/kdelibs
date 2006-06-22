@@ -31,6 +31,7 @@
 #include <kfiledialog.h>
 #include <kfilespeedbar.h>
 #include <kglobalsettings.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kprotocolinfo.h>

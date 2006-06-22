@@ -24,28 +24,24 @@
 #include "kcharselect_p.h"
 #include "kcharselect_p.moc"
 
-#include <qbrush.h>
 #include <qcolor.h>
+#include <qcombobox.h>
 #include <qevent.h>
 #include <qfont.h>
 #include <qfontdatabase.h>
-
-#include <qnamespace.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpainter.h>
 #include <qpen.h>
 #include <qregexp.h>
+#include <qspinbox.h>
 #include <qstyle.h>
 #include <qtooltip.h>
 #include <qvalidator.h>
 
-#include <qapplication.h>
-
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
-#include <kvbox.h>
 #include <qheaderview.h>
 
 
@@ -381,6 +377,48 @@ void KCharSelect::setTableNum( int _tableNum )
 {
     tableSpinBox->setValue( _tableNum );
     charTable->setTableNum( _tableNum );
+}
+
+//==================================================================
+QChar KCharSelect::chr() const
+{
+    return charTable->chr();
+}
+
+//==================================================================
+QString KCharSelect::font() const
+{
+    return fontCombo->currentText();
+}
+
+//==================================================================
+int KCharSelect::tableNum() const
+{
+    return tableSpinBox->value();
+}
+
+//==================================================================
+void KCharSelect::enableFontCombo( bool e )
+{
+    fontCombo->setEnabled( e );
+}
+
+//==================================================================
+void KCharSelect::enableTableSpinBox( bool e )
+{
+    tableSpinBox->setEnabled( e );
+}
+
+//==================================================================
+bool KCharSelect::isFontComboEnabled() const
+{
+    return fontCombo->isEnabled();
+}
+
+//==================================================================
+bool KCharSelect::isTableSpinBoxEnabled() const
+{
+    return tableSpinBox->isEnabled();
 }
 
 //==================================================================

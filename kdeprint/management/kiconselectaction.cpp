@@ -19,6 +19,8 @@
 
 #include "kiconselectaction.h"
 
+#include <kicon.h>
+
 KIconSelectAction::KIconSelectAction(const QString& text, KActionCollection* parent, const char* name)
   : KSelectAction(text, parent, name)
   , d(0L)

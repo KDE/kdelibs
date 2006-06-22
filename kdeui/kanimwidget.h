@@ -51,7 +51,7 @@ public:
    *
    * @param parent The parent widget
    */
-  KAnimatedButton(QWidget *parent = 0L);
+  explicit KAnimatedButton(QWidget *parent = 0L);
 
   /**
    * Destructor

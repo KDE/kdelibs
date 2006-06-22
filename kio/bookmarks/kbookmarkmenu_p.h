@@ -27,6 +27,7 @@
 #include <qobject.h>
 
 #include <kdialog.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>

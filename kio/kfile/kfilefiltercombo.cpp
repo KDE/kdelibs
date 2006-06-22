@@ -22,6 +22,7 @@
 #include <kstaticdeleter.h>
 #include <config-kfile.h>
 #include <QEvent>
+#include <QLineEdit>
 
 #include "kfilefiltercombo.h"
 

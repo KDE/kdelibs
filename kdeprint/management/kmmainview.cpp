@@ -42,6 +42,7 @@
 #include <qlayout.h>
 #include <kmessagebox.h>
 #include <kaction.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <ktoolbar.h>

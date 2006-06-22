@@ -22,6 +22,7 @@
 #include <kapplication.h>
 #include <krandom.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 

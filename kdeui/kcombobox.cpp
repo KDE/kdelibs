@@ -20,7 +20,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kcombobox.h"
+
 #include <qclipboard.h>
+#include <QLineEdit>
 #include <qmenu.h>
 #include <qapplication.h>
 #include <qevent.h>
@@ -39,8 +42,6 @@
 #include <kicon.h>
 
 #include <kdebug.h>
-
-#include "kcombobox.h"
 
 #include <stdlib.h> // getenv
 
@@ -105,6 +106,11 @@ bool KComboBox::contains( const QString& _text ) const
             return true;
     }
     return false;
+}
+
+int KComboBox::cursorPosition() const
+{
+    return ( lineEdit() ) ? lineEdit()->cursorPosition() : -1;
 }
 
 void KComboBox::setAutoCompletion( bool autocomplete )

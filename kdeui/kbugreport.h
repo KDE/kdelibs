@@ -50,7 +50,7 @@ public:
    * since KHelpMenu takes care of the menu item
    * for "Report Bug..." and of creating a KBugReport dialog.
    */
-  KBugReport( QWidget * parent = 0L, bool modal=true, const KAboutData *aboutData = 0L );
+  explicit KBugReport( QWidget * parent = 0L, bool modal=true, const KAboutData *aboutData = 0L );
   /**
    * Destructor
    */

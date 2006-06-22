@@ -51,7 +51,7 @@ class KDEUI_EXPORT KAboutKDE : public KAboutDialog
      *        made visible using QWidget::show(). Otherwise it will be
      *        modal and must be made visible using QWidget::exec()
      */
-    KAboutKDE( QWidget *parent=0, bool modal=true );
+    explicit KAboutKDE( QWidget *parent=0, bool modal=true );
 };
 
 

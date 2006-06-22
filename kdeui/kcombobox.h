@@ -22,12 +22,12 @@
 #ifndef KCOMBOBOX_H
 #define KCOMBOBOX_H
 
-#include <QLineEdit>
 #include <QComboBox>
 
 #include <kcompletion.h>
 
 class QLineEdit;
+class QMenu;
 
 class KCompletionBox;
 class KUrl;
@@ -154,7 +154,7 @@ public:
     *
     * @param parent The parent object of this widget
     */
-    KComboBox( QWidget *parent=0 );
+    explicit KComboBox( QWidget *parent=0 );
 
     /**
     * Constructs a "read-write" or "read-only" combo box depending on
@@ -164,7 +164,7 @@ public:
     * @param rw When @p true, widget will be editable.
     * @param parent The parent object of this widget.
     */
-    KComboBox( bool rw, QWidget *parent=0 );
+    explicit KComboBox( bool rw, QWidget *parent=0 );
 
     /**
     * Destructor.
@@ -241,7 +241,7 @@ public:
     *
     * @return Current cursor position.
     */
-    int cursorPosition() const { return ( lineEdit() ) ? lineEdit()->cursorPosition() : -1; }
+    int cursorPosition() const;
 
     /**
     * Re-implemented from QComboBox.

@@ -30,6 +30,7 @@
 #include <qlayout.h>
 #include <kimageeffect.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
 #include <kaction.h>

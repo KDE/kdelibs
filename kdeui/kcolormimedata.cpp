@@ -19,9 +19,11 @@
 */
 
 #include "kcolormimedata.h"
-#include <QPainter>
-#include <QMimeData>
+
+#include <QColor>
 #include <QDrag>
+#include <QMimeData>
+#include <QPainter>
 
 void
 KColorMimeData::populateMimeData(QMimeData *mimeData, const QColor &color)

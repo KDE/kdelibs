@@ -29,6 +29,8 @@
 //
 
 
+#include "kcolorcombo.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -55,9 +57,8 @@
 #include <kpalette.h>
 #include <kimageeffect.h>
 
-//#include "kcolordialog.h"
+#include "kcolordialog.h"
 //#include "kcolordrag.h"
-#include "kcolorcombo.h"
 
 // This is repeated from the KColorDlg, but I didn't
 // want to make it public BL.

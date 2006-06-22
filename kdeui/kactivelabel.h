@@ -21,7 +21,6 @@
 #define KACTIVELABEL_H
 
 #include <ktextbrowser.h>
-#include <kdelibs_export.h>
 
 class KActiveLabelPrivate;
  /**
@@ -36,12 +35,12 @@ public:
     /**
      * Constructor.
      */
-    KActiveLabel(QWidget * parent);
+    explicit KActiveLabel(QWidget * parent = 0);
 
     /**
      * Constructor.
      */
-    KActiveLabel(const QString & text, QWidget * parent);
+    explicit KActiveLabel(const QString & text, QWidget * parent = 0);
 
     virtual ~KActiveLabel();
 

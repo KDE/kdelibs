@@ -92,7 +92,7 @@ public:
   KCModule(QWidget *parent, const char *name, const QStringList &args=QStringList() );
 #endif
   
-  KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
+  explicit KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
 
   /*
    * Destroys the module.

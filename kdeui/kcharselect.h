@@ -23,15 +23,13 @@
 
 #include <qtableview.h>
 
-#include <qcombobox.h>
-#include <qspinbox.h>
 #include <qstring.h>
 #include <qpoint.h>
 #include <qstringlist.h>
 
-#include <kdelibs_export.h>
 #include <kvbox.h>
 
+class QComboBox;
 class QFont;
 class QFontDatabase;
 class QMouseEvent;
@@ -184,31 +182,31 @@ public:
     /**
      * Returns the currently selected character.
      */
-    virtual QChar chr() const { return charTable->chr(); }
+    virtual QChar chr() const;
 
     /**
      * Returns the currently displayed font.
      */
-    virtual QString font() const { return fontCombo->currentText(); }
+    virtual QString font() const;
 
     /**
      * Returns the currently displayed table
      */
-    virtual int tableNum() const { return tableSpinBox->value(); }
+    virtual int tableNum() const;
 
     /**
      * If @p e is set to true, the combobox which allows the user to
      * select the font which should be displayed is enabled, else
      * disabled.
      */
-    virtual void enableFontCombo( bool e ) { fontCombo->setEnabled( e ); }
+    virtual void enableFontCombo( bool e );
 
     /**
      * If @p e is set to true, the spinbox which allows the user to
      * specify which characters of the font should be displayed, is
      * enabled, else disabled.
      */
-    virtual void enableTableSpinBox( bool e ) { tableSpinBox->setEnabled( e ); }
+    virtual void enableTableSpinBox( bool e );
 
     /**
      * Returns wether the font combobox on the top is enabled or
@@ -216,7 +214,7 @@ public:
      *
      * @see enableFontCombo()
      */
-    virtual bool isFontComboEnabled() const { return fontCombo->isEnabled(); }
+    virtual bool isFontComboEnabled() const;
 
     /**
      * Returns wether the table spinbox on the top is enabled or
@@ -224,7 +222,7 @@ public:
      *
      * @see enableTableSpinBox()
      */
-    virtual bool isTableSpinBoxEnabled() const { return tableSpinBox->isEnabled(); }
+    virtual bool isTableSpinBoxEnabled() const;
 
 protected:
     virtual void fillFontCombo();

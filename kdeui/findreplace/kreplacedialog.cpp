@@ -24,6 +24,7 @@
 #include <qgroupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qlineedit.h>
 #include <qregexp.h>
 #include <kcombobox.h>
 #include <klocale.h>

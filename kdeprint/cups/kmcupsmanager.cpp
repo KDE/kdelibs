@@ -41,6 +41,7 @@
 
 #include <kdebug.h>
 #include <krandom.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>

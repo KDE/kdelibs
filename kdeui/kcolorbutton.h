@@ -45,17 +45,17 @@ public:
     /**
      * Creates a color button.
      */
-    KColorButton( QWidget *parent );
+    explicit KColorButton( QWidget *parent = 0 );
 
     /**
      * Creates a color button with an initial color @p c.
      */
-    KColorButton( const QColor &c, QWidget *parent );
+    explicit KColorButton( const QColor &c, QWidget *parent = 0 );
 
     /**
      * Creates a color button with an initial color @p c and default color @p defaultColor.
      */
-    KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent );
+    KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent = 0 );
 
     virtual ~KColorButton();
 

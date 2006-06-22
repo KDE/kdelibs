@@ -46,7 +46,7 @@ class KDEUI_EXPORT KButtonGroup
     /**
      * Construct a new empty KGroupBox.
      */
-    KButtonGroup( QWidget* parent = 0 );
+    explicit KButtonGroup( QWidget* parent = 0 );
     /**
      * Destroys the widget.
      */

@@ -89,7 +89,7 @@ class KDEUI_EXPORT KActionSelector : public QWidget {
   Q_PROPERTY( bool showUpDownButtons READ showUpDownButtons WRITE setShowUpDownButtons )
 
 public:
-  KActionSelector( QWidget *parent=0 );
+  explicit KActionSelector( QWidget *parent=0 );
   ~KActionSelector();
 
   /**
