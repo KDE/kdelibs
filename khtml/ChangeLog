@@ -1,3 +1,11 @@
+2006-06-22  Germain Garand  <germain@ebooksfrance.org>
+
+        Implement floating auto-width table quirk
+
+        * rendering/render_block.cpp (positionNewFloats): in quirkmode, floated auto-width
+        tables try to fit within remaining linewidth, so look for minWidth, and relayout if 
+        position found ends up being narrower than current table width.
+
 2006-06-20  Germain Garand  <germain@ebooksfrance.org>
 
         Don't let a float serie grow an object's maxwidth beyond the available width

@@ -1872,6 +1872,12 @@ void RenderBlock::positionNewFloats()
         int lo = leftOffset(); // Constant part of left offset.
         int fwidth = f->width; // The width we look for.
                                //kdDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo << endl;
+
+        // in quirk mode, floated auto-width tables try to fit within remaining linewidth
+        bool ftQuirk = o->isTable() && style()->htmlHacks() && o->style()->width().isVariable();
+        if (ftQuirk)
+            fwidth = kMin( o->minWidth()+o->marginLeft()+o->marginRight(), fwidth );
+
         if (ro - lo < fwidth)
             fwidth = ro - lo; // Never look for more than what will be available.
 
@@ -1894,6 +1900,13 @@ void RenderBlock::positionNewFloats()
                     fx = leftRelOffset(y,lo, false, &heightRemainingLeft);
                 }
             }
+            if (ftQuirk && (rightRelOffset(y,ro, false)-fx < f->width)) {
+                o->setPos( o->xPos(), y + o->marginTop() );
+                o->setChildNeedsLayout(true, false);
+                o->layoutIfNeeded();
+                _height = o->height() + o->marginTop() + o->marginBottom();
+                f->width = o->width() + o->marginLeft() + o->marginRight();
+            }
             if (fx<0) fx=0;
             f->left = fx;
             //kdDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ") fx=" << fx << endl;
@@ -1911,6 +1924,13 @@ void RenderBlock::positionNewFloats()
                     y += kMin(heightRemainingLeft, heightRemainingRight);
                     fx = rightRelOffset(y,ro, false, &heightRemainingRight);
                 }
+            }
+            if (ftQuirk && (fx - leftRelOffset(y,lo, false) < f->width)) {
+                o->setPos( o->xPos(), y + o->marginTop() );
+                o->setChildNeedsLayout(true, false);
+                o->layoutIfNeeded();
+                _height = o->height() + o->marginTop() + o->marginBottom();
+                f->width = o->width() + o->marginLeft() + o->marginRight();
             }
             if (fx<f->width) fx=f->width;
             f->left = fx - f->width;
