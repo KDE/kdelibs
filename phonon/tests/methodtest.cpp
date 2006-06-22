@@ -113,7 +113,8 @@ void MethodTest::addMethod( const char* returnType, const char* signature, bool 
 
 void MethodTest::checkMethods( QObject* backendObject )
 {
-	QVERIFY( backendObject );
+	if( !backendObject )
+		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
 	meta = backendObject->metaObject();
 
 	QFETCH( QByteArray, returnType );
