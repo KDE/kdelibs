@@ -71,8 +71,7 @@ NotifyBySound::NotifyBySound(QObject *parent) : KNotifyPlugin(parent),d(new Priv
 	connect(d->signalmapper, SIGNAL(mapped(int)), this, SLOT(slotSoundFinished(int)));
 	
 	d->audiopath = new Phonon::AudioPath( this );
-	d->audiooutput = new Phonon::AudioOutput( this );
-	d->audiooutput->setCategory( Phonon::NotificationCategory  );
+	d->audiooutput = new Phonon::AudioOutput( Phonon::NotificationCategory, this );
 	d->audiopath->addOutput( d->audiooutput );
 
 	loadConfig();
