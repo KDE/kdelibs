@@ -930,6 +930,12 @@ if needed (see the KURLDrag section)</li>
 <li>static QString KInputDialog::text( const QString &amp;caption,...) was replaced by QString KInputDialog::getText( const QString &amp;caption,...)</li>
 </ul>
 
+<h4>KLed</h4>
+<ul>
+<li>int ensureRoundLed() -&gt; virtual int ledWidth() const</li>
+<li>virtual void paintRound() -&gt; virtual void paintRaised()</li>
+</ul>
+
 <h4>KToolBar</h4>
 <ul>
 <li>Ported to QToolBar</li>

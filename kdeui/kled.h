@@ -17,19 +17,21 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KLED_H_
-#define _KLED_H_
+#ifndef KLED_H
+#define KLED_H
 
-#include <qwidget.h>
 #include <kdelibs_export.h>
 
+#include <QtGui/QWidget>
+
 class QColor;
+
 /**
  * @short An LED widget.
  *
- * Displays a round  or rectangular light emitting diode.
+ * Displays a round or rectangular light emitting diode.
  *
- * It is configurable to five colors, the two on/off states and three
+ * It is configurable to arbitrary colors, the two on/off states and three
  * styles (or "looks");
  *
  * It may display itself in a performant flat view, a round view with
@@ -49,268 +51,258 @@ class KDEUI_EXPORT KLed : public QWidget
     Q_PROPERTY( QColor color READ color WRITE setColor )
     Q_PROPERTY( int darkFactor READ darkFactor WRITE setDarkFactor )
 
-public:
+  public:
 
-  /**
-   * Status of the light is on/off.
-   * @short LED on/off.
-   */
-  enum State { Off, On };
+    /**
+     * Status of the light is on/off.
+     * @short LED on/off.
+     */
+    enum State { Off, On };
 
-  /**
-   * Shades of the lamp.
-   * @short LED shape
-   */
-  enum Shape { Rectangular, Circular };
+    /**
+     * Shades of the lamp.
+     * @short LED shape
+     */
+    enum Shape { Rectangular, Circular };
 
-  /**
-   * Displays a flat, round or sunken LED.
-   *
-   * Displaying the LED flat is less time and color consuming,
-   * but not so nice to see.
-   *
-   * The sunken LED itself is (certainly) smaller than the round LED
-   * because of the 3 shading circles and is
-   * most time consuming. Makes sense for LED > 15x15 pixels.
-   *
-   * \b Timings: \n
-   * ( AMD K5/133, Diamond Stealth 64 PCI Graphics, widgetsize 29x29 )
-   *  @li flat Approximately 0.7 msec per paint
-   *  @li round Approximately 2.9 msec per paint
-   *  @li sunken Approximately 3.3 msec per paint
-   *
-   * The widget will be updated on the next repaining event.
-   *
-   * @short LED look.
-   */
-  enum Look  { Flat, Raised, Sunken };
+    /**
+     * Displays a flat, round or sunken LED.
+     *
+     * Displaying the LED flat is less time and color consuming,
+     * but not so nice to see.
+     *
+     * The sunken LED itself is (certainly) smaller than the round LED
+     * because of the 3 shading circles and is
+     * most time consuming. Makes sense for LED > 15x15 pixels.
+     *
+     * \b Timings: \n
+     * ( AMD K5/133, Diamond Stealth 64 PCI Graphics, widgetsize 29x29 )
+     *  @li flat Approximately 0.7 msec per paint
+     *  @li round Approximately 2.9 msec per paint
+     *  @li sunken Approximately 3.3 msec per paint
+     *
+     * The widget will be updated on the next repaining event.
+     *
+     * @short LED look.
+     */
+    enum Look  { Flat, Raised, Sunken };
 
-  /**
-   * Constructs a green, round LED widget which will initially
-   * be turned on.
-   */
-  KLed( QWidget *parent=0 );
-  /**
-   * Constructor with the ledcolor, the parent widget, and the name.
-   *
-   * The State will be defaulted On and the Look round.
-   *
-   * @param col Initial color of the LED.
-   * @param parent   Will be handed over to QWidget.
-   * @short Constructor
-   */
-  KLed(const QColor &col, QWidget *parent=0);
+    /**
+     * Constructs a green, round LED widget which will initially
+     * be turned on.
+     *
+     * @param parent The parent widget.
+     */
+    KLed( QWidget *parent = 0 );
 
-  /**
-   * Constructor with the ledcolor, ledstate, ledlook,
-   * the parent widget, and the name.
-   *
-   * Differs from above only in the parameters, which configure all settings.
-   *
-   * @param col Initial color of the LED.
-   * @param state    Sets the State.
-   * @param look     Sets the Look.
-   * @param shape    Sets the Shape (rectangular or circular)
-   * @param parent   Will be handed over to QWidget.
-   * @short Constructor
-   */
-  KLed(const QColor& col, KLed::State state, KLed::Look look, KLed::Shape shape,
-       QWidget *parent=0);
+    /**
+     * Constructs a round LED widget with the supplied color which will
+     * initially be turned on.
+     *
+     * @param color Initial color of the LED.
+     * @param parent The parent widget.
+     * @short Constructor
+     */
+    KLed( const QColor &color, QWidget *parent = 0 );
 
+    /**
+     * Constructor with the color, state and look.
+     *
+     * Differs from above only in the parameters, which configure all settings.
+     *
+     * @param color  Initial color of the LED.
+     * @param state  Sets the State.
+     * @param look   Sets the Look.
+     * @param shape  Sets the Shape (rectangular or circular).
+     * @param parent The parent widget.
+     * @short Constructor
+     */
+    KLed( const QColor& color, KLed::State state, KLed::Look look, KLed::Shape shape,
+          QWidget *parent = 0 );
 
-  /**
-   * Destructor
-   * @short Destructor
-   */
-  ~KLed();
+    /**
+     * Destroys the LED widget.
+     * @short Destructor
+     */
+    ~KLed();
 
-  /**
-   * Returns the current state of the widget (on/off).
-   *
-   * @see State
-   * @short Returns LED state.
-   */
-  State state() const;
+    /**
+     * Returns the current color of the widget.
+     *
+     * @see Color
+     * @short Returns LED color.
+     */
+    QColor color() const;
 
-  Shape shape() const;
+    /**
+     * Returns the current state of the widget (on/off).
+     *
+     * @see State
+     * @short Returns LED state.
+     */
+    State state() const;
 
-  /**
-   * Returns the color of the widget
-   *
-   * @see Color
-   * @short Returns LED color.
-   */
-  QColor color() const;
+    /**
+     * Returns the current look of the widget.
+     *
+     * @see Look
+     * @short Returns LED look.
+     */
+    Look look() const;
 
-  /**
-   * Returns the look of the widget.
-   *
-   * @see Look
-   * @short Returns LED look.
-   */
-  Look look() const;
+    /**
+     * Returns the current shape of the widget.
+     *
+     * @see Shape
+     * @short Returns LED shape.
+     */
+    Shape shape() const;
 
-  /**
-   * Returns the factor to darken the LED.
-   *
-   * @see setDarkFactor()
-   * @short Returns dark factor
-   */
-  int darkFactor() const;
+    /**
+     * Returns the factor to darken the LED.
+     *
+     * @see setDarkFactor()
+     * @short Returns dark factor.
+     */
+    int darkFactor() const;
 
-  /**
-   * Sets the state of the widget to On or Off.
-   *
-   * The widget will be painted immediately.
-   * @see on() off() toggle() 
-   *
-   * @param state The LED state: on or off.
-   * @short Set LED state.
-   */
-  void setState( State state );
+    /**
+     * Set the color of the widget.
+     *
+     * The LED is shown with Color when in the KLed::On state
+     * or with the darken Color (@see setDarkFactor) in KLed::Off
+     * state.
+     *
+     * The widget calls the update() method, so it will
+     * be updated when entering the main event loop.
+     *
+     * @see Color
+     *
+     * @param color New color of the LED.
+     * @short Sets the LED color.
+     */
+    void setColor( const QColor& color );
 
-  /**
-   * Set the shape of the LED to @p s.
-   */
-  void setShape(Shape s);
+    /**
+     * Sets the state of the widget to On or Off.
+     *
+     * The widget will be painted immediately.
+     * @see on() off() toggle()
+     *
+     * @param state The LED state: on or off.
+     * @short Set LED state.
+     */
+    void setState( State state );
 
+    /**
+     * Sets the look of the widget.
+     *
+     * The look may be Flat, Raised or Sunken.
+     *
+     * The widget calls the update() method, so it will
+     * be updated when entering the main event loop.
+     *
+     * @see Look
+     *
+     * @param look New look of the LED.
+     * @short Sets LED look.
+     */
+    void setLook( Look look );
 
-  /**
-   * Set the color of the widget.
-   * The Color is shown with the KLed::On state.
-   * The KLed::Off state is shown with QColor.dark() method
-   *
-   * The widget calls the update() method, so it will
-   * be updated when entering the main event loop.
-   *
-   * @see Color
-   *
-   * @param color New color of the LED.
-   * @short Sets the LED color.
-   */
-  void setColor(const QColor& color);
+    /**
+     * Set the shape of the LED.
+     *
+     * @param shape The LED shape.
+     * @short Set LED shape.
+     */
+    void setShape( Shape shape );
 
-  /**
-   * Sets the factor to darken the LED in OFF state.
-   * Same as QColor::dark().
-   * "darkfactor should be greater than 100, else the LED gets lighter
-   * in OFF state.
-   * Defaults to 300.
-   *
-   * @see QColor
-   *
-   * @param darkfactor sets the factor to darken the LED.
-   * @short sets the factor to darken the LED.
-   */
-  void setDarkFactor(int darkfactor);
+    /**
+     * Sets the factor to darken the LED in KLed::Off state.
+     *
+     * The @param darkFactor should be greater than 100, otherwise the LED
+     * becomes lighter in KLed::Off state.
+     *
+     * Defaults to 300.
+     *
+     * @see QColor
+     *
+     * @param darkFactor Sets the factor to darken the LED.
+     * @short Sets the factor to darken the LED.
+     */
+    void setDarkFactor( int darkFactor );
 
-  /**
-   * Sets the color of the widget.
-   * The Color is shown with the KLed::On state.
-   * darkcolor is explicidly used for the off state of the LED.
-   * Normally you don't have to use this method, the setColor(const QColor& color) is sufficient for the task.
-   *
-   * The widget calls the update() method, so it will
-   * be updated when entering the main event loop.
-   *
-   * @see Color setColor()
-   *
-   * @param color New color of the LED used for on state.
-   * @param darkcolor Dark color of the LED used for off state.
-   * @short Sets the light and dark LED color.
-   *
-  void setColor(const QColor& color, const QColor& darkcolor);
-  */
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
 
-  /**
-   * Sets the look of the widget.
-   *
-   * The look may be flat, round or sunken.
-   * The widget calls the update() method, so it will
-   * be updated when entering the main event loop.
-   *
-   * @see Look
-   *
-   * @param look New look of the LED.
-   * @short Sets LED look.
-   */
-  void setLook( Look look );
+  public Q_SLOTS:
 
-  virtual QSize sizeHint() const;
-  virtual QSize minimumSizeHint() const;
+    /**
+     * Toggles the state of the led from Off to On or vice versa.
+     *
+     * The widget repaints itself immediately.
+     */
+    void toggle();
 
-public Q_SLOTS:
+    /**
+     * Sets the state of the widget to On.
+     *
+     * The widget will be painted immediately.
+     * @see off() toggle()  setState()
+     */
+    void on();
 
-  /**
-   * Toggles the state of the led from Off to On or vice versa.
-   *
-   * The widget repaints itself immediately.
-   */
-  void toggle();
+    /**
+     * Sets the state of the widget to Off.
+     *
+     * The widget will be painted immediately.
+     * @see on() toggle()  setState()
+     */
+    void off();
 
-  /**
-   * Sets the state of the widget to On.
-   *
-   * The widget will be painted immediately.
-   * @see off() toggle()  setState()
-   */
-  void on();
+  protected:
+    /**
+     * Returns the width of the led.
+     */
+    virtual int ledWidth() const;
 
-  /**
-   * Sets the state of the widget to Off.
-   *
-   * The widget will be painted immediately.
-   * @see on() toggle()  setState()
-   */
-  void off();
+    /**
+     * Paints a circular, flat LED.
+     */
+    virtual void paintFlat();
 
-protected:
-  /**
-   * Paints a circular, flat LED.
-   */
-  virtual void paintFlat();
-  /**
-   * Paints a circular, raised LED.
-   */
-  virtual void paintRound();
-  /**
-   * Paints a circular, sunken LED.
-   */
-  virtual void paintSunken();
-  /**
-   * Paints a rectangular, flat LED.
-   */
-  virtual void paintRect();
-  /**
-   * Paints a rectangular LED, either raised or
-   * sunken, depending on its argument.
-   */
-  virtual void paintRectFrame(bool raised);
+    /**
+     * Paints a circular, raised LED.
+     */
+    virtual void paintRaised();
 
-  void paintEvent( QPaintEvent * );
+    /**
+     * Paints a circular, sunken LED.
+     */
+    virtual void paintSunken();
 
-  /**
-   * Compute LED width
-   */
-  int ensureRoundLed();
+    /**
+     * Paints a rectangular, flat LED.
+     */
+    virtual void paintRect();
 
-  /**
-   * Paint the cached antialiased pixmap corresponding to the state if any
-   * @return true if the pixmap was painted, false if it hasn't been created yet
-   */
-  bool paintCachedPixmap();
+    /**
+     * Paints a rectangular LED, either raised or
+     * sunken, depending on its argument.
+     */
+    virtual void paintRectFrame( bool raised );
 
-private:
-  State led_state;
-  QColor led_color;
-  Look  led_look;
-  Shape led_shape;
+    void paintEvent( QPaintEvent* );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
-private:
-  class KLedPrivate;
-  KLedPrivate * const d;
+    /**
+     * Paint the cached antialiased pixmap corresponding to the state if any
+     * @return true if the pixmap was painted, false if it hasn't been created yet
+     */
+    bool paintCachedPixmap();
+
+  private:
+    class Private;
+    Private * const d;
 };
 
 #endif
