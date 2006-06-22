@@ -1,5 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><HTML><HEAD>
-<TITLE>Guide to Porting Applications to KDE 4.0</TITLE>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Guide to Porting Applications to KDE 4.0</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
  <!--
@@ -32,9 +34,9 @@ text-decoration: underline;
 }
 -->
 </style>
-</HEAD>
-<BODY>
-<H1>Porting Applications to KDE 4.0</H1>
+</head>
+<body>
+<h1>Porting Applications to KDE 4.0</h1>
 
 <h2>Note</h2>
 <p>KDE4's kdelibs also exist in branches/work/kdelibs4_snapshot. You should use that one if you're not interested in developing kdelibs. (It will be updated from time to time.) Expect trunk/KDE/kdelibs to be broken at any random time (for now). For the time being other KDE modules should not develop against kdelibs, but use the branch.</p>
@@ -44,32 +46,32 @@ KDE 3.x when you want to port them to KDE 4.0.<br>
 As a start you should have a look at doc/html/porting4.html in the Qt package,
 or <a href="http://doc.trolltech.com/4.1/porting4.html">this page online</a>.</p>
 
-<H3><A NAME="TOC">Table of Contents</A></H3>
+<h3><a name="TOC">Table of Contents</a></h3>
 
 <UL>
-<LI><A HREF="#gettingstarted">Getting Started</A></LI>
-<LI><A HREF="#globalchanges">Global Changes</A></LI>
-<LI><A HREF="#kab">Changes in kab</A></LI>
-<LI><A HREF="#kdecore">Changes in kdecore</A></LI>
-<LI><A HREF="#kdeui">Changes in kdeui</A></LI>
-<LI><A HREF="#kio">Changes in kio</A></LI>
-<LI><A HREF="#kparts">Changes in kparts</A></LI>
-<LI><A HREF="#kded">Changes in kded</A></LI>
-<LI><A HREF="#kspell">Changes in kspell</A></LI>
-<LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
-<LI><A HREF="#kfile">Changes in kfile</A></LI>
-<LI><A HREF="#kcontrol">KDE Control Center</A></LI>
-<LI><A HREF="#kicker">Panel Applets and Extensions</A></LI>
+<li><a href="#gettingstarted">Getting Started</a></li>
+<li><a href="#globalchanges">Global Changes</a></li>
+<li><a href="#kab">Changes in kab</a></li>
+<li><a href="#kdecore">Changes in kdecore</a></li>
+<li><a href="#kdeui">Changes in kdeui</a></li>
+<li><a href="#kio">Changes in kio</a></li>
+<li><a href="#kparts">Changes in kparts</a></li>
+<li><a href="#kded">Changes in kded</a></li>
+<li><a href="#kspell">Changes in kspell</a></li>
+<li><a href="#khtmlpart">API-cleanup in KHTML</a></li>
+<li><a href="#kfile">Changes in kfile</a></li>
+<li><a href="#kcontrol">KDE Control Center</a></li>
+<li><a href="#kicker">Panel Applets and Extensions</a></li>
 <li><a href="#kscreensaver">KScreensaver</a></li>
 <li><a href="#i18n">I18N</a></li>
 </UL>
 
-<H3><A NAME="gettingstarted">Getting started</A></H3>
+<h3><a name="gettingstarted">Getting started</a></h3>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 
-<H3><A NAME="globalchanges">Global Changes</A></H3>
+<h3><a name="globalchanges">Global Changes</a></h3>
 <ul>
 <li>
 The "const char *name" arguments in the constructors of QObject derived classes
@@ -81,26 +83,26 @@ KDE_DEPRECATED does not work with constructors, use KDE_CONSTRUCTOR_DEPRECATED
 instead.</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 
-<H3><A NAME="kab">Changes in kab</A></H3>
+<h3><a name="kab">Changes in kab</a></h3>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kab">Changes in kdefx</A></H3>
+<h3><a name="kdefx">Changes in kdefx</a></h3>
 
-<H4>KPixmap</H4>
+<h4>KPixmap</h4>
 <ul>
 <li>Removed. Use QPixmap instead.</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kdecore">Changes in kdecore</A></H3>
+<h3><a name="kdecore">Changes in kdecore</a></h3>
 
 
-<H4>Header file names</H4>
+<h4>Header file names</h4>
 <ul>
 <li>kuniqueapp.h =&gt; kuniqueapplication.h</li>
 <li>klargefile.h =&gt; kde_file.h</li>
@@ -109,34 +111,34 @@ instead.</li>
 </ul>
 
 
-<H4>KCompletion</H4>
+<h4>KCompletion</h4>
 <ul>
 <li>enableSounds() was removed, use setEnableSounds()</li>
 <li>disableSounds() was removed, use setEnableSounds()</li>
 </ul>
 
-<H4>KGlobal</H4>
+<h4>KGlobal</h4>
 <ul>
 <li>&quot;int kasciistricmp( const char *str1, const char *str2 )&quot; has been moved into kascii.h</li>
 </ul>
 
-<H4>KGlobalSettings</H4>
+<h4>KGlobalSettings</h4>
 <ul>
 <li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO::trash instead</li>
 </ul>
 
-<H4>KAccel</H4>
+<h4>KAccel</h4>
 <ul>
 <li>Removed. Replaced by the new KAction/QAction framework.</li>
 <li>See KActionCollection::setAssociatedWidget() if you need the old KAccel widget-binding behavior.</li>
 </ul>
 
-<H4>KAccelBase</H4>
+<h4>KAccelBase</h4>
 <ul>
 <li>Removed. Replaced by the new KAction/QAction framework.</li>
 </ul>
 
-<H4>KAccelAction</H4>
+<h4>KAccelAction</h4>
 <ul>
 <li>Removed. Replaced by the new KAction/QAction framework.</li>
 <li>[Old note] KDE3 supported 3 modifier key shortcuts and 4 modifier key (3+META) shortcuts, because earlier versions of Qt3 didn't
@@ -146,9 +148,9 @@ instead.</li>
 <li>[Old note] Removed shortcutDefault3() and shortcutDefault4().  Use shortcutDefault() instead</li>
 </ul>
 
-<H4>KApplication</H4>
+<h4>KApplication</h4>
 <ul>
-<li>kapp->isRestored() is now qApp->isSessionRestored()</li>
+<li>kapp-&gt;isRestored() is now qApp-&gt;isSessionRestored()</li>
 <li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
 by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
 <li>random() has been moved to the KRandom class</li>
@@ -166,7 +168,7 @@ by QX11Info::display()</li>
  QString geometry;
  KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
  if (args &amp;&amp; args-&gt;isSet("geometry"))
-	geometry = args-&gt;getOption("geometry");
+    geometry = args-&gt;getOption("geometry");
 </pre>
 </li>
 <li>installSigpipeHandler() was removed.</li>
@@ -185,34 +187,34 @@ by QX11Info::display()</li>
   }
 </pre></li>
 <li>caption() has moved to KInstance</li>
-<li>makeStdCaption(const QString&, bool, bool) has moved to KInstance and changed signature to makeStdCaption(const QString&, CaptionFlags)</li>
+<li>makeStdCaption(const QString&amp;, bool, bool) has moved to KInstance and changed signature to makeStdCaption(const QString&amp;, CaptionFlags)</li>
 </ul>
 
-<H4>KCatalogue</H4>
+<h4>KCatalogue</h4>
 <ul>
 <li>Has been renamed to KCatalog. Method name parts with "catalogue" have been also renamed to contain "catalog".
 </ul>
 
-<H4>KCodecs</H4>
+<h4>KCodecs</h4>
 <ul>
 <li>All methods using a QCString removed. The methods use QByteArray now. </li>
 <li>Header renamed to kcodecs.h</li>
 </ul>
 
-<H4>KConfigBackend</H4>
+<h4>KConfigBackend</h4>
 <ul>
 <li>Removed filename(), use fileName()</li>
 </ul>
 
-<H4>KConfigBase</H4>
+<h4>KConfigBase</h4>
 <ul>
 <li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b>.
 This uses QVariant in the background so only types that QVariant can convert to QString work. The use of QVariant allows some ambiguous conversions, so it might be necessary to use <em>explicit</em> construction to disambiguate the type wanted, i.e.
  <ul>
-		 <li>bool var = readEntry(key, <b>false</b>);</li>
-		 <li>int var = readEntry(key, <b>int(SomeEnumValue)</b>);</li>
-                 <li>QColor var = readEntry(key, QColor(<b>Qt::black</b>)); // no conversion from Qt::GlobalColor to QVariant
-		 <li>long var = readEntry(key, <b>0</b>); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
+     <li>bool var = readEntry(key, <b>false</b>);</li>
+     <li>int var = readEntry(key, <b>int(SomeEnumValue)</b>);</li>
+     <li>QColor var = readEntry(key, QColor(<b>Qt::black</b>)); // no conversion from Qt::GlobalColor to QVariant
+     <li>long var = readEntry(key, <b>0</b>); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
  </ul>
 </li>
 <li>readEntry(const QString&amp;, const QString&amp;) no longer has a default argument, add QString() as
@@ -231,14 +233,14 @@ writeEntry("someKey", int(timeVal)); // ok
 </li>
 <li>writeEntry, deleteGroup, and deleteEntry do not take several boolean options (persistent,global,localized) anymore, but instead one QFlags</li>
 </ul>
-<H4>KLibFactory</H4>
+<h4>KLibFactory</h4>
 
-<H4>KMacroExpander</H4>
+<h4>KMacroExpander</h4>
 <ul>
 <li>KMacroExpander now takes a QHash and not a QMap</li>
 </ul>
 
-<H4>NETRootInfo</H4>
+<h4>NETRootInfo</h4>
 <ul>
 <li>NETRootInfo(Display *display, Window supportWindow, const char *wmName,unsigned long properties, int screen = -1, bool doActivate = true) -&gt;
     NETRootInfo(Display *display, Window supportWindow, const char *wmName,
@@ -250,7 +252,7 @@ writeEntry("someKey", int(timeVal)); // ok
 <li> WindowType windowType() -&gt;     WindowType windowType( unsigned long supported_types ) const;</li>
 </ul>
 
-<H4>KDesktopFile</H4>
+<h4>KDesktopFile</h4>
 <ul>
 <li>QString filename() const -&gt; QString fileName() const</li>
 <li>more standards compliant. See
@@ -264,19 +266,19 @@ Desktop Entry Spec</a>
 </li>
 </ul>
 
-<H4>KExtendedSocket</H4>
+<h4>KExtendedSocket</h4>
 <ul>
 <li>This class has been removed. Use KNetwork::KStreamSocket or KNetwork::KServerSocket instead.</li>
 </ul>
 
-<H4>KGlobalAccel</H4>
+<h4>KGlobalAccel</h4>
 <ul>
 <li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
 <li>Now a singleton</li>
 <li>You shouldn't need to access this class much... just use setGlobalShortcut() in KAction.</li>
 </ul>
 
-<H4>KKey</H4>
+<h4>KKey</h4>
 <ul>
 <li>Removed. Use plain ints as the Qt key code instead.</li>
 <li>When replacing KKey(QKeyEvent*), you need to OR the event-&gt;key() and event-&gt;modifiers() to get the replacement.</li>
@@ -284,39 +286,39 @@ Desktop Entry Spec</a>
 <li>modFlagLabel() was removed, use either KKeyServer::modToStringUser(), or QKeySequence(Qt::yourmodifier).toString()</li>
 </ul>
 
-<H4>KKeySequence</H4>
+<h4>KKeySequence</h4>
 <ul>
 <li>Removed, use QKeySequence instead.</li>
 <li>Note that QKeySequence expects multiple shortcuts to be separated by ", " (ie a comma then a space) in converting from text.</li>
 </ul>
 
-<H4>KKeyNative</H4>
+<h4>KKeyNative</h4>
 <ul>
 <li>Removed. Use plain ints as the Qt key code instead.</li>
 </ul>
 
-<H4>KNotifyClient</H4>
+<h4>KNotifyClient</h4>
 <ul><li>Replaced by KNotification.  The API is quite similar, but the config file need to be updated. See KNotification documentation</li></ul>
 
-<H4>KPalette</H4>
+<h4>KPalette</h4>
 <ul>
 <li>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</li>
 </ul>
 
-<H4>KProcess</h4>
+<h4>KProcess</h4>
 <ul>
 <li>setExecutable() was removed in favor of using operator &lt;&lt; </li>
 <li>getPid() was removed for just pid()</li>
 </ul>
 
-<H4>KPixmapSplitter</H4>
+<h4>KPixmapSplitter</h4>
 
-<H4>KRegExp</H4>
+<h4>KRegExp</h4>
 <ul>
 <li>This class has been removed.  Use QRegExp instead</li>
 </ul>
 
-<H4>KSaveFile</H4>
+<h4>KSaveFile</h4>
 <ul>
 <li>KSaveFile has been modified from its KDE 3.x behavior to allow for new backup methods:</li>
 <li>KSaveFile::backupFile() will use the backup behavior specified in KConfig.</li>
@@ -325,24 +327,24 @@ Desktop Entry Spec</a>
 <li>KSaveFile::rcsBackupFile() will use rcs to maintain the backup file</li>
 </ul>
 
-<H4>KShortcut</H4>
+<h4>KShortcut</h4>
 <ul>
 <li>Now implicitly shared and reentrant</li>
 <li>Only uses QKeySequences now</li>
 </ul>
 
-<H4>KShortcutList and derivatives</H4>
+<h4>KShortcutList and derivatives</h4>
 <ul>
 <li>Removed - no longer needed</li>
 <li>Saving and loading of shortcuts now performed in KActionCollection, KGlobalAccel, and KStdAccel.</li>
 </ul>
 
-<H4>KSortableValueList</H4>
+<h4>KSortableValueList</h4>
 <ul>
 <li>Has been ported to QList, renamed to KSortableList and the header is ksortablelist.h</li>
 </ul>
 
-<H4>KStringHandler</H4>
+<h4>KStringHandler</h4>
 <ul>
 <li>static QString ljust( const QString &amp;text , int width ) -&gt; QString::leftJustified</li>
 <li>static QString rjust( const QString &amp;text , int width ) -&gt; QString::rightJustified</li>
@@ -351,21 +353,21 @@ Desktop Entry Spec</a>
 <li>::randomString() has been moved to KRandom::randomString()</li>
 </ul>
 
-<H4>KStdAccel</H4>
+<h4>KStdAccel</h4>
 <ul>
 <li>Removed deprecated methods</li>
 <li>Removed WhatThis, use WhatsThis</li>
 <li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
 </ul>
 
-<H4>KStyle</H4>
+<h4>KStyle</h4>
 
-<H4>KTempDir</H4>
+<h4>KTempDir</h4>
 <ul>
 <li>existing() was removed, use exists() instead</li>
 </ul>
 
-<H4>KURL</H4>
+<h4>KURL</h4>
 <ul>
 <li>Has been renamed to KUrl, but a typedef is available for source compatibility</li>
 <li>KUrl inherits QUrl now, but the API offered by KUrl is mostly unchanged</li>
@@ -391,7 +393,7 @@ This requires libQtGui, which is why it can't be in KUrl anymore.</li>
 </li>
 </ul>
 
-<H4>KURLDrag</H4>
+<h4>KURLDrag</h4>
 <ul>
 <li>This class has been moved to kde3support. Use KUrl::populateMimeData() and
 KUrl::List::populateMimeData() in the drag/copy side,
@@ -403,9 +405,9 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
   if ( !uriList.isEmpty() ) {</pre></li>
 </ul>
 
-<H4>KMD5</H4>
+<h4>KMD5</h4>
 
-<H4>KLocale</H4>
+<h4>KLocale</h4>
 <ul>
 <li> QString formatNumber(const QString &amp;numStr) const -&gt;   QString formatNumber(const QString &amp;numStr, bool round=true, int precision=2) const;</li>
 <li> bool weekStartsMonday() const -&gt; int weekStartDay() const</li>
@@ -421,13 +423,13 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 </ul>
 <p>See also <a href="#i18n">the I18N section below</a>.</p>
 
-<H4>KCmdLineArgs</H4>
+<h4>KCmdLineArgs</h4>
 <ul>
 <li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
 <li> noKApp parameter is gone, instead:   Q_FLAGS(StdCmdLineArgs)</li>
 </ul>
 
-<H4>KCharsets</H4>
+<h4>KCharsets</h4>
 <ul>
 <li>KCharsets::codecForName cannot use glibc's i18n data anymore.
 (Note: this feature was new in KDE 3.5 but never publically announced.)</li>
@@ -436,19 +438,19 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
    (simply name and description, no need of two tables and an lists of aliases.</li>
 </ul>
 
-<H4>KWin</H4>
+<h4>KWin</h4>
 <ul>
 <li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
 <li>info(WId win) removed, use windowInfo() instead</li>
 <li>struct Info was removed, use WindowInfo instead</li>
 </ul>
 
-<H4>KNetwork::KResolver</H4>
+<h4>KNetwork::KResolver</h4>
 <ul>
 <li>the signal finished(KResolverResults) is now finished(const KNetwork::KResolverResults&amp;)</li>
 </ul>
 
-<H4>KVMAllocator</H4>
+<h4>KVMAllocator</h4>
 <ul>
 <li>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</li>
 </ul>
@@ -459,7 +461,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>Replacement is KIcon - now in kdeui</li>
 </ul>
 
-<H4>KConfigGroupSaver</H4>
+<h4>KConfigGroupSaver</h4>
 <p>
 The class KConfigGroupSaver has been deprecated, instead use KConfigGroup. The
 difference is a KConfigGroupSaver object directly affects the config object it
@@ -469,14 +471,14 @@ Instead of:
 <pre>
 KConfig *config = KGlobal::config();
 KConfigGroupSaver saver(config, "group name");
-	...
+  ...
 config-&gt;readXXX("entry name");
 </pre>
 should be rewritten as:
 <pre>
 KConfig *config = KGlobal::config();
 KConfigGroup cg(config, "group name");
-	...
+  ...
 cg.readXXX("entry name");
 </pre>
 
@@ -490,9 +492,9 @@ cg.readXXX("entry name");
 <h4>KAudioPlayer</h4>
 <p>Removed, use now Phonon::SimplePlayer</p>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kdeui">Changes in kdeui</A></H3>
+<h3><a name="kdeui">Changes in kdeui</a></h3>
 <ul>
 <li>kcolordlg.h went away, use kcolordialog.h</li>
 <li>kcolorbtn.h went away, use kcolorbutton.h</li>
@@ -501,12 +503,12 @@ cg.readXXX("entry name");
 <li>kxmlgui.h went away, use kxmlguifactory.h</li>
 </ul>
 
-<H4>KSeparator</H4>
+<h4>KSeparator</h4>
 <ul>
 <li>KSeparator now uses Qt::Vertical and Qt::Horizontal rather then QFrame's HFrame and VFrame.</li>
 </ul>
 
-<H4>KCharSelectTable</H4>
+<h4>KCharSelectTable</h4>
 <ul>
 <li>There is no separation between focused and selected item anymore, only between selected and activated.</li>
 <li>Signal focusItemChanged is not emitted with the currently selected/focused character, not with the most recent activated one.</li>
@@ -514,7 +516,7 @@ cg.readXXX("entry name");
 <li>Protected members gotoleft/right/up/down are gone. If you really need to simulate them, use the qitemselectionmodel</li>
 </ul>
 
-<H4>KColorDrag</H4>
+<h4>KColorDrag</h4>
 <ul>
 <li>has been moved as K3ColorDrag to kde3support</li>
 <li>use QMimeData  direcly instead or KColorMimeData, which closest resembles KColorDrag</li>
@@ -526,7 +528,7 @@ cg.readXXX("entry name");
 <li>Thin wrapper around QIcon which creates a KIconEngine corresponding to the kde named icon</li>
 </ul>
 
-<H4>KAction</H4>
+<h4>KAction</h4>
 <p>Making KAction a subclass of QAction brings KDE more into line with the Qt way of creating user interfaces, improves accessibility, and removes code duplication.</p>
 <p>QAction in Qt4 is a true 1st class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
@@ -552,7 +554,7 @@ cg.readXXX("entry name");
 <li>setShortcut() now defaults to setting the default shortcut as well (as it was by far the most common use case).  To just set the custom shortcut, use setShortcut(myShortcut, KAction::CustomShortcut)</li>
 </ul>
 
-<H4>KActionCollection</H4>
+<h4>KActionCollection</h4>
 <ul>
 <li>constructor (QWidget* watch, ..) and setWidget() replaced by {set|add|remove}AssociatedWidget() - allows actions to respond to matching key presses on a widget level (basically a convenience method to have all actions in the collection added to the associated widget(s) and their shortcut scopes set to Qt::WidgetShortcut).</li>
 <li>*AutoConnectShortcuts removed - irrelevant</li>
@@ -562,98 +564,98 @@ cg.readXXX("entry name");
 <li>{set}HighlightingEnabled(), {connect|disconnect}Highlight() removed - highlighting is always enabled now</li>
 <li>actionHighlighted(), actionStatusText(), clearStatusText() removed - use QAction::setStatusTip() as a replacement.  QStatusBars belonging to QMainWindow automatically get the statusTip() applied to them when they are moused over in a QMenu, via a QStatusTipEvent.</li>
 <li>groups() removed (now using QActionGroups) - see actionGroups() (and actionsWithoutGroup()) for replacement</li>
-<li>actions( const QString& group ) removed - use actionGroups() instead, and then QActionGroup::actions()</li>
+<li>actions( const QString&amp; group ) removed - use actionGroups() instead, and then QActionGroup::actions()</li>
 <li>action(int), count() deprecated - use actions() directly</li>
 <li>action(const char* name, const char* className) removed: action(const QString&amp; name), actions(const QString&amp; name), actionOfType&lt;Class&gt;(const QString&amp; name), actionsOfType&lt;Class&gt;(const QString&amp; name) are the replacements</li>
 </ul>
 
-<H4>KActionSeparator</H4>
+<h4>KActionSeparator</h4>
 <ul>
 <li>Renamed to KSeparatorAction</li>
 <li>Note that you need to create multiple separator actions if you want to insert multiple separators into a widget, unlike with KDE3.</li>
 </ul>
 
-<H4>KToggleAction</H4>
+<h4>KToggleAction</h4>
 <ul>
 <li>setExclusiveGroup() / exclusiveGroup() removed, use setActionGroup() and QActionGroup::setExclusive() for exclusivity (imitates the deleted KRadioAction class)</li>
 <li>in comparison with KAction, adds setCheckedState() and sets this action to checkable</li>
 </ul>
 
-<H4>KSelectAction</H4>
+<h4>KSelectAction</h4>
 <ul>
 <li>now allows for combo box or button with popup menu when inserted to a toolbar</li>
 <li>popupMenu() removed, use menu() instead</li>
 <li>{set|}removeAmpersandsInCombo() removed - was deprecated</li>
 </ul>
 
-<H4>KRecentFilesAction</H4>
+<h4>KRecentFilesAction</h4>
 <ul>
 <li>clearURLList() removed, use clear() instead</li>
 <li>*URL* -&gt; *Url* as per KDE naming policy</li>
 </ul>
 
-<H4>KWidgetAction</H4>
+<h4>KWidgetAction</h4>
 <ul>
 <li>deprecated, instead assign a QActionWidgetFactory to a {K|Q}Action so the action can be plugged into mutiple toolbars.</li>
 <li>Renamed to K3WidgetAction</li>
 </ul>
 
-<H4>KToolBarButton</H4>
+<h4>KToolBarButton</h4>
 <ul>
 <li>Deleted - all done by QToolButton now</li>
 </ul>
 
-<H4>KToolBarRadioGroup</H4>
+<h4>KToolBarRadioGroup</h4>
 <ul>
 <li>Deleted - all done by QToolButton now</li>
 </ul>
 
-<H4>KRadioAction</H4>
+<h4>KRadioAction</h4>
 <ul>
 <li>Deleted - use KAction (or KToggleAction if you need different text/icons for the selected state) instead, in combination with an exclusive QActionGroup</li>
 </ul>
 
-<H4>KListAction</H4>
+<h4>KListAction</h4>
 <ul>
 <li>Deleted - as per comments, did not add anything to KSelectAction</li>
 </ul>
 
-<H4>KToolBarSeparator</H4>
+<h4>KToolBarSeparator</h4>
 <ul>
 <li>Deleted - use QAction::setSeparator()</li>
 </ul>
 
 
-<H4>KActionSelector</H4>
+<h4>KActionSelector</h4>
 <ul>
 <li>Q3ListBox -&gt; QListWidget</li>
 <li>selectedListBox  -&gt;  selectedListWidget</li>
 <li>availableListBox  -&gt;  availableListWidget</li>
 </ul>
 
-<H4>KRootPixmap</H4>
+<h4>KRootPixmap</h4>
 <ul>
 <li>checkAvailable() -&gt; isAvailable()</li>
 </ul>
 
-<H4>KPixmapIO</H4>
+<h4>KPixmapIO</h4>
 <ul>
 <li>The class is dumped, use QPixmap.toImage() and QPixmap::fromImage()</li>
 </ul>
 
-<H4>KURLLabel</H4>
+<h4>KURLLabel</h4>
 <ul>
 <li>renamed to KUrlLabel</li>
 </ul>
 
-<H4>KConfigDialog</H4>
+<h4>KConfigDialog</h4>
 <ul>
     <li>The dialog name is now a QString instead of a const char*</li>
     <li>signal void settingsChanged(const char *dialogName); -&gt; void settingsChanged(const QString&amp; dialogName);</li>
     <li>signal void settingsChanged(); has dissapeared use the signal with the parameter instead. If you don't need the parameter don't connect it, e.g <pre>connect(myDialog, SIGNAL(settingsChanged(const QString&amp;)), this, SLOT(mySlot()));</pre></li>
 </ul>
 
-<H4>KDualColorButton</H4>
+<h4>KDualColorButton</h4>
 <ul>
 <li>enum DualColor -&gt; enum Selection</li>
 <li>void setForeground( const QColor&amp; ) -&gt; void setForegroundColor( const QColor&amp; )</li>
@@ -667,12 +669,12 @@ cg.readXXX("entry name");
 <li>signal void currentChanged( DualoColor ) -&gt; signal void selectionChanged( Selection )</li>
 </ul>
 
-<H4>KJanusWidget</H4>
+<h4>KJanusWidget</h4>
 <ul>
 <li>Deprecated. Use KPageWidget instead</li>
 </ul>
 
-<H4>KDialogBase</H4>
+<h4>KDialogBase</h4>
 <ul>
 <li>Deprecated. Use KDialog or KPageDialog instead.</li>
 <li>If the KDialogBase is Swallow or Plain mode you should replace it with KDialog, for
@@ -726,7 +728,7 @@ replace with
 </li>
 </ul>
 
-<H4>KDialog</H4>
+<h4>KDialog</h4>
 <ul>
 <li>Simplified ctor.
 <pre>
@@ -753,7 +755,7 @@ should be rewritten as
 <li>enableButtonOK -&gt; enableButtonOk &nbsp;&nbsp; (lower case 'k')</li>
 </ul>
 
-<H4>KDatePicker</H4>
+<h4>KDatePicker</h4>
 <ul>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);</li>
 <li>signal void dateEntered(QDate); was replaced by void dateEntered( const QDate&amp;);</li>
@@ -763,37 +765,37 @@ should be rewritten as
 <li>removed protected slot <tt>void selectWeekClicked()</tt></li>
 </ul>
 
-<H4>KDockWindow</H4>
+<h4>KDockWindow</h4>
 <ul>
 <li>This class is obsolete, it is provided for compatibility only.
 Use KSystemTray instead.</li>
 </ul>
 
-<H4>KDateWidget</H4>
+<h4>KDateWidget</h4>
 <ul>
 <li>signal void changed(QDate); was changed by void changed(const QDate&amp;)</li>
 </ul>
 
-<H4>KDateTable</H4>
+<h4>KDateTable</h4>
 <ul>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged(const QDate&amp;);</li>
 <li>changed the order of the constructor's parameter</li>
 <li>removed getData() method.  Use date() instead</li>
 </ul>
 
-<H4>KKeyDialog</H4>
+<h4>KKeyDialog</h4>
 <ul>
 <li>removed KDE2 deprecated functions</li>
 <li>Added new constructor parameter: KKeyChooser::ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
 </ul>
 
-<H4>KKeyChooser</H4>
+<h4>KKeyChooser</h4>
 <ul>
 <li>Added new constructor parameter: ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
 <li>Removed all functions dealing with old classes KShortcutList, KGlobalAccel (kde3 version)</li>
 </ul>
 
-<H4>KMainWindowInterface</H4>
+<h4>KMainWindowInterface</h4>
 <ul>
 <li>functionsDynamic() now returns a DCOPCStringList</li>
 <li>function processDynamic arguments uses DCOPCString instead of QCString :
@@ -801,7 +803,7 @@ Use KSystemTray instead.</li>
 <li>actions() now returns a DCOPCString</li>
 </ul>
 
-<H4>KMainWindow</H4>
+<h4>KMainWindow</h4>
 <ul>
 <li>getMemberList() was replaced by memberList() and memberList was renamed to mMemberList and made it private</li>
 <li>sizeForCentralWidgetSize(QSize size) returned the size the mainwindow should have so that the central widget will be of size.  You normally don't need this, the recommended way to achieve a certain central widget size is as follows.<br>
@@ -812,9 +814,9 @@ Use KSystemTray instead.</li>
 <li>accel() removed - KAccel no longer needed</li>
 </ul>
 
-<H4>KAboutDialog</H4>
+<h4>KAboutDialog</h4>
 <ul>
-<li>changed enum names</li>
+<li>changed enum names<br>
 <pre>
   AbtPlain         -&gt; Plain
   AbtTabbed        -&gt; Tabbed
@@ -827,6 +829,7 @@ Use KSystemTray instead.</li>
   AbtAppStandard   -&gt; AppStandard
   AbtImageAndTitle -&gt; ImageAndTitle
 </pre>
+</li>
 <li>Constructor: KAboutDialog( QWidget *parent = 0, bool modal = true ) -&gt; KAboutDialog( QWidget *parent = 0 )</li>
 <li>Constructor: KAboutDialog( int dialogLayout, const QString &amp;caption, ButtonCodes buttonMask,
                                ButtonCode defaultButton, QWidget *parent=0, bool modal=false, bool separator = false,
@@ -840,7 +843,7 @@ Use KSystemTray instead.</li>
 <li>addContainer int args are now Qt::Alignment args</li>
 </ul>
 
-<H4>KAboutContainer</H4>
+<h4>KAboutContainer</h4>
 <ul>
 <li>KAboutContainer constructor int args have been replaced by Qt::Alignment</li>
 <li>addTitle int args replaced by Qt::Alignment</li>
@@ -856,22 +859,22 @@ Use KSystemTray instead.</li>
 <li>QString getWork( void ) const -&gt; QString work() const</li>
 </ul>
 
-<H4>KRecentFilesAction</H4>
+<h4>KRecentFilesAction</h4>
 <ul>
 <li>the maxItem property is now an int (was a uint) (affects all accessors methods)</li>
 </ul>
 
-<H4>KPasswdEdit</H4>
+<h4>KPasswdEdit</h4>
 <ul>
 <li>KPasswordEdit(QWidget *parent, const char *name, int echoMode) ; was deprecated</li>
 </ul>
 
-<H4>KPassivePopup</H4>
+<h4>KPassivePopup</h4>
 <ul>
 <li>clicked single now emits a const QPoint reference</li>
 </ul>
 
-<H4>KPopupMenu</H4>
+<h4>KPopupMenu</h4>
 <ul>
 <li>Renamed to KMenu to reflect change in Qt</li>
 <li>indexes replaced by QAction*</li>
@@ -879,12 +882,12 @@ Use KSystemTray instead.</li>
 <li>contextMenuFocusItem changed to contextMenuFocusAction in line with the change from indexes to actions</li>
 </ul>
 
-<H4>KPopupTitle</H4>
+<h4>KPopupTitle</h4>
 <ul>
 <li>Removed - QMenu doesn't accept widgets, and QAction allows specification of font, icon etc... and gradients / background pixmaps weren't even working in KDE3</li>
 </ul>
 
-<H4>KStatusBar</H4>
+<h4>KStatusBar</h4>
 <ul>
 <li>The unused BarStatus enum was removed.</li>
 <li>The 'permanent' bool has been removed in favor of more explicit naming.
@@ -892,40 +895,40 @@ Use KSystemTray instead.</li>
   insertFixedItem(text,id,true) -&gt; insertPermanentFixedItem(text,id)</li>
 </ul>
 
-<H4>KEditListBox</H4>
+<h4>KEditListBox</h4>
 <ul>
 <li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>
 </ul>
 
-<H4>KEdit</H4>
+<h4>KEdit</h4>
 <ul>
 <li>The signal gotUrlDrop was removed, nobody used it, and it's easy to do in the application
 if needed (see the KURLDrag section)</li>
 </ul>
 
-<H4>KTabBar</H4>
+<h4>KTabBar</h4>
 <ul>
 <li>colors, close buttons on individual tabs not working at the moment</li>
 <li>The old insertTab and removeTab have been removed, use addTab / insertTab / removeTab from QTabBar instead (uses indices, not QTab*s)</li>
 </ul>
 
-<H4>KTimeWidget</H4>
+<h4>KTimeWidget</h4>
 <ul>
 <li>Removed, use QTimeEdit
 </ul>
 
-<H4>KNetwork::K*Socket</H4>
+<h4>KNetwork::K*Socket</h4>
 <ul>
 <li>readBlock, writeBlock and peekBlock are now called simply read, write and peek</li>
 <li>connect() now has an extra parameter (QIODevice::OpenMode)</li>
 </ul>
 
-<H4>KStdAction</H4>
+<h4>KStdAction</h4>
 <ul>
 <li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
 </ul>
 
-<H4>KInputDialog</H4>
+<h4>KInputDialog</h4>
 <ul>
 <li>static QString KInputDialog::text( const QString &amp;caption,...) was replaced by QString KInputDialog::getText( const QString &amp;caption,...)</li>
 </ul>
@@ -988,14 +991,14 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 <li>kpassdlg.h was renamed kpassworddialog.h.</li>
 </ul>
 
-<H4>KProgress</H4>
+<h4>KProgress</h4>
 <ul>
 <li>KProgress has been renamed to KProgressBar (#include &lt;kprogressbar.h&gt; instead of #include &lt;kprogress.h&gt;)</li>
 <li>QProgressBar is mostly enough. KProgressBar only necessary if setFormat(const QString &amp; format) or advance(int offset) is needed.</li>
 <li>KProgressBar inherits from QProgressBar. QProgressBar has changed a lot in Qt4 ( setTotalSteps(totalSteps) -&gt; setRange(0, totalSteps), setProgress -&gt; setValue, percentageChanged -&gt; valueChanged ). For more details see QProgressBar class reference.</li>
 </ul>
 
-<H4>KProgressDialog</H4>
+<h4>KProgressDialog</h4>
 <ul>
 <li>#include &lt;kprogressdialog.h&gt; instead of #include &lt;kprogress.h&gt;</li>
 <li>See KProgress API changes</li>
@@ -1061,11 +1064,11 @@ There's no need to do anything in mousePressEvent/mouseReleaseEvent/keyPressEven
 <li>Reversed the value range, if orientation is horizontal. Now minimum is on the left and maximum on the right side.</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kio">Changes in kio</A></H3>
+<h3><a name="kio">Changes in kio</a></h3>
 
-<H4>KIO::UDSEntry</H4>
+<h4>KIO::UDSEntry</h4>
 <ul>
 <li>UDSEntry is now a hash instead of a list. Use the methods stringValue()
 and numberValue() to retrieve fields directly, no loop is needed anymore.
@@ -1080,7 +1083,7 @@ a listDir result.</li>
   with the line <pre>entry.insert( KIO::UDS_SIZE, buff.st_size );</pre></li>
 </ul>
 
-<H4>KFileItemList</H4>
+<h4>KFileItemList</h4>
 <ul>
   <li>KFileItemList has been ported from QPtrList to QList. This means you
       have to iterate using either integers or java-style or stl iterators.
@@ -1094,12 +1097,12 @@ a listDir result.</li>
    <li>Note however that no loop is necessary anymore for finding an item by name (use findByName), finding an item by URL (use findByURL) or making a list of all urls (use urlList).</li>
 </ul>
 
-<H4>KIO:: global methods</H4>
+<h4>KIO:: global methods</h4>
 <ul>
     <li>KIO::convertSizeFromKB is now KIO::convertSizeFromKiB since it takes a value in KiB (1 KiB = 1024 B)</li>
 </ul>
 
-<H4>KMimeType</H4>
+<h4>KMimeType</h4>
 <ul>
     <li>KMimeType::pixmap() has been deprecated (for core/gui separation), use icon() or icon(url)
     and KIconLoader::loadMimeTypeIcon with that icon name.</li>
@@ -1110,7 +1113,7 @@ a listDir result.</li>
        instead of returning the application/octet-stream mimetype. Test for null!</li>
 </ul>
 
-<H4>KIO::Job</H4>
+<h4>KIO::Job</h4>
 <ul>
    <li>For Job subclasses: removeSubjob doesn't terminate the parent job anymore, add
          <code>if ( !hasSubjobs() ) emitResult();</code> to emulate the old behavior that.</li>
@@ -1129,12 +1132,12 @@ a listDir result.</li>
 	<li> instead of KConfig* + QString group everywhere KConfigGroup is used now </li>
 </ul>
 
-<H4>KFileMetaInfo</H4>
+<h4>KFileMetaInfo</h4>
 <ul>
     <li>KFileMetaInfo::KiloBytes has been renamed KFileMetaInfo::KibiBytes (1 KiB = 1024 B)</li>
 </ul>
 
-<H4>KProtocolInfo</H4>
+<h4>KProtocolInfo</h4>
 <ul>
 <li>Many static methods have been moved to KProtocolManager (which is in kio)
 so that kprotocolinfo itself could be moved to kdecore:
@@ -1149,32 +1152,32 @@ so that kprotocolinfo itself could be moved to kdecore:
 to pass a KUrl to most methods instead.</li>
 </ul>
 
-<H4>KRun</H4>
+<h4>KRun</h4>
 <ul>
 <li>the constructor needs a second parameter (a widget) now</li>
 </ul>
 
-<H4>PasswordDialog</H4>
+<h4>PasswordDialog</h4>
 <ul>
 		<li>void setEnableUserField( bool enable, bool=false ) removed use :setUserReadOnly( !enable )</li>
 </ul>
 
-<H4>KIconButton</H4>
+<h4>KIconButton</h4>
 <ul>
 		<li>signal void iconChanged(QString); replaced by void iconChanged(const QString &amp;);</li>
 </ul>
 
-<H4>KIconDialog</H4>
+<h4>KIconDialog</h4>
 <ul>
 		<li>signal void newIconName(QString); replaced by void newIconName(const QString &amp;);</li>
 </ul>
 
-<H4>UIServer</H4>
+<h4>UIServer</h4>
 <ul>
 		<li>QByteArray openPassDlg( const KIO::AuthInfo &gt;info ); removed. Use KIO::PasswordDialog::getNameAndPassword</li>
 </ul>
 
-<H4>RenameDlg</H4>
+<h4>RenameDlg</h4>
 <ul>
 <li>void b0Pressed() renamed to void cancelPressed()</li>
 <li>void b1Pressed() renamed to void renamePressed()</li>
@@ -1187,29 +1190,29 @@ to pass a KUrl to most methods instead.</li>
 <li>void b8Pressed() renamed to void suggestNewNamePressed()</li>
 </ul>
 
-<H4>KURLCombo</H4>
+<h4>KURLCombo</h4>
 <ul>
 <li>Renamed to KUrlCombo</li>
 <li>All usage of QPixmap has been replaced by usage of QIcon</li>
 <li>getPixmap() --&gt; getIcon()</li>
 </ul>
 
-<H4>KURLCompletion</H4>
+<h4>KURLCompletion</h4>
 <ul>
 <li>Renamed to KUrlCompletion</li>
 </ul>
 
-<H4>KURLPixmapProvider</H4>
+<h4>KURLPixmapProvider</h4>
 <ul>
 <li>Renamed to KUrlPixmapProvider</li>
 </ul>
 
-<H4>KMimeType</H4>
+<h4>KMimeType</h4>
 <ul>
 <li>iconForURL has been deprecated, will possily removed for KDE 4.0 final, use iconNameForURL instead</li>
 </ul>
 
-<H4>KArchive/KTar/KZip/KAr</H4>
+<h4>KArchive/KTar/KZip/KAr</h4>
 <ul>
 <li>All sizes and file offsets now use qint64 (similar to QIODevice)</li>
 <li>The API has changed for subclasses: there is a KArchive constructor that takes a filename, and which provides KSaveFile support automatically, writeDir is doWriteDir, prepareWriting is doPrepareWriting etc.</li>
@@ -1222,7 +1225,7 @@ to pass a KUrl to most methods instead.</li>
 <li>KTarGz -&gt; KTar</li>
 </ul>
 
-<H4>KURLRequester</H4>
+<h4>KURLRequester</h4>
 <ul>
 <li>renamed to KUrlRequester</li>
 <li>setCaption is gone, use setWindowTitle instead</li>
@@ -1231,12 +1234,12 @@ to pass a KUrl to most methods instead.</li>
 <li>Removed showLocalProtocol() and setShowLocalProtocol(); this is now always false (the user never sees file:///)</li>
 </ul>
 
-<H4>KURLBar</H4>
+<h4>KURLBar</h4>
 <ul>
 <li>renamed to KUrlBar</li>
 </ul>
 
-<H4>KFileDialog</H4>
+<h4>KFileDialog</h4>
 <ul>
 <li>void toolbarCallback(int) was removed</li>
 <li>void pathComboChanged( const QString&amp; ); was removed</li>
@@ -1252,7 +1255,7 @@ to pass a KUrl to most methods instead.</li>
 just remove any instance of it.</li>
 </ul>
 
-<H4>KBookmark classes</H4>
+<h4>KBookmark classes</h4>
 <ul>
 <li>KBookmarkDrag class has been moved to kde3support. Use KBookmark::populateMimeData() and
 KBookmark::List::populateMimeData() in the drag/copy side,
@@ -1260,7 +1263,7 @@ and the static methods KBookmark::List::canDecode() and KBookmark::List::fromMim
 in the drop/paste side.</li>
 </ul>
 
-<H4>KImageIO classes</H4>
+<h4>KImageIO classes</h4>
 <ul>
 <li>The KImageIO plugins are converted to Qt's imageformat plugins. The KImageIO class
 now a lightweight version to query the installed plugins without actually loading them.
@@ -1272,7 +1275,7 @@ with ServiceType as QImageIOPlugins</li>
 <li>Instead of canRead() and canWrite() you can use types(mode).contains(typename)</li>
 </ul>
 
-<H4>KDESasl class</H4>
+<h4>KDESasl class</h4>
 <ul>
 <li>This class is removed due to its inflexiblity, use cyrus-sasl or the upcoming QCA SASL implementation</li>
 </ul>
@@ -1284,7 +1287,7 @@ with ServiceType as QImageIOPlugins</li>
 
 <h4>KServiceType</h4>
 <ul>
-<li>KServiceType::offers() -&gt; KServiceTypeTrader::self()->query()</li>
+<li>KServiceType::offers() -&gt; KServiceTypeTrader::self()-&gt;query()</li>
 <li>The behavior of KServiceType::serviceType() has changed: it now only returns real service types, and no more mimetypes. For mimetypes, use KMimeType::mimeType().</li>
 <li>Similarly, allServiceTypes() only returns real service types, no more mimetypes.</li>
 </ul>
@@ -1292,9 +1295,8 @@ with ServiceType as QImageIOPlugins</li>
 <h4>KServiceTypeProfile</h4>
 <ul>
 <li>This class has been moved to kservicetypeprofile.h and is mostly internal now. Use KTrader or KMimeTypeTrader instead.</li>
-<li>KServiceTypeProfile::preferredService is now KMimeTypeTrader::self()->preferredService or KTrader::self()->preferredService</li>
-<li>KServiceTypeProfile::offers is now KMimeTypeTrader::self()->query or KTrader::self()->query</li>
-<li>
+<li>KServiceTypeProfile::preferredService is now KMimeTypeTrader::self()-&gt;preferredService or KTrader::self()-&gt;preferredService</li>
+<li>KServiceTypeProfile::offers is now KMimeTypeTrader::self()-&gt;query or KTrader::self()-&gt;query</li>
 </ul>
 
 <h4>KTrader</h4>
@@ -1310,11 +1312,11 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
   KMimeTypeTrader::self()->query(mimetype,"RenameDlg/Plugin")</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kparts">Changes in kparts</A></H3>
+<h3><a name="kparts">Changes in kparts</a></h3>
 
-<H3>ComponentFactory</H3>
+<h3>ComponentFactory</h3>
 <ul>
 <li>createInstanceFromFactory is now KLibFactory::create&lt;T&gt;</li>
 <li>createInstanceFromLibrary is now KLibLoader::createInstance&lt;T&gt;</li>
@@ -1323,15 +1325,15 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <li>All the error codes like KParts::ComponentFactory::ErrNoServiceFound have moved to KLibLoader</li>
 </ul>
 
-<H4>BrowserRun</H4>
+<h4>BrowserRun</h4>
 <ul>
     <li>BrowserRun::isExecutable obsoleted by KRun::isExecutable</li>
     <li>suggestedFilename -&gt; suggestedFileName</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kded">Changes in kded</A></H3>
+<h3><a name="kded">Changes in kded</a></h3>
 
 <ul>
  <li>The class KDEDModule is now part of libkdecore so that kded modules can link without undefined symbols.
@@ -1341,33 +1343,33 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
   and from your kded module's constructor</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kspell">Changes in kspell</A></H3>
+<h3><a name="kspell">Changes in kspell</a></h3>
 
-<H4>KSpell</H4>
+<h4>KSpell</h4>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="khtmlpart">API-cleanups in KHTML</A></H3>
+<h3><a name="khtmlpart">API-cleanups in KHTML</a></h3>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kfile">Changes in kfile</A></H3>
+<h3><a name="kfile">Changes in kfile</a></h3>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kcontrol">Changes in KControl</A></H3>
+<h3><a name="kcontrol">Changes in KControl</a></h3>
 <ul>
 <li>KCModule does no longer take a name argument, but directly a KInstance (having the correct
    name for the translations to work.</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-<H3><A NAME="kicker">Panel Applets and Extensions</A></H3>
+<h3><a name="kicker">Panel Applets and Extensions</a></h3>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 <!-- ### TODO: should this not be a KDE3SUPPORT <h3> section? -->
 <ul>
@@ -1376,19 +1378,19 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <li>KMDI* --&gt; kdeSupport K3MDI*</li>
 </ul>
 
-<H3>libkmid</H3>
+<h3>libkmid</h3>
 <ul>
 <li>Moved to kdemultimedia, where atm it is only used by kmid.</li>
 </ul>
 
-<H3><A NAME="kscreensaver">KScreensaver</A></H3>
+<h3><a name="kscreensaver">KScreensaver</a></h3>
 
 <h4>libkscreensaver</h4>
 <ul>
 <li>Moved to kdebase/workspace/kscreensaver</li>
 </ul>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 <h3><a name="i18n">I18N</a></h3>
 
@@ -1507,7 +1509,7 @@ ki18n("Welcome").toString(myLocale);
 
 <p>There is a script for semi-automatic conversion of KDE 3 code, <code>i18nk34conv.pl</code> in <code>branches/work/kde4-l10n/scripts/conversion/</code>. It will convert most of the calls automatically, and mark the places that need manual review. There is also the script <code>i18ncheckarg.pl</code> in <code>branches/work/kde4-l10n/scripts</code>, which will check whether placeholders and arguments match. Use it to catch and correct deferred substitutions (like in the examples above). Both these scripts you can just run without any arguments in top directory of your sources (but you can also specify paths or filenames as arguments). <i>Do not</i> run conversion script twice on same sources!</p>
 
-<H4 ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></H4>
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
-</BODY>
-</HTML>
+</body>
+</html>
