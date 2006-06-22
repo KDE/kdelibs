@@ -1,0 +1,10 @@
+[Desktop Entry]
+Comment=Superkaramba Theme File
+Comment[fr]=Fichier de thème SuperKaramba
+Comment[x-test]=xxSuperkaramba Theme Filexx
+DefaultApp=superkaramba
+Icon=superkaramba_theme
+MimeType=application/x-superkaramba
+Patterns=*.skz;*.SKZ;*.theme;*.THEME
+Type=MimeType
+X-KDE-AutoEmbed=false
