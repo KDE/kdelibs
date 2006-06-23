@@ -807,6 +807,10 @@ void KateBuffer::removeLine(uint i)
     // cu block !
     delete buf;
     m_blocks.erase (m_blocks.begin()+index);
+
+    // make sure we don't keep a pointer to the deleted block
+    if( m_lastInSyncBlock >= index )
+      m_lastInSyncBlock = index - 1;
   }
   else
   {
