@@ -45,7 +45,7 @@ class Resource;
  *
  * QList<Resource *> list = ... // can be retrived from KRES::Manager (e.g. KABC::AddressBook)
  *
- * KABC::Resource *res = KABC::SelectDialog::getResource( list, parentWdg );
+ * Resource *res = SelectDialog::getResource( list, parentWdg );
  * if ( !res ) {
  *   // no resource selected
  * } else {
