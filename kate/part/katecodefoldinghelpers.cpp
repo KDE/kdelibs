@@ -559,7 +559,9 @@ bool KateCodeFoldingTree::removeOpening(KateCodeFoldingNode *node,unsigned int l
   uint endCol=node->endCol;
 
   // removes + deletes
-  delete parent->takeChild(mypos);
+  KateCodeFoldingNode *child = parent->takeChild(mypos);
+  markedForDeleting.removeRef(child);
+  delete child;
 
   if ((type>0) && (endLineValid))
     correctEndings(-type, parent, line+endLineRel/*+1*/,endCol, mypos); // why the hell did I add a +1 here ?
@@ -583,7 +585,11 @@ bool KateCodeFoldingTree::removeEnding(KateCodeFoldingNode *node,unsigned int /*
     // removes + deletes
     int i = parent->findChild (node);
     if (i >= 0)
-      delete parent->takeChild (i);
+    {
+      KateCodeFoldingNode *child = parent->takeChild(i);
+      markedForDeleting.removeRef(child);
+      delete child;
+    }
 
     return true;
   }
@@ -598,7 +604,9 @@ bool KateCodeFoldingTree::removeEnding(KateCodeFoldingNode *node,unsigned int /*
       node->endLineValid = true;
       node->endLineRel = parent->child(i)->startLineRel - node->startLineRel;
 
-      delete parent->takeChild(i);
+      KateCodeFoldingNode *child = parent->takeChild(i);
+      markedForDeleting.removeRef(child);
+      delete child;
 
       count = i-mypos-1;
       if (count > 0)
@@ -831,7 +839,9 @@ void KateCodeFoldingTree::addOpening(KateCodeFoldingNode *node,signed char nType
                 node->endLineValid = true;
                 node->endLineRel = getStartLine(parent->child(i))-line;
                 node->endCol = parent->child(i)->endCol;
-                delete parent->takeChild(i);
+                KateCodeFoldingNode *child = parent->takeChild(i);
+                markedForDeleting.removeRef( child );
+                delete child;
                 break;
               }
             }
@@ -907,7 +917,9 @@ void KateCodeFoldingTree::addOpening(KateCodeFoldingNode *node,signed char nType
               count = node->childCount() - i - 1;
               newNode->endLineValid = true;
               newNode->endLineRel = line - getStartLine(node->child(i));
-              delete node->takeChild(i);
+              KateCodeFoldingNode *child = node->takeChild(i);
+              markedForDeleting.removeRef( child );
+              delete child;
               break;
             }
           }
