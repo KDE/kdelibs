@@ -395,7 +395,7 @@ private:
 
   class KActionCollectionPrivate* const d;
 
-  Q_DISABLE_COPY( KActionCollection );
+  Q_DISABLE_COPY( KActionCollection )
 
   static QList<KActionCollection*> s_allCollections;
 };
