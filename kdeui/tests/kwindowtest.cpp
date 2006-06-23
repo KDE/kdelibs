@@ -13,6 +13,7 @@
 #include <kactionclasses.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
+#include <kicon.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <kxmlguifactory.h>
