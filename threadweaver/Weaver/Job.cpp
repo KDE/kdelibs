@@ -67,6 +67,7 @@ namespace ThreadWeaver {
     signals:
         void started ( Job* );
         void done ( Job* );
+        void failed( Job* );
 
     public:
 
@@ -87,6 +88,11 @@ namespace ThreadWeaver {
             job->m_mutex->unlock();
             job->resolveDependencies(); // notify dependents
 
+            if ( ! job->success() )
+            {
+                emit ( failed( job ) );
+            }
+
             emit ( done( job ) );
         }
     };
@@ -95,10 +101,9 @@ namespace ThreadWeaver {
     {
 	P_ASSERT (sm_dep()->values(this).isEmpty());
         JobRunHelper helper;
-        connect ( &helper,  SIGNAL ( started ( Job* ) ),
-                  SIGNAL ( started ( Job* ) ) );
-        connect ( &helper,  SIGNAL ( done ( Job* ) ),
-                  SIGNAL ( done ( Job* ) ) );
+        connect ( &helper,  SIGNAL ( started ( Job* ) ), SIGNAL ( started ( Job* ) ) );
+        connect ( &helper,  SIGNAL ( done ( Job* ) ), SIGNAL ( done ( Job* ) ) );
+        connect ( &helper, SIGNAL( failed( Job* ) ), SIGNAL( failed( Job* ) ) );
 
 	debug(3, "Job::execute: executing job in thread %i.\n", th->id());
         helper.runTheJob( th, this );
@@ -136,15 +141,18 @@ namespace ThreadWeaver {
 
     void Job::resolveDependencies ()
     {
-        QMutexLocker l(sm_mutex);
-        QMutableMapIterator<Job*, Job*> it(*sm_dep());
-        // there has to be a better way to do this: (?)
-        while ( it.hasNext() )
-        {   // we remove all entries where jobs depend on *this* :
-            it.next();
-            if ( it.value()==this )
-            {
-                it.remove();
+        if ( success() )
+        {
+            QMutexLocker l(sm_mutex);
+            QMutableMapIterator<Job*, Job*> it(*sm_dep());
+            // there has to be a better way to do this: (?)
+            while ( it.hasNext() )
+            {   // we remove all entries where jobs depend on *this* :
+                it.next();
+                if ( it.value()==this )
+                {
+                    it.remove();
+                }
             }
         }
     }

@@ -63,6 +63,23 @@ namespace ThreadWeaver {
             implementation, overload run(). */
         virtual void execute(Thread*);
 
+        /** Return whether the Job finished successfully or not.
+            The default implementation simply returns true. Overload in
+            derived classes if the derived Job class can fail.
+
+            If a job fails (success() returns false), it will *NOT* resolve
+            it's dependencies when it finishes. This will make sure that Jobs
+            that depend on the failed job will not be started.
+
+            There is an important gotcha: When a Job object is deleted, it
+            will always resolve it's dependencies. If dependent jobs should
+            not be executed after a failure, it is important to dequeue those
+            befor deleting the failed Job.
+
+            A JobSequence may be helpful for that purpose.
+         */
+        virtual bool success () const { return true; }
+
         /** Abort the execution of the job.
             Call this method to ask the Job to abort if it is currently executed.
             Please note that the default implementation of the method does
@@ -118,9 +135,6 @@ namespace ThreadWeaver {
         */
         bool removeDependency (Job *dep);
 
-        /** Retrieve a list of dependencies of this job. */
-        QList<Job*> getDependencies() const;
-
         /** Query whether the job has an unresolved dependency.
             In case it does, it will not be processed by a thread trying to
             request a job. */
@@ -133,8 +147,18 @@ namespace ThreadWeaver {
 	/** This signal is emitted when the job has been finished. */
 	void done ( Job* );
 
+        /** This job has failed.
+            This signal is emitted when success() returns false after the job
+            is executed.
+        */
+        void failed( Job* );
+
     protected:
+        // FIXME pimpl
         friend class JobRunHelper;
+
+        /** Retrieve a list of dependencies of this job. */
+        QList<Job*> getDependencies() const;
 
         /** The method that actually performs the job. It is called from
             execute(). This method is the one to overload it with the
@@ -160,17 +184,14 @@ namespace ThreadWeaver {
 
         Thread * m_thread;
 
-//         QMutex *m_wcmutex;
-// 	QWaitCondition *m_wc;
-
 	/** A container to keep track of Job dependencies.
 	    For each dependency A->B, which means Job B depends on Job A and
 	    may only be executed after A has been finished, an entry will be
 	    added with key A and value B. When A is finished, the entry will
 	    be removed. */
         static JobMultiMap* sm_dep();
-//         static QMultiMap<Job*, Job*> *sm_dep();
 	static QMutex *sm_mutex;
+
     private:
 	QMutex *m_mutex;
 	/** m_finished is set to true when the Job has been executed. */

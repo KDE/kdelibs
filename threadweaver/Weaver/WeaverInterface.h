@@ -18,14 +18,15 @@
 #define WeaverInterface_H
 
 #include <QObject>
-#include <QList>
+// #include <QList>
 
 #include "State.h"
 
 namespace ThreadWeaver {
 
-    class WeaverObserver;
     class Job;
+    class State;
+    class WeaverObserver;
 
     /** WeaverInterface provides a common interface for weaver
         implementations, to be used for example in adapters and

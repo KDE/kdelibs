@@ -28,6 +28,8 @@ namespace ThreadWeaver {
     /** All weaver objects maintain a state of operation which can be
         queried by the application. See the threadweaver documentation on
         how the different states are related.
+
+        State is not part of the published API.
     */
     enum StateId {
         /** The object is in the state of construction and has not yet
@@ -60,6 +62,7 @@ namespace ThreadWeaver {
     {
     public:
         /** Default constructor. */
+        // FIXME remove second param
         explicit State( WeaverImpl *weaver,  const StateId id = InConstruction );
 
 	/** Destructor. */
@@ -89,6 +92,7 @@ namespace ThreadWeaver {
         /** Id of this state.
             Set in the constructor.
         */
+        // FIXME remove, implement in virtuals
         StateId m_id;
         /** The Weaver we relate to. */
         WeaverImpl *m_weaver;

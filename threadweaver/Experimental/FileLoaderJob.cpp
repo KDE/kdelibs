@@ -21,7 +21,7 @@
 namespace ThreadWeaver {
 
     FileLoaderJob::FileLoaderJob (QString filename, QObject* parent)
-        : FailableJob (parent),
+        : Job (parent),
           m_filename (filename),
           m_data (0),
           m_error (0)

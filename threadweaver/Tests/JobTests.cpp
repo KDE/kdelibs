@@ -33,11 +33,27 @@ public:
         QMutexLocker locker ( &s_GlobalMutex );
         m_stringref->append( m_c );
     }
+
 private:
     QChar m_c;
     QString* m_stringref;
 };
 
+class FailingAppendCharacterJob : public AppendCharacterJob
+{
+    Q_OBJECT
+
+public:
+    FailingAppendCharacterJob ( QChar c = QChar(), QString* stringref = 0, QObject* parent = 0 )
+        : AppendCharacterJob ( c, stringref, parent )
+    {
+    }
+
+    bool success () const
+    {
+        return false;
+    }
+};
 
 class JobTests : public QObject
 {
@@ -177,6 +193,34 @@ private slots:
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abcdefghij" ) );
     }
+
+/*    void QueueAndStopTest() {
+        QString sequence;
+        AppendCharacterJob a( 'a', &sequence );
+        AppendCharacterJob b( 'b', &sequence );
+        AppendCharacterJob c( 'c', &sequence );
+        FailingAppendCharacterJob d( 'd', &sequence );
+        AppendCharacterJob e( 'e', &sequence );
+        AppendCharacterJob f( 'f', &sequence );
+        AppendCharacterJob g( 'g', &sequence );
+        ThreadWeaver::JobSequence jobSequence ( this );
+        jobSequence.addJob( &a );
+        jobSequence.addJob( &b );
+        jobSequence.addJob( &c );
+        jobSequence.addJob( &d );
+        jobSequence.addJob( &e );
+        jobSequence.addJob( &f );
+        jobSequence.addJob( &g );
+
+        QObject::connect ( &d, SIGNAL( failed( Job*) ), &jobSequence, SLOT( stop( Job* ) ) );
+
+        ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
+        ThreadWeaver::Weaver::instance()->finish();
+
+        QCOMPARE ( sequence, QString( "abcd" ) );
+    }
+*/
+
 };
 
 QTEST_MAIN ( JobTests )
