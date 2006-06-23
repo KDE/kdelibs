@@ -23,6 +23,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
+#include "kpagewidgetmodel.h"
 
 #include "kpagewidgettest.h"
 

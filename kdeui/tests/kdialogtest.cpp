@@ -2,6 +2,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kdialog.h>
+#include <kguiitem.h>
 
 #include <QTextBrowser>
 #include <QLabel>

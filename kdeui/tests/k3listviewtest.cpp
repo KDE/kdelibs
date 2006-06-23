@@ -4,6 +4,8 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdialog.h>
+#include <kglobal.h>
+#include <kconfig.h>
 #include <kvbox.h>
 
 int main( int argc, char **argv )

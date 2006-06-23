@@ -7,6 +7,7 @@
 #include <kxmlguibuilder.h>
 #include <kaction.h>
 #include <kdebug.h>
+#include <kicon.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <qlineedit.h>
