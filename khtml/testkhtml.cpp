@@ -28,6 +28,7 @@
 #include <kmainwindow.h>
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
+#include <kicon.h>
 #include "domtreeview.h"
 #include "kxmlguifactory.h"
 
