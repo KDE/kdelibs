@@ -151,7 +151,7 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
     Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
-    Q_PROPERTY( bool enableSqueezedText READ isSqueezedTextEnabled WRITE setEnableSqueezedText )
+    Q_PROPERTY( bool squeezedTextEnabled READ squeezedTextEnabled WRITE setSqueezedTextEnabled )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
 public:
