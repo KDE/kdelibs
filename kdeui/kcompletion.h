@@ -164,7 +164,7 @@ public:
      * found.
      *
      * In the latter case, a sound will be issued, depending on
-     * isSoundsEnabled().
+     * soundsEnabled().
      * If a match was found, it will also be emitted via the signal
      * match().
      *
@@ -194,7 +194,7 @@ public:
     /**
      * Returns the next item from the matching-items-list.
      * When reaching the beginning, the list is rotated so it will return the
-     * last match and a sound is issued (depending on isSoundsEnabled()).
+     * last match and a sound is issued (depending on soundsEnabled()).
      * @return the next item from the matching-items-list.
      * When there is no match, QString() is returned and
      * a sound is be issued.
@@ -206,7 +206,7 @@ public:
      * Returns the next item from the matching-items-list.
      * When reaching the last item, the list is rotated, so it will return
      * the first match and a sound is issued (depending on
-     * isSoundsEnabled()).
+     * soundsEnabled()).
      * @return the next item from the matching-items-list.  When there is no
      * match, QString() is returned and a sound is issued
      * @see slotNextMatch
@@ -361,18 +361,17 @@ public:
      * For playing the sounds, KNotifyClient() is used.
      *
      * @param enable true to enable sounds
-     * @see isSoundsEnabled
+     * @see soundsEnabled
      */
-    virtual void setEnableSounds( bool enable ) { myBeep = enable; }
+    virtual void setSoundsEnabled( bool enable ) { myBeep = enable; }
 
     /**
      * Tells you whether KCompletion will play sounds on certain occasions.
      * Default is enabled.
      * @return true if sounds are enabled
-     * @see enableSounds
-     * @see disableSounds
+     * @see setSoundsEnabled
      */
-    bool isSoundsEnabled() const { return myBeep; }
+    bool soundsEnabled() const { return myBeep; }
 
     /**
      * Returns true when more than one match is found.

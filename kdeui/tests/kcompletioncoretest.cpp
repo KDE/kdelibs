@@ -55,7 +55,7 @@ void
 Test_KCompletion::insertionOrder()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	QSignalSpy spy1(&completion, SIGNAL(match(const QString &)));
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
@@ -90,7 +90,7 @@ void
 Test_KCompletion::sortedOrder()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	QSignalSpy spy1(&completion, SIGNAL(match(const QString &)));
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
@@ -126,7 +126,7 @@ void
 Test_KCompletion::weightedOrder()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	QSignalSpy spy1(&completion, SIGNAL(match(const QString &)));
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
@@ -165,7 +165,7 @@ void
 Test_KCompletion::substringCompletion_Insertion()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.setOrder(KCompletion::Insertion);
@@ -200,7 +200,7 @@ void
 Test_KCompletion::substringCompletion_Sorted()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.setOrder(KCompletion::Sorted);
@@ -235,7 +235,7 @@ void
 Test_KCompletion::substringCompletion_Weighted()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.setOrder(KCompletion::Weighted);
@@ -270,7 +270,7 @@ void
 Test_KCompletion::allMatches_Insertion()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.setOrder(KCompletion::Insertion);
@@ -297,7 +297,7 @@ void
 Test_KCompletion::allMatches_Sorted()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.setOrder(KCompletion::Sorted);
@@ -324,7 +324,7 @@ void
 Test_KCompletion::allMatches_Weighted()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
 
 	completion.setOrder(KCompletion::Weighted);
@@ -351,7 +351,7 @@ void
 Test_KCompletion::cycleMatches_Insertion()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setOrder(KCompletion::Insertion);
 	completion.setItems(strings);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
@@ -367,7 +367,7 @@ void
 Test_KCompletion::cycleMatches_Sorted()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setOrder(KCompletion::Sorted);
 	completion.setItems(strings);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
@@ -383,7 +383,7 @@ void
 Test_KCompletion::cycleMatches_Weighted()
 {
 	KCompletion completion;
-	completion.setEnableSounds(false);
+	completion.setSoundsEnabled(false);
 	completion.setOrder(KCompletion::Weighted);
 	completion.setItems(wstrings);
 	completion.setCompletionMode(KGlobalSettings::CompletionAuto);

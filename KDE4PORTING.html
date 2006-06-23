@@ -199,8 +199,9 @@ by QX11Info::display()</li>
 
 <h4>KCompletion</h4>
 <ul>
-<li>enableSounds() was removed, use setEnableSounds()</li>
-<li>disableSounds() was removed, use setEnableSounds()</li>
+<li>enableSounds() was removed, use setSoundsEnabled()</li>
+<li>disableSounds() was removed, use setSoundsEnabled()</li>
+<li>isSoundsEnabled() -&gt; soundsEnabled()</li>
 </ul>
 
 <h4>KCodecs</h4>
@@ -851,6 +852,8 @@ if needed (see the KURLDrag section)</li>
 <ul>
 <li>void cursorAtEnd() removed, use QLineEdit::end(false) instead</li>
 <li>unused protected slots removed: void slotAboutToShow() and void slotCancelled()</li>
+<li>void setEnableSqueezedText( bool enable ) -&gt; void setSqueezedTextEnabled( bool enable )</li>
+<li>bool isSqueezedTextEnabled() const -&gt; bool squeezedTextEnabled() const</li>
 </ul>
 
 <h4>KLineEditDlg</h4>
@@ -1021,6 +1024,7 @@ flag)</tt> have been removed in favor of <tt>setMovingEnabled(bool)</tt></li>
 <tt>maximumHeight()/maximumWidth()</tt></li>
 <li><tt>void setMaxHeight (int h)</tt> and <tt>void setMaxWidth (int dw)</tt>
 removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
+<li>void setEnableContextMenu(bool enable = true) -&gt; void setContextMenuEnabled(bool enable = true)</li>
 </ul>
 
 <h4>KToolBarButton</h4>

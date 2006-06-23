@@ -302,16 +302,16 @@ void KLineEdit::setReadOnly(bool readOnly)
 
 void KLineEdit::setSqueezedText( const QString &text)
 {
-    setEnableSqueezedText(true);
+    setSqueezedTextEnabled(true);
     setText(text);
 }
 
-void KLineEdit::setEnableSqueezedText( bool enable )
+void KLineEdit::setSqueezedTextEnabled( bool enable )
 {
     d->enableSqueezedText = enable;
 }
 
-bool KLineEdit::isSqueezedTextEnabled() const
+bool KLineEdit::squeezedTextEnabled() const
 {
     return d->enableSqueezedText;
 }

@@ -119,7 +119,7 @@ public:
    *
    * @param enable If false, then the context menu will be disabled
    */
-    void setEnableContextMenu(bool enable = true);
+    void setContextMenuEnabled(bool enable = true);
 
   /**
    * Returns the context menu enabled flag

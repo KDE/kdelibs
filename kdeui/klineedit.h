@@ -283,13 +283,13 @@ public:
      *
      * @see QLineEdit
      */
-    void setEnableSqueezedText( bool enable );
+    void setSqueezedTextEnabled( bool enable );
 
     /**
      * Returns true if text squeezing is enabled.
      * This is only valid when the widget is in read-only mode.
      */
-    bool isSqueezedTextEnabled() const;
+    bool squeezedTextEnabled() const;
 
     /**
      * Returns the original text if text squeezing is enabled.

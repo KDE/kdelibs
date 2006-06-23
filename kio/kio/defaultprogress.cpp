@@ -105,7 +105,7 @@ void DefaultProgress::init()
 
   sourceEdit = new KLineEdit(this);
   sourceEdit->setReadOnly(true);
-  sourceEdit->setEnableSqueezedText(true);
+  sourceEdit->setSqueezedTextEnabled(true);
   grid->addWidget(sourceEdit, 0, 2);
 
   destInvite = new QLabel(i18n("Destination:"), this);
@@ -113,7 +113,7 @@ void DefaultProgress::init()
 
   destEdit = new KLineEdit(this);
   destEdit->setReadOnly (true);
-  destEdit->setEnableSqueezedText(true);
+  destEdit->setSqueezedTextEnabled(true);
   grid->addWidget(destEdit, 1, 2);
 
   m_pProgressBar = new QProgressBar(this);

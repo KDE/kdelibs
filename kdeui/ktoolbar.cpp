@@ -211,7 +211,7 @@ void KToolBar::init( bool readConfig, bool honorStyle )
     setFont(KGlobalSettings::toolBarFont());
 }
 
-void KToolBar::setEnableContextMenu(bool enable )
+void KToolBar::setContextMenuEnabled(bool enable )
 {
     d->enableContext = enable;
 }

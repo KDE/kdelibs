@@ -32,7 +32,7 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_lineedit->setObjectName( "klineedittest" );
     m_lineedit->completionObject()->setItems( list );
     m_lineedit->setFixedSize(500,30);
-    m_lineedit->setEnableSqueezedText( true );
+    m_lineedit->setSqueezedTextEnabled( true );
     connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
     connect( m_lineedit, SIGNAL( returnPressed(const QString&) ),
              SLOT( slotReturnPressed(const QString&) ) );
@@ -143,7 +143,7 @@ int main ( int argc, char **argv)
     KLineEditTest *t = new KLineEditTest();
     //t->lineEdit()->setTrapReturnKey( true );
     //t->lineEdit()->completionBox()->setTabHandling( false );
-    t->lineEdit()->setEnableSqueezedText( true );
+    t->lineEdit()->setSqueezedTextEnabled( true );
     t->lineEdit()->setText ("This is a really really really really really really "
                             "really really long line because I am a talkative fool!");
     t->show();
