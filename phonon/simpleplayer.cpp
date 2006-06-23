@@ -37,15 +37,10 @@ class SimplePlayer::Private
 		{
 		}
 
-		MediaObject * player;
-		AudioPath * path;
-		AudioOutput * output;
+		MediaObject* player;
+		AudioPath* path;
+		AudioOutput* output;
 		KUrl url;
-		State state;
-		float volume;
-		long time;
-		QString title;
-		QString type;
 };
 
 SimplePlayer::SimplePlayer( Phonon::Category category, QObject* parent )
@@ -105,17 +100,17 @@ void SimplePlayer::stop()
 	d->player->stop();
 }
 
-long SimplePlayer::totalTime() const
+qint64 SimplePlayer::totalTime() const
 {
 	return d->player->totalTime();
 }
 
-long SimplePlayer::currentTime() const
+qint64 SimplePlayer::currentTime() const
 {
 	return d->player->currentTime();
 }
 
-void SimplePlayer::seek( long ms )
+void SimplePlayer::seek( qint64 ms )
 {
 	d->player->seek( ms );
 }
