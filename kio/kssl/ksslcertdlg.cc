@@ -141,8 +141,8 @@ QString KSSLCertDlg::getChoice() {
 void KSSLCertDlg::setHost(const QString& host) {
    _host = host;
    d->p_message->setText(i18n("The server <b>%1</b> requests a certificate.<p>"
-			     "Select a certificate to use from the list below:")
-			 .arg(_host));
+			      "Select a certificate to use from the list below:",
+			      _host));
 }
 
 
