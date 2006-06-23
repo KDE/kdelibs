@@ -28,6 +28,7 @@
 
 #include <kfiledialog.h>
 #include <kglobal.h>
+#include <kguiitem.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>

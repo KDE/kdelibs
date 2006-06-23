@@ -27,6 +27,7 @@
 #include <kdialog.h>
 #include <kstringhandler.h>
 #include <kglobal.h>
+#include <kguiitem.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kprocess.h>

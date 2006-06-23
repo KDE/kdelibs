@@ -27,6 +27,7 @@
 #include <qlabel.h>
 
 #include <kapplication.h>
+#include <kguiitem.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kpushbutton.h>

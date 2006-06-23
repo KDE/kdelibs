@@ -38,9 +38,12 @@
 #include <klocale.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qicon.h>
+#include <qpixmap.h>
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kinstance.h>
+#include <kpagewidgetmodel.h>
 #include <qstringlist.h>
 #include <kio/passdlg.h>
 #include <kguiitem.h>

@@ -27,6 +27,7 @@
 #include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kmessagebox.h>
+#include <kpagewidgetmodel.h>
 #include <kurl.h>
 #include <kconfig.h>
 #include <ktoolinvocation.h>

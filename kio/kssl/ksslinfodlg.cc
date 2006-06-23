@@ -34,6 +34,7 @@
 #include <kcombobox.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kprocess.h>

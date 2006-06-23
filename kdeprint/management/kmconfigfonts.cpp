@@ -29,6 +29,7 @@
 
 #include <klocale.h>
 #include <kconfig.h>
+#include <kguiitem.h>
 #include <kiconloader.h>
 #include <kurlrequester.h>
 #include <kfile.h>

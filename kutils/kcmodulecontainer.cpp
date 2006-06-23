@@ -31,6 +31,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kglobal.h>
+#include <kguiitem.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kservice.h>

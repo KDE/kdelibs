@@ -25,6 +25,7 @@
 #include <kdebug.h>
 #include <kicon.h>
 #include <kservicetypetrader.h>
+#include <kpagewidgetmodel.h>
 #include <kplugininfo.h>
 #include "ksettings/dispatcher.h"
 #include "ksettings/componentsdialog.h"

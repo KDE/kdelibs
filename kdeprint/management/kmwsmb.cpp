@@ -23,6 +23,7 @@
 #include "kmprinter.h"
 #include "util.h"
 
+#include <kguiitem.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <qlayout.h>

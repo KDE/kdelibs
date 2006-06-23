@@ -25,10 +25,12 @@
 #include <QStringList>
 
 #include <kauthorized.h>
+#include <kguiitem.h>
 #include <khbox.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kprocess.h>
+#include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
 #include <krun.h>
 #include <kuser.h>

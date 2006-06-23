@@ -29,6 +29,8 @@
 #include "kmconfigfonts.h"
 #include "kmconfigjobs.h"
 
+#include <kpagewidgetmodel.h>
+
 #include <qlayout.h>
 #include <klocale.h>
 #include <kconfig.h>

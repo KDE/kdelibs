@@ -26,6 +26,8 @@
 #include <kactivelabel.h>
 #include <kiconloader.h>
 #include <kdialog.h>
+#include <khbox.h>
+#include <kvbox.h>
 #include <QLabel>
 #include <QTextDocument>
 
