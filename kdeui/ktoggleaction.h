@@ -28,7 +28,8 @@
 #define KTOGGLEACTION_H
 
 #include <kaction.h>
-#include <kguiitem.h>
+
+class KGuiItem;
 
 /**
  *  @short Checkbox like action.

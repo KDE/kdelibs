@@ -55,7 +55,7 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
      * @param parent Parent of the widget.
      * @param notifyClick @p true causes signals to be emitted.
      */
-    KTextBrowser( QWidget *parent=0, bool notifyClick=false );
+    explicit KTextBrowser( QWidget *parent=0, bool notifyClick=false );
 
     /**
      * Destructor.

@@ -19,6 +19,7 @@
 #include "ktoolbarlabelaction.h"
 
 #include <qlabel.h>
+#include <qpointer.h>
 #include <qapplication.h>
 
 #include "ktoolbar.h"

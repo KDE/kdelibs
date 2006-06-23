@@ -21,13 +21,11 @@
 #ifndef KTREEWIDGETSEARCHLINE_H
 #define KTREEWIDGETSEARCHLINE_H
 
-#include <QModelIndex>
-
 #include <klineedit.h>
 
+class QModelIndex;
 class QTreeWidget;
 class QTreeWidgetItem;
-class QToolButton;
 
 /**
  * This class makes it easy to add a search line for filtering the items in
@@ -53,7 +51,7 @@ public:
      * If \a treeWidget is null then the widget will be disabled until listviews
      * are set with setTreeWidget(), setTreeWidgets() or added with addTreeWidget().
      */
-    KTreeWidgetSearchLine(QWidget *parent = 0, QTreeWidget *treeWidget = 0);
+    explicit KTreeWidgetSearchLine(QWidget *parent = 0, QTreeWidget *treeWidget = 0);
 
     /**
      * Constructs a KTreeWidgetSearchLine with \a treeWidgets being the list of

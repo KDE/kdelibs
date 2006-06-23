@@ -32,13 +32,13 @@
 #include <qtimer.h>
 #include <QStackedWidget>
 
-#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <kshortcut.h>
 #include <kstdguiitem.h>
 #include <kpushbutton.h>
 

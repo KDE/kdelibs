@@ -72,9 +72,9 @@ public:
    * @param parent Passed to lower level constructor.
    *
    **/
-  KStringListValidator( const QStringList & list=QStringList(),
-			bool rejecting=true, bool fixupEnabled=false,
-			QObject * parent=0 )
+  explicit KStringListValidator( const QStringList & list=QStringList(),
+                                 bool rejecting=true, bool fixupEnabled=false,
+                                 QObject * parent=0 )
     : QValidator( parent ), mStringList( list ),
       mRejecting( rejecting ), mFixupEnabled( fixupEnabled ) { }
 
@@ -119,7 +119,7 @@ class KDEUI_EXPORT KMimeTypeValidator : public QValidator
 {
   Q_OBJECT
 public:
-  KMimeTypeValidator( QObject* parent)
+  explicit KMimeTypeValidator( QObject* parent = 0 )
     : QValidator( parent ) {}
 
   /**

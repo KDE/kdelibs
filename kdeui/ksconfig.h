@@ -98,8 +98,8 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
      * activateHelp for more information.
      *
      */
-    KSpellConfig( QWidget *parent=0, 
-		  KSpellConfig *spellConfig=0, bool addHelpButton = true );
+    explicit KSpellConfig( QWidget *parent=0, 
+                           KSpellConfig *spellConfig=0, bool addHelpButton = true );
 
     KSpellConfig( const KSpellConfig & );
 

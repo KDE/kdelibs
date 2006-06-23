@@ -57,7 +57,7 @@ public:
      * @param target A pointer to the widget that you want to make pseudo
      * transparent.
      */
-    KRootPixmap( QWidget *target );
+    explicit KRootPixmap( QWidget *target );
 
     /**
      * Constructs a KRootPixmap where the parent QObject and target QWidget are

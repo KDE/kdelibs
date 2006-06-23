@@ -12,11 +12,12 @@
 #ifndef KSHAREDPIXMAP_H
 #define KSHAREDPIXMAP_H
 
-#include <qstring.h>
-#include <qpixmap.h>
 #include <qwidget.h>
 
 #include <kdelibs_export.h>
+
+class QPixmap;
+class QString;
 
 /**
  * Shared pixmap client.

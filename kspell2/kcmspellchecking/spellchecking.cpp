@@ -24,6 +24,7 @@
 #include <kapplication.h>
 #include <kdialog.h>
 #include <kgenericfactory.h>
+#include <ksconfig.h>
 #include <kspell.h>
 #include <klocale.h>
 

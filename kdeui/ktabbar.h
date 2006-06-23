@@ -33,7 +33,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     Q_OBJECT
 
 public:
-    KTabBar( QWidget* parent=0 );
+    explicit KTabBar( QWidget* parent=0 );
     virtual ~KTabBar();
 
     // KDE4 porting: use the QTabBar functions instead

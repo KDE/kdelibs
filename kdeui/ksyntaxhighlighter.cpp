@@ -22,6 +22,8 @@
 #include <QHash>
 #include <QKeyEvent>
 #include <QRegExp>
+#include <QStringList>
+#include <QTextEdit>
 #include <QTimer>
 
 #include <kconfig.h>

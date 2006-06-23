@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
+#include <qdom.h>
 #include <QSet>
 #include <qvariant.h>
 #include <QHash>

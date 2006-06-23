@@ -46,7 +46,7 @@ class KDEUI_EXPORT KTabCtl : public QWidget
     Q_OBJECT
 
 public:
-    KTabCtl(QWidget *parent = 0);
+    explicit KTabCtl(QWidget *parent = 0);
    ~KTabCtl();
 
     void show();

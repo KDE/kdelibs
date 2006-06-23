@@ -53,7 +53,7 @@ public:
    *  The first two parameters are simply passed on to QLineEdit.
    *  @param parent   pointer to the parent widget
    */
-  KRestrictedLine( QWidget* parent );
+  explicit KRestrictedLine( QWidget* parent = 0);
 
   /**
    * Destructs the restricted line editor.

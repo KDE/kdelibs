@@ -29,9 +29,8 @@
 
 #include <kselectaction.h>
 
-#include <kurl.h>
-
 class KConfig;
+class KUrl;
 
 /**
  *  @short Recent files action

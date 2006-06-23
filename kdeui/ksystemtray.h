@@ -79,7 +79,7 @@ public:
      * when the user clicks on the trray window with the left mouse
      * button.
      **/
-    KSystemTray( QWidget* parent = 0 );
+    explicit KSystemTray( QWidget* parent = 0 );
 
     /*
       Destructor

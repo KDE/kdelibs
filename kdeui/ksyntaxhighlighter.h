@@ -25,14 +25,15 @@
 #define KSYNTAXHIGHLIGHTER_H
 
 #include <QColor>
-#include <QStringList>
 #include <QSyntaxHighlighter>
-#include <QTextEdit>
 
 #include <kdelibs_export.h>
 
 class KSpell;
 class KSpellConfig;
+
+class QStringList;
+class QTextEdit;
 class QTimer;
 
 /**

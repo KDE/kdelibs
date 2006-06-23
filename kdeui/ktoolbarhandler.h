@@ -34,7 +34,7 @@ class ToolBarHandler : public QObject,
 {
     Q_OBJECT
 public:
-    ToolBarHandler( KMainWindow *mainWindow );
+    explicit ToolBarHandler( KMainWindow *mainWindow );
     ToolBarHandler( KMainWindow *mainWindow, QObject *parent );
     virtual ~ToolBarHandler();
 

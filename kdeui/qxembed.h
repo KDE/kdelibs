@@ -68,7 +68,7 @@ public:
      * The parent, name and f arguments are passed to the QFrame
      * constructor.
      */
-    QXEmbed( QWidget *parent=0, const char *name=0, Qt::WFlags f = 0 );
+    explicit QXEmbed( QWidget *parent=0, const char *name=0, Qt::WFlags f = 0 );
 
     /**
      * Destructor. Cleans up the focus if necessary.

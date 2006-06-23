@@ -37,6 +37,7 @@
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QDockWidget>
+#include <qdom.h>
 #include <qlayout.h>
 #include <qobject.h>
 #include <qsessionmanager.h>

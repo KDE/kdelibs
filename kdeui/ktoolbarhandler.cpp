@@ -20,6 +20,7 @@
 
 #include <kaction.h>
 #include <kauthorized.h>
+#include <kguiitem.h>
 #include <klocale.h>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
@@ -28,6 +29,8 @@
 
 #include "ktoggletoolbaraction.h"
 #include "kactionmenu.h"
+
+#include <qdom.h>
 
 #include <assert.h>
 

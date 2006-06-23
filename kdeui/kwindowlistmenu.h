@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define kwindowlistmenu_h
 
 #include <kmenu.h>
-#include <qmap.h>
+#include <qglobal.h> // can be removed when the ifdef Q_WS_X11 will be removed
 
 #ifdef Q_WS_X11 // not yet available for non-X11
 
@@ -38,7 +38,7 @@ class KDEUI_EXPORT KWindowListMenu : public KMenu
     Q_OBJECT
 
 public:
-    KWindowListMenu( QWidget *parent = 0 );
+    explicit KWindowListMenu( QWidget *parent = 0 );
     virtual ~KWindowListMenu();
 
     void init();

@@ -22,7 +22,6 @@
 #define kxmlguifactory_h
 
 #include <qobject.h>
-#include <qdom.h>
 
 #include <kdelibs_export.h>
 
@@ -31,6 +30,12 @@ class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
 class KInstance;
+
+class QDomAttr;
+class QDomDocument;
+class QDomElement;
+class QDomNode;
+class QDomNamedNodeMap;
 
 namespace KXMLGUI
 {
@@ -69,7 +74,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
    * Note that the ownership of the given KXMLGUIBuilder object won't be transferred to this
    * KXMLGUIFactory, so you have to take care of deleting it properly.
    */
-  KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent = 0 );
+  explicit KXMLGUIFactory( KXMLGUIBuilder *builder, QObject *parent = 0 );
 
   /**
    * Destructor

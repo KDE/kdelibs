@@ -37,7 +37,7 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction, public QActionWidgetFa
   Q_PROPERTY(int maximumWidth READ maximumWidth WRITE setMaximumWidth)
 
   public:
-    KToolBarSpacerAction(KActionCollection* parent, const QString& name = QString());
+    explicit KToolBarSpacerAction(KActionCollection* parent, const QString& name = QString());
 
     int width();
     void setWidth(int width);

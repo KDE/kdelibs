@@ -28,6 +28,7 @@
 #include "ktoggleaction.h"
 
 #include <kdebug.h>
+#include <kguiitem.h>
 #include <klocale.h>
 
 class KToggleAction::KToggleActionPrivate

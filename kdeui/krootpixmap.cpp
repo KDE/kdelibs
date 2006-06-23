@@ -9,10 +9,13 @@
  * licensing terms.
  */
 
+#include <krootpixmap.h>
+
 #include <qwidget.h>
 #include <qtimer.h>
 #include <qrect.h>
 #include <qimage.h>
+#include <qpixmap.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -29,7 +32,6 @@
 #include <netwm.h>
 
 #include <ksharedpixmap.h>
-#include <krootpixmap.h>
 
 
 static QString wallpaperForDesktop(int desktop)

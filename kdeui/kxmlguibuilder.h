@@ -20,16 +20,16 @@
 #ifndef kxmlguibuilder_h
 #define kxmlguibuilder_h
 
-#include <qdom.h>
-#include <qstringlist.h>
-
 #include <kdelibs_export.h>
 
-class KXMLGUIBuilderPrivate;
-class QWidget;
 class KInstance;
+class KXMLGUIBuilderPrivate;
 class KXMLGUIClient;
+
 class QAction;
+class QDomElement;
+class QStringList;
+class QWidget;
 
 /**
  * Abstract interface for a "GUI builder", used by the GUIFactory
@@ -41,7 +41,7 @@ class KDEUI_EXPORT KXMLGUIBuilder
 {
  public:
 
-  KXMLGUIBuilder( QWidget *widget );
+  explicit KXMLGUIBuilder( QWidget *widget );
   virtual ~KXMLGUIBuilder();
 
   /* @internal */

@@ -26,14 +26,15 @@
 #include <klocale.h>
 
 #include <QApplication>
-#include <QTimer>
-#include <QMenu>
-#include <QLabel>
 #include <QContextMenuEvent>
-#include <QList>
-#include <QToolButton>
-#include <QHeaderView>
 #include <QHBoxLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QList>
+#include <QMenu>
+#include <QModelIndex>
+#include <QTimer>
+#include <QToolButton>
 #include <QTreeWidget>
 
 class KTreeWidgetSearchLine::KTreeWidgetSearchLinePrivate

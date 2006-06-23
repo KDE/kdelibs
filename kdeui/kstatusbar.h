@@ -93,7 +93,7 @@ public:
   /**
    *  Constructs a status bar. @p parent is usually KMainWindow.
    */
-  KStatusBar( QWidget* parent = 0 );
+  explicit KStatusBar( QWidget* parent = 0 );
 
   /**
    *  Destructor.

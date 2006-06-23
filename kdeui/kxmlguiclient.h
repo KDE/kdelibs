@@ -19,13 +19,15 @@
 #ifndef KXMLGUICLIENT_H
 #define KXMLGUICLIENT_H
 
-#include <QtXml/qdom.h>
 #include <QMap>
 #include <QStringList>
 
 #include <kdelibs_export.h>
 
+class QDomDocument;
+class QDomElement;
 class QWidget;
+
 class KAction;
 class KActionCollection;
 class KInstance;
@@ -61,7 +63,7 @@ public:
    * Child clients are automatically added to the GUI if the parent is added.
    *
    */
-  KXMLGUIClient( KXMLGUIClient *parent );
+  explicit KXMLGUIClient( KXMLGUIClient *parent );
 
   /**
    * Destructs the KXMLGUIClient.

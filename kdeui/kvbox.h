@@ -25,7 +25,7 @@ class KDEUI_EXPORT KVBox : public KHBox {
     Q_OBJECT
 
 public:
-    KVBox( QWidget* parent = 0 );
+    explicit KVBox( QWidget* parent = 0 );
 };
 
 

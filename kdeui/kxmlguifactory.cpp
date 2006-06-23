@@ -26,6 +26,7 @@
 #include <assert.h>
 
 #include <qdir.h>
+#include <qdom.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qwidget.h>

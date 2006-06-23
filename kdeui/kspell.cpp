@@ -43,6 +43,7 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include "ksconfig.h"
 #include "kspelldlg.h"
 #include <kwin.h>
 #include <kprocio.h>

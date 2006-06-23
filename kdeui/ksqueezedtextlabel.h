@@ -50,8 +50,8 @@ public:
   /**
    * Default constructor.
    */
-  KSqueezedTextLabel( QWidget *parent );
-  KSqueezedTextLabel( const QString &text, QWidget *parent );
+  explicit KSqueezedTextLabel( QWidget *parent = 0 );
+  explicit KSqueezedTextLabel( const QString &text, QWidget *parent = 0 );
 
   virtual QSize minimumSizeHint() const;
   virtual QSize sizeHint() const;

@@ -26,12 +26,9 @@
 #define KTOOLBAR_H
 
 #include <QToolBar>
-#include <QMap>
-#include <QPointer>
 
 #include <kdelibs_export.h>
 
-class QMenu;
 class QDomElement;
 
 class KMenu;
@@ -73,7 +70,7 @@ public:
    * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QWidget *parent, bool honorStyle = false, bool readConfig = true );
+    explicit KToolBar( QWidget *parent, bool honorStyle = false, bool readConfig = true );
 
   /**
    * Constructor for non-XML-GUI applications.

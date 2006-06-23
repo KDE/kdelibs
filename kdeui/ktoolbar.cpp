@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include <QMouseEvent>
+#include <qdom.h>
 #include <qdrawutil.h>
 #include <qicon.h>
 #include <qlayout.h>
@@ -45,6 +46,7 @@
 #include <kdebug.h>
 #include <kedittoolbar.h>
 #include <kglobal.h>
+#include <kguiitem.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kipc.h>

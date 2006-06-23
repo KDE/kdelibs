@@ -33,7 +33,9 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
+#include <qdom.h>
 #include <qobject.h>
+#include <qstringlist.h>
 #include "kmenumenuhandler_p.h"
 
 using namespace KDEPrivate;

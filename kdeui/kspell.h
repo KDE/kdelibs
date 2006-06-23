@@ -19,8 +19,6 @@
 #ifndef KSPELL_H
 #define KSPELL_H
 
-#include "ksconfig.h"
-
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
@@ -29,6 +27,7 @@
 class QTextCodec;
 class KProcIO;
 class KProcess;
+class KSpellConfig;
 class KSpellDlg;
 
 /**

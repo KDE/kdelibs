@@ -21,12 +21,12 @@
 #ifndef KSHORTCUTDIALOG_H
 #define KSHORTCUTDIALOG_H
 
-#include <kshortcut.h>
-
 #include "kdialog.h"
 
 class QStackedWidget;
+
 class KPushButton;
+class KShortcut;
 
 /**
  * @short Dialog for configuring a shortcut.
@@ -41,7 +41,7 @@ class KDEUI_EXPORT KShortcutDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	KShortcutDialog( const KShortcut& shortcut, QWidget* parent = 0 );
+	explicit KShortcutDialog( const KShortcut& shortcut, QWidget* parent = 0 );
 	~KShortcutDialog();
 
 	void setShortcut( const KShortcut & shortcut );

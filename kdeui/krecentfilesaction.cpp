@@ -33,6 +33,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
+#include <kurl.h>
 
 #include "kmenu.h"
 

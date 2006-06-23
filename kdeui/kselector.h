@@ -50,7 +50,7 @@ public:
    * Constructs a two-dimensional selector widget which
    * has a value range of [0..100] in both directions.
    */
-  KXYSelector( QWidget *parent=0 );
+  explicit KXYSelector( QWidget *parent=0 );
   /**
    * Destructs the widget.
    */
@@ -168,12 +168,12 @@ public:
   /**
    * Constructs a horizontal one-dimensional selection widget.
    */
-  KSelector( QWidget *parent=0 );
+  explicit KSelector( QWidget *parent=0 );
   /**
    * Constructs a one-dimensional selection widget with
    * a given orientation.
    */
-  KSelector( Qt::Orientation o, QWidget *parent = 0 );
+  explicit KSelector( Qt::Orientation o, QWidget *parent = 0 );
   /*
    * Destructs the widget.
    */
@@ -250,7 +250,7 @@ public:
    * Constructs a horizontal color selector which
    * contains a gradient between white and black.
    */
-  KGradientSelector( QWidget *parent=0 );
+  explicit KGradientSelector( QWidget *parent=0 );
   /**
    * Constructs a colors selector with orientation o which
    * contains a gradient between white and black.

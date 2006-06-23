@@ -61,7 +61,7 @@ public:
      *
      * @param tipFile The absolute path to the tips file.
      */
-    KTipDatabase(const QString &tipFile = QString());
+    explicit KTipDatabase(const QString &tipFile = QString());
 
     /**
      * This constructor takes a list of files that will be merged. This constructor
@@ -69,7 +69,7 @@ public:
      *
      * @param tipFiles A list of absolute paths to the tips file
      */ 
-    KTipDatabase(const QStringList &tipFiles);
+    explicit KTipDatabase(const QStringList &tipFiles);
 
     /**
      * Returns the current tip.
@@ -115,7 +115,7 @@ public:
      * @param db TipDatabase that should be used by the TipDialog.
      * @param parent Parent widget of TipDialog.
      */
-    KTipDialog(KTipDatabase *db, QWidget *parent = 0);
+    explicit KTipDialog(KTipDatabase *db, QWidget *parent = 0);
     ~KTipDialog();
 
     /**

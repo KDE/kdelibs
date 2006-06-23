@@ -79,7 +79,7 @@ public:
    * Use setURL() and setText() or QListView::setPixmap()
    * to set the resp. properties.
    */
-  KUrlLabel (QWidget* parent = 0L);
+  explicit KUrlLabel (QWidget* parent = 0L);
 
   /**
    * Convenience constructor.
@@ -92,8 +92,8 @@ public:
    * @p parent and @p name are passed to QLabel, which in turn passes
    * them further down
    */
-  KUrlLabel (const QString& url, const QString& text = QString(),
-              QWidget* parent = 0L);
+  explicit KUrlLabel (const QString& url, const QString& text = QString(),
+                      QWidget* parent = 0L);
 
   /**
    * Destructs the label.

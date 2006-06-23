@@ -47,7 +47,7 @@ public:
     /**
      * Constructs a new separator.
      */
-    KSeparatorAction( KActionCollection* parent = 0, const QString& name = QString() );
+    explicit KSeparatorAction( KActionCollection* parent = 0, const QString& name = QString() );
 };
 
 #endif
