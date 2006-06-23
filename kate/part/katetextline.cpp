@@ -185,10 +185,14 @@ bool KateTextLine::stringAtPos(uint pos, const QString& match) const
   if ((pos+matchlen) > len)
     return false;
 
+  // (pos > len) in case the uint pos was assigned a signed -1, pos+matchlen can
+  // overflow again which (pos+matchlen > len) does not catch; see bugs #129263 and #129580
+  Q_ASSERT(pos < len);
+
   const QChar *unicode = m_text.unicode();
   const QChar *matchUnicode = match.unicode();
 
-  for (uint i=0; i < matchlen && i < len; i++)
+  for (uint i=0; i < matchlen; i++)
     if (unicode[i+pos] != matchUnicode[i])
       return false;
 
