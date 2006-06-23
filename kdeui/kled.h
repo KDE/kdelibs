@@ -93,7 +93,7 @@ class KDEUI_EXPORT KLed : public QWidget
      *
      * @param parent The parent widget.
      */
-    KLed( QWidget *parent = 0 );
+    explicit KLed( QWidget *parent = 0 );
 
     /**
      * Constructs a round LED widget with the supplied color which will
@@ -103,7 +103,7 @@ class KDEUI_EXPORT KLed : public QWidget
      * @param parent The parent widget.
      * @short Constructor
      */
-    KLed( const QColor &color, QWidget *parent = 0 );
+    explicit KLed( const QColor &color, QWidget *parent = 0 );
 
     /**
      * Constructor with the color, state and look.

@@ -58,7 +58,7 @@ class KDEUI_EXPORT KFontRequester : public QWidget
      * @param onlyFixed Only display fonts which have fixed-width character
      *        sizes.
      */
-    KFontRequester( QWidget *parent=0L, bool onlyFixed=false );
+    explicit KFontRequester( QWidget *parent=0L, bool onlyFixed=false );
 
     /**
      * @return The currently selected font in the requester.

@@ -40,10 +40,12 @@
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>
+#include <kguiitem.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
 #include <kstaticdeleter.h>
+#include <kstdguiitem.h>
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
 #include <kwhatsthismanager_p.h>

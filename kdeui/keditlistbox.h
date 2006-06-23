@@ -21,7 +21,6 @@
 #define KEDITLISTBOX_H
 
 #include <QGroupBox>
-#include <QStringList>
 #include <QStringListModel>
 
 #include <kdelibs_export.h>

@@ -141,7 +141,7 @@ public:
      * for the composer windows "composer#".
      *
      */
-    KMainWindow( QWidget* parent = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
+    explicit KMainWindow( QWidget* parent = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
 
     /// @deprecated, remove the name argument and use setObjectName instead
     KDE_CONSTRUCTOR_DEPRECATED KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );

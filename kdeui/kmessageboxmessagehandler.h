@@ -38,7 +38,7 @@ public:
      * @brief Create a new KMessageBoxMessageHandler
      * @param parent Parent widget to use for the KMessageBox.
      */
-    KMessageBoxMessageHandler(QWidget *parent = 0);
+    explicit KMessageBoxMessageHandler(QWidget *parent = 0);
 
     /**
      * @copydoc KMessageHandler::message

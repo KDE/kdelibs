@@ -49,6 +49,7 @@
 #include <QTimer>
 #include <QTabWidget>
 #include <QFile>
+#include <QStringList>
 #include <QTextStream>
 #include <QDateTime>
 

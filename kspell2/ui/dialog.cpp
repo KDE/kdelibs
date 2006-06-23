@@ -28,6 +28,7 @@
 #include "settings.h"
 
 #include <kconfig.h>
+#include <kguiitem.h>
 #include <klocale.h>
 #include <kdebug.h>
 

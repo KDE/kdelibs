@@ -23,7 +23,6 @@
 #define KKEYDIALOG_H
 
 #include <kdialog.h>
-#include <kshortcut.h>
 
 class QCheckBox;
 class QLabel;
@@ -97,7 +96,7 @@ public:
 	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyChooser( QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
+	explicit KKeyChooser( QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
 
 	/// Destructor
 	virtual ~KKeyChooser();
@@ -246,7 +245,7 @@ public:
 	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
 	 * keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyDialog( KKeyChooser::ActionTypes types = KKeyChooser::AllActions, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0 );
+	explicit KKeyDialog( KKeyChooser::ActionTypes types = KKeyChooser::AllActions, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0 );
 
 	/**
 	 * Destructor. Deletes all resources used by a KKeyDialog object.

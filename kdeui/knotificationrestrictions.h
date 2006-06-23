@@ -75,8 +75,8 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
         };
         Q_DECLARE_FLAGS(Services, Service)
 
-        KNotificationRestrictions(Services control = NonCriticalServices,
-                                  QObject* parent = 0);
+        explicit KNotificationRestrictions(Services control = NonCriticalServices,
+                                           QObject* parent = 0);
         virtual ~KNotificationRestrictions();
 
     private slots:

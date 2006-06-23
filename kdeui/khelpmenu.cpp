@@ -34,12 +34,14 @@
 #include <kauthorized.h>
 #include <kbugreport.h>
 #include <kdialog.h>
+#include <kguiitem.h>
 #include <khbox.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
+#include <kstdguiitem.h>
 #include <ktoolinvocation.h>
 
 #include "khelpmenu.h"

@@ -55,7 +55,7 @@ public:
    *
    * @param parent The parent of the combo box
    */
-  KLanguageButton(QWidget * parent = 0);
+  explicit KLanguageButton(QWidget * parent = 0);
 
   /**
    * Constructs a version with static text. The parent parent is called name.
@@ -63,7 +63,7 @@ public:
    * @param text The text of the button
    * @param parent The parent of the button
    */
-  KLanguageButton(const QString & text, QWidget * parent = 0 );
+  explicit KLanguageButton(const QString & text, QWidget * parent = 0 );
 
   /**
    * Deconstructor

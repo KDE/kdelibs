@@ -45,14 +45,14 @@ public:
      *
      * @param parent The parent widget
      */
-    KFontCombo(QWidget *parent);
+    explicit KFontCombo(QWidget *parent = 0);
     /**
      * Constructor that takes an already initialzed font list
      *
      * @param fonts A list of fonts to show
      * @param parent The parent widget
      */
-    KFontCombo(const QStringList &fonts, QWidget *parent);
+    explicit KFontCombo(const QStringList &fonts, QWidget *parent = 0);
     /**
      * Destructor
      */

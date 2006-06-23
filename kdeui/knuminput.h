@@ -49,7 +49,7 @@ public:
      * window. If parent is another widget, this widget becomes a child
      * window inside parent. The new widget is deleted when its parent is deleted.
      */
-    KNumInput(QWidget* parent=0);
+    explicit KNumInput(QWidget* parent=0);
 
     /**
      * @param below A pointer to another KNumInput.
@@ -187,7 +187,7 @@ public:
      * Constructs an input control for integer values
      * with base 10 and initial value 0.
      */
-    KIntNumInput(QWidget *parent=0);
+    explicit KIntNumInput(QWidget *parent=0);
     /**
      * Constructor
      * It constructs a QSpinBox that allows the input of integer numbers
@@ -199,7 +199,7 @@ public:
      * @param base   numeric base used for display
      * @param parent parent QWidget
      */
-    KIntNumInput(int value, QWidget *parent=0,int base = 10);
+    explicit KIntNumInput(int value, QWidget *parent=0,int base = 10);
 
     /**
      * Constructor
@@ -424,7 +424,7 @@ public:
      * Constructs an input control for double values
      * with initial value 0.00.
      */
-    KDoubleNumInput(QWidget *parent);
+    explicit KDoubleNumInput(QWidget *parent = 0);
 
     /**
      * Constructor
@@ -648,7 +648,7 @@ public:
      *  and a slider, with minimal value 0, maximal value 99, step 1, base 10
      *  and initial value 0.
      */
-    KIntSpinBox( QWidget *parent);
+    explicit KIntSpinBox( QWidget *parent = 0 );
 
     /**
      *  Constructor.
@@ -771,7 +771,7 @@ public:
   /** Constructs a KDoubleSpinBox with parent @p parent and
       default values for range and value (whatever QRangeControl
       uses) and precision (2). */
-  KDoubleSpinBox( QWidget * parent);
+  explicit KDoubleSpinBox( QWidget * parent = 0 );
 
   /** Constructs a KDoubleSpinBox with parent @p parent, range
       [ @p lower, @p upper ], lineStep @p step, precision @p

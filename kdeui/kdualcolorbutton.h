@@ -69,7 +69,7 @@ class KDEUI_EXPORT KDualColorButton : public QWidget
      * @param parent The parent widget of the KDualColorButton.
      * @param dialogParent The parent widget of the color selection dialog.
      */
-    KDualColorButton( QWidget *parent = 0, QWidget* dialogParent = 0 );
+    explicit KDualColorButton( QWidget *parent = 0, QWidget* dialogParent = 0 );
 
     /**
      * Constructs a new KDualColorButton with the supplied foreground and

@@ -56,7 +56,7 @@ class KDEUI_EXPORT KSelectionOwner
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        KSelectionOwner( Atom selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionOwner( Atom selection, int screen = -1, QObject* parent = NULL );
         /**
          * @overload
          * This constructor accepts the selection name and creates the appropriate atom
@@ -66,7 +66,7 @@ class KDEUI_EXPORT KSelectionOwner
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        KSelectionOwner( const char* selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionOwner( const char* selection, int screen = -1, QObject* parent = NULL );
         /**
          * Destructor. Calls release().
          */
@@ -176,7 +176,7 @@ class KDEUI_EXPORT KSelectionWatcher
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        KSelectionWatcher( Atom selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionWatcher( Atom selection, int screen = -1, QObject* parent = NULL );
         /**
          * @overload
          * This constructor accepts the selection name and creates the appropriate atom
@@ -186,7 +186,7 @@ class KDEUI_EXPORT KSelectionWatcher
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        KSelectionWatcher( const char* selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionWatcher( const char* selection, int screen = -1, QObject* parent = NULL );
 	virtual ~KSelectionWatcher();
         /**
          * Return the current owner of the manager selection, if any.

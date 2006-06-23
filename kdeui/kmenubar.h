@@ -41,7 +41,7 @@ class KDEUI_EXPORT KMenuBar : public QMenuBar
 
 public:
 
-    KMenuBar (QWidget *parent=0);
+    explicit KMenuBar (QWidget *parent=0);
     ~KMenuBar ();
 
     /**

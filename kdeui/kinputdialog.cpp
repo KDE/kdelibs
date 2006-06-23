@@ -21,10 +21,12 @@
 #include <qlabel.h>
 #include <qvalidator.h>
 
+#include <kguiitem.h>
 #include <klineedit.h>
 #include <knuminput.h>
 #include <kcombobox.h>
 #include <klistbox.h>
+#include <kstdguiitem.h>
 #include <ktextedit.h>
 
 #include "kinputdialog.h"

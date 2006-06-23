@@ -42,7 +42,7 @@ class KDEUI_EXPORT KListBox : public Q3ListBox
     Q_OBJECT
 
 public:
-  KListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+  explicit KListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
 
 Q_SIGNALS:
 

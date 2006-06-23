@@ -45,7 +45,7 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
     /**
       Constuctor.  Also sets the base value.
     */
-    KIntValidator ( QWidget * parent, int base = 10 );
+    explicit KIntValidator ( QWidget * parent, int base = 10 );
     /**
      * Constructor.  Also sets the minimum, maximum, and numeric base values.
      */
@@ -110,7 +110,7 @@ class KDEUI_EXPORT KFloatValidator : public QValidator {
     /**
      * Constructor.
      */
-    KFloatValidator ( QWidget * parent );
+    explicit KFloatValidator ( QWidget * parent );
     /**
      * Constructor.  Also sets the minimum and maximum values.
      */
@@ -182,7 +182,7 @@ public:
   /** Constuct a locale-aware KDoubleValidator with default range
       (whatever QDoubleValidator uses for that) and parent @p
       parent */
-  KDoubleValidator( QObject * parent );
+  explicit KDoubleValidator( QObject * parent );
   /** Constuct a locale-aware KDoubleValidator for range [@p bottom,@p
       top] and a precision of @p decimals decimals after the decimal
       point.  */

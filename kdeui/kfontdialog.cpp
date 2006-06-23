@@ -35,6 +35,7 @@
 #include <qfont.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qlineedit.h>
 #include <qscrollbar.h>
 #include <qstringlist.h>
 #include <qfontdatabase.h>
@@ -418,6 +419,21 @@ Qt::CheckState KFontChooser::sizeIsRelative() const
   return sizeIsRelativeCheckBox
        ? sizeIsRelativeCheckBox->checkState()
        : Qt::PartiallyChecked;
+}
+
+QString KFontChooser::sampleText() const
+{
+  return sampleEdit->text();
+}
+
+void KFontChooser::setSampleText( const QString &text )
+{
+  sampleEdit->setText( text );
+}
+
+void KFontChooser::setSampleBoxVisible( bool visible )
+{
+  sampleEdit->setVisible( visible );
 }
 
 QSize KFontChooser::sizeHint( void ) const

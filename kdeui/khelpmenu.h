@@ -124,8 +124,8 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      *        added to the dialog.
      *
      */
-    KHelpMenu( QWidget *parent=0, const QString &aboutAppText=QString(),
-	       bool showWhatsThis=true );
+    explicit KHelpMenu( QWidget *parent=0, const QString &aboutAppText=QString(),
+                        bool showWhatsThis=true );
 
     /**
      * Constructor.

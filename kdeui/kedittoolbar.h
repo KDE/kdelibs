@@ -139,9 +139,9 @@ public:
    *               be parsed.
    * @param parent The parent of the dialog.
    */
-  KEditToolbar(KActionCollection *collection,
-               const QString& xmlfile = QString(), bool global = true,
-               QWidget* parent = 0);
+  explicit KEditToolbar(KActionCollection *collection,
+                        const QString& xmlfile = QString(), bool global = true,
+                        QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
   /* Constructor for apps that do not use components, which has an extra argument

@@ -24,17 +24,17 @@
 #ifndef K_FONT_DIALOG_H
 #define K_FONT_DIALOG_H
 
-#include <QLineEdit>
-
 #include <kdialog.h>
 
 class QComboBox;
 class QCheckBox;
 class QFont;
 class QLabel;
+class QLineEdit;
 class QStringList;
 class KListBox;
 class KIntNumInput;
+
 /**
  * @short A font selection widget.
  *
@@ -99,11 +99,11 @@ public:
    *        calling sizeIsRelative().
    */
     /// KDE4: copy to KDE3SUPPORT
-  KFontChooser(QWidget *parent = 0L,
-	       bool onlyFixed = false,
-	       const QStringList &fontList = QStringList(),
-	       bool makeFrame = true, int visibleListSize=8,
-               bool diff = false, Qt::CheckState *sizeIsRelativeState = 0L );
+  explicit KFontChooser(QWidget *parent = 0L,
+                        bool onlyFixed = false,
+                        const QStringList &fontList = QStringList(),
+                        bool makeFrame = true, int visibleListSize=8,
+                        bool diff = false, Qt::CheckState *sizeIsRelativeState = 0L );
 
   /**
    * Destructs the font chooser.
@@ -183,7 +183,7 @@ public:
   /**
    * @return The current text in the sample text input area.
    */
-  QString sampleText() const { return sampleEdit->text(); }
+  QString sampleText() const;
 
   /**
    * Sets the sample text.
@@ -195,20 +195,14 @@ public:
    *
    * @param text The new sample text. The current will be removed.
    */
-  void setSampleText( const QString &text )
-  {
-    sampleEdit->setText( text );
-  }
+  void setSampleText( const QString &text );
 
   /**
    * Shows or hides the sample text box.
    *
    * @param visible Set it to true to show the box, to false to hide it.
    */
-  void setSampleBoxVisible( bool visible )
-  {
-    sampleEdit->setVisible( visible );
-  }
+  void setSampleBoxVisible( bool visible );
 
   /**
    * Converts a QFont into the corresponding X Logical Font

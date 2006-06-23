@@ -44,6 +44,7 @@
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
 #include <kaboutdata.h>
+#include <kshortcut.h>
 #include <kstaticdeleter.h>
 #include <kstdaccel.h>
 

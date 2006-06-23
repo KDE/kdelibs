@@ -25,6 +25,7 @@
 #define KDIALOG_H
 
 class QMenu;
+class KGuiItem;
 class KPushButton;
 
 #include <QtGui/QDialog>
@@ -32,8 +33,6 @@ class KPushButton;
 #include <kdelibs_export.h>
 
 #include <kconfigbase.h>
-#include <kguiitem.h>
-#include <kstdguiitem.h>
 
 /**
  * @short A dialog base class with standard buttons and predefined layouts.
@@ -162,7 +161,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param parent The parent of the dialog.
      * @param flags  The widget flags passed to the QDialog constructor
      */
-    KDialog( QWidget *parent = 0, Qt::WFlags flags = 0 );
+    explicit KDialog( QWidget *parent = 0, Qt::WFlags flags = 0 );
 
     /**
      * Destroys the dialog.

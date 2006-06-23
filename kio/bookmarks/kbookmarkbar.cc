@@ -32,6 +32,7 @@
 
 #include <kactionmenu.h>
 #include <kconfig.h>
+#include <kglobal.h>
 #include <kmenu.h>
 
 #include "kbookmarkmenu_p.h"

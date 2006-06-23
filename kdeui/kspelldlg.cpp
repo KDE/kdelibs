@@ -26,6 +26,7 @@
 #include <QProgressBar>
 
 #include <kconfig.h>
+#include <kglobal.h>
 #include <klocale.h>
 
 #include "ksconfig.h"

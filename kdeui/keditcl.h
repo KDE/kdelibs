@@ -41,7 +41,7 @@ class KDEUI_EXPORT KEdGotoLine : public KDialog
     Q_OBJECT
 
 public:
-    KEdGotoLine( QWidget *parent=0, bool modal=true );
+    explicit KEdGotoLine( QWidget *parent=0, bool modal=true );
     int getLineNumber();
 
 public Q_SLOTS:
@@ -64,7 +64,7 @@ class KDEUI_EXPORT KEdFind : public KDialog
     Q_PROPERTY( bool direction READ get_direction WRITE setDirection )
 public:
 
-    KEdFind( QWidget *parent = 0, bool modal=true);
+    explicit KEdFind( QWidget *parent = 0, bool modal=true);
     ~KEdFind();
 
     QString getText() const;
@@ -107,7 +107,7 @@ class KDEUI_EXPORT KEdReplace : public KDialog
 
 public:
 
-    KEdReplace ( QWidget *parent = 0, bool modal=true );
+    explicit KEdReplace ( QWidget *parent = 0, bool modal=true );
     ~KEdReplace();
 
     QString 	getText();
@@ -166,7 +166,7 @@ public:
     /**
      * The usual constructor.
      **/
-    KEdit (QWidget *_parent=0);
+    explicit KEdit (QWidget *_parent=0);
 
     ~KEdit();
 

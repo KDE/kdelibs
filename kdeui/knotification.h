@@ -23,7 +23,6 @@
 
 #include <qpixmap.h>
 #include <qobject.h>
-#include <qstringlist.h>
 #include <qpair.h>
 #include <kdelibs_export.h>
 
@@ -237,8 +236,9 @@ public:
 	 * @param widget is a widget where the notification reports to
 	 * @param flags is a bitmask of NotificationFlag
 	 */
-	KNotification(const QString & eventId , QWidget *widget=0L, const NotificationFlags &flags=CloseOnTimeout);
-    ~KNotification();
+	explicit KNotification(const QString & eventId , QWidget *widget=0L, const NotificationFlags &flags=CloseOnTimeout);
+
+	~KNotification();
 
     /**
 	 * @brief the widget associated to the notification
