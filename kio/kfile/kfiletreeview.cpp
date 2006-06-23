@@ -660,8 +660,4 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 ///////////////////////////////////////////////////////////////////
 
 
-
-void KFileTreeView::virtual_hook( int id, void* data )
-{ K3ListView::virtual_hook( id, data ); }
-
 #include "kfiletreeview.moc"

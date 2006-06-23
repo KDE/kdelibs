@@ -3330,7 +3330,7 @@ void K3DockManager::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 void K3DockMainWindow::virtual_hook( int id, void* data )
-{ KMainWindow::virtual_hook( id, data ); }
+{ /* KMainWindow::virtual_hook( id, data ); */ }
 
 void K3DockArea::virtual_hook( int, void* )
 { /*KMainWindow::virtual_hook( id, data );*/ }

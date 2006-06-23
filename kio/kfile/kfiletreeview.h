@@ -245,8 +245,6 @@ private:
    QPixmap  m_openFolderPixmap;
     QTimer *m_autoOpenTimer;
 
-protected:
-   virtual void virtual_hook( int id, void* data );
 private:
    class KFileTreeViewPrivate;
    KFileTreeViewPrivate *d;

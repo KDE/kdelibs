@@ -1039,14 +1039,5 @@ bool KUrlBarItemDialog::applicationLocal() const
     return m_appLocal->isChecked();
 }
 
-void KUrlBarItem::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KUrlBar::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KUrlBarListBox::virtual_hook( int id, void* data )
-{ KListBox::virtual_hook( id, data ); }
-
 
 #include "kurlbar.moc"

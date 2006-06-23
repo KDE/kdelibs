@@ -1486,7 +1486,4 @@ static QString unescape(const QString &text)
 	return result;
 }
 
-void KUrlCompletion::virtual_hook( int id, void* data )
-{ KCompletion::virtual_hook( id, data ); }
-
 #include "kurlcompletion.moc"

@@ -188,8 +188,6 @@ private:
     KUrlBar *m_parent;
     bool m_appLocal :1;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KUrlBarItemPrivate;
     KUrlBarItemPrivate *d;
@@ -470,9 +468,6 @@ private:
     KUrlBarListBox *m_listBox;
     int m_iconSize;
 
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KUrlBarPrivate;
     KUrlBarPrivate *d;
@@ -544,8 +539,6 @@ protected:
 private:
     Qt::Orientation m_orientation;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KUrlBarListBoxPrivate;
     KUrlBarListBoxPrivate *d;

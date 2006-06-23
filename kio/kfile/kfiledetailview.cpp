@@ -678,9 +678,4 @@ void KFileListViewItem::init()
     setText( COL_GROUP, inf->group() );
 }
 
-
-void KFileDetailView::virtual_hook( int id, void* data )
-{ K3ListView::virtual_hook( id, data );
-  KFileView::virtual_hook( id, data ); }
-
 #include "kfiledetailview.moc"

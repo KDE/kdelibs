@@ -235,8 +235,6 @@ private:
     void initItem(KFileIconViewItem *item, const KFileItem *i,
                   bool updateTextAndPixmap );
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KFileIconViewPrivate;
     KFileIconViewPrivate* const d;

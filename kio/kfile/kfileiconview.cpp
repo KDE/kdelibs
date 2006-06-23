@@ -883,8 +883,4 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
     }
 }
 
-void KFileIconView::virtual_hook( int id, void* data )
-{ K3IconView::virtual_hook( id, data );
-  KFileView::virtual_hook( id, data ); }
-
 #include "kfileiconview.moc"

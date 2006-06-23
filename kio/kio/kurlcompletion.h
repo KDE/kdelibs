@@ -223,8 +223,6 @@ private:
 	                  const QString& filter = QString(),
 	                  bool no_hidden = false );
 
-protected:
-	virtual void virtual_hook( int id, void* data );
 private:
 	KUrlCompletionPrivate* const d;
 };
