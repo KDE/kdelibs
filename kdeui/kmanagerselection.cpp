@@ -479,11 +479,5 @@ void KSelectionWatcher::filterEvent( XEvent* ev_P )
 
 Atom KSelectionWatcher::manager_atom = None;
 
-void KSelectionOwner::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KSelectionWatcher::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kmanagerselection.moc"
 #endif

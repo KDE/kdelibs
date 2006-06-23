@@ -58,7 +58,4 @@ Qt::Orientation KSeparator::orientation() const
    return ( frameStyle() & VLine ) ? Qt::Vertical : Qt::Horizontal;
 }
 
-void KSeparator::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kseparator.moc"

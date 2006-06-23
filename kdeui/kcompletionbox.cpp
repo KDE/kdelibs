@@ -565,7 +565,4 @@ bool KCompletionBox::activateOnSelect() const
     return d->emitSelected;
 }
 
-void KCompletionBox::virtual_hook( int id, void* data )
-{ KListBox::virtual_hook( id, data ); }
-
 #include "kcompletionbox.moc"

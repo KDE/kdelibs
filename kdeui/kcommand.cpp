@@ -401,7 +401,4 @@ void KNamedCommand::virtual_hook( int id, void* data )
 void KMacroCommand::virtual_hook( int id, void* data )
 { KNamedCommand::virtual_hook( id, data ); }
 
-void KCommandHistory::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kcommand.moc"

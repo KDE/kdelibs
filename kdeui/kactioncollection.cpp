@@ -573,9 +573,6 @@ void KActionCollection::connectNotify ( const char * signal )
   QObject::connectNotify(signal);
 }
 
-void KActionCollection::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 const QList< KActionCollection * >& KActionCollection::allCollections( )
 {
 	return s_allCollections;

@@ -1153,10 +1153,5 @@ const QList<KMainWindow*>& KMainWindow::memberList() { return sMemberList; }
 void KMainWindow::finalizeGUI( KXMLGUIClient *client )
 { KXMLGUIBuilder::finalizeGUI( client ); }
 
-void KMainWindow::virtual_hook( int id, void* data )
-{ KXMLGUIBuilder::virtual_hook( id, data );
-  KXMLGUIClient::virtual_hook( id, data ); }
-
-
 #include "kmainwindow.moc"
 

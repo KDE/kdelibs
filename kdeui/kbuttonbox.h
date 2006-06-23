@@ -157,8 +157,6 @@ protected:
   void  placeButtons();
   QSize buttonSizeHint(QPushButton *) const;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   KButtonBoxPrivate* const data;
 };

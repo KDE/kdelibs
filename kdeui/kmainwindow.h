@@ -912,8 +912,6 @@ private:
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
     static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     KMainWindowPrivate *d;
 };

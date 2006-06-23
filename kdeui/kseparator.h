@@ -63,9 +63,6 @@ class KDEUI_EXPORT KSeparator : public QFrame
    */
   void setOrientation(Qt::Orientation orientation);
 
-protected:
-  virtual void virtual_hook( int id, void* data );
-
 private:
   class KSeparatorPrivate* d;
 };

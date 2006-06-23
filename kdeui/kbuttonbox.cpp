@@ -350,7 +350,3 @@ QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
 
   return s;
 }
-
-void KButtonBox::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-

@@ -116,7 +116,4 @@ void KArrowButton::paintEvent(QPaintEvent*)
 	style()->drawPrimitive( e, &opt, &p, this );
 }
 
-void KArrowButton::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "karrowbutton.moc"

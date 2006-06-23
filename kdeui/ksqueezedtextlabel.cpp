@@ -79,7 +79,4 @@ void KSqueezedTextLabel::setAlignment( Qt::Alignment alignment )
   fullText = tmpFull;
 }
 
-void KSqueezedTextLabel::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "ksqueezedtextlabel.moc"

@@ -357,8 +357,6 @@ protected:
   virtual void slotActionTriggered();
   virtual void slotActionHighlighted();
 
-  virtual void virtual_hook( int id, void* data );
-
 public:
   /**
    * Add an action to the collection.
@@ -396,6 +394,8 @@ private:
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 
   class KActionCollectionPrivate* const d;
+
+  Q_DISABLE_COPY( KActionCollection );
 
   static QList<KActionCollection*> s_allCollections;
 };

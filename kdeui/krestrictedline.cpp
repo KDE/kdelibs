@@ -72,7 +72,4 @@ QString KRestrictedLine::validChars() const
   return qsValidChars;
 }
 
-void KRestrictedLine::virtual_hook( int id, void* data )
-{ KLineEdit::virtual_hook( id, data ); }
-
 #include "krestrictedline.moc"

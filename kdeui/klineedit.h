@@ -562,8 +562,7 @@ private:
     bool possibleTripleClick;  // set in mousePressEvent, deleted in tripleClickTimeout
 
     QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
-protected:
-    virtual void virtual_hook( int id, void* data );
+
 private:
     class KLineEditPrivate;
     KLineEditPrivate *const d;

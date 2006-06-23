@@ -102,7 +102,6 @@ public Q_SLOTS:
 
 protected:
   virtual QString text() const;
-  virtual void virtual_hook( int id, void* data );
 
 private:
   struct KProgressBarPrivate;

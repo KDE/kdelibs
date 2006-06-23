@@ -150,11 +150,6 @@ class KDEUI_EXPORT KSelectionOwner
         static Atom xa_multiple;
         static Atom xa_targets;
         static Atom xa_timestamp;
-    protected:
-	/** Virtual hook, used to add new "virtual" functions while maintaining
-	    binary compatibility. Unused in this class.
-	*/
-        virtual void virtual_hook( int id, void* data );
     private:
         KSelectionOwnerPrivate* const d;
     };
@@ -221,11 +216,6 @@ class KDEUI_EXPORT KSelectionWatcher
         const int screen;
         Window selection_owner;
         static Atom manager_atom;
-    protected:
-	/** Virtual hook, used to add new "virtual" functions while maintaining
-	    binary compatibility. Unused in this class.
-	*/
-        virtual void virtual_hook( int id, void* data );
     private:
         KSelectionWatcherPrivate* const d;
     };

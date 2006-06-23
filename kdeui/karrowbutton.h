@@ -86,12 +86,6 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		 */
 		virtual void paintEvent(QPaintEvent*);
 
-	protected:
-		/** 
-		 * Standard hack for adding virtual methods while
-		 * preserving BC; unused for now.
-		 */
-		virtual void virtual_hook( int id, void* data );
 	private:
 		KArrowButtonPrivate *d;
 };

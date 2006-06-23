@@ -308,7 +308,3 @@ bool KFontCombo::displayFonts()
     KConfigGroup cg(KGlobal::config(), "KDE");
     return cg.readEntry("DisplayFontItems", true);
 }
-
-void KFontCombo::virtual_hook( int id, void* data )
-{ KComboBox::virtual_hook( id, data ); }
-

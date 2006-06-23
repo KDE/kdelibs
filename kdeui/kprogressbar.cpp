@@ -98,7 +98,4 @@ QString KProgressBar::text() const
     return newString;
 }
 
-void KProgressBar::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kprogressbar.moc"

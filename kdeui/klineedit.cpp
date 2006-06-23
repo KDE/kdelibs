@@ -1366,7 +1366,3 @@ void KLineEdit::setClickMessage( const QString &msg )
 	d->drawClickMsg = text().isEmpty();
     update();
 }
-
-void KLineEdit::virtual_hook( int id, void* data )
-{ KCompletionBase::virtual_hook( id, data ); }
-

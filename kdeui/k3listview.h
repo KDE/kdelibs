@@ -966,8 +966,6 @@ private:
   class Tooltip;
 #endif
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class K3ListViewPrivate;
   K3ListViewPrivate* const d;

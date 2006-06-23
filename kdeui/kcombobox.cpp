@@ -711,10 +711,4 @@ void KHistoryCombo::slotSimulateActivated( const QString& text )
         emit activated(text);
 }
 
-void KComboBox::virtual_hook( int id, void* data )
-{ KCompletionBase::virtual_hook( id, data ); }
-
-void KHistoryCombo::virtual_hook( int id, void* data )
-{ KComboBox::virtual_hook( id, data ); }
-
 #include "kcombobox.moc"

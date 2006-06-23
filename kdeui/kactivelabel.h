@@ -48,7 +48,6 @@ public:
     QSize sizeHint() const;
 
 protected:
-    virtual void virtual_hook( int id, void* data );
     virtual void focusInEvent( QFocusEvent* fe );
     virtual void focusOutEvent( QFocusEvent* fe );
     virtual void keyPressEvent ( QKeyEvent * e );

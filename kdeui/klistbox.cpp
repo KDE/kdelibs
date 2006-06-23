@@ -262,7 +262,4 @@ void KListBox::slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoin
     emitExecute( item, pos );
 }
 
-void KListBox::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "klistbox.moc"

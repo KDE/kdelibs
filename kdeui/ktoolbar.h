@@ -230,9 +230,6 @@ private:
     static Qt::ToolButtonStyle toolButtonStyleFromString(const QString& style);
     static QString toolButtonStyleToString(Qt::ToolButtonStyle);
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-
 private:
     class KToolBarPrivate* const d;
 };

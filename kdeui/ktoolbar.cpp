@@ -806,9 +806,6 @@ void KToolBar::slotContextAboutToHide()
     d->context->removeAction(configureAction);
 }
 
-void KToolBar::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 void KToolBar::slotContextLeft( )
 {
     mainWindow()->addToolBar( Qt::LeftToolBarArea, this );

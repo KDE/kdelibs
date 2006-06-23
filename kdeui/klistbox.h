@@ -118,8 +118,6 @@ protected:
 private Q_SLOTS:
   void slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoint &pos );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KListBoxPrivate;
   KListBoxPrivate* const d;

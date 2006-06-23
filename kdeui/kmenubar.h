@@ -98,8 +98,6 @@ private:
     void updateMenuBarSize();
     void checkSize( int& w, int& h );
     static int block_resize;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KMenuBarPrivate;
     KMenuBarPrivate *d;

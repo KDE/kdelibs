@@ -136,7 +136,4 @@ int KAnimatedButton::iconDimensions() const
   return qMin(iconSize().width(), iconSize().height());
 }
 
-void KAnimatedButton::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kanimwidget.moc"

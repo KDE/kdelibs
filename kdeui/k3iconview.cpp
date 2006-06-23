@@ -735,7 +735,4 @@ void K3IconViewItem::setPixmapSize( const QSize& size )
     d->m_pixmapSize = size;
 }
 
-void K3IconView::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "k3iconview.moc"

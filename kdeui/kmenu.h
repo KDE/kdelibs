@@ -149,8 +149,6 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual void hideEvent(QHideEvent*);
 
-    virtual void virtual_hook( int id, void* data );
-
 protected Q_SLOTS:
     QString underlineText(const QString& text, uint length);
     void resetKeyboardVars(bool noMatches = false);

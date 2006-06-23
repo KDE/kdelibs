@@ -83,8 +83,6 @@ protected:
 private:
   /// QString of valid characters for this line
   QString	qsValidChars;
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KRestrictedLinePrivate* d;
 };

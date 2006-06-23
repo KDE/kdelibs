@@ -231,9 +231,6 @@ private Q_SLOTS:
     void canceled();
     void slotItemClicked( Q3ListBoxItem * );
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-
 private:
     class KCompletionBoxPrivate;
     KCompletionBoxPrivate* const d;

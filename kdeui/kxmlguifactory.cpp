@@ -589,9 +589,6 @@ QDomElement KXMLGUIFactory::findActionByName( QDomElement& elem, const QString& 
         return QDomElement();
 }
 
-void KXMLGUIFactory::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kxmlguifactory.moc"
 
 /* vim: et sw=4

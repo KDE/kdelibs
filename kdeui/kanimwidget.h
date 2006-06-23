@@ -101,9 +101,6 @@ Q_SIGNALS:
 protected Q_SLOTS:
   void slotTimerUpdate();
 
-protected:
-  virtual void virtual_hook( int id, void* data );
-
 private:
   void updateCurrentIcon();
 

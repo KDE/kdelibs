@@ -163,8 +163,6 @@ protected:
 private:
     void init();
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     struct KFontComboPrivate *const d;
 };

@@ -72,10 +72,6 @@ KActiveLabel::~KActiveLabel()
     delete d;
 }
 
-
-void KActiveLabel::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 void KActiveLabel::focusInEvent( QFocusEvent* fe )
 {
    KTextBrowser::focusInEvent(fe);

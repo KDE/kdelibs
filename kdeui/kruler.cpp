@@ -712,7 +712,4 @@ KRuler::paintEvent(QPaintEvent */*e*/)
 
 }
 
-void KRuler::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kruler.moc"

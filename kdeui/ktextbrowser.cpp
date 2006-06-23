@@ -160,7 +160,4 @@ void KTextBrowser::contextMenuEvent(QContextMenuEvent *e)
     delete popup;
 }
 
-void KTextBrowser::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "ktextbrowser.moc"

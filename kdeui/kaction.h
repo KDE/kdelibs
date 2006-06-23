@@ -641,6 +641,8 @@ private:
 
 private:
     class KActionPrivate* const d;
+
+    Q_DISABLE_COPY( KAction );
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KAction::ShortcutTypes)

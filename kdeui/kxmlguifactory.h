@@ -206,8 +206,6 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   void configureAction( KAction *action, const QDomNamedNodeMap &attributes );
   void configureAction( KAction *action, const QDomAttr &attribute );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   KXMLGUIFactoryPrivate *const d;
 };

@@ -513,9 +513,6 @@ private:
      */
     void init();
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-
 private:
     class KComboBoxPrivate;
     KComboBoxPrivate* const d;
@@ -781,8 +778,6 @@ private:
     bool myRotated;
     KPixmapProvider *myPixProvider;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KHistoryComboPrivate;
     KHistoryComboPrivate* const d;

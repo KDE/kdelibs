@@ -514,9 +514,6 @@ void KMenu::hideEvent(QHideEvent *e)
  * end of RMB menus on menus support
  */
 
-void KMenu::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 KMenuContext::KMenuContext( )
   : m_menu(0L)
   , m_action(0L)

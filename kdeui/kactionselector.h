@@ -397,6 +397,7 @@ private:
     Private data storage
   */
   KActionSelectorPrivate *d;
+    Q_DISABLE_COPY( KAction );
 };
 
 #endif // _KACTION_SELECTOR_H_

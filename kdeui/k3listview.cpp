@@ -2340,9 +2340,6 @@ void K3ListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, i
   Q3ListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 
-void K3ListView::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "k3listview.moc"
 #include "k3listviewlineedit.moc"
 

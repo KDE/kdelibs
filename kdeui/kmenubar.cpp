@@ -572,7 +572,4 @@ void KMenuBar::paintEvent( QPaintEvent* pe )
 #endif
 }
 
-void KMenuBar::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kmenubar.moc"

@@ -204,8 +204,6 @@ private:
   QTimer* m_pAutoSelect;
   int m_autoSelectDelay;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class K3IconViewPrivate;
   K3IconViewPrivate *d;

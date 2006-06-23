@@ -124,8 +124,6 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
      */
     void urlClick( const QString &url );
 
-  protected:
-    virtual void virtual_hook( int id, void* data );
   private:
     class KTextBrowserPrivate;
     KTextBrowserPrivate *d;

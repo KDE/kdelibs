@@ -74,8 +74,6 @@ protected:
   void squeezeTextToLabel();
   QString fullText;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KSqueezedTextLabelPrivate;
   KSqueezedTextLabelPrivate *d;

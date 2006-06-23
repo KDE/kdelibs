@@ -332,8 +332,4 @@ bool KUrlLabel::event (QEvent *e)
     return QLabel::event(e);
 }
 
-
-void KUrlLabel::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kurllabel.moc"

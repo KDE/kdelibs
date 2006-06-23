@@ -311,8 +311,6 @@ private:
     KAction *m_undo, *m_redo;
     QMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KCommandHistoryPrivate;
     KCommandHistoryPrivate * const d;

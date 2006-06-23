@@ -209,13 +209,12 @@ public:
    */
   int exec(int x, int y);
 
-protected:
-  virtual void virtual_hook( int id, void* data );
+Q_SIGNALS:
+  void leaveModality();
+
 private:
   class KPopupFramePrivate;
   KPopupFramePrivate *d;
-Q_SIGNALS:
-  void leaveModality();
 };
 
 /**
@@ -398,8 +397,6 @@ private Q_SLOTS:
   void beginningOfWeek();
   void endOfWeek();
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
     class KDateTablePrivate;
     KDateTablePrivate *d;
