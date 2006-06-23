@@ -22,18 +22,16 @@
 #ifndef KPAGEWIDGET_H
 #define KPAGEWIDGET_H
 
-#include <kdelibs_export.h>
-
 #include "kpageview.h"
-#include "kpagewidgetmodel.h"
 
+class KPageWidgetItem;
 
 class KDEUI_EXPORT KPageWidget : public KPageView
 {
   Q_OBJECT
 
   public:
-    KPageWidget( QWidget *parent = 0 );
+    explicit KPageWidget( QWidget *parent = 0 );
     ~KPageWidget();
 
     /**

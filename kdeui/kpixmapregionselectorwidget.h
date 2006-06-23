@@ -21,13 +21,15 @@
 #define KPIXMAPREGIONSELECTORWIDGET_H
 
 #include <QPixmap>
-#include <QLabel>
-#include <QRubberBand>
+#include <QWidget>
 
 #include <kdelibs_export.h>
 #include <kimageeffect.h>
 
 class KMenu;
+
+class QLabel;
+class QRubberBand;
 
 /**
  * KPixmapRegionSelectorWidget is a widget that shows a picture and provides the
@@ -48,7 +50,7 @@ public:
    /**
     * Constructor for a KPixmapRegionSelectorWidget.
     */
-   KPixmapRegionSelectorWidget( QWidget *parent = 0 );
+   explicit KPixmapRegionSelectorWidget( QWidget *parent = 0 );
 
    /**
     * Destructor for a KPixmapRegionSelectorWidget

@@ -22,12 +22,15 @@
 #ifndef KPAGEVIEW_H
 #define KPAGEVIEW_H
 
-#include <QtGui/QAbstractItemView>
 #include <QtGui/QWidget>
 
 #include <kdelibs_export.h>
 
-#include "kpagemodel.h"
+class KPageModel;
+
+class QAbstractItemDelegate;
+class QAbstractItemView;
+class QModelIndex;
 
 /**
  * @short A base class which can handle multiple pages.
@@ -86,7 +89,7 @@ class KDEUI_EXPORT KPageView : public QWidget
     /**
      * Creates a page view with given parent.
      */
-    KPageView( QWidget *parent = 0 );
+    explicit KPageView( QWidget *parent = 0 );
 
     /**
      * Destroys the page view.

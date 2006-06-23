@@ -36,6 +36,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kstdguiitem.h>

@@ -20,10 +20,11 @@
 #ifndef KPIXMAPREGIONSELECTORDIALOG_H
 #define KPIXMAPREGIONSELECTORDIALOG_H
 
-#include <QImage>
-
 #include <kdialog.h>
-#include <kpixmapregionselectorwidget.h>
+
+class KPixmapRegionSelectorWidget;
+
+class QImage;
 
 /**
  * A dialog that uses a KPixmapRegionSelectorWidget to allow the user
@@ -46,7 +47,7 @@ public:
     * later the setPixmap method of the KPixmapRegionSelectorWidget widget of
     * the new object.
     */
-   KPixmapRegionSelectorDialog(QWidget *parent=0L, bool modal = false );
+   explicit KPixmapRegionSelectorDialog(QWidget *parent=0L, bool modal = false );
    /**
     * The destructor of the dialog
     */

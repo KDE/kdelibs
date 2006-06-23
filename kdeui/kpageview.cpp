@@ -19,14 +19,16 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kpageview.h"
+#include "kpageview_p.h"
+
+#include "kpagemodel.h"
+
+#include <QAbstractItemView>
 #include <QGridLayout>
 #include <QLabel>
 #include <QStackedWidget>
 #include <QTimer>
-
-#include "kpageview_p.h"
-
-#include "kpageview.h"
 
 class KPageView::Private
 {

@@ -29,7 +29,8 @@
 #define KPROGRESSDIALOG_H
 
 #include <kdialog.h>
-#include <kprogressbar.h>
+
+class KProgressBar;
 
 /**
  * KProgressDialog provides a dialog with a text label, a progress bar
@@ -61,8 +62,8 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          * @param text Text to display in the dialog
          * @param modal Set to true to make the dialog modal
          */
-        KProgressDialog(QWidget* parent = 0, const QString& caption = QString(),
-                        const QString& text = QString(), bool modal = false);
+        explicit KProgressDialog(QWidget* parent = 0, const QString& caption = QString(),
+                                 const QString& text = QString(), bool modal = false);
 
         /**
          * Destructor

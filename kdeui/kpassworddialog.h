@@ -47,20 +47,20 @@ public:
     /**
      * Constructs a password input widget using the user's global "echo mode" setting.
      */
-    KPasswordEdit(QWidget *parent=0);
+    explicit KPasswordEdit(QWidget *parent=0);
     // KDE4: either of the two must go! add default values for parameters
 
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a QLineEdit::EchoMode.
      */
-    KPasswordEdit(EchoMode echoMode, QWidget *parent);
+    explicit KPasswordEdit(EchoMode echoMode, QWidget *parent = 0);
 
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a KPasswordEdit::EchoModes.
      */
-    KPasswordEdit(EchoModes echoMode, QWidget *parent);
+    explicit KPasswordEdit(EchoModes echoMode, QWidget *parent = 0);
 
     /**
      * Destructs the widget.

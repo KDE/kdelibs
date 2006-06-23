@@ -27,8 +27,9 @@
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qimage.h>
+#include <QLabel>
 #include <qlayout.h>
-#include <kimageeffect.h>
+#include <QRubberBand>
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>

@@ -30,7 +30,7 @@
 
 #include <QProgressBar>
 
-#include <kdialog.h>
+#include <kdelibs_export.h>
 
 /**
  * @short A progress indicator widget.
@@ -54,7 +54,7 @@ public:
   /**
    * Construct a progress bar.
    */
-  KProgressBar(QWidget *parent=0);
+  explicit KProgressBar(QWidget *parent=0);
 
   /**
    * Construct a progress bar with a total number of steps.
@@ -62,7 +62,7 @@ public:
    * bar represents. For example, if the operation is to examine 50 files, this value would be 50. Before examining
    * the first file, call setProgress(0); call setProgress(50) after examining the last file.
    */
-  KProgressBar(int totalSteps, QWidget *parent=0);
+  explicit KProgressBar(int totalSteps, QWidget *parent=0);
 
   /**
    * Destruct the progress bar.

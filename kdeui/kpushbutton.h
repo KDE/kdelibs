@@ -22,7 +22,6 @@
 
 #include <QPushButton>
 
-#include <kguiitem.h>
 #include <kstdguiitem.h>
 
 class QDrag;
@@ -46,23 +45,23 @@ public:
     /**
      * Default constructor.
      */
-    KPushButton( QWidget *parent );
+    explicit KPushButton( QWidget *parent = 0 );
 
     /**
      * Constructor, that sets the button-text to @p text
      */
-    KPushButton( const QString &text, QWidget *parent );
+    explicit KPushButton( const QString &text, QWidget *parent = 0 );
 
     /**
      * Constructor, that sets an icon and the button-text to @p text
      */
-    KPushButton( const QIcon &icon, const QString &text, QWidget *parent );
+    KPushButton( const QIcon &icon, const QString &text, QWidget *parent = 0 );
 
     /**
      * Constructor that takes a KGuiItem for the text, the icon, the tooltip
      * and the what's this help
      */
-    KPushButton( const KGuiItem &item, QWidget *parent );
+    KPushButton( const KGuiItem &item, QWidget *parent = 0 );
 
     /**
      * Destructs the button.

@@ -26,9 +26,11 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
-
-#include <qlayout.h>
+#include <kpagewidgetmodel.h>
 #include <kvbox.h>
+
+#include <qicon.h>
+#include <qlayout.h>
 #include <qmap.h>
 
 QHash<QString,KConfigDialog *> KConfigDialog::openDialogs;

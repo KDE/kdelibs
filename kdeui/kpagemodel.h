@@ -71,7 +71,7 @@ class KDEUI_EXPORT KPageModel : public QAbstractItemModel
     /**
      * Constructs a page model with the given parent.
      */
-    KPageModel( QObject *parent = 0 );
+    explicit KPageModel( QObject *parent = 0 );
 
     /**
      * Destroys the page model.

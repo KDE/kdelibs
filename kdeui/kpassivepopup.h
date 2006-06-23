@@ -13,8 +13,9 @@
 
 #include <QFrame>
 
-#include <kvbox.h>
 #include <kdelibs_export.h>
+
+class KVBox;
 
 /**
  * @short A dialog-like popup that displays messages without interupting the user.
@@ -84,19 +85,19 @@ public:
     /**
      * Creates a popup for the specified widget.
      */
-    KPassivePopup( QWidget *parent=0, Qt::WFlags f = 0 );
+    explicit KPassivePopup( QWidget *parent=0, Qt::WFlags f = 0 );
 
     /**
      * Creates a popup for the specified window.
      */
-    KPassivePopup( WId parent );
+    explicit KPassivePopup( WId parent );
 
 #if 0 // These break macos and win32 where the definition of WId makes them ambiguous
     /**
      * Creates a popup for the specified widget.
      * THIS WILL BE REMOVED, USE setPopupStyle().
      */
-    KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 ) KDE_DEPRECATED;
+    explicit KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 ) KDE_DEPRECATED;
 
     /**
      * Creates a popup for the specified window.

@@ -94,7 +94,7 @@ class KDEUI_EXPORT KPageDialog : public KDialog
     /**
      * Creates a new page dialog.
      */
-    KPageDialog( QWidget *parent = 0, Qt::WFlags flags = 0 );
+    explicit KPageDialog( QWidget *parent = 0, Qt::WFlags flags = 0 );
 
     /**
      * Destroys the page dialog.

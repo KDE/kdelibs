@@ -18,10 +18,15 @@
 */
 
 #include "kpixmapregionselectordialog.h"
+
 #include <qdialog.h>
 #include <qdesktopwidget.h>
+#include <QImage>
+#include <qlabel.h>
+
 #include <klocale.h>
 #include <kdialog.h>
+#include <kpixmapregionselectorwidget.h>
 #include <kvbox.h>
 
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,

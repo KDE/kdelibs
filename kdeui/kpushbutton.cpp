@@ -24,6 +24,7 @@
 
 #include "config.h"
 
+#include <kguiitem.h>
 #include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kglobal.h>

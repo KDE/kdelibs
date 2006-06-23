@@ -41,6 +41,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kpushbutton.h>

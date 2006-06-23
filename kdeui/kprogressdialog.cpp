@@ -20,13 +20,15 @@
  * KProgressDialog -- a dialog with a progress indicator
  */
 
+#include "kprogressdialog.h"
+
 #include <QLabel>
 #include <QLayout>
 #include <QTimer>
 
+#include <kguiitem.h>
+#include <kprogressbar.h>
 #include <kpushbutton.h>
-
-#include "kprogressdialog.h"
 
 struct KProgressDialog::KProgressDialogPrivate
 {

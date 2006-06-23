@@ -21,6 +21,8 @@
 
 #include "kpagewidget.h"
 
+#include "kpagewidgetmodel.h"
+
 class KPageWidget::Private
 {
   public:

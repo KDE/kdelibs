@@ -22,12 +22,9 @@
 #ifndef KPAGEWIDGETMODEL_H
 #define KPAGEWIDGETMODEL_H
 
-#include <QtGui/QIcon>
-
-#include <kdelibs_export.h>
-
 #include "kpagemodel.h"
 
+class QIcon;
 class QWidget;
 
 class KDEUI_EXPORT KPageWidgetItem : public QObject
@@ -68,7 +65,7 @@ class KDEUI_EXPORT KPageWidgetModel : public KPageModel
   Q_OBJECT
 
   public:
-    KPageWidgetModel( QObject *parent = 0 );
+    explicit KPageWidgetModel( QObject *parent = 0 );
     ~KPageWidgetModel();
 
     /**
