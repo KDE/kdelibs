@@ -27,12 +27,12 @@
 
 
 KAboutKDE::KAboutKDE( QWidget *parent, bool modal )
-  : KAboutDialog( KAboutDialog::KDEStandard, QLatin1String("KDE"), parent )
-
+  : KAboutDialog( KAboutDialog::KDEStandard, QLatin1String("KDE"), parent ),
+    d( 0 )
 {
-    setButtons( KDialog::Help|KDialog::Close );
-    setDefaultButton( KDialog::Close );
-    setModal( modal );
+  setButtons( KDialog::Help|KDialog::Close );
+  setDefaultButton( KDialog::Close );
+  setModal( modal );
 
   const QString text1 = i18n(""
     "The <b>K Desktop Environment</b> is written and maintained by the "
