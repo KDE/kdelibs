@@ -71,10 +71,10 @@ KDirListerCache::KDirListerCache( int maxCount )
 
   kdirnotify = QDBus::sessionBus().findInterface<org::kde::KDirNotify>(QString(), QString());
   kdirnotify->setParent(this);
-  connect(kdirnotify, SIGNAL(FileRenamed(QString,QString)), SLOT(FileRenamed(QString,QString)));
-  connect(kdirnotify, SIGNAL(FilesAdded(QString)), SLOT(FilesAdded(QString)));
-  connect(kdirnotify, SIGNAL(FilesChanged(QStringList)), SLOT(FilesChanged(QStringList)));
-  connect(kdirnotify, SIGNAL(FilesRemoved(QStringList)), SLOT(FileRenamed(QStringList)));
+  connect(kdirnotify, SIGNAL(FileRenamed(QString,QString)), SLOT(slotFileRenamed(QString,QString)));
+  connect(kdirnotify, SIGNAL(FilesAdded(QString)), SLOT(slotFilesAdded(QString)));
+  connect(kdirnotify, SIGNAL(FilesChanged(QStringList)), SLOT(slotFilesChanged(QStringList)));
+  connect(kdirnotify, SIGNAL(FilesRemoved(QStringList)), SLOT(slotFilesRemoved(QStringList)));
 }
 
 KDirListerCache::~KDirListerCache()
@@ -695,27 +695,28 @@ KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KUrl& _u 
   return 0;
 }
 
-void KDirListerCache::FilesAdded( const KUrl &dir )
+void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify signals
 {
   kDebug(7004) << k_funcinfo << dir << endl;
-  updateDirectory( dir );
+  updateDirectory( KUrl(dir) );
 }
 
-void KDirListerCache::FilesRemoved( const KUrl::List &fileList )
+void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
 {
   kDebug(7004) << k_funcinfo << endl;
-  KUrl::List::ConstIterator it = fileList.begin();
+  QStringList::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
     // emit the deleteItem signal if this file was shown in any view
     KFileItem *fileitem = 0L;
-    KUrl parentDir( *it );
+    KUrl url( *it );
+    KUrl parentDir( url );
     parentDir.setPath( parentDir.directory() );
     KFileItemList *lstItems = itemsForDir( parentDir );
     if ( lstItems )
     {
       for ( KFileItemList::iterator fit = lstItems->begin(), fend = lstItems->end() ; fit != fend ; ++fit ) {
-        if ( (*fit )->url() == *it ) {
+        if ( (*fit )->url() == url ) {
           fileitem = *fit;
           lstItems->erase( fit ); // remove fileitem from list
           break;
@@ -738,7 +739,7 @@ void KDirListerCache::FilesRemoved( const KUrl::List &fileList )
     {
       // in case of a dir, check if we have any known children, there's much to do in that case
       // (stopping jobs, removing dirs from cache etc.)
-      deleteDir( *it );
+      deleteDir( url );
     }
 
     // now remove the item itself
@@ -746,17 +747,18 @@ void KDirListerCache::FilesRemoved( const KUrl::List &fileList )
   }
 }
 
-void KDirListerCache::FilesChanged( const KUrl::List &fileList )
+void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KDirNotify signals
 {
   KUrl::List dirsToUpdate;
   kDebug(7004) << k_funcinfo << "only half implemented" << endl;
-  KUrl::List::ConstIterator it = fileList.begin();
+  QStringList::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
-    if ( ( *it ).isLocalFile() )
+    KUrl url( *it );
+    if ( url.isLocalFile() )
     {
-      kDebug(7004) << "KDirListerCache::FilesChanged " << *it << endl;
-      KFileItem *fileitem = findByURL( 0, *it );
+      kDebug(7004) << "KDirListerCache::slotFilesChanged " << url << endl;
+      KFileItem *fileitem = findByURL( 0, url );
       if ( fileitem )
       {
           // we need to refresh the item, because e.g. the permissions can have changed.
@@ -769,7 +771,7 @@ void KDirListerCache::FilesChanged( const KUrl::List &fileList )
     } else {
       // For remote files, refresh() won't be able to figure out the new information.
       // Let's update the dir.
-      KUrl dir( *it );
+      KUrl dir( url );
       dir.setPath( dir.directory() );
       if ( !dirsToUpdate.contains( dir ) )
         dirsToUpdate.prepend( dir );
@@ -783,8 +785,10 @@ void KDirListerCache::FilesChanged( const KUrl::List &fileList )
   // ( see kde-2.2.2's kdirlister )
 }
 
-void KDirListerCache::FileRenamed( const KUrl &src, const KUrl &dst )
+void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst ) // from KDirNotify signals
 {
+  KUrl src( _src );
+  KUrl dst( _dst );
   kDebug(7004) << k_funcinfo << src.prettyUrl() << " -> " << dst.prettyUrl() << endl;
 #ifdef DEBUG_CACHE
   printDebug();
@@ -801,7 +805,7 @@ void KDirListerCache::FileRenamed( const KUrl &src, const KUrl &dst )
   if ( fileitem )
   {
     if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
-        FilesChanged( src );
+        slotFilesChanged( QStringList() << src.url() );
     else
     {
         aboutToRefreshItem( fileitem );
@@ -924,15 +928,15 @@ void KDirListerCache::slotFileCreated( const QString& _file )
   KUrl u;
   u.setPath( _file );
   u.setPath( u.directory() );
-  FilesAdded( u );
+  updateDirectory( u );
 }
 
-void KDirListerCache::slotFileDeleted( const QString& _file )
+void KDirListerCache::slotFileDeleted( const QString& _file ) // from KDirWatch
 {
   kDebug(7004) << k_funcinfo << _file << endl;
   KUrl u;
   u.setPath( _file );
-  FilesRemoved( u );
+  slotFilesRemoved( QStringList() << u.url() );
 }
 
 void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )

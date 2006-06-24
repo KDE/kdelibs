@@ -141,27 +141,27 @@ public slots:
    * Notify that files have been added in @p directory
    * The receiver will list that directory again to find
    * the new items (since it needs more than just the names anyway).
-   * Reimplemented from KDirNotify.
+   * Connected to the DBus signal from the KDirNotify interface.
    */
-  void FilesAdded( const KUrl& directory );
+  void slotFilesAdded( const QString& urlDirectory );
 
   /**
    * Notify that files have been deleted.
    * This call passes the exact urls of the deleted files
    * so that any view showing them can simply remove them
    * or be closed (if its current dir was deleted)
-   * Reimplemented from KDirNotify.
+   * Connected to the DBus signal from the KDirNotify interface.
    */
-  void FilesRemoved( const KUrl::List& fileList );
+  void slotFilesRemoved( const QStringList& fileList );
 
   /**
    * Notify that files have been changed.
    * At the moment, this is only used for new icon, but it could be
    * used for size etc. as well.
-   * Note: this is ASYNC so that it can be used with a broadcast
+   * Connected to the DBus signal from the KDirNotify interface.
    */
-  void FilesChanged( const KUrl::List& fileList );
-  void FileRenamed( const KUrl& src, const KUrl& dst );
+  void slotFilesChanged( const QStringList& fileList );
+  void slotFileRenamed( const QString& srcUrl, const QString& dstUrl );
 
 public:
   static KDirListerCache *self();
@@ -215,9 +215,9 @@ private:
   // and removed from the cache including all the children.
   void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList & );
   void processPendingUpdates();
-  // common for slotRedirection and FileRenamed
+  // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
-  // common for deleteUnmarkedItems and FilesRemoved
+  // common for deleteUnmarkedItems and slotFilesRemoved
   void deleteDir( const KUrl& dirUrl );
   // remove directory from cache (itemsCached), including all child dirs
   void removeDirFromCache( const KUrl& dir );
