@@ -277,6 +277,10 @@ namespace KIO {
          */
         static void checkSlaveOnHold(bool b) { self()->_checkSlaveOnHold(b); }
 
+        static void emitReparseSlaveConfiguration() {
+            emit self()->reparseSlaveConfiguration( QString() );
+        }
+
         void debug_info();
 
     public Q_SLOTS:
@@ -284,12 +288,15 @@ namespace KIO {
         void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
                              const QString &host, bool connected);
 
-        // D-Bus:
-        Q_SCRIPTABLE void reparseSlaveConfiguration(const QString &);
+        // connected to D-Bus signal:
+        void slotReparseSlaveConfiguration(const QString &);
 
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
+
+        // DBUS (TODO: adaptor, or Qt-4.2 ExportSignals)
+        void reparseSlaveConfiguration(const QString &);
 
     protected:
         void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config=0);

@@ -121,10 +121,19 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 
 
 Scheduler::Scheduler()
-    : QObject(kapp)
+    : QObject()
 {
     setObjectName( "scheduler" );
-    QDBus::sessionBus().registerObject("/KIO/Scheduler", this, QDBusConnection::ExportSlots);
+
+    const QString dbusPath = "/KIO/Scheduler";
+    const QString dbusInterface = "org.kde.KIO.Scheduler";
+    QDBusConnection& dbus = QDBus::sessionBus();
+    dbus.registerObject("/KIO/Scheduler", this, QDBusConnection::ExportSlots);
+    dbus.connect(QString(), dbusPath, dbusInterface, "reparseSlaveConfiguration",
+                 this, SLOT(slotReparseSlaveConfiguration(QString)));
+#ifdef __GNUC__
+#warning TODO adaptor, or wait for ExportSignals with Qt-4.2
+#endif
 
     slaveTimer.setObjectName( "Scheduler::slaveTimer" );
     slaveTimer.setSingleShot( true );
@@ -165,7 +174,7 @@ Scheduler::debug_info()
 {
 }
 
-void Scheduler::reparseSlaveConfiguration(const QString &proto)
+void Scheduler::slotReparseSlaveConfiguration(const QString &proto)
 {
     kDebug( 7006 ) << "reparseSlaveConfiguration( " << proto << " )" << endl;
     KProtocolManager::reparseConfiguration();
@@ -862,9 +871,11 @@ Scheduler::slotUnregisterWindow(QObject *obj)
        call(QDBusInterface::NoWaitForReply, "unregisterWindowId", qlonglong(windowId));
 }
 
+static KStaticDeleter<Scheduler> kioSchedulerSd;
+
 Scheduler* Scheduler::self() {
     if ( !instance ) {
-        instance = new Scheduler;
+        kioSchedulerSd.setObject( instance, new Scheduler );
     }
     return instance;
 }
