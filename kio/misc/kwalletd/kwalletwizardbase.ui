@@ -8,8 +8,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
-    <height>385</height>
+    <width>612</width>
+    <height>421</height>
    </rect>
   </property>
   <widget class="QWidget" name="page1" >
@@ -17,8 +17,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>544</width>
-     <height>299</height>
+     <width>600</width>
+     <height>335</height>
     </rect>
    </property>
    <layout class="QGridLayout" >
@@ -75,7 +75,7 @@
         <hsizetype>5</hsizetype>
         <vsizetype>5</vsizetype>
         <horstretch>0</horstretch>
-        <verstretch>2</verstretch>
+        <verstretch>0</verstretch>
        </sizepolicy>
       </property>
       <property name="text" >
@@ -169,8 +169,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>100</width>
-     <height>30</height>
+     <width>600</width>
+     <height>335</height>
     </rect>
    </property>
    <layout class="QGridLayout" >
@@ -188,6 +188,9 @@
       <property name="textFormat" >
        <enum>Qt::RichText</enum>
       </property>
+      <property name="wordWrap" >
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -197,8 +200,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>100</width>
-     <height>30</height>
+     <width>600</width>
+     <height>335</height>
     </rect>
    </property>
    <layout class="QGridLayout" >
@@ -215,6 +218,9 @@
       </property>
       <property name="textFormat" >
        <enum>Qt::RichText</enum>
+      </property>
+      <property name="wordWrap" >
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -388,8 +394,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>100</width>
-     <height>30</height>
+     <width>600</width>
+     <height>335</height>
     </rect>
    </property>
    <layout class="QGridLayout" >
@@ -409,6 +415,9 @@
       </property>
       <property name="alignment" >
        <set>Qt::AlignVCenter</set>
+      </property>
+      <property name="wordWrap" >
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -466,14 +475,14 @@
  <customwidgets>
   <customwidget>
    <class>Q3ButtonGroup</class>
-   <extends></extends>
+   <extends>Q3GroupBox</extends>
    <header>Qt3Support/Q3ButtonGroup</header>
    <container>1</container>
    <pixmap></pixmap>
   </customwidget>
   <customwidget>
    <class>Q3Wizard</class>
-   <extends></extends>
+   <extends>QDialog</extends>
    <header>q3wizard.h</header>
    <container>1</container>
    <pixmap></pixmap>
