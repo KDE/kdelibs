@@ -32,6 +32,8 @@
 #include <kjs/value.h>
 #include <kjs_binding.h>
 
+#include "dom/dom_misc.h"
+
 class KActionCollection;
 class KAction;
 
@@ -45,6 +47,30 @@ class ConsoleDock;
 
 namespace KJS
 {
+
+class DebugDocument : public DOM::DomShared
+{
+public:
+    DebugDocument(const QString &url, Interpreter *interpreter)
+        : m_url(url), m_interpreter(interpreter)
+        {};
+    ~DebugDocument() {};
+
+    QString url() { return m_url; }
+    Interpreter *interpreter() { return m_interpreter; }
+
+    QStringList code() { return m_codeFragments; }
+
+    void addCodeFragment(const QString &code) { m_codeFragments.append(code); }
+
+private:
+    QString m_url;
+    Interpreter *m_interpreter;
+    QStringList m_codeFragments;
+
+};
+
+
 /**
 * DebuggerWindow
 *
@@ -114,7 +140,12 @@ private:
     BreakpointsDock *m_breakpoints;
     ConsoleDock *m_console;
 
+    // Internal temp variables to overcome some issues with KJS::Debugger...
+    int m_nextBaseLine;
+    QString m_nextUrl;
 
+
+    QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
 
     static DebugWindow *m_debugger;
 };

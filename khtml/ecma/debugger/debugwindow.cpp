@@ -68,7 +68,6 @@
 #include "debugwindow.h"
 #include "debugwindow.moc"
 
-
 using namespace KJS;
 
 DebugWindow* DebugWindow::m_debugger = 0;
@@ -92,12 +91,12 @@ DebugWindow * DebugWindow::window()
     return m_debugger;
 }
 
-// STUB
+// ----------------------------------------------
+
 void DebugWindow::setNextSourceInfo(QString url, int baseLine)
 {
-    kDebug() << "setNextSourceInfo:" << endl
-             << "url: " << url << endl
-             << "baseLine: " << baseLine  << endl;
+    m_nextUrl = url;
+    m_nextBaseLine = baseLine;
 }
 
 // ----------------------------------------------
@@ -249,6 +248,32 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
              << "errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
 
+    // Determine key
+    QString key = QString("%1|%2").arg((long)exec->interpreter()).arg(m_nextUrl);
+
+    DebugDocument *document = 0;
+    if (!m_nextUrl.isEmpty())
+        document = m_documents[key];
+    if (!document)
+    {
+//        if (!m_nextUrl.isEmpty()) // Not in our cache, but has a URL
+//        {
+
+            document = new DebugDocument(m_nextUrl, exec->interpreter());
+            m_documents[key] = document;
+//        }
+    }
+    else
+    {
+        // interpreter should already be there, if it isn't then we should look above to the problem
+    }
+
+    m_scripts->addDocument(document);
+
+    m_nextBaseLine = 1;
+    m_nextUrl = "";
+
+//    return (m_mode != Stop);
     return true;
 }
 
