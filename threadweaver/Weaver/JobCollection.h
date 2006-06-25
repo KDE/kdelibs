@@ -6,6 +6,7 @@
 namespace ThreadWeaver {
 
     class Thread;
+    class JobCollectionJobRunner;
 
     /** A JobCollection is a vector of Jobs that will be queued together.
      *
@@ -16,6 +17,7 @@ namespace ThreadWeaver {
      */
     class JobCollection : public Job
     {
+        friend class JobCollectionJobRunner;
         Q_OBJECT
 
     public:
@@ -31,7 +33,6 @@ namespace ThreadWeaver {
 
         /** Overload to manage recursive sets. */
         bool hasUnresolvedDependencies();
-
 
     public slots:
         /** Stop processing, dequeue all remaining Jobs.
@@ -49,6 +50,11 @@ namespace ThreadWeaver {
 
         /** Return the number of jobs in the joblist. */
         const int jobListLength();
+
+        /** Callback method for failed jobs.
+            Default implementation does nothing.
+        */
+        virtual void jobFailed ( Job* );
 
     private:
         /** Overload the execute method. */

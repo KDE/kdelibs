@@ -102,6 +102,11 @@ namespace ThreadWeaver {
             Use this method to, for example, queue sub-operations as jobs
             before the job itself is queued.
 
+            Note: When this method is called, the associated Weaver object's
+            thread holds a lock on the weaver's queue. Therefore, it is save
+            to assume that recursive queueing is atomic from the queues
+            perspective.
+
             @param weaver the Weaver object the job will be queued in
             */
         virtual void aboutToBeQueued ( WeaverInterface *weaver );

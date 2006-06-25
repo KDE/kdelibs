@@ -24,6 +24,9 @@ namespace ThreadWeaver {
     protected:
         /** Overload to queue the sequence. */
         void aboutToBeQueued ( WeaverInterface *weaver );
+
+        /** reimplemented */
+        void jobFailed( Job* );
     };
 
 }

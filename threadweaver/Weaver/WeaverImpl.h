@@ -95,7 +95,11 @@ namespace ThreadWeaver {
         void assignJobs();
 	int noOfThreads ();
         void requestAbort();
-    signals:
+
+        /** Dump the current jobs to the console. */
+        void dumpJobs();
+
+signals:
         /** A Thread has been created. */
         void threadStarted ( Thread* );
         /** A thread has exited. */
@@ -106,6 +110,7 @@ namespace ThreadWeaver {
         void threadBusy ( Thread*,  Job* j);
         /** The Weaver's state has changed. */
         void stateChanged ( State* );
+
     protected:
         /** Adjust active thread count.
             This is a helper function for incActiveThreadCount and decActiveThreadCount. */
@@ -146,6 +151,7 @@ namespace ThreadWeaver {
         QWaitCondition m_jobAvailable;
 	/** Wait for a job to finish. */
 	QWaitCondition m_jobFinished;
+
     private:
 	/** Mutex to serialize operations. */
 	QMutex *m_mutex;

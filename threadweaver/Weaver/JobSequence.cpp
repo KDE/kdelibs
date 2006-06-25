@@ -27,5 +27,11 @@ namespace ThreadWeaver {
 
         JobCollection::aboutToBeQueued( weaver );
     }
+
+    void JobSequence::jobFailed( Job* job)
+    {
+        stop( job );
+    }
+
 }
 

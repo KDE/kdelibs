@@ -32,10 +32,11 @@ namespace ThreadWeaver {
         Q_OBJECT
 
     public:
-        JobCollectionJobRunner ( Job* guard, Job* payload, QObject* parent )
+        JobCollectionJobRunner ( JobCollection* collection, Job* guard, Job* payload, QObject* parent )
             : Job( parent )
             , m_guard ( guard )
             , m_payload( payload )
+            , m_collection( collection )
         {
             Q_ASSERT ( payload ); // will not accept zero jobs
             Q_ASSERT ( guard );
@@ -67,6 +68,10 @@ namespace ThreadWeaver {
             if ( m_payload )
             {
                 m_payload->execute ( t );
+                if ( ! m_payload->success() )
+                {
+                    m_collection->jobFailed( m_payload );
+                }
             } else {
                 debug ( 1, "JobCollection: job in collection has been deleted." );
             }
@@ -78,6 +83,7 @@ namespace ThreadWeaver {
 
         Job* m_guard;
         QPointer<Job> m_payload;
+        JobCollection* m_collection;
     };
 
     class JobCollection::JobList : public QList <JobCollectionJobRunner*> {};
@@ -116,24 +122,31 @@ namespace ThreadWeaver {
     {
         P_ASSERT ( m_queued == false );
 
-        m_elements->prepend ( new JobCollectionJobRunner( m_guard, j, this ) );
+        m_elements->prepend ( new JobCollectionJobRunner( this, m_guard, j, this ) );
     }
 
     void JobCollection::stop( Job *job )
-    {
+    {   // this only works if there is an event queue executed by the main
+        // thread, and it is not blocked:
         Q_UNUSED( job );
-        P_ASSERT ( m_queued == true ); // should only be stopped once started,
-                                       // maybe a bit strict...
 
-        // dequeue everything:
-        for ( int index = 1; index < m_elements->size(); ++index )
+        if ( m_queued )
         {
-            if ( ! m_elements->at( index )->isFinished() )
+            // dequeue everything:
+            for ( int index = 1; index < m_elements->size(); ++index )
             {
-                m_weaver->dequeue ( m_elements->at( index ) );
+                if ( ! m_elements->at( index )->isFinished() )
+                {
+                    debug( 4, "JobCollection::stop: dequeueing %p.\n", m_elements->at( index ) );
+                    m_weaver->dequeue ( m_elements->at( index ) );
+                } else {
+                    debug( 4, "JobCollection::stop: not dequeueing %p, already finished.\n",
+                           m_elements->at( index ) );
+                }
             }
+            debug( 4, "JobCollection::stop: dequeueing %p.\n", this);
+            m_weaver->dequeue( this );
         }
-        m_weaver->dequeue( this );
     }
 
     void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
@@ -154,7 +167,7 @@ namespace ThreadWeaver {
                 m_guard->addDependency ( dependencies.at( index ) );
             }
 
-            // set up the dependencies:
+            // set up the dependencies and queue the individual jobs:
             for ( i = 1; i < m_elements->size(); ++i )
             {
                 Job* job = m_elements->at( i );
@@ -200,8 +213,11 @@ namespace ThreadWeaver {
         } else {
             hasInheritedDependencies = false;
         }
-        return Job::hasUnresolvedDependencies()
-            || hasInheritedDependencies;
+        return Job::hasUnresolvedDependencies() || hasInheritedDependencies;
+    }
+
+    void JobCollection::jobFailed( Job* )
+    {
     }
 
 }

@@ -18,6 +18,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QtDebug>
 
 #include "ThreadWeaver.h"
 #include "WeaverObserver.h"
@@ -149,15 +150,15 @@ namespace ThreadWeaver {
     void WeaverImpl::enqueue(Job* job)
     {
         adjustInventory ( 1 );
+        debug ( 3, "WeaverImpl::enqueue: queueing job of type %s.\n",
+                job->metaObject()->className() );
 	if (job)
 	{
+            QMutexLocker l (m_mutex);
             job->aboutToBeQueued ( this );
-	    {
-		QMutexLocker l (m_mutex);
-		m_assignments.append(job);
-	    }
-	    assignJobs();
+	    m_assignments.append(job);
 	}
+        assignJobs();
     }
 
     void WeaverImpl::adjustInventory ( int noOfNewJobs )
@@ -192,18 +193,31 @@ namespace ThreadWeaver {
 
     bool WeaverImpl::dequeue ( Job* job )
     {
-        QMutexLocker l (m_mutex);
-        if ( int i = m_assignments.indexOf ( job ) )
+        bool result;
         {
-            m_assignments.removeAt( i );
-            return true;
-        } else {
-            return false;
+            QMutexLocker l (m_mutex);
+            int i = m_assignments.indexOf ( job );
+            if ( i != -1 )
+            {
+                m_assignments.removeAt( i );
+                result = true;
+                debug( 3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n",
+                       job, m_assignments.size() );
+            } else {
+                debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", job );
+                result = false;
+            }
         }
+
+        // from the queues point of view, a job is just as finished if
+        // it gets dequeued:
+        m_jobFinished.wakeOne();
+        return result;
     }
 
     void WeaverImpl::dequeue ()
     {
+        debug( 3, "WeaverImpl::dequeue: dequeueing all jobs.\n" );
         QMutexLocker l (m_mutex);
         m_assignments.clear();
     }
@@ -321,7 +335,6 @@ namespace ThreadWeaver {
             QMutex mutex;
             mutex.lock();
             m_jobFinished.wait( &mutex );
-            mutex.unlock();
         }
 	debug (2, "WeaverImpl::finish: done.\n\n\n" );
     }
@@ -331,6 +344,17 @@ namespace ThreadWeaver {
         for ( int i = 0; i<m_inventory.size(); ++i )
         {
             m_inventory[i]->requestAbort();
+        }
+    }
+
+    void WeaverImpl::dumpJobs()
+    {
+        QMutexLocker l (m_mutex);
+        debug( 0, "WeaverImpl::dumpJobs: current jobs:\n" );
+        for ( int index = 0; index < m_assignments.size(); ++index )
+        {
+            debug( 0, "--> %4i: %p %s\n", index, m_assignments.at( index ),
+                   m_assignments.at( index )->metaObject()->className() );
         }
     }
 
