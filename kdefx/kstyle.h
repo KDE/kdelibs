@@ -234,18 +234,30 @@ protected:
         {}
     };
 
+    /**
+     * Option for drawing double scrollbar buttons, indicating whether
+     * a button should be drawn active or not.
+     * @sa ScrollBar::Primitive
+     */
     struct KDEFX_EXPORT DoubleButtonOption: public OptionBase<DoubleButtonOption, Option>
     {
+        // TODO: To bring it in line with the ScrollBar properties:
+        // Only None,Top,Bottom for specification and assume a flip
+        // for horizontal scrollbars ?? giessl
         enum ActiveButton
         {
-            None,
-            Top,
-            Left,
-            Right,
-            Bottom
+            None,   ///< No button is active
+            Top,    ///< Vertical scrollbar: The upper button is active
+            Left,   ///< Horizontal scrollbar: The left button is active
+            Right,  ///< Horizontal scrollbar: The right button is active
+            Bottom  ///< Vertical scrollbar: The lower button is active
         };
 
-        ActiveButton activeButton;
+	/**
+          Whether any of the two buttons is active; and if yes, which
+          one.
+	*/
+        ActiveButton activeButton; 
 
         DoubleButtonOption(): activeButton(None)
         {}
@@ -354,15 +366,22 @@ protected:
         };
     };
     
-    /// Metrics, primitives, etc., relevant for rendering buttons
+    /**
+     * Layout properties and primitives relevant for rendering buttons
+     *
+     * Generic primitives used:
+     * @li @c Bevel
+     * @li @c Text
+     * @li @c FocusIndicator
+     * @li @c ArrowDown
+     */
     struct PushButton
     {
         /**
          Push button. These are structured as follows:
          
          1. Between the very outside and the bevel is the default indicator 
-         area, controlled by the DefaultIndicatorMargin. KStyle may reserve
-         this for auto-default buttons, too, for consistency's sake.
+         area, controlled by the DefaultIndicatorMargin. 
          
          2. From the bevel, the content and focus rect margins are measured.
          Only the content margin is used to size the content area.
@@ -371,38 +390,40 @@ protected:
          arrow if there is a popup menu.
          
          TextToIconSpace is allocated between icon and text if both exist
-         
-         Relevant generic primitives:
-            Bevel, Text, FocusIndicator, ArrowDown
-         
-         Note that some primitives here may be called without a QStyleOptionButton. 
         */
+        // TODO: create diagrams to illustrate the meaning of the metrics...?
         enum LayoutProp
         {
-            ContentsMargin,
-            FocusMargin            = ContentsMargin + MarginInc, 
-            DefaultIndicatorMargin = FocusMargin    + MarginInc,
-            PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc,
-            PressedShiftVertical,
-            MenuIndicatorSize,
-            TextToIconSpace
+            ContentsMargin, ///< Space between the bevel and the button contents
+            FocusMargin            = ContentsMargin + MarginInc, ///< Used to calculate the area of the focus indicator. Measured from the bevel.
+            DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake.
+            PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc, ///< Horizontal contents shift for pressed buttons
+            PressedShiftVertical, ///< Vertical contents shift for pressed buttons
+            MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu
+            TextToIconSpace ///< Space between the icon and the text if both exist
         };
-        
+
+        /**
+         * @note some primitives here may be called without a QStyleOptionButton.
+         */
         enum Primitive
         {
-            DefaultButtonBevel
+            DefaultButtonBevel ///< Bevel indicating a default button
         };
     };
 
     /**
-      For splitters, Bevel is used; the Size metric specifies the size
-    */        
+     * Layout properties and primitives relevant for rendering splitters
+     *
+     * Generic primitives used:
+     * @li @c Bevel used to draw splitters
+     */
+    // TODO: Implement splitters...!!
     struct Splitter
     {
-        
         enum LayoutProp
         {
-            Size //Size of the splitter
+            Size ///< Size of the splitter handle
         };
     };
     
