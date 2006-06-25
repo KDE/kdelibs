@@ -763,6 +763,7 @@ KFontDialog::KFontDialog( QWidget *parent,
   setCaption( i18n("Select Font") );
   setButtons( Ok | Cancel );
   setModal( modal);
+  setDefaultButton(Ok);
   chooser = new KFontChooser( this,
                               onlyFixed, fontList, makeFrame, 8,
                               diff, sizeIsRelativeState );
