@@ -32,6 +32,8 @@ public:
     {
         QMutexLocker locker ( &s_GlobalMutex );
         m_stringref->append( m_c );
+        ThreadWeaver::debug( 3, "AppendCharacterJob::run: %c appended, result is %s.\n",
+                             m_c.toAscii(), qPrintable( *m_stringref ) );
     }
 
 private:
@@ -104,9 +106,9 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
-    /* This test is not the most efficient, as the mutex locking takes most of
-       the execution time. Anyway, it will fail if the jobs are not executed
-       in the right order. */
+//     This test is not the most efficient, as the mutex locking takes most of
+//     the execution time. Anyway, it will fail if the jobs are not executed
+//     in the right order.
     void MassiveJobSequenceTest() {
         const int NoOfChars = 1024;
         const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -194,7 +196,7 @@ private slots:
         QCOMPARE ( sequence, QString( "abcdefghij" ) );
     }
 
-/*    void QueueAndStopTest() {
+    void QueueAndStopTest() {
         QString sequence;
         AppendCharacterJob a( 'a', &sequence );
         AppendCharacterJob b( 'b', &sequence );
@@ -212,14 +214,11 @@ private slots:
         jobSequence.addJob( &f );
         jobSequence.addJob( &g );
 
-        QObject::connect ( &d, SIGNAL( failed( Job*) ), &jobSequence, SLOT( stop( Job* ) ) );
-
         ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
         ThreadWeaver::Weaver::instance()->finish();
 
         QCOMPARE ( sequence, QString( "abcd" ) );
     }
-*/
 
 };
 
