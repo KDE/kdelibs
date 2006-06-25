@@ -33,6 +33,8 @@
 class KProgressBar;
 
 /**
+ * @short A dialog with a progress bar
+ *
  * KProgressDialog provides a dialog with a text label, a progress bar
  * and an optional cancel button with a KDE look 'n feel.
  *
@@ -45,7 +47,6 @@ class KProgressBar;
  * All the functionality of KProgressBar is available through direct access
  * to the progress bar widget via progressBar();
  *
- * @short A dialog with a progress bar
  * @author Aaron J. Seigo
  * @author Urs Wolfer uwolfer @ fwo.ch
  */
@@ -175,10 +176,10 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
 
         virtual void reject();
 
-	/**
-	 * Reimplemented for internal reasons, the API is not affected.
-	 */
-	virtual void show();
+        /**
+         * Reimplemented for internal reasons, the API is not affected.
+         */
+        virtual void show();
 
     protected Q_SLOTS:
         void slotAutoShow();

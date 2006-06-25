@@ -33,7 +33,7 @@
 #include <kdelibs_export.h>
 
 /**
- * @short A progress indicator widget.
+ * @short A progress indicator widget
  *
  * KProgressBar is derived from QProgressBar, so you can use all the
  * methods from that class. The only real difference is that you can
@@ -60,7 +60,7 @@ public:
    * Construct a progress bar with a total number of steps.
    * The totalSteps is the total number of steps that need to be completed for the operation which this progress
    * bar represents. For example, if the operation is to examine 50 files, this value would be 50. Before examining
-   * the first file, call setProgress(0); call setProgress(50) after examining the last file.
+   * the first file, call setValue(0); call setValue(50) after examining the last file.
    */
   explicit KProgressBar(int totalSteps, QWidget *parent=0);
 
@@ -94,9 +94,8 @@ public Q_SLOTS:
   /**
    * Advance the progress bar by @p offset.
    *
-   * This method is
-   * provided for convenience and is equivalent with
-   * setProgress(progress()+offset).
+   * This method is provided for convenience and is equivalent with
+   * setValue(value()+offset).
    */
   virtual void advance(int offset);
 
