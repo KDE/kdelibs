@@ -80,12 +80,12 @@ KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
 {
     if (!null)
     {
+        // FIXME:
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-
         KFileMimeTypeInfo::ItemInfo* info = new KFileMimeTypeInfo::ItemInfo();
-        null = sd_KFileMetaInfoItemData.setObject( null, new Data(info, QString(), QVariant()) );
+        null = sd_KFileMetaInfoItemData.setObject( new Data(info, QString(), QVariant()) );
     }
     return null;
 }
@@ -754,10 +754,11 @@ static KStaticDeleter<KFileMetaInfo::Data> sd_KFileMetaInfoData;
 KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
 {
     if (!null)
+        // FIXME:
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-        null = sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(KUrl(), 0) );
+        null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(KUrl(), 0) );
     return null;
 }
 
@@ -1432,10 +1433,11 @@ KFileMetaInfoGroup::Data* KFileMetaInfoGroup::Data::makeNull()
 {
     if (!null)
     {
+        // FIXME:
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-        null = sd_KFileMetaInfoGroupData.setObject( null, new Data(QString()));
+        null = sd_KFileMetaInfoGroupData.setObject( new Data(QString()));
         null->mimeTypeInfo = new KFileMimeTypeInfo();
     }
     return null;
