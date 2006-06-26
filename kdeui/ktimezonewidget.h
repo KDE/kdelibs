@@ -105,7 +105,7 @@ class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( KTimeZoneWidget );
+    Q_DISABLE_COPY( KTimeZoneWidget )
 };
 
 #endif
