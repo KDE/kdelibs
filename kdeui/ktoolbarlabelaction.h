@@ -109,8 +109,6 @@ class KDEUI_EXPORT KToolBarLabelAction : public KAction, public QActionWidgetFac
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KToolBarLabelAction )
 };
 
 #endif

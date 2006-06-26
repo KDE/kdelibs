@@ -348,8 +348,6 @@ class KDEUI_EXPORT KUrlLabel : public QLabel
     Private* const d;
 
     Q_PRIVATE_SLOT( d, void updateColor() )
-
-    Q_DISABLE_COPY( KUrlLabel )
 };
 
 #endif

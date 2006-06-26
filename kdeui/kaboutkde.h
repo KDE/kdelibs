@@ -56,8 +56,6 @@ class KDEUI_EXPORT KAboutKDE : public KAboutDialog
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KAboutKDE )
 };
 
 

@@ -68,8 +68,6 @@ class KDEUI_EXPORT KHBox : public QFrame
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KHBox )
 };
 
 #endif

@@ -41,8 +41,6 @@ class KDEUI_EXPORT KVBox : public KHBox
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KVBox )
 };
 
 #endif

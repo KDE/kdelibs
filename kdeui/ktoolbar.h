@@ -206,8 +206,6 @@ class KDEUI_EXPORT KToolBar : public QToolBar
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( KToolBar )
-
     Q_PRIVATE_SLOT( d, void slotReadConfig() )
     Q_PRIVATE_SLOT( d, void slotAppearanceChanged() )
     Q_PRIVATE_SLOT( d, void slotContextAboutToShow() )

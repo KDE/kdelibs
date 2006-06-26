@@ -77,8 +77,6 @@ class KDEUI_EXPORT KWindowListMenu : public KMenu
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KWindowListMenu )
 };
 
 #endif // Q_WS_X11

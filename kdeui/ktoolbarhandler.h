@@ -65,8 +65,6 @@ class ToolBarHandler : public QObject, public KXMLGUIClient
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( ToolBarHandler )
-
     Q_PRIVATE_SLOT( d, void clientAdded( KXMLGUIClient* ) )
 };
 

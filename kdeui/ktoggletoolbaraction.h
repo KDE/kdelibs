@@ -86,8 +86,6 @@ class KDEUI_EXPORT KToggleToolBarAction : public KToggleAction
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KToggleToolBarAction )
 };
 
 #endif

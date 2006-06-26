@@ -119,8 +119,6 @@ public:
 
 private:
     class KActionMenuPrivate* const d;
-
-    Q_DISABLE_COPY( KActionMenu )
 };
 
 #endif

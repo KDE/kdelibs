@@ -192,8 +192,6 @@ class KDEUI_EXPORT KToggleAction : public KAction
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KToggleAction )
 };
 
 #endif

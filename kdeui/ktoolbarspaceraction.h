@@ -85,8 +85,6 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction, public QActionWidgetFa
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( KToolBarSpacerAction )
-
     Q_PRIVATE_SLOT( d, void spacerDestroyed( QObject* ) )
 };
 

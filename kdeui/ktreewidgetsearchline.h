@@ -256,8 +256,6 @@ class KDEUI_EXPORT KTreeWidgetSearchLine : public KLineEdit
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( KTreeWidgetSearchLine )
-
     Q_PRIVATE_SLOT( d, void rowsInserted( const QModelIndex&, int, int ) const )
     Q_PRIVATE_SLOT( d, void treeWidgetDeleted( QObject* ) )
     Q_PRIVATE_SLOT( d, void slotColumnActivated( QAction* ) )
@@ -311,8 +309,6 @@ class KDEUI_EXPORT KTreeWidgetSearchLineWidget : public QWidget
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KTreeWidgetSearchLineWidget )
 };
 
 #endif

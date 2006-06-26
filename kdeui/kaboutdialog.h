@@ -92,8 +92,6 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KAboutContainer )
 };
 
 /**
@@ -149,8 +147,6 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KAboutContributor )
 
     virtual void setName(const char *_name) { QObject::setObjectName(_name); }
 };
@@ -273,8 +269,6 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KAboutWidget )
 };
 
 /**
@@ -619,8 +613,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
   private:
     class Private;
     Private* const d;
-
-    Q_DISABLE_COPY( KAboutDialog )
 };
 
 #endif // defined KABOUTDIALOG_H

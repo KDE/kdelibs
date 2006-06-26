@@ -132,8 +132,6 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     class Private;
     Private *const d;
 
-    Q_DISABLE_COPY( KTextEdit )
-
     Q_PRIVATE_SLOT( d, void slotSpellCheckReady( KSpell* ) )
     Q_PRIVATE_SLOT( d, void slotSpellCheckDone( const QString& ) )
     Q_PRIVATE_SLOT( d, void spellCheckerMisspelling( const QString&, const QStringList&, unsigned int ) )
