@@ -10,12 +10,12 @@ Generic items on job handling:
   (planned for 0.7)
 - * job categories (can currently be done by using different Weaver objects)
   (planned for 0.6)
-- (implemented in Experimental/FailableJob) cancellation of dependent jobs if a dependency raises an error
-  (all-or-nothing)
 - (DONE in 0.5) JobSequence objects (a queue of Jobs that will be executed in order,
   automatically sets up deps)
 - (DONE in 0.5) virtual aboutToBeQueued method for jobs (allows jobs to queue subjobs
   before themselves)
+- (DONE for 0.6) (implemented in Experimental/FailableJob) cancellation of dependent jobs if a dependency raises an error
+  (all-or-nothing)
 
 Items to provide performance improvements:
 ------------------------------------------
