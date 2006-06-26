@@ -76,7 +76,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   , m_scrollTimer (this)
   , m_cursorTimer (this)
   , m_textHintTimer (this)
-  , m_maximizeLineScroll (false)
   , m_textHintEnabled(false)
   , m_textHintMouseX(-1)
   , m_textHintMouseY(-1)
@@ -390,9 +389,6 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExter
   if (c > limit) {
     c = limit;
 
-    if (m_view->dynWordWrap())
-      m_maximizeLineScroll = true;
-
     // Re-check we're not just scrolling to the same place
     if (!force && ((!m_view->dynWordWrap() && c.line() == (int)startLine()) || c == startPos()))
       return;
@@ -487,12 +483,7 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     maxLineScrollRange++;
   m_lineScroll->setRange(0, maxLineScrollRange);
 
-  if (m_view->dynWordWrap() && m_maximizeLineScroll) {
-    m_maximizeLineScroll = false;
-    m_lineScroll->setValue(maxStart.line());
-  } else {
-    m_lineScroll->setValue(startPos().line());
-  }
+  m_lineScroll->setValue(startPos().line());
   m_lineScroll->setSteps(1, height() / m_view->renderer()->fontHeight());
   m_lineScroll->blockSignals(false);
 

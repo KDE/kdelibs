@@ -362,10 +362,6 @@ class KateViewInternal : public QWidget
     static const int scrollTime = 30;
     static const int scrollMargin = 16;
 
-    // dyn wrap mode:
-    // used to set the lineScroll to the max value
-    bool m_maximizeLineScroll;
-
   private slots:
     void scrollTimeout ();
     void cursorTimeout ();
