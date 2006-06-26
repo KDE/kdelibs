@@ -22,9 +22,10 @@
 #ifndef KPAGEWIDGETMODEL_H
 #define KPAGEWIDGETMODEL_H
 
+#include <kicon.h>
+
 #include "kpagemodel.h"
 
-class QIcon;
 class QWidget;
 
 class KDEUI_EXPORT KPageWidgetItem : public QObject
@@ -42,8 +43,8 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     void setHeader( const QString &header );
     QString header() const;
 
-    void setIcon( const QIcon &icon );
-    QIcon icon() const;
+    void setIcon( const KIcon &icon );
+    KIcon icon() const;
 
     void setCheckable( bool checkable );
     bool isCheckable() const;

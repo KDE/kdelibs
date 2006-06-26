@@ -130,7 +130,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
 
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
   item->setHeader( header );
-  item->setIcon( SmallIcon(pixmapName, 32) );
+  item->setIcon( KIcon( pixmapName ) );
 
   KPageDialog::addPage( item );
 }

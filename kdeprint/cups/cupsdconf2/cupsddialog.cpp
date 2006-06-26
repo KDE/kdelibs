@@ -152,7 +152,7 @@ void CupsdDialog::addConfPage(CupsdPage *page)
 
   KPageWidgetItem *item = addPage( box, page->pageLabel() );
   item->setHeader( page->header() );
-  item->setIcon( icon );
+  item->setIcon( KIcon( QIcon( icon ) ) );
 }
 
 void CupsdDialog::constructDialog()
