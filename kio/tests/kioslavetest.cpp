@@ -190,7 +190,7 @@ void KioslaveTest::closeEvent( QCloseEvent * ){
 
 void KioslaveTest::slotQuit(){
   if ( job ) {
-    job->kill( true );  // kill the job quietly
+    job->kill( KJob::Quietly );  // kill the job quietly
   }
   if (slave)
     KIO::Scheduler::disconnectSlave(slave);

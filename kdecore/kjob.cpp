@@ -27,7 +27,7 @@
 class KJob::Private
 {
 public:
-    Private() : progressId( 0 ), error( 0 ),
+    Private() : progressId( 0 ), error( KJob::NoError ),
                 processedSize( 0 ), totalSize( 0 ), percentage( 0 ) {}
 
     int progressId;
@@ -52,6 +52,35 @@ KJob::~KJob()
     KGlobal::deref();
 }
 
+bool KJob::kill( KillVerbosity verbosity )
+{
+    if ( doKill() )
+    {
+        if ( verbosity!=Quietly )
+        {
+            // FIXME: Define this error correctly
+            setError( KilledJobError );
+            emitResult();
+        }
+        else
+        {
+            // If we are displaying a progress dialog, remove it first.
+            if ( d->progressId )
+            {
+                emit finished( this, d->progressId );
+            }
+
+            deleteLater();
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool KJob::exec()
 {
     QEventLoop loop( this );
@@ -61,7 +90,7 @@ bool KJob::exec()
     start();
     loop.exec();
 
-    return ( d->error == 0 );
+    return ( d->error == NoError );
 }
 
 int KJob::error() const

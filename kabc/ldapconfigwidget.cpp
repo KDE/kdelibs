@@ -355,7 +355,7 @@ void LdapConfigWidget::sendQuery()
   mProg->exec();
   if ( mCancelled ) {
     kDebug(5700) << "query canceled!" << endl;
-    job->kill( true );
+    job->kill( KJob::Quietly );
   } else {
     if ( !mErrorMsg.isEmpty() ) KMessageBox::error( this, mErrorMsg );
   }

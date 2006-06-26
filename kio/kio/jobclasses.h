@@ -86,7 +86,7 @@ namespace KIO {
          * should call with true or false depends on whether they rely
          * on result being emitted or not.
          */
-        virtual void kill( bool quietly = true );
+        virtual bool doKill();
 
         /**
          * Converts an error code and a non-i18n error message into an
@@ -441,11 +441,8 @@ namespace KIO {
         /**
          * Abort job.
          * This kills all subjobs and deletes the job.
-         * @param quietly if true, Job will emit signal result
-         * Should only be set to false when the user kills the job
-         * (from kio_uiserver), not when you want to abort a job.
          */
-        virtual void kill( bool quietly = true );
+        virtual bool doKill();
 
         /**
          * Abort job.

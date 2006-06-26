@@ -31,6 +31,8 @@
 
 #include <sys/stat.h> // S_ISDIR
 
+#include <kjob.h>
+
 #ifdef Q_OS_WIN
 template class KDE_EXPORT QMap<QString, QString>;
 #endif
@@ -173,80 +175,80 @@ namespace KIO
    * Error codes that can be emitted by KIO.
    */
   enum Error {
-    ERR_CANNOT_OPEN_FOR_READING = 1,
-    ERR_CANNOT_OPEN_FOR_WRITING = 2,
-    ERR_CANNOT_LAUNCH_PROCESS = 3,
-    ERR_INTERNAL = 4,
-    ERR_MALFORMED_URL = 5,
-    ERR_UNSUPPORTED_PROTOCOL = 6,
-    ERR_NO_SOURCE_PROTOCOL = 7,
-    ERR_UNSUPPORTED_ACTION = 8,
-    ERR_IS_DIRECTORY = 9, // ... where a file was expected
-    ERR_IS_FILE = 10, // ... where a directory was expected (e.g. listing)
-    ERR_DOES_NOT_EXIST = 11,
-    ERR_FILE_ALREADY_EXIST = 12,
-    ERR_DIR_ALREADY_EXIST = 13,
-    ERR_UNKNOWN_HOST = 14,
-    ERR_ACCESS_DENIED = 15,
-    ERR_WRITE_ACCESS_DENIED = 16,
-    ERR_CANNOT_ENTER_DIRECTORY = 17,
-    ERR_PROTOCOL_IS_NOT_A_FILESYSTEM = 18,
-    ERR_CYCLIC_LINK = 19,
-    ERR_USER_CANCELED = 20,
-    ERR_CYCLIC_COPY = 21,
-    ERR_COULD_NOT_CREATE_SOCKET = 22, // KDE4: s/COULD_NOT/CANNOT/ or the other way round
-    ERR_COULD_NOT_CONNECT = 23,
-    ERR_CONNECTION_BROKEN = 24,
-    ERR_NOT_FILTER_PROTOCOL = 25,
-    ERR_COULD_NOT_MOUNT = 26,
-    ERR_COULD_NOT_UNMOUNT = 27,
-    ERR_COULD_NOT_READ = 28,
-    ERR_COULD_NOT_WRITE = 29,
-    ERR_COULD_NOT_BIND = 30,
-    ERR_COULD_NOT_LISTEN = 31,
-    ERR_COULD_NOT_ACCEPT = 32,
-    ERR_COULD_NOT_LOGIN = 33,
-    ERR_COULD_NOT_STAT = 34,
-    ERR_COULD_NOT_CLOSEDIR = 35,
-    ERR_COULD_NOT_MKDIR = 37,
-    ERR_COULD_NOT_RMDIR = 38,
-    ERR_CANNOT_RESUME = 39,
-    ERR_CANNOT_RENAME = 40,
-    ERR_CANNOT_CHMOD = 41,
-    ERR_CANNOT_DELETE = 42,
+    ERR_CANNOT_OPEN_FOR_READING = KJob::UserDefinedError + 1,
+    ERR_CANNOT_OPEN_FOR_WRITING = KJob::UserDefinedError + 2,
+    ERR_CANNOT_LAUNCH_PROCESS = KJob::UserDefinedError + 3,
+    ERR_INTERNAL = KJob::UserDefinedError + 4,
+    ERR_MALFORMED_URL = KJob::UserDefinedError + 5,
+    ERR_UNSUPPORTED_PROTOCOL = KJob::UserDefinedError + 6,
+    ERR_NO_SOURCE_PROTOCOL = KJob::UserDefinedError + 7,
+    ERR_UNSUPPORTED_ACTION = KJob::UserDefinedError + 8,
+    ERR_IS_DIRECTORY = KJob::UserDefinedError + 9, // ... where a file was expected
+    ERR_IS_FILE = KJob::UserDefinedError + 10, // ... where a directory was expected (e.g. listing)
+    ERR_DOES_NOT_EXIST = KJob::UserDefinedError + 11,
+    ERR_FILE_ALREADY_EXIST = KJob::UserDefinedError + 12,
+    ERR_DIR_ALREADY_EXIST = KJob::UserDefinedError + 13,
+    ERR_UNKNOWN_HOST = KJob::UserDefinedError + 14,
+    ERR_ACCESS_DENIED = KJob::UserDefinedError + 15,
+    ERR_WRITE_ACCESS_DENIED = KJob::UserDefinedError + 16,
+    ERR_CANNOT_ENTER_DIRECTORY = KJob::UserDefinedError + 17,
+    ERR_PROTOCOL_IS_NOT_A_FILESYSTEM = KJob::UserDefinedError + 18,
+    ERR_CYCLIC_LINK = KJob::UserDefinedError + 19,
+    ERR_USER_CANCELED = KJob::UserDefinedError + 20,
+    ERR_CYCLIC_COPY = KJob::UserDefinedError + 21,
+    ERR_COULD_NOT_CREATE_SOCKET = KJob::UserDefinedError + 22, // KDE4: s/COULD_NOT/CANNOT/ or the other way round
+    ERR_COULD_NOT_CONNECT = KJob::UserDefinedError + 23,
+    ERR_CONNECTION_BROKEN = KJob::UserDefinedError + 24,
+    ERR_NOT_FILTER_PROTOCOL = KJob::UserDefinedError + 25,
+    ERR_COULD_NOT_MOUNT = KJob::UserDefinedError + 26,
+    ERR_COULD_NOT_UNMOUNT = KJob::UserDefinedError + 27,
+    ERR_COULD_NOT_READ = KJob::UserDefinedError + 28,
+    ERR_COULD_NOT_WRITE = KJob::UserDefinedError + 29,
+    ERR_COULD_NOT_BIND = KJob::UserDefinedError + 30,
+    ERR_COULD_NOT_LISTEN = KJob::UserDefinedError + 31,
+    ERR_COULD_NOT_ACCEPT = KJob::UserDefinedError + 32,
+    ERR_COULD_NOT_LOGIN = KJob::UserDefinedError + 33,
+    ERR_COULD_NOT_STAT = KJob::UserDefinedError + 34,
+    ERR_COULD_NOT_CLOSEDIR = KJob::UserDefinedError + 35,
+    ERR_COULD_NOT_MKDIR = KJob::UserDefinedError + 37,
+    ERR_COULD_NOT_RMDIR = KJob::UserDefinedError + 38,
+    ERR_CANNOT_RESUME = KJob::UserDefinedError + 39,
+    ERR_CANNOT_RENAME = KJob::UserDefinedError + 40,
+    ERR_CANNOT_CHMOD = KJob::UserDefinedError + 41,
+    ERR_CANNOT_DELETE = KJob::UserDefinedError + 42,
     // The text argument is the protocol that the dead slave supported.
     // This means for example: file, ftp, http, ...
-    ERR_SLAVE_DIED = 43,
-    ERR_OUT_OF_MEMORY = 44,
-    ERR_UNKNOWN_PROXY_HOST = 45,
-    ERR_COULD_NOT_AUTHENTICATE = 46,
-    ERR_ABORTED = 47, // Action got aborted from application side
-    ERR_INTERNAL_SERVER = 48,
-    ERR_SERVER_TIMEOUT = 49,
-    ERR_SERVICE_NOT_AVAILABLE = 50,
-    ERR_UNKNOWN = 51,
+    ERR_SLAVE_DIED = KJob::UserDefinedError + 43,
+    ERR_OUT_OF_MEMORY = KJob::UserDefinedError + 44,
+    ERR_UNKNOWN_PROXY_HOST = KJob::UserDefinedError + 45,
+    ERR_COULD_NOT_AUTHENTICATE = KJob::UserDefinedError + 46,
+    ERR_ABORTED = KJob::UserDefinedError + 47, // Action got aborted from application side
+    ERR_INTERNAL_SERVER = KJob::UserDefinedError + 48,
+    ERR_SERVER_TIMEOUT = KJob::UserDefinedError + 49,
+    ERR_SERVICE_NOT_AVAILABLE = KJob::UserDefinedError + 50,
+    ERR_UNKNOWN = KJob::UserDefinedError + 51,
     // (was a warning) ERR_CHECKSUM_MISMATCH = 52,
-    ERR_UNKNOWN_INTERRUPT = 53,
-    ERR_CANNOT_DELETE_ORIGINAL = 54,
-    ERR_CANNOT_DELETE_PARTIAL = 55,
-    ERR_CANNOT_RENAME_ORIGINAL = 56,
-    ERR_CANNOT_RENAME_PARTIAL = 57,
-    ERR_NEED_PASSWD = 58,
-    ERR_CANNOT_SYMLINK = 59,
-    ERR_NO_CONTENT = 60, // Action succeeded but no content will follow.
-    ERR_DISK_FULL = 61,
-    ERR_IDENTICAL_FILES = 62, // src==dest when moving/copying
-    ERR_SLAVE_DEFINED = 63, // for slave specified errors that can be
-                            // rich text.  Email links will be handled
-                            // by the standard email app and all hrefs
-                            // will be handled by the standard browser.
-                            // <a href="exec:/khelpcenter ?" will be
-                            // forked.
-    ERR_UPGRADE_REQUIRED = 64, // A transport upgrade is required to access this
-                               // object.  For instance, TLS is demanded by
-                               // the server in order to continue.
-    ERR_POST_DENIED = 65    // Issued when trying to POST data to a certain Ports
-                               // see job.cpp
+    ERR_UNKNOWN_INTERRUPT = KJob::UserDefinedError + 53,
+    ERR_CANNOT_DELETE_ORIGINAL = KJob::UserDefinedError + 54,
+    ERR_CANNOT_DELETE_PARTIAL = KJob::UserDefinedError + 55,
+    ERR_CANNOT_RENAME_ORIGINAL = KJob::UserDefinedError + 56,
+    ERR_CANNOT_RENAME_PARTIAL = KJob::UserDefinedError + 57,
+    ERR_NEED_PASSWD = KJob::UserDefinedError + 58,
+    ERR_CANNOT_SYMLINK = KJob::UserDefinedError + 59,
+    ERR_NO_CONTENT = KJob::UserDefinedError + 60, // Action succeeded but no content will follow.
+    ERR_DISK_FULL = KJob::UserDefinedError + 61,
+    ERR_IDENTICAL_FILES = KJob::UserDefinedError + 62, // src==dest when moving/copying
+    ERR_SLAVE_DEFINED = KJob::UserDefinedError + 63, // for slave specified errors that can be
+                                                     // rich text.  Email links will be handled
+                                                     // by the standard email app and all hrefs
+                                                     // will be handled by the standard browser.
+                                                     // <a href="exec:/khelpcenter ?" will be
+                                                     // forked.
+    ERR_UPGRADE_REQUIRED = KJob::UserDefinedError + 64, // A transport upgrade is required to access this
+                                                        // object.  For instance, TLS is demanded by
+                                                        // the server in order to continue.
+    ERR_POST_DENIED = KJob::UserDefinedError + 65 // Issued when trying to POST data to a certain Ports
+                                                  // see job.cpp
   };
 
   /**

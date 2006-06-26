@@ -191,26 +191,17 @@ void Job::slotFinished( KJob */*job*/, int /*id*/ )
     showErrorDialog( d->m_errorParentWidget );
 }
 
-void Job::kill( bool quietly )
+bool Job::doKill()
 {
-  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " progressId()=" << progressId() << " quietly=" << quietly << endl;
+  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " progressId()=" << progressId() << endl;
   // kill all subjobs, without triggering their result slot
   QList<Job *>::const_iterator it = m_subjobs.begin();
   const QList<Job *>::const_iterator end = m_subjobs.end();
   for ( ; it != end ; ++it )
-     (*it)->kill( true );
+    (*it)->kill( KJob::Quietly );
   m_subjobs.clear();
 
-  if ( ! quietly ) {
-    setError( ERR_USER_CANCELED );
-    emit canceled( this ); // Not very useful (deprecated)
-    emitResult();
-  } else
-  {
-    if ( progressId() ) // in both cases we want to hide the progress window
-      Observer::self()->jobFinished( progressId() );
-    deleteLater();
-  }
+  return true;
 }
 
 void Job::slotResult( KJob *job )
@@ -404,11 +395,11 @@ void SimpleJob::start()
 
 }
 
-void SimpleJob::kill( bool quietly )
+bool SimpleJob::doKill()
 {
     Scheduler::cancelJob( this ); // deletes the slave if not 0
     m_slave = 0; // -> set to 0
-    Job::kill( quietly );
+    return true;
 }
 
 void SimpleJob::putOnHold()
@@ -419,7 +410,7 @@ void SimpleJob::putOnHold()
         Scheduler::putSlaveOnHold(this, m_url);
         m_slave = 0;
     }
-    kill(true);
+    kill( Quietly );
 }
 
 void SimpleJob::removeOnHold()
@@ -1707,9 +1698,9 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             else if ( res == R_CANCEL )
             {
                 if ( job == m_putJob )
-                    m_putJob->kill(true);
+                    m_putJob->kill( Quietly );
                 else
-                    m_copyJob->kill(true);
+                    m_copyJob->kill( Quietly );
                 setError( ERR_USER_CANCELED );
                 emitResult();
                 return;
@@ -1794,7 +1785,7 @@ void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
        // This can't happen (except as a migration bug on 12/10/2000)
        setError( ERR_INTERNAL );
        setErrorText( "'Put' job didn't send canResume or 'Get' job didn't send data!" );
-       m_putJob->kill(true);
+       m_putJob->kill( Quietly );
        emitResult();
        return;
    }
@@ -1831,13 +1822,13 @@ void FileCopyJob::slotResult( KJob *job)
       {
         m_getJob = 0L;
         if (m_putJob)
-          m_putJob->kill(true);
+          m_putJob->kill( Quietly );
       }
       else if (job == m_putJob)
       {
         m_putJob = 0L;
         if (m_getJob)
-          m_getJob->kill(true);
+          m_getJob->kill( Quietly );
       }
       setError( job->error() );
       setErrorText( job->errorText() );

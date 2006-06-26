@@ -62,6 +62,7 @@
 class KDECORE_EXPORT KJob : public QObject
 {
     Q_OBJECT
+    Q_ENUMS( KillVerbosity )
 
 public:
     /**
@@ -83,24 +84,44 @@ public:
      */
     virtual void start() = 0;
 
+    enum KillVerbosity { Quietly, EmitResult };
+
     /**
      * Aborts this job.
      * This kills and deletes the job.
      *
-     * @param quietly if false, Job will emit signal result
+     * @param verbosity if equals to EmitResult, Job will emit signal result
      * and ask uiserver to close the progress window.
-     * @p quietly is set to true for subjobs. Whether applications
-     * should call with true or false depends on whether they rely
+     * @p verbosity is set to EmitResult for subjobs. Whether applications
+     * should call with Quietly or EmitResult depends on whether they rely
      * on result being emitted or not.
+     * @return true if the operation is supported and succeded, false otherwise
      */
-    virtual void kill( bool quietly = true ) = 0;
+    bool kill( KillVerbosity verbosity = Quietly );
 
+protected:
+    /**
+     * Aborts this job quietly.
+     * This simply kills the job, no error reporting or job deletion should be involved.
+     *
+     * @return true if the operation is supported and succeded, false otherwise
+     */
+    virtual bool doKill() { return false; }
+
+public:
     /**
      * Executes the job synchronously.
      *
      * @return true if the job has been executed without error, false otherwise
      */
     bool exec();
+
+    enum
+    {
+        NoError = 0,
+        KilledJobError = 1,
+        UserDefinedError = 100
+    };
 
 
     /**

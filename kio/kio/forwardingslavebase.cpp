@@ -397,7 +397,7 @@ void ForwardingSlaveBase::slotRedirection(KIO::Job *job, const KUrl &url)
     redirection(url);
 
     // We've been redirected stop everything.
-    job->kill( true );
+    job->kill( KJob::Quietly );
     finished();
 
     eventLoop.exit();

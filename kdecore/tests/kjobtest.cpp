@@ -37,7 +37,7 @@ void KJobTest::testEmitResult_data()
     QTest::addColumn<int>("errorCode");
     QTest::addColumn<QString>("errorText");
 
-    QTest::newRow("no error") << 0 << QString();
+    QTest::newRow("no error") << (int)KJob::NoError << QString();
     QTest::newRow("error no text") << 2 << QString();
     QTest::newRow("error with text") << 6 << "oops! an error? naaah, really?";
 }
@@ -188,7 +188,7 @@ void KJobTest::testExec_data()
     QTest::addColumn<int>("errorCode");
     QTest::addColumn<QString>("errorText");
 
-    QTest::newRow("no error") << 0 << QString();
+    QTest::newRow("no error") << (int)KJob::NoError << QString();
     QTest::newRow("error no text") << 2 << QString();
     QTest::newRow("error with text") << 6 << "oops! an error? naaah, really?";
 }
@@ -207,7 +207,54 @@ void KJobTest::testExec()
 
     bool status = job->exec();
 
-    QCOMPARE( status, ( errorCode == 0 ) );
+    QCOMPARE( status, ( errorCode == KJob::NoError ) );
+    QCOMPARE( job->error(),  errorCode );
+    QCOMPARE( job->errorText(),  errorText );
+
+    // Verify that the job is not deleted immediately...
+    QCOMPARE( destroyed_spy.size(), 0 );
+    QTimer::singleShot( 0, &loop, SLOT( quit() ) );
+    // ... but when we enter the event loop again.
+    loop.exec();
+    QCOMPARE( destroyed_spy.size(), 1 );
+}
+
+void KJobTest::testKill_data()
+{
+    QTest::addColumn<int>("killVerbosity");
+    QTest::addColumn<int>("errorCode");
+    QTest::addColumn<QString>("errorText");
+
+    QTest::newRow("killed with result") << (int)KJob::EmitResult
+                                        << (int)KJob::KilledJobError
+                                        << QString();
+    QTest::newRow("killed quietly") << (int)KJob::Quietly
+                                    << (int)KJob::NoError
+                                    << QString();
+}
+
+void KJobTest::testKill()
+{
+    TestJob *job = new TestJob;
+
+    connect( job, SIGNAL( result( KJob* ) ),
+             this, SLOT( slotResult( KJob* ) ) );
+
+    m_lastError = KJob::NoError;
+    m_lastErrorText = QString();
+
+    QFETCH(int, killVerbosity);
+    QFETCH(int, errorCode);
+    QFETCH(QString, errorText);
+
+    QSignalSpy destroyed_spy( job, SIGNAL( destroyed( QObject* ) ) );
+
+    job->kill( ( KJob::KillVerbosity )killVerbosity );
+    loop.processEvents( QEventLoop::AllEvents, 2000 );
+
+    QCOMPARE( m_lastError, errorCode );
+    QCOMPARE( m_lastErrorText, errorText );
+
     QCOMPARE( job->error(),  errorCode );
     QCOMPARE( job->errorText(),  errorText );
 
@@ -228,14 +275,19 @@ void KJobTest::slotResult( KJob *job )
     }
     else
     {
-        m_lastError = 0;
+        m_lastError = KJob::NoError;
         m_lastErrorText = QString();
     }
 
     loop.quit();
 }
 
-TestJob::TestJob()
+TestJob::TestJob() : KJob()
+{
+
+}
+
+TestJob::~TestJob()
 {
 
 }
@@ -245,9 +297,9 @@ void TestJob::start()
     QTimer::singleShot( 0, this, SLOT( doEmit() ) );
 }
 
-void TestJob::kill( bool /*quietly*/ )
+bool TestJob::doKill()
 {
-
+    return true;
 }
 
 void TestJob::setError( int errorCode )

@@ -28,10 +28,14 @@ class TestJob : public KJob
     Q_OBJECT
 public:
     TestJob();
+    virtual ~TestJob();
 
     virtual void start();
-    virtual void kill( bool quietly );
 
+protected:
+    virtual bool doKill();
+
+public:
     void setError( int errorCode );
     void setErrorText( const QString &errorText );
     void setProcessedSize( qulonglong size );
@@ -54,6 +58,8 @@ private Q_SLOTS:
     void testProgressTracking();
     void testExec_data();
     void testExec();
+    void testKill_data();
+    void testKill();
 
     void slotResult( KJob *job );
 

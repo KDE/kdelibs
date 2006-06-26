@@ -96,7 +96,7 @@ void Observer::killJob( int progressId )
         kWarning() << "Can't find job to kill ! There is no job with progressId=" << progressId << " in this process" << endl;
         return;
     }
-    job->kill( false /* not quietly */ );
+    job->kill( KJob::EmitResult /* not quietly */ );
 }
 
 QVariantMap Observer::metadata( int progressId )
