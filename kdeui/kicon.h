@@ -60,7 +60,7 @@ class KDEUI_EXPORT KIcon : public QIcon
    /**
      * Constructor for a null icon.
      */
-    explicit KIcon();
+    KIcon();
 };
 
 #endif
