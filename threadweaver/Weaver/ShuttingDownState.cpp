@@ -38,4 +38,8 @@ namespace ThreadWeaver {
         // immidiately return here
     }
 
+    StateId ShuttingDownState::stateId() const
+    {
+        return ShuttingDown;
+    }
 }

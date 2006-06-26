@@ -14,8 +14,9 @@
    $Id: SuspendingState.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include "ThreadWeaver.h"
+#include "State.h"
 #include "WeaverImpl.h"
+#include "ThreadWeaver.h"
 #include "SuspendingState.h"
 
 namespace ThreadWeaver {
@@ -54,4 +55,8 @@ namespace ThreadWeaver {
         m_weaver->blockThreadUntilJobsAreBeingAssigned( th );
     }
 
+    StateId SuspendingState::stateId() const
+    {
+        return Suspending;
+    }
 }

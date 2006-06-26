@@ -68,4 +68,10 @@ namespace ThreadWeaver {
         m_weaver->blockThreadUntilJobsAreBeingAssigned ( th );
     }
 
+    StateId WorkingHardState::stateId() const
+    {
+        return WorkingHard;
+    }
+
+
 }

@@ -29,9 +29,8 @@ namespace ThreadWeaver {
         "Destructed"
     };
 
-    State::State ( WeaverImpl *weaver,  const StateId id )
-        : m_id ( id ),
-          m_weaver ( weaver )
+    State::State ( WeaverImpl *weaver )
+        : m_weaver ( weaver )
     {
     }
 
@@ -41,12 +40,7 @@ namespace ThreadWeaver {
 
     const QString& State::stateName () const
     {
-        return StateNames[m_id];
-    }
-
-    const StateId State::stateId() const
-    {
-        return m_id;
+        return StateNames[ stateId() ];
     }
 
     void State::activated()

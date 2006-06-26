@@ -50,4 +50,9 @@ namespace ThreadWeaver {
         m_weaver->blockThreadUntilJobsAreBeingAssigned ( th );
     }
 
+    StateId InConstructionState::stateId() const
+    {
+        return InConstruction;
+    }
+
 }

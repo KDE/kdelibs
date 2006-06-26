@@ -35,4 +35,8 @@ namespace ThreadWeaver {
     {
     }
 
+    StateId DestructedState::stateId() const
+    {
+        return Destructed;
+    }
 }

@@ -41,4 +41,8 @@ namespace ThreadWeaver {
         m_weaver->blockThreadUntilJobsAreBeingAssigned ( th );
     }
 
+    StateId SuspendedState::stateId() const
+    {
+        return Suspended;
+    }
 }

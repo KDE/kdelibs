@@ -27,7 +27,7 @@ namespace ThreadWeaver {
     {
     public:
 	explicit SuspendedState( WeaverImpl *weaver)
-	    : State (weaver, Suspended)
+	    : State (weaver)
 	    {
 	    }
 	/** Suspend job processing. */
@@ -38,7 +38,10 @@ namespace ThreadWeaver {
         virtual Job* applyForWork ( Thread *th,  Job* previous );
         /** Wait (by suspending the calling thread) until a job becomes available. */
         virtual void waitForAvailableJob ( Thread *th );
-    };
+
+        /** reimpl */
+        StateId stateId() const;
+};
 
 }
 

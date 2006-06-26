@@ -63,7 +63,7 @@ namespace ThreadWeaver {
     public:
         /** Default constructor. */
         // FIXME remove second param
-        explicit State( WeaverImpl *weaver,  const StateId id = InConstruction );
+        explicit State( WeaverImpl *weaver );
 
 	/** Destructor. */
         virtual ~State();
@@ -73,7 +73,7 @@ namespace ThreadWeaver {
         */
         const QString& stateName() const;
         /** The state Id. */
-        const StateId stateId() const;
+        virtual StateId stateId() const = 0;
         /** Suspend job processing. */
         virtual void suspend() = 0;
         /** Resume job processing. */
@@ -89,11 +89,6 @@ namespace ThreadWeaver {
          * state handling. */
         virtual void activated();
     protected:
-        /** Id of this state.
-            Set in the constructor.
-        */
-        // FIXME remove, implement in virtuals
-        StateId m_id;
         /** The Weaver we relate to. */
         WeaverImpl *m_weaver;
     };
