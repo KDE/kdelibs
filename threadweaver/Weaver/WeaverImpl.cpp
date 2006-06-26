@@ -152,8 +152,8 @@ namespace ThreadWeaver {
     void WeaverImpl::enqueue(Job* job)
     {
         adjustInventory ( 1 );
-        debug ( 3, "WeaverImpl::enqueue: queueing job of type %s.\n",
-                job->metaObject()->className() );
+        debug ( 3, "WeaverImpl::enqueue: queueing job %p of type %s.\n",
+                job, job->metaObject()->className() );
 	if (job)
 	{
             QMutexLocker l (m_mutex);
@@ -317,13 +317,13 @@ namespace ThreadWeaver {
 
     void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
     {
-        debug ( 3,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
+        debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
         emit ( threadSuspended ( th ) );
-	QMutex mutex;
-	mutex.lock();
+        QMutex mutex; // FIXME this is bullshit
+        mutex.lock();
 	m_jobAvailable.wait( &mutex );
 	mutex.unlock();
-        debug ( 3,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
+        debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
     }
 
     int WeaverImpl::queueLength()
@@ -348,7 +348,8 @@ namespace ThreadWeaver {
             QMutexLocker l( m_finishMutex );
             if ( m_jobFinished.wait( m_finishMutex, MaxWaitMilliSeconds ) == false )
             {
-                debug ( 2, "WeaverImpl::finish: wait timed out, waking threads.\n" );
+                debug ( 2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n",
+                        queueLength() );
                 m_jobAvailable.wakeAll();
             }
         }

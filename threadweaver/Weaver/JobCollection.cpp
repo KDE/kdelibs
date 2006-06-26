@@ -63,6 +63,11 @@ namespace ThreadWeaver {
             m_payload->aboutToBeQueued( weaver );
         }
 
+        void aboutToBeDequeued ( WeaverInterface *weaver )
+        {
+            m_payload->aboutToBeDequeued( weaver );
+        }
+
         void execute ( Thread *t )
         {
             if ( m_payload )
@@ -98,8 +103,7 @@ namespace ThreadWeaver {
     }
 
     JobCollection::~JobCollection()
-    {
-        // dequeue all remaining jobs:
+    {   // dequeue all remaining jobs:
         if ( m_weaver )
         {
             for ( int i = 1; i < m_elements->size(); ++i )
@@ -132,7 +136,6 @@ namespace ThreadWeaver {
 
         if ( m_queued )
         {
-//             dequeueElements();
             debug( 4, "JobCollection::stop: dequeueing %p.\n", this);
             m_weaver->dequeue( this );
         }
@@ -170,14 +173,18 @@ namespace ThreadWeaver {
         m_queued = true;
     }
 
-    void JobCollection::aboutToBeDequeued( WeaverInterface* )
+    void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
     {
         Q_ASSERT ( m_queued ); // must have been queued first
 
         if ( m_queued )
         {
             dequeueElements();
+
+            m_elements->at( 0 )->aboutToBeDequeued( weaver );
         }
+
+        m_weaver = 0;
     }
 
 
@@ -221,22 +228,22 @@ namespace ThreadWeaver {
     }
 
     void JobCollection::dequeueElements()
-    {
-        // dequeue everything:
-        for ( int index = 1; index < m_elements->size(); ++index )
-        {
-            if ( ! m_elements->at( index )->isFinished() )
+    {   // dequeue everything:
+        if ( m_weaver != 0 )
+            for ( int index = 1; index < m_elements->size(); ++index )
             {
-                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
-                       m_elements->at( index ) );
-                m_weaver->dequeue ( m_elements->at( index ) );
-            } else {
-                debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
-                       m_elements->at( index ) );
-                // this returns false if the job was not in the queue, which we assume:
-                Q_ASSERT ( ! m_weaver->dequeue ( m_elements->at( index ) ) );
+                if ( ! m_elements->at( index )->isFinished() )
+                {
+                    debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
+                           m_elements->at( index ) );
+                    m_weaver->dequeue ( m_elements->at( index ) );
+                } else {
+                    debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+                           m_elements->at( index ) );
+                    // this returns false if the job was not in the queue, which we assume:
+                    Q_ASSERT ( ! m_weaver->dequeue ( m_elements->at( index ) ) );
+                }
             }
-        }
     }
 }
 
