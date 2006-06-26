@@ -59,6 +59,13 @@ class PHONONCORE_EXPORT SimplePlayer : public QObject
 		 * \param parent The QObject parent.
 		 */
 		SimplePlayer( Phonon::Category category, QObject* parent = 0 );
+
+		/**
+		 * On destruction the playback is stopped, also the audio output is
+		 * removed so that the desktop mixer will not show the application
+		 * anymore. If you need a persistent audio output don't use
+		 * %SimplePlayer but MediaObject, AudioPath and AudioOutput.
+		 */
 		~SimplePlayer();
 
 		/**

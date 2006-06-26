@@ -108,8 +108,25 @@ should simply make those methods slots).
 
 The central class that needs to be implemented is the backend factory class,
 throughout this documentation simply called Backend:
-\ref phonon_Backend "Backend"
 
+\li \ref phonon_Backend "Backend"
+
+\subsection The Playback Classes
+
+\li \ref phonon_MediaObject "MediaObject"
+\li \ref phonon_ByteStream "ByteStream"
+\li \ref phonon_AudioPath "AudioPath"
+\li \ref phonon_AudioOutput "AudioOutput"
+\li \ref phonon_VideoPath "VideoPath"
+\li \ref phonon_VideoWidget "VideoWidget"
+
+\subsection The Effect Classes
+
+\li \ref phonon_AudioEffect "AudioEffect"
+\li \ref phonon_VideoEffect "VideoEffect"
+\li \ref phonon_VolumeFaderEffect "VolumeFaderEffect"
+\li \ref phonon_BrightnessControl "BrightnessControl"
+\li \ref phonon_Visualization "Visualization"
 
 
 
@@ -120,14 +137,59 @@ throughout this documentation simply called Backend:
 \page phonon_Backend The Backend Class
 
 \section phonon_Backend_requiredfunctions Required Functions
-\li const char* \ref phonon_Backend_uiLibrary "uiLibrary()"
+\li bool \ref phonon_Backend_supportsOSD "supportsOSD()"
+\li bool \ref phonon_Backend_supportsFourcc "supportsFourcc( quint32 )"
+\li bool \ref phonon_Backend_supportsSubtitles "supportsSubtitles()"
+\li bool \ref phonon_Backend_supportsVideo "supportsVideo()"
+\li QStringList \ref phonon_Backend_knownMimeTypes "knownMimeTypes()"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_audioOutputDeviceIndexes "audioOutputDeviceIndexes()"
+\li QString \ref phonon_Backend_audioOutputDeviceName "audioOutputDeviceName( int )"
+\li QString \ref phonon_Backend_audioOutputDeviceDescription "audioOutputDeviceDescription( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_videoOutputDeviceIndexes "videoOutputDeviceIndexes()"
+\li QString \ref phonon_Backend_videoOutputDeviceName "videoOutputDeviceName( int )"
+\li QString \ref phonon_Backend_videoOutputDeviceDescription "videoOutputDeviceDescription( int )"
+
 \li \ref QSet "QSet<int>" \ref phonon_Backend_audioCaptureDeviceIndexes "audioCaptureDeviceIndexes()"
 \li QString \ref phonon_Backend_audioCaptureDeviceName "audioCaptureDeviceName( int )"
 \li QString \ref phonon_Backend_audioCaptureDeviceDescription "audioCaptureDeviceDescription( int )"
 \li qint32 \ref phonon_Backend_audioCaptureDeviceVideoIndex "audioCaptureDeviceVideoIndex( int )"
 
+\li \ref QSet "QSet<int>" \ref phonon_Backend_videoCaptureDeviceIndexes "videoCaptureDeviceIndexes()"
+\li QString \ref phonon_Backend_videoCaptureDeviceName "videoCaptureDeviceName( int )"
+\li QString \ref phonon_Backend_videoCaptureDeviceDescription "videoCaptureDeviceDescription( int )"
+\li qint32 \ref phonon_Backend_videoCaptureDeviceAudioIndex "videoCaptureDeviceAudioIndex( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_audioEffectIndexes "audioEffectIndexes()"
+\li QString \ref phonon_Backend_audioEffectName "audioEffectName( int )"
+\li QString \ref phonon_Backend_audioEffectDescription "audioEffectDescription( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_videoEffectIndexes "videoEffectIndexes()"
+\li QString \ref phonon_Backend_videoEffectName "videoEffectName( int )"
+\li QString \ref phonon_Backend_videoEffectDescription "videoEffectDescription( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_visualizationIndexes "visualizationIndexes()"
+\li QString \ref phonon_Backend_visualizationName "visualizationName( int )"
+\li QString \ref phonon_Backend_visualizationDescription "visualizationDescription( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_containerFormatIndexes "containerFormatIndexes()"
+\li QString \ref phonon_Backend_containerFormatName "containerFormatName( int )"
+\li QString \ref phonon_Backend_containerFormatDescription "containerFormatDescription( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_audioCodecIndexes "audioCodecIndexes()"
+\li QString \ref phonon_Backend_audioCodecName "audioCodecName( int )"
+\li QString \ref phonon_Backend_audioCodecDescription "audioCodecDescription( int )"
+
+\li \ref QSet "QSet<int>" \ref phonon_Backend_videoCodecIndexes "videoCodecIndexes()"
+\li QString \ref phonon_Backend_videoCodecName "videoCodecName( int )"
+\li QString \ref phonon_Backend_videoCodecDescription "videoCodecDescription( int )"
+
+\li const char* \ref phonon_Backend_uiLibrary "uiLibrary()"
+
 \section phonon_Backend_optionalfunctions Optional Functions
 \li const char* \ref phonon_Backend_uiSymbol "uiSymbol()"
+
 \li QObject* \ref phonon_Backend_createAudioDataOutput "createAudioDataOutput( QObject* )"
 \li QObject* \ref phonon_Backend_createAudioEffect "createAudioEffect( int, QObject* )"
 \li QObject* \ref phonon_Backend_createAudioOutput "createAudioOutput( QObject* )"
@@ -144,6 +206,137 @@ throughout this documentation simply called Backend:
 \li QObject* \ref phonon_Backend_createVolumeFaderEffect "createVolumeFaderEffect( QObject* )"
 
 \section Member Function Documentation
+
+\subsection phonon_Backend_createAudioDataOutput QObject* createAudioDataOutput( QObject* parent )
+Normally the implementation simply does:
+\code
+return new AudioDataOutput( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_AudioDataOutput "AudioDataOutput"
+class.
+
+\subsection phonon_Backend_createAudioEffect QObject* createAudioEffect( int index, QObject* parent )
+Normally the implementation simply does:
+\code
+return new AudioEffect( index, parent );
+\endcode
+\param index The index of the requested audio Effect.
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_AudioEffect "AudioEffect"
+class.
+\see phonon_Backend_audioEffectIndexes
+
+\subsection phonon_Backend_createAudioOutput QObject* createAudioOutput( QObject* parent )
+Normally the implementation simply does:
+\code
+return new AudioOutput( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_AudioOutput "AudioOutput"
+class.
+
+\subsection phonon_Backend_createAudioPath QObject* createAudioPath( QObject* parent )
+Normally the implementation simply does:
+\code
+return new AudioPath( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_AudioPath "AudioPath"
+class.
+
+\subsection phonon_Backend_createAvCapture QObject* createAvCapture( QObject* parent )
+Normally the implementation simply does:
+\code
+return new AvCapture( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_AvCapture "AvCapture"
+class.
+
+\subsection phonon_Backend_createBrightnessControl QObject* createBrightnessControl( QObject* parent )
+Normally the implementation simply does:
+\code
+return new BrightnessControl( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_BrightnessControl "BrightnessControl"
+class.
+
+\subsection phonon_Backend_createByteStream QObject* createByteStream( QObject* parent )
+Normally the implementation simply does:
+\code
+return new ByteStream( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_ByteStream "ByteStream"
+class.
+
+\subsection phonon_Backend_createMediaObject QObject* createMediaObject( QObject* parent )
+Normally the implementation simply does:
+\code
+return new MediaObject( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_MediaObject "MediaObject"
+class.
+
+\subsection phonon_Backend_createMediaQueue QObject* createMediaQueue( QObject* parent )
+Normally the implementation simply does:
+\code
+return new MediaQueue( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_MediaQueue "MediaQueue"
+class.
+
+\subsection phonon_Backend_createVideoDataOutput QObject* createVideoDataOutput( QObject* parent )
+Normally the implementation simply does:
+\code
+return new VideoDataOutput( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_VideoDataOutput "VideoDataOutput"
+class.
+
+\subsection phonon_Backend_createVideoEffect QObject* createVideoEffect( int index, QObject* parent )
+Normally the implementation simply does:
+\code
+return new VideoEffect( index, parent );
+\endcode
+\param index The index of the requested video Effect.
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_VideoEffect "VideoEffect"
+class.
+\see phonon_Backend_videoEffectIndexes
+
+\subsection phonon_Backend_createVideoPath QObject* createVideoPath( QObject* parent )
+Normally the implementation simply does:
+\code
+return new VideoPath( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_VideoPath "VideoPath"
+class.
+
+\subsection phonon_Backend_createVisualization QObject* createVisualization( QObject* parent )
+Normally the implementation simply does:
+\code
+return new Visualization( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_Visualization "Visualization"
+class.
+
+\subsection phonon_Backend_createVolumeFaderEffect QObject* createVolumeFaderEffect( QObject* parent )
+Normally the implementation simply does:
+\code
+return new VolumeFaderEffect( parent );
+\endcode
+\param parent The QObject parent for the new object.
+\returns A new instance of a \ref phonon_VolumeFaderEffect "VolumeFaderEffect"
+class.
+
 \subsection phonon_Backend_uiLibrary const char* uiLibrary()
 \returns The name of the library that needs to be loaded to get access to the
 GUI dependent classes.
@@ -155,6 +348,32 @@ classes into the same DSO. Then \ref phonon_Backend_uiLibrary "uiLibrary()"
 returns the same library as is specified in the .desktop file.
 \returns The symbol in the library that needs to be called to get access to the
 \ref phonon_UiBackend "UiBackend" instance.
+
+\subsection phonon_Backend_supportsOSD bool supportsOSD()
+Tells whether the backend implements the OSD interfaces.
+TODO: Currently not used.
+
+\subsection phonon_Backend_supportsFourcc bool supportsFourcc( quint32 fourcc )
+Tells whether the FOURCC (four character code) is supported for
+the \ref phonon_VideoDataOutput "VideoDataOutput" interface. If you return \c true, you have to be
+able to return VideoFrame objects accordingly from
+\ref phonon_VideoDataOutput "VideoDataOutput".
+\param fourcc A four character code defining a video frame format.
+\returns \c true if your \ref phonon_VideoDataOutput "VideoDataOutput" can
+output video frames in the requested format.
+\returns \c false if the video frames can not be converted into the requested
+format.
+
+\subsection phonon_Backend_supportsSubtitles bool supportsSubtitles()
+TODO: Currently not used.
+
+\subsection phonon_Backend_supportsVideo bool supportsVideo()
+Tells whether the backend is audio only or can handle video files
+and display of videos.
+\returns \c false is VideoPath, VideoEffect and so on are not implemented.
+
+\subsection phonon_Backend_knownMimeTypes QStringList knownMimeTypes()
+Lists the MIME types the backend can read and decode.
 
 \subsection phonon_Backend_audioCaptureDeviceIndexes QSet<int> audioCaptureDeviceIndexes()
 \returns A set of indexes that identify the audio capture devices the backend
@@ -180,10 +399,33 @@ returned via \ref phonon_Backend_audioCaptureDeviceIndexes
 audio capture device. For example a webcam might have both a video and an audio
 capture device, and in order give the user a hint that the audio and video
 capture devices belong together this index is used.
+\returns If there is no associated video capture device return -1.
 
-\returns If there is no associated
-video capture device return -1.
+\subsection phonon_Backend_videoCaptureDeviceIndexes QSet<int> videoCaptureDeviceIndexes()
+\returns A set of indexes that identify the video capture devices the backend
+supports. This list needs to be compiled from looking at available hardware
+devices and "virtual devices". The implementation should use cached information,
+but you need to invalidate the cache whenever the hardware configuration changes
+or new virtual devices come available.
 
+\subsection phonon_Backend_videoCaptureDeviceName QString videoCaptureDeviceName( int index )
+\param index The index of the device. This is one of the indexes the backend
+returned via \ref phonon_Backend_videoCaptureDeviceIndexes
+\returns A translated user visible string to name the device.
+
+\subsection phonon_Backend_videoCaptureDeviceDescription QString videoCaptureDeviceDescription( int index )
+\param index The index of the device. This is one of the indexes the backend
+returned via \ref phonon_Backend_videoCaptureDeviceIndexes
+\returns A translated user visible string to describe the device.
+
+\subsection phonon_Backend_videoCaptureDeviceAudioIndex qint32 videoCaptureDeviceAudioIndex( int index )
+\param index The index of the device. This is one of the indexes the backend
+returned via \ref phonon_Backend_videoCaptureDeviceIndexes
+\returns An index of a audio capture device that is associated with the given
+video capture device. For example a webcam might have both a audio and an video
+capture device, and in order give the user a hint that the video and audio
+capture devices belong together this index is used.
+\returns If there is no associated audio capture device return -1.
 */
 // DOXYGEN_REFERENCES = kdecore kio phonon/ui
 // DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR

@@ -61,7 +61,8 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		static BackendCapabilities* self();
 
 		/**
-		 * \copydoc Phonon::Ifaces::Backend::supportsVideo
+		 * Tells whether the backend is audio only or can handle video files
+		 * and display of videos.
 		 *
 		 * If the backend does not support video the classes
 		 * VideoPath, VideoEffect and all AbstractVideoOutput subclasses won't
@@ -70,12 +71,17 @@ class PHONONCORE_EXPORT BackendCapabilities : public QObject
 		static bool supportsVideo();
 
 		/**
-		 * \copydoc Phonon::Ifaces::Backend::supportsOSD
+		 * Tells whether the backend implements the OSD interfaces.
+		 *
+		 * \todo there's no interfaces for it at this point
 		 */
 		static bool supportsOSD();
 
 		/**
-		 * \copydoc Phonon::Ifaces::Backend::supportsSubtitles
+		 * Tells whether the backend supports subtitle rendering on the
+		 * video output.
+		 *
+		 * \todo there's no interfaces for it at this point
 		 */
 		static bool supportsSubtitles();
 
