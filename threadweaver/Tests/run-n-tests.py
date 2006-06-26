@@ -4,29 +4,28 @@ import os
 import sys
 import time
 
-def TimeIt(f):
-    """ Annotate a function with its elapsed execution time. """
-
-    def timed_f(*args, **kwargs):
-        t1 = time.time()
-
-        try:
-            f(*args, **kwargs)
-        finally:
-            t2 = time.time()
-        
-        timed_f.func_time = ((t2 - t1) / 60.0, t2 - t1, (t2 - t1) * 1000.0)
-        
-        sys.stdout.write ("%s: %0.3fms (%0.3fs)\n" % ( f.func_name, timed_f.func_time[2], timed_f.func_time[1] ))
-            
-    return timed_f()
-
-def RunTests():
-    for count in range(10):
+def RunTests( Number ):
+    for count in range( Number ):
         print "Test run #", count + 1
         os.system ("LD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests >/dev/null")
 
+Number = 10
 
-TimeIt(RunTests)
+try:
+    Number = int ( sys.argv[1] )
+except:
+    print "No number given, using default of ", Number
+
+t1 = time.time()
+RunTests ( Number )
+t2 = time.time()
+
+elapsed = ((t2 - t1) / 60.0, t2 - t1, (t2 - t1) * 1000.0)
+
+print "RunTests: %0.3fms (%0.3fs)" % ( elapsed[2], elapsed[1] )
+print "Averages: %0.3fms per test run (%0.3fs)" % ( elapsed[2] / Number, elapsed[1] / Number )
+
+
+
 
 
