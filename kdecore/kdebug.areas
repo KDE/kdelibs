@@ -468,12 +468,9 @@
 
 26500  KDOM XInclude
 26550  KDOM XPointer
-26560  KDOM XPath
+26560  Patternist
 26600  KDOM Catalog
 26650  KDOM kxmllint
-
-# XSLT on top of KDOM
-27000  KXSLT
 
 # libkscan / kooka
 28000   Kooka
