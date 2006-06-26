@@ -20,11 +20,9 @@
 #ifndef KTEXTEDIT_H
 #define KTEXTEDIT_H
 
-#include <QTextEdit>
+#include <QtGui/QTextEdit>
 
 #include <kdelibs_export.h>
-
-class KSpell;
 
 /**
  * @short A KDE'ified QTextEdit
@@ -43,7 +41,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
 {
     Q_OBJECT
 
-public:
+  public:
     /**
      * Constructs a KTextEdit object. See QTextEdit::QTextEdit
      * for details.
@@ -85,33 +83,32 @@ public:
      */
     bool checkSpellingEnabled() const;
 
-    void highLightWord( unsigned int length, unsigned int pos );
+    void highlightWord( unsigned int length, unsigned int pos );
 
-
-public Q_SLOTS:
+  public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
      * until spell checking has been completed.
      */
     void checkSpelling();
 
-protected:
+  protected:
     /**
      * Reimplemented to catch "delete word" key events.
      */
-    virtual void keyPressEvent( QKeyEvent * );
+    virtual void keyPressEvent( QKeyEvent* );
 
     /**
      * Reimplemented to instantiate a KDictSpellingHighlighter, if
      * spellchecking is enabled.
      */
-    virtual void focusInEvent( QFocusEvent * );
+    virtual void focusInEvent( QFocusEvent* );
 
     /**
      * Reimplemented to allow fast-wheelscrolling with Ctrl-Wheel
      * or zoom.
      */
-    virtual void wheelEvent( QWheelEvent * );
+    virtual void wheelEvent( QWheelEvent* );
 
     /**
      * Deletes a word backwards from the current cursor position,
@@ -129,24 +126,22 @@ protected:
      * Reimplemented from QTextEdit to add spelling related items
      * when appropriate.
      */
-    virtual void contextMenuEvent( QContextMenuEvent *e );
+    virtual void contextMenuEvent( QContextMenuEvent* );
 
+  private:
+    class Private;
+    Private *const d;
 
-private Q_SLOTS:
-    void slotSpellCheckReady( KSpell *s );
-    void slotSpellCheckDone( const QString &s );
-    void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
-    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
-    void spellCheckerFinished();
-    void toggleAutoSpellCheck();
-    void slotAllowTab();
-    void menuActivated( QAction* act);
+    Q_DISABLE_COPY( KTextEdit )
 
-private:
-    void posToRowCol( unsigned int pos, unsigned int &line, unsigned int &col );
-
-    class KTextEditPrivate;
-    KTextEditPrivate *const d;
+    Q_PRIVATE_SLOT( d, void slotSpellCheckReady( KSpell* ) )
+    Q_PRIVATE_SLOT( d, void slotSpellCheckDone( const QString& ) )
+    Q_PRIVATE_SLOT( d, void spellCheckerMisspelling( const QString&, const QStringList&, unsigned int ) )
+    Q_PRIVATE_SLOT( d, void spellCheckerCorrected( const QString&, const QString&, unsigned int ) )
+    Q_PRIVATE_SLOT( d, void spellCheckerFinished() )
+    Q_PRIVATE_SLOT( d, void toggleAutoSpellCheck() )
+    Q_PRIVATE_SLOT( d, void slotAllowTab() )
+    Q_PRIVATE_SLOT( d, void menuActivated( QAction* ) )
 };
 
 #endif // KTEXTEDIT_H
