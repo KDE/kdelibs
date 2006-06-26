@@ -7,9 +7,10 @@
 #include <qtimer.h>
 
 KFDTest::KFDTest( const QString& startDir, QObject *parent, const char *name )
-    : QObject( parent, name ),
+    : QObject( parent ),
       m_startDir( startDir )
 {
+    setObjectName( name );
     QTimer::singleShot( 1000, this, SLOT( doit() ));
 }
 

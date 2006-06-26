@@ -471,12 +471,14 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_widgetStack->insertWidget( KACLListView::NamedGroup,groupsBox );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
-    m_usersCombo = new QComboBox( false, usersBox );
+    m_usersCombo = new QComboBox( usersBox );
+    m_usersCombo->setEditable( false );
     m_usersCombo->setObjectName( QLatin1String( "users" ) );
     usersLabel->setBuddy( m_usersCombo );
 
     QLabel *groupsLabel = new QLabel( i18n( "Group: " ), groupsBox );
-    m_groupsCombo = new QComboBox( false, groupsBox );
+    m_groupsCombo = new QComboBox( groupsBox );
+    m_groupsCombo->setEditable( false );
     m_groupsCombo->setObjectName( QLatin1String( "groups" ) );
     groupsLabel->setBuddy( m_groupsCombo );
 
@@ -488,9 +490,9 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
         slotSelectionChanged( m_buttonIds.key( m_item->type ) );
         slotUpdateAllowedUsersAndGroups();
         if ( m_item->type == KACLListView::NamedUser ) {
-            m_usersCombo->setCurrentText( m_item->qualifier );
+            m_usersCombo->setItemText( m_usersCombo->currentIndex(), m_item->qualifier );
         } else if ( m_item->type == KACLListView::NamedGroup ) {
-            m_groupsCombo->setCurrentText( m_item->qualifier );
+            m_groupsCombo->setItemText( m_groupsCombo->currentIndex(), m_item->qualifier );
         }
     } else {
         // new entry, preselect "named user", arguably the most common one
@@ -523,19 +525,19 @@ void EditACLEntryDialog::slotUpdateAllowedUsersAndGroups()
     m_usersCombo->clear();
     m_groupsCombo->clear();
     if ( m_defaultCB && m_defaultCB->isChecked() ) {
-        m_usersCombo->insertStringList( m_defaultUsers );
+        m_usersCombo->addItems( m_defaultUsers );
         if ( m_defaultUsers.contains( oldUser ) )
-            m_usersCombo->setCurrentText( oldUser );
-        m_groupsCombo->insertStringList( m_defaultGroups );
+            m_usersCombo->setItemText( m_usersCombo->currentIndex(), oldUser );
+        m_groupsCombo->addItems( m_defaultGroups );
         if ( m_defaultGroups.contains( oldGroup ) )
-            m_groupsCombo->setCurrentText( oldGroup );
+            m_groupsCombo->setItemText( m_groupsCombo->currentIndex(), oldGroup );
     } else {
-        m_usersCombo->insertStringList( m_users );
+        m_usersCombo->addItems( m_users );
         if ( m_users.contains( oldUser ) )
-            m_usersCombo->setCurrentText( oldUser );
-        m_groupsCombo->insertStringList( m_groups );
+            m_usersCombo->setItemText( m_usersCombo->currentIndex(), oldUser );
+        m_groupsCombo->addItems( m_groups );
         if ( m_groups.contains( oldGroup ) )
-            m_groupsCombo->setCurrentText( oldGroup );
+            m_groupsCombo->setItemText( m_groupsCombo->currentIndex(), oldGroup );
     }
 }
 void EditACLEntryDialog::slotOk()

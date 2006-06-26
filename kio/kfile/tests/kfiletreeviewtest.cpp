@@ -33,10 +33,11 @@
 
 #include "kfiletreeviewtest.moc"
 
-testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
+testFrame::testFrame():KMainWindow( 0 ),
 		       dirOnlyMode(false)
 
 {
+   setObjectName( "Test FileTreeView" );
    treeView = new KFileTreeView( this );
    treeView->setDragEnabled( true );
    treeView->setAcceptDrops( true );
