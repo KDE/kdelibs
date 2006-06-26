@@ -311,7 +311,7 @@ void KLineEdit::setSqueezedTextEnabled( bool enable )
     d->enableSqueezedText = enable;
 }
 
-bool KLineEdit::squeezedTextEnabled() const
+bool KLineEdit::isSqueezedTextEnabled() const
 {
     return d->enableSqueezedText;
 }
@@ -1041,12 +1041,12 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 }
 
 
-void KLineEdit::setURLDropsEnabled(bool enable)
+void KLineEdit::setUrlDropsEnabled(bool enable)
 {
     d->handleURLDrops=enable;
 }
 
-bool KLineEdit::isURLDropsEnabled() const
+bool KLineEdit::urlDropsEnabled() const
 {
     return d->handleURLDrops;
 }
@@ -1061,7 +1061,7 @@ bool KLineEdit::trapReturnKey() const
     return d->grabReturnKeyEvents;
 }
 
-void KLineEdit::setURL( const KUrl& url )
+void KLineEdit::setUrl( const KUrl& url )
 {
     setText( url.prettyUrl() );
 }

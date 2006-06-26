@@ -51,7 +51,7 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction, public QActionWidgetFac
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
   Q_PROPERTY( bool stickyMenu READ stickyMenu WRITE setStickyMenu )
 
-public:
+  public:
     //Not all constructors - because we need an icon, since this action only makes
     // sense when being plugged at least in a toolbar.
     /**
@@ -116,6 +116,9 @@ public:
                          const QObject* receiver, const char* slot,
                          KActionCollection* parent, const QString& name );
 
+    /**
+     * Destroys the toolbar popup action.
+     */
     virtual ~KToolBarPopupAction();
 
     /**
@@ -132,17 +135,20 @@ public:
      * when plugged in a KToolBar.
      */
     bool delayed() const;
+
     /**
      * If set to true, this action will create a delayed popup menu
      * when plugged in a KToolBar. Otherwise it creates a normal popup.
      * Default: delayed.
      */
     void setDelayed(bool delayed);
+
     /**
      * Returns true if this action creates a sticky popup menu.
      * @see setStickyMenu().
      */
     bool stickyMenu() const;
+
     /**
      * If set to true, this action will create a sticky popup menu
      * when plugged in a KToolBar.
@@ -154,14 +160,16 @@ public:
      */
     void setStickyMenu(bool sticky);
 
+    /**
+     * Reimplemented from @see QActionWidgetFactory.
+     */
     virtual QWidget* createToolBarWidget(QToolBar* parent);
 
-private:
-    bool m_delayed:1;
-    bool m_stickyMenu:1;
-private:
-    class KToolBarPopupActionPrivate;
-    KToolBarPopupActionPrivate *d;
+  private:
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KToolBarPopupAction )
 };
 
 #endif

@@ -21,8 +21,6 @@
 
 #include <kaction.h>
 
-class QLabel;
-
 /**
  * @short Class to display a label in a toolbar.
  *
@@ -34,14 +32,15 @@ class QLabel;
  *
  * \code
  *
- * KHistoryCombo* findCombo = new KHistoryCombo(true, this);
- * KWidgetAction* action
- *   = new KWidgetAction(findCombo, i18n("F&ind Combo"), Qt::Key_F6, this,
- *                       SLOT(slotFocus()), actionCollection(), "find_combo");
+ * KHistoryCombo* findCombo = new KHistoryCombo( true, this );
  *
- * new KToolBarLabelAction(findCombo, i18n("F&ind "), 0, this,
- *                         SLOT(slotFocus()), actionCollection(),
- *             "find_label");
+ * KWidgetAction* action = new KWidgetAction( findCombo, i18n("Find Combo"),
+ *                                            Qt::Key_F6, this, SLOT( slotFocus() ),
+ *                                            actionCollection(), "find_combo");
+ *
+ * KAction *action = new KToolBarLabelAction( action, i18n( "Find "), "find_label" );
+ * action->setShortcut( Qt::Key_F6 );
+ * connect( action, SIGNAL( triggered() ), this, SLOT( slotFocus() ) );
  *
  * \endcode
  *
@@ -51,65 +50,67 @@ class KDEUI_EXPORT KToolBarLabelAction : public KAction, public QActionWidgetFac
 {
   Q_OBJECT
 
-public:
-  /**
-   * Constructs a toolbar label.
-   *
-   * @param text The label's and the action's text.
-   * @param cut The action's shortcut.
-   * @param receiver The SLOT's parent.
-   * @param slot The SLOT to invoke to execute this action.
-   * @param parent This action's parent.
-   * @param name An internal name for this action.
-   */
-  KToolBarLabelAction(const QString &text,
-		      const KShortcut &cut,
-		      const QObject *receiver, const char *slot,
-		      KActionCollection *parent, const QString& name);
-  /**
-   * Constructs a toolbar label setting a buddy for the label.
-   *
-   * @param buddy The action whose widget which is focused when the label's accelerator is
-   * typed.
-   * @param text The label's and the action's text.
-   * @param cut The action's shortcut.
-   * @param receiver The SLOT's parent.
-   * @param slot The SLOT to invoke to execute this action.
-   * @param parent This action's parent.
-   * @param name An internal name for this action.
-   */
-  KToolBarLabelAction(QAction* buddy, const QString &text,
-		      const KShortcut &cut,
-		      const QObject *receiver, const char *slot,
-		      KActionCollection *parent, const QString& name);
+  public:
+    /**
+     * Creates a toolbar label.
+     *
+     * @param text The label's and the action's text.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KToolBarLabelAction( const QString &text, KActionCollection *parent, const QString& name );
 
-  virtual ~KToolBarLabelAction();
+    /**
+     * Creates a toolbar label setting a buddy for the label.
+     *
+     * @param buddy The action whose widget which is focused when the label's accelerator is
+     * typed.
+     * @param text The label's and the action's text.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KToolBarLabelAction( QAction *buddy, const QString &text,
+                         KActionCollection *parent, const QString& name );
 
-  /**
-   * Sets the label's buddy to buddy.
-   *
-   * See QLabel#setBuddy() for details.
-   */
-  void setBuddy(QAction* buddy);
+    /**
+     * Destroys the toolbar label.
+     */
+    virtual ~KToolBarLabelAction();
 
-  /**
-   * Returns the label's buddy or 0 if no buddy is currently set.
-   *
-   * See QLabel#buddy() and QLabel#setBuddy() for more information.
-   */
-  QAction* buddy() const;
+    /**
+     * Sets the label's buddy to buddy.
+     *
+     * See QLabel#setBuddy() for details.
+     */
+    void setBuddy( QAction *buddy );
 
-  virtual QWidget* createToolBarWidget(QToolBar* parent);
+    /**
+     * Returns the label's buddy or 0 if no buddy is currently set.
+     *
+     * See QLabel#buddy() and QLabel#setBuddy() for more information.
+     */
+    QAction* buddy() const;
 
-Q_SIGNALS:
-  void textChanged(const QString& newText);
+    /**
+     * Reimplemented from @see QActionWidgetFactory.
+     */
+    virtual QWidget* createToolBarWidget( QToolBar* parent );
 
-protected:
-  virtual bool event(QEvent* event);
+  Q_SIGNALS:
+    /**
+     * This signal is emmitted whenever the text of this action
+     * is changed.
+     */
+    void textChanged( const QString &newText );
 
-private:
-  class KToolBarLabelActionPrivate;
-  KToolBarLabelActionPrivate *d;
+  protected:
+    virtual bool event( QEvent* );
+
+  private:
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KToolBarLabelAction )
 };
 
 #endif

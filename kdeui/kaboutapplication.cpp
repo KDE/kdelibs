@@ -81,10 +81,10 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   {
     KUrlLabel *url = new KUrlLabel();
     url->setText(aboutData->homepage());
-    url->setURL(aboutData->homepage());
+    url->setUrl(aboutData->homepage());
     appPage->addWidget( url );
-    connect( url, SIGNAL(leftClickedURL(const QString &)),
-             this, SLOT(openURLSlot(const QString &)));
+    connect( url, SIGNAL(leftClickedUrl(const QString &)),
+             this, SLOT(openUrlSlot(const QString &)));
   }
 
   int authorCount = aboutData->authors().count();

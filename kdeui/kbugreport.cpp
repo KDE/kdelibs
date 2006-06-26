@@ -272,7 +272,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     lay->addWidget( label );
     lay->addSpacing(10);
 
-    updateURL();
+    updateUrl();
     d->submitBugButton->setText( i18n("&Launch Bug Report Wizard") );
     d->submitBugButton->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     lay->addWidget( d->submitBugButton );
@@ -289,7 +289,7 @@ KBugReport::~KBugReport()
     delete d;
 }
 
-void KBugReport::updateURL()
+void KBugReport::updateUrl()
 {
     KUrl url ( "http://bugs.kde.org/wizard.cgi" );
     url.addQueryItem( "os", d->os );
@@ -319,7 +319,7 @@ void KBugReport::appChanged(int i)
 
     m_version->setText(m_strVersion);
     if ( d->submitBugButton )
-        updateURL();
+        updateUrl();
 }
 
 void KBugReport::slotConfigureEmail()

@@ -78,7 +78,7 @@ protected Q_SLOTS:
   /**
    * Update the url to match the current os, compiler, selected app, etc
    */
-  void updateURL();
+  void updateUrl();
 
 protected:
   /**

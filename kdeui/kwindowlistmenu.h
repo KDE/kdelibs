@@ -22,28 +22,45 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#ifndef kwindowlistmenu_h
-#define kwindowlistmenu_h
+#ifndef KWINDOWLISTMENU_H
+#define KWINDOWLISTMENU_H
 
 #include <kmenu.h>
+
 #include <qglobal.h> // can be removed when the ifdef Q_WS_X11 will be removed
 
 #ifdef Q_WS_X11 // not yet available for non-X11
 
-class KWinModule;
-class KWindowListMenuPrivate;
-
+/**
+ * This class provides a menu which contains actions
+ * to manage a window. It is used by the window manager
+ * for example an accessable there via the menu button of
+ * the window decoration.
+ */
 class KDEUI_EXPORT KWindowListMenu : public KMenu
 {
     Q_OBJECT
 
-public:
+  public:
+    /**
+     * Creates a new window list menu.
+     *
+     * @param parent The parent widget.
+     */
     explicit KWindowListMenu( QWidget *parent = 0 );
+
+    /**
+     * Destroys the window list menu.
+     */
     virtual ~KWindowListMenu();
 
+    /**
+     * Initializes the menu by filling it with actions
+     * for managing a window.
+     */
     void init();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     /**
      * Pre-selects the active window in the popup menu, for faster
      * keyboard navigation. Needs to be called after popup().
@@ -51,16 +68,17 @@ public Q_SLOTS:
      */
     void selectActiveWindow();
 
-protected Q_SLOTS:
+  protected Q_SLOTS:
     void slotForceActiveWindow();
     void slotSetCurrentDesktop();
     void slotUnclutterWindows();
     void slotCascadeWindows();
 
-private:
-    KWinModule*         kwin_module;
-private:
-    KWindowListMenuPrivate *d;
+  private:
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KWindowListMenu )
 };
 
 #endif // Q_WS_X11

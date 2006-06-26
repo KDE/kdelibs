@@ -144,7 +144,7 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
 
   Q_SIGNALS:
     void sendEmail( const QString& name, const QString& email );
-    void openURL( const QString& url );
+    void openUrl( const QString& url );
 
   private:
     class Private;
@@ -216,7 +216,7 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
     /**
      * An URL has been clicked.
      */
-    void openURL(const QString& url);
+    void openUrl(const QString& url);
 
   protected Q_SLOTS:
     /**
@@ -227,7 +227,7 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
     /**
      * Catches the clicked URLs.
      */
-    void openURLSlot(const QString& url);
+    void openUrlSlot(const QString& url);
 
   protected:
     /**
@@ -569,7 +569,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      * Create a modal dialog with an image in the upper area with a
      * URL link below.
      */
-    static void imageURL( QWidget *parent, const QString &caption,
+    static void imageUrl( QWidget *parent, const QString &caption,
                           const QString &path, const QColor &imageColor,
                           const QString &url );
 
@@ -585,7 +585,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
     /**
      * Open the selected URL.
      */
-    void openURL( const QString& url );
+    void openUrl( const QString& url );
 
   protected:
     /**
@@ -607,7 +607,7 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
     /**
      * Open this URL.
      */
-    void openURLSlot( const QString& url );
+    void openUrlSlot( const QString& url );
 
     /**
      * (Constructor II only)

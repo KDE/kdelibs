@@ -43,7 +43,7 @@ class KDEUI_EXPORT KToggleAction : public KAction
 {
     Q_OBJECT
 
-public:
+  public:
     /**
      * Constructs an action in the specified KActionCollection.
      *
@@ -51,7 +51,7 @@ public:
      * @param name An internal name for this action.
      * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
      */
-    KToggleAction(KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
+    KToggleAction( KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L );
 
     /**
      * Constructs an action with text; a shortcut may be specified by
@@ -67,7 +67,8 @@ public:
      * @param name An internal name for this action.
      * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
      */
-    KToggleAction(const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
+    KToggleAction( const QString& text, KActionCollection* parent,
+                   const QString& name, QActionGroup* exclusiveGroup = 0L );
 
     /**
      * Constructs an action with text and an icon; a shortcut may be specified by
@@ -82,7 +83,8 @@ public:
      * @param name An internal name for this action.
      * @param exclusiveGroup the group of actions that this action is part of, for exclusive action groups
      */
-    KToggleAction(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
+    KToggleAction( const KIcon& icon, const QString& text, KActionCollection* parent,
+                   const QString& name, QActionGroup* exclusiveGroup = 0L );
 
     /**
      * \overload KSelectAction(const QIcon&, const QString&, KActionCollection*)
@@ -95,7 +97,8 @@ public:
      * @param parent The action collection to contain this action.
      * @param name An internal name for this action.
      */
-    KDE_CONSTRUCTOR_DEPRECATED KToggleAction(const QString& icon, const QString& text, KActionCollection* parent, const QString& name, QActionGroup* exclusiveGroup = 0L);
+    KDE_CONSTRUCTOR_DEPRECATED KToggleAction( const QString& icon, const QString& text, KActionCollection* parent,
+                                              const QString& name, QActionGroup* exclusiveGroup = 0L );
 
     /**
      * Constructs a toggle action with text and potential keyboard
@@ -183,14 +186,14 @@ public:
      */
     void setCheckedState( const KGuiItem& checkedItem );
 
-protected Q_SLOTS:
-    virtual void slotToggled(bool checked);
+  protected Q_SLOTS:
+    virtual void slotToggled( bool checked );
 
-private:
-    void init();
+  private:
+    class Private;
+    Private* const d;
 
-    class KToggleActionPrivate;
-    KToggleActionPrivate *d;
+    Q_DISABLE_COPY( KToggleAction )
 };
 
 #endif

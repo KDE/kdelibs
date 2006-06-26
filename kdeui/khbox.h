@@ -19,42 +19,57 @@
 #ifndef KHBOX_H
 #define KHBOX_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
+
 #include <kdelibs_export.h>
+
+class QEvent;
 
 /**
  * A container widget which arranges its children horizontally.
- * When using a KHBox you don't need to create a layout nor to add the child widgets to it.
+ * When using a KHBox you don't need to create a layout nor
+ * to add the child widgets to it.
+ *
+ * @see KVBox
  */
 class KDEUI_EXPORT KHBox : public QFrame
 {
-    Q_OBJECT
-public:
-    explicit KHBox( QWidget* parentWidget = 0 );
+  public:
+    /**
+     * Creates a new hbox.
+     */
+    explicit KHBox( QWidget* parent = 0 );
+
+    /**
+     * Sets the @p margin of the hbox.
+     */
+    void setMargin( int margin );
 
     /**
      * Sets the spacing between the child widgets to @p space
      */
     void setSpacing( int space );
+
     /*
-     * Sets the stretch factor of widget @p w to @p stretch.
+     * Sets the stretch factor of @p widget to @p stretch.
      */
-    void setStretchFactor( QWidget* w, int stretch );
+    void setStretchFactor( QWidget* widget, int stretch );
 
     virtual QSize sizeHint() const;
 
-    void setMargin(int margin);
-protected:
+  protected:
     /*
      * @internal
      */
-    KHBox( bool vertical, QWidget* parentWidget );
+    KHBox( bool vertical, QWidget* parent );
 
     virtual bool event( QEvent* ev );
 
-private:
-    Q_DISABLE_COPY(KHBox)
-};
+  private:
+    class Private;
+    Private* const d;
 
+    Q_DISABLE_COPY( KHBox )
+};
 
 #endif

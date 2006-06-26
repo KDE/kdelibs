@@ -16,57 +16,39 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktoolbarlabelaction.h"
-
-#include <qlabel.h>
-#include <qpointer.h>
-#include <qapplication.h>
+#include <QtCore/QPointer>
+#include <QtGui/QApplication>
+#include <QtGui/QLabel>
 
 #include "ktoolbar.h"
+#include "ktoolbarlabelaction.h"
 
-class KToolBarLabelAction::KToolBarLabelActionPrivate
+class KToolBarLabelAction::Private
 {
-public:
-  KToolBarLabelActionPrivate()
-  {
-  }
-  QPointer<QAction> m_buddy;
-  QString oldText;
+  public:
+    QPointer<QAction> buddy;
+    QString oldText;
 };
 
-
-KToolBarLabelAction::KToolBarLabelAction(const QString &text,
-					 const KShortcut &cut,
-					 const QObject *receiver,
-					 const char *slot,
-					 KActionCollection *parent,
-					 const QString& name)
-  : KAction(text, parent, name),
-    d(new KToolBarLabelActionPrivate)
+KToolBarLabelAction::KToolBarLabelAction( const QString &text,
+                                          KActionCollection *parent,
+                                          const QString& name )
+  : KAction( text, parent, name ),
+    d( new Private )
 {
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
-
-  setToolBarWidgetFactory(this);
+  setToolBarWidgetFactory( this );
   d->oldText = KToolBarLabelAction::text();
 }
 
-KToolBarLabelAction::KToolBarLabelAction(QAction* buddy,
-					 const QString &text,
-					 const KShortcut &cut,
-					 const QObject *receiver,
-					 const char *slot,
- 					 KActionCollection *parent,
-					 const QString& name)
-  : KAction(text, parent, name),
-    d(new KToolBarLabelActionPrivate)
+KToolBarLabelAction::KToolBarLabelAction( QAction* buddy, const QString &text,
+                                          KActionCollection *parent, const QString& name )
+  : KAction( text, parent, name ),
+    d( new Private )
 {
-  setShortcut( cut );
-  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+  setToolBarWidgetFactory( this );
 
-  d->m_buddy = buddy;
-  setBuddy(buddy);
-  setToolBarWidgetFactory(this);
+  setBuddy( buddy );
+
   d->oldText = KToolBarLabelAction::text();
 }
 
@@ -75,58 +57,60 @@ KToolBarLabelAction::~KToolBarLabelAction()
   delete d;
 }
 
-void KToolBarLabelAction::setBuddy(QAction* buddy)
+void KToolBarLabelAction::setBuddy( QAction* buddy )
 {
-  d->m_buddy = buddy;
+  d->buddy = buddy;
 
   QList<QLabel*> labels;
-  foreach (QWidget* widget, associatedWidgets())
-    if (QToolBar* toolBar = qobject_cast<QToolBar*>(widget))
-      if (QLabel* label = qobject_cast<QLabel*>(toolBar->widgetForAction(this)))
-        labels.append(label);
+  foreach ( QWidget* widget, associatedWidgets() )
+    if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) )
+      if ( QLabel* label = qobject_cast<QLabel*>( toolBar->widgetForAction( this ) ) )
+        labels.append( label );
 
-  foreach (QWidget* widget, buddy->associatedWidgets())
-    if (QToolBar* toolBar = qobject_cast<QToolBar*>(widget)) {
-      QWidget* newBuddy = toolBar->widgetForAction(buddy);
-      foreach (QLabel* label, labels)
-        label->setBuddy(newBuddy);
+  foreach ( QWidget* widget, buddy->associatedWidgets() )
+    if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
+      QWidget* newBuddy = toolBar->widgetForAction( buddy );
+      foreach ( QLabel* label, labels )
+        label->setBuddy( newBuddy );
       return;
     }
 }
 
 QAction* KToolBarLabelAction::buddy() const
 {
-  return d->m_buddy;
+  return d->buddy;
 }
 
-bool KToolBarLabelAction::event ( QEvent * event )
+bool KToolBarLabelAction::event( QEvent *event )
 {
-  if (event->type() == QEvent::ActionChanged) {
-    if (text() != d->oldText) {
+  if ( event->type() == QEvent::ActionChanged ) {
+    if ( text() != d->oldText ) {
       emit textChanged( text() );
       d->oldText = text();
     }
   }
 
-  return KAction::event(event);
+  return KAction::event( event );
 }
 
-QWidget * KToolBarLabelAction::createToolBarWidget(QToolBar* parent)
+QWidget *KToolBarLabelAction::createToolBarWidget( QToolBar* parent )
 {
-  QLabel* newLabel = new QLabel(parent);
-  /* these lines were copied from Konqueror's KonqDraggableLabel class in
-     konq_misc.cc */
-  newLabel->setBackgroundRole(QPalette::Button);
-  newLabel->setAlignment((QApplication::isRightToLeft()
-        ? Qt::AlignRight : Qt::AlignLeft) |
-       Qt::AlignVCenter );
+  QLabel* newLabel = new QLabel( parent );
+
+  /**
+   * These lines were copied from Konqueror's KonqDraggableLabel class in
+   * konq_misc.cc
+   */
+  newLabel->setBackgroundRole( QPalette::Button );
+  newLabel->setAlignment( (QApplication::isRightToLeft() ? Qt::AlignRight : Qt::AlignLeft) |
+                          Qt::AlignVCenter );
   newLabel->adjustSize();
 
-  if (d->m_buddy)
-    foreach (QWidget* widget, d->m_buddy->associatedWidgets())
-      if (QToolBar* toolBar = qobject_cast<QToolBar*>(widget)) {
-        QWidget* newBuddy = toolBar->widgetForAction(d->m_buddy);
-        newLabel->setBuddy(newBuddy);
+  if ( d->buddy )
+    foreach ( QWidget* widget, d->buddy->associatedWidgets() )
+      if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
+        QWidget* newBuddy = toolBar->widgetForAction( d->buddy );
+        newLabel->setBuddy( newBuddy );
         break;
       }
 

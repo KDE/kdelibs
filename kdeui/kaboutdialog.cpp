@@ -200,15 +200,15 @@ KAboutContributor::KAboutContributor( QWidget *_parent,
   setWork( _work, i18n("Task"), false );
 
   KUrlLabel *kurl = static_cast<KUrlLabel *>(d->text[1]);
-  kurl->setFloat(true);
+  kurl->setFloatEnabled(true);
   kurl->setUnderline(true);
-  connect(kurl, SIGNAL(leftClickedURL(const QString &)),
+  connect(kurl, SIGNAL(leftClickedUrl(const QString &)),
           SLOT(emailClickedSlot(const QString &)));
 
   kurl = static_cast<KUrlLabel *>(d->text[2]);
-  kurl->setFloat(true);
+  kurl->setFloatEnabled(true);
   kurl->setUnderline(true);
-  connect(kurl, SIGNAL(leftClickedURL(const QString &)),
+  connect(kurl, SIGNAL(leftClickedUrl(const QString &)),
           SLOT(urlClickedSlot(const QString &)));
 
   d->label[3]->setAlignment( Qt::AlignTop );
@@ -238,7 +238,7 @@ void KAboutContributor::setEmail( const QString &_text, const QString &_header,
   d->label[1]->setText(_header);
   KUrlLabel* const kurl = static_cast<KUrlLabel *>(d->text[1]);
   kurl->setText(_text);
-  kurl->setURL(_text);
+  kurl->setUrl(_text);
   if( _update ) { d->updateLayout(); }
 }
 
@@ -249,7 +249,7 @@ void KAboutContributor::setUrl( const QString &_text, const QString &_header,
   d->label[2]->setText(_header);
   KUrlLabel* const kurl = static_cast<KUrlLabel *>(d->text[2]);
   kurl->setText(_text);
-  kurl->setURL(_text);
+  kurl->setUrl(_text);
   if( _update ) { d->updateLayout(); }
 }
 
@@ -308,7 +308,7 @@ QSize KAboutContributor::sizeHint( void ) const
 
 void KAboutContributor::urlClickedSlot( const QString &u )
 {
-  emit openURL(u);
+  emit openUrl(u);
 }
 
 
@@ -934,7 +934,7 @@ void KAboutContainer::addPerson( const QString &_name, const QString &_email,
   KAboutContributor* const cont = new KAboutContributor( this,
     _name, _email, _url, _task, showHeader, showFrame, showBold );
   cont->setObjectName( "pers" );
-  connect( cont, SIGNAL( openURL(const QString&)),
+  connect( cont, SIGNAL( openUrl(const QString&)),
 	   this, SIGNAL( urlClick(const QString &)));
   connect( cont, SIGNAL( sendEmail(const QString &, const QString &)),
 	   this, SIGNAL( mailClick(const QString &, const QString &)));
@@ -996,12 +996,12 @@ KAboutWidget::KAboutWidget(QWidget *_parent)
   // -----
   connect(author, SIGNAL(sendEmail(const QString&, const QString&)),
 	  SLOT(sendEmailSlot(const QString&, const QString&)));
-  connect(author, SIGNAL(openURL(const QString&)),
-	  SLOT(openURLSlot(const QString&)));
+  connect(author, SIGNAL(openUrl(const QString&)),
+	  SLOT(openUrlSlot(const QString&)));
   connect(maintainer, SIGNAL(sendEmail(const QString&, const QString&)),
 	  SLOT(sendEmailSlot(const QString&, const QString&)));
-  connect(maintainer, SIGNAL(openURL(const QString&)),
-	  SLOT(openURLSlot(const QString&)));
+  connect(maintainer, SIGNAL(openUrl(const QString&)),
+	  SLOT(openUrlSlot(const QString&)));
   // #################################################################
 }
 
@@ -1060,9 +1060,9 @@ void KAboutWidget::sendEmailSlot(const QString &_name, const QString &_email)
   emit(sendEmail(_name, _email));
 }
 
-void KAboutWidget::openURLSlot(const QString& _url)
+void KAboutWidget::openUrlSlot(const QString& _url)
 {
-  emit(openURL(_url));
+  emit(openUrl(_url));
 }
 
 void
@@ -1104,7 +1104,7 @@ KAboutWidget::addContributor(const QString &_name, const QString &_email,
   contributors.append(c);
   connect(c, SIGNAL(sendEmail(const QString&, const QString&)),
 	  SLOT(sendEmailSlot(const QString&, const QString&)));
-  connect(c, SIGNAL(openURL(const QString&)), SLOT(openURLSlot(const QString&)));
+  connect(c, SIGNAL(openUrl(const QString&)), SLOT(openUrlSlot(const QString&)));
   // ############################################################################
 }
 
@@ -1172,8 +1172,8 @@ KAboutDialog::KAboutDialog(QWidget *_parent)
   setMainWidget(mAbout);
   connect(mAbout, SIGNAL(sendEmail(const QString&, const QString&)),
 	  SLOT(sendEmailSlot(const QString&, const QString&)));
-  connect(mAbout, SIGNAL(openURL(const QString&)),
-	  SLOT(openURLSlot(const QString&)));
+  connect(mAbout, SIGNAL(openUrl(const QString&)),
+	  SLOT(openUrlSlot(const QString&)));
 }
 
 
@@ -1189,7 +1189,7 @@ KAboutDialog::KAboutDialog( int layoutType, const QString &_caption, QWidget *_p
   setMainWidget(mContainerBase);
 
   connect( mContainerBase, SIGNAL(urlClick(const QString &)),
-	   this, SLOT(openURLSlot(const QString &)));
+	   this, SLOT(openUrlSlot(const QString &)));
   connect( mContainerBase, SIGNAL(mailClick(const QString &,const QString &)),
 	   this, SLOT(sendEmailSlot(const QString &,const QString &)));
   connect( mContainerBase, SIGNAL(mouseTrack(int, const QMouseEvent *)),
@@ -1272,7 +1272,7 @@ void KAboutDialog::sendEmailSlot(const QString& /*name*/, const QString& email)
   KToolInvocation::invokeMailer( email, QString() );
 }
 
-void KAboutDialog::openURLSlot(const QString& url)
+void KAboutDialog::openUrlSlot(const QString& url)
 {
   KToolInvocation::invokeBrowser( url );
 }
@@ -1381,7 +1381,7 @@ void KAboutDialog::setProduct( const QString &appName, const QString &version,
 
 
 
-void KAboutDialog::imageURL( QWidget *_parent, const QString &_caption,
+void KAboutDialog::imageUrl( QWidget *_parent, const QString &_caption,
 			     const QString &_path, const QColor &_imageColor,
 			     const QString &_url )
 {

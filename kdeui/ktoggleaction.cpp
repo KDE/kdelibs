@@ -25,86 +25,117 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktoggleaction.h"
-
 #include <kdebug.h>
 #include <kguiitem.h>
 #include <klocale.h>
 
-class KToggleAction::KToggleActionPrivate
+#include "ktoggleaction.h"
+
+class KToggleAction::Private
 {
-public:
-  KToggleActionPrivate()
-    : m_checkedGuiItem(0L)
-  {}
+  public:
+    Private( KToggleAction *_parent )
+      : parent( _parent ), checkedGuiItem( 0L )
+    {
+    }
 
-  ~KToggleActionPrivate()
-  {
-    delete m_checkedGuiItem;
-  }
+    ~Private()
+    {
+      delete checkedGuiItem;
+    }
 
-  KGuiItem* m_checkedGuiItem;
+    void init()
+    {
+      parent->setCheckable( true );
+      connect( parent, SIGNAL( toggled( bool ) ),
+               parent, SLOT( slotToggled( bool ) ) );
+    }
+
+    KToggleAction* parent;
+    KGuiItem* checkedGuiItem;
 };
 
 
 KToggleAction::KToggleAction( KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
-    : KAction(parent, name)
+  : KAction( parent, name ),
+    d( new Private( this ) )
 {
-  init();
-  setActionGroup(exclusiveGroup);
+  d->init();
+  setActionGroup( exclusiveGroup );
 }
 
-KToggleAction::KToggleAction( const QString & text, KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
-    : KAction(text, parent, name)
+KToggleAction::KToggleAction( const QString & text, KActionCollection * parent, const QString& name,
+                              QActionGroup * exclusiveGroup )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
-  setActionGroup(exclusiveGroup);
+  d->init();
+  setActionGroup( exclusiveGroup );
 }
 
-KToggleAction::KToggleAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
-    : KAction(icon, text, parent, name)
+KToggleAction::KToggleAction( const KIcon & icon, const QString & text, KActionCollection * parent,
+                              const QString& name, QActionGroup * exclusiveGroup )
+  : KAction( icon, text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
-  setActionGroup(exclusiveGroup);
+  d->init();
+  setActionGroup( exclusiveGroup );
 }
 
-KToggleAction::KToggleAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name, QActionGroup * exclusiveGroup )
-    : KAction(icon, text, parent, name)
+KToggleAction::KToggleAction( const QString & icon, const QString & text, KActionCollection * parent,
+                              const QString& name, QActionGroup * exclusiveGroup )
+  : KAction( KIcon( icon ), text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
-  setActionGroup(exclusiveGroup);
+  d->init();
+  setActionGroup( exclusiveGroup );
 }
 
 KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
                               KActionCollection* parent,
                               const QString& name )
-    : KAction( text, cut, 0,0,parent, name )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
+  setShortcut( cut );
+
+  d->init();
 }
 
 KToggleAction::KToggleAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
                               KActionCollection* parent, const QString& name )
-  : KAction( text, cut, receiver, slot, parent, name )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered() ), receiver, slot );
+
+  d->init();
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               KActionCollection* parent, const QString& name )
-  : KAction( text, pix, cut, 0,0,parent, name )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
+  setShortcut( cut );
+  QAction::setIcon( pix );
+
+  d->init();
 }
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
                               KActionCollection* parent, const QString& name )
- : KAction( text, pix, cut, 0,0,parent, name )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
+  setShortcut( cut );
+  setIcon( KIcon( pix ) );
+
+  d->init();
 }
 
 KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
@@ -112,9 +143,14 @@ KToggleAction::KToggleAction( const QString& text, const QIcon& pix,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
                               const QString& name )
-  : KAction( text, pix, cut, receiver, slot, parent, name )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
+  setShortcut( cut );
+  QAction::setIcon( pix );
+  connect( this, SIGNAL( triggered() ), receiver, slot );
+
+  d->init();
 }
 
 KToggleAction::KToggleAction( const QString& text, const QString& pix,
@@ -122,9 +158,14 @@ KToggleAction::KToggleAction( const QString& text, const QString& pix,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
                               const QString& name )
-  : KAction( text, pix, cut, receiver, slot, parent, name )
+  : KAction( text, parent, name ),
+    d( new Private( this ) )
 {
-  init();
+  setShortcut( cut );
+  setIcon( KIcon( pix ) );
+  connect( this, SIGNAL( triggered() ), receiver, slot );
+
+  d->init();
 }
 
 KToggleAction::~KToggleAction()
@@ -132,39 +173,30 @@ KToggleAction::~KToggleAction()
   delete d;
 }
 
-void KToggleAction::init()
-{
-  d = new KToggleActionPrivate;
-  setCheckable(true);
-  connect(this, SIGNAL(toggled(bool)), SLOT(slotToggled(bool)));
-}
 
 void KToggleAction::setCheckedState( const KGuiItem& checkedItem )
 {
-  delete d->m_checkedGuiItem;
-  d->m_checkedGuiItem = new KGuiItem( checkedItem );
+  delete d->checkedGuiItem;
+  d->checkedGuiItem = new KGuiItem( checkedItem );
 }
 
-void KToggleAction::slotToggled( bool checked )
+void KToggleAction::slotToggled( bool )
 {
-  if (d->m_checkedGuiItem) {
-    QString string = d->m_checkedGuiItem->text();
-    d->m_checkedGuiItem->setText(text());
-    setText(string);
+  if ( d->checkedGuiItem ) {
+    QString string = d->checkedGuiItem->text();
+    d->checkedGuiItem->setText( text() );
+    setText( string );
 
-    string = d->m_checkedGuiItem->toolTip();
-    d->m_checkedGuiItem->setToolTip(toolTip());
-    setToolTip(string);
+    string = d->checkedGuiItem->toolTip();
+    d->checkedGuiItem->setToolTip( toolTip() );
+    setToolTip( string );
 
-    if (d->m_checkedGuiItem->hasIconSet()) {
-      QIcon icon = d->m_checkedGuiItem->iconSet();
-      d->m_checkedGuiItem->setIcon(QAction::icon());
-      QAction::setIcon(icon);
+    if ( d->checkedGuiItem->hasIconSet() ) {
+      QIcon icon = d->checkedGuiItem->iconSet();
+      d->checkedGuiItem->setIcon( QAction::icon() );
+      QAction::setIcon( icon );
     }
   }
 }
-
-/* vim: et sw=2 ts=2
- */
 
 #include "ktoggleaction.moc"

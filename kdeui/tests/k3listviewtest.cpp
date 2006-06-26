@@ -1,12 +1,13 @@
 #define QT3_SUPPORT
 
-#include "k3listview.h"
 #include <kapplication.h>
 #include <kcmdlineargs.h>
+#include <kconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
-#include <kconfig.h>
 #include <kvbox.h>
+
+#include "k3listview.h"
 
 int main( int argc, char **argv )
 {

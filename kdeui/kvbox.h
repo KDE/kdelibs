@@ -21,13 +21,28 @@
 
 #include <khbox.h>
 
-class KDEUI_EXPORT KVBox : public KHBox {
-    Q_OBJECT
-
-public:
+/**
+ * A container widget which arranges its children vertically.
+ * When using a KVBox you don't need to create a layout nor
+ * to add the child widgets to it.
+ *
+ * @see KHBox
+ */
+class KDEUI_EXPORT KVBox : public KHBox
+{
+  public:
+    /**
+     * Creates a new vbox.
+     *
+     * @param parent The parent widget.
+     */
     explicit KVBox( QWidget* parent = 0 );
+
+  private:
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KVBox )
 };
 
-
-#endif /* KVBOX_H */
-
+#endif

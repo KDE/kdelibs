@@ -30,48 +30,42 @@
 
 class MainWindow : public KMainWindow
 {
-public:
-  MainWindow()
-  {
-    KVBox* main = new KVBox(this);
-    setCentralWidget(main);
+  public:
 
-    KSqueezedTextLabel* accel = new KSqueezedTextLabel
-      ("&Really long, long, long and boring text goes here", main);
-    new KSqueezedTextLabel
-      ("Really long, long, long and boring text goes here", main);
+    MainWindow()
+    {
+      KVBox* main = new KVBox( this );
+      setCentralWidget( main );
+
+      KSqueezedTextLabel* accel = new KSqueezedTextLabel( "&Really long, long, long and boring text goes here", main );
+
+      new KSqueezedTextLabel( "Really long, long, long and boring text goes here", main );
 
 
-    // first constructor
-    KToolBarLabelAction* label1 = new KToolBarLabelAction("&Label 1", 0,
-							  0, 0,
-							  actionCollection(),
-							  "label1");
-    // second constructor
-    KLineEdit* lineEdit = new KLineEdit(this);
-    K3WidgetAction* lineEditAction = new K3WidgetAction(lineEdit, "Line Edit", 0, this, 0,
-		      actionCollection(), "lineEdit");
-    KToolBarLabelAction* label2 =
-      new KToolBarLabelAction(lineEditAction, "L&abel 2", 0, 0, 0,
-			      actionCollection(),
-			      "label2");
+      // first constructor
+      KToolBarLabelAction* label1 = new KToolBarLabelAction( "&Label 1", actionCollection(), "label1" );
 
-    // set buddy for label1
-    label1->setBuddy(lineEditAction);
-    accel->setBuddy(lineEdit);
+      // second constructor
+      KLineEdit* lineEdit = new KLineEdit( this );
+      K3WidgetAction* lineEditAction = new K3WidgetAction( lineEdit, "Line Edit",
+                                                           actionCollection(), "lineEdit");
 
-     // third constructor
-    KToolBarLabelAction* label3 = new KToolBarLabelAction("&Really long, long, long and boring text goes here", 0, 0, 0,
- 							  actionCollection(),
-							  "label3");
+      KToolBarLabelAction* label2 = new KToolBarLabelAction( lineEditAction, "L&abel 2",
+                                                             actionCollection(), "label2" );
 
-    // set buddy for label3
-    label3->setBuddy(lineEditAction);
+      // set buddy for label1
+      label1->setBuddy( lineEditAction );
+      accel->setBuddy( lineEdit );
 
-    // customLabel->setText("&test me again some time soon");
+      // third constructor
+      KToolBarLabelAction* label3 = new KToolBarLabelAction( "&Really long, long, long and boring text goes here",
+                                                             actionCollection(), "label3" );
 
-    createGUI("ktoolbarlabelactiontestui.rc");
-  }
+      // set buddy for label3
+      label3->setBuddy( lineEditAction );
+
+      createGUI( "ktoolbarlabelactiontestui.rc" );
+    }
 };
 
 int main( int argc, char **argv )
@@ -79,7 +73,7 @@ int main( int argc, char **argv )
   KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication app;
 
-  KGlobal::instance()->dirs()->addResourceDir("data", ".");
+  KGlobal::instance()->dirs()->addResourceDir( "data", "." );
 
   MainWindow* mw = new MainWindow;
   mw->show();

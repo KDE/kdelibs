@@ -1041,10 +1041,10 @@ void KDialog::enableLinkedHelp( bool state )
 
     d->mUrlHelp = new KUrlLabel( this );
     d->mUrlHelp->setText( helpLinkText() );
-    d->mUrlHelp->setFloat(true);
+    d->mUrlHelp->setFloatEnabled(true);
     d->mUrlHelp->setUnderline(true);
     d->mUrlHelp->setMinimumHeight( fontMetrics().height() + marginHint() );
-    connect(d->mUrlHelp,SIGNAL(leftClickedURL(const QString &)),
+    connect(d->mUrlHelp,SIGNAL(leftClickedUrl(const QString &)),
       SLOT(helpClickedSlot(const QString &)));
     d->mUrlHelp->show();
   }

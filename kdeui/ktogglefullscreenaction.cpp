@@ -25,74 +25,78 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktogglefullscreenaction.h"
-
-#include <QEvent>
+#include <QtCore/QEvent>
 
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>
 
+#include "ktogglefullscreenaction.h"
+
+class KToggleFullScreenAction::Private
+{
+  public:
+    Private()
+      : window( 0 )
+    {
+    }
+
+    QWidget* window;
+};
+
 KToggleFullScreenAction::KToggleFullScreenAction( KActionCollection * parent, const QString& name )
-  : KToggleAction( KIcon("window_fullscreen"), i18n("F&ull Screen Mode"), parent, name ),
-    m_window( 0L )
+  : KToggleAction( KIcon( "window_fullscreen" ), i18n( "F&ull Screen Mode" ), parent, name ),
+    d( new Private )
 {
 }
 
-KToggleFullScreenAction::KToggleFullScreenAction( const KShortcut &cut,
-                             const QObject* receiver, const char* slot,
-                             KActionCollection* parent, QWidget* window,
-                             const QString& name )
-  : KToggleAction( i18n("F&ull Screen Mode"), cut, receiver, slot, parent, name ),
-    m_window( 0L )
+KToggleFullScreenAction::KToggleFullScreenAction( QWidget* window, KActionCollection* parent,
+                                                  const QString& name )
+  : KToggleAction( i18n( "F&ull Screen Mode" ), parent, name ),
+    d( new Private )
 {
-  setIcon(KIcon("window_fullscreen"));
+  setIcon( KIcon( "window_fullscreen" ) );
   setWindow( window );
 }
 
 KToggleFullScreenAction::~KToggleFullScreenAction()
 {
+  delete d;
 }
 
-void KToggleFullScreenAction::setWindow( QWidget* w )
+void KToggleFullScreenAction::setWindow( QWidget* window )
 {
-  if( m_window )
-    m_window->removeEventFilter( this );
+  if ( d->window )
+    d->window->removeEventFilter( this );
 
-  m_window = w;
+  d->window = window;
 
-  if( m_window )
-    m_window->installEventFilter( this );
+  if ( d->window )
+    d->window->installEventFilter( this );
 }
 
 void KToggleFullScreenAction::slotToggled( bool checked )
 {
-  if (checked)
-  {
-     setText(i18n("Exit F&ull Screen Mode"));
-     setIconName("window_nofullscreen");
-  }
-  else
-  {
-     setText(i18n("F&ull Screen Mode"));
-     setIconName("window_fullscreen");
+  if ( checked ) {
+    setText( i18n( "Exit F&ull Screen Mode" ) );
+    setIcon( KIcon( "window_nofullscreen" ) );
+  } else {
+    setText( i18n( "F&ull Screen Mode" ) );
+    setIcon( KIcon( "window_fullscreen" ) );
   }
 
-  KToggleAction::slotToggled(checked);
+  KToggleAction::slotToggled( checked );
 }
 
-bool KToggleFullScreenAction::eventFilter( QObject* o, QEvent* e )
+bool KToggleFullScreenAction::eventFilter( QObject* object, QEvent* event )
 {
-    if( o == m_window )
-        if( e->type() == QEvent::WindowStateChange )
-            {
-            if( m_window->isFullScreen() != isChecked())
-                activate(QAction::Trigger);
-            }
-    return false;
-}
+  if ( object == d->window )
+    if ( event->type() == QEvent::WindowStateChange ) {
+      if ( d->window->isFullScreen() != isChecked() )
+        activate( QAction::Trigger );
+    }
 
-/* vim: et sw=2 ts=2
- */
+  return false;
+}
 
 #include "ktogglefullscreenaction.moc"

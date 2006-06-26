@@ -19,9 +19,10 @@
 #ifndef KBARHANDLER_H
 #define KBARHANDLER_H
 
-#include <QLinkedList>
-#include <qobject.h>
-#include <qpointer.h>
+#include <QtCore/QLinkedList>
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
+
 #include <kxmlguiclient.h>
 
 class KMainWindow;
@@ -29,40 +30,46 @@ class KToolBar;
 
 namespace KDEPrivate
 {
-class ToolBarHandler : public QObject,
-                       public KXMLGUIClient
+
+class ToolBarHandler : public QObject, public KXMLGUIClient
 {
-    Q_OBJECT
-public:
+  Q_OBJECT
+
+  public:
+    /**
+     * Creates a new tool bar handler for the supplied
+     * @param mainWindow.
+     */
     explicit ToolBarHandler( KMainWindow *mainWindow );
+
+    /**
+     * Creates a new tool bar handler for the supplied
+     * @param mainWindow and with the supplied parent.
+     */
     ToolBarHandler( KMainWindow *mainWindow, QObject *parent );
+
+    /**
+     * Destroys the tool bar handler.
+     */
     virtual ~ToolBarHandler();
 
+    /**
+     * Returns the action which is responsible for the tool bar menu.
+     */
     KAction *toolBarMenuAction();
 
-public Q_SLOTS:
+  public Q_SLOTS:
     void setupActions();
 
-private Q_SLOTS:
-    void clientAdded( KXMLGUIClient *client );
+  private:
+    class Private;
+    Private* const d;
 
-private:
-    void init( KMainWindow *mainWindow );
-    void connectToActionContainers();
-    void connectToActionContainer( KAction *action );
-    void connectToActionContainer( QWidget *container );
+    Q_DISABLE_COPY( ToolBarHandler )
 
-    struct Data;
-    Data *d;
-
-    QPointer<KMainWindow> m_mainWindow;
-    QList<KAction*> m_actions;
-    QLinkedList<KToolBar*> m_toolBars;
+    Q_PRIVATE_SLOT( d, void clientAdded( KXMLGUIClient* ) )
 };
 
 } // namespace KDEPrivate
 
 #endif // KBARHANDLER_H
-
-/* vim: et sw=4 ts=4
- */

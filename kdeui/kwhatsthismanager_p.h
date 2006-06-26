@@ -41,17 +41,17 @@ class KDEUI_EXPORT KWhatsThisManager : public QObject
   Q_OBJECT
 
   public:
-      static void init();
-      bool eventFilter( QObject *object, QEvent *event);
+    static void init();
+    bool eventFilter( QObject *object, QEvent *event );
 
   protected:
-      static KWhatsThisManager *s_instance;
+    static KWhatsThisManager *s_instance;
 
   private:
-      QString text() const;
-      void clicked( const QString&, QWidget* );
+    QString text() const;
+    void clicked( const QString&, QWidget* );
 
-      KWhatsThisManager();
+    KWhatsThisManager();
 };
 
 #endif

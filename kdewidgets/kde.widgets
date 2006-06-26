@@ -222,7 +222,7 @@ WhatsThis=A spinbox widget for floating point numbers.
 IncludeFile=knuminput.h
 Group=Input (KDE)
 
-[KTimezoneWidget]
+[KTimeZoneWidget]
 ToolTip=This widget can be used to display or allow user selection of timezones. (KDE)
 IncludeFile=ktimezonewidget.h
 ConstructorArgs=(parent)

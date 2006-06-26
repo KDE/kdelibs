@@ -25,37 +25,48 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktoolbarpopupaction.h"
-
-#include <QToolBar>
-#include <QToolButton>
+#include <QtGui/QToolBar>
+#include <QtGui/QToolButton>
 
 #include <kdebug.h>
 #include <klocale.h>
 
 #include "kmenu.h"
+#include "ktoolbarpopupaction.h"
+
+class KToolBarPopupAction::Private
+{
+  public:
+    Private()
+      : delayed( true ), stickyMenu( true )
+    {
+    }
+
+    bool delayed:1;
+    bool stickyMenu:1;
+};
 
 KToolBarPopupAction::KToolBarPopupAction( const KIcon& icon,
                                           const QString& text,
                                           KActionCollection* parent, const QString& name )
-  : KAction( icon, text, parent, name )
+  : KAction( icon, text, parent, name ),
+    d( new Private )
 {
-  m_delayed = true;
-  m_stickyMenu = true;
-  setToolBarWidgetFactory(this);
-  setMenu(new KMenu);
+  setToolBarWidgetFactory( this );
+  setMenu( new KMenu );
 }
 
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QString& icon,
                                           const KShortcut& cut,
                                           KActionCollection* parent, const QString& name )
-  : KAction( text, icon, cut, 0,0,parent, name )
+  : KAction( KIcon( icon ), text, parent, name ),
+    d( new Private )
 {
-  m_delayed = true;
-  m_stickyMenu = true;
-  setToolBarWidgetFactory(this);
-  setMenu(new KMenu);
+  setShortcut( cut );
+
+  setToolBarWidgetFactory( this );
+  setMenu( new KMenu );
 }
 
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
@@ -64,12 +75,14 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QObject* receiver,
                                           const char* slot, KActionCollection* parent,
                                           const QString& name )
-  : KAction( text, icon, cut, receiver, slot, parent, name )
+  : KAction( KIcon( icon ), text, parent, name ),
+    d( new Private )
 {
-  m_delayed = true;
-  m_stickyMenu = true;
-  setToolBarWidgetFactory(this);
-  setMenu(new KMenu);
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered() ), receiver, slot );
+
+  setToolBarWidgetFactory( this );
+  setMenu( new KMenu );
 }
 
 KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
@@ -77,117 +90,72 @@ KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
                                           const QObject* receiver,
                                           const char* slot, KActionCollection* parent,
                                           const QString& name )
-  : KAction( item, cut, receiver, slot, parent, name )
+  : KAction( KIcon( item.iconName() ), item.text(), parent, name ),
+    d( new Private )
 {
-  m_delayed = true;
-  m_stickyMenu = true;
-  setToolBarWidgetFactory(this);
-  setMenu(new KMenu);
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered() ), receiver, slot );
+
+  setToolBarWidgetFactory( this );
+  setMenu( new KMenu );
 }
 
 KToolBarPopupAction::~KToolBarPopupAction()
 {
-    delete menu();
+  delete d;
+  delete menu();
 }
 
 KMenu* KToolBarPopupAction::popupMenu() const
 {
-  return qobject_cast<KMenu*>(menu());
+  return qobject_cast<KMenu*>( menu() );
 }
 
 QWidget * KToolBarPopupAction::createToolBarWidget( QToolBar * parent )
 {
-  QToolButton* button = new QToolButton(parent);
-  button->setAutoRaise(true);
-  button->setFocusPolicy(Qt::NoFocus);
-  button->setIconSize(parent->iconSize());
-  button->setToolButtonStyle(parent->toolButtonStyle());
-  QObject::connect(parent, SIGNAL(iconSizeChanged(const QSize&)),
-                   button, SLOT(setIconSize(const QSize&)));
-  QObject::connect(parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
-                   button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
-  button->setDefaultAction(this);
-  QObject::connect(button, SIGNAL(triggered(QAction*)), parent, SIGNAL(actionTriggered(QAction*)));
+  QToolButton* button = new QToolButton( parent );
+  button->setAutoRaise( true );
+  button->setFocusPolicy( Qt::NoFocus );
+  button->setIconSize( parent->iconSize() );
+  button->setToolButtonStyle( parent->toolButtonStyle() );
+  button->setDefaultAction( this );
 
-  if (m_delayed)
-    if (m_stickyMenu)
-      button->setPopupMode(QToolButton::MenuButtonPopup);
+  connect( parent, SIGNAL( iconSizeChanged( const QSize& ) ),
+           button, SLOT( setIconSize( const QSize& ) ) );
+  connect( parent, SIGNAL( toolButtonStyleChanged( Qt::ToolButtonStyle ) ),
+           button, SLOT( setToolButtonStyle( Qt::ToolButtonStyle ) ) );
+  connect( button, SIGNAL( triggered( QAction* ) ),
+           parent, SIGNAL( actionTriggered( QAction* ) ) );
+
+  if ( d->delayed )
+    if ( d->stickyMenu )
+      button->setPopupMode( QToolButton::MenuButtonPopup );
     else
-      button->setPopupMode(QToolButton::DelayedPopup);
+      button->setPopupMode( QToolButton::DelayedPopup );
   else
-    button->setPopupMode(QToolButton::InstantPopup);
+    button->setPopupMode( QToolButton::InstantPopup );
 
   return button;
 }
 
-bool KToolBarPopupAction::delayed() const {
-    return m_delayed;
-}
-
-void KToolBarPopupAction::setDelayed(bool delayed) {
-    m_delayed = delayed;
-}
-
-bool KToolBarPopupAction::stickyMenu() const {
-    return m_stickyMenu;
-}
-
-void KToolBarPopupAction::setStickyMenu(bool sticky) {
-    m_stickyMenu = sticky;
-}
-
-#if 0
-int KToolBarPopupAction::plug( QWidget *widget, int index )
+bool KToolBarPopupAction::delayed() const
 {
-  if (!KAuthorized::authorizeKAction(name()))
-    return -1;
-  // This is very related to KActionMenu::plug.
-  // In fact this class could be an interesting base class for KActionMenu
-  if ( qobject_cast<KToolBar*>( widget ) )
-  {
-    KToolBar *bar = (KToolBar *)widget;
-
-    int id_ = KAction::getToolButtonID();
-
-    if ( icon().isEmpty() && !iconSet().isNull() ) {
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
-                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
-                           isEnabled(), plainText(),
-                           index );
-    } else {
-        KInstance * instance;
-        if ( m_parentCollection )
-            instance = m_parentCollection->instance();
-        else
-            instance = KGlobal::instance();
-
-        bar->insertButton( icon(), id_, SIGNAL( buttonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ), this,
-                           SLOT( slotButtonClicked(int, Qt::MouseButtons, Qt::KeyboardModifiers) ),
-                           isEnabled(), plainText(),
-                           index, instance );
-    }
-
-    addContainer( bar, id_ );
-
-    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    if (delayed()) {
-        bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
-    } else {
-        bar->getButton(id_)->setMenu(popupMenu(), stickyMenu());
-    }
-
-    if ( !whatsThis().isEmpty() )
-        bar->getButton( id_ )->setWhatsThis(whatsThisWithIcon() );
-
-    return containerCount() - 1;
-  }
-
-  return KAction::plug( widget, index );
+  return d->delayed;
 }
-#endif
 
-/* vim: et sw=2 ts=2
- */
+void KToolBarPopupAction::setDelayed( bool delayed )
+{
+  d->delayed = delayed;
+}
+
+bool KToolBarPopupAction::stickyMenu() const
+{
+  return d->stickyMenu;
+}
+
+void KToolBarPopupAction::setStickyMenu( bool sticky )
+{
+  d->stickyMenu = sticky;
+}
 
 #include "ktoolbarpopupaction.moc"

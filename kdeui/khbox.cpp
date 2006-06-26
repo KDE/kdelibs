@@ -16,76 +16,83 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QtCore/QEvent>
+#include <QtGui/QApplication>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
+
 #include "khbox.h"
-#include <qlayout.h>
-#include <qevent.h>
-#include <qapplication.h>
 
-KHBox::KHBox( QWidget* parentWidget )
-    : QFrame( parentWidget )
+KHBox::KHBox( QWidget* parent )
+  : QFrame( parent ),
+    d( 0 )
 {
-    QHBoxLayout* layout = new QHBoxLayout( this );
-    layout->setSpacing( 0 );
-    layout->setMargin( 0 );
-    setLayout( layout );
+  QHBoxLayout* layout = new QHBoxLayout( this );
+  layout->setSpacing( 0 );
+  layout->setMargin( 0 );
+
+  setLayout( layout );
 }
 
 
-KHBox::KHBox( bool /*vertical*/, QWidget* parentWidget )
-    : QFrame( parentWidget )
+KHBox::KHBox( bool /*vertical*/, QWidget* parent )
+  : QFrame( parent ),
+    d( 0 )
 {
-    QVBoxLayout* layout = new QVBoxLayout( this );
-    layout->setSpacing( 0 );
-    layout->setMargin( 0 );
-    setLayout( layout );
+  QVBoxLayout* layout = new QVBoxLayout( this );
+  layout->setSpacing( 0 );
+  layout->setMargin( 0 );
+
+  setLayout( layout );
 }
 
-bool KHBox::event( QEvent* ev )
+bool KHBox::event( QEvent* event )
 {
-    switch ( ev->type() ) {
+  switch ( event->type() ) {
     case QEvent::ChildAdded:
     {
-        QChildEvent* childEv = static_cast<QChildEvent *>( ev );
-        if ( childEv->child()->isWidgetType() ) {
-            QWidget* w = static_cast<QWidget *>( childEv->child() );
-            static_cast<QBoxLayout *>( layout() )->addWidget( w );
-        }
-        return QFrame::event( ev );
+      QChildEvent* childEvent = static_cast<QChildEvent *>( event );
+      if ( childEvent->child()->isWidgetType() ) {
+        QWidget* widget = static_cast<QWidget *>( childEvent->child() );
+        static_cast<QBoxLayout *>( layout() )->addWidget( widget );
+      }
+
+      return QFrame::event( event );
     }
     case QEvent::ChildRemoved:
     {
-        QChildEvent* childEv = static_cast<QChildEvent *>( ev );
-        if ( childEv->child()->isWidgetType() ) {
-            QWidget* w = static_cast<QWidget *>( childEv->child() );
-            static_cast<QBoxLayout *>( layout() )->removeWidget( w );
-        }
-        return QFrame::event( ev );
+      QChildEvent* childEvent = static_cast<QChildEvent *>( event );
+      if ( childEvent->child()->isWidgetType() ) {
+        QWidget* widget = static_cast<QWidget *>( childEvent->child() );
+        static_cast<QBoxLayout *>( layout() )->removeWidget( widget );
+      }
+
+      return QFrame::event( event );
     }
     default:
-        return QFrame::event( ev );
-    }
+      return QFrame::event( event );
+  }
 }
 
 QSize KHBox::sizeHint() const
 {
-    KHBox* that = const_cast<KHBox *>( this );
-    QApplication::sendPostedEvents( that, QEvent::ChildAdded );
-    return QFrame::sizeHint();
+  KHBox* that = const_cast<KHBox *>( this );
+  QApplication::sendPostedEvents( that, QEvent::ChildAdded );
+
+  return QFrame::sizeHint();
 }
 
-void KHBox::setSpacing( int sp )
+void KHBox::setSpacing( int spacing )
 {
-    layout()->setSpacing( sp );
+  layout()->setSpacing( spacing );
 }
 
-void KHBox::setStretchFactor( QWidget* w, int stretch )
+void KHBox::setStretchFactor( QWidget* widget, int stretch )
 {
-    static_cast<QBoxLayout *>( layout() )->setStretchFactor( w, stretch );
+  static_cast<QBoxLayout *>( layout() )->setStretchFactor( widget, stretch );
 }
 
-void KHBox::setMargin(int margin)
+void KHBox::setMargin( int margin )
 {
-	layout()->setMargin(margin);
+	layout()->setMargin( margin );
 }
-
-#include "khbox.moc"

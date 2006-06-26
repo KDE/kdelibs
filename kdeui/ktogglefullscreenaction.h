@@ -46,7 +46,7 @@ class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
 {
     Q_OBJECT
 
-public:
+  public:
     /**
      * Create a KToggleFullScreenAction. Call setWindow() to associate this
      * action with a window.
@@ -58,18 +58,16 @@ public:
 
     /**
      * Create a KToggleFullScreenAction
-     *  @param cut The corresponding keyboard accelerator (shortcut).
-     *  @param receiver The SLOT's parent.
-     *  @param slot The SLOT to invoke to execute this action.
-     *  @param parent This action's parent.
      *  @param window the window that will switch to/from full screen mode
+     *  @param parent This action's parent.
      *  @param name An internal name for this action.
      */
-    KToggleFullScreenAction( const KShortcut &cut,
-                             const QObject* receiver, const char* slot,
-                             KActionCollection* parent, QWidget* window,
+    KToggleFullScreenAction( QWidget* window, KActionCollection* parent,
                              const QString& name );
 
+    /**
+     * Destroys the toggle fullscreen action.
+     */
     virtual ~KToggleFullScreenAction();
 
     /**
@@ -77,17 +75,17 @@ public:
      */
     void setWindow( QWidget* window );
 
-protected:
-    bool eventFilter( QObject* o, QEvent* e );
+  protected:
+    bool eventFilter( QObject* object, QEvent* event );
 
-private slots:
-    virtual void slotToggled(bool checked);
+  private slots:
+    virtual void slotToggled( bool checked );
 
-private:
-    QWidget* m_window;
+  private:
+    class Private;
+    Private* const d;
 
-    class KToggleFullScreenActionPrivate;
-    KToggleFullScreenActionPrivate *d;
+    Q_DISABLE_COPY( KToggleFullScreenAction )
 };
 
 #endif

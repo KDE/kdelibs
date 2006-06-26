@@ -29,11 +29,11 @@
 #include <QAction>
 
 #include <kdelibs_export.h>
+#include <kguiitem.h>
+#include <kicon.h>
 #include <kshortcut.h>
 
 class KActionCollection;
-class KGuiItem;
-class KIcon;
 class KInstance;
 
 /**

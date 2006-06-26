@@ -16,61 +16,66 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "ktoolbarspaceraction.h"
-
 #include <QToolBar>
 
-class KToolBarSpacerActionPrivate
+#include "ktoolbarspaceraction.h"
+
+class KToolBarSpacerAction::Private
 {
   public:
-    KToolBarSpacerActionPrivate()
-      : width(0)
-      , minimumWidth(-1)
-      , maximumWidth(-1)
+    Private()
+      : width( 0 ),
+        minimumWidth( -1 ),
+        maximumWidth( -1 )
     {
+    }
+
+    void spacerDestroyed( QObject* spacer )
+    {
+      spacers.removeAll( static_cast<QWidget*>( spacer ) );
     }
 
     int width, minimumWidth, maximumWidth;
     QList<QWidget*> spacers;
 };
 
-KToolBarSpacerAction::KToolBarSpacerAction(KActionCollection* parent, const QString& name)
-  : KAction(parent, name)
-  , d(new KToolBarSpacerActionPrivate)
+KToolBarSpacerAction::KToolBarSpacerAction( KActionCollection* parent, const QString& name )
+  : KAction( parent, name ),
+    d( new Private )
 {
-  setToolBarWidgetFactory(this);
+  setToolBarWidgetFactory( this );
 }
 
-int KToolBarSpacerAction::width( )
+int KToolBarSpacerAction::width() const
 {
   return d->width;
 }
 
 void KToolBarSpacerAction::setWidth( int width )
 {
-  if (d->width == width)
+  if ( d->width == width )
     return;
 
   d->width = width;
 
-  foreach (QWidget* spacer, d->spacers)
-    spacer->resize(width, spacer->height());
+  foreach ( QWidget* spacer, d->spacers )
+    spacer->resize( width, spacer->height() );
 }
 
-int KToolBarSpacerAction::minimumWidth( ) const
+int KToolBarSpacerAction::minimumWidth() const
 {
   return d->minimumWidth;
 }
 
 void KToolBarSpacerAction::setMinimumWidth( int width )
 {
-  if (d->minimumWidth == width)
+  if ( d->minimumWidth == width )
     return;
 
   d->minimumWidth = width;
 
-  foreach (QWidget* spacer, d->spacers)
-    spacer->setMinimumWidth(width);
+  foreach ( QWidget* spacer, d->spacers )
+    spacer->setMinimumWidth( width );
 }
 
 int KToolBarSpacerAction::maximumWidth( ) const
@@ -80,29 +85,25 @@ int KToolBarSpacerAction::maximumWidth( ) const
 
 void KToolBarSpacerAction::setMaximumWidth( int width )
 {
-  if (d->maximumWidth == width)
+  if ( d->maximumWidth == width )
     return;
 
   d->maximumWidth = width;
 
-  foreach (QWidget* spacer, d->spacers)
-    spacer->setMaximumWidth(width);
+  foreach ( QWidget* spacer, d->spacers )
+    spacer->setMaximumWidth( width );
 }
 
 QWidget * KToolBarSpacerAction::createToolBarWidget( QToolBar * parent )
 {
-  QWidget* spacer = new QWidget(parent);
-  spacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+  QWidget* spacer = new QWidget( parent );
+  spacer->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Fixed );
 
-  d->spacers.append(spacer);
-  connect(spacer, SIGNAL(destroyed(QObject*)), SLOT(spacerDestroyed(QObject*)));
+  d->spacers.append( spacer );
+  connect( spacer, SIGNAL( destroyed( QObject* ) ),
+           SLOT( spacerDestroyed( QObject* ) ) );
 
   return spacer;
-}
-
-void KToolBarSpacerAction::spacerDestroyed( QObject * spacer )
-{
-  d->spacers.removeAll(static_cast<QWidget*>(spacer));
 }
 
 #include "ktoolbarspaceraction.moc"

@@ -149,9 +149,9 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase
 
     Q_OBJECT
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
-    Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
+    Q_PROPERTY( bool urlDropsEnabled READ urlDropsEnabled WRITE setUrlDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
-    Q_PROPERTY( bool squeezedTextEnabled READ squeezedTextEnabled WRITE setSqueezedTextEnabled )
+    Q_PROPERTY( bool squeezedTextEnabled READ isSqueezedTextEnabled WRITE setSqueezedTextEnabled )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
 
 public:
@@ -180,7 +180,7 @@ public:
      * Sets @p url into the lineedit. It uses KUrl::prettyUrl() so
      * that the url is properly decoded for displaying.
      */
-    void setURL( const KUrl& url );
+    void setUrl( const KUrl& url );
 
      /**
      * Re-implemented from KCompletionBase for internal reasons.
@@ -220,12 +220,12 @@ public:
      *
      * @param enable If @p true, insert decoded URLs
      */
-    void setURLDropsEnabled( bool enable );
+    void setUrlDropsEnabled( bool enable );
 
     /**
      * Returns @p true when decoded URL drops are enabled
      */
-    bool isURLDropsEnabled() const;
+    bool urlDropsEnabled() const;
 
     /**
      * By default, KLineEdit recognizes @p Key_Return and @p Key_Enter and emits
@@ -289,7 +289,7 @@ public:
      * Returns true if text squeezing is enabled.
      * This is only valid when the widget is in read-only mode.
      */
-    bool squeezedTextEnabled() const;
+    bool isSqueezedTextEnabled() const;
 
     /**
      * Returns the original text if text squeezing is enabled.

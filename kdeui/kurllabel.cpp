@@ -15,11 +15,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 // 02110-1301  USA
 
-#include <qcolor.h>
-#include <qtimer.h>
-#include <qpixmap.h>
-#include <qapplication.h>
-#include <QMouseEvent>
+#include <QtCore/QTimer>
+#include <QtGui/QApplication>
+#include <QtGui/QMouseEvent>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
@@ -28,308 +26,306 @@
 
 class KUrlLabel::Private
 {
-public:
-  Private (const QString& url, KUrlLabel* label)
-    : URL (url),
-      TextUnderline (true),
-      LinkColor (KGlobalSettings::linkColor()),
-      HighlightedLinkColor (Qt::red),
-      Tip(url),
-      Cursor (0L),
-      UseTips (false),
-      UseCursor (false),
-      Glow (true),
-      Float (false),
-      RealUnderline (true),
-      Timer (new QTimer (label))
-  {
-    connect (Timer, SIGNAL (timeout ()), label, SLOT (updateColor ()));
-  }
+  public:
+    Private( const QString& _url, KUrlLabel* _parent )
+      : parent( _parent ),
+        url( _url ),
+        textUnderlined( true ),
+        realUnderlined( true ),
+        tipText( url ),
+        linkColor( KGlobalSettings::linkColor() ),
+        highlightedLinkColor( Qt::red ),
+        cursor( 0 ),
+        useTips( false ),
+        useCursor( false ),
+        glowEnabled( true ),
+        floatEnabled( false ),
+        timer( new QTimer( parent ) )
+    {
+      connect( timer, SIGNAL( timeout() ), parent, SLOT( updateColor() ) );
+    }
 
-  ~Private ()
-  {
-  }
+    ~Private ()
+    {
+    }
 
-  QString URL;
-  QPixmap AltPixmap;
+    void updateColor()
+    {
+      timer->stop();
 
-  bool TextUnderline;
-  QColor LinkColor;
-  QColor HighlightedLinkColor;
+      if ( !(glowEnabled || floatEnabled) || !parent->rect().contains( parent->mapFromGlobal( QCursor::pos() ) ) )
+        setLinkColor( linkColor );
+    }
 
-  QString Tip;
-  QCursor* Cursor;
-  bool UseTips:1;
-  bool UseCursor:1;
-  bool Glow:1;
-  bool Float:1;
-  bool RealUnderline:1;
-  QPixmap RealPixmap;
+    void setLinkColor( const QColor& color )
+    {
+      QPalette palette = parent->palette();
+      palette.setColor( QPalette::Foreground, color );
+      parent->setPalette( palette );
 
-  QTimer* Timer;
+      parent->update();
+    }
+
+
+    KUrlLabel *parent;
+
+    QString url;
+    bool textUnderlined;
+    bool realUnderlined;
+    QString tipText;
+    QColor linkColor;
+    QColor highlightedLinkColor;
+    QCursor* cursor;
+    bool useTips;
+    bool useCursor;
+    bool glowEnabled;
+    bool floatEnabled;
+    QPixmap alternatePixmap;
+    QPixmap realPixmap;
+    QTimer* timer;
 };
 
-KUrlLabel::KUrlLabel (const QString& url, const QString& text,
-                        QWidget* parent)
-  : QLabel (!text.isNull() ? text : url, parent),
-    d (new Private (url, this))
+KUrlLabel::KUrlLabel( const QString& url, const QString& text, QWidget* parent )
+  : QLabel( !text.isNull() ? text : url, parent ),
+    d( new Private( url, this ) )
 {
-  setFont (font());
-  setCursor (KCursor::handCursor());
-  setLinkColor (d->LinkColor);
+  setFont( font() );
+  setCursor( KCursor::handCursor() );
+  d->setLinkColor( d->linkColor );
 }
 
-KUrlLabel::KUrlLabel (QWidget* parent)
-  : QLabel (parent),
-    d (new Private (QString(), this))
+KUrlLabel::KUrlLabel( QWidget* parent )
+  : QLabel( parent ),
+    d( new Private( QString(), this ) )
 {
-  setFont (font());
-  setCursor (KCursor::handCursor());
-  setLinkColor (d->LinkColor);
+  setFont( font() );
+  setCursor( KCursor::handCursor() );
+  d->setLinkColor( d->linkColor );
 }
 
-KUrlLabel::~KUrlLabel ()
+KUrlLabel::~KUrlLabel()
 {
   delete d;
 }
 
-void KUrlLabel::mouseReleaseEvent (QMouseEvent* e)
+void KUrlLabel::mouseReleaseEvent( QMouseEvent* event )
 {
-  QLabel::mouseReleaseEvent (e);
+  QLabel::mouseReleaseEvent( event );
 
-  setLinkColor (d->HighlightedLinkColor);
-  d->Timer->start (300);
+  d->setLinkColor( d->highlightedLinkColor );
+  d->timer->start( 300 );
 
-  switch (e->button())
-    {
+  switch ( event->button() ) {
     case Qt::LeftButton:
-      emit leftClickedURL ();
-      emit leftClickedURL (d->URL);
+      emit leftClickedUrl();
+      emit leftClickedUrl( d->url );
       break;
 
     case Qt::MidButton:
-      emit middleClickedURL ();
-      emit middleClickedURL (d->URL);
+      emit middleClickedUrl();
+      emit middleClickedUrl( d->url );
       break;
 
     case Qt::RightButton:
-      emit rightClickedURL ();
-      emit rightClickedURL (d->URL);
+      emit rightClickedUrl();
+      emit rightClickedUrl( d->url );
       break;
 
     default:
-      ; // nothing
-    }
+      break;
+  }
 }
 
-void KUrlLabel::setFont (const QFont& f)
+void KUrlLabel::setFont( const QFont& font )
 {
-  QFont newFont = f;
-  newFont.setUnderline (d->TextUnderline);
+  QFont newFont = font;
+  newFont.setUnderline( d->textUnderlined );
 
-  QLabel::setFont (newFont);
+  QLabel::setFont( newFont );
 }
 
-void KUrlLabel::setUnderline (bool on)
+void KUrlLabel::setUnderline( bool on )
 {
-  d->TextUnderline = on;
+  d->textUnderlined = on;
 
-  setFont (font());
+  setFont( font() );
 }
 
-void KUrlLabel::updateColor ()
+void KUrlLabel::setUrl( const QString& url )
 {
-  d->Timer->stop();
-
-  if (!(d->Glow || d->Float) || !rect().contains (mapFromGlobal(QCursor::pos())))
-    setLinkColor (d->LinkColor);
-}
-
-void KUrlLabel::setLinkColor (const QColor& col)
-{
-  QPalette p = palette();
-  p.setColor (QPalette::Foreground, col);
-  setPalette (p);
-
-  update();
-}
-
-void KUrlLabel::setURL (const QString& url)
-{
-  if ( d->Tip == d->URL ) { // update the tip as well
-    d->Tip = url;
-    setUseTips( d->UseTips );
+  if ( d->tipText == d->url ) { // update the tip as well
+    d->tipText = url;
+    setUseTips( d->useTips );
   }
 
-  d->URL = url;
+  d->url = url;
 }
 
-const QString& KUrlLabel::url () const
+const QString& KUrlLabel::url() const
 {
-  return d->URL;
+  return d->url;
 }
 
-void KUrlLabel::setUseCursor (bool on, QCursor* cursor)
+void KUrlLabel::setUseCursor( bool on, QCursor* cursor )
 {
-  d->UseCursor = on;
-  d->Cursor = cursor;
+  d->useCursor = on;
+  d->cursor = cursor;
 
-  if (on)
-    {
-      if (cursor)
-        setCursor (*cursor);
-      else
-        setCursor (KCursor::handCursor());
-    }
-  else
+  if ( on ) {
+    if ( cursor )
+      setCursor( *cursor );
+    else
+      setCursor( KCursor::handCursor() );
+  } else
     unsetCursor();
 }
 
-bool KUrlLabel::useCursor () const
+bool KUrlLabel::useCursor() const
 {
-  return d->UseCursor;
+  return d->useCursor;
 }
 
-void KUrlLabel::setUseTips (bool on)
+void KUrlLabel::setUseTips( bool on )
 {
-  d->UseTips = on;
+  d->useTips = on;
 
-  if (on)
-    setToolTip(d->Tip);
+  if ( on )
+    setToolTip( d->tipText );
   else
-    setToolTip(QString());
+    setToolTip( QString() );
 }
 
-void KUrlLabel::setTipText (const QString& tip)
+void KUrlLabel::setTipText( const QString& tipText )
 {
-  d->Tip = tip;
+  d->tipText = tipText;
 
-  setUseTips (d->UseTips);
+  setUseTips( d->useTips );
 }
 
-bool KUrlLabel::useTips () const
+bool KUrlLabel::useTips() const
 {
-  return d->UseTips;
+  return d->useTips;
 }
 
-const QString& KUrlLabel::tipText () const
+const QString& KUrlLabel::tipText() const
 {
-  return d->Tip;
+  return d->tipText;
 }
 
-void KUrlLabel::setHighlightedColor (const QColor& highcolor)
+void KUrlLabel::setHighlightedColor( const QColor& color )
 {
-  d->LinkColor = highcolor;
+  d->linkColor = color;
 
-  if (!d->Timer->isActive())
-    setLinkColor (highcolor);
+  if ( !d->timer->isActive() )
+    d->setLinkColor( color );
 }
 
-void KUrlLabel::setHighlightedColor (const QString& highcolor)
+void KUrlLabel::setHighlightedColor( const QString& color )
 {
-  setHighlightedColor (QColor (highcolor));
+  setHighlightedColor( QColor( color ) );
 }
 
-void KUrlLabel::setSelectedColor (const QColor& selcolor)
+void KUrlLabel::setSelectedColor( const QColor& color )
 {
-  d->HighlightedLinkColor = selcolor;
+  d->highlightedLinkColor = color;
 
-  if (d->Timer->isActive())
-    setLinkColor (selcolor);
+  if ( d->timer->isActive() )
+    d->setLinkColor( color );
 }
 
-void KUrlLabel::setSelectedColor (const QString& selcolor)
+void KUrlLabel::setSelectedColor( const QString& color )
 {
-  setSelectedColor (QColor (selcolor));
+  setSelectedColor( QColor( color ) );
 }
 
-void KUrlLabel::setGlow (bool glow)
+void KUrlLabel::setGlowEnabled( bool glowEnabled )
 {
-  d->Glow = glow;
+  d->glowEnabled = glowEnabled;
 }
 
-void KUrlLabel::setFloat (bool do_float)
+void KUrlLabel::setFloatEnabled( bool floatEnabled )
 {
-  d->Float = do_float;
+  d->floatEnabled = floatEnabled;
 }
 
-bool KUrlLabel::isGlowEnabled () const
+bool KUrlLabel::isGlowEnabled() const
 {
-  return d->Glow;
+  return d->glowEnabled;
 }
 
-bool KUrlLabel::isFloatEnabled () const
+bool KUrlLabel::isFloatEnabled() const
 {
-  return d->Float;
+  return d->floatEnabled;
 }
 
-void KUrlLabel::setAltPixmap (const QPixmap& altPix)
+void KUrlLabel::setAlternatePixmap( const QPixmap& pixmap )
 {
-  d->AltPixmap = altPix;
+  d->alternatePixmap = pixmap;
 }
 
-const QPixmap* KUrlLabel::altPixmap () const
+const QPixmap* KUrlLabel::alternatePixmap() const
 {
-  return &d->AltPixmap;
+  return &d->alternatePixmap;
 }
 
-void KUrlLabel::enterEvent (QEvent* e)
+void KUrlLabel::enterEvent( QEvent* event )
 {
-  QLabel::enterEvent (e);
+  QLabel::enterEvent( event );
 
-  if (!d->AltPixmap.isNull() && pixmap())
-    {
-      d->RealPixmap = *pixmap();
-      setPixmap (d->AltPixmap);
-    }
-
-  if (d->Glow || d->Float)
-    {
-      d->Timer->stop();
-
-      setLinkColor (d->HighlightedLinkColor);
-
-      d->RealUnderline = d->TextUnderline;
-
-      if (d->Float)
-        setUnderline (true);
-    }
-
-  emit enteredURL ();
-  emit enteredURL (d->URL);
-}
-
-void KUrlLabel::leaveEvent (QEvent* e)
-{
-  QLabel::leaveEvent (e);
-
-  if (!d->AltPixmap.isNull() && pixmap())
-    setPixmap (d->RealPixmap);
-
-  if ((d->Glow || d->Float) && !d->Timer->isActive())
-    setLinkColor (d->LinkColor);
-
-  setUnderline (d->RealUnderline);
-
-  emit leftURL ();
-  emit leftURL (d->URL);
-}
-
-bool KUrlLabel::event (QEvent *e)
-{
-  if (e->type() == QEvent::PaletteChange)
-  {
-    // use parentWidget() unless you are a toplevel widget, then try qAapp
-    QPalette p = parentWidget() ? parentWidget()->palette() : qApp->palette();
-    p.setBrush(QPalette::Base, p.brush(QPalette::Normal, QPalette::Background));
-    p.setColor(QPalette::Foreground, palette().color(QPalette::Active, QPalette::Foreground));
-    setPalette(p);
-    d->LinkColor = KGlobalSettings::linkColor();
-    setLinkColor(d->LinkColor);
-    return true;
+  if ( !d->alternatePixmap.isNull() && pixmap() ) {
+    d->realPixmap = *pixmap();
+    setPixmap( d->alternatePixmap );
   }
-  else
-    return QLabel::event(e);
+
+  if ( d->glowEnabled || d->floatEnabled ) {
+    d->timer->stop();
+
+    d->setLinkColor( d->highlightedLinkColor );
+
+    d->realUnderlined = d->textUnderlined;
+
+    if ( d->floatEnabled )
+      setUnderline( true );
+  }
+
+  emit enteredUrl();
+  emit enteredUrl( d->url );
+}
+
+void KUrlLabel::leaveEvent( QEvent* event )
+{
+  QLabel::leaveEvent( event );
+
+  if ( !d->alternatePixmap.isNull() && pixmap() )
+    setPixmap( d->realPixmap );
+
+  if ( (d->glowEnabled || d->floatEnabled) && !d->timer->isActive() )
+    d->setLinkColor( d->linkColor );
+
+  setUnderline( d->realUnderlined );
+
+  emit leftUrl();
+  emit leftUrl( d->url );
+}
+
+bool KUrlLabel::event( QEvent *event )
+{
+  if ( event->type() == QEvent::PaletteChange ) {
+    /**
+     * Use parentWidget() unless you are a toplevel widget, then try qAapp
+     */
+    QPalette palette = parentWidget() ? parentWidget()->palette() : qApp->palette();
+
+    palette.setBrush( QPalette::Base, palette.brush( QPalette::Normal, QPalette::Background ) );
+    palette.setColor( QPalette::Foreground, this->palette().color( QPalette::Active, QPalette::Foreground ) );
+    setPalette( palette );
+
+    d->linkColor = KGlobalSettings::linkColor();
+    d->setLinkColor( d->linkColor );
+
+    return true;
+  } else
+    return QLabel::event( event );
 }
 
 #include "kurllabel.moc"

@@ -32,29 +32,62 @@
 class KDEUI_EXPORT KToolBarSpacerAction : public KAction, public QActionWidgetFactory
 {
   Q_OBJECT
-  Q_PROPERTY(int width READ width WRITE setWidth)
-  Q_PROPERTY(int minimumWidth READ minimumWidth WRITE setMinimumWidth)
-  Q_PROPERTY(int maximumWidth READ maximumWidth WRITE setMaximumWidth)
+  Q_PROPERTY( int width READ width WRITE setWidth )
+  Q_PROPERTY( int minimumWidth READ minimumWidth WRITE setMinimumWidth )
+  Q_PROPERTY( int maximumWidth READ maximumWidth WRITE setMaximumWidth )
 
   public:
-    explicit KToolBarSpacerAction(KActionCollection* parent, const QString& name = QString());
+    /**
+     * Creates a new toolbar spacer action.
+     *
+     * @param parent The parent @see KActionCollection of the action.
+     * @param name The name of the action.
+     */
+    explicit KToolBarSpacerAction( KActionCollection* parent, const QString& name = QString() );
 
-    int width();
-    void setWidth(int width);
+    /**
+     * Returns the width of the spacer item.
+     */
+    int width() const;
 
+    /**
+     * Sets the @param width of the spacer item.
+     */
+    void setWidth( int width );
+
+    /**
+     * Returns the minimum width of the spacer item.
+     */
     int minimumWidth() const;
-    void setMinimumWidth(int width);
 
+    /**
+     * Sets the minimum @param width of the spacer item.
+     */
+    void setMinimumWidth( int width );
+
+    /**
+     * Returns the maximum width of the spacer item.
+     */
     int maximumWidth() const;
-    void setMaximumWidth(int width);
 
-    virtual QWidget* createToolBarWidget(QToolBar* parent);
+    /**
+     * Sets the maximum @param width of the spacer item.
+     */
+    void setMaximumWidth( int width );
 
-  private Q_SLOTS:
-    void spacerDestroyed(QObject* spacer);
+    /**
+     * Reimplemented from @see QActionWidgetFactory.
+     */
+    virtual QWidget* createToolBarWidget( QToolBar* parent );
+
 
   private:
-    class KToolBarSpacerActionPrivate* const d;
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KToolBarSpacerAction )
+
+    Q_PRIVATE_SLOT( d, void spacerDestroyed( QObject* ) )
 };
 
 #endif

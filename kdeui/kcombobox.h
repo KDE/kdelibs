@@ -143,7 +143,7 @@ class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase
 {
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
-  Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
+  Q_PROPERTY( bool urlDropsEnabled READ urlDropsEnabled WRITE setUrlDropsEnabled )
   Q_PROPERTY( bool trapReturnKey READ trapReturnKey WRITE setTrapReturnKey )
 
 public:
@@ -176,62 +176,62 @@ public:
 	 * @deprecated
 	 */
 	KDE_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
-		{ insertURL( index < 0 ? count() : index, url ); }
+		{ insertUrl( index < 0 ? count() : index, url ); }
 	KDE_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
-		{ insertURL( index < 0 ? count() : index, QIcon(pixmap), url ); }
+		{ insertUrl( index < 0 ? count() : index, QIcon(pixmap), url ); }
 	KDE_DEPRECATED void changeURL( const KUrl& url, int index )
-		{ changeURL( index, url ); }
-    KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
-		{ changeURL( index, QIcon(pixmap), url ); }
+		{ changeUrl( index, url ); }
+  KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
+		{ changeUrl( index, QIcon(pixmap), url ); }
 
 	/**
      * Sets @p url into the edit field of the combobox. It uses
      * KUrl::prettyUrl() so that the url is properly decoded for
      * displaying.
      */
-    void setEditURL( const KUrl& url );
+    void setEditUrl( const KUrl& url );
    
 	/**
      * Appends @p url to the combobox.
      * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
-    void addURL( const KUrl& url );
+    void addUrl( const KUrl& url );
 
 	/**
      * Appends @p url with the icon &p icon to the combobox.
      * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
-    void addURL( const QIcon& icon,  const KUrl& url );
+    void addUrl( const QIcon& icon,  const KUrl& url );
 
 	/**
      * Inserts @p url at position @p index into the combobox.
      * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
-	void insertURL( int index, const KUrl& url );
+	void insertUrl( int index, const KUrl& url );
 
     /**
      * Inserts @p url with the pixmap &p pixmap at position @p index into
      * the combobox. KUrl::prettyUrl() is used so that the url is
      * properly decoded for displaying.
      */
-    void insertURL( int index, const QIcon& icon, const KUrl& url );
+    void insertUrl( int index, const QIcon& icon, const KUrl& url );
 
     /**
      * Replaces the item at position @p index with @p url.
      * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
-    void changeURL( int index, const KUrl& url );
+    void changeUrl( int index, const KUrl& url );
 
     /**
      * Replaces the item at position @p index with @p url and icon @p icon.
      * KUrl::prettyUrl() is used so that the url is properly decoded
      * for displaying.
      */
-    void changeURL( int index , const QIcon& icon, const KUrl& url);
+    void changeUrl( int index , const QIcon& icon, const KUrl& url);
 
     /**
     * Returns the current cursor position.
@@ -292,12 +292,12 @@ public:
      *
      * @param enable If @p true, insert decoded URLs
      */
-    void setURLDropsEnabled( bool enable );
+    void setUrlDropsEnabled( bool enable );
 
     /**
      * Returns @p true when decoded URL drops are enabled
      */
-    bool isURLDropsEnabled() const;
+    bool urlDropsEnabled() const;
 
     /**
      * Convenience method which iterates over all items and checks if

@@ -27,9 +27,6 @@
 #ifndef KTOGGLETOOLBARACTION_H
 #define KTOGGLETOOLBARACTION_H
 
-#include <QPointer>
-#include <QByteArray>
-
 #include <ktoggleaction.h>
 
 class KToolBar;
@@ -49,7 +46,8 @@ class KToolBar;
 class KDEUI_EXPORT KToggleToolBarAction : public KToggleAction
 {
     Q_OBJECT
-public:
+
+  public:
     /**
      * Create a KToggleToolbarAction that manages the toolbar
      * named toolBarName. This can be either the name of a
@@ -58,23 +56,38 @@ public:
      */
     KToggleToolBarAction( const char* toolBarName, const QString& text,
                           KActionCollection* parent, const QString& name );
+
+    /**
+     * Create a KToggleToolbarAction that manages the @param toolbar.
+     * This can be either the name of a toolbar in an xml ui file,
+     * or a toolbar programmatically created with that name.
+     */
     KToggleToolBarAction( KToolBar *toolBar, const QString &text,
                           KActionCollection *parent, const char *name );
+
+    /**
+     * Destroys toggle toolbar action.
+     */
     virtual ~KToggleToolBarAction();
 
+    /**
+     * Returns a pointer to the tool bar it manages.
+     */
     KToolBar *toolBar();
 
-    virtual bool eventFilter(QObject* watched, QEvent* event);
+    /**
+     * Reimplemented from @see QObject.
+     */
+    virtual bool eventFilter( QObject* watched, QEvent* event );
 
-private Q_SLOTS:
-    virtual void slotToggled(bool checked);
+  private Q_SLOTS:
+    virtual void slotToggled( bool checked );
 
-private:
-    QByteArray          m_toolBarName;
-    QPointer<KToolBar>  m_toolBar;
-    bool                m_beingToggled;
+  private:
+    class Private;
+    Private* const d;
 
-    class KToggleToolBarActionPrivate* const d;
+    Q_DISABLE_COPY( KToggleToolBarAction )
 };
 
 #endif

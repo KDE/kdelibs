@@ -25,102 +25,112 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktoggletoolbaraction.h"
-
-#include <QEvent>
+#include <QtCore/QByteArray>
+#include <QtCore/QEvent>
+#include <QtCore/QPointer>
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kmainwindow.h>
+#include <ktoolbar.h>
 
-#include "kmainwindow.h"
-#include "ktoolbar.h"
+#include "ktoggletoolbaraction.h"
 
-// BEGIN KToggleToolBarAction
-KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
-         const QString& text, KActionCollection* parent, const QString& name )
-  : KToggleAction( text, parent, name )
-  , m_toolBarName( toolBarName )
-  , m_toolBar( 0L )
-  , m_beingToggled( false )
-  , d(0L)
+class KToggleToolBarAction::Private
 {
+  public:
+    Private()
+      : toolBarName( 0 ), toolBar( 0 ), beingToggled( false )
+    {
+    }
+
+    QByteArray toolBarName;
+    QPointer<KToolBar> toolBar;
+    bool beingToggled;
+};
+
+
+KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName, const QString& text,
+                                            KActionCollection* parent, const QString& name )
+  : KToggleAction( text, parent, name ),
+    d( new Private )
+{
+  d->toolBarName = toolBarName;
 }
 
 KToggleToolBarAction::KToggleToolBarAction( KToolBar *toolBar, const QString &text,
                                             KActionCollection *parent, const char *name )
-  : KToggleAction( text, parent, name )
-  , m_toolBarName( 0 ), m_toolBar( toolBar ), m_beingToggled( false )
-  , d(0L)
+  : KToggleAction( text, parent, name ),
+    d( new Private )
 {
-    m_toolBar->installEventFilter(this);
+  d->toolBar = toolBar;
+  d->toolBar->installEventFilter( this );
 
-    m_beingToggled = true;
-    if (m_toolBar->isVisible())
-      setChecked(true);
-    m_beingToggled = false;
+  d->beingToggled = true;
+
+  if ( d->toolBar->isVisible() )
+    setChecked( true );
+
+  d->beingToggled = false;
 }
 
 KToggleToolBarAction::~KToggleToolBarAction()
 {
-    //delete d;
+  delete d;
 }
 
 bool KToggleToolBarAction::eventFilter( QObject * watched, QEvent * event )
 {
-    if (m_beingToggled)
-        return false;
-
-    m_beingToggled = true;
-
-    if (watched == m_toolBar) {
-        switch (event->type()) {
-            case QEvent::Hide:
-                if (isChecked())
-                    setChecked(false);
-                break;
-
-            case QEvent::Show:
-                if (!isChecked())
-                    setChecked(true);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    m_beingToggled = false;
-
+  if ( d->beingToggled )
     return false;
+
+  d->beingToggled = true;
+
+  if ( watched == d->toolBar ) {
+    switch ( event->type() ) {
+      case QEvent::Hide:
+        if ( isChecked() )
+          setChecked( false );
+        break;
+
+      case QEvent::Show:
+        if ( !isChecked() )
+          setChecked( true );
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  d->beingToggled = false;
+
+  return false;
 }
 
 KToolBar * KToggleToolBarAction::toolBar( )
 {
-  return m_toolBar;
+  return d->toolBar;
 }
 
 void KToggleToolBarAction::slotToggled( bool checked )
 {
-  if (!m_beingToggled && m_toolBar && checked != m_toolBar->isVisible() ) {
-    m_beingToggled = true;
+  if ( !d->beingToggled && d->toolBar && checked != d->toolBar->isVisible() ) {
+    d->beingToggled = true;
 
-    if (checked) {
-      m_toolBar->show();
-    } else {
-      m_toolBar->hide();
-    }
+    if ( checked )
+      d->toolBar->show();
+    else
+      d->toolBar->hide();
 
-    m_beingToggled = false;
+    d->beingToggled = false;
 
-    QMainWindow* mw = m_toolBar->mainWindow();
+    QMainWindow* mw = d->toolBar->mainWindow();
     if ( mw && qobject_cast<KMainWindow*>( mw ) )
       static_cast<KMainWindow *>( mw )->setSettingsDirty();
   }
 
-  KToggleAction::slotToggled(checked);
+  KToggleAction::slotToggled( checked );
 }
-
-/* vim: et sw=2 ts=2
- */
 
 #include "ktoggletoolbaraction.moc"

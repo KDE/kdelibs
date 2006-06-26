@@ -25,7 +25,6 @@
 #define KDIALOG_H
 
 class QMenu;
-class KGuiItem;
 class KPushButton;
 
 #include <QtGui/QDialog>
@@ -33,6 +32,7 @@ class KPushButton;
 #include <kdelibs_export.h>
 
 #include <kconfigbase.h>
+#include <kguiitem.h>
 
 /**
  * @short A dialog base class with standard buttons and predefined layouts.
