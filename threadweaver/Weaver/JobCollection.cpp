@@ -132,18 +132,7 @@ namespace ThreadWeaver {
 
         if ( m_queued )
         {
-            // dequeue everything:
-            for ( int index = 1; index < m_elements->size(); ++index )
-            {
-                if ( ! m_elements->at( index )->isFinished() )
-                {
-                    debug( 4, "JobCollection::stop: dequeueing %p.\n", m_elements->at( index ) );
-                    m_weaver->dequeue ( m_elements->at( index ) );
-                } else {
-                    debug( 4, "JobCollection::stop: not dequeueing %p, already finished.\n",
-                           m_elements->at( index ) );
-                }
-            }
+//             dequeueElements();
             debug( 4, "JobCollection::stop: dequeueing %p.\n", this);
             m_weaver->dequeue( this );
         }
@@ -180,6 +169,17 @@ namespace ThreadWeaver {
 
         m_queued = true;
     }
+
+    void JobCollection::aboutToBeDequeued( WeaverInterface* )
+    {
+        Q_ASSERT ( m_queued ); // must have been queued first
+
+        if ( m_queued )
+        {
+            dequeueElements();
+        }
+    }
+
 
     void JobCollection::execute ( Thread *t )
     {
@@ -220,6 +220,25 @@ namespace ThreadWeaver {
     {
     }
 
+    void JobCollection::dequeueElements()
+    {
+        // dequeue everything:
+        for ( int index = 1; index < m_elements->size(); ++index )
+        {
+            if ( ! m_elements->at( index )->isFinished() )
+            {
+                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
+                       m_elements->at( index ) );
+                m_weaver->dequeue ( m_elements->at( index ) );
+            } else {
+                debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+                       m_elements->at( index ) );
+                // this returns false if the job was not in the queue, which we assume:
+                Q_ASSERT ( ! m_weaver->dequeue ( m_elements->at( index ) ) );
+            }
+        }
+    }
 }
+
 
 #include "JobCollection.moc"

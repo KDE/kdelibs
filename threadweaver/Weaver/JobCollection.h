@@ -45,6 +45,9 @@ namespace ThreadWeaver {
         /** Overload to queue the collection. */
         void aboutToBeQueued ( WeaverInterface *weaver );
 
+        /** Overload to dequeue the collection. */
+        void aboutToBeDequeued ( WeaverInterface *weaver );
+
         /** Return a reference to the job in the job list at position i. */
         Job* jobAt( int i );
 
@@ -63,6 +66,12 @@ namespace ThreadWeaver {
         /** Overload run().
             We have to. */
         void run() {}
+
+        /** Dequeue all elements of the collection.
+            Note: This will not dequeue the collection itself.
+        */
+        void dequeueElements();
+
 
         /** The elements of the collection. */
         class JobList;

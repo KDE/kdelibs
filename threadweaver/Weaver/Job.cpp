@@ -177,6 +177,10 @@ namespace ThreadWeaver {
     {
     }
 
+    void Job::aboutToBeDequeued ( WeaverInterface* )
+    {
+    }
+
     void Job::DumpJobDependencies()
     {
         QMutexLocker l(sm_mutex);

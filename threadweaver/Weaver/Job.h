@@ -111,6 +111,23 @@ namespace ThreadWeaver {
             */
         virtual void aboutToBeQueued ( WeaverInterface *weaver );
 
+        /** This Job is about the be dequeued from the weaver's job queue.
+            The job will be removed from the queue right after this method
+            returns.
+            Use this method to dequeue, if necessary,  sub-operations (joobs) that this job
+            has enqueued.
+
+            Note: When this method is called, the associated Weaver object's
+            thread does hold a lock on the weaver's queue.
+
+            Note: The default implementation does nothing.
+
+            @param weaver the Weaver object from which the job will be dequeued
+        */
+        virtual void aboutToBeDequeued ( WeaverInterface *weaver );
+
+
+
         /** Returns true if the jobs's execute method finished. */
         bool isFinished() const { return m_finished; }
 

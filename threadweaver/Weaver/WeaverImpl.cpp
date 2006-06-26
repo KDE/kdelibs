@@ -37,12 +37,13 @@
 namespace ThreadWeaver {
 
     WeaverImpl::WeaverImpl(QObject* parent, int inventoryMin, int inventoryMax)
-        : WeaverInterface(parent),
-          m_active(0),
-          m_inventoryMin(inventoryMin),
-          m_inventoryMax(inventoryMax),
-          m_mutex ( new QMutex( QMutex::Recursive ) ),
-          m_state (0)
+        : WeaverInterface(parent)
+        , m_active(0)
+        , m_inventoryMin(inventoryMin)
+        , m_inventoryMax(inventoryMax)
+        , m_mutex ( new QMutex( QMutex::Recursive ) )
+        , m_finishMutex( new QMutex )
+        , m_state (0)
     {
         // initialize state objects:
         m_states[InConstruction] = new InConstructionState( this );
@@ -89,6 +90,7 @@ namespace ThreadWeaver {
 
         m_inventory.clear();
 	delete m_mutex;
+        delete m_finishMutex;
 	debug ( 3, "WeaverImpl dtor: done\n" );
 	setState ( Destructed ); // m_state = Halted;
         // @TODO: delete state objects. what sense does DestructedState make then?
@@ -196,6 +198,9 @@ namespace ThreadWeaver {
         bool result;
         {
             QMutexLocker l (m_mutex);
+
+            job->aboutToBeDequeued( this );
+
             int i = m_assignments.indexOf ( job );
             if ( i != -1 )
             {
@@ -219,7 +224,13 @@ namespace ThreadWeaver {
     {
         debug( 3, "WeaverImpl::dequeue: dequeueing all jobs.\n" );
         QMutexLocker l (m_mutex);
+        for ( int index = 0; index < m_assignments.size(); ++index )
+        {
+            m_assignments.at( index )->aboutToBeDequeued( this );
+        }
         m_assignments.clear();
+
+        Q_ASSERT ( m_assignments.isEmpty() );
     }
 
     void WeaverImpl::suspend ()
@@ -329,12 +340,17 @@ namespace ThreadWeaver {
 
     void WeaverImpl::finish()
     {
+        const int MaxWaitMilliSeconds = 500;
+
         while ( !isIdle() )
         {
             debug (2, "WeaverImpl::finish: not done, waiting.\n" );
-            QMutex mutex;
-            mutex.lock();
-            m_jobFinished.wait( &mutex );
+            QMutexLocker l( m_finishMutex );
+            if ( m_jobFinished.wait( m_finishMutex, MaxWaitMilliSeconds ) == false )
+            {
+                debug ( 2, "WeaverImpl::finish: wait timed out, waking threads.\n" );
+                m_jobAvailable.wakeAll();
+            }
         }
 	debug (2, "WeaverImpl::finish: done.\n\n\n" );
     }

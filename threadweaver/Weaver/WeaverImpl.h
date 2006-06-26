@@ -155,6 +155,10 @@ signals:
     private:
 	/** Mutex to serialize operations. */
 	QMutex *m_mutex;
+
+        /** Non-recursive mutex to serialize calls to finish(). */
+        QMutex* m_finishMutex;
+
         // @TODO: make state objects static
 	/** The state of the art.
          * @see StateId
