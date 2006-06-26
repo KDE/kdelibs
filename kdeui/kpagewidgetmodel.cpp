@@ -24,6 +24,8 @@
 #include <QPointer>
 #include <QWidget>
 
+#include <kicon.h>
+
 class KPageWidgetItem::Private
 {
   public:

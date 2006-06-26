@@ -22,11 +22,11 @@
 #ifndef KPAGEWIDGETMODEL_H
 #define KPAGEWIDGETMODEL_H
 
-#include <kicon.h>
-
 #include "kpagemodel.h"
 
 class QWidget;
+
+class KIcon;
 
 class KDEUI_EXPORT KPageWidgetItem : public QObject
 {

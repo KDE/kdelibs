@@ -41,6 +41,7 @@
 #include <qicon.h>
 #include <qpixmap.h>
 #include <kglobal.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kinstance.h>
 #include <kpagewidgetmodel.h>

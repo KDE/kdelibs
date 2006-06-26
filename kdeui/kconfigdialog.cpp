@@ -21,15 +21,15 @@
  */
 #include "kconfigdialog.h"
 
-#include <kconfigskeleton.h>
 #include <kconfigdialogmanager.h>
-#include <klocale.h>
-#include <kiconloader.h>
+#include <kconfigskeleton.h>
 #include <kdebug.h>
+#include <kicon.h>
+#include <kiconloader.h>
+#include <klocale.h>
 #include <kpagewidgetmodel.h>
 #include <kvbox.h>
 
-#include <qicon.h>
 #include <qlayout.h>
 #include <qmap.h>
 
