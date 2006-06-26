@@ -960,7 +960,6 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   setButtons( modal ? Ok|Cancel : Close );
   showButtonSeparator(true);
   setModal(modal);
-  setDefaultButton( modal ? Cancel : Close );
   d = new KColorDialogPrivate;
   d->bRecursion = true;
   d->bColorPicking = false;
