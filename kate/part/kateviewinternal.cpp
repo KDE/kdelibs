@@ -141,7 +141,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
 
   m_columnScroll->setTracking(true);
   m_startX = 0;
-  m_oldStartX = 0;
 
   connect( m_columnScroll, SIGNAL( valueChanged (int) ),
            this, SLOT( scrollColumns (int) ) );
@@ -455,7 +454,6 @@ void KateViewInternal::scrollColumns ( int x )
     x = 0;
 
   int dx = m_startX - x;
-  m_oldStartX = m_startX;
   m_startX = x;
 
   if (QABS(dx) < width())
@@ -688,6 +686,12 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     int max = maxLen(startLine()) - width();
     if (max < 0)
       max = 0;
+
+    // if we lose the ability to scroll horizontally, move view to the far-left
+    if (max == 0)
+    {
+      m_startX = 0;
+    }
 
     // disable scrollbar
     m_columnScroll->setDisabled (max == 0);

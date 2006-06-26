@@ -268,7 +268,6 @@ class KateViewInternal : public QWidget
     //
     QScrollBar *m_columnScroll;
     int m_startX;
-    int m_oldStartX;
 
     // has selection changed while your mouse or shift key is pressed
     bool m_selChangedByUser;
