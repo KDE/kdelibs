@@ -20,6 +20,7 @@ t1 = time.time()
 RunTests ( Number )
 t2 = time.time()
 
+
 elapsed = ((t2 - t1) / 60.0, t2 - t1, (t2 - t1) * 1000.0)
 
 print "RunTests: %0.3fms (%0.3fs)" % ( elapsed[2], elapsed[1] )
