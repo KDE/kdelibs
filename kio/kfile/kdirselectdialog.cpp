@@ -87,7 +87,7 @@ static KUrl rootUrl(const KUrl &url)
     return root;
 }
 
-KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
+KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
                                    QWidget *parent)
     : KDialog( parent ),
       m_localOnly( localOnly ),d(new KDirSelectDialogPrivate)
@@ -153,7 +153,7 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     KUrl root = rootUrl(d->startURL);
 
-    m_startDir = d->startURL.url();
+    m_startDir = d->startURL;
 
     d->branch = createBranch( root );
 
@@ -369,7 +369,7 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
 
     KUrl oldURL = m_treeView->currentURL();
     if ( oldURL.isEmpty() )
-        oldURL = KUrl( m_startDir ); // ### TODO m_startDir should be a KUrl
+        oldURL = m_startDir;
 
     setCurrentURL( url );
 }
@@ -471,7 +471,7 @@ void KDirSelectDialog::slotShowHiddenFoldersToggled()
 }
 
 // static
-KUrl KDirSelectDialog::selectDirectory( const QString& startDir,
+KUrl KDirSelectDialog::selectDirectory( const KUrl& startDir,
                                         bool localOnly,
                                         QWidget *parent,
                                         const QString& caption)

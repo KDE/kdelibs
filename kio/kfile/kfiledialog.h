@@ -94,23 +94,16 @@ public:
     /**
       * Constructs a file dialog.
       *
-      * The parameters here are identical to the first constructor except
-      * for the addition of a QWidget parameter.
-      *
-      * Historical note: The original version of KFileDialog did not have this extra
-      * parameter. It was added later, and, in order to maintain binary compatibility,
-      * it was placed in a new constructor instead of added to the original one.
-      *
       * @param startDir This can either be
       *         @li The URL of the directory to start in.
-      *         @li QString() to start in the current working
+      *         @li A KUrl() to start in the current working
       *             directory, or the last directory where a file has been
       *             selected.
-      *         @li ':&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in the same application that specified
+      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+      *             directory last used by a filedialog in the same application that specified
       *             the same keyword.
-      *         @li '::&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in any application that specified the
+      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+      *             in the directory last used by a filedialog in any application that specified the
       *             same keyword.
       *
       * @param filter A shell glob or a mime-type-filter that specifies
@@ -124,8 +117,8 @@ public:
       *               since the widget's parent will be set automatically by KFileDialog.
       * @param parent The parent widget of this dialog
       */
-    KFileDialog(const QString& startDir, const QString& filter,
-		QWidget *parent, QWidget* widget=0);
+    KFileDialog( const KUrl& startDir, const QString& filter,
+                 QWidget *parent, QWidget* widget = 0 );
 
 
     /**
@@ -328,14 +321,14 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
@@ -344,10 +337,10 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static QString getOpenFileName(const QString& startDir= QString(),
-				   const QString& filter= QString(),
-				   QWidget *parent= 0,
-				   const QString& caption = QString());
+    static QString getOpenFileName( const KUrl& startDir= KUrl(),
+                                    const QString& filter= QString(),
+                                    QWidget *parent= 0,
+                                    const QString& caption = QString() );
 
 
    /**
@@ -356,9 +349,9 @@ public:
      * a widget in another process or if the parent widget is a
      * non-Qt widget. For example, in a GTK program.
     */
-   static QString getOpenFileNameWId(const QString& startDir,
-                                     const QString& filter,
-                                     WId parent_id, const QString& caption);
+   static QString getOpenFileNameWId( const KUrl& startDir,
+                                      const QString& filter,
+                                      WId parent_id, const QString& caption );
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -369,14 +362,14 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
@@ -385,10 +378,10 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static QStringList getOpenFileNames(const QString& startDir= QString(),
-					const QString& filter= QString(),
-					QWidget *parent = 0,
-					const QString& caption= QString());
+    static QStringList getOpenFileNames( const KUrl& startDir= KUrl(),
+                                         const QString& filter = QString(),
+                                         QWidget *parent = 0,
+                                         const QString& caption= QString() );
 
 
 
@@ -401,14 +394,14 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
@@ -417,10 +410,10 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getOpenURL(const QString& startDir = QString(),
-			   const QString& filter= QString(),
-			   QWidget *parent= 0,
-			   const QString& caption = QString());
+    static KUrl getOpenURL( const KUrl& startDir = KUrl(),
+                            const QString& filter = QString(),
+                            QWidget *parent= 0,
+                            const QString& caption = QString() );
 
 
 
@@ -433,14 +426,14 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
@@ -449,10 +442,10 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl::List getOpenURLs(const QString& startDir= QString(),
-				  const QString& filter= QString(),
-				  QWidget *parent = 0,
-				  const QString& caption= QString());
+    static KUrl::List getOpenURLs( const KUrl& startDir = KUrl(),
+                                   const QString& filter = QString(),
+                                   QWidget *parent = 0,
+                                   const QString& caption = QString() );
 
 
 
@@ -465,16 +458,14 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li a relative path or a filename determining the
-     *             directory to start in and the file to be selected.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
@@ -483,19 +474,19 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static QString getSaveFileName(const QString& startDir= QString(),
-				   const QString& filter= QString(),
-				   QWidget *parent= 0,
-				   const QString& caption = QString());
+    static QString getSaveFileName( const KUrl& startDir = KUrl(),
+                                    const QString& filter = QString(),
+                                    QWidget *parent = 0,
+                                    const QString& caption = QString() );
 
 
     /**
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    static QString getSaveFileNameWId(const QString& dir, const QString& filter,
-                                     WId parent_id,
-                                     const QString& caption);
+    static QString getSaveFileNameWId( const KUrl &startDir, const QString& filter,
+                                       WId parent_id,
+                                       const QString& caption );
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -506,16 +497,14 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li a relative path or a filename determining the
-     *             directory to start in and the file to be selected.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
@@ -524,10 +513,10 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getSaveURL(const QString& startDir= QString(),
-			   const QString& filter= QString(),
-			   QWidget *parent= 0,
-			   const QString& caption = QString());
+    static KUrl getSaveURL( const KUrl& startDir = KUrl(),
+                            const QString& filter = QString(),
+                            QWidget *parent = 0,
+                            const QString& caption = QString() );
 
 
     /**
@@ -536,21 +525,21 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static QString getExistingDirectory(const QString & startDir = QString(),
-					QWidget * parent = 0,
-					const QString& caption= QString());
+    static QString getExistingDirectory( const KUrl& startDir = KUrl(),
+                                         QWidget * parent = 0,
+                                         const QString& caption= QString() );
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -561,42 +550,44 @@ public:
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getExistingURL(const QString & startDir = QString(),
-                                  QWidget * parent = 0,
-                                  const QString& caption= QString());
+    static KUrl getExistingURL( const KUrl& startDir = KUrl(),
+                                QWidget * parent = 0,
+                                const QString& caption= QString() );
+
     /**
      * Creates a modal file dialog with an image previewer and returns the
      * selected url or an empty string if none was chosen.
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
+     *         @li A KUrl() to start in the current working
+     *             directory, or the last directory where a file has been
+     *             selected.
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;' to start in the
+     *             directory last used by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
+     *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
+     *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getImageOpenURL( const QString& startDir = QString(),
-				 QWidget *parent = 0,
-				 const QString& caption = QString() );
+    static KUrl getImageOpenURL( const KUrl& startDir = KUrl(),
+                                 QWidget *parent = 0,
+                                 const QString& caption = QString() );
+
     virtual void show();
 
     /**
@@ -700,14 +691,15 @@ public:
      * This method implements the logic to determine the user's default directory
      * to be listed. E.g. the documents directory, home directory or a recently
      * used directory.
-     * @param startDir A url/directory, to be used. May use the ':' and '::' syntax
-     *        as documented in the KFileDialog() constructor.
-     * @param recentDirClass If the ':' or '::' syntax is used, recentDirClass
+     * @param startDir A url, to be used. May use the 'kfiledialog:///keyword' and
+     *                 'kfiledialog:///keyword?global' syntax
+     *                 as documented in the KFileDialog() constructor.
+     * @param recentDirClass If the 'kfiledialog:///' syntax is used, recentDirClass
      *        will contain the string to be used later for KRecentDir::dir()
      * @return The URL that should be listed by default (e.g. by KFileDialog or
      *         KDirSelectDialog).
      */
-    static KUrl getStartURL( const QString& startDir, QString& recentDirClass );
+    static KUrl getStartURL( const KUrl& startDir, QString& recentDirClass );
 
     /**
      * @internal
@@ -769,7 +761,7 @@ protected:
     /**
       * Perform basic initialization tasks. Called by constructors.
       */
-    void init(const QString& startDir, const QString& filter, QWidget* widget);
+    void init(const KUrl& startDir, const QString& filter, QWidget* widget);
 
     /**
       * rebuild geometry management.

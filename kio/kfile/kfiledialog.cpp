@@ -165,8 +165,8 @@ KUrl *KFileDialog::lastDirectory; // to set the start path
 static KStaticDeleter<KUrl> ldd;
 
 
-KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
-                         QWidget *parent, QWidget* widget)
+KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
+                          QWidget *parent, QWidget* widget)
     : KDialog( parent )
 {
     init( startDir, filter, widget );
@@ -758,7 +758,7 @@ void KFileDialog::updateLocationWhatsThis (void)
     locationEdit->setWhatsThis(whatsThisText);
 }
 
-void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
+void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* widget )
 {
     initStatic();
     d = new KFileDialogPrivate();
@@ -1241,7 +1241,7 @@ void KFileDialog::slotLocationChanged( const QString& text )
     updateFilter();
 }
 
-QString KFileDialog::getOpenFileName(const QString& startDir,
+QString KFileDialog::getOpenFileName(const KUrl& startDir,
                                      const QString& filter,
                                      QWidget *parent, const QString& caption)
 {
@@ -1257,7 +1257,7 @@ QString KFileDialog::getOpenFileName(const QString& startDir,
     return dlg.selectedFile();
 }
 
-QString KFileDialog::getOpenFileNameWId(const QString& startDir,
+QString KFileDialog::getOpenFileNameWId(const KUrl& startDir,
                                         const QString& filter,
                                         WId parent_id, const QString& caption)
 {
@@ -1281,7 +1281,7 @@ QString KFileDialog::getOpenFileNameWId(const QString& startDir,
     return dlg.selectedFile();
 }
 
-QStringList KFileDialog::getOpenFileNames(const QString& startDir,
+QStringList KFileDialog::getOpenFileNames(const KUrl& startDir,
                                           const QString& filter,
                                           QWidget *parent,
                                           const QString& caption)
@@ -1297,7 +1297,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& startDir,
     return dlg.selectedFiles();
 }
 
-KUrl KFileDialog::getOpenURL(const QString& startDir, const QString& filter,
+KUrl KFileDialog::getOpenURL(const KUrl& startDir, const QString& filter,
                                 QWidget *parent, const QString& caption)
 {
     KFileDialog dlg(startDir, filter, parent);
@@ -1311,7 +1311,7 @@ KUrl KFileDialog::getOpenURL(const QString& startDir, const QString& filter,
     return dlg.selectedURL();
 }
 
-KUrl::List KFileDialog::getOpenURLs(const QString& startDir,
+KUrl::List KFileDialog::getOpenURLs(const KUrl& startDir,
                                           const QString& filter,
                                           QWidget *parent,
                                           const QString& caption)
@@ -1327,14 +1327,14 @@ KUrl::List KFileDialog::getOpenURLs(const QString& startDir,
     return dlg.selectedURLs();
 }
 
-KUrl KFileDialog::getExistingURL(const QString& startDir,
+KUrl KFileDialog::getExistingURL(const KUrl& startDir,
                                        QWidget *parent,
                                        const QString& caption)
 {
     return KDirSelectDialog::selectDirectory(startDir, false, parent, caption);
 }
 
-QString KFileDialog::getExistingDirectory(const QString& startDir,
+QString KFileDialog::getExistingDirectory(const KUrl& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
@@ -1351,7 +1351,7 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
 #endif
 }
 
-KUrl KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
+KUrl KFileDialog::getImageOpenURL( const KUrl& startDir, QWidget *parent,
                                    const QString& caption)
 {
     QStringList mimetypes = KImageIO::mimeTypes( KImageIO::Reading );
@@ -1517,12 +1517,12 @@ KUrl KFileDialog::baseURL() const
     return ops->url();
 }
 
-QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
+QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
-    KFileDialog dlg( specialDir ? dir : QString(), filter, parent);
+    bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
+    KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
         dlg.setSelection( dir ); // may also be a filename
 
@@ -1539,13 +1539,13 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
     return filename;
 }
 
-QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filter,
+QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
                                      WId parent_id,
                                      const QString& caption)
 {
-    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
+    bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
     QWidget* parent = QWidget::find( parent_id );
-    KFileDialog dlg( specialDir ? dir : QString(), filter, parent);
+    KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
 #ifdef Q_WS_X11
     if( parent == NULL && parent_id != 0 )
         XSetTransientForHint(QX11Info::display(), dlg.winId(), parent_id);
@@ -1569,11 +1569,11 @@ QString KFileDialog::getSaveFileNameWId(const QString& dir, const QString& filte
     return filename;
 }
 
-KUrl KFileDialog::getSaveURL(const QString& dir, const QString& filter,
+KUrl KFileDialog::getSaveURL(const KUrl& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    bool specialDir = (!dir.isEmpty()) && (dir.at(0) == ':');
-    KFileDialog dlg(specialDir ? dir : QString(), filter, parent);
+    bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
+    KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
     dlg.setSelection( dir ); // may also be a filename
 
@@ -2219,7 +2219,7 @@ void KFileDialog::initStatic()
 }
 
 // static
-KUrl KFileDialog::getStartURL( const QString& startDir,
+KUrl KFileDialog::getStartURL( const KUrl& startDir,
                                QString& recentDirClass )
 {
     initStatic();
@@ -2230,14 +2230,18 @@ KUrl KFileDialog::getStartURL( const QString& startDir,
     bool useDefaultStartDir = startDir.isEmpty();
     if ( !useDefaultStartDir )
     {
-        if (startDir[0] == ':')
+        if (startDir.protocol() == "kfiledialog")
         {
-            recentDirClass = startDir;
+            if ( startDir.query() == "?global" )
+              recentDirClass = QString( "::%1" ).arg( startDir.path().mid( 1 ) );
+            else
+              recentDirClass = QString( ":%1" ).arg( startDir.path().mid( 1 ) );
+
             ret = KUrl( KRecentDirs::dir(recentDirClass) );
         }
         else
         {
-            ret = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
+            ret = startDir;
             // If we won't be able to list it (e.g. http), then use default
             if ( !KProtocolManager::supportsListing( ret ) )
                 useDefaultStartDir = true;

@@ -52,7 +52,7 @@ public:
      * @param localOnly unused. You can only select paths below the startDir
      * @param parent the parent for the dialog, usually 0L
      */
-    KDirSelectDialog(const QString& startDir = QString(), // TODO KDE4: make it a KUrl
+    KDirSelectDialog(const KUrl& startDir = KUrl(),
                      bool localOnly = false,
                      QWidget *parent = 0L);
 
@@ -80,14 +80,14 @@ public:
      * @return The URL selected, or an empty URL if the user canceled
      * or no URL was selected.
      */
-    static KUrl selectDirectory( const QString& startDir = QString(),
+    static KUrl selectDirectory( const KUrl& startDir = KUrl(),
                                  bool localOnly = false, QWidget *parent = 0L,
                                  const QString& caption = QString());
 
     /**
      * @return The path for the root node
      */
-    QString startDir() const { return m_startDir; }
+    KUrl startDir() const { return m_startDir; }
 
 public Q_SLOTS:
     void setCurrentURL( const KUrl& url );
@@ -100,7 +100,7 @@ protected:
 
     // Layouts protected so that subclassing is easy
     QVBoxLayout *m_mainLayout;
-    QString m_startDir;
+    KUrl m_startDir;
 
 private Q_SLOTS:
     void slotCurrentChanged();

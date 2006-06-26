@@ -30,7 +30,7 @@
 using namespace KIO;
 
 KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
-  : KMainWindow(0, "")
+  : KMainWindow(0)
 {
 
   job = 0L;

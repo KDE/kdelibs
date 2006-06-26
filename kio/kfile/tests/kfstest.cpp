@@ -53,11 +53,11 @@ int main(int argc, char **argv)
     QStringList names;
 
     QString argv1;
-    QString startDir;
+    KUrl startDir;
     if (argc > 1)
 	argv1 = QLatin1String(argv[1]);
     if ( argc > 2 )
-        startDir = QLatin1String( argv[2]);
+        startDir = KUrl( argv[2] );
 
     if (argv1 == QLatin1String("diroperator")) {
 	KDirOperator *op = new KDirOperator(startDir, 0);
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("preselect")) {
-        names = KFileDialog::getOpenFileNames(QLatin1String("/etc/passwd"));
+        names = KFileDialog::getOpenFileNames(KUrl("/etc/passwd"));
         QStringList::Iterator it = names.begin();
         while ( it != names.end() ) {
             qDebug("selected file: %s", (*it).toLatin1().constData());

@@ -1219,6 +1219,24 @@ in the drop/paste side.</li>
 
 <h4>KFileDialog</h4>
 <ul>
+<li>Changed constructor and method 'startDir' arguments from QString to KUrl
+
+<pre>
+  Affected methods:
+
+    KFileDialog( ... )
+    static QString getOpenFileNameWId( ... )
+    static QStringList getOpenFileNames( ... )
+    static KUrl getOpenURL( ... )
+    static KUrl::List getOpenURLs( ... )
+    static QString getSaveFileName( ... )
+    static QString getSaveFileNameWId( ... )
+    static KUrl getSaveURL( ... )
+    static QString getExistingDirectory( ... )
+    static KUrl getExistingURL( ... )
+    static KUrl getImageOpenURL( ... )
+</pre>
+</li>
 <li>void toolbarCallback(int) was removed</li>
 <li>void pathComboChanged( const QString&amp; ); was removed</li>
 <li>void dirCompletion( const QString&amp; ); was removed</li>
