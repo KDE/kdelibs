@@ -76,7 +76,7 @@ set(kiocore_STAT_SRCS
   kio/karchive.cpp
   kio/kfilefilter.cpp
   kio/kfilemetainfo.cpp
-  kio/kdcopservicestarter.cpp
+  kio/kdbusservicestarter.cpp
   kio/dataslave.cpp
   kio/dataprotocol.cpp
   kio/kacl.cpp

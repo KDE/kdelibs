@@ -68,7 +68,7 @@ install_files( /include FILES
   kfilemetainfo.h
   renamedlgplugin.h
   kmimetyperesolver.h
-  kdcopservicestarter.h
+  kdbusservicestarter.h
   kremoteencoding.h
   kmimetypechooser.h
   kacl.h

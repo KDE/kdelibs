@@ -27,7 +27,7 @@
 #include <qpixmapcache.h>
 
 #include <kapplication.h>
-#include <kdcopservicestarter.h>
+#include <kdbusservicestarter.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <ksimpleconfig.h>

@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kdcopservicestarter.h"
+#include "kdbusservicestarter.h"
 #include "kservicetypetrader.h"
 #include <kapplication.h>
 #include "kservice.h"
