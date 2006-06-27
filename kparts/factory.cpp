@@ -49,10 +49,7 @@ Part *Factory::createPart( QWidget *parentWidget, QObject *parent, const char *c
 
 const KInstance *Factory::partInstance()
 {
-    QueryInstanceParams params;
-    params.instance = 0;
-    virtual_hook( VIRTUAL_QUERY_INSTANCE_PARAMS, &params );
-    return params.instance;
+	return 0;
 }
 
 const KInstance *Factory::partInstanceFromLibrary( const QByteArray &libraryName )

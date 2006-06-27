@@ -81,7 +81,7 @@ public:
       * return the instance that belongs to the part without the need to instantiate
       * the part component.
       */
-     const KInstance *partInstance();
+     virtual const KInstance *partInstance();
 
      /**
       * A convenience method for partInstance that takes care of retrieving
@@ -122,16 +122,6 @@ protected:
      */
     virtual QObject *createObject( QObject *parent = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
 
-    /** This 'enum' along with the structure below is NOT part of the public API.
-      * It's going to disappear in KDE 4.0 and is likely to change inbetween.
-      *
-      * @internal
-      */
-    enum { VIRTUAL_QUERY_INSTANCE_PARAMS = 0x10 };
-    struct QueryInstanceParams
-    {
-        const KInstance *instance;
-    };
 };
 
 }

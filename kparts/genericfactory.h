@@ -34,6 +34,11 @@ namespace KParts
 
         static KInstance *instance();
         static KAboutData *aboutData();
+        virtual const KInstance* partInstance()
+        {
+            return instance();
+        }
+
 
     protected:
         virtual KInstance *createInstance()
@@ -41,16 +46,6 @@ namespace KParts
             return new KInstance( aboutData() );
         }
 
-        virtual void virtual_hook( int id, void *data )
-        {
-            if ( id != VIRTUAL_QUERY_INSTANCE_PARAMS ) {
-                KParts::Factory::virtual_hook( id, data );
-                return;
-            }
-
-            QueryInstanceParams *params = reinterpret_cast<QueryInstanceParams *>( data );
-            params->instance = instance();
-        }
 
     private:
         static GenericFactoryBase<T> *s_self;
