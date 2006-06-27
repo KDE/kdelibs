@@ -7,6 +7,10 @@
 
 #include <kmainwindow.h>
 #include "ui_knotifytestview.h"
+#include <QPointer>
+
+class KNotification;
+
 
 class KNotifyTestWindow : public KMainWindow
 {
@@ -17,6 +21,8 @@ class KNotifyTestWindow : public KMainWindow
 	
 	private:
 		Ui::KNotifyTestView view;
+		QPointer<KNotification> m_readNotif;
+		int m_nbNewMessage;
 
 	public Q_SLOTS:
 		void slotSendOnlineEvent();
