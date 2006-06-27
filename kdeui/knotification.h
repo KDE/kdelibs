@@ -139,7 +139,7 @@ class KInstance;
 	notification->setActions( QStringList( i18n( "Open chat" ) ) );
 	
 	foreach( QString group , contact->groups() ) {
-		notification->addContext( qMakePair( QString("group") , group ) );
+		notification->addContext( "group" , group ) ;
 	}
 	
 	connect(notification, SIGNAL(activated(unsigned int )), contact , SLOT(slotOpenChat()) );
@@ -240,7 +240,7 @@ public:
 
 	~KNotification();
 
-    /**
+	/**
 	 * @brief the widget associated to the notification
 	 *
 	 * If the widget is destroyed, the notification will be automatically canceled.
@@ -323,8 +323,15 @@ public:
 	void setContexts( const ContextList &contexts);
 	/**
 	 * append a context at the list of contexts, see KNotificaiton::Context
+	 * @param context the context which is added
 	 */
 	void addContext( const Context & context);
+	/**
+	 * @overload
+	 * @param context_key is the key of the context
+	 * @param context_value is the value of the context
+	 */
+	void addContext( const QString & context_key, const QString & context_value );
 	
 	/**
 	 * The instance is used to determine the location of the config file.  By default, kapp is used

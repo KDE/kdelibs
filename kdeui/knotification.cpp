@@ -148,6 +148,11 @@ void KNotification::addContext( const KNotification::Context & context)
 	d->contexts << context;
 }
 
+void KNotification::addContext( const QString & context_key, const QString & context_value )
+{
+	d->contexts << qMakePair( context_key , context_value );
+}
+
 void KNotification::setInstance( const KInstance * i)
 {
 	d->instance=i;
@@ -261,31 +266,31 @@ void KNotification::beep( const QString & reason, QWidget * widget )
 
 void KNotification::sendEvent()
 {
-	
-	QString appname; 
-
-	if(d->flags & DefaultEvent)
-		appname = QLatin1String("kde");
-	else if(d->instance)
-		appname = QString::fromLatin1(d->instance->instanceName());
-	else
-		appname = QString::fromLatin1(KGlobal::instance()->instanceName());
-	
-	if(!(d->flags & NoTimeout))
+	if(d->id==0)
 	{
-		QTimer::singleShot(6*1000, this, SLOT(close()));
+		QString appname; 
+	
+		if(d->flags & DefaultEvent)
+			appname = QLatin1String("kde");
+		else if(d->instance)
+			appname = QString::fromLatin1(d->instance->instanceName());
+		else
+			appname = QString::fromLatin1(KGlobal::instance()->instanceName());
+		
+		if(!(d->flags & NoTimeout))
+		{
+			QTimer::singleShot(6*1000, this, SLOT(close()));
+		}
+	
+		
+		d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
+		if(d->id>0)
+			ref();
+	//	kDebug(299) << k_funcinfo << d->id << endl;
+		
+		//after a small timeout, the notification will be deleted if all presentation are finished
+		QTimer::singleShot(1000, this, SLOT(deref()));
 	}
-
-	
-	d->id=KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname );
-	if(d->id>0)
-		ref();
-//	kDebug(299) << k_funcinfo << d->id << endl;
-	
-	//after a small timeout, the notification will be deleted if all presentation are finished
-	QTimer::singleShot(1000, this, SLOT(deref()));
-
-
 }
 
 #include "knotification.moc"

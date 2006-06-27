@@ -112,16 +112,20 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     QDataStream arg(&pixmapData, QIODevice::WriteOnly);
     arg << pix;
 
-//TODO
     QVariantList contextList;
     typedef QPair<QString,QString> Context;
     foreach (const Context& ctx, contexts)
-        contextList << (QVariantList() << ctx.first << ctx.second);
+    {
+        kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second  << endl;
+	QVariantList vl;
+	vl << ctx.first << ctx.second;
+        contextList << vl;
+    }
     
     QDBusReply<int> reply =
         d->knotify->call("event.ssa(ss)sayasx", n->eventId(),
                          (appname.isEmpty() ? kapp->instanceName() : appname),
-                         /*contextList*/ QVariantList(), n->text(), pixmapData, actions, qlonglong(winId));
+                         contextList, n->text(), pixmapData, actions, qlonglong(winId));
     if (reply.isError())
     {
         kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
