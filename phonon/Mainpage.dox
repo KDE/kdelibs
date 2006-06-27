@@ -15,20 +15,20 @@ connected using Path objects which also allow the insertion of Effect objects
 between producer and output.
 
 \section phonon_tutorial Tutorial
-\ref phonon_tut1 "a simple audio player"
-\ref phonon_tut2 "add a playlist"
-\ref phonon_tut3 "crossfades"
-\ref phonon_tut4 "show videos"
+\li \ref phonon_tut1 "a simple audio player"
+\li \ref phonon_tut2 "add a playlist"
+\li \ref phonon_tut3 "crossfades"
+\li \ref phonon_tut4 "show videos"
 
 \section phonon_frontend The Frontend API
- - for simple playback use \ref Phonon::SimplePlayer
- - add ref to overview of frontend objects
- - \ref Phonon "The Phonon namespace"
- - \ref Phonon::MediaObject "The central class for playback functionality (MediaObject)"
+\li for simple playback use \ref Phonon::SimplePlayer
+\li add ref to overview of frontend objects
+\li \ref Phonon "The Phonon namespace"
+\li \ref Phonon::MediaObject "The central class for playback functionality (MediaObject)"
 
 \section phonon_backend_development Backend Development
 If you want to write a new backend for %Phonon this is for you:
- - \ref phonon_backend_development_page "Phonon Backend Development"
+\li \ref phonon_backend_development_page "Phonon Backend Development"
 
 
 
@@ -143,47 +143,47 @@ throughout this documentation simply called Backend:
 \li bool \ref phonon_Backend_supportsVideo "supportsVideo()"
 \li QStringList \ref phonon_Backend_knownMimeTypes "knownMimeTypes()"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_audioOutputDeviceIndexes "audioOutputDeviceIndexes()"
-\li QString \ref phonon_Backend_audioOutputDeviceName "audioOutputDeviceName( int )"
-\li QString \ref phonon_Backend_audioOutputDeviceDescription "audioOutputDeviceDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "audioOutputDeviceIndexes()"
+\li QString \ref phonon_Backend_xName "audioOutputDeviceName( int )"
+\li QString \ref phonon_Backend_xDescription "audioOutputDeviceDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_videoOutputDeviceIndexes "videoOutputDeviceIndexes()"
-\li QString \ref phonon_Backend_videoOutputDeviceName "videoOutputDeviceName( int )"
-\li QString \ref phonon_Backend_videoOutputDeviceDescription "videoOutputDeviceDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "videoOutputDeviceIndexes()"
+\li QString \ref phonon_Backend_xName "videoOutputDeviceName( int )"
+\li QString \ref phonon_Backend_xDescription "videoOutputDeviceDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_audioCaptureDeviceIndexes "audioCaptureDeviceIndexes()"
-\li QString \ref phonon_Backend_audioCaptureDeviceName "audioCaptureDeviceName( int )"
-\li QString \ref phonon_Backend_audioCaptureDeviceDescription "audioCaptureDeviceDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "audioCaptureDeviceIndexes()"
+\li QString \ref phonon_Backend_xName "audioCaptureDeviceName( int )"
+\li QString \ref phonon_Backend_xDescription "audioCaptureDeviceDescription( int )"
 \li qint32 \ref phonon_Backend_audioCaptureDeviceVideoIndex "audioCaptureDeviceVideoIndex( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_videoCaptureDeviceIndexes "videoCaptureDeviceIndexes()"
-\li QString \ref phonon_Backend_videoCaptureDeviceName "videoCaptureDeviceName( int )"
-\li QString \ref phonon_Backend_videoCaptureDeviceDescription "videoCaptureDeviceDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "videoCaptureDeviceIndexes()"
+\li QString \ref phonon_Backend_xName "videoCaptureDeviceName( int )"
+\li QString \ref phonon_Backend_xDescription "videoCaptureDeviceDescription( int )"
 \li qint32 \ref phonon_Backend_videoCaptureDeviceAudioIndex "videoCaptureDeviceAudioIndex( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_audioEffectIndexes "audioEffectIndexes()"
-\li QString \ref phonon_Backend_audioEffectName "audioEffectName( int )"
-\li QString \ref phonon_Backend_audioEffectDescription "audioEffectDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "audioEffectIndexes()"
+\li QString \ref phonon_Backend_xName "audioEffectName( int )"
+\li QString \ref phonon_Backend_xDescription "audioEffectDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_videoEffectIndexes "videoEffectIndexes()"
-\li QString \ref phonon_Backend_videoEffectName "videoEffectName( int )"
-\li QString \ref phonon_Backend_videoEffectDescription "videoEffectDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "videoEffectIndexes()"
+\li QString \ref phonon_Backend_xName "videoEffectName( int )"
+\li QString \ref phonon_Backend_xDescription "videoEffectDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_visualizationIndexes "visualizationIndexes()"
-\li QString \ref phonon_Backend_visualizationName "visualizationName( int )"
-\li QString \ref phonon_Backend_visualizationDescription "visualizationDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "visualizationIndexes()"
+\li QString \ref phonon_Backend_xName "visualizationName( int )"
+\li QString \ref phonon_Backend_xDescription "visualizationDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_containerFormatIndexes "containerFormatIndexes()"
-\li QString \ref phonon_Backend_containerFormatName "containerFormatName( int )"
-\li QString \ref phonon_Backend_containerFormatDescription "containerFormatDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "containerFormatIndexes()"
+\li QString \ref phonon_Backend_xName "containerFormatName( int )"
+\li QString \ref phonon_Backend_xDescription "containerFormatDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_audioCodecIndexes "audioCodecIndexes()"
-\li QString \ref phonon_Backend_audioCodecName "audioCodecName( int )"
-\li QString \ref phonon_Backend_audioCodecDescription "audioCodecDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "audioCodecIndexes()"
+\li QString \ref phonon_Backend_xName "audioCodecName( int )"
+\li QString \ref phonon_Backend_xDescription "audioCodecDescription( int )"
 
-\li \ref QSet "QSet<int>" \ref phonon_Backend_videoCodecIndexes "videoCodecIndexes()"
-\li QString \ref phonon_Backend_videoCodecName "videoCodecName( int )"
-\li QString \ref phonon_Backend_videoCodecDescription "videoCodecDescription( int )"
+\li \ref QSet "QSet<int>" \ref phonon_Backend_xIndexes "videoCodecIndexes()"
+\li QString \ref phonon_Backend_xName "videoCodecName( int )"
+\li QString \ref phonon_Backend_xDescription "videoCodecDescription( int )"
 
 \li const char* \ref phonon_Backend_uiLibrary "uiLibrary()"
 
@@ -375,57 +375,57 @@ and display of videos.
 \subsection phonon_Backend_knownMimeTypes QStringList knownMimeTypes()
 Lists the MIME types the backend can read and decode.
 
-\subsection phonon_Backend_audioCaptureDeviceIndexes QSet<int> audioCaptureDeviceIndexes()
-\returns A set of indexes that identify the audio capture devices the backend
-supports. This list needs to be compiled from looking at available hardware
-devices and "virtual devices". The implementation should use cached information,
-but you need to invalidate the cache whenever the hardware configuration changes
-or new virtual devices come available.
+\subsection phonon_Backend_xIndexes QSet<int> <device/codec/effect/...>Indexes()
+	Returns a set of indexes that identify the devices/codecs/effects/... the
+	backend supports. This list needs to be compiled from looking at
+	available hardware and virtual devices/plugins/... . The implementation
+	should use cached information, but you need to invalidate the cache
+	whenever the hardware configuration changes or new virtual devices come
+	available/new plugins are installed/... .
 
-\subsection phonon_Backend_audioCaptureDeviceName QString audioCaptureDeviceName( int index )
-\param index The index of the device. This is one of the indexes the backend
-returned via \ref phonon_Backend_audioCaptureDeviceIndexes
-\returns A translated user visible string to name the device.
+	\return The indexes of the available devices/codecs/effects/...
 
-\subsection phonon_Backend_audioCaptureDeviceDescription QString audioCaptureDeviceDescription( int index )
-\param index The index of the device. This is one of the indexes the backend
-returned via \ref phonon_Backend_audioCaptureDeviceIndexes
-\returns A translated user visible string to describe the device.
+	\see \ref phonon_Backend_xName
+	\see \ref phonon_Backend_xDescription
+
+\subsection phonon_Backend_xName QString <device/codec/effect/...>Name()
+	Returns the name of the given device/codec/effect/...
+
+	\param index The index of one device/codec/effect/... this is one index
+	out of \ref phonon_Backend_xIndexes
+	
+	\returns A translated user visible string to name the device.
+
+	\see \ref phonon_Backend_xIndexes
+	\see \ref phonon_Backend_xDescription
+\subsection phonon_Backend_xDescription QString <device/codec/effect/...>Description()
+	Returns the description of the given device/codec/effect/...
+
+	\param index The index of one device/codec/effect/... this is one index
+	out of \ref phonon_Backend_xIndexes
+	
+	\returns A translated user visible string to describe the device.
+
+	\see \ref phonon_Backend_xIndexes
+	\see \ref phonon_Backend_xName
 
 \subsection phonon_Backend_audioCaptureDeviceVideoIndex qint32 audioCaptureDeviceVideoIndex( int index )
-\param index The index of the device. This is one of the indexes the backend
-returned via \ref phonon_Backend_audioCaptureDeviceIndexes
-\returns An index of a video capture device that is associated with the given
-audio capture device. For example a webcam might have both a video and an audio
-capture device, and in order give the user a hint that the audio and video
-capture devices belong together this index is used.
-\returns If there is no associated video capture device return -1.
-
-\subsection phonon_Backend_videoCaptureDeviceIndexes QSet<int> videoCaptureDeviceIndexes()
-\returns A set of indexes that identify the video capture devices the backend
-supports. This list needs to be compiled from looking at available hardware
-devices and "virtual devices". The implementation should use cached information,
-but you need to invalidate the cache whenever the hardware configuration changes
-or new virtual devices come available.
-
-\subsection phonon_Backend_videoCaptureDeviceName QString videoCaptureDeviceName( int index )
-\param index The index of the device. This is one of the indexes the backend
-returned via \ref phonon_Backend_videoCaptureDeviceIndexes
-\returns A translated user visible string to name the device.
-
-\subsection phonon_Backend_videoCaptureDeviceDescription QString videoCaptureDeviceDescription( int index )
-\param index The index of the device. This is one of the indexes the backend
-returned via \ref phonon_Backend_videoCaptureDeviceIndexes
-\returns A translated user visible string to describe the device.
+	\param index The index of the device. This is one of the indexes the backend
+	returned via \ref phonon_Backend_audioCaptureDeviceIndexes
+	\returns An index of a video capture device that is associated with the given
+	audio capture device. For example a webcam might have both a video and an audio
+	capture device, and in order give the user a hint that the audio and video
+	capture devices belong together this index is used.
+	\returns If there is no associated video capture device return -1.
 
 \subsection phonon_Backend_videoCaptureDeviceAudioIndex qint32 videoCaptureDeviceAudioIndex( int index )
-\param index The index of the device. This is one of the indexes the backend
-returned via \ref phonon_Backend_videoCaptureDeviceIndexes
-\returns An index of a audio capture device that is associated with the given
-video capture device. For example a webcam might have both a audio and an video
-capture device, and in order give the user a hint that the video and audio
-capture devices belong together this index is used.
-\returns If there is no associated audio capture device return -1.
+	\param index The index of the device. This is one of the indexes the backend
+	returned via \ref phonon_Backend_videoCaptureDeviceIndexes
+	\returns An index of a audio capture device that is associated with the given
+	video capture device. For example a webcam might have both a audio and an video
+	capture device, and in order give the user a hint that the video and audio
+	capture devices belong together this index is used.
+	\returns If there is no associated audio capture device return -1.
 */
 // DOXYGEN_REFERENCES = kdecore kio phonon/ui
 // DOXYGEN_SET_EXPAND_AS_DEFINED = PHONON_ABSTRACTBASE PHONON_OBJECT PHONON_HEIR
