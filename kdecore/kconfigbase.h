@@ -27,6 +27,7 @@
 #include <qvariant.h>
 #include <kdelibs_export.h>
 #include <kdebug.h>
+#include <dbus/qdbusmessage.h>
 
 template <typename KT, typename KV> class QMap;
 class QString;
