@@ -525,9 +525,6 @@ void KSycocaEntry::read( QDataStream &s, QStringList &list )
   }
 }
 
-void KSycoca::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 void KSycocaEntry::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 

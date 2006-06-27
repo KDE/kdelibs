@@ -586,10 +586,4 @@ QString KLibLoader::errorString( int componentLoadingError )
     }
 }
 
-void KLibLoader::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-void KLibFactory::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "klibloader.moc"

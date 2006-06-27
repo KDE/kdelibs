@@ -267,8 +267,5 @@ int KProcIO::readln (QString &line, bool autoAck, bool *partial)
 
 }
 
-void KProcIO::virtual_hook( int id, void* data )
-{ KProcess::virtual_hook( id, data ); }
-
 #include "kprocio.moc"
 

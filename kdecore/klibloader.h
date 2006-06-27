@@ -255,11 +255,6 @@ protected:
                                    const QStringList &args = QStringList() ) = 0;
 
 
-protected:
-    /** Virtual hook, used to add new "virtual" functions while maintaining
-	binary compatibility. Unused in this class.
-    */
-    virtual void virtual_hook( int id, void* data );
 private:
     KLibFactoryPrivate *d;
 };
@@ -498,11 +493,6 @@ private:
 
     static KLibLoader* s_self;
 
-protected:
-    /** Virtual hook, used to add new "virtual" functions while maintaining
-	binary compatibility. Unused in this class.
-    */
-    virtual void virtual_hook( int id, void* data );
 private:
     class Private;
     Private *const d;

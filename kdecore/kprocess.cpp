@@ -1064,9 +1064,6 @@ void KProcess::commClose()
 }
 
 
-void KProcess::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 
 ///////////////////////////
 // CC: Class KShellProcess
@@ -1091,7 +1088,5 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
   return KProcess::start(runmode, comm);
 }
 
-void KShellProcess::virtual_hook( int id, void* data )
-{ KProcess::virtual_hook( id, data ); }
 
 #include "kprocess.moc"
