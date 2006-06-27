@@ -1450,6 +1450,7 @@ void KateStyleListItem::unsetColor( int c )
     is->clearAttribute(KateAttribute::BGColor);
   else if ( c == 101 && is->itemSet(KateAttribute::SelectedBGColor) )
     is->clearAttribute(KateAttribute::SelectedBGColor);
+  updateStyle();
 }
 
 void KateStyleListItem::paintCell( QPainter *p, const QColorGroup& /*cg*/, int col, int width, int align )
