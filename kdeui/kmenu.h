@@ -154,8 +154,6 @@ protected Q_SLOTS:
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
     void showCtxMenu(const QPoint &pos);
-    void ctxMenuHiding();
-    void ctxMenuHideShowingMenu();
 
 private:
     class KMenuPrivate;

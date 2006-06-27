@@ -41,7 +41,6 @@ public:
         , mouseButtons(Qt::NoButton)
         , keyboardModifiers(Qt::NoModifier)
         , ctxMenu(0)
-        , continueCtxMenuShow(true)
         , highlightedAction(0)
     {}
 
@@ -67,7 +66,6 @@ public:
 
     // support for RMB menus on menus
     QMenu* ctxMenu;
-    bool continueCtxMenuShow;
     QPointer<QAction> highlightedAction;
 };
 
@@ -363,7 +361,6 @@ QMenu* KMenu::contextMenu()
     if (!d->ctxMenu)
     {
         d->ctxMenu = new QMenu(this);
-        connect(d->ctxMenu, SIGNAL(aboutToHide()), this, SLOT(ctxMenuHiding()));
         connect(this, SIGNAL(hovered(QAction*)), SLOT(actionHovered(QAction*)));
     }
 
@@ -377,18 +374,17 @@ const QMenu* KMenu::contextMenu() const
 
 void KMenu::hideContextMenu()
 {
-    d->continueCtxMenuShow = false;
-}
-
-void KMenu::actionHovered(QAction* action)
-{
     if (!d->ctxMenu || !d->ctxMenu->isVisible())
     {
         return;
     }
 
     d->ctxMenu->hide();
-    //showCtxMenu(actionGeometry(action).center());
+}
+
+void KMenu::actionHovered(QAction* /*action*/)
+{
+    hideContextMenu();
 }
 
 Q_DECLARE_METATYPE(KMenuContext)
@@ -404,10 +400,6 @@ static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contex
 
 void KMenu::showCtxMenu(const QPoint &pos)
 {
-    if (d->highlightedAction)
-        if (QMenu* subMenu = d->highlightedAction->menu())
-            disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
-
     d->highlightedAction = activeAction();
 
     if (!d->highlightedAction)
@@ -419,19 +411,14 @@ void KMenu::showCtxMenu(const QPoint &pos)
     emit aboutToShowContextMenu(this, d->highlightedAction, d->ctxMenu);
     KMenuSetActionData(this,this,d->highlightedAction);
 
+
     if (QMenu* subMenu = d->highlightedAction->menu())
     {
-        connect(subMenu, SIGNAL(aboutToShow()), SLOT(ctxMenuHideShowingMenu()));
         QTimer::singleShot(100, subMenu, SLOT(hide()));
     }
 
-    if (!d->continueCtxMenuShow)
-    {
-        d->continueCtxMenuShow = true;
-        return;
-    }
 
-    d->ctxMenu->exec(this->mapToGlobal(pos));
+    d->ctxMenu->popup(this->mapToGlobal(pos));
 }
 
 KMenu * KMenu::contextMenuFocus( )
@@ -450,26 +437,6 @@ QAction * KMenu::contextMenuFocusAction( )
   }
 
   return 0L;
-}
-
-/*
- * this method helps prevent submenus popping up while we have a context menu
- * showing
- */
-void KMenu::ctxMenuHideShowingMenu()
-{
-    if (d->highlightedAction)
-        if (QMenu* subMenu = d->highlightedAction->menu())
-            QTimer::singleShot(0, subMenu, SLOT(hide()));
-}
-
-void KMenu::ctxMenuHiding()
-{
-    if (d->highlightedAction)
-        if (QMenu* subMenu = d->highlightedAction->menu())
-            disconnect(subMenu, SIGNAL(aboutToShow()), this, SLOT(ctxMenuHideShowingMenu()));
-
-    d->continueCtxMenuShow = true;
 }
 
 void KMenu::contextMenuEvent(QContextMenuEvent* e)

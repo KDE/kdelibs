@@ -58,31 +58,25 @@ testWindow::testWindow (QWidget *parent)
     toolBarsAction->setMenu(toolBarMenu);
     toolBarMenu->addAction ("(Un)Hide toolbar 1", this, SLOT(slotHide1()));
     toolBarMenu->addAction ("(Un)Hide toolbar 2", this, SLOT(slotHide2()));
-
+#endif
     itemsMenu = new QMenu;
-    QAction* itemsAction = menuBar->addAction ("&Items");
-    itemsAction->setMenu(itemsMenu);
+//    QAction* itemsAction = menuBar->addAction ("&Items");
+//    itemsAction->setMenu(itemsMenu);
 
     exitB = true;   // exit button is shown
     lineL = true;   // LineEdit is enabled
     greenF = false;  // Frame not inserted
 
     itemsMenu->addAction ("delete/insert exit button", this, SLOT(slotExit()));
-    //itemsMenu->addAction ("insert/delete green frame!", this, SLOT(slotFrame()));
     itemsMenu->addAction ("enable/disable lineedit", this, SLOT(slotLined()));
     itemsMenu->addAction ("Toggle fileNew", this, SLOT(slotNew()));
     itemsMenu->addAction ("Combo: clear", this, SLOT(slotClearCombo()));
     itemsMenu->addAction ("Combo: insert list", this, SLOT(slotInsertListInCombo()));
     itemsMenu->addAction ("Combo: make item 3 current", this, SLOT(slotMakeItem3Current()));
-    //itemsMenu->addAction ("Insert clock!", this, SLOT(slotInsertClock()));
     itemsMenu->addAction ("Important msg in statusbar", this, SLOT(slotImportant()));
 
-    menuBar->addSeparator();
-    helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
-    QAction* helpAction = menuBar->addAction( "&Help" );
-    helpAction->setMenu(helpMenu->menu());
 
-#endif
+
     KStdAction::configureToolbars( this, SLOT( configureToolbars() ),  actionCollection() );
 	KStdAction::keyBindings( guiFactory(), SLOT( configureShortcuts() ), actionCollection() );
 
