@@ -395,14 +395,16 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
         return true;
     }
 
-    if (par->isInline()) {
+    RenderObject *prev = previousRenderer();
+    if (prev && prev->isBR()) // <span><br/> <br/></span>
+        return false;
+
+    if (par->isInlineFlow()) {
         // <span><div/> <div/></span>
-        RenderObject *prev = previousRenderer();
-        if (prev && prev->isRenderBlock()) {
+        if (prev && !prev->isInline()) {
             return false;
         }
     } else {
-        RenderObject *prev = previousRenderer();
         if (par->isRenderBlock() && !par->childrenInline() && (!prev || !prev->isInline())) {
             return false;
         }
