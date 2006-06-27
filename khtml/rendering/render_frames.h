@@ -130,6 +130,12 @@ public:
     virtual const char *renderName() const { return "RenderFrame"; }
     virtual bool isFrame() const { return true; }
 
+    // frames never have padding
+    virtual int paddingTop() const { return 0; }
+    virtual int paddingBottom() const { return 0; }
+    virtual int paddingLeft() const { return 0; }
+    virtual int paddingRight() const { return 0; }
+
     DOM::HTMLFrameElementImpl *element() const
     { return static_cast<DOM::HTMLFrameElementImpl*>(RenderObject::element()); }
 
@@ -150,6 +156,8 @@ public:
 
     virtual void layout( );
     virtual void updateWidget();
+    
+    virtual bool canHaveBorder() const { return true; }
 
     virtual bool partLoadingErrorNotify( khtml::ChildFrame *childFrame, const KURL& url, const QString& serviceType );
 

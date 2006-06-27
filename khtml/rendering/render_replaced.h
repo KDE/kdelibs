@@ -146,6 +146,11 @@ protected:
     bool m_needsMask;
 
 public:
+    virtual int borderTop() const { return canHaveBorder() ? RenderReplaced::borderTop() : 0; }
+    virtual int borderBottom() const { return canHaveBorder() ? RenderReplaced::borderBottom() : 0; }
+    virtual int borderLeft() const { return canHaveBorder() ? RenderReplaced::borderLeft() : 0; }
+    virtual int borderRight() const { return canHaveBorder() ? RenderReplaced::borderRight() : 0; }
+
     class EventPropagator : public QWidget {
     public:
         void sendEvent(QEvent *e);

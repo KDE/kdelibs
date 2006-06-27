@@ -190,7 +190,11 @@ public:
     virtual void recalcStyle( StyleChange ch );
 
 protected:
+
+    void updateFrame();
+
     bool needWidgetUpdate;
+    bool m_frame;
 };
 
 

@@ -584,6 +584,7 @@ HTMLIFrameElementImpl::HTMLIFrameElementImpl(DocumentPtr *doc) : HTMLFrameElemen
     marginWidth = 0;
     marginHeight = 0;
     needWidgetUpdate = false;
+    m_frame = true;
 }
 
 HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
@@ -615,9 +616,32 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
         needWidgetUpdate = true; // ### do this for scrolling, margins etc?
         HTMLFrameElementImpl::parseAttribute( attr );
         break;
+    case ATTR_FRAMEBORDER:
+    {
+        m_frame = (!attr->val() || attr->value().toInt() > 0);
+        if (attached()) updateFrame();
+    }
     default:
         HTMLFrameElementImpl::parseAttribute( attr );
     }
+}
+
+void HTMLIFrameElementImpl::updateFrame()
+{
+    if (m_frame) {
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_OUTSET);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_OUTSET);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_OUTSET);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_OUTSET);
+        addCSSLength(CSS_PROP_BORDER_WIDTH, "2");
+    } else {
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_NONE);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_NONE);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_NONE);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_NONE);
+        removeCSSProperty(CSS_PROP_BORDER_WIDTH);
+    }
+
 }
 
 void HTMLIFrameElementImpl::attach()
@@ -626,6 +650,7 @@ void HTMLIFrameElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
+    updateFrame();
     name = getAttribute(ATTR_NAME);
     if (name.isNull())
         name = getAttribute(ATTR_ID);

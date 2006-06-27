@@ -660,7 +660,14 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	QWidget *w = it.current();
 	RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
 	if (w && rw && !rw->isKHTMLWidget()) { 
-            QRect g = w->geometry();
+            int x, y;
+            rw->absolutePosition(x, y);
+            contentsToViewport(x, y, x, y);
+            int pbx = rw->borderLeft()+rw->paddingLeft();
+            int pby = rw->borderTop()+rw->paddingTop();
+            QRect g = QRect(x+pbx, y+pby, 
+                            rw->width()-pbx-rw->borderRight()-rw->paddingRight(), 
+                            rw->height()-pby-rw->borderBottom()-rw->paddingBottom());
             if ( !rw->isFrame() && ((g.top() > pt.y()+eh) || (g.bottom() <= pt.y()) ||
                                     (g.right() <= pt.x()) || (g.left() > pt.x()+ew) ))
                 continue;
@@ -673,10 +680,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
                 mask = mask.intersect( QRect(g.x(),g.y(),g.width(),g.height()) );
                 cr -= mask;
             } else {
-                int x, y;
-                rw->absolutePosition(x,y);
-                contentsToViewport(x,y,x,y);
-                cr -= QRect(x,y,rw->width(),rw->height());
+                cr -= g;
             }
         }
     }

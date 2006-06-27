@@ -2182,9 +2182,13 @@ void RenderObject::updateWidgetMasks() {
             QRegion r = l ? l->getMask() : QRegion();
             int x,y;
             if (!r.isNull() && curr->absolutePosition(x,y)) {
-                x+= curr->borderLeft()+curr->paddingLeft();
-                y+= curr->borderBottom()+curr->paddingBottom();
-                r = r.intersect(QRect(x,y,curr->width(),curr->height()));
+                int pbx = curr->borderLeft()+curr->paddingLeft();
+                int pby = curr->borderTop()+curr->paddingTop();
+                x+= pbx;
+                y+= pby;
+                r = r.intersect(QRect(x,y,
+                                  curr->width()-pbx-curr->borderRight()-curr->paddingRight(),
+                                  curr->height()-pby-curr->borderBottom()-curr->paddingBottom()));
 #ifdef MASK_DEBUG
                 QMemArray<QRect> ar = r.rects();
                 kdDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;

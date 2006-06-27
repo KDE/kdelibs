@@ -78,11 +78,6 @@ public:
 
     virtual bool isFormElement() const { return true; }
 
-    virtual int borderTop() const { return canHaveBorder() ? RenderWidget::borderTop() : 0; }
-    virtual int borderBottom() const { return canHaveBorder() ? RenderWidget::borderBottom() : 0; }
-    virtual int borderLeft() const { return canHaveBorder() ? RenderWidget::borderLeft() : 0; }
-    virtual int borderRight() const { return canHaveBorder() ? RenderWidget::borderRight() : 0; }
-
     // form elements never have padding
     virtual int paddingTop() const { return 0; }
     virtual int paddingBottom() const { return 0; }

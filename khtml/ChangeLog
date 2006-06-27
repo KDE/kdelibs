@@ -1,3 +1,19 @@
+2006-06-27  Germain Garand  <germain@ebooksfrance.org>
+
+        . Correct drawing of borders on iframes and objects (#118277/#56109)
+        . Frameborder attribute for iframes (http://www.w3.org/TR/html401/present/frames.html#adef-frameborder) 
+        . Fix widget counter-mask not being updated in time, thus sometimes missing a repaint (e.g: http://lequipe.fr)
+
+        * html/html_baseimpl.{h,cpp} (HTMLIFrameElementImpl::parseAttribute): parse frameborder attribute. Defaults to true as per specification.
+        (HTMLIFrameElementImpl::updateFrame/attach): apply/remove frameborder style at attachment time.
+        * khtmlview.cpp (drawContents): fix counter-mask problem. Widget geometry is not accurate before painting, so we must 
+        use the RenderObject's.
+        * rendering/render_frames.h (paddingTop/paddingBottom/paddingLeft/paddingRight): reimplement. Frames have no padding.
+        (RenderPartObject::canHaveBorder): reimplement. True.
+        * rendering/render_object.cpp (RenderObject::updateWidgetMasks): clip mask to correct width/height, though it doesn't matter much on X11.
+        * rendering/render_replaced.h (RenderWidget::borderTop/borderBottom/borderLeft/borderRight): percolated down from RenderForm. 
+        Frames/Iframes also need that reimplementation.
+
 2006-06-22  Germain Garand  <germain@ebooksfrance.org>
 
         Implement floating auto-width table quirk
