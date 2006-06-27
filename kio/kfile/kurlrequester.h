@@ -239,7 +239,6 @@ private Q_SLOTS:
 
 protected:
     virtual void changeEvent (QEvent *e);
-    virtual void virtual_hook( int id, void* data );
 private:
     class KUrlRequesterPrivate;
     KUrlRequesterPrivate* const d;

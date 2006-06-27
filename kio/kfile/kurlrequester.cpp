@@ -377,8 +377,6 @@ KEditListBox::CustomEditor KUrlRequester::customEditor()
     return editor;
 }
 
-void KUrlRequester::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 KUrlComboRequester::KUrlComboRequester( QWidget *parent)
   : KUrlRequester( new KComboBox(false), parent)
