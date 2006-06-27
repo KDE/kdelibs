@@ -407,9 +407,6 @@ void KDirWatchPrivate::slotActivated()
       if ( event->len )
         path = QFile::decodeName( QCString( event->name, event->len ) );
 
-      if ( event->mask & IN_IGNORED )
-        continue;
-
       if ( path.length() && isNoisyFile( path.latin1() ) )
         continue;
 
@@ -428,12 +425,15 @@ void KDirWatchPrivate::slotActivated()
             if( event->mask & IN_DELETE_SELF) {
               kdDebug(7001) << "-->got deleteself signal for " << e->path << endl;
               e->m_status = NonExistent;
-              //(void) inotify_rm_watch( m_inotify_fd, e->wd );
-              addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+              if (e->isDir)
+                addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+              else
+                addEntry(0, QFileInfo(e->path).dirPath(true), e, true);
+            }
+            if ( event->mask & IN_IGNORED ) {
+              e->wd = 0;
             }
             if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
-              kdDebug(7001) << "-->got new subfile " << path << " in " << e->path << endl;
-
               Entry *sub_entry = e->m_entries.first();
               for(;sub_entry; sub_entry = e->m_entries.next())
                 if (sub_entry->path == e->path + "/" + path) break;
@@ -727,7 +727,10 @@ bool KDirWatchPrivate::useINotify( Entry* e )
     return true;
 
   if ( e->m_status == NonExistent ) {
-    addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+    if (e->isDir) 
+      addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+    else
+      addEntry(0, QFileInfo(e->path).dirPath(true), e, true);
     return true;
   }
 
@@ -782,6 +785,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
        (*it).m_entries.append(sub_entry);
        kdDebug(7001) << "Added already watched Entry " << path
 		     << " (for " << sub_entry->path << ")" << endl;
+
 #ifdef HAVE_DNOTIFY
        Entry* e = &(*it);
        if( (e->m_mode == DNotifyMode) && (e->dn_fd > 0) ) {
@@ -798,6 +802,21 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
          }
        }
 #endif
+
+#ifdef HAVE_INOTIFY
+       Entry* e = &(*it);
+       if( (e->m_mode == INotifyMode) && (e->wd > 0) ) {
+         int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
+         if(!e->isDir)
+           mask |= IN_MODIFY|IN_ATTRIB;
+         else
+           mask |= IN_ONLYDIR;
+
+         inotify_rm_watch (m_inotify_fd, e->wd);
+         e->wd = inotify_add_watch( m_inotify_fd, QFile::encodeName( e->path ), mask);
+       }
+#endif
+ 
     }
     else {
        (*it).addClient(instance);
@@ -928,8 +947,12 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
         m_inotify_fd << ", "  << e->wd <<
         ") for " << e->path << endl;
     }
-    else
-      removeEntry( 0, QDir::cleanDirPath( e->path+"/.." ), e );
+    else {
+      if (e->isDir)
+	removeEntry(0, QDir::cleanDirPath(e->path+"/.."), e);
+      else
+	removeEntry(0, QFileInfo(e->path).dirPath(true), e);
+    }
   }
 #endif
 
@@ -1167,15 +1190,6 @@ int KDirWatchPrivate::scanEntry(Entry* e)
       return Changed;
     }
 
-#ifdef HAVE_INOTIFY
-    // for inotify we delay the initial stating till the first event in it
-    if ( e->m_status == Normal && e->m_ctime == invalid_ctime )
-    {
-      e->m_ctime = stat_buf.st_ctime;
-      e->m_nlink = stat_buf.st_nlink;
-    }
-#endif
-
     return NoChange;
   }
 
@@ -1278,7 +1292,7 @@ void KDirWatchPrivate::slotRescan()
   // removeDir(), when called in slotDirty(), can cause a crash otherwise
   delayRemove = true;
 
-#ifdef HAVE_DNOTIFY
+#if defined(HAVE_DNOTIFY) || defined(HAVE_INOTIFY)
   QPtrList<Entry> dList, cList;
 #endif
 
@@ -1305,6 +1319,16 @@ void KDirWatchPrivate::slotRescan()
     if (!(*it).isValid()) continue;
 
     int ev = scanEntry( &(*it) );
+
+
+#ifdef HAVE_INOTIFY
+    if ((*it).m_mode == INotifyMode && ev == Created && (*it).wd == 0) {
+      cList.append( &(*it) );
+      if (! useINotify( &(*it) )) {
+        useStat( &(*it) );
+      }
+    }
+#endif
 
 #ifdef HAVE_DNOTIFY
     if ((*it).m_mode == DNotifyMode) {
@@ -1337,7 +1361,7 @@ void KDirWatchPrivate::slotRescan()
   }
 
 
-#ifdef HAVE_DNOTIFY
+#if defined(HAVE_DNOTIFY) || defined(HAVE_INOTIFY)
   // Scan parent of deleted directories for new creation
   Entry* e;
   for(e=dList.first();e;e=dList.next())
@@ -1542,7 +1566,8 @@ void KDirWatchPrivate::statistics()
 	kdDebug(7001) << "    dependent entries:" << endl;
 	Entry* d = e->m_entries.first();
 	for(;d; d = e->m_entries.next()) {
-	  kdDebug(7001) << "      " << d->path << endl;
+          kdDebug(7001) << "      " << d << endl;
+	  kdDebug(7001) << "      " << d->path << " (" << d << ") " << endl;
 	}
       }
     }
