@@ -30,6 +30,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QMouseEvent>
 #include <QtXml/QDomElement>
+#include <QtCore/QPointer>
 
 #include <kaction.h>
 #include <kactioncollection.h>

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
+   Copyright (C) 2006 Olivier Goffart <ogoffart@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,8 +21,6 @@
 #define KMENU_H
 
 #include <QMenu>
-#include <QPointer>
-#include <QAction>
 
 #include <kdelibs_export.h>
 
@@ -149,33 +148,15 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual void hideEvent(QHideEvent*);
 
-protected Q_SLOTS:
-    QString underlineText(const QString& text, uint length);
+private Q_SLOTS:
     void resetKeyboardVars(bool noMatches = false);
     void actionHovered(QAction* action);
     void showCtxMenu(const QPoint &pos);
 
 private:
+    QString underlineText(const QString& text, uint length);
     class KMenuPrivate;
     KMenuPrivate * const d;
-};
-
-/**
- * custom variant type for QAction::data of kmenu context menus
- * @author Joseph Wenninger <jowenn@kde.org>
- */
-class KDEUI_EXPORT KMenuContext {
-public:
-    KMenuContext();
-    KMenuContext(const KMenuContext& o);
-    KMenuContext(QPointer<KMenu> menu,QPointer<QAction> action);
-
-    inline QPointer<KMenu> menu() const { return m_menu; }
-    inline QPointer<QAction> action() const { return m_action; }
-
-private:
-    QPointer<KMenu> m_menu;
-    QPointer<QAction> m_action;
 };
 
 

@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
    Copyright (C) 2002 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2006 Olivier Goffart <ogoffart@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,6 +26,9 @@
 #include <QPointer>
 #include <QMenuItem>
 #include <QApplication>
+#include <QPointer>
+#include <QAction>
+
 
 #include "kmenu.h"
 
@@ -68,6 +72,30 @@ public:
     QMenu* ctxMenu;
     QPointer<QAction> highlightedAction;
 };
+
+
+/**
+ * custom variant type for QAction::data of kmenu context menus
+ * @author Joseph Wenninger <jowenn@kde.org>
+ */
+class KMenuContext {
+public:
+    KMenuContext();
+    KMenuContext(const KMenuContext& o);
+    KMenuContext(QPointer<KMenu> menu,QPointer<QAction> action);
+
+    inline QPointer<KMenu> menu() const { return m_menu; }
+    inline QPointer<QAction> action() const { return m_action; }
+
+private:
+    QPointer<KMenu> m_menu;
+    QPointer<QAction> m_action;
+};
+
+
+Q_DECLARE_METATYPE(KMenuContext)
+
+
 
 KMenu::KMenu(QWidget *parent)
     : QMenu(parent)
@@ -387,8 +415,6 @@ void KMenu::actionHovered(QAction* /*action*/)
     hideContextMenu();
 }
 
-Q_DECLARE_METATYPE(KMenuContext)
-
 static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contextedAction) {
     QList<QAction*> actions=menu->actions();
     QVariant v;
@@ -480,6 +506,10 @@ void KMenu::hideEvent(QHideEvent *e)
 /**
  * end of RMB menus on menus support
  */
+
+
+
+
 
 KMenuContext::KMenuContext( )
   : m_menu(0L)
