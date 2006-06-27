@@ -545,7 +545,8 @@ void KIconDialog::slotButtonClicked(int id)
             // Create a file dialog to select a PNG, XPM or SVG file,
             // with the image previewer shown.
             // KFileDialog::getImageOpenURL doesn't allow svg.
-           KFileDialog dlg( KUrl(), i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
+            KUrl emptyUrl;
+            KFileDialog dlg( emptyUrl, i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
                             this);
             dlg.setOperationMode( KFileDialog::Opening );
             dlg.setCaption( i18n("Open") );
