@@ -216,8 +216,6 @@ protected:
 
 private:
     KInstance *m_instance;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KScanDialogFactoryPrivate* d;
 };
@@ -344,8 +342,6 @@ protected:
 
 private:
     KInstance *m_instance;
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KOCRDialogFactory* d;
 };
