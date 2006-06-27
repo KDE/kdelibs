@@ -23,6 +23,7 @@
 #include <qvariant.h>
 
 #include <kdelibs_export.h>
+#include <dbus/qdbusmessage.h>
 
 class QIODevice;
 class DrBase;
