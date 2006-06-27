@@ -28,7 +28,7 @@
 // In qdbusmessage.h QList<QVariant> is instantiated because
 // it is a base class of an exported class. This must be 
 // known here to avoid an additional instantiation. 
-#ifdef Q_OS_WIN
+#ifdef Q_CC_MSVC
 #include <dbus/qdbusmessage.h>
 #endif
 
