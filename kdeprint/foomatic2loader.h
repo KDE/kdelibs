@@ -23,7 +23,14 @@
 #include <qvariant.h>
 
 #include <kdelibs_export.h>
+
+// This include fixes linker errors under msvc:
+// In qdbusmessage.h QList<QVariant> is instantiated because
+// it is a base class of an exported class. This must be 
+// known here to avoid an additional instantiation. 
+#ifdef Q_OS_WIN
 #include <dbus/qdbusmessage.h>
+#endif
 
 class QIODevice;
 class DrBase;
