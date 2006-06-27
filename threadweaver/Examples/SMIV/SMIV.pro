@@ -8,5 +8,5 @@ HEADERS += SMIV.h SMIVItem.h SMIVModel.h SMIVView.h \
 FORMS += SMIVBase.ui
 INCLUDEPATH += ../../Weaver/ ../../Experimental
 LIBS += -L../../Weaver -lThreadWeaver -L../../Experimental -lThreadWeaverExperimental
-CONFIG += qt warn_on debug thread
+CONFIG += qt warn_on thread
 TARGET = smiv

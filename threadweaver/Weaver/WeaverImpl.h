@@ -99,7 +99,7 @@ namespace ThreadWeaver {
         /** Dump the current jobs to the console. */
         void dumpJobs();
 
-signals:
+    signals:
         /** A Thread has been created. */
         void threadStarted ( Thread* );
         /** A thread has exited. */
@@ -158,6 +158,9 @@ signals:
 
         /** Non-recursive mutex to serialize calls to finish(). */
         QMutex* m_finishMutex;
+
+        /** Mutex used by m_jobAvailable wait condition. */
+        QMutex* m_jobAvailableMutex;
 
         // @TODO: make state objects static
 	/** The state of the art.

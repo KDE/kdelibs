@@ -43,6 +43,7 @@ namespace ThreadWeaver {
         , m_inventoryMax(inventoryMax)
         , m_mutex ( new QMutex( QMutex::Recursive ) )
         , m_finishMutex( new QMutex )
+        , m_jobAvailableMutex ( new QMutex )
         , m_state (0)
     {
         // initialize state objects:
@@ -91,6 +92,7 @@ namespace ThreadWeaver {
         m_inventory.clear();
 	delete m_mutex;
         delete m_finishMutex;
+        delete m_jobAvailableMutex;
 	debug ( 3, "WeaverImpl dtor: done\n" );
 	setState ( Destructed ); // m_state = Halted;
         // @TODO: delete state objects. what sense does DestructedState make then?
@@ -318,11 +320,9 @@ namespace ThreadWeaver {
     void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
     {
         debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
-        emit ( threadSuspended ( th ) );
-        QMutex mutex; // FIXME this is bullshit
-        mutex.lock();
-	m_jobAvailable.wait( &mutex );
-	mutex.unlock();
+        emit threadSuspended ( th );
+        QMutexLocker l( m_jobAvailableMutex );
+	m_jobAvailable.wait( m_jobAvailableMutex );
         debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
     }
 

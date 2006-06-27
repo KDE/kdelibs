@@ -88,6 +88,7 @@ namespace ThreadWeaver {
 	DebugLevel = level;
     }
 
+#ifndef QT_NO_DEBUG
     inline void debug(int severity, const char * cformat, ...)
     {
 	if ( Debug == true && ( severity<=DebugLevel || severity == 0) )
@@ -113,6 +114,9 @@ namespace ThreadWeaver {
 	    va_end (ap);
 	}
     }
+#else
+#define debug(x,...)
+#endif
 
 }
 

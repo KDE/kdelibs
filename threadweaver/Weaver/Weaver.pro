@@ -20,7 +20,7 @@ HEADERS += WeaverInterface.h \
 	JobCollection.h \
 	JobSequence.h 
 
-CONFIG += dll warn_on thread release debug
+CONFIG += dll warn_on thread
 QT -= gui
 VERSION = 0.4.0
 TARGET = ThreadWeaver
