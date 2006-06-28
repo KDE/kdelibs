@@ -948,7 +948,6 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       return;
 
    struct dirent *ep;
-   KDE_struct_stat buff;
 
    while( ( ep = readdir( dp ) ) != 0L )
    {
@@ -956,16 +955,24 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
          continue;
 
+      bool isDir = ep->d_type == DT_DIR;
+      bool isReg = ep->d_type == DT_REG;
+
       QString pathfn = dir + fn;
-      if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-         continue; // Couldn't stat (e.g. no read permissions)
+      if (ep->d_type == DT_UNKNOWN) {
+	KDE_struct_stat buff;
+        if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+           continue; // Couldn't stat (e.g. no read permissions)
+        }
+        isDir = S_ISDIR ( buff.st_mode );
+        isReg = S_ISREG ( buff.st_mode );
       }
-      if ( S_ISDIR( buff.st_mode )) {
+      if (isDir) {
          loadApplications(pathfn + '/', prefix + fn + '-');
          continue;
       }
 
-      if ( S_ISREG( buff.st_mode))
+      if (isReg)
       {
          if (!fn.endsWith(".desktop"))
             continue;
@@ -1053,7 +1060,6 @@ kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix <
       return;
 
    struct dirent *ep;
-   KDE_struct_stat buff;
 
    while( ( ep = readdir( dp ) ) != 0L )
    {
@@ -1061,11 +1067,20 @@ kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix <
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
          continue;
 
+      bool isDir = ep->d_type == DT_DIR;
+      bool isReg = ep->d_type == DT_REG;
+
+
       QString pathfn = dir + fn;
-      if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-         continue; // Couldn't stat (e.g. no read permissions)
+      if (ep->d_type == DT_UNKNOWN) {
+	KDE_struct_stat buff;
+        if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+           continue; // Couldn't stat (e.g. no read permissions)
+        }
+        isDir = S_ISDIR ( buff.st_mode );
+        isReg = S_ISREG ( buff.st_mode );
       }
-      if ( S_ISDIR( buff.st_mode )) {
+      if ( isDir ) {
          SubMenu *parentMenu = m_currentMenu;
 
          m_currentMenu = new SubMenu;
@@ -1079,7 +1094,7 @@ kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix <
          continue;
       }
 
-      if ( S_ISREG( buff.st_mode))
+      if ( isReg )
       {
          if (!fn.endsWith(".desktop"))
             continue;
