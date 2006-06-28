@@ -409,18 +409,14 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 
     QString ext = name.right(4);
 
-    static const QString &png_ext = KGlobal::staticQString(".png");
-    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-    if (ext == png_ext || ext == xpm_ext)
+    if (ext == ".png" || ext == ".xpm" )
       extensionLength=4;
     else
     {
 	static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-	static const QString &svg_ext = KGlobal::staticQString(".svg");
-
 	if (name.endsWith(svgz_ext))
 	    extensionLength=5;
-	else if (ext == svg_ext)
+	else if (ext == ".svg")
 	    extensionLength=4;
     }
 
@@ -441,16 +437,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     K3Icon icon;
 
-    const QString *ext[4];
-    int count=0;
-    static const QString &png_ext = KGlobal::staticQString(".png");
-    ext[count++]=&png_ext;
-    static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-    ext[count++]=&svgz_ext;
-    static const QString &svg_ext = KGlobal::staticQString(".svg");
-    ext[count++]=&svg_ext;
-    static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-    ext[count++]=&xpm_ext;
+    const char * const ext[4] = { ".png", "svgz", ".svg", ".xpm" };
 
     /* antlarr: Multiple inheritance is a broken concept on icon themes, so
        the next code doesn't support it on purpose because in fact, it was
@@ -468,7 +455,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
        */
     foreach(KIconThemeNode *themeNode, d->links)
     {
-	for (int i = 0 ; i < count ; i++)
+	for (int i = 0 ; i < 4 ; i++)
 	{
 	    icon = themeNode->theme->iconPath(name + *ext[i], size, K3Icon::MatchExact);
 	    if (icon.isValid())
@@ -479,7 +466,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
 
     foreach(KIconThemeNode *themeNode, d->links)
     {
-	for (int i = 0 ; i < count ; i++)
+	for (int i = 0 ; i < 4 ; i++)
 	{
 	    icon = themeNode->theme->iconPath(name + *ext[i], size, K3Icon::MatchBest);
 	    if (icon.isValid())
