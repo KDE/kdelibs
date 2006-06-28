@@ -47,8 +47,6 @@
 #include <qmimedata.h>
 #include <qtextcodec.h>
 
-static const QString fileProt = "file";
-
 static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool decodeDots )
 {
   if (_path.isEmpty()) return QString();
@@ -628,7 +626,7 @@ void KUrl::setEncodedPath( const QString& _txt, int encoding_hint )
 
   decode( m_strPath_encoded, m_strPath, m_strPath_encoded, encoding_hint );
   // Throw away encoding for local files, makes file-operations faster.
-  if (m_strProtocol == fileProt)
+  if (m_strProtocol == "file")
      m_strPath_encoded.clear();
 
   if ( m_iUriMode == Auto )
@@ -658,7 +656,7 @@ QString KUrl::path( AdjustPathOption trailing ) const
 
 bool KUrl::isLocalFile() const
 {
-  if ( ( scheme() != fileProt ) || hasSubUrl() )
+  if ( ( scheme() != "file" ) || hasSubUrl() )
      return false;
 
   if (host().isEmpty() || (host() == QLatin1String("localhost")))
@@ -1074,7 +1072,7 @@ bool KUrl::cd( const QString& _dir )
   }
 
   // Users home directory on the local disk ?
-  if ( ( _dir[0] == '~' ) && ( scheme() == fileProt ))
+  if ( ( _dir[0] == '~' ) && ( scheme() == "file" ))
   {
     //m_strPath_encoded.clear();
     QString strPath = QDir::homePath();
