@@ -473,7 +473,6 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 #endif
 
     struct dirent *ep;
-    KDE_struct_stat buff;
 
     while( ( ep = readdir( dp ) ) != 0L )
     {
@@ -484,19 +483,28 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       if (!recursive && !regexp.exactMatch(fn))
 	continue; // No match
 
+      bool isDir = ep->d_type == DT_DIR;
+      bool isReg = ep->d_type == DT_REG;
+
       QString pathfn = path + fn;
-      if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-	kDebug() << "Error stat'ing " << pathfn << " : " << perror << endl;
-	continue; // Couldn't stat (e.g. no read permissions)
+      if (ep->d_type == DT_UNKNOWN) {
+	KDE_struct_stat buff;
+	if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+	  kDebug() << "Error stat'ing " << pathfn << " : " << perror << endl;
+	  continue; // Couldn't stat (e.g. no read permissions)
+	}
+	isReg = S_ISREG (buff.st_mode);
+	isDir = S_ISDIR (buff.st_mode);
       }
+
       if ( recursive ) {
-	if ( S_ISDIR( buff.st_mode )) {
+	if ( isDir ) {
 	  lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, unique);
 	}
         if (!regexp.exactMatch(fn))
 	  continue; // No match
       }
-      if ( S_ISREG( buff.st_mode))
+      if ( isReg )
       {
         if (!unique || !relList.contains(relPart + fn))
         {
@@ -559,8 +567,6 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 #else
     assert(prefix.at(prefix.length() - 1) == '/');
 #endif
-    KDE_struct_stat buff;
-
     if (path.contains('*') || path.contains('?')) {
 
 	QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
@@ -572,22 +578,28 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 	struct dirent *ep;
 
 	while( ( ep = readdir( dp ) ) != 0L )
-	    {
-		QString fn( QFile::decodeName(ep->d_name));
-		if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
-		    continue;
+	{
+	  QString fn( QFile::decodeName(ep->d_name));
+	  if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
+	    continue;
 
-		if ( !pathExp.exactMatch(fn) )
-		    continue; // No match
-		QString rfn = relPart+fn;
-		fn = prefix + fn;
-		if ( KDE_stat( QFile::encodeName(fn), &buff ) != 0 ) {
-		    kDebug() << "Error statting " << fn << " : " << perror << endl;
-		    continue; // Couldn't stat (e.g. no permissions)
-		}
-		if ( S_ISDIR( buff.st_mode ))
-		    lookupPrefix(fn + '/', rest, rfn + '/', regexp, list, relList, recursive, unique);
+	  if ( !pathExp.exactMatch(fn) )
+	    continue; // No match
+	  QString rfn = relPart+fn;
+	  fn = prefix + fn;
+
+	  bool isDir = ep->d_type == DT_DIR;
+	  if (ep->d_type == DT_UNKNOWN) {
+	    KDE_struct_stat buff;
+	    if ( KDE_stat( QFile::encodeName(fn), &buff ) != 0 ) {
+	      kDebug() << "Error stat'ing " << fn << " : " << perror << endl;
+	      continue; // Couldn't stat (e.g. no read permissions)
 	    }
+	    isDir = S_ISDIR (buff.st_mode);
+	  }
+	  if ( isDir )
+	    lookupPrefix(fn + '/', rest, rfn + '/', regexp, list, relList, recursive, unique);
+	}
 
 	closedir( dp );
     } else {
