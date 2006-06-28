@@ -1,3 +1,15 @@
+2006-06-28  Germain Garand  <germain@ebooksfrance.org>
+
+        make updating of addRule/removeRule/insertRule work
+        cf. http://www.quirksmode.org/dom/w3c_css.html#change
+
+        * css/css_stylesheetimpl.cpp 
+            (insertRule/deleteRule): shallow update of styleselector.
+        * xml/dom_docimpl.{h,cpp} 
+            (updateStyleSelector): new boolean argument for shallow recalculation, when all sheets are known.
+            (DocumentImpl::recalcStyleSelector): split.
+            (DocumentImpl::rebuildStyleSelector): new from split. Recreate styleselector with known sheets.
+
 2006-06-27  Germain Garand  <germain@ebooksfrance.org>
 
         . Correct drawing of borders on iframes and objects (#118277/#56109)

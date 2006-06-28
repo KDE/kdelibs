@@ -1976,7 +1976,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
     if (exceptioncode) *exceptioncode = excode;
 }
 
-void DocumentImpl::updateStyleSelector()
+void DocumentImpl::updateStyleSelector(bool shallow)
 {
 //    kdDebug() << "PENDING " << m_pendingStylesheets << endl;
 
@@ -1984,7 +1984,10 @@ void DocumentImpl::updateStyleSelector()
     if (m_pendingStylesheets > 0)
         return;
 
-    recalcStyleSelector();
+    if (shallow)
+        rebuildStyleSelector();
+    else
+        recalcStyleSelector();
     recalcStyle(Force);
 #if 0
 
@@ -2134,6 +2137,11 @@ void DocumentImpl::recalcStyleSelector()
     for (; it.current(); ++it)
 	it.current()->deref();
 
+    rebuildStyleSelector();
+}
+
+void DocumentImpl::rebuildStyleSelector()
+{
     // Create a new style selector
     delete m_styleSelector;
     QString usersheet = m_usersheet;
