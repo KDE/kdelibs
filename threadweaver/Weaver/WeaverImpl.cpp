@@ -36,10 +36,9 @@
 
 namespace ThreadWeaver {
 
-    WeaverImpl::WeaverImpl(QObject* parent, int inventoryMin, int inventoryMax)
+    WeaverImpl::WeaverImpl(QObject* parent, int inventoryMax)
         : WeaverInterface(parent)
         , m_active(0)
-        , m_inventoryMin(inventoryMin)
         , m_inventoryMax(inventoryMax)
         , m_mutex ( new QMutex( QMutex::Recursive ) )
         , m_finishMutex( new QMutex )
@@ -168,7 +167,7 @@ namespace ThreadWeaver {
     void WeaverImpl::adjustInventory ( int noOfNewJobs )
     {
         // no of threads that can be created:
-        const int reserve = m_inventoryMin - noOfThreads();
+        const int reserve = m_inventoryMax - noOfThreads();
         if ( reserve > 0 )
         {
             QMutexLocker l (m_mutex);
@@ -319,6 +318,7 @@ namespace ThreadWeaver {
 
     void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
     {
+        Q_UNUSED ( th );
         debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
         emit threadSuspended ( th );
         QMutexLocker l( m_jobAvailableMutex );

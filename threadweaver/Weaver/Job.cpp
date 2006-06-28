@@ -15,6 +15,7 @@
 */
 
 #include <QSet>
+#include <QList>
 #include <QMutex>
 #include <QObject>
 #include <QMultiMap>
@@ -24,20 +25,26 @@
 #include <Thread.h>
 
 #include "Job.h"
+#include "QueuePolicy.h"
+#include "DependencyPolicy.h"
 
 namespace ThreadWeaver {
 
     class JobMultiMap : public QMultiMap<Job*, Job*> {};
-    Q_GLOBAL_STATIC(JobMultiMap, g_sm_dep)
+    Q_GLOBAL_STATIC(JobMultiMap, g_sm_dep);
+
+    class QueuePolicyList : public QList<QueuePolicy*> {};
 
     QMutex *Job::sm_mutex;
 
     Job::Job ( QObject *parent )
-        : QObject (parent),
-	  m_thread (0),
-	  m_mutex (new QMutex (QMutex::NonRecursive) ),
-          m_finished (false)
+        : QObject (parent)
+        , m_thread (0)
+        , m_queuePolicies ( new QueuePolicyList )
+        , m_mutex (new QMutex (QMutex::NonRecursive) )
+        , m_finished (false)
     {
+        m_queuePolicies->append( & DependencyPolicy::instance() );
         // initialize the process global mutex that protects the dependency tracker:
 	if (sm_mutex == 0)
 	{
@@ -108,7 +115,8 @@ namespace ThreadWeaver {
 	debug(3, "Job::execute: executing job of type %s in thread %i.\n",
               metaObject()->className(), th->id());
         helper.runTheJob( th, this );
-	debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
+        freeQueuePolicyResources();
+        debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
     }
 
     void Job::addDependency (Job *dep)
@@ -173,12 +181,48 @@ namespace ThreadWeaver {
         return result;
     }
 
+    void Job::freeQueuePolicyResources()
+    {
+        for ( int index = 0; index < m_queuePolicies->size(); ++index )
+        {
+            m_queuePolicies->at( index )->free( this );
+        }
+    }
+
     void Job::aboutToBeQueued ( WeaverInterface* )
     {
     }
 
     void Job::aboutToBeDequeued ( WeaverInterface* )
     {
+    }
+
+    bool Job::canBeExecuted()
+    {
+        QueuePolicyList acquired;
+
+        bool success = true;
+
+        for ( int index = 0; index < m_queuePolicies->size(); ++index )
+        {
+            if ( m_queuePolicies->at( index )->canRun( this ) )
+            {
+                acquired.append( m_queuePolicies->at( index ) );
+            } else {
+                success = false;
+                break;
+            }
+        }
+
+        if ( ! success )
+        {
+            for ( int index = 0; index < acquired.size(); ++index )
+            {
+                acquired.at( index )->release( this );
+            }
+        }
+
+        return success;
     }
 
     void Job::DumpJobDependencies()

@@ -245,10 +245,10 @@ namespace ThreadWeaver {
       dependencies.</p>
     */
 
-    Weaver::Weaver ( QObject* parent, int inventoryMin, int inventoryMax )
+    Weaver::Weaver ( QObject* parent, int inventoryMax )
         : WeaverInterface( parent )
     {
-        m_weaverinterface = makeWeaverImpl ( inventoryMin, inventoryMax );
+        m_weaverinterface = makeWeaverImpl ( inventoryMax );
         connect ( m_weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
         connect ( m_weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
         connect ( m_weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
@@ -259,9 +259,9 @@ namespace ThreadWeaver {
         delete m_weaverinterface;
     }
 
-    WeaverInterface* Weaver::makeWeaverImpl(int inventoryMin, int inventoryMax )
+    WeaverInterface* Weaver::makeWeaverImpl( int inventoryMax )
     {
-        return new WeaverImpl ( this, inventoryMin,  inventoryMax );
+        return new WeaverImpl ( this, inventoryMax );
     }
 
     const State& Weaver::state() const

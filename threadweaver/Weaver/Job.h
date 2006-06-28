@@ -28,6 +28,7 @@ namespace ThreadWeaver {
     class WeaverInterface;
     class JobRunHelper;
     class JobMultiMap;
+    class QueuePolicyList;
 
     /** A Job is a simple abstraction of an action that is to be
         executed in a thread context.
@@ -126,7 +127,15 @@ namespace ThreadWeaver {
         */
         virtual void aboutToBeDequeued ( WeaverInterface *weaver );
 
+        /** canBeExecuted() returns true if all the jobs queue policies agree to it.
+            If it returns true, it expects that the job is executed right
+            after that. The done() methods of the queue policies will be
+            automatically called when the job is finished.
 
+            If it returns false, all queue policy resources have been freed,
+            and the method can be called again at a later time.
+        */
+        bool canBeExecuted();
 
         /** Returns true if the jobs's execute method finished. */
         bool isFinished() const { return m_finished; }
@@ -182,6 +191,10 @@ namespace ThreadWeaver {
         /** Retrieve a list of dependencies of this job. */
         QList<Job*> getDependencies() const;
 
+        /** Free the queue policies acquired before this job has been
+            executed. */
+        void freeQueuePolicyResources();
+
         /** The method that actually performs the job. It is called from
             execute(). This method is the one to overload it with the
             job's task. */
@@ -213,6 +226,9 @@ namespace ThreadWeaver {
 	    be removed. */
         static JobMultiMap* sm_dep();
 	static QMutex *sm_mutex;
+
+        /** The list of QueuePolicies assigned to this Job. */
+        QueuePolicyList* m_queuePolicies;
 
     private:
 	QMutex *m_mutex;

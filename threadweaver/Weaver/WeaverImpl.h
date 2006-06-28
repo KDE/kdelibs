@@ -41,9 +41,7 @@ namespace ThreadWeaver {
         Q_OBJECT
     public:
 	/** Construct a WeaverImpl object. */
-        WeaverImpl (QObject* parent=0,
-                int inventoryMin = 4, // minimal number of provided threads
-                int inventoryMax = 32); // maximum number of provided threads
+        WeaverImpl (QObject* parent=0, int inventoryMax = 32); // maximum number of provided threads
 	/** Destruct a WeaverImpl object. */
         virtual ~WeaverImpl ();
 	const State& state() const;
@@ -143,8 +141,6 @@ namespace ThreadWeaver {
 	/** The number of jobs that are assigned to the worker
 	    threads, but not finished. */
 	int m_active;
-        /** Stored setting. */
-        int m_inventoryMin;
         /** Stored setting . */
         int m_inventoryMax;
         /** Wait condition all idle or done threads wait for. */

@@ -8,7 +8,8 @@ SOURCES += WeaverInterface.cpp \
 	ShuttingDownState.cpp DestructedState.cpp \
         WeaverObserver.cpp \
 	JobCollection.cpp \
-	JobSequence.cpp
+	JobSequence.cpp \
+	DependencyPolicy.cpp
 
 HEADERS += WeaverInterface.h \
 	ThreadWeaver.h WeaverImpl.h \
@@ -18,7 +19,9 @@ HEADERS += WeaverInterface.h \
         ShuttingDownState.h DestructedState.h \
         WeaverObserver.h \
 	JobCollection.h \
-	JobSequence.h 
+	JobSequence.h \
+	QueuePolicy.h \
+	DependencyPolicy.h
 
 CONFIG += dll warn_on thread
 QT -= gui
