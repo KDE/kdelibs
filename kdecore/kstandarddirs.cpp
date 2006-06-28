@@ -475,13 +475,10 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     struct dirent *ep;
     KDE_struct_stat buff;
 
-    QString _dot(".");
-    QString _dotdot("..");
-
     while( ( ep = readdir( dp ) ) != 0L )
     {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).toLatin1() == '~')
+      if (fn == "." || fn == ".." || fn.at(fn.length() - 1).toLatin1() == '~')
 	continue;
 
       if (!recursive && !regexp.exactMatch(fn))
@@ -574,13 +571,10 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
 	struct dirent *ep;
 
-        QString _dot(".");
-        QString _dotdot("..");
-
 	while( ( ep = readdir( dp ) ) != 0L )
 	    {
 		QString fn( QFile::decodeName(ep->d_name));
-		if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
+		if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
 		    continue;
 
 		if ( !pathExp.exactMatch(fn) )
