@@ -79,8 +79,6 @@ void KDirSize::startNextJob( const KUrl & url )
 
 void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
-    static const QString& dot = KGlobal::staticQString( "." );
-    static const QString& dotdot = KGlobal::staticQString( ".." );
     KIO::UDSEntryList::ConstIterator it = list.begin();
     const KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
@@ -88,9 +86,9 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
         const KIO::UDSEntry& entry = *it;
         const KIO::filesize_t size = entry.numberValue( KIO::UDS_SIZE, -1 );
         const QString name = entry.stringValue( KIO::UDS_NAME );
-        if ( name == dot )
+        if ( name == "." )
             m_totalSize += size;
-        else if ( name != dotdot )
+        else if ( name != ".." )
         {
             if (!entry.isLink())
               m_totalSize += size;

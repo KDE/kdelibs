@@ -102,8 +102,7 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
         const KIO::UDSEntry& entry = *it;
         const bool isLink = !entry.stringValue( KIO::UDS_STRING ).isEmpty();
         const QString relativePath = entry.stringValue( KIO::UDS_NAME );
-        static const QString& dotdot = KGlobal::staticQString("..");
-        if ( !isLink && relativePath != dotdot )
+        if ( !isLink && relativePath != ".." )
         {
             const mode_t permissions = entry.numberValue( KIO::UDS_ACCESS );
 

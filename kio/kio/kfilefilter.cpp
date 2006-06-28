@@ -67,15 +67,12 @@ void KSimpleFileFilter::setModeFilter( mode_t mode )
 
 bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 {
-    static const QString& dot    = KGlobal::staticQString(".");
-    static const QString& dotdot = KGlobal::staticQString("..");
-
     const QString& name = item->name();
 
     if ( m_filterDotFiles && item->isHidden() )
         return false;
 
-    if ( m_filterSpecials && (name == dot || name == dotdot) )
+    if ( m_filterSpecials && (name == "." || name == "..") )
         return false;
 
     if ( m_modeFilter && !(m_modeFilter & item->mode()) )

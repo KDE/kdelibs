@@ -959,10 +959,6 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
   for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
     delayedMimeTypes &= kdl->d->delayedMimeTypes;
 
-  // avoid creating these QStrings again and again
-  static const QString& dot = KGlobal::staticQString(".");
-  static const QString& dotdot = KGlobal::staticQString("..");
-
   KIO::UDSEntryList::ConstIterator it = entries.begin();
   KIO::UDSEntryList::ConstIterator end = entries.end();
 
@@ -974,7 +970,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     if ( name.isEmpty() )
       continue;
 
-    if ( name == dot )
+    if ( name == "." )
     {
       Q_ASSERT( !dir->rootItem );
       dir->rootItem = new KFileItem( *it, url, delayedMimeTypes, true  );
@@ -983,7 +979,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
         if ( !kdl->d->rootFileItem && kdl->d->url == url )
           kdl->d->rootFileItem = dir->rootItem;
     }
-    else if ( name != dotdot )
+    else if ( name != ".." )
     {
       KFileItem* item = new KFileItem( *it, url, delayedMimeTypes, true );
       Q_ASSERT( item );
@@ -1540,9 +1536,6 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     fileItems.insert( (*kit)->url().url(), *kit );
   }
 
-  static const QString& dot = KGlobal::staticQString(".");
-  static const QString& dotdot = KGlobal::staticQString("..");
-
   KFileItem *item = 0, *tmp;
 
   KIO::UDSEntryList buf = jobs.value( job );
@@ -1561,10 +1554,10 @@ void KDirListerCache::slotUpdateResult( KJob * j )
 
     // we duplicate the check for dotdot here, to avoid iterating over
     // all items again and checking in matchesFilter() that way.
-    if ( name.isEmpty() || name == dotdot )
+    if ( name.isEmpty() || name == ".." )
       continue;
 
-    if ( name == dot )
+    if ( name == "." )
     {
       // if the update was started before finishing the original listing
       // there is no root item yet
@@ -1950,9 +1943,6 @@ void KDirLister::emitChanges()
   if ( d->changes == NONE )
     return;
 
-  static const QString& dot = KGlobal::staticQString(".");
-  static const QString& dotdot = KGlobal::staticQString("..");
-
   for ( KUrl::List::Iterator it = d->lstDirs.begin();
         it != d->lstDirs.end(); ++it )
   {
@@ -1961,7 +1951,7 @@ void KDirLister::emitChanges()
     const KFileItemList::const_iterator kend = itemList->end();
     for ( ; kit != kend; ++kit )
     {
-      if ( (*kit)->text() == dot || (*kit)->text() == dotdot )
+      if ( (*kit)->text() == "." || (*kit)->text() == ".." )
         continue;
 
       bool oldMime = true, newMime = true;
@@ -2145,9 +2135,8 @@ bool KDirLister::matchesMimeFilter( const QString& mime ) const
 bool KDirLister::matchesFilter( const KFileItem *item ) const
 {
   Q_ASSERT( item );
-  static const QString& dotdot = KGlobal::staticQString("..");
 
-  if ( item->text() == dotdot )
+  if ( item->text() == ".." )
     return false;
 
   if ( !d->isShowingDotFiles && item->isHidden() )

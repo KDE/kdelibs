@@ -950,13 +950,10 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
    struct dirent *ep;
    KDE_struct_stat buff;
 
-   QString _dot(".");
-   QString _dotdot("..");
-
    while( ( ep = readdir( dp ) ) != 0L )
    {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
+      if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
          continue;
 
       QString pathfn = dir + fn;
@@ -1058,13 +1055,10 @@ kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix <
    struct dirent *ep;
    KDE_struct_stat buff;
 
-   QString _dot(".");
-   QString _dotdot("..");
-
    while( ( ep = readdir( dp ) ) != 0L )
    {
       QString fn( QFile::decodeName(ep->d_name));
-      if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1) == '~')
+      if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
          continue;
 
       QString pathfn = dir + fn;

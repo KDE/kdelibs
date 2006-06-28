@@ -278,15 +278,13 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
 
 bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
 {
-    QString dot = ".";
-    QString dotdot = "..";
     QDir dir( path );
     if ( !dir.exists() )
         return false;
     QStringList files = dir.entryList();
     for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
     {
-        if ( *it != dot && *it != dotdot )
+        if ( *it != "." && *it != ".." )
         {
             QString fileName = path + '/' + *it;
 //            kDebug() << "storing " << fileName << endl;
