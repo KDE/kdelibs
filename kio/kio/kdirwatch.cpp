@@ -1034,9 +1034,11 @@ void KDirWatchPrivate::slotRescan()
   if ( timerRunning )
     timer.start(freq);
 
+#ifdef HAVE_SYS_INOTIFY_H
   // Remove watch of parent of new created directories
   Q_FOREACH(Entry* e, cList)
     removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
+#endif
 
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));
 }
