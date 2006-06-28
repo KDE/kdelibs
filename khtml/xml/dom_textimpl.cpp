@@ -396,9 +396,6 @@ bool TextImpl::rendererIsNeeded(RenderStyle *style)
     }
 
     RenderObject *prev = previousRenderer();
-    if (prev && prev->isBR()) // <span><br/> <br/></span>
-        return false;
-
     if (par->isInlineFlow()) {
         // <span><div/> <div/></span>
         if (prev && !prev->isInline()) {
