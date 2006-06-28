@@ -454,7 +454,18 @@ KLauncher::slotAutoStart()
 	 if( !mAutoStart.phaseDone())
 	 {
 	    mAutoStart.setPhaseDone();
-            emit autoStartDone(mAutoStart.phase());
+            switch( mAutoStart.phase())
+                {
+                case 0:
+                    emit autoStart0Done();
+                    break;
+                case 1:
+                    emit autoStart1Done();
+                    break;
+                case 2:
+                    emit autoStart2Done();
+                    break;
+                }
 	 }
          return;
       }

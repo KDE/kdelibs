@@ -28,8 +28,11 @@ class KLauncherAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.kde.KLauncher")
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"org.kde.KLauncher\" >\n"
-"    <signal name=\"autoStartDone\" >\n"
-"      <arg direction=\"out\" type=\"i\" name=\"phase\" />\n"
+"    <signal name=\"autoStart0Done\" >\n"
+"    </signal>\n"
+"    <signal name=\"autoStart1Done\" >\n"
+"    </signal>\n"
+"    <signal name=\"autoStart2Done\" >\n"
 "    </signal>\n"
 "    <method name=\"autoStart\" >\n"
 "      <arg direction=\"in\" type=\"i\" name=\"phase\" />\n"
@@ -182,7 +185,9 @@ public Q_SLOTS: // METHODS
     int start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid);
     void waitForSlave(int pid, const QDBusMessage &msg);
 Q_SIGNALS: // SIGNALS
-    void autoStartDone(int phase);
+    void autoStart0Done();
+    void autoStart1Done();
+    void autoStart2Done();
 };
 
 #endif

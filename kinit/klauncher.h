@@ -152,7 +152,9 @@ protected:
        const QStringList &envs );
 
 Q_SIGNALS:
-    void autoStartDone(int phase);
+    void autoStart0Done();
+    void autoStart1Done();
+    void autoStart2Done();
 
 public: // remote methods, called by KLauncherAdaptor
     void autoStart(int phase = 1);

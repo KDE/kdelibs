@@ -2,8 +2,11 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.kde.KLauncher">
-    <signal name="autoStartDone">
-      <arg name="phase" type="i" direction="out"/>
+    <signal name="autoStart0Done">
+    </signal>
+    <signal name="autoStart1Done">
+    </signal>
+    <signal name="autoStart2Done">
     </signal>
     <method name="autoStart">
       <arg name="phase" type="i" direction="in"/>
