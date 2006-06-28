@@ -152,6 +152,12 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 	// just add it...
 	insertChildNode(newChild, beforeChild);
     }
+ 
+    if (newChild->isText() && newChild->style()->textTransform() == CAPITALIZE) {
+        DOM::DOMStringImpl* textToTransform =  static_cast<RenderText*>(newChild)->originalString();
+        if (textToTransform)
+            static_cast<RenderText*>(newChild)->setText(textToTransform, true);
+    }    
     newChild->attach();
 }
 

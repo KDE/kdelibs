@@ -88,7 +88,7 @@ public:
     bool isLower() const;
     DOMStringImpl *lower() const;
     DOMStringImpl *upper() const;
-    DOMStringImpl *capitalize() const;
+    DOMStringImpl *capitalize(bool noFirstCap=false) const;
 
     QChar *unicode() const { return s; }
     uint length() const { return l; }

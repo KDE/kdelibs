@@ -1151,7 +1151,22 @@ void RenderText::setText(DOMStringImpl *text, bool force)
     if ( str && style() ) {
         oldstr = str;
         switch(style()->textTransform()) {
-	case CAPITALIZE:   str = str->capitalize();  break;
+        case CAPITALIZE:
+        {
+            // find previous text renderer if one exists
+            RenderObject* o;
+            bool runOnString = false;
+            for (o = previousRenderer(); o && o->isInlineFlow(); o = o->previousRenderer())
+                ;
+            if (o && o->isText()) {
+                DOMStringImpl* prevStr = static_cast<RenderText*>(o)->string();
+                QChar c = (*prevStr)[prevStr->length() - 1];
+                if (!c.isSpace())
+                    runOnString = true;
+            }
+            str = str->capitalize(runOnString);
+        }
+        break;
 	case UPPERCASE:   str = str->upper();       break;
 	case LOWERCASE:  str = str->lower();       break;
 	case NONE:

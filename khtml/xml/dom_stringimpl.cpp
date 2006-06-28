@@ -370,9 +370,9 @@ DOMStringImpl *DOMStringImpl::upper() const
     return c;
 }
 
-DOMStringImpl *DOMStringImpl::capitalize() const
+DOMStringImpl *DOMStringImpl::capitalize(bool noFirstCap) const
 {
-    bool canCapitalize=true;
+    bool canCapitalize= !noFirstCap;
     DOMStringImpl *c = new DOMStringImpl;
     if(!l) return c;
 

@@ -283,6 +283,38 @@ void RenderObject::insertChildNode(RenderObject*, RenderObject*)
     KHTMLAssert(0);
 }
 
+RenderObject *RenderObject::nextRenderer() const
+{
+    if (firstChild())
+        return firstChild();
+    else if (nextSibling())
+        return nextSibling();
+    else {
+        const RenderObject *r = this;
+        while (r && !r->nextSibling())
+            r = r->parent();
+        if (r)
+            return r->nextSibling();
+    }
+    return 0;
+}
+
+RenderObject *RenderObject::previousRenderer() const
+{
+    if (previousSibling()) {
+        RenderObject *r = previousSibling();
+        while (r->lastChild())
+            r = r->lastChild();
+        return r;
+    }
+    else if (parent()) {
+        return parent();
+    }
+    else {
+        return 0;
+    }
+}
+
 static void addLayers(RenderObject* obj, RenderLayer* parentLayer, RenderObject*& newObject,
                       RenderLayer*& beforeChild)
 {
