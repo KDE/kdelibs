@@ -251,7 +251,7 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         {
             modules.append(service);
             if( !serviceName.isEmpty() )
-                serviceName += "_";
+                serviceName += '_';
 
             serviceName += args->arg(i);
         }
