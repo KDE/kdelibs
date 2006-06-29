@@ -836,6 +836,9 @@ DOMString ElementImpl::toString() const
 	result += "</";
 	result += tagName();
 	result += ">";
+    } else if (result.length() == 1) {
+	// ensure we dont get results like < /> can happen when serialize document
+        result = "";
     } else {
 	result += " />";
     }
