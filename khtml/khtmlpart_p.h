@@ -316,7 +316,7 @@ public:
   KURLLabel* m_statusBarUALabel;
   KURLLabel* m_statusBarJSErrorLabel;
   KURLLabel* m_statusBarPopupLabel;
-  QPtrList<KHTMLPart> m_suppressedPopupOriginParts;
+  QValueList<QGuardedPtr<KHTMLPart> > m_suppressedPopupOriginParts;
   int m_openableSuppressedPopups;
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
