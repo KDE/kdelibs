@@ -696,6 +696,13 @@ void KateRenderer::paintTextLine(QPainter& paint, const KateLineRange* range, in
       }
     }
 
+    // If this line has a partial selection that's the start of a multi-line selection,
+    // we have to fill areas on the right side of the text with the selection color.
+    if (showSelections() && hasSel && !selectionPainted && xStart >= (int)xPos && m_view->lineEndSelected(line, -1))
+    {
+      paint.fillRect(0, 0, xEnd-xStart, fs->fontHeight, config()->selectionColor());
+    }
+
     // Determine cursor position (if it is not within the range being drawn)
     if (showCursor && (cursor->col() >= int(curCol)))
     {
