@@ -44,8 +44,17 @@
 #include <openssl/ssl.h>
 #undef crypt
 #endif
-
 #include <kopenssl.h>
+
+#ifdef KSSL_HAVE_SSL
+#define sk_new d->kossl->sk_new
+#define sk_push d->kossl->sk_push
+#define sk_free d->kossl->sk_free
+#define sk_value d->kossl->sk_value
+#define sk_num d->kossl->sk_num
+#define sk_dup d->kossl->sk_dup
+#define sk_pop d->kossl->sk_pop
+#endif
 
       class CipherNode {
       public:
@@ -123,87 +132,78 @@ bool KSSLSettings::tlsv1() const {
 //        since OpenSSL seems to just choose any old thing if it's given an
 //        empty list.  This behavior is not confirmed though.
 QString KSSLSettings::getCipherList() {
-  QString clist;
+	QString clist;
 #ifdef KSSL_HAVE_SSL
-  QString tcipher;
-  bool firstcipher = true;
-  SSL_METHOD *meth = 0L;
-  QSortedList<CipherNode> cipherSort;
+	QString tcipher;
+	bool firstcipher = true;
+	SSL_METHOD *meth = 0L;
+	QPtrList<CipherNode> cipherList;
 
-  cipherSort.setAutoDelete(true);
+	cipherList.setAutoDelete(true);
 
-  if (!d->kossl)
-    d->kossl = KOSSL::self();
+	if (!d->kossl)
+		d->kossl = KOSSL::self();
 
-  if (m_bUseSSLv3) {
-    m_cfg->setGroup("SSLv3");
-    meth = d->kossl->SSLv3_client_method();
-    for(int i = 0; ; i++) {
-      SSL_CIPHER *sc = (meth->get_cipher)(i);
-      if (!sc)
-        break;
-      tcipher.sprintf("cipher_%s", sc->name);
-      int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
+	if (m_bUseSSLv3 && m_bUseSSLv2)
+		meth = d->kossl->SSLv23_client_method();
+	else if(m_bUseSSLv3)
+		meth = d->kossl->SSLv3_client_method();
+	else if (m_bUseSSLv2)
+		meth = d->kossl->SSLv2_client_method();
 
-      if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
-        CipherNode *xx = new CipherNode(sc->name,bits);
-        if (!cipherSort.contains(xx)) {
-          cipherSort.prepend(xx);
-        } else {
-          delete xx;
-        }
-      }
-    }
-  }
+	SSL_CTX *ctx = d->kossl->SSL_CTX_new(meth);
+	SSL* ssl = d->kossl->SSL_new(ctx);
+	STACK_OF(SSL_CIPHER)* sk = d->kossl->SSL_get_ciphers(ssl);
+	int cnt = sk_SSL_CIPHER_num(sk);
+	for (int i=0; i< cnt; i++) {
+		SSL_CIPHER *sc = sk_SSL_CIPHER_value(sk,i);
+		if (!sc)
+			break;
 
-  if (m_bUseSSLv2) {
-    m_cfg->setGroup("SSLv2");
-    meth = d->kossl->SSLv2_client_method();
+		if(!strcmp("SSLv2", d->kossl->SSL_CIPHER_get_version(sc)))
+			m_cfg->setGroup("SSLv2");
+		else
+			m_cfg->setGroup("SSLv3");
 
-    for(int i = 0; meth; i++) {
-      SSL_CIPHER *sc = (meth->get_cipher)(i);
-      if (!sc)
-        break;
-      tcipher.sprintf("cipher_%s", sc->name);
-      int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
+		tcipher.sprintf("cipher_%s", sc->name);
+		int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
+		if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
+			CipherNode *xx = new CipherNode(sc->name,bits);
+			if (!cipherList.contains(xx))
+				cipherList.prepend(xx);
+			else
+				delete xx;
+		}
+	}
+	d->kossl->SSL_free(ssl);
+	d->kossl->SSL_CTX_free(ctx);
 
-      if (m_cfg->readBoolEntry(tcipher, bits >= 56)) {
-        CipherNode *xx = new CipherNode(sc->name,bits);
-        if (!cipherSort.contains(xx)) {
-          cipherSort.prepend(xx);
-        } else {
-          delete xx;
-        }
-      }
-    }
-  }
+	// Remove any ADH ciphers as per RFC2246
+	// Also remove NULL ciphers and 168bit ciphers
+	for (unsigned int i = 0; i < cipherList.count(); i++) {
+		CipherNode *j = 0L;
+		while ((j = cipherList.at(i)) != 0L) {
+			if (j->name.contains("ADH-") || j->name.contains("NULL-") || j->name.contains("DES-CBC3-SHA") || j->name.contains("FZA")) {
+				cipherList.remove(j);
+			} else {
+				break;
+			}
+		}
+	} 
 
-  // Remove any ADH ciphers as per RFC2246
-  // Also remove NULL ciphers and 168bit ciphers
-  for (unsigned int i = 0; i < cipherSort.count(); i++) {
-    CipherNode *j = 0L;
-    while ((j = cipherSort.at(i)) != 0L) {
-      if (j->name.contains("ADH-") || j->name.contains("NULL-") || j->name.contains("DES-CBC3-SHA") || j->name.contains("FZA")) {
-        cipherSort.remove(j);
-      } else {
-        break;
-      }
-    }
-  } 
+	// now assemble the list  cipher1:cipher2:cipher3:...:ciphern
+	while (!cipherList.isEmpty()) {
+		if (firstcipher)
+			firstcipher = false;
+		else clist.append(":");
+		clist.append(cipherList.getLast()->name);
+		cipherList.removeLast();
+	} // while
 
-  // now assemble the list  cipher1:cipher2:cipher3:...:ciphern
-  while (!cipherSort.isEmpty()) {
-    if (firstcipher)
-      firstcipher = false;
-    else clist.append(":");
-    clist.append(cipherSort.getLast()->name);
-    cipherSort.removeLast();
-  } // while
-
-  kdDebug(7029) << "Cipher list is: " << clist << endl;
+	kdDebug(7029) << "Cipher list is: " << clist << endl;
 
 #endif
-  return clist;
+	return clist;
 }
 
 // FIXME - sync these up so that we can use them with the control module!!
@@ -343,4 +343,14 @@ void KSSLSettings::setSSLv2(bool enabled) { m_bUseSSLv2 = enabled; }
 void KSSLSettings::setSSLv3(bool enabled) { m_bUseSSLv3 = enabled; }
 
 QString& KSSLSettings::getEGDPath()       { return d->m_EGDPath; }
+
+#ifdef KSSL_HAVE_SSL
+#undef sk_new
+#undef sk_push
+#undef sk_free
+#undef sk_value
+#undef sk_num
+#undef sk_pop
+#undef sk_dup
+#endif
 

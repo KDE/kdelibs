@@ -20,7 +20,6 @@
 #include <config.h>
 #endif
 
-
 #ifdef KSSL_HAVE_SSL
 #include <openssl/opensslv.h>
 #endif
@@ -197,6 +196,8 @@ static int (*K_X509_NAME_add_entry_by_txt)(X509_NAME*, char*, int, unsigned char
 static X509_NAME *(*K_X509_NAME_new)() = 0L;
 static int (*K_X509_REQ_set_subject_name)(X509_REQ*,X509_NAME*) = 0L;
 static unsigned char *(*K_ASN1_STRING_data)(ASN1_STRING*) = 0L;
+static STACK_OF(SSL_CIPHER) *(*K_SSL_get_ciphers)(const SSL *ssl) = 0L;
+
 #endif
 }
 
@@ -567,6 +568,7 @@ KConfig *cfg;
       K_SSL_set_session = (int (*)(SSL*,SSL_SESSION*)) _sslLib->symbol("SSL_set_session");
       K_d2i_SSL_SESSION = (SSL_SESSION* (*)(SSL_SESSION**,unsigned char**, long)) _sslLib->symbol("d2i_SSL_SESSION");
       K_i2d_SSL_SESSION = (int (*)(SSL_SESSION*,unsigned char**)) _sslLib->symbol("i2d_SSL_SESSION");
+      K_SSL_get_ciphers = (STACK *(*)(const SSL*)) _sslLib->symbol("SSL_get_ciphers");
 #endif
 
 
@@ -1541,6 +1543,11 @@ int KOpenSSLProxy::X509_REQ_set_subject_name(X509_REQ *req,X509_NAME *name) {
 unsigned char *KOpenSSLProxy::ASN1_STRING_data(ASN1_STRING *x) {
    if (K_ASN1_STRING_data) return (K_ASN1_STRING_data)(x);
    return 0L;
+}
+
+STACK_OF(SSL_CIPHER) *KOpenSSLProxy::SSL_get_ciphers(const SSL* ssl) {
+  if (K_SSL_get_ciphers) return (K_SSL_get_ciphers)(ssl);
+  return 0L;
 }
 
 #endif
