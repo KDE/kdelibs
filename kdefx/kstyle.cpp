@@ -1180,7 +1180,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             QRect   textRect = QRect(ir.x() + leftColW, ir.y(), ir.width() - leftColW - rightColW, ir.height());
 
 
-            int tabPos = miOpt->text.indexOf('\t');
+            int tabPos = miOpt->text.indexOf(QLatin1Char('\t'));
             if (tabPos != -1)
             {
                 text = miOpt->text.left(tabPos);
@@ -1897,7 +1897,7 @@ bool KStyle::useSideText(const QStyleOptionProgressBar* pbOpt) const
 
     if (pbOpt->minimum == pbOpt->maximum) return false;
 
-    int widthAlloc = pbOpt->fontMetrics.width("100%");
+    int widthAlloc = pbOpt->fontMetrics.width(QLatin1String("100%"));
 
     if (pbOpt->fontMetrics.width(pbOpt->text) > widthAlloc)
         return false; //Doesn't fit!
@@ -1907,7 +1907,7 @@ bool KStyle::useSideText(const QStyleOptionProgressBar* pbOpt) const
 
 int KStyle::sideTextWidth(const QStyleOptionProgressBar* pbOpt) const
 {
-    return pbOpt->fontMetrics.width("100%") +
+    return pbOpt->fontMetrics.width(QLatin1String("100%")) +
                                     2*widgetLayoutProp(WT_ProgressBar, ProgressBar::SideTextSpace);
 }
 
@@ -2871,7 +2871,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                     QFontMetrics fm(miOpt->font);
 
                     int textW;
-                    int tabPos = miOpt->text.indexOf('\t');
+                    int tabPos = miOpt->text.indexOf(QLatin1Char('\t'));
                     if (tabPos == -1)
                     {
                         //No accel..
