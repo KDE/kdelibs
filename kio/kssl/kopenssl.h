@@ -865,6 +865,9 @@ public:
    /* Set the subject */
    int X509_REQ_set_subject_name(X509_REQ*,X509_NAME*);
 
+   /* get list of available SSL_CIPHER's sorted by preference */
+   STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL* ssl);
+
 #endif
 
 private:
