@@ -63,6 +63,13 @@ struct PropertyMapHashTable
     int sizeMask;
     int size;
     int keyCount;
+
+    // gets initialized in expand, an array that stores insert order of a particular hash
+    int *hashToIndex; // NOTE: is one based 1,2,3 etc..
+
+    // keeps trac on how many insertions we have made, cant use keyCount because delete a key in the middle messes things
+    int indexCount;
+
     PropertyMapHashTableEntry entries[1];
 };
 
@@ -102,6 +109,10 @@ PropertyMap::~PropertyMap()
         if (key)
 	  key->deref();
     }
+    // fredrik added to cleanup sortorder
+    if (_table)
+        delete [] _table->hashToIndex;
+
     free(_table);
 }
 
@@ -216,7 +227,9 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
     assert(!name.isNull());
     assert(value != 0);
 
+#if DO_CONSISTENCY_CHECK // speed, why call a stub if we dont need to??
     checkConsistency();
+#endif
 
     UString::Rep *rep = name._ustring.rep;
 
@@ -244,10 +257,8 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
         }
     }
 #endif
-
     if (!_table || _table->keyCount * 2 >= _table->size)
         expand();
-
     int i = hash(rep);
 #if DUMP_STATISTICS
     ++numProbes;
@@ -270,7 +281,13 @@ void PropertyMap::put(const Identifier &name, ValueImp *value, int attributes)
     _table->entries[i].attributes = attributes;
     ++_table->keyCount;
 
+    // store insert order
+    _table->indexCount++;
+    _table->hashToIndex[i] = _table->indexCount;
+
+#if DO_CONSISTENCY_CHECK// speed, why call a stub if we dont need to??
     checkConsistency();
+#endif
 }
 
 inline void PropertyMap::insert(UString::Rep *key, ValueImp *value, int attributes)
@@ -292,42 +309,97 @@ inline void PropertyMap::insert(UString::Rep *key, ValueImp *value, int attribut
 
 void PropertyMap::expand()
 {
+#if DO_CONSISTENCY_CHECK// speed, why call a stub if we dont need to??
     checkConsistency();
-
+#endif
     Table *oldTable = _table;
+
     int oldTableSize = oldTable ? oldTable->size : 0;
 
     int newTableSize = oldTableSize ? oldTableSize * 2 : 16;
-    _table = (Table *)calloc(1, sizeof(Table) + (newTableSize - 1) * sizeof(Entry) );
+
+    // Is this realy the best way? wouldnt it be easier to use new/delete on an array instead
+    // and do a pointer in Table to that array, that way we wouldnt need to delete the whole _table
+    // every time we need to expand
+    _table = (Table *)calloc(1, sizeof(Table) + ((newTableSize - 1) * sizeof(Entry)) );
+
+    int *p = new int[newTableSize];
+    for (int i = 0; i < newTableSize; i++)
+        p[i] = 0;
+
+    _table->hashToIndex = p;
+
     _table->size = newTableSize;
+
     _table->sizeMask = newTableSize - 1;
+
     _table->keyCount = oldTable ? oldTable->keyCount : 0;
+
+    _table->indexCount = oldTable ? oldTable->indexCount : 0;
 
 #if USE_SINGLE_ENTRY
     UString::Rep *key = _singleEntry.key;
     if (key) {
         insert(key, _singleEntry.value, _singleEntry.attributes);
-	_table->keyCount++;
+        _table->keyCount++;
         _singleEntry.key = 0;
+
+        // store sort order
+        // first get the id of newly inserted key, check for trashed hash, then store it
+        int k = hash(key);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[k].key && _table->entries[k].key != key;
+#endif
+        while (UString::Rep *newKey = _table->entries[k].key) {
+             if (key == newKey)
+                 break;
+             k = (k + 1) & _table->sizeMask;
+        }
+        _table->indexCount++;
+        _table->hashToIndex[k] = _table->indexCount;
     }
 #endif
 
     for (int i = 0; i != oldTableSize; ++i) {
         UString::Rep *key = oldTable->entries[i].key;
-        if (key)
+        if (key) {
             insert(key, oldTable->entries[i].value, oldTable->entries[i].attributes);
+
+            // store sort order
+            // first get the id of newly inserted key, check for trashed hash, then store it
+            int k = hash(key);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[k].key && _table->entries[k].key != key;
+#endif
+            while (UString::Rep *newKey = _table->entries[k].key) {
+                if (key == newKey)
+                    break;
+                k = (k + 1) & _table->sizeMask;
+            }
+            // store hashindex on the newly inserted entry
+            _table->hashToIndex[k] = oldTable->hashToIndex[i];
+        }
     }
 
+    if (oldTable){
+        delete [] oldTable->hashToIndex;
+    }
     free(oldTable);
 
+#if DO_CONSISTENCY_CHECK// speed, why call a stub if we dont need to??
     checkConsistency();
+#endif
 }
 
 void PropertyMap::remove(const Identifier &name)
 {
     assert(!name.isNull());
 
+#if DO_CONSISTENCY_CHECK// speed, why call a stub if we dont need to??
     checkConsistency();
+#endif
 
     UString::Rep *rep = name._ustring.rep;
 
@@ -356,6 +428,7 @@ void PropertyMap::remove(const Identifier &name)
             break;
         i = (i + 1) & _table->sizeMask;
     }
+
     if (!key)
         return;
 
@@ -371,11 +444,30 @@ void PropertyMap::remove(const Identifier &name)
         key = _table->entries[i].key;
         if (!key)
             break;
+
         _table->entries[i].key = 0;
+
         insert(key, _table->entries[i].value, _table->entries[i].attributes);
+
+        // store the index of the new hash
+        int k = hash(key);
+#if DUMP_STATISTICS
+    ++numProbes;
+    numCollisions += _table->entries[k].key && _table->entries[k].key != key;
+#endif
+        while (UString::Rep *newKey = _table->entries[k].key) {
+            if (key == newKey)
+                break;
+            k = (k + 1) & _table->sizeMask;
+        }
+
+        // store hashindex on the newly moved entry
+        _table->hashToIndex[k] = _table->hashToIndex[i];
     }
 
+#if DO_CONSISTENCY_CHECK// speed, why call a stub if we dont need to??
     checkConsistency();
+#endif
 }
 
 void PropertyMap::mark() const
@@ -411,15 +503,45 @@ void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, const Objec
         return;
     }
 
-    for (int i = 0; i != _table->size; ++i) {
-        UString::Rep *key = _table->entries[i].key;
-        if (key && !(_table->entries[i].attributes & DontEnum))
-            list.append(Reference(base, Identifier(key)));
+    // Allocate a buffer to use to sort the keys.
+    int indexSize = _table->indexCount + 1; // indexes is one based
+    UString::Rep **allKeys = new UString::Rep*[indexSize];
+
+    for (int i = 0; i < indexSize; i++)
+        allKeys[i] = NULL;
+
+    // push  valid hashes to the array allKeys, using insert order as index.
+    // we need to pass array hashes instead of pointers to keys, because we got
+    // memory corruption sometimes, seems that Identifier in below call deletes the key
+    int size = _table->size;
+    Entry *entries = _table->entries;
+    for (int i = 0; i != size; ++i) {
+        if (entries[i].key && !(entries[i].attributes & DontEnum)) {
+            int idx = _table->hashToIndex[i];
+            if (idx) {
+                allKeys[idx] = entries[i].key;
+            } else { // nonsorted key, failure
+                //cout<<"Error with in KJS property_map.addEnumerablesToReferenceList \nUnsorted key"<<endl;
+                assert(0==1); // allways throw error if get here
+            }
+        }
     }
+    // Put the keys of the sorted entries into the reference list.
+    for (int i = 0; i < indexSize; ++i) {
+        if (allKeys[i] != NULL){
+            list.append(Reference(base, Identifier(allKeys[i])));
+        }
+        allKeys[i] = NULL; // dont deallocate key by accident, when we delete allKeys
+    }
+
+    // Deallocate the buffer.
+    delete [] allKeys;
 }
 
 void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, const Object &base) const
 {
+    // NOTE: I did'nt add sort in this method because It seems to be referenced in ArrayInstanceImp
+    // only and arrays are sorted by definition, dont need the extra overhead
     if (!_table) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
@@ -520,6 +642,7 @@ void PropertyMap::checkConsistency()
             i = (i + 1) & _table->sizeMask;
         }
         assert(i == j);
+        assert(_table->hashToIndex[i] > 0);
         count++;
     }
     assert(count == _table->keyCount);
