@@ -796,8 +796,10 @@ void RenderPartObject::updateWidget()
               serviceType = "application/x-java-applet";
               url = objbase->classId.mid(5);
           }
-          if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
-
+          if ( (serviceType.isEmpty() ||
+                      serviceType == "application/x-oleobject") &&
+                  !objbase->classId.isEmpty())
+          {
 #if 0
               // We have a clsid, means this is activex (Niko)
               serviceType = "application/x-activex-handler";
@@ -831,7 +833,7 @@ void RenderPartObject::updateWidget()
               // TODO: add more plugins here
           }
       }
-      if ((url.isEmpty() && !embed) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
+      if (!document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
   }
 }
