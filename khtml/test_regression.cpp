@@ -31,6 +31,7 @@
 #include <signal.h>
 
 #include <kapplication.h>
+#include <kstandarddirs.h>
 #include <qimage.h>
 #include <qfile.h>
 #include "test_regression.h"
@@ -468,16 +469,21 @@ int main(int argc, char *argv[])
 
     if (args->isSet("xvfb"))
     {
-        if ( ::access( "/usr/X11R6/bin/Xvfb", X_OK ) ) {
-            fprintf( stderr, "ERROR: We need /usr/X11R6/bin/Xvfb to be installed for reliable results\n" );
+        QString xvfbPath = KStandardDirs::findExe("Xvfb");
+        if ( xvfbPath.isEmpty() ) {
+            fprintf( stderr, "ERROR: We need Xvfb to be installed for reliable results\n" );
             exit( 1 );
         }
+        
+        QCString xvfbPath8 = QFile::encodeName(xvfbPath);
 
         xvfb = fork();
         if ( !xvfb ) {
-            char buffer[1000];
-            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1,/usr/share/fonts/X11/misc,/usr/share/fonts/X11/75dpi:unscaled,/usr/share/fonts/X11/Type1", (const char *)baseDir );
-            execl( "/usr/X11R6/bin/Xvfb", "/usr/X11R6/bin/Xvfb", "-once", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", (char*)NULL );
+            char buffer[2000];
+            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1,/usr/share/fonts/X11/misc,/usr/share/fonts/X11/75dpi:unscaled,/usr/share/fonts/X11/Type1,"
+            "/usr/lib/X11/fonts/75dpi:unscaled,/usr/lib/X11/fonts/misc:unscaled,/usr/lib/X11/fonts/Type1",
+             (const char *)baseDir );
+            execl( xvfbPath8.data(), xvfbPath8.data(), "-once", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", (char*)NULL );
         }
 
         setenv( "DISPLAY", ":47", 1 );
