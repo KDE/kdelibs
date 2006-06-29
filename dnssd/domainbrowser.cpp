@@ -29,15 +29,15 @@
 namespace DNSSD
 {
 
-class DomainBrowserPrivate 
+class DomainBrowserPrivate
 {
 public:
 	QHash<QString,Query*> resolvers;
 	QStringList m_domains;
 	bool m_recursive;
 	bool m_running;
-};		
-	
+};
+
 DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
 {
 	d->m_running = false;
@@ -85,7 +85,7 @@ void DomainBrowser::startBrowse()
 
 void DomainBrowser::gotNewDomain(DNSSD::RemoteService::Ptr srv)
 {
-	QString domain = srv->serviceName()+"."+srv->domain();
+	QString domain = srv->serviceName()+'.'+srv->domain();
 	if (d->m_domains.contains(domain)) return;
 	d->m_domains.append(domain);
 	emit domainAdded(domain);
@@ -102,7 +102,7 @@ void DomainBrowser::gotNewDomain(DNSSD::RemoteService::Ptr srv)
 
 void DomainBrowser::gotRemoveDomain(DNSSD::RemoteService::Ptr srv)
 {
-	QString domain = srv->serviceName()+"."+srv->domain();
+	QString domain = srv->serviceName()+'.'+srv->domain();
 	d->m_domains.removeAll(domain);
 	emit domainRemoved(domain);
 	d->resolvers.remove(domain);

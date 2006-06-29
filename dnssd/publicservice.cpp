@@ -180,7 +180,7 @@ const KUrl PublicService::toInvitation(const QString& host)
 	} else 	url.setHost(host);
 	//FIXME: if there is no public interface, select any non-loopback
 	url.setPort(m_port);
-	url.setPath("/"+m_type+"/"+m_serviceName);
+	url.setPath('/'+m_type+'/'+m_serviceName);
 	QString query;
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
 	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it)

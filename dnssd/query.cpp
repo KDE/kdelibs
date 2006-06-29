@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "query.h" 
+#include "query.h"
 #include "responder.h"
 #include "remoteservice.h"
 #include "sdevent.h"
@@ -30,7 +30,7 @@
 
 namespace DNSSD
 {
-#ifdef HAVE_DNSSD  
+#ifdef HAVE_DNSSD
 void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode,
 		     const char *serviceName, const char *regtype, const char *replyDomain, void *context);
 #endif
@@ -80,7 +80,7 @@ void Query::startQuery()
 	d->m_finished = false;
 #ifdef HAVE_DNSSD
 	DNSServiceRef ref;
-	if (DNSServiceBrowse(&ref,0,0, d->m_type.toAscii().constData(), 
+	if (DNSServiceBrowse(&ref,0,0, d->m_type.toAscii().constData(),
 	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 #endif
@@ -101,8 +101,8 @@ void Query::customEvent(QEvent* event)
 	if (event->type()==QEvent::User+SD_ADDREMOVE) {
 		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
 		// m_type has useless trailing dot
-		RemoteService::Ptr svr(new RemoteService(aev->m_name+"."+
-			aev->m_type.left(aev->m_type.length()-1)+"."+aev->m_domain));
+		RemoteService::Ptr svr(new RemoteService(aev->m_name+'.'+
+			aev->m_type.left(aev->m_type.length()-1)+'.'+aev->m_domain));
 		if (aev->m_op==AddRemoveEvent::Add) emit serviceAdded(svr);
 			else emit serviceRemoved(svr);
 		d->m_finished = aev->m_last;
@@ -126,7 +126,7 @@ void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceE
 		QApplication::sendEvent(obj, &err);
 	} else {
 		AddRemoveEvent arev((flags & kDNSServiceFlagsAdd) ? AddRemoveEvent::Add :
-			AddRemoveEvent::Remove, QString::fromUtf8(serviceName), regtype, 
+			AddRemoveEvent::Remove, QString::fromUtf8(serviceName), regtype,
 			DNSToDomain(replyDomain), !(flags & kDNSServiceFlagsMoreComing));
 		QApplication::sendEvent(obj, &arev);
 	}
