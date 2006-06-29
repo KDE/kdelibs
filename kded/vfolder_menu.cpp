@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <sys/dir.h>
 #include <dirent.h>
 #include <stdlib.h> // getenv
 
