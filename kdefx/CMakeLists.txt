@@ -3,6 +3,8 @@ project(kdefx)
 
 configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-processor.h )
 
+include(kdefx.cmake)
+
 include_directories( ${QT_INCLUDES} )
 if(WIN32)
   include_directories( ${KDEWIN32_INCLUDES} )
