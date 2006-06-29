@@ -787,6 +787,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 		     << " (for " << sub_entry->path << ")" << endl;
 
 #ifdef HAVE_DNOTIFY
+     {
        Entry* e = &(*it);
        if( (e->m_mode == DNotifyMode) && (e->dn_fd > 0) ) {
          int mask = DN_DELETE|DN_CREATE|DN_RENAME|DN_MULTISHOT;
@@ -801,9 +802,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
            useStat( e );
          }
        }
+     }
 #endif
 
 #ifdef HAVE_INOTIFY
+     {
        Entry* e = &(*it);
        if( (e->m_mode == INotifyMode) && (e->wd > 0) ) {
          int mask = IN_DELETE|IN_DELETE_SELF|IN_CREATE|IN_MOVE|IN_MOVE_SELF|IN_DONT_FOLLOW;
@@ -815,6 +818,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
          inotify_rm_watch (m_inotify_fd, e->wd);
          e->wd = inotify_add_watch( m_inotify_fd, QFile::encodeName( e->path ), mask);
        }
+    }
 #endif
  
     }
