@@ -324,6 +324,7 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   if ( d->mButtonBox ) {
     d->mButtonList.clear();
     delete d->mButtonBox;
+    d->mButtonBox = 0;
   }
 
   if ( buttonMask & Cancel )
