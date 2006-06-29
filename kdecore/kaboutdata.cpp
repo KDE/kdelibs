@@ -174,7 +174,7 @@ public:
     QString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
     const char *mTranslatedProgramName;
-    const char *organizationDomain;
+    QString organizationDomain;
 };
 
 
@@ -211,8 +211,12 @@ KAboutData::KAboutData( const char* _appName,
    if ( homePageAddress && strncmp( homePageAddress, "http://", 7 ) == 0 ) {
        const QByteArray addr = homePageAddress;
        const int dot = addr.indexOf( '.' );
-       if ( dot > -1 )
+       if ( dot > -1 ) {
            d->organizationDomain = homePageAddress + dot + 1;
+           const int slash = d->organizationDomain.indexOf( '/' );
+           if ( slash > -1 )
+               d->organizationDomain.truncate( slash );
+       }
        else
            d->organizationDomain = "kde.org";
    } else
@@ -439,7 +443,7 @@ KAboutData::bugAddress() const
 QString
 KAboutData::organizationDomain() const
 {
-    return QLatin1String(d->organizationDomain);
+    return d->organizationDomain;
 }
 
 
