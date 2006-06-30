@@ -2648,7 +2648,8 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           selEndCached = m_view->selectEnd;
 
           cursor.setCol(0);
-          updateCursor( cursor );
+          updateCursor( cursor, true );
+          e->accept ();
           return;
         }
 
@@ -2701,6 +2702,11 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       }
       else
       {
+        // first clear the selection, otherweise we run into bug #106402
+        // Parameters: 1st false: don't redraw
+        //             2nd false: don't emit selectionChanged signals, as
+        //             selectWord() emits this already
+        m_view->clearSelection( false, false );
         m_view->selectWord( cursor );
         selectAnchor = KateTextCursor (m_view->selEndLine(), m_view->selEndCol());
         selStartCached = m_view->selectStart;
@@ -2715,7 +2721,7 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         QApplication::clipboard()->setSelectionMode( false );
 
         cursor.setPos(m_view->selectEnd);
-        updateCursor( cursor );
+        updateCursor( cursor, true );
 
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
