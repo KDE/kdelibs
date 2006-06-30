@@ -119,7 +119,9 @@ void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
 
 void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
 {
-  Q_ASSERT ( m_weaver != 0 ); // must have been queued first
+  //  Q_ASSERT ( m_weaver != 0 ); 
+  // I thought: "must have been queued first" 
+  // but the user can queue and dequeue in a suspended Weaver
 
   if ( m_weaver )
     {
