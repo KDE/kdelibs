@@ -18,111 +18,98 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <QTextBrowser>
-#include <QWhatsThis>
+#include <QtGui/QAction>
+#include <QtGui/QMenu>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QWhatsThis>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <ktextbrowser.h>
-#include <ktoolinvocation.h>
 #include <kurl.h>
-#include <QAction>
-#include <QMenu>
-#include <QKeyEvent>
+#include <ktoolinvocation.h>
 
-class KTextBrowser::KTextBrowserPrivate
+#include "ktextbrowser.h"
+
+class KTextBrowser::Private
 {
-public:
-    KTextBrowserPrivate()
-        : mNotifyClick( false )
-    { }
-    ~KTextBrowserPrivate() { }
+  public:
+    Private()
+      : notifyClick( false )
+    {
+    }
 
-    bool mNotifyClick;
+    ~Private()
+    {
+    }
+
+    bool notifyClick;
 };
 
 KTextBrowser::KTextBrowser( QWidget *parent, bool notifyClick )
-  : QTextBrowser( parent ), d( new KTextBrowserPrivate )
+  : QTextBrowser( parent ), d( new Private )
 {
-  d->mNotifyClick = notifyClick;
+  d->notifyClick = notifyClick;
 }
 
-KTextBrowser::~KTextBrowser( void )
+KTextBrowser::~KTextBrowser()
 {
+  delete d;
 }
 
 
 void KTextBrowser::setNotifyClick( bool notifyClick )
 {
-  d->mNotifyClick = notifyClick;
+  d->notifyClick = notifyClick;
 }
 
 
 bool KTextBrowser::isNotifyClick() const
 {
-  return d->mNotifyClick;
+  return d->notifyClick;
 }
 
 
 void KTextBrowser::setSource( const QUrl& name )
 {
   QString strName = name.toString();
-  if( strName.isNull() )
-  {
+  if ( strName.isNull() )
     return;
-  }
 
-  QRegExp whatsthis("whatsthis:/*([^/].*)");
-  if ( !d->mNotifyClick && whatsthis.exactMatch(strName) )
-  {
-     QWhatsThis::showText(QCursor::pos(),whatsthis.cap(1));
-  }
-  else if( strName.indexOf('@') > -1 )
-  {
-    if( !d->mNotifyClick )
-    {
+  QRegExp whatsthis( "whatsthis:/*([^/].*)" );
+  if ( !d->notifyClick && whatsthis.exactMatch( strName ) ) {
+     QWhatsThis::showText( QCursor::pos(), whatsthis.cap( 1 ) );
+  } else if ( strName.indexOf( '@' ) > -1 ) {
+    if ( !d->notifyClick ) {
       KToolInvocation::invokeMailer( KUrl( strName ) );
-    }
-    else
-    {
+    } else {
       emit mailClick( QString(), strName );
     }
-  }
-  else
-  {
-    if( !d->mNotifyClick )
-    {
+  } else {
+    if ( !d->notifyClick ) {
       KToolInvocation::invokeBrowser( strName );
-    }
-    else
-    {
+    } else {
       emit urlClick( strName );
     }
   }
 }
 
 
-void KTextBrowser::keyPressEvent( QKeyEvent *e )
+void KTextBrowser::keyPressEvent( QKeyEvent *event )
 {
-  if( e->key() == Qt::Key_Escape )
-  {
-    e->ignore();
-  }
-  else if( e->key() == Qt::Key_F1 )
-  {
-    e->ignore();
-  }
+  if ( event->key() == Qt::Key_Escape )
+    event->ignore();
+  else if ( event->key() == Qt::Key_F1 )
+    event->ignore();
   else
-  {
-    QTextBrowser::keyPressEvent( e );
-  }
+    QTextBrowser::keyPressEvent( event );
 }
 
-void KTextBrowser::mouseMoveEvent( QMouseEvent* e)
+void KTextBrowser::mouseMoveEvent( QMouseEvent *event )
 {
   // do this first so we get the right type of cursor
-  QTextBrowser::mouseMoveEvent(e);
+  QTextBrowser::mouseMoveEvent( event );
 
   if ( viewport()->cursor().shape() == Qt::PointingHandCursor )
     viewport()->setCursor( KCursor::handCursor() );
@@ -130,34 +117,34 @@ void KTextBrowser::mouseMoveEvent( QMouseEvent* e)
     viewport()->setCursor( viewport()->cursor().shape() );
 }
 
-void KTextBrowser::wheelEvent( QWheelEvent *e )
+void KTextBrowser::wheelEvent( QWheelEvent *event )
 {
-    if ( KGlobalSettings::wheelMouseZooms() )
-        QTextBrowser::wheelEvent( e );
-    else // thanks, we don't want to zoom, so skip QTextEdit's impl.
-        QAbstractScrollArea::wheelEvent( e );
+  if ( KGlobalSettings::wheelMouseZooms() )
+    QTextBrowser::wheelEvent( event );
+  else // thanks, we don't want to zoom, so skip QTextEdit's impl.
+    QAbstractScrollArea::wheelEvent( event );
 }
-void KTextBrowser::contextMenuEvent(QContextMenuEvent *e)
+
+void KTextBrowser::contextMenuEvent( QContextMenuEvent *event )
 {
-    QMenu *popup = createStandardContextMenu();
-    QList<QAction *> lstAction = popup->actions ();
-    if ( !lstAction.isEmpty() )
-    {
-        enum { UndoAct = 0, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
-        if ( isReadOnly() )
-            lstAction[0]->setIcon( SmallIconSet("editcopy") );
-        else
-        {
-            lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
-            lstAction[RedoAct]->setIcon( SmallIconSet("redo") );
-            lstAction[CutAct]->setIcon( SmallIconSet("editcut") );
-            lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
-            lstAction[PasteAct]->setIcon( SmallIconSet("editpaste") );
-            lstAction[ClearAct]->setIcon( SmallIconSet("editclear") );
-        }
+  QMenu *popup = createStandardContextMenu();
+  QList<QAction *> lstAction = popup->actions();
+  if ( !lstAction.isEmpty() ) {
+    enum { UndoAct = 0, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+    if ( isReadOnly() )
+      lstAction[ 0 ]->setIcon( SmallIconSet( "editcopy" ) );
+    else {
+      lstAction[ UndoAct ]->setIcon( SmallIconSet( "undo" ) );
+      lstAction[ RedoAct ]->setIcon( SmallIconSet( "redo" ) );
+      lstAction[ CutAct ]->setIcon( SmallIconSet( "editcut" ) );
+      lstAction[ CopyAct ]->setIcon( SmallIconSet( "editcopy" ) );
+      lstAction[ PasteAct ]->setIcon( SmallIconSet( "editpaste" ) );
+      lstAction[ ClearAct ]->setIcon( SmallIconSet( "editclear" ) );
     }
-    popup->exec(e->globalPos());
-    delete popup;
+  }
+
+  popup->exec( event->globalPos() );
+  delete popup;
 }
 
 #include "ktextbrowser.moc"

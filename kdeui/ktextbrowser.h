@@ -21,7 +21,7 @@
 #ifndef KTEXTBROWSER_H
 #define KTEXTBROWSER_H
 
-#include <QTextBrowser>
+#include <QtGui/QTextBrowser>
 
 #include <kdelibs_export.h>
 
@@ -50,17 +50,17 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
 
   public:
     /**
-     * Constructor.
+     * Creates a new text browser.
      *
      * @param parent Parent of the widget.
      * @param notifyClick @p true causes signals to be emitted.
      */
-    explicit KTextBrowser( QWidget *parent=0, bool notifyClick=false );
+    explicit KTextBrowser( QWidget *parent = 0, bool notifyClick = false );
 
     /**
-     * Destructor.
+     * Destroys the text browser.
      */
-    ~KTextBrowser( void );
+    ~KTextBrowser();
 
     /**
      * Decide whether a click on a link should be handled internally
@@ -78,25 +78,25 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
 
   protected:
     /**
-       Reimplemented to NOT set the source but to do the special handling.
-       Do not call.
+     * Reimplemented to NOT set the source but to do the special handling.
+     * Do not call.
      */
     void setSource( const QUrl& name );
 
     /**
      * Makes sure Key_Escape is ignored
      */
-    virtual void keyPressEvent( QKeyEvent *e );
+    virtual void keyPressEvent( QKeyEvent *event );
 
     /**
      * Make sure we use our own hand cursor
      */
-    virtual void mouseMoveEvent( QMouseEvent* e );
+    virtual void mouseMoveEvent( QMouseEvent* event );
 
     /**
      * Reimplemented to support Qt2 behavior (Ctrl-Wheel = fast scroll)
      */
-    virtual void wheelEvent( QWheelEvent *e );
+    virtual void wheelEvent( QWheelEvent *event );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
@@ -104,7 +104,7 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
     * See QLineEdit::createPopupMenu().
     */
 
-    virtual void contextMenuEvent( QContextMenuEvent *e );
+    virtual void contextMenuEvent( QContextMenuEvent *event );
 
   Q_SIGNALS:
     /**
@@ -125,8 +125,8 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
     void urlClick( const QString &url );
 
   private:
-    class KTextBrowserPrivate;
-    KTextBrowserPrivate *d;
+    class Private;
+    Private* const d;
 };
 
 #endif

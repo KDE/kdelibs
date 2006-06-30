@@ -117,7 +117,7 @@ testWindow::testWindow (QWidget *parent)
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
     KAction* filePrintAction = new KAction(KIcon("fileprint"), "Print (enables/disables open)", actionCollection(), "fileprint");
-    connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
+    connect(filePrintAction, SIGNAL(triggered(bool)), SLOT(slotPrint()));
 
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
@@ -135,32 +135,32 @@ testWindow::testWindow (QWidget *parent)
 //    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
     // Now add another button and align it right
-    exitAction = new KAction("exit", "Exit", actionCollection(), "exit");
+    exitAction = new KAction(KIcon( "exit" ), "Exit", actionCollection(), "exit");
     connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT( quit() ));
 
     // Another toolbar
 
-    KAction* fileNewAction2 = new KAction("filenew", "Create new file2 (Toggle)", actionCollection(), "filenew2");
+    KAction* fileNewAction2 = new KAction(KIcon( "filenew" ), "Create new file2 (Toggle)", actionCollection(), "filenew2");
     connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
 
-    KAction* fileOpenAction2 = new KAction("fileopen", "Open (starts progres in sb)", actionCollection(), "fileopen2");
+    KAction* fileOpenAction2 = new KAction(KIcon( "fileopen" ), "Open (starts progres in sb)", actionCollection(), "fileopen2");
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
     
-    KAction* fileFloppyAction2 = new KAction("filefloppy", "Save file2 (autorepeat)", actionCollection(), "filefloppy2");
+    KAction* fileFloppyAction2 = new KAction(KIcon( "filefloppy" ), "Save file2 (autorepeat)", actionCollection(), "filefloppy2");
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
 
-    KAction* filePrintAction2 = new KAction("fileprint", "Print (pops menu)", actionCollection(), "fileprint2");
+    KAction* filePrintAction2 = new KAction(KIcon( "fileprint" ), "Print (pops menu)", actionCollection(), "fileprint2");
     filePrintAction2->setMenu(itemsMenu);
 
 	
     // *** RADIO BUTTONS
     QActionGroup* radioGroup = new QActionGroup(this);
     radioGroup->setExclusive(true);
-    new KToggleAction("filenew", "Radiobutton1", actionCollection(), "radioButton1", radioGroup);
-    new KToggleAction("fileopen", "Radiobutton2", actionCollection(), "radioButton2", radioGroup);
-    new KToggleAction("filefloppy", "Radiobutton3", actionCollection(), "radioButton3", radioGroup);
-    new KToggleAction("fileprint", "Radiobutton4", actionCollection(), "radioButton4", radioGroup);
+    new KToggleAction(KIcon( "filenew" ), "Radiobutton1", actionCollection(), "radioButton1", radioGroup);
+    new KToggleAction(KIcon( "fileopen" ), "Radiobutton2", actionCollection(), "radioButton2", radioGroup);
+    new KToggleAction(KIcon( "filefloppy" ), "Radiobutton3", actionCollection(), "radioButton3", radioGroup);
+    new KToggleAction(KIcon( "fileprint" ), "Radiobutton4", actionCollection(), "radioButton4", radioGroup);
 
     connect (radioGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotToggled(QAction*)));
 
