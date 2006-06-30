@@ -1374,7 +1374,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 
    if ( url.hasRef() )
    {
-      relURL += "#";
+      relURL += '#';
       relURL += url.ref();
    }
 

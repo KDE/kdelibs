@@ -132,7 +132,7 @@ class CfgEntry
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
         mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
-        mDefaultValue( defaultValue ), mChoices(choices), 
+        mDefaultValue( defaultValue ), mChoices(choices),
 	mSignalList(signalList), mHidden( hidden )
     {
     }
@@ -551,7 +551,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     signalList.append( signal);
    }
   }
-  
+
 
   bool nameIsEmpty = name.isEmpty();
   if ( nameIsEmpty && key.isEmpty() ) {
@@ -997,7 +997,7 @@ QString memberMutatorBody( CfgEntry *e )
   if (!e->param().isEmpty())
     out << "[i]";
   out << " = v;" << endl;
-  
+
   if ( !e->signalList().empty() ) {
     foreach(Signal signal, e->signalList()) {
       out << "  " << This << varPath("settingsChanged") << " |= " << signalEnumName(signal.name) << ";" << endl;
@@ -1073,7 +1073,7 @@ int main( int argc, char **argv )
   QString className = codegenConfig.value("ClassName").toString();
   QString inherits = codegenConfig.value("Inherits").toString();
   QString visibility = codegenConfig.value("Visibility").toString();
-  if (!visibility.isEmpty()) visibility+=" ";
+  if (!visibility.isEmpty()) visibility+=' ';
   bool singleton = codegenConfig.value("Singleton", false).toBool();
   bool staticAccessors = singleton;
   //bool useDPointer = codegenConfig.readEntry("DPointer", false);
@@ -1475,7 +1475,7 @@ int main( int argc, char **argv )
     }
     h << endl;
   }
-  
+
   h << "  protected:" << endl;
 
   // Private constructor for singleton

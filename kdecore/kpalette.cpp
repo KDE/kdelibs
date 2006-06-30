@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 //-----------------------------------------------------------------------------
-// KDE color palette 
+// KDE color palette
 
 #include "kpalette.h"
 
@@ -38,8 +38,8 @@ KPalette::getPaletteList()
   for(QStringList::Iterator it = paletteList.begin();
       it != paletteList.end();
       it++)
-  { 
-      (*it) = (*it).mid(strip); 
+  {
+      (*it) = (*it).mid(strip);
   }
 
   return paletteList;
@@ -65,14 +65,14 @@ KPalette::KPalette(const QString &name)
   while( !paletteFile.atEnd() )
   {
      line = QString::fromLocal8Bit(paletteFile.readLine());
-     if (line[0] == '#') 
+     if (line[0] == '#')
      {
         // This is a comment line
-        line = line.mid(1); // Strip '#' 
+        line = line.mid(1); // Strip '#'
         line = line.trimmed(); // Strip remaining white space..
         if (!line.isEmpty())
         {
-           mDesc += line+"\n"; // Add comment to description
+           mDesc += line+'\n'; // Add comment to description
         }
      }
      else
@@ -95,7 +95,7 @@ KPalette::KPalette(const QString &name)
 }
 
 KPalette::KPalette(const KPalette &p)
- : mColorList(p.mColorList), mName(p.mName), 
+ : mColorList(p.mColorList), mName(p.mName),
    mDesc(p.mDesc), mEditable(p.mEditable)
 {}
 
@@ -116,7 +116,7 @@ KPalette::save()
    QString description = mDesc.trimmed();
    description = '#'+description.split( "\n", QString::KeepEmptyParts).join("\n#");
 
-   (*str) << "KDE RGB Palette\n";   
+   (*str) << "KDE RGB Palette\n";
    (*str) << description << "\n";
    foreach (ColorNode node, mColorList)
    {
@@ -135,7 +135,7 @@ KPalette::operator=( const KPalette &p)
   mColorList = p.mColorList;
   mName = p.mName;
   mDesc = p.mDesc;
-  mEditable = p.mEditable; 
+  mEditable = p.mEditable;
   return *this;
 }
 
@@ -176,8 +176,8 @@ KPalette::addColor(const QColor &newColor, const QString &newColorName)
 }
 
 int
-KPalette::changeColor(int index, 
-                      const QColor &newColor, 
+KPalette::changeColor(int index,
+                      const QColor &newColor,
                       const QString &newColorName)
 {
   if ((index < 0) || (index >= nrColors()))
@@ -186,6 +186,6 @@ KPalette::changeColor(int index,
   ColorNode& node = mColorList[index];
   node.color = newColor;
   node.name  = newColorName;
-  
+
   return index;
 }

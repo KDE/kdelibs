@@ -73,9 +73,9 @@ void KIconThemeNode::printTree(QString& dbgString) const
 {
     /* This method doesn't have much sense anymore, so maybe it should
        be removed in the (near?) future */
-    dbgString += "(";
+    dbgString += '(';
     dbgString += theme->name();
-    dbgString += ")";
+    dbgString += ')';
 }
 
 void KIconThemeNode::queryIcons(QStringList *result,
@@ -786,7 +786,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 	if ((overlay & K3Icon::ShareOverlay) &&
 	    ((ovl = loadOverlay(theme->shareOverlay(), size)) != 0L))
 	  KIconEffect::overlay(*img, *ovl);
-        if (overlay & K3Icon::HiddenOverlay) 
+        if (overlay & K3Icon::HiddenOverlay)
         {
 	    *img = img->convertToFormat(QImage::Format_ARGB32);
             for (int y = 0; y < img->height(); y++)

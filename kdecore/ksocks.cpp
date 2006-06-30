@@ -277,7 +277,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
                               it != newlibs.end();
                               ++it) {
       QString thisone = *it;
-      if (thisone[thisone.length()-1] != '/') thisone += "/";
+      if (thisone[thisone.length()-1] != '/') thisone += '/';
       _libPaths << thisone;
       kDebug(171) << "KSocks added a new library path: " << thisone << endl;
    }

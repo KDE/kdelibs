@@ -95,7 +95,7 @@ public:
      * @p verbosity is set to EmitResult for subjobs. Whether applications
      * should call with Quietly or EmitResult depends on whether they rely
      * on result being emitted or not.
-     * @return true if the operation is supported and succeded, false otherwise
+     * @return true if the operation is supported and succeeded, false otherwise
      */
     bool kill( KillVerbosity verbosity = Quietly );
 
@@ -104,7 +104,7 @@ protected:
      * Aborts this job quietly.
      * This simply kills the job, no error reporting or job deletion should be involved.
      *
-     * @return true if the operation is supported and succeded, false otherwise
+     * @return true if the operation is supported and succeeded, false otherwise
      */
     virtual bool doKill() { return false; }
 

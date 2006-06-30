@@ -279,7 +279,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
       for (uint i = 0; i < n; i++) {
           shellCmd += arguments[i];
-          shellCmd += " "; // CC: to separate the arguments
+          shellCmd += ' '; // CC: to separate the arguments
       }
 
       arglist = static_cast<char **>(malloc( 4 * sizeof(char *)));

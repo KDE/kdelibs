@@ -178,7 +178,7 @@ static QString num2heb(int num, bool includeMillenium)
     result += QChar(0x05D0 - 1 + num);
 
   if (result.length() == 1)
-    result += "'";
+    result += '\'';
   else
     result.insert(result.length() - 1, '\"');
 
@@ -740,7 +740,7 @@ int KCalendarSystemHebrew::yearStringToInteger(const QString & sNum, int & iLeng
     iResult = heb2num(sNum, iLength);
   else
     iResult = KCalendarSystem::yearStringToInteger(sNum, iLength);
-  
+
   if (iResult < 1000)
     iResult += 5000; // assume we're in the 6th millenium (y6k bug)
 

@@ -68,7 +68,7 @@ QString KStringHandler::word( const QString &text , const char *range )
     while ( pos < list.count() && (wordsToExtract-- > 0))
     {
        tmp += list.at(pos);
-       tmp += " ";
+       tmp += ' ';
        ++pos;
     }
 
@@ -197,8 +197,8 @@ QString KStringHandler::capwords( const QString &text )
 
     const QString strippedText = text.trimmed();
     const QStringList words = capwords( strippedText.split(' '));
-		
-					
+
+
     QString result = text;
     result.replace( strippedText, words.join( " " ) );
     return result;
@@ -558,7 +558,7 @@ bool KStringHandler::isUtf8( const char *buf )
   int i, n;
   register unsigned char c;
   bool gotone = false;
-  
+
   if (!buf)
     return true; // whatever, just don't crash
 
@@ -647,6 +647,6 @@ QString KStringHandler::from8Bit( const char *str )
     return emptyString;
   }
   return KStringHandler::isUtf8( str ) ?
-             QString::fromUtf8( str ) : 
+             QString::fromUtf8( str ) :
              QString::fromLocal8Bit( str );
 }

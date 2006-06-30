@@ -193,7 +193,7 @@ rmtree(const QByteArray& name)
             if ( !qstrcmp( ep->d_name, "." ) || !qstrcmp( ep->d_name, ".." ) )
                 continue;
             QByteArray newName( name );
-            newName += "/"; // Careful: do not add '/' instead or you get problems with Qt3.
+            newName += '/';
             newName += ep->d_name;
             /*
              * Be defensive and close the directory.

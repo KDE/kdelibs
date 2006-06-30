@@ -162,11 +162,11 @@ int KShortcut::compare( const KShortcut& cut ) const
 
 	if (d->seq.count() != cut.d->seq.count())
 		return d->seq.count() > cut.d->seq.count() ? 1 : -1;
-	
+
 	for (int i = 0; i < d->seq.count(); ++i)
 		if (d->seq[i] != cut.d->seq[i])
 			return d->seq[i] > cut.d->seq[i] ? 1 : -1;
-	
+
 	return 0;
 }
 
@@ -250,7 +250,7 @@ QString KShortcut::toStringInternal( const KShortcut* pcutDefault ) const
 		if( pcutDefault && i < pcutDefault->count() && seq == pcutDefault->seq(i) ) {
 			s += "default(";
 			s += seq.toString();
-			s += ")";
+			s += ')';
 		} else
 			s += seq.toString();
 		if( i < count() - 1 )

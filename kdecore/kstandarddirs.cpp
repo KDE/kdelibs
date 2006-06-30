@@ -1183,7 +1183,7 @@ QString KStandardDirs::saveLocation(const char *type,
         dircache.remove(type);
     }
     if (!fullPath.endsWith("/"))
-	    fullPath += "/";
+	    fullPath += '/';
     return fullPath;
 }
 

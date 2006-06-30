@@ -656,7 +656,7 @@ KCmdLineArgs::parseAllArgs()
              QString email;
              if ( !(*it).emailAddress().isEmpty() )
                email = " <" + (*it).emailAddress() + '>';
-             authorlist += QString("    ") + (*it).name() + email + "\n";
+             authorlist += QString("    ") + (*it).name() + email + '\n';
            }
            printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(about->programName()) ,  authorlist ) );
          }
@@ -870,7 +870,7 @@ KCmdLineArgs::usage(const char *id)
    }
 
    printQ(i18n("Usage: %1 %2\n", argv[0], usage));
-   printQ("\n"+about->shortDescription()+"\n");
+   printQ('\n'+about->shortDescription()+'\n');
 
    printQ(i18n("\nGeneric options:\n"));
    printQ(optionFormatString.arg("--help", -25).arg(i18n("Show help about options")));
@@ -934,7 +934,7 @@ KCmdLineArgs::usage(const char *id)
          {
             if (option->description)
             {
-               optionsHeader = "\n"+i18n(option->description);
+               optionsHeader = '\n'+i18n(option->description);
                if (!optionsHeader.endsWith("\n"))
                   optionsHeader.append("\n");
                hasOptions = false;
@@ -948,7 +948,7 @@ KCmdLineArgs::usage(const char *id)
          {
             if (option->description)
             {
-               tmp = "\n"+i18n(option->description);
+               tmp = '\n'+i18n(option->description);
                if (!tmp.endsWith("\n"))
                   tmp.append("\n");
                printQ(tmp);
