@@ -33,7 +33,7 @@
 #include <qfile.h>
 #include <qtimer.h>
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kuniqueapplication.h>
 #include <kapplication.h>
@@ -80,8 +80,8 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    {
       QVariantList args;
       args << QString("kbuildsycoca") << args;
-      KToolInvocation::klauncher()->callWithArgs("kdeinit_exec_wait", callBackObj,
-                                                 callBackSlot, args);
+      KToolInvocation::klauncher()->callWithArgumentList("kdeinit_exec_wait", args, callBackObj,
+                                                         callBackSlot);
    }
    else
    {
@@ -111,7 +111,7 @@ Kded::Kded(bool checkUpdates)
   new KBuildsycocaAdaptor(this);
   new KdedAdaptor(this);
 
-  QDBusConnection &session = QDBus::sessionBus();
+  QDBusConnection session = QDBus::sessionBus();
   session.registerObject("/kbuildsycoca", this);
   session.registerObject("/kded", this);
 
@@ -361,7 +361,7 @@ void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,
      module->removeAll(appId);
   }
 #endif
-  if (oldOwner.isEmpty() || !QDBusUtil::isValidUniqueConnectionName(name))
+  if (oldOwner.isEmpty())
      return;
 
   const QList<qlonglong> windowIds = m_windowIdList.value(name);
@@ -482,8 +482,8 @@ void Kded::recreateDone()
 
    for(; m_recreateCount; m_recreateCount--)
    {
-      QDBusMessage reply = m_recreateRequests.takeFirst();
-      reply.connection().send(reply);
+      QDBusMessage msg = m_recreateRequests.takeFirst();
+      msg.sendReply();
    }
    m_recreateBusy = false;
 
@@ -519,7 +519,8 @@ void Kded::recreate(const QDBusMessage &msg)
       }
       m_recreateCount++;
    }
-   m_recreateRequests.append(QDBusMessage::methodReply(msg));
+   msg.setDelayedReply(true);
+   m_recreateRequests.append(msg);
    return;
 }
 
@@ -754,12 +755,12 @@ bool KdedAdaptor::unloadModule(const QString &module)
 
 void KdedAdaptor::registerWindowId(qlonglong windowId, const QDBusMessage &msg)
 {
-   Kded::self()->registerWindowId(windowId, msg.sender());
+   Kded::self()->registerWindowId(windowId, msg.service());
 }
 
 void KdedAdaptor::unregisterWindowId(qlonglong windowId, const QDBusMessage &msg)
 {
-   Kded::self()->unregisterWindowId(windowId, msg.sender());
+   Kded::self()->unregisterWindowId(windowId, msg.service());
 }
 
 QStringList KdedAdaptor::loadedModules()
@@ -879,8 +880,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckHostname)
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
-     QObject::connect(QDBus::sessionBus().busService(),
-                      SIGNAL(nameOwnerChanged(QString,QString,QString)),
+     QObject::connect(QDBus::sessionBus().interface(),
+                      SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                       kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
 
      // During startup kdesktop waits for KDED to finish.
@@ -892,11 +893,11 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
      // FIXME: rename the signal
      QDBusMessage msg = QDBusMessage::signal("/kbuildsycoca", "org.kde.ksycoca",
-                                             "notifyDatabaseChanged");
-     QDBus::sessionBus().send(msg);
+                                             "notifyDatabaseChanged", QDBus::sessionBus());
+     msg.send();
 
-     QDBusInterfacePtr("org.kde.ksplash", "/")->
-        call(QDBusInterface::NoWaitForReply, "upAndRunning", QString("kded"));
+     QDBusInterface("org.kde.ksplash", "/")
+         .call(QDBus::NoBlock, "upAndRunning", QString("kded"));
 #ifdef Q_WS_X11
      XEvent e;
      e.xclient.type = ClientMessage;

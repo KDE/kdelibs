@@ -167,7 +167,7 @@ AppPresenceCurrent ContactPresenceListCurrent::best()
 
 OrgKdeKIMInterface * findInterface( const QString & app )
 {
-	return QDBus::sessionBus().findInterface<OrgKdeKIMInterface>( app, "/KIMIface" );
+        return new OrgKdeKIMInterface( app, "/KIMIface", QDBus::sessionBus() );
 }
 
 KIMProxy * KIMProxy::instance() 
@@ -181,8 +181,8 @@ KIMProxy::KIMProxy() : QObject(), d( new Private )
 {
 	//QDBus::sessionBus().registerObject( "/KIMProxy", this);
 	m_initialized = false;
-	connect( QDBus::sessionBus().busService(),
-		 SIGNAL(nameOwnerChanged(QString,QString,QString)),
+	connect( QDBus::sessionBus().interface(),
+		 SIGNAL(serviceOwnerChanged(QString,QString,QString)),
 		 SLOT(nameOwnerChanged(QString,QString,QString)) );
 
 	d->presence_strings.append( "Unknown" );
@@ -222,7 +222,7 @@ bool KIMProxy::initialize()
 			// see what apps implementing our service type are out there
 			const KService::List offers = KServiceTypeTrader::self()->query( IM_SERVICE_TYPE );
 			KService::List::const_iterator offer;
-			QStringList registeredApps = QDBus::sessionBus().busService()->listNames();
+			QStringList registeredApps = QDBus::sessionBus().interface()->registeredServiceNames();
 			foreach (QString app, registeredApps)
 			{
 				//kDebug( 790 ) << " considering: " << *app << endl;

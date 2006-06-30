@@ -28,7 +28,7 @@
 #include <QList>
 #include <QPair>
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 typedef QHash<QString,QString> Dict;
 typedef QList< QPair<QString,QString> > ContextList;

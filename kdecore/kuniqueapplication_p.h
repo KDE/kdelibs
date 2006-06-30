@@ -20,7 +20,7 @@
 #ifndef KUNIQUEAPPLICATION_P_H
 #define KUNIQUEAPPLICATION_P_H
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KUniqueApplicationAdaptor: public QDBusAbstractAdaptor
 {

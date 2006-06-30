@@ -39,7 +39,7 @@
 
 #include <qfile.h>
 #include <qlist.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kapplication.h>
 #include <kcrash.h>
@@ -784,7 +784,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     kDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
 
-    QDBusInterfacePtr kps( "org.kde.kded", "/modules/kpasswdserver" );
+    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver" );
 
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
@@ -792,10 +792,10 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     QDBusMessage reply;
 
     if (metaData("no-auth-prompt").toLower() == "true")
-       reply = kps->call("queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
+       reply = kps.call("queryAuthInfo", data, QString(QLatin1String("<NoAuthPrompt>")),
                          qlonglong(windowId), s_seqNr);
     else
-       reply = kps->call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr);
+       reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr);
 
 
     if ( !reply.type() == QDBusMessage::ReplyMessage )
@@ -804,9 +804,9 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
        return false;
     }
 
-    QDataStream stream2( reply[0].toByteArray() );
+    QDataStream stream2( reply.at(1).toByteArray() );
     stream2 >> authResult;
-    s_seqNr = reply[1].toLongLong();
+    s_seqNr = reply.at(1).toLongLong();
 
     if (!authResult.isModified())
        return false;
@@ -1073,16 +1073,16 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
-    QDBusInterfacePtr kps( "org.kde.kded", "/modules/kpasswdserver" );
+    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver" );
 
     QByteArray data;
     {
        QDataStream stream(&data, QIODevice::WriteOnly);
        stream << info;
     }
-    QDBusReply<QByteArray> reply = kps->call("checkAuthInfo", data, qlonglong(windowId));
+    QDBusReply<QByteArray> reply = kps.call("checkAuthInfo", data, qlonglong(windowId));
 
-    if ( !reply.isSuccess() )
+    if ( !reply.isValid() )
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
@@ -1110,7 +1110,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     QDataStream stream(&params, QIODevice::WriteOnly);
     stream << info;
 
-    QDBusInterfacePtr( "org.kde.kded", "/modules/kpasswdserver" )->
+    QDBusInterface( "org.kde.kded", "/modules/kpasswdserver" ).
        call("addAuthInfo", params, windowId);
 
     return true;

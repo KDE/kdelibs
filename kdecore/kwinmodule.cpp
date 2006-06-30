@@ -29,7 +29,7 @@
 #include <klocale.h>
 #include <QDesktopWidget>
 #include "netwm.h"
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 static KWinModulePrivate* static_d = 0;
 
@@ -422,7 +422,8 @@ void KWinModule::setDesktopName( int desktop, const QString& name )
 
 void KWinModule::doNotManage( const QString& title )
 {
-    QDBusInterfacePtr("org.kde.kwin", "/kwin", "org.kde.KWin")->call("doNotManage", title);
+    QDBusInterface("org.kde.kwin", "/kwin", "org.kde.KWin", QDBus::sessionBus())
+        .call("doNotManage", title);
 }
 
 #include "kwinmodule.moc"

@@ -30,7 +30,7 @@
 #include <qfile.h>
 #include <qlist.h>
 #include <qtimer.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
@@ -103,8 +103,8 @@ KUniqueApplication::start()
 #endif
 
   // Check the D-Bus connection health
-  QDBusBusService* dbusService = 0;
-  if (!QDBus::sessionBus().isConnected() || !(dbusService = QDBus::sessionBus().busService()))
+  QDBusConnectionInterface* dbusService = 0;
+  if (!QDBus::sessionBus().isConnected() || !(dbusService = QDBus::sessionBus().interface()))
   {
     kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
     ::exit(255);
@@ -133,7 +133,7 @@ KUniqueApplication::start()
      // server.
 
 #ifndef Q_WS_WIN //TODO
-     if (dbusService->requestName(appName, QDBusBusService::DoNotQueueName) != QDBusBusService::PrimaryOwnerReply)
+     if (dbusService->registerService(appName) != QDBusConnectionInterface::ServiceRegistered)
      {
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;
@@ -165,16 +165,16 @@ KUniqueApplication::start()
         if (s_multipleInstances)
            appName.append("-").append(QString::number(getpid()));
 
-        QDBusReply<QDBusBusService::RequestNameReply> reply =
-            dbusService->requestName(appName, QDBusBusService::DoNotQueueName);
-        if (reply.isError())
+        QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
+            dbusService->registerService(appName);
+        if (!reply.isValid())
         {
            kError() << "KUniqueApplication: Can't setup D-Bus service." << endl;
            result = -1;
            ::write(fd[1], &result, 1);
            ::exit(255);
         }
-        if (reply == QDBusBusService::NameExistsReply)
+        if (reply == QDBusConnectionInterface::ServiceNotRegistered)
         {
            // Already running. Ok.
            result = 0;
@@ -217,7 +217,7 @@ KUniqueApplication::start()
      // The primary one (QDBus::sessionBus()) belongs to the child
      QDBusConnection con = QDBusConnection::addConnection(QDBusConnection::SessionBus, "kuniqueapplication");
      dbusService = 0;
-     if (!con.isConnected() || !(dbusService = con.busService()))
+     if (!con.isConnected() || !(dbusService = con.interface()))
      {
        kError() << "KUniqueApplication: Cannot create secondary connection to the D-BUS server" << endl;
        ::exit(255);
@@ -242,7 +242,7 @@ KUniqueApplication::start()
      if (result != 0)
         ::exit(result); // Error occurred in child.
 
-     if (!dbusService->nameHasOwner(appName))
+     if (!dbusService->isServiceRegistered(appName))
      {
         kError() << "KUniqueApplication: Registering failed!" << endl;
      }
@@ -258,17 +258,15 @@ KUniqueApplication::start()
          new_asn_id = id.id();
 #endif
 
-     QDBusInterface *iface = con.findInterface(appName, "/MainApplication",
-                                               "org.kde.KUniqueApplication");
+     QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", con);
      QDBusReply<int> reply;
-     if (!iface || (reply = iface->call("newInstance", new_asn_id)).isError())
+     if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id)).isValid())
      {
-       QDBusError err = iface->lastError();
+       QDBusError err = iface.lastError();
         kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl
                  << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
      }
-     delete iface;
      ::exit(reply);
      break;
   }

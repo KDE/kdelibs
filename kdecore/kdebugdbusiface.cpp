@@ -19,7 +19,7 @@
 */
 
 #include "kdebugdbusiface_p.h"
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 #include "kdebug.h"
 
 KDebugDBusIface::KDebugDBusIface()

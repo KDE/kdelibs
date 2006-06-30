@@ -11,7 +11,7 @@
 #define KHTMLPARTADAPTOR_H_63241146766339
 
 #include <QtCore/QObject>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 class QByteArray;
 template<class T> class QList;
 template<class Key, class Value> class QMap;
@@ -136,7 +136,7 @@ public Q_SLOTS: // METHODS
     bool gotoAnchor(const QString &name);
     bool nextAnchor();
     bool prevAnchor();
-    Q_ASYNC void print(bool quick);
+    Q_NOREPLY void print(bool quick);
     void saveBackground(const QString &url);
     void saveDocument(const QString &url);
     void selectAll();

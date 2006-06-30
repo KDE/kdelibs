@@ -20,7 +20,7 @@
 #define MANAGERADAPTOR_H
 
 #include <qstring.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 namespace KRES
 {

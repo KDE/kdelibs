@@ -26,7 +26,7 @@
 #include <qhash.h>
 #include <qset.h>
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <ksycoca.h>
 #include <ksycocatype.h>
@@ -164,7 +164,7 @@ public:
    KBuildsycocaAdaptor(QObject *parent);
 
 public Q_SLOTS:
-   Q_ASYNC void recreate(const QDBusMessage&);
+   Q_NOREPLY void recreate(const QDBusMessage&);
 };
    
 class KdedAdaptor: public QDBusAbstractAdaptor

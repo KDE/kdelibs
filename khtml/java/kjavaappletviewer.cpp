@@ -28,7 +28,7 @@
 #include <qtimer.h>
 #include <qpointer.h>
 #include <qlabel.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kauthorized.h>
 #include <klibloader.h>
@@ -331,10 +331,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
 
         // make the call
         QDBusReply<QByteArray> reply =
-            QDBusInterfacePtr ("org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer")->
+            QDBusInterface("org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer").
             call ("checkAuthInfo", params, qlonglong(m_view->topLevelWidget()->winId()));
 
-        if (reply.isError()) {
+        if (!reply.isValid()) {
             kWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
         } else {
             KIO::AuthInfo authResult;

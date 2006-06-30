@@ -50,7 +50,7 @@
 #include <kcharsets.h>
 #include <kglobalsettings.h>
 #include <ktoolinvocation.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
@@ -114,12 +114,12 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    QDBusInterfacePtr kcookiejar("org.kde.kded", "/modules/kcookiejar",
-                                 "org.kde.KCookieServer");
-    QDBusReply<QString> reply = kcookiejar->call("findDOMCookies",
-                                                 URL().url(), qlonglong(windowId));
+    QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar",
+                              "org.kde.KCookieServer");
+    QDBusReply<QString> reply = kcookiejar.call("findDOMCookies",
+                                                URL().url(), qlonglong(windowId));
 
-    if ( !reply.isSuccess() )
+    if ( !reply.isValid() )
     {
        kWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
@@ -139,18 +139,18 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     QString fake_header("Set-Cookie: ");
     fake_header.append(value.string().toLatin1().constData());
     fake_header.append("\n");
-    QDBusInterface *kcookiejar =
-        QDBus::sessionBus().findInterface("org.kde.kded", "/modules/kcookiejar",
-                                          "org.kde.KCookieServer");
+    QDBusInterface *kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
+                                                    "org.kde.KCookieServer");
     if (!kcookiejar->isValid())
     {
          // Maybe it wasn't running (e.g. we're opening local html files)
          KToolInvocation::startServiceByDesktopName( "kcookiejar");
-         kcookiejar = QDBus::sessionBus().findInterface("org.kde.kded", "/modules/kcookiejar",
-                                                        "org.kde.KCookieServer");
+         delete kcookiejar;
+         kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
+                                         "org.kde.KCookieServer");
     }
 
-    kcookiejar->call(QDBusInterface::NoWaitForReply, "addCookies",
+    kcookiejar->call(QDBus::NoBlock, "addCookies",
                      URL().url(), fake_header, qlonglong(windowId));
 
     delete kcookiejar;

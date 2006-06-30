@@ -28,7 +28,7 @@
 #include "kpastetextaction.h"
 
 #include <QClipboard>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -94,10 +94,10 @@ void KPasteTextAction::menuAboutToShow()
 {
     m_popup->clear();
     QStringList list;
-    QDBusInterfacePtr klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
-    if (klipper->isValid()) {
-      QDBusReply<QStringList> reply = klipper->call("getClipboardHistoryMenu");
-      if (reply.isSuccess())
+    QDBusInterface klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
+    if (klipper.isValid()) {
+      QDBusReply<QStringList> reply = klipper.call("getClipboardHistoryMenu");
+      if (reply.isValid())
         list = reply;
     }
     QString clipboardText = qApp->clipboard()->text(QClipboard::Clipboard);
@@ -119,15 +119,15 @@ void KPasteTextAction::menuAboutToShow()
 
 void KPasteTextAction::slotTriggered(QAction* action)
 {
-    QDBusInterfacePtr klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
-    if (klipper->isValid()) {
-      QDBusReply<QString> reply = klipper->call("getClipboardHistoryItem",
+    QDBusInterface klipper("org.kde.klipper", "/klipper", "org.kde.Klipper");
+    if (klipper.isValid()) {
+      QDBusReply<QString> reply = klipper.call("getClipboardHistoryItem",
                                                 m_popup->actions().indexOf(action));
-      if (!reply.isSuccess())
+      if (!reply.isValid())
         return;
       QString clipboardText = reply;
-      reply = klipper->call("setClipboardContents", clipboardText);
-      if (reply.isSuccess())
+      reply = klipper.call("setClipboardContents", clipboardText);
+      if (reply.isValid())
         kDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard) << endl;
     }
 }

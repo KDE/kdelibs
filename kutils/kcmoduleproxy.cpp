@@ -30,7 +30,7 @@
 
 #include <qwidget.h>
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #ifdef Q_WS_X11
 #include <QX11EmbedWidget>
@@ -181,14 +181,7 @@ KCModule * KCModuleProxy::realModule() const
 		d->isInitialized = true;
 	}
 
-
-	QDBusBusService *busService = QDBus::sessionBus().busService();
-	QDBusReply<QDBusBusService::RequestNameReply> reply
-	    = busService->requestName( d->dbusService,
-	                               QDBusBusService::DoNotQueueName );
-
-	if( reply.isSuccess() && (reply == QDBusBusService::PrimaryOwnerReply
-				  || reply == QDBusBusService::AlreadyOwnerReply)
+	if( QDBus::sessionBus().registerService( d->dbusService ) 
 	    || d->bogusOccupier )
 	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
@@ -243,14 +236,14 @@ KCModule * KCModuleProxy::realModule() const
 	{
 		kDebug(711) << "Module already loaded, loading KCMError" << endl;
 
-		connect( busService, SIGNAL(nameOwnerChanged(QString,QString,QString)),
+		connect( QDBus::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                          SLOT(ownerChanged(QString,QString,QString)) );
 
 		/* Figure out the name of where the module is already loaded */
-		QDBusInterfacePtr proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface");
-		QDBusReply<QString> reply = proxy->call("applicationName");
+		QDBusInterface proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface");
+		QDBusReply<QString> reply = proxy.call("applicationName");
 
-		if( reply.isSuccess() )
+		if( reply.isValid() )
 		{
 			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
 					i18nc( "Argument is application name", "This configuration section is "
@@ -538,11 +531,11 @@ void KCModuleProxy::save()
 
 void KCModuleProxy::callRootModule( const QString& function )
 {
-	QDBusInterfacePtr proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface" );
+	QDBusInterface proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface" );
 
 	/* Note, we don't use d->dcopClient here, because it's used for
 	 * the loaded module(and it's not "us" when this function is called) */
-	if( proxy->call( function ).type()!=QDBusMessage::ReplyMessage )
+	if( proxy.call( function ).type()!=QDBusMessage::ReplyMessage )
 		kDebug(711) << "Calling function '" << function << "' failed." << endl;
 
 }
@@ -562,10 +555,10 @@ QString KCModuleProxy::quickHelp() const
 		return realModule() ? realModule()->quickHelp() : QString();
 	else
 	{
-		QDBusInterfacePtr proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface" );
-		QDBusReply<QString> reply = proxy->call( "quickHelp" );
+		QDBusInterface proxy( d->dbusService, d->dbusPath, "org.kde.KCModuleProxyIface" );
+		QDBusReply<QString> reply = proxy.call( "quickHelp" );
 
-		if ( reply.isError() )
+		if ( !reply.isValid() )
 			kDebug(711) << "Calling DCOP function bool changed() failed." << endl;
 
 		return reply;

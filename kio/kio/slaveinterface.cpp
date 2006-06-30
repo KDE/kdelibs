@@ -30,7 +30,7 @@
 #include <kapplication.h>
 #include <time.h>
 #include <qtimer.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 using namespace KIO;
 

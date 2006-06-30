@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #include <qfile.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include "kaboutdata.h"
 #include "kapplication.h"
@@ -94,8 +94,8 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
             }
             if (bHighlight)
             {
-               QDBusInterfacePtr kicker( "org.kde.kicker", "/kicker", "org.kde.Kicker" );
-               QDBusReply<void> result = kicker->call( "highlightMenuItem", menuId );
+               QDBusInterface kicker( "org.kde.kicker", "/kicker", "org.kde.Kicker" );
+               QDBusReply<void> result = kicker.call( "highlightMenuItem", menuId );
                if (!result.isSuccess())
                   error(3, i18n("Menu item '%1' could not be highlighted.", menuId).toLocal8Bit());
             }
