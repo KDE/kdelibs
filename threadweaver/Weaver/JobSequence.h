@@ -26,7 +26,7 @@ namespace ThreadWeaver {
         void aboutToBeQueued ( WeaverInterface *weaver );
 
         /** reimplemented */
-        void jobFailed( Job* );
+        void internalJobDone( Job* );
     };
 
 }

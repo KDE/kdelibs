@@ -6,6 +6,7 @@
 #include <QPointer>
 
 #include "JobCollection.h"
+#include "DependencyPolicy.h"
 
 using namespace ThreadWeaver;
 
@@ -175,21 +176,21 @@ const int JobCollection::jobListLength()
 
 bool JobCollection::canBeExecuted()
 {
-  bool inheritedCanRun;
+  bool inheritedCanRun = true;;
 
   if ( m_elements->size() > 0 )
     {
       inheritedCanRun = m_elements->at( 0 )->canBeExecuted();
-    } else {
-      inheritedCanRun = false;
     }
-  return Job::canBeExecuted() || inheritedCanRun;
+
+  return Job::canBeExecuted() && inheritedCanRun;
 }
 
 void JobCollection::internalJobDone ( Job* job )
 {
   Q_UNUSED (job);
   --m_jobCounter;
+
   if (m_jobCounter == 0)
     {
       emit done(this);
@@ -210,7 +211,7 @@ void JobCollection::dequeueElements()
 	    debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n", m_elements->at( index ) );
 	    m_weaver->dequeue ( m_elements->at( index ) );
 	  } else {
-	    debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+	    debug( 5, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
 		   m_elements->at( index ) );
 	    // this returns false if the job was not in the queue, which we assume:
 	    Q_ASSERT ( ! m_weaver->dequeue ( m_elements->at( index ) ) );

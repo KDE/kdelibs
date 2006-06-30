@@ -13,25 +13,32 @@ namespace ThreadWeaver {
 
     void JobSequence::aboutToBeQueued ( WeaverInterface *weaver )
     {
-        int i;
-
-        if ( jobListLength() > 1 )
+      if ( jobListLength() > 1 )
         {
             // set up the dependencies:
-            for ( i = 0; i < jobListLength() -1 ; ++i )
+            for ( int i = 1; i < jobListLength(); ++i )
             {
-                P_ASSERT ( jobAt( i ) != 0 );
-                P_ASSERT ( jobAt( i+1 ) != 0 );
-                DependencyPolicy::instance().addDependency ( jobAt( i ), jobAt( i+1 ) );
+	      Job* jobA = jobAt(i);
+	      Job* jobB = jobAt(i-1);
+	      P_ASSERT ( jobA != 0 );
+	      P_ASSERT ( jobB != 0 );
+	      DependencyPolicy::instance().addDependency ( jobA, jobB );
             }
         }
 
         JobCollection::aboutToBeQueued( weaver );
+
+	DependencyPolicy::instance().dumpJobDependencies();
+ 
     }
 
-    void JobSequence::jobFailed( Job* job)
+    void JobSequence::internalJobDone( Job* job)
     {
-        stop( job );
+      if ( ! job->success() )
+	{
+	  stop( job );
+	}
+      JobCollection::internalJobDone(job);
     }
 
 }

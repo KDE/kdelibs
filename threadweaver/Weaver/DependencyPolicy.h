@@ -67,7 +67,7 @@ namespace ThreadWeaver {
 
     public:
         /** This method should be useful for debugging purposes. */
-        void DumpJobDependencies();
+        void dumpJobDependencies();
     };
 
 }

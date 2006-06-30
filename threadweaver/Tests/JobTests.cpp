@@ -66,7 +66,7 @@ private slots:
 
     void initTestCase ()
     {
-        ThreadWeaver::setDebugLevel ( true,  5 );
+        ThreadWeaver::setDebugLevel ( true,  4 );
     }
 
     // call finish() before leave a test to make sure the queue is empty
@@ -98,7 +98,7 @@ private slots:
         QVERIFY( sequence.count( 'b' ) == 1 );
         QVERIFY( sequence.count( 'c' ) == 1 );
     }
-/*
+
     void ShortJobSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -115,6 +115,7 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
+ /*
     void QueueAndDequeueSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );

@@ -39,6 +39,7 @@ DependencyPolicy::DependencyPolicy()
 void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
 {   // jobA depends on jobB
     jobA->assignQueuePolicy( this );
+    jobB->assignQueuePolicy( this );
     QMutexLocker l( & d->mutex() );
     d->dependencies().insert( jobA, jobB );
 }
@@ -115,6 +116,8 @@ bool DependencyPolicy::canRun( Job* job )
 void DependencyPolicy::free( Job* job )
 {
     resolveDependencies( job );
+    Q_ASSERT ( ! hasUnresolvedDependencies( job ) );
+    debug ( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", job);
 }
 
 void DependencyPolicy::release( Job* )
@@ -126,7 +129,7 @@ void DependencyPolicy::destructed( Job* job )
     resolveDependencies ( job );
 }
 
-void DependencyPolicy::DumpJobDependencies()
+void DependencyPolicy::dumpJobDependencies()
 {
     QMutexLocker l( & d->mutex() );
 

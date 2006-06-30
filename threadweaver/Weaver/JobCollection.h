@@ -55,7 +55,7 @@ namespace ThreadWeaver {
 
         /** Callback method for done jobs.
         */
-        void internalJobDone( Job* );
+        virtual void internalJobDone( Job* );
 
     private:
         /** Overload the execute method. */
