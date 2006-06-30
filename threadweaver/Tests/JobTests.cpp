@@ -184,7 +184,6 @@ private slots:
         QVERIFY ( empty == true );
     }
 
-  /*
     void QueueAndDequeueAllSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -208,6 +207,7 @@ private slots:
         QVERIFY ( empty == true );
     }
 
+  /*
     void RecursiveQueueAndDequeueAllSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
