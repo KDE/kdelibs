@@ -207,7 +207,6 @@ private slots:
         QVERIFY ( empty == true );
     }
 
-  /*
     void RecursiveQueueAndDequeueAllSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -255,6 +254,7 @@ private slots:
         QVERIFY ( empty == true );
     }
 
+   /*
 //     This test is not the most efficient, as the mutex locking takes most of
 //     the execution time. Anyway, it will fail if the jobs are not executed
 //     in the right order.
