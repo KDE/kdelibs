@@ -22,26 +22,18 @@
 	*   <i>Javascript (aka. ECMAScript and JScript) support.</i>
 	* - <a href="kio/html/index.html"><b>kio</b></a>
         *   (<a href="kio/kio/html/classes.html">classes</a>)\n
-	*   <i>Low level access to network files. Also provides access to facilities
-	*   such as KDirWatcher which monitors directories for changes.</i>
+	*   <i>KDE's input/output system.<br> Provides network transparency input
+	*   and output, file monitoring, and more</i>
 	* - <a href="kparts/html/index.html"><b>kparts</b></a>
         *   (<a href="kparts/html/classes.html">classes</a>)\n
-	*   <i>Support for re-usable, embeddable, extendable applications.</i>
-	* - <a href="dcop/html/index.html"><b>dcop</b></a>
-        *   (<a href="dcop/html/classes.html">classes</a>)\n
-	*   <i>The DCOP communications library.</i>
+	*   <i>The KDE component library.<br> Provides support for re-usable, 
+	*   embeddable, extendable componets for use in applications.</i>
 	* - <a href="kdefx/html/index.html"><b>kdefx</b></a>
         *   (<a href="kdefx/html/classes.html">classes</a>)\n
-	*   <i>A library with pixmap effects.</i>
-	* - <a href="kmdi/html/index.html"><b>kmdi</b></a>
-        *   (<a href="kmdi/html/classes.html">classes</a>)\n
-	*   <i>MultiDocument Interface library.</i>
-	* - <a href="libkmid/html/index.html"><b>libkmid</b></a>
-        *   (<a href="libkmid/html/classes.html">classes</a>)\n
-	*   <i>Midi library.</i>
+	*   <i>KDE's graphic effects library.</i>
 	* - <a href="kdeprint/html/index.html"><b>kdeprint</b></a>
         *   (<a href="kdeprint/html/classes.html">classes</a>)\n
-	*   <i>High level  printer control functionality.</i>
+	*   <i>High level printer control functionality.</i>
 	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>
         *   (<a href="interfaces/html/classes.html">classes</a>)\n
 	*   <i>Defines interfaces for common components so that new implementations
