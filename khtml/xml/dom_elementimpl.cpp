@@ -824,17 +824,18 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
 
 DOMString ElementImpl::toString() const
 {
-    DOMString result = openTagStartToString();
+    QString result = openTagStartToString().string(); //Accumulate in QString, since DOMString can't append well.
 
     if (hasChildNodes()) {
 	result += ">";
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
-	    result += child->toString();
+	    DOMString kid = child->toString();
+	    result += QConstString(kid.unicode(), kid.length()).string();
 	}
 
 	result += "</";
-	result += tagName();
+	result += tagName().string();
 	result += ">";
     } else if (result.length() == 1) {
 	// ensure we dont get results like < /> can happen when serialize document

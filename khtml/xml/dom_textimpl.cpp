@@ -39,25 +39,7 @@ using namespace khtml;
 
 static DOMString escapeHTML( const DOMString& in )
 {
-    //FIXME: this is rather slow
-    DOMString s;
-    for ( unsigned int i = 0; i < in.length(); ++i ) {
-        switch( in[i].latin1() ) {
-        case '&':
-            s += "&amp;";
-            break;
-        case '<':
-            s += "&lt;";
-            break;
-        case '>':
-            s += "&gt;";
-            break;
-        default:
-            s += DOMString( in[i] );
-        }
-    }
-
-    return s;
+    return in.implementation()->escapeHTML();
 }
 
 CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text)

@@ -450,9 +450,11 @@ void HTMLElementImpl::removeCSSProperty(int id)
 
 DOMString HTMLElementImpl::innerHTML() const
 {
-    DOMString result = "";
-    for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling())
-        result += child->toString();
+    QString result; //Use QString to accumulate since DOMString is poor for appends
+    for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
+        DOMString kid = child->toString();
+        result += QConstString(kid.unicode(), kid.length()).string();
+    }
     return result;
 }
 

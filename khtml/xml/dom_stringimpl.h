@@ -74,6 +74,7 @@ public:
         return new DOMStringImpl(s,l);
     };
 
+
     DOMStringImpl *substring(unsigned int pos, unsigned int len);
     DOMStringImpl *collapseWhiteSpace(bool preserveLF, bool preserveWS);
 
@@ -89,6 +90,7 @@ public:
     DOMStringImpl *lower() const;
     DOMStringImpl *upper() const;
     DOMStringImpl *capitalize(bool noFirstCap=false) const;
+    DOMStringImpl *escapeHTML();
 
     QChar *unicode() const { return s; }
     uint length() const { return l; }
