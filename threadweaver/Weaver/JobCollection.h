@@ -32,7 +32,7 @@ namespace ThreadWeaver {
         virtual void addJob ( Job* );
 
         /** Overload to manage recursive sets. */
-        bool hasUnresolvedDependencies();
+        bool canBeExecuted();
 
     public slots:
         /** Stop processing, dequeue all remaining Jobs.

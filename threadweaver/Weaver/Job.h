@@ -16,7 +16,6 @@
 #ifndef THREADWEAVER_JOB_H
 #define THREADWEAVER_JOB_H
 
-#include <QList>
 #include <QObject>
 
 class QMutex;
@@ -25,9 +24,9 @@ class QWaitCondition;
 namespace ThreadWeaver {
 
     class Thread;
-    class WeaverInterface;
+    class QueuePolicy;
     class JobRunHelper;
-    class JobMultiMap;
+    class WeaverInterface;
     class QueuePolicyList;
 
     /** A Job is a simple abstraction of an action that is to be
@@ -41,14 +40,16 @@ namespace ThreadWeaver {
 	different objects to perform two consecutive or parallel runs.
 
 	Jobs may declare dependencies. If Job B depends on Job A, B may not be
-	executed before A is finished.
-
+	executed before A is finished. To learn about dependencies, see
+	DependencyPolicy.
     */
 
     class Job : public QObject
     {
         Q_OBJECT
     public:
+        friend class JobRunHelper;
+
         /** Construct a Job.
 
             @param parent the parent QObject
@@ -135,41 +136,23 @@ namespace ThreadWeaver {
             If it returns false, all queue policy resources have been freed,
             and the method can be called again at a later time.
         */
-        bool canBeExecuted();
+        virtual bool canBeExecuted();
 
         /** Returns true if the jobs's execute method finished. */
         bool isFinished() const { return m_finished; }
 
-	/** Process events related to this job (created by the processing
-	    thread or the weaver or whoever). */
-	// virtual void processEvent ( Event* );
-
-        /** Add a dependency.
-            The object given will be added as a dependency. The Job will not
-            be executed until all dependencies have been processed.
-            The job is automatically added to the dependency as a dependent.
-            @param dependency: the other job this job depends on
+        /** Assign a queue policy.
+            Queue Policies customize the queueing (running) behaviour of sets
+            of jobs. Examples for queue policies are dependencies and resource
+            restrictions.
+            Every queue policy object can only be assigned once to a job,
+            multiple assignments will be IGNORED.
         */
-        void addDependency (Job* dependency);
+        void assignQueuePolicy ( QueuePolicy* );
 
-        /** Remove dependency.
-            The given dependency will be removed. If none are left, the job
-            will be executed as soon as a waiting thread is available.
-            The job will automatically be removed as a dependent of dep.
-
-            Returns false if the given object is not dependency of this job.
-
-	    This function is inefficient, and should be used only to abort
-	    execution of a job.
-
-	    @param dep the dependency that will be removed
-        */
-        bool removeDependency (Job *dep);
-
-        /** Query whether the job has an unresolved dependency.
-            In case it does, it will not be processed by a thread trying to
-            request a job. */
-        virtual bool hasUnresolvedDependencies();
+        /** Remove a queue policy from this job.
+         */
+        void removeQueuePolicy ( QueuePolicy* );
 
     signals:
 	/** This signal is emitted when this job is being processed by a
@@ -186,10 +169,6 @@ namespace ThreadWeaver {
 
     protected:
         // FIXME pimpl
-        friend class JobRunHelper;
-
-        /** Retrieve a list of dependencies of this job. */
-        QList<Job*> getDependencies() const;
 
         /** Free the queue policies acquired before this job has been
             executed. */
@@ -208,24 +187,11 @@ namespace ThreadWeaver {
 	inline Thread *thread() { return m_thread; }
 	/** Call with status = true to mark this job as done. */
 	inline void setFinished ( bool status ) { m_finished = status; }
-        /** Resolve all dependencies.
-            This method is called after the Job has been finished, or
-            when it is deleted without being executed (performed by the
-            destructor).
-            The method will remove all entries stating that another Job
-            depends on this one.
+
+        /** The thread that executes this job.
+            Zero when the job is not executed.
         */
-        virtual void resolveDependencies();
-
         Thread * m_thread;
-
-	/** A container to keep track of Job dependencies.
-	    For each dependency A->B, which means Job B depends on Job A and
-	    may only be executed after A has been finished, an entry will be
-	    added with key A and value B. When A is finished, the entry will
-	    be removed. */
-        static JobMultiMap* sm_dep();
-	static QMutex *sm_mutex;
 
         /** The list of QueuePolicies assigned to this Job. */
         QueuePolicyList* m_queuePolicies;
@@ -235,11 +201,7 @@ namespace ThreadWeaver {
 	/** m_finished is set to true when the Job has been executed. */
         bool m_finished;
 
-    public:
-        /** This method should be useful for debugging purposes. */
-        static void DumpJobDependencies();
     };
-
 }
 
 #endif // THREADWEAVER_JOB_H

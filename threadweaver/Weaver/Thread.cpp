@@ -66,28 +66,10 @@ namespace ThreadWeaver {
                 {
                     break;
                 } else {
-//                     {
-//                         QMutexLocker l ( &sm_mutex );
                     m_job = job;
-//                     }
-
-                    /*
-                      QThread* originalOwner = job->QObject::thread();
-
-                      if ( originalOwner != this )
-                      {
-                      job->moveToThread ( this );
-                      }
-                    */
                     emit ( jobStarted ( th,  m_job ) );
                     m_job->execute (th);
                     emit ( jobDone ( m_job ) );
-                    /*
-                      if ( originalOwner != this )
-                      {
-                      job->moveToThread ( originalOwner );
-                      }
-                    */
                 }
             }
         }
@@ -99,15 +81,6 @@ namespace ThreadWeaver {
             {
                 job->requestAbort();
             }
-
-//             if ( m_job )
-//             {
-//                 QMutexLocker l ( &sm_mutex );
-//                 if ( m_job )
-//                 {
-//                     m_job->requestAbort();
-//                 }
-//             }
         }
     };
 
@@ -115,11 +88,10 @@ namespace ThreadWeaver {
     QMutex Thread::sm_mutex;
 
     Thread::Thread (WeaverImpl *parent)
-        : QThread (),
-          m_parent ( parent ),
-          m_runhelper ( 0 ),
-//          m_job ( 0 ),
-          m_id ( makeId() )
+        : QThread ()
+        , m_parent ( parent )
+        , m_runhelper ( 0 )
+        , m_id ( makeId() )
     {
     }
 

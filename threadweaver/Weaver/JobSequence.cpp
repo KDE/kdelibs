@@ -2,6 +2,7 @@
 #include <DebuggingAids.h>
 
 #include "JobSequence.h"
+#include "DependencyPolicy.h"
 
 namespace ThreadWeaver {
 
@@ -21,7 +22,7 @@ namespace ThreadWeaver {
             {
                 P_ASSERT ( jobAt( i ) != 0 );
                 P_ASSERT ( jobAt( i+1 ) != 0 );
-                jobAt( i )->addDependency ( jobAt( i+1 ) );
+                DependencyPolicy::instance().addDependency ( jobAt( i ), jobAt( i+1 ) );
             }
         }
 
