@@ -153,12 +153,12 @@ Q_SIGNALS:
   /**
    * Emitted when a mainwindow registers itself.
    */
-  void windowRegistered(long windowId);
+  void windowRegistered(qlonglong windowId);
 
   /**
    * Emitted when a mainwindow unregisters itself.
    */
-  void windowUnregistered(long windowId);
+  void windowUnregistered(qlonglong windowId);
 
 private:
   KDEDModulePrivate* const d;
