@@ -295,7 +295,7 @@ void KMainWindow::setUniqueName()
     }
     setObjectName( s );
 
-    const QString pathname = "/" + objectName();
+    const QString pathname = '/' + objectName();
     QDBus::sessionBus().registerObject(pathname, this, QDBusConnection::ExportAllSlots |
                                        QDBusConnection::ExportAllProperties |
                                        QDBusConnection::ExportAdaptors);

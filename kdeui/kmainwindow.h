@@ -40,13 +40,10 @@ class KConfig;
 class KConfigBase;
 class KHelpMenu;
 class KStatusBar;
-class QStatusBar;
 class KMenuBar;
 class KMWSessionManaged;
 class KMainWindowPrivate;
 class KToolBar;
-class KToolBarMenuAction;
-class DCOPObject;
 
 #define KDE_DEFAULT_WINDOWFLAGS 0
 

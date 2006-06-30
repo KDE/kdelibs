@@ -58,7 +58,7 @@ public:
 public Q_SLOTS:
 	/**
 	Return a list of actions available to the application's window.
-	@return A QCStringList containing valid names actions.
+	@return A QStringList containing valid names actions.
 	*/
 	QStringList actions();
 
@@ -98,7 +98,7 @@ public Q_SLOTS:
 	Returns the tool tip text of the requested action.
 	@param action The name of the action to activate.  The names of valid
 	actions can be found by calling actions().
-	@return A QCString containing the text of the action's tool tip.
+	@return A QString containing the text of the action's tool tip.
 	*/
 	QString actionToolTip( const QString& action);
 
