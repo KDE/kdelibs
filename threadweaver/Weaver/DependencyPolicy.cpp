@@ -7,7 +7,7 @@
 
 using namespace ThreadWeaver;
 
-class JobMultiMap : public QMultiMap<Job*, Job*> {};
+typedef QMultiMap<Job*, Job*> JobMultiMap;
 
 class DependencyPolicy::Private
 {
@@ -34,6 +34,11 @@ DependencyPolicy::DependencyPolicy()
     : QueuePolicy()
     , d ( new Private() )
 {
+}
+
+DependencyPolicy::~DependencyPolicy()
+{
+  delete d;
 }
 
 void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
@@ -83,8 +88,8 @@ void DependencyPolicy::resolveDependencies( Job* job )
 QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
 {
     QList<Job*> result;
-    QMutexLocker l( & d->mutex() );
     JobMultiMap::const_iterator it;
+    QMutexLocker l( & d->mutex() );
 
     for ( it = d->dependencies().begin(); it != d->dependencies().end(); ++it )
     {

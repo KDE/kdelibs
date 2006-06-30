@@ -66,7 +66,7 @@ private slots:
 
     void initTestCase ()
     {
-        ThreadWeaver::setDebugLevel ( true,  4 );
+        ThreadWeaver::setDebugLevel ( true,  1 );
     }
 
     // call finish() before leave a test to make sure the queue is empty
@@ -254,10 +254,9 @@ private slots:
         QVERIFY ( empty == true );
     }
 
-   /*
 //     This test is not the most efficient, as the mutex locking takes most of
 //     the execution time. Anyway, it will fail if the jobs are not executed
-//     in the right order.
+//     in the right order, and the order is randomized. 
     void MassiveJobSequenceTest() {
         const int NoOfChars = 1024;
         const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -303,6 +302,7 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
+    /*
     void SequenceOfSequencesTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -344,6 +344,7 @@ private slots:
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abcdefghij" ) );
     }
+    */
 
     void QueueAndStopTest() {
         QString sequence;
@@ -368,8 +369,6 @@ private slots:
 
         QCOMPARE ( sequence, QString( "abcd" ) );
     }
-
-*/
 
 };
 

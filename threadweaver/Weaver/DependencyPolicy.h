@@ -8,6 +8,9 @@ namespace ThreadWeaver {
     class DependencyPolicy : public QueuePolicy
     {
     public:
+      /** Destructor. */
+      ~DependencyPolicy();
+
         /** Add jobA as a dependency of jobB.
             jobA will only be executed after jobB has been successfully processed.
             @param jobA the depending job
