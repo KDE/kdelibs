@@ -115,7 +115,6 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
- /*
     void QueueAndDequeueSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -138,6 +137,7 @@ private slots:
         QVERIFY ( empty == true );
     }
 
+  /*
     void RecursiveQueueAndDequeueSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
