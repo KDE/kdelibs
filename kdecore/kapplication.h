@@ -28,7 +28,6 @@
 class KConfig;
 class KConfigBase;
 class KCharsets;
-class QDBusInterface;
 
 #ifdef KDE3_SUPPORT
 #include <krandom.h>

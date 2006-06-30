@@ -1242,9 +1242,23 @@ void KUrlTest::testBrokenStuff()
 
   weird = "ssh://user@machine?cmd='echo $HOSTNAME'";
   QVERIFY( weird.isValid() );
-  QVERIFY( weird.host() == QString("machine") );
+  QCOMPARE( weird.host(), QString("machine") );
   //qDebug("%s",qPrintable( weird.query() ) );
-  QVERIFY( weird.queryItem("cmd") == QString("'echo $HOSTNAME'") );
+  QCOMPARE( weird.queryItem("cmd"), QString("'echo $HOSTNAME'") );
+
+  weird = ":pictures"; // for KFileDialog's startDir
+  QVERIFY( weird.isValid() );
+  QVERIFY( weird.protocol().isEmpty() );
+  QVERIFY( weird.host().isEmpty() );
+  QCOMPARE( weird.path(), QString( "pictures" ) );
+  QCOMPARE( weird.url(), QString( "pictures" ) ); // # BUG: the : is missing
+
+  weird = "::keyword"; // for KFileDialog's startDir
+  QVERIFY( weird.isValid() );
+  QVERIFY( weird.protocol().isEmpty() );
+  QVERIFY( weird.host().isEmpty() );
+  QCOMPARE( weird.path(), QString( ":keyword" ) );
+  QCOMPARE( weird.url(), QString( ":keyword" ) ); // # BUG: the : is missing
 
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
