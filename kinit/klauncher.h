@@ -37,7 +37,7 @@
 
 #include <kservice.h>
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include "autostart.h"
 

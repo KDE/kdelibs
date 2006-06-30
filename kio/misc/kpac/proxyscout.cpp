@@ -25,7 +25,7 @@
 #include <klocale.h>
 #include <knotification.h>
 #include <kprotocolmanager.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include "proxyscout.moc"
 #include "discovery.h"
@@ -68,8 +68,7 @@ namespace KPAC
 
         if ( m_downloader || startDownload() )
         {
-            msg.setDelayedReply(true);
-            m_requestQueue.append( QueuedRequest( msg, url ) );
+            m_requestQueue.append( QueuedRequest( QDBusMessage::methodReply(msg), url ) );
             return QString();   // return value will be ignored
         }
         else return "DIRECT";
@@ -137,9 +136,10 @@ namespace KPAC
               it != m_requestQueue.end(); ++it )
         {
             if ( success )
-                ( *it ).transaction.sendReply( handleRequest( ( *it ).url ) );
+                ( *it ).transaction << handleRequest( ( *it ).url );
             else
-                ( *it ).transaction.sendReply( QString( "DIRECT" ) );
+                ( *it ).transaction << QString( "DIRECT" );
+            QDBus::sessionBus().send( ( *it ).transaction );
         }
         m_requestQueue.clear();
         m_downloader->deleteLater();

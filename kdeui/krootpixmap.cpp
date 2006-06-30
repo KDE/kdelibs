@@ -23,7 +23,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #endif
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <kimageeffect.h>
@@ -36,8 +36,8 @@
 
 static QString wallpaperForDesktop(int desktop)
 {
-    QDBusInterface kdesktop("org.kde.kdesktop", "/Background", "org.kde.kdesktop.KBackground");
-    QDBusReply<QString> retval = kdesktop.call("currentWallpaper", desktop);
+    QDBusInterfacePtr kdesktop("org.kde.kdesktop", "/Background", "org.kde.kdesktop.KBackground");
+    QDBusReply<QString> retval = kdesktop->call("currentWallpaper", desktop);
     return retval;
 }
 
@@ -276,8 +276,7 @@ void KRootPixmap::enableExports()
     if ( screen_number )
         appname += QLatin1String("-screen-") + QString::number( screen_number );
 
-    QDBusInterface(appname, "/Background", "org.kde.kdesktop.KBackground")
-        .call( "setExport", 1 );
+    QDBusInterfacePtr(appname, "/Background", "org.kde.kdesktop.KBackground")->call( "setExport(int)", 1 );
 #endif
 }
 

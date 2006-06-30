@@ -110,7 +110,8 @@ KMFactory::KMFactory()
 
 	// create D-Bus signal connection
 	(void)new KMFactoryAdaptor(this);
-	QObject* iface = new org::kde::KDEPrint::KMFactory(QString(), QString(), QDBus::sessionBus(), this);
+	QObject* iface = QDBus::sessionBus().findInterface<org::kde::KDEPrint::KMFactory>(QString(), QString());
+	iface->setParent(this);
 	connect(iface, SIGNAL(pluginChanged(int)), SLOT(slot_pluginChanged(int)));
 	connect(iface, SIGNAL(configChanged()), SLOT(slot_configChanged()));
 }
@@ -422,15 +423,15 @@ void KMFactory::saveConfig()
 
 QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& user, const QString& host, int port )
 {
-	QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+	QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
 	/**
 	 * We do not use an internal event loop for 2 potential problems:
 	 *  - the MessageWindow modality (appearing afterwards, it pops up on top
 	 *    of the password dialog)
 	 *  - KMTimer should be stopped, but it's unavailable from this object
 	 */
-	QDBusReply<QString> reply = kdeprintd.call( "requestPassword", user, host, port, seqNbr );
-	if ( reply.isValid() )
+	QDBusReply<QString> reply = kdeprintd->call( "requestPassword", user, host, port, seqNbr );
+	if ( reply.isSuccess() )
 	{
 		QString replyString = reply;
 		if ( replyString != "::" )
@@ -448,14 +449,14 @@ QPair<QString,QString> KMFactory::requestPassword( int& seqNbr, const QString& u
 
 void KMFactory::initPassword( const QString& user, const QString& password, const QString& host, int port )
 {
-	QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+	QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
 	/**
 	 * We do not use an internal event loop for 2 potential problems:
 	 *  - the MessageWindow modality (appearing afterwards, it pops up on top
 	 *    of the password dialog)
 	 *  - KMTimer should be stopped, but it's unavailable from this object
 	 */
-	kdeprintd.call( "initPassword", user, password, host, port );
+	kdeprintd->call( "initPassword", user, password, host, port );
 }
 
 #include "kmfactory.moc"

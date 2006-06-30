@@ -40,7 +40,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 #include <qdatetime.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kurl.h>
 #include <kidna.h>
@@ -1705,10 +1705,10 @@ bool HTTPProtocol::isOffline(const KUrl &url)
   const int NetWorkStatusOnline = 8;
 
   QDBusReply<int> reply =
-    QDBusInterface( "org.kde.kded", "/modules/networkstatus", "org.kde.NetworkStatusModule" ).
+    QDBusInterfacePtr( "org.kde.kded", "/modules/networkstatus", "org.kde.NetworkStatusModule" )->
     call( "status", url.url() );
 
-  if ( reply.isValid() )
+  if ( reply.isSuccess() )
   {
      int result = reply;
      kDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
@@ -4448,18 +4448,18 @@ void HTTPProtocol::error( int _err, const QString &_text )
 void HTTPProtocol::addCookies( const QString &url, const QByteArray &cookieHeader )
 {
    qlonglong windowId = m_request.window.toLongLong();
-   QDBusInterface kcookiejar( "org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer" );
-   (void)kcookiejar.call( QDBus::NoBlock, "addCookies", url,
+   QDBusInterfacePtr kcookiejar( "org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer" );
+   (void)kcookiejar->call( QDBusInterface::NoWaitForReply, "addCookies", url,
                            cookieHeader, windowId );
 }
 
 QString HTTPProtocol::findCookies( const QString &url)
 {
   qlonglong windowId = m_request.window.toLongLong();
-  QDBusInterface kcookiejar( "org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer" );
-  QDBusReply<QString> reply = kcookiejar.call( "findCookies", url, windowId );
+  QDBusInterfacePtr kcookiejar( "org.kde.kded", "/modules/kcookiejar", "org.kde.KCookieServer" );
+  QDBusReply<QString> reply = kcookiejar->call( "findCookies", url, windowId );
 
-  if ( !reply.isValid() )
+  if ( reply.isError() )
   {
      kWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
      return QString();

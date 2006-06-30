@@ -31,7 +31,7 @@
 #include <qstring.h>
 #include <qtextcodec.h>
 #include <qset.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -95,9 +95,9 @@ QStringList KCrashBookmarkImporterImpl::getCrashLogs()
             continue;
 
         QDBusReply<QString> reply =
-            QDBusInterface(clientId, "/Konqueror", "org.kde.Konqueror").call("crashLogfile");
+            QDBusInterfacePtr(clientId, "/Konqueror", "org.kde.Konqueror")->call("crashLogfile");
 
-        if ( !reply.isValid() )
+        if ( reply.isError() )
             continue;
 
         activeLogs += reply;

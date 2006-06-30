@@ -21,7 +21,7 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kapplication.h>
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
    
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-   org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded", "/modules/kcookiejar", QDBus::sessionBus());
+   org::kde::KCookieServer *kcookiejar = QDBus::sessionBus().findInterface<org::kde::KCookieServer>("org.kde.kded", "/modules/kcookiejar");
    if (args->isSet("remove-all"))
    {
       kcookiejar->deleteAllCookies();
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
    }
    if (args->isSet("shutdown"))
    {
-      QDBusInterface("org.kded.kded", "/kded", "org.kde.kded").call("unloadModule", QByteArray("kcookiejar"));
+      QDBusInterfacePtr("org.kded.kded", "/kded", "org.kde.kded")->call("unloadModule", QByteArray("kcookiejar"));
    }
    else if(args->isSet("reload-config"))
    {
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
    }
    else
    {
-      QDBusInterface("org.kded.kded", "/kded", "org.kde.kded").call("loadModule", QByteArray("kcookiejar"));
+      QDBusInterfacePtr("org.kded.kded", "/kded", "org.kde.kded")->call("loadModule", QByteArray("kcookiejar"));
    }
    delete kcookiejar;
 

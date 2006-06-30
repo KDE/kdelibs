@@ -1,7 +1,7 @@
 #include "kbuildsycocaprogressdialog.h"
 #include <klocale.h>
 #include <kapplication.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
 {
@@ -9,11 +9,11 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
                                  i18n("Updating System Configuration"),
                                  i18n("Updating system configuration."));
 
-  QDBusInterface kbuildsycoca("org.kde.kded", "/kbuildsycoca",
-                              "org.kde.kbuildsycoca");
-  if (kbuildsycoca.isValid())
+  QDBusInterfacePtr kbuildsycoca("org.kde.kded", "/kbuildsycoca",
+                                 "org.kde.kbuildsycoca");
+  if (kbuildsycoca->isValid())
   {
-     kbuildsycoca.callWithArgumentList("recreate", QVariantList(), &dlg, SLOT(slotFinished()));
+     kbuildsycoca->callWithArgs("recreate", &dlg, SLOT(slotFinished()));
      dlg.exec();
   }
 }

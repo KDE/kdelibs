@@ -20,7 +20,7 @@
 
 #include <string.h>
 #include <sys/utsname.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -264,8 +264,8 @@ QString KProtocolManager::proxyForURL( const KUrl &url )
             if ( p.startsWith("http") || p == "ftp" || p == "gopher" )
             {
               QDBusReply<QString> reply =
-                  QDBusInterface( "org.kde.kded", "/modules/proxyscout", "org.kde.KPAC.ProxyScout" )
-                  .call( "proxyForURL", u.url() );
+                  QDBusInterfacePtr( "org.kde.kded", "/modules/proxyscout", "org.kde.KPAC.ProxyScout" )->
+                  call( "proxyForURL", u.url() );
               proxy = reply;
             }
           }
@@ -286,8 +286,8 @@ QString KProtocolManager::proxyForURL( const KUrl &url )
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-  QDBusInterface( "org.kde.kded", "/modules/proxyscout" )
-      .call( "blackListProxy", proxy );
+  QDBusInterfacePtr( "org.kde.kded", "/modules/proxyscout" )->
+      call( "blackListProxy", proxy );
 }
 
 /*

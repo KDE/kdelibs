@@ -22,7 +22,7 @@
 
 #include "kdedmodule.h"
 #include <qtimer.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include "kconfigdata.h"
 

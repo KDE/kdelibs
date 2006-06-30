@@ -28,7 +28,7 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include "resource.h"
 #include "factory.h"
@@ -51,7 +51,8 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
   mId = KRandom::randomString( 8 );
 
   // Register with DCOP
-  QDBus::sessionBus().registerService("org.kde.KResourcesManager");
+  QDBus::sessionBus().busService()->requestName("org.kde.KResourcesManager",
+         QDBusBusService::ReplaceExistingName);
 
   QDBus::sessionBus().connect("", dBusPath, "org.kde.KResourcesManager", "signalKResourceAdded",
       this, SLOT(dcopKResourceAdded(QString,QString)));

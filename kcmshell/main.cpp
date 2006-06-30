@@ -34,7 +34,7 @@
 
 #include <QVBoxLayout>
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -110,16 +110,16 @@ static KService::Ptr locateModule(const QByteArray& module)
 
 bool KCMShell::isRunning()
 {
-    QString owner = QDBus::sessionBus().interface()->serviceOwner(m_serviceName);
+    QString owner = QDBus::sessionBus().busService()->nameOwner(m_serviceName);
     if( owner == QDBus::sessionBus().baseService() )
         return false; // We are the one and only.
 
     kDebug(780) << "kcmshell with modules '" <<
         m_serviceName << "' is already running." << endl;
 
-    QDBusInterface iface(m_serviceName, "/KCModule/dialog", "org.kde.KCMShellMultiDialog");
-    QDBusReply<void> reply = iface.call("activate", kapp->startupId());
-    if (!reply.isValid())
+    QDBusInterfacePtr iface(m_serviceName, "/KCModule/dialog", "org.kde.KCMShellMultiDialog");
+    QDBusReply<void> reply = iface->call("activate", kapp->startupId());
+    if (reply.isError())
     {
         kDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
         return false; // Error, we have to do it ourselves.
@@ -157,14 +157,14 @@ void KCMShell::setServiceName(const QString &dcopName, bool rootMode )
 
     m_serviceName += dcopName;
 
-    QDBus::sessionBus().registerService(m_serviceName);
+    QDBus::sessionBus().busService()->requestName(m_serviceName, QDBusBusService::DoNotQueueName);
 }
 
 void KCMShell::waitForExit()
 {
     kDebug(780) << k_funcinfo << endl;
 
-    connect(QDBus::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+    connect(QDBus::sessionBus().busService(), SIGNAL(nameOwnerChanged(QString,QString,QString)),
             SLOT(appExit(QString,QString,QString)));
     exec();
 }

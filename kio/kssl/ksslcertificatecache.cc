@@ -22,7 +22,7 @@
 #include "ksslcertificatecache.h"
 #include "ksslcertchain.h"
 #include "ksslcertificate.h"
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <stdlib.h>
 #include <kdebug.h>
@@ -56,7 +56,7 @@ void KSSLCertificateCache::loadDefaultPolicies() {
 
 
 void KSSLCertificateCache::reload() {
-     QDBusInterface("org.kde.kded", "/modules/kssld").call("cacheReload");
+     QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->call("cacheReload");
 }
 
 
@@ -65,15 +65,15 @@ void KSSLCertificateCache::addCertificate(KSSLCertificate& cert,
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     QDBusInterface("org.kde.kded", "/modules/kssld")
-         .call("cacheAddCertificate", data, int(policy), permanent);
+     QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+         call("cacheAddCertificate", data, int(policy), permanent);
 }
 
 
 KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(const QString& cn) {
-     QDBusReply<int> reply = QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheGetPolicyByCN", cn);
-     if (reply.isValid())
+     QDBusReply<int> reply = QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheGetPolicyByCN", cn);
+     if (reply.isSuccess())
         return KSSLCertificatePolicy(reply.value());
 return KSSLCertificateCache::Ambiguous;
 }
@@ -83,18 +83,18 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCer
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     QDBusReply<int> reply = QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheGetPolicyByCertificate", data);
+     QDBusReply<int> reply = QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheGetPolicyByCertificate", data);
 
-     if (reply.isValid()) 
+     if (reply.isSuccess()) 
         return KSSLCertificatePolicy(reply.value());
 return KSSLCertificateCache::Ambiguous;
 }
 
 
 bool KSSLCertificateCache::seenCN(const QString& cn) {
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheSeenCN", cn));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheSeenCN", cn));
 }
 
 
@@ -102,8 +102,8 @@ bool KSSLCertificateCache::seenCertificate(KSSLCertificate& cert) {
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheSeenCertificate", data));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheSeenCertificate", data));
 }
 
 
@@ -111,14 +111,14 @@ bool KSSLCertificateCache::isPermanent(KSSLCertificate& cert) {
      QByteArray data, retval;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheIsPermanent", data));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheIsPermanent", data));
 }
 
 
 bool KSSLCertificateCache::removeByCN(const QString& cn) {
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheRemoveByCN", cn));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheRemoveByCN", cn));
 }
 
 
@@ -126,8 +126,8 @@ bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheRemoveByCertificate", data));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheRemoveByCertificate", data));
 }
 
 
@@ -135,9 +135,9 @@ bool KSSLCertificateCache::modifyByCN(const QString& cn,
                   KSSLCertificateCache::KSSLCertificatePolicy policy,
                   bool permanent,
                   QDateTime& expires) {
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheModifyByCN", cn, int(policy), permanent,
-                                   expires.toTime_t()));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheModifyByCN", cn, int(policy), permanent,
+                                  expires.toTime_t()));
 }
 
 
@@ -148,9 +148,9 @@ bool KSSLCertificateCache::modifyByCertificate(KSSLCertificate& cert,
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheModifyByCertificate", data, int(policy), permanent,
-                                   expires.toTime_t()));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheModifyByCertificate", data, int(policy), permanent,
+                                  expires.toTime_t()));
 }
 
 
@@ -158,8 +158,8 @@ QStringList KSSLCertificateCache::getHostList(KSSLCertificate& cert) {
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<QStringList>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                                    .call("cacheGetHostList", data));
+     return QDBusReply<QStringList>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                                    call("cacheGetHostList", data));
 }
 
 
@@ -167,8 +167,8 @@ bool KSSLCertificateCache::addHost(KSSLCertificate& cert, const QString& host) {
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld")
-                             .call("cacheAddHost", data, host));
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+                             call("cacheAddHost", data, host));
 }
 
 
@@ -176,22 +176,22 @@ bool KSSLCertificateCache::removeHost(KSSLCertificate& cert, const QString& host
      QByteArray data;
      QDataStream arg(&data, QIODevice::WriteOnly);
      arg << cert;
-     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
+     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
                              call("cacheRemoveHost", data, host));
 }
 
 
 QStringList KSSLCertificateCache::getKDEKeyByEmail(const QString &email) {
-     return QDBusReply<QStringList>(QDBusInterface("org.kde.kded", "/modules/kssld").
+     return QDBusReply<QStringList>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
                                     call("getKDEKeyByEmail", email));
 }     
 
 
 KSSLCertificate *KSSLCertificateCache::getCertByMD5Digest(const QString &key) {
-     QDBusReply<QByteArray> reply = QDBusInterface("org.kde.kded", "/modules/kssld").
+     QDBusReply<QByteArray> reply = QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
                                     call("getCertByMD5Digest", key);
 
-     if (reply.isValid()) {
+     if (reply.isSuccess()) {
         QByteArray data(reply.value());
         QDataStream retStream(data);
         KSSLCertificate *drc = new KSSLCertificate;

@@ -39,7 +39,7 @@
 #include <qset.h>
 #include <qstring.h>
 #include <qfile.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -509,8 +509,8 @@ QString KMimeType::favIconForURL( const KUrl& url )
          || !useFavIcons )
         return QString();
 
-    QDBusInterface kded( "org.kde.kded", "/modules/favicons", "org.kde.FavIcon" );
-    QDBusReply<QString> result = kded.call( "iconForURL", url.url() );
+    QDBusInterfacePtr kded( "org.kde.kded", "/modules/favicons", "org.kde.FavIcon" );
+    QDBusReply<QString> result = kded->call( "iconForURL", url.url() );
     return result;              // default is QString()
 }
 

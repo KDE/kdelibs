@@ -41,7 +41,7 @@
 #include <qtooltip.h>
 #include <qwidget.h>
 #include <qlist.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
@@ -559,8 +559,8 @@ void KApplication::init()
   // sanity checking, to make sure we've connected
   extern void qDBusBindToApplication();
   qDBusBindToApplication();
-  QDBusConnectionInterface *bus = 0;
-  if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().interface()))
+  QDBusBusService *bus = 0;
+  if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().busService()))
       kFatal(101) << "Session bus not found" << endl;
 
   extern bool s_kuniqueapplication_startCalled;
@@ -578,7 +578,7 @@ void KApplication::init()
           }
       const QString pidSuffix = QString::number( getpid() ).prepend( '_' );
       const QString serviceName = reversedDomain + applicationName() + pidSuffix;
-      if ( bus->registerService(serviceName) == QDBusConnectionInterface::ServiceNotRegistered ) {
+      if ( bus->requestName(serviceName, QDBusBusService::DoNotQueueName) == QDBusBusService::NameExistsReply ) {
           kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
           ::exit(126);
       }
@@ -1209,7 +1209,7 @@ void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 #if defined Q_WS_X11
     if( time == 0 )
         time = QX11Info::appUserTime();
-    QDBusInterface(service, "/MainApplication", "org.kde.KApplication").call("updateUserTimestamp", time);
+    QDBusInterfacePtr(service, "/MainApplication", "org.kde.KApplication")->call("updateUserTimestamp", time);
 #endif
 }
 

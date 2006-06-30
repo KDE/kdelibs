@@ -22,7 +22,7 @@
 #include <kconfig.h>
 #include <klocale.h>
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include "addresseehelper.h"
 

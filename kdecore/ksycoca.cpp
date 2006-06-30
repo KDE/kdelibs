@@ -30,7 +30,7 @@
 #include <qcoreapplication.h>
 #include <qfile.h>
 #include <qbuffer.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <stdlib.h>
 #include <fcntl.h>

@@ -30,7 +30,7 @@
 
 #include <qfile.h>
 #include <qtimer.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -391,8 +391,8 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     if (!bForkSlaves)
     {
        // check the UID of klauncher
-       QDBusReply<uint> reply = QDBus::sessionBus().interface()->serviceUid(KToolInvocation::klauncher()->service());
-       if (reply.isValid() && getuid() != reply)
+       QDBusReply<uint> reply = QDBus::sessionBus().busService()->connectionUnixUser(KToolInvocation::klauncher()->service());
+       if (reply.isSuccess() && getuid() != reply)
           bForkSlaves = true;
     }
 #endif
@@ -432,7 +432,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
     QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), sockname, errorStr);
-    if (!reply.isValid()) {
+    if (reply.isError()) {
 	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
@@ -479,7 +479,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
 #endif
 
     QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), socketfile.name());
-    if (!reply.isValid()) {
+    if (reply.isError()) {
         delete slave;
         return 0;
     }

@@ -36,7 +36,7 @@
 #include <qlayout.h>
 #include <qtimer.h>
 #include <qregexp.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <unistd.h>
 
@@ -244,8 +244,7 @@ QString KDEPrintd::requestPassword( const QString& user, const QString& host, in
 	req->user = user;
 	req->uri = "print://" + user + "@" + host + ":" + QString::number(port);
 	req->seqNbr = seqNbr;
-        msg.setDelayedReply(true);
-	req->reply = msg;
+	req->reply = QDBusMessage::methodReply(msg);
 	m_requestsPending.append( req );
 	if ( m_requestsPending.count() == 1 )
 		QTimer::singleShot( 0, this, SLOT( processRequest() ) );
@@ -270,7 +269,7 @@ void KDEPrintd::processRequest()
 	QDataStream input( &params, QIODevice::WriteOnly );
 	input << info;
 	QDBusMessage reply =
-		QDBusInterface( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" ).
+		QDBusInterfacePtr( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" )->
 		call("queryAuthInfo", params, i18n( "Authentication failed (user name=%1)",	 info.username ),
 		     0, req->seqNbr);
 	if ( reply.type() == QDBusMessage::ReplyMessage )
@@ -291,7 +290,8 @@ void KDEPrintd::processRequest()
 	else
 		kWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
 
-	req->reply.sendReply(authString);
+	req->reply << authString;
+	req->reply.connection().send(req->reply);
 
 	m_requestsPending.removeAll( ( unsigned int )0 );
 	if ( m_requestsPending.count() > 0 )
@@ -311,7 +311,7 @@ void KDEPrintd::initPassword( const QString& user, const QString& passwd, const 
 	input << info;
 
 	QDBusMessage reply =
-		QDBusInterface( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" ).
+		QDBusInterfacePtr( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" )->
 		call("addAuthInfo", params, qlonglong(0));
 	if ( reply.type() != QDBusMessage::ReplyMessage )
 		kWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver" << endl;

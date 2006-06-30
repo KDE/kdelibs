@@ -33,7 +33,7 @@
 #include <qmessagebox.h>
 #include <qapplication.h>
 #include <qhash.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -153,11 +153,11 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     else
         url = QString("help:/%1/index.html").arg(appname);
 
-    QDBusInterface *iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
-                                               QLatin1String("/KHelpCenter"),
-                                               QLatin1String("org.kde.KHelpCenter"),
-                                               QDBus::sessionBus());
-    if ( !iface->isValid() )
+    QDBusInterface *iface =
+        QDBus::sessionBus().findInterface(QLatin1String("org.kde.khelpcenter"),
+                                          QLatin1String("/KHelpCenter"),
+                                          QLatin1String("org.kde.KHelpCenter"));
+    if ( iface->lastError().isValid() )
     {
         QString error;
         if (startServiceByDesktopName("khelpcenter", url, &error, 0, 0, startup_id, false))
@@ -172,15 +172,15 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 #endif
         }
 
-        delete iface;
-        iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
-                                   QLatin1String("/KHelpCenter"),
-                                   QLatin1String("org.kde.KHelpCenter"),
-                                   QDBus::sessionBus());
+        iface = QDBus::sessionBus().findInterface(QLatin1String("org.kde.khelpcenter"),
+                                                  QLatin1String("/KHelpCenter"),
+                                                  QLatin1String("org.kde.KHelpCenter"));
     }
 
-    iface->call("openUrl", url, startup_id );
-    delete iface;
+    if ( iface ) {
+        iface->call("openUrl", url, startup_id );
+        delete iface;
+    }
 }
 
 void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
@@ -486,7 +486,7 @@ startServiceInternal(const char *_function,
     QDBusMessage msg = QDBusMessage::methodCall(launcher->service(),
                                                 launcher->path(),
                                                 launcher->interface(),
-                                                function, QDBus::sessionBus());
+                                                function);
     msg << _name << URLs;
     QStringList envs;
 #ifdef Q_WS_X11
@@ -508,7 +508,7 @@ startServiceInternal(const char *_function,
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )
         msg << noWait;
 
-    QDBusMessage reply = QDBus::sessionBus().call(msg);
+    QDBusMessage reply = QDBus::sessionBus().sendWithReply(msg);
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
         printError(i18n("KLauncher could not be reached via D-Bus.\n"), error);

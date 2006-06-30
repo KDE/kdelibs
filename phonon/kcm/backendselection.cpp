@@ -27,7 +27,7 @@
 #include <kapplication.h>
 #include <kicon.h>
 #include <QList>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 BackendSelection::BackendSelection( QWidget* parent )
 	: QWidget( parent )
@@ -91,8 +91,8 @@ void BackendSelection::save()
 	KServiceTypeProfile::clear();
 
 	QDBusMessage signal = QDBusMessage::signal( "/", "org.kde.Phonon.Factory",
-						    "phononBackendChanged", QDBus::sessionBus() );
-        signal.send();
+						    "phononBackendChanged" );
+	QDBus::sessionBus().send(signal);
 }
 
 void BackendSelection::defaults()

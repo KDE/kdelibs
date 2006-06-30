@@ -20,14 +20,14 @@
 */
 
 #include "kbookmarknotifier.h"
-#include "QtDBus/QtDBus"
+#include "dbus/qdbus.h"
 
 static void emitSignal(const QString &signalName, const QVariantList &args)
 {
     QDBusMessage message =
-        QDBusMessage::signal("/", "org.kde.KIO.KBookmarkNotifier", signalName, QDBus::sessionBus());
-    message.setArguments(args);
-    message.send();
+        QDBusMessage::signal("/", "org.kde.KIO.KBookmarkNotifier", signalName);
+    message += args;
+    QDBus::sessionBus().send(message);
 }
 
 void KBookmarkNotifier::addedBookmark(const QString &filename, const QString &url,

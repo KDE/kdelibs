@@ -24,33 +24,15 @@
 #include <kdeversion.h>
 #include <qapplication.h>
 #include <qwidget.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <assert.h>
 
 using namespace KWallet;
 
-typedef QMap<QString, QString> StringStringMap;
-Q_DECLARE_METATYPE(StringStringMap)
-typedef QMap<QString, StringStringMap> StringToStringStringMapMap;
-Q_DECLARE_METATYPE(StringToStringStringMapMap)
-typedef QMap<QString, QByteArray> StringByteArrayMap;
-Q_DECLARE_METATYPE(StringByteArrayMap)
-
-static void registerTypes()
+static QDBusInterface* findWallet()
 {
-	static bool registered = false;
-	if (!registered) {
-		qDBusRegisterMetaType<StringStringMap>();
-		qDBusRegisterMetaType<StringToStringStringMapMap>();
-		qDBusRegisterMetaType<StringByteArrayMap>();
-		registered = true;
-	}
-}
-
-static QDBusInterface *findWallet()
-{
-	return new QDBusInterface("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
+	return QDBus::sessionBus().findInterface("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
 }
 
 const QString Wallet::LocalWallet() {
@@ -98,10 +80,10 @@ Wallet::Wallet(int handle, const QString& name)
 	_wallet = findWallet();
 	_wallet->setParent(this);
 
-	connect(QDBus::sessionBus().interface(),
-                SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-                this,
-                SLOT(slotAppUnregistered(QString,QString,QString)));
+	connect(QDBus::sessionBus().busService(),
+			SIGNAL(nameLost(QString)),
+			this,
+			SLOT(slotAppUnregistered(QString)));
 
 	connect(_wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
 	connect(_wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
@@ -111,7 +93,7 @@ Wallet::Wallet(int handle, const QString& name)
 	// Verify that the wallet is still open
 	if (_handle != -1) {
 		QDBusReply<bool> r = _wallet->call("isOpen", _handle);
-		if (r.isValid() && !r) {
+		if (r.isSuccess() && !r) {
 			_handle = -1;
 			_name.clear();
 		}
@@ -130,37 +112,37 @@ Wallet::~Wallet() {
 
 
 QStringList Wallet::walletList() {
-        QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<QStringList> r = wallet.call("wallets");
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<QStringList> r = wallet->call("wallets");
 	return r;					// default is QStringList()
 }
 
 
 void Wallet::changePassword(const QString& name, WId w) {
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	wallet.call("changePassword", name, qlonglong(w));
+	QDBusInterfacePtr wallet(findWallet());
+	wallet->call("changePassword", name, qlonglong(w));
 }
 
 
 bool Wallet::isEnabled() {
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<bool> r = wallet.call("isEnabled");
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<bool> r = wallet->call("isEnabled");
 	return r;					// default is false
 }
 
 
 bool Wallet::isOpen(const QString& name) {
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<bool> r = wallet.call("isOpen", name);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<bool> r = wallet->call("isOpen", name);
 	return r;					// default is false
 }
 
 
 int Wallet::closeWallet(const QString& name, bool force) {
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<int> r = wallet.call("close", name, force);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<int> r = wallet->call("close", name, force);
 	int rc = -1;
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 	return rc;
@@ -168,10 +150,10 @@ int Wallet::closeWallet(const QString& name, bool force) {
 
 
 int Wallet::deleteWallet(const QString& name) {
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<int> r = wallet.call("deleteWallet", name);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<int> r = wallet->call("deleteWallet", name);
 	int rc = -1;
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 	return rc;
@@ -185,7 +167,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 		// place an asynchronous call
 		QVariantList args;
 		args << name << qlonglong(w);
-		wallet->_wallet->callWithArgumentList("open", args, wallet, SLOT(walletOpenResult(int)));
+		wallet->_wallet->callWithArgs("open", wallet, SLOT(walletOpenResult(int)), args);
 
 		return wallet;
 	}
@@ -195,10 +177,10 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 			widget->close();
 
 	bool isPath = ot == Path;
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<int> r = wallet.call(isPath ? "openPath" : "open",
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<int> r = wallet->call(isPath ? "openPath" : "open",
 									 name, qlonglong(w));
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		int drc = r;
 		if (drc != -1) {
 			return new Wallet(drc, name);
@@ -210,15 +192,15 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
 
 bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
-	QDBusInterface w("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<bool> r = w.call("disconnectApplication", wallet, app);
+	QDBusInterfacePtr w(findWallet());
+	QDBusReply<bool> r = w->call("disconnectApplication", wallet, app);
 	return r;					// default is false
 }
 
 
 QStringList Wallet::users(const QString& name) {
-	QDBusInterface wallet("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<QStringList> r = wallet.call("users", name);
+	QDBusInterfacePtr wallet(findWallet());
+	QDBusReply<QStringList> r = wallet->call("users", name);
 	return r;				  // default is QStringList()
 }
 
@@ -242,7 +224,7 @@ int Wallet::lockWallet() {
 	_handle = -1;
 	_folder.clear();
 	_name.clear();
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		return r;
 	}
 	return -1;
@@ -372,7 +354,7 @@ int Wallet::readEntry(const QString& key, QByteArray& value) {
 	}
 
 	QDBusReply<QByteArray> r = _wallet->call("readEntry", _handle, _folder, key);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		value = r;
 		rc = 0;
 	}
@@ -382,18 +364,21 @@ int Wallet::readEntry(const QString& key, QByteArray& value) {
 
 
 int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) {
-	registerTypes();
-
 	int rc = -1;
 
 	if (_handle == -1) {
 		return rc;
 	}
 
-	QDBusReply<QMap<QString, QByteArray> > r = _wallet->call("readEntryList", _handle, _folder, key);
-	if (r.isValid()) {
+	QDBusReply<QVariantMap> r = _wallet->call("readEntryList", _handle, _folder, key);
+	if (r.isSuccess()) {
 		rc = 0;
-                value = r;
+		value.clear();
+
+		// convert QMap<QString, QVariant> to QMap<QString, QByteArray>
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it)
+			value.insert(it.key(), it.value().toByteArray());
 	}
 
 	return rc;
@@ -408,7 +393,7 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
 	}
 
 	QDBusReply<int> r = _wallet->call("renameEntry", _handle, _folder, oldName, newName);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -417,18 +402,21 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
 
 
 int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
-	registerTypes();
-
 	int rc = -1;
 
 	if (_handle == -1) {
 		return rc;
 	}
 
-	QDBusReply<QMap<QString,QString> > r = _wallet->call("readMap", _handle, _folder, key);
-	if (r.isValid()) {
+	QDBusReply<QVariantMap> r = _wallet->call("readMap", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value.clear();
+		// convert QMap<QString, QVariant> to QMap<QString, QString>
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it)
+			value.insert(it.key(), it.value().toString());
+
 		rc = 0;
-                value = r;
 	}
 
 	return rc;
@@ -436,19 +424,26 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 
 
 int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value) {
-	registerTypes();
-
 	int rc = -1;
 
 	if (_handle == -1) {
 		return rc;
 	}
 
-	QDBusReply<QMap<QString, QMap<QString, QString> > > r =
-            _wallet->call("readMapList", _handle, _folder, key);
-	if (r.isValid()) {
+	QDBusReply<QVariantMap> r = _wallet->call("readMapList", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value.clear();
+		// convert QMap<QString, QVariant> to QMap<QString, QMap<QString, QString> >
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it) {
+			QMap<QString, QString> entry;
+			const QVariantMap &raw = it.value().toMap();
+			QVariantMap::ConstIterator it2 = raw.constBegin();
+			for ( ; it != raw.constEnd(); ++it)
+				entry.insert(it2.key(), it2.value().toString());
+			value.insert(it.key(), entry);
+		}
 		rc = 0;
-                value = r;
 	}
 
 	return rc;
@@ -463,7 +458,7 @@ int Wallet::readPassword(const QString& key, QString& value) {
 	}
 
 	QDBusReply<QString> r = _wallet->call("readPassword", _handle, _folder, key);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		value = r;
 		rc = 0;
 	}
@@ -473,18 +468,20 @@ int Wallet::readPassword(const QString& key, QString& value) {
 
 
 int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) {
-	registerTypes();
-
 	int rc = -1;
 
 	if (_handle == -1) {
 		return rc;
 	}
 
-	QDBusReply<QMap<QString, QString> > r = _wallet->call("readPasswordList", _handle, _folder, key);
-	if (r.isValid()) {
+	QDBusReply<QVariantMap> r = _wallet->call("readPasswordList", _handle, _folder, key);
+	if (r.isSuccess()) {
+		value.clear();
+		// convert QMap<QString, QVariant> to QMap<QString, QString>
+		QVariantMap::ConstIterator it = r.value().constBegin();
+		for ( ; it != r.value().constEnd(); ++it)
+			value.insert(it.key(), it.value().toString());
 		rc = 0;
-                value = r;
 	}
 
 	return rc;
@@ -499,7 +496,7 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value, EntryType en
 	}
 
 	QDBusReply<int> r = _wallet->call("writeEntry", _handle, _folder, key, value, int(entryType));
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -515,7 +512,7 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value) {
 	}
 
 	QDBusReply<int> r = _wallet->call("writeEntry", _handle, _folder, key, value);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -524,17 +521,19 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value) {
 
 
 int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
-	registerTypes();
-
 	int rc = -1;
 
 	if (_handle == -1) {
 		return rc;
 	}
 
-	QDBusReply<int> r = _wallet->call("writeMap.issa{ss}", _handle, _folder, key,
-                                          qVariantFromValue(value));
-	if (r.isValid()) {
+	// convert QMap<QString,QString> to QVariantMap
+	QVariantMap map;
+	QMap<QString, QString>::ConstIterator it;
+	for (it = value.constBegin(); it != value.constEnd(); ++it)
+		map.insert(it.key(), it.value());
+	QDBusReply<int> r = _wallet->call("writeMap.issa{ss}", _handle, _folder, key, map);
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -550,7 +549,7 @@ int Wallet::writePassword(const QString& key, const QString& value) {
 	}
 
 	QDBusReply<int> r = _wallet->call("writePassword", _handle, _folder, key, value);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -576,7 +575,7 @@ int Wallet::removeEntry(const QString& key) {
 	}
 
 	QDBusReply<int> r = _wallet->call("removeEntry", _handle, _folder, key);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -592,7 +591,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 	}
 
 	QDBusReply<int> r = _wallet->call("entryType", _handle, _folder, key);
-	if (r.isValid()) {
+	if (r.isSuccess()) {
 		rc = r;
 	}
 
@@ -646,16 +645,16 @@ void Wallet::walletOpenResult(int id) {
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)
 {
-	QDBusInterface w("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<bool> r = w.call("folderDoesNotExist", wallet, folder);
+	QDBusInterfacePtr w(findWallet());
+	QDBusReply<bool> r = w->call("folderDoesNotExist", wallet, folder);
 	return r;
 }
 
 
 bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key)
 {
-	QDBusInterface w("org.kde.kded", "/modules/kwalletd", "org.kde.KWallet");
-	QDBusReply<bool> r = w.call("keyDoesNotExist", wallet, folder, key);
+	QDBusInterfacePtr w(findWallet());
+	QDBusReply<bool> r = w->call("keyDoesNotExist", wallet, folder, key);
 	return r;
 }
 

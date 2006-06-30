@@ -22,17 +22,19 @@
 #include "klauncher_iface.h"
 #include "kdebug.h"
 
-Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
-                          ("org.kde.klauncher", "/KLauncher", QDBus::sessionBus()))
+Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher *, klauncherIface,
+                          (QDBus::sessionBus().findInterface<org::kde::KLauncher>("org.kde.klauncher",
+                                                             "/KLauncher")
+                          ))
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
-    if ( !QDBus::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ) )
+    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.klauncher" ) )
     {
         kDebug() << "klauncher not running... launching kdeinit" << endl;
         KToolInvocation::startKdeinit();
     }
-    return ::klauncherIface();
+    return *::klauncherIface();
 }
 
 // this seems a bit silly, but equally seems to be required.

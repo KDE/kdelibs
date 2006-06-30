@@ -48,7 +48,7 @@
 
 #include <klocale.h>
 #include <qdatastream.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kapplication.h>
 #include <ktoolinvocation.h>
@@ -59,9 +59,6 @@
 #include "kio/tcpslavebase.h"
 
 using namespace KIO;
-
-typedef QMap<QString, QString> StringStringMap;
-Q_DECLARE_METATYPE(StringStringMap)
 
 class TCPSlaveBase::TcpSlaveBasePrivate
 {
@@ -626,14 +623,14 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
-    if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver")) {
+    if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver")) {
         KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                    QStringList() );
     }
 
-    QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+    QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
 
-    QDBusMessage retVal = uis.call("showSSLCertDialog", ourHost, certs, metaData("window-id").toLongLong());
+    QDBusMessage retVal = uis->call("showSSLCertDialog", ourHost, certs, metaData("window-id").toLongLong());
     if (retVal.type() == QDBusMessage::ReplyMessage) {
         if (retVal.at(0).toBool()) {
            send = retVal.at(1).toBool();
@@ -868,15 +865,17 @@ int TCPSlaveBase::verifyCertificate()
                 }
 
                 if (result == KMessageBox::Yes) {
-                  if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
+                  if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver"))
                       KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                                  QStringList() );
 
-                  QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
-                  QMap<QString, QString> adjusted = mOutgoingMetaData;
-                  qDBusRegisterMetaType<QMap<QString, QString> >();
-                  uis.call("showSSLInfoDialog",
-                      theurl, qVariantFromValue(adjusted), metaData("window-id").toLongLong());
+                  QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+                  QVariantMap adjusted;
+                  for (MetaData::ConstIterator it = mOutgoingMetaData.constBegin();
+                       it != mOutgoingMetaData.constEnd(); ++it)
+                     adjusted.insert(it.key(), it.value());
+                  uis->call("showSSLInfoDialog",
+                    theurl, adjusted, metaData("window-id").toLongLong());
                 }
              } while (result == KMessageBox::Yes);
 
@@ -988,15 +987,17 @@ int TCPSlaveBase::verifyCertificate()
                                  i18n("&Details"),
                                  i18n("Co&nnect"));
                 if (result == KMessageBox::Yes) {
-                  if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
+                  if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver"))
                       KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                                  QStringList() );
 
-                  QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
-                  QMap<QString, QString> adjusted = mOutgoingMetaData;
-                  qDBusRegisterMetaType<QMap<QString, QString> >(); // make sure it's registered
-                  uis.call("showSSLInfoDialog",
-                           theurl, qVariantFromValue(adjusted), metaData("window-id").toLongLong());
+                  QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+                  QVariantMap adjusted;
+                  for (MetaData::ConstIterator it = mOutgoingMetaData.constBegin();
+                       it != mOutgoingMetaData.constEnd(); ++it)
+                     adjusted.insert(it.key(), it.value());
+                  uis->call("showSSLInfoDialog",
+                    theurl, adjusted, metaData("window-id").toLongLong());
                 }
           } while (result == KMessageBox::Yes);
 
@@ -1065,15 +1066,17 @@ int TCPSlaveBase::verifyCertificate()
 
       if ( result == KMessageBox::Yes )
       {
-          if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
+          if (!QDBus::sessionBus().busService()->nameHasOwner("org.kde.kio.uiserver"))
               KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                          QStringList() );
 
-          QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
-          QMap<QString, QString> adjusted = mOutgoingMetaData;
-          qDBusRegisterMetaType<QMap<QString, QString> >();
-          uis.call("showSSLInfoDialog",
-                   theurl, qVariantFromValue(adjusted), metaData("window-id").toLongLong());
+          QDBusInterfacePtr uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");
+          QVariantMap adjusted;
+          for (MetaData::ConstIterator it = mOutgoingMetaData.constBegin();
+               it != mOutgoingMetaData.constEnd(); ++it)
+              adjusted.insert(it.key(), it.value());
+          uis->call("showSSLInfoDialog",
+                    theurl, adjusted, metaData("window-id").toLongLong());
       }
       } while (result != KMessageBox::No);
    }

@@ -74,7 +74,7 @@
 #include <kjs/value.h>
 
 #define QT_NO_KEYWORDS
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 using namespace KJS;
 using namespace khtml;

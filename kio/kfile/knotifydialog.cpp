@@ -47,7 +47,7 @@
 #include <qtimer.h>
 #include <kvbox.h>
 #include <qevent.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 using namespace KNotify;
 
@@ -822,8 +822,8 @@ void KNotifyWidget::save()
 
     if ( kapp )
     {
-        QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KNotify", "reconfigure", QDBus::sessionBus());
-        signal.send();
+        QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KNotify", "reconfigure");
+        QDBus::sessionBus().send(signal);
     }
 
     emit changed( false );

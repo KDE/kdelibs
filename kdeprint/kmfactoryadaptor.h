@@ -11,7 +11,7 @@
 #define KMFACTORYADAPTOR_H_282481146498264
 
 #include <QtCore/QObject>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 class QByteArray;
 template<class T> class QList;
 template<class Key, class Value> class QMap;

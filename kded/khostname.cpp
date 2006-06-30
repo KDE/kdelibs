@@ -36,7 +36,7 @@
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
 #include <kde_file.h>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 static KCmdLineOptions options[] = {
    { "+old", I18N_NOOP("Old hostname"), 0 },
@@ -224,7 +224,7 @@ void KHostName::changeSessionManager()
       return;
    }
    sm = "local/"+newName+sm.mid(i);
-   KToolInvocation::klauncher()->call(QDBus::NoBlock, "setLaunchEnv", QByteArray("SESSION_MANAGER"), sm);
+   KToolInvocation::klauncher()->call(QDBusInterface::NoWaitForReply, "setLaunchEnv", QByteArray("SESSION_MANAGER"), sm);
 }
 
 int main(int argc, char **argv)

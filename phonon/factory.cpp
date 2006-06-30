@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 static KStaticDeleter<Phonon::Factory> sd;
 

@@ -334,9 +334,9 @@ QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices( cons
     const QString& interface = dbuscall.at( 2 );
     const QString& function  = dbuscall.at( 3 );
 
-    QDBusInterface remote( app, object, interface );
-    QDBusReply<QStringList> reply = remote.call( QDBus::BlockWithGui,
-                                                 function, file_list.toStringList() );
+    QDBusInterfacePtr ref( app, object, interface );
+    QDBusReply<QStringList> reply = ref->call( QDBusInterface::UseEventLoop,
+                                               function, file_list.toStringList() );
     keys = reply;               // ensures that the reply was a QStringList
   }
 

@@ -69,7 +69,8 @@ KDirListerCache::KDirListerCache( int maxCount )
   connect( kdirwatch, SIGNAL( deleted( const QString& ) ),
            this, SLOT( slotFileDeleted( const QString& ) ) );
 
-  kdirnotify = new org::kde::KDirNotify(QString(), QString(), QDBus::sessionBus(), this);
+  kdirnotify = QDBus::sessionBus().findInterface<org::kde::KDirNotify>(QString(), QString());
+  kdirnotify->setParent(this);
   connect(kdirnotify, SIGNAL(FileRenamed(QString,QString)), SLOT(slotFileRenamed(QString,QString)));
   connect(kdirnotify, SIGNAL(FilesAdded(QString)), SLOT(slotFilesAdded(QString)));
   connect(kdirnotify, SIGNAL(FilesChanged(QStringList)), SLOT(slotFilesChanged(QStringList)));

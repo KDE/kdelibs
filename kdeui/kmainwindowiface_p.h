@@ -21,7 +21,7 @@
 #ifndef KWINDOW_INTERFACE_H
 #define KWINDOW_INTERFACE_H
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 #include <qmap.h>
 #include <kdelibs_export.h>
 

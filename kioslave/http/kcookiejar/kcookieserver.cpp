@@ -32,7 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <q3ptrlist.h>
 #include <qfile.h>
 
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -271,7 +271,8 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
         {
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
-           request->reply.sendReply(res);
+           request->reply << res;
+           QDBus::sessionBus().send(request->reply);
            CookieRequest *tmp = request;
            request = mRequestList->next();
            mRequestList->removeRef( tmp );
@@ -364,8 +365,7 @@ KCookieServer::findCookies(QString url, qlonglong windowId, const QDBusMessage &
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
-      msg.setDelayedReply(true);
-      request->reply = msg;
+      request->reply = QDBusMessage::methodReply(msg);
       request->url = url;
       request->DOM = false;
       request->windowId = windowId;

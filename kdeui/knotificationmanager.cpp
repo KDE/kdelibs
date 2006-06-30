@@ -21,7 +21,7 @@
 
 #include <QHash>
 #include <QWidget>
-#include <QtDBus/QtDBus>
+#include <dbus/qdbus.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>
@@ -53,8 +53,8 @@ KNotificationManager::KNotificationManager()
     : d(new Private)
 {
     d->knotify =
-        new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
-                           QLatin1String("org.kde.KNotify"), QDBus::sessionBus(), this);
+        QDBus::sessionBus().findInterface(QLatin1String("org.kde.knotify"),
+                                          QLatin1String("/Notify"), QLatin1String("org.kde.KNotify"));
     QObject::connect(d->knotify, SIGNAL(notificationClosed(int)),
                      this, SLOT(notificationClosed(int)));
     QObject::connect(d->knotify, SIGNAL(notificationActivated(int,int)),
@@ -123,10 +123,10 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     }
     
     QDBusReply<int> reply =
-        d->knotify->call("event", n->eventId(),
+        d->knotify->call("event.ssa(ss)sayasx", n->eventId(),
                          (appname.isEmpty() ? kapp->instanceName() : appname),
                          contextList, n->text(), pixmapData, actions, qlonglong(winId));
-    if (!reply.isValid())
+    if (reply.isError())
     {
         kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
     }
