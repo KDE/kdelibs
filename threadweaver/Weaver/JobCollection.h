@@ -37,7 +37,6 @@ namespace ThreadWeaver {
     public slots:
         /** Stop processing, dequeue all remaining Jobs.
             job is supposed to be an element of the collection.
-            FIXME the job parameter is not necessary anymore
             */
         void stop ( Job *job );
 
@@ -54,10 +53,9 @@ namespace ThreadWeaver {
         /** Return the number of jobs in the joblist. */
         const int jobListLength();
 
-        /** Callback method for failed jobs.
-            Default implementation does nothing.
+        /** Callback method for done jobs.
         */
-        virtual void jobFailed ( Job* );
+        void internalJobDone( Job* );
 
     private:
         /** Overload the execute method. */
@@ -72,8 +70,7 @@ namespace ThreadWeaver {
         */
         void dequeueElements();
 
-
-        /** The elements of the collection. */
+	/** The elements of the collection. */
         class JobList;
         JobList* m_elements;
 
@@ -85,6 +82,12 @@ namespace ThreadWeaver {
         Job* m_guard;
         /** The Weaver interface this collection is queued in. */
         WeaverInterface *m_weaver;
+
+	/** Counter for the finished jobs. 
+	    Set to the number of elements when started. 
+	    When zero, all elements are done. 
+	*/
+	int m_jobCounter;
     };
 
 }
