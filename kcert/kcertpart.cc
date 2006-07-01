@@ -604,7 +604,7 @@ bool KCertPart::openFile() {
 					//		 Dunno how to load this
 					/////////////////////////////////////////////////////////////////////////////
 					} else {
-			QString emsg = i18n("I do not know how to handle this type of file.") + "\n" + whatType;
+			QString emsg = i18n("I do not know how to handle this type of file.") + '\n' + whatType;
 			KMessageBox::sorry(_frame, emsg, i18n("Certificate Import"));
 			return false;
 		}
@@ -734,7 +734,7 @@ void KCertPart::slotImport() {
 		KSimpleConfig cfg("ksslcertificates", false);
 
 		if (cfg.hasGroup(_p12->getCertificate()->getSubject())) {
-			QString msg = _curName + "\n" + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
+			QString msg = _curName + '\n' + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
 			int rc= KMessageBox::warningContinueCancel(_frame, msg, i18n("Certificate Import"),i18n("Replace"));
 			if (rc == KMessageBox::Cancel) {
 				return;
@@ -750,7 +750,7 @@ void KCertPart::slotImport() {
 	} else if (_ca) {
 		KConfig cfg("ksslcalist", true, false);
 		if (cfg.hasGroup(_ca->getSubject())) {
-			QString msg = _curName + "\n" + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
+			QString msg = _curName + '\n' + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
 			int rc= KMessageBox::warningContinueCancel(_frame, msg, i18n("Certificate Import"),i18n("Replace"));
 			if (rc == KMessageBox::Cancel) {
 				return;
