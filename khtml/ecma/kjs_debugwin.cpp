@@ -441,16 +441,24 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   m_actionCollection = new KActionCollection(this);
   m_actionCollection->setInstance(this);
-  m_nextAction       = new KAction(i18n("Next breakpoint","&Next"),"dbgnext",KShortcut(),this,SLOT(slotNext()),
+
+  // Venkman use F12, KDevelop F10
+  KShortcut scNext = KShortcut(KKeySequence(KKey(Qt::Key_F12)));
+  scNext.append(KKeySequence(KKey(Qt::Key_F10)));
+  m_nextAction       = new KAction(i18n("Next breakpoint","&Next"),"dbgnext",scNext,this,SLOT(slotNext()),
 				   m_actionCollection,"next");
-  m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(),this,SLOT(slotStep()),
+  m_stepAction       = new KAction(i18n("&Step"),"dbgstep",KShortcut(Qt::Key_F11),this,SLOT(slotStep()),
 				   m_actionCollection,"step");
-  m_continueAction   = new KAction(i18n("&Continue"),"dbgrun",KShortcut(),this,SLOT(slotContinue()),
+  // Venkman use F5, Kdevelop F9
+  KShortcut scCont = KShortcut(KKeySequence(KKey(Qt::Key_F5)));
+  scCont.append(KKeySequence(KKey(Qt::Key_F9)));
+  m_continueAction   = new KAction(i18n("&Continue"),"dbgrun",scCont,this,SLOT(slotContinue()),
 				   m_actionCollection,"cont");
-  m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(),this,SLOT(slotStop()),
+  m_stopAction       = new KAction(i18n("St&op"),"stop",KShortcut(Qt::Key_F4),this,SLOT(slotStop()),
 				   m_actionCollection,"stop");
-  m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(),this,SLOT(slotBreakNext()),
+  m_breakAction      = new KAction(i18n("&Break at Next Statement"),"dbgrunto",KShortcut(Qt::Key_F8),this,SLOT(slotBreakNext()),
 				   m_actionCollection,"breaknext");
+
 
   m_nextAction->setToolTip(i18n("Next breakpoint","Next"));
   m_stepAction->setToolTip(i18n("Step"));
@@ -727,7 +735,7 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
       // but we still know the interpreter
       sourceFile = new SourceFile("(unknown)",source.qstring(),exec->interpreter());
       m_sourceSelFiles.append(sourceFile);
-      m_sourceSel->insertItem("???");
+      m_sourceSel->insertItem(QString::number(index) += "-???");
     }
   }
   else {
