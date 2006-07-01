@@ -57,14 +57,16 @@ class KSpellingHighlighter::Private
 {
   public:
 
-    KSpellingHighlighterPrivate()
-      : mAlwaysEndsWithSpace( true ),
+    Private( KSpellingHighlighter *parent )
+      : mParent( parent ),
+        mAlwaysEndsWithSpace( true ),
         mIntraWordEditing( false )
     {
     }
 
     void flushCurrentWord();
 
+    KSpellingHighlighter *mParent;
     QString mCurrentWord;
     int mCurrentPos;
     bool mAlwaysEndsWithSpace;
@@ -72,10 +74,32 @@ class KSpellingHighlighter::Private
     QColor mColor;
 };
 
+void KSpellingHighlighter::Private::flushCurrentWord()
+{
+  while ( mCurrentWord[ 0 ].isPunct() ) {
+    mCurrentWord = mCurrentWord.mid( 1 );
+    mCurrentPos++;
+  }
+
+  QChar ch;
+  while ( !mCurrentWord.isEmpty() && ( ch = mCurrentWord[(int) mCurrentWord.length() - 1] ).isPunct() &&
+          ch != '(' && ch != '@' )
+    mCurrentWord.truncate( mCurrentWord.length() - 1 );
+
+  if ( !mCurrentWord.isEmpty() ) {
+    if ( mParent->isMisspelled( mCurrentWord ) ) {
+      mParent->setFormat( mCurrentPos, mCurrentWord.length(), mColor );
+//      mParent->setMisspelled( mCurrentPos, mCurrentWord.length(), true );
+    }
+  }
+
+  mCurrentWord = "";
+}
+
 class KDictSpellingHighlighter::Private
 {
   public:
-    KDictSpellingHighlighterPrivate()
+    Private()
       : mDict( 0 ),
         mSpell( 0 ),
         mSpellConfig( 0 ),
@@ -88,7 +112,7 @@ class KDictSpellingHighlighter::Private
     {
     }
 
-    ~KDictSpellingHighlighterPrivate()
+    ~Private()
     {
       delete mRehighlightRequest;
       mRehighlightRequest = 0;
@@ -195,7 +219,7 @@ KSpellingHighlighter::KSpellingHighlighter( QTextEdit *textEdit,
                                             const QColor& depth2,
                                             const QColor& depth3 )
   : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 ),
-    d( new Private )
+    d( new Private( this ) )
 {
   d->mColor = spellColor;
 }
@@ -273,27 +297,6 @@ QStringList KSpellingHighlighter::personalWords()
 }
 
 
-void KSpellingHighlighter::flushCurrentWord()
-{
-  while ( d->mCurrentWord[ 0 ].isPunct() ) {
-    d->mCurrentWord = d->mCurrentWord.mid( 1 );
-    d->mCurrentPos++;
-  }
-
-  QChar ch;
-  while ( !d->mCurrentWord.isEmpty() && ( ch = d->mCurrentWord[(int) d->mCurrentWord.length() - 1] ).isPunct() &&
-          ch != '(' && ch != '@' )
-    d->mCurrentWord.truncate( d->mCurrentWord.length() - 1 );
-
-  if ( !d->mCurrentWord.isEmpty() ) {
-    if ( isMisspelled( d->mCurrentWord ) ) {
-      setFormat( d->mCurrentPos, d->mCurrentWord.length(), d->mColor );
-//      setMisspelled( d->mCurrentPos, d->mCurrentWord.length(), true );
-    }
-  }
-
-  d->mCurrentWord = "";
-}
 
 QObject *KDictSpellingHighlighter::Private::sDictionaryMonitor = 0;
 
@@ -320,7 +323,7 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
 
   KConfigGroup cg( KGlobal::config(), "KSpell" );
   d->mDisablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
-  d->mDisablePercentage = qMin( d->disablePercentage, 101 );
+  d->mDisablePercentage = qMin( d->mDisablePercentage, 101 );
   d->mDisableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
   textEdit->installEventFilter( this );
@@ -435,7 +438,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
   return false;
 }
 
-bool KSpellingHighlighter::mIntraWordEditing() const
+bool KSpellingHighlighter::intraWordEditing() const
 {
   return d->mIntraWordEditing;
 }
@@ -480,9 +483,9 @@ void KDictSpellingHighlighter::slotCorrected( const QString &word, const QString
 
 void KDictSpellingHighlighter::dictionaryChanged()
 {
-  QObject *oldMonitor = KDictSpellingHighlighterPrivate::sDictionaryMonitor;
-  KDictSpellingHighlighterPrivate::sDictionaryMonitor = new QObject();
-  KDictSpellingHighlighterPrivate::sDict()->clear();
+  QObject *oldMonitor = Private::sDictionaryMonitor;
+  Private::sDictionaryMonitor = new QObject();
+  Private::sDict()->clear();
   delete oldMonitor;
 }
 
