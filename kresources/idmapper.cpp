@@ -81,7 +81,7 @@ QString IdMapper::identifier() const
 QString IdMapper::filename()
 {
   QString file = d->path;
-  if ( !file.endsWith( "/" ) ) file += "/";
+  if ( !file.endsWith( "/" ) ) file += '/';
   file += d->identifier;
 
   return locateLocal( "data", file );
@@ -187,7 +187,7 @@ QString IdMapper::asString() const
     QString fp;
     if ( d->fingerprintMap.contains( it.key() ) )
       fp = d->fingerprintMap[ it.key() ];
-    content += it.key() + "\t" + it.value().toString() + "\t" + fp + "\r\n";
+    content += it.key() + '\t' + it.value().toString() + '\t' + fp + "\r\n";
   }
 
   return content;
