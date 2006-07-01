@@ -324,13 +324,6 @@ that we would like to make for the next binary incompatible release.
 
 - Merge kdecore classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
 
-- Deprecate KStringHandler::(l|c|r)sequeeze. It is fairly slow since it reshapes the string with
-  each iteration (by calling QFontMetrics::width) and most important it does not work with complex
-  languages because it cuts off the string at any cposition, not only at valid cursor positions,
-  easily creating nonsense text. Use Qt 4.2's QFontMetrics::elidedText instead, which
-  gets that part right, shapes only once and also uses the unicode ellipsis character (0x2026)
-  if present in the font. (Simon)
-
 - Is the malloc.c implementation still needed now that glibc 2.3 is widely
   available and glibc 2.4 is around the corner?  Also, there is a more recent
   version of Doug Lea's malloc.c available, so perhaps updating to that
