@@ -71,7 +71,7 @@ public:
 
     void setFont( const QString &family );
 
-    virtual QWidget* createToolBarWidget(QToolBar* parent);
+    virtual QWidget* createWidget(QWidget* parent);
 
 private:
     class KFontActionPrivate;

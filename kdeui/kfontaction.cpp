@@ -176,8 +176,11 @@ KFontAction::~KFontAction()
     //delete d;
 }
 
-QWidget* KFontAction::createToolBarWidget(QToolBar* parent)
+QWidget* KFontAction::createWidget(QWidget* _parent)
 {
+    QToolBar *parent = qobject_cast<QToolBar *>(_parent);
+    if (!parent)
+        return KSelectAction::createWidget(_parent);
     KFontCombo *cb = new KFontCombo( items(), parent );
     connect( cb, SIGNAL( activated( const QString & ) ), SIGNAL(triggered( const QString&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
