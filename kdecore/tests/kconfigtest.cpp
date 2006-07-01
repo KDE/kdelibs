@@ -249,7 +249,7 @@ void KConfigTest::testComplex()
   QCOMPARE( sc2.readEntry( "dateEntry", QDate() ).toString(Qt::ISODate),
             DATETIMEENTRY.date().toString(Qt::ISODate) );
   QCOMPARE( sc2.readEntry( "dateTimeEntry", QDate() ), DATETIMEENTRY.date() );
-  QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", Qt::black )).toString(),
+  QCOMPARE( QVariant(sc2.readEntry( "colorEntry1", QColor(Qt::black) )).toString(),
             QVariant(COLORENTRY1).toString() );
   QCOMPARE( sc2.readEntry( "colorEntry1", QColor() ), COLORENTRY1 );
   QCOMPARE( sc2.readEntry( "colorEntry2", QColor() ), COLORENTRY2 );
