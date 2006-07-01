@@ -46,7 +46,7 @@
  *
  * @author Felix Berger <felixberger@beldesign.de>
  */
-class KDEUI_EXPORT KToolBarLabelAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KToolBarLabelAction : public KAction
 {
   Q_OBJECT
 
@@ -94,7 +94,7 @@ class KDEUI_EXPORT KToolBarLabelAction : public KAction, public QActionWidgetFac
     /**
      * Reimplemented from @see QActionWidgetFactory.
      */
-    virtual QWidget* createToolBarWidget( QToolBar* parent );
+    virtual QWidget* createWidget( QWidget* parent );
 
   Q_SIGNALS:
     /**

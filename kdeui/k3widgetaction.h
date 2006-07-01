@@ -40,7 +40,7 @@
  *             and provide a QActionWidgetFactory to create widgets
  *             on request.
  */
-class KDEUI_EXPORT K3WidgetAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT K3WidgetAction : public KAction
 {
     Q_OBJECT
 public:
@@ -67,9 +67,6 @@ public:
      * Returns the widget associated with this action.
      */
     KDE_DEPRECATED QWidget* widget() const { return m_widget; }
-
-    virtual KDE_DEPRECATED QWidget* createToolBarWidget(QToolBar* parent);
-    virtual KDE_DEPRECATED void destroyToolBarWidget(QWidget* widget);
 
 protected:
     virtual bool event(QEvent* event);

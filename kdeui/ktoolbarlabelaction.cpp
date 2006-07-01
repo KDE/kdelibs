@@ -36,7 +36,6 @@ KToolBarLabelAction::KToolBarLabelAction( const QString &text,
   : KAction( text, parent, name ),
     d( new Private )
 {
-  setToolBarWidgetFactory( this );
   d->oldText = KToolBarLabelAction::text();
 }
 
@@ -45,7 +44,6 @@ KToolBarLabelAction::KToolBarLabelAction( QAction* buddy, const QString &text,
   : KAction( text, parent, name ),
     d( new Private )
 {
-  setToolBarWidgetFactory( this );
 
   setBuddy( buddy );
 
@@ -93,8 +91,11 @@ bool KToolBarLabelAction::event( QEvent *event )
   return KAction::event( event );
 }
 
-QWidget *KToolBarLabelAction::createToolBarWidget( QToolBar* parent )
+QWidget *KToolBarLabelAction::createWidget( QWidget* _parent )
 {
+  QToolBar *parent = qobject_cast<QToolBar *>(_parent);
+  if (!parent)
+    return KAction::createWidget(_parent);
   QLabel* newLabel = new QLabel( parent );
 
   /**

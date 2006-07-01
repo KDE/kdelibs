@@ -29,7 +29,7 @@
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KToolBarSpacerAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KToolBarSpacerAction : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( int width READ width WRITE setWidth )
@@ -78,7 +78,7 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction, public QActionWidgetFa
     /**
      * Reimplemented from @see QActionWidgetFactory.
      */
-    virtual QWidget* createToolBarWidget( QToolBar* parent );
+    virtual QWidget* createWidget( QWidget* parent );
 
 
   private:

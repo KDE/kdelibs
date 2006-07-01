@@ -52,7 +52,6 @@ KToolBarPopupAction::KToolBarPopupAction( const KIcon& icon,
   : KAction( icon, text, parent, name ),
     d( new Private )
 {
-  setToolBarWidgetFactory( this );
   setMenu( new KMenu );
 }
 
@@ -65,7 +64,6 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
 {
   setShortcut( cut );
 
-  setToolBarWidgetFactory( this );
   setMenu( new KMenu );
 }
 
@@ -81,7 +79,6 @@ KToolBarPopupAction::KToolBarPopupAction( const QString& text,
   setShortcut( cut );
   connect( this, SIGNAL( triggered() ), receiver, slot );
 
-  setToolBarWidgetFactory( this );
   setMenu( new KMenu );
 }
 
@@ -96,7 +93,6 @@ KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
   setShortcut( cut );
   connect( this, SIGNAL( triggered() ), receiver, slot );
 
-  setToolBarWidgetFactory( this );
   setMenu( new KMenu );
 }
 
@@ -111,8 +107,11 @@ KMenu* KToolBarPopupAction::popupMenu() const
   return qobject_cast<KMenu*>( menu() );
 }
 
-QWidget * KToolBarPopupAction::createToolBarWidget( QToolBar * parent )
+QWidget * KToolBarPopupAction::createWidget( QWidget * _parent )
 {
+  QToolBar *parent = qobject_cast<QToolBar *>(_parent);
+  if (!parent)
+    return KAction::createWidget(_parent);
   QToolButton* button = new QToolButton( parent );
   button->setAutoRaise( true );
   button->setFocusPolicy( Qt::NoFocus );

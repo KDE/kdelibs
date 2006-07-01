@@ -44,7 +44,7 @@ class KMenu;
  * If you want a submenu for selecting one tool among many (without icons), see KSelectAction.
  * See also setDelayed about the main action.
  */
-class KDEUI_EXPORT KActionMenu : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KActionMenu : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
@@ -115,7 +115,7 @@ public:
      */
     void setStickyMenu(bool sticky);
 
-    virtual QWidget* createToolBarWidget(QToolBar* parent);
+    virtual QWidget* createWidget(QWidget* parent);
 
 private:
     class KActionMenuPrivate* const d;

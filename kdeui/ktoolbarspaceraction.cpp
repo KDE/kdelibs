@@ -43,7 +43,6 @@ KToolBarSpacerAction::KToolBarSpacerAction( KActionCollection* parent, const QSt
   : KAction( parent, name ),
     d( new Private )
 {
-  setToolBarWidgetFactory( this );
 }
 
 int KToolBarSpacerAction::width() const
@@ -94,8 +93,11 @@ void KToolBarSpacerAction::setMaximumWidth( int width )
     spacer->setMaximumWidth( width );
 }
 
-QWidget * KToolBarSpacerAction::createToolBarWidget( QToolBar * parent )
+QWidget * KToolBarSpacerAction::createWidget( QWidget * _parent )
 {
+  QToolBar *parent = qobject_cast<QToolBar *>(_parent);
+  if (!_parent)
+    return KAction::createWidget(_parent);
   QWidget* spacer = new QWidget( parent );
   spacer->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Fixed );
 

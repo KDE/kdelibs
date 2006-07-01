@@ -45,7 +45,7 @@ class KMenu;
  * used, and enough for menus, but in toolbars there is \e also an optional popup
  * to go back N steps or undo N steps.
  */
-class KDEUI_EXPORT KToolBarPopupAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KToolBarPopupAction : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
@@ -163,7 +163,7 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction, public QActionWidgetFac
     /**
      * Reimplemented from @see QActionWidgetFactory.
      */
-    virtual QWidget* createToolBarWidget(QToolBar* parent);
+    virtual QWidget* createWidget(QWidget* parent);
 
   private:
     class Private;

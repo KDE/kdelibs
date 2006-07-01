@@ -54,7 +54,6 @@ KActionMenu::KActionMenu( KActionCollection * parent, const QString& name )
   , d(new KActionMenuPrivate)
 {
   setShortcutConfigurable( false );
-  setToolBarWidgetFactory(this);
 }
 
 KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, const QString& name )
@@ -62,7 +61,6 @@ KActionMenu::KActionMenu( const QString & text, KActionCollection * parent, cons
   , d(new KActionMenuPrivate)
 {
   setShortcutConfigurable( false );
-  setToolBarWidgetFactory(this);
 }
 
 KActionMenu::KActionMenu( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
@@ -70,7 +68,6 @@ KActionMenu::KActionMenu( const KIcon & icon, const QString & text, KActionColle
   , d(new KActionMenuPrivate)
 {
   setShortcutConfigurable( false );
-  setToolBarWidgetFactory(this);
 }
 
 KActionMenu::~KActionMenu()
@@ -79,8 +76,11 @@ KActionMenu::~KActionMenu()
     delete menu();
 }
 
-QWidget * KActionMenu::createToolBarWidget( QToolBar * parent )
+QWidget * KActionMenu::createWidget( QWidget * _parent )
 {
+  QToolBar *parent = qobject_cast<QToolBar *>(_parent);
+  if (!parent)
+    return KAction::createWidget(_parent);
   QToolButton* button = new QToolButton(parent);
   button->setAutoRaise(true);
   button->setFocusPolicy(Qt::NoFocus);

@@ -39,7 +39,7 @@ K3WidgetAction::K3WidgetAction( QWidget* widget,
   , m_widget( widget )
   , d(0L)
 {
-  setToolBarWidgetFactory(this);
+  setDefaultWidget(widget);
 }
 
 K3WidgetAction::K3WidgetAction( QWidget* widget,
@@ -50,27 +50,12 @@ K3WidgetAction::K3WidgetAction( QWidget* widget,
   , m_widget( widget )
   , d(0L)
 {
-  setToolBarWidgetFactory(this);
+  setDefaultWidget(widget);
 }
 
 K3WidgetAction::~K3WidgetAction()
 {
-  delete m_widget;
   //delete d;
-}
-
-QWidget * K3WidgetAction::createToolBarWidget( QToolBar * parent )
-{
-  if (!m_widget)
-    return 0L;
-
-  m_widget->setParent(parent);
-  return m_widget;
-}
-
-void K3WidgetAction::destroyToolBarWidget(QWidget* widget)
-{
-  widget->setParent(0L);
 }
 
 bool K3WidgetAction::event(QEvent* event)
