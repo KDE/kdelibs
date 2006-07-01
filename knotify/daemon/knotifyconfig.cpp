@@ -25,9 +25,9 @@
 
 KNotifyConfig::KNotifyConfig( const QString & _appname, const ContextList & _contexts, const QString & _eventid )
 	: appname (_appname),
-	eventsfile( _appname+"/"+_appname + ".notifyrc" , true, false, "data"),
+	eventsfile( _appname+'/'+_appname + ".notifyrc" , true, false, "data"),
 	configfile( _appname+QString::fromAscii( ".notifyrc" ), true, false),
-	contexts(_contexts) , eventid(_eventid) 
+	contexts(_contexts) , eventid(_eventid)
 {
 //	kDebug(300) << k_funcinfo << appname << " , " << eventid << endl;
 }
@@ -41,7 +41,7 @@ QString KNotifyConfig::readEntry( const QString & entry, bool path )
 	QPair<QString , QString> context;
 	foreach(  context , contexts )
 	{
-		const QString group="Event/" + eventid + "/" + context.first + "/" + context.second;
+		const QString group="Event/" + eventid + '/' + context.first + '/' + context.second;
 		if(configfile.hasGroup( group ) )
 		{
 			configfile.setGroup(group);

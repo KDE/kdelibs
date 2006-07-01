@@ -28,7 +28,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
   QStringList headerLabels;
   headerLabels << i18n( "Title" ) << i18n( "Description" ) << "" << "" << "" << "" << "" ; //<< i18n( "State" );
   setHeaderLabels( headerLabels );
-  
+
   resizeColumnToContents(2);
   resizeColumnToContents(3);
   resizeColumnToContents(4);
@@ -51,7 +51,7 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	clear();
 	delete config;
 	delete loconf;
-	config= new KConfig(appname +"/" + appname + ".notifyrc" , true, false, "data"),
+	config= new KConfig(appname + '/' + appname + ".notifyrc" , true, false, "data"),
 	loconf= new KConfig(appname + ".notifyrc" , false , false );
 
 	QStringList conflist = config->groupList();
@@ -69,12 +69,12 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 			QStringList contexts = config->readEntry("Contexts", QStringList());
 			if(!contexts.contains(context_name))
 				continue;
-			
-			id=id+"/"+context_name+"/"+context_value;
+
+			id=id+'/'+context_name+'/'+context_value;
 		}
 		QString name = config->readEntry("Name");
 		QString description = config->readEntry("Comment");
-		
+
 		m_elements << new KNotifyEventListItem(this, id, name, description, loconf , config );
 	}
 }
@@ -94,7 +94,7 @@ void KNotifyEventList::slotSelectionChanged(  QTreeWidgetItem *current , QTreeWi
 		emit eventSelected( it->configElement() );
 	else
 		emit eventSelected( 0l );
-	
+
 	it=dynamic_cast<KNotifyEventListItem *>(previous);
 	if(it)
 		it->update();
@@ -102,7 +102,7 @@ void KNotifyEventList::slotSelectionChanged(  QTreeWidgetItem *current , QTreeWi
 
 
 
-KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString & eventName, 
+KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString & eventName,
 				const QString & name, const QString & description , KConfigBase* locconf , KConfigBase *defconf)
 	: QTreeWidgetItem(parent) ,
 	m_config(eventName , defconf, locconf )
@@ -130,7 +130,7 @@ void KNotifyEventListItem::update()
 {
 	QString prstring=m_config.readEntry( "Action" );
 	QStringList actions=prstring.split ("|");
-	
+
 	QPixmap pexec = SmallIcon("exec");
 	QPixmap pstderr = SmallIcon("terminal");
 	QPixmap pmessage = SmallIcon("info");
