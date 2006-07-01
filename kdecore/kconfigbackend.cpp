@@ -211,6 +211,26 @@ static QCString encodeGroup(const QCString &str)
   return result;
 }
 
+static QCString encodeKey(const char* key)
+{
+    QCString newKey(key);
+
+    newKey.replace('[', "%5b");
+    newKey.replace(']', "%5d");
+
+    return newKey;
+}
+
+static QCString decodeKey(const char* key)
+{
+    QCString newKey(key);
+
+    newKey.replace("%5b", "[");
+    newKey.replace("%5d", "]");
+
+    return newKey;
+}
+
 class KConfigBackEnd::KConfigBackEndPrivate
 {
 public:
@@ -675,7 +695,7 @@ qWarning("SIGBUS while reading %s", rFile.name().latin1());
       QCString val = printableToString(st, s - st);
       //qDebug("found key '%s' with value '%s'", key.data(), val.data());
 
-      KEntryKey aEntryKey(aCurrentGroup, key);
+      KEntryKey aEntryKey(aCurrentGroup, decodeKey(key));
       aEntryKey.bLocal = (locale != 0);
       aEntryKey.bDefault = bDefault;
 
@@ -870,7 +890,7 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 
      firstEntry = false;
      // it is data for a group
-     fputs(key.mKey.data(), pStream); // Key
+     fputs(encodeKey(key.mKey.data()), pStream); // Key
 
      if ( currentEntry.bNLS )
      {
