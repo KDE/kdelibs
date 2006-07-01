@@ -74,7 +74,7 @@ public:
    void gotScriptArguments(const QString &_arguments);
    void resetOptions();
 
-   void copyGroup(KConfigBase *cfg1, const QString &group1, 
+   void copyGroup(KConfigBase *cfg1, const QString &group1,
                   KConfigBase *cfg2, const QString &group2);
 
 protected:
@@ -118,7 +118,7 @@ KonfUpdate::KonfUpdate()
 
    QStringList updateFiles;
    KCmdLineArgs *args=KCmdLineArgs::parsedArgs();
-   
+
    debug = args->isSet("debug");
 
    m_bUseConfigInfo = false;
@@ -201,9 +201,9 @@ KonfUpdate::log()
         m_textStream = new QTextStream(stderr, QIODevice::WriteOnly);
       }
    }
-   
+
    (*m_textStream) << QDateTime::currentDateTime().toString( Qt::ISODate ) << " ";
-   
+
    return *m_textStream;
 }
 
@@ -220,7 +220,7 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
       if (stat( QFile::encodeName(file), &buff) == 0)
       {
          int i = file.lastIndexOf('/');
-         if (i != -1) 
+         if (i != -1)
             file = file.mid(i+1);
          config->setGroup(file);
          time_t ctime = config->readEntry("ctime", 0);
@@ -239,7 +239,7 @@ bool KonfUpdate::checkFile(const QString &filename)
 {
    currentFilename = filename;
    int i = currentFilename.lastIndexOf('/');
-   if (i != -1) 
+   if (i != -1)
       currentFilename = currentFilename.mid(i+1);
    skip = true;
    QFile file(filename);
@@ -258,11 +258,11 @@ bool KonfUpdate::checkFile(const QString &filename)
       if (line.isEmpty() || (line[0] == '#'))
          continue;
       if (line.startsWith("Id="))
-         id = currentFilename+":"+line.mid(3);
+         id = currentFilename+':'+line.mid(3);
       else if (line.startsWith("File="))
          checkGotFile(line.mid(5), id);
    }
-  
+
    return true;
 }
 
@@ -313,14 +313,14 @@ bool KonfUpdate::updateFile(const QString &filename)
 {
    currentFilename = filename;
    int i = currentFilename.lastIndexOf('/');
-   if (i != -1) 
+   if (i != -1)
        currentFilename = currentFilename.mid(i+1);
    skip = true;
    QFile file(filename);
    if (!file.open(QIODevice::ReadOnly))
       return false;
 
-   log() << "Checking update-file '" << filename << "' for new updates" << endl; 
+   log() << "Checking update-file '" << filename << "' for new updates" << endl;
 
    QTextStream ts(&file);
    ts.setCodec(QTextCodec::codecForName("ISO-8859-1"));
@@ -381,7 +381,7 @@ bool KonfUpdate::updateFile(const QString &filename)
    }
    // Flush.
    gotId(QString());
-  
+
    struct stat buff;
    stat( QFile::encodeName(filename), &buff);
    config->setGroup(currentFilename);
@@ -436,7 +436,7 @@ void KonfUpdate::gotFile(const QString &_file)
 {
    // Reset group
    gotGroup(QString());
- 
+
    if (!oldFile.isEmpty())
    {
       // Close old file.
@@ -445,7 +445,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
       oldConfig2->setGroup("$Version");
       QStringList ids = oldConfig2->readEntry("update_info", QStringList());
-      QString cfg_id = currentFilename + ":" + id;
+      QString cfg_id = currentFilename + ':' + id;
       if (!ids.contains(cfg_id) && !skip)
       {
          ids.append(cfg_id);
@@ -454,7 +454,7 @@ void KonfUpdate::gotFile(const QString &_file)
       oldConfig2->sync();
       delete oldConfig2;
       oldConfig2 = 0;
-      
+
       QString file = locateLocal("config", oldFile);
       struct stat s_buf;
       if (stat(QFile::encodeName(file), &s_buf) == 0)
@@ -463,7 +463,7 @@ void KonfUpdate::gotFile(const QString &_file)
          {
             // Delete empty file.
             unlink(QFile::encodeName(file));
-         }   
+         }
       }
 
       oldFile.clear();
@@ -473,7 +473,7 @@ void KonfUpdate::gotFile(const QString &_file)
       // Close new file.
       newConfig->setGroup("$Version");
       QStringList ids = newConfig->readEntry("update_info", QStringList());
-      QString cfg_id = currentFilename + ":" + id;
+      QString cfg_id = currentFilename + ':' + id;
       if (!ids.contains(cfg_id) && !skip)
       {
          ids.append(cfg_id);
@@ -485,7 +485,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
       newFile.clear();
    }
-   newConfig = 0; 
+   newConfig = 0;
 
    int i = _file.indexOf(',');
    if (i == -1)
@@ -499,11 +499,11 @@ void KonfUpdate::gotFile(const QString &_file)
       if (oldFile == newFile)
          newFile.clear();
    }
-   
+
    if (!oldFile.isEmpty())
    {
       oldConfig2 = new KConfig(oldFile, false, false);
-      QString cfg_id = currentFilename + ":" + id;
+      QString cfg_id = currentFilename + ':' + id;
       oldConfig2->setGroup("$Version");
       QStringList ids = oldConfig2->readEntry("update_info", QStringList());
       if (ids.contains(cfg_id))
@@ -614,7 +614,7 @@ void KonfUpdate::gotKey(const QString &_key)
       return; // Done.
 
    // Delete old entry
-   if ((oldConfig2 == newConfig) && 
+   if ((oldConfig2 == newConfig) &&
        (oldGroup == newGroup) &&
        (oldKey == newKey))
       return; // Don't delete!
@@ -704,7 +704,7 @@ void KonfUpdate::gotOptions(const QString &_options)
    }
 }
 
-void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &group1, 
+void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &group1,
                            KConfigBase *cfg2, const QString &group2)
 {
    cfg1->setGroup(group1);
@@ -742,7 +742,7 @@ void KonfUpdate::gotScript(const QString &_script)
       log() << currentFilename << ": !! Script fails to specify filename in line " << m_lineCount << " : '" << m_line << "'" << endl;
       skip = true;
       return;
-   } 
+   }
 
 
 
@@ -769,7 +769,7 @@ void KonfUpdate::gotScript(const QString &_script)
    if (interpreter.isEmpty())
       cmd = path;
    else
-      cmd = interpreter + " " + path;
+      cmd = interpreter + ' ' + path;
 
    if( !m_arguments.isNull())
    {
@@ -805,7 +805,7 @@ void KonfUpdate::gotScript(const QString &_script)
                copyGroup(oldConfig1, *it, &cfg, *it);
            }
        }
-       else 
+       else
        {
            copyGroup(oldConfig1, oldGroup, &cfg, QString());
        }
@@ -822,7 +822,7 @@ void KonfUpdate::gotScript(const QString &_script)
    {
      QFile output(tmp3.name());
      if (output.open(QIODevice::ReadOnly))
-     { 
+     {
        QTextStream ts( &output );
        ts.setCodec(QTextCodec::codecForName("UTF-8"));
        while(!ts.atEnd())
@@ -853,7 +853,7 @@ void KonfUpdate::gotScript(const QString &_script)
      QString group = oldGroup;
      QFile output(tmp2.name());
      if (output.open(QIODevice::ReadOnly))
-     { 
+     {
        QTextStream ts( &output );
        ts.setCodec(QTextCodec::codecForName("UTF-8"));
        while(!ts.atEnd())
@@ -866,7 +866,7 @@ void KonfUpdate::gotScript(const QString &_script)
                group = line.mid(1, j-2);
          }
          else if (line.startsWith("# DELETE "))
-         {  
+         {
             QString key = line.mid(9);
             if (key[0] == '[')
             {
