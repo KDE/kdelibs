@@ -99,6 +99,7 @@ namespace KJS {
     class DOMDocument;
     class SourceFile;
     class ScheduledAction;
+    class DebugDocument;
 }
 
 namespace KParts
@@ -205,6 +206,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::JSLazyEventListener;
   friend class KJS::DOMDocument;
   friend class KJS::SourceFile;
+  friend class KJS::DebugDocument;
   friend class KJSProxy;
   friend class KHTMLPartBrowserExtension;
   friend class DOM::DocumentImpl;

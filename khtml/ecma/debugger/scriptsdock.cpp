@@ -8,18 +8,15 @@
 #include "scriptsdock.h"
 #include "scriptsdock.moc"
 
+using namespace KJS;
+
 ScriptsDock::ScriptsDock(QWidget *parent)
     : QDockWidget("Loaded Scripts", parent)
 {
-    QTreeWidget *m_widget = new QTreeWidget(this);
-    m_widget->setColumnCount(1);
-
-    for (int i = 0; i < 10; i++)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
-        item->setText(0, QString("item :%1").arg(i));
-        m_widget->addTopLevelItem(item);
-    }
+    m_widget = new QTreeWidget(this);
+    m_widget->setColumnCount(2);
+    connect(m_widget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+            this, SLOT(scriptSelected(QTreeWidgetItem*, int)));
 
     setWidget(m_widget);
 }
@@ -28,48 +25,65 @@ ScriptsDock::~ScriptsDock()
 {
 /*
     if (m_widget)
-    {
         delete m_widget;
-        m_widget = 0;
-    }
+    m_widget = 0;
 */
 }
 
 void ScriptsDock::addDocument(KJS::DebugDocument *document)
 {
-/*
-    if (m_widget)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
-        item->setText(0, "Blah");
-        m_widget->addTopLevelItem(item);
-    }
-*/
-
-    /*
     if (document && m_widget)
     {
-        QList<QTreeWidgetItem *> items = m_widget->findItems("blah", Qt::MatchExactly);
+        QList<QTreeWidgetItem *> items = m_widget->findItems(document->url(), Qt::MatchExactly);
+        kDebug() << "Found " << items.count() << " items." << endl;
+        QTreeWidgetItem *item;
         if (items.count() > 0)
         {
-            QTreeWidgetItem *script = items[0];
+            QTreeWidgetItem *script = items.takeFirst();
             int idx = m_widget->indexOfTopLevelItem(script);
-            m_widget->takeTopLevelItem(idx);
+            item = m_widget->topLevelItem(idx);
+            item->setText(1, "multiple");
 
-            m_widget->insertTopLevelItem(idx, new QTreeWidgetItem(m_widget, QStringList("blah")));
-            kDebug() << "inserted document for url: " << document->url() << endl;
+            item->takeChildren();
+            QList<SourceFragment> fragments = document->code();
+            foreach (SourceFragment fragment, fragments)
+            {
+                QTreeWidgetItem *child = new QTreeWidgetItem;
+                child->setText(0, QString::number(fragment.baseLine));
+                child->setText(1, fragment.source);
+                item->addChild(child);
+            }
         }
         else
         {
-            m_widget->addTopLevelItem(new QTreeWidgetItem(m_widget, QStringList("blah")));
+            item = new QTreeWidgetItem;
+            item->setText(0, document->url());
+
+            QList<SourceFragment> fragments = document->code();
+            foreach (SourceFragment fragment, fragments)
+            {
+                QTreeWidgetItem *child = new QTreeWidgetItem;
+                child->setText(0, QString::number(fragment.baseLine));
+                child->setText(1, fragment.source);
+                item->addChild(child);
+            }
+
+            m_widget->addTopLevelItem(item);
             kDebug() << "added document for url: " << document->url() << endl;
         }
+        m_documents[item] = document;
     }
     else
     {
-        kDebug() << "ERRORORORORORORR";
+        kDebug() << "ERRORORORORORORR" << endl;
     }
-    */
+}
+
+void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int column)
+{
+    KJS::DebugDocument *doc = m_documents[item];
+    kDebug() << "   url: " << doc->url() << endl
+             << "source: " << doc->source() << endl;
 }
 
 

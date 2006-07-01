@@ -1157,7 +1157,7 @@ bool KJSDebugWin::haveBreakpoint(SourceFile *sourceFile, int line0, int line1)
         m_sourceFragments[sourceId]->sourceFile == sourceFile) {
       int absLineno = m_sourceFragments[sourceId]->baseLine+lineno-1;
       if (absLineno >= line0 && absLineno <= line1)
-	return true;
+        return true;
     }
   }
 

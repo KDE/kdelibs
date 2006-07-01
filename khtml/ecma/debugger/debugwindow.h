@@ -32,6 +32,10 @@
 #include <kjs/value.h>
 #include <kjs_binding.h>
 
+#include "khtml_pagecache.h"
+#include "khtml_part.h"
+#include "misc/decoder.h"
+
 #include "dom/dom_misc.h"
 
 class KActionCollection;
@@ -48,25 +52,69 @@ class ConsoleDock;
 namespace KJS
 {
 
+struct SourceFragment
+{
+    int sourceId;
+    int baseLine;
+    QString source;
+};
+
 class DebugDocument : public DOM::DomShared
 {
 public:
     DebugDocument(const QString &url, Interpreter *interpreter)
         : m_url(url), m_interpreter(interpreter)
-        {};
-    ~DebugDocument() {};
+        {}
+    ~DebugDocument() {}
 
-    QString url() { return m_url; }
-    Interpreter *interpreter() { return m_interpreter; }
+    QString url() const { return m_url; }
+    Interpreter *interpreter() const { return m_interpreter; }
 
-    QStringList code() { return m_codeFragments; }
+    QList<SourceFragment> code() { return m_codeFragments; }
+    QString source() const
+    {
+        if (m_interpreter)
+        {
+            ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(m_interpreter);
+            KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
+            if (part &&
+                m_url == part->url().url() &&
+                KHTMLPageCache::self()->isValid(part->cacheId()))
+            {
+                khtml::Decoder *decoder = part->createDecoder();
 
-    void addCodeFragment(const QString &code) { m_codeFragments.append(code); }
+                QByteArray data;
+                QDataStream stream(&data,QIODevice::WriteOnly);
+                KHTMLPageCache::self()->saveData(part->cacheId(), &stream);
+
+                QString str;
+                if (data.size() == 0)
+                    str = "";
+                else
+                    str = decoder->decode(data.data(), data.size()) + decoder->flush();
+
+                delete decoder;
+                return str;
+            }
+        }
+
+        return QString();
+    }
+
+    void addCodeFragment(int sourceId, int baseLine, const QString &source)
+    {
+        SourceFragment code;
+        code.sourceId = sourceId;
+        code.baseLine = baseLine;
+        code.source = source;
+
+        m_codeFragments.append(code);
+    }
 
 private:
     QString m_url;
     Interpreter *m_interpreter;
-    QStringList m_codeFragments;
+    QList<SourceFragment> m_codeFragments;
 
 };
 
@@ -143,6 +191,14 @@ private:
     // Internal temp variables to overcome some issues with KJS::Debugger...
     int m_nextBaseLine;
     QString m_nextUrl;
+
+
+
+
+    KJS::Interpreter *m_tempInterpreter;
+
+
+
 
 
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents

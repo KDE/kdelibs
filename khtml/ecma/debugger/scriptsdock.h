@@ -2,6 +2,7 @@
 #define SCRIPTSDOCK_H
 
 #include <QDockWidget>
+#include <QTreeWidgetItem>
 
 class QTreeWidget;
 
@@ -19,8 +20,12 @@ public:
 
     void addDocument(KJS::DebugDocument *document);
 
+private slots:
+    void scriptSelected(QTreeWidgetItem *item, int column);
+
 private:
     QTreeWidget *m_widget;
+    QHash<QTreeWidgetItem*, KJS::DebugDocument*> m_documents;
 };
 
 #endif

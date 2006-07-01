@@ -208,7 +208,9 @@ void DebugWindow::createStatusBar()
 
 void DebugWindow::stopExecution()
 {
-    KMessageBox::information(this, "Stop!");
+//    KMessageBox::information(this, "Stop!");
+    m_localVariables->display(m_tempInterpreter);
+
 }
 
 void DebugWindow::continueExecution()
@@ -242,10 +244,12 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     Q_UNUSED(exec);
 
     kDebug() << "***************************** sourceParsed **************************************************" << endl
-             << " sourceId: " << sourceId << endl
-             << "sourceURL: " << sourceURL.qstring() << endl
-             << "   source: " << source.qstring() << endl
-             << "errorLine: " << errorLine << endl
+             << "      sourceId: " << sourceId << endl
+             << "     sourceURL: " << sourceURL.qstring() << endl
+             << "     m_nextUrl: " << m_nextUrl << endl
+             << "m_nextBaseLine: " << m_nextBaseLine << endl
+             << "        source: " << source.qstring() << endl
+             << "     errorLine: " << errorLine << endl
              << "*********************************************************************************************" << endl;
 
     // Determine key
@@ -261,6 +265,8 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 
             document = new DebugDocument(m_nextUrl, exec->interpreter());
             m_documents[key] = document;
+
+            m_tempInterpreter = exec->interpreter();
 //        }
     }
     else
@@ -268,6 +274,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
         // interpreter should already be there, if it isn't then we should look above to the problem
     }
 
+    document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
     m_scripts->addDocument(document);
 
     m_nextBaseLine = 1;

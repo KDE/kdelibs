@@ -60,7 +60,7 @@ namespace KJS {
   {
    public:
     SourceFile(QString u, QString c, Interpreter *interp)
-	: url(u), code(c), interpreter(interp) {}
+        : url(u), code(c), interpreter(interp) {}
     QString getCode();
     QString url;
     QString code;
