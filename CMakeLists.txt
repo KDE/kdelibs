@@ -20,7 +20,6 @@ if(MSVC_IDE)
 endif(MSVC_IDE)
 
 find_package(KDE4Internal REQUIRED)
-find_package(QtDBus REQUIRED)
 find_package(ZLIB REQUIRED)
 
 if (APPLE)
