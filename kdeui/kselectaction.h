@@ -42,7 +42,7 @@
  *  the formerly checked item becomes unchecked.
  *  There can be only one item checked at a time.
  */
-class KDEUI_EXPORT KSelectAction : public KAction, public QActionWidgetFactory
+class KDEUI_EXPORT KSelectAction : public KAction
 {
     Q_OBJECT
     Q_PROPERTY( QAction* currentAction READ currentAction WRITE setCurrentAction )
@@ -383,8 +383,6 @@ public:
      */
     void changeItem( int index, const QString& text );
 
-    virtual QWidget* createToolBarWidget(QToolBar* parent);
-
 Q_SIGNALS:
     /**
      * This signal is emitted when an item is selected; @param action 
@@ -409,6 +407,9 @@ protected Q_SLOTS:
      * This function is called whenever an action from the selections is triggered.
      */
     virtual void actionTriggered(QAction* action);
+
+protected:
+    virtual QWidget *createWidget(QWidget *parent);
 
 private Q_SLOTS:
     void comboBoxDeleted(QObject* object);

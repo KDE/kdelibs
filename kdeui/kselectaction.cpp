@@ -180,7 +180,6 @@ KSelectAction::~KSelectAction()
 
 void KSelectAction::init()
 {
-  setToolBarWidgetFactory(this);
   connect(selectableActionGroup(), SIGNAL(triggered(QAction*)), SLOT(actionTriggered(QAction*)));
   setMenu(new KMenu());
 }
@@ -492,21 +491,24 @@ bool KSelectAction::menuAccelsEnabled() const
   return d->m_menuAccelsEnabled;
 }
 
-QWidget * KSelectAction::createToolBarWidget( QToolBar * parent )
+QWidget * KSelectAction::createWidget( QWidget * parent )
 {
+  QToolBar *toolBar = qobject_cast<QToolBar *>(parent);
+  if (!toolBar)
+    return 0;
   switch (toolBarMode()) {
     case MenuMode: {
-      QToolButton* button = new QToolButton(parent);
+      QToolButton* button = new QToolButton(toolBar);
       button->setAutoRaise(true);
       button->setFocusPolicy(Qt::NoFocus);
-      button->setIconSize(parent->iconSize());
-      button->setToolButtonStyle(parent->toolButtonStyle());
-      QObject::connect(parent, SIGNAL(iconSizeChanged(const QSize&)),
+      button->setIconSize(toolBar->iconSize());
+      button->setToolButtonStyle(toolBar->toolButtonStyle());
+      QObject::connect(toolBar, SIGNAL(iconSizeChanged(const QSize&)),
                        button, SLOT(setIconSize(const QSize&)));
-      QObject::connect(parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
+      QObject::connect(toolBar, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
                        button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
       button->setDefaultAction(this);
-      QObject::connect(button, SIGNAL(triggered(QAction*)), parent, SIGNAL(actionTriggered(QAction*)));
+      QObject::connect(button, SIGNAL(triggered(QAction*)), toolBar, SIGNAL(actionTriggered(QAction*)));
 
       button->setPopupMode(toolButtonPopupMode());
 
@@ -516,7 +518,7 @@ QWidget * KSelectAction::createToolBarWidget( QToolBar * parent )
     }
 
     case ComboBoxMode: {
-      KComboBox* comboBox = new KComboBox(parent);
+      KComboBox* comboBox = new KComboBox(toolBar);
 
       if ( d->m_maxComboViewCount != -1 )
         comboBox->setMaxVisibleItems( d->m_maxComboViewCount );
