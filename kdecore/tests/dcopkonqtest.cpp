@@ -2,8 +2,8 @@
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <dbus/qdbusinterface.h>
-#include <dbus/qdbusreply.h>
+#include <qdbusinterface.h>
+#include <qdbusreply.h>
 
 int main( int argc, char** argv )
 {
@@ -17,8 +17,8 @@ int main( int argc, char** argv )
     QByteArray data;
 
     kDebug() << "sending reparseConfiguration to object KonquerorIface in konqueror" << endl;
-    QDBusInterfacePtr kded("org.kde.konqueror", "/KonquerorIface", "org.kde.KonquerorIface");
-    QDBusReply<void> reply = kded->call("reparceConfiguration");
+    QDBusInterface kded("org.kde.konqueror", "/KonquerorIface", "org.kde.KonquerorIface");
+    QDBusReply<void> reply = kded.call("reparceConfiguration");
 
     if ( reply.isError() ) kDebug() << "void expected, " << reply.error().name() << " returned" << endl;
 
