@@ -16,11 +16,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kstdguiitem.h"
+#include <QtGui/QApplication>
 
-#include <qapplication.h>
 #include <kguiitem.h>
 #include <klocale.h>
+
+#include "kstdguiitem.h"
 
 KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
 {
@@ -199,7 +200,7 @@ KGuiItem KStdGuiItem::forward( BidiMode useBidi )
 
 QPair<KGuiItem, KGuiItem> KStdGuiItem::backAndForward()
 {
-    return qMakePair( back( UseRTL ), forward( UseRTL ) );
+  return qMakePair( back( UseRTL ), forward( UseRTL ) );
 }
 
 KGuiItem KStdGuiItem::print()
@@ -283,5 +284,3 @@ KGuiItem KStdGuiItem::overwrite()
 {
   return KGuiItem(i18n("&Overwrite"));
 }
-
-// vim: set ts=2 sts=2 sw=2 et:

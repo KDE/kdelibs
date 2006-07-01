@@ -19,7 +19,7 @@
 #ifndef kstdguiitem_h
 #define kstdguiitem_h
 
-#include <QPair>
+#include <QtCore/QPair>
 
 #include <kdelibs_export.h>
 
@@ -53,26 +53,107 @@ public:
         Continue, Open, Quit, AdminMode, Reset, Delete, Insert,
         Configure, Find, Stop, Add, Remove, Test, Properties, Overwrite
     };
-    static KGuiItem guiItem ( StdItem ui_enum );
-    static QString  stdItem ( StdItem ui_enum );
+
+    /**
+     * Returns the gui item for the given identifier @param id.
+     */
+    static KGuiItem guiItem ( StdItem id );
+
+    /**
+     * Returns the name of the gui item for the given identifier @param id.
+     */
+    static QString stdItem ( StdItem id );
+
+    /**
+     * Returns the 'Ok' gui item.
+     */
     static KGuiItem ok();
+
+    /**
+     * Returns the 'Cancel' gui item.
+     */
     static KGuiItem cancel();
+
+    /**
+     * Returns the 'Yes' gui item.
+     */
     static KGuiItem yes();
+
+    /**
+     * Returns the 'No' gui item.
+     */
     static KGuiItem no();
+
+    /**
+     * Returns the 'Insert' gui item.
+     */
     static KGuiItem insert();
+
+    /**
+     * Returns the 'Discard' gui item.
+     */
     static KGuiItem discard();
+
+    /**
+     * Returns the 'Save' gui item.
+     */
     static KGuiItem save();
+
+    /**
+     * Returns the 'Help' gui item.
+     */
     static KGuiItem help();
+
+    /**
+     * Returns the 'DontSave' gui item.
+     */
     static KGuiItem dontSave();
+
+    /**
+     * Returns the 'SaveAs' gui item.
+     */
     static KGuiItem saveAs();
+
+    /**
+     * Returns the 'Apply' gui item.
+     */
     static KGuiItem apply();
+
+    /**
+     * Returns the 'Clear' gui item.
+     */
     static KGuiItem clear();
+
+    /**
+     * Returns the 'Defaults' gui item.
+     */
     static KGuiItem defaults();
+
+    /**
+     * Returns the 'Close' gui item.
+     */
     static KGuiItem close();
+
+    /**
+     * Returns the 'Print' gui item.
+     */
     static KGuiItem print();
+
+    /**
+     * Returns the 'Properties' gui item.
+     */
     static KGuiItem properties();
+
+    /**
+     * Returns the 'Reset' gui item.
+     */
     static KGuiItem reset();
+
+    /**
+     * Returns the 'Overwrite' gui item.
+     */
     static KGuiItem overwrite();
+
     /**
      * Returns a KGuiItem suiting for cases where code or functionality
      * runs under root privileges. Used in conjunction with KConfig Modules.
@@ -80,21 +161,24 @@ public:
     static KGuiItem adminMode();
 
     /**
-     * Returns a "continue" item. The short name is due to "continue" being a
+     * Returns the 'Continue' gui item. The short name is due to 'continue' being a
      * reserved word in the C++ language.
      */
     static KGuiItem cont();
 
     /**
-     * Returns a "delete" item. The short name is due to "delete" being a
+     * Returns the 'Delete' gui item. The short name is due to 'delete' being a
      * reserved word in the C++ language.
      */
     static KGuiItem del();
 
+    /**
+     * Returns the 'Open' gui item.
+     */
     static KGuiItem open();
 
     /**
-     * Return a GUI item for a 'back' action, like Konqueror's back button.
+     * Returns the 'Back' gui item, like Konqueror's back button.
      * This GUI item can optionally honor the user's setting for BiDi, so the
      * icon for right-to-left languages (Hebrew and Arab) has the arrow
      * pointing in the opposite direction.
@@ -106,7 +190,7 @@ public:
     static KGuiItem back( BidiMode useBidi = IgnoreRTL );
 
     /**
-     * Return a GUI item for a 'forward' action, like Konqueror's forward
+     * Returns the 'Forward' gui item, like Konqueror's forward
      * button. This GUI item can optionally honor the user's setting for BiDi,
      * so the icon for right-to-left languages (Hebrew and Arab) has the arrow
      * pointing in the opposite direction.
@@ -118,48 +202,48 @@ public:
     static KGuiItem forward( BidiMode useBidi = IgnoreRTL );
 
     /**
-     * Returns a "configure" item.
+     * Returns the 'Configure' gui item.
      */
     static KGuiItem configure();
 
     /**
-     * Return both a back and a forward item. This function always returns
+     * Return both a back and a forward gui item. This function always returns
      * items that are aware of the Right-to-Left setting for Arab and Hebrew
      * locales. If you have a reason for wanting the 'Western' back/forward
      * buttons, please use the back() and forward() items instead.
      */
     static QPair<KGuiItem, KGuiItem> backAndForward();
 
+    /**
+     * Returns the 'Quit' gui item.
+     */
     static KGuiItem quit();
 
     /**
-    * Returns a "find" item.
-    */
+     * Returns the 'Find' gui item.
+     */
     static KGuiItem find();
 
     /**
-    * Returns a "stop" item.
-    */
+     * Returns the 'Stop' gui item.
+     */
     static KGuiItem stop();
 
     /**
-    * Returns a "add" item.
-    */
+     * Returns the 'Add' gui item.
+     */
     static KGuiItem add();
 
     /**
-    * Returns a "remove" item.
-    */
+     * Returns the 'Remove' gui item.
+     */
     static KGuiItem remove();
 
     /**
-    * Returns a "test" item.
-    */
+     * Returns the 'Test' gui item.
+     */
     static KGuiItem test();
 
 };
 
 #endif
-
-// vim: set et ts=4 sw=4 sts=4:
-

@@ -22,8 +22,8 @@
 #ifndef KSTRINGVALIDATOR_H
 #define KSTRINGVALIDATOR_H
 
-#include <qvalidator.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
+#include <QtGui/QValidator>
 
 #include <kdelibs_export.h>
 
@@ -57,45 +57,80 @@
  *
  * @author Marc Mutz <mutz@kde.org>
  **/
-class KDEUI_EXPORT KStringListValidator : public QValidator {
+class KDEUI_EXPORT KStringListValidator : public QValidator
+{
   Q_OBJECT
   Q_PROPERTY( QStringList stringList READ stringList WRITE setStringList )
   Q_PROPERTY( bool rejecting READ isRejecting WRITE setRejecting )
   Q_PROPERTY( bool fixupEnabled READ isFixupEnabled WRITE setFixupEnabled )
-public:
-  /** Construct a new validator.
-   *
-   * @param list         The list of strings to (dis)allow.
-   * @param rejecting    Selects the validator's mode
-   *                     (rejecting: true; accepting: false)
-   * @param fixupEnabled Selects whether to fix strings or not.
-   * @param parent Passed to lower level constructor.
-   *
-   **/
-  explicit KStringListValidator( const QStringList & list=QStringList(),
-                                 bool rejecting=true, bool fixupEnabled=false,
-                                 QObject * parent=0 )
-    : QValidator( parent ), mStringList( list ),
-      mRejecting( rejecting ), mFixupEnabled( fixupEnabled ) { }
 
-  virtual State validate( QString & input, int & pos ) const;
-  virtual void fixup( QString & input ) const;
+  public:
+    /**
+     * Creates a new string validator.
+     *
+     * @param list         The list of strings to (dis)allow.
+     * @param rejecting    Selects the validator's mode
+     *                     (rejecting: true; accepting: false)
+     * @param fixupEnabled Selects whether to fix strings or not.
+     * @param parent Passed to lower level constructor.
+     *
+     **/
+    explicit KStringListValidator( const QStringList &list = QStringList(),
+                                   bool rejecting = true, bool fixupEnabled = false,
+                                   QObject *parent = 0 );
 
-  void setRejecting( bool rejecting ) { mRejecting = rejecting; }
-  bool isRejecting() const { return mRejecting; }
+    /**
+     * Destroys the string validator.
+     */
+    ~KStringListValidator();
 
-  void setFixupEnabled( bool fixupEnabled ) { mFixupEnabled = fixupEnabled; }
-  bool isFixupEnabled() const { return mFixupEnabled; }
+    /**
+     * Sets whether the string validator is in rejecting mode or not.
+     * If in rejecting mode, the strings from @see stringList are not
+     * allowed to appear in the validation string.
+     */
+    void setRejecting( bool rejecting );
 
-  void setStringList( const QStringList & list ) { mStringList = list; }
-  QStringList stringList() const { return mStringList; }
+    /**
+     * Returns whether the string validator is in rejecting mode.
+     */
+    bool isRejecting() const;
 
-protected:
-  QStringList mStringList;
-  bool        mRejecting;
-  bool        mFixupEnabled;
-private:
-  class KStringListValidator* d;
+    /**
+     * Sets the fixup flag. If enabled, wrong input is corrected
+     * automatically.
+     */
+    void setFixupEnabled( bool fixupEnabled );
+
+    /**
+     * Returns whether the fixup flag is set.
+     */
+    bool isFixupEnabled() const;
+
+    /**
+     * Sets the @param list of string which is used as black or
+     * white list, depending on the rejecting mode (@see isRejecting()).
+     */
+    void setStringList( const QStringList & list );
+
+    /**
+     * Returns the string list of the validator.
+     */
+    QStringList stringList() const;
+
+    /**
+     * Reimplemented from @see QValidator.
+     */
+    virtual State validate( QString & input, int & pos ) const;
+
+    /**
+     * Reimplemented from @see QValidator.
+     */
+    virtual void fixup( QString & input ) const;
+
+  private:
+    class Private;
+    Private* const d;
 };
 
 /**
@@ -118,23 +153,34 @@ private:
 class KDEUI_EXPORT KMimeTypeValidator : public QValidator
 {
   Q_OBJECT
-public:
-  explicit KMimeTypeValidator( QObject* parent = 0 )
-    : QValidator( parent ) {}
 
-  /**
-   * Checks for well-formed mimetype. Returns
-   * @li Acceptable iff input ~= /^[:allowed chars:]+\/[:allowed chars:]+$/
-   * @li Intermediate iff input ~= /^[:allowed chars:]*\/?[:allowed chars:]*$/
-   * @li Invalid else
-   */
-  virtual State validate( QString & input, int & pos ) const;
-  /**
-   * Removes all characters that are forbidden in mimetypes.
-   */
-  virtual void fixup( QString & input ) const;
-private:
-  class KMimeTypeValidator* d;
+  public:
+    /**
+     * Creates a new mime type validator.
+     */
+    explicit KMimeTypeValidator( QObject* parent = 0 );
+
+    /**
+     * Destroys the mime type validator.
+     */
+    ~KMimeTypeValidator();
+
+    /**
+     * Checks for well-formed mimetype. Returns
+     * @li Acceptable iff input ~= /^[:allowed chars:]+\/[:allowed chars:]+$/
+     * @li Intermediate iff input ~= /^[:allowed chars:]*\/?[:allowed chars:]*$/
+     * @li Invalid else
+     */
+    virtual State validate( QString & input, int & pos ) const;
+
+    /**
+     * Removes all characters that are forbidden in mimetypes.
+     */
+    virtual void fixup( QString & input ) const;
+
+  private:
+    class Private;
+    Private* const d;
 };
 
 #endif // KSTRINGVALIDATOR_H
