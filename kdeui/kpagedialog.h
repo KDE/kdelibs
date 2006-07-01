@@ -70,7 +70,7 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      *  @li @p Auto   - A dialog with a face based on the structure of the
      *                  available pages.
      *                  If only a single page is added, the dialog behaves like
-     *                  in @p Plain mode, with multiple pages whithout sub pages
+     *                  in @p Plain mode, with multiple pages without sub pages
      *                  it behaves like in @p List mode and like in @p Tree mode
      *                  otherwise.
      *  @li @p Plain  - A normal dialog.
