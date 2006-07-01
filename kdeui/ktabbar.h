@@ -25,21 +25,36 @@
 
 #include <kdelibs_export.h>
 
-class QTimer;
-class QPushButton;
-
+/**
+ * A QTabBar with extended features.
+ */
 class KDEUI_EXPORT KTabBar: public QTabBar
 {
     Q_OBJECT
 
-public:
-    explicit KTabBar( QWidget* parent=0 );
+  public:
+    /**
+     * Creates a new tab bar.
+     *
+     * @param parent The parent widget.
+     */
+    explicit KTabBar( QWidget* parent = 0 );
+
+    /**
+     * Destroys the tab bar.
+     */
     virtual ~KTabBar();
 
-    // KDE4 porting: use the QTabBar functions instead
-    //virtual int insertTab( QTab *, int index = -1 );
-
+    /**
+     * Sets the tab reordering enabled or disabled. If enabled,
+     * the user can reorder the tabs by drag and drop the tab
+     * headers.
+     */
     void setTabReorderingEnabled( bool enable );
+
+    /**
+     * Returns whether tab reordering is enabled.
+     */
     bool isTabReorderingEnabled() const;
 
     // KDE4 porting: disabled
@@ -50,61 +65,62 @@ public:
     void setHoverCloseButtonDelayed( bool );
     bool hoverCloseButtonDelayed() const;
 
+    /**
+     * Sets the 'activate previous tab on close' feature enabled
+     * or disabled. If enabled, as soon as you close a tab, the
+     * previously selected tab is activated again.
+     */
     void setTabCloseActivatePrevious( bool );
+
+    /**
+     * Returns whether the 'activate previous tab on close' feature
+     * is enabled.
+     */
     bool tabCloseActivatePrevious() const;
 
-    int selectTab(const QPoint& pos) const;
+    /**
+     * Selects the tab which has a tab header at
+     * given @param position.
+     */
+    int selectTab( const QPoint &position ) const;
 
-Q_SIGNALS:
-    void contextMenu( int, const QPoint & );
+  Q_SIGNALS:
+    void contextMenu( int, const QPoint& );
     void mouseDoubleClick( int );
     void mouseMiddleClick( int );
     void initiateDrag( int );
-    void testCanDecode(const QDragMoveEvent *e, bool &accept /* result */);
-    void receivedDropEvent( int, QDropEvent * );
+    void testCanDecode( const QDragMoveEvent*, bool& );
+    void receivedDropEvent( int, QDropEvent* );
     void moveTab( int, int );
     void closeRequest( int );
 #ifndef QT_NO_WHEELEVENT
     void wheelDelta( int );
 #endif
 
-protected:
-    virtual void mouseDoubleClickEvent( QMouseEvent *e );
-    virtual void mousePressEvent( QMouseEvent *e );
-    virtual void mouseMoveEvent( QMouseEvent *e );
-    virtual void mouseReleaseEvent( QMouseEvent *e );
+  protected:
+    virtual void mouseDoubleClickEvent( QMouseEvent *event );
+    virtual void mousePressEvent( QMouseEvent *event );
+    virtual void mouseMoveEvent( QMouseEvent *event );
+    virtual void mouseReleaseEvent( QMouseEvent *event );
 #ifndef QT_NO_WHEELEVENT
-    virtual void wheelEvent( QWheelEvent *e );
+    virtual void wheelEvent( QWheelEvent *event );
 #endif
 
-    virtual void dragEnterEvent( QDragEnterEvent *e );
-    virtual void dragMoveEvent( QDragMoveEvent *e );
-    virtual void dropEvent( QDropEvent *e );
+    virtual void dragEnterEvent( QDragEnterEvent *event );
+    virtual void dragMoveEvent( QDragMoveEvent *event );
+    virtual void dropEvent( QDropEvent *event );
 
-protected Q_SLOTS:
+  protected Q_SLOTS:
     //virtual void closeButtonClicked();
     //virtual void enableCloseButton();
     virtual void activateDragSwitchTab();
 
-protected:
+  protected:
     virtual void tabLayoutChange();
 
-private:
-    QPoint mDragStart;
-    int mReorderStartTab;
-    int mReorderPreviousTab;
-    int mDragSwitchTab;
-    //QTab *mHoverCloseButtonTab, *mDragSwitchTab;
-    //QPushButton *mHoverCloseButton;
-    QTimer /*mEnableCloseButtonTimer,*/ *mActivateDragSwitchTabTimer;
-
-    //bool mHoverCloseButtonEnabled;
-    //bool mHoverCloseButtonDelayed;
-    bool mTabReorderingEnabled;
-    bool mTabCloseActivatePrevious;
-
+  private:
     class Private;
-    Private * d;
+    Private* const d;
 };
 
 #endif

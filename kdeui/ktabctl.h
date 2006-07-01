@@ -20,9 +20,9 @@
 #ifndef KTABCTL_H
 #define KTABCTL_H
 
-#include <qwidget.h>
-#include <qtabbar.h>
-#include <QVector>
+#include <QtCore/QVector>
+#include <QtGui/QWidget>
+#include <QtGui/QTabBar>
 
 #include <kdelibs_export.h>
 
@@ -43,42 +43,81 @@
 */
 class KDEUI_EXPORT KTabCtl : public QWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    explicit KTabCtl(QWidget *parent = 0);
-   ~KTabCtl();
+  public:
+    /**
+     * Creates a new tab bar widget.
+     *
+     * @param parent The parent widget.
+     */
+    explicit KTabCtl( QWidget *parent = 0 );
 
-    void show();
-    void setFont(const QFont & font);
+    /**
+     * Destroys the tab widget.
+     */
+    ~KTabCtl();
+
+
+    /**
+     * Sets the @param font for the whole widget.
+     */
+    void setFont( const QFont &font );
+
+    /**
+     * Sets the @param font for the tab widgets.
+     */
     void setTabFont( const QFont &font );
 
-    void addTab(QWidget *, const QString&);
-    bool isTabEnabled(const QString& );
-    void setTabEnabled(const QString&, bool);
-    void setBorder(bool);
+    /**
+     * Adds the @param widget as new tab with the given
+     * @param name.
+     */
+    void addTab( QWidget *widget, const QString &name );
+
+    /**
+     * Returns whether the tab with the given @param name
+     * is enabled.
+     */
+    bool isTabEnabled( const QString &name );
+
+    /**
+     * Sets the tab with the given @param name enabled or disabled.
+     */
+    void setTabEnabled( const QString &name, bool enabled );
+
+    /**
+     * Sets whether the tab widget should be enclosed by
+     * a border.
+     */
+    void showBorder( bool border );
+
+    /**
+     * Sets the shape of the tab widget.
+     */
     void setShape( QTabBar::Shape shape );
+
+    /**
+     * Reimplemented from @see QWidget.
+     */
+    void show();
+
+    /**
+     * Reimplemented from @see QWidget.
+     */
     virtual QSize sizeHint() const;
 
-protected:
-    void paintEvent(QPaintEvent *);
-    void resizeEvent(QResizeEvent *);
+  protected:
+    void paintEvent( QPaintEvent* );
+    void resizeEvent( QResizeEvent* );
 
-Q_SIGNALS:
-    void tabSelected(int);
+  Q_SIGNALS:
+    void tabSelected( int index );
 
-protected Q_SLOTS:
-    void showTab(int i);
+  private:
+    class Private;
+    Private* const d;
 
-protected:
-    void setSizes();
-    QRect getChildRect() const;
-
-    QTabBar * tabs;
-    QVector<QWidget*> pages;
-    int bh;
-    bool blBorder;
-private:
-    class KTabCtrlPrivate* d;
+    Q_PRIVATE_SLOT( d, void showTab( int ) )
 };
 #endif
