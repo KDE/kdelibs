@@ -247,7 +247,7 @@ void KLauncher::setLaunchEnv(const QString &name, const QString &value)
 {
    klauncher_header request_header;
    QByteArray requestData;
-   requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit());
+   requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit()).append('\0');
    request_header.cmd = LAUNCHER_SETENV;
    request_header.arg_length = requestData.size();
    write(kdeinitSocket, &request_header, sizeof(request_header));
