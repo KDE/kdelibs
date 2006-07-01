@@ -204,8 +204,9 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
+     * @deprecated Use QFontMetrics::elidedText instead.
      */
-    static QString lPixelSqueeze( const QString & name,
+    static KDE_DEPRECATED QString lPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
                                   int maxPixels );
 
@@ -237,8 +238,9 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
+     * @deprecated Use QFontMetrics::elidedText instead.
      */
-    static QString cPixelSqueeze( const QString & name,
+    static KDE_DEPRECATED QString cPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
                                   int maxPixels );
 
@@ -270,8 +272,9 @@ public:
      * @param maxPixels is the maximum pixel length the modified string will have
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
+     * @deprecated Use QFontMetrics::elidedText instead.
      */
-    static QString rPixelSqueeze( const QString & name,
+    static KDE_DEPRECATED QString rPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics,
                                   int maxPixels );
 
