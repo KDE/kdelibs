@@ -36,7 +36,7 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 #include <kstaticdeleter.h>
 #include "kbookmarkmanageradaptor_p.h"
 
@@ -569,7 +569,7 @@ void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &
 
     // Reparse (the whole file, no other choice)
     // if someone else notified us
-    if (msg.sender() != QDBus::sessionBus().baseService())
+    if (msg.service() != QDBus::sessionBus().baseService())
        parse();
 
     //kDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;

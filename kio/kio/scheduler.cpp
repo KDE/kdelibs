@@ -33,7 +33,7 @@
 
 #include <qhash.h>
 #include <qwidget.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
 // to the system wide slave pool. (3 minutes)
@@ -127,7 +127,7 @@ Scheduler::Scheduler()
 
     const QString dbusPath = "/KIO/Scheduler";
     const QString dbusInterface = "org.kde.KIO.Scheduler";
-    QDBusConnection& dbus = QDBus::sessionBus();
+    QDBusConnection dbus = QDBus::sessionBus();
     dbus.registerObject("/KIO/Scheduler", this, QDBusConnection::ExportSlots);
     dbus.connect(QString(), dbusPath, dbusInterface, "reparseSlaveConfiguration",
                  this, SLOT(slotReparseSlaveConfiguration(QString)));
@@ -849,8 +849,8 @@ Scheduler::_registerWindow(QWidget *wid)
       m_windowList.insert(obj, windowId);
       connect(wid, SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
-      QDBusInterfacePtr("org.kde.kded", "/kded", "org.kde.kded")->
-          call(QDBusInterface::NoWaitForReply, "registerWindowId", qlonglong(windowId));
+      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
+          call(QDBus::NoBlock, "registerWindowId", qlonglong(windowId));
    }
 }
 
@@ -867,8 +867,8 @@ Scheduler::slotUnregisterWindow(QObject *obj)
    disconnect( it.key(), SIGNAL(destroyed(QObject *)),
               this, SLOT(slotUnregisterWindow(QObject*)));
    m_windowList.erase( it );
-   QDBusInterfacePtr("org.kde.kded", "/kded", "org.kde.kded")->
-       call(QDBusInterface::NoWaitForReply, "unregisterWindowId", qlonglong(windowId));
+   QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
+       call(QDBus::NoBlock, "unregisterWindowId", qlonglong(windowId));
 }
 
 static KStaticDeleter<Scheduler> kioSchedulerSd;

@@ -31,7 +31,7 @@
 
 #include <qfile.h>
 #include <qregexp.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 #include <kinputdialog.h>
 #include <klocale.h>
 #include <krandom.h>
@@ -194,8 +194,8 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 {
 	kDebug(500) << "kdeprint: print command: " << cmd << endl;
 
-    QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
-    QDBusReply<int> reply = kdeprintd->call( "print", cmd, files, removeflag );
+        QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+        QDBusReply<int> reply = kdeprintd.call( "print", cmd, files, removeflag );
 	return reply;               // default is 0
 }
 
@@ -211,8 +211,8 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 	if (printer && !msg.isEmpty())
 		message.prepend(i18n("Printing document: %1", printer->docName())+"\n");
 
-    QDBusInterfacePtr kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
-    (void)kdeprintd->call( "statusMessage", msg, int(getpid()), kapp->caption() );
+        QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+        (void)kdeprintd.call( "statusMessage", msg, int(getpid()), kapp->caption() );
 }
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)

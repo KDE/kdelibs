@@ -20,7 +20,7 @@
 #ifndef __KCMODULEPROXYIFACE_P_H__
 #define __KCMODULEPROXYIFACE_P_H__
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 /**
  * @short DCOP Interface for KCModule.

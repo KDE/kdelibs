@@ -38,7 +38,7 @@
 #include <qdatastream.h>
 #include <qfile.h>
 #include <qtimer.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 #include <errno.h>
 
 #include <assert.h>
@@ -780,16 +780,15 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
      // kapp registered already, but with the PID in the name.
      // We need to re-register without it, to detect already-running kbuildsycoca instances.
-     QDBusBusService *bus = QDBus::sessionBus().busService();
-     QDBusBusService::RequestNameReply reply = bus->requestName(appFullName, 0);
-     if (reply == QDBusBusService::PrimaryOwnerReply || reply == QDBusBusService::AlreadyOwnerReply)
+     if (QDBus::sessionBus().registerService(appFullName))
      {
        break; // Go
      }
      fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
 
      QEventLoop eventLoop;
-     QObject::connect(bus, SIGNAL(nameAcquired(QString)), &eventLoop, SLOT(quit()));
+     QObject::connect(QDBus::sessionBus().interface(), SIGNAL(serviceAcquired(QString)),
+                      &eventLoop, SLOT(quit()));
      eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
    }
    fprintf(stderr, "%s running...\n", appName);
@@ -918,9 +917,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    if (args->isSet("signal"))
    {
      // Notify ALL applications that have a ksycoca object, using a signal
-     QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KSycoca", "notifyDatabaseChanged");
+     QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KSycoca", "notifyDatabaseChanged", QDBus::sessionBus());
      signal << *g_changeList;
-     QDBus::sessionBus().send(signal);
+     signal.send();
    }
 
 #ifdef KBUILDSYCOCA_GUI

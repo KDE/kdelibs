@@ -72,15 +72,14 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
          kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server." << endl;
          return 1;
       } 
-      QDBusReply<QDBusBusService::RequestNameReply> reply =
-          QDBus::sessionBus().busService()->requestName(service, QDBusBusService::DoNotQueueName);
-      if (reply.isError())
+      QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
+          QDBus::sessionBus().interface()->registerService(service);
+      if (!reply.isValid())
       {
          kWarning() << "DBUS communication problem!" << endl;
          return 1;
       }
-      if (reply == QDBusBusService::PrimaryOwnerReply ||
-          reply == QDBusBusService::AlreadyOwnerReply)
+      if (reply == QDBusConnectionInterface::ServiceRegistered)
           break;
 
       if (--maxTry == 0)

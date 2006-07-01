@@ -32,7 +32,7 @@
 #include <Q3PtrList>
 #include <time.h>
 #include <stdlib.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KDirWatch;
 class KTimeout;
@@ -69,7 +69,7 @@ class KWalletD : public KDEDModule {
 		int close(int handle, bool force, const QDBusMessage& msg);
 
 		// Save to disk but leave open
-		Q_ASYNC void sync(int handle, const QDBusMessage& msg);
+		Q_NOREPLY void sync(int handle, const QDBusMessage& msg);
 
 		// Physically deletes the wallet from disk.
 		int deleteWallet(const QString& wallet);

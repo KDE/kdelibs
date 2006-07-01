@@ -23,7 +23,7 @@
 #ifndef _KWALLETDADAPTOR_H_
 #define _KWALLETDADAPTOR_H_
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KWalletDAdaptor: public QDBusAbstractAdaptor
 {
@@ -61,7 +61,7 @@ public Q_SLOTS:
         { return parent->close(handle, force, msg); }
 
     // Save to disk but leave open
-    inline Q_ASYNC void sync(int handle, const QDBusMessage& msg)
+    inline Q_NOREPLY void sync(int handle, const QDBusMessage& msg)
         { parent->sync(handle, msg); }
 
     // Physically deletes the wallet from disk.

@@ -26,7 +26,7 @@
 
 #include <qstringlist.h>
 #include <kdedmodule.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KHttpCookieList;
 class KCookieJar;

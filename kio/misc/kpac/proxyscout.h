@@ -26,7 +26,7 @@
 
 #include <kdedmodule.h>
 #include <kurl.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <time.h>
 
@@ -47,8 +47,8 @@ namespace KPAC
 
     public Q_SLOTS:
         Q_SCRIPTABLE QString proxyForURL( const KUrl& url, const QDBusMessage & );
-        Q_SCRIPTABLE Q_ASYNC void blackListProxy( const QString& proxy );
-        Q_SCRIPTABLE Q_ASYNC void reset();
+        Q_SCRIPTABLE Q_NOREPLY void blackListProxy( const QString& proxy );
+        Q_SCRIPTABLE Q_NOREPLY void reset();
 
     private Q_SLOTS:
         void downloadResult( bool );

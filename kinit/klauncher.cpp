@@ -167,8 +167,8 @@ KLauncher::KLauncher(int _kdeinitSocket)
    QDBus::sessionBus().registerObject("/KLauncher", this); // same as ktoolinvocation.cpp
 
    connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
-   connect(QDBus::sessionBus().busService(),
-           SIGNAL(nameOwnerChanged(QString,QString,QString)),
+   connect(QDBus::sessionBus().interface(),
+           SIGNAL(serviceOwnerChanged(QString,QString,QString)),
            SLOT(slotNameOwnerChanged(QString,QString,QString)));
 
    QString prefix = locateLocal("socket", "klauncher");
@@ -379,7 +379,7 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
          if (request->dcop_service_type == KService::DCOP_Wait)
             request->status = KLaunchRequest::Done;
          else if ((request->dcop_service_type == KService::DCOP_Unique) &&
-                  QDBus::sessionBus().busService()->nameHasOwner(request->dcop_name))
+                  QDBus::sessionBus().interface()->isServiceRegistered(request->dcop_name))
             request->status = KLaunchRequest::Running;
          else
             request->status = KLaunchRequest::Error;
@@ -405,7 +405,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       // For unique services check the requested service name first
       if ((request->dcop_service_type == KService::DCOP_Unique) &&
           ((appId == request->dcop_name) ||
-           QDBus::sessionBus().busService()->nameHasOwner(request->dcop_name)))
+           QDBus::sessionBus().interface()->isServiceRegistered(request->dcop_name)))
       {
          request->status = KLaunchRequest::Running;
          requestDone(request);
@@ -528,8 +528,10 @@ KLauncher::requestDone(KLaunchRequest *request)
       if ( requestResult.dcopName.isNull() ) // null strings can't be sent
           requestResult.dcopName = "";
       Q_ASSERT( !requestResult.error.isNull() );
-      request->transaction << requestResult.result << requestResult.dcopName << requestResult.error << requestResult.pid;
-      QDBus::sessionBus().send(request->transaction);
+      request->transaction.sendReply(QVariantList() << requestResult.result
+                                     << requestResult.dcopName
+                                     << requestResult.error
+                                     << requestResult.pid);
    }
    requestList.removeAll( request );
    delete request;
@@ -742,7 +744,8 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    // Request will be handled later.
    if (!blind && !autoStart)
    {
-      request->transaction = QDBusMessage::methodReply(msg);
+      msg.setDelayedReply(true);
+      request->transaction = msg;
    }
    queueRequest(request);
    return true;
@@ -869,7 +872,8 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
        else // no .desktop file, no startup info
            cancel_service_startup_info( request, startup_id, envs );
    }
-   request->transaction = QDBusMessage::methodReply(msg);
+   msg.setDelayedReply(true);
+   request->transaction = msg;
    queueRequest(request);
    return true;
 }
@@ -1041,7 +1045,8 @@ KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
            return; // Already here.
     }
     SlaveWaitRequest *waitRequest = new SlaveWaitRequest;
-    waitRequest->transaction = QDBusMessage::methodReply(msg);
+    msg.setDelayedReply() = true;
+    waitRequest->transaction = msg;
     waitRequest->pid = static_cast<pid_t>(pid);
     mSlaveWaitRequest.append(waitRequest);
 }
@@ -1072,8 +1077,7 @@ KLauncher::slotSlaveStatus(IdleSlave *slave)
        SlaveWaitRequest *waitRequest = it.next();
        if (waitRequest->pid == slave->pid())
        {
-          QDBusMessage reply = QDBusMessage::methodReply(waitRequest->transaction);
-          QDBus::sessionBus().send(reply);
+          waitRequest->transaction.sendReply();
           it.remove();
           delete waitRequest;
        }

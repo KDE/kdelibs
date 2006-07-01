@@ -20,7 +20,7 @@
 #include "kcmoduleproxyIface.h"
 #include "kcmoduleproxyIface_p.h"
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 
 KCModuleProxyIface::KCModuleProxyIface( const QString &path, QObject *parent )

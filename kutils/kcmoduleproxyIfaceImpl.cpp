@@ -19,7 +19,7 @@
 #include <qdatastream.h>
 #include <qmessagebox.h>
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kapplication.h>
 #include <kcmoduleproxy.h>

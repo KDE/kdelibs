@@ -48,7 +48,7 @@ Observer::Observer()
 {
     QDBus::sessionBus().registerObject("/KIO/Observer", this, QDBusConnection::ExportSlots);
 
-    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio_uiserver" ) )
+    if ( !QDBus::sessionBus().interface()->isServiceRegistered( "org.kde.kio_uiserver" ) )
     {
         kDebug(KDEBUG_OBSERVER) << "Starting kio_uiserver" << endl;
         QString error;
@@ -61,13 +61,12 @@ Observer::Observer()
             kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
 
     }
-    if ( !QDBus::sessionBus().busService()->nameHasOwner( "org.kde.kio_uiserver" ) )
+    if ( !QDBus::sessionBus().interface()->isServiceRegistered( "org.kde.kio_uiserver" ) )
         kDebug(KDEBUG_OBSERVER) << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
     else
         kDebug(KDEBUG_OBSERVER) << "kio_uiserver registered" << endl;
 
-    m_uiserver = QDBus::sessionBus().findInterface<org::kde::KIO::UIServer>("org.kde.kio_uiserver",
-                                                                            "/UIServer");
+    m_uiserver = new org::kde::KIO::UIServer("org.kde.kio_uiserver", "/UIServer", QDBus::sessionBus());
 }
 
 int Observer::newJob( KIO::Job * job, bool showProgress )
@@ -293,10 +292,10 @@ int Observer::messageBox( int progressId, int type, const QString &text,
             QString observerAppId = caption; // hack, see slaveinterface.cpp
             // Contact the object "KIO::Observer" in the application <appId>
             // Yes, this could be the same application we are, but not necessarily.
-            QDBusInterfacePtr observer( observerAppId, "/KIO/Observer", "org.kde.KIO.Observer" );
+            QDBusInterface observer( observerAppId, "/KIO/Observer", "org.kde.KIO.Observer" );
 
             QDBusReply<QVariantMap> reply =
-                observer->call(QDBusInterface::UseEventLoop, "metadata", progressId );
+                observer.call(QDBus::BlockWithGui, "metadata", progressId );
             const QVariantMap &meta = reply;
             KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].toString().toUpper()=="TRUE", 0L /*parent?*/, 0L, true);
             KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].toString().toLocal8Bit());

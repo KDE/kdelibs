@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui/QPainter>
 #include <QtGui/QX11Info>
 
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 #include <klocale.h>
 #include <kstringhandler.h>
 #include <kstyle.h>
@@ -222,12 +222,12 @@ void KWindowListMenu::selectActiveWindow()
 
 void KWindowListMenu::slotUnclutterWindows()
 {
-    QDBusInterfacePtr("org.kde.kwin", "/KWin")->call("unclutterDesktop");
+    QDBusInterface("org.kde.kwin", "/KWin").call("unclutterDesktop");
 }
 
 void KWindowListMenu::slotCascadeWindows()
 {
-    QDBusInterfacePtr("org.kde.kwin", "/KWin")->call("cascadeDesktop");
+    QDBusInterface("org.kde.kwin", "/KWin").call("cascadeDesktop");
 }
 
 #endif // Q_WS_X11

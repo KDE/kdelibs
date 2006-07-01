@@ -21,7 +21,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 #include "ksslcertificate.h"
 #include "ksslsigners.h"
 #include <stdlib.h>
@@ -47,13 +47,13 @@ bool KSSLSigners::addCA(const QString &cert,
                         bool ssl,
                         bool email,
                         bool code) const {
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caAdd", cert, ssl, email, code));
 }
 
 
 bool KSSLSigners::regenerate() {
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caRegenerate"));
 }
 
@@ -64,7 +64,7 @@ bool KSSLSigners::useForSSL(KSSLCertificate& cert) const {
 
 
 bool KSSLSigners::useForSSL(const QString &subject) const{
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caUseForSSL", subject));
 }
 
@@ -75,7 +75,7 @@ bool KSSLSigners::useForEmail(KSSLCertificate& cert) const{
 
 
 bool KSSLSigners::useForEmail(const QString &subject) const{
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caUseForEmail", subject));
 }
 
@@ -86,7 +86,7 @@ bool KSSLSigners::useForCode(KSSLCertificate& cert) const{
 
 
 bool KSSLSigners::useForCode(const QString &subject) const{
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caUseForCode", subject));
 }
 
@@ -97,25 +97,25 @@ bool KSSLSigners::remove(KSSLCertificate& cert) {
 
 
 bool KSSLSigners::remove(const QString &subject) {
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caRemove", subject));
 }
 
 
 QStringList KSSLSigners::list() {
-     return QDBusReply<QStringList>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<QStringList>(QDBusInterface("org.kde.kded", "/modules/kssld").
                                     call("caList"));
 }
 
 
 QString KSSLSigners::getCert(const QString &subject) {
-     return QDBusReply<QString>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<QString>(QDBusInterface("org.kde.kded", "/modules/kssld").
                                 call("caGetCert", subject));
 }
 
 
 bool KSSLSigners::setUse(const QString &subject, bool ssl, bool email, bool code) {
-     return QDBusReply<bool>(QDBusInterfacePtr("org.kde.kded", "/modules/kssld")->
+     return QDBusReply<bool>(QDBusInterface("org.kde.kded", "/modules/kssld").
                              call("caSetUse", subject, ssl, email, code));
 }
 

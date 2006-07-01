@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 #include <qpointer.h>
 #include <qhash.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 class KPrintProcess;
 class KProcess;
@@ -45,7 +45,7 @@ public Q_SLOTS:
 	Q_SCRIPTABLE QString openPassDlg(const QString& user);
 	Q_SCRIPTABLE QString requestPassword( const QString& user, const QString& host, int port, int seqNbr, const QDBusMessage& msg );
 	Q_SCRIPTABLE void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
-	Q_SCRIPTABLE Q_ASYNC void statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
+	Q_SCRIPTABLE Q_NOREPLY void statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
 
 protected Q_SLOTS:
 	void slotPrintTerminated( KPrintProcess* );

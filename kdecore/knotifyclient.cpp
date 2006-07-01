@@ -23,7 +23,7 @@
 
 #include <qdatastream.h>
 #include <qstack.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <krandom.h>
 #include <kstandarddirs.h>
@@ -84,9 +84,9 @@ static int sendNotifyEvent(const QString &message, const QString &text,
   if ( !KNotifyClient::startDaemon() )
       return 0;
 
-  QDBusInterfacePtr iface(QString::fromLatin1(daemonName), "/Notify", "org.kde.KNotify");
-  QDBusReply<void> r = iface->call("notify", message, appname, text, sound, file, present,
-                                   qlonglong(winId), uniqueId);
+  QDBusInterface iface(QString::fromLatin1(daemonName), "/Notify", "org.kde.KNotify");
+  QDBusReply<void> r = iface.call("notify", message, appname, text, sound, file, present,
+                                  qlonglong(winId), uniqueId);
   return r.isSuccess() ? uniqueId : 0;
 }
 
@@ -211,7 +211,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 bool KNotifyClient::startDaemon()
 {
   static bool firstTry = true;
-  if (!QDBus::sessionBus().busService()->nameHasOwner(QLatin1String(daemonName))) {
+  if (!QDBus::sessionBus().interface()->isServiceRegistered(QLatin1String(daemonName))) {
     if( firstTry ) {
       firstTry = false;
       return KToolInvocation::startServiceByDesktopName(daemonName) == 0;
@@ -230,7 +230,7 @@ void KNotifyClient::beep(const QString& reason)
   }
 
   // The kaccess daemon handles visual and other audible beeps
-  if ( QDBus::sessionBus().busService()->nameHasOwner( QLatin1String("org.kde.kaccess") ) )
+  if ( QDBus::sessionBus().interface()->isServiceRegistered( QLatin1String("org.kde.kaccess") ) )
   {
       QApplication::beep();
       return;

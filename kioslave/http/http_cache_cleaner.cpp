@@ -29,7 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qdir.h>
 #include <qstring.h>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kinstance.h>
 #include <klocale.h>
@@ -203,8 +203,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    if (!deleteAll)
    {
-      QDBusBusService *bus = QDBus::sessionBus().busService();
-      if (!bus)
+      if (!QDBus::sessionBus().isConnected())
       {
          QDBusError error(QDBus::sessionBus().lastError());
          fprintf(stderr, "%s: Could not connect to D-Bus! (%s: %s)\n", appName,
@@ -212,7 +211,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
          return 1;
       }
 
-      if (bus->requestName(appFullName, 0) != QDBusBusService::PrimaryOwnerReply)
+      if (!QDBus::sessionBus().registerService(appFullName))
       {
          fprintf(stderr, "%s: Already running!\n", appName);
          return 0;

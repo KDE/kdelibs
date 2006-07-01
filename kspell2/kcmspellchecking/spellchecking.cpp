@@ -19,7 +19,7 @@
 #include <QVBoxLayout>
 #include <QBoxLayout>
 #include <QGroupBox>
-#include <dbus/qdbus.h>
+#include <QtDBus/QtDBus>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -60,8 +60,9 @@ void KSpellCheckingConfig::load()
 void KSpellCheckingConfig::save()
 {
     spellConfig->writeGlobalSettings();
-    QDBusMessage msg = QDBusMessage::signal("/", "org.kde.KonquerorIface", "reparseConfiguration");
-    QDBus::sessionBus().send(msg);
+    QDBusMessage msg = QDBusMessage::signal("/", "org.kde.KonquerorIface", "reparseConfiguration",
+                                            QDBus::sessionBus());
+    msg.send();
 }
 
 void KSpellCheckingConfig::defaults()
