@@ -514,7 +514,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
        for (int i = 1;  i < argc; i++)
        {
           d.argv[i] = (char *) args;
-          procTitle += " ";
+          procTitle += ' ';
           procTitle += (char *) args;
           while(*args != 0) args++;
           args++;
@@ -1443,7 +1443,7 @@ static void kdeinit_library_path()
           continue;
 
       if ( !extra_path.isEmpty())
-         extra_path += ":";
+         extra_path += ':';
       extra_path += dir;
    }
 
