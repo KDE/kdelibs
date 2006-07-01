@@ -2322,7 +2322,7 @@ bool K3ListViewItem::isAlternate()
 
        while(item)
        {
-          item->m_odd = previous = !previous;
+          item->m_odd = (previous = !previous);
           item->m_known = true;
           item = dynamic_cast<K3ListViewItem *>(item->nextSibling());
        }

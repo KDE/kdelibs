@@ -870,7 +870,7 @@ void KMainWindow::applyMainWindowSettings(KConfig *config, const QString &config
     finalizeGUI( true );
 }
 
-void KMainWindow::finalizeGUI( bool force )
+void KMainWindow::finalizeGUI( bool /*force*/ )
 {
     //kDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
     // The whole reason for this is that moveToolBar relies on the indexes

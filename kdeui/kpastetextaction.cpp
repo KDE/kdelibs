@@ -27,12 +27,13 @@
 
 #include "kpastetextaction.h"
 
-#include <QClipboard>
+#include <QtGui/QClipboard>
 #include <dbus/qdbus.h>
 
-#include <kdebug.h>
-#include <klocale.h>
 #include <kapplication.h>
+#include <kdebug.h>
+#include <kicon.h>
+#include <klocale.h>
 #include <kstringhandler.h>
 
 #include "kmenu.h"
@@ -56,7 +57,7 @@ KPasteTextAction::KPasteTextAction( const KIcon & icon, const QString & text, KA
 }
 
 KPasteTextAction::KPasteTextAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction( icon, text, parent, name )
+  : KAction( KIcon( icon ), text, parent, name )
 {
   init();
 }
@@ -67,8 +68,11 @@ KPasteTextAction::KPasteTextAction( const QString& text,
                             const QObject* receiver,
                             const char* slot, KActionCollection* parent,
                             const QString& name)
-  : KAction( text, icon, cut, receiver, slot,parent, name )
+  : KAction( KIcon( icon ), text, parent, name )
 {
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered() ), receiver, slot );
+
   init();
 }
 
