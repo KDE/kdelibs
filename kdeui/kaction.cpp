@@ -58,26 +58,30 @@ public:
 //---------------------------------------------------------------------
 
 KAction::KAction( KActionCollection * parent, const QString& name )
-  : QAction(parent), d(new KActionPrivate)
+  : QWidgetAction(parent), d(new KActionPrivate)
 {
   initPrivate(name);
 }
 
 KAction::KAction( const QString & text, KActionCollection * parent, const QString& name )
-  : QAction(text, parent), d(new KActionPrivate)
+  : QWidgetAction(parent), d(new KActionPrivate)
 {
+  setText(text);
   initPrivate(name);
 }
 
 KAction::KAction( const KIcon & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : QAction(icon, text, parent), d(new KActionPrivate)
+  : QWidgetAction(parent), d(new KActionPrivate)
 {
+  setIcon(icon);
+  setText(text);
   initPrivate(name);
 }
 
 KAction::KAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : QAction(text, parent), d(new KActionPrivate)
+  : QWidgetAction(parent), d(new KActionPrivate)
 {
+  setText(text);
   initPrivate(name);
   setIcon( KIcon(icon) );
 }
@@ -85,16 +89,18 @@ KAction::KAction( const QString & icon, const QString & text, KActionCollection 
 KAction::KAction( const QString& text, const KShortcut& cut,
              const QObject* receiver, const char* slot,
              KActionCollection* parent, const QString& name )
-: QAction( text, parent ), d(new KActionPrivate)
+: QWidgetAction(parent), d(new KActionPrivate)
 {
+  setText(text);
   initPrivate( cut, receiver, slot, name );
 }
 
 KAction::KAction( const QString& text, const QString& sIconName, const KShortcut& cut,
   const QObject* receiver, const char* slot,
   KActionCollection* parent, const QString& name )
-: QAction(text, parent), d(new KActionPrivate)
+: QWidgetAction(parent), d(new KActionPrivate)
 {
+  setText(text);
   initPrivate( cut, receiver, slot, name );
   setIcon( KIcon(sIconName) );
 }
@@ -102,16 +108,19 @@ KAction::KAction( const QString& text, const QString& sIconName, const KShortcut
 KAction::KAction( const QString& text, const QIcon& icon, const KShortcut& cut,
   const QObject* receiver, const char* slot,
   KActionCollection* parent, const QString& name )
-: QAction(icon, text, parent), d(new KActionPrivate)
+: QWidgetAction(parent), d(new KActionPrivate)
 {
+  QAction::setIcon(icon);
+  setText(text);
   initPrivate( cut, receiver, slot, name );
 }
 
 KAction::KAction( const KGuiItem& item, const KShortcut& cut,
   const QObject* receiver, const char* slot,
   KActionCollection* parent, const QString& name )
-: QAction(item.text(), parent), d(new KActionPrivate)
+: QWidgetAction(parent), d(new KActionPrivate)
 {
+  setText(item.text());
   initPrivate( cut, receiver, slot, name );
   if( item.hasIcon() )
     setIcon( KIcon(item.iconName()) );
@@ -206,14 +215,14 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
     d->shortcut = shortcut;
 
     if (d->shortcut.count()) {
-      QAction::setShortcut(shortcut.seq(0));
+      QList<QKeySequence> shortcuts;
+      shortcuts << shortcut.seq(0);
 
       if (d->shortcut.count() > 1) {
-        QList<QKeySequence> alternateShortcuts;
         for (int i = 1; i < shortcut.count(); ++i)
-          alternateShortcuts.append(d->shortcut.seq(i));
-        setAlternateShortcuts(alternateShortcuts);
+          shortcuts.append(d->shortcut.seq(i));
       }
+      setShortcuts(shortcuts);
     }
   }
 }

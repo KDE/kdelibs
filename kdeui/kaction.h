@@ -26,7 +26,7 @@
 #ifndef KACTION_H
 #define KACTION_H
 
-#include <QAction>
+#include <QWidgetAction>
 
 #include <kdelibs_export.h>
 #include <kguiitem.h>
@@ -172,7 +172,7 @@ class KInstance;
  *
  * @see KStdAction
  */
-class KDEUI_EXPORT KAction : public QAction
+class KDEUI_EXPORT KAction : public QWidgetAction
 {
   Q_OBJECT
 
