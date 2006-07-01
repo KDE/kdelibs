@@ -277,11 +277,11 @@ ToolTip=A color palette in table form.
 Group=Display (KDE)
 ConstructorArgs=(parent, 210, 16)
 
-[KABC::LdapConfigWidget]
-IncludeFile=kabc/ldapconfigwidget.h
-ToolTip=A widget which allows the user to set up LDAP connection parameters
-Group=Input (KDE)
-ConstructorArgs=(KABC::LdapConfigWidget::W_ALL, parent)
+#[KABC::LdapConfigWidget]
+#IncludeFile=kabc/ldapconfigwidget.h
+#ToolTip=A widget which allows the user to set up LDAP connection parameters
+#Group=Input (KDE)
+#ConstructorArgs=(KABC::LdapConfigWidget::W_ALL, parent)
 
 [KArrowButton]
 IncludeFile=karrowbutton.h

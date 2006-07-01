@@ -260,8 +260,8 @@ ToolTip=A color palette in table form.
 Group=Display (KDE)
 ConstructorArgs=(parent, 210, 16)
 
-[KABC::AddressLineEdit]
-IncludeFile=kabc/addresslineedit.h
-ToolTip=A lineedit with LDAP and kabc completion.
-Group=Input (KDE)
-ConstructorArgs=(parent, true, name)
+#[KABC::AddressLineEdit]
+#IncludeFile=kabc/addresslineedit.h
+#ToolTip=A lineedit with LDAP and kabc completion.
+#Group=Input (KDE)
+#ConstructorArgs=(parent, true, name)
