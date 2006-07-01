@@ -19,12 +19,12 @@
  Boston, MA 02110-1301, USA.
 */
 
-#include <QHash>
-#include <QKeyEvent>
-#include <QRegExp>
-#include <QStringList>
-#include <QTextEdit>
-#include <QTimer>
+#include <QtCore/QHash>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
+#include <QtCore/QTimer>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QTextEdit>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -41,514 +41,548 @@ static int *Ignore = &dummy3;
 static int *Unknown = &dummy4;
 static const int tenSeconds = 10*1000;
 
-class KSyntaxHighlighter::KSyntaxHighlighterPrivate
+class KSyntaxHighlighter::Private
 {
-public:
-    QColor col1, col2, col3, col4, col5;
-    SyntaxMode mode;
-    bool enabled;
+  public:
+    QColor mColor1;
+    QColor mColor2;
+    QColor mColor3;
+    QColor mColor4;
+    QColor mColor5;
+    SyntaxMode mMode;
+    bool mEnabled;
 };
 
-class KSpellingHighlighter::KSpellingHighlighterPrivate
+class KSpellingHighlighter::Private
 {
-public:
+  public:
 
-    KSpellingHighlighterPrivate() :
-	alwaysEndsWithSpace( true ),
-	intraWordEditing( false ) {}
+    KSpellingHighlighterPrivate()
+      : mAlwaysEndsWithSpace( true ),
+        mIntraWordEditing( false )
+    {
+    }
 
-    QString currentWord;
-    int currentPos;
-    bool alwaysEndsWithSpace;
-    QColor color;
-    bool intraWordEditing;
+    void flushCurrentWord();
+
+    QString mCurrentWord;
+    int mCurrentPos;
+    bool mAlwaysEndsWithSpace;
+    bool mIntraWordEditing;
+    QColor mColor;
 };
 
-class KDictSpellingHighlighter::KDictSpellingHighlighterPrivate
+class KDictSpellingHighlighter::Private
 {
-public:
-    KDictSpellingHighlighterPrivate() :
-        mDict( 0 ),
-	spell( 0 ),
+  public:
+    KDictSpellingHighlighterPrivate()
+      : mDict( 0 ),
+        mSpell( 0 ),
         mSpellConfig( 0 ),
-        rehighlightRequest( 0 ),
-	wordCount( 0 ),
-	errorCount( 0 ),
-	autoReady( false ),
-        globalConfig( true ),
-	spellReady( false ) {}
+        mRehighlightRequest( 0 ),
+        mWordCount( 0 ),
+        mErrorCount( 0 ),
+        mAutoReady( false ),
+        mGlobalConfig( true ),
+        mSpellReady( false )
+    {
+    }
 
-    ~KDictSpellingHighlighterPrivate() {
-	delete rehighlightRequest;
-	delete spell;
+    ~KDictSpellingHighlighterPrivate()
+    {
+      delete mRehighlightRequest;
+      mRehighlightRequest = 0;
+
+      delete mSpell;
+      mSpell = 0;
+
+      delete mDict;
+      mDict = 0;
     }
 
     static QHash<QString, int*>* sDict()
     {
-      if (!statDict)
-        statDict = new QHash<QString,int*>();
+      if ( !statDict )
+        statDict = new QHash<QString, int*>();
+
       return statDict;
     }
 
     QHash<QString, int*>* mDict;
-    QHash<QString, int*> autoDict;
-    QHash<QString, int*> autoIgnoreDict;
+    QHash<QString, int*> mAutoDict;
+    QHash<QString, int*> mAutoIgnoreDict;
     static QObject *sDictionaryMonitor;
-    KSpell *spell;
+    KSpell *mSpell;
     KSpellConfig *mSpellConfig;
-    QTimer *rehighlightRequest, *spellTimeout;
-    QString spellKey;
-    int wordCount, errorCount;
-    int checksRequested, checksDone;
-    int disablePercentage;
-    int disableWordCount;
-    bool completeRehighlightRequired;
-    bool active, automatic, autoReady;
-    bool globalConfig, spellReady;
-private:
-    static QHash<QString,int*>* statDict;
+    QTimer *mRehighlightRequest;
+    QTimer *mSpellTimeout;
+    QString mSpellKey;
+    int mWordCount;
+    int mErrorCount;
+    int mChecksRequested;
+    int mChecksDone;
+    int mDisablePercentage;
+    int mDisableWordCount;
+    bool mCompleteRehighlightRequired;
+    bool mActive;
+    bool mAutomatic;
+    bool mAutoReady;
+    bool mGlobalConfig;
+    bool mSpellReady;
 
+  private:
+    static QHash<QString,int*>* statDict;
 };
 
-QHash<QString, int*>* KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::statDict = 0;
+QHash<QString, int*>* KDictSpellingHighlighter::Private::statDict = 0;
 
 KSyntaxHighlighter::KSyntaxHighlighter( QTextEdit *textEdit,
-					  bool colorQuoting,
-					  const QColor& depth0,
-					  const QColor& depth1,
-					  const QColor& depth2,
-					  const QColor& depth3,
-					  SyntaxMode mode )
-    : QSyntaxHighlighter( textEdit ),d(new KSyntaxHighlighterPrivate())
+                                        bool colorQuoting,
+                                        const QColor& depth0,
+                                        const QColor& depth1,
+                                        const QColor& depth2,
+                                        const QColor& depth3,
+                                        SyntaxMode mode )
+  : QSyntaxHighlighter( textEdit ),
+    d( new Private )
 {
+  d->mEnabled = colorQuoting;
+  d->mColor1 = depth0;
+  d->mColor2 = depth1;
+  d->mColor3 = depth2;
+  d->mColor4 = depth3;
+  d->mColor5 = depth0;
 
-    d->enabled = colorQuoting;
-    d->col1 = depth0;
-    d->col2 = depth1;
-    d->col3 = depth2;
-    d->col4 = depth3;
-    d->col5 = depth0;
-
-    d->mode = mode;
+  d->mMode = mode;
 }
 
 KSyntaxHighlighter::~KSyntaxHighlighter()
 {
-    delete d;
+  delete d;
 }
 
 void KSyntaxHighlighter::highlightBlock ( const QString & text )
 {
-    if (!d->enabled) {
-        //reset color.
-	//setFormat( 0, text.length(), document()->paletteForegroundColor() );
-        setCurrentBlockState ( 0 );
-	return;
-    }
-    QString simplified = text;
-    simplified = simplified.replace( QRegExp( "\\s" ), QString() ).replace( '|', QLatin1String(">") );
-    while ( simplified.startsWith( QLatin1String(">>>>") ) )
-	simplified = simplified.mid(3);
-    if	( simplified.startsWith( QLatin1String(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )
-	setFormat( 0, text.length(), d->col2 );
-    else if	( simplified.startsWith( QLatin1String(">>") ) || simplified.startsWith( QString::fromLatin1("> >") ) )
-	setFormat( 0, text.length(), d->col3 );
-    else if	( simplified.startsWith( QLatin1String(">") ) )
-	setFormat( 0, text.length(), d->col4 );
-    else
-	setFormat( 0, text.length(), d->col5 );
-    setCurrentBlockState ( 0 );
+  if ( !d->mEnabled ) {
+    //reset color.
+    //setFormat( 0, text.length(), document()->paletteForegroundColor() );
+    setCurrentBlockState( 0 );
+    return;
+  }
+
+  QString simplified = text;
+  simplified = simplified.replace( QRegExp( "\\s" ), QString() ).replace( '|', QLatin1String(">") );
+  while ( simplified.startsWith( QLatin1String(">>>>") ) )
+    simplified = simplified.mid( 3 );
+
+  if ( simplified.startsWith( QLatin1String(">>>") ) || simplified.startsWith( QString::fromLatin1("> >	>") ) )
+    setFormat( 0, text.length(), d->mColor2 );
+  else if ( simplified.startsWith( QLatin1String(">>") ) || simplified.startsWith( QString::fromLatin1("> >") ) )
+    setFormat( 0, text.length(), d->mColor3 );
+  else if ( simplified.startsWith( QLatin1String(">") ) )
+    setFormat( 0, text.length(), d->mColor4 );
+  else
+    setFormat( 0, text.length(), d->mColor5 );
+
+  setCurrentBlockState( 0 );
 }
 
-
 KSpellingHighlighter::KSpellingHighlighter( QTextEdit *textEdit,
-					    const QColor& spellColor,
-					    bool colorQuoting,
-					    const QColor& depth0,
-					    const QColor& depth1,
-					    const QColor& depth2,
-					    const QColor& depth3 )
-    : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 ),d(new KSpellingHighlighterPrivate())
+                                            const QColor& spellColor,
+                                            bool colorQuoting,
+                                            const QColor& depth0,
+                                            const QColor& depth1,
+                                            const QColor& depth2,
+                                            const QColor& depth3 )
+  : KSyntaxHighlighter( textEdit, colorQuoting, depth0, depth1, depth2, depth3 ),
+    d( new Private )
 {
-
-    d->color = spellColor;
+  d->mColor = spellColor;
 }
 
 KSpellingHighlighter::~KSpellingHighlighter()
 {
-    delete d;
+  delete d;
 }
 
 void KSpellingHighlighter::highlightBlock ( const QString& )
 {
 #if 0
-    if ( paraNo == -2 )
-	paraNo = 0;
-    // leave #includes, diffs, and quoted replies alone
-    QString diffAndCo( ">|" );
+  if ( paraNo == -2 )
+    paraNo = 0;
 
-    bool isCode = diffAndCo.find(text[0]) != -1;
+  // leave #includes, diffs, and quoted replies alone
+  QString diffAndCo( ">|" );
 
-    if ( !text.endsWith(" ") )
-	d->alwaysEndsWithSpace = false;
+  bool isCode = diffAndCo.find( text[ 0 ] ) != -1;
 
-    KSyntaxHighlighter::highlightBlock ( text );
+  if ( !text.endsWith( " " ) )
+    d->mAlwaysEndsWithSpace = false;
 
-    if ( !isCode ) {
-        int para, index;
-	document ()->getCursorPosition( &para, &index );
-	int len = text.length();
-	if ( d->alwaysEndsWithSpace )
-	    len--;
+  KSyntaxHighlighter::highlightBlock ( text );
 
-	d->currentPos = 0;
-	d->currentWord = "";
-	for ( int i = 0; i < len; i++ ) {
-	    if ( !text[i].isLetter() && (!(text[i] == '\'')) ) {
-		if ( ( para != paraNo ) ||
-		    !intraWordEditing() ||
-		    ( i - d->currentWord.length() > index ) ||
-		    ( i < index ) ) {
-		    flushCurrentWord();
-		} else {
-		    d->currentWord = "";
-		}
-		d->currentPos = i + 1;
-	    } else {
-		d->currentWord += text[i];
-	    }
-	}
-	if ( ( len > 0 && !text[len - 1].isLetter() ) ||
-	     ( index + 1 ) != text.length() ||
-	     para != paraNo )
-	    flushCurrentWord();
+  if ( !isCode ) {
+    int para, index;
+    document ()->getCursorPosition( &para, &index );
+    int len = text.length();
+    if ( d->mAlwaysEndsWithSpace )
+      len--;
+
+    d->mCurrentPos = 0;
+    d->mCurrentWord = "";
+    for ( int i = 0; i < len; i++ ) {
+      if ( !text[i].isLetter() && (!(text[i] == '\'')) ) {
+        if ( ( para != paraNo ) || !d->mIntraWordEditing() ||
+             ( i - d->mCurrentWord.length() > index ) || ( i < index ) ) {
+          flushCurrentWord();
+        } else {
+          d->mCurrentWord = "";
+        }
+
+        d->mCurrentPos = i + 1;
+      } else {
+        d->mCurrentWord += text[ i ];
+      }
     }
-    return ++paraNo;
+
+    if ( ( len > 0 && !text[ len - 1 ].isLetter() ) ||
+         ( index + 1 ) != text.length() ||
+          para != paraNo )
+      flushCurrentWord();
+  }
+
+  return ++paraNo;
 #endif
 }
 
 QStringList KSpellingHighlighter::personalWords()
 {
-    QStringList l;
-    l.append( "KMail" );
-    l.append( "KOrganizer" );
-    l.append( "KAddressBook" );
-    l.append( "KHTML" );
-    l.append( "KIO" );
-    l.append( "KJS" );
-    l.append( "Konqueror" );
-    l.append( "KSpell" );
-    l.append( "Kontact" );
-    l.append( "Qt" );
-    return l;
+  QStringList list;
+  list.append( "KMail" );
+  list.append( "KOrganizer" );
+  list.append( "KAddressBook" );
+  list.append( "KHTML" );
+  list.append( "KIO" );
+  list.append( "KJS" );
+  list.append( "Konqueror" );
+  list.append( "KSpell" );
+  list.append( "Kontact" );
+  list.append( "Qt" );
+
+  return list;
 }
 
 
 void KSpellingHighlighter::flushCurrentWord()
 {
-    while ( d->currentWord[0].isPunct() ) {
-	d->currentWord = d->currentWord.mid( 1 );
-	d->currentPos++;
-    }
+  while ( d->mCurrentWord[ 0 ].isPunct() ) {
+    d->mCurrentWord = d->mCurrentWord.mid( 1 );
+    d->mCurrentPos++;
+  }
 
-    QChar ch;
-    while ( !d->currentWord.isEmpty() && ( ch = d->currentWord[(int) d->currentWord.length() - 1] ).isPunct() &&
-	     ch != '(' && ch != '@' )
-	d->currentWord.truncate( d->currentWord.length() - 1 );
+  QChar ch;
+  while ( !d->mCurrentWord.isEmpty() && ( ch = d->mCurrentWord[(int) d->mCurrentWord.length() - 1] ).isPunct() &&
+          ch != '(' && ch != '@' )
+    d->mCurrentWord.truncate( d->mCurrentWord.length() - 1 );
 
-    if ( !d->currentWord.isEmpty() ) {
-	if ( isMisspelled( d->currentWord ) ) {
-	    setFormat( d->currentPos, d->currentWord.length(), d->color );
-//	    setMisspelled( d->currentPos, d->currentWord.length(), true );
-	}
+  if ( !d->mCurrentWord.isEmpty() ) {
+    if ( isMisspelled( d->mCurrentWord ) ) {
+      setFormat( d->mCurrentPos, d->mCurrentWord.length(), d->mColor );
+//      setMisspelled( d->mCurrentPos, d->mCurrentWord.length(), true );
     }
-    d->currentWord = "";
+  }
+
+  d->mCurrentWord = "";
 }
 
-
-QObject *KDictSpellingHighlighter::KDictSpellingHighlighterPrivate::sDictionaryMonitor = 0;
+QObject *KDictSpellingHighlighter::Private::sDictionaryMonitor = 0;
 
 KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
-						    bool spellCheckingActive ,
-						    bool autoEnable,
-						    const QColor& spellColor,
-						    bool colorQuoting,
-						    const QColor& depth0,
-						    const QColor& depth1,
-						    const QColor& depth2,
-						    const QColor& depth3,
+                                                    bool spellCheckingActive,
+                                                    bool autoEnable,
+                                                    const QColor& spellColor,
+                                                    bool colorQuoting,
+                                                    const QColor& depth0,
+                                                    const QColor& depth1,
+                                                    const QColor& depth2,
+                                                    const QColor& depth3,
                                                     KSpellConfig *spellConfig )
-    : KSpellingHighlighter( textEdit, spellColor,
-			    colorQuoting, depth0, depth1, depth2, depth3 ),d(new KDictSpellingHighlighterPrivate())
+  : KSpellingHighlighter( textEdit, spellColor, colorQuoting, depth0, depth1, depth2, depth3 ),
+    d( new Private )
 {
+  d->mSpellConfig = spellConfig;
+  d->mGlobalConfig = ( !spellConfig );
+  d->mAutomatic = autoEnable;
+  d->mActive = spellCheckingActive;
+  d->mChecksRequested = 0;
+  d->mChecksDone = 0;
+  d->mCompleteRehighlightRequired = false;
 
-    d->mSpellConfig = spellConfig;
-    d->globalConfig = ( !spellConfig );
-    d->automatic = autoEnable;
-    d->active = spellCheckingActive;
-    d->checksRequested = 0;
-    d->checksDone = 0;
-    d->completeRehighlightRequired = false;
+  KConfigGroup cg( KGlobal::config(), "KSpell" );
+  d->mDisablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
+  d->mDisablePercentage = qMin( d->disablePercentage, 101 );
+  d->mDisableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
 
-    KConfigGroup cg( KGlobal::config(), "KSpell" );
-    d->disablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
-    d->disablePercentage = qMin( d->disablePercentage, 101 );
-    d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
+  textEdit->installEventFilter( this );
+  textEdit->viewport()->installEventFilter( this );
 
-    textEdit->installEventFilter( this );
-    textEdit->viewport()->installEventFilter( this );
+  d->mRehighlightRequest = new QTimer(this);
+  connect( d->mRehighlightRequest, SIGNAL( timeout() ),
+           this, SLOT( slotRehighlight() ));
 
-    d->rehighlightRequest = new QTimer(this);
-    connect( d->rehighlightRequest, SIGNAL( timeout() ),
-	     this, SLOT( slotRehighlight() ));
-    d->spellTimeout = new QTimer(this);
-    connect( d->spellTimeout, SIGNAL( timeout() ),
-	     this, SLOT( slotKSpellNotResponding() ));
+  d->mSpellTimeout = new QTimer(this);
+  connect( d->mSpellTimeout, SIGNAL( timeout() ),
+           this, SLOT( slotKSpellNotResponding() ));
 
-    if ( d->globalConfig ) {
-        d->spellKey = spellKey();
+  if ( d->mGlobalConfig ) {
+    d->mSpellKey = spellKey();
 
-        if ( !d->sDictionaryMonitor )
-            d->sDictionaryMonitor = new QObject();
-    }
-    else {
-        d->mDict = new QHash<QString,int*>();
-        connect( d->mSpellConfig, SIGNAL( configChanged() ),
-                 this, SLOT( slotLocalSpellConfigChanged() ) );
-    }
+    if ( !d->sDictionaryMonitor )
+      d->sDictionaryMonitor = new QObject();
 
-    slotDictionaryChanged();
-    startTimer( 2 * 1000 );
+  } else {
+    d->mDict = new QHash<QString,int*>();
+    connect( d->mSpellConfig, SIGNAL( configChanged() ),
+             this, SLOT( slotLocalSpellConfigChanged() ) );
+  }
+
+  slotDictionaryChanged();
+  startTimer( 2 * 1000 );
 }
 
 KDictSpellingHighlighter::~KDictSpellingHighlighter()
 {
-    delete d->spell;
-    d->spell = 0;
-    delete d->mDict;
-    d->mDict = 0;
-    delete d;
+  delete d;
 }
 
 void KDictSpellingHighlighter::slotSpellReady( KSpell *spell )
 {
-    kDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
-    if ( d->globalConfig ) {
-        connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
-                 this, SLOT( slotDictionaryChanged() ));
-    }
-    if ( spell != d->spell )
-    {
-        delete d->spell;
-        d->spell = spell;
-    }
-    d->spellReady = true;
-    const QStringList l = KSpellingHighlighter::personalWords();
-    for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
-        d->spell->addPersonal( *it );
-    }
-    connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
-	     this, SLOT( slotMisspelling( const QString &, const QStringList &, unsigned int )));
-    connect( spell, SIGNAL( corrected( const QString &, const QString &, unsigned int )),
-	     this, SLOT( slotCorrected( const QString &, const QString &, unsigned int )));
-    d->checksRequested = 0;
-    d->checksDone = 0;
-    d->completeRehighlightRequired = true;
-    d->rehighlightRequest->setSingleShot( true );
-    d->rehighlightRequest->start( 0 );
+  kDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
+  if ( d->mGlobalConfig ) {
+    connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
+             this, SLOT( slotDictionaryChanged() ));
+  }
+
+  if ( spell != d->mSpell ) {
+    delete d->mSpell;
+    d->mSpell = spell;
+  }
+
+  d->mSpellReady = true;
+  const QStringList l = KSpellingHighlighter::personalWords();
+  for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it )
+    d->mSpell->addPersonal( *it );
+
+  connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
+           this, SLOT( slotMisspelling( const QString &, const QStringList &, unsigned int )));
+  connect( spell, SIGNAL( corrected( const QString &, const QString &, unsigned int )),
+           this, SLOT( slotCorrected( const QString &, const QString &, unsigned int )));
+
+  d->mChecksRequested = 0;
+  d->mChecksDone = 0;
+  d->mCompleteRehighlightRequired = true;
+  d->mRehighlightRequest->setSingleShot( true );
+  d->mRehighlightRequest->start( 0 );
 }
 
 bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 {
-    if (!d->spellReady)
-	return false;
-
-    // This debug is expensive, only enable it locally
-    //kDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
-    // Normally isMisspelled would look up a dictionary and return
-    // true or false, but kspell is asynchronous and slow so things
-    // get tricky...
-    // For auto detection ignore signature and reply prefix
-    if ( !d->autoReady )
-	d->autoIgnoreDict.insert( word, Ignore );
-
-    // "dict" is used as a cache to store the results of KSpell
-    QHash<QString,int*>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
-    if ( !dict->isEmpty() && (*dict)[word] == NotOkay ) {
-	if ( d->autoReady && ( d->autoDict[word] != NotOkay )) {
-	    if ( !d->autoIgnoreDict[word] )
-		++d->errorCount;
-	    d->autoDict.insert( word, NotOkay );
-	}
-
-	return d->active;
-    }
-    if ( !dict->isEmpty() && (*dict)[word] == Okay ) {
-	if ( d->autoReady && !d->autoDict[word] ) {
-	    d->autoDict.insert( word, Okay );
-	}
-	return false;
-    }
-
-    if ((dict->isEmpty() || !((*dict)[word])) && d->spell ) {
-	//int para, index;
-	//document ()->getCursorPosition( &para, &index );
-	++d->wordCount;
-	dict->insert( word, Unknown );
-	++d->checksRequested;
-	//if (currentParagraph() != para)
-	//    d->completeRehighlightRequired = true;
-  d->spellTimeout->setSingleShot( true );
-	d->spellTimeout->start( tenSeconds );
-	d->spell->checkWord( word, false );
-    }
+  if ( !d->mSpellReady )
     return false;
+
+  // This debug is expensive, only enable it locally
+  //kDebug(0) << "KDictSpellingHighlighter::isMisspelled( \"" << word << "\" )" << endl;
+  // Normally isMisspelled would look up a dictionary and return
+  // true or false, but kspell is asynchronous and slow so things
+  // get tricky...
+  // For auto detection ignore signature and reply prefix
+  if ( !d->mAutoReady )
+    d->mAutoIgnoreDict.insert( word, Ignore );
+
+  // "dict" is used as a cache to store the results of KSpell
+  QHash<QString,int*>* dict = ( d->mGlobalConfig ? d->sDict() : d->mDict );
+  if ( !dict->isEmpty() && (*dict)[ word ] == NotOkay ) {
+    if ( d->mAutoReady && ( d->mAutoDict[ word ] != NotOkay )) {
+      if ( !d->mAutoIgnoreDict[ word ] )
+        ++d->mErrorCount;
+      d->mAutoDict.insert( word, NotOkay );
+    }
+
+    return d->mActive;
+  }
+
+  if ( !dict->isEmpty() && (*dict)[ word ] == Okay ) {
+    if ( d->mAutoReady && !d->mAutoDict[ word ] ) {
+      d->mAutoDict.insert( word, Okay );
+    }
+
+    return false;
+  }
+
+  if ( (dict->isEmpty() || !((*dict)[word])) && d->mSpell ) {
+    //int para, index;
+    //document ()->getCursorPosition( &para, &index );
+    ++d->mWordCount;
+    dict->insert( word, Unknown );
+    ++d->mChecksRequested;
+    //if (currentParagraph() != para)
+    //    d->completeRehighlightRequired = true;
+    d->mSpellTimeout->setSingleShot( true );
+    d->mSpellTimeout->start( tenSeconds );
+    d->mSpell->checkWord( word, false );
+  }
+
+  return false;
 }
 
-bool KSpellingHighlighter::intraWordEditing() const
+bool KSpellingHighlighter::mIntraWordEditing() const
 {
-    return d->intraWordEditing;
+  return d->mIntraWordEditing;
 }
 
 void KSpellingHighlighter::setIntraWordEditing( bool editing )
 {
-    d->intraWordEditing = editing;
+  d->mIntraWordEditing = editing;
 }
 
 void KDictSpellingHighlighter::slotMisspelling (const QString &originalWord, const QStringList &suggestions,
                                                 unsigned int pos)
 {
-    Q_UNUSED( suggestions );
-    // kDebug() << suggestions.join( " " ).toLatin1() << endl;
-    if ( d->globalConfig )
-        d->sDict()->insert( originalWord, NotOkay );
-    else
-        d->mDict->insert( originalWord, NotOkay );
+  Q_UNUSED( suggestions );
 
-    //Emit this baby so that apps that want to have suggestions in a popup over
-    //the misspelled word can catch them.
-    emit newSuggestions( originalWord, suggestions, pos );
+  if ( d->mGlobalConfig )
+    d->sDict()->insert( originalWord, NotOkay );
+  else
+    d->mDict->insert( originalWord, NotOkay );
+
+  //Emit this baby so that apps that want to have suggestions in a popup over
+  //the misspelled word can catch them.
+  emit newSuggestions( originalWord, suggestions, pos );
 }
 
-void KDictSpellingHighlighter::slotCorrected(const QString &word,
-					     const QString &,
-					     unsigned int)
+void KDictSpellingHighlighter::slotCorrected( const QString &word, const QString&, unsigned int )
 
 {
-    QHash<QString,int*>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
-    if ( !dict->isEmpty() && (*dict)[word] == Unknown ) {
-        dict->insert( word, Okay );
-    }
-    ++d->checksDone;
-    if (d->checksDone == d->checksRequested) {
-	d->spellTimeout->stop();
-      slotRehighlight();
-    } else {
-  d->spellTimeout->setSingleShot( true );
-	d->spellTimeout->start( tenSeconds );
-    }
+  QHash<QString,int*>* dict = ( d->mGlobalConfig ? d->sDict() : d->mDict );
+  if ( !dict->isEmpty() && (*dict)[ word ] == Unknown )
+    dict->insert( word, Okay );
+
+  ++d->mChecksDone;
+
+  if ( d->mChecksDone == d->mChecksRequested ) {
+    d->mSpellTimeout->stop();
+    slotRehighlight();
+  } else {
+    d->mSpellTimeout->setSingleShot( true );
+    d->mSpellTimeout->start( tenSeconds );
+  }
 }
 
 void KDictSpellingHighlighter::dictionaryChanged()
 {
-    QObject *oldMonitor = KDictSpellingHighlighterPrivate::sDictionaryMonitor;
-    KDictSpellingHighlighterPrivate::sDictionaryMonitor = new QObject();
-    KDictSpellingHighlighterPrivate::sDict()->clear();
-    delete oldMonitor;
+  QObject *oldMonitor = KDictSpellingHighlighterPrivate::sDictionaryMonitor;
+  KDictSpellingHighlighterPrivate::sDictionaryMonitor = new QObject();
+  KDictSpellingHighlighterPrivate::sDict()->clear();
+  delete oldMonitor;
 }
 
 void KDictSpellingHighlighter::restartBackgroundSpellCheck()
 {
-    kDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
-    slotDictionaryChanged();
+  kDebug(0) << "KDictSpellingHighlighter::restartBackgroundSpellCheck()" << endl;
+  slotDictionaryChanged();
 }
 
 void KDictSpellingHighlighter::setActive( bool active )
 {
-    if ( active == d->active )
-        return;
+  if ( active == d->mActive )
+    return;
 
-    d->active = active;
-    //rehighlight();
-    if ( d->active )
-        emit activeChanged( i18n("As-you-type spell checking enabled.") );
-    else
-        emit activeChanged( i18n("As-you-type spell checking disabled.") );
+  d->mActive = active;
+  //rehighlight();
+
+  if ( d->mActive )
+    emit activeChanged( i18n("As-you-type spell checking enabled.") );
+  else
+    emit activeChanged( i18n("As-you-type spell checking disabled.") );
 }
 
 bool KDictSpellingHighlighter::isActive() const
 {
-    return d->active;
+  return d->mActive;
 }
 
 void KDictSpellingHighlighter::setAutomatic( bool automatic )
 {
-    if ( automatic == d->automatic )
-        return;
+  if ( automatic == d->mAutomatic )
+    return;
 
-    d->automatic = automatic;
-    if ( d->automatic )
-        slotAutoDetection();
+  d->mAutomatic = automatic;
+  if ( d->mAutomatic )
+    slotAutoDetection();
 }
 
 bool KDictSpellingHighlighter::automatic() const
 {
-    return d->automatic;
+  return d->mAutomatic;
 }
 
 void KDictSpellingHighlighter::slotRehighlight()
 {
-    kDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
-    if (d->completeRehighlightRequired) {
-	//rehighlight();
-    } else {
-	//int para, index;
-	//document ()->getCursorPosition( &para, &index );
-	//rehighlight the current para only (undo/redo safe)
-	//document ()->insertAt( "", para, index );
-    }
-    if (d->checksDone == d->checksRequested)
-	d->completeRehighlightRequired = false;
-    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+  kDebug(0) << "KDictSpellingHighlighter::slotRehighlight()" << endl;
+  if ( d->mCompleteRehighlightRequired) {
+    //rehighlight();
+  } else {
+    //int para, index;
+    //document ()->getCursorPosition( &para, &index );
+    //rehighlight the current para only (undo/redo safe)
+    //document ()->insertAt( "", para, index );
+  }
+
+  if ( d->mChecksDone == d->mChecksRequested )
+    d->mCompleteRehighlightRequired = false;
+
+  QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ) );
 }
 
 void KDictSpellingHighlighter::slotDictionaryChanged()
 {
-    delete d->spell;
-    d->spellReady = false;
-    d->wordCount = 0;
-    d->errorCount = 0;
-    d->autoDict.clear();
+  delete d->mSpell;
+  d->mSpellReady = false;
+  d->mWordCount = 0;
+  d->mErrorCount = 0;
+  d->mAutoDict.clear();
 
-    d->spell = new KSpell( 0, i18n( "Incremental Spellcheck" ), this,
-		SLOT( slotSpellReady( KSpell * ) ), d->mSpellConfig );
+  d->mSpell = new KSpell( 0, i18n( "Incremental Spellcheck" ), this,
+                          SLOT( slotSpellReady( KSpell* ) ), d->mSpellConfig );
 }
 
 void KDictSpellingHighlighter::slotLocalSpellConfigChanged()
 {
-    kDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
-    // the spell config has been changed, so we have to restart from scratch
-    d->mDict->clear();
-    slotDictionaryChanged();
+  kDebug(0) << "KDictSpellingHighlighter::slotSpellConfigChanged()" << endl;
+  // the spell config has been changed, so we have to restart from scratch
+  d->mDict->clear();
+  slotDictionaryChanged();
 }
 
 QString KDictSpellingHighlighter::spellKey()
 {
-    KGlobal::config()->reparseConfiguration();
-    KConfigGroup cg( KGlobal::config(), "KSpell" );
-    QString key;
-    key += QString::number( cg.readEntry( "KSpell_NoRootAffix", 0 ));
-    key += '/';
-    key += QString::number( cg.readEntry( "KSpell_RunTogether", 0 ));
-    key += '/';
-    key += cg.readEntry( "KSpell_Dictionary", "" );
-    key += '/';
-    key += QString::number( int(cg.readEntry( "KSpell_DictFromList", false )) );
-    key += '/';
-    key += QString::number( cg.readEntry( "KSpell_Encoding", int(KS_E_ASCII )) );
-    key += '/';
-    key += QString::number( cg.readEntry( "KSpell_Client", int(KS_CLIENT_ISPELL )) );
-    return key;
+  KGlobal::config()->reparseConfiguration();
+  KConfigGroup cg( KGlobal::config(), "KSpell" );
+
+  QString key;
+  key += QString::number( cg.readEntry( "KSpell_NoRootAffix", 0 ) );
+  key += '/';
+  key += QString::number( cg.readEntry( "KSpell_RunTogether", 0 ) );
+  key += '/';
+  key += cg.readEntry( "KSpell_Dictionary", "" );
+  key += '/';
+  key += QString::number( int(cg.readEntry( "KSpell_DictFromList", false )) );
+  key += '/';
+  key += QString::number( cg.readEntry( "KSpell_Encoding", int(KS_E_ASCII) ) );
+  key += '/';
+  key += QString::number( cg.readEntry( "KSpell_Client", int(KS_CLIENT_ISPELL) ) );
+
+  return key;
 }
 
 
@@ -558,119 +592,126 @@ QString KDictSpellingHighlighter::spellKey()
 //
 // Words in the signature and reply prefix are ignored.
 // Only unique words are counted.
-
 void KDictSpellingHighlighter::slotAutoDetection()
 {
-    if ( !d->autoReady )
-	return;
+  if ( !d->mAutoReady )
+    return;
 
-    bool savedActive = d->active;
+  bool savedActive = d->mActive;
 
-    if ( d->automatic ) {
-	// tme = Too many errors
-        bool tme = ( d->wordCount >= d->disableWordCount ) && ( d->errorCount * 100 >= d->disablePercentage * d->wordCount );
-	if ( d->active && tme )
-	    d->active = false;
-	else if ( !d->active && !tme )
-	    d->active = true;
-    }
-    if ( d->active != savedActive ) {
-	if ( d->wordCount > 1 )
-	    if ( d->active )
-		emit activeChanged( i18n("As-you-type spell checking enabled.") );
-	    else
-		emit activeChanged( i18n( "Too many misspelled words. "
-					  "As-you-type spell checking disabled." ) );
-	d->completeRehighlightRequired = true;
-  d->rehighlightRequest->setSingleShot( true );
-	d->rehighlightRequest->start( 100 );
-    }
+  if ( d->mAutomatic ) {
+    // tme = Too many errors
+    bool tme = ( d->mWordCount >= d->mDisableWordCount ) && ( d->mErrorCount * 100 >= d->mDisablePercentage * d->mWordCount );
+
+    if ( d->mActive && tme )
+      d->mActive = false;
+    else if ( !d->mActive && !tme )
+      d->mActive = true;
+  }
+
+  if ( d->mActive != savedActive ) {
+    if ( d->mWordCount > 1 )
+      if ( d->mActive )
+        emit activeChanged( i18n("As-you-type spell checking enabled.") );
+      else
+        emit activeChanged( i18n( "Too many misspelled words. "
+                                  "As-you-type spell checking disabled." ) );
+
+    d->mCompleteRehighlightRequired = true;
+    d->mRehighlightRequest->setSingleShot( true );
+    d->mRehighlightRequest->start( 100 );
+  }
 }
 
 void KDictSpellingHighlighter::slotKSpellNotResponding()
 {
-    static int retries = 0;
-    if (retries < 10) {
-        if ( d->globalConfig )
-	    KDictSpellingHighlighter::dictionaryChanged();
-	else
-	    slotLocalSpellConfigChanged();
-    } else {
-	setAutomatic( false );
-	setActive( false );
-    }
-    ++retries;
-}
-
-bool KDictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
-{
-    if (o == document () && (e->type() == QEvent::FocusIn)) {
-        if ( d->globalConfig ) {
-            QString skey = spellKey();
-            if ( d->spell && d->spellKey != skey ) {
-                d->spellKey = skey;
-                KDictSpellingHighlighter::dictionaryChanged();
-            }
-        }
-    }
-
-    if (o == document () && (e->type() == QEvent::KeyPress)) {
-	QKeyEvent *k = static_cast<QKeyEvent *>(e);
-	d->autoReady = true;
-	if (d->rehighlightRequest->isActive()) { // try to stay out of the users way
-      d->rehighlightRequest->setSingleShot( false );
-	    d->rehighlightRequest->start( 500 );
+  static int retries = 0;
+  if ( retries < 10 ) {
+    if ( d->mGlobalConfig )
+      KDictSpellingHighlighter::dictionaryChanged();
+    else
+      slotLocalSpellConfigChanged();
+  } else {
+    setAutomatic( false );
+    setActive( false );
   }
-	if ( k->key() == Qt::Key_Enter ||
-	     k->key() == Qt::Key_Return ||
-	     k->key() == Qt::Key_Up ||
-	     k->key() == Qt::Key_Down ||
-	     k->key() == Qt::Key_Left ||
-	     k->key() == Qt::Key_Right ||
-	     k->key() == Qt::Key_PageUp ||
-	     k->key() == Qt::Key_PageDown ||
-	     k->key() == Qt::Key_Home ||
-	     k->key() == Qt::Key_End ||
-	     (( k->modifiers() & Qt::ControlModifier ) &&
-	      ((k->key() == Qt::Key_A) ||
-	       (k->key() == Qt::Key_B) ||
-	       (k->key() == Qt::Key_E) ||
-	       (k->key() == Qt::Key_N) ||
-	       (k->key() == Qt::Key_P))) ) {
-	    if ( intraWordEditing() ) {
-		setIntraWordEditing( false );
-		d->completeRehighlightRequired = true;
-    d->rehighlightRequest->setSingleShot( true );
-		d->rehighlightRequest->start( 500 );
-	    }
-	    if (d->checksDone != d->checksRequested) {
-		// Handle possible change of paragraph while
-		// words are pending spell checking
-		d->completeRehighlightRequired = true;
-    d->rehighlightRequest->setSingleShot( true );
-		d->rehighlightRequest->start( 500 );
-	    }
-	} else {
-	    setIntraWordEditing( true );
-	}
-	if ( k->key() == Qt::Key_Space ||
-	     k->key() == Qt::Key_Enter ||
-	     k->key() == Qt::Key_Return ) {
-	    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
-	}
-    }
 
-    else if ( /*o == document ()->viewport() &&*/
-	 ( e->type() == QEvent::MouseButtonPress )) {
-	d->autoReady = true;
-	if ( intraWordEditing() ) {
-	    setIntraWordEditing( false );
-	    d->completeRehighlightRequired = true;
-      d->rehighlightRequest->setSingleShot( true );
-	    d->rehighlightRequest->start( 0 );
-	}
-    }
-
-    return false;
+  ++retries;
 }
+
+bool KDictSpellingHighlighter::eventFilter( QObject *object, QEvent *event )
+{
+  if ( object == document () && (event->type() == QEvent::FocusIn) ) {
+    if ( d->mGlobalConfig ) {
+      QString skey = spellKey();
+      if ( d->mSpell && d->mSpellKey != skey ) {
+        d->mSpellKey = skey;
+        KDictSpellingHighlighter::dictionaryChanged();
+      }
+    }
+  }
+
+  if ( object == document () && (event->type() == QEvent::KeyPress) ) {
+    QKeyEvent *keyEvent = static_cast<QKeyEvent *>( event );
+    d->mAutoReady = true;
+
+    if ( d->mRehighlightRequest->isActive() ) { // try to stay out of the users way
+      d->mRehighlightRequest->setSingleShot( false );
+      d->mRehighlightRequest->start( 500 );
+    }
+
+    if ( keyEvent->key() == Qt::Key_Enter ||
+         keyEvent->key() == Qt::Key_Return ||
+         keyEvent->key() == Qt::Key_Up ||
+         keyEvent->key() == Qt::Key_Down ||
+         keyEvent->key() == Qt::Key_Left ||
+         keyEvent->key() == Qt::Key_Right ||
+         keyEvent->key() == Qt::Key_PageUp ||
+         keyEvent->key() == Qt::Key_PageDown ||
+         keyEvent->key() == Qt::Key_Home ||
+         keyEvent->key() == Qt::Key_End ||
+         ((keyEvent->modifiers() & Qt::ControlModifier) &&
+         ((keyEvent->key() == Qt::Key_A) ||
+         (keyEvent->key() == Qt::Key_B) ||
+         (keyEvent->key() == Qt::Key_E) ||
+         (keyEvent->key() == Qt::Key_N) ||
+         (keyEvent->key() == Qt::Key_P) ) ) ) {
+
+      if ( intraWordEditing() ) {
+        setIntraWordEditing( false );
+        d->mCompleteRehighlightRequired = true;
+        d->mRehighlightRequest->setSingleShot( true );
+        d->mRehighlightRequest->start( 500 );
+      }
+
+      if ( d->mChecksDone != d->mChecksRequested ) {
+        // Handle possible change of paragraph while
+        // words are pending spell checking
+        d->mCompleteRehighlightRequired = true;
+        d->mRehighlightRequest->setSingleShot( true );
+        d->mRehighlightRequest->start( 500 );
+      }
+    } else {
+      setIntraWordEditing( true );
+    }
+
+    if ( keyEvent->key() == Qt::Key_Space ||
+         keyEvent->key() == Qt::Key_Enter ||
+         keyEvent->key() == Qt::Key_Return ) {
+      QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ) );
+    }
+  } else if ( /*o == document ()->viewport() &&*/
+            ( event->type() == QEvent::MouseButtonPress )) {
+    d->mAutoReady = true;
+    if ( intraWordEditing() ) {
+      setIntraWordEditing( false );
+      d->mCompleteRehighlightRequired = true;
+      d->mRehighlightRequest->setSingleShot( true );
+      d->mRehighlightRequest->start( 0 );
+    }
+  }
+
+  return false;
+}
+
 #include "ksyntaxhighlighter.moc"
