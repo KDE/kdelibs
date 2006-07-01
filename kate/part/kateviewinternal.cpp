@@ -1265,20 +1265,25 @@ void KateViewInternal::end( bool sel )
     }
   }
 
-  // "Smart" EOL jumping as requested in bug #78258
-  // If we're already at the end, jump to last non-space character
-  if (cursor.col() == currentRange().endCol - 1 && cursor.col() != currentRange().startCol) {
-    KateTextLine::Ptr text = textLine(cursor.line());
-    if (text) {
-      int col = text->lastChar() + 1;
-      KateTextCursor c( cursor.line(), col );
-      updateSelection( c, sel );
-      updateCursor( c );
-      return;
-    }
+  if( !(m_doc->configFlags() & KateDocument::cfSmartHome) ) {
+    moveEdge( right, sel );
+    return;
   }
 
-  moveEdge( right, sel );
+  // "Smart" EOL jumping as requested in bugs #78258 and #106970
+  // If we're already at the end, jump to last non-space character
+
+  KateTextCursor c = cursor;
+  int lc = textLine( c.line() )->lastChar();
+
+  if (lc < 0 || c.col() == (lc + 1)) {
+    c.setCol(currentRange().endCol - 1);
+  } else {
+    c.setCol(lc + 1);
+  }
+
+  updateSelection( c, sel );
+  updateCursor( c, true );
 }
 
 KateLineRange KateViewInternal::range(int realLine, const KateLineRange* previous)
