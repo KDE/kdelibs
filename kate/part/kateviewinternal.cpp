@@ -1270,9 +1270,7 @@ void KateViewInternal::end( bool sel )
     return;
   }
 
-  // "Smart" EOL jumping as requested in bugs #78258 and #106970
-  // If we're already at the end, jump to last non-space character
-
+  // "Smart End", as requested in bugs #78258 and #106970
   KateTextCursor c = cursor;
   int lc = textLine( c.line() )->lastChar();
 
