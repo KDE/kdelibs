@@ -1063,7 +1063,7 @@ QString HTTPProtocol::davProcessLocks()
     }
 
     if ( bracketsOpen )
-      response += ")";
+      response += ')';
 
     response += "\r\n";
     return response;
