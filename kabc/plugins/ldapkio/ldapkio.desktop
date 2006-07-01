@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=LDAP
-Name[x-test]=xxLDAPxx
-X-KDE-Library=kabc_ldapkio
-Type=Service
-ServiceTypes=KResources/Plugin
-X-KDE-ResourceFamily=contact
-X-KDE-ResourceType=ldapkio
