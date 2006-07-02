@@ -1026,6 +1026,8 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
     cCol = 0;
 
     ensureRows( cRow+1 );
+    KHTMLAssert( child->isTableRow() );
+    grid[cRow].rowRenderer = static_cast<RenderTableRow*>(child);
 
     if (!beforeChild) {
         grid[cRow].height = child->style()->height();
@@ -1199,7 +1201,7 @@ void RenderTableSection::calcRowHeight()
 	int bdesc = 0;
 // 	qDebug("height of row %d is %d/%d", r, grid[r].height.value, grid[r].height.type );
 	int ch = grid[r].height.minWidth( 0 );
-	int pos = rowPos[ r+1 ] + ch + vspacing;
+	int pos = rowPos[r] + ch + (grid[r].rowRenderer ? vspacing : 0);
 
 	if ( pos > rowPos[r+1] )
 	    rowPos[r+1] = pos;
@@ -1240,7 +1242,7 @@ void RenderTableSection::calcRowHeight()
             if (!cell->style()->height().isVariable())
                 grid[r].needFlex = true;
 
-	    pos = rowPos[ indx ] + ch + vspacing;
+	    pos = rowPos[indx] + ch + (grid[r].rowRenderer ? vspacing : 0);
 
 	    if ( pos > rowPos[r+1] )
 		rowPos[r+1] = pos;
@@ -1265,7 +1267,7 @@ void RenderTableSection::calcRowHeight()
 	//do we have baseline aligned elements?
 	if (baseline) {
 	    // increase rowheight if baseline requires
-	    int bRowPos = baseline + bdesc  + vspacing ; // + 2*padding
+	    int bRowPos = baseline + bdesc + (grid[r].rowRenderer ? vspacing : 0);
 	    if (rowPos[r+1]<bRowPos)
 		rowPos[r+1]=bRowPos;
 
@@ -1689,6 +1691,8 @@ void RenderTableSection::recalcCells()
             cRow++;
             cCol = 0;
             ensureRows( cRow+1 );
+            grid[cRow].rowRenderer = static_cast<RenderTableRow*>(row);
+
             for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
                 if (cell->isTableCell())
                     addCell( static_cast<RenderTableCell *>(cell), static_cast<RenderTableRow *>(row) );
