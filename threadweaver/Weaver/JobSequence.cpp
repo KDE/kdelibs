@@ -13,6 +13,8 @@ namespace ThreadWeaver {
 
     void JobSequence::aboutToBeQueued ( WeaverInterface *weaver )
     {
+      REQUIRE (weaver != 0);
+
       if ( jobListLength() > 1 )
         {
             // set up the dependencies:
@@ -31,11 +33,11 @@ namespace ThreadWeaver {
 
     void JobSequence::internalJobDone( Job* job)
     {
+      JobCollection::internalJobDone(job);
       if ( ! job->success() )
 	{
 	  stop( job );
 	}
-      JobCollection::internalJobDone(job);
     }
 
 }

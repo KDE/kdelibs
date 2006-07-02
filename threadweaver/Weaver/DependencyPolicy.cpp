@@ -134,9 +134,15 @@ bool DependencyPolicy::canRun( Job* job )
 void DependencyPolicy::free( Job* job )
 {
   REQUIRE (job != 0);
-  resolveDependencies( job );
-  Q_ASSERT ( ! hasUnresolvedDependencies( job ) );
-  debug ( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", job);
+  if ( job->success() )
+    {
+      resolveDependencies( job );
+      debug( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", job);
+    } else {
+      debug( 3, "DependencyPolicy::free: not resolving dependencies for %p (execution not successful).\n",
+	     job);
+    }
+  ENSURE ( ( ! hasUnresolvedDependencies( job ) && job->success() ) || ! job->success() );
 }
 
 void DependencyPolicy::release( Job* job )

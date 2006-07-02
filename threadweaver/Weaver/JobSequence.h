@@ -19,7 +19,7 @@ namespace ThreadWeaver {
         Q_OBJECT
 
     public:
-        explicit JobSequence ( QObject *parent );
+        explicit JobSequence ( QObject *parent = 0 );
 
     protected:
         /** Overload to queue the sequence. */

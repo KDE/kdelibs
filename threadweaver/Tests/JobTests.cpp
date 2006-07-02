@@ -88,12 +88,12 @@ private slots:
     QCOMPARE (weaver.noOfThreads(), 0);
     AppendCharacterJob a( QChar('a'), &sequence, this);
     weaver.enqueue( & a);
-    ThreadWeaver::Weaver::instance()->finish();
+    weaver.finish();
     QVERIFY(a.isFinished());
     QCOMPARE (weaver.noOfThreads(), 1);
   }
 
-    void SimpleJobTest() {
+  void SimpleJobTest() {
         QString sequence;
         AppendCharacterJob job( QChar( '1' ), &sequence, this );
         ThreadWeaver::Weaver::instance()->enqueue ( &job );
@@ -121,6 +121,13 @@ private slots:
         QVERIFY( sequence.count( 'c' ) == 1 );
     }
 
+  void EmptyJobCollectionTest() {
+    ThreadWeaver::JobCollection collection;
+    ThreadWeaver::Weaver::instance()->enqueue ( &collection );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(collection.isFinished());
+  }
+  
     void ShortJobSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -137,6 +144,12 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
+  void EmptyJobSequenceTest() {
+    ThreadWeaver::JobSequence sequence;
+    ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(sequence.isFinished());
+  }
     void QueueAndDequeueSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );

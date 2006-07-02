@@ -21,7 +21,7 @@ namespace ThreadWeaver {
         Q_OBJECT
 
     public:
-        explicit JobCollection ( QObject *parent );
+        explicit JobCollection ( QObject *parent = 0 );
         ~JobCollection ();
         /** Append a job to the collection.
 
@@ -56,6 +56,12 @@ namespace ThreadWeaver {
         /** Callback method for done jobs.
         */
         virtual void internalJobDone( Job* );
+
+	/** Perform the task usually done when one individual job is
+	    finished, but in our case only when the whole collection
+	    is finished or partly dequeued.
+	*/
+	void finalCleanup();
 
     private:
         /** Overload the execute method. */
