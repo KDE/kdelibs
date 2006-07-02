@@ -491,8 +491,7 @@ bool KateCommands::SedReplace::exec (Kate::View *view, const QString &cmd, QStri
 
    if ( find.contains("\\n") )
    {
-     // FIXME i18n this message (or make it work)
-     msg = "Sorry, but we can't replace newlines (yet)";
+     msg = i18n("Sorry, but Kate is not able to replace newlines, yet");
      return false;
    }
 
