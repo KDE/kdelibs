@@ -586,19 +586,6 @@ target_link_libraries(kdatetimewidgettest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kspelltest_SRCS
-kspelltest.cpp
-)
-
-kde4_automoc(${kspelltest_SRCS})
-
-kde4_add_executable(kspelltest RUN_UNINSTALLED ${kspelltest_SRCS})
-
-target_link_libraries(kspelltest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(kinputdialogtest_SRCS
 kinputdialogtest.cpp
 )
