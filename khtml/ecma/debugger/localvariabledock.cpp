@@ -8,7 +8,7 @@
 #include <kjs/scope_chain.h>
 #include <kjs/object.h>
 
-#include "jsobjectmodel.h"
+//#include "jsobjectmodel.h"
 #include "localvariabledock.h"
 #include "localvariabledock.moc"
 
