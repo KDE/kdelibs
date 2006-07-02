@@ -1,12 +1,14 @@
 #include <cstdlib>
 
-#include <DebuggingAids.h>
-#include <ThreadWeaver.h>
-#include <JobSequence.h>
-#include <JobCollection.h>
-#include <QtTest/QtTest>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QtTest/QtTest>
+
+#include <JobSequence.h>
+#include <ThreadWeaver.h>
+#include <DebuggingAids.h>
+#include <JobCollection.h>
+#include <ResourceRestrictionPolicy.h>
 
 QMutex s_GlobalMutex;
 
@@ -402,6 +404,39 @@ private slots:
 
         QCOMPARE ( sequence, QString( "abcd" ) );
     }
+
+  void ResourceRestrictionPolicyBasicsTest () {
+    // this test tests that with resource restrictions assigned, jobs
+    // still get executed as expected 
+    QString sequence;
+    ThreadWeaver::ResourceRestrictionPolicy restriction (2);
+    AppendCharacterJob a( 'a', &sequence );
+    AppendCharacterJob b( 'b', &sequence );
+    AppendCharacterJob c( 'c', &sequence );
+    AppendCharacterJob d( 'd', &sequence );
+    AppendCharacterJob e( 'e', &sequence );
+    AppendCharacterJob f( 'f', &sequence );
+    AppendCharacterJob g( 'g', &sequence );
+    ThreadWeaver::JobCollection collection;
+    collection.addJob( &a );
+    a.assignQueuePolicy ( &restriction); 
+    collection.addJob( &b );
+    b.assignQueuePolicy ( &restriction); 
+    collection.addJob( &c );
+    c.assignQueuePolicy ( &restriction); 
+    collection.addJob( &d );
+    d.assignQueuePolicy ( &restriction); 
+    collection.addJob( &e );
+    e.assignQueuePolicy ( &restriction); 
+    collection.addJob( &f );
+    f.assignQueuePolicy ( &restriction); 
+    collection.addJob( &g );
+    g.assignQueuePolicy ( &restriction); 
+
+    ThreadWeaver::Weaver::instance()->enqueue ( &collection );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
+  }
 
 };
 
