@@ -10,8 +10,6 @@ kde4_automoc(${kwalletclient_LIB_SRCS})
 
 add_definitions(${QDBUS_DEFINITIONS})
 
-kde4_add_dcop_skels(kwalletclient_LIB_SRCS ${kwalletclient_DCOP_SKEL_SRCS})
-
 kde4_add_library(kwalletclient SHARED ${kwalletclient_LIB_SRCS})
 
 target_link_libraries(kwalletclient  ${KDE4_KDECORE_LIBS} )
