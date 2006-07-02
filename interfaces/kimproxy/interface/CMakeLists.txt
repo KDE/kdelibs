@@ -8,15 +8,3 @@ install_files( ${DATA_INSTALL_DIR}/kcm_componentchooser FILES kcm_instantmesseng
 
 
 
-#original Makefile.am contents follow:
-
-#INCLUDES = $(all_includes)
-#
-#kimifaceinclude_HEADERS = kimiface.h
-#kimifaceincludedir = $(includedir)
-#
-#servicetypedir = $(kde_servicetypesdir)
-#servicetype_DATA = dcopinstantmessenger.desktop
-#
-#kcm_instantmessenger_DATA = kcm_instantmessenger.desktop
-#kcm_instantmessengerdir = $(kde_datadir)/kcm_componentchooser

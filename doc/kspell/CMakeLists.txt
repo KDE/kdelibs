@@ -11,10 +11,3 @@ add_custom_target(doc
 
 
 
-#original Makefile.am contents follow:
-
-#
-#KDE_LANG = en
-#KDE_DOCS = AUTO
-#KDE_DOCS_DEPS = $(MEINPROC_DEP)
-#

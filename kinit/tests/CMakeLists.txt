@@ -19,13 +19,3 @@ endif(KDE4_BUILD_TESTS)
 
 
 
-#original Makefile.am contents follow:
-
-#INCLUDES=	-I$(srcdir)/../.. $(all_includes) 
-######## Files
-#
-#check_PROGRAMS = klaunchertest
-#
-#klaunchertest_SOURCES = klaunchertest.cpp 
-#klaunchertest_LDADD   = $(LIB_KIO)
-#

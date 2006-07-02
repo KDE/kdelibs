@@ -33,14 +33,3 @@ install(TARGETS console DESTINATION bin)
 
 
 
-#original Makefile.am contents follow:
-
-#INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kjsembed $(all_includes)
-#
-#bin_PROGRAMS = console 
-#
-#console_SOURCES = jsconsole.ui console.qrc main.cpp console.cpp \
-#                  kjs_object_model.cpp numberedtextview.cpp
-#console_METASOURCES = AUTO
-#console_LDFLAGS = $(all_libraries) 
-#console_LDADD = ../kjsembed/libkjsembed.la

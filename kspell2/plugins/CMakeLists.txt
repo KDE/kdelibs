@@ -17,14 +17,3 @@ add_subdirectory( ispell )
 
 
 
-#original Makefile.am contents follow:
-
-#if include_aspell_plugin
-#LIBASPELLPLUGIN = aspell
-#endif
-#
-#if include_hspell_plugin
-#LIBHSPELLPLUGIN = hspell
-#endif
-#
-#SUBDIRS = $(LIBASPELLPLUGIN) $(LIBHSPELLPLUGIN) ispell 

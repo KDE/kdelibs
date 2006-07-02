@@ -11,7 +11,3 @@ add_subdirectory( installtheme )
 
 
 
-#original Makefile.am contents follow:
-
-#SUBDIRS= installtheme
-#
