@@ -1083,7 +1083,10 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
     QPoint p(x-absx, y-absy);
     QMouseEvent fw(me->type(), p, me->button(), me->state());
     QWidget* w = r->widget();
-    if(w)
+    QScrollView* sc = ::qt_cast<QScrollView*>(w);
+    if (sc && !::qt_cast<QListBox*>(w))
+        static_cast<khtml::RenderWidget::ScrollViewEventPropagator*>(sc)->sendEvent(&fw);
+    else if(w)
         static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
 }
 
@@ -1940,9 +1943,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	    case QEvent::MouseButtonPress:
 	    case QEvent::MouseButtonRelease:
 	    case QEvent::MouseButtonDblClick: {
-		if (w->parentWidget() == view && !::qt_cast<QScrollBar *>(w)) {
+		if ( (w->parentWidget() == view || ::qt_cast<QScrollView*>(c)) && !::qt_cast<QScrollBar *>(w)) {
 		    QMouseEvent *me = static_cast<QMouseEvent *>(e);
-		    QPoint pt = (me->pos() + w->pos());
+		    QPoint pt = w->mapTo( view, me->pos());
 		    QMouseEvent me2(me->type(), pt, me->button(), me->state());
 
 		    if (e->type() == QEvent::MouseMove)

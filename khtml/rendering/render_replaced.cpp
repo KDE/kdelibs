@@ -697,6 +697,31 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
     }
 }
 
+void RenderWidget::ScrollViewEventPropagator::sendEvent(QEvent *e) {
+    switch(e->type()) {
+    case QEvent::MouseButtonPress:
+        viewportMousePressEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseButtonRelease:
+        viewportMouseReleaseEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseButtonDblClick:
+        viewportMouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::MouseMove:
+        viewportMouseMoveEvent(static_cast<QMouseEvent *>(e));
+        break;
+    case QEvent::KeyPress:
+        keyPressEvent(static_cast<QKeyEvent *>(e));
+        break;
+    case QEvent::KeyRelease:
+        keyReleaseEvent(static_cast<QKeyEvent *>(e));
+        break;
+    default:
+        break;
+    }
+}
+
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
     bool ret = false;
@@ -712,8 +737,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         int absy = 0;
 
         absolutePosition(absx, absy);
-
-        const QPoint p(me.clientX() - absx + m_view->contentsX(),
+        QPoint p(me.clientX() - absx + m_view->contentsX(),
                  me.clientY() - absy + m_view->contentsY());
         QMouseEvent::Type type;
         int button = 0;
@@ -763,7 +787,11 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 //                   << " pos=" << p << " type=" << type
 //                   << " button=" << button << " state=" << state << endl;
         QMouseEvent e(type, p, button, state);
-        static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
+        QScrollView * sc = ::qt_cast<QScrollView*>(m_widget);
+        if (sc && !::qt_cast<QListBox*>(m_widget))
+            static_cast<ScrollViewEventPropagator *>(sc)->sendEvent(&e);
+        else
+            static_cast<EventPropagator *>(m_widget)->sendEvent(&e);
         ret = e.isAccepted();
         break;
     }
