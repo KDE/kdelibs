@@ -46,7 +46,7 @@
 
 #include "klauncher.h"
 #include "klauncher_cmds.h"
-#include "klauncher_adaptor.h"
+#include "klauncheradaptor.h"
 
 #ifdef Q_WS_X11
 #include <kstartupinfo.h>

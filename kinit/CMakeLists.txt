@@ -130,9 +130,10 @@ install(TARGETS kdostartupconfig DESTINATION bin)
 set(klauncher_KDEINIT_SRCS
    klauncher.cpp
    klauncher_main.cpp
-   klauncher_adaptor.cpp
    autostart.cpp
    )
+
+qt4_add_dbus_adaptors(klauncher_KDEINIT_SRCS org.kde.KLauncher.xml )
 
 kde4_automoc(${klauncher_KDEINIT_SRCS})
 
