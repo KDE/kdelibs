@@ -119,7 +119,7 @@ bool KCMShell::isRunning()
 
     QDBusInterface iface(m_serviceName, "/KCModule/dialog", "org.kde.KCMShellMultiDialog");
     QDBusReply<void> reply = iface.call("activate", kapp->startupId());
-    if (!reply.isValid())
+    if (!reply.isSuccess())
     {
         kDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
         return false; // Error, we have to do it ourselves.

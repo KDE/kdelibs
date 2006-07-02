@@ -1045,7 +1045,7 @@ KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
            return; // Already here.
     }
     SlaveWaitRequest *waitRequest = new SlaveWaitRequest;
-    msg.setDelayedReply() = true;
+    msg.setDelayedReply(true);
     waitRequest->transaction = msg;
     waitRequest->pid = static_cast<pid_t>(pid);
     mSlaveWaitRequest.append(waitRequest);

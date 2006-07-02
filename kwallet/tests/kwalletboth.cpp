@@ -9,9 +9,9 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kwallet.h>
-#include <dbus/qdbusbus.h>
-#include <dbus/qdbusconnection.h>
-#include <dbus/qdbusreply.h>
+#include <qdbusconnectioninterface.h>
+#include <qdbusconnection.h>
+#include <qdbusreply.h>
 
 #include "kwallettest.h"
 
@@ -73,11 +73,11 @@ int main( int argc, char *argv[] )
 	KApplication app( "kwalletboth" );
 
 	// force name with D-BUS
-        QDBusReply<QDBusBusService::RequestNameReply> reply
-            = QDBus::sessionBus().busService()->requestName( app.objectName(),
-                                                             QDBusBusService::ReplaceExistingName );
+        QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply
+            = QDBus::sessionBus().interface()->registerService( app.objectName(),
+                                                                QDBusConnectionInterface::ReplaceExistingService );
 
-        if ( reply.isError() )
+        if ( !reply.isValid() )
         {
                 _out << "D-BUS name request returned " << reply.error().name() << endl;
         }
