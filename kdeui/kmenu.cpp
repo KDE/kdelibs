@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Daniel M. Duley <mosfet@kde.org>
-   Copyright (C) 2002 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2002,2006 Hamish Rodda <rodda@kde.org>
    Copyright (C) 2006 Olivier Goffart <ogoffart@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -27,8 +27,9 @@
 #include <QMenuItem>
 #include <QApplication>
 #include <QPointer>
-#include <QAction>
-
+#include <QWidgetAction>
+#include <QLabel>
+#include <QStyle>
 
 #include "kmenu.h"
 
@@ -120,22 +121,32 @@ KMenu::~KMenu()
 
 QAction* KMenu::addTitle(const QString &text, QAction* before)
 {
-    QAction* action = new QAction(text, this);
+    QWidgetAction* action = new QWidgetAction(this);
     action->setEnabled(false);
-    QFont f = action->font();
+    QLabel* label = new QLabel(this);
+    action->setDefaultWidget(label);
+    label->setFrameShape(QFrame::Box);
+    label->setText(text);
+    QFont f = label->font();
     f.setBold(true);
-    action->setFont(f);
+    label->setFont(f);
     insertAction(before, action);
     return action;
 }
 
 QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before)
 {
-    QAction* action = new QAction(icon, text, this);
+    QWidgetAction* action = new QWidgetAction(this);
     action->setEnabled(false);
-    QFont f = action->font();
+    QLabel* label = new QLabel(this);
+    action->setDefaultWidget(label);
+    label->setFrameShape(QFrame::Box);
+    label->setText(text);
+    int iconSize = style()->pixelMetric(QStyle::PM_SmallIconSize, 0, this);
+    label->setPixmap(icon.pixmap(QSize(iconSize, iconSize)));
+    QFont f = label->font();
     f.setBold(true);
-    action->setFont(f);
+    label->setFont(f);
     insertAction(before, action);
     return action;
 }
