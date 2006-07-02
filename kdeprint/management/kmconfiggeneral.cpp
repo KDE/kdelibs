@@ -131,7 +131,7 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 	conf->setGroup("General");
 	conf->writeEntry("TimerDelay",m_timer->value());
 	conf->writePathEntry("TestPage",(m_defaulttestpage->isChecked() ? m_testpage->url().url() : QString()));
-	if (m_defaulttestpage->isChecked() && KMimeMagic::self()->findFileType(m_testpage->url())->mimeType() != "application/postscript")
+	if (m_defaulttestpage->isChecked() && KMimeMagic::self()->findFileType(m_testpage->url().toString())->mimeType() != "application/postscript")
 		KMessageBox::sorry(this, i18n("The selected test page is not a PostScript file. You may not "
 		                              "be able to test your printer anymore."));
 	conf->writeEntry("ShowStatusMsg", m_statusmsg->isChecked());
@@ -140,7 +140,7 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 
 void KMConfigGeneral::slotTestPagePreview()
 {
-	QString	tpage = m_testpage->url();
+	QString	tpage = m_testpage->url().toString();
 	if (tpage.isEmpty())
 		KMessageBox::error(this, i18n("Empty file name."));
 	else
