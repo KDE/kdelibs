@@ -25,6 +25,8 @@
 #include <qstringlist.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace KSpell2
 {
     /**
@@ -34,7 +36,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short class used for actuall spell checking
      */
-    class Speller
+    class KSPELL2_EXPORT Speller
     {
     public:
         virtual ~Speller();
