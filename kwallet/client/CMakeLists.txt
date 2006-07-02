@@ -8,7 +8,6 @@ kwallet.cc
 
 kde4_automoc(${kwalletclient_LIB_SRCS})
 
-add_definitions(${QDBUS_DEFINITIONS})
 
 kde4_add_library(kwalletclient SHARED ${kwalletclient_LIB_SRCS})
 

@@ -11,7 +11,6 @@ if (NOT JPEG_FOUND)
 endif (NOT JPEG_FOUND)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
-add_definitions( ${QDBUS_DEFINITIONS} )
 
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
 

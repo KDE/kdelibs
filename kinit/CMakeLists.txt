@@ -3,7 +3,6 @@ project(kdeinit)
 
 add_subdirectory( tests )
 
-add_definitions(${QDBUS_DEFINITIONS})
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )

@@ -3,7 +3,6 @@ project(kcmshell)
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kutils )
-add_definitions( ${QDBUS_DEFINITIONS} )
 
 
 ########### next target ###############

@@ -20,9 +20,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kservice )
 
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
-include_directories( ${QDBUS_INCLUDE_DIRS} )
-#include_directories( ${KDE4_DCOP_INCLUDES} )
-add_definitions( ${QDBUS_DEFINITIONS} )
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore

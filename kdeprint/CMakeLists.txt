@@ -1,7 +1,7 @@
 
 project(kdeprint)
 
-add_definitions(-D_KDEPRINT_COMPILE ${QDBUS_DEFINITIONS})
+add_definitions(-D_KDEPRINT_COMPILE )
 
 # Needed for the subdirs
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )

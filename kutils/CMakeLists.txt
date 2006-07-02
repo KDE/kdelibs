@@ -7,7 +7,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 
 add_subdirectory( ksettings )
 
-add_definitions( ${QDBUS_DEFINITIONS} )
 
 # kutils/ksettings/Makefile.am: ksettings
 

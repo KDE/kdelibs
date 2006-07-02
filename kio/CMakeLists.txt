@@ -3,7 +3,7 @@ project(kio)
 
 macro_optional_find_package(FAM)
 
-add_definitions(-D_LARGEFILE64_SOURCE ${QDBUS_DEFINITIONS})
+add_definitions(-D_LARGEFILE64_SOURCE )
 
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)

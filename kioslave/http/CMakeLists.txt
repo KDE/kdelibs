@@ -1,7 +1,6 @@
 
 project(kioslave-http)
 
-add_definitions(${QDBUS_DEFINITIONS})
 
 macro_optional_find_package(GSSAPI)
 
