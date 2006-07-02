@@ -40,12 +40,13 @@ void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 {
 	kDebug()<<"TestSpell::contextMenuEvent\n";
 	QMenu *popup = createStandardContextMenu();
-    QMenu *subMenu = new QMenu( popup );
+  QMenu *subMenu = new QMenu( popup );
+  subMenu->setTitle( "Text Completion" );
 	connect( subMenu, SIGNAL( triggered ( QAction* ) ),
     	this, SLOT( slotActivate( ) ) );
 	QAction *action = new QAction( "active or not", popup );
-	popup->insertSeparator();
-	popup->insertItem( "Text Completion",subMenu );
+	popup->addSeparator();
+	popup->addMenu( subMenu );
 	subMenu->addAction(action);
 	popup->exec(e->globalPos());
 	delete popup;
@@ -65,7 +66,6 @@ int main( int argc, char** argv )
     KApplication app;
 
     QTextEdit *test = new TestSpell();
-    app.setMainWidget( test );
     test->show();
 
     return app.exec();
