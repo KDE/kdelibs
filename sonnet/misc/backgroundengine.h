@@ -30,7 +30,7 @@ namespace KSpell2
 {
     class Filter;
     class Loader;
-    class Dictionary;
+    class Speller;
     class BackgroundEngine : public QObject
     {
         Q_OBJECT
@@ -63,7 +63,7 @@ namespace KSpell2
          * Emitted when a misspelling is found.
          */
         void misspelling( const QString&, int );
-	
+
         /**
          * Emitted when all words have been checked.
          */
@@ -74,7 +74,7 @@ namespace KSpell2
     private:
         Filter            *m_filter;
         Loader::Ptr        m_loader;
-        Dictionary        *m_dict;
+        Speller           *m_dict;
         DefaultDictionary *m_defaultDict;
     };
 }

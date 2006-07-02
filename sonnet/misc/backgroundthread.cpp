@@ -48,7 +48,7 @@ void BackgroundThread::setLoader( const Loader::Ptr& loader )
     stop();
     m_loader = loader;
     delete m_dict;
-    m_dict   = m_loader->dictionary();
+    m_dict   = m_loader->createSpeller();
     m_filter->restart();
 }
 
@@ -63,7 +63,7 @@ void BackgroundThread::run()
     m_done = false;
     for ( Word w = m_filter->nextWord(); !m_done && !w.end;
           w = m_filter->nextWord() ) {
-        if ( !m_dict->check( w.word ) && !m_done ) {
+        if (m_dict->isMisspelled(w.word) && !m_done) {
             MisspellingEvent *event = new MisspellingEvent( w.word, w.start );
             QApplication::postEvent( m_recv, event );
         }
@@ -101,7 +101,7 @@ void BackgroundThread::changeLanguage( const QString& lang )
     stop();
     m_mutex.lock();
     delete m_dict;
-    m_dict = m_loader->dictionary( lang );
+    m_dict = m_loader->createSpeller( lang );
     m_filter->restart();
     m_mutex.unlock();
     start();

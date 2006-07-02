@@ -35,7 +35,7 @@
 #include <qhash.h>
 #include <qmap.h>
 
-#define DEFAULT_CONFIG_FILE   "kspellrc"
+#define DEFAULT_CONFIG_FILE   "sonnetrc"
 
 namespace KSpell2
 {
@@ -56,40 +56,41 @@ typedef QHash<KSharedConfig*, Loader*> LoaderConfigHash;
 static KStaticDeleter<LoaderConfigHash> s_loaderDeleter;
 static LoaderConfigHash *s_loaders = 0;
 
-Loader::Ptr Loader::openLoader( KSharedConfig::Ptr config )
+Loader::Ptr Loader::openLoader(KSharedConfig::Ptr config)
 {
-    if ( !config )
-        config = KSharedConfig::openConfig( DEFAULT_CONFIG_FILE );
+    if (!config)
+        config = KSharedConfig::openConfig(DEFAULT_CONFIG_FILE);
 
-    if ( s_loaders ) {
-        Loader *loader = s_loaders->value( config.data() );
-        if ( loader )
-            return Ptr( loader );
+    if (s_loaders) {
+        Loader *loader = s_loaders->value(config.data());
+        if (loader)
+            return Ptr(loader);
     }
 
-    Loader *loader = new Loader( config );
-    return Ptr( loader );
+    Loader *loader = new Loader(config);
+    return Ptr(loader);
 }
 
-Loader::Loader( KSharedConfig::Ptr config )
+Loader::Loader(KSharedConfig::Ptr config)
 	:d(new Private)
 {
-    if ( !s_loaders ) {
-        s_loaderDeleter.setObject( s_loaders, new LoaderConfigHash );
+    if (!s_loaders) {
+        s_loaderDeleter.setObject(s_loaders, new LoaderConfigHash);
     }
-    s_loaders->insert( config.data(), this );
+    s_loaders->insert(config.data(), this);
 
-    d->settings = new Settings( this, config );
+    d->settings = new Settings(this, config);
     loadPlugins();
 
-    d->defaultDictionary = new DefaultDictionary( d->settings->defaultLanguage(),
-                                                  this );
+    d->defaultDictionary = new DefaultDictionary(
+        d->settings->defaultLanguage(),
+        this);
 }
 
 Loader::~Loader()
 {
     kDebug()<<"Removing loader : "<< this << endl;
-    s_loaders->remove( d->settings->sharedConfig() );
+    s_loaders->remove(d->settings->sharedConfig());
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
@@ -100,44 +101,42 @@ DefaultDictionary* Loader::defaultDictionary() const
     return d->defaultDictionary;
 }
 
-Dictionary* Loader::dictionary( const QString& language, const QString& clientName ) const
+Speller *Loader::createSpeller(const QString& language,
+                               const QString& clientName) const
 {
     QString pclient = clientName;
     QString plang   = language;
     bool ddefault = false;
 
-    if ( plang.isEmpty() ) {
+    if (plang.isEmpty()) {
         plang = d->settings->defaultLanguage();
     }
-    if ( clientName == d->settings->defaultClient() &&
-        plang == d->settings->defaultLanguage() ) {
+    if (clientName == d->settings->defaultClient() &&
+        plang == d->settings->defaultLanguage()) {
         ddefault = true;
     }
 
-    QList<Client*> lClients = d->languageClients[ plang ];
+    QList<Client*> lClients = d->languageClients[plang];
 
-    if ( lClients.isEmpty() ) {
-        kError()<<"No language dictionaries for the language : "<< plang <<endl;
+    if (lClients.isEmpty()) {
+        kError()<<"No language dictionaries for the language : "
+                << plang <<endl;
         return 0;
     }
 
-    QListIterator<Client*> itr( lClients );
-    while ( itr.hasNext() ) {
-			Client* item = itr.next();
-        if ( !pclient.isEmpty() ) {
-            if ( pclient == item->name() ) {
-                Dictionary *dict = item->dictionary( plang );
-                if ( dict ) //remove the if if the assert proves ok
-                    dict->m_default = ddefault;
+    QListIterator<Client*> itr(lClients);
+    while (itr.hasNext()) {
+        Client* item = itr.next();
+        if (!pclient.isEmpty()) {
+            if (pclient == item->name()) {
+                Speller *dict = item->createSpeller(plang);
                 return dict;
             }
         } else {
             //the first one is the one with the highest
             //reliability
-            Dictionary *dict = item->dictionary( plang );
-            Q_ASSERT( dict );
-            if ( dict ) //remove the if if the assert proves ok
-                dict->m_default = ddefault;
+            Speller *dict = item->createSpeller(plang);
+            Q_ASSERT(dict);
             return dict;
         }
     }
@@ -161,20 +160,20 @@ QStringList Loader::languagesName() const
      * to be in sync with it let's do the following check.
      */
     if (languagesNameCache.count() == languages().count() )
-	    return languagesNameCache;
+        return languagesNameCache;
 
     QStringList allLocalizedDictionaries;
     QStringList allDictionaries = languages();
     QString currentDictionary,   // e.g. en_GB-ize-wo_accents
-            lISOName,            // language ISO name
-            cISOName,            // country ISO name
-            variantName,         // dictionary variant name e.g. w_accents
-            localizedLang,       // localized language
-            localizedCountry;    // localized country
+                                  lISOName,            // language ISO name
+                                  cISOName,            // country ISO name
+                                  variantName,         // dictionary variant name e.g. w_accents
+                                  localizedLang,       // localized language
+                                  localizedCountry;    // localized country
     const char*  variantEnglish = 0; // dictionary variant in English
 
     int underscorePos,     // position of "_" char
-        minusPos,          // position of "-" char
+                       minusPos,          // position of "-" char
         variantCount = 0;  // used to iterate over variantList
 
     struct variantListType
@@ -183,84 +182,92 @@ QStringList Loader::languagesName() const
         const char* variantEnglishName;
     };
     const variantListType variantList[] = {
-      { "40", I18N_NOOP2("dictionary variant", "40") }, // what does 40 mean?
-      { "60", I18N_NOOP2("dictionary variant", "60") }, // what does 60 mean?
-      { "80", I18N_NOOP2("dictionary variant", "80") }, // what does 80 mean?
-      { "ise", I18N_NOOP2("dictionary variant", "-ise suffixes") },
-      { "ize", I18N_NOOP2("dictionary variant", "-ize suffixes") },
-      { "ise-w_accents", I18N_NOOP2("dictionary variant", "-ise suffixes and with accents") },
-      { "ise-wo_accents", I18N_NOOP2("dictionary variant", "-ise suffixes and without accents") },
-      { "ize-w_accents", I18N_NOOP2("dictionary variant", "-ize suffixes and with accents") },
-      { "ize-wo_accents", I18N_NOOP2("dictionary variant", "-ize suffixes and without accents") },
-      { "lrg", I18N_NOOP2("dictionary variant", "large") },
-      { "med", I18N_NOOP2("dictionary variant", "medium") },
-      { "sml", I18N_NOOP2("dictionary variant", "small") },
-      { "variant_0", I18N_NOOP2("dictionary variant", "variant 0") },
-      { "variant_1", I18N_NOOP2("dictionary variant", "variant 1") },
-      { "variant_2", I18N_NOOP2("dictionary variant", "variant 2") },
-      { "wo_accents", I18N_NOOP2("dictionary variant", "without accents") },
-      { "w_accents", I18N_NOOP2("dictionary variant", "with accents") },
-      { "ye", I18N_NOOP2("dictionary variant", "with ye") },
-      { "yeyo", I18N_NOOP2("dictionary variant", "with yeyo") },
-      { "yo", I18N_NOOP2("dictionary variant", "with yo") },
-      { "extended", I18N_NOOP2("dictionary variant", "extended") },
-      { 0, 0 }
+        { "40", I18N_NOOP2("dictionary variant", "40") }, // what does 40 mean?
+        { "60", I18N_NOOP2("dictionary variant", "60") }, // what does 60 mean?
+        { "80", I18N_NOOP2("dictionary variant", "80") }, // what does 80 mean?
+        { "ise", I18N_NOOP2("dictionary variant", "-ise suffixes") },
+        { "ize", I18N_NOOP2("dictionary variant", "-ize suffixes") },
+        { "ise-w_accents", I18N_NOOP2("dictionary variant", "-ise suffixes and with accents") },
+        { "ise-wo_accents", I18N_NOOP2("dictionary variant", "-ise suffixes and without accents") },
+        { "ize-w_accents", I18N_NOOP2("dictionary variant", "-ize suffixes and with accents") },
+        { "ize-wo_accents", I18N_NOOP2("dictionary variant", "-ize suffixes and without accents") },
+        { "lrg", I18N_NOOP2("dictionary variant", "large") },
+        { "med", I18N_NOOP2("dictionary variant", "medium") },
+        { "sml", I18N_NOOP2("dictionary variant", "small") },
+        { "variant_0", I18N_NOOP2("dictionary variant", "variant 0") },
+        { "variant_1", I18N_NOOP2("dictionary variant", "variant 1") },
+        { "variant_2", I18N_NOOP2("dictionary variant", "variant 2") },
+        { "wo_accents", I18N_NOOP2("dictionary variant", "without accents") },
+        { "w_accents", I18N_NOOP2("dictionary variant", "with accents") },
+        { "ye", I18N_NOOP2("dictionary variant", "with ye") },
+        { "yeyo", I18N_NOOP2("dictionary variant", "with yeyo") },
+        { "yo", I18N_NOOP2("dictionary variant", "with yo") },
+        { "extended", I18N_NOOP2("dictionary variant", "extended") },
+        { 0, 0 }
     };
 
-    for ( QStringList::Iterator it = allDictionaries.begin(); it != allDictionaries.end(); ++it ) {
+    for (QStringList::Iterator it = allDictionaries.begin();
+         it != allDictionaries.end(); ++it) {
         currentDictionary = *it;
-        minusPos = currentDictionary.indexOf( "-" );
-      	underscorePos = currentDictionary.indexOf( "_" );
-	if ( underscorePos != -1 && underscorePos <= 3 ) {
-           cISOName = currentDictionary.mid( underscorePos + 1, 2 );
-           lISOName = currentDictionary.left( underscorePos );
-           if ( minusPos != -1 )
-              variantName = currentDictionary.right( currentDictionary.length() - minusPos - 1 );
+        minusPos = currentDictionary.indexOf("-");
+      	underscorePos = currentDictionary.indexOf("_");
+	if (underscorePos != -1 && underscorePos <= 3) {
+            cISOName = currentDictionary.mid(underscorePos + 1, 2);
+            lISOName = currentDictionary.left(underscorePos);
+            if ( minusPos != -1 )
+                variantName = currentDictionary.right(
+                    currentDictionary.length() - minusPos - 1);
 	}  else {
-              if ( minusPos != -1 ) {
-                  variantName = currentDictionary.right( currentDictionary.length() - minusPos - 1 );
-                  lISOName = currentDictionary.left( minusPos );
-              }
-              else
-                 lISOName = currentDictionary;
-              }
-        localizedLang = KGlobal::locale()->twoAlphaToLanguageName( lISOName );
-        if ( localizedLang.isEmpty() )
-           localizedLang = lISOName;
-	if ( !cISOName.isEmpty() )
-           if ( !KGlobal::locale()->twoAlphaToCountryName( cISOName ).isEmpty() )
-              localizedCountry = KGlobal::locale()->twoAlphaToCountryName( cISOName );
-           else
-              localizedCountry = cISOName;
-	if ( !variantName.isEmpty() ) {
-	   while ( variantList[ variantCount ].variantShortName != 0 )
-		  if ( variantList[ variantCount ].variantShortName == variantName )
-			 break;
-	          else
-			 variantCount++;
-	   if ( variantList[ variantCount ].variantShortName != 0 )
-           	variantEnglish = variantList[ variantCount ].variantEnglishName;
-	   else
+            if ( minusPos != -1 ) {
+                variantName = currentDictionary.right(
+                    currentDictionary.length() - minusPos - 1);
+                lISOName = currentDictionary.left(minusPos);
+            }
+            else
+                lISOName = currentDictionary;
+        }
+        localizedLang = KGlobal::locale()->twoAlphaToLanguageName(lISOName);
+        if (localizedLang.isEmpty())
+            localizedLang = lISOName;
+	if (!cISOName.isEmpty())
+            if (!KGlobal::locale()->twoAlphaToCountryName(cISOName).isEmpty())
+                localizedCountry = KGlobal::locale()->twoAlphaToCountryName(
+                    cISOName);
+            else
+                localizedCountry = cISOName;
+	if (!variantName.isEmpty()) {
+            while (variantList[variantCount].variantShortName != 0)
+                if (variantList[ variantCount ].variantShortName ==
+                    variantName)
+                    break;
+                else
+                    variantCount++;
+            if (variantList[variantCount].variantShortName != 0)
+           	variantEnglish = variantList[variantCount].variantEnglishName;
+            else
            	variantEnglish = variantName.toLatin1();
 	}
-	if ( !cISOName.isEmpty() && !variantName.isEmpty() )
-             allLocalizedDictionaries.append( i18nc(
-				    "dictionary name. %1-language, %2-country and %3 variant name",
-				    "%1 (%2) [%3]", localizedLang, localizedCountry,
-				                    i18nc( "dictionary variant", variantEnglish ) ) );
+	if (!cISOName.isEmpty() && !variantName.isEmpty())
+            allLocalizedDictionaries.append(
+                i18nc(
+                    "dictionary name. %1-language, %2-country and %3 variant name",
+                    "%1 (%2) [%3]", localizedLang, localizedCountry,
+                    i18nc( "dictionary variant", variantEnglish)));
 	else
-	     if ( !cISOName.isEmpty() )
-                  allLocalizedDictionaries.append( i18nc(
-					 "dictionary name. %1-language and %2-country name",
-					 "%1 (%2)", localizedLang, localizedCountry ) );
-             else
-	        if ( !variantName.isEmpty() )
-            	     allLocalizedDictionaries.append( i18nc(
-					    "dictionary name. %1-language and %2-variant name",
-					    "%1 [%2]", localizedLang,
-						       i18nc( "dictionary variant", variantEnglish ) ) );
+            if (!cISOName.isEmpty())
+                allLocalizedDictionaries.append(
+                    i18nc(
+                        "dictionary name. %1-language and %2-country name",
+                        "%1 (%2)", localizedLang, localizedCountry));
+            else
+	        if (!variantName.isEmpty())
+                    allLocalizedDictionaries.append(
+                        i18nc(
+                            "dictionary name. %1-language and %2-variant name",
+                            "%1 [%2]", localizedLang,
+                            i18nc("dictionary variant", variantEnglish)));
 		else
-                  allLocalizedDictionaries.append( localizedLang );
+                    allLocalizedDictionaries.append(localizedLang);
 	lISOName = cISOName = variantName = "";
 	variantCount = 0;
     }
@@ -276,42 +283,44 @@ Settings* Loader::settings() const
 
 void Loader::loadPlugins()
 {
-    d->plugins = KServiceTypeTrader::self()->query( "KSpell/Client" );
+    d->plugins = KServiceTypeTrader::self()->query("KSpell/Client");
 
     for ( KService::List::const_iterator itr = d->plugins.begin();
           itr != d->plugins.end(); ++itr ) {
-        loadPlugin( (*itr) );
+        loadPlugin((*itr));
     }
 }
 
-void Loader::loadPlugin( const KSharedPtr<KService>& service )
+void Loader::loadPlugin(const KSharedPtr<KService> &service)
 {
     int error = 0;
 
-    Client *client = KService::createInstance<Client>( service, this, QStringList(), &error );
+    Client *client = KService::createInstance<Client>(service,
+                                                      this,
+                                                      QStringList(),
+                                                      &error);
 
-    if ( client )
-    {
+    if (client) {
         const QStringList languages = client->languages();
-        d->clients.append( client->name() );
+        d->clients.append(client->name());
 
-        for ( QStringList::const_iterator itr = languages.begin();
-              itr != languages.end(); ++itr ) {
-            if ( !d->languageClients[ *itr ].isEmpty() &&
-                 client->reliability() < d->languageClients[ *itr ].first()->reliability() )
-                d->languageClients[ *itr ].append( client );
+        for (QStringList::const_iterator itr = languages.begin();
+             itr != languages.end(); ++itr) {
+            if (!d->languageClients[*itr].isEmpty() &&
+                client->reliability() <
+                d->languageClients[*itr].first()->reliability())
+                d->languageClients[*itr].append(client);
             else
-                d->languageClients[ *itr ].prepend( client );
+                d->languageClients[*itr].prepend(client);
         }
 
         kDebug() << k_funcinfo << "Successfully loaded plugin '"
-                  << service->desktopEntryPath() << "'" << endl;
-    }
-    else
-    {
-        kDebug() << k_funcinfo << "Loading plugin '" << service->desktopEntryPath()
-                  << "' failed, KLibLoader reported error: '" << endl
-                  << KLibLoader::errorString(error) << "'" << endl;
+                 << service->desktopEntryPath() << "'" << endl;
+    } else {
+        kDebug() << k_funcinfo << "Loading plugin '"
+                 << service->desktopEntryPath()
+                 << "' failed, KLibLoader reported error: '" << endl
+                 << KLibLoader::errorString(error) << "'" << endl;
     }
 }
 

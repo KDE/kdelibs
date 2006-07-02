@@ -35,19 +35,20 @@ namespace KSpell2
     {
 	Q_OBJECT
     public:
-        Highlighter( QTextEdit *textEdit,
-                     const QString& configFile = QString(),
-                     Filter *filter = Filter::defaultFilter(), const QColor& _col =QColor() );
+        Highlighter(QTextEdit *textEdit,
+                    const QString &configFile = QString(),
+                    Filter *filter = Filter::defaultFilter(),
+                    const QColor &col=QColor());
         ~Highlighter();
-	
-	virtual void highlightBlock ( const QString & text );
+
+	virtual void highlightBlock (const QString &text);
 
         Filter *currentFilter() const;
         void setCurrentFilter( Filter *filter );
 
         QString currentLanguage() const;
         void setCurrentLanguage( const QString& lang );
-	
+
 	static QStringList personalWords();
 
 	/**
@@ -55,15 +56,16 @@ namespace KSpell2
 	 *
 	 * If @p active is true then spell checking is enabled; otherwise it
 	 * is disabled. Note that you have to disable automatic (de)activation
-	 * with @ref setAutomatic() before you change the state of spell checking
-	 * if you want to persistently enable/disable spell checking.
+	 * with @ref setAutomatic() before you change the state of spell
+	 * checking if you want to persistently enable/disable spell
+	 * checking.
 	 *
 	 * @param active if true, then spell checking is enabled
 	 *
 	 * @see isActive(), setAutomatic()
 	 */
-	void setActive( bool active );
-	
+	void setActive(bool active);
+
 	/**
 	 * Returns the state of spell checking.
 	 *
@@ -75,33 +77,34 @@ namespace KSpell2
 
 	bool automatic() const;
 
-	void setAutomatic( bool automatic );
-	
-    
+	void setAutomatic(bool automatic);
+
+
     Q_SIGNALS:
 	/**
 	 * Emitted when as-you-type spell checking is enabled or disabled.
 	 *
-	 * @param description is a i18n description of the new state, with an optional reason
+	 * @param description is a i18n description of the new state,
+	 *        with an optional reason
 	 */
 	void activeChanged(const QString &description);
 
     protected:
-        virtual void setMisspelled( int start, int count );
-        virtual void unsetMisspelled( int start,  int count );
+        virtual void setMisspelled(int start, int count);
+        virtual void unsetMisspelled(int start,  int count);
 
 	bool eventFilter(QObject *o, QEvent *e);
 	bool intraWordEditing() const;
-	void setIntraWordEditing( bool editing );
+	void setIntraWordEditing(bool editing);
 
     public Q_SLOTS:
-	void slotAutoDetection();
-    void slotRehighlight();
+        void slotAutoDetection();
+        void slotRehighlight();
     private:
         class Private;
-        Private* const d;
+        Private *const d;
     };
-    
+
 }
 
 #endif

@@ -32,7 +32,7 @@ namespace KSpell2
 {
     class Filter;
     class Loader;
-    class Dictionary;
+    class Speller;
     class BackgroundThread : public QThread
     {
     public:
@@ -61,7 +61,7 @@ namespace KSpell2
         QMutex      m_mutex;
         Filter     *m_filter;
         Loader::Ptr m_loader;
-        Dictionary *m_dict;
+        Speller    *m_dict;
         bool        m_done;
     };
 }

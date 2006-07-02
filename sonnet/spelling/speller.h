@@ -34,73 +34,63 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short class used for actuall spell checking
      */
-    class Dictionary
+    class Speller
     {
     public:
-        virtual ~Dictionary() {}
+        virtual ~Speller();
 
         /**
          * Checks the given word.
          * @return false if the word is misspelled. true otherwise
          */
-        virtual bool check( const QString& word ) =0;
+        virtual bool isCorrect(const QString &word) const =0;
+
+        /**
+         * Checks the given word.
+         * @return true if the word is misspelled. false otherwise
+         */
+        bool isMisspelled(const QString &word) const;
 
         /**
          * Fetches suggestions for the word.
          *
          * @return list of all suggestions for the word
          */
-        virtual QStringList suggest( const QString& word ) =0;
+        virtual QStringList suggest(const QString &word) const =0;
 
         /**
-         * Checks the word and fetches suggestions for it.
+         * Convience method calling isCorrect() and suggest()
+         * if the word isn't correct.
          */
-        virtual bool checkAndSuggest( const QString& word,
-                                      QStringList& suggestions ) =0;
+        virtual bool checkAndSuggest(const QString& word,
+                                     QStringList& suggestions) const;
 
         /**
          * Stores user defined good replacement for the bad word.
          * @returns true on success
          */
-        virtual bool storeReplacement( const QString& bad,
-                                       const QString& good ) =0;
+        virtual bool storeReplacement(const QString& bad,
+                                      const QString& good) =0;
 
         /**
          * Adds word to the list of of personal words.
          * @return true on success
          */
-        virtual bool addToPersonal( const QString& word ) =0;
+        virtual bool addToPersonal(const QString &word) =0;
 
         /**
          * Adds word to the words recognizable in the current session.
          * @return true on success
          */
-        virtual bool addToSession( const QString& word ) =0;
+        virtual bool addToSession(const QString &word) =0;
 
         /**
          * Returns language supported by this dictionary.
          */
-        QString language() const
-        {
-            return m_language;
-        }
-
-        /**
-         * Returns true if this dictionary was constructed from
-         * default Settings values
-         */
-        bool isDefault() const
-        {
-            return m_default;
-        }
+        QString language() const;
 
     protected:
-        Dictionary( const QString& lang, bool def = false )
-            : m_language( lang ), m_default( def ) {}
-    protected:
-        friend class Loader;
-        QString m_language;
-        bool    m_default;
+        Speller(const QString &lang);
     private:
         class Private;
         Private* d;

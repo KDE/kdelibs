@@ -45,8 +45,8 @@ class Highlighter::Private
 public:
     Filter     *filter;
     Loader::Ptr loader;
-    Dictionary *dict;
-    QHash<QString, Dictionary*>dictCache;
+    Speller *dict;
+    QHash<QString, Speller*>dictCache;
     QTextEdit *edit;
     bool active;
     bool automatic;
@@ -84,7 +84,7 @@ Highlighter::Highlighter( QTextEdit *textEdit,
         d->loader = Loader::openLoader();
 
     d->filter->setSettings( d->loader->settings() );
-    d->dict   = d->loader->dictionary();
+    d->dict   = d->loader->createSpeller();
     Q_ASSERT( d->dict );
     d->dictCache.insert( d->loader->settings()->defaultLanguage(),
                          d->dict );
@@ -234,16 +234,16 @@ void Highlighter::highlightBlock ( const QString & text )
         Word w = d->filter->nextWord();
         while ( !w.end ) {
             ++d->wordCount;
-            if ( !d->dict->check( w.word ) ) {
+            if (d->dict->isMisspelled(w.word)) {
                 ++d->errorCount;
-                setMisspelled( w.start, w.word.length() );
+                setMisspelled(w.start, w.word.length());
             } else
-                unsetMisspelled( w.start, w.word.length() );
+                unsetMisspelled(w.start, w.word.length());
             w = d->filter->nextWord();
         }
     }
     //QTimer::singleShot( 0, this, SLOT(checkWords()) );
-    setCurrentBlockState ( 0 );
+    setCurrentBlockState(0);
 }
 
 Filter *Highlighter::currentFilter() const
@@ -251,10 +251,10 @@ Filter *Highlighter::currentFilter() const
     return d->filter;
 }
 
-void Highlighter::setCurrentFilter( Filter *filter )
+void Highlighter::setCurrentFilter(Filter *filter)
 {
     d->filter = filter;
-    d->filter->setSettings( d->loader->settings() );
+    d->filter->setSettings(d->loader->settings());
 }
 
 QString Highlighter::currentLanguage() const
@@ -262,12 +262,12 @@ QString Highlighter::currentLanguage() const
     return d->dict->language();
 }
 
-void Highlighter::setCurrentLanguage( const QString& lang )
+void Highlighter::setCurrentLanguage(const QString &lang)
 {
-    if ( !d->dictCache.find( lang ) ) {
-        Dictionary *dict = d->loader->dictionary( lang );
+    if (!d->dictCache.find(lang)) {
+        Speller *dict = d->loader->createSpeller(lang);
         if ( dict ) {
-            d->dictCache.insert( lang, dict );
+            d->dictCache.insert(lang, dict);
         } else {
             kDebug()<<"No dictionary for \""
                      <<lang
@@ -279,13 +279,13 @@ void Highlighter::setCurrentLanguage( const QString& lang )
     d->dict = d->dictCache[lang];
     d->wordCount = 0;
     d->errorCount = 0;
-    if ( d->automatic )
+    if (d->automatic)
         slotAutoDetection();
 }
 
-void Highlighter::setMisspelled( int start, int count )
+void Highlighter::setMisspelled(int start, int count)
 {
-    setFormat( start , count, d->spellColor );
+    setFormat(start, count, d->spellColor);
 }
 
 void Highlighter::unsetMisspelled( int start, int count )

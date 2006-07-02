@@ -9,6 +9,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/sonnet/misc )
 set(sonnetbase_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/sonnet/spelling/loader.cpp
   ${CMAKE_SOURCE_DIR}/sonnet/spelling/client.cpp
+  ${CMAKE_SOURCE_DIR}/sonnet/spelling/speller.cpp
   ${CMAKE_SOURCE_DIR}/sonnet/misc/filter.cpp
   ${CMAKE_SOURCE_DIR}/sonnet/misc/settings.cpp
   ${CMAKE_SOURCE_DIR}/sonnet/misc/backgroundchecker.cpp

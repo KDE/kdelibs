@@ -30,7 +30,7 @@ using namespace KSpell2;
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+    KCmdLineArgs::init(argc, argv, "KSpell2Test", 0, 0, 0, 0);
     KApplication app;
 
     Loader::Ptr loader = Loader::openLoader();
@@ -38,7 +38,7 @@ int main( int argc, char** argv )
     kDebug()<< "Clients are "   << loader->clients()   << endl;
     kDebug()<< "Languages are " << loader->languages() << endl;
 
-    Dictionary *dict = loader->dictionary( "en_US" );
+    Speller *dict = loader->createSpeller("en_US");
 
     QStringList words;
 
@@ -85,10 +85,11 @@ int main( int argc, char** argv )
 
     QTime mtime;
     mtime.start();
-    for ( QStringList::Iterator itr = words.begin(); itr != words.end(); ++itr ) {
-        if ( dict && !dict->check( *itr ) ) {
+    for (QStringList::Iterator itr = words.begin();
+         itr != words.end(); ++itr) {
+        if (dict && !dict->isCorrect(*itr)) {
             //kDebug()<<"Word " << *itr <<" is misspelled"<<endl;
-            QStringList sug = dict->suggest( *itr );
+            QStringList sug = dict->suggest(*itr);
             //kDebug()<<"Suggestions : "<<sug<<endl;
         }
     }

@@ -28,15 +28,15 @@ using namespace KSpell2;
 class DefaultDictionary::Private
 {
 public:
-    Dictionary *dict;
-    Loader     *loader; //not a Ptr because Loader holds DefaultDictionary
-                        //we need it only to switch the dics
+    Speller *dict;
+    Loader  *loader; //not a Ptr because Loader holds DefaultDictionary
+                     //we need it only to switch the dics
 };
 
 DefaultDictionary::DefaultDictionary( const QString& lang, Loader *loader )
-    : QObject( loader ), Dictionary( lang, true ),d(new Private)
+    : QObject(loader), Speller(lang), d(new Private)
 {
-    d->dict = loader->dictionary();
+    d->dict = loader->createSpeller();
     d->loader = loader;
     connect( loader, SIGNAL(configurationChanged()),
              SLOT(defaultConfigurationChanged()) );
@@ -53,28 +53,28 @@ bool DefaultDictionary::isValid() const
     return d->dict;
 }
 
-bool DefaultDictionary::check( const QString& word )
+bool DefaultDictionary::isCorrect(const QString &word) const
 {
-    if ( d->dict )
-        return d->dict->check( word );
+    if (d->dict)
+        return d->dict->isCorrect(word);
     else
         return true;
 }
 
-QStringList DefaultDictionary::suggest( const QString& word )
+QStringList DefaultDictionary::suggest(const QString &word) const
 {
-    if ( d->dict )
-        return d->dict->suggest( word );
+    if (d->dict)
+        return d->dict->suggest(word);
     else
         return QStringList();
 
 }
 
-bool DefaultDictionary::checkAndSuggest( const QString& word,
-                                         QStringList& suggestions )
+bool DefaultDictionary::checkAndSuggest(const QString& word,
+                                        QStringList& suggestions) const
 {
-    if ( d->dict )
-        return d->dict->checkAndSuggest( word, suggestions );
+    if (d->dict)
+        return d->dict->checkAndSuggest(word, suggestions);
     else
         return true;
 }
@@ -107,11 +107,7 @@ bool DefaultDictionary::addToSession( const QString& word )
 void DefaultDictionary::defaultConfigurationChanged()
 {
     delete d->dict;
-    d->dict = d->loader->dictionary();
-    if ( d->dict )
-        m_language = d->dict->language();
-    else
-        m_language.clear();
+    d->dict = d->loader->createSpeller();
 }
 
 #include "defaultdictionary.moc"

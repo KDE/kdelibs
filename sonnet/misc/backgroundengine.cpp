@@ -60,34 +60,34 @@ QString BackgroundEngine::text() const
     return m_filter->buffer();
 }
 
-void BackgroundEngine::changeLanguage( const QString& lang )
+void BackgroundEngine::changeLanguage(const QString &lang)
 {
     delete m_dict;
-    if ( lang.isEmpty() ) {
+    if (lang.isEmpty()) {
         m_dict = 0;
     } else {
-        m_dict = m_loader->dictionary( lang );
+        m_dict = m_loader->createSpeller(lang);
     }
 }
 
 QString BackgroundEngine::language() const
 {
-    if ( m_dict )
+    if (m_dict)
         return m_dict->language();
     else
         return m_defaultDict->language();
 }
 
-void BackgroundEngine::setFilter( Filter *filter )
+void BackgroundEngine::setFilter(Filter *filter)
 {
     QString oldText = m_filter->buffer();
     m_filter = filter;
-    m_filter->setBuffer( oldText );
+    m_filter->setBuffer(oldText);
 }
 
 void BackgroundEngine::start()
 {
-    QTimer::singleShot( 0, this, SLOT(checkNext()) );
+    QTimer::singleShot(0, this, SLOT(checkNext()));
 }
 
 void BackgroundEngine::stop()
@@ -96,20 +96,20 @@ void BackgroundEngine::stop()
 
 void BackgroundEngine::continueChecking()
 {
-    QTimer::singleShot( 0, this, SLOT(checkNext()) );
+    QTimer::singleShot(0, this, SLOT(checkNext()));
 }
 
 void BackgroundEngine::checkNext()
 {
     Word w = m_filter->nextWord();
-    if ( w.end ) {
+    if (w.end) {
         emit done();
         return;
     }
 
-    Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );
+    Speller *dict = (m_dict) ? m_dict : static_cast<Speller*>(m_defaultDict);
 
-    if ( !dict->check( w.word ) ) {
+    if (dict->isMisspelled(w.word)) {
         //kDebug()<<"found misspelling "<< w.word <<endl;
         emit misspelling( w.word, w.start );
         //wait for the handler. the parent will decide itself when to continue
@@ -119,19 +119,19 @@ void BackgroundEngine::checkNext()
 
 bool BackgroundEngine::checkWord( const QString& word )
 {
-    Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );
-    return dict->check( word );
+    Speller *dict = (m_dict)?m_dict:static_cast<Speller*>(m_defaultDict);
+    return dict->isCorrect(word);
 }
 
 bool BackgroundEngine::addWord( const QString& word )
 {
-    Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );
-    return dict->addToPersonal( word );
+    Speller *dict = (m_dict)?m_dict:static_cast<Speller*>(m_defaultDict);
+    return dict->addToPersonal(word);
 }
 
 QStringList BackgroundEngine::suggest( const QString& word )
 {
-    Dictionary *dict = ( m_dict ) ? m_dict : static_cast<Dictionary*>( m_defaultDict );
+    Speller *dict = (m_dict)?m_dict:static_cast<Speller*>(m_defaultDict);
     return dict->suggest( word );
 }
 

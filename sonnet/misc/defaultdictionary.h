@@ -30,11 +30,11 @@ namespace KSpell2
 {
     class Loader;
     class DefaultDictionary : public QObject,
-                              public Dictionary
+                              public Speller
     {
         Q_OBJECT
     public:
-        DefaultDictionary( const QString& lang, Loader *loader );
+        DefaultDictionary(const QString &lang, Loader *loader);
         ~DefaultDictionary();
     public:
         /**
@@ -46,14 +46,14 @@ namespace KSpell2
         bool isValid() const;
 
         //Dictionary interface
-        virtual bool check( const QString& word );
-        virtual QStringList suggest( const QString& word );
-        virtual bool checkAndSuggest( const QString& word,
-                                      QStringList& suggestions );
-        virtual bool storeReplacement( const QString& bad,
-                                       const QString& good );
-        virtual bool addToPersonal( const QString& word );
-        virtual bool addToSession( const QString& word );
+        virtual bool isCorrect(const QString &word) const;
+        virtual QStringList suggest(const QString &word) const;
+        virtual bool checkAndSuggest(const QString &word,
+                                     QStringList &suggestions) const;
+        virtual bool storeReplacement(const QString &bad,
+                                      const QString &good);
+        virtual bool addToPersonal(const QString &word);
+        virtual bool addToSession(const QString &word);
         //end of Dictionary interfaces
 
     Q_SIGNALS:

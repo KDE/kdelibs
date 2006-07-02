@@ -34,7 +34,7 @@ class KService;
 namespace KSpell2
 {
     class Settings;
-    class Dictionary;
+    class Speller;
     class DefaultDictionary;
 
     /**
@@ -45,7 +45,7 @@ namespace KSpell2
      * of the KSpell2 architecture.
      */
     class KSPELL2_EXPORT Loader : public QObject,
-                   public KShared
+                                  public KShared
     {
         Q_OBJECT
     public:
@@ -63,7 +63,8 @@ namespace KSpell2
          *        and default client values. If no value will
          *        be passed Loader will use global kspellrc file.
          */
-        static Loader::Ptr openLoader( KSharedConfig::Ptr config = KSharedConfig::Ptr() );
+        static Loader::Ptr openLoader(
+            KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
     public:
         ~Loader();
@@ -91,9 +92,9 @@ namespace KSpell2
          *               reliability value is returned.
          *
          */
-        Dictionary *dictionary(
+        Speller *createSpeller(
             const QString& language = QString(),
-            const QString& client = QString() ) const;
+            const QString& client = QString()) const;
 
         /**
          * Returns names of all supported clients (e.g. ISpell, ASpell)
@@ -125,9 +126,9 @@ namespace KSpell2
         friend class Settings;
         void changed();
     private:
-        Loader( KSharedConfig::Ptr config );
+        Loader(KSharedConfig::Ptr config);
         void loadPlugins();
-        void loadPlugin( const KSharedPtr<KService>& );
+        void loadPlugin(const KSharedPtr<KService>&);
         mutable QStringList languagesNameCache;
     private:
         class Private;

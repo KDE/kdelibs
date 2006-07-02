@@ -33,7 +33,7 @@ int main( int argc, char** argv )
     KApplication app; // with GUI
 
     Loader::Ptr loader = Loader::openLoader();
-    ConfigDialog *dialog = new ConfigDialog( loader, 0 );
+    ConfigDialog *dialog = new ConfigDialog(loader, 0);
 
     dialog->show();
 
