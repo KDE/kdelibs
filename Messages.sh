@@ -1,5 +1,4 @@
 #! /usr/bin/env bash
-( cd kabc/scripts && perl ./makeaddressee )
 find . -type d | fgrep -v '.svn' | sed -e 's,$,/,' > dirs
 msh=`find . -name Messages.sh`
 for dir in $msh; do

@@ -38,12 +38,6 @@
         *   (<a href="interfaces/html/classes.html">classes</a>)\n
 	*   <i>Defines interfaces for common components so that new implementations
 	*   can be dropped in.</i>
-	* - <a href="kabc/html/index.html"><b>kabc</b></a>
-        *   (<a href="kabc/html/classes.html">classes</a>)\n
-	*   <i>Access to the KDE address book.</i>
-	* - <a href="kresources/html/index.html"><b>kresources</b></a>
-        *   (<a href="kresources/html/classes.html">classes</a>)\n
-	*   <i>The KDE resources system.</i>
 	* - <a href="kutils/html/index.html"><b>kutils</b></a>
         *   (<a href="kutils/html/classes.html">classes</a>)\n
 	*   <i>High-level utils, like search/replace support.</i>
