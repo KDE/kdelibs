@@ -20,12 +20,9 @@
     <number>6</number>
    </property>
    <item>
-    <widget class="Q3ButtonGroup" name="buttonGroup2" >
+    <widget class="QGroupBox" name="buttonGroup2" >
      <property name="title" >
       <string>Terminal</string>
-     </property>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
      </property>
      <layout class="QGridLayout" >
       <property name="margin" >
@@ -87,12 +84,9 @@
     </widget>
    </item>
    <item>
-    <widget class="Q3ButtonGroup" name="buttonGroup2_2" >
+    <widget class="QGroupBox" name="buttonGroup2_2" >
      <property name="title" >
       <string>User</string>
-     </property>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
      </property>
      <layout class="QGridLayout" >
       <property name="margin" >
@@ -151,12 +145,9 @@
     </widget>
    </item>
    <item>
-    <widget class="Q3ButtonGroup" name="buttonGroup4" >
+    <widget class="QGroupBox" name="buttonGroup4" >
      <property name="title" >
       <string>Startup</string>
-     </property>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
      </property>
      <layout class="QGridLayout" >
       <property name="margin" >
@@ -243,13 +234,6 @@
  <layoutdefault spacing="6" margin="11" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
-  <customwidget>
-   <class>Q3ButtonGroup</class>
-   <extends></extends>
-   <header>Qt3Support/Q3ButtonGroup</header>
-   <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
   <customwidget>
    <class>KLineEdit</class>
    <extends>QWidget</extends>
