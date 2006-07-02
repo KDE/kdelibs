@@ -457,7 +457,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
     {
 	for (int i = 0 ; i < 4 ; i++)
 	{
-	    icon = themeNode->theme->iconPath(name + *ext[i], size, K3Icon::MatchExact);
+	    icon = themeNode->theme->iconPath(name + ext[i], size, K3Icon::MatchExact);
 	    if (icon.isValid())
 		return icon;
 	}
@@ -468,7 +468,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
     {
 	for (int i = 0 ; i < 4 ; i++)
 	{
-	    icon = themeNode->theme->iconPath(name + *ext[i], size, K3Icon::MatchBest);
+	    icon = themeNode->theme->iconPath(name + ext[i], size, K3Icon::MatchBest);
 	    if (icon.isValid())
 		return icon;
 	}
