@@ -33,7 +33,7 @@ class HSpellDict : public KSpell2::Speller
 public:
     HSpellDict( const QString& lang );
     ~HSpellDict();
-    virtual bool isCorrect( const QString& word );
+    virtual bool isCorrect( const QString& word ) const;
 
     virtual QStringList suggest( const QString& word ) const;
 
