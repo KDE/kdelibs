@@ -1,6 +1,6 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * dictionary.h
+ * speller.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
  *

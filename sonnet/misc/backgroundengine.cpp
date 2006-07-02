@@ -21,7 +21,7 @@
 #include "backgroundengine.h"
 
 #include "defaultdictionary.h"
-#include "dictionary.h"
+#include "speller.h"
 #include "filter.h"
 
 #include <kdebug.h>

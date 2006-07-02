@@ -23,7 +23,7 @@
 #include "highlighter.h"
 #include "highlighter.moc"
 #include "loader.h"
-#include "dictionary.h"
+#include "speller.h"
 #include "settings.h"
 
 #include <kconfig.h>

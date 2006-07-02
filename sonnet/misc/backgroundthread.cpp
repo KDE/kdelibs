@@ -23,7 +23,7 @@
 #include "threadevents.h"
 #include "loader.h"
 #include "filter.h"
-#include "dictionary.h"
+#include "speller.h"
 
 #include <kdebug.h>
 #include <qapplication.h>

@@ -12,8 +12,6 @@ if (HSPELL_FOUND)
    add_subdirectory( hspell )
 endif (HSPELL_FOUND)
 
-add_subdirectory( ispell ) 
-
 
 
 

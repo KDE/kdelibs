@@ -21,7 +21,7 @@
 #ifndef KSPELL_DEFAULTDICTIONARY_H
 #define KSPELL_DEFAULTDICTIONARY_H
 
-#include "dictionary.h"
+#include "speller.h"
 
 #include <qobject.h>
 #include <qstringlist.h>

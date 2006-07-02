@@ -23,7 +23,7 @@
 #include "settings.h"
 #include "client.h"
 #include "defaultdictionary.h"
-#include "dictionary.h"
+#include "speller.h"
 
 #include <klocale.h>
 #include <kservicetypetrader.h>
