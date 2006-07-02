@@ -36,7 +36,7 @@
 #include <kpushbutton.h>
 #include <kstdguiitem.h>
 
-#include "ksconfig.h"
+#include "k3sconfig.h"
 
 class K3SpellConfigPrivate
 {
@@ -199,7 +199,7 @@ K3SpellConfig::dictFromList() const
 bool
 K3SpellConfig::readGlobalSettings()
 {
-  kDebug(750) << "Entering K3SpellConfig::readGlobalSettings (see ksconfig.cpp)" << endl;
+  kDebug(750) << "Entering K3SpellConfig::readGlobalSettings (see k3sconfig.cpp)" << endl;
   KConfigGroup cg( kc,"K3Spell" );
 
   setDoSpellChecking ( cg.readEntry("K3Spell_DoSpellChecking", false ) );
@@ -998,7 +998,7 @@ void K3SpellConfig::activateHelp( void )
 
 void K3SpellConfig::sHelp( void )
 {
-  KToolInvocation::invokeHelp("configuration", "kspell");
+  KToolInvocation::invokeHelp("configuration", "k3spell");
 }
 
 /*
@@ -1054,7 +1054,7 @@ K3SpellConfig::replaceAllList() const
   return d->replacelist;
 }
 
-#include "ksconfig.moc"
+#include "k3sconfig.moc"
 
 
 

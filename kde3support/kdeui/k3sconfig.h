@@ -240,7 +240,7 @@ class KDEUI_EXPORT_DEPRECATED K3SpellConfig : public QWidget
 
   protected Q_SLOTS:
     /**
-     * Invokes the help documentation for kspell
+     * Invokes the help documentation for k3spell
      */
     void sHelp();
     //void sBrowseDict();

@@ -29,9 +29,9 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-#include "ksconfig.h"
-#include "kspelldlg.h"
-#include "ui_kspellui.h"
+#include "k3sconfig.h"
+#include "k3spelldlg.h"
+#include "ui_k3spellui.h"
 
 //to initially disable sorting in the suggestions listview
 #define NONSORTINGCOLUMN 2
@@ -101,7 +101,7 @@ K3SpellDlg::K3SpellDlg( QWidget * parent, bool _progressbar, bool _modal )
     connect( d->spellConfig, SIGNAL(configChanged()),
            SLOT(slotConfigChanged()) );
 
-    setHelp( "spelldlg", "kspell" );
+    setHelp( "spelldlg", "k3spell" );
     setMinimumSize( sizeHint() );
     emit ready( false );
   }
@@ -284,4 +284,4 @@ K3SpellDlg::slotConfigChanged()
   done( KS_CONFIG );
 }
 
-#include "kspelldlg.moc"
+#include "k3spelldlg.moc"

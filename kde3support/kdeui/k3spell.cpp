@@ -43,8 +43,8 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include "ksconfig.h"
-#include "kspelldlg.h"
+#include "k3sconfig.h"
+#include "k3spelldlg.h"
 #include <kwin.h>
 #include <kprocio.h>
 #include <QTextStream>
@@ -239,7 +239,7 @@ K3Spell::startIspell()
 
   //Note to potential debuggers:  -Tlatin2 _is_ being added on the
   //  _first_ try.  But, some versions of ispell will fail with this
-  // option, so kspell tries again without it.  That's why as 'ps -ax'
+  // option, so k3spell tries again without it.  That's why as 'ps -ax'
   // shows "ispell -a -S ..." withou the "-Tlatin2" option.
 
     if ( trystart<1 ) {
@@ -1565,7 +1565,7 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
   maxtrystart = 2;
 
   if ( obj && slot )
-      // caller wants to know when kspell is ready
+      // caller wants to know when k3spell is ready
       connect( this, SIGNAL(ready(K3Spell *)), obj, slot);
   else
       // Hack for modal spell checking
@@ -1580,5 +1580,5 @@ QString K3Spell::modaltext;
 int K3Spell::modalreturn = 0;
 QWidget* K3Spell::modalWidgetHack = 0;
 
-#include "kspell.moc"
+#include "k3spell.moc"
 

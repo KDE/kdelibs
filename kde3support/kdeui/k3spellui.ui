@@ -2,8 +2,8 @@
  <author></author>
  <comment></comment>
  <exportmacro></exportmacro>
- <class>KSpellUI</class>
- <widget class="QWidget" name="KSpellUI" >
+ <class>K3SpellUI</class>
+ <widget class="QWidget" name="K3SpellUI" >
   <property name="geometry" >
    <rect>
     <x>0</x>
