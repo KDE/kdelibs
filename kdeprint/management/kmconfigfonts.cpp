@@ -148,7 +148,7 @@ void KMConfigFonts::slotAdd()
 	Q3ListViewItem	*lastItem(m_fontpath->firstChild());
 	while (lastItem && lastItem->nextSibling())
 		lastItem = lastItem->nextSibling();
-	Q3ListViewItem	*item = new Q3ListViewItem(m_fontpath, lastItem, m_addpath->url());
+	Q3ListViewItem	*item = new Q3ListViewItem(m_fontpath, lastItem, m_addpath->url().toString());
 	m_fontpath->setSelected(item, true);
 }
 
