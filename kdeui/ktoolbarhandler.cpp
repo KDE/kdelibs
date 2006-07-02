@@ -161,9 +161,9 @@ class ToolBarHandler::Private
     QLinkedList<KToolBar*> toolBars;
 };
 
-void ToolBarHandler::Private::init( KMainWindow *mainWindow )
+void ToolBarHandler::Private::init( KMainWindow *mw )
 {
-  mainWindow = mainWindow;
+  mainWindow = mw;
 
   QObject::connect( mainWindow->guiFactory(), SIGNAL( clientAdded( KXMLGUIClient * ) ),
                     parent, SLOT( clientAdded( KXMLGUIClient * ) ) );
