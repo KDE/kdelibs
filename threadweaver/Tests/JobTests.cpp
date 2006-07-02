@@ -71,6 +71,28 @@ private slots:
 
     // call finish() before leave a test to make sure the queue is empty
 
+  void WeaverInitializationTest()
+  { // this one mostly tests the sanity of the startup behaviour
+    ThreadWeaver::Weaver weaver;
+    QCOMPARE (weaver.noOfThreads(), 0);
+    QVERIFY (weaver.isEmpty());
+    QVERIFY(weaver.isIdle());
+    QVERIFY(weaver.queueLength() == 0);
+    weaver.finish();
+  }
+
+  void WeaverLazyThreadCreationTest()
+  {
+    ThreadWeaver::Weaver weaver;
+    QString sequence;
+    QCOMPARE (weaver.noOfThreads(), 0);
+    AppendCharacterJob a( QChar('a'), &sequence, this);
+    weaver.enqueue( & a);
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(a.isFinished());
+    QCOMPARE (weaver.noOfThreads(), 1);
+  }
+
     void SimpleJobTest() {
         QString sequence;
         AppendCharacterJob job( QChar( '1' ), &sequence, this );
@@ -302,7 +324,6 @@ private slots:
         QCOMPARE ( sequence, QString( "abc" ) );
     }
 
-    /*
     void SequenceOfSequencesTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -344,7 +365,6 @@ private slots:
         ThreadWeaver::Weaver::instance()->finish();
         QCOMPARE ( sequence, QString( "abcdefghij" ) );
     }
-    */
 
     void QueueAndStopTest() {
         QString sequence;

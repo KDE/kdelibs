@@ -27,9 +27,6 @@ namespace ThreadWeaver {
         }
 
         JobCollection::aboutToBeQueued( weaver );
-
-	DependencyPolicy::instance().dumpJobDependencies();
- 
     }
 
     void JobSequence::internalJobDone( Job* job)

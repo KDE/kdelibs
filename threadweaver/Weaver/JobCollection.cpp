@@ -166,13 +166,11 @@ void JobCollection::execute ( Thread *t )
 
 Job* JobCollection::jobAt( int i )
 {
-  qDebug("unecessary" );
   return m_elements->at( i )->payload();
 }
 
 const int JobCollection::jobListLength()
 {
-  qDebug("unecessary" );
   return m_elements->size();
 }
 

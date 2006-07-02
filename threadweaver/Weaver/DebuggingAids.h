@@ -117,6 +117,24 @@ namespace ThreadWeaver {
 #else
 #define debug(x,...)
 #endif
+  
+  inline bool invariant() { return true; }
+
+#define INVARIANT Q_ASSERT_X (invariant(), __FILE__, "class invariant failed" );
+
+#define REQUIRE(x) \
+INVARIANT \
+Q_ASSERT_X (x, __FUNCTION__, "unfulfilled requirement " #x );
+
+#define ENSURE(x) \
+INVARIANT \
+Q_ASSERT_X (x, __FUNCTION__, "broken guarantee " #x );
+
+#ifdef QT_NO_DEBUG
+#define DEBUGONLY(x)
+#else 
+#define DEBUGONLY(x) x
+#endif
 
 }
 

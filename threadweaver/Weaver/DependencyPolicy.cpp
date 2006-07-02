@@ -28,6 +28,7 @@ public:
         static QMutex s_mutex;
         return s_mutex;
     }
+  
 };
 
 DependencyPolicy::DependencyPolicy()
@@ -42,16 +43,22 @@ DependencyPolicy::~DependencyPolicy()
 }
 
 void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
-{   // jobA depends on jobB
+{   
+    // jobA depends on jobB
+    REQUIRE (jobA != 0 && jobB != 0);
     jobA->assignQueuePolicy( this );
     jobB->assignQueuePolicy( this );
     QMutexLocker l( & d->mutex() );
     d->dependencies().insert( jobA, jobB );
+    
+    ENSURE ( d->dependencies().contains (jobA));
 }
 
 bool DependencyPolicy::removeDependency( Job* jobA, Job* jobB )
 {
-    QMutexLocker l( & d->mutex() );
+  REQUIRE (jobA != 0 && jobB != 0);
+  bool result = false;
+  QMutexLocker l( & d->mutex() );
 
     // there may be only one (!) occurence of [this, dep]:
     QMutableMapIterator<Job*, Job*> it( d->dependencies () );
@@ -61,10 +68,13 @@ bool DependencyPolicy::removeDependency( Job* jobA, Job* jobB )
 	    if ( it.key()==jobA && it.value()==jobB )
 	    {
 		it.remove();
-		return true;
+		result = true;
+		break;
 	    }
 	}
-    return false;
+    
+    ENSURE ( ! d->dependencies().keys(jobB).contains(jobA) );
+    return result;
 }
 
 void DependencyPolicy::resolveDependencies( Job* job )
@@ -87,6 +97,7 @@ void DependencyPolicy::resolveDependencies( Job* job )
 
 QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
 {
+  REQUIRE (job != 0);
     QList<Job*> result;
     JobMultiMap::const_iterator it;
     QMutexLocker l( & d->mutex() );
@@ -103,6 +114,7 @@ QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
 
 bool DependencyPolicy::hasUnresolvedDependencies( Job* job )
 {
+  REQUIRE (job != 0);
     QMutexLocker l( & d->mutex() );
     return d->dependencies().contains( job );
 }
@@ -115,23 +127,27 @@ DependencyPolicy& DependencyPolicy::instance ()
 
 bool DependencyPolicy::canRun( Job* job )
 {
-    return ! hasUnresolvedDependencies( job );
+  REQUIRE (job != 0);
+  return ! hasUnresolvedDependencies( job );
 }
 
 void DependencyPolicy::free( Job* job )
 {
-    resolveDependencies( job );
-    Q_ASSERT ( ! hasUnresolvedDependencies( job ) );
-    debug ( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", job);
+  REQUIRE (job != 0);
+  resolveDependencies( job );
+  Q_ASSERT ( ! hasUnresolvedDependencies( job ) );
+  debug ( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", job);
 }
 
-void DependencyPolicy::release( Job* )
+void DependencyPolicy::release( Job* job )
 {
+  REQUIRE (job != 0);
 }
 
 void DependencyPolicy::destructed( Job* job )
 {
-    resolveDependencies ( job );
+  REQUIRE (job != 0);
+  resolveDependencies ( job );
 }
 
 void DependencyPolicy::dumpJobDependencies()
@@ -151,3 +167,4 @@ void DependencyPolicy::dumpJobDependencies()
     }
     debug ( 0, "-----------------\n" );
 }
+
