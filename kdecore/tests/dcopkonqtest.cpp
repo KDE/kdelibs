@@ -7,18 +7,13 @@
 
 int main( int argc, char** argv )
 {
-   KAboutData about("KIDLTestClient", "KIDLTestClient", "version");
+   KAboutData about("DBusKonqTest", "DBusKonqTest", "version");
    KCmdLineArgs::init(argc, argv, &about);
    KApplication app(false);
 
-    //KApplication::dcopClient()->attach();
-    // KApplication::dcopClient()->registerAs( "kidlclienttest" );
-
-    QByteArray data;
-
     kDebug() << "sending reparseConfiguration to object KonquerorIface in konqueror" << endl;
     QDBusInterface kded("org.kde.konqueror", "/KonquerorIface", "org.kde.KonquerorIface");
-    QDBusReply<void> reply = kded.call("reparceConfiguration");
+    QDBusReply<void> reply = kded.call("reparseConfiguration");
 
     if ( reply.isError() ) kDebug() << "void expected, " << reply.error().name() << " returned" << endl;
 
