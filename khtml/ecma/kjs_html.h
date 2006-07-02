@@ -53,6 +53,8 @@ namespace KJS {
     DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }
   };
 
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor)
+
   class HTMLElement : public DOMElement {
   public:
     HTMLElement(ExecState *exec, const DOM::HTMLElement& e) : DOMElement(exec, e) { }

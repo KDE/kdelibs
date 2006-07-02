@@ -223,55 +223,6 @@ void JSLazyEventListener::parseCode() const
 
 // -------------------------------------------------------------------------
 
-const ClassInfo EventConstructor::info = { "EventConstructor", 0, &EventConstructorTable, 0 };
-/*
-@begin EventConstructorTable 3
-  CAPTURING_PHASE	DOM::Event::CAPTURING_PHASE	DontDelete|ReadOnly
-  AT_TARGET		DOM::Event::AT_TARGET		DontDelete|ReadOnly
-  BUBBLING_PHASE	DOM::Event::BUBBLING_PHASE	DontDelete|ReadOnly
-# Reverse-engineered from Netscape
-  MOUSEDOWN		1				DontDelete|ReadOnly
-  MOUSEUP		2				DontDelete|ReadOnly
-  MOUSEOVER		4				DontDelete|ReadOnly
-  MOUSEOUT		8				DontDelete|ReadOnly
-  MOUSEMOVE		16				DontDelete|ReadOnly
-  MOUSEDRAG		32				DontDelete|ReadOnly
-  CLICK			64				DontDelete|ReadOnly
-  DBLCLICK		128				DontDelete|ReadOnly
-  KEYDOWN		256				DontDelete|ReadOnly
-  KEYUP			512				DontDelete|ReadOnly
-  KEYPRESS		1024				DontDelete|ReadOnly
-  DRAGDROP		2048				DontDelete|ReadOnly
-  FOCUS			4096				DontDelete|ReadOnly
-  BLUR			8192				DontDelete|ReadOnly
-  SELECT		16384				DontDelete|ReadOnly
-  CHANGE		32768				DontDelete|ReadOnly
-@end
-*/
-
-EventConstructor::EventConstructor(ExecState *exec)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype())
-{
-}
-
-Value EventConstructor::tryGet(ExecState *exec, const Identifier &p) const
-{
-  return DOMObjectLookupGetValue<EventConstructor, DOMObject>(exec,p,&EventConstructorTable,this);
-}
-
-Value EventConstructor::getValueProperty(ExecState *, int token) const
-{
-  // We use the token as the value to return directly
-  return Number(token);
-}
-
-Value KJS::getEventConstructor(ExecState *exec)
-{
-  return cacheGlobalObject<EventConstructor>(exec, "[[event.constructor]]");
-}
-
-// -------------------------------------------------------------------------
-
 const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
 /*
 @begin DOMEventTable 7
@@ -430,6 +381,34 @@ DOM::Event KJS::toEvent(const Value& val)
   return dobj->toEvent();
 }
 
+// -------------------------------------------------------------------------
+/*
+@begin EventConstantsTable 23
+  CAPTURING_PHASE   DOM::Event::CAPTURING_PHASE DontDelete|ReadOnly
+  AT_TARGET     DOM::Event::AT_TARGET       DontDelete|ReadOnly
+  BUBBLING_PHASE    DOM::Event::BUBBLING_PHASE  DontDelete|ReadOnly
+# Reverse-engineered from Netscape
+  MOUSEDOWN     1               DontDelete|ReadOnly
+  MOUSEUP       2               DontDelete|ReadOnly
+  MOUSEOVER     4               DontDelete|ReadOnly
+  MOUSEOUT      8               DontDelete|ReadOnly
+  MOUSEMOVE     16              DontDelete|ReadOnly
+  MOUSEDRAG     32              DontDelete|ReadOnly
+  CLICK         64              DontDelete|ReadOnly
+  DBLCLICK      128             DontDelete|ReadOnly
+  KEYDOWN       256             DontDelete|ReadOnly
+  KEYUP         512             DontDelete|ReadOnly
+  KEYPRESS      1024                DontDelete|ReadOnly
+  DRAGDROP      2048                DontDelete|ReadOnly
+  FOCUS         4096                DontDelete|ReadOnly
+  BLUR          8192                DontDelete|ReadOnly
+  SELECT        16384               DontDelete|ReadOnly
+  CHANGE        32768               DontDelete|ReadOnly
+@end
+*/
+CREATE_CONSTANT_TABLE(EventConstants, "EventConstants")
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(EventConstructor, "EventConstructor", DOMEventProto, EventConstants);
 // -------------------------------------------------------------------------
 
 
@@ -613,8 +592,11 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   case OffsetY: // MSIE extension
   {
     DOM::Node node = event.target();
-    node.handle()->getDocument()->updateRendering();
-    khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
+    khtml::RenderObject *rend = 0;
+    if (node.handle()) {
+        node.handle()->getDocument()->updateRendering();
+        rend = node.handle()->renderer();
+    }
     int x = static_cast<DOM::MouseEvent>(event).clientX();
     int y = static_cast<DOM::MouseEvent>(event).clientY();
     if ( rend ) {

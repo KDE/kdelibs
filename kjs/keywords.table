@@ -31,9 +31,9 @@ throw		THROW
 try		TRY
 typeof		TYPEOF
 with		WITH
+debugger	DEBUGGER
 # reserved for future use
 class		RESERVED
-debugger	RESERVED
 enum		RESERVED
 export		RESERVED
 extends		RESERVED

@@ -144,7 +144,9 @@ namespace KJS {
            Onkeydown, Onkeypress, Onkeyup, Onload, Onmousedown, Onmousemove,
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
            Onselect, Onsubmit, Onunload,
-           MutationEventCtor, KeyboardEventCtor, EventExceptionCtor };
+           MutationEventCtor, KeyboardEventCtor, EventExceptionCtor,
+           ElementCtor, DocumentCtor, HTMLElementCtor, HTMLDocumentCtor,
+           CSSStyleDeclarationCtor};
     WindowQObject *winq;
 
     void forgetSuppressedWindows();

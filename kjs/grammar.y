@@ -94,6 +94,7 @@ using namespace KJS;
 %token IF THIS DO WHILE ELSE IN INSTANCEOF TYPEOF
 %token SWITCH WITH RESERVED
 %token THROW TRY CATCH FINALLY
+%token DEBUGGER
 
 /* punctuators */
 %token EQEQ NE                     /* == and != */
@@ -138,6 +139,7 @@ using namespace KJS;
 %type <stat>  BreakStatement ReturnStatement WithStatement
 %type <stat>  SwitchStatement LabelledStatement
 %type <stat>  ThrowStatement TryStatement
+%type <stat>  DebuggerStatement
 %type <stat>  SourceElement
 
 %type <slist> StatementList
@@ -398,6 +400,7 @@ Statement:
   | LabelledStatement
   | ThrowStatement
   | TryStatement
+  | DebuggerStatement
 ;
 
 Block:
@@ -600,6 +603,16 @@ TryStatement:
   | TRY Block Finally              { $$ = new TryNode($2, $3); DBG($$,@1,@1); }
   | TRY Block Catch Finally        { $$ = new TryNode($2, $3, $4); DBG($$,@1,@1); }
 ;
+
+DebuggerStatement:
+    DEBUGGER ';'                           { $$ = new EmptyStatementNode(); DBG($$, @1, @2); }
+  | DEBUGGER error                         { if (automatic()) {
+                                                $$ = new EmptyStatementNode(); 
+                                                DBG($$, @1, @1); 
+                                             } else {
+                                                YYABORT; } }
+;
+
 
 Catch:
     CATCH '(' IDENT ')' Block      { CatchNode *c; $$ = c = new CatchNode(*$3, $5);

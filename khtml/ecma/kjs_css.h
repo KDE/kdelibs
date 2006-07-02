@@ -50,6 +50,8 @@ namespace KJS {
     DOM::CSSStyleDeclaration styleDecl;
   };
 
+  DEFINE_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor)
+
   Value getDOMCSSStyleDeclaration(ExecState *exec, const DOM::CSSStyleDeclaration& n);
 
   class DOMStyleSheet : public DOMObject {

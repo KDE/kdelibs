@@ -264,6 +264,55 @@ namespace KJS {
 
   Value getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
+
+// This is used to create pseudo-constructor objects, like Mozillaish
+// Element, HTMLDocument, etc., which do not act like real constructors,
+// but do have the prototype property pointing to prototype of "instances"
+#define DEFINE_PSEUDO_CONSTRUCTOR(ClassName) \
+  class ClassName : public DOMObject { \
+      public: \
+          ClassName(ExecState *); \
+          virtual const ClassInfo* classInfo() const { return &info; } \
+          static const ClassInfo info; \
+          static Object self(ExecState *exec); \
+  };
+
+#define IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProto) \
+    const ClassInfo Class::info = { ClassName, 0, 0, 0 }; \
+    Class::Class(ExecState* exec): DOMObject(ParentProto) {\
+        Object proto = ProtoClass::self(exec); \
+        putDirect(prototypePropertyName, proto.imp(), DontDelete|ReadOnly); \
+    }\
+    Object Class::self(ExecState *exec) { \
+        return Object(cacheGlobalObject<Class>(exec, "[[" ClassName ".constructor]]")); \
+    }
+
+#define IMPLEMENT_PSEUDO_CONSTRUCTOR(Class,ClassName,ProtoClass) \
+    IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,exec->lexicalInterpreter()->builtinObjectPrototype())
+
+#define IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(Class,ClassName,ProtoClass,ParentProtoClass) \
+    IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProtoClass::self(exec))
+
+// This is used to implement a constant table. Can be used as a prototype
+#define CREATE_CONSTANT_TABLE(Class,ClassName) \
+   class Class : public DOMObject { \
+   public: \
+     Class(ExecState *exec): DOMObject(exec->interpreter()->builtinObjectPrototype()) {} \
+     virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const { \
+        return DOMObjectLookupGetValue<Class, DOMObject>(exec, propertyName, &Class##Table, this);\
+     } \
+     Value getValueProperty(ExecState * /*exec*/, int token) const { \
+        /* We use the token as the value to return directly*/ \
+        return Number((unsigned int)token); \
+     }  \
+     virtual const ClassInfo* classInfo() const { return &info; } \
+     static const ClassInfo info; \
+     static Object self(ExecState *exec) { \
+        return Object(cacheGlobalObject<Class>(exec, "[[" ClassName ".constant_table]]")); \
+     } \
+   }; \
+   const ClassInfo Class::info = { ClassName, 0, &Class##Table, 0 };
+
 } // namespace
 
 #endif

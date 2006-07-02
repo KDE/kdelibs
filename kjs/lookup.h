@@ -287,8 +287,10 @@ namespace KJS {
    * and use DOMNodeProto::self(exec) as prototype in the DOMNode constructor.
    * If the prototype has a "parent prototype", e.g. DOMElementProto falls back on DOMNodeProto,
    * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
+   * PUBLIC_DEFINE_PROTOTYPE and PUBLIC_IMPLEMENT_PROTOTYPE are versions with support for separate compilation
    */
-#define DEFINE_PROTOTYPE(ClassName,ClassProto) \
+
+#define PUBLIC_DEFINE_PROTOTYPE(ClassName,ClassProto) \
   namespace KJS { \
   class ClassProto : public KJS::ObjectImp { \
     friend KJS::Object cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
@@ -307,8 +309,16 @@ namespace KJS {
     KJS::Value get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
     bool hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const; \
   }; \
+  }
+
+#define IMPLEMENT_CLASSINFO(ClassName,ClassProto) \
+  namespace KJS {\
   const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
   }
+
+#define DEFINE_PROTOTYPE(ClassName,ClassProto) \
+  PUBLIC_DEFINE_PROTOTYPE(ClassName,ClassProto) \
+  IMPLEMENT_CLASSINFO(ClassName,ClassProto)
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
     KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
@@ -320,6 +330,10 @@ namespace KJS {
     { /*stupid but we need this to have a common macro for the declaration*/ \
       return KJS::ObjectImp::hasProperty(exec, propertyName); \
     }
+
+#define PUBLIC_IMPLEMENT_PROTOTYPE(ClassProto,ClassName,ClassFunc) \
+    IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc)\
+    IMPLEMENT_CLASSINFO(ClassName,ClassProto)
 
 #define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
     KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const \
@@ -336,6 +350,10 @@ namespace KJS {
         return true; \
       return ParentProto::self(exec).hasProperty(exec, propertyName); \
     }
+    
+#define PUBLIC_IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassName,ClassFunc,ParentProto)  \
+    IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto) \
+    IMPLEMENT_CLASSINFO(ClassName,ClassProto)
 
 #define IMPLEMENT_PROTOFUNC(ClassFunc) \
   namespace KJS { \

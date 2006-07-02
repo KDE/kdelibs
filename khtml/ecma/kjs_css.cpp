@@ -80,6 +80,8 @@ DEFINE_PROTOTYPE("DOMCSSStyleDeclaration", DOMCSSStyleDeclarationProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMCSSStyleDeclarationProtoFunc)
 IMPLEMENT_PROTOTYPE(DOMCSSStyleDeclarationProto, DOMCSSStyleDeclarationProtoFunc)
 
+IMPLEMENT_PSEUDO_CONSTRUCTOR(CSSStyleDeclarationPseudoCtor, "DOMCSSStyleDeclaration",DOMCSSStyleDeclarationProto)
+
 const ClassInfo DOMCSSStyleDeclaration::info = { "CSSStyleDeclaration", 0, &DOMCSSStyleDeclarationTable, 0 };
 
 DOMCSSStyleDeclaration::DOMCSSStyleDeclaration(ExecState *exec, const DOM::CSSStyleDeclaration& s)

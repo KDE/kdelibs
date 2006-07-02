@@ -333,6 +333,15 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   XMLHttpRequest Window::XMLHttpRequest DontDelete|ReadOnly
   XMLSerializer	Window::XMLSerializer	DontDelete|ReadOnly
   DOMParser	Window::DOMParser	DontDelete|ReadOnly
+
+# Mozilla dom emulation ones.
+  Element   Window::ElementCtor DontDelete
+  Document  Window::DocumentCtor DontDelete
+  #this one is an alias since we don't have a separate XMLDocument
+  XMLDocument Window::DocumentCtor DontDelete
+  HTMLElement  Window::HTMLElementCtor DontDelete
+  HTMLDocument Window::HTMLDocumentCtor DontDelete
+  CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontDelete
 @end
 */
 IMPLEMENT_PROTOFUNC_DOM(WindowFunc)
@@ -591,7 +600,7 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       else
         return Undefined();
     case Node:
-      return getNodeConstructor(exec);
+      return NodeConstructor::self(exec);
     case Range:
       return getRangeConstructor(exec);
     case NodeFilter:
@@ -600,8 +609,17 @@ Value Window::get(ExecState *exec, const Identifier &p) const
       return getDOMExceptionConstructor(exec);
     case CSSRule:
       return getCSSRuleConstructor(exec);
+    case ElementCtor:
+    case HTMLElementCtor: //Hack -- we don't have a separate prototype here
+      return ElementPseudoCtor::self(exec);
+    case DocumentCtor:
+      return DocumentPseudoCtor::self(exec);
+    case HTMLDocumentCtor:
+      return HTMLDocumentPseudoCtor::self(exec);
+    case CSSStyleDeclarationCtor:
+        return CSSStyleDeclarationPseudoCtor::self(exec);
     case EventCtor:
-      return getEventConstructor(exec);
+      return EventConstructor::self(exec);
     case MutationEventCtor:
       return getMutationEventConstructor(exec);
     case KeyboardEventCtor:

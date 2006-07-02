@@ -63,7 +63,26 @@
 
 using namespace KJS;
 
+DEFINE_PROTOTYPE("HTMLDocument",HTMLDocumentProto)
 IMPLEMENT_PROTOFUNC_DOM(HTMLDocFunction)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(HTMLDocumentProto,HTMLDocFunction,DOMDocumentProto)
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLDocumentPseudoCtor, "HTMLDocument", HTMLDocumentProto)
+
+/* Source for HTMLDocumentProtoTable.
+@begin HTMLDocumentProtoTable 11
+  clear         HTMLDocument::Clear     DontDelete|Function 0
+  open          HTMLDocument::Open      DontDelete|Function 0
+  close         HTMLDocument::Close     DontDelete|Function 0
+  write         HTMLDocument::Write     DontDelete|Function 1
+  writeln       HTMLDocument::WriteLn       DontDelete|Function 1
+  getElementsByName HTMLDocument::GetElementsByName DontDelete|Function 1
+  getSelection  HTMLDocument::GetSelection  DontDelete|Function 1
+  captureEvents     HTMLDocument::CaptureEvents DontDelete|Function 0
+  releaseEvents     HTMLDocument::ReleaseEvents DontDelete|Function 0
+@end
+*/
+
 
 Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
@@ -146,15 +165,6 @@ const ClassInfo KJS::HTMLDocument::info =
   anchors		HTMLDocument::Anchors		DontDelete|ReadOnly
   scripts		HTMLDocument::Scripts		DontDelete|ReadOnly
   all			HTMLDocument::All		DontDelete|ReadOnly
-  clear			HTMLDocument::Clear		DontDelete|Function 0
-  open			HTMLDocument::Open		DontDelete|Function 0
-  close			HTMLDocument::Close		DontDelete|Function 0
-  write			HTMLDocument::Write		DontDelete|Function 1
-  writeln		HTMLDocument::WriteLn		DontDelete|Function 1
-  getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
-  getSelection	HTMLDocument::GetSelection	DontDelete|Function 1
-  captureEvents		HTMLDocument::CaptureEvents	DontDelete|Function 0
-  releaseEvents		HTMLDocument::ReleaseEvents	DontDelete|Function 0
   bgColor		HTMLDocument::BgColor		DontDelete
   fgColor		HTMLDocument::FgColor		DontDelete
   alinkColor		HTMLDocument::AlinkColor	DontDelete
@@ -179,8 +189,7 @@ const ClassInfo KJS::HTMLDocument::info =
 */
 
 KJS::HTMLDocument::HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d)
-  /*TODO pass HTMLDocumentProto::self(exec), but it needs to access DOMDocumentProto...*/
-  : DOMDocument(exec, d) { }
+  : DOMDocument(HTMLDocumentProto::self(exec), d) { }
 
 bool KJS::HTMLDocument::hasProperty(ExecState *exec, const Identifier &p) const
 {
@@ -300,16 +309,6 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
         return getHTMLCollection(exec,doc.all());
       else // enabled but hidden
         return getHTMLCollection(exec,doc.all(), true);
-    case Clear:
-    case Open:
-    case Close:
-    case Write:
-    case WriteLn:
-    case GetElementsByName:
-    case GetSelection:
-    case CaptureEvents:
-    case ReleaseEvents:
-      return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
     case CompatMode:
       return String(static_cast<HTMLDocumentImpl *>(doc.handle())->parseMode()
               == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");

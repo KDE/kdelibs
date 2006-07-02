@@ -29,6 +29,8 @@
 
 #include "ecma/kjs_binding.h"
 
+PUBLIC_DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
+
 namespace KJS {
 
   class DOMNode : public DOMObject {
@@ -106,7 +108,7 @@ namespace KJS {
     void putValueProperty(ExecState *exec, int token, const Value& value, int attr);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { DocType, Implementation, DocumentElement,
+    enum { DocType, Implementation, DocumentElement, CharacterSet, 
            // Functions
            CreateElement, CreateDocumentFragment, CreateTextNode, CreateComment,
            CreateCDATASection, CreateProcessingInstruction, CreateAttribute,
@@ -116,6 +118,8 @@ namespace KJS {
            CreateEvent, StyleSheets, GetOverrideStyle, Abort, Load, LoadXML,
            PreferredStylesheetSet, SelectedStylesheetSet, ReadyState, Async };
   };
+
+  DEFINE_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor)
 
   class DOMAttr : public DOMNode {
   public:
@@ -145,6 +149,8 @@ namespace KJS {
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS };
   };
+
+  DEFINE_PSEUDO_CONSTRUCTOR(ElementPseudoCtor)
 
   class DOMDOMImplementation : public DOMObject {
   public:
@@ -223,16 +229,7 @@ namespace KJS {
     enum { PublicId, SystemId, NotationName };
   };
 
-  // Constructor for Node - constructor stuff not implemented yet
-  class NodeConstructor : public DOMObject {
-  public:
-    NodeConstructor(ExecState *);
-    virtual Value tryGet(ExecState *exec, const Identifier &propertyName) const;
-    Value getValueProperty(ExecState *exec, int token) const;
-    // no put - all read-only
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-  };
+  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor);
 
   // Constructor for DOMException - constructor stuff not implemented yet
   class DOMExceptionConstructor : public DOMObject {
@@ -250,7 +247,6 @@ namespace KJS {
   Value getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m);
   Value getDOMNodeList(ExecState *exec, const DOM::NodeList& l);
   Value getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i);
-  Object getNodeConstructor(ExecState *exec);
   Object getDOMExceptionConstructor(ExecState *exec);
 
   // Internal class, used for the collection return by e.g. document.forms.myinput

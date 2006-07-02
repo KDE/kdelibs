@@ -46,6 +46,24 @@
 using namespace KJS;
 
 // -------------------------------------------------------------------------
+/* Source for DOMNodeConstantsTable.
+@begin DOMNodeConstantsTable 11
+  ELEMENT_NODE      DOM::Node::ELEMENT_NODE     DontDelete|ReadOnly
+  ATTRIBUTE_NODE    DOM::Node::ATTRIBUTE_NODE       DontDelete|ReadOnly
+  TEXT_NODE     DOM::Node::TEXT_NODE        DontDelete|ReadOnly
+  CDATA_SECTION_NODE    DOM::Node::CDATA_SECTION_NODE   DontDelete|ReadOnly
+  ENTITY_REFERENCE_NODE DOM::Node::ENTITY_REFERENCE_NODE    DontDelete|ReadOnly
+  ENTITY_NODE       DOM::Node::ENTITY_NODE      DontDelete|ReadOnly
+  PROCESSING_INSTRUCTION_NODE DOM::Node::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
+  COMMENT_NODE      DOM::Node::COMMENT_NODE     DontDelete|ReadOnly
+  DOCUMENT_NODE     DOM::Node::DOCUMENT_NODE        DontDelete|ReadOnly
+  DOCUMENT_TYPE_NODE    DOM::Node::DOCUMENT_TYPE_NODE   DontDelete|ReadOnly
+  DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE  DontDelete|ReadOnly
+  NOTATION_NODE     DOM::Node::NOTATION_NODE        DontDelete|ReadOnly
+@end
+*/
+CREATE_CONSTANT_TABLE(DOMNodeConstants,"DOMNodeConstants")
+// -------------------------------------------------------------------------
 /* Source for DOMNodeProtoTable.
 @begin DOMNodeProtoTable 13
   insertBefore	DOMNode::InsertBefore	DontDelete|Function 2
@@ -71,7 +89,7 @@ using namespace KJS;
 */
 DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMNodeProtoFunc)
-IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMNodeProto,DOMNodeProtoFunc,DOMNodeConstants)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
@@ -813,9 +831,10 @@ void DOMAttr::putValueProperty(ExecState *exec, int token, const Value& value, i
   loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
 @end
 */
-DEFINE_PROTOTYPE("DOMDocument", DOMDocumentProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMDocumentProtoFunc)
-IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
+PUBLIC_IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMDocumentProto, "DOMDocument", DOMDocumentProtoFunc, DOMNodeProto)
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR(DocumentPseudoCtor, "Document", DOMDocumentProto)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
@@ -823,6 +842,7 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
 @begin DOMDocumentTable 4
   doctype         DOMDocument::DocType                         DontDelete|ReadOnly
   implementation  DOMDocument::Implementation                  DontDelete|ReadOnly
+  characterSet    DOMDocument::CharacterSet                    DontDelete|ReadOnly
   documentElement DOMDocument::DocumentElement                 DontDelete|ReadOnly
   styleSheets     DOMDocument::StyleSheets                     DontDelete|ReadOnly
   preferredStylesheetSet  DOMDocument::PreferredStylesheetSet  DontDelete|ReadOnly
@@ -864,6 +884,10 @@ Value DOMDocument::getValueProperty(ExecState *exec, int token) const
     return getDOMDOMImplementation(exec,doc.implementation());
   case DocumentElement:
     return getDOMNode(exec,doc.documentElement());
+  case CharacterSet: {
+    DOM::DocumentImpl* docImpl = static_cast<DOM::DocumentImpl*>(doc.handle());
+    return String(docImpl->part()->encoding());
+  }
   case StyleSheets:
     //kdDebug() << "DOMDocument::StyleSheets, returning " << doc.styleSheets().length() << " stylesheets" << endl;
     return getDOMStyleSheetList(exec, doc.styleSheets(), doc);
@@ -1057,6 +1081,8 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
 DEFINE_PROTOTYPE("DOMElement",DOMElementProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMElementProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
+
+IMPLEMENT_PSEUDO_CONSTRUCTOR(ElementPseudoCtor, "Element", DOMElementProto)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
 /* Source for DOMElementTable.
@@ -1526,77 +1552,7 @@ Value KJS::getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation
 }
 
 // -------------------------------------------------------------------------
-
-const ClassInfo NodeConstructor::info = { "NodeConstructor", 0, &NodeConstructorTable, 0 };
-/* Source for NodeConstructorTable.
-@begin NodeConstructorTable 11
-  ELEMENT_NODE		DOM::Node::ELEMENT_NODE		DontDelete|ReadOnly
-  ATTRIBUTE_NODE	DOM::Node::ATTRIBUTE_NODE		DontDelete|ReadOnly
-  TEXT_NODE		DOM::Node::TEXT_NODE		DontDelete|ReadOnly
-  CDATA_SECTION_NODE	DOM::Node::CDATA_SECTION_NODE	DontDelete|ReadOnly
-  ENTITY_REFERENCE_NODE	DOM::Node::ENTITY_REFERENCE_NODE	DontDelete|ReadOnly
-  ENTITY_NODE		DOM::Node::ENTITY_NODE		DontDelete|ReadOnly
-  PROCESSING_INSTRUCTION_NODE DOM::Node::PROCESSING_INSTRUCTION_NODE DontDelete|ReadOnly
-  COMMENT_NODE		DOM::Node::COMMENT_NODE		DontDelete|ReadOnly
-  DOCUMENT_NODE		DOM::Node::DOCUMENT_NODE		DontDelete|ReadOnly
-  DOCUMENT_TYPE_NODE	DOM::Node::DOCUMENT_TYPE_NODE	DontDelete|ReadOnly
-  DOCUMENT_FRAGMENT_NODE DOM::Node::DOCUMENT_FRAGMENT_NODE	DontDelete|ReadOnly
-  NOTATION_NODE		DOM::Node::NOTATION_NODE		DontDelete|ReadOnly
-@end
-*/
-
-NodeConstructor::NodeConstructor(ExecState *exec)
-  : DOMObject(exec->interpreter()->builtinObjectPrototype())
-{
-}
-
-Value NodeConstructor::tryGet(ExecState *exec, const Identifier &propertyName) const
-{
-  return DOMObjectLookupGetValue<NodeConstructor, DOMObject>(exec, propertyName, &NodeConstructorTable, this);
-}
-
-Value NodeConstructor::getValueProperty(ExecState *, int token) const
-{
-  // We use the token as the value to return directly
-  return Number((unsigned int)token);
-#if 0
-  switch (token) {
-  case ELEMENT_NODE:
-    return Number((unsigned int)DOM::Node::ELEMENT_NODE);
-  case ATTRIBUTE_NODE:
-    return Number((unsigned int)DOM::Node::ATTRIBUTE_NODE);
-  case TEXT_NODE:
-    return Number((unsigned int)DOM::Node::TEXT_NODE);
-  case CDATA_SECTION_NODE:
-    return Number((unsigned int)DOM::Node::CDATA_SECTION_NODE);
-  case ENTITY_REFERENCE_NODE:
-    return Number((unsigned int)DOM::Node::ENTITY_REFERENCE_NODE);
-  case ENTITY_NODE:
-    return Number((unsigned int)DOM::Node::ENTITY_NODE);
-  case PROCESSING_INSTRUCTION_NODE:
-    return Number((unsigned int)DOM::Node::PROCESSING_INSTRUCTION_NODE);
-  case COMMENT_NODE:
-    return Number((unsigned int)DOM::Node::COMMENT_NODE);
-  case DOCUMENT_NODE:
-    return Number((unsigned int)DOM::Node::DOCUMENT_NODE);
-  case DOCUMENT_TYPE_NODE:
-    return Number((unsigned int)DOM::Node::DOCUMENT_TYPE_NODE);
-  case DOCUMENT_FRAGMENT_NODE:
-    return Number((unsigned int)DOM::Node::DOCUMENT_FRAGMENT_NODE);
-  case NOTATION_NODE:
-    return Number((unsigned int)DOM::Node::NOTATION_NODE);
-  default:
-    kdDebug(6070) << "WARNING: NodeConstructor::getValueProperty unhandled token " << token << endl;
-    return Value();
-  }
-#endif
-}
-
-Object KJS::getNodeConstructor(ExecState *exec)
-{
-  return Object(cacheGlobalObject<NodeConstructor>(exec, "[[node.constructor]]"));
-}
-
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOMNodeProto, DOMNodeConstants);
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };
