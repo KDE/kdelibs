@@ -680,7 +680,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             {
                 NodeImpl *node = current;
                 NodeImpl *parent = node->parentNode();
-
+                // A script may have removed the current node's parent from the DOM
+                // http://bugzilla.opendarwin.org/show_bug.cgi?id=7137
+                // FIXME: we should do real recovery here and re-parent with the correct node.
+                if (!parent)
+                    return false;
                 NodeImpl *parentparent = parent->parentNode();
 
                 if (n->isTextNode() ||
@@ -694,6 +698,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     node = (node->id() == ID_TABLE) ? node :
                            ((node->id() == ID_TR ) ? parentparent : parent);
                     NodeImpl *parent = node->parentNode();
+                    if (!parent)
+                        return false;
                     int exceptioncode = 0;
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "calling insertBefore(" << n->nodeName().string() << "," << node->nodeName().string() << ")" << endl;
