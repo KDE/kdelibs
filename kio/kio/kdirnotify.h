@@ -23,7 +23,7 @@
 /*
  * Proxy class for interface org.kde.KDirNotify
  */
-class OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
+class __attribute__ ((visibility("default"))) OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
