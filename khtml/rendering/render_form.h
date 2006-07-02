@@ -45,7 +45,7 @@ class QListboxItem;
 #include "dom/dom_misc.h"
 
 class KHTMLPartBrowserExtension;
-class KSpell;
+class K3Spell;
 class KFindDialog;
 class KReplaceDialog;
 class KFind;
@@ -272,7 +272,7 @@ protected:
 private Q_SLOTS:
     void clearHistoryActivated();
     void slotCheckSpelling();
-    void slotSpellCheckReady( KSpell *s );
+    void slotSpellCheckReady( K3Spell *s );
     void slotSpellCheckDone( const QString &s );
     void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
     void spellCheckerCorrected( const QString &, const QString &, unsigned int );
@@ -284,7 +284,7 @@ private:
     };
     DOM::HTMLInputElementImpl* m_input;
     KHTMLView* m_view;
-    KSpell *m_spell;
+    K3Spell *m_spell;
     KAction *m_spellAction;
 };
 

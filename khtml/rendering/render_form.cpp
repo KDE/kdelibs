@@ -34,7 +34,7 @@
 #include <kmessagebox.h>
 #include <kreplace.h>
 #include <kreplacedialog.h>
-#include <kspell.h>
+#include <k3spell.h>
 #include <kurlcompletion.h>
 #include <kwin.h>
 #include <kstdaction.h>
@@ -342,7 +342,7 @@ void LineEditWidget::slotCheckSpelling()
     }
 
     delete m_spell;
-    m_spell = new KSpell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+    m_spell = new K3Spell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( K3Spell *) ), 0, true, true);
 
     connect( m_spell, SIGNAL( death() ),this, SLOT( spellCheckerFinished() ) );
     connect( m_spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
@@ -373,7 +373,7 @@ void LineEditWidget::spellCheckerFinished()
 {
 }
 
-void LineEditWidget::slotSpellCheckReady( KSpell *s )
+void LineEditWidget::slotSpellCheckReady( K3Spell *s )
 {
     s->check( text() );
     connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
@@ -1843,7 +1843,7 @@ void RenderTextArea::computeParagraphAndIndex(long offset, int* para, int* index
         *index = -1;
         return;
     }
-    
+
     //Find the paragraph that contains us..
     int containingPar = 0;
     long endPos       = 0;
