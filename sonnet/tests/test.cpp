@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 #include "loader.h"
-#include "dictionary.h"
+#include "speller.h"
 
 #include <kapplication.h>
 #include <kdebug.h>

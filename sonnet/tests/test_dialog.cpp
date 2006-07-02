@@ -22,7 +22,6 @@
 #include "test_dialog.moc"
 
 #include "backgroundchecker.h"
-#include "dictionary.h"
 #include "filter.h"
 
 #include <kapplication.h>

@@ -23,7 +23,6 @@
 #define KTESTSPELL_H
 
 #include "highlighter.h"
-#include "dictionary.h"
 #include "filter.h"
 #include <QTextEdit>
 

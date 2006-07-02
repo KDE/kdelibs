@@ -21,7 +21,6 @@
 #include "highlighter.h"
 #include "test_highlighter.h"
 #include "test_highlighter.moc"
-#include "dictionary.h"
 #include "filter.h"
 
 #include <kapplication.h>
