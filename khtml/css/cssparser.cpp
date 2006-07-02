@@ -357,8 +357,7 @@ static bool validUnit( Value *value, int unitflags, bool strict )
             value->unit = CSSPrimitiveValue::CSS_PX;
             b = true;
         }
-        if ( !b && ( unitflags & FInteger ) &&
-             (value->fValue - (int)value->fValue) < 0.001 )
+        if (!b && (unitflags & FInteger) && value->isInt)
             b = true;
         break;
     case CSSPrimitiveValue::CSS_PERCENTAGE:
@@ -2361,7 +2360,8 @@ int DOM::CSSParser::lex( void *_yylval )
     case SECS:
     case PERCENTAGE:
         length--;
-    case NUMBER:
+    case FLOAT:
+    case INTEGER:
         yylval->val = QString( (QChar *)t, length ).toDouble();
         //qDebug("value = %s, converted=%.2f", QString( (QChar *)t, length ).latin1(), yylval->val );
         break;

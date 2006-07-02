@@ -69,11 +69,12 @@
      KHERZ = 295,
      DIMEN = 296,
      PERCENTAGE = 297,
-     NUMBER = 298,
-     URI = 299,
-     FUNCTION = 300,
-     NOTFUNCTION = 301,
-     UNICODERANGE = 302
+     FLOAT = 298,
+     INTEGER = 299,
+     URI = 300,
+     FUNCTION = 301,
+     NOTFUNCTION = 302,
+     UNICODERANGE = 303
    };
 #endif
 #define UNIMPORTANT_TOK 258
@@ -116,11 +117,12 @@
 #define KHERZ 295
 #define DIMEN 296
 #define PERCENTAGE 297
-#define NUMBER 298
-#define URI 299
-#define FUNCTION 300
-#define NOTFUNCTION 301
-#define UNICODERANGE 302
+#define FLOAT 298
+#define INTEGER 299
+#define URI 300
+#define FUNCTION 301
+#define NOTFUNCTION 302
+#define UNICODERANGE 303
 
 
 

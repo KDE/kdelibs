@@ -14,6 +14,7 @@ string2         \'([\t !#$%&(-~]|\\{nl}|\"|{nonascii}|{escape})*\'
 ident           -?{nmstart}{nmchar}*
 name            {nmchar}+
 num             [0-9]+|[0-9]*"."[0-9]+
+intnum          [0-9]+
 string          {string1}|{string2}
 url             ([!#$%&*-~]|{nonascii}|{escape})*
 w               [ \t\r\n\f]*
@@ -73,7 +74,9 @@ nth             (-?[0-9]*n[\+-][0-9]+)|(-?[0-9]*n)
 {num}kHz                {yyTok = KHERZ; return yyTok;}
 {num}{ident}            {yyTok = DIMEN; return yyTok;}
 {num}%                  {yyTok = PERCENTAGE; return yyTok;}
-{num}                   {yyTok = NUMBER; return yyTok;}
+{intnum}                {yyTok = INTEGER; return yyTok;}
+{num}                   {yyTok = FLOAT; return yyTok;}
+
 
 "not("                  {yyTok = NOTFUNCTION; return yyTok;}
 "url("{w}{string}{w}")" {yyTok = URI; return yyTok;}
