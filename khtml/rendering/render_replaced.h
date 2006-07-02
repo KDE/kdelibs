@@ -24,6 +24,7 @@
 
 #include "rendering/render_block.h"
 #include <qobject.h>
+#include <qscrollview.h>
 
 class KHTMLView;
 class QWidget;
@@ -152,6 +153,10 @@ public:
     virtual int borderRight() const { return canHaveBorder() ? RenderReplaced::borderRight() : 0; }
 
     class EventPropagator : public QWidget {
+    public:
+        void sendEvent(QEvent *e);
+    };
+    class ScrollViewEventPropagator : public QScrollView {
     public:
         void sendEvent(QEvent *e);
     };
