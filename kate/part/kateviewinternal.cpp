@@ -1233,8 +1233,13 @@ void KateViewInternal::home( bool sel )
     return;
   }
 
+  KateTextLine::Ptr l = textLine( cursor.line() );
+
+  if (!l)
+    return;
+
   KateTextCursor c = cursor;
-  int lc = textLine( c.line() )->firstChar();
+  int lc = l->firstChar();
 
   if( lc < 0 || c.col() == lc ) {
     c.setCol(0);
@@ -1270,9 +1275,14 @@ void KateViewInternal::end( bool sel )
     return;
   }
 
+  KateTextLine::Ptr l = textLine( cursor.line() );
+
+  if (!l)
+    return;
+
   // "Smart End", as requested in bugs #78258 and #106970
   KateTextCursor c = cursor;
-  int lc = textLine( c.line() )->lastChar();
+  int lc = l->lastChar();
 
   if (lc < 0 || c.col() == (lc + 1)) {
     c.setCol(currentRange().endCol - 1);
