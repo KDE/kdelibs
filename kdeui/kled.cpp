@@ -208,6 +208,7 @@ void KLed::paintFlat()
 
   // start painting widget
   paint.begin( tmpMap );
+  paint.setRenderHint(QPainter::Antialiasing);
 
   // Set the color of the LED according to given parameters
   color = ( d->state ) ? d->color : d->offColor;
@@ -264,6 +265,7 @@ void KLed::paintRaised()
   tmpMap = new QPixmap( width + 6, width + 6 );
   tmpMap->fill( palette().color( backgroundRole() ) );
   paint.begin( tmpMap );
+  paint.setRenderHint(QPainter::Antialiasing);
 
   // Set the color of the LED according to given parameters
   color = ( d->state == On ? d->color : d->offColor );
@@ -366,6 +368,7 @@ void KLed::paintSunken()
   tmpMap = new QPixmap( width, width );
   tmpMap->fill( palette().color( backgroundRole() ) );
   paint.begin( tmpMap );
+  paint.setRenderHint(QPainter::Antialiasing);
 
   // Set the color of the LED according to given parameters
   color = ( d->state == On ) ? d->color : d->offColor;
@@ -452,6 +455,7 @@ void KLed::paintSunken()
 
   dest = new QPixmap( QPixmap::fromImage( i ) );
   paint.begin( this );
+  paint.setCompositionMode(QPainter::CompositionMode_Source);
   paint.drawPixmap( 0, 0, *dest );
   paint.end();
 }
@@ -459,6 +463,7 @@ void KLed::paintSunken()
 void KLed::paintRect()
 {
   QPainter painter( this );
+  painter.setRenderHint(QPainter::Antialiasing);
   QBrush lightBrush( d->color );
   QBrush darkBrush( d->offColor );
 
@@ -492,6 +497,7 @@ void KLed::paintRect()
 void KLed::paintRectFrame( bool raised )
 {
   QPainter painter( this );
+  painter.setRenderHint(QPainter::Antialiasing);
   QBrush lightBrush( d->color );
   QBrush darkBrush( d->offColor );
   int w = width();
