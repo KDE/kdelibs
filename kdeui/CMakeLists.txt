@@ -127,9 +127,6 @@ set(kdeui_LIB_SRCS
  ktoolbarhandler.cpp
  kdatetimewidget.cpp
  ktimezonewidget.cpp
- ksconfig.cpp
- kspelldlg.cpp
- kspell.cpp
  ktabbar.cpp
  ktabwidget.cpp
  ksplashscreen.cpp
@@ -179,7 +176,6 @@ endif (Q_WS_WIN)
 kde4_automoc(${kdeui_LIB_SRCS})
 
 set( kdeui_UI
-   kspellui.ui
    kkeydialog.ui
    kshortcutdialog_simple.ui
    kshortcutdialog_advanced.ui
@@ -298,9 +294,6 @@ install_files( /include FILES
  kpassivepopup.h
  kdatetimewidget.h
  ktimezonewidget.h
- kspell.h
- ksconfig.h
- kspelldlg.h
  ktabbar.h
  ktabwidget.h
  ksplashscreen.h

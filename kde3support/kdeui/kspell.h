@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KSPELL_H
-#define KSPELL_H
+#ifndef K3SPELL_H
+#define K3SPELL_H
 
 #include <qobject.h>
 #include <qstringlist.h>
@@ -27,8 +27,8 @@
 class QTextCodec;
 class KProcIO;
 class KProcess;
-class KSpellConfig;
-class KSpellDlg;
+class K3SpellConfig;
+class K3SpellDlg;
 
 /**
  * %KDE Spellchecker
@@ -39,11 +39,11 @@ class KSpellDlg;
  *  access to the spellchecker.
  *
  * @author David Sweet <dsweet@kde.org>
- * @see KSpellConfig, KSyntaxHighlighter
+ * @see K3SpellConfig, KSyntaxHighlighter
  *
  * @deprecated, use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED KSpell : public QObject
+class KDEUI_EXPORT_DEPRECATED K3Spell : public QObject
 {
   Q_OBJECT
 
@@ -52,7 +52,7 @@ public:
   /**
    * Possible states of the spell checker.
    *
-   * @li @p Starting - After creation of KSpell.
+   * @li @p Starting - After creation of K3Spell.
    * @li @p Running - After the ready signal has been emitted.
    * @li @p Cleaning - After cleanUp() has been called.
    * @li @p Finished - After cleanUp() has been completed.
@@ -82,48 +82,48 @@ public:
   /**
    * Starts the spellchecker.
    *
-   * KSpell emits ready() when it has verified that
+   * K3Spell emits ready() when it has verified that
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
-   * Be sure to call cleanUp() when you are done with KSpell.
+   * Be sure to call cleanUp() when you are done with K3Spell.
    *
-   * If KSpell could not be started correctly, death() is emitted.
+   * If K3Spell could not be started correctly, death() is emitted.
    *
-   * @param parent      Parent of KSpellConfig dialog..
-   * @param caption     Caption of KSpellConfig dialog.
-   * @param receiver    Receiver object for the ready(KSpell *) signal.
-   * @param slot        Receiver's slot, will be connected to the ready(KSpell *) signal.
-   * @param kcs         Configuration for KSpell.
+   * @param parent      Parent of K3SpellConfig dialog..
+   * @param caption     Caption of K3SpellConfig dialog.
+   * @param receiver    Receiver object for the ready(K3Spell *) signal.
+   * @param slot        Receiver's slot, will be connected to the ready(K3Spell *) signal.
+   * @param kcs         Configuration for K3Spell.
    * @param progressbar Indicates if progress bar should be shown.
    * @param modal       Indicates modal or non-modal dialog.
    */
-  KSpell(QWidget *parent, const QString &caption,
-	 QObject *receiver, const char *slot, KSpellConfig *kcs=0,
+  K3Spell(QWidget *parent, const QString &caption,
+	 QObject *receiver, const char *slot, K3SpellConfig *kcs=0,
 	 bool progressbar = true, bool modal = false);
 
   /**
    * Starts the spellchecker.
    *
-   * KSpell emits ready() when it has verified that
+   * K3Spell emits ready() when it has verified that
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
-   * Be sure to call cleanUp() when you are done with KSpell.
+   * Be sure to call cleanUp() when you are done with K3Spell.
    *
-   * If KSpell could not be started correctly, death() is emitted.
+   * If K3Spell could not be started correctly, death() is emitted.
    *
-   * @param parent      Parent of KSpellConfig dialog..
-   * @param caption     Caption of KSpellConfig dialog.
-   * @param receiver    Receiver object for the ready(KSpell *) signal.
-   * @param slot        Receiver's slot, will be connected to the ready(KSpell *) signal.
-   * @param kcs         Configuration for KSpell.
+   * @param parent      Parent of K3SpellConfig dialog..
+   * @param caption     Caption of K3SpellConfig dialog.
+   * @param receiver    Receiver object for the ready(K3Spell *) signal.
+   * @param slot        Receiver's slot, will be connected to the ready(K3Spell *) signal.
+   * @param kcs         Configuration for K3Spell.
    * @param progressbar Indicates if progress bar should be shown.
    * @param modal       Indicates modal or non-modal dialog.
    * @param type        Type of the document to check
    */
-  KSpell(QWidget *parent, const QString &caption,
-	 QObject *receiver, const char *slot, KSpellConfig *kcs,
+  K3Spell(QWidget *parent, const QString &caption,
+	 QObject *receiver, const char *slot, K3SpellConfig *kcs,
 	 bool progressbar, bool modal, SpellerType type);
 
   /**
-   * Returns the status of KSpell.
+   * Returns the status of K3Spell.
    *
    * @see spellStatus()
    */
@@ -139,7 +139,7 @@ public:
   virtual void cleanUp ();
 
   /**
-   * Sets the auto-delete flag. If this is set, the KSpell object
+   * Sets the auto-delete flag. If this is set, the K3Spell object
    * is automatically deleted after emitting death().
    */
   void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
@@ -193,7 +193,7 @@ public:
    * checkWord() returns @p false if @p buffer is not a single word (e.g.
    *  if it contains white space), otherwise it returns @p true;
    *
-   * If @p usedialog is set to @p true, KSpell will open the standard
+   * If @p usedialog is set to @p true, K3Spell will open the standard
    *  dialog if the word is not found.  The dialog results can be queried
    *  by using dlgResult() and replacement().
    *
@@ -267,7 +267,7 @@ public:
   QString intermediateBuffer () const {return newbuffer;}
 
   /**
-   * Tells ISpell/ASpell to ignore this word for the life of this KSpell instance.
+   * Tells ISpell/ASpell to ignore this word for the life of this K3Spell instance.
    *
    *  @return false if @p word is not a word or there was an error
    *  communicating with ISpell/ASpell.
@@ -283,14 +283,14 @@ public:
   virtual bool addPersonal (const QString & word);
 
   /**
-   * @return the KSpellConfig object being used by this KSpell instance.
+   * @return the K3SpellConfig object being used by this K3Spell instance.
    */
-  KSpellConfig ksConfig () const;
+  K3SpellConfig ksConfig () const;
 
   /**
    * Sets the resolution (in percent) of the progress() signals.
    *
-   * E.g. setProgressResolution (10) instructs KSpell to send progress
+   * E.g. setProgressResolution (10) instructs K3Spell to send progress
    *  signals (at most) every 10% (10%, 20%, 30%...).
    * The default is 10%.
    */
@@ -300,7 +300,7 @@ public:
    * The destructor instructs ISpell/ASpell to write out the personal
    *  dictionary and then terminates ISpell/ASpell.
    */
-  virtual ~KSpell();
+  virtual ~K3Spell();
 
   /**
    * @deprecated
@@ -320,7 +320,7 @@ public:
    *
    * This overloaded method uses the spell-check configuration passed as parameter.
    */
-  static int modalCheck( QString& text, KSpellConfig * kcs );
+  static int modalCheck( QString& text, K3SpellConfig * kcs );
 
   /**
    * Call setIgnoreUpperWords(true) to tell the spell-checker to ignore
@@ -403,10 +403,10 @@ Q_SIGNALS:
   void replaceall( const QString & origword ,  const QString &replacement );
 
   /**
-   * Emitted after KSpell has verified that ISpell/ASpell is running
+   * Emitted after K3Spell has verified that ISpell/ASpell is running
    * and working properly.
    */
-  void ready(KSpell *);
+  void ready(K3Spell *);
 
   /**
    * Emitted during a check().
@@ -436,11 +436,11 @@ Q_SIGNALS:
   /**
    * Emitted on terminal errors and after clean up.
    *
-   * You can delete the KSpell object in this signal.
+   * You can delete the K3Spell object in this signal.
    *
    * You can check status() to see what caused the death:
-   * @li @p Error - KSpell could not start.
-   * @li @p Crashed - KSpell encountered an unexpected error during execution.
+   * @li @p Error - K3Spell could not start.
+   * @li @p Crashed - K3Spell encountered an unexpected error during execution.
    * @li @p Finished - Clean up finished.
    */
   void death( );
@@ -448,7 +448,7 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
   /* All of those signals from KProcIO get sent here. */
-  void KSpell2 (KProcIO *);
+  void K3Spell2 (KProcIO *);
   void checkWord2 (KProcIO *);
   void checkWord3 ();
   void check2 (KProcIO *);
@@ -494,8 +494,8 @@ protected:
 
   KProcIO *proc;
   QWidget *parent;
-  KSpellConfig *ksconfig;
-  KSpellDlg *ksdlg;
+  K3SpellConfig *ksconfig;
+  K3SpellDlg *ksdlg;
   QStringList *wordlist;
   QStringList::Iterator wlIt;
   QStringList ignorelist;
@@ -557,12 +557,12 @@ protected:
   void startIspell();
   bool writePersonalDictionary();
   void initialize( QWidget *_parent, const QString &_caption,
-                   QObject *obj, const char *slot, KSpellConfig *_ksc,
+                   QObject *obj, const char *slot, K3SpellConfig *_ksc,
                    bool _progressbar, bool _modal, SpellerType type );
 
 private:
-  class KSpellPrivate;
-  KSpellPrivate *d;
+  class K3SpellPrivate;
+  K3SpellPrivate *d;
 };
 
 #endif

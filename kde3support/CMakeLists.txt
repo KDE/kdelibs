@@ -30,6 +30,10 @@ install_files( /include FILES kdecore/k3urldrag.h kdecore/k3multipledrag.h kdeco
 
 # kde3support/kdeui/Makefile.am: kde3ui
 
+set(kde3ui_UI
+    kspellui.ui
+)
+
 set(kde3ui_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget_private.cpp
@@ -38,6 +42,9 @@ set(kde3ui_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3colordrag.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3syntaxhighlighter.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3wizard.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spell.cpp  
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spelldlg.cpp
+  ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3sconfig.cpp
 )
 
 # kde3support/kio/Makefile.am: k3io

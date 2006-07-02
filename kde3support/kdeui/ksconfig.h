@@ -28,7 +28,7 @@ class QComboBox;
 class QLabel;
 
 class KConfig;
-class KSpellConfigPrivate;
+class K3SpellConfigPrivate;
 
 /**
  * @brief Encoding for the spell checker
@@ -56,7 +56,7 @@ enum Encoding {
   KS_E_CP1255=15
 };
 
-enum KSpellClients {
+enum K3SpellClients {
   KS_CLIENT_ISPELL=0,
   KS_CLIENT_ASPELL=1,
   KS_CLIENT_HSPELL=2,
@@ -64,32 +64,32 @@ enum KSpellClients {
 };
 
 /**
- * A configuration class/dialog for KSpell.
+ * A configuration class/dialog for K3Spell.
  *
  * It contains all of the options settings.The options are set to default
  * values by the constructor and can be reset either by using the
- * public interface or by using KSpellConfig as a widget in a dialog
+ * public interface or by using K3SpellConfig as a widget in a dialog
  * (or, preferably a tabbed dialog using KPageDialog) and letting
  * the user change the settings. This way an application that uses
- * KSpell can either rely on the default settings (in the simplest
- * case), offer a dialog to configure KSpell, or offer a dialog to
- * configure KSpell <em>for this app only</em> (in which case, the application
+ * K3Spell can either rely on the default settings (in the simplest
+ * case), offer a dialog to configure K3Spell, or offer a dialog to
+ * configure K3Spell <em>for this app only</em> (in which case, the application
  * should save the settings for use next time it is run).
  * This last option might be useful in an email program, for example, where
  * people may be writing in a language different from that used for
  * writing papers in their word processor.
  *
  * @author David Sweet <dsweet@kde.org>
- * @see KSpell
+ * @see K3Spell
  * @deprecated use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
+class KDEUI_EXPORT_DEPRECATED K3SpellConfig : public QWidget
 {
   Q_OBJECT
 
   public:
     /**
-     * Constructs a KSpellConfig with default or custom settings.
+     * Constructs a K3SpellConfig with default or custom settings.
      *
      * @param parent Parent of the widget.
      * @param spellConfig Predefined configuration. If this parameter
@@ -98,18 +98,18 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
      * activateHelp for more information.
      *
      */
-    explicit KSpellConfig( QWidget *parent=0, 
-                           KSpellConfig *spellConfig=0, bool addHelpButton = true );
+    explicit K3SpellConfig( QWidget *parent=0,
+                           K3SpellConfig *spellConfig=0, bool addHelpButton = true );
 
-    KSpellConfig( const KSpellConfig & );
+    K3SpellConfig( const K3SpellConfig & );
 
     /**
      * Deconstructor.
      * Deletes private class.
      */
-    virtual ~KSpellConfig();
+    virtual ~K3SpellConfig();
 
-    void operator=( const KSpellConfig &ksc );
+    void operator=( const K3SpellConfig &ksc );
 
     /**
      *
@@ -135,9 +135,9 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
 
     /**
      *
-     * The @p _ignorelist contains words you'd like KSpell
-     * to ignore when it is spellchecking.  When you get a KSpellConfig
-     * object back from KSpell (using KSpell::kcConfig()),
+     * The @p _ignorelist contains words you'd like K3Spell
+     * to ignore when it is spellchecking.  When you get a K3SpellConfig
+     * object back from K3Spell (using K3Spell::kcConfig()),
      * the @p _ignorelist contains whatever was put in by you plus
      * any words the user has chosen to ignore via the dialog box.
      * It may be useful to save this list with the document being
@@ -197,7 +197,7 @@ class KDEUI_EXPORT_DEPRECATED KSpellConfig : public QWidget
     QStringList ignoreList() const;
     QStringList replaceAllList() const;
 
-    int client() const; ///< Spell checker client, @see KSpellClients
+    int client() const; ///< Spell checker client, @see K3SpellClients
 
     /**
      * Call this method before this class is deleted  if you want
@@ -284,7 +284,7 @@ Q_SIGNALS:
     void configChanged();
 
 private:
-    KSpellConfigPrivate *const d;
+    K3SpellConfigPrivate *const d;
     void getAvailDictsIspell();
     void getAvailDictsAspell();
 };

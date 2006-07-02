@@ -95,8 +95,8 @@ public:
     Q3Dict<int> autoDict;
     Q3Dict<int> autoIgnoreDict;
     static QObject *sDictionaryMonitor;
-    KSpell *spell;
-    KSpellConfig *mSpellConfig;
+    K3Spell *spell;
+    K3SpellConfig *mSpellConfig;
     QTimer *rehighlightRequest, *spellTimeout;
     QString spellKey;
     int wordCount, errorCount;
@@ -236,7 +236,7 @@ QStringList K3SpellingHighlighter::personalWords()
     l.append( "KIO" );
     l.append( "KJS" );
     l.append( "Konqueror" );
-    l.append( "KSpell" );
+    l.append( "K3Spell" );
     l.append( "Kontact" );
     l.append( "Qt" );
     return l;
@@ -274,7 +274,7 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
 						    const QColor& depth1,
 						    const QColor& depth2,
 						    const QColor& depth3,
-                                                    KSpellConfig *spellConfig )
+                                                    K3SpellConfig *spellConfig )
     : K3SpellingHighlighter( textEdit, spellColor,
 			    colorQuoting, depth0, depth1, depth2, depth3 ),d(new K3DictSpellingHighlighterPrivate())
 {
@@ -287,10 +287,10 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
     d->checksDone = 0;
     d->completeRehighlightRequired = false;
 
-    KConfigGroup cg( KGlobal::config(), "KSpell" );
-    d->disablePercentage = cg.readEntry( "KSpell_AsYouTypeDisablePercentage", QVariant(42 )).toInt();
+    KConfigGroup cg( KGlobal::config(), "K3Spell" );
+    d->disablePercentage = cg.readEntry( "K3Spell_AsYouTypeDisablePercentage", QVariant(42 )).toInt();
     d->disablePercentage = qMin( d->disablePercentage, 101 );
-    d->disableWordCount = cg.readEntry( "KSpell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
+    d->disableWordCount = cg.readEntry( "K3Spell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
 
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
@@ -300,7 +300,7 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
 	     this, SLOT( slotRehighlight() ));
     d->spellTimeout = new QTimer(this);
     connect( d->spellTimeout, SIGNAL( timeout() ),
-	     this, SLOT( slotKSpellNotResponding() ));
+	     this, SLOT( slotK3SpellNotResponding() ));
 
     if ( d->globalConfig ) {
         d->spellKey = spellKey();
@@ -327,7 +327,7 @@ K3DictSpellingHighlighter::~K3DictSpellingHighlighter()
     delete d;
 }
 
-void K3DictSpellingHighlighter::slotSpellReady( KSpell *spell )
+void K3DictSpellingHighlighter::slotSpellReady( K3Spell *spell )
 {
     kDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )" << endl;
     if ( d->globalConfig ) {
@@ -368,7 +368,7 @@ bool K3DictSpellingHighlighter::isMisspelled( const QString &word )
     if ( !d->autoReady )
 	d->autoIgnoreDict.replace( word, Ignore );
 
-    // "dict" is used as a cache to store the results of KSpell
+    // "dict" is used as a cache to store the results of K3Spell
     Q3Dict<int>* dict = ( d->globalConfig ? d->sDict() : d->mDict );
     if ( !dict->isEmpty() && (*dict)[word] == NotOkay ) {
 	if ( d->autoReady && ( d->autoDict[word] != NotOkay )) {
@@ -514,8 +514,8 @@ void K3DictSpellingHighlighter::slotDictionaryChanged()
     d->errorCount = 0;
     d->autoDict.clear();
 
-    d->spell = new KSpell( 0, i18n( "Incremental Spellcheck" ), this,
-		SLOT( slotSpellReady( KSpell * ) ), d->mSpellConfig );
+    d->spell = new K3Spell( 0, i18n( "Incremental Spellcheck" ), this,
+		SLOT( slotSpellReady( K3Spell * ) ), d->mSpellConfig );
 }
 
 void K3DictSpellingHighlighter::slotLocalSpellConfigChanged()
@@ -529,19 +529,19 @@ void K3DictSpellingHighlighter::slotLocalSpellConfigChanged()
 QString K3DictSpellingHighlighter::spellKey()
 {
     KGlobal::config()->reparseConfiguration();
-    KConfigGroup cg( KGlobal::config(), "KSpell" );
+    KConfigGroup cg( KGlobal::config(), "K3Spell" );
     QString key;
-    key += QString::number( cg.readEntry( "KSpell_NoRootAffix", QVariant(0 )).toInt());
+    key += QString::number( cg.readEntry( "K3Spell_NoRootAffix", QVariant(0 )).toInt());
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_RunTogether", QVariant(0 )).toInt());
+    key += QString::number( cg.readEntry( "K3Spell_RunTogether", QVariant(0 )).toInt());
     key += '/';
-    key += cg.readEntry( "KSpell_Dictionary", "" );
+    key += cg.readEntry( "K3Spell_Dictionary", "" );
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_DictFromList", QVariant(false )).toInt());
+    key += QString::number( cg.readEntry( "K3Spell_DictFromList", QVariant(false )).toInt());
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_Encoding", QVariant(KS_E_ASCII )).toInt());
+    key += QString::number( cg.readEntry( "K3Spell_Encoding", QVariant(KS_E_ASCII )).toInt());
     key += '/';
-    key += QString::number( cg.readEntry( "KSpell_Client", QVariant(KS_CLIENT_ISPELL )).toInt());
+    key += QString::number( cg.readEntry( "K3Spell_Client", QVariant(KS_CLIENT_ISPELL )).toInt());
     return key;
 }
 
@@ -580,7 +580,7 @@ void K3DictSpellingHighlighter::slotAutoDetection()
     }
 }
 
-void K3DictSpellingHighlighter::slotKSpellNotResponding()
+void K3DictSpellingHighlighter::slotK3SpellNotResponding()
 {
     static int retries = 0;
     if (retries < 10) {

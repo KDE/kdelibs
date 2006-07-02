@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KSPELLDLG_H
-#define KSPELLDLG_H
+#ifndef K3SPELLDLG_H
+#define K3SPELLDLG_H
 
 #include <kdialog.h>
 
@@ -46,12 +46,12 @@ enum KS_RESULT {
 /**
  * @deprecated, use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED KSpellDlg : public KDialog
+class KDEUI_EXPORT_DEPRECATED K3SpellDlg : public KDialog
 {
   Q_OBJECT
 
-  class KSpellDlgPrivate;
-  KSpellDlgPrivate *d;
+  class K3SpellDlgPrivate;
+  K3SpellDlgPrivate *d;
   KLineEdit *editbox;
   QProgressBar *progbar;
   KListBox *listbox;
@@ -62,9 +62,9 @@ class KDEUI_EXPORT_DEPRECATED KSpellDlg : public KDialog
   bool progressbar;
 
 public:
-  explicit KSpellDlg( QWidget *parent,
+  explicit K3SpellDlg( QWidget *parent,
                       bool _progressbar = false, bool _modal = false );
-  ~KSpellDlg();
+  ~K3SpellDlg();
 
   QString replacement() const
     { return newword; }

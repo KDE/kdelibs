@@ -38,14 +38,14 @@
 
 #include "ksconfig.h"
 
-class KSpellConfigPrivate
+class K3SpellConfigPrivate
 {
 public:
     QStringList replacelist;
 };
 
 
-KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
+K3SpellConfig::K3SpellConfig (const K3SpellConfig &_ksc)
   : QWidget(0), nodialog(true)
   , kc(0)
   , cb0(0)
@@ -55,9 +55,9 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   , dictcombo(0)
   , encodingcombo(0)
   , clientcombo(0)
-  , d(new KSpellConfigPrivate)
+  , d(new K3SpellConfigPrivate)
 {
-  kDebug(750) << "Entering KSpellConfig::KSpellConfig(KSpellConfig&)" << endl;
+  kDebug(750) << "Entering K3SpellConfig::K3SpellConfig(K3SpellConfig&)" << endl;
   setDoSpellChecking( _ksc.doSpellChecking() );
   setReplaceAllList( _ksc.replaceAllList() );
   setNoRootAffix( _ksc.noRootAffix() );
@@ -71,8 +71,8 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 }
 
 
-KSpellConfig::KSpellConfig( QWidget *parent,
-			    KSpellConfig *_ksc, bool addHelpButton )
+K3SpellConfig::K3SpellConfig( QWidget *parent,
+			    K3SpellConfig *_ksc, bool addHelpButton )
   : QWidget (parent), nodialog(false)
   , kc(0)
   , cb0(0)
@@ -82,7 +82,7 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   , dictcombo(0)
   , encodingcombo(0)
   , clientcombo(0)
-  , d(new KSpellConfigPrivate)
+  , d(new K3SpellConfigPrivate)
 {
   kc = KGlobal::config();
 
@@ -184,62 +184,62 @@ KSpellConfig::KSpellConfig( QWidget *parent,
   fillInDialog();
 }
 
-KSpellConfig::~KSpellConfig()
+K3SpellConfig::~K3SpellConfig()
 {
   delete d;
 }
 
 
 bool
-KSpellConfig::dictFromList() const
+K3SpellConfig::dictFromList() const
 {
   return dictfromlist;
 }
 
 bool
-KSpellConfig::readGlobalSettings()
+K3SpellConfig::readGlobalSettings()
 {
-  kDebug(750) << "Entering KSpellConfig::readGlobalSettings (see ksconfig.cpp)" << endl;
-  KConfigGroup cg( kc,"KSpell" );
+  kDebug(750) << "Entering K3SpellConfig::readGlobalSettings (see ksconfig.cpp)" << endl;
+  KConfigGroup cg( kc,"K3Spell" );
 
-  setDoSpellChecking ( cg.readEntry("KSpell_DoSpellChecking", false ) );
-  setNoRootAffix   ( cg.readEntry("KSpell_NoRootAffix", 0) );
-  setRunTogether   ( cg.readEntry("KSpell_RunTogether", 0) );
-  setDictionary    ( cg.readEntry("KSpell_Dictionary") );
-  setDictFromList  ( cg.readEntry("KSpell_DictFromList", 0) );
-  setEncoding ( cg.readEntry ("KSpell_Encoding", int(KS_E_ASCII)) );
-  setClient ( cg.readEntry ("KSpell_Client", int(KS_CLIENT_ISPELL)) );
+  setDoSpellChecking ( cg.readEntry("K3Spell_DoSpellChecking", false ) );
+  setNoRootAffix   ( cg.readEntry("K3Spell_NoRootAffix", 0) );
+  setRunTogether   ( cg.readEntry("K3Spell_RunTogether", 0) );
+  setDictionary    ( cg.readEntry("K3Spell_Dictionary") );
+  setDictFromList  ( cg.readEntry("K3Spell_DictFromList", 0) );
+  setEncoding ( cg.readEntry ("K3Spell_Encoding", int(KS_E_ASCII)) );
+  setClient ( cg.readEntry ("K3Spell_Client", int(KS_CLIENT_ISPELL)) );
 
   return true;
 }
 
 bool
-KSpellConfig::writeGlobalSettings ()
+K3SpellConfig::writeGlobalSettings ()
 {
-  KConfigGroup cg( kc,"KSpell" );
+  KConfigGroup cg( kc,"K3Spell" );
 
-  cg.writeEntry ("KSpell_DoSpellChecking", doSpellChecking(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("KSpell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("KSpell_RunTogether", (int) runTogether(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("KSpell_Dictionary", dictionary(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("KSpell_DictFromList",(int) dictFromList(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("KSpell_Encoding", (int) encoding(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("KSpell_Client", client(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_DoSpellChecking", doSpellChecking(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_RunTogether", (int) runTogether(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_Dictionary", dictionary(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_DictFromList",(int) dictFromList(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_Encoding", (int) encoding(), KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_Client", client(), KConfigBase::Global|KConfigBase::Persistent);
   kc->sync();
 
   return true;
 }
 
 void
-KSpellConfig::sChangeEncoding( int i )
+K3SpellConfig::sChangeEncoding( int i )
 {
-  kDebug(750) << "KSpellConfig::sChangeEncoding(" << i << ")" << endl;
+  kDebug(750) << "K3SpellConfig::sChangeEncoding(" << i << ")" << endl;
   setEncoding( i );
   emit configChanged();
 }
 
 void
-KSpellConfig::sChangeClient( int i )
+K3SpellConfig::sChangeClient( int i )
 {
   setClient( i );
 
@@ -266,12 +266,12 @@ KSpellConfig::sChangeClient( int i )
 }
 
 bool
-KSpellConfig::interpret( const QString &fname, QString &lname,
+K3SpellConfig::interpret( const QString &fname, QString &lname,
                          QString &hname )
 
 {
 
-  kDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
+  kDebug(750) << "K3SpellConfig::interpret [" << fname << "]" << endl;
 
   QString dname( fname );
 
@@ -390,12 +390,12 @@ KSpellConfig::interpret( const QString &fname, QString &lname,
 }
 
 void
-KSpellConfig::fillInDialog ()
+K3SpellConfig::fillInDialog ()
 {
   if ( nodialog )
     return;
 
-  kDebug(750) << "KSpellConfig::fillinDialog" << endl;
+  kDebug(750) << "K3SpellConfig::fillinDialog" << endl;
 
   cb0->setChecked( doSpellChecking() );
   cb1->setChecked( noRootAffix() );
@@ -451,7 +451,7 @@ KSpellConfig::fillInDialog ()
 }
 
 
-void KSpellConfig::getAvailDictsIspell () {
+void K3SpellConfig::getAvailDictsIspell () {
 
   langfnames.clear();
   dictcombo->clear();
@@ -473,13 +473,13 @@ void KSpellConfig::getAvailDictsIspell () {
   */
   if (!dir.exists() || !dir.isDir()) return;
 
-  kDebug(750) << "KSpellConfig::getAvailDictsIspell "
+  kDebug(750) << "K3SpellConfig::getAvailDictsIspell "
 	       << dir.filePath() << " " << dir.path() << endl;
 
   const QDir thedir (dir.filePath(),"*.hash");
   const QStringList entryList = thedir.entryList();
 
-  kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
   kDebug(750) << "entryList().count()="
 	       << entryList.count() << endl;
 
@@ -516,7 +516,7 @@ void KSpellConfig::getAvailDictsIspell () {
   }
 }
 
-void KSpellConfig::getAvailDictsAspell () {
+void K3SpellConfig::getAvailDictsAspell () {
 
   langfnames.clear();
   dictcombo->clear();
@@ -537,13 +537,13 @@ void KSpellConfig::getAvailDictsAspell () {
     dir.setFile ("/usr/local/share/aspell");
   if (!dir.exists() || !dir.isDir()) return;
 
-  kDebug(750) << "KSpellConfig::getAvailDictsAspell "
+  kDebug(750) << "K3SpellConfig::getAvailDictsAspell "
 	       << dir.filePath() << " " << dir.path() << endl;
 
   const QDir thedir (dir.filePath(),"*");
   const QStringList entryList = thedir.entryList();
 
-  kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
   kDebug(750) << "entryList().count()="
 	       << entryList.count() << endl;
 
@@ -559,7 +559,7 @@ void KSpellConfig::getAvailDictsAspell () {
     // FIXME: may be this is wrong an the list should contain
     // all *.multi files too, to allow using special dictionaries
 
-    // Well, KSpell2 has a better way to do this, but this code has to be
+    // Well, K3Spell2 has a better way to do this, but this code has to be
     // cleaned up somehow: since aspell 0.6 we have quite a lot of files in the
     // aspell dictionary that are not dictionaries. These must not be presented as "languages"
     // We only keep
@@ -599,7 +599,7 @@ void KSpellConfig::getAvailDictsAspell () {
 }
 
 void
-KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
+K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
 {
   langfnames.clear();
   if ( box ) {
@@ -623,13 +623,13 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       */
       if (!dir.exists() || !dir.isDir()) return;
 
-      kDebug(750) << "KSpellConfig::getAvailDictsIspell "
+      kDebug(750) << "K3SpellConfig::getAvailDictsIspell "
                    << dir.filePath() << " " << dir.path() << endl;
 
       const QDir thedir (dir.filePath(),"*.hash");
       const QStringList entryList = thedir.entryList();
 
-      kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
       kDebug(750) << "entryList().count()="
                    << entryList.count() << endl;
 
@@ -693,13 +693,13 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         dir.setFile ("/usr/local/share/aspell");
       if (!dir.exists() || !dir.isDir()) return;
 
-      kDebug(750) << "KSpellConfig::getAvailDictsAspell "
+      kDebug(750) << "K3SpellConfig::getAvailDictsAspell "
                    << dir.filePath() << " " << dir.path() << endl;
 
       const QDir thedir (dir.filePath(),"*");
       const QStringList entryList = thedir.entryList();
 
-      kDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
       kDebug(750) << "entryList().count()="
                    << entryList.count() << endl;
 
@@ -715,7 +715,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         // FIXME: may be this is wrong an the list should contain
         // all *.multi files too, to allow using special dictionaries
 
-        // Well, KSpell2 has a better way to do this, but this code has to be
+        // Well, K3Spell2 has a better way to do this, but this code has to be
         // cleaned up somehow: since aspell 0.6 we have quite a lot of files in the
         // aspell dictionary that are not dictionaries. These must not be presented as "languages"
         // We only keep
@@ -767,7 +767,7 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
  */
 
 void
-KSpellConfig::setClient (int c)
+K3SpellConfig::setClient (int c)
 {
   iclient = c;
 
@@ -776,7 +776,7 @@ KSpellConfig::setClient (int c)
 }
 
 void
-KSpellConfig::setDoSpellChecking (bool b)
+K3SpellConfig::setDoSpellChecking (bool b)
 {
   bdospellchecking=b;
 
@@ -785,7 +785,7 @@ KSpellConfig::setDoSpellChecking (bool b)
 }
 
 void
-KSpellConfig::setNoRootAffix (bool b)
+K3SpellConfig::setNoRootAffix (bool b)
 {
   bnorootaffix=b;
 
@@ -794,7 +794,7 @@ KSpellConfig::setNoRootAffix (bool b)
 }
 
 void
-KSpellConfig::setRunTogether(bool b)
+K3SpellConfig::setRunTogether(bool b)
 {
   bruntogether=b;
 
@@ -803,7 +803,7 @@ KSpellConfig::setRunTogether(bool b)
 }
 
 void
-KSpellConfig::setDictionary (const QString s)
+K3SpellConfig::setDictionary (const QString s)
 {
   qsdict=s; //.copy();
 
@@ -830,21 +830,21 @@ KSpellConfig::setDictionary (const QString s)
 }
 
 void
-KSpellConfig::setDictFromList (bool dfl)
+K3SpellConfig::setDictFromList (bool dfl)
 {
   //  kdebug (KDEBUG_INFO, 750, "sdfl = %d", dfl);
   dictfromlist=dfl;
 }
 
 /*
-void KSpellConfig::setPersonalDict (const char *s)
+void K3SpellConfig::setPersonalDict (const char *s)
 {
   qspdict=s;
 }
 */
 
 void
-KSpellConfig::setEncoding (int enctype)
+K3SpellConfig::setEncoding (int enctype)
 {
   enc=enctype;
 
@@ -856,65 +856,65 @@ KSpellConfig::setEncoding (int enctype)
   Options reading routines.
  */
 int
-KSpellConfig::client () const
+K3SpellConfig::client () const
 {
   return iclient;
 }
 
 
 bool
-KSpellConfig::doSpellChecking () const
+K3SpellConfig::doSpellChecking () const
 {
   return bdospellchecking;
 }
 
 bool
-KSpellConfig::noRootAffix () const
+K3SpellConfig::noRootAffix () const
 {
   return bnorootaffix;
 }
 
 bool
-KSpellConfig::runTogether() const
+K3SpellConfig::runTogether() const
 {
   return bruntogether;
 }
 
 const
-QString KSpellConfig::dictionary () const
+QString K3SpellConfig::dictionary () const
 {
   return qsdict;
 }
 
 /*
-const QString KSpellConfig::personalDict () const
+const QString K3SpellConfig::personalDict () const
 {
   return qspdict;
 }
 */
 
 int
-KSpellConfig::encoding () const
+K3SpellConfig::encoding () const
 {
   return enc;
 }
 
 void
-KSpellConfig::sRunTogether(bool)
+K3SpellConfig::sRunTogether(bool)
 {
   setRunTogether (cb2->isChecked());
   emit configChanged();
 }
 
 void
-KSpellConfig::sNoAff(bool)
+K3SpellConfig::sNoAff(bool)
 {
   setNoRootAffix (cb1->isChecked());
   emit configChanged();
 }
 
 void
-KSpellConfig::sDoSpell()
+K3SpellConfig::sDoSpell()
 {
   setDoSpellChecking (cb0->isChecked());
   emit configChanged();
@@ -922,7 +922,7 @@ KSpellConfig::sDoSpell()
 
 /*
 void
-KSpellConfig::sBrowseDict()
+K3SpellConfig::sBrowseDict()
 {
   return;
 
@@ -934,7 +934,7 @@ KSpellConfig::sBrowseDict()
 */
 
 /*
-void KSpellConfig::sBrowsePDict()
+void K3SpellConfig::sBrowsePDict()
 {
   //how do I find home directory path??
   QString qs( KFileDialog::getOpenFileName ("",".ispell_*") );
@@ -946,7 +946,7 @@ void KSpellConfig::sBrowsePDict()
 */
 
 void
-KSpellConfig::sSetDictionary (int i)
+K3SpellConfig::sSetDictionary (int i)
 {
   setDictionary (langfnames[i]);
   setDictFromList (true);
@@ -954,7 +954,7 @@ KSpellConfig::sSetDictionary (int i)
 }
 
 void
-KSpellConfig::sDictionary(bool on)
+K3SpellConfig::sDictionary(bool on)
 {
   if (on)
   {
@@ -970,7 +970,7 @@ KSpellConfig::sDictionary(bool on)
 }
 
 void
-KSpellConfig::sPathDictionary(bool on)
+K3SpellConfig::sPathDictionary(bool on)
 {
   return; //enough for now
 
@@ -991,30 +991,30 @@ KSpellConfig::sPathDictionary(bool on)
 }
 
 
-void KSpellConfig::activateHelp( void )
+void K3SpellConfig::activateHelp( void )
 {
   sHelp();
 }
 
-void KSpellConfig::sHelp( void )
+void K3SpellConfig::sHelp( void )
 {
   KToolInvocation::invokeHelp("configuration", "kspell");
 }
 
 /*
-void KSpellConfig::textChanged1 (const char *s)
+void K3SpellConfig::textChanged1 (const char *s)
 {
   setDictionary (s);
 }
 
-void KSpellConfig::textChanged2 (const char *)
+void K3SpellConfig::textChanged2 (const char *)
 {
   //  setPersonalDict (s);
 }
 */
 
 void
-KSpellConfig::operator= (const KSpellConfig &ksc)
+K3SpellConfig::operator= (const K3SpellConfig &ksc)
 {
   //We want to copy the data members, but not the
   //pointers to the child widgets
@@ -1031,25 +1031,25 @@ KSpellConfig::operator= (const KSpellConfig &ksc)
 }
 
 void
-KSpellConfig::setIgnoreList (const QStringList &_ignorelist)
+K3SpellConfig::setIgnoreList (const QStringList &_ignorelist)
 {
   ignorelist=_ignorelist;
 }
 
 QStringList
-KSpellConfig::ignoreList () const
+K3SpellConfig::ignoreList () const
 {
   return ignorelist;
 }
 
 void
-KSpellConfig::setReplaceAllList (const QStringList &_replacelist)
+K3SpellConfig::setReplaceAllList (const QStringList &_replacelist)
 {
   d->replacelist=_replacelist;
 }
 
 QStringList
-KSpellConfig::replaceAllList() const
+K3SpellConfig::replaceAllList() const
 {
   return d->replacelist;
 }

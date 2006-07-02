@@ -33,8 +33,8 @@
 
 class Q3Accel;
 class QTimer;
-class KSpell;
-class KSpellConfig;
+class K3Spell;
+class K3SpellConfig;
 
 /**
  * \brief Syntax sensitive text highlighter
@@ -105,7 +105,7 @@ public:
 			      const QColor& QuoteColor1 = QColor( 0x00, 0x80, 0x00 ),
 			      const QColor& QuoteColor2 = QColor( 0x00, 0x70, 0x00 ),
 			      const QColor& QuoteColor3 = QColor( 0x00, 0x60, 0x00 ),
-                              KSpellConfig *spellConfig = 0 );
+                              K3SpellConfig *spellConfig = 0 );
     ~K3DictSpellingHighlighter();
 
     virtual bool isMisspelled( const QString &word );
@@ -171,10 +171,10 @@ protected Q_SLOTS:
     void slotCorrected( const QString &originalWord, const QString &, unsigned int );
     void slotRehighlight();
     void slotDictionaryChanged();
-    void slotSpellReady( KSpell *spell );
+    void slotSpellReady( K3Spell *spell );
     void slotAutoDetection();
     void slotLocalSpellConfigChanged();
-    void slotKSpellNotResponding();
+    void slotK3SpellNotResponding();
 
 private:
     class K3DictSpellingHighlighterPrivate;

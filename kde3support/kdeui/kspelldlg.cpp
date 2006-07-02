@@ -36,13 +36,13 @@
 //to initially disable sorting in the suggestions listview
 #define NONSORTINGCOLUMN 2
 
-class KSpellDlg::KSpellDlgPrivate {
+class K3SpellDlg::K3SpellDlgPrivate {
 public:
-  Ui_KSpellUI   ui;
-  KSpellConfig* spellConfig;
+  Ui_K3SpellUI   ui;
+  K3SpellConfig* spellConfig;
 };
 
-KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
+K3SpellDlg::K3SpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   : KDialog(parent)
     , d(0),progressbar( false )
 {
@@ -53,13 +53,13 @@ KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   showButtonSeparator( true );
   setButtonText( Cancel, i18n("&Finished") );
 
-  KConfigGroup cg( KGlobal::config(),"KSpell" );
-  kDebug() << (cg.readEntry("KSpell_DoSpellChecking")) << endl;
-  kDebug() << "dospellchecking is " << cg.readEntry("KSpell_DoSpellChecking", false)  << endl;
-  if ( (cg.readEntry("KSpell_DoSpellChecking", false) == true) )  //dospellcheck ?
+  KConfigGroup cg( KGlobal::config(),"K3Spell" );
+  kDebug() << (cg.readEntry("K3Spell_DoSpellChecking")) << endl;
+  kDebug() << "dospellchecking is " << cg.readEntry("K3Spell_DoSpellChecking", false)  << endl;
+  if ( (cg.readEntry("K3Spell_DoSpellChecking", false) == true) )  //dospellcheck ?
   {
     Q_UNUSED( _progressbar );
-    d = new KSpellDlgPrivate;
+    d = new K3SpellDlgPrivate;
     d->ui.setupUi(this);
 
     connect( d->ui.m_replaceBtn, SIGNAL(clicked()),
@@ -94,7 +94,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
 
     connect( d->ui.m_suggestions, SIGNAL( doubleClicked ( Q3ListViewItem *, const QPoint &, int ) ),
              SLOT( replace() ) );
-    d->spellConfig = new KSpellConfig( 0, 0 , false );
+    d->spellConfig = new K3SpellConfig( 0, 0 , false );
     d->spellConfig->fillDicts( d->ui.m_language );
     connect( d->ui.m_language, SIGNAL(activated(int)),
     	   d->spellConfig, SLOT(sSetDictionary(int)) );
@@ -107,13 +107,13 @@ KSpellDlg::KSpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   }
 }
 
-KSpellDlg::~KSpellDlg()
+K3SpellDlg::~K3SpellDlg()
 {
   delete d;
 }
 
 void
-KSpellDlg::init( const QString & _word, QStringList * _sugg )
+K3SpellDlg::init( const QString & _word, QStringList * _sugg )
 {
   sugg = _sugg;
   word = _word;
@@ -125,7 +125,7 @@ KSpellDlg::init( const QString & _word, QStringList * _sugg )
                                              d->ui.m_suggestions->lastItem() );
     item->setText( 0, *it );
   }
-  kDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
+  kDebug(750) << "K3SpellDlg::init [" << word << "]" << endl;
 
   emit ready( true );
 
@@ -146,7 +146,7 @@ KSpellDlg::init( const QString & _word, QStringList * _sugg )
 }
 
 void
-KSpellDlg::init( const QString& _word, QStringList* _sugg,
+K3SpellDlg::init( const QString& _word, QStringList* _sugg,
                  const QString& context )
 {
   sugg = _sugg;
@@ -160,7 +160,7 @@ KSpellDlg::init( const QString& _word, QStringList* _sugg,
       item->setText( 0, *it );
   }
 
-  kDebug(750) << "KSpellDlg::init [" << word << "]" << endl;
+  kDebug(750) << "K3SpellDlg::init [" << word << "]" << endl;
 
   emit ready( true );
 
@@ -182,7 +182,7 @@ KSpellDlg::init( const QString& _word, QStringList* _sugg,
 }
 
 void
-KSpellDlg::slotProgress( unsigned int p )
+K3SpellDlg::slotProgress( unsigned int p )
 {
   if (!progressbar)
     return;
@@ -191,7 +191,7 @@ KSpellDlg::slotProgress( unsigned int p )
 }
 
 void
-KSpellDlg::textChanged( const QString & )
+K3SpellDlg::textChanged( const QString & )
 {
   d->ui.m_replaceBtn->setEnabled( true );
   d->ui.m_replaceAllBtn->setEnabled( true );
@@ -199,7 +199,7 @@ KSpellDlg::textChanged( const QString & )
 }
 
 void
-KSpellDlg::slotSelectionChanged( Q3ListViewItem* item )
+K3SpellDlg::slotSelectionChanged( Q3ListViewItem* item )
 {
   if ( item )
     d->ui.m_replacement->setText( item->text( 0 ) );
@@ -210,32 +210,32 @@ KSpellDlg::slotSelectionChanged( Q3ListViewItem* item )
   */
 
 void
-KSpellDlg::closeEvent( QCloseEvent * )
+K3SpellDlg::closeEvent( QCloseEvent * )
 {
   cancel();
 }
 
 void
-KSpellDlg::done( int result )
+K3SpellDlg::done( int result )
 {
   emit command( result );
 }
 void
-KSpellDlg::ignore()
+K3SpellDlg::ignore()
 {
   newword = word;
   done( KS_IGNORE );
 }
 
 void
-KSpellDlg::ignoreAll()
+K3SpellDlg::ignoreAll()
 {
   newword = word;
   done( KS_IGNOREALL );
 }
 
 void
-KSpellDlg::add()
+K3SpellDlg::add()
 {
   newword = word;
   done( KS_ADD );
@@ -243,42 +243,42 @@ KSpellDlg::add()
 
 
 void
-KSpellDlg::cancel()
+K3SpellDlg::cancel()
 {
   newword = word;
   done( KS_CANCEL );
 }
 
 void
-KSpellDlg::replace()
+K3SpellDlg::replace()
 {
   newword = d->ui.m_replacement->text();
   done( KS_REPLACE );
 }
 
 void
-KSpellDlg::stop()
+K3SpellDlg::stop()
 {
   newword = word;
   done( KS_STOP );
 }
 
 void
-KSpellDlg::replaceAll()
+K3SpellDlg::replaceAll()
 {
   newword = d->ui.m_replacement->text();
   done( KS_REPLACEALL );
 }
 
 void
-KSpellDlg::suggest()
+K3SpellDlg::suggest()
 {
   newword = d->ui.m_replacement->text();
   done( KS_SUGGEST );
 }
 
 void
-KSpellDlg::slotConfigChanged()
+K3SpellDlg::slotConfigChanged()
 {
   d->spellConfig->writeGlobalSettings();
   done( KS_CONFIG );
