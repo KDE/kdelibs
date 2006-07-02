@@ -223,12 +223,9 @@ public:
   T readEntry( const QString& pKey, const T& aDefault) const
     { return readEntry(pKey.toUtf8().constData(), aDefault); }
 
-#if QT_VERSION < 0x040200
   /**
    * Reads the color of an entry specified by @p pKey in the current group.
    *
-   * @warning This is only temporary until QVariant copes with Qt::GlobalColor
-   * (probably in Qt 4.2)
    */
   QColor readEntry(const char* pKey, Qt::GlobalColor aDefault) const
     { return readEntry(pKey, QColor(aDefault)); }
@@ -236,12 +233,9 @@ public:
   /**
    * Reads the color of an entry specified by @p pKey in the current group.
    *
-   * @warning This is only temporary until QVariant copes with Qt::GlobalColor
-   * (probably in Qt 4.2)
    */
   QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const
     { return readEntry(pKey, QColor(aDefault)); }
-#endif
 
   // these two are here temporarily for porting, remove before KDE4
   KDE_DEPRECATED QVariant readPropertyEntry( const QString& pKey, const QVariant& aDefault) const
