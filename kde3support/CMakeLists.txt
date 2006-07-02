@@ -30,10 +30,6 @@ install_files( /include FILES kdecore/k3urldrag.h kdecore/k3multipledrag.h kdeco
 
 # kde3support/kdeui/Makefile.am: kde3ui
 
-set(kde3ui_UI
-    k3spellui.ui
-)
-
 set(kde3ui_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3dockwidget_private.cpp
@@ -46,6 +42,12 @@ set(kde3ui_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spelldlg.cpp
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3sconfig.cpp
 )
+
+set(kde3ui_UI
+    ${CMAKE_SOURCE_DIR}/kde3support/kdeui/k3spellui.ui
+)
+
+kde4_add_ui_files(kde3ui_STAT_SRCS ${kde3ui_UI} )
 
 # kde3support/kio/Makefile.am: k3io
 

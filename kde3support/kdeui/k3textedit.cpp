@@ -49,7 +49,7 @@ public:
     bool customPalette;
     bool checkSpellingEnabled;
     K3DictSpellingHighlighter *highlighter;
-    KSpell *spell;
+    K3Spell *spell;
 };
 
 K3TextEdit::K3TextEdit( const QString& text, const QString& context,
@@ -345,8 +345,8 @@ void K3TextEdit::virtual_hook( int, void* )
 void K3TextEdit::checkSpelling()
 {
     delete d->spell;
-    d->spell = new KSpell( this, i18n( "Spell Checking" ),
-                          this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+    d->spell = new K3Spell( this, i18n( "Spell Checking" ),
+                          this, SLOT( slotSpellCheckReady( K3Spell *) ), 0, true, true);
 
     connect( d->spell, SIGNAL( death() ),
              this, SLOT( spellCheckerFinished() ) );
@@ -390,7 +390,7 @@ void K3TextEdit::spellCheckerFinished()
     d->spell = 0L;
 }
 
-void K3TextEdit::slotSpellCheckReady( KSpell *s )
+void K3TextEdit::slotSpellCheckReady( K3Spell *s )
 {
     s->check( text() );
     connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );

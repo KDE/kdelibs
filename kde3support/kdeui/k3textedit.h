@@ -24,7 +24,7 @@
 
 #include <kdelibs_export.h>
 
-class KSpell;
+class K3Spell;
 
 /**
  * @short A KDE'ified Q3TextEdit
@@ -147,7 +147,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 
 private Q_SLOTS:
-    void slotSpellCheckReady( KSpell *s );
+    void slotSpellCheckReady( K3Spell *s );
     void slotSpellCheckDone( const QString &s );
     void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
     void spellCheckerCorrected( const QString &, const QString &, unsigned int );
