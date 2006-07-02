@@ -93,7 +93,7 @@ private slots:
     QCOMPARE (weaver.noOfThreads(), 1);
   }
 
-  void SimpleJobTest() {
+    void SimpleJobTest() {
         QString sequence;
         AppendCharacterJob job( QChar( '1' ), &sequence, this );
         ThreadWeaver::Weaver::instance()->enqueue ( &job );

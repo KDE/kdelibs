@@ -9,7 +9,8 @@ SOURCES += WeaverInterface.cpp \
         WeaverObserver.cpp \
 	JobCollection.cpp \
 	JobSequence.cpp \
-	DependencyPolicy.cpp
+	DependencyPolicy.cpp \
+        ResourceRestrictionPolicy.cpp 
 
 HEADERS += WeaverInterface.h \
 	ThreadWeaver.h WeaverImpl.h \
@@ -21,7 +22,8 @@ HEADERS += WeaverInterface.h \
 	JobCollection.h \
 	JobSequence.h \
 	QueuePolicy.h \
-	DependencyPolicy.h
+	DependencyPolicy.h \
+        ResourceRestrictionPolicy.h
 
 CONFIG += dll warn_on thread
 QT -= gui
