@@ -1063,7 +1063,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   clip	  	  KJS::HTMLElement::LayerClip			DontDelete|ReadOnly
   layers	  KJS::HTMLElement::LayerLayers			DontDelete|ReadOnly
 @end
-@begin HTMLFrameElementTable 9
+@begin HTMLFrameElementTable 13
   contentDocument KJS::HTMLElement::FrameContentDocument        DontDelete|ReadOnly
   contentWindow KJS::HTMLElement::FrameContentWindow        DontDelete|ReadOnly
   frameBorder     KJS::HTMLElement::FrameFrameBorder		DontDelete
@@ -1075,6 +1075,9 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   scrolling	  KJS::HTMLElement::FrameScrolling		DontDelete
   src		  KJS::HTMLElement::FrameSrc			DontDelete
   location	  KJS::HTMLElement::FrameLocation		DontDelete
+# IE extension
+  width		  KJS::HTMLElement::FrameWidth			DontDelete|ReadOnly
+  height	  KJS::HTMLElement::FrameHeight			DontDelete|ReadOnly
 @end
 @begin HTMLIFrameElementTable 12
   align		  KJS::HTMLElement::IFrameAlign			DontDelete
@@ -1869,6 +1872,14 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case FrameScrolling:       return String(frameElement.scrolling());
     case FrameSrc:
     case FrameLocation:        return String(frameElement.src());
+    // IE only
+    case FrameWidth:
+    case FrameHeight:
+      {
+          frameElement.handle()->getDocument()->updateLayout();
+          khtml::RenderObject* r = frameElement.handle()->renderer();
+          return Number( r ? (token == FrameWidth ? r->width() : r->height()) : 0 );
+      }
     }
   }
   break;

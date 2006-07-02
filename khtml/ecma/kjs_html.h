@@ -146,7 +146,7 @@ namespace KJS {
            FrameSetRows, FrameSrc, FrameLocation, FrameFrameBorder, FrameScrolling,
            FrameMarginWidth, FrameLongDesc, FrameMarginHeight, FrameName,
            FrameContentDocument, FrameContentWindow,
-           FrameNoResize, IFrameLongDesc, IFrameAlign,
+           FrameNoResize, FrameWidth, FrameHeight, IFrameLongDesc, IFrameAlign,
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
            IFrameContentDocument, IFrameContentWindow,
