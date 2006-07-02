@@ -5,7 +5,7 @@
 
 set(kspell2_LIB_SRCS
  dialog.cpp
- ${kspell2base_STAT_SRCS}
+ ${sonnetbase_STAT_SRCS}
  configwidget.cpp
  highlighter.cpp
  configdialog.cpp
