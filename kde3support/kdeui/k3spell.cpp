@@ -33,7 +33,7 @@
 #include <strings.h>
 #endif
 
-#include "kspell.h"
+#include "k3spell.h"
 
 
 #include <qapplication.h>

@@ -31,7 +31,7 @@ install_files( /include FILES kdecore/k3urldrag.h kdecore/k3multipledrag.h kdeco
 # kde3support/kdeui/Makefile.am: kde3ui
 
 set(kde3ui_UI
-    kspellui.ui
+    k3spellui.ui
 )
 
 set(kde3ui_STAT_SRCS

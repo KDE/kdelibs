@@ -24,7 +24,7 @@
 #include <q3popupmenu.h>
 
 #include <k3syntaxhighlighter.h>
-#include <kspell.h>
+#include <k3spell.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstdaccel.h>
@@ -188,7 +188,7 @@ void K3TextEdit::keyPressEvent( QKeyEvent *e )
         e->ignore();
         return;
     }
-    
+
     Q3TextEdit::keyPressEvent( e );
 }
 
