@@ -376,7 +376,6 @@ public:
     // internal
     bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
-    virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep );
 

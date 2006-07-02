@@ -1703,42 +1703,34 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
     return false;
 }
 
+
 // DOM Section 1.1.1
-bool DocumentImpl::childAllowed( NodeImpl *newChild )
-{
-    // Documents may contain a maximum of one Element child
-    if (newChild->nodeType() == Node::ELEMENT_NODE) {
-        NodeImpl *c;
-        for (c = firstChild(); c; c = c->nextSibling()) {
-            if (c->nodeType() == Node::ELEMENT_NODE)
-                return false;
-        }
-    }
-
-    // Documents may contain a maximum of one DocumentType child
-    if (newChild->nodeType() == Node::DOCUMENT_TYPE_NODE) {
-        NodeImpl *c;
-        for (c = firstChild(); c; c = c->nextSibling()) {
-            if (c->nodeType() == Node::DOCUMENT_TYPE_NODE)
-                return false;
-        }
-    }
-
-    return childTypeAllowed(newChild->nodeType());
-}
-
 bool DocumentImpl::childTypeAllowed( unsigned short type )
 {
     switch (type) {
-        case Node::ELEMENT_NODE:
-        case Node::PROCESSING_INSTRUCTION_NODE:
-        case Node::COMMENT_NODE:
-        case Node::DOCUMENT_TYPE_NODE:
-            return true;
-            break;
-        default:
+        case Node::ATTRIBUTE_NODE:
+        case Node::CDATA_SECTION_NODE:
+        case Node::DOCUMENT_FRAGMENT_NODE:
+        case Node::DOCUMENT_NODE:
+        case Node::ENTITY_NODE:
+        case Node::ENTITY_REFERENCE_NODE:
+        case Node::NOTATION_NODE:
+        case Node::TEXT_NODE:
+//        case Node::XPATH_NAMESPACE_NODE:
             return false;
+        case Node::COMMENT_NODE:
+        case Node::PROCESSING_INSTRUCTION_NODE:
+            return true;
+        case Node::DOCUMENT_TYPE_NODE:
+        case Node::ELEMENT_NODE:
+            // Documents may contain no more than one of each of these.
+            // (One Element and one DocumentType.)
+            for (NodeImpl* c = firstChild(); c; c = c->nextSibling())
+                if (c->nodeType() == type)
+                    return false;
+            return true;
     }
+    return false;
 }
 
 NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/ )
