@@ -960,9 +960,9 @@ QByteArray qba;
 // These should technically be unsigned char * but it doesn't matter
 // for our purposes
 char *cert = new char[certlen];
-char *p = cert;
+unsigned char *p = (unsigned char *)cert;
 	// FIXME: return code!
-	d->kossl->i2d_X509(getCert(), (unsigned char **)&p);
+	d->kossl->i2d_X509(getCert(), &p);
 
 	// encode it into a QString
 	qba = QByteArray(cert, certlen);

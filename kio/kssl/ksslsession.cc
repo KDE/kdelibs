@@ -50,9 +50,9 @@ QString KSSLSession::toString() const {
 	// These should technically be unsigned char * but it doesn't matter
 	// for our purposes
 	char *csess = new char[slen];
-	char *p = csess;
+	unsigned char *p = (unsigned char*)csess;
 
-	if (!KOpenSSLProxy::self()->i2d_SSL_SESSION(session, (unsigned char **)&p)) {
+	if (!KOpenSSLProxy::self()->i2d_SSL_SESSION(session, &p)) {
 	    delete[] csess;
 	    return QString();
 	}
