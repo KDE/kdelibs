@@ -40,7 +40,7 @@ HSpellClient::~HSpellClient()
 {
 }
 
-Dictionary* HSpellClient::dictionary( const QString& language )
+Speller* HSpellClient::createSpeller( const QString& language )
 {
     HSpellDict *ad = new HSpellDict( language );
     return ad;

@@ -1,0 +1,71 @@
+#include "enchantdict.h"
+
+#include <qtextcodec.h>
+#include <qdebug.h>
+
+QSpellEnchantDict::QSpellEnchantDict(EnchantBroker *broker,
+                                     EnchantDict *dict,
+                                     const QString &language)
+    : QSpell::Speller(language),
+      m_broker(broker),
+      m_dict(dict)
+{
+    qDebug()<<"Enchant dict for"<<language;
+}
+
+QSpellEnchantDict::~QSpellEnchantDict()
+{
+    enchant_broker_free_dict(m_broker, m_dict);
+}
+
+bool QSpellEnchantDict::isCorrect(const QString &word) const
+{
+    int wrong = enchant_dict_check(m_dict, word.toUtf8(),
+                                   word.toUtf8().length());
+    return !wrong;
+}
+
+QStringList QSpellEnchantDict::suggest(const QString &word) const
+{
+    /* Needed for Unicode conversion */
+    QTextCodec *codec = QTextCodec::codecForName("utf8");
+
+    size_t number = 0;
+    char **suggestions =
+        enchant_dict_suggest(m_dict, word.toUtf8(), word.toUtf8().length(),
+                             &number);
+
+    QStringList qsug;
+    for (size_t i = 0; i < number; ++i) {
+        qsug.append(codec->toUnicode(suggestions[i]));
+    }
+
+    if (suggestions && number)
+        enchant_dict_free_string_list(m_dict, suggestions);
+    return qsug;
+}
+
+bool QSpellEnchantDict::storeReplacement(const QString &bad,
+                                  const QString &good)
+{
+    enchant_dict_store_replacement(m_dict,
+                                   bad.toUtf8(), bad.toUtf8().length(),
+                                   good.toUtf8(), good.toUtf8().length());
+    return true;
+}
+
+bool QSpellEnchantDict::addToPersonal(const QString &word)
+{
+    qDebug() << "QSpellEnchantDict::addToPersonal: word = "
+             << word;
+    enchant_dict_add_to_pwl(m_dict, word.toUtf8(),
+                            word.toUtf8().length());
+    return true;
+}
+
+bool QSpellEnchantDict::addToSession(const QString &word)
+{
+    enchant_dict_add_to_session(m_dict, word.toUtf8(),
+                                word.toUtf8().length());
+    return true;
+}

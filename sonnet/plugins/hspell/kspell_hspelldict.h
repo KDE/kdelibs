@@ -28,17 +28,14 @@ extern "C" {
 #include "hspell.h"
 }
 
-class HSpellDict : public KSpell2::Dictionary
+class HSpellDict : public KSpell2::Speller
 {
 public:
     HSpellDict( const QString& lang );
     ~HSpellDict();
-    virtual bool check( const QString& word );
+    virtual bool isCorrect( const QString& word );
 
-    virtual QStringList suggest( const QString& word );
-
-    virtual bool checkAndSuggest( const QString& word,
-                                  QStringList& suggestions ) ;
+    virtual QStringList suggest( const QString& word ) const;
 
     virtual bool storeReplacement( const QString& bad,
                                    const QString& good );

@@ -27,7 +27,7 @@
 using namespace KSpell2;
 
 ASpellDict::ASpellDict( const QString& lang )
-    : Dictionary( lang )
+    : Speller(lang)
 {
     m_config = new_aspell_config();
     aspell_config_replace( m_config, "lang", lang.toLatin1() );
@@ -50,7 +50,7 @@ ASpellDict::~ASpellDict()
     delete_aspell_config( m_config );
 }
 
-bool ASpellDict::check( const QString& word )
+bool ASpellDict::isCorrect(const QString &word) const
 {
     /* ASpell is expecting length of a string in char representation */
     /* word.length() != word.toUtf8().length() for nonlatin strings    */
@@ -58,7 +58,7 @@ bool ASpellDict::check( const QString& word )
     return correct;
 }
 
-QStringList ASpellDict::suggest( const QString& word )
+QStringList ASpellDict::suggest(const QString &word) const
 {
     /* Needed for Unicode conversion */
     QTextCodec *codec = QTextCodec::codecForName("utf8");
@@ -84,14 +84,6 @@ QStringList ASpellDict::suggest( const QString& word )
     return qsug;
 }
 
-bool ASpellDict::checkAndSuggest( const QString& word,
-                                  QStringList& suggestions )
-{
-    bool c = check( word );
-    if ( c )
-        suggestions = suggest( word );
-    return c;
-}
 
 bool ASpellDict::storeReplacement( const QString& bad,
                                    const QString& good )
@@ -111,7 +103,7 @@ bool ASpellDict::addToPersonal( const QString& word )
     aspell_speller_add_to_personal( m_speller, word.toUtf8(),
                                     word.toUtf8().length() );
     /* Add is not enough, one has to save it. This is not documented */
-    /* in ASpell's API manual. I found it in                         */ 
+    /* in ASpell's API manual. I found it in                         */
     /* aspell-0.60.2/example/example-c.c                             */
     return aspell_speller_save_all_word_lists( m_speller );
 }

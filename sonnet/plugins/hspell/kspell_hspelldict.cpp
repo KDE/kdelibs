@@ -28,7 +28,7 @@
 using namespace KSpell2;
 
 HSpellDict::HSpellDict( const QString& lang )
-    : Dictionary( lang )
+    : Speller( lang )
 {
    int int_error = hspell_init( &m_speller, HSPELL_OPT_DEFAULT );
    if ( int_error == -1 )
@@ -43,7 +43,7 @@ HSpellDict::~HSpellDict()
     hspell_uninit( m_speller );
 }
 
-bool HSpellDict::check( const QString& word )
+bool HSpellDict::isCorrect( const QString& word ) const
 {
     kDebug() << "HSpellDict::check word = " << word <<endl;
     int preflen;
@@ -61,7 +61,7 @@ bool HSpellDict::check( const QString& word )
     return correct == 1;
 }
 
-QStringList HSpellDict::suggest( const QString& word )
+QStringList HSpellDict::suggest( const QString& word ) const
 {
     QStringList qsug;
     struct corlist cl;
@@ -75,33 +75,24 @@ QStringList HSpellDict::suggest( const QString& word )
     return qsug;
 }
 
-bool HSpellDict::checkAndSuggest( const QString& word,
-                                  QStringList& suggestions )
-{
-    bool c = check( word );
-    if( c )
-        suggestions = suggest( word );
-    return c;
-}
-
 bool HSpellDict::storeReplacement( const QString& bad,
                                    const QString& good )
 {
     // hspell-0.9 cannot do this
-    kDebug() << "HSpellDict::storeReplacement: Sorry, cannot." << endl; 
+    kDebug() << "HSpellDict::storeReplacement: Sorry, cannot." << endl;
     return false;
 }
 
 bool HSpellDict::addToPersonal( const QString& word )
 {
     // hspell-0.9 cannot do this
-    kDebug() << "HSpellDict::addToPersonal: Sorry, cannot." << endl; 
+    kDebug() << "HSpellDict::addToPersonal: Sorry, cannot." << endl;
     return false;
 }
 
 bool HSpellDict::addToSession( const QString& word )
 {
     // hspell-0.9 cannot do this
-    kDebug() << "HSpellDict::addToSession: Sorry, cannot." << endl; 
+    kDebug() << "HSpellDict::addToSession: Sorry, cannot." << endl;
     return false;
 }

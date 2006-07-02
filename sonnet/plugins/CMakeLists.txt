@@ -12,6 +12,7 @@ if (HSPELL_FOUND)
    add_subdirectory( hspell )
 endif (HSPELL_FOUND)
 
-
-
-
+macro_optional_find_package(ENCHANT)
+if (ENCHANT_FOUND)
+   add_subdirectory( enchant )
+endif (ENCHANT_FOUND)

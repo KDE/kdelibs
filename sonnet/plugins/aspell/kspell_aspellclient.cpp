@@ -41,7 +41,7 @@ ASpellClient::~ASpellClient()
     delete_aspell_config( m_config );
 }
 
-Dictionary* ASpellClient::dictionary( const QString& language )
+Speller *ASpellClient::createSpeller(const QString &language)
 {
     ASpellDict *ad = new ASpellDict( language );
     return ad;

@@ -31,9 +31,9 @@ extern "C" {
 }
 
 namespace KSpell2 {
-    class Dictionary;
+    class Speller;
 }
-using KSpell2::Dictionary;
+using KSpell2::Speller;
 
 class HSpellClient : public KSpell2::Client
 {
@@ -46,7 +46,7 @@ public:
         return 20;
     }
 
-    virtual Dictionary* dictionary( const QString& language );
+    virtual Speller* createSpeller( const QString& language );
 
     virtual QStringList languages() const;
 

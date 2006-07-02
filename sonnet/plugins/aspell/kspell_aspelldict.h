@@ -25,23 +25,20 @@
 
 #include "aspell.h"
 
-class ASpellDict : public KSpell2::Dictionary
+class ASpellDict : public KSpell2::Speller
 {
 public:
-    ASpellDict( const QString& lang );
+    ASpellDict(const QString &lang);
     ~ASpellDict();
-    virtual bool check( const QString& word );
+    virtual bool isCorrect(const QString &word) const;
 
-    virtual QStringList suggest( const QString& word );
+    virtual QStringList suggest(const QString &word) const;
 
-    virtual bool checkAndSuggest( const QString& word,
-                                  QStringList& suggestions ) ;
+    virtual bool storeReplacement(const QString &bad,
+                                  const QString &good);
 
-    virtual bool storeReplacement( const QString& bad,
-                                   const QString& good );
-
-    virtual bool addToPersonal( const QString& word );
-    virtual bool addToSession( const QString& word );
+    virtual bool addToPersonal(const QString &word);
+    virtual bool addToSession(const QString &word);
 private:
     AspellConfig  *m_config;
     AspellSpeller *m_speller;
