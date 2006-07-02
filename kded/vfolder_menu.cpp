@@ -22,6 +22,7 @@
 #include <sys/dir.h>
 #include <dirent.h>
 #include <stdlib.h> // getenv
+#include <config.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -956,11 +957,17 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
          continue;
 
-      bool isDir = ep->d_type == DT_DIR;
-      bool isReg = ep->d_type == DT_REG;
-
+      bool isDir;
+      bool isReg;
       QString pathfn = dir + fn;
-      if (ep->d_type == DT_UNKNOWN) {
+
+#ifdef HAVE_DIRENT_D_TYPE
+      isDir = ep->d_type == DT_DIR;
+      isReg = ep->d_type == DT_REG;
+
+      if (ep->d_type == DT_UNKNOWN)
+#endif
+      {
 	KDE_struct_stat buff;
         if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
            continue; // Couldn't stat (e.g. no read permissions)
@@ -1068,12 +1075,17 @@ kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix <
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
          continue;
 
-      bool isDir = ep->d_type == DT_DIR;
-      bool isReg = ep->d_type == DT_REG;
-
-
+      bool isDir;
+      bool isReg;
       QString pathfn = dir + fn;
-      if (ep->d_type == DT_UNKNOWN) {
+
+#ifdef HAVE_DIRENT_D_TYPE
+      isDir = ep->d_type == DT_DIR;
+      isReg = ep->d_type == DT_REG;
+
+      if (ep->d_type == DT_UNKNOWN)
+#endif
+      {
 	KDE_struct_stat buff;
         if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
            continue; // Couldn't stat (e.g. no read permissions)
