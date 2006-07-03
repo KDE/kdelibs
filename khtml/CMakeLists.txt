@@ -247,9 +247,7 @@ include_directories(
 include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
 add_subdirectory( kmultipart )
-if (NOT KDE4_USE_QT_EMB)
-   add_subdirectory( java )
-endif (NOT KDE4_USE_QT_EMB )
+add_subdirectory( java )
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
 
