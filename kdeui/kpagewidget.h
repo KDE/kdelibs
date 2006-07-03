@@ -22,9 +22,9 @@
 #ifndef KPAGEWIDGET_H
 #define KPAGEWIDGET_H
 
-#include "kpageview.h"
+#include <kpagewidgetmodel.h>
 
-class KPageWidgetItem;
+#include "kpageview.h"
 
 /**
  * @short A @see KPageView with hierarchical page model.
