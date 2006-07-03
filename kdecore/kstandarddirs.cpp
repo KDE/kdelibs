@@ -487,7 +487,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       bool isReg;
 
       QString pathfn = path + fn;
-#ifdef HAVE_DIRENT_D_TYPPE
+#ifdef HAVE_DIRENT_D_TYPE
       isDir = ep->d_type == DT_DIR;
       isReg = ep->d_type == DT_REG;
 
