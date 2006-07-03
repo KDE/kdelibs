@@ -118,7 +118,7 @@ There is no direct replacement of DCOPObject. It's replaced by normal QObject, w
   public Q_SLOTS:
     Q_SCRIPTABLE void methodName();
 ~/pp~
-# Change "ASYNC" to "Q_ASYNC void"
+# Change "ASYNC" to "Q_NOREPLY void"
 # Remove the call to the DCOPObject constructor in the class' constructor.
 # Add the registering to the constructor.
 
