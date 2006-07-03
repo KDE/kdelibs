@@ -1,0 +1,30 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="test" version="1">
+
+  <MenuBar>
+    <Menu name="file" noMerge="1"><text>&amp;File</text>
+      <Action name="open"/>
+    </Menu>
+
+    <Menu name="edit" noMerge="1"><text>&amp;Edit</text>
+      <Action name="undo"/>
+    </Menu>
+
+    <Menu name="view" noMerge="1"><text>&amp;View</text>
+      <Action name="view"/>
+    </Menu>
+  </MenuBar>
+
+  <Menu name="RMBPopup">
+    <Action name="open"/>
+    <Action name="undo"/>
+    <Action name="view"/>
+  </Menu>
+
+  <ToolBar name="mainToolBar" noMerge="1"><text>Main Toolbar</text>
+    <Action name="open"/>
+    <Action name="undo"/>
+    <Action name="view"/>
+  </ToolBar>
+
+</kpartgui>

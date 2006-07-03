@@ -300,6 +300,7 @@ XmlGuiHandler::XmlGuiHandler(KLiveUiBuilder *builder, QObject *component)
     : builder(builder), component(component)
 {
     currentWidget = 0;
+    inTextTag = false;
 }
 
 bool XmlGuiHandler::startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes)
@@ -313,23 +314,26 @@ bool XmlGuiHandler::startElement(const QString & /*namespaceURI*/, const QString
         currentWidget = builder->beginToolBar();
     } else if (tag == QLatin1String("separator")) {
         builder->addSeparator();
+    } else if (tag == QLatin1String("text")) {
+        inTextTag = true;
     } else if (tag == QLatin1String("action")) {
         QString group = attributes.value("group");
         QAction *a = component->findChild<QAction *>(attributes.value("name"));
-        if (!group.isEmpty())
-            builder->beginActionGroup(group);
-        builder->addAction(a);
-        if (!group.isEmpty())
-            builder->endActionGroup();
+        if ( a ) {
+          if (!group.isEmpty())
+              builder->beginActionGroup(group);
+              builder->addAction(a);
+          if (!group.isEmpty())
+              builder->endActionGroup();
+        }
     }
     return true;
 }
 
-bool XmlGuiHandler::endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes & /*attributes*/)
+bool XmlGuiHandler::endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName)
 {
     QString tag = qName.toLower();
     if (tag == QLatin1String("menubar")) {
-// ####        editor->endMenuBar(); break;
         currentWidget = 0;
     } else if (tag == QLatin1String("menu")) {
         builder->endMenu();
@@ -337,13 +341,15 @@ bool XmlGuiHandler::endElement(const QString & /*namespaceURI*/, const QString &
     } else if (tag == QLatin1String("toolbar")) {
         builder->endToolBar();
         currentWidget = 0;
+    } else if (tag == QLatin1String("text")) {
+        inTextTag = false;
     }
     return true;
 }
 
 bool XmlGuiHandler::characters(const QString &text)
 {
-    if (currentWidget)
+    if (currentWidget && inTextTag)
         currentWidget->setProperty("title", text);
     return true;
 }
