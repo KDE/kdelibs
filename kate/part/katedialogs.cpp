@@ -1244,9 +1244,10 @@ void KatePartPluginConfigPage::slotConfigure()
 //END KatePartPluginConfigPage
 
 //BEGIN KateHlConfigPage
-KateHlConfigPage::KateHlConfigPage (QWidget *parent)
+KateHlConfigPage::KateHlConfigPage (QWidget *parent, KateDocument *doc)
  : KateConfigPage (parent, "")
  , hlData (0)
+ , m_doc (doc)
 {
   QVBoxLayout *layout = new QVBoxLayout(this, 0, KDialog::spacingHint() );
 
@@ -1267,7 +1268,6 @@ KateHlConfigPage::KateHlConfigPage (QWidget *parent)
     else
       hlCombo->insertItem(KateHlManager::self()->hlNameTranslated(i));
   }
-  hlCombo->setCurrentItem(0);
 
   QGroupBox *gbInfo = new QGroupBox( 1, Qt::Horizontal, i18n("Information"), this );
   layout->add (gbInfo);
@@ -1316,8 +1316,9 @@ KateHlConfigPage::KateHlConfigPage (QWidget *parent)
   QPushButton *btnDl = new QPushButton(i18n("Do&wnload..."), hbBtns);
   connect( btnDl, SIGNAL(clicked()), this, SLOT(hlDownload()) );
 
-  hlCombo->setCurrentItem( 0 );
-  hlChanged(0);
+  int currentHl = m_doc ? m_doc->hlMode() : 0;
+  hlCombo->setCurrentItem( currentHl );
+  hlChanged( currentHl );
 
   QWhatsThis::add( hlCombo, i18n(
         "Choose a <em>Syntax Highlight mode</em> from this list to view its "

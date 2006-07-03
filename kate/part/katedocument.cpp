@@ -402,7 +402,7 @@ KTextEditor::ConfigPage *KateDocument::configPage (uint number, QWidget *parent,
       return new KateSaveConfigTab (parent);
 
     case 6:
-      return new KateHlConfigPage (parent);
+      return new KateHlConfigPage (parent, this);
 
     case 7:
       return new KateFileTypeConfigTab (parent);
