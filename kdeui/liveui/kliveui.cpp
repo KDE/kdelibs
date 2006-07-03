@@ -13,7 +13,7 @@
 #include <QtXml>
 #include <QWidgetAction>
 
-namespace GuiEditorPriv {
+namespace KLiveUiPrivate {
     class MenuOrWidgetDeleter : public QObject
     {
         Q_OBJECT
@@ -31,7 +31,7 @@ namespace GuiEditorPriv {
     };
 }
 
-class GuiEditorPrivate
+class KLiveUiBuilderPrivate
 {
 public:
     QObject *component;
@@ -43,7 +43,7 @@ public:
     QPointer<QAction> beforeAction;
 };
 
-QAction *GuiEditorPrivate::findActionGroup(QString groupName)
+QAction *KLiveUiBuilderPrivate::findActionGroup(QString groupName)
 {
     groupName.prepend("ActionGroup:");
     foreach (QAction *action, widgets.top()->actions())
@@ -54,59 +54,59 @@ QAction *GuiEditorPrivate::findActionGroup(QString groupName)
     return 0;
 }
 
-GuiEditor::GuiEditor(QMainWindow *mw)
+KLiveUiBuilder::KLiveUiBuilder(QMainWindow *mw)
 {
     d = 0;
     begin(mw);
 }
 
-GuiEditor::GuiEditor(QObject *plugin)
+KLiveUiBuilder::KLiveUiBuilder(QObject *plugin)
 {
     d = 0;
     begin(plugin);
 }
 
-GuiEditor::GuiEditor()
+KLiveUiBuilder::KLiveUiBuilder()
 {
     d = 0;
 }
 
-GuiEditor::~GuiEditor()
+KLiveUiBuilder::~KLiveUiBuilder()
 {
     end();
 }
 
-void GuiEditor::begin(QMainWindow *mw)
+void KLiveUiBuilder::begin(QMainWindow *mw)
 {
     if (d) {
-        qWarning("GuiEditor::begin(): editor is already active.");
+        qWarning("KLiveUiBuilder::begin(): editor is already active.");
         return;
     }
-    d = new GuiEditorPrivate;
+    d = new KLiveUiBuilderPrivate;
     d->component = mw;
     d->widgets.push(mw);
 }
 
-void GuiEditor::begin(QObject *plugin)
+void KLiveUiBuilder::begin(QObject *plugin)
 {
     if (d) {
-        qWarning("GuiEditor::begin(): editor is already active.");
+        qWarning("KLiveUiBuilder::begin(): editor is already active.");
         return;
     }
-    d = new GuiEditorPrivate;
+    d = new KLiveUiBuilderPrivate;
     d->component = plugin;
-    GuiEditorComponentInterface *iface = qobject_cast<GuiEditorComponentInterface *>(plugin);
+    KLiveUiComponent *iface = qobject_cast<KLiveUiComponent *>(plugin);
     Q_ASSERT(iface);
-    d->widgets.push(iface->currentGuiEditorMainWindow);
+    d->widgets.push(iface->currentBuilderMainWindow);
 }
 
-void GuiEditor::end()
+void KLiveUiBuilder::end()
 {
     delete d;
     d = 0;
 }
 
-void GuiEditor::beginMenuBar()
+void KLiveUiBuilder::beginMenuBar()
 {
     QMainWindow *mw = qobject_cast<QMainWindow *>(d->widgets.top());
     if (!mw) {
@@ -116,7 +116,7 @@ void GuiEditor::beginMenuBar()
     d->widgets.push(mw->menuBar());
 }
 
-QMenu *GuiEditor::beginMenu(const QString &name, const QString &title)
+QMenu *KLiveUiBuilder::beginMenu(const QString &name, const QString &title)
 {
     QMenu *menu = 0;
     foreach (QAction *a, d->widgets.top()->actions())
@@ -128,14 +128,14 @@ QMenu *GuiEditor::beginMenu(const QString &name, const QString &title)
         menu = new QMenu(d->widgets.top());
         menu->setObjectName(name);
         menu->setTitle(title);
-        (void)new GuiEditorPriv::MenuOrWidgetDeleter(menu, d->component);
+        (void)new KLiveUiPrivate::MenuOrWidgetDeleter(menu, d->component);
         d->widgets.top()->insertAction(d->beforeAction, menu->menuAction());
     }
     d->widgets.push(menu);
     return menu;
 }
 
-void GuiEditor::endMenu()
+void KLiveUiBuilder::endMenu()
 {
     if (d->widgets.count() <= 1) {
         qWarning("GuiEditor: endMenu called without previous endMenu");
@@ -146,7 +146,7 @@ void GuiEditor::endMenu()
         qWarning("GuiEditor: endMenu called but current widget is not a menu");
 }
 
-QToolBar *GuiEditor::beginToolBar(const QString &title)
+QToolBar *KLiveUiBuilder::beginToolBar(const QString &title)
 {
     if (qobject_cast<QMenuBar *>(d->widgets.top())
         || qobject_cast<QToolBar *>(d->widgets.top())) {
@@ -163,7 +163,7 @@ QToolBar *GuiEditor::beginToolBar(const QString &title)
     return tb;
 }
 
-void GuiEditor::endToolBar()
+void KLiveUiBuilder::endToolBar()
 {
     if (d->widgets.count() <= 1) {
         qWarning("GuiEditor: endMenu called without previous endMenu");
@@ -174,7 +174,7 @@ void GuiEditor::endToolBar()
         qWarning("GuiEditor: endToolBar called but current widget is not a toolbar");
 }
 
-void GuiEditor::addAction(QAction *action)
+void KLiveUiBuilder::addAction(QAction *action)
 {
     if (action->parent() != d->component) {
         qWarning("GuiEditor: addAction called with action not belonging to editing component");
@@ -182,13 +182,13 @@ void GuiEditor::addAction(QAction *action)
     d->widgets.top()->insertAction(d->beforeAction, action);
 }
 
-void GuiEditor::addActions(const QList<QAction *> actions)
+void KLiveUiBuilder::addActions(const QList<QAction *> actions)
 {
     foreach (QAction *action, actions)
         addAction(action);
 }
 
-QAction *GuiEditor::addAction(const QString &text)
+QAction *KLiveUiBuilder::addAction(const QString &text)
 {
     QAction *a = new QAction(d->component);
     a->setText(text);
@@ -196,7 +196,7 @@ QAction *GuiEditor::addAction(const QString &text)
     return a;
 }
 
-QAction *GuiEditor::addAction(const QIcon &icon, const QString &text)
+QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text)
 {
     QAction *a = new QAction(d->component);
     a->setIcon(icon);
@@ -205,7 +205,7 @@ QAction *GuiEditor::addAction(const QIcon &icon, const QString &text)
     return a;
 }
 
-QAction *GuiEditor::addAction(const QString &text, const QObject *receiver, const char *member,
+QAction *KLiveUiBuilder::addAction(const QString &text, const QObject *receiver, const char *member,
                               const QKeySequence &shortcut)
 {
     QAction *a = new QAction(d->component);
@@ -216,7 +216,7 @@ QAction *GuiEditor::addAction(const QString &text, const QObject *receiver, cons
     return a;
 }
 
-QAction *GuiEditor::addAction(const QIcon &icon, const QString &text,
+QAction *KLiveUiBuilder::addAction(const QIcon &icon, const QString &text,
                               const QObject *receiver, const char *member,
                               const QKeySequence &shortcut)
 {
@@ -229,7 +229,7 @@ QAction *GuiEditor::addAction(const QIcon &icon, const QString &text,
     return a;
 }
 
-QAction *GuiEditor::addSeparator()
+QAction *KLiveUiBuilder::addSeparator()
 {
     QAction *a = new QAction(d->component);
     a->setSeparator(true);
@@ -237,16 +237,16 @@ QAction *GuiEditor::addSeparator()
     return a;
 }
 
-QAction *GuiEditor::addWidget(QWidget *widget)
+QAction *KLiveUiBuilder::addWidget(QWidget *widget)
 {
     QWidgetAction *a = new QWidgetAction(d->component);
     a->setDefaultWidget(widget);
-    (void)new GuiEditorPriv::MenuOrWidgetDeleter(widget, d->component);
+    (void)new KLiveUiPrivate::MenuOrWidgetDeleter(widget, d->component);
     addAction(a);
     return a;
 }
 
-void GuiEditor::addActionGroup(const QString &name)
+void KLiveUiBuilder::addActionGroup(const QString &name)
 {
     QAction *a = new QAction(d->component);
     a->setSeparator(true);
@@ -255,21 +255,21 @@ void GuiEditor::addActionGroup(const QString &name)
     addAction(a);
 }
 
-void GuiEditor::beginActionGroup(const QString &name)
+void KLiveUiBuilder::beginActionGroup(const QString &name)
 {
     d->beforeAction = d->findActionGroup(name);
 }
 
-void GuiEditor::endActionGroup()
+void KLiveUiBuilder::endActionGroup()
 {
     d->beforeAction = 0;
 }
 
-void GuiEditorComponentInterface::activateComponentGui(QMainWindow *mw)
+void KLiveUiComponent::activateComponentGui(QMainWindow *mw)
 {
-    currentGuiEditorMainWindow = mw;
+    currentBuilderMainWindow = mw;
     buildGui();
-    currentGuiEditorMainWindow = 0;
+    currentBuilderMainWindow = 0;
 }
 
 static bool isAncestor(QObject *toplevel, QObject *child)
@@ -282,7 +282,7 @@ static bool isAncestor(QObject *toplevel, QObject *child)
     return false;
 }
 
-void GuiEditorComponentInterface::deactivateComponentGui(QMainWindow *mw)
+void KLiveUiComponent::deactivateComponentGui(QMainWindow *mw)
 {
     foreach (QAction *a, qObject()->findChildren<QAction *>()) {
         foreach (QWidget *widget, a->associatedWidgets()) {
@@ -290,15 +290,15 @@ void GuiEditorComponentInterface::deactivateComponentGui(QMainWindow *mw)
                 widget->removeAction(a);
         }
     }
-    foreach (GuiEditorPriv::MenuOrWidgetDeleter *deleter,
-             qObject()->findChildren<GuiEditorPriv::MenuOrWidgetDeleter *>())
+    foreach (KLiveUiPrivate::MenuOrWidgetDeleter *deleter,
+             qObject()->findChildren<KLiveUiPrivate::MenuOrWidgetDeleter *>())
         delete deleter;
 }
 
 class XmlGuiHandler : public QXmlContentHandler
 {
 public:
-    XmlGuiHandler(GuiEditor *editor, QObject *component);
+    XmlGuiHandler(KLiveUiBuilder *builder, QObject *component);
     
     virtual bool startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes);
     virtual bool endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes & /*attributes*/);
@@ -315,13 +315,13 @@ public:
     virtual bool skippedEntity(const QString&) { return true; }
     virtual QString errorString() const { return QString(); }
 private:
-    GuiEditor *editor;
+    KLiveUiBuilder *builder;
     QWidget *currentWidget;
     QObject *component;
 };
 
-XmlGuiHandler::XmlGuiHandler(GuiEditor *editor, QObject *component)
-    : editor(editor), component(component)
+XmlGuiHandler::XmlGuiHandler(KLiveUiBuilder *builder, QObject *component)
+    : builder(builder), component(component)
 {
     currentWidget = 0;
 }
@@ -330,21 +330,21 @@ bool XmlGuiHandler::startElement(const QString & /*namespaceURI*/, const QString
 {
     QString tag = qName.toLower();
     if (tag == QLatin1String("menubar")) {
-        editor->beginMenuBar();
+        builder->beginMenuBar();
     } else if (tag == QLatin1String("menu")) {
-        currentWidget = editor->beginMenu(attributes.value("name"), /*title=*/QString());
+        currentWidget = builder->beginMenu(attributes.value("name"), /*title=*/QString());
     } else if (tag == QLatin1String("toolbar")) {
-        currentWidget = editor->beginToolBar();
+        currentWidget = builder->beginToolBar();
     } else if (tag == QLatin1String("separator")) {
-        editor->addSeparator();
+        builder->addSeparator();
     } else if (tag == QLatin1String("action")) {
         QString group = attributes.value("group");
         QAction *a = component->findChild<QAction *>(attributes.value("name"));
         if (!group.isEmpty())
-            editor->beginActionGroup(group);
-        editor->addAction(a);
+            builder->beginActionGroup(group);
+        builder->addAction(a);
         if (!group.isEmpty())
-            editor->endActionGroup();
+            builder->endActionGroup();
     }
     return true;
 }
@@ -356,10 +356,10 @@ bool XmlGuiHandler::endElement(const QString & /*namespaceURI*/, const QString &
 // ####        editor->endMenuBar(); break;
         currentWidget = 0;
     } else if (tag == QLatin1String("menu")) {
-        editor->endMenu();
+        builder->endMenu();
         currentWidget = 0;
     } else if (tag == QLatin1String("toolbar")) {
-        editor->endToolBar();
+        builder->endToolBar();
         currentWidget = 0;
     }
     return true;
@@ -372,7 +372,7 @@ bool XmlGuiHandler::characters(const QString &text)
     return true;
 }
 
-void GuiEditor::populateFromXmlGui(const QString &fileName)
+void KLiveUiBuilder::populateFromXmlGui(const QString &fileName)
 {
     QFile f(fileName);
     f.open(QIODevice::ReadOnly);

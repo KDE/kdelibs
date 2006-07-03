@@ -7,20 +7,20 @@
 #include <QPointer>
 #include <QMainWindow>
 
-class GuiEditorPrivate;
+class KLiveUiBuilderPrivate;
 class QAction;
 class QString;
 class QWidget;
 class QMenu;
 class QToolBar;
 class QIcon;
-class GuiEditor;
+class KLiveUiBuilder;
 
-class GuiEditorComponentInterface
+class KLiveUiComponent
 {
-    friend class GuiEditor;
+    friend class KLiveUiBuilder;
 public:
-    inline virtual ~GuiEditorComponentInterface() {}
+    inline virtual ~KLiveUiComponent() {}
     
     QObject *qObject() { return static_cast<QObject *>(qt_metacast("QObject")); }
 
@@ -30,19 +30,19 @@ public:
 protected:
     virtual void buildGui() = 0;
 private:
-    QPointer<QMainWindow> currentGuiEditorMainWindow;
+    QPointer<QMainWindow> currentBuilderMainWindow;
     virtual void *qt_metacast(const char *) = 0;
 };
 
-Q_DECLARE_INTERFACE(GuiEditorComponentInterface, "org.kde.framework.GuiEditorComponentInterfaces/1.0")
+Q_DECLARE_INTERFACE(KLiveUiComponent, "org.kde.framework.KLiveUiComponent/1.0")
 
-class GuiEditor
+class KLiveUiBuilder
 {
 public:
-    explicit GuiEditor(QMainWindow *mw);
-    explicit GuiEditor(QObject *plugin);
-    GuiEditor();
-    ~GuiEditor();
+    explicit KLiveUiBuilder(QMainWindow *mw);
+    explicit KLiveUiBuilder(QObject *plugin);
+    KLiveUiBuilder();
+    ~KLiveUiBuilder();
 
     void begin(QMainWindow *mw);
     void begin(QObject *plugin);
@@ -79,8 +79,8 @@ public:
     void populateFromXmlGui(const QString &fileName);
 
 private:
-    GuiEditorPrivate *d;
-    Q_DISABLE_COPY(GuiEditor)
+    KLiveUiBuilderPrivate *d;
+    Q_DISABLE_COPY(KLiveUiBuilder)
 };
 
 #endif // KLIVEUI_H
