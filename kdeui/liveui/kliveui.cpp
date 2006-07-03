@@ -1,0 +1,386 @@
+
+#include "guieditor.h"
+
+#include <QMainWindow>
+#include <QMenuBar>
+#include <QMenu>
+#include <QToolBar>
+#include <QAction>
+#include <QStack>
+#include <QPointer>
+#include <QDebug>
+#include <QFile>
+#include <QtXml>
+#include <QWidgetAction>
+
+namespace GuiEditorPriv {
+    class MenuOrWidgetDeleter : public QObject
+    {
+        Q_OBJECT
+    public:
+        MenuOrWidgetDeleter(QWidget *widgetOrMenu, QObject *component)
+            : QObject(component), widgetOrMenu(widgetOrMenu)
+        {
+        }
+        virtual ~MenuOrWidgetDeleter()
+        {
+            delete widgetOrMenu;
+        }
+
+        QPointer<QWidget> widgetOrMenu;
+    };
+}
+
+class GuiEditorPrivate
+{
+public:
+    QObject *component;
+
+    QStack<QWidget *> widgets;
+
+    QAction *findActionGroup(QString groupName);
+
+    QPointer<QAction> beforeAction;
+};
+
+QAction *GuiEditorPrivate::findActionGroup(QString groupName)
+{
+    groupName.prepend("ActionGroup:");
+    foreach (QAction *action, widgets.top()->actions())
+        if (action->isSeparator()
+            && !action->isVisible()
+            && action->objectName() == groupName)
+            return action;
+    return 0;
+}
+
+GuiEditor::GuiEditor(QMainWindow *mw)
+{
+    d = 0;
+    begin(mw);
+}
+
+GuiEditor::GuiEditor(QObject *plugin)
+{
+    d = 0;
+    begin(plugin);
+}
+
+GuiEditor::GuiEditor()
+{
+    d = 0;
+}
+
+GuiEditor::~GuiEditor()
+{
+    end();
+}
+
+void GuiEditor::begin(QMainWindow *mw)
+{
+    if (d) {
+        qWarning("GuiEditor::begin(): editor is already active.");
+        return;
+    }
+    d = new GuiEditorPrivate;
+    d->component = mw;
+    d->widgets.push(mw);
+}
+
+void GuiEditor::begin(QObject *plugin)
+{
+    if (d) {
+        qWarning("GuiEditor::begin(): editor is already active.");
+        return;
+    }
+    d = new GuiEditorPrivate;
+    d->component = plugin;
+    GuiEditorComponentInterface *iface = qobject_cast<GuiEditorComponentInterface *>(plugin);
+    Q_ASSERT(iface);
+    d->widgets.push(iface->currentGuiEditorMainWindow);
+}
+
+void GuiEditor::end()
+{
+    delete d;
+    d = 0;
+}
+
+void GuiEditor::beginMenuBar()
+{
+    QMainWindow *mw = qobject_cast<QMainWindow *>(d->widgets.top());
+    if (!mw) {
+        qWarning("GuiEditor: beginMenuBar() called without available main window");
+        return;
+    }
+    d->widgets.push(mw->menuBar());
+}
+
+QMenu *GuiEditor::beginMenu(const QString &name, const QString &title)
+{
+    QMenu *menu = 0;
+    foreach (QAction *a, d->widgets.top()->actions())
+        if (a->menu() && a->menu()->objectName() == name) {
+            menu = a->menu();
+            break;
+        }
+    if (!menu) {
+        menu = new QMenu(d->widgets.top());
+        menu->setObjectName(name);
+        menu->setTitle(title);
+        (void)new GuiEditorPriv::MenuOrWidgetDeleter(menu, d->component);
+        d->widgets.top()->insertAction(d->beforeAction, menu->menuAction());
+    }
+    d->widgets.push(menu);
+    return menu;
+}
+
+void GuiEditor::endMenu()
+{
+    if (d->widgets.count() <= 1) {
+        qWarning("GuiEditor: endMenu called without previous endMenu");
+        return;
+    }
+    QWidget *w = d->widgets.pop();
+    if (!qobject_cast<QMenu *>(w))
+        qWarning("GuiEditor: endMenu called but current widget is not a menu");
+}
+
+QToolBar *GuiEditor::beginToolBar(const QString &title)
+{
+    if (qobject_cast<QMenuBar *>(d->widgets.top())
+        || qobject_cast<QToolBar *>(d->widgets.top())) {
+        d->widgets.pop();
+    }
+    QMainWindow *mw = qobject_cast<QMainWindow *>(d->widgets.top());
+    if (!mw) {
+        qWarning("GuiEditor: beginToolBar called but current widget is not the main window");
+        return 0;
+    }
+
+    QToolBar *tb = mw->addToolBar(title);
+    d->widgets.push(tb);
+    return tb;
+}
+
+void GuiEditor::endToolBar()
+{
+    if (d->widgets.count() <= 1) {
+        qWarning("GuiEditor: endMenu called without previous endMenu");
+        return;
+    }
+    QWidget *w = d->widgets.pop();
+    if (!qobject_cast<QToolBar *>(w))
+        qWarning("GuiEditor: endToolBar called but current widget is not a toolbar");
+}
+
+void GuiEditor::addAction(QAction *action)
+{
+    if (action->parent() != d->component) {
+        qWarning("GuiEditor: addAction called with action not belonging to editing component");
+    }
+    d->widgets.top()->insertAction(d->beforeAction, action);
+}
+
+void GuiEditor::addActions(const QList<QAction *> actions)
+{
+    foreach (QAction *action, actions)
+        addAction(action);
+}
+
+QAction *GuiEditor::addAction(const QString &text)
+{
+    QAction *a = new QAction(d->component);
+    a->setText(text);
+    addAction(a);
+    return a;
+}
+
+QAction *GuiEditor::addAction(const QIcon &icon, const QString &text)
+{
+    QAction *a = new QAction(d->component);
+    a->setIcon(icon);
+    a->setText(text);
+    addAction(a);
+    return a;
+}
+
+QAction *GuiEditor::addAction(const QString &text, const QObject *receiver, const char *member,
+                              const QKeySequence &shortcut)
+{
+    QAction *a = new QAction(d->component);
+    a->setText(text);
+    a->setShortcut(shortcut);
+    QObject::connect(a, SIGNAL(triggered()), receiver, member);
+    addAction(a);
+    return a;
+}
+
+QAction *GuiEditor::addAction(const QIcon &icon, const QString &text,
+                              const QObject *receiver, const char *member,
+                              const QKeySequence &shortcut)
+{
+    QAction *a = new QAction(d->component);
+    a->setIcon(icon);
+    a->setText(text);
+    a->setShortcut(shortcut);
+    QObject::connect(a, SIGNAL(triggered()), receiver, member);
+    addAction(a);
+    return a;
+}
+
+QAction *GuiEditor::addSeparator()
+{
+    QAction *a = new QAction(d->component);
+    a->setSeparator(true);
+    addAction(a);
+    return a;
+}
+
+QAction *GuiEditor::addWidget(QWidget *widget)
+{
+    QWidgetAction *a = new QWidgetAction(d->component);
+    a->setDefaultWidget(widget);
+    (void)new GuiEditorPriv::MenuOrWidgetDeleter(widget, d->component);
+    addAction(a);
+    return a;
+}
+
+void GuiEditor::addActionGroup(const QString &name)
+{
+    QAction *a = new QAction(d->component);
+    a->setSeparator(true);
+    a->setVisible(false);
+    a->setObjectName(QString::fromLatin1("ActionGroup:") + name);
+    addAction(a);
+}
+
+void GuiEditor::beginActionGroup(const QString &name)
+{
+    d->beforeAction = d->findActionGroup(name);
+}
+
+void GuiEditor::endActionGroup()
+{
+    d->beforeAction = 0;
+}
+
+void GuiEditorComponentInterface::activateComponentGui(QMainWindow *mw)
+{
+    currentGuiEditorMainWindow = mw;
+    buildGui();
+    currentGuiEditorMainWindow = 0;
+}
+
+static bool isAncestor(QObject *toplevel, QObject *child)
+{
+    while (child) {
+        if (child == toplevel)
+            return true;
+        child = child->parent();
+    }
+    return false;
+}
+
+void GuiEditorComponentInterface::deactivateComponentGui(QMainWindow *mw)
+{
+    foreach (QAction *a, qObject()->findChildren<QAction *>()) {
+        foreach (QWidget *widget, a->associatedWidgets()) {
+            if (isAncestor(mw, widget))
+                widget->removeAction(a);
+        }
+    }
+    foreach (GuiEditorPriv::MenuOrWidgetDeleter *deleter,
+             qObject()->findChildren<GuiEditorPriv::MenuOrWidgetDeleter *>())
+        delete deleter;
+}
+
+class XmlGuiHandler : public QXmlContentHandler
+{
+public:
+    XmlGuiHandler(GuiEditor *editor, QObject *component);
+    
+    virtual bool startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes);
+    virtual bool endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes & /*attributes*/);
+    virtual bool characters(const QString &text);
+
+    virtual void setDocumentLocator(QXmlLocator*) { }
+    virtual bool startDocument() { return true; }
+    virtual bool endDocument() { return true; }
+    virtual bool startPrefixMapping(const QString&, const QString&) { return true; }
+     virtual bool endPrefixMapping(const QString&) { return true; }
+     virtual bool endElement(const QString&, const QString&, const QString&) { return true; }
+     virtual bool ignorableWhitespace(const QString&) { return true; }
+    virtual bool processingInstruction(const QString&, const QString&) { return true; }
+    virtual bool skippedEntity(const QString&) { return true; }
+    virtual QString errorString() const { return QString(); }
+private:
+    GuiEditor *editor;
+    QWidget *currentWidget;
+    QObject *component;
+};
+
+XmlGuiHandler::XmlGuiHandler(GuiEditor *editor, QObject *component)
+    : editor(editor), component(component)
+{
+    currentWidget = 0;
+}
+
+bool XmlGuiHandler::startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes)
+{
+    QString tag = qName.toLower();
+    if (tag == QLatin1String("menubar")) {
+        editor->beginMenuBar();
+    } else if (tag == QLatin1String("menu")) {
+        currentWidget = editor->beginMenu(attributes.value("name"), /*title=*/QString());
+    } else if (tag == QLatin1String("toolbar")) {
+        currentWidget = editor->beginToolBar();
+    } else if (tag == QLatin1String("separator")) {
+        editor->addSeparator();
+    } else if (tag == QLatin1String("action")) {
+        QString group = attributes.value("group");
+        QAction *a = component->findChild<QAction *>(attributes.value("name"));
+        if (!group.isEmpty())
+            editor->beginActionGroup(group);
+        editor->addAction(a);
+        if (!group.isEmpty())
+            editor->endActionGroup();
+    }
+    return true;
+}
+
+bool XmlGuiHandler::endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes & /*attributes*/)
+{
+    QString tag = qName.toLower();
+    if (tag == QLatin1String("menubar")) {
+// ####        editor->endMenuBar(); break;
+        currentWidget = 0;
+    } else if (tag == QLatin1String("menu")) {
+        editor->endMenu();
+        currentWidget = 0;
+    } else if (tag == QLatin1String("toolbar")) {
+        editor->endToolBar();
+        currentWidget = 0;
+    }
+    return true;
+}
+
+bool XmlGuiHandler::characters(const QString &text)
+{
+    if (currentWidget)
+        currentWidget->setProperty("title", text);
+    return true;
+}
+
+void GuiEditor::populateFromXmlGui(const QString &fileName)
+{
+    QFile f(fileName);
+    f.open(QIODevice::ReadOnly);
+    QXmlInputSource source(&f);
+    QXmlSimpleReader reader;
+    XmlGuiHandler handler(this, d->component);
+    reader.setContentHandler(&handler);
+    reader.parse(&source, /*incremental=*/false);
+}
+
+#include "guieditor.moc"
