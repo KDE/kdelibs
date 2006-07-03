@@ -9,12 +9,16 @@ add_subdirectory( tests )
 
 set(kcookiejar_SRCS
 main.cpp
-kcookiejariface.cpp
+#kcookiejariface.cpp
 )
 
 kde4_automoc(${kcookiejar_SRCS})
 
+qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml )
+
 kde4_add_executable( kcookiejar NOGUI ${kcookiejar_SRCS})
+
+set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
 
 target_link_libraries( kcookiejar  ${KDE4_KDECORE_LIBS} )
 
@@ -26,10 +30,12 @@ set(kded_kcookiejar_PART_SRCS
    kcookiejar.cpp
    kcookieserver.cpp
    kcookiewin.cpp
-   kcookiejaradaptor.cpp
+#   kcookiejaradaptor.cpp
 )
 
 kde4_automoc(${kded_kcookiejar_PART_SRCS})
+
+qt4_add_dbus_adaptors(kded_kcookiejar_PART_SRCS org.kde.KCookieServer.xml )
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 

@@ -291,7 +291,7 @@ set(khtml_LIB_SRCS
    khtml_ext.cpp
    khtml_pagecache.cpp
    khtml_printsettings.cpp
-   khtmlpartadaptor.cpp
+#   khtmlpartadaptor.cpp
    #khtmlpartiface.cpp
    khtmlimage.cpp
    kjserrordlg.cpp
@@ -308,6 +308,8 @@ set(khtml_LIB_SRCS
    )
 
 kde4_automoc(${khtml_LIB_SRCS})
+
+qt4_add_dbus_adaptors(khtml_LIB_SRCS org.kde.KHTMLPart.xml )
 
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 

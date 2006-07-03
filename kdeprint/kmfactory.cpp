@@ -46,7 +46,7 @@
 #include <unistd.h>
 
 #include "kmfactoryadaptor.h"
-#include "kmfactoryiface.h"
+#include "kmfactoryinterface.h"
 
 #define	UNLOAD_OBJECT(x) if (x != 0) { delete x; x = 0; }
 

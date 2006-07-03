@@ -48,8 +48,8 @@ install_targets(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
 
 set(kdeprint_LIB_SRCS
    kmfactory.cpp
-   kmfactoryiface.cpp
-   kmfactoryadaptor.cpp
+#   kmfactoryiface.cpp
+#   kmfactoryadaptor.cpp
    kmjob.cpp
    kmjobmanager.cpp
    kmmanager.cpp
@@ -101,6 +101,9 @@ set(kdeprint_LIB_SRCS
    )
 
 kde4_automoc(${kdeprint_LIB_SRCS})
+
+qt4_add_dbus_adaptors(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml )
+qt4_add_dbus_interfaces(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml )
 
 kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 

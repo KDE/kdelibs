@@ -43,7 +43,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 #include "kcookieserver.h"
-#include "kcookiejaradaptor.h"
+#include "kcookieserveradaptor.h"
 
 extern "C" {
     KDE_EXPORT KDEDModule *create_kcookiejar()
