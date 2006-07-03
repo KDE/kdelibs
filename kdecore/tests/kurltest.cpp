@@ -1262,7 +1262,7 @@ void KUrlTest::testBrokenStuff()
 
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
-#if QT_VERSION < 0x040200
+#if QT_VERSION < 0x040201
   QSKIP( "QUrl doesn't provide the initial string if it's an invalid url; asked for 4.2...", SkipSingle );
 #endif
   QCOMPARE( broken.url(), QString("ptal://mlc:usb:PC_970") ); // FAILS - but we need it...

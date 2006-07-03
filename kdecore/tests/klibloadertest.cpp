@@ -29,7 +29,9 @@ QTEST_KDEMAIN( KLibLoaderTest, NoGUI )
 
 void KLibLoaderTest::initTestCase()
 {
-    KGlobal::dirs()->addResourceDir( "module", QDir::currentPath() + "/../../lib" );
+    const QString libdir = QDir::currentPath() + "/../../lib";
+    KGlobal::dirs()->addResourceDir( "module", libdir );
+    //qDebug( "initTestCase: added %s to 'module' resource", qPrintable(libdir) );
 }
 
 void KLibLoaderTest::testNonWorking()
