@@ -11,11 +11,10 @@ int main( int argc, char** argv )
    KCmdLineArgs::init(argc, argv, &about);
    KApplication app(false);
 
-    kDebug() << "sending reparseConfiguration to object KonquerorIface in konqueror" << endl;
-    QDBusInterface kded("org.kde.konqueror", "/KonquerorIface", "org.kde.KonquerorIface");
-    QDBusReply<void> reply = kded.call("reparseConfiguration");
-
-    if ( reply.isError() ) kDebug() << "void expected, " << reply.error().name() << " returned" << endl;
+    kDebug() << "sending reparseConfiguration to object Konqueror in konqueror" << endl;
+    QDBusMessage message = QDBusMessage::signal("/Konqueror", "org.kde.Konqueror", "reparseConfiguration", QDBus::sessionBus());
+    if(!QDBus::sessionBus().send(message))
+		kDebug() << "void expected, " << QDBus::sessionBus().lastError().name() << " returned" << endl;
 
     /*
        QByteArray snd;
