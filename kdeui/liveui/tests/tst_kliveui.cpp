@@ -1,30 +1,5 @@
 
-#include <QtTest/QtTest>
-#include <QMainWindow>
-#include <QAction>
-#include <QMenu>
-#include <QMenuBar>
-
-#include "../guieditor.h"
-
-class tst_GuiEditor : public QObject
-{
-    Q_OBJECT
-public slots:
-    void init();
-    void cleanup();
-private slots:
-    void actionGroups();
-//    void recursiveActionGroups();
-    void menuDeletion();
-    void changeExistingMenu();
-
-private:
-    QMainWindow *mw;
-    QAction *testAction1;
-    QAction *testAction2;
-    QAction *testAction3;
-};
+#include "tst_kliveui.h"
 
 void tst_GuiEditor::init()
 {
@@ -47,7 +22,7 @@ void tst_GuiEditor::cleanup()
 
 void tst_GuiEditor::actionGroups()
 {
-    GuiEditor editor(mw);
+    KLiveUiBuilder editor(mw);
 
     editor.beginMenuBar();
     QMenu *menu = editor.beginMenu("ui.file", "&File");
@@ -100,7 +75,7 @@ void tst_GuiEditor::menuDeletion()
     QPointer<QMenu> menu;
 
     {
-        GuiEditor editor(mw);
+        KLiveUiBuilder editor(mw);
 
         editor.beginMenuBar();
         menu = editor.beginMenu("ui.file", "&File");
@@ -118,7 +93,7 @@ void tst_GuiEditor::menuDeletion()
 
 void tst_GuiEditor::changeExistingMenu()
 {
-    GuiEditor editor(mw);
+    KLiveUiBuilder editor(mw);
     editor.beginMenuBar();
     QMenu *menu = editor.beginMenu("testmenu", "Test");
     editor.addAction("First");
@@ -136,4 +111,4 @@ void tst_GuiEditor::changeExistingMenu()
 }
 
 QTEST_MAIN(tst_GuiEditor)
-#include "tst_guieditor.moc"
+#include "tst_kliveui.moc"

@@ -17,6 +17,7 @@ endif (Q_WS_X11)
 
 add_subdirectory( findreplace )
 add_subdirectory( tests )
+add_subdirectory( liveui/tests )
 add_subdirectory( about )
 
 
