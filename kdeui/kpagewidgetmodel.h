@@ -28,32 +28,106 @@ class QWidget;
 
 class KIcon;
 
+/**
+ * KPageWidgetItem is used by @see KPageWidget and represents
+ * a page.
+ *
+ * <b>Example:</b>\n
+ *
+ * \code
+ *  ColorPage *page = new ColorPage;
+ *
+ *  KPageWidgetItem *item = new KPageWidgetItem( page, i18n( "Colors" ) );
+ *  item->setHeader( i18n( "Colors of Main Window" ) );
+ *  item->setIcon( KIcon( "colors" ) );
+ *
+ *  KPageWidget *pageWidget = new KPageWidget( this );
+ *  pageWidget->addPage( item );
+ * \endcode
+ *
+ * @author Tobias Koenig (tokoe@kde.org)
+ */
 class KDEUI_EXPORT KPageWidgetItem : public QObject
 {
   Q_OBJECT
 
   public:
+    /**
+     * Creates a new page widget item.
+     *
+     * @param widget The widget that is shown as page in the KPageWidget.
+     * @param name The localized string that is show in the navigation view
+     *             of the KPageWidget.
+     */
     KPageWidgetItem( QWidget *widget, const QString &name );
+
+    /**
+     * Destroys the page widget item.
+     */
     ~KPageWidgetItem();
 
+    /**
+     * Returns the widget of the page widget item.
+     */
     QWidget* widget() const;
 
+    /**
+     * Returns the name of the page widget item.
+     */
     QString name() const;
 
+    /**
+     * Sets the header of the @param header of the page widget item.
+     */
     void setHeader( const QString &header );
+
+    /**
+     * Returns the header of the page widget item.
+     */
     QString header() const;
 
+    /**
+     * Sets the @param icon of the page widget item.
+     */
     void setIcon( const KIcon &icon );
+
+    /**
+     * Returns the icon of the page widget item.
+     */
     KIcon icon() const;
 
+    /**
+     * Sets whether the page widget item is @param checkable
+     * in the view.
+     */
     void setCheckable( bool checkable );
+
+    /**
+     * Returns whether the page widget item is checkable.
+     */
     bool isCheckable() const;
 
+    /**
+     * Sets the page widget item checked.
+     */
     void setChecked( bool checked );
+
+    /**
+     * Returns whether the page widget item is checked.
+     */
     bool isChecked() const;
 
   Q_SIGNALS:
+    /**
+     * This signal is emitted whenever the icon or header
+     * is changed.
+     */
     void changed();
+
+    /**
+     * This signal is emitted whenever the user checks or
+     * unchecks the item of @see setChecked() is called.
+     */
     void toggled( bool checked );
 
   private:
@@ -61,12 +135,25 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     Private* const d;
 };
 
+/**
+ * This page model is used by @see KPageWidget to provide
+ * a hierarchical layout of pages.
+ */
 class KDEUI_EXPORT KPageWidgetModel : public KPageModel
 {
   Q_OBJECT
 
   public:
+    /**
+     * Creates a new page widget model.
+     *
+     * @param parent The parent object.
+     */
     explicit KPageWidgetModel( QObject *parent = 0 );
+
+    /**
+     * Destroys the page widget model.
+     */
     ~KPageWidgetModel();
 
     /**

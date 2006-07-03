@@ -96,10 +96,24 @@ class KDEUI_EXPORT KPageView : public QWidget
      */
     virtual ~KPageView();
 
+    /**
+     * Sets the @param model of the page view.
+     */
     void setModel( KPageModel *model );
+
+    /**
+     * Returns the model of the page view.
+     */
     KPageModel* model() const;
 
+    /**
+     * Sets the face type of the page view.
+     */
     void setFaceType( FaceType faceType );
+
+    /**
+     * Returns the face type of the page view.
+     */
     FaceType faceType() const;
 
     /**
@@ -114,7 +128,15 @@ class KDEUI_EXPORT KPageView : public QWidget
      */
     QModelIndex currentPage() const;
 
+    /**
+     * Sets the item @param delegate which can be used customize
+     * the page view.
+     */
     void setItemDelegate( QAbstractItemDelegate *delegate );
+
+    /**
+     * Returns the item delegate of the page view.
+     */
     QAbstractItemDelegate* itemDelegate() const;
 
   Q_SIGNALS:

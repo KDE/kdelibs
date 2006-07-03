@@ -26,12 +26,26 @@
 
 class KPageWidgetItem;
 
+/**
+ * @short A @see KPageView with hierarchical page model.
+ *
+ * @author Tobias Koenig (tokoe@kde.org)
+ */
 class KDEUI_EXPORT KPageWidget : public KPageView
 {
   Q_OBJECT
 
   public:
+    /**
+     * Creates a new page widget.
+     *
+     * @param parent The parent widget.
+     */
     explicit KPageWidget( QWidget *parent = 0 );
+
+    /**
+     * Destroys the page widget.
+     */
     ~KPageWidget();
 
     /**
