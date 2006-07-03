@@ -148,9 +148,10 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
             has_col_elems = true;
             break;
         case TABLE_HEADER_GROUP:
-            if ( !head )
+            if ( !head ) {
                 if (child->isTableSection())
                     head = static_cast<RenderTableSection *>(child);
+            }
             else if ( !firstBody )
                 if (child->isTableSection())
                     firstBody = static_cast<RenderTableSection *>(child);
