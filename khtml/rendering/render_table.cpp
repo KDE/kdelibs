@@ -688,6 +688,7 @@ void RenderTable::recalcSections()
                 if (section->needCellRecalc)
                     section->recalcCells();
             }
+            break;
         case TABLE_FOOTER_GROUP:
             if (child->isTableSection()) {
                 RenderTableSection *section = static_cast<RenderTableSection *>(child);
@@ -698,6 +699,7 @@ void RenderTable::recalcSections()
                 if (section->needCellRecalc)
                     section->recalcCells();
             }
+            break;
         case TABLE_ROW_GROUP:
             if (child->isTableSection()) {
                 RenderTableSection *section = static_cast<RenderTableSection *>(child);
