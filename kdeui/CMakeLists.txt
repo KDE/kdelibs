@@ -159,6 +159,7 @@ set(kdeui_LIB_SRCS
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
+ liveui/kliveui.cpp
 )
 
 if (Q_WS_X11)
@@ -171,6 +172,8 @@ if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_win.cpp )
 endif (Q_WS_WIN)
 
+
+SET_SOURCE_FILES_PROPERTIES(liveui/kliveui.cpp PROPERTIES SKIP_AUTOMOC TRUE)
 
 kde4_automoc(${kdeui_LIB_SRCS})
 
@@ -322,6 +325,9 @@ install_files( /include FILES
  kpassivepopupmessagehandler.h
  kbuttongroup.h
 )
+
+QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
+MACRO_ADD_FILE_DEPENDENCIES(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
 
 install(PROGRAMS preparetips DESTINATION bin)
 

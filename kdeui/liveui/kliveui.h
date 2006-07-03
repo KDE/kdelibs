@@ -1,5 +1,5 @@
-#ifndef GUIEDITOR_H
-#define GUIEDITOR_H
+#ifndef KLIVEUI_H
+#define KLIVEUI_H
 
 #include <QString>
 #include <QObject>
@@ -83,5 +83,5 @@ private:
     Q_DISABLE_COPY(GuiEditor)
 };
 
-#endif // GUIEDITOR_H
+#endif // KLIVEUI_H
 

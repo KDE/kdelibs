@@ -1,5 +1,5 @@
 
-#include "guieditor.h"
+#include "kliveui.h"
 
 #include <QMainWindow>
 #include <QMenuBar>
@@ -383,4 +383,4 @@ void GuiEditor::populateFromXmlGui(const QString &fileName)
     reader.parse(&source, /*incremental=*/false);
 }
 
-#include "guieditor.moc"
+#include "kliveui.moc"
