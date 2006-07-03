@@ -8,6 +8,8 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_
 # all dependent libs
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
+add_definitions ( -DQT3_SUPPORT )
+
 add_subdirectory( kdeui )
 add_subdirectory( kio )
 add_subdirectory( kparts )
