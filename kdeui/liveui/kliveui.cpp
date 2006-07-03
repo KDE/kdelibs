@@ -1,5 +1,6 @@
 
 #include "kliveui.h"
+#include "kliveui_p.h"
 
 #include <QMainWindow>
 #include <QMenuBar>
@@ -294,31 +295,6 @@ void KLiveUiComponent::deactivateComponentGui(QMainWindow *mw)
              qObject()->findChildren<KLiveUiPrivate::MenuOrWidgetDeleter *>())
         delete deleter;
 }
-
-class XmlGuiHandler : public QXmlContentHandler
-{
-public:
-    XmlGuiHandler(KLiveUiBuilder *builder, QObject *component);
-    
-    virtual bool startElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes &attributes);
-    virtual bool endElement(const QString & /*namespaceURI*/, const QString & /*localName*/, const QString &qName, const QXmlAttributes & /*attributes*/);
-    virtual bool characters(const QString &text);
-
-    virtual void setDocumentLocator(QXmlLocator*) { }
-    virtual bool startDocument() { return true; }
-    virtual bool endDocument() { return true; }
-    virtual bool startPrefixMapping(const QString&, const QString&) { return true; }
-     virtual bool endPrefixMapping(const QString&) { return true; }
-     virtual bool endElement(const QString&, const QString&, const QString&) { return true; }
-     virtual bool ignorableWhitespace(const QString&) { return true; }
-    virtual bool processingInstruction(const QString&, const QString&) { return true; }
-    virtual bool skippedEntity(const QString&) { return true; }
-    virtual QString errorString() const { return QString(); }
-private:
-    KLiveUiBuilder *builder;
-    QWidget *currentWidget;
-    QObject *component;
-};
 
 XmlGuiHandler::XmlGuiHandler(KLiveUiBuilder *builder, QObject *component)
     : builder(builder), component(component)

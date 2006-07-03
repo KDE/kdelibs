@@ -7,6 +7,8 @@
 #include <QPointer>
 #include <QMainWindow>
 
+#include <kdelibs_export.h>
+
 class KLiveUiBuilderPrivate;
 class QAction;
 class QString;
@@ -16,7 +18,7 @@ class QToolBar;
 class QIcon;
 class KLiveUiBuilder;
 
-class KLiveUiComponent
+class KDEUI_EXPORT KLiveUiComponent
 {
     friend class KLiveUiBuilder;
 public:
@@ -36,7 +38,7 @@ private:
 
 Q_DECLARE_INTERFACE(KLiveUiComponent, "org.kde.framework.KLiveUiComponent/1.0")
 
-class KLiveUiBuilder
+class KDEUI_EXPORT KLiveUiBuilder
 {
 public:
     explicit KLiveUiBuilder(QMainWindow *mw);
