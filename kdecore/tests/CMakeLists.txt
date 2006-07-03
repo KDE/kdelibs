@@ -208,15 +208,15 @@ target_link_libraries(kmemtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(dcopkonqtest_SRCS dcopkonqtest.cpp )
+set(dbuskonqtest_SRCS dbuskonqtest.cpp )
 
-kde4_automoc(${dcopkonqtest_SRCS})
+kde4_automoc(${dbuskonqtest_SRCS})
 
-kde4_add_executable(dcopkonqtest NOGUI RUN_UNINSTALLED ${dcopkonqtest_SRCS})
+kde4_add_executable(dbuskonqtest NOGUI RUN_UNINSTALLED ${dbuskonqtest_SRCS})
 
-target_link_libraries(dcopkonqtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(dbuskonqtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-dcopkonqtest ${EXECUTABLE_OUTPUT_PATH}/dcopkonqtest)
+# add_test(kdecore-dbuskonqtest ${EXECUTABLE_OUTPUT_PATH}/dbuskonqtest)
 
 ########### next target ###############
 
