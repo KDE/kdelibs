@@ -58,7 +58,6 @@
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
-#include <k3widgetaction.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -297,7 +296,8 @@ void KMJobViewer::initActions()
 	connect(uact, SIGNAL(toggled(bool)), m_userfield, SLOT(setEnabled(bool)));
 	m_userfield->setEnabled(false);
 	m_userfield->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-	K3WidgetAction *ufact = new K3WidgetAction(m_userfield, i18n("User Name"), 0, 0, 0, actionCollection(), "view_username");
+	KAction *ufact = new KAction(i18n("User Name"), 0, 0, 0, actionCollection(), "view_username");
+	ufact->setDefaultWidget(m_userfield);
 
 	if (!m_pop)
 	{
