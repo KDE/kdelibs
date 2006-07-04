@@ -129,17 +129,17 @@ public:
     /**
      * @returns The selected fully qualified filename.
      */
-    KUrl selectedURL() const;
+    KUrl selectedUrl() const;
 
     /**
      * @returns The list of selected URLs.
      */
-    KUrl::List selectedURLs() const;
+    KUrl::List selectedUrls() const;
 
     /**
      * @returns the currently shown directory.
      */
-    KUrl baseURL() const;
+    KUrl baseUrl() const;
 
     /**
      * Returns the full path of the selected file in the local filesystem.
@@ -159,7 +159,7 @@ public:
      * @param clearforward Indicates whether the forward queue
      * should be cleared.
      */
-    void setURL(const KUrl &url, bool clearforward = true);
+    void setUrl(const KUrl &url, bool clearforward = true);
 
     /**
      * Sets the file name to preselect to @p name
@@ -562,7 +562,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getExistingURL( const KUrl& startDir = KUrl(),
+    static KUrl getExistingUrl( const KUrl& startDir = KUrl(),
                                 QWidget * parent = 0,
                                 const QString& caption= QString() );
 
@@ -829,8 +829,8 @@ protected:
 
 protected Q_SLOTS:
     void urlEntered( const KUrl& );
-    void enterURL( const KUrl& url );
-    void enterURL( const QString& url );
+    void enterUrl( const KUrl& url );
+    void enterUrl( const QString& url );
     void locationActivated( const QString& url );
 
 
@@ -873,7 +873,7 @@ protected:
     KDirOperator *ops;
     bool autoDirectoryFollowing;
 
-    KUrl::List& parseSelectedURLs() const;
+    KUrl::List& parseSelectedUrls() const;
 
 private:
     KFileDialogPrivate *d;

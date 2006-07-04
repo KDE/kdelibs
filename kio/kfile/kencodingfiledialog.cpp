@@ -135,7 +135,7 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenURLAndEncoding(const QSt
     dlg.exec();
 
     Result res;
-    res.URLs<<dlg.selectedURL();
+    res.URLs<<dlg.selectedUrl();
     res.encoding=dlg.selectedEncoding();
     return res;
 }
@@ -152,7 +152,7 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenURLsAndEncoding(const QS
     dlg.exec();
 
     Result res;
-    res.URLs=dlg.selectedURLs();
+    res.URLs=dlg.selectedUrls();
     res.encoding=dlg.selectedEncoding();
     return res;
 }
@@ -196,7 +196,7 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveURLAndEncoding(const QS
 
     dlg.exec();
 
-    KUrl url = dlg.selectedURL();
+    KUrl url = dlg.selectedUrl();
     if (url.isValid())
         KRecentDocument::add( url );
 

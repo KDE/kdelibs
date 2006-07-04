@@ -63,7 +63,7 @@ KFileBookmarkHandler::~KFileBookmarkHandler()
 
 QString KFileBookmarkHandler::currentURL() const
 {
-    return m_dialog->baseURL().url();
+    return m_dialog->baseUrl().url();
 }
 
 void KFileBookmarkHandler::importOldBookmarks( const QString& path,

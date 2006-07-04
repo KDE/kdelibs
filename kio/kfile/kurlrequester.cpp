@@ -283,7 +283,7 @@ void KUrlRequester::slotOpenDialog()
           return;
       }
 
-      newurl = dlg->selectedURL();
+      newurl = dlg->selectedUrl();
     }
 
     setUrl( newurl );

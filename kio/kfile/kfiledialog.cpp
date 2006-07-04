@@ -386,7 +386,7 @@ void KFileDialog::slotOk()
     }
 
 
-    KUrl selectedURL;
+    KUrl selectedUrl;
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
         QString locationText = locationEdit->currentText();
@@ -394,27 +394,27 @@ void KFileDialog::slotOk()
             // relative path? -> prepend the current directory
             KUrl u( ops->url(), KShell::tildeExpand(locationText));
             if ( u.isValid() )
-                selectedURL = u;
+                selectedUrl = u;
             else
-                selectedURL = ops->url();
+                selectedUrl = ops->url();
         }
         else // simple filename -> just use the current URL
-            selectedURL = ops->url();
+            selectedUrl = ops->url();
     }
 
     else {
-        selectedURL = getCompleteURL(locationEdit->currentText());
+        selectedUrl = getCompleteURL(locationEdit->currentText());
 
-        // appendExtension() may change selectedURL
-        appendExtension (selectedURL);
+        // appendExtension() may change selectedUrl
+        appendExtension (selectedUrl);
     }
 
-    if ( !selectedURL.isValid() ) {
+    if ( !selectedUrl.isValid() ) {
        KMessageBox::sorry( d->mainWidget, i18n("%1\ndoes not appear to be a valid URL.\n", d->url.url()), i18n("Invalid URL") );
        return;
     }
 
-    KUrl url = KIO::NetAccess::mostLocalURL(selectedURL,topLevelWidget());
+    KUrl url = KIO::NetAccess::mostLocalURL(selectedUrl,topLevelWidget());
     if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
          !url.isLocalFile() ) {
         KMessageBox::sorry( d->mainWidget,
@@ -508,7 +508,7 @@ void KFileDialog::slotOk()
     if ( (mode() & KFile::Files) == KFile::Files &&
          !locationEdit->currentText().contains( '/' )) {
         kDebug(kfile_area) << "Files\n";
-        KUrl::List list = parseSelectedURLs();
+        KUrl::List list = parseSelectedUrls();
         for ( KUrl::List::ConstIterator it = list.begin();
               it != list.end(); ++it )
         {
@@ -574,7 +574,7 @@ void KFileDialog::slotStatResult(KJob* job)
             if ( count == 0 ) {
                 locationEdit->clearEditText();
                 locationEdit->lineEdit()->setModified( false );
-                setURL( sJob->url() );
+                setUrl( sJob->url() );
             }
         }
         d->statJobs.clear();
@@ -602,7 +602,7 @@ void KFileDialog::accept()
     // clear the topmost item, we insert it as full path later on as item 1
     locationEdit->setItemText( 0, QString() );
 
-    KUrl::List list = selectedURLs();
+    KUrl::List list = selectedUrls();
     QList<KUrl>::const_iterator it = list.begin();
     for ( ; it != list.end(); ++it ) {
         const KUrl& url = *it;
@@ -932,9 +932,9 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     d->pathCombo->setAutoDeleteCompletionObject( true );
 
     connect( d->pathCombo, SIGNAL( urlActivated( const KUrl&  )),
-             this,  SLOT( enterURL( const KUrl& ) ));
+             this,  SLOT( enterUrl( const KUrl& ) ));
     connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
-             this,  SLOT( enterURL( const QString& ) ));
+             this,  SLOT( enterUrl( const QString& ) ));
 
     QString whatsThisText;
 
@@ -1001,7 +1001,7 @@ void KFileDialog::initSpeedbar()
     d->urlBar = new KFileSpeedBar( d->mainWidget );
     d->urlBar->setObjectName( QLatin1String( "url bar" ) );
     connect( d->urlBar, SIGNAL( activated( const KUrl& )),
-             SLOT( enterURL( const KUrl& )) );
+             SLOT( enterUrl( const KUrl& )) );
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
@@ -1104,7 +1104,7 @@ void KFileDialog::slotFilterChanged()
 }
 
 
-void KFileDialog::setURL(const KUrl& url, bool clearforward)
+void KFileDialog::setUrl(const KUrl& url, bool clearforward)
 {
     d->selection.clear();
     ops->setURL( url, clearforward);
@@ -1146,14 +1146,14 @@ void KFileDialog::locationActivated( const QString& url )
         setSelection( url );
 }
 
-void KFileDialog::enterURL( const KUrl& url )
+void KFileDialog::enterUrl( const KUrl& url )
 {
-    setURL( url );
+    setUrl( url );
 }
 
-void KFileDialog::enterURL( const QString& url )
+void KFileDialog::enterUrl( const QString& url )
 {
-    setURL( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
+    setUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
 }
 
 
@@ -1184,7 +1184,7 @@ void KFileDialog::setSelection(const QString& url)
         // local (we cannot stat non-local urls) and if it exists!
         // (as KFileItem does not check if the file exists or not
         // -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
-        setURL(u, true);
+        setUrl(u, true);
     }
     else {
         QString filename = u.url();
@@ -1194,7 +1194,7 @@ void KFileDialog::setSelection(const QString& url)
                 KUrl dir(u);
                 dir.setQuery( QString() );
                 dir.setFileName( QString() );
-                setURL(dir, true );
+                setUrl(dir, true );
             }
 
             // filename must be decoded, or "name with space" would become
@@ -1308,7 +1308,7 @@ KUrl KFileDialog::getOpenUrl(const KUrl& startDir, const QString& filter,
     dlg.ops->clearHistory();
     dlg.exec();
 
-    return dlg.selectedURL();
+    return dlg.selectedUrl();
 }
 
 KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
@@ -1324,10 +1324,10 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
     dlg.ops->clearHistory();
     dlg.exec();
 
-    return dlg.selectedURLs();
+    return dlg.selectedUrls();
 }
 
-KUrl KFileDialog::getExistingURL(const KUrl& startDir,
+KUrl KFileDialog::getExistingUrl(const KUrl& startDir,
                                        QWidget *parent,
                                        const QString& caption)
 {
@@ -1366,10 +1366,10 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
     dlg.setPreviewWidget( ip );
     dlg.exec();
 
-    return dlg.selectedURL();
+    return dlg.selectedUrl();
 }
 
-KUrl KFileDialog::selectedURL() const
+KUrl KFileDialog::selectedUrl() const
 {
     if ( result() == QDialog::Accepted )
         return d->url;
@@ -1377,12 +1377,12 @@ KUrl KFileDialog::selectedURL() const
         return KUrl();
 }
 
-KUrl::List KFileDialog::selectedURLs() const
+KUrl::List KFileDialog::selectedUrls() const
 {
     KUrl::List list;
     if ( result() == QDialog::Accepted ) {
         if ( (ops->mode() & KFile::Files) == KFile::Files )
-            list = parseSelectedURLs();
+            list = parseSelectedUrls();
         else
             list.append( d->url );
     }
@@ -1390,7 +1390,7 @@ KUrl::List KFileDialog::selectedURLs() const
 }
 
 
-KUrl::List& KFileDialog::parseSelectedURLs() const
+KUrl::List& KFileDialog::parseSelectedUrls() const
 {
     if ( d->filenames.isEmpty() ) {
         return d->urlList;
@@ -1493,7 +1493,7 @@ QStringList KFileDialog::selectedFiles() const
 
     if ( result() == QDialog::Accepted ) {
         if ( (ops->mode() & KFile::Files) == KFile::Files ) {
-            KUrl::List urls = parseSelectedURLs();
+            KUrl::List urls = parseSelectedUrls();
             QList<KUrl>::const_iterator it = urls.begin();
             while ( it != urls.end() ) {
                 url = KIO::NetAccess::mostLocalURL(*it,topLevelWidget());
@@ -1512,7 +1512,7 @@ QStringList KFileDialog::selectedFiles() const
     return list;
 }
 
-KUrl KFileDialog::baseURL() const
+KUrl KFileDialog::baseUrl() const
 {
     return ops->url();
 }
@@ -1583,7 +1583,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
 
     dlg.exec();
 
-    KUrl url = dlg.selectedURL();
+    KUrl url = dlg.selectedUrl();
     if (url.isValid())
         KRecentDocument::add( url );
 
@@ -2109,7 +2109,7 @@ void KFileDialog::addToRecentDocuments()
     }
 
     else { // urls
-        KUrl::List urls = selectedURLs();
+        KUrl::List urls = selectedUrls();
         KUrl::List::ConstIterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
             if ( (*it).isValid() )
@@ -2182,7 +2182,7 @@ void KFileDialog::toggleBookmarks(bool show)
 
         d->bookmarkHandler = new KFileBookmarkHandler( this );
         connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
-                    SLOT( enterURL( const QString& )));
+                    SLOT( enterUrl( const QString& )));
 
         d->bookmarkButton = new KActionMenu(i18n("Bookmarks"), actionCollection(), "bookmark");
         d->bookmarkButton->setMenu(d->bookmarkHandler->menu());
