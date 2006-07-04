@@ -892,7 +892,7 @@ QString paramString(const QString &group, const QList<Param> &parameters)
   if (arguments.isEmpty())
     return "QLatin1String( \""+group+"\" )";
 
-  return "QLatin1String( \""+paramString+"\" )"+arguments;
+  return "QString( QLatin1String( \""+paramString+"\" ) )"+arguments;
 }
 
 /* int i is the value of the parameter */
@@ -968,7 +968,7 @@ QString memberMutatorBody( CfgEntry *e )
     out << "}" << endl << endl;
   }
 
-  out << "if (!" << This << "isImmutable( QLatin1String( \"";
+  out << "if (!" << This << "isImmutable( QString::fromLatin1 ( \"";
   if (!e->param().isEmpty())
   {
     out << e->paramName().replace("$("+e->param()+")", "%1") << "\" ).arg( ";

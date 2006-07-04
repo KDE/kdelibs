@@ -28,7 +28,7 @@
 KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIG_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)
 
-QTEST_KDEMAIN( KConfigTest, NoGUI );
+QTEST_KDEMAIN( KConfigTest, NoGUI )
 
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
