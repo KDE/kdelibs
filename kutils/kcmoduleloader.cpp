@@ -219,6 +219,8 @@ bool KCModuleLoader::testModule( const KCModuleInfo& module )
     return true;
   }
 
+//  if (module.service()-
+
   bool doLoad = module.service()->property( "X-KDE-Test-Module", QVariant::Bool ).toBool();
   if( !doLoad )
   {
