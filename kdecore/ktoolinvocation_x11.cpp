@@ -34,6 +34,7 @@
 #include <qapplication.h>
 #include <qhash.h>
 #include <QtDBus/QtDBus>
+#include <QDebug>
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -383,14 +384,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     //qry.append( "body=" + QLatin1String(KUrl::toPercentEncoding( body ) ));
     //url.setQuery( qry.join( "&" ) );
 
-    const bool hasQuery = !url.encodedQuery().isEmpty();
-#if QT_VERSION >= 0x040200
-#ifdef __GNUC__
-#warning Qt-4.2, use QUrl::hasQuery()
-#endif
-#endif
-
-    if ( ! (to.isEmpty() && (!hasQuery)) )
+    if ( ! (to.isEmpty() && (!url.hasQuery())) )
         url.setProtocol("mailto");
 
     QHash<QChar, QString> keyMap;
@@ -511,7 +505,8 @@ startServiceInternal(const char *_function,
     QDBusMessage reply = QDBus::sessionBus().call(msg);
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
-        printError(i18n("KLauncher could not be reached via D-Bus.\n"), error);
+        printError(i18n("KLauncher could not be reached via D-Bus, error when calling %1\n",function), error);
+        //qDebug() << reply;
         return EINVAL;
     }
 
