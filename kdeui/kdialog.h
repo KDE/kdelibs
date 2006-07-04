@@ -25,7 +25,6 @@
 #define KDIALOG_H
 
 class QMenu;
-class KPushButton;
 
 #include <QtGui/QDialog>
 
@@ -148,8 +147,6 @@ class KDEUI_EXPORT KDialog : public QDialog
       User1   = 0x00001000, ///< Show User defined button 1.
       User2   = 0x00002000, ///< Show User defined button 2.
       User3   = 0x00004000, ///< Show User defined button 3.
-      Filler  = 0x40000000, ///< @internal Ignored when used in a constructor.
-      Stretch = 0x80000000, ///< @internal Ignored when used in a constructor.
       NoDefault             ///< Used when specifying a default button; indicates that no button should be marked by default. 
     };
     Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
