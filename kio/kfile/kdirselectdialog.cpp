@@ -23,7 +23,6 @@
 #include <qstringlist.h>
 #include <QStack>
 
-#include <kactionclasses.h>
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kcombobox.h>
@@ -44,6 +43,7 @@
 #include <kio/renamedlg.h>
 #include <kmessagebox.h>
 #include <kactioncollection.h>
+#include <ktoggleaction.h>
 
 #include "kfiletreeview.h"
 #include "kdirselectdialog.h"
