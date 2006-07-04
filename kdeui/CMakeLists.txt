@@ -24,7 +24,6 @@ add_subdirectory( about )
 ########### next target ###############
 
 set(kdeui_LIB_SRCS
- ksharedpixmap.cpp
  kmenu.cpp
  ktoolbar.cpp
  kaction.cpp
@@ -103,7 +102,6 @@ set(kdeui_LIB_SRCS
  kmenumenuhandler_p.cpp
  kedittoolbar.cpp
  kanimwidget.cpp
- krootpixmap.cpp
  kaboutkde.cpp
  kaboutapplication.cpp
  kcolorcombo.cpp
@@ -243,7 +241,6 @@ install( FILES
  kaboutdialog.h
  kauthicon.h
  kmessagebox.h
- ksharedpixmap.h
  kdualcolorbutton.h
  ktextbrowser.h
  kaction.h
@@ -276,7 +273,6 @@ install( FILES
  kwordwrap.h
  kedittoolbar.h
  kanimwidget.h
- krootpixmap.h
  kaboutkde.h
  kaboutapplication.h
  kpushbutton.h
