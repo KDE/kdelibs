@@ -27,9 +27,11 @@ QTEST_KDEMAIN( KMainWindow_UnitTest, GUI )
 void KMainWindow_UnitTest::testDefaultName()
 {
     KMainWindow mw;
+    mw.show();
     mw.ensurePolished();
     QCOMPARE( mw.objectName(), QString::fromLatin1( "qttest/MainWindow_1" ) );
     KMainWindow mw2;
+    mw2.show();
     mw2.ensurePolished();
     QCOMPARE( mw2.objectName(), QString::fromLatin1( "qttest/MainWindow_2" ) );
 }
@@ -38,10 +40,12 @@ void KMainWindow_UnitTest::testFixedName()
 {
     KMainWindow mw;
     mw.setObjectName( "mymainwindow" );
+    mw.show();
     mw.ensurePolished();
     QCOMPARE( mw.objectName(), QString::fromLatin1( "qttest/mymainwindow" ) );
     KMainWindow mw2;
     mw2.setObjectName( "mymainwindow" );
+    mw2.show();
     mw2.ensurePolished();
     QCOMPARE( mw2.objectName(), QString::fromLatin1( "qttest/mymainwindow2" ) );
 }
@@ -50,10 +54,12 @@ void KMainWindow_UnitTest::testNameWithHash()
 {
     KMainWindow mw;
     mw.setObjectName( "composer_#" );
+    mw.show();
     mw.ensurePolished();
     QCOMPARE( mw.objectName(), QString::fromLatin1( "qttest/composer_1" ) );
     KMainWindow mw2;
     mw2.setObjectName( "composer_#" );
+    mw2.show();
     mw2.ensurePolished();
     QCOMPARE( mw2.objectName(), QString::fromLatin1( "qttest/composer_2" ) );
 }
@@ -62,10 +68,12 @@ void KMainWindow_UnitTest::testNameWithSpecialChars()
 {
     KMainWindow mw;
     mw.setObjectName( "a#@_test/" );
+    mw.show();
     mw.ensurePolished();
     QCOMPARE( mw.objectName(), QString::fromLatin1( "qttest/a___test_" ) );
     KMainWindow mw2;
     mw2.setObjectName( "a#@_test/" );
+    mw2.show();
     mw2.ensurePolished();
     QCOMPARE( mw2.objectName(), QString::fromLatin1( "qttest/a___test_2" ) );
 }
