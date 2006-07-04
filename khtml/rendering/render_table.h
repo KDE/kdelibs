@@ -150,6 +150,9 @@ public:
 
     virtual RenderObject* removeChildNode(RenderObject* child);
 
+    RenderTableSection* sectionAbove(const RenderTableSection*, bool skipEmptySections = false) const;
+    RenderTableSection* sectionBelow(const RenderTableSection*, bool skipEmptySections = false) const;
+
     RenderTableCell* cellAbove(const RenderTableCell* cell) const;
     RenderTableCell* cellBelow(const RenderTableCell* cell) const;
     RenderTableCell* cellLeft(const RenderTableCell* cell) const;
