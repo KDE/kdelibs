@@ -198,7 +198,7 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES aboutkde.png ktip-bulb.png ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
-install_files( /include FILES
+install( FILES
  kprogressbar.h
  kprogressdialog.h
  kcolordialog.h
@@ -325,7 +325,7 @@ install_files( /include FILES
  kmessageboxmessagehandler.h
  kpassivepopupmessagehandler.h
  kbuttongroup.h
-)
+ DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
 MACRO_ADD_FILE_DEPENDENCIES(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)

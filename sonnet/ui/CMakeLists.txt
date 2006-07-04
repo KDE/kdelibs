@@ -27,7 +27,7 @@ install(TARGETS kspell2  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install_files( /include/sonnet FILES dialog.h highlighter.h configdialog.h   configwidget.h )
+install( FILES dialog.h highlighter.h configdialog.h   configwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet )
 
 
 

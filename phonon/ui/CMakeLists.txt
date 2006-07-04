@@ -24,11 +24,11 @@ install(TARGETS phononui  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-install_files( /include/phonon/ui FILES
+install( FILES
 	videowidget.h
 	seekslider.h
 	mediacontrols.h
 	volumeslider.h
 	effectwidget.h
-	)
+	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon/ui)
 

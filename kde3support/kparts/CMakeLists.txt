@@ -1,3 +1,3 @@
 
-install_files( /include FILES dockmainwindow3.h )
+install( FILES dockmainwindow3.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 

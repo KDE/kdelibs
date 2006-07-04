@@ -75,7 +75,7 @@ install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-install_files( /include/phonon FILES
+install( FILES
 	namedescriptiontuple.h
 	namedescriptiontuplemodel.h
 	audiooutputdevice.h
@@ -114,6 +114,6 @@ install_files( /include/phonon FILES
 	simpleplayer.h
 	backendcapabilities.h
 	phonondefs.h
-	)
+	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
 install( FILES  phononbackend.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 

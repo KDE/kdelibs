@@ -120,8 +120,8 @@ install( FILES kdeprintrc  DESTINATION  ${CONFIG_INSTALL_DIR} )
 install( FILES kdeprintd.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 install( FILES kprintpreviewui.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES kdeprintrc.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
-install_files( /include FILES kprinter.h kprintaction.h )
-install_files( /include/kdeprint FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h )
+install( FILES kprinter.h kprintaction.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kdeprint )
 
 
 

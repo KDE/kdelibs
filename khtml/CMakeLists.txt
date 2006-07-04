@@ -415,7 +415,7 @@ endif(KDE4_BUILD_TESTS AND NOT WIN32)
 
 install( FILES khtml.desktop khtmlimage.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc  DESTINATION  ${DATA_INSTALL_DIR}/khtml )
-install_files( /include FILES khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h )
+install( FILES khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 
 
 

@@ -8,4 +8,4 @@ target_link_libraries(kdocument  ${KDE4_KPARTS_LIBS} )
 set_target_properties(kdocument PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
 install(TARGETS kdocument  DESTINATION ${LIB_INSTALL_DIR} )
-install_files( /include/kdocument FILES factory.h document.h view.h )
+install( FILES factory.h document.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kdocument )

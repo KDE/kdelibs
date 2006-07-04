@@ -34,7 +34,7 @@ install(TARGETS kparts  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop   DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-install_files( /include/kparts FILES part.h plugin.h partmanager.h mainwindow.h event.h   browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h     componentfactory.h browserrun.h statusbarextension.h )
+install( FILES part.h plugin.h partmanager.h mainwindow.h event.h   browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h     componentfactory.h browserrun.h statusbarextension.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kparts )
 
 
 

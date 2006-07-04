@@ -57,7 +57,7 @@ install(TARGETS ktelnetservice DESTINATION bin)
 
 install( FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol ssh.protocol  		mms.protocol mmst.protocol mmsu.protocol pnm.protocol rtspt.protocol rtspu.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES kio_uiserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
-install_files( /include/kio FILES  uiserver.h)
+install( FILES  uiserver.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )
 
 # install the fileshareset and filesharelist scripts, they are not required on windows
 if (UNIX)

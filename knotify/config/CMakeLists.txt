@@ -25,7 +25,7 @@ install(TARGETS knotifyconfig  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install_files( /include FILES knotifyconfigwidget.h )
+install( FILES knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 
 
 

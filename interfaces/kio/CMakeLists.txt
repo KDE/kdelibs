@@ -1,1 +1,1 @@
-install_files( /include/kio FILES http.h )
+install( FILES http.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )

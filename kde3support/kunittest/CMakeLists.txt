@@ -29,6 +29,6 @@ install(TARGETS kunittestmodrunner DESTINATION bin)
 
 
 ########### install files ###############
-install_files( /include/kunittest FILES runner.h tester.h module.h )
+install( FILES runner.h tester.h module.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kunittest )
 
 

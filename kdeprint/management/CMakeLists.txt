@@ -105,7 +105,7 @@ install(TARGETS kaddprinterwizard DESTINATION bin)
 ########### install files ###############
 
 install( FILES tileup.png tiledown.png side.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
-install_files( /include/kdeprint FILES  kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h )
+install( FILES  kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kdeprint )
 
 
 

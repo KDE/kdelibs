@@ -43,7 +43,7 @@ install(TARGETS kdnssd  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install_files( /include/dnssd FILES domainbrowser.h query.h remoteservice.h   publicservice.h servicebase.h servicebrowser.h settings.h )
+install( FILES domainbrowser.h query.h remoteservice.h   publicservice.h servicebase.h servicebrowser.h ${CMAKE_CURRENT_BINARY_DIR}/settings.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd )
 
 
 

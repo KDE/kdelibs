@@ -1,3 +1,3 @@
 
-install_files( /include FILES k3bookmarkdrag.h )
+install( FILES k3bookmarkdrag.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 

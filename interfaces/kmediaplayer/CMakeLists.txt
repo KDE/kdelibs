@@ -24,4 +24,4 @@ install(TARGETS kmediaplayer  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES kmediaplayerengine.desktop kmediaplayer.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-install_files( /include/kmediaplayer FILES player.h view.h )
+install( FILES player.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kmediaplayer )

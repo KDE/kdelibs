@@ -1,4 +1,4 @@
-install_files( /include FILES
+install( FILES
  kservice.h
  kservicetype.h
  kservicetypeprofile.h
@@ -6,7 +6,7 @@ install_files( /include FILES
  kserviceoffer.h
  ktrader.h
  kplugininfo.h
-)
+ DESTINATION ${INCLUDE_INSTALL_DIR})
 install( FILES kplugininfo.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 # not installed: kservicefactory.h kservicetypefactory.h

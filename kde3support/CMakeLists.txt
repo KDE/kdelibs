@@ -28,7 +28,7 @@ set(kde3core_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/kde3support/kdecore/k3multipledrag.cpp
 )
 
-install_files( /include FILES kdecore/k3urldrag.h kdecore/k3multipledrag.h kdecore/k3sqlpropertymap.h )
+install( FILES kdecore/k3urldrag.h kdecore/k3multipledrag.h kdecore/k3sqlpropertymap.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 
 # kde3support/kdeui/Makefile.am: kde3ui
 

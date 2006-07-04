@@ -34,7 +34,7 @@ install(TARGETS kdefx  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install_files( /include FILES kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h )
+install( FILES kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h kdrawutil.h kstyle.h kcpuinfo.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 
 
 

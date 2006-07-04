@@ -5,7 +5,7 @@ check_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)
 configure_file(config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdirwatch.h )
 
 ########### install files ###############
-install_files( /include/kio FILES
+install(  FILES
   connection.h
   slaveinterface.h
   slave.h
@@ -35,9 +35,9 @@ install_files( /include/kio FILES
   davjob.h
   renamedlg.h
   skipdlg.h
-)
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
-install_files( /include FILES
+install( FILES
   kmimetype.h
   kmimetypetrader.h
   kmimemagic.h
@@ -74,4 +74,4 @@ install_files( /include FILES
   kacl.h
   kdedesktopmimetype.h 
   kbuildsycocaprogressdialog.h
-)
+  DESTINATION ${INCLUDE_INSTALL_DIR}) 

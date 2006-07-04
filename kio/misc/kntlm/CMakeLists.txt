@@ -14,7 +14,7 @@ install(TARGETS kntlm  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install_files( /include/kio FILES kntlm.h )
+install( FILES kntlm.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )
 
 
 
