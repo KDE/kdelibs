@@ -1552,7 +1552,7 @@ Value KJS::getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation
 }
 
 // -------------------------------------------------------------------------
-IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOMNodeProto, DOMNodeConstants);
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(NodeConstructor, "NodeConstructor", DOMNodeProto, DOMNodeConstants)
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 0, 0 };

@@ -408,7 +408,7 @@ DOM::Event KJS::toEvent(const Value& val)
 */
 CREATE_CONSTANT_TABLE(EventConstants, "EventConstants")
 
-IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(EventConstructor, "EventConstructor", DOMEventProto, EventConstants);
+IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(EventConstructor, "EventConstructor", DOMEventProto, EventConstants)
 // -------------------------------------------------------------------------
 
 

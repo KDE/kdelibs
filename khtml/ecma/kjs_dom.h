@@ -229,7 +229,7 @@ namespace KJS {
     enum { PublicId, SystemId, NotationName };
   };
 
-  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor);
+  DEFINE_PSEUDO_CONSTRUCTOR(NodeConstructor)
 
   // Constructor for DOMException - constructor stuff not implemented yet
   class DOMExceptionConstructor : public DOMObject {
