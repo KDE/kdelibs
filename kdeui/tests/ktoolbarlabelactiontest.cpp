@@ -24,7 +24,6 @@
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h>
 #include <kvbox.h>
-#include <k3widgetaction.h>
 
 #include <assert.h>
 
@@ -47,8 +46,8 @@ class MainWindow : public KMainWindow
 
       // second constructor
       KLineEdit* lineEdit = new KLineEdit( this );
-      K3WidgetAction* lineEditAction = new K3WidgetAction( lineEdit, "Line Edit",
-                                                           actionCollection(), "lineEdit");
+      KAction* lineEditAction = new KAction( "Line Edit", actionCollection(), "lineEdit");
+      lineEditAction->setDefaultWidget(lineEdit);
 
       KToolBarLabelAction* label2 = new KToolBarLabelAction( lineEditAction, "L&abel 2",
                                                              actionCollection(), "label2" );

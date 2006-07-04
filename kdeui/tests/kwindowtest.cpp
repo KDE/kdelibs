@@ -10,13 +10,14 @@
 #include <khelpmenu.h>
 #include <kcmdlineargs.h>
 #include <kmenu.h>
-#include <kactionclasses.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kicon.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
 #include <kxmlguifactory.h>
+#include <kactionmenu.h>
+#include <ktoggleaction.h>
 
 /*
  Ok this is a constructor of our top widget. It inherits KMainWindow.
@@ -33,7 +34,7 @@ testWindow::testWindow (QWidget *parent)
 {
     ena=false;
     setCaption("test window");
-	
+
 #if 0
     /******************************/
     /* First, we setup setup Menus */
@@ -98,7 +99,7 @@ testWindow::testWindow (QWidget *parent)
     /***********************/
 
     // Create main toolbar...
-    
+
 	// and set it to full width
     //tb->setFullSize(true);
     //addToolBarBreak();
@@ -146,14 +147,14 @@ testWindow::testWindow (QWidget *parent)
     KAction* fileOpenAction2 = new KAction(KIcon( "fileopen" ), "Open (starts progres in sb)", actionCollection(), "fileopen2");
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
-    
+
     KAction* fileFloppyAction2 = new KAction(KIcon( "filefloppy" ), "Save file2 (autorepeat)", actionCollection(), "filefloppy2");
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
 
     KAction* filePrintAction2 = new KAction(KIcon( "fileprint" ), "Print (pops menu)", actionCollection(), "fileprint2");
     filePrintAction2->setMenu(itemsMenu);
 
-	
+
     // *** RADIO BUTTONS
     QActionGroup* radioGroup = new QActionGroup(this);
     radioGroup->setExclusive(true);
@@ -188,14 +189,14 @@ testWindow::testWindow (QWidget *parent)
 
     connect (completions, SIGNAL(triggered(QAction*)), this, SLOT(slotCompletionsMenu(QAction*)));
     pr = 0;
-    
+
     setStandardToolBarMenuEnabled(true);
-	
+
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // Let's add $PWD (ideally $srcdir instead...) to it
 	KGlobal::dirs()->addResourceDir( "data", QDir::currentPath() );
 	createGUI( "./kwindowtest.rc" );
-	
+
 	tb=toolBar();
 	tb1=toolBar("AnotherToolBar");
 //	qobject_cast<QToolButton*>(tb1->widgetForAction(fileFloppyAction2))->setAutoRepeat(true);

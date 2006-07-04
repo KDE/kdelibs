@@ -159,19 +159,6 @@ target_link_libraries(kdatewidgettest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kdualcolortest_SRCS
-kdualcolortest.cpp
-)
-
-kde4_automoc(${kdualcolortest_SRCS})
-
-kde4_add_executable(kdualcolortest RUN_UNINSTALLED ${kdualcolortest_SRCS})
-
-target_link_libraries(kdualcolortest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(keditlistboxtest_SRCS
 keditlistboxtest.cpp
 )
@@ -774,23 +761,23 @@ kde4_add_executable(kpagewidgettest RUN_UNINSTALLED ${kpagewidgettest_SRCS})
 target_link_libraries(kpagewidgettest  ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
-   
+
 set(kfindtest_SRCS kfindtest.cpp )
-   
+
 kde4_automoc(${kfindtest_SRCS})
-   
+
 kde4_add_executable(kfindtest ${kfindtest_SRCS})
-   
+
 target_link_libraries(kfindtest ${KDE4_KDEUI_LIBS} )
-   
+
 ########### next target ###############
-   
+
 set(kreplacetest_SRCS kreplacetest.cpp )
-   
+
 kde4_automoc(${kreplacetest_SRCS})
-   
+
 kde4_add_executable(kreplacetest ${kreplacetest_SRCS})
-   
+
 target_link_libraries(kreplacetest  ${KDE4_KDEUI_LIBS} )
 
 ########### kbuttongrouptest ###############
