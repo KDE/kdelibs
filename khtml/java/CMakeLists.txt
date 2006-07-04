@@ -36,7 +36,7 @@ add_definitions(-DMAKE_KHTML_LIB)
 ########### install files ###############
 
 # kjava.policy 
-install( FILES kjava.jar kjava.policy pluginsinfo  DESTINATION  ${DATA_INSTALL_DIR}/kjava/ )
+install( FILES kjava.jar ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy pluginsinfo  DESTINATION  ${DATA_INSTALL_DIR}/kjava/ )
 install( FILES kjavaappletviewer.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 kde4_install_icons( ${DATA_INSTALL_DIR}/kjava/icons crystalsvg )
 
