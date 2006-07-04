@@ -26,7 +26,7 @@
 
 #include <kimageeffect.h>
 
-#include "kselector.h"
+#include "kselector_p.h"
 #include <stdio.h>
 
 //-----------------------------------------------------------------------------
@@ -497,5 +497,5 @@ void KGradientSelector::drawContents( QPainter *painter )
 }
 
 
-#include "kselector.moc"
+#include "kselector_p.moc"
 

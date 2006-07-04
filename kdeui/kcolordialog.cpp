@@ -65,6 +65,8 @@
 #include <config.h>
 #include <kdebug.h>
 
+#include "kselector_p.h"
+
 #include "config.h"
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -210,6 +212,33 @@ static void createStandardPalette()
     standardPalette[i++] = Qt::black;
 }
 
+class KHSSelector : public KXYSelector
+{
+public:
+  /**
+   * Constructs a hue/saturation selection widget.
+   */
+  KHSSelector( QWidget *parent=0);
+
+protected:
+  /**
+   * Draws the contents of the widget on a pixmap,
+   * which is used for buffering.
+   */
+  virtual void drawPalette( QPixmap *pixmap );
+  virtual void resizeEvent( QResizeEvent * );
+
+  /**
+   * Reimplemented from KXYSelector. This drawing is
+   * buffered in a pixmap here. As real drawing
+   * routine, drawPalette() is used.
+   */
+  virtual void drawContents( QPainter *painter );
+
+private:
+  void updateContents();
+  QPixmap pixmap;
+};
 
 KHSSelector::KHSSelector( QWidget *parent )
 	: KXYSelector( parent )
@@ -261,6 +290,49 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 
 
 //-----------------------------------------------------------------------------
+
+class KValueSelector : public KSelector
+{
+public:
+  /**
+   * Constructs a widget for color selection.
+   */
+  KValueSelector( QWidget *parent=0 );
+  /**
+   * Constructs a widget for color selection with a given orientation
+   */
+  KValueSelector( Qt::Orientation o, QWidget *parent = 0 );
+
+  int hue() const
+        { return _hue; }
+  void setHue( int h )
+        { _hue = h; }
+  int saturation() const
+        { return _sat; }
+  void setSaturation( int s )
+        { _sat = s; }
+
+  void updateContents();
+protected:
+  /**
+   * Draws the contents of the widget on a pixmap,
+   * which is used for buffering.
+   */
+  virtual void drawPalette( QPixmap *pixmap );
+  virtual void resizeEvent( QResizeEvent * );
+
+  /**
+   * Reimplemented from KSelector. The drawing is
+   * buffered in a pixmap here. As real drawing
+   * routine, drawPalette() is used.
+   */
+  virtual void drawContents( QPainter *painter );
+
+private:
+  int _hue;
+  int _sat;
+  QPixmap pixmap;
+};
 
 KValueSelector::KValueSelector( QWidget *parent )
 	: KSelector( Qt::Vertical, parent ), _hue(0), _sat(0)

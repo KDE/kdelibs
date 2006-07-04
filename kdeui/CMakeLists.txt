@@ -51,7 +51,7 @@ set(kdeui_LIB_SRCS
  kprogressdialog.cpp
  kprogressbar.cpp
  kcolordialog.cpp
- kselector.cpp
+ kselector_p.cpp
  kdatepicker.cpp
  kdatetable.cpp
  kfontrequester.cpp
@@ -198,7 +198,6 @@ install( FILES
  kprogressbar.h
  kprogressdialog.h
  kcolordialog.h
- kselector.h
  kdatepicker.h
  kdatetable.h
  kfontdialog.h

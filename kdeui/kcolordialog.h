@@ -35,116 +35,11 @@
 #include <q3gridview.h>
 #include <qscrollarea.h>
 
-#include "kselector.h"
-
 class QComboBox;
 class QLineEdit;
 class KListBox;
 class KPalette;
 class KColorCells;
-
-
-/**
- * Widget for Hue/Saturation colour selection.
- *
- * The actual values can be fetched using the inherited xValue and yValue
- * methods.
- *
- * \image html khsselector.png "KDE Hue/Saturation Selection Widget"
- *
- * @see KXYSelector, KValueSelector, KColorDialog
- * @author Martin Jones (mjones@kde.org)
-*/
-class KDEUI_EXPORT KHSSelector : public KXYSelector
-{
-  Q_OBJECT
-
-public:
-  /**
-   * Constructs a hue/saturation selection widget.
-   */
-  KHSSelector( QWidget *parent=0);
-
-protected:
-  /**
-   * Draws the contents of the widget on a pixmap,
-   * which is used for buffering.
-   */
-  virtual void drawPalette( QPixmap *pixmap );
-  virtual void resizeEvent( QResizeEvent * );
-
-  /**
-   * Reimplemented from KXYSelector. This drawing is
-   * buffered in a pixmap here. As real drawing
-   * routine, drawPalette() is used.
-   */
-  virtual void drawContents( QPainter *painter );
-
-private:
-  void updateContents();
-  QPixmap pixmap;
-
-private:
-  class KHSSelectorPrivate;
-  KHSSelectorPrivate *d;
-};
-
-
-class KValueSelectorPrivate;
-/**
- * Widget for color value selection.
- *
- * @see KHSSelector, KColorDialog
- * @author Martin Jones (mjones@kde.org)
- */
-class KDEUI_EXPORT KValueSelector : public KSelector
-{
-  Q_OBJECT
-
-public:
-  /**
-   * Constructs a widget for color selection.
-   */
-  KValueSelector( QWidget *parent=0 );
-  /**
-   * Constructs a widget for color selection with a given orientation
-   */
-  KValueSelector( Qt::Orientation o, QWidget *parent = 0 );
-
-  int hue() const
-        { return _hue; }
-  void setHue( int h )
-        { _hue = h; }
-  int saturation() const
-        { return _sat; }
-  void setSaturation( int s )
-        { _sat = s; }
-
-  void updateContents();
-protected:
-  /**
-   * Draws the contents of the widget on a pixmap,
-   * which is used for buffering.
-   */
-  virtual void drawPalette( QPixmap *pixmap );
-  virtual void resizeEvent( QResizeEvent * );
-
-  /**
-   * Reimplemented from KSelector. The drawing is
-   * buffered in a pixmap here. As real drawing
-   * routine, drawPalette() is used.
-   */
-  virtual void drawContents( QPainter *painter );
-
-private:
-  int _hue;
-  int _sat;
-  QPixmap pixmap;
-
-private:
-  class KValueSelectorPrivate;
-  KValueSelectorPrivate *d;
-};
 
 
 /**
