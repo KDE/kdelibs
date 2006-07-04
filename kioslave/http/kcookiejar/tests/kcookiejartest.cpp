@@ -1,10 +1,10 @@
 /*
-    This file is part of KDE 
+    This file is part of KDE
 
     Copyright (C) 2004 Waldo Bastian (bastian@kde.org)
 
     This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License 
+    modify it under the terms of the GNU General Public License
     version 2 as published by the Free Software Foundation.
 
     This software is distributed in the hope that it will be useful,
@@ -70,7 +70,7 @@ static void popArg(QString &command, QString & line)
 static void clearConfig()
 {
    delete config;
-   QString file = locateLocal("config", "kcookiejar-testconfig");
+   QString file = KStandardDirs::locateLocal("config", "kcookiejar-testconfig");
    QFile::remove(file);
    config = new KConfig(file);
    config->setGroup("Cookie Policy");
@@ -88,7 +88,7 @@ static void clearCookies()
 
 static void saveCookies()
 {
-   QString file = locateLocal("config", "kcookiejar-testcookies");
+   QString file = KStandardDirs::locateLocal("config", "kcookiejar-testcookies");
    QFile::remove(file);
    jar->saveCookies(file);
    delete jar;
@@ -157,7 +157,7 @@ static void processClear(QString &line)
       clearConfig();
    else if (line == "COOKIES")
       clearCookies();
-   else 
+   else
       FAIL(QString("Unknown command 'CLEAR %1'").arg(line));
 }
 
