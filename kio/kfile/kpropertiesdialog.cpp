@@ -3392,7 +3392,7 @@ void KDesktopPropsPlugin::applyChanges()
 
 void KDesktopPropsPlugin::slotBrowseExec()
 {
-  KUrl f = KFileDialog::getOpenURL( QString(),
+  KUrl f = KFileDialog::getOpenUrl( KUrl(),
                                       QString(), m_frame );
   if ( f.isEmpty() )
     return;
@@ -3852,7 +3852,7 @@ void KExecPropsPlugin::applyChanges()
 
 void KExecPropsPlugin::slotBrowseExec()
 {
-    KUrl f = KFileDialog::getOpenURL( QString(),
+    KUrl f = KFileDialog::getOpenUrl( KUrl(),
                                       QString(), d->m_frame );
     if ( f.isEmpty() )
         return;

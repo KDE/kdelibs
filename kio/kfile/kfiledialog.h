@@ -59,8 +59,8 @@ struct KFileDialogPrivate;
  * QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the static methods
- * getOpenFileName(), getSaveFileName(), getOpenURL()
- * or for multiple files getOpenFileNames() or getOpenURLs().
+ * getOpenFileName(), getSaveFileName(), getOpenUrl()
+ * or for multiple files getOpenFileNames() or getOpenUrls().
  *
  * The dialog has been designed to allow applications to customize it
  * by subclassing. It uses geometry management to ensure that subclasses
@@ -203,7 +203,7 @@ public:
      *
      * This is implicitly set when operationMode() is KFileDialog::Saving
      *
-     * getSaveFileName() and getSaveURL() set this to true by default, so that
+     * getSaveFileName() and getSaveUrl() set this to true by default, so that
      * you can type in the filename and change the directory without having
      * to type the name again.
      */
@@ -410,7 +410,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getOpenURL( const KUrl& startDir = KUrl(),
+    static KUrl getOpenUrl( const KUrl& startDir = KUrl(),
                             const QString& filter = QString(),
                             QWidget *parent= 0,
                             const QString& caption = QString() );
@@ -442,7 +442,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl::List getOpenURLs( const KUrl& startDir = KUrl(),
+    static KUrl::List getOpenUrls( const KUrl& startDir = KUrl(),
                                    const QString& filter = QString(),
                                    QWidget *parent = 0,
                                    const QString& caption = QString() );
@@ -513,7 +513,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getSaveURL( const KUrl& startDir = KUrl(),
+    static KUrl getSaveUrl( const KUrl& startDir = KUrl(),
                             const QString& filter = QString(),
                             QWidget *parent = 0,
                             const QString& caption = QString() );
@@ -584,7 +584,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static KUrl getImageOpenURL( const KUrl& startDir = KUrl(),
+    static KUrl getImageOpenUrl( const KUrl& startDir = KUrl(),
                                  QWidget *parent = 0,
                                  const QString& caption = QString() );
 
