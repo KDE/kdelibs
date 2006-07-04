@@ -296,7 +296,7 @@ install(TARGETS kde-config DESTINATION bin)
 
 
 ########### install files ###############
-install( FILES all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES eventsrc DESTINATION ${DATA_INSTALL_DIR}/knotify )
 install( FILES kdebug.areas kdebugrc language.codes DESTINATION ${CONFIG_INSTALL_DIR})
 install( FILES 40.colors Web.colors Royal.colors Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
