@@ -181,7 +181,9 @@ QWidget* KFontAction::createWidget(QWidget* _parent)
     QToolBar *parent = qobject_cast<QToolBar *>(_parent);
     if (!parent)
         return KSelectAction::createWidget(_parent);
-    QFontComboBox *cb = new QFontComboBox( items(), parent );
+
+#warning FIXME: items need to be converted
+    QFontComboBox *cb = new QFontComboBox( parent );
     connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SIGNAL(slotFontChanged( const QFont&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
     return cb;

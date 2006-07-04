@@ -74,7 +74,7 @@ public:
     virtual QWidget* createWidget(QWidget* parent);
 
 private Q_SLOTS:
-    void slotCurrentFontChanged(const QFont&);
+    void slotFontChanged(const QFont&);
 
 private:
     class KFontActionPrivate;
