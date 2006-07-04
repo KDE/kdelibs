@@ -148,9 +148,9 @@ int main(int argc, char **argv) {
         }
 
         QString catalogs;
-        catalogs += locate( "dtd", "customization/catalog" );
+        catalogs += KStandardDirs::locate( "dtd", "customization/catalog" );
         catalogs += " ";
-        catalogs += locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
+        catalogs += KStandardDirs::locate( "dtd", "docbook/xml-dtd-4.1.2/docbook.cat" );
 
         setenv( "SGML_CATALOG_FILES", QFile::encodeName( catalogs ).data(), 1);
         QString exe;
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
         if ( ::access( QFile::encodeName( exe ), X_OK ) ) {
             exe = KStandardDirs::findExe( "xmllint" );
             if (exe.isEmpty())
-                exe = locate( "exe", "xmllint" );
+                exe = KStandardDirs::locate( "exe", "xmllint" );
         }
         if ( !::access( QFile::encodeName( exe ), X_OK ) ) {
             chdir( QFile::encodeName( file.absolutePath() ) );
@@ -218,7 +218,7 @@ int main(int argc, char **argv) {
     if ( index )
         tss = "customization/htdig_index.xsl" ;
 
-    tss = locate( "dtd", tss );
+    tss = KStandardDirs::locate( "dtd", tss );
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =

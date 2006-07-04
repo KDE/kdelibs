@@ -280,7 +280,7 @@ void Engine::requestMetaInformation( Provider *provider )
 void Engine::upload( Entry *entry )
 {
   if ( mUploadFile.isNull()) {
-     mUploadFile = locateLocal( "data", QString(KGlobal::instance()->instanceName()) + "/upload/" + entry->fullName() );
+     mUploadFile = KStandardDirs::locateLocal( "data", QString(KGlobal::instance()->instanceName()) + "/upload/" + entry->fullName() );
 
     if ( !d->mNewStuff->createUploadFile( mUploadFile ) ) {
       KMessageBox::error( mParentWidget, i18n("Unable to create file to upload.") );
@@ -354,7 +354,7 @@ bool Engine::createMetaFile( Entry *entry )
 
   if ( mUploadMetaFile.isNull() ) {
     mUploadMetaFile = entry->fullName() + ".meta";
-    mUploadMetaFile = locateLocal( "data", QString(KGlobal::instance()->instanceName()) + "/upload/" + mUploadMetaFile );
+    mUploadMetaFile = KStandardDirs::locateLocal( "data", QString(KGlobal::instance()->instanceName()) + "/upload/" + mUploadMetaFile );
   }
 
   QFile f( mUploadMetaFile );

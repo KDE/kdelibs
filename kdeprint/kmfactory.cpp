@@ -303,7 +303,7 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 
 QList<KMFactory::PluginInfo> KMFactory::pluginList()
 {
-	QDir	d(locate("data", "kdeprint/plugins/"), "*.print", QDir::Name, QDir::Files);
+	QDir	d(KStandardDirs::locate("data", "kdeprint/plugins/"), "*.print", QDir::Name, QDir::Files);
 	QList<PluginInfo>	list;
 	for (uint i=0; i<d.count(); i++)
 	{
@@ -319,7 +319,7 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
 {
 	QString	path(name);
 	if (path[0] != '/')
-		path = locate("data", QString::fromLatin1("kdeprint/plugins/%1.print").arg(name));
+		path = KStandardDirs::locate("data", QString::fromLatin1("kdeprint/plugins/%1.print").arg(name));
 	KSimpleConfig	conf(path);
 	PluginInfo	info;
 

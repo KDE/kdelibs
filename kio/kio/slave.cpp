@@ -352,7 +352,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     if (protocol == "data")
         return new DataProtocol();
 
-    QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
+    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
     KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
     if ( socketfile.status() != 0 )
     {
@@ -417,7 +417,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
        KProcess proc;
 
-       proc << locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
+       proc << KStandardDirs::locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
 
        proc.start(KProcess::DontCare);
@@ -460,7 +460,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     if (protocol == "data")
         return 0;
 
-    QString prefix = locateLocal("socket", KGlobal::instance()->instanceName());
+    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::instance()->instanceName());
     KTempFile socketfile(prefix, QLatin1String(".slave-socket"));
     if ( socketfile.status() != 0 )
 	return 0;

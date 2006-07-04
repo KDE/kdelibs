@@ -491,7 +491,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       isDir = ep->d_type == DT_DIR;
       isReg = ep->d_type == DT_REG;
 
-      if (ep->d_type == DT_UNKNOWN) 
+      if (ep->d_type == DT_UNKNOWN)
 #endif
       {
 	KDE_struct_stat buff;
@@ -1752,20 +1752,21 @@ QString KStandardDirs::localxdgconfdir() const
 
 
 // just to make code more readable without macros
-QString locate( const char *type,
+QString KStandardDirs::locate( const char *type,
 		const QString& filename, const KInstance* inst )
 {
     return inst->dirs()->findResource(type, filename);
 }
 
-QString locateLocal( const char *type,
+QString KStandardDirs::locateLocal( const char *type,
 	             const QString& filename, const KInstance* inst )
 {
     return locateLocal(type, filename, true, inst);
 }
 
-QString locateLocal( const char *type,
-	             const QString& filename, bool createDir, const KInstance* inst )
+QString KStandardDirs::locateLocal( const char *type,
+                                    const QString& filename, bool createDir,
+                                    const KInstance* inst )
 {
     // try to find slashes. If there are some, we have to
     // create the subdir first
@@ -1779,7 +1780,7 @@ QString locateLocal( const char *type,
     return inst->dirs()->saveLocation(type, dir, createDir) + file;
 }
 
-bool checkAccess(const QString& pathname, int mode)
+bool KStandardDirs::checkAccess(const QString& pathname, int mode)
 {
   int accessOK = access( QFile::encodeName(pathname), mode );
   if ( accessOK == 0 )

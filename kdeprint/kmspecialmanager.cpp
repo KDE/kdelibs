@@ -46,7 +46,7 @@ bool KMSpecialManager::savePrinters()
 	QString	confname;
 	if (getuid() == 0)
 	{
-		confname = locate("data", "kdeprint/specials.desktop");
+		confname = KStandardDirs::locate("data", "kdeprint/specials.desktop");
 		if (confname.startsWith(KGlobal::dirs()->localkdedir()))
 		{
 			// seems there's a problem here
@@ -58,7 +58,7 @@ bool KMSpecialManager::savePrinters()
 		}
 	}
 	else
-		confname = locateLocal("data","kdeprint/specials.desktop");
+		confname = KStandardDirs::locateLocal("data","kdeprint/specials.desktop");
 
 	KSimpleConfig	conf(confname);
 

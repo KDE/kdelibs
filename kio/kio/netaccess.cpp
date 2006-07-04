@@ -55,7 +55,7 @@ bool NetAccess::download(const KUrl& u, QString & target, QWidget* window)
   if (u.isLocalFile()) {
     // file protocol. We do not need the network
     target = u.path();
-    bool accessible = checkAccess(target, R_OK);
+    bool accessible = KStandardDirs::checkAccess(target, R_OK);
     if(!accessible)
     {
         if(!lastErrorMsg)

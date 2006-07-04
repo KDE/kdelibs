@@ -125,7 +125,7 @@ KonfUpdate::KonfUpdate()
    if (args->isSet("check"))
    {
       m_bUseConfigInfo = true;
-      QString file = locate("data", "kconf_update/"+QFile::decodeName(args->getOption("check")));
+      QString file = KStandardDirs::locate("data", "kconf_update/"+QFile::decodeName(args->getOption("check")));
       if (file.isEmpty())
       {
          qWarning("File '%s' not found.", args->getOption("check").data());
@@ -189,7 +189,7 @@ KonfUpdate::log()
 {
    if (!m_textStream)
    {
-      QString file = locateLocal("data", "kconf_update/log/update.log");
+      QString file = KStandardDirs::locateLocal("data", "kconf_update/log/update.log");
       m_file = new QFile(file);
       if (m_file->open(QIODevice::WriteOnly | QIODevice::Append))
       {
@@ -455,7 +455,7 @@ void KonfUpdate::gotFile(const QString &_file)
       delete oldConfig2;
       oldConfig2 = 0;
 
-      QString file = locateLocal("config", oldFile);
+      QString file = KStandardDirs::locateLocal("config", oldFile);
       struct stat s_buf;
       if (stat(QFile::encodeName(file), &s_buf) == 0)
       {
@@ -746,11 +746,11 @@ void KonfUpdate::gotScript(const QString &_script)
 
 
 
-   QString path = locate("data","kconf_update/"+script);
+   QString path = KStandardDirs::locate("data","kconf_update/"+script);
    if (path.isEmpty())
    {
       if (interpreter.isEmpty())
-         path = locate("lib", "kconf_update_bin/"+script);
+         path = KStandardDirs::locate("lib", "kconf_update_bin/"+script);
 
       if (path.isEmpty())
       {

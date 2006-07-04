@@ -148,7 +148,7 @@ void MainWindow::createShellGUI( bool create )
             d->m_helpMenu = new KHelpMenu( this, instance()->aboutData(), true, actionCollection() );
 
         QString f = xmlFile();
-        setXMLFile( locate( "config", "ui/ui_standards.rc", instance() ) );
+        setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc", instance() ) );
         if ( !f.isEmpty() )
             setXMLFile( f, true );
         else

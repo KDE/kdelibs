@@ -64,14 +64,14 @@ int main()
     {
     KInstance inst( "kdostartupconfig" );
     kDebug() << "Running kdostartupconfig." << endl;
-    QString keysname = locateLocal( "config", "startupconfigkeys" );
+    QString keysname = KStandardDirs::locateLocal( "config", "startupconfigkeys" );
     QFile keys( keysname );
     if( !keys.open( QIODevice::ReadOnly ))
         return 3;
-    QFile f1( locateLocal( "config", "startupconfig" ));
+    QFile f1( KStandardDirs::locateLocal( "config", "startupconfig" ));
     if( !f1.open( QIODevice::WriteOnly ))
         return 4;
-    QFile f2( locateLocal( "config", "startupconfigfiles" ));
+    QFile f2( KStandardDirs::locateLocal( "config", "startupconfigfiles" ));
     if( !f2.open( QIODevice::WriteOnly ))
         return 5;
     QTextStream startupconfig( &f1 );

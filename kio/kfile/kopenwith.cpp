@@ -775,7 +775,7 @@ void KOpenWithDlg::slotOK()
     if ( !qMimeType.isEmpty() )
     {
       // Also make sure the "auto embed" setting for this mimetype is off
-      KDesktopFile mimeDesktop( locateLocal( "mime", qMimeType + ".desktop" ) );
+      KDesktopFile mimeDesktop( KStandardDirs::locateLocal( "mime", qMimeType + ".desktop" ) );
       mimeDesktop.writeEntry( "X-KDE-AutoEmbed", false );
       mimeDesktop.sync();
     }

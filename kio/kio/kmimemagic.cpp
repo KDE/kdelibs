@@ -2123,7 +2123,7 @@ from_oct(int digs, char *where)
 KMimeMagic::KMimeMagic()
 {
     // Magic file detection init
-    QString mimefile = locate( "mime", "magic" );
+    QString mimefile = KStandardDirs::locate( "mime", "magic" );
     init( mimefile );
     // Add snippets from share/config/magic/*
     QStringList snippets = KGlobal::dirs()->findAllResources( "config", "magic/*.magic", true );

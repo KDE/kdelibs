@@ -457,7 +457,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( this, SIGNAL( started( KIO::Job * ) ),
            this, SLOT( updateActions() ) );
 
-  d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
+  d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( KStandardDirs::locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::instance() ) );
 
   connect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
            this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );

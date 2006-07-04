@@ -107,7 +107,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 			" <br>"
 			" <hr>"
 			" <p><em><b>Additional hint for power users:</b> This KDEPrint GUI element matches"
-			" with the CUPS commandline job option parameter:</em>" 
+			" with the CUPS commandline job option parameter:</em>"
 			" <pre>"
 			"    -o gamma=...      # use range from \"1\" to \"3000\""
 			" </pre>"
@@ -274,7 +274,7 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 
 	m_hue->setEnabled(useColor);
 	m_saturation->setEnabled(useColor);
-	QImage	img(locate("data", "kdeprint/preview.png"));
+	QImage	img(KStandardDirs::locate("data", "kdeprint/preview.png"));
 	m_preview->setImage(img);
 
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, colorbox);

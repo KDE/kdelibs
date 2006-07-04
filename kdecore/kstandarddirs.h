@@ -120,7 +120,55 @@ class KStandardDirsPrivate;
  *          Note that the setting of @c $HOME is ignored in this case.
  *
  * @see KGlobalSettings
- */
+ *
+ *
+ * On The Usage Of 'locate' and 'locateLocal'
+ *
+ * Typical KDE applications use resource files in one out of
+ * three ways:
+ *
+ * 1) A resource file is read but is never written. A system
+ *    default is supplied but the user can override this
+ *    default in his local .kde directory:
+ *
+ *    \code
+ *    // Code example
+ *    myFile = KStandardDirs::locate("appdata", "groups.lst");
+ *    myData =  myReadGroups(myFile); // myFile may be null
+ *    \endcode
+ *
+ * 2) A resource file is read and written. If the user has no
+ *    local version of the file the system default is used.
+ *    The resource file is always written to the users local
+ *    .kde directory.
+ *
+ *    \code
+ *    // Code example
+ *    myFile = KStandardDirs::locate("appdata", "groups.lst")
+ *    myData =  myReadGroups(myFile);
+ *    ...
+ *    doSomething(myData);
+ *    ...
+ *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
+ *    myWriteGroups(myFile, myData);
+ *    \endcode
+ *
+ * 3) A resource file is read and written. No system default
+ *    is used if the user has no local version of the file.
+ *    The resource file is always written to the users local
+ *    .kde directory.
+ *
+ *    \code
+ *    // Code example
+ *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
+ *    myData =  myReadGroups(myFile);
+ *    ...
+ *    doSomething(myData);
+ *    ...
+ *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
+ *    myWriteGroups(myFile, myData);
+ *    \endcode
+ **/
 class KDECORE_EXPORT KStandardDirs
 {
 public:
@@ -601,6 +649,71 @@ public:
 	 */
 	static QString realFilePath(const QString &filename);
 
+	/*
+	 * This function is just for convenience. It simply calls
+	 * instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
+	 *
+	 * @param type   The type of the wanted resource, see KStandardDirs
+	 * @param filename   A relative filename of the resource
+	 * @param instance   The KInstance object
+	 *
+	 * @return A full path to the filename specified in the second
+	 *         argument, or QString() if not found
+	 **/
+	static QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+
+	/**
+	 * This function is much like locate. However it returns a
+	 * filename suitable for writing to. No check is made if the
+	 * specified @p filename actually exists. Missing directories
+	 * are created. If @p filename is only a directory, without a
+	 * specific file, @p filename must have a trailing slash.
+	 *
+	 * @param type   The type of the wanted resource, see KStandardDirs
+	 * @param filename   A relative filename of the resource
+	 * @param instance   The KInstance object
+	 *
+	 * @return A full path to the filename specified in the second
+	 *         argument, or QString() if not found
+	 **/
+	static QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+
+	/**
+	 * This function is much like locate. No check is made if the
+	 * specified filename actually exists. Missing directories
+	 * are created if @p createDir is true. If @p filename is only
+	 * a directory, without a specific file, @p filename must have
+	 * a trailing slash.
+	 *
+	 * @param type   The type of the wanted resource, see KStandardDirs
+	 * @param filename   A relative filename of the resource
+	 * @param createDir  If @c true, missing directories are created,
+	 *        if @c false, no directory is created
+	 * @param instance   The KInstance object
+	 *
+	 * @return A full path to the filename specified in the second
+	 *         argument, or QString() if not found
+	 **/
+	static QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
+
+	/**
+	 * Check, if a file may be accessed in a given mode.
+	 * This is a wrapper around the access() system call.
+	 * checkAccess() calls access() with the given parameters.
+	 * If this is OK, checkAccess() returns true. If not, and W_OK
+	 * is part of mode, it is checked if there is write access to
+	 * the directory. If yes, checkAccess() returns true.
+	 * In all other cases checkAccess() returns false.
+	 *
+	 * Other than access() this function EXPLICITLY ignores non-existant
+	 * files if checking for write access.
+	 *
+	 * @param pathname The full path of the file you want to test
+	 * @param mode     The access mode, as in the access() system call.
+	 * @return Whether the access is allowed, true = Access allowed
+	 */
+	static bool checkAccess(const QString& pathname, int mode);
+
  private:
 
 	QStringList prefixes;
@@ -641,127 +754,5 @@ public:
 	bool addResourceDir( const char *type,
 			     const QString& absdir, bool priority);
 };
-
-/**
- * \addtogroup locates Locate Functions
- *  @{
- * On The Usage Of 'locate' and 'locateLocal'
- *
- * Typical KDE applications use resource files in one out of
- * three ways:
- *
- * 1) A resource file is read but is never written. A system
- *    default is supplied but the user can override this
- *    default in his local .kde directory:
- *
- *    \code
- *    // Code example
- *    myFile = locate("appdata", "groups.lst");
- *    myData =  myReadGroups(myFile); // myFile may be null
- *    \endcode
- *
- * 2) A resource file is read and written. If the user has no
- *    local version of the file the system default is used.
- *    The resource file is always written to the users local
- *    .kde directory.
- *
- *    \code
- *    // Code example
- *    myFile = locate("appdata", "groups.lst")
- *    myData =  myReadGroups(myFile);
- *    ...
- *    doSomething(myData);
- *    ...
- *    myFile = locateLocal("appdata", "groups.lst");
- *    myWriteGroups(myFile, myData);
- *    \endcode
- *
- * 3) A resource file is read and written. No system default
- *    is used if the user has no local version of the file.
- *    The resource file is always written to the users local
- *    .kde directory.
- *
- *    \code
- *    // Code example
- *    myFile = locateLocal("appdata", "groups.lst");
- *    myData =  myReadGroups(myFile);
- *    ...
- *    doSomething(myData);
- *    ...
- *    myFile = locateLocal("appdata", "groups.lst");
- *    myWriteGroups(myFile, myData);
- *    \endcode
- **/
-
-/*!
- * \relates KStandardDirs
- * This function is just for convenience. It simply calls
- * instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
- *
- * @param type   The type of the wanted resource, see KStandardDirs
- * @param filename   A relative filename of the resource
- * @param instance   The KInstance object
- *
- * @return A full path to the filename specified in the second
- *         argument, or QString() if not found
- **/
-KDECORE_EXPORT QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
-
-/*!
- * \relates KStandardDirs
- * This function is much like locate. However it returns a
- * filename suitable for writing to. No check is made if the
- * specified @p filename actually exists. Missing directories
- * are created. If @p filename is only a directory, without a
- * specific file, @p filename must have a trailing slash.
- *
- * @param type   The type of the wanted resource, see KStandardDirs
- * @param filename   A relative filename of the resource
- * @param instance   The KInstance object
- *
- * @return A full path to the filename specified in the second
- *         argument, or QString() if not found
- **/
-KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
-
-/*!
- * \relates KStandardDirs
- * This function is much like locate. No check is made if the
- * specified filename actually exists. Missing directories
- * are created if @p createDir is true. If @p filename is only
- * a directory, without a specific file, @p filename must have
- * a trailing slash.
- *
- * @param type   The type of the wanted resource, see KStandardDirs
- * @param filename   A relative filename of the resource
- * @param createDir  If @c true, missing directories are created,
- *        if @c false, no directory is created
- * @param instance   The KInstance object
- *
- * @return A full path to the filename specified in the second
- *         argument, or QString() if not found
- **/
-KDECORE_EXPORT QString locateLocal( const char *type, const QString& filename, bool createDir, const KInstance* instance = KGlobal::instance() );
-
-/**
- * \relates KGlobal
- * Check, if a file may be accessed in a given mode.
- * This is a wrapper around the access() system call.
- * checkAccess() calls access() with the given parameters.
- * If this is OK, checkAccess() returns true. If not, and W_OK
- * is part of mode, it is checked if there is write access to
- * the directory. If yes, checkAccess() returns true.
- * In all other cases checkAccess() returns false.
- *
- * Other than access() this function EXPLICITLY ignores non-existant
- * files if checking for write access.
- *
- * @param pathname The full path of the file you want to test
- * @param mode     The access mode, as in the access() system call.
- * @return Whether the access is allowed, true = Access allowed
- */
-KDECORE_EXPORT bool checkAccess(const QString& pathname, int mode);
-
-/*! @} */
 
 #endif // SSK_KSTDDIRS_H

@@ -300,7 +300,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
     if(s_defaultStyle) return;
 
     {
-	QFile f(locate( "data", "khtml/css/html4.css" ) );
+	QFile f(KStandardDirs::locate( "data", "khtml/css/html4.css" ) );
 	f.open(QIODevice::ReadOnly);
 
 	QByteArray file( f.size()+1, 0 );
@@ -325,7 +325,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	s_defaultPrintStyle->append( s_defaultSheet, "print" );
     }
     {
-	QFile f(locate( "data", "khtml/css/quirks.css" ) );
+	QFile f(KStandardDirs::locate( "data", "khtml/css/quirks.css" ) );
 	f.open(QIODevice::ReadOnly);
 
 	QByteArray file( f.size()+1, 0 );
@@ -3320,7 +3320,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 if (attrID)
                     style->addContent(element->getAttribute(attrID).implementation());
                 else
-                    kdDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found" << endl;
+                    kDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found" << endl;
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
@@ -3352,7 +3352,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 }
                 style->addContent(quote);
             } else
-                kdDebug(6080) << "Unrecognized CSS content" << endl;
+                kDebug(6080) << "Unrecognized CSS content" << endl;
 
         }
         break;

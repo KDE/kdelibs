@@ -81,12 +81,12 @@ KAboutKDE::KAboutKDE( QWidget *parent, bool modal )
     "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
     "<br><br>Thank you very much in advance for your support.");
   setHelp( QLatin1String("khelpcenter/main.html"), QString() );
-  setTitle(i18n("K Desktop Environment. Release %1", 
+  setTitle(i18n("K Desktop Environment. Release %1",
 	   QLatin1String(KDE_VERSION_STRING)) );
   addTextPage( i18nc("About KDE","&About"), text1, true );
   addTextPage( i18n("&Report Bugs or Wishes"), text2, true );
   addTextPage( i18n("&Join the KDE Team"), text3, true );
   addTextPage( i18n("&Support KDE"), text4, true );
-  setImage( locate( "data", QLatin1String("kdeui/pics/aboutkde.png")) );
+  setImage( KStandardDirs::locate( "data", QLatin1String("kdeui/pics/aboutkde.png")) );
   setImageBackgroundColor( Qt::white );
 }

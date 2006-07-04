@@ -311,7 +311,7 @@ PluginBase::PluginBase(ExecState *exec)
                     continue;
             }
             // read configuration
-            KConfig kc( locate ("data", pluginsinfo.toString()) );
+            KConfig kc( KStandardDirs::locate ("data", pluginsinfo.toString()) );
             const int num = kc.readEntry("number", 0);
             for ( int n = 0; n < num; n++ ) {
                 kc.setGroup( QString::number(n) );

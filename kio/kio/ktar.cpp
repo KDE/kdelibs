@@ -121,7 +121,7 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         // has to walk through the decompression filter each time.
         // Which is in fact nearly as slow as a complete decompression for each file.
 
-        d->tmpFile = new KTempFile(locateLocal("tmp", "ktar-"),".tar");
+        d->tmpFile = new KTempFile( KStandardDirs::locateLocal("tmp", "ktar-"),".tar");
         kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->name() << endl;
         d->tmpFile->setAutoDelete(true);
 

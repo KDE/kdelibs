@@ -109,7 +109,7 @@ extern "C" {
 # define _tcsetattr(fd, ttmode) ioctl(fd, TIOCSETA, (char *)ttmode)
 #else
 # if defined(_HPUX_SOURCE) || defined(__CYGWIN__)
-#  define _tcsetattr(fd, ttmode) tcsetattr(fd, TCSANOW, ttmode) 
+#  define _tcsetattr(fd, ttmode) tcsetattr(fd, TCSANOW, ttmode)
 # else
 #  define _tcsetattr(fd, ttmode) ioctl(fd, TCSETS, (char *)ttmode)
 # endif
@@ -530,7 +530,7 @@ int KPty::slaveFd() const
 bool KPty::chownpty(bool grant)
 {
   KProcess proc;
-  proc << locate("exe", BASE_CHOWN) << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
+  proc << KStandardDirs::locate("exe", BASE_CHOWN) << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
   return proc.start(KProcess::Block) && proc.normalExit() && !proc.exitStatus();
 }
 

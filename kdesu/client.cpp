@@ -68,7 +68,7 @@ KDEsuClient::KDEsuClient()
     QByteArray display("NODISPLAY");
 #endif
 
-    sock = QFile::encodeName(locateLocal("socket", QString("kdesud_").append(display)));
+    sock = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdesud_").append(display)));
     connect();
 }
 
@@ -383,7 +383,7 @@ int KDEsuClient::stopServer()
 
 static QString findDaemon()
 {
-    QString daemon = locate("bin", "kdesud");
+    QString daemon = KStandardDirs::locate("bin", "kdesud");
     if (daemon.isEmpty()) // if not in KDEDIRS, rely on PATH
 	daemon = KStandardDirs::findExe("kdesud");
 

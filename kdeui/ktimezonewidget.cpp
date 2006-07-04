@@ -75,7 +75,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
     listItem->setText( Private::ZoneColumn, tzName ); /* store complete path in ListView */
 
     // Locate the flag from /l10n/%1/flag.png.
-    QString flag = locate( "locale", QString( "l10n/%1/flag.png" ).arg( zone->countryCode().toLower() ) );
+    QString flag = KStandardDirs::locate( "locale", QString( "l10n/%1/flag.png" ).arg( zone->countryCode().toLower() ) );
     if ( QFile::exists( flag ) )
       listItem->setIcon( Private::RegionColumn, QPixmap( flag ) );
   }

@@ -73,7 +73,7 @@ public:
 
 KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_complete(false)
 {
-  QString path = locateLocal("tmp", "khtmlcache");
+  QString path = KStandardDirs::locateLocal("tmp", "khtmlcache");
   m_file = new KTempFile(path);
   m_file->unlink();
 }

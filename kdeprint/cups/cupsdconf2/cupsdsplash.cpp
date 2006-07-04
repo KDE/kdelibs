@@ -41,11 +41,11 @@ CupsdSplash::CupsdSplash(QWidget *parent)
 	main_->addLayout(sub_);
 
 	QLabel	*cupslogo_ = new QLabel(this);
-	QString	logopath = locate("data", QString("kdeprint/cups_logo.png"));
+	QString	logopath = KStandardDirs::locate("data", QString("kdeprint/cups_logo.png"));
 	cupslogo_->setPixmap(logopath.isEmpty() ? QPixmap() : QPixmap(logopath));
 	cupslogo_->setAlignment(Qt::AlignCenter);
 	QLabel	*kupslogo_ = new QLabel(this);
-	logopath = locate("data", QString("kdeprint/kde_logo.png"));
+	logopath = KStandardDirs::locate("data", QString("kdeprint/kde_logo.png"));
 	kupslogo_->setPixmap(logopath.isEmpty() ? QPixmap() : QPixmap(logopath));
 	kupslogo_->setAlignment(Qt::AlignCenter);
 

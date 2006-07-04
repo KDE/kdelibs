@@ -302,7 +302,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
   mConfigState = KConfigBase::ReadOnly;
   if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly())
   {
-     if (checkAccess(mLocalFileName, W_OK))
+     if (KStandardDirs::checkAccess(mLocalFileName, W_OK))
      {
         mConfigState = KConfigBase::ReadWrite;
      }
@@ -314,7 +314,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
         QString dir=path.directory();
         KStandardDirs::makeDir(dir);
 
-        if (checkAccess(mLocalFileName, W_OK))
+        if (KStandardDirs::checkAccess(mLocalFileName, W_OK))
         {
            mConfigState = KConfigBase::ReadWrite;
         }
@@ -338,7 +338,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
     QString etc_kderc = QLatin1String("/etc/kderc");
 #endif
 
-    if (checkAccess(etc_kderc, R_OK))
+    if (KStandardDirs::checkAccess(etc_kderc, R_OK))
       kdercs += etc_kderc;
 
     kdercs += KGlobal::dirs()->
@@ -736,7 +736,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
     // it wasn't SUID.
-    if (checkAccess(mLocalFileName, W_OK)) {
+    if (KStandardDirs::checkAccess(mLocalFileName, W_OK)) {
       // File is writable
       KLockFile::Ptr lf;
 
@@ -795,7 +795,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
   if (bEntriesLeft && useKDEGlobals) {
 
     // can we allow the write? (see above)
-    if (checkAccess ( mGlobalFileName, W_OK )) {
+    if (KStandardDirs::checkAccess ( mGlobalFileName, W_OK )) {
       KLockFile::Ptr lf = lockFile(true); // Lock file for global file
       if (lf && lf->isLocked())
          lf = 0; // Already locked, we don't need to lock/unlock again
@@ -1082,7 +1082,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
   // WARNING: Do NOT use the event loop as it may not exist at this time.
   bool allWritable = true;
   QString errorMsg;
-  if ( !mLocalFileName.isEmpty() && !bFileImmutable && !checkAccess(mLocalFileName,W_OK) )
+  if ( !mLocalFileName.isEmpty() && !bFileImmutable && !KStandardDirs::checkAccess(mLocalFileName,W_OK) )
   {
     errorMsg = i18n("Will not save configuration.\n");
     allWritable = false;
@@ -1090,7 +1090,7 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
   }
   // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
   // the local config file immutable is senseless.
-  if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !checkAccess(mGlobalFileName,W_OK) )
+  if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !KStandardDirs::checkAccess(mGlobalFileName,W_OK) )
   {
     if ( errorMsg.isEmpty() )
       errorMsg = i18n("Will not save configuration.\n");

@@ -120,7 +120,7 @@ bool CupsdComment::loadComments()
 {
         qDeleteAll(comments_);
         comments_.clear();
-        QFile	f(locate("data", "kdeprint/cupsd.conf.template"));
+        QFile f(KStandardDirs::locate("data", "kdeprint/cupsd.conf.template"));
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
                 Comment         *comm;

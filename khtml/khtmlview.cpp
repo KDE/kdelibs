@@ -3034,7 +3034,7 @@ QStringList KHTMLView::formCompletionItems(const QString &name) const
     if (!m_part->settings()->isFormCompletionEnabled())
         return QStringList();
     if (!d->formCompletions)
-        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     return d->formCompletions->readEntry(name, QStringList());
 }
 
@@ -3042,7 +3042,7 @@ void KHTMLView::clearCompletionHistory(const QString& name)
 {
     if (!d->formCompletions)
     {
-        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
     d->formCompletions->writeEntry(name, "");
     d->formCompletions->sync();
@@ -3078,7 +3078,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
 void KHTMLView::addNonPasswordStorableSite(const QString& host)
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
 
     d->formCompletions->setGroup("NonPasswordStorableSites");
@@ -3092,7 +3092,7 @@ void KHTMLView::addNonPasswordStorableSite(const QString& host)
 bool KHTMLView::nonPasswordStorableSite(const QString& host) const
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KSimpleConfig(locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KSimpleConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
     d->formCompletions->setGroup("NonPasswordStorableSites");
     QStringList sites =  d->formCompletions->readEntry("Sites", QStringList());

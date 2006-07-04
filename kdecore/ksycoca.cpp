@@ -119,7 +119,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
    bool bOpen = database->open( QIODevice::ReadOnly );
    if (!bOpen)
    {
-     path = locate("services", KSYCOCA_FILENAME);
+     path = KStandardDirs::locate("services", KSYCOCA_FILENAME);
      if (!path.isEmpty())
      {
        kDebug(7011) << "Trying to open global ksycoca from " << path << endl;

@@ -696,7 +696,7 @@ QString KService::locateLocal() const
       (QDir::isRelativePath(desktopEntryPath()) && d->categories.isEmpty()))
      return KDesktopFile::locateLocal(desktopEntryPath());
 
-  return ::locateLocal("xdgdata-apps", d->menuId);
+  return KStandardDirs::locateLocal("xdgdata-apps", d->menuId);
 }
 
 QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
@@ -724,13 +724,13 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
 
       if (showInMenu)
       {
-         if (!locate("xdgdata-apps", result).isEmpty())
+          if (!KStandardDirs::locate("xdgdata-apps", result).isEmpty())
             continue;
       }
       else
       {
          QString file = result.mid(4); // Strip "kde-"
-         if (!locate("apps", ".hidden/"+file).isEmpty())
+         if (!KStandardDirs::locate("apps", ".hidden/"+file).isEmpty())
             continue;
       }
 
@@ -741,11 +741,11 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
 
    if (showInMenu)
    {
-       return ::locateLocal("xdgdata-apps", result);
+       return KStandardDirs::locateLocal("xdgdata-apps", result);
    }
 
    QString file = result.mid(4); // Strip "kde-"
-   return ::locateLocal("apps", ".hidden/"+file);
+   return KStandardDirs::locateLocal("apps", ".hidden/"+file);
 }
 
 

@@ -265,7 +265,7 @@ QString KPrinterImpl::tempFile()
 {
 	QString	f;
 	// be sure the file doesn't exist
-	do f = locateLocal("tmp","kdeprint_") + KRandom::randomString(8); while (QFile::exists(f));
+	do f = KStandardDirs::locateLocal("tmp","kdeprint_") + KRandom::randomString(8); while (QFile::exists(f));
 	return f;
 }
 

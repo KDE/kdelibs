@@ -96,7 +96,7 @@ KTempFile::KTempFile(const QString& filePrefix,
       extension = QLatin1String(".tmp");
    if (prefix.isEmpty())
    {
-      prefix = locateLocal("tmp", KGlobal::instance()->instanceName());
+      prefix = KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName());
    }
    (void) create(prefix, extension, mode);
 }

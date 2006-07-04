@@ -167,7 +167,7 @@ QString getPrintcapFileName()
 				kDebug() << "printcap_path value: " << pcentry << endl;
 				if (pcentry[0] == '|')
 				{ // printcap through pipe
-					printcap = locateLocal("tmp","printcap");
+					printcap = KStandardDirs::locateLocal("tmp","printcap");
 					QString	cmd = QString::fromLatin1("echo \"all\" | %1 > %2").arg(pcentry.mid(1)).arg(printcap);
 					kDebug() << "printcap obtained through pipe" << endl << "executing: " << cmd << endl;
 					::system(cmd.toLocal8Bit());
@@ -233,7 +233,7 @@ QString getEtcPrintersConfName()
 	if (!QFile::exists(printersconf) && !KStandardDirs::findExe( "ypcat" ).isEmpty())
 	{
 		// standard file not found, try NIS
-		printersconf = locateLocal("tmp","printers.conf");
+		printersconf = KStandardDirs::locateLocal("tmp","printers.conf");
 		QString	cmd = QString::fromLatin1("ypcat printers.conf.byname > %1").arg(printersconf);
 		kDebug() << "printers.conf obtained from NIS server: " << cmd << endl;
 		::system(QFile::encodeName(cmd));

@@ -36,15 +36,15 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
     m_menu = new KMenu( dialog );
     m_menu->setObjectName( "bookmark menu" );
 
-    QString file = locate( "data", "kfile/bookmarks.xml" );
+    QString file = KStandardDirs::locate( "data", "kfile/bookmarks.xml" );
     if ( file.isEmpty() )
-        file = locateLocal( "data", "kfile/bookmarks.xml" );
+        file = KStandardDirs::locateLocal( "data", "kfile/bookmarks.xml" );
 
     KBookmarkManager *manager = KBookmarkManager::managerForFile( file, false);
 
     // import old bookmarks
     if ( !KStandardDirs::exists( file ) ) {
-        QString oldFile = locate( "data", "kfile/bookmarks.html" );
+        QString oldFile = KStandardDirs::locate( "data", "kfile/bookmarks.html" );
         if ( !oldFile.isEmpty() )
             importOldBookmarks( oldFile, manager );
     }

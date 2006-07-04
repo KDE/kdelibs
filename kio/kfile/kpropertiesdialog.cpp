@@ -1373,7 +1373,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
   if (KBindingPropsPlugin::supports(properties->items()) && !m_sRelativePath.isEmpty())
   {
     KUrl newURL;
-    newURL.setPath( locateLocal("mime", m_sRelativePath) );
+    newURL.setPath( KStandardDirs::locateLocal("mime", m_sRelativePath) );
     properties->updateUrl( newURL );
   }
   else if (d->bDesktopFile && !m_sRelativePath.isEmpty())
@@ -2091,7 +2091,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     if ( properties->items().first()->isDir() )
       extendedACLs->setAllowDefaults( true );
   }
-#endif  
+#endif
   dlg.setMainWidget( mainw );
   if (dlg.exec() != KDialog::Accepted)
     return;

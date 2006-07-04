@@ -583,7 +583,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
     if (name.startsWith("favicons/"))
     {
        favIconOverlay = true;
-       name = locateLocal("cache", name+".png");
+       name = KStandardDirs::locateLocal("cache", name+".png");
     }
     if (!QDir::isRelativePath(name)) absolutePath=true;
 

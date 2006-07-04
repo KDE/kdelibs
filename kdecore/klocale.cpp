@@ -328,9 +328,9 @@ void KLocalePrivate::initFormat(KLocale *parent)
 
   KConfigGroup cg(config, "Locale");
 
-  KSimpleConfig entry(locate("locale",
-                             QString::fromLatin1("l10n/%1/entry.desktop")
-                             .arg(country)), true);
+  KSimpleConfig entry(KStandardDirs::locate("locale",
+                                           QString::fromLatin1("l10n/%1/entry.desktop")
+                                           .arg(country)), true);
   entry.setGroup("KCM Locale");
 
   // Numeric
@@ -388,9 +388,9 @@ void KLocalePrivate::initFormat(KLocale *parent)
 
   //Grammatical
   //Precedence here is l10n / i18n / config file
-  KSimpleConfig lang(locate("locale",
-			     QString::fromLatin1("%1/entry.desktop")
-                             .arg(language)), true);
+  KSimpleConfig lang(KStandardDirs::locate("locale",
+                                           QString::fromLatin1("%1/entry.desktop")
+                                           .arg(language)), true);
   lang.setGroup("KCM Locale");
 #define read3ConfigBoolEntry(key, default, save) \
   save = entry.readEntry(key, default); \

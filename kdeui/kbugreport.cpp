@@ -491,7 +491,7 @@ bool KBugReport::sendBugReport()
     QString::fromLatin1("submit@bugs.kde.org") );
 
   QString command;
-  command = locate("exe", "ksendbugmail");
+  command = KStandardDirs::locate("exe", "ksendbugmail");
   if (command.isEmpty())
       command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") );
 

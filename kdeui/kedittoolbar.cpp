@@ -422,7 +422,7 @@ void KEditToolbar::slotDefault()
 
     if ( d->m_factory )
     {
-        const QString localPrefix = locateLocal("data", "");
+        const QString localPrefix = KStandardDirs::locateLocal("data", "");
         foreach (KXMLGUIClient* client, d->m_factory->clients())
         {
             QString file = client->xmlFile();
@@ -433,7 +433,7 @@ void KEditToolbar::slotDefault()
             if (QDir::isRelativePath(file))
             {
                 const KInstance *instance = client->instance() ? client->instance() : KGlobal::instance();
-                file = locateLocal("data", QLatin1String( instance->instanceName() + '/' ) + file);
+                file = KStandardDirs::locateLocal("data", QLatin1String( instance->instanceName() + '/' ) + file);
             }
             else
             {
@@ -454,7 +454,7 @@ void KEditToolbar::slotDefault()
         int slash = d->m_file.lastIndexOf('/')+1;
         if (slash)
             d->m_file = d->m_file.mid(slash);
-        QString xml_file = locateLocal("data", QLatin1String( KGlobal::instance()->instanceName() + '/' ) + d->m_file);
+        QString xml_file = KStandardDirs::locateLocal("data", QLatin1String( KGlobal::instance()->instanceName() + '/' ) + d->m_file);
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )
@@ -567,7 +567,7 @@ void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
 
   // handle the merging
   if (global)
-    setXMLFile(locate("config", "ui/ui_standards.rc"));
+    setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc"));
   QString localXML = d->loadXMLFile(file);
   setXML(localXML, true);
 
@@ -706,7 +706,7 @@ void KEditToolbarWidget::rebuildKXMLGUIClients()
 
         // for the shell, merge in ui_standards.rc
         if ( client == firstClient ) // same assumption as in the ctor: first==shell
-            client->setXMLFile(locate("config", "ui/ui_standards.rc"));
+            client->setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc"));
 
         // and this forces it to use the *new* XML file
         client->setXMLFile( file, client == firstClient /* merge if shell */ );

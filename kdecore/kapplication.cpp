@@ -890,7 +890,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( pSessionConfig ) {
         pSessionConfig->sync();
         QStringList discard;
-        discard  << "rm" << locateLocal("config", sessionConfigName());
+        discard  << "rm" << KStandardDirs::locateLocal("config", sessionConfigName());
         sm.setDiscardCommand( discard );
     } else {
 	sm.setDiscardCommand( QStringList( "" ) );

@@ -131,7 +131,7 @@ KBuildSycoca::~KBuildSycoca()
 
 void KBuildSycoca::processGnomeVfs()
 {
-   QString file = locate("app-reg", "gnome-vfs.applications");
+   QString file = KStandardDirs::locate("app-reg", "gnome-vfs.applications");
    if (file.isEmpty())
    {
 //      kDebug(7021) << "gnome-vfs.applications not found." << endl;
@@ -461,7 +461,7 @@ void KBuildSycoca::createMenu(QString caption, QString name, VFolderMenu::SubMen
      if (bMenuTest)
      {
         if (!menu->isDeleted && !p->noDisplay())
-          printf("%s\t%s\t%s\n", caption.toLocal8Bit().data(), p->menuId().toLocal8Bit().data(), locate("apps", p->desktopEntryPath()).toLocal8Bit().data());
+           printf("%s\t%s\t%s\n", qPrintable( caption ), qPrintable( p->menuId() ), qPrintable( KStandardDirs::locate("apps", p->desktopEntryPath() ) ) );
      }
      else
      {

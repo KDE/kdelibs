@@ -155,5 +155,5 @@ void KMRlprManager::savePrintersConf(const QString& filename)
 
 QString KMRlprManager::printerFile()
 {
-	return locateLocal("data","kdeprint/printers.conf");
+	return KStandardDirs::locateLocal("data","kdeprint/printers.conf");
 }

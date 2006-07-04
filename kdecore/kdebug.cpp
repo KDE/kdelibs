@@ -98,7 +98,7 @@ static QByteArray getDescrFromNum(unsigned int _num)
   if ( !KDebugCache->isEmpty() ) // areas already loaded
     return QByteArray();
 
-  QString filename(locate("config", QLatin1String("kdebug.areas")));
+  QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
   if (filename.isEmpty())
       return QByteArray();
 

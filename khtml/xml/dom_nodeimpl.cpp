@@ -1670,7 +1670,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
         //Compute distance from the requested index to the cache node
         unsigned long cacheDist = QABS(long(index) - long(m_cache->position));
 
-        if (cacheDist < (long)index) { //Closer to the cached position
+        if (cacheDist < (unsigned long)index) { //Closer to the cached position
             usedCache = true;
             if (index >= m_cache->position) { //Go ahead
                 unsigned long relIndex = index - m_cache->position;
@@ -1734,7 +1734,7 @@ NodeListImpl::~NodeListImpl()
 
 
 /**
- Next item in the pre-order walk of tree from node, but not going outside 
+ Next item in the pre-order walk of tree from node, but not going outside
  absStart
 */
 static NodeImpl* helperNext(NodeImpl* node, NodeImpl* absStart)
@@ -1899,7 +1899,7 @@ Node NamedNodeMapImpl::setNamedItem( const Node &arg, int& exceptioncode )
       exceptioncode = DOMException::NOT_FOUND_ERR;
       return 0;
     }
-    
+
     Node r = setNamedItem(arg.handle(), false,
                        arg.handle()->nodeName().implementation(), exceptioncode);
     return r;

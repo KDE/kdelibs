@@ -143,7 +143,7 @@ QString KXMLGUIClient::localXMLFile() const
   if ( !QDir::isRelativePath(d->m_xmlFile) )
       return QString(); // can't save anything here
 
-  return locateLocal( "data", QLatin1String( instance()->instanceName() + '/' ) + d->m_xmlFile );
+  return KStandardDirs::locateLocal( "data", QLatin1String( instance()->instanceName() + '/' ) + d->m_xmlFile );
 }
 
 

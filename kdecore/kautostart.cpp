@@ -122,7 +122,7 @@ void KAutostart::setVisibleName(const QString& name)
 
 bool KAutostart::isServiceRegistered(const QString& entryName)
 {
-    return QFile::exists(locate("autostart", entryName + ".desktop"));
+    return QFile::exists(KStandardDirs::locate("autostart", entryName + ".desktop"));
 }
 
 QString KAutostart::commandToCheck() const

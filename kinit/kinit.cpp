@@ -1483,7 +1483,7 @@ static void kdeinit_library_path()
 #endif
 
    display.replace(":","_");
-   QByteArray socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), s_instance));
+   QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit: Aborting. Socket name will be too long:\n");
@@ -1733,7 +1733,7 @@ int main(int argc, char **argv, char **envp)
 #ifndef __CYGWIN__
    if (!d.suicide && !getenv("KDE_IS_PRELINKED"))
    {
-      QString konq = locate("lib", "libkonq.la", s_instance);
+      QString konq = KStandardDirs::locate("lib", "libkonq.la", s_instance);
       if (!konq.isEmpty())
 	  (void) lt_dlopen(QFile::encodeName(konq).data());
    }

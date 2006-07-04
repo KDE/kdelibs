@@ -45,7 +45,7 @@ KMThreadJob::~KMThreadJob()
 
 QString KMThreadJob::jobFile()
 {
-	QString	f = locateLocal("data","kdeprint/printjobs");
+	QString	f = KStandardDirs::locateLocal("data","kdeprint/printjobs");
 	return f;
 }
 

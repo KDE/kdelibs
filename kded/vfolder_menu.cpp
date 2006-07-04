@@ -768,7 +768,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
    }
 
    QString baseName = QDir::cleanPath(m_docInfo.baseDir + fileName);
-   QString result = locate("xdgconf-menu", baseName);
+   QString result = KStandardDirs::locate("xdgconf-menu", baseName);
 
    return result;
 }
@@ -1021,7 +1021,7 @@ kDebug(7021) << "processKDELegacyDirs()" << endl;
          name = name.left(name.length()-11);
 
          SubMenu *newMenu = new SubMenu;
-         newMenu->directoryFile = locate("apps", *it);
+         newMenu->directoryFile = KStandardDirs::locate("apps", *it);
 
          insertSubMenu(m_currentMenu, name, newMenu);
          continue;

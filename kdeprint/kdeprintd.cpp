@@ -128,7 +128,7 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 		KUrl url( re.cap( 1 ) );
 		if ( !url.isLocalFile() )
 		{
-			QString tmpFilename = locateLocal( "tmp", "kdeprint_" + KRandom::randomString( 8 ) );
+			QString tmpFilename = KStandardDirs::locateLocal( "tmp", "kdeprint_" + KRandom::randomString( 8 ) );
 			command.replace( re, KProcess::quote( tmpFilename ) );
 			proc->setOutput( re.cap( 1 ) );
 			proc->setTempOutput( tmpFilename );

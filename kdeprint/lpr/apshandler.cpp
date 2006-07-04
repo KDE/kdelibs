@@ -97,7 +97,7 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 					prt->setDevice("ncp://<unknown>/<unknown>");
 				else
 				{
-					QString uri = buildSmbURI( 
+					QString uri = buildSmbURI(
 							QString(),
 							opts[ "NCP_SERVER" ],
 							opts[ "NCP_PRINTER" ],
@@ -196,7 +196,7 @@ DrMain* ApsHandler::loadDbDriver(const QString& s)
 
 DrMain* ApsHandler::loadApsDriver(bool config)
 {
-	DrMain	*driver = loadToolDriver(locate("data", (config ? "kdeprint/apsdriver1" : "kdeprint/apsdriver2")));
+	DrMain	*driver = loadToolDriver(KStandardDirs::locate("data", (config ? "kdeprint/apsdriver1" : "kdeprint/apsdriver2")));
 	if (driver)
 		driver->set("text", "APS Common Driver");
 	return driver;

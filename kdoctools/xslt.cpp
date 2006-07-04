@@ -226,7 +226,7 @@ static bool readCache( const QString &filename,
     kDebug( 7119 ) << "verifyCache " << filename << " " << cache << endl;
     if ( !compareTimeStamps( filename, cache ) )
         return false;
-    if ( !compareTimeStamps( locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
+    if ( !compareTimeStamps( KStandardDirs::locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
         return false;
 
     kDebug( 7119 ) << "create filter" << endl;
@@ -277,7 +277,7 @@ QString lookForCache( const QString &filename )
     if ( readCache( filename, cache + "cache.bz2", output) )
         return output;
     if ( readCache( filename,
-                    locateLocal( "cache",
+                    KStandardDirs::locateLocal( "cache",
                                  "kio_help" + cache +
                                  "cache.bz2" ), output ) )
         return output;

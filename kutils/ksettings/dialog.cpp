@@ -528,8 +528,8 @@ void Dialog::parseGroupFile( const QString & filename )
 void Dialog::createDialogFromServices()
 {
 	// read .setdlg files
-	QString setdlgpath = locate( "appdata",
-			KGlobal::instance()->instanceName() + ".setdlg" );
+	QString setdlgpath = KStandardDirs::locate( "appdata",
+                                                    KGlobal::instance()->instanceName() + ".setdlg" );
 	QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
 			"ksettingsdialog/*.setdlg" );
 	if( ! setdlgpath.isNull() )

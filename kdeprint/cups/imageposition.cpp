@@ -47,7 +47,7 @@ ImagePosition::ImagePosition(QWidget *parent)
 	position_ = Center;
 	setMinimumSize(sizeHint());
 	setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
-	pix_.load(locate("data", "kdeprint/preview-mini.png"));
+	pix_.load(KStandardDirs::locate("data", "kdeprint/preview-mini.png"));
 }
 
 ImagePosition::~ImagePosition()

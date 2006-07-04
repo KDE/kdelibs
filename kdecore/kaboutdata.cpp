@@ -552,23 +552,23 @@ KAboutData::license() const
        break;
     case License_GPL_V2:
        l = "GPL v2";
-       f = locate("data", "LICENSES/GPL_V2");
+       f = KStandardDirs::locate("data", "LICENSES/GPL_V2");
        break;
     case License_LGPL_V2:
        l = "LGPL v2";
-       f = locate("data", "LICENSES/LGPL_V2");
+       f = KStandardDirs::locate("data", "LICENSES/LGPL_V2");
        break;
     case License_BSD:
        l = "BSD License";
-       f = locate("data", "LICENSES/BSD");
+       f = KStandardDirs::locate("data", "LICENSES/BSD");
        break;
     case License_Artistic:
        l = "Artistic License";
-       f = locate("data", "LICENSES/ARTISTIC");
+       f = KStandardDirs::locate("data", "LICENSES/ARTISTIC");
        break;
     case License_QPL_V1_0:
        l = "QPL v1.0";
-       f = locate("data", "LICENSES/QPL_V1.0");
+       f = KStandardDirs::locate("data", "LICENSES/QPL_V1.0");
        break;
     case License_Custom:
        if (d->_licenseText && *d->_licenseText)

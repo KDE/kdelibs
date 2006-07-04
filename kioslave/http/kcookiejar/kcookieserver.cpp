@@ -87,10 +87,10 @@ KCookieServer::KCookieServer()
    mConfig = new KConfig("kcookiejarrc");
    mCookieJar->loadConfig( mConfig );
 
-   QString filename = locateLocal("data", "kcookiejar/cookies");
+   QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
 
    // Stay backwards compatible!
-   QString filenameOld = locate("data", "kfm/cookies");
+   QString filenameOld = KStandardDirs::locate("data", "kfm/cookies");
    if (!filenameOld.isEmpty())
    {
       mCookieJar->loadCookies( filenameOld );
@@ -290,7 +290,7 @@ void KCookieServer::slotSave()
 {
    delete mTimer;
    mTimer = 0;
-   QString filename = locateLocal("data", "kcookiejar/cookies");
+   QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
    mCookieJar->saveCookies(filename);
 }
 

@@ -28,16 +28,16 @@ SidePixmap::SidePixmap(QWidget *parent)
 	setLineWidth(1);
 	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 
-	m_side.load(locate("data", "kdeprint/side.png"));
-	m_tileup.load(locate("data", "kdeprint/tileup.png"));
-	m_tiledown.load(locate("data", "kdeprint/tiledown.png"));
+	m_side.load(KStandardDirs::locate("data", "kdeprint/side.png"));
+	m_tileup.load(KStandardDirs::locate("data", "kdeprint/tileup.png"));
+	m_tiledown.load(KStandardDirs::locate("data", "kdeprint/tiledown.png"));
 
 	setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
 }
 
 bool SidePixmap::isValid()
 {
-	return (!m_side.isNull() && !m_tileup.isNull() && !m_tiledown.isNull() 
+	return (!m_side.isNull() && !m_tileup.isNull() && !m_tiledown.isNull()
 			&& (m_side.width() == m_tileup.width())
 			&& (m_side.width() == m_tiledown.width()));
 }

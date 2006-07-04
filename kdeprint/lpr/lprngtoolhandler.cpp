@@ -163,7 +163,7 @@ DrMain* LPRngToolHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool 
 		return NULL;
 	}
 
-	DrMain*	driver = loadToolDriver(locate("data", "kdeprint/lprngtooldriver1"));
+	DrMain*	driver = loadToolDriver(KStandardDirs::locate("data", "kdeprint/lprngtooldriver1"));
 	if (driver)
 	{
 		QString	model = prt->option("driverID");
@@ -183,7 +183,7 @@ DrMain* LPRngToolHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool 
 DrMain* LPRngToolHandler::loadDbDriver(const QString& s)
 {
 	int	p = s.indexOf('/');
-	DrMain*	driver = loadToolDriver(locate("data", "kdeprint/lprngtooldriver1"));
+	DrMain*	driver = loadToolDriver(KStandardDirs::locate("data", "kdeprint/lprngtooldriver1"));
 	if (driver)
 		driver->set("driverID", s.mid(p+1));
 	return driver;
@@ -229,9 +229,9 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 	QStringList	l = optstr.split(',', QString::SkipEmptyParts);
 	if (l.count() == 0)
 		return opts;
-	
+
 	if (m_dict.count() == 0)
-		m_dict = loadChoiceDict(locate("data", "kdeprint/lprngtooldriver1"));
+		m_dict = loadChoiceDict(KStandardDirs::locate("data", "kdeprint/lprngtooldriver1"));
 
 	QString	unknown;
 	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)

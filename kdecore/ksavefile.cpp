@@ -71,7 +71,7 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
    // we only check here if the directory can be written to
    // the actual filename isn't written to, but replaced later
    // with the contents of our tempfile
-   if (!checkAccess(real_filename, W_OK))
+   if (!KStandardDirs::checkAccess(real_filename, W_OK))
    {
       mTempFile->setError(EACCES);
       return;

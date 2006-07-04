@@ -110,9 +110,9 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
         xml_file = filename;
     else
     {
-        xml_file = locate("data", QLatin1String(instance->instanceName() + '/' ) + filename);
+        xml_file = KStandardDirs::locate("data", QLatin1String(instance->instanceName() + '/' ) + filename);
         if ( !QFile::exists( xml_file ) )
-          xml_file = locate( "data", filename );
+          xml_file = KStandardDirs::locate( "data", filename );
     }
 
     QFile file( xml_file );
@@ -136,8 +136,8 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     QString xml_file(filename);
 
     if (QDir::isRelativePath(xml_file))
-        xml_file = locateLocal("data", QLatin1String( instance->instanceName() + '/' )
-                               + filename);
+        xml_file = KStandardDirs::locateLocal("data", QLatin1String( instance->instanceName() + '/' )
+                                              + filename);
 
     QFile file( xml_file );
     if ( !file.open( QIODevice::WriteOnly ) )

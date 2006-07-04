@@ -48,18 +48,18 @@
 #include <phonon/audiooutput.h>
 
 
-class NotifyBySound::Private 
+class NotifyBySound::Private
 {
 	public:
 		bool useExternal;
 		QString externalPlayer;
-		
+
 		QHash<int, KProcess *> processes;
 		QHash<int, Phonon::MediaObject*> mediaobjects;
 		QSignalMapper *signalmapper;
 		Phonon::AudioPath *audiopath;
 		Phonon::AudioOutput *audiooutput;
-		
+
 		int volume;
 
 };
@@ -69,7 +69,7 @@ NotifyBySound::NotifyBySound(QObject *parent) : KNotifyPlugin(parent),d(new Priv
 {
 	d->signalmapper = new QSignalMapper(this);
 	connect(d->signalmapper, SIGNAL(mapped(int)), this, SLOT(slotSoundFinished(int)));
-	
+
 	d->audiopath = new Phonon::AudioPath( this );
 	d->audiooutput = new Phonon::AudioOutput( Phonon::NotificationCategory, this );
 	d->audiopath->addOutput( d->audiooutput );
@@ -84,7 +84,7 @@ NotifyBySound::~NotifyBySound()
 }
 
 
-void NotifyBySound::loadConfig() 
+void NotifyBySound::loadConfig()
 {
     // load external player settings
 	KConfig *kc = KGlobal::config();
@@ -112,7 +112,7 @@ void NotifyBySound::loadConfig()
 void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 {
 	QString soundFile = config->readEntry( "sound" , true );
-    
+
 	if (soundFile.isEmpty())
 	{
 		finish( eventId );
@@ -125,7 +125,7 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
 		search = KGlobal::instance()->dirs()->findResource("data", search);
 		if ( search.isEmpty() )
-			soundFile = locate( "sound", soundFile );
+			soundFile = KStandardDirs::locate( "sound", soundFile );
 		else
 			soundFile = search;
 	}
@@ -134,28 +134,28 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 		finish( eventId );
 		return;
 	}
-	
+
 	kDebug(300) << k_funcinfo << " going to play " << soundFile << endl;
 
 	if(!d->useExternal || d->externalPlayer.isEmpty())
 	{
-		
+
 		Phonon::MediaObject *media = new Phonon::MediaObject( this );
 		connect( media, SIGNAL( finished() ), d->signalmapper, SLOT(map()));
 		d->signalmapper->setMapping( media , eventId );
-		
+
 		media->addAudioPath(d->audiopath);
 		media->setUrl( KUrl(soundFile) );
 		media->play();
 		d->mediaobjects.insert(eventId , media);
 	}
 	else
-	{		
+	{
         // use an external player to play the sound
 		KProcess *proc = new KProcess( this );
 		connect( proc, SIGNAL(processExited(KProcess*)), d->signalmapper,  SLOT(map()));
 		d->signalmapper->setMapping( proc , eventId );
-		
+
 		proc->clearArguments();
 		(*proc) << d->externalPlayer << QFile::encodeName( soundFile );
 		proc->start(KProcess::NotifyOnExit);

@@ -453,7 +453,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       QString name;
       if ( KURIFilter::self()->filterURI(data, list) )
       {
-        QString iconPath = locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
+        QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
         if ( iconPath.isEmpty() )
           icon = SmallIcon("find");
         else
@@ -490,7 +490,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
           if ( KURIFilter::self()->filterURI(data, list) )
           {
-            QString iconPath = locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
+            QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
             if ( iconPath.isEmpty() )
               icon = SmallIcon("find");
             else

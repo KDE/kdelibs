@@ -79,7 +79,7 @@ void KTipDatabase::Private::loadTips( const QString &tipFile )
  */
 void KTipDatabase::Private::addTips( const QString &tipFile )
 {
-  QString fileName = locate( "data", tipFile );
+  QString fileName = KStandardDirs::locate( "data", tipFile );
 
   if ( fileName.isEmpty() ) {
     kDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs" << endl;
@@ -252,7 +252,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->blendedColor.setHsv( h, int(s * (71 / 76.0)), int(v * (67 / 93.0)) );
 
   if ( !isTipDialog ) {
-    img = QImage(locate( "data", "kdewizard/pics/wizard_small.png" ) );
+    img = QImage(KStandardDirs::locate( "data", "kdewizard/pics/wizard_small.png" ) );
     // colorize and check to figure the correct color
     KIconEffect::colorize( img, d->blendedColor, 1.0 );
     QRgb colPixel( img.pixel( 0, 0 ) );
@@ -288,7 +288,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
     vbox->addLayout( pl );
 
     QLabel *bulb = new QLabel( this );
-    bulb->setPixmap( locate( "data", "kdeui/pics/ktip-bulb.png" ) );
+    bulb->setPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-bulb.png" ) );
     pl->addWidget( bulb );
 
     QLabel *titlePane = new QLabel( this );
@@ -296,7 +296,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 //  neither gcc 3.2 nor 3.3 are able to compile this line:, Alex
 //    QBrush brush( QPixmap(locate("data", "kdeui/pics/ktip-background.png")) );
     QBrush brush;
-    brush.setTexture( QPixmap( locate( "data", "kdeui/pics/ktip-background.png" ) ) );
+    brush.setTexture( QPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-background.png" ) ) );
 
     QPalette palette = titlePane->palette();
     palette.setBrush( QPalette::Window, brush );

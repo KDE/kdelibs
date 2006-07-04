@@ -50,7 +50,7 @@ KPalette::KPalette(const QString &name)
 {
   if (mName.isEmpty()) return;
 
-  QString filename = locate("config", "colors/"+mName);
+  QString filename = KStandardDirs::locate("config", "colors/"+mName);
   if (filename.isEmpty()) return;
 
   QFile paletteFile(filename);
@@ -107,7 +107,7 @@ KPalette::~KPalette()
 bool
 KPalette::save()
 {
-   QString filename = locateLocal("config", "colors/"+mName);
+   QString filename = KStandardDirs::locateLocal("config", "colors/"+mName);
    KSaveFile sf(filename);
    if (sf.status() != 0) return false;
 

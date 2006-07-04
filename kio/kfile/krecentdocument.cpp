@@ -45,7 +45,7 @@
 QString KRecentDocument::recentDocumentDirectory()
 {
     // need to change this path, not sure where
-    return locateLocal("data", QLatin1String("RecentDocuments/"));
+    return KStandardDirs::locateLocal("data", QLatin1String("RecentDocuments/"));
 }
 
 QStringList KRecentDocument::recentDocuments()

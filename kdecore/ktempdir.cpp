@@ -73,7 +73,7 @@ KTempDir::KTempDir(QString directoryPrefix, int mode) : d(new Private)
    mError=0;
    if (directoryPrefix.isEmpty())
    {
-      directoryPrefix = locateLocal("tmp", KGlobal::instance()->instanceName());
+      directoryPrefix = KStandardDirs::locateLocal("tmp", KGlobal::instance()->instanceName());
    }
    (void) create(directoryPrefix , mode);
 }

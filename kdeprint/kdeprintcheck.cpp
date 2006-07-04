@@ -93,7 +93,7 @@ bool KdeprintChecker::checkConfig(const KUrl& url)
 	bool	state(false);
 
 	// first check for standard KDE config file
-	if (!locate("config",f).isEmpty())
+	if (!KStandardDirs::locate("config",f).isEmpty())
 		state = true;
 	else
 	// otherwise check in standard UNIX config directories

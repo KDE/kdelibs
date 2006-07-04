@@ -373,7 +373,7 @@ bool KMManager::uncompressFile(const QString& filename, QString& destname)
 		if ((uchar)(buf[0]) == 037 && (uchar)(buf[1]) == 0213)
 		{
 			f.close();
-			destname = locateLocal("tmp","kdeprint_") + KRandom::randomString(8);
+			destname = KStandardDirs::locateLocal("tmp","kdeprint_") + KRandom::randomString(8);
 			f.setFileName(destname);
 
 			if (f.open(QIODevice::WriteOnly))
@@ -445,7 +445,7 @@ QString KMManager::getTestPage()
 		tpage.clear();
 
 	if (tpage.isEmpty())
-		tpage = locate("data","kdeprint/testprint.ps");
+		tpage = KStandardDirs::locate("data","kdeprint/testprint.ps");
 	return tpage;
 }
 

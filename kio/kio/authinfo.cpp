@@ -126,7 +126,7 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
   {
     loginMap.clear();
 
-    QString filename = locateLocal("config", QLatin1String("kionetrc"));
+    QString filename = KStandardDirs::locateLocal("config", QLatin1String("kionetrc"));
     bool status = parse (openf (filename));
 
     if ( userealnetrc )

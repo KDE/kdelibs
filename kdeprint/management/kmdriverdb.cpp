@@ -78,7 +78,7 @@ void KMDriverDB::clear()
 QString KMDriverDB::dbFile()
 {
 	// this calls insure missing directories creation
-	QString	filename = locateLocal("data",QString::fromLatin1("kdeprint/printerdb_%1.txt").arg(KMFactory::self()->printSystem()));
+	QString	filename = KStandardDirs::locateLocal("data",QString::fromLatin1("kdeprint/printerdb_%1.txt").arg(KMFactory::self()->printSystem()));
 	return filename;
 }
 

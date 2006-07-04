@@ -534,7 +534,7 @@ DrMain* KMCupsManager::loadFileDriver(const QString& filename)
 DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 {
 	QStringList	comps = drname.split('/', QString::SkipEmptyParts);
-	QString	tmpFile = locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
+	QString	tmpFile = KStandardDirs::locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
 	QString	PATH = QLatin1String(getenv("PATH"));
 	PATH += QLatin1String(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
 	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
@@ -695,7 +695,7 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 
 bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
 {
-	QString	tmpfilename = locateLocal("tmp","print_") + KRandom::randomString(8);
+	QString	tmpfilename = KStandardDirs::locateLocal("tmp","print_") + KRandom::randomString(8);
 
 	// first save the driver in a temporary file
 	saveDriverFile(d,tmpfilename);

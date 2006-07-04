@@ -49,7 +49,7 @@ public:
 KProtocolInfo::KProtocolInfo(const QString &path)
  : KSycocaEntry(path), d( new KProtocolInfoPrivate )
 {
-  QString fullPath = locate("services", path);
+  QString fullPath = KStandardDirs::locate("services", path);
 
   KSimpleConfig config( fullPath, true );
   config.setGroup( "Protocol" );

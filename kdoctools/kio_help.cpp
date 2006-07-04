@@ -181,7 +181,7 @@ void HelpProtocol::get( const KUrl& url )
     kDebug( 7119 ) << "target " << target.url() << endl;
 
     QString file = target.path();
-    
+
     if ( mGhelp ) {
       if ( file.right( 4 ) != ".xml" ) {
          get_file( target );
@@ -209,7 +209,7 @@ void HelpProtocol::get( const KUrl& url )
 
     if ( mGhelp ) {
         QString xsl = "customization/kde-nochunk.xsl";
-        mParsed = transform(file, locate("dtd", xsl));
+        mParsed = transform(file, KStandardDirs::locate("dtd", xsl));
 
         kDebug( 7119 ) << "parsed " << mParsed.length() << endl;
 
@@ -234,13 +234,13 @@ void HelpProtocol::get( const KUrl& url )
         kDebug( 7119 ) << "cached parsed " << mParsed.length() << endl;
 
         if ( mParsed.isEmpty() ) {
-            mParsed = transform(file, locate("dtd", "customization/kde-chunk.xsl"));
+            mParsed = transform(file, KStandardDirs::locate("dtd", "customization/kde-chunk.xsl"));
             if ( !mParsed.isEmpty() ) {
                 infoMessage( i18n( "Saving to cache" ) );
                 QString cache = file.left( file.length() - 7 );
-                saveToCache( mParsed, locateLocal( "cache",
-                                                        "kio_help" + cache +
-                                                        "cache.bz2" ) );
+                saveToCache( mParsed, KStandardDirs::locateLocal( "cache",
+                                                                  "kio_help" + cache +
+                                                                  "cache.bz2" ) );
             }
         } else infoMessage( i18n( "Using cached version" ) );
 

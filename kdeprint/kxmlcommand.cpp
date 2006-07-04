@@ -202,7 +202,7 @@ void KXmlCommand::setComment( const QString& s )
 
 bool KXmlCommand::isValid()
 {
-	return (!locate("data", "kdeprint/filters/"+name()+".desktop").isEmpty());
+	return (!KStandardDirs::locate("data", "kdeprint/filters/"+name()+".desktop").isEmpty());
 }
 
 void KXmlCommand::check(bool use_xml)
@@ -221,7 +221,7 @@ void KXmlCommand::check(bool use_xml)
 
 void KXmlCommand::loadDesktop()
 {
-	KSimpleConfig	conf(locate("data", "kdeprint/filters/"+name()+".desktop"));
+	KSimpleConfig	conf(KStandardDirs::locate("data", "kdeprint/filters/"+name()+".desktop"));
 	conf.setGroup("KDE Print Filter Entry");
 	d->m_description = conf.readEntry("Comment");
 	d->m_outputMime = conf.readEntry("MimeTypeOut");
@@ -232,7 +232,7 @@ void KXmlCommand::loadDesktop()
 
 void KXmlCommand::saveDesktop()
 {
-	KSimpleConfig	conf(locateLocal("data", "kdeprint/filters/"+name()+".desktop"));
+	KSimpleConfig	conf(KStandardDirs::locateLocal("data", "kdeprint/filters/"+name()+".desktop"));
 	conf.setGroup("KDE Print Filter Entry");
 	conf.writeEntry("Comment", d->m_description);
 	conf.writeEntry("MimeTypeIn", d->m_inputMime);
@@ -243,7 +243,7 @@ void KXmlCommand::saveDesktop()
 
 void KXmlCommand::loadXml()
 {
-	QFile	f(locate("data", "kdeprint/filters/"+name()+".xml"));
+	QFile	f(KStandardDirs::locate("data", "kdeprint/filters/"+name()+".xml"));
 	QDomDocument	doc;
 	if (f.open(QIODevice::ReadOnly) && doc.setContent(&f) && doc.documentElement().tagName() == "kprintfilter")
 	{
@@ -428,7 +428,7 @@ void KXmlCommand::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 void KXmlCommand::saveXml()
 {
-	QFile	f(locateLocal("data", "kdeprint/filters/"+name()+".xml"));
+	QFile	f(KStandardDirs::locateLocal("data", "kdeprint/filters/"+name()+".xml"));
 	if (!f.open(QIODevice::WriteOnly))
 		return;
 
@@ -576,7 +576,7 @@ KXmlCommand* KXmlCommandManager::loadCommand(const QString& xmlId, bool check)
 {
 	if (check)
 	{
-		QString	desktopFile = locate("data", "kdeprint/filters/"+xmlId+".desktop");
+		QString	desktopFile = KStandardDirs::locate("data", "kdeprint/filters/"+xmlId+".desktop");
 		if (desktopFile.isEmpty())
 			return 0;
 	}

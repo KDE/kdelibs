@@ -171,7 +171,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
            SIGNAL(serviceOwnerChanged(QString,QString,QString)),
            SLOT(slotNameOwnerChanged(QString,QString,QString)));
 
-   QString prefix = locateLocal("socket", "klauncher");
+   QString prefix = KStandardDirs::locateLocal("socket", "klauncher");
    KTempFile domainname(prefix, QLatin1String(".slave-socket"));
    if (domainname.status() != 0)
    {
@@ -1004,7 +1004,7 @@ KLauncher::requestSlave(const QString &protocol,
     if (mSlaveValgrind == arg1)
     {
        arg_list.prepend(QFile::encodeName(KLibLoader::findLibrary(name.toLocal8Bit())));
-       arg_list.prepend(QFile::encodeName(locate("exe", "kioslave")));
+       arg_list.prepend(QFile::encodeName(KStandardDirs::locate("exe", "kioslave")));
        name = "valgrind";
        if (!mSlaveValgrindSkin.isEmpty()) {
            arg_list.prepend(QLatin1String("--tool=") + mSlaveValgrindSkin);
