@@ -349,7 +349,7 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
 
   QVGroupBox *gbCursor = new QVGroupBox(i18n("Text Cursor Movement"), this);
 
-  opt[0] = new QCheckBox(i18n("Smart ho&me"), gbCursor);
+  opt[0] = new QCheckBox(i18n("Smart ho&me and smart end"), gbCursor);
   opt[0]->setChecked(configFlags & KateDocumentConfig::cfSmartHome);
   connect(opt[0], SIGNAL(toggled(bool)), this, SLOT(slotChanged()));
 
@@ -391,7 +391,8 @@ KateSelectConfigTab::KateSelectConfigTab(QWidget *parent)
 
   QWhatsThis::add(opt[0], i18n(
         "When selected, pressing the home key will cause the cursor to skip "
-        "whitespace and go to the start of a line's text."));
+        "whitespace and go to the start of a line's text. "
+        "The same applies for the end key."));
 
     QWhatsThis::add(opt[1], i18n(
         "When on, moving the insertion cursor using the <b>Left</b> and "
