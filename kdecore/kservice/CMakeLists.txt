@@ -7,6 +7,6 @@ install_files( /include FILES
  ktrader.h
  kplugininfo.h
 )
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES kplugininfo.desktop )
+install( FILES kplugininfo.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 # not installed: kservicefactory.h kservicetypefactory.h

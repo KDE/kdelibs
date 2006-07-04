@@ -22,12 +22,12 @@ kde4_add_plugin(kdeprint_rlpr ${kdeprint_rlpr_PART_SRCS})
 target_link_libraries(kdeprint_rlpr  ${KDE4_KDECORE_LIBS} kdeprint_management )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_rlpr )
-install_targets(${PLUGIN_INSTALL_DIR} kdeprint_rlpr )
+install(TARGETS kdeprint_rlpr  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES rlpr.print )
+install( FILES rlpr.print  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint/plugins )
 
 
 

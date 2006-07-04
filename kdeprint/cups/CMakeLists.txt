@@ -51,7 +51,7 @@ kde4_add_plugin(kdeprint_cups ${kdeprint_cups_PART_SRCS})
 target_link_libraries(kdeprint_cups  ${KDE4_KDECORE_LIBS} kdeprint_management kio ${KDEFAKES_LIB} ${CUPS_LIBRARIES} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_cups )
-install_targets(${PLUGIN_INSTALL_DIR} kdeprint_cups )
+install(TARGETS kdeprint_cups  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -74,8 +74,8 @@ install(TARGETS cupsdoprint DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint FILES preview.png preview-mini.png )
-install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES cups.print )
+install( FILES preview.png preview-mini.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
+install( FILES cups.print  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint/plugins )
 
 
 

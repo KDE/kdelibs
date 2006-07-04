@@ -41,7 +41,7 @@ kde4_add_library(kjsembed SHARED ${kjsembed_LIB_SRCS})
 target_link_libraries(kjsembed ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTDESIGNER_LIBRARY} kjs )
 
 set_target_properties(kjsembed PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install_targets(${LIB_INSTALL_DIR} kjsembed )
+install(TARGETS kjsembed  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############

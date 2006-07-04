@@ -15,7 +15,7 @@ kde4_add_kdeinit_executable( kcmshell ${kcmshell_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kcmshell  ${KDE4_KDECORE_LIBS} kutils )
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_kcmshell )
+install(TARGETS kdeinit_kcmshell  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kcmshell kdeinit_kcmshell )
 install(TARGETS kcmshell DESTINATION bin)

@@ -80,7 +80,7 @@ kde4_add_library(kde3support SHARED ${kde3support_LIB_SRCS})
 target_link_libraries(kde3support  ${KDE4_KDECORE_LIBS}  ${QT_QTXML_LIBRARY} kdeui kutils kparts kio)
 
 set_target_properties(kde3support PROPERTIES VERSION 0.0.0 SOVERSION 0 )
-install_targets(${LIB_INSTALL_DIR} kde3support )
+install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############

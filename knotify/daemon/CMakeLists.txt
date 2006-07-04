@@ -20,15 +20,15 @@ kde4_add_kdeinit_executable( knotify ${knotify_KDEINIT_SRCS})
 target_link_libraries(kdeinit_knotify  ${KDE4_KDECORE_LIBS} kdeui phononcore )
 
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_knotify )
+install(TARGETS kdeinit_knotify  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( knotify kdeinit_knotify )
 install(TARGETS knotify DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kde FILES kde.notifyrc )
-install_files( ${SERVICES_INSTALL_DIR} FILES knotify.desktop )
+install( FILES kde.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/kde )
+install( FILES knotify.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

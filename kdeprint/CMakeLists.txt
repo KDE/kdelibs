@@ -41,7 +41,7 @@ kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
 target_link_libraries(kded_kdeprintd  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
-install_targets(${PLUGIN_INSTALL_DIR} kded_kdeprintd )
+install(TARGETS kded_kdeprintd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -110,16 +110,16 @@ kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 target_link_libraries(kdeprint  ${KDE4_KDECORE_LIBS} kparts )
 
 set_target_properties(kdeprint PROPERTIES VERSION 5.0.0 SOVERSION 5 )
-install_targets(${LIB_INSTALL_DIR} kdeprint )
+install(TARGETS kdeprint  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint FILES testprint.ps specials.desktop )
-install_files( ${CONFIG_INSTALL_DIR} FILES kdeprintrc )
-install_files( ${SERVICES_INSTALL_DIR}/kded FILES kdeprintd.desktop )
-install_files( ${CONFIG_INSTALL_DIR}/ui FILES kprintpreviewui.rc )
-install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kdeprintrc.upd )
+install( FILES testprint.ps specials.desktop  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
+install( FILES kdeprintrc  DESTINATION  ${CONFIG_INSTALL_DIR} )
+install( FILES kdeprintd.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
+install( FILES kprintpreviewui.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
+install( FILES kdeprintrc.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install_files( /include FILES kprinter.h kprintaction.h )
 install_files( /include/kdeprint FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h )
 

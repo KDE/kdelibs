@@ -22,7 +22,7 @@ install(TARGETS knotifytest DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/knotifytest FILES  knotifytestui.rc knotifytest.notifyrc )
+install( FILES  knotifytestui.rc knotifytest.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/knotifytest )
 
 
 

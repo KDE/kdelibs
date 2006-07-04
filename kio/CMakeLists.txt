@@ -252,16 +252,16 @@ endif(ACL_FOUND)
 set_target_properties(kio PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 ########### install files ###############
 
-install_targets(${LIB_INSTALL_DIR} kio )
+install(TARGETS kio  DESTINATION ${LIB_INSTALL_DIR} )
 
-install_files(${KCONF_UPDATE_INSTALL_DIR} FILES useragent.pl proxytype.pl )
+install( FILES useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
-install_files( ${MIME_INSTALL_DIR} FILES magic )
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop )
-install_files( ${SERVICES_INSTALL_DIR} FILES data.protocol )
-install_files( ${SERVICES_INSTALL_DIR}/kded FILES kpasswdserver.desktop )
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES renamedlgplugin.desktop )
-install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kioslave.upd )
+install( FILES magic  DESTINATION  ${MIME_INSTALL_DIR} )
+install( FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
+install( FILES kpasswdserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
+install( FILES renamedlgplugin.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
 
 

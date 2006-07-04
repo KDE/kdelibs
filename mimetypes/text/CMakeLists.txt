@@ -1,4 +1,4 @@
-install_files( ${MIME_INSTALL_DIR}/text FILES
+install( FILES 
  x-c++src.desktop
  x-c++hdr.desktop
  x-csrc.desktop
@@ -41,6 +41,6 @@ install_files( ${MIME_INSTALL_DIR}/text FILES
  vnd.abc.desktop
  javascript.desktop
  directory.desktop 
-)
+ DESTINATION ${MIME_INSTALL_DIR}/text)
 
 

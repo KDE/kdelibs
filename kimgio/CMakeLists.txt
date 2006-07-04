@@ -24,8 +24,8 @@ if(JASPER_FOUND)
     target_link_libraries(kimg_jp2  ${KDE4_KDECORE_LIBS} ${JASPER_LIBRARIES} )
     
     #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
-    install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
-    install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES jp2.desktop)
+install(TARGETS kimg_jp2  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif(JASPER_FOUND)
 
@@ -36,7 +36,7 @@ kde4_add_plugin(kimg_ico ${kimg_ico_LIB_SRCS})
 target_link_libraries(kimg_ico  ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_ico )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_ico )
+install(TARGETS kimg_ico  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
 
@@ -45,7 +45,7 @@ kde4_add_plugin(kimg_eps ${kimg_eps_LIB_SRCS})
 target_link_libraries(kimg_eps  ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_eps )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_eps )
+install(TARGETS kimg_eps  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
 
@@ -54,7 +54,7 @@ kde4_add_plugin(kimg_pcx ${kimg_pcx_LIB_SRCS})
 target_link_libraries(kimg_pcx  ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_pcx )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_pcx )
+install(TARGETS kimg_pcx  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
 
@@ -63,7 +63,7 @@ kde4_add_plugin(kimg_tga ${kimg_tga_LIB_SRCS})
 target_link_libraries(kimg_tga  ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tga )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tga )
+install(TARGETS kimg_tga  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
 
@@ -72,7 +72,7 @@ kde4_add_plugin(kimg_rgb ${kimg_rgb_LIB_SRCS})
 target_link_libraries(kimg_rgb  ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_rgb )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_rgb )
+install(TARGETS kimg_rgb  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
 
@@ -81,7 +81,7 @@ kde4_add_plugin(kimg_xcf ${kimg_xcf_LIB_SRCS})
 target_link_libraries(kimg_xcf ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xcf )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xcf )
+install(TARGETS kimg_xcf  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 
 ##################################
@@ -91,7 +91,7 @@ kde4_add_plugin(kimg_dds ${kimg_dds_LIB_SRCS})
 target_link_libraries(kimg_dds ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_dds )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_dds )
+install(TARGETS kimg_dds  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 
 ##################################
@@ -101,7 +101,7 @@ kde4_add_plugin(kimg_psd ${kimg_psd_LIB_SRCS})
 target_link_libraries(kimg_psd ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_psd )
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_psd )
+install(TARGETS kimg_psd  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
                                               
@@ -110,7 +110,7 @@ kde4_add_plugin(kimg_xview ${kimg_xview_LIB_SRCS})
 target_link_libraries(kimg_xview ${KDE4_KDECORE_LIBS})
 
 #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )  
-install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_xview )
+install(TARGETS kimg_xview  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 
 ##################################
 
@@ -121,8 +121,8 @@ if(OPENEXR_FOUND)
     target_link_libraries(kimg_exr ${KDE4_KDECORE_LIBS} ${OPENEXR_LIBRARIES} )
 
     #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
-    install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_exr )
-    install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES exr.desktop)
+install(TARGETS kimg_exr  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 endif(OPENEXR_FOUND)
 
 
@@ -133,17 +133,17 @@ if(TIFF_FOUND)
     target_link_libraries(kimg_tiff ${KDE4_KDECORE_LIBS} ${TIFF_LIBRARY})
 
     #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tiff )
-    install_targets(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tiff )
-    install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES tiff.desktop)
+install(TARGETS kimg_tiff  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+install( FILES tiff.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 endif(TIFF_FOUND)
 
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR}/qimageioplugins/ FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop )
+install( FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
-install_files( ${SERVICETYPES_INSTALL_DIR}/ FILES qimageio_plugin.desktop)
+install( FILES qimageio_plugin.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR}/ )
 
 
 

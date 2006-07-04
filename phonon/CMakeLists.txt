@@ -70,7 +70,7 @@ kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 target_link_libraries(phononcore  ${KDE4_KDECORE_LIBS} kio )
 
 set_target_properties(phononcore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install_targets(${LIB_INSTALL_DIR} phononcore )
+install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
@@ -115,5 +115,5 @@ install_files( /include/phonon FILES
 	backendcapabilities.h
 	phonondefs.h
 	)
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES  phononbackend.desktop )
+install( FILES  phononbackend.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 

@@ -56,7 +56,7 @@ kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 target_link_libraries(spellcheckplugin  ${KDE4_KDECORE_LIBS} kparts )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} spellcheckplugin )
-install_targets(${PLUGIN_INSTALL_DIR} spellcheckplugin )
+install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -70,7 +70,7 @@ kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 target_link_libraries(notepadpart  ${KDE4_KDECORE_LIBS} kparts )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} notepadpart )
-install_targets(${PLUGIN_INSTALL_DIR} notepadpart )
+install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -78,11 +78,11 @@ install_targets(${PLUGIN_INSTALL_DIR} notepadpart )
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/notepadpart/kpartplugins FILES plugin_foobar.rc plugin_spellcheck.rc )
-install_files( ${DATA_INSTALL_DIR}/notepadpart FILES notepadpart.rc )
-install_files( ${DATA_INSTALL_DIR}/ghostviewtest FILES ghostviewtest_shell.rc )
-install_files( ${DATA_INSTALL_DIR}/kpartstest FILES kpartstest_shell.rc )
-install_files( ${DATA_INSTALL_DIR}/kpartstestpart FILES kpartstest_part1.rc )
+install( FILES plugin_foobar.rc plugin_spellcheck.rc  DESTINATION  ${DATA_INSTALL_DIR}/notepadpart/kpartplugins )
+install( FILES notepadpart.rc  DESTINATION  ${DATA_INSTALL_DIR}/notepadpart )
+install( FILES ghostviewtest_shell.rc  DESTINATION  ${DATA_INSTALL_DIR}/ghostviewtest )
+install( FILES kpartstest_shell.rc  DESTINATION  ${DATA_INSTALL_DIR}/kpartstest )
+install( FILES kpartstest_part1.rc  DESTINATION  ${DATA_INSTALL_DIR}/kpartstestpart )
 
 endif(KDE4_BUILD_TESTS)
 

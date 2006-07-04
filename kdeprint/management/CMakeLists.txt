@@ -70,7 +70,7 @@ kde4_add_library(kdeprint_management SHARED ${kdeprint_management_LIB_SRCS})
 target_link_libraries(kdeprint_management  ${KDE4_KDECORE_LIBS} kdeprint )
 
 set_target_properties(kdeprint_management PROPERTIES VERSION 5.0.0 SOVERSION 5 )
-install_targets(${LIB_INSTALL_DIR} kdeprint_management )
+install(TARGETS kdeprint_management  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -84,7 +84,7 @@ kde4_add_plugin(kdeprint_management_module WITH_PREFIX ${kdeprint_management_mod
 target_link_libraries(kdeprint_management_module  ${KDE4_KDECORE_LIBS} kdeprint_management)
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_management_module )
-install_targets(${PLUGIN_INSTALL_DIR} kdeprint_management_module )
+install(TARGETS kdeprint_management_module  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -97,14 +97,14 @@ kde4_add_kdeinit_executable( kaddprinterwizard ${kaddprinterwizard_KDEINIT_SRCS}
 
 target_link_libraries(kdeinit_kaddprinterwizard  ${KDE4_KDECORE_LIBS} kdeprint_management)
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_kaddprinterwizard )
+install(TARGETS kdeinit_kaddprinterwizard  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kaddprinterwizard kdeinit_kaddprinterwizard )
 install(TARGETS kaddprinterwizard DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint FILES tileup.png tiledown.png side.png )
+install( FILES tileup.png tiledown.png side.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
 install_files( /include/kdeprint FILES  kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h )
 
 

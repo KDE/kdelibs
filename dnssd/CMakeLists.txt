@@ -39,7 +39,7 @@ else (HAVE_DNSSD)
 endif (HAVE_DNSSD)
 
 set_target_properties(kdnssd PROPERTIES VERSION 2.0.0 SOVERSION 2 )
-install_targets(${LIB_INSTALL_DIR} kdnssd )
+install(TARGETS kdnssd  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############

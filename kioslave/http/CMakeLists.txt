@@ -39,7 +39,7 @@ kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_clean
 
 target_link_libraries(kdeinit_kio_http_cache_cleaner  ${KDE4_KDECORE_LIBS} kio )
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_kio_http_cache_cleaner )
+install(TARGETS kdeinit_kio_http_cache_cleaner  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
 install(TARGETS kio_http_cache_cleaner DESTINATION bin)
@@ -64,12 +64,12 @@ if(GSSAPI_FOUND)
 endif(GSSAPI_FOUND)
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_http )
-install_targets(${PLUGIN_INSTALL_DIR}  kio_http )
+install(TARGETS  kio_http  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol )
+install( FILES http_cache_cleaner.desktop http.protocol https.protocol                webdav.protocol webdavs.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

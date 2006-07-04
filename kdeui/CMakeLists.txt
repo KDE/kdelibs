@@ -191,13 +191,13 @@ kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 target_link_libraries(kdeui  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
 
 set_target_properties(kdeui PROPERTIES VERSION 5.0.0 SOVERSION 5 )
-install_targets(${LIB_INSTALL_DIR} kdeui )
+install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeui/pics FILES aboutkde.png ktip-bulb.png ktip-background.png )
-install_files( ${CONFIG_INSTALL_DIR}/ui FILES ui_standards.rc )
+install( FILES aboutkde.png ktip-bulb.png ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
+install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install_files( /include FILES
  kprogressbar.h
  kprogressdialog.h

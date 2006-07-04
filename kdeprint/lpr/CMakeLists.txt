@@ -31,7 +31,7 @@ kde4_add_plugin(kdeprint_lpr ${kdeprint_lpr_PART_SRCS})
 target_link_libraries(kdeprint_lpr  ${KDE4_KDECORE_LIBS} kdeprint_management ${KDEFAKES_LIB} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_lpr )
-install_targets(${PLUGIN_INSTALL_DIR} kdeprint_lpr )
+install(TARGETS kdeprint_lpr  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -49,8 +49,8 @@ endif (UNIX)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint FILES apsdriver1 apsdriver2 lprngtooldriver1 )
-install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES lpr.print )
+install( FILES apsdriver1 apsdriver2 lprngtooldriver1  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
+install( FILES lpr.print  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint/plugins )
 install_files( /include/kdeprint/lpr FILES printcapentry.h lprhandler.h lprsettings.h )
 
 

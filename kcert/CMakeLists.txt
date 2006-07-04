@@ -19,13 +19,13 @@ kde4_add_plugin(kcertpart WITH_PREFIX ${kcertpart_PART_SRCS})
 target_link_libraries(kcertpart  ${KDE4_KDECORE_LIBS} kparts )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kcertpart )
-install_targets(${PLUGIN_INSTALL_DIR} kcertpart )
+install(TARGETS kcertpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kcertpart.desktop )
-install_files( ${DATA_INSTALL_DIR}/kcertpart FILES kcertpart.rc )
+install( FILES kcertpart.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
+install( FILES kcertpart.rc  DESTINATION  ${DATA_INSTALL_DIR}/kcertpart )
 
 
 

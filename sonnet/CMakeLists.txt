@@ -28,7 +28,7 @@ add_subdirectory( plugins )
 
 ########### install files ###############
 
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES spelling/sonnetspeller.desktop )
+install( FILES spelling/sonnetspeller.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install_files( /include/sonnet FILES 
         misc/backgroundchecker.h
         misc/defaultdictionary.h

@@ -3,7 +3,7 @@
 
 ########### install files ###############
 
-install_files( ${MIME_INSTALL_DIR}/model FILES vrml.desktop )
+install( FILES vrml.desktop  DESTINATION  ${MIME_INSTALL_DIR}/model )
 
 
 

@@ -315,7 +315,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} kparts kdeprint kutils kde3support kwalletclient kjs ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install_targets(${LIB_INSTALL_DIR} khtml )
+install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### khtmlpart ###############
@@ -329,7 +329,7 @@ kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 target_link_libraries(khtmlpart  ${KDE4_KDECORE_LIBS} khtml )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlpart )
-install_targets(${PLUGIN_INSTALL_DIR} khtmlpart )
+install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -342,7 +342,7 @@ kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/ khtmlimagepart  )
 
 target_link_libraries(khtmlimagepart khtml)
 
-install_targets(${PLUGIN_INSTALL_DIR} khtmlimagepart )
+install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 # msvc linker doesn't like "#define protected public"
 if(KDE4_BUILD_TESTS AND NOT MSVC)
@@ -413,8 +413,8 @@ endif(KDE4_BUILD_TESTS AND NOT WIN32)
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES khtml.desktop khtmlimage.desktop )
-install_files( ${DATA_INSTALL_DIR}/khtml FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc )
+install( FILES khtml.desktop khtmlimage.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
+install( FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc  DESTINATION  ${DATA_INSTALL_DIR}/khtml )
 install_files( /include FILES khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h )
 
 

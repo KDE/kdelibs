@@ -8,8 +8,8 @@ kde4_automoc(${kcmphonon_SRCS})
 kde4_add_plugin(kcm_phonon ${kcmphonon_SRCS})
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kcm_phonon)
 target_link_libraries(kcm_phonon  ${KDE4_KDECORE_LIBS} phononcore )
-install_targets(${PLUGIN_INSTALL_DIR} kcm_phonon )
+install(TARGETS kcm_phonon  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
-install_files( ${XDG_APPS_DIR} FILES kcm_phonon.desktop )
+install( FILES kcm_phonon.desktop  DESTINATION  ${XDG_APPS_DIR} )
 

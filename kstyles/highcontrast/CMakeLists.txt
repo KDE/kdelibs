@@ -16,12 +16,12 @@ kde4_add_plugin(highcontrast ${highcontrast_PART_SRCS})
 target_link_libraries(highcontrast  ${KDE4_KDECORE_LIBS} kdefx )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} highcontrast )
-install_targets(${PLUGIN_INSTALL_DIR} highcontrast )
+install(TARGETS highcontrast  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES highcontrast.themerc )
+install( FILES highcontrast.themerc  DESTINATION  ${DATA_INSTALL_DIR}/kstyle/themes )
 
 
 

@@ -10,12 +10,12 @@ kde4_add_plugin(kded_kssld ${kded_kssld_PART_SRCS})
 target_link_libraries(kded_kssld  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kssld )
-install_targets(${PLUGIN_INSTALL_DIR} kded_kssld )
+install(TARGETS kded_kssld  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR}/kded FILES kssld.desktop )
+install( FILES kssld.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 
 
 

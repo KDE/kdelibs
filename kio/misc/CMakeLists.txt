@@ -22,7 +22,7 @@ kde4_add_kdeinit_executable( kio_uiserver ${kio_uiserver_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kio_uiserver  ${KDE4_KDECORE_LIBS} kio )
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_kio_uiserver )
+install(TARGETS kdeinit_kio_uiserver  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kio_uiserver kdeinit_kio_uiserver )
 install(TARGETS kio_uiserver DESTINATION bin)
@@ -55,8 +55,8 @@ install(TARGETS ktelnetservice DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol ssh.protocol  		mms.protocol mmst.protocol mmsu.protocol pnm.protocol rtspt.protocol rtspu.protocol )
-install_files( ${SERVICES_INSTALL_DIR} FILES kio_uiserver.desktop )
+install( FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protocol ssh.protocol  		mms.protocol mmst.protocol mmsu.protocol pnm.protocol rtspt.protocol rtspu.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
+install( FILES kio_uiserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install_files( /include/kio FILES  uiserver.h)
 
 # install the fileshareset and filesharelist scripts, they are not required on windows

@@ -14,7 +14,7 @@ add_subdirectory( uri )
 
 ########### install files ###############
 
-install_files( ${MIME_INSTALL_DIR}/all FILES all.desktop allfiles.desktop )
+install( FILES all.desktop allfiles.desktop  DESTINATION  ${MIME_INSTALL_DIR}/all )
 
 
 

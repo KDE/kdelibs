@@ -43,14 +43,14 @@ kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 target_link_libraries(kded_kcookiejar  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_kcookiejar )
-install_targets(${PLUGIN_INSTALL_DIR} kded_kcookiejar )
+install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/khtml FILES domain_info )
-install_files( ${SERVICES_INSTALL_DIR}/kded FILES kcookiejar.desktop )
-install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kcookiescfg.upd )
+install( FILES domain_info  DESTINATION  ${DATA_INSTALL_DIR}/khtml )
+install( FILES kcookiejar.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
+install( FILES kcookiescfg.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
 
 

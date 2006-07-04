@@ -25,7 +25,7 @@ if (HAVE_RESOLV_LIBRARY)
 endif (HAVE_RESOLV_LIBRARY)
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kded_proxyscout )
-install_targets(${PLUGIN_INSTALL_DIR} kded_proxyscout )
+install(TARGETS kded_proxyscout  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -41,8 +41,8 @@ install(TARGETS kpac_dhcp_helper DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/proxyscout FILES proxyscout.notifyrc )
-install_files( ${SERVICES_INSTALL_DIR}/kded FILES proxyscout.desktop )
+install( FILES proxyscout.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/proxyscout )
+install( FILES proxyscout.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 
 
 

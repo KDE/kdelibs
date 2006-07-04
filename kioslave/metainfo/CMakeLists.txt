@@ -16,12 +16,12 @@ kde4_add_plugin(kio_metainfo ${kio_metainfo_PART_SRCS})
 target_link_libraries(kio_metainfo  ${KDE4_KDECORE_LIBS} kio )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_metainfo )
-install_targets(${PLUGIN_INSTALL_DIR} kio_metainfo )
+install(TARGETS kio_metainfo  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES metainfo.protocol )
+install( FILES metainfo.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

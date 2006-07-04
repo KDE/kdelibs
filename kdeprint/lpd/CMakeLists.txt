@@ -20,7 +20,7 @@ kde4_add_plugin(kdeprint_lpd ${kdeprint_lpd_PART_SRCS})
 target_link_libraries(kdeprint_lpd  ${KDE4_KDECORE_LIBS} kdeprint_management )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kdeprint_lpd )
-install_targets(${PLUGIN_INSTALL_DIR} kdeprint_lpd )
+install(TARGETS kdeprint_lpd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -44,7 +44,7 @@ install(TARGETS make_driver_db_lpd DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint/plugins FILES lpd.print )
+install( FILES lpd.print  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint/plugins )
 
 
 

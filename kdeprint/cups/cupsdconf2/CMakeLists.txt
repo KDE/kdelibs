@@ -35,14 +35,14 @@ kde4_add_kdeinit_executable( cupsdconf ${cupsdconf_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_cupsdconf  ${KDE4_KDECORE_LIBS} kio ${CUPS_LIBRARIES})
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_cupsdconf )
+install(TARGETS kdeinit_cupsdconf  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( cupsdconf kdeinit_cupsdconf )
 install(TARGETS cupsdconf DESTINATION bin)
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kdeprint FILES kde_logo.png cups_logo.png cupsd.conf.template )
+install( FILES kde_logo.png cups_logo.png cupsd.conf.template  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
 
 
 

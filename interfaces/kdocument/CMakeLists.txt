@@ -7,5 +7,5 @@ kde4_add_library(kdocument SHARED ${kdocument_LIB_SRCS})
 target_link_libraries(kdocument  ${KDE4_KPARTS_LIBS} )
 set_target_properties(kdocument PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
-install_targets(${LIB_INSTALL_DIR} kdocument )
+install(TARGETS kdocument  DESTINATION ${LIB_INSTALL_DIR} )
 install_files( /include/kdocument FILES factory.h document.h view.h )

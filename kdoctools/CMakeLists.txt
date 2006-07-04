@@ -26,7 +26,7 @@ kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 target_link_libraries(kio_help  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}  kio_help )
-install_targets(${PLUGIN_INSTALL_DIR} kio_help )
+install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -40,7 +40,7 @@ kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 target_link_libraries(kio_ghelp  ${KDE4_KDECORE_LIBS} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} )
 
 kde4_install_libtool_file(${PLUGIN_INSTALL_DIR} kio_ghelp )
-install_targets(${PLUGIN_INSTALL_DIR} kio_ghelp )
+install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -70,18 +70,18 @@ target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} )
 
 ########### install files ###############
 
-install_files( ${SERVICES_INSTALL_DIR} FILES help.protocol ghelp.protocol )
-install_files( ${DATA_INSTALL_DIR}/kconf_update FILES kio_help.upd )
+install( FILES help.protocol ghelp.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
+install( FILES kio_help.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION bin)
 
-install_files(${KCONF_UPDATE_INSTALL_DIR} FILES move_kio_help_cache.sh )
+install( FILES move_kio_help_cache.sh  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
 
 macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
     FILE(GLOB _file_CUST "${_expr}" )
     foreach(_curentfile ${_file_CUST})
-        install(FILES ${_curentfile} DESTINATION ${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/${_directory} )
+        install(FILES ${_curentfile} DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/${_directory} )
     endforeach(_curentfile ${_file_CUST})
 endmacro(INSTALL_CUSTOMIZE_DIR _expr _directory)
 

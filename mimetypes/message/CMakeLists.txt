@@ -3,7 +3,7 @@
 
 ########### install files ###############
 
-install_files( ${MIME_INSTALL_DIR}/message FILES rfc822.desktop news.desktop )
+install( FILES rfc822.desktop news.desktop  DESTINATION  ${MIME_INSTALL_DIR}/message )
 
 
 

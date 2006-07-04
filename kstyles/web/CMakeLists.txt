@@ -14,12 +14,12 @@ kde4_add_library(webstyle SHARED ${webstyle_LIB_SRCS})
 target_link_libraries(webstyle  ${KDE4_KDECORE_LIBS} kdeui )
 
 set_target_properties(webstyle PROPERTIES VERSION 0.0.0 SOVERSION 0 )
-install_targets(${LIB_INSTALL_DIR} webstyle )
+install(TARGETS webstyle  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kstyle/themes FILES web.themerc )
+install( FILES web.themerc  DESTINATION  ${DATA_INSTALL_DIR}/kstyle/themes )
 
 
 

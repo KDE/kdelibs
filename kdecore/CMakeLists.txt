@@ -110,7 +110,7 @@ if (UNIX)
 
    kde4_add_library(kdefakes SHARED fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-   install_targets(${LIB_INSTALL_DIR} kdefakes )
+   install(TARGETS kdefakes DESTINATION ${LIB_INSTALL_DIR} )
 
    #no ttyname on windows
    kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
@@ -252,7 +252,7 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${X11_LIBRARIES} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
-install_targets(${LIB_INSTALL_DIR} kdecore )
+install(TARGETS kdecore DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -260,27 +260,27 @@ install_targets(${LIB_INSTALL_DIR} kdecore )
 # set the variables used in kde-config.cpp.in
 
 set(prefix              ${CMAKE_INSTALL_PREFIX})
-set(datadir             ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
-set(exec_prefix         ${CMAKE_INSTALL_PREFIX}/bin)
-set(libdir              ${CMAKE_INSTALL_PREFIX}${LIB_INSTALL_DIR})
-set(includedir          ${CMAKE_INSTALL_PREFIX}/include)
-set(kde_appsdir         ${CMAKE_INSTALL_PREFIX}${APPLNK_INSTALL_DIR} )
-set(kde_bindir          ${CMAKE_INSTALL_PREFIX}/bin )
-set(kde_confdir         ${CMAKE_INSTALL_PREFIX}${CONFIG_INSTALL_DIR})
-set(kde_datadir         ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL_DIR})
-set(kde_htmldir         ${CMAKE_INSTALL_PREFIX}${HTML_INSTALL_DIR})
-set(kde_icondir         ${CMAKE_INSTALL_PREFIX}${ICON_INSTALL_DIR})
-set(kde_kcfgdir         ${CMAKE_INSTALL_PREFIX}${KCFG_INSTALL_DIR})
-set(kde_locale          ${CMAKE_INSTALL_PREFIX}${LOCALE_INSTALL_DIR})
-set(kde_moduledir       ${CMAKE_INSTALL_PREFIX}${PLUGIN_INSTALL_DIR})
-set(kde_mimedir         ${CMAKE_INSTALL_PREFIX}${MIME_INSTALL_DIR})
-set(kde_servicesdir     ${CMAKE_INSTALL_PREFIX}${SERVICES_INSTALL_DIR})
-set(kde_servicetypesdir ${CMAKE_INSTALL_PREFIX}${SERVICETYPES_INSTALL_DIR})
-set(kde_sounddir        ${CMAKE_INSTALL_PREFIX}${SOUND_INSTALL_DIR})
-set(kde_templatesdir    ${CMAKE_INSTALL_PREFIX}${TEMPLATES_INSTALL_DIR})
-set(kde_wallpaperdir    ${CMAKE_INSTALL_PREFIX}${WALLPAPER_INSTALL_DIR})
-set(xdg_appsdir         ${CMAKE_INSTALL_PREFIX}${XDG_APPS_DIR})
-set(xdg_directorydir    ${CMAKE_INSTALL_PREFIX}${XDG_DIRECTORY_DIR})
+set(datadir             ${DATA_INSTALL_DIR})
+set(exec_prefix         ${BIN_INSTALL_DIR})
+set(libdir              ${LIB_INSTALL_DIR})
+set(includedir          ${INCLUDE_INSTALL_DIR})
+set(kde_appsdir         ${APPLNK_INSTALL_DIR} )
+set(kde_bindir          ${BIN_INSTALL_DIR} )
+set(kde_confdir         ${CONFIG_INSTALL_DIR})
+set(kde_datadir         ${DATA_INSTALL_DIR})
+set(kde_htmldir         ${HTML_INSTALL_DIR})
+set(kde_icondir         ${ICON_INSTALL_DIR})
+set(kde_kcfgdir         ${KCFG_INSTALL_DIR})
+set(kde_locale          ${LOCALE_INSTALL_DIR})
+set(kde_moduledir       ${PLUGIN_INSTALL_DIR})
+set(kde_mimedir         ${MIME_INSTALL_DIR})
+set(kde_servicesdir     ${SERVICES_INSTALL_DIR})
+set(kde_servicetypesdir ${SERVICETYPES_INSTALL_DIR})
+set(kde_sounddir        ${SOUND_INSTALL_DIR})
+set(kde_templatesdir    ${TEMPLATES_INSTALL_DIR})
+set(kde_wallpaperdir    ${WALLPAPER_INSTALL_DIR})
+set(xdg_appsdir         ${XDG_APPS_DIR})
+set(xdg_directorydir    ${XDG_DIRECTORY_DIR})
 
 
 configure_file(kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
@@ -296,11 +296,11 @@ install(TARGETS kde-config DESTINATION bin)
 
 
 ########### install files ###############
-install_files( ${LOCALE_INSTALL_DIR} FILES all_languages )
-install_files( ${DATA_INSTALL_DIR}/knotify FILES eventsrc )
-install_files( ${CONFIG_INSTALL_DIR} FILES kdebug.areas kdebugrc language.codes )
-install_files( ${CONFIG_INSTALL_DIR}/colors FILES 40.colors Web.colors Royal.colors Rainbow.colors )
-install_files( /include FILES
+install( FILES all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
+install( FILES eventsrc DESTINATION ${DATA_INSTALL_DIR}/knotify )
+install( FILES kdebug.areas kdebugrc language.codes DESTINATION ${CONFIG_INSTALL_DIR})
+install( FILES 40.colors Web.colors Royal.colors Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
+install( FILES
    kascii.h
    kconfig.h
    kconfigskeleton.h
@@ -395,7 +395,7 @@ install_files( /include FILES
    kdedmodule.h
    kautostart.h
    kprotocolinfo.h
-   kdefakes.h
-   kmessage.h
+   ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
+   kmessage.h DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 

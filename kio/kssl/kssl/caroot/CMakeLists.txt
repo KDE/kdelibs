@@ -3,7 +3,7 @@
 
 ########### install files ###############
 
-install_files( ${DATA_INSTALL_DIR}/kssl FILES ca-bundle.crt )
+install( FILES ca-bundle.crt  DESTINATION  ${DATA_INSTALL_DIR}/kssl )
 
 
 

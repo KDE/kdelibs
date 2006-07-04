@@ -143,7 +143,7 @@ kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_klauncher  ${KDE4_KDECORE_LIBS} kio )
 
-install_targets(${LIB_INSTALL_DIR} kdeinit_klauncher )
+install(TARGETS kdeinit_klauncher  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( klauncher kdeinit_klauncher )
 install(TARGETS klauncher DESTINATION bin)

@@ -27,7 +27,7 @@ kde4_add_library(knewstuff SHARED ${knewstuff_LIB_SRCS})
 target_link_libraries(knewstuff  ${KDE4_KDECORE_LIBS} kio )
 
 set_target_properties(knewstuff PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install_targets(${LIB_INSTALL_DIR} knewstuff )
+install(TARGETS knewstuff  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -70,7 +70,7 @@ endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 
-install_files( ${CONFIG_INSTALL_DIR} FILES khotnewstuffrc )
+install( FILES khotnewstuffrc  DESTINATION  ${CONFIG_INSTALL_DIR} )
 install_files( /include/knewstuff FILES downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h knewstuffsecure.h )
 
 kde4_install_icons( ${ICON_INSTALL_DIR} crystalsvg )
