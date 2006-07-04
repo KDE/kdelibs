@@ -49,12 +49,11 @@ extern "C" {
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kdebug.h>
-#include <kdialog.h>
-#include <kmessagebox.h>
 #include <kde_file.h>
 
 #include <errno.h>
 
+#include "jobuidelegate.h"
 #include "kmimetype.h"
 #include "slave.h"
 #include "scheduler.h"
@@ -84,14 +83,10 @@ using namespace KIO;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_autoErrorHandling( false ), m_autoWarningHandling( true ),
-                   m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0)
+    JobPrivate() : m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0)
                    {}
 
-    bool m_autoErrorHandling;
-    bool m_autoWarningHandling;
     bool m_interactive;
-    QPointer<QWidget> m_errorParentWidget;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
@@ -100,32 +95,18 @@ public:
 
 Job::Job(bool showProgressInfo) : KJob(0), m_speedTimer(0), d( new JobPrivate )
 {
-    // Notify the UI Server and get a progress id
-    if ( showProgressInfo )
-    {
-        setProgressId( Observer::self()->newJob( this, true ) );
-        //kDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
-        // Connect global progress info signals
-        connect( this, SIGNAL( percent( KJob*, unsigned long ) ),
-                 Observer::self(), SLOT( slotPercent( KJob*, unsigned long ) ) );
-        connect( this, SIGNAL( infoMessage( KJob*, const QString &, const QString & ) ),
-                 Observer::self(), SLOT( slotInfoMessage( KJob*, const QString & ) ) );
-        connect( this, SIGNAL( totalSize( KJob*, qulonglong ) ),
-                 Observer::self(), SLOT( slotTotalSize( KJob*, qulonglong ) ) );
-        connect( this, SIGNAL( processedSize( KJob*, qulonglong ) ),
-                 Observer::self(), SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
-        connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
-                 Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-
-        connect( this, SIGNAL( finished( KJob*, int ) ),
-                 this, SLOT( slotFinished( KJob*, int ) ) );
-    }
+    setUiDelegate( new JobUiDelegate( showProgressInfo ) );
 }
 
 Job::~Job()
 {
     delete m_speedTimer;
     delete d;
+}
+
+JobUiDelegate *Job::ui() const
+{
+    return static_cast<JobUiDelegate*>( uiDelegate() );
 }
 
 int& Job::extraFlags()
@@ -151,7 +132,7 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
 
-    job->setWindow( m_window );
+    job->ui()->setWindow( m_window );
 }
 
 void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
@@ -180,15 +161,6 @@ void Job::emitSpeed( unsigned long bytes_per_second )
   }
   emit speed( this, bytes_per_second );
   m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
-}
-
-void Job::slotFinished( KJob */*job*/, int /*id*/ )
-{
-  // If we are displaying a progress dialog, remove it first.
-  if ( progressId() ) // Did we get an ID from the observer ?
-    Observer::self()->jobFinished( progressId() );
-  if ( error() && d->m_interactive && d->m_autoErrorHandling )
-    showErrorDialog( d->m_errorParentWidget );
 }
 
 bool Job::doKill()
@@ -240,72 +212,9 @@ void Job::slotSpeedTimeout()
 
 //Job::errorString is implemented in global.cpp
 
-void Job::showErrorDialog( QWidget * parent )
-{
-  //kDebug(7007) << "Job::showErrorDialog parent=" << parent << endl;
-  // Show a message box, except for "user canceled" or "no content"
-  if ( (error() != ERR_USER_CANCELED) && (error() != ERR_NO_CONTENT) ) {
-    //old plain error message
-    //kDebug(7007) << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
-    if ( 1 )
-      KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
-#if 0
-    } else {
-      QStringList errors = detailedErrorStrings();
-      QString caption, err, detail;
-      QStringList::const_iterator errors = it.begin();
-      if ( it != errors.end() )
-        caption = *(it++);
-      if ( it != errors.end() )
-        err = *(it++);
-      if ( it != errors.end() )
-        detail = *it;
-      KMessageBox::queuedDetailedError( parent, err, detail, caption );
-    }
-#endif
-  }
-}
-
-void Job::setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget )
-{
-  d->m_autoErrorHandling = enable;
-  d->m_errorParentWidget = parentWidget;
-}
-
-bool Job::isAutoErrorHandlingEnabled() const
-{
-  return d->m_autoErrorHandling;
-}
-
-void Job::setAutoWarningHandlingEnabled( bool enable )
-{
-  d->m_autoWarningHandling = enable;
-}
-
-bool Job::isAutoWarningHandlingEnabled() const
-{
-  return d->m_autoWarningHandling;
-}
-
-void Job::setInteractive(bool enable)
-{
-  d->m_interactive = enable;
-}
-
 bool Job::isInteractive() const
 {
-  return d->m_interactive;
-}
-
-void Job::setWindow(QWidget *window)
-{
-  m_window = window;
-  KIO::Scheduler::registerWindow(window);
-}
-
-QWidget *Job::window() const
-{
-  return m_window;
+  return uiDelegate() != 0;
 }
 
 void Job::setParentJob(Job* job)
@@ -469,10 +378,10 @@ void SimpleJob::start(Slave *slave)
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
-    if (window())
+    if (ui()->window())
     {
        QString id;
-       addMetaData("window-id", id.setNum((ulong)window()->winId()));
+       addMetaData("window-id", id.setNum((ulong)ui()->window()->winId()));
     }
 
     QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
@@ -549,21 +458,7 @@ void SimpleJob::slotError( int err, const QString & errorText )
 
 void SimpleJob::slotWarning( const QString & errorText )
 {
-    QPointer<SimpleJob> guard( this );
-    if (isInteractive() && isAutoWarningHandlingEnabled())
-    {
-        static uint msgBoxDisplayed = 0;
-        if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
-        {
-            msgBoxDisplayed++;
-            KMessageBox::information( 0L, errorText );
-            msgBoxDisplayed--;
-        }
-        // otherwise just discard it.
-    }
-
-    if ( !guard.isNull() )
-        emit warning( this, errorText );
+    emit warning( this, errorText );
 }
 
 void SimpleJob::slotInfoMessage( const QString & msg )
@@ -2581,8 +2476,7 @@ void CopyJob::statCurrentSrc()
         // if the file system doesn't support deleting, we do not even stat
         if (m_mode == Move && !KProtocolManager::supportsDeleting(m_currentSrcURL)) {
             QPointer<CopyJob> that = this;
-            if (isInteractive())
-                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyUrl()));
+            emit warning( this, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyUrl()) );
             if (that)
                 statNextSrc(); // we could use a loop instead of a recursive call :)
             return;
@@ -3686,12 +3580,6 @@ void KIO::CopyJob::setDefaultPermissions( bool b )
     d->m_defaultPermissions = b;
 }
 
-// KDE4: remove
-void KIO::CopyJob::setInteractive( bool b )
-{
-    Job::setInteractive( b );
-}
-
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 {
     //kDebug(7007) << "KIO::copy src=" << src << " dest=" << dest << endl;
@@ -3886,8 +3774,7 @@ void DeleteJob::statNextSrc()
         if (!KProtocolManager::supportsDeleting(m_currentURL)) {
             QPointer<DeleteJob> that = this;
             ++m_currentStat;
-            if (isInteractive())
-                KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyUrl()));
+            emit warning( this, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyUrl()) );
             if (that)
                 statNextSrc();
             return;

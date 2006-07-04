@@ -292,7 +292,7 @@ void ForwardingSlaveBase::connectJob(KIO::Job *job)
 {
     // We will forward the warning message, no need to let the job
     // display it itself
-    job->setInteractive(false);
+    job->setUiDelegate( 0 );
 
     // Forward metadata (e.g. modification time for put())
     job->setMetaData( allMetaData() );

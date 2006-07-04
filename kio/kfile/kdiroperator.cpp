@@ -42,6 +42,7 @@
 #include <kmenu.h>
 #include <kstdaction.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
@@ -479,8 +480,8 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
 
     if ( doIt ) {
         KIO::DeleteJob *job = KIO::del( urls, false, showProgress );
-        job->setWindow (topLevelWidget());
-        job->setAutoErrorHandlingEnabled( true, parent );
+        job->ui()->setWindow (topLevelWidget());
+        job->ui()->setAutoErrorHandlingEnabled( true );
         return job;
     }
 
@@ -534,8 +535,8 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
 
     if ( doIt ) {
         KIO::CopyJob *job = KIO::trash( urls, showProgress );
-        job->setWindow (topLevelWidget());
-        job->setAutoErrorHandlingEnabled( true, parent );
+        job->ui()->setWindow (topLevelWidget());
+        job->ui()->setAutoErrorHandlingEnabled( true );
         return job;
     }
 

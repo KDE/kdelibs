@@ -25,6 +25,8 @@
 #include <QObject>
 #include <kdelibs_export.h>
 
+class KJobUiDelegate;
+
 /**
  * The base class for all jobs.
  * For all jobs created in an application, the code looks like
@@ -77,6 +79,23 @@ public:
      */
     virtual ~KJob();
 
+    /**
+     * Attach a UI delegate to this job.
+     *
+     * If the job had another UI delegate, it's automatically deleted. Once
+     * attached to the job, the UI delegate will be deleted with the job.
+     *
+     * @param delegate the new UI delegate to use
+     * @see KJobUiDelegate
+     */
+    void setUiDelegate( KJobUiDelegate *delegate );
+
+    /**
+     * Retrieves the delegate attached to this job.
+     *
+     * @return the delegate attached to this job, or 0 if there's no such delegate
+     */
+    KJobUiDelegate *uiDelegate() const;
 
     /**
      * Starts the job asynchronously. When the job is finished,

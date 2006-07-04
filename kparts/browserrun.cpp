@@ -20,6 +20,7 @@
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
 #include <klocale.h>
 #include <kprocess.h>
@@ -131,7 +132,7 @@ void BrowserRun::scanFile()
      m_args.metaData().remove("referrer");
 
   job->addMetaData( m_args.metaData() );
-  job->setWindow( m_window );
+  job->ui()->setWindow( m_window );
   connect( job, SIGNAL( result( KJob *)),
            this, SLOT( slotBrowserScanFinished(KJob *)));
   connect( job, SIGNAL( mimetype( KIO::Job *, const QString &)),
@@ -229,7 +230,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 KUrl destURL;
                 destURL.setPath( tempFile.name() );
                 KIO::Job *job = KIO::file_copy( m_strURL, destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
-                job->setWindow (m_window);
+                job->ui()->setWindow (m_window);
                 connect( job, SIGNAL( result( KJob *)),
                          this, SLOT( slotCopyToTempFileResult(KJob *)) );
                 return Delayed; // We'll continue after the job has finished
@@ -404,8 +405,8 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
         if ( destURL.isValid() )
         {
             KIO::Job *job = KIO::copy( url, destURL );
-            job->setWindow (window);
-            job->setAutoErrorHandlingEnabled( true );
+            job->ui()->setWindow (window);
+            job->ui()->setAutoErrorHandlingEnabled( true );
         }
     }
     delete dlg;
@@ -466,7 +467,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
 void BrowserRun::slotCopyToTempFileResult(KJob *job)
 {
     if ( job->error() ) {
-        static_cast<KIO::Job*>( job )->showErrorDialog( m_window );
+	    job->uiDelegate()->showErrorMessage();
     } else {
         // Same as KRun::foundMimeType but with a different URL
         (void) (KRun::runUrl( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType, m_window ));

@@ -150,6 +150,7 @@ set(kdecore_LIB_SRCS
    kcrash.cpp
    kurl.cpp
    kjob.cpp
+   kjobuidelegate.cpp
    kglobal.cpp
    kglobalsettings.cpp
    kallocator.cpp
@@ -312,6 +313,7 @@ install( FILES
    kurl.h
    kaboutdata.h
    kjob.h
+   kjobuidelegate.h
    kcmdlineargs.h
    kconfigbackend.h
    kapplication.h

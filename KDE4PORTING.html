@@ -1309,6 +1309,13 @@ with ServiceType as QImageIOPlugins</li>
 <code>if ( !hasSubjobs() ) emitResult();</code> to emulate the old behavior that.</li>
 <li>subjobs is now private. This means you should replace subjobs.remove(job) with removeSubjob(job),
 and subjobs.isEmpty() with !hasSubjobs()</li>
+<li><code>job->showErrorDialog(QWidget*)</code> becomes <code>job->ui()->showErrorDialog()</code></li>
+<li><code>job->setAutoErrorHandlingEnabled(bool,QWidget*)</code> becomes <code>job->ui()->setAutoErrorHandlingEnabled(bool)</code></li>
+<li><code>job->isAutoErrorHandlingEnabled()</code> becomes <code>job->ui()->isAutoErrorHandlingEnabled()</code></li>
+<li><code>job->setAutoWarningHandlingEnabled(bool)</code> becomes <code>job->ui()->setAutoWarningHandlingEnabled(bool)</code></li>
+<li><code>job->isAutoWarningHandlingEnabled()</code> becomes <code>job->ui()->isAutoWarningHandlingEnabled()</code></li>
+<li><code>job->setWindow(QWidget*)</code> becomes <code>job->ui()->setWindow(QWidget*)</code></li>
+<li><code>job->window()</code> becomes <code>job->ui()->window()</code></li>
 </ul>
 
 <h4>KIO::UDSEntry</h4>

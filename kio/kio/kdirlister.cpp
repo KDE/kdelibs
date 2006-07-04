@@ -30,6 +30,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kmessagebox.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
@@ -241,7 +242,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
       lister->connectJob( job );
 
       if ( lister->d->window )
-        job->setWindow( lister->d->window );
+        job->ui()->setWindow( lister->d->window );
 
       connect( job, SIGNAL( entries( KIO::Job *, const KIO::UDSEntryList & ) ),
                this, SLOT( slotEntries( KIO::Job *, const KIO::UDSEntryList & ) ) );
@@ -566,7 +567,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
   KIO::ListJob *job = jobForUrl( urlStr );
   if ( job )
   {
-     window = job->window();
+     window = job->ui()->window();
 
      killJob( job );
      killed = true;
@@ -611,14 +612,14 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
            if ( first && kdl->d->window )
            {
               first = false;
-              job->setWindow( kdl->d->window );
+              job->ui()->setWindow( kdl->d->window );
            }
            emit kdl->started( _dir );
         }
      }
      else
      {
-        job->setWindow( window );
+        job->ui()->setWindow( window );
 
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
            kdl->jobStarted( job );
@@ -2198,7 +2199,7 @@ bool KDirLister::doMimeExcludeFilter( const QString& mime, const QStringList& fi
 void KDirLister::handleError( KIO::Job *job )
 {
   if ( d->autoErrorHandling )
-    job->showErrorDialog( d->errorParent );
+    job->uiDelegate()->showErrorMessage();
 }
 
 

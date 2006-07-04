@@ -29,6 +29,7 @@
 
 #include <qtimer.h>
 
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kinstance.h>
 #include <kmimetype.h>
@@ -226,7 +227,7 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
 {
     if ( job->error() )
     {
-        job->showErrorDialog();
+        job->uiDelegate()->showErrorMessage();
         emit canceled( job->errorString() );
     }
     else

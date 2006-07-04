@@ -37,6 +37,7 @@
 #include <kfiledialog.h>
 #include <kinstance.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
@@ -364,7 +365,7 @@ bool ReadOnlyPart::openURL( const KUrl &url )
     KUrl destURL;
     destURL.setPath( m_file );
     d->m_job = KIO::file_copy( m_url, destURL, 0600, true, false, d->m_showProgressInfo );
-    d->m_job->setWindow( widget() ? widget()->topLevelWidget() : 0 );
+    d->m_job->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
     emit started( d->m_job );
     connect( d->m_job, SIGNAL( result( KJob * ) ), this, SLOT( slotJobFinished ( KJob * ) ) );
     return true;
@@ -638,7 +639,7 @@ bool ReadWritePart::saveToURL()
        return false;
     }
     d->m_uploadJob = KIO::file_move( uploadUrl, m_url, -1, true /*overwrite*/ );
-    d->m_uploadJob->setWindow( widget() ? widget()->topLevelWidget() : 0 );
+    d->m_uploadJob->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
     connect( d->m_uploadJob, SIGNAL( result( KJob * ) ), this, SLOT( slotUploadFinished (KJob *) ) );
     return true;
   }

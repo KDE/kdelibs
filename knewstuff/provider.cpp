@@ -20,6 +20,7 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kglobal.h>
 #include <kmessagebox.h>
@@ -256,7 +257,7 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 void ProviderLoader::slotJobResult( KJob *job )
 {
   if ( job->error() ) {
-    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
+     job->uiDelegate()->showErrorMessage();
   }
 
   kDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"

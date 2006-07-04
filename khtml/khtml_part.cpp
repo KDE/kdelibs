@@ -75,6 +75,7 @@ using namespace DOM;
 #include <kstandarddirs.h>
 #include <kstringhandler.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kio/global.h>
 #include <kio/netaccess.h>
 #include <kprotocolmanager.h>
@@ -741,7 +742,7 @@ bool KHTMLPart::openURL( const KUrl &url )
   }
 
   if (widget())
-     d->m_job->setWindow(widget()->topLevelWidget());
+     d->m_job->ui()->setWindow(widget()->topLevelWidget());
   d->m_job->addMetaData(args.metaData());
 
   connect( d->m_job, SIGNAL( result( KJob* ) ),
@@ -1689,7 +1690,7 @@ void KHTMLPart::showError( KJob* job )
 	return;
 
   if ( (d->m_doc && d->m_doc->parsing()) || d->m_workingURL.isEmpty() ) // if we got any data already
-    static_cast<KIO::Job*>( job )->showErrorDialog( /*d->m_view*/ );
+    job->uiDelegate()->showErrorMessage();
   else
   {
     htmlError( job->error(), job->errorText(), d->m_workingURL );

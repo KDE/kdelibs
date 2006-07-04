@@ -21,15 +21,18 @@
 
 #include "kjob.h"
 
+#include "kjobuidelegate.h"
+
 #include <kglobal.h>
 #include <QEventLoop>
 
 class KJob::Private
 {
 public:
-    Private() : progressId( 0 ), error( KJob::NoError ),
+    Private() : uiDelegate( 0 ), progressId( 0 ), error( KJob::NoError ),
                 processedSize( 0 ), totalSize( 0 ), percentage( 0 ) {}
 
+    KJobUiDelegate *uiDelegate;
     int progressId;
     int error;
     QString errorText;
@@ -50,6 +53,24 @@ KJob::~KJob()
     delete d;
 
     KGlobal::deref();
+}
+
+void KJob::setUiDelegate( KJobUiDelegate *delegate )
+{
+    if ( delegate == 0 || delegate->setJob( this ) )
+    {
+        if ( d->uiDelegate )
+        {
+            delete d->uiDelegate;
+        }
+
+        d->uiDelegate = delegate;
+    }
+}
+
+KJobUiDelegate *KJob::uiDelegate() const
+{
+    return d->uiDelegate;
 }
 
 bool KJob::kill( KillVerbosity verbosity )

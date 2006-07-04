@@ -26,6 +26,7 @@
 #include <kinstance.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -133,7 +134,7 @@ void Engine::slotNewStuffJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error downloading new stuff descriptions." << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
+    job->uiDelegate()->showErrorMessage();
   } else {
     QString knewstuffDoc = mNewStuffJobData[ job ];
 
@@ -216,7 +217,7 @@ void Engine::slotDownloadJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error downloading new stuff payload." << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
+    job->uiDelegate()->showErrorMessage();
     return;
   }
 
@@ -376,7 +377,7 @@ void Engine::slotUploadPayloadJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error uploading new stuff payload." << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
+    job->uiDelegate()->showErrorMessage();
     emit uploadFinished( false );
     return;
   }
@@ -400,7 +401,7 @@ void Engine::slotUploadPreviewJobResult( KJob *job )
 {
   if ( job->error() ) {
     kDebug(5850) << "Error uploading new stuff preview." << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
+    job->uiDelegate()->showErrorMessage();
     emit uploadFinished( true );
     return;
   }
@@ -420,7 +421,7 @@ void Engine::slotUploadMetaJobResult( KJob *job )
   mUploadMetaFile.clear();
   if ( job->error() ) {
     kDebug(5850) << "Error uploading new stuff metadata." << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog( mParentWidget );
+    job->uiDelegate()->showErrorMessage();
     emit uploadFinished( false );
     return;
   }

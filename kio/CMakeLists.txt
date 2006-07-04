@@ -88,6 +88,7 @@ set(kiocore_STAT_SRCS
   kio/scheduler.cpp
   kio/connection.cpp
   kio/job.cpp
+  kio/jobuidelegate.cpp
   kio/global.cpp
   kio/slaveconfig.cpp
   kio/kurlpixmapprovider.cpp

@@ -40,6 +40,7 @@
 #include <kurl.h>
 #include <kstandarddirs.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
 
 #include "kio/netaccess.h"
@@ -240,7 +241,7 @@ bool NetAccess::filecopyInternal(const KUrl& src, const KUrl& target, int permis
   KIO::Job * job = move
                    ? KIO::file_move( src, target, permissions, overwrite, resume )
                    : KIO::file_copy( src, target, permissions, overwrite, resume );
-  job->setWindow (window);
+  job->ui()->setWindow (window);
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
 
@@ -256,7 +257,7 @@ bool NetAccess::dircopyInternal(const KUrl::List& src, const KUrl& target,
   KIO::Job * job = move
                    ? KIO::move( src, target )
                    : KIO::copy( src, target );
-  job->setWindow (window);
+  job->ui()->setWindow (window);
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
 
@@ -269,7 +270,7 @@ bool NetAccess::statInternal( const KUrl & url, int details, bool source,
 {
   bJobOK = true; // success unless further error occurs
   KIO::StatJob * job = KIO::stat( url, !url.isLocalFile() );
-  job->setWindow (window);
+  job->ui()->setWindow (window);
   job->setDetails( details );
   job->setSide( source );
   connect( job, SIGNAL( result (KJob *) ),
@@ -282,7 +283,7 @@ bool NetAccess::delInternal( const KUrl & url, QWidget* window )
 {
   bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::del( url );
-  job->setWindow (window);
+  job->ui()->setWindow (window);
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
   enter_loop();
@@ -294,7 +295,7 @@ bool NetAccess::mkdirInternal( const KUrl & url, int permissions,
 {
   bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::mkdir( url, permissions );
-  job->setWindow (window);
+  job->ui()->setWindow (window);
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
   enter_loop();
@@ -306,7 +307,7 @@ QString NetAccess::mimetypeInternal( const KUrl & url, QWidget* window )
   bJobOK = true; // success unless further error occurs
   m_mimetype = QLatin1String("unknown");
   KIO::Job * job = KIO::mimetype( url );
-  job->setWindow (window);
+  job->ui()->setWindow (window);
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
   connect( job, SIGNAL( mimetype (KIO::Job *, const QString &) ),
@@ -344,7 +345,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
     stream << int('X') << tempPathUrl << command;
 
     KIO::Job * job = KIO::special( tempPathUrl, packedArgs, true );
-    job->setWindow( window );
+    job->ui()->setWindow( window );
     connect( job, SIGNAL( result (KJob *) ),
              this, SLOT( slotResult (KJob *) ) );
     enter_loop();
@@ -373,7 +374,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
 bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* data,
                                         KUrl* finalURL, QMap<QString,QString>* metaData )
 {
-  job->setWindow( window );
+  job->ui()->setWindow( window );
 
   m_metaData = metaData;
   if ( m_metaData ) {

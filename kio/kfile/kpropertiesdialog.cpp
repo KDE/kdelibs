@@ -94,6 +94,7 @@ extern "C" {
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstandarddirs.h>
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kio/chmodjob.h>
 #include <kio/renamedlg.h>
@@ -1358,7 +1359,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     emit leaveModality();
     if ( job->error() )
     {
-        job->showErrorDialog( d->m_frame );
+        job->uiDelegate()->showErrorMessage();
         // Didn't work. Revert the URL to the old one
         properties->updateUrl( static_cast<KIO::CopyJob*>(job)->srcURLs().first() );
         properties->abortApplying(); // Don't apply the changes to the wrong file !
@@ -2505,7 +2506,7 @@ void KFilePermissionsPropsPlugin::slotChmodResult( KJob * job )
 {
   kDebug(250) << "KFilePermissionsPropsPlugin::slotChmodResult" << endl;
   if (job->error())
-      static_cast<KIO::Job*>( job )->showErrorDialog( d->m_frame );
+      job->uiDelegate()->showErrorMessage();
   // allow apply() to return
   emit leaveModality();
 }

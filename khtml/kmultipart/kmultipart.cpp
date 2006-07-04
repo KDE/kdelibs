@@ -23,6 +23,7 @@
 #include <kinstance.h>
 #include <kmimetype.h>
 #include <klocale.h>
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <qfile.h>
 #include <ktempfile.h>
@@ -539,7 +540,7 @@ void KMultiPart::slotJobFinished( KJob *job )
     if ( job->error() )
     {
         // TODO use khtml's error:// scheme
-        static_cast<KIO::Job*>( job )->showErrorDialog();
+        job->uiDelegate()->showErrorMessage();
         emit canceled( job->errorString() );
     }
     else

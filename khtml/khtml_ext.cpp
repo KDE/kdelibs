@@ -43,6 +43,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kfiledialog.h>
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kprocess.h>
 #include <ktoolbar.h>
@@ -927,7 +928,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
               job->setMetaData(metadata);
               job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
               job->addMetaData("cache", "cache"); // Use entry from cache if available.
-              job->setAutoErrorHandlingEnabled( true );
+              job->uiDelegate()->setAutoErrorHandlingEnabled( true );
           }
         } //end if(!saved)
     }

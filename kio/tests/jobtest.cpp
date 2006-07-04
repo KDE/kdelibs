@@ -439,7 +439,7 @@ void JobTest::moveFileNoPermissions()
     d.setPath( dest );
 
     KIO::CopyJob* job = KIO::move( u, d, 0 );
-    job->setInteractive( false ); // no skip dialog, thanks
+    job->setUiDelegate( 0 ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     QVERIFY( !ok );
@@ -472,7 +472,7 @@ void JobTest::moveDirectoryNoPermissions()
     d.setPath( dest );
 
     KIO::CopyJob* job = KIO::move( u, d, 0 );
-    job->setInteractive( false ); // no skip dialog, thanks
+    job->setUiDelegate( 0 ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     QVERIFY( !ok );

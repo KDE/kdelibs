@@ -20,6 +20,7 @@
 #include "krun.h"
 #include "kdirwatch.h"
 #include "kio/job.h"
+#include "kio/jobuidelegate.h"
 #include <kdirnotify.h>
 #include <kdebug.h>
 
@@ -46,7 +47,7 @@ void KAutoMount::slotResult( KJob * job )
 {
   if ( job->error() ) {
     emit error();
-    static_cast<KIO::Job*>( job )->showErrorDialog();
+    job->uiDelegate()->showErrorMessage();
   }
   else
   {
@@ -87,7 +88,7 @@ void KAutoUnmount::slotResult( KJob * job )
 {
   if ( job->error() ) {
     emit error();
-    static_cast<KIO::Job*>( job )->showErrorDialog();
+    job->uiDelegate()->showErrorMessage();
   }
   else
   {

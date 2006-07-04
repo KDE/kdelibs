@@ -194,7 +194,7 @@ namespace KIO
     ERR_CANNOT_ENTER_DIRECTORY = KJob::UserDefinedError + 17,
     ERR_PROTOCOL_IS_NOT_A_FILESYSTEM = KJob::UserDefinedError + 18,
     ERR_CYCLIC_LINK = KJob::UserDefinedError + 19,
-    ERR_USER_CANCELED = KJob::UserDefinedError + 20,
+    ERR_USER_CANCELED = KJob::KilledJobError,
     ERR_CYCLIC_COPY = KJob::UserDefinedError + 21,
     ERR_COULD_NOT_CREATE_SOCKET = KJob::UserDefinedError + 22, // KDE4: s/COULD_NOT/CANNOT/ or the other way round
     ERR_COULD_NOT_CONNECT = KJob::UserDefinedError + 23,

@@ -49,6 +49,7 @@
 #include <kiconloader.h>
 #include <kimageio.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
 #include <kservicetypefactory.h>
@@ -523,7 +524,7 @@ void KFileDialog::slotOk()
               it != list.end(); ++it )
         {
             job = KIO::stat( *it, !(*it).isLocalFile() );
-            job->setWindow (topLevelWidget());
+            job->ui()->setWindow (topLevelWidget());
             KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
             connect( job, SIGNAL( result(KJob *) ),
@@ -533,7 +534,7 @@ void KFileDialog::slotOk()
     }
 
     job = KIO::stat(d->url,!d->url.isLocalFile());
-    job->setWindow (topLevelWidget());
+    job->ui()->setWindow (topLevelWidget());
     d->statJobs.append( job );
     connect(job, SIGNAL(result(KJob*)), SLOT(slotStatResult(KJob*)));
 }

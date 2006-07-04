@@ -17,6 +17,7 @@ install(  FILES
   job.h
   scheduler.h
   jobclasses.h
+  jobuidelegate.h
   paste.h
   slavebase.h
   progressbase.h

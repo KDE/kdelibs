@@ -62,6 +62,7 @@
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kio/job.h>
+#include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
 #include <kglobal.h>
 #include <kcharsets.h>
@@ -1087,7 +1088,7 @@ void Loader::servePendingRequests()
             {
                 job->addMetaData( "cross-domain", part->toplevelURL().url() );
                 if (part->widget())
-                    job->setWindow (part->widget()->topLevelWidget());
+                    job->ui()->setWindow (part->widget()->topLevelWidget());
             }
         }
 

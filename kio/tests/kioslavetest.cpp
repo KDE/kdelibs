@@ -20,6 +20,7 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kstatusbar.h>
+#include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
@@ -327,7 +328,7 @@ void KioslaveTest::slotResult( KJob * _job )
 {
   if ( _job->error() )
   {
-      static_cast<KIO::Job*>(_job)->showErrorDialog();
+      job->uiDelegate()->showErrorMessage();
   }
   else if ( selectedOperation == Stat )
   {

@@ -35,6 +35,7 @@
 #include "kmimetype.h"
 #include "kmimemagic.h"
 #include "kio/job.h"
+#include "kio/jobuidelegate.h"
 #include "kio/global.h"
 #include "kio/scheduler.h"
 #include "kio/netaccess.h"
@@ -874,7 +875,7 @@ void KRun::init()
 
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL, true, 0 /* no details */, m_bProgressInfo );
-  job->setWindow (d->m_window);
+  job->ui()->setWindow (d->m_window);
   connect( job, SIGNAL( result( KJob * ) ),
            this, SLOT( slotStatResult( KJob * ) ) );
   m_job = job;
@@ -923,7 +924,7 @@ void KRun::scanFile()
   kDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
 
   KIO::TransferJob *job = KIO::get( m_strURL, false /*reload*/, m_bProgressInfo );
-  job->setWindow (d->m_window);
+  job->ui()->setWindow (d->m_window);
   connect(job, SIGNAL( result(KJob *)),
           this, SLOT( slotScanFinished(KJob *)));
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
@@ -978,7 +979,7 @@ void KRun::slotStatResult( KJob * job )
   {
     d->m_showingError = true;
     kError(7010) << this << " ERROR " << job->error() << " " << job->errorString() << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog();
+    job->uiDelegate()->showErrorMessage();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 
@@ -1037,7 +1038,7 @@ void KRun::slotScanFinished( KJob *job )
   {
     d->m_showingError = true;
     kError(7010) << this << " ERROR (stat) : " << job->error() << " " << job->errorString() << endl;
-    static_cast<KIO::Job*>( job )->showErrorDialog();
+    job->uiDelegate()->showErrorMessage();
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us" << endl;
     d->m_showingError = false;
 

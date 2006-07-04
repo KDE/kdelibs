@@ -38,13 +38,14 @@
 class Observer;
 class QTimer;
 
+
 #define KIO_COPYJOB_HAS_SETINTERACTIVE // new in 3.4. Used by kio_trash.
 
 namespace KIO {
 
+    class JobUiDelegate;
     class Slave;
     class SlaveInterface;
-
 
     /**
      * The base class for all jobs.
@@ -75,6 +76,15 @@ namespace KIO {
     public:
         virtual ~Job();
         void start() {} // Since KIO autostarts its jobs
+
+        /**
+         * Retrieves the UI delegate of this job.
+         *
+         * This method is basically a convenience for static_cast<KIO::JobUiDelegate*>(uiDelegate()).
+         *
+         * @return the delegate used by the job to communicate with the UI
+         */
+        JobUiDelegate *ui() const;
 
         /**
          * Abort this job.
@@ -121,63 +131,6 @@ namespace KIO {
                                          int method = -1) const;
 
         /**
-         * Display a dialog box to inform the user of the error given by
-         * this job.
-         * Only call if error is not 0, and only in the slot connected
-         * to result.
-         * @param parent the parent widget for the dialog box, can be 0 for
-	 *        top-level
-         */
-        void showErrorDialog( QWidget * parent = 0L );
-
-        /**
-         * Enable or disable the automatic error handling. When automatic
-         * error handling is enabled and an error occurs, then showErrorDialog()
-         * is called with the specified @p parentWidget (if supplied) , right before
-         * the emission of the result signal.
-         *
-         * The default is false.
-         *
-         * See also isAutoErrorHandlingEnabled , showErrorDialog
-         *
-         * @param enable enable or disable automatic error handling
-         * @param parentWidget the parent widget, passed to showErrorDialog.
-	 *        Can be 0 for top-level
-	 * @see isAutoErrorHandlingEnabled()
-         */
-        void setAutoErrorHandlingEnabled( bool enable, QWidget *parentWidget = 0 );
-
-        /**
-         * Returns whether automatic error handling is enabled or disabled.
-         * See also setAutoErrorHandlingEnabled .
-	 * @return true if automatic error handling is enabled
-	 * @see setAutoErrorHandlingEnabled()
-         */
-        bool isAutoErrorHandlingEnabled() const;
-
-        /**
-         * Enable or disable the automatic warning handling. When automatic
-         * warning handling is enabled and an error occurs, then a message box
-         * is displayed with the warning message
-         *
-         * The default is true.
-         *
-         * See also isAutoWarningHandlingEnabled , showErrorDialog
-         *
-         * @param enable enable or disable automatic warning handling
-         * @see isAutoWarningHandlingEnabled()
-         */
-        void setAutoWarningHandlingEnabled( bool enable );
-
-        /**
-         * Returns whether automatic warning handling is enabled or disabled.
-         * See also setAutoWarningHandlingEnabled .
-         * @return true if automatic warning handling is enabled
-         * @see setAutoWarningHandlingEnabled()
-         */
-        bool isAutoWarningHandlingEnabled() const;
-
-        /**
          * Enable or disable the message display from the job.
          *
          * The default is true.
@@ -192,19 +145,6 @@ namespace KIO {
          * @see setInteractive()
          */
         bool isInteractive() const;
-        /**
-         * Associate this job with a window given by @p window.
-	 * @param window the window to associate to
-	 * @see window()
-         */
-        void setWindow(QWidget *window);
-
-        /**
-         * Returns the window this job is associated with.
-	 * @return the associated window
-	 * @see setWindow()
-         */
-        QWidget *window() const;
 
         /**
          * Set the parent Job.
@@ -318,8 +258,6 @@ namespace KIO {
          */
         virtual void slotResult( KJob *job );
 
-        void slotFinished( KJob *job, int id );
-
         /**
          * Forward signal from subjob.
 	 * @param job the subjob
@@ -406,6 +344,7 @@ namespace KIO {
         class JobPrivate;
         JobPrivate *d;
     };
+
 
     /**
      * A simple job (one url and one command).
