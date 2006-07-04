@@ -18,7 +18,7 @@ target_link_libraries(kdeinit_kcmshell  ${KDE4_KDECORE_LIBS} kutils )
 install(TARGETS kdeinit_kcmshell  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kcmshell kdeinit_kcmshell )
-install(TARGETS kcmshell DESTINATION bin)
+install(TARGETS kcmshell DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 

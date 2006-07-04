@@ -22,7 +22,7 @@ set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURR
 
 target_link_libraries( kcookiejar  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kcookiejar DESTINATION bin)
+install(TARGETS kcookiejar DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 

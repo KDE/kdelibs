@@ -115,7 +115,7 @@ if (UNIX)
    #no ttyname on windows
    kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
    target_link_libraries(kgrantpty  kdefakes )
-   install(TARGETS kgrantpty DESTINATION bin)
+   install(TARGETS kgrantpty DESTINATION ${BIN_INSTALL_DIR} )
    
 endif (UNIX)
 
@@ -288,11 +288,12 @@ configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @
 
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  ${CMAKE_CURRENT_BINARY_DIR}/all_languages )
 
+#change the name of kde-config to kde4-config, but we can't do this before we require at least 2.4.3
 kde4_add_executable(kde-config NOGUI ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 
 target_link_libraries(kde-config ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kde-config DESTINATION bin)
+install(TARGETS kde-config DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

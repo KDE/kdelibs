@@ -10,7 +10,7 @@ kde4_add_executable(ktradertest NOGUI ktradertest.cpp)
 
 target_link_libraries(ktradertest ${KDE4_KIO_LIBS})
 
-install(TARGETS ktradertest DESTINATION bin)
+install(TARGETS ktradertest DESTINATION ${BIN_INSTALL_DIR} )
 
 if(KDE4_BUILD_TESTS)
 

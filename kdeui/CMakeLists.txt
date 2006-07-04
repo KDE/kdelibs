@@ -330,7 +330,7 @@ install( FILES
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
 MACRO_ADD_FILE_DEPENDENCIES(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
 
-install(PROGRAMS preparetips DESTINATION bin)
+install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
 
 

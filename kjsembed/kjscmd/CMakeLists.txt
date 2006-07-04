@@ -17,7 +17,7 @@ kde4_add_executable(kjscmd ${kjscmd_SRCS})
 
 target_link_libraries(kjscmd  ${KDE4_KDECORE_LIBS} kjsembed )
 
-install(TARGETS kjscmd DESTINATION bin)
+install(TARGETS kjscmd DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

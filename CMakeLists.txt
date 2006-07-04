@@ -8,17 +8,6 @@ if (WIN32)
    find_package(GNUWIN32)
 endif (WIN32)
 
-# for visual studio IDE set the path correctly for custom commands
-# maybe under windows bat-files should be generated for running apps during the build
-if(MSVC_IDE)
-  find_program(PERL_PATH perl)
-  get_filename_component(PERL_LOCATION "${PERL_PATH}" PATH)
-  file(TO_NATIVE_PATH "${PERL_LOCATION}" PERL_PATH_WINDOWS)
-  file(TO_NATIVE_PATH "${QT_BINARY_DIR}" QT_BIN_DIR_WINDOWS)
-  set(CMAKE_MSVCIDE_RUN_PATH "${PERL_PATH_WINDOWS}\;${QT_BIN_DIR_WINDOWS}"
-    CACHE STATIC "MSVC IDE Run path" FORCE)
-endif(MSVC_IDE)
-
 find_package(KDE4Internal REQUIRED)
 find_package(ZLIB REQUIRED)
 
@@ -32,6 +21,13 @@ include(KDE4Defaults)
 # make some more macros available
 include (MacroLibrary)
 
+# macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
+# so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
+macro_optional_find_package(BZip2)
+macro_optional_find_package(OpenSSL)
+macro_optional_find_package(Gettext)
+
+
 #########################################################################
 # Disallow in-source build
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
@@ -44,12 +40,6 @@ if(${generatedFileInSourceDir})
 endif(${generatedFileInSourceDir})
 #########################################################################
 
-
-# macro_optional_find_package() is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
-# so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
-macro_optional_find_package(BZip2)
-macro_optional_find_package(OpenSSL)
-macro_optional_find_package(Gettext)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
 link_directories(${KDE4_LIB_DIR})
@@ -73,6 +63,9 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAK
 # kparts depends on kio
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts ${KDE4_KIO_INCLUDES})
 
+
+# now create config headers
+
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
@@ -85,6 +78,10 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+
+
+
+# list the subdirectories
 
 add_subdirectory( cmake )
 add_subdirectory( libltdl )

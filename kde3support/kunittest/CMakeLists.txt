@@ -25,7 +25,7 @@ kde4_add_executable(kunittestmodrunner NOGUI ${kunittestmodrunner_SRCS})
 
 target_link_libraries(kunittestmodrunner ${KDE4_KDECORE_LIBS} kunittest)
 
-install(TARGETS kunittestmodrunner DESTINATION bin)
+install(TARGETS kunittestmodrunner DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

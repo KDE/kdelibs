@@ -54,7 +54,7 @@ kde4_add_executable(meinproc NOGUI ${meinproc_SRCS})
 target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
-install(TARGETS meinproc DESTINATION bin)
+install(TARGETS meinproc DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -73,7 +73,7 @@ target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} )
 install( FILES help.protocol ghelp.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES kio_help.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
 
 install( FILES move_kio_help_cache.sh  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 

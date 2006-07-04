@@ -42,7 +42,7 @@ target_link_libraries(kdeinit_kio_http_cache_cleaner  ${KDE4_KDECORE_LIBS} kio )
 install(TARGETS kdeinit_kio_http_cache_cleaner  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
-install(TARGETS kio_http_cache_cleaner DESTINATION bin)
+install(TARGETS kio_http_cache_cleaner DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 

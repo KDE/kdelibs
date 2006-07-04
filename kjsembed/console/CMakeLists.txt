@@ -24,7 +24,7 @@ kde4_add_executable(console ${console_SRCS})
 
 target_link_libraries(console  ${KDE4_KDECORE_LIBS} kjsembed )
 
-install(TARGETS console DESTINATION bin)
+install(TARGETS console DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

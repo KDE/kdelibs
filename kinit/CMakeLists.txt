@@ -19,7 +19,7 @@ kde4_add_executable(kdeinit NOGUI ${kdeinit_SRCS})
 
 target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} kparts )
 
-install(TARGETS kdeinit DESTINATION bin)
+install(TARGETS kdeinit DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -34,7 +34,7 @@ if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-install(TARGETS kdeinit_wrapper DESTINATION bin)
+install(TARGETS kdeinit_wrapper DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -45,7 +45,7 @@ kde4_add_executable(kshell NOGUI ${kshell_SRCS})
 
 target_link_libraries(kshell  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kshell DESTINATION bin)
+install(TARGETS kshell DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -56,7 +56,7 @@ kde4_add_executable(kdeinit_shutdown NOGUI ${kdeinit_shutdown_SRCS})
 
 target_link_libraries(kdeinit_shutdown  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kdeinit_shutdown DESTINATION bin)
+install(TARGETS kdeinit_shutdown DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -67,7 +67,7 @@ kde4_add_executable(kwrapper NOGUI ${kwrapper_SRCS})
 
 target_link_libraries(kwrapper  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kwrapper DESTINATION bin)
+install(TARGETS kwrapper DESTINATION ${BIN_INSTALL_DIR} )
 
 
 endif(NOT WIN32)
@@ -79,7 +79,7 @@ kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 
 target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS lnusertemp DESTINATION bin)
+install(TARGETS lnusertemp DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -92,7 +92,7 @@ kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
 target_link_libraries(kioslave  ${KDE4_KDECORE_LIBS} kio )
 
-install(TARGETS kioslave DESTINATION bin)
+install(TARGETS kioslave DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -109,7 +109,7 @@ else(WIN32)
    target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS} kdefakes)
 endif(WIN32)
 
-install(TARGETS kstartupconfig DESTINATION bin)
+install(TARGETS kstartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -122,7 +122,7 @@ kde4_add_executable(kdostartupconfig NOGUI ${kdostartupconfig_SRCS})
 
 target_link_libraries(kdostartupconfig  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kdostartupconfig DESTINATION bin)
+install(TARGETS kdostartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -146,7 +146,7 @@ target_link_libraries(kdeinit_klauncher  ${KDE4_KDECORE_LIBS} kio )
 install(TARGETS kdeinit_klauncher  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( klauncher kdeinit_klauncher )
-install(TARGETS klauncher DESTINATION bin)
+install(TARGETS klauncher DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 

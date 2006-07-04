@@ -15,7 +15,7 @@ kde4_add_executable(embed ${embed_SRCS})
 
 target_link_libraries(embed  ${KDE4_KDECORE_LIBS} kjsembed )
 
-install(TARGETS embed DESTINATION bin)
+install(TARGETS embed DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

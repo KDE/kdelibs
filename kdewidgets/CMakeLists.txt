@@ -17,7 +17,7 @@ kde4_add_executable(makekdewidgets NOGUI RUN_UNINSTALLED ${makekdewidgets_SRCS})
 
 target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS makekdewidgets DESTINATION bin)
+install(TARGETS makekdewidgets DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############

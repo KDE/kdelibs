@@ -17,7 +17,7 @@ target_link_libraries(kdeinit_kconf_update  ${KDE4_KDECORE_LIBS} )
 install(TARGETS kdeinit_kconf_update  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kconf_update kdeinit_kconf_update )
-install(TARGETS kconf_update DESTINATION bin)
+install(TARGETS kconf_update DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 

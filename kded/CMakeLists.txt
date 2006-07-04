@@ -17,7 +17,7 @@ target_link_libraries(kdeinit_kded  ${KDE4_KDECORE_LIBS} kio )
 install(TARGETS kdeinit_kded  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kded kdeinit_kded )
-install(TARGETS kded DESTINATION bin)
+install(TARGETS kded DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 
@@ -42,7 +42,7 @@ target_link_libraries(kdeinit_kbuildsycoca  ${KDE4_KDECORE_LIBS} kio )
 install(TARGETS kdeinit_kbuildsycoca  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kbuildsycoca kdeinit_kbuildsycoca )
-install(TARGETS kbuildsycoca DESTINATION bin)
+install(TARGETS kbuildsycoca DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 
@@ -54,7 +54,7 @@ kde4_add_executable(kdontchangethehostname NOGUI ${kdontchangethehostname_SRCS})
 
 target_link_libraries(kdontchangethehostname  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kdontchangethehostname DESTINATION bin)
+install(TARGETS kdontchangethehostname DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -67,7 +67,7 @@ kde4_add_executable(kde-menu NOGUI ${kde-menu_SRCS})
 
 target_link_libraries(kde-menu  ${KDE4_KDECORE_LIBS} kio)
 
-install(TARGETS kde-menu DESTINATION bin)
+install(TARGETS kde-menu DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

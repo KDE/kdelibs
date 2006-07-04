@@ -100,7 +100,7 @@ target_link_libraries(kdeinit_kaddprinterwizard  ${KDE4_KDECORE_LIBS} kdeprint_m
 install(TARGETS kdeinit_kaddprinterwizard  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kaddprinterwizard kdeinit_kaddprinterwizard )
-install(TARGETS kaddprinterwizard DESTINATION bin)
+install(TARGETS kaddprinterwizard DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### install files ###############
 

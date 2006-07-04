@@ -25,7 +25,7 @@ target_link_libraries(kdeinit_kio_uiserver  ${KDE4_KDECORE_LIBS} kio )
 install(TARGETS kdeinit_kio_uiserver  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kio_uiserver kdeinit_kio_uiserver )
-install(TARGETS kio_uiserver DESTINATION bin)
+install(TARGETS kio_uiserver DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 
@@ -37,7 +37,7 @@ kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
 target_link_libraries(kmailservice  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kmailservice DESTINATION bin)
+install(TARGETS kmailservice DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
@@ -50,7 +50,7 @@ kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 
 target_link_libraries(ktelnetservice  ${KDE4_KDECORE_LIBS} kdeui )
 
-install(TARGETS ktelnetservice DESTINATION bin)
+install(TARGETS ktelnetservice DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############
@@ -61,7 +61,7 @@ install( FILES  uiserver.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )
 
 # install the fileshareset and filesharelist scripts, they are not required on windows
 if (UNIX)
-   install(PROGRAMS fileshareset DESTINATION bin)
+   install(PROGRAMS fileshareset DESTINATION ${BIN_INSTALL_DIR} )
    # write a cmake script file which creates the symlink
    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/fileshareset ${CMAKE_INSTALL_PREFIX}/bin/filesharelist)\n")
    # and add it as post-install script to any of the installed targets, so it will be executed during "make install"
