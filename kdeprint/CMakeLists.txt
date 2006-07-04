@@ -102,7 +102,7 @@ set(kdeprint_LIB_SRCS
 
 kde4_automoc(${kdeprint_LIB_SRCS})
 
-qt4_add_dbus_adaptors(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml )
+qt4_add_dbus_adaptor(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml kmfactory.h KMFactory)
 qt4_add_dbus_interfaces(kdeprint_LIB_SRCS org.kde.KDEPrint.KMFactory.xml )
 
 kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})

@@ -14,7 +14,7 @@ main.cpp
 
 kde4_automoc(${kcookiejar_SRCS})
 
-qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml )
+qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml)
 
 kde4_add_executable( kcookiejar NOGUI ${kcookiejar_SRCS})
 
@@ -30,12 +30,13 @@ set(kded_kcookiejar_PART_SRCS
    kcookiejar.cpp
    kcookieserver.cpp
    kcookiewin.cpp
-#   kcookiejaradaptor.cpp
+   kcookiejaradaptor.cpp
 )
 
 kde4_automoc(${kded_kcookiejar_PART_SRCS})
 
-qt4_add_dbus_adaptors(kded_kcookiejar_PART_SRCS org.kde.KCookieServer.xml )
+# The adaptor is hand-edited to add QDBusMessage
+# qt4_add_dbus_adaptor(kded_kcookiejar_PART_SRCS org.kde.KCookieServer.xml kcookieserver.h KCookieServer)
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
