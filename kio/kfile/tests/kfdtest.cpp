@@ -25,7 +25,7 @@ void KFDTest::doit()
 
     if ( dlg->exec() == KDialog::Accepted )
     {
-        KMessageBox::information(0, QString::fromLatin1("You selected the file: %1").arg( dlg->selectedURL().prettyUrl() ));
+        KMessageBox::information(0, QString::fromLatin1("You selected the file: %1").arg( dlg->selectedUrl().prettyUrl() ));
     }
     
 //     qApp->quit();

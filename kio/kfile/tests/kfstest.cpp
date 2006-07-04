@@ -73,8 +73,8 @@ int main(int argc, char **argv)
         qDebug("filename=%s",name.toLatin1().constData());
     }
 
-    else if (argv1 == QLatin1String("existingURL")) {
-        KUrl url = KFileDialog::getExistingURL();
+    else if (argv1 == QLatin1String("existingUrl")) {
+        KUrl url = KFileDialog::getExistingUrl();
         qDebug("URL=%s",url.url().toLatin1().constData());
         name1 = url.url();
     }
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     }
 
 	if ( dlg->exec() == KDialog::Accepted )
-	    name1 = dlg->selectedURL().url();
+	    name1 = dlg->selectedUrl().url();
     }
 
     else if ( argv1 == QLatin1String("eventloop") )
@@ -158,16 +158,16 @@ int main(int argc, char **argv)
 //    types.append( KMimeType::mimeType( "text/html" ) );
 //    dlg.setFilterMimeType( "Filetypes:", types, types.first() );
 	if ( dlg.exec() == QDialog::Accepted ) {
-	    KUrl::List list = dlg.selectedURLs();
+	    KUrl::List list = dlg.selectedUrls();
 	    KUrl::List::ConstIterator it = list.begin();
-            qDebug("*** selectedURLs(): ");
+            qDebug("*** selectedUrls(): ");
 	    while ( it != list.end() ) {
 		name1 = (*it).url();
 		qDebug("  -> %s", name1.toLatin1().constData());
 		++it;
             }
             qDebug("*** selectedFile: %s", dlg.selectedFile().toLatin1().constData());
-            qDebug("*** selectedURL: %s", dlg.selectedURL().url().toLatin1().constData());
+            qDebug("*** selectedUrl: %s", dlg.selectedUrl().url().toLatin1().constData());
             qDebug("*** selectedFiles: ");
             QStringList l = dlg.selectedFiles();
             QStringList::Iterator it2 = l.begin();
