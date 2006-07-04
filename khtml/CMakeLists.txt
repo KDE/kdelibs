@@ -289,7 +289,7 @@ set(khtml_LIB_SRCS
    khtml_ext.cpp
    khtml_pagecache.cpp
    khtml_printsettings.cpp
-   #khtmlpartiface.cpp
+   khtml_iface.cc
    khtmlimage.cpp
    kjserrordlg.cpp
    ${khtmlxml_STAT_SRCS}
@@ -306,7 +306,7 @@ set(khtml_LIB_SRCS
 
 kde4_automoc(${khtml_LIB_SRCS})
 
-qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_part.h KHTMLPart)
+qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_iface.h KHTMLPartIface)
 
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 

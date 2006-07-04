@@ -473,7 +473,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
 
-  (void)new KHTMLPartAdaptor(this);
+  KHTMLPartIface* iface = new KHTMLPartIface(this);
+  (void)new KHTMLPartAdaptor(iface);
   for (int i = 1; ; ++i)
     if (QDBus::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
       break;

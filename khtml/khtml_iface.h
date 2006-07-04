@@ -21,22 +21,24 @@
 #define __khtml_Iface_h__
 
 #include <kurl.h>
+#include <khtml_part.h>
+#include <QtDBus/QtDBus>
 
 class KHTMLPart;
 
 /**
- * DCOP interface for KHTML
+ * D-BUS interface for KHTML
  */
-class KHTMLPartIface : public DCOPObject
+class KHTMLPartIface : public QObject
 {
-    K_DCOP
+    Q_OBJECT
 
 public:
 
     KHTMLPartIface( KHTMLPart * );
     virtual ~KHTMLPartIface();
 
-k_dcop:
+public Q_SLOTS:
     /**
      * @return the current URL
      */
@@ -211,7 +213,7 @@ k_dcop:
      * Print the contents of the current html view.
      * @param quick if true, fully automated printing, without the print dialog.
      */
-    ASYNC print( bool quick );
+    Q_NOREPLY void print( bool quick );
 
     void debugRenderTree();
     void debugDOMTree();

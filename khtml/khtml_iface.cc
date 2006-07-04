@@ -27,7 +27,7 @@
 #include <qvariant.h>
 
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
-    : DCOPObject( _part->dcopObjectId() ), part(_part)
+    : QObject( _part ), part(_part)
 {
 }
 
@@ -231,3 +231,5 @@ QString KHTMLPartIface::evalJS(const QString &script)
 void KHTMLPartIface::print( bool quick ) {
     part->view()->print( quick );
 }
+
+#include "khtml_iface.moc"
