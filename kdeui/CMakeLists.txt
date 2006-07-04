@@ -111,7 +111,6 @@ set(kdeui_LIB_SRCS
  kcmodule.cpp
  kcommand.cpp
  kwindowlistmenu.cpp
- kfontcombo.cpp
  ktip.cpp
  kdatewidget.cpp
  karrowbutton.cpp
@@ -281,7 +280,6 @@ install( FILES
  ksqueezedtextlabel.h
  kcommand.h
  kwindowlistmenu.h
- kfontcombo.h
  kaccelgen.h
  ktip.h
  kdatewidget.h
