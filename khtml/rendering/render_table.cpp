@@ -1918,10 +1918,13 @@ void RenderTableRow::detach()
     RenderContainer::detach();
 }
 
-void RenderTableRow::setStyle(RenderStyle* style)
+void RenderTableRow::setStyle(RenderStyle* newStyle)
 {
-    style->setDisplay(TABLE_ROW);
-    RenderContainer::setStyle(style);
+    if (section() && style() && style()->height() != newStyle->height())
+        section()->setNeedCellRecalc();
+
+    newStyle->setDisplay(TABLE_ROW);
+    RenderContainer::setStyle(newStyle);
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
@@ -2203,20 +2206,23 @@ short RenderTableCell::baselinePosition( bool ) const
 }
 
 
-void RenderTableCell::setStyle( RenderStyle *style )
+void RenderTableCell::setStyle( RenderStyle *newStyle )
 {
-    style->setDisplay(TABLE_CELL);
-    RenderBlock::setStyle( style );
+    if (parent() && section() && style() && style()->height() != newStyle->height())
+        section()->setNeedCellRecalc();
+
+    newStyle->setDisplay(TABLE_CELL);
+    RenderBlock::setStyle( newStyle );
     setShouldPaintBackgroundOrBorder(true);
 
-    if (style->whiteSpace() == KHTML_NOWRAP) {
+    if (newStyle->whiteSpace() == KHTML_NOWRAP) {
       // Figure out if we are really nowrapping or if we should just
       // use normal instead.  If the width of the cell is fixed, then
       // we don't actually use NOWRAP.
-      if (style->width().isFixed())
-	style->setWhiteSpace(NORMAL);
+      if (newStyle->width().isFixed())
+	newStyle->setWhiteSpace(NORMAL);
       else
-	style->setWhiteSpace(NOWRAP);
+	newStyle->setWhiteSpace(NOWRAP);
     }
 }
 
