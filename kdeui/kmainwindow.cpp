@@ -521,7 +521,7 @@ void KMainWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, co
 void KMainWindow::createGUI( const QString &xmlfile )
 {
     // disabling the updates prevents unnecessary redraws
-    setUpdatesEnabled( false );
+    //setUpdatesEnabled( false );
 
     // just in case we are rebuilding, let's remove our old client
     guiFactory()->removeClient( this );
@@ -559,7 +559,7 @@ void KMainWindow::createGUI( const QString &xmlfile )
     // do the actual GUI building
     guiFactory()->addClient( this );
 
-    setUpdatesEnabled( true );
+    //  setUpdatesEnabled( true );
     updateGeometry();
 }
 
