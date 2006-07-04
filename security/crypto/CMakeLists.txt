@@ -12,12 +12,12 @@ kde4_install_libtool_file( ${PLUGIN_INSTALL_DIR} kcm_crypto )
 
 target_link_libraries(kcm_crypto  ${KDE4_KDE3SUPPORT_LIBS} ${OPENSSL_LIBRARIES})
 
-install_targets(${PLUGIN_INSTALL_DIR} kcm_crypto )
+install(TARGETS kcm_crypto  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${XDG_APPS_DIR} FILES crypto.desktop )
+install( FILES crypto.desktop  DESTINATION  ${XDG_APPS_DIR} )
 
 
 
