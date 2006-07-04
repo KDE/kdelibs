@@ -92,7 +92,7 @@ void KMimeTypeTest::testFindByPath()
     QCOMPARE( mf->name(), QString::fromLatin1( "application/x-executable" ) );
 
     // Can't use KIconLoader since this is a "without GUI" test.
-    QString fh = locate( "icon", "crystalsvg/22x22/filesystems/folder_home.png" );
+    QString fh = KStandardDirs::locate( "icon", "crystalsvg/22x22/filesystems/folder_home.png" );
     QVERIFY( !fh.isEmpty() );
     mf = KMimeType::findByPath( fh );
     QVERIFY( mf );
@@ -211,7 +211,7 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
 
 void KMimeTypeTest::testHasServiceType1() // with services constructed with a full path (rare)
 {
-    QString katepartPath = locate( "services", "katepart.desktop" );
+    QString katepartPath = KStandardDirs::locate( "services", "katepart.desktop" );
     QVERIFY( !katepartPath.isEmpty() );
     KService katepart( katepartPath );
     QVERIFY( katepart.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
@@ -220,7 +220,7 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
     QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
 
-    QString ktexteditor_isearchPath = locate( "services", "ktexteditor_isearch.desktop" );
+    QString ktexteditor_isearchPath = KStandardDirs::locate( "services", "ktexteditor_isearch.desktop" );
     QVERIFY( !ktexteditor_isearchPath.isEmpty() );
     KService ktexteditor_isearch( ktexteditor_isearchPath );
     QVERIFY( ktexteditor_isearch.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
