@@ -181,10 +181,15 @@ QWidget* KFontAction::createWidget(QWidget* _parent)
     QToolBar *parent = qobject_cast<QToolBar *>(_parent);
     if (!parent)
         return KSelectAction::createWidget(_parent);
-    QFontComboBox *cb = new QFontComboBox( parent );
-    connect( cb, SIGNAL( activated( const QString & ) ), SIGNAL(triggered( const QString&  ) ) );
+    QFontComboBox *cb = new QFontComboBox( items(), parent );
+    connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SIGNAL(slotFontChanged( const QFont&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
     return cb;
+}
+
+void KFontAction::slotFontChanged(const QFont& f)
+{
+    triggered(f.family());
 }
 
 /*
