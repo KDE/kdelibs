@@ -24,18 +24,21 @@
 using namespace Phonon;
 
 void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
+#include "methods/abstractaudiooutput.cpp"
 #include "methods/audiodataoutput.cpp"
 }
 void MethodTest::checkAudioEffectMethods_data() { addColumns();
 #include "methods/audioeffect.cpp"
 }
 void MethodTest::checkAudioOutputMethods_data() { addColumns();
+#include "methods/abstractaudiooutput.cpp"
 #include "methods/audiooutput.cpp"
 }
 void MethodTest::checkAudioPathMethods_data() { addColumns();
 #include "methods/audiopath.cpp"
 }
 void MethodTest::checkAvCaptureMethods_data() { addColumns();
+#include "methods/abstractmediaproducer.cpp"
 #include "methods/avcapture.cpp"
 }
 void MethodTest::checkBackendMethods_data() { addColumns();
@@ -57,15 +60,18 @@ void MethodTest::checkBrightnessControlMethods_data() { addColumns();
 #include "methods/brightnesscontrol.cpp"
 }
 void MethodTest::checkByteStreamMethods_data() { addColumns();
+#include "methods/abstractmediaproducer.cpp"
 #include "methods/bytestream.cpp"
 }
 void MethodTest::checkMediaObjectMethods_data() { addColumns();
+#include "methods/abstractmediaproducer.cpp"
 #include "methods/mediaobject.cpp"
 }
 void MethodTest::checkMediaQueueMethods_data() { addColumns();
 #include "methods/mediaqueue.cpp"
 }
 void MethodTest::checkVideoDataOutputMethods_data() { addColumns();
+#include "methods/abstractvideooutput.cpp"
 #include "methods/videodataoutput.cpp"
 }
 void MethodTest::checkVideoEffectMethods_data() { addColumns();
