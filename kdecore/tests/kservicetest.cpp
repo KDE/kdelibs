@@ -29,7 +29,7 @@
 
 void KServiceTest::initTestCase()
 {
-    QString profilerc = locateLocal( "config", "profilerc" );
+    QString profilerc = KStandardDirs::locateLocal( "config", "profilerc" );
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
 
@@ -196,13 +196,13 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 
 void KServiceTest::testHasServiceType1() // with services constructed with a full path (rare)
 {
-    QString katepartPath = locate( "services", "katepart.desktop" );
+    QString katepartPath = KStandardDirs::locate( "services", "katepart.desktop" );
     QVERIFY( !katepartPath.isEmpty() );
     KService katepart( katepartPath );
     QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
 
-    QString ktexteditor_isearchPath = locate( "services", "ktexteditor_isearch.desktop" );
+    QString ktexteditor_isearchPath = KStandardDirs::locate( "services", "ktexteditor_isearch.desktop" );
     QVERIFY( !ktexteditor_isearchPath.isEmpty() );
     KService ktexteditor_isearch( ktexteditor_isearchPath );
     QVERIFY( ktexteditor_isearch.hasServiceType( "KTextEditor/Plugin" ) );

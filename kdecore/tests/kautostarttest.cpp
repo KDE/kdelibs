@@ -41,7 +41,7 @@ void KAutostartTest::testStartDetection_data()
 
 void KAutostartTest::testStartDetection()
 {
-    if ( locate("panel", "autostart").isEmpty() )
+    if ( KStandardDirs::locate("panel", "autostart").isEmpty() )
         QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
 
     QFETCH(QString, service);
@@ -66,7 +66,7 @@ void KAutostartTest::testStartInEnvDetection()
 
     KAutostart autostart("panel");
     // Let's see if panel.desktop actually exists
-    if ( locate("panel", "autostart").isEmpty() )
+    if ( KStandardDirs::locate("panel", "autostart").isEmpty() )
         QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
     else
         QCOMPARE(autostart.autostarts(env), doesAutostart);
@@ -103,7 +103,7 @@ void KAutostartTest::testStartphase()
 void KAutostartTest::testStartName()
 {
     KAutostart autostart("panel");
-    if ( locate("panel", "autostart").isEmpty() )
+    if ( KStandardDirs::locate("panel", "autostart").isEmpty() )
         QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
     QCOMPARE(autostart.visibleName(), QString("KDE Panel"));
 }
@@ -113,14 +113,14 @@ void KAutostartTest::testServiceRegistered()
     KAutostart autostart;
     QCOMPARE(KAutostart::isServiceRegistered("doesnotexist"), false);
 
-    if ( locate("panel", "autostart").isEmpty() )
+    if ( KStandardDirs::locate("panel", "autostart").isEmpty() )
         QSKIP( "panel.desktop not found, kdebase not installed", SkipSingle );
     QCOMPARE(KAutostart::isServiceRegistered("panel"), true);
 }
 
 void KAutostartTest::testRegisteringAndManipulatingANewService()
 {
-    QFile::remove(locateLocal("autostart", "doesnotexist.desktop"));
+    QFile::remove(KStandardDirs::locateLocal("autostart", "doesnotexist.desktop"));
     {
         // need to clean up the KAutostart object before QFile can remove it
         KAutostart autostart("doesnotexist");
@@ -170,5 +170,5 @@ void KAutostartTest::testRegisteringAndManipulatingANewService()
 
 void KAutostartTest::testRemovalOfNewServiceFile()
 {
-    QCOMPARE(QFile::remove(locateLocal("autostart", "doesnotexist.desktop")), true);
+    QCOMPARE(QFile::remove(KStandardDirs::locateLocal("autostart", "doesnotexist.desktop")), true);
 }

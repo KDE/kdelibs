@@ -30,7 +30,7 @@ QTEST_KDEMAIN( KStandarddirsTest, NoGUI )
 
 void KStandarddirsTest::testLocateLocal()
 {
-    const QString configLocal = locateLocal( "config", "ksomethingrc" );
+    const QString configLocal = KStandardDirs::locateLocal( "config", "ksomethingrc" );
     QCOMPARE( configLocal, QDir::homePath() + "/.kde-unit-test/share/config/ksomethingrc" );
 }
 
