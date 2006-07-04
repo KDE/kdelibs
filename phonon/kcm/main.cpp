@@ -23,7 +23,7 @@
 #include <kdeversion.h>
 #include <QHBoxLayout>
 #include <kdialog.h>
-#include "outputdevicechoice2.h"
+#include "outputdevicechoice.h"
 #include <QTabWidget>
 #include "backendselection.h"
 
