@@ -507,7 +507,7 @@ bool ReadWritePart::queryClose()
     {
       if (m_url.isEmpty())
       {
-          KUrl url = KFileDialog::getSaveURL();
+          KUrl url = KFileDialog::getSaveUrl();
           if (url.isEmpty())
             return false;
 

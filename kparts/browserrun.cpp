@@ -400,7 +400,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
     dlg->setSelection( suggestedFileName.isEmpty() ? url.fileName() : suggestedFileName );
     if ( dlg->exec() )
     {
-        KUrl destURL( dlg->selectedURL() );
+        KUrl destURL( dlg->selectedUrl() );
         if ( destURL.isValid() )
         {
             KIO::Job *job = KIO::copy( url, destURL );
