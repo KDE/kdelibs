@@ -182,8 +182,13 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const Identifier &propertyN
     if (DOM::getPropertyID(prop.latin1(), prop.length())) {
       if (propvalue.isEmpty())
         styleDecl.removeProperty(prop);
-      else
-        styleDecl.setProperty(prop,DOM::DOMString(propvalue),""); // ### is "" ok for priority?
+      else {
+        int important = propvalue.find("!important", 0, false);
+        if (important == -1)
+            styleDecl.setProperty(prop, DOM::DOMString(propvalue), "");
+        else
+            styleDecl.setProperty(prop, DOM::DOMString(propvalue.left(important - 1)), "important");
+      }
     }
     else
       // otherwise add it as a JS property
