@@ -11,10 +11,6 @@ include_directories(
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
-if (Q_WS_X11)
-   add_subdirectory( kdetrayproxy )
-endif (Q_WS_X11)
-
 add_subdirectory( findreplace )
 add_subdirectory( tests )
 add_subdirectory( liveui/tests )
@@ -241,7 +237,6 @@ install( FILES
  ktextbrowser.h
  kaction.h
  kactioncollection.h
- kactionclasses.h
  kseparatoraction.h
  ktoggleaction.h
  kselectaction.h
