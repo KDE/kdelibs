@@ -143,7 +143,7 @@ set(KDE4_DATA_INSTALL_DIR    \"${DATA_INSTALL_DIR}\")
 export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 
 install( FILES kdelibs_export.h ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
-install_files( /share/apps/cmake/modules FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/apps/cmake/modules)
 
 if(WIN32)
 install( FILES kdelibs_export_win.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
