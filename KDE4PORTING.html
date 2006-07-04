@@ -513,6 +513,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 
 <h3><a name="kdeui">Changes in kdeui</a></h3>
 <ul>
+<li>kactionclasses.h went away, use the several kxxxaction.h instead</li>
 <li>kcolordlg.h went away, use kcolordialog.h</li>
 <li>kcolorbtn.h went away, use kcolorbutton.h</li>
 <li>kdatapik.h went away, use kdatepicker.h</li>
@@ -661,6 +662,11 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>Now a subclass of QToolButton, acts in a much more standard fashion</li>
 <li>size(), setSize() replaced by iconSize() + setIconSize()</li>
 <li>Call updateIcons() whenever you change the iconSize() (the setter is non virtual :(</li>
+</ul>
+
+<h4>KAuthIcon</h4>
+<ul>
+<li>Removed since not used</li>
 </ul>
 
 <h4>KBugReport</h4>
@@ -996,7 +1002,7 @@ if needed (see the KURLDrag section)</li>
 
 <h4>KRootPixmap</h4>
 <ul>
-<li>checkAvailable() -&gt; isAvailable()</li>
+<li>Removed since not used</li>
 </ul>
 
 <h4>KSelectAction</h4>
@@ -1009,6 +1015,11 @@ if needed (see the KURLDrag section)</li>
 <h4>KSeparator</h4>
 <ul>
 <li>KSeparator now uses Qt::Vertical and Qt::Horizontal rather then QFrame's HFrame and VFrame.</li>
+</ul>
+
+<h4>KSharedPixmap</h4>
+<ul>
+<li>Removed since not used</li>
 </ul>
 
 <h4>KStatusBar</h4>
