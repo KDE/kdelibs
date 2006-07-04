@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("preview")) {
-        KUrl u =  KFileDialog::getImageOpenURL();
+        KUrl u =  KFileDialog::getImageOpenUrl();
         qDebug("filename=%s", u.url().toLatin1().constData());
     }
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("save")) {
-        KUrl u = KFileDialog::getSaveURL();
+        KUrl u = KFileDialog::getSaveUrl();
 //        QString(QDir::homePath() + QLatin1String("/testfile")),
 //        QString(), 0L);
         name1 = u.url();
