@@ -81,7 +81,6 @@ set(kdeui_LIB_SRCS
  kpagewidgetmodel.cpp
  kaboutdialog.cpp
  kmessagebox.cpp
- kdualcolorbutton.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
  k3iconview.cpp
@@ -233,7 +232,6 @@ install( FILES
  kpagewidgetmodel.h
  kaboutdialog.h
  kmessagebox.h
- kdualcolorbutton.h
  ktextbrowser.h
  kaction.h
  kactioncollection.h
