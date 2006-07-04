@@ -28,12 +28,12 @@
 #include "kfontaction.h"
 
 #include <QToolBar>
+#include <QFontComboBox>
 
 #include <kdebug.h>
 #include <klocale.h>
 
 #include <kfontdialog.h>
-#include <kfontcombo.h>
 
 KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, const QString& name )
   : KSelectAction( parent, name )
@@ -181,14 +181,14 @@ QWidget* KFontAction::createWidget(QWidget* _parent)
     QToolBar *parent = qobject_cast<QToolBar *>(_parent);
     if (!parent)
         return KSelectAction::createWidget(_parent);
-    KFontCombo *cb = new KFontCombo( items(), parent );
+    QFontComboBox *cb = new QFontComboBox( parent );
     connect( cb, SIGNAL( activated( const QString & ) ), SIGNAL(triggered( const QString&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
     return cb;
 }
 
 /*
- * Maintenance note: Keep in sync with KFontCombo::setCurrentFont()
+ * Maintenance note: Keep in sync with QFontComboBox::setCurrentFont()
  */
 void KFontAction::setFont( const QString &family )
 {
