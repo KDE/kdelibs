@@ -276,7 +276,9 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   icon.addPixmap( pixmap, QIcon::Normal, QIcon::On );
   setWindowIcon( icon );
 
-  QVBoxLayout *vbox = new QVBoxLayout( this );
+  QFrame *frame = new QFrame( this );
+  setMainWidget( frame );
+  QVBoxLayout *vbox = new QVBoxLayout( frame );
   vbox->setMargin( marginHint() );
   vbox->setSpacing( spacingHint() );
 
@@ -307,7 +309,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
     pl->addWidget( titlePane, 100 );
   }
 
-  KHBox *hbox = new KHBox( this );
+  KHBox *hbox = new KHBox;
   hbox->setSpacing( 0 );
   hbox->setFrameStyle( QFrame::Panel | QFrame::Sunken );
   vbox->addWidget( hbox );
