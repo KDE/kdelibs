@@ -25,12 +25,12 @@
 #include <qvector.h>
 
 #include "kcompletion.h"
-#include "kcompletion_private.h"
+#include "kcompletion_p.h"
 
 class KCompletionPrivate
 {
 public:
-    // not a member to avoid #including kcompletion_private.h from kcompletion.h
+    // not a member to avoid #including kcompletion_p.h from kcompletion.h
     // list used for nextMatch() and previousMatch()
     KCompletionMatchesWrapper matches;
 };

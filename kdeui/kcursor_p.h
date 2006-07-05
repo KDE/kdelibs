@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCURSOR_PRIVATE_H
-#define KCURSOR_PRIVATE_H
+#ifndef KCURSOR_P_H
+#define KCURSOR_P_H
 
 #include <QCursor>
 #include <QHash>

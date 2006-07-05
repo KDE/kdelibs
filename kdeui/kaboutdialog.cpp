@@ -41,7 +41,7 @@
 #include <kurllabel.h>
 #include <kaboutdialog.h>
 #include <kiconloader.h>
-#include <kaboutdialog_private.h>
+#include <kaboutdialog_p.h>
 #include <kdebug.h>
 #include <ktextedit.h>
 
@@ -55,7 +55,7 @@ template class QList<KAboutContributor *>;
 // ##############################################################
 // MOC OUTPUT FILES:
 #include "kaboutdialog.moc"
-#include "kaboutdialog_private.moc"
+#include "kaboutdialog_p.moc"
 // ##############################################################
 
 class KAboutTabWidget : public QTabWidget

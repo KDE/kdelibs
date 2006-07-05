@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KCURSOR_H
-#define _KCURSOR_H
+#ifndef KCURSOR_H
+#define KCURSOR_H
 
 #include <qcursor.h>
 #include <kdelibs_export.h>
@@ -40,7 +40,7 @@ class QWidget;
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KCursor 
+class KDEUI_EXPORT KCursor
 {
 public:
     /**

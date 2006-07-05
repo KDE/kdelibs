@@ -32,8 +32,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kcursor.h>
-
-#include "kcursor_private.h"
+#include "kcursor_p.h"
 
 KCursor::KCursor()
 {
@@ -430,4 +429,4 @@ void KCursorPrivate::slotWidgetDestroyed( QObject* o )
     delete filter;
 }
 
-#include "kcursor_private.moc"
+#include "kcursor_p.moc"

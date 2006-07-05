@@ -25,7 +25,7 @@
 #include <QPixmap>
 
 #include <kaboutapplication.h>
-#include <kaboutdialog_private.h>
+#include <kaboutdialog_p.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kactivelabel.h>
