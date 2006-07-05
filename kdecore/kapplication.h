@@ -308,7 +308,7 @@ public:
   /**
    * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
-   * @deprecated Use KMath::random()
+   * @deprecated Use KRandom::random()
    */
   static inline KDE_DEPRECATED int random() { return KRandom::random(); }
 
