@@ -68,7 +68,7 @@ public:
      * Find an implementation of the given @p serviceType,
      * and start it, to use its DBus interface.
      * The default implementation uses KServiceTypeTrader to find the preferred Application,
-     * and then starts it using kapp->startService...
+     * and then starts it using KToolInvocation::startService...
      *
      * However applications (like kontact) can reimplement this method, to provide
      * an in-process way of loading the implementation for this service type.
