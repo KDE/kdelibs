@@ -38,71 +38,35 @@
 
 using namespace KIO;
 
-SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool _modal ) :
-  KDialog ( parent)
+SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool _modal )
+  : KDialog ( parent ), modal( _modal )
 {
-  setModal(_modal);
-  modal = _modal;
+  setCaption( i18n( "Information" ) );
+  setModal( _modal );
+
+  if ( !_multi ) {
+    setButtons( Cancel );
+  } else {
+    setButtons( Cancel | User1 | User2 );
+
+    setButtonText( User1, i18n( "Skip" ) );
+    connect( this, SIGNAL( user1Clicked() ), SLOT( b1Pressed() ) );
+
+    setButtonText( User2, i18n( "AutoSkip" ) );
+    connect( this, SIGNAL( user2Clicked() ), SLOT( b2Pressed() ) );
+  }
+
+  connect( this, SIGNAL( cancelClicked() ), SLOT( b0Pressed() ) );
 
   // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
   // i.e. in a separate process.
 #ifdef Q_WS_X11 //FIXME(E): Implement for QT Embedded, mac & win32
-  if (modal)
+  if ( modal )
     KWin::setState( winId(), NET::StaysOnTop );
 #endif
 
-  b0 = b1 = b2 = 0L;
+  setMainWidget( new QLabel( _error_text, this ) );
 
-  setCaption( i18n( "Information" ) );
-
-  b0 = new KPushButton( KStdGuiItem::cancel(), this );
-  connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
-
-  if ( _multi )
-  {
-    b1 = new QPushButton( i18n( "Skip" ), this );
-    connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
-
-    b2 = new QPushButton( i18n( "Auto Skip" ), this );
-    connect(b2, SIGNAL(clicked()), this, SLOT(b2Pressed()));
-  }
-
-  QVBoxLayout *vlayout = new QVBoxLayout( this );
-  vlayout->setMargin( 10 );
-  vlayout->setSpacing( 0 );
-  // vlayout->addStrut( 360 );	makes dlg at least that wide
-
-  QLabel * lb = new QLabel( _error_text, this );
-  lb->setFixedHeight( lb->sizeHint().height() );
-  lb->setMinimumWidth( lb->sizeHint().width() );
-  vlayout->addWidget( lb );
-
-  vlayout->addSpacing( 10 );
-
-  QHBoxLayout* layout = new QHBoxLayout();
-  vlayout->addLayout( layout );
-  if ( b0 )
-  {
-    b0->setDefault( true );
-    b0->setFixedSize( b0->sizeHint() );
-    layout->addWidget( b0 );
-    layout->addSpacing( 5 );
-  }
-  if ( b1 )
-  {
-    b1->setFixedSize( b1->sizeHint() );
-    layout->addWidget( b1 );
-    layout->addSpacing( 5 );
-  }
-  if ( b2 )
-  {
-    b2->setFixedSize( b2->sizeHint() );
-    layout->addWidget( b2 );
-    layout->addSpacing( 5 );
-  }
-
-  vlayout->addStretch( 10 );
-  vlayout->activate();
   resize( sizeHint() );
 }
 

@@ -42,10 +42,6 @@ public:
   ~SkipDlg();
 
 protected:
-  QPushButton *b0;
-  QPushButton *b1;
-  QPushButton *b2;
-
   bool modal;
 
 public Q_SLOTS:
