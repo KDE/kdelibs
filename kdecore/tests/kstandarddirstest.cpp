@@ -130,6 +130,7 @@ void KStandarddirsTest::testFindDirs()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed", SkipAll );
 
+    const QString t = KStandardDirs::locateLocal("data", "kconf_update/" );
     const QStringList dirs = KGlobal::dirs()->findDirs( "data", "kconf_update" );
     QVERIFY( !dirs.isEmpty() );
     QVERIFY( dirs.count() >= 2 ); // at least local and global
