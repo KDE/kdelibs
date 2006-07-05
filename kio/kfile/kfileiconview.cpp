@@ -47,7 +47,7 @@
 
 #define DEFAULT_PREVIEW_SIZE 60
 #define DEFAULT_SHOW_PREVIEWS false
-#define DEFAULT_VIEW_MODE "SmallColumns"
+#define DEFAULT_VIEW_MODE "KFileIconView_SmallColumns"
 
 KFileIconViewItem::~KFileIconViewItem()
 {
@@ -115,7 +115,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 {
 
     setViewName( i18n("Icon View") );
-
+    setItemTextPos( Q3IconView::Right );
     setResizeMode( Adjust );
     setMaxItemWidth( 300 );
     setWordWrapIconText( false );
@@ -480,6 +480,8 @@ void KFileIconView::slotSelectionChanged()
 
 void KFileIconView::slotSmallColumns()
 {
+    kDebug() << "slotSmallColumns " << kBacktrace() << endl;
+
     // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!
@@ -503,6 +505,7 @@ void KFileIconView::slotSmallColumns()
 
 void KFileIconView::slotLargeRows()
 {
+    kDebug() << "slotLargeRows " << kBacktrace() << endl;
     // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!

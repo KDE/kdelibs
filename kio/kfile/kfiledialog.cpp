@@ -997,9 +997,6 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     ops->setViewConfig(d->viewConfigGroup);
     readConfig(d->viewConfigGroup);
     setSelection(d->selection);
-
-
-dumpObjectTree ();
 }
 
 void KFileDialog::initSpeedbar()
@@ -1638,7 +1635,6 @@ void KFileDialog::readConfig( KConfigGroup *configGroup)
 {
     if ( !configGroup )
         return;
-
 
     ops->readConfig(configGroup);
 
