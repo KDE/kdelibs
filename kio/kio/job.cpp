@@ -167,7 +167,7 @@ bool Job::doKill()
   const QList<KJob *>::const_iterator end = subjobs().end();
   for ( ; it != end ; ++it )
     (*it)->kill( KJob::Quietly );
-  subjobs().clear();
+  clearSubjobs();
 
   return true;
 }

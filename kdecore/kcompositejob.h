@@ -77,8 +77,13 @@ protected:
      *
      * @return the full list of sub jobs
      */
-    QList<KJob*> subjobs();
+    const QList<KJob*> &subjobs() const;
 
+    /**
+     * Clears the list of subjobs.
+     */
+    void clearSubjobs();
+    
 protected Q_SLOTS:
     /**
      * Called whenever a subjob finishes.

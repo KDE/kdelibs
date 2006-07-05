@@ -73,9 +73,14 @@ bool KCompositeJob::hasSubjobs()
     return !d->subjobs.isEmpty();
 }
 
-QList<KJob*> KCompositeJob::subjobs()
+const QList<KJob*> &KCompositeJob::subjobs() const
 {
     return d->subjobs;
+}
+
+void KCompositeJob::clearSubjobs()
+{
+    d->subjobs.clear();
 }
 
 void KCompositeJob::slotResult( KJob *job )
