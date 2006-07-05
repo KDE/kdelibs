@@ -40,7 +40,7 @@ KJobUiDelegate::KJobUiDelegate()
 
 KJobUiDelegate::~KJobUiDelegate()
 {
-
+    delete d;
 }
 
 bool KJobUiDelegate::setJob( KJob *job )
