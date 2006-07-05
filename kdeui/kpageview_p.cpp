@@ -196,14 +196,15 @@ KPageTabbedView::KPageTabbedView( QWidget *parent )
 
   setFrameShape( NoFrame );
 
-  QVBoxLayout *layout = new QVBoxLayout( this );
+  QGridLayout *layout = new QGridLayout( this );
   layout->setMargin( 0 );
   layout->setSpacing( 0 );
 
   mTabBar = new QTabBar( this );
   connect( mTabBar, SIGNAL( currentChanged( int ) ), this, SLOT( currentPageChanged( int ) ) );
 
-  layout->addWidget( mTabBar, Qt::AlignBottom );
+  layout->addWidget( mTabBar, 0, 0, Qt::AlignBottom );
+  layout->setColumnStretch( 1, 1 );
 }
 
 void KPageTabbedView::setModel( QAbstractItemModel *model )
