@@ -30,8 +30,11 @@ class QDateTime;
 class QDate;
 class QTime;
 class QPoint;
+class QPointF;
 class QSize;
+class QSizeF;
 class QRect;
+class QRectF;
 class QRegion;
 class KUrl;
 class QStringList;
@@ -294,6 +297,13 @@ class KDECORE_EXPORT kdbgstream {
 
     /**
      * Prints the given value.
+     * @param point the point to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QPointF& point );
+
+    /**
+     * Prints the given value.
      * @param size the QSize to print
      * @return this stream
      */
@@ -301,10 +311,24 @@ class KDECORE_EXPORT kdbgstream {
 
     /**
      * Prints the given value.
+     * @param size the QSize to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QSizeF& size );
+
+    /**
+     * Prints the given value.
      * @param rect the QRect to print
      * @return this stream
      */
     kdbgstream& operator << ( const QRect& rect);
+
+    /**
+     * Prints the given value.
+     * @param rect the QRect to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QRectF& rect);
 
     /**
      * Prints the given value.

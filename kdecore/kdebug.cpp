@@ -517,18 +517,35 @@ kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
         d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
     return *this;
 }
+kdbgstream& kdbgstream::operator<<( const QPointF& p ) {
+    if ( d->print )
+        d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
+    return *this;
+}
 kdbgstream& kdbgstream::operator<<( const QSize& s ) {
     if ( d->print )
         d->output += QString::fromAscii("[%1x%2]").arg(s.width())
 	                 .arg(s.height());
     return *this;
 }
-static QString s_rectString(const QRect& r)
+kdbgstream& kdbgstream::operator<<( const QSizeF& s ) {
+    if ( d->print )
+        d->output += QString::fromAscii("[%1x%2]").arg(s.width())
+                         .arg(s.height());
+    return *this;
+}
+template <class Rect>
+static QString s_rectString(const Rect& r)
 {
     QString str = QString::fromAscii("[%1,%2 - %3x%4]");
     return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
 }
 kdbgstream& kdbgstream::operator<<( const QRect& r ) {
+    if( d->print )
+        d->output += s_rectString( r );
+    return *this;
+}
+kdbgstream& kdbgstream::operator<<( const QRectF& r ) {
     if( d->print )
         d->output += s_rectString( r );
     return *this;
