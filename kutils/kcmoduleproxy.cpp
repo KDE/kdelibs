@@ -36,6 +36,7 @@
 #include <QX11EmbedWidget>
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
+#include <fixx11h.h>
 #endif
 
 #include <kapplication.h>
@@ -53,7 +54,6 @@
 
 #include <kvbox.h>
 
-#include <fixx11h.h>
 #include <kcmoduleloader.h>
 
 #include "kcmoduleproxy.h"
@@ -181,7 +181,7 @@ KCModule * KCModuleProxy::realModule() const
 		d->isInitialized = true;
 	}
 
-	if( QDBus::sessionBus().registerService( d->dbusService ) 
+	if( QDBus::sessionBus().registerService( d->dbusService )
 	    || d->bogusOccupier )
 	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
