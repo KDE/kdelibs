@@ -16,8 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kapplication.h"
-#include <stdio.h>
+#include <kapplication.h>
 
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -27,15 +26,16 @@
 int
 main(int argc, char *argv[])
 {
-   KAboutData about("kapptest", "kapptest", "version");
+   KAboutData about("ktoolinvocationtest", "ktoolinvocationtest", "version");
    KCmdLineArgs::init(argc, argv, &about);
 
    KApplication a;
 
    QString error;
-   QString dcopService;
+   QString dbusService;
    int pid;
-   KToolInvocation::startServiceByDesktopName( "kaddressbook", QString(), &error, &dcopService, &pid );
-   kDebug() << "Started. error=" << error << " dcopService=" << dcopService << " pid=" << pid << endl;
-   a.exec();
+   KToolInvocation::startServiceByDesktopPath( "kio_uiserver.desktop", QString(), &error, &dbusService, &pid );
+   kDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid << endl;
+
+   return 0;
 }

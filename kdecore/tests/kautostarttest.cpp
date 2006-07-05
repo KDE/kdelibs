@@ -77,7 +77,7 @@ void KAutostartTest::testStartphase_data()
     QTest::addColumn<QString>("service");
     QTest::addColumn<int>("startPhase");
     QTest::newRow("kicker") << "panel" << (int)KAutostart::BaseDesktop;
-    QTest::newRow("klipper") << "klipper" << (int)KAutostart::DesktopServices;
+    QTest::newRow("klipper") << "klipper" << (int)KAutostart::Applications;
     QTest::newRow("khotkeys") << "ktip" << (int)KAutostart::Applications;
     QTest::newRow("does not exist") << "doesnotexist"
                                     << (int)KAutostart::Applications;
@@ -87,14 +87,6 @@ void KAutostartTest::testStartphase()
 {
     QFETCH(QString, service);
     QFETCH(int, startPhase);
-
-    QEXPECT_FAIL("kicker",
-                 "Waiting for Lubos to finish the new autostart levels",
-                 Continue);
-
-    QEXPECT_FAIL("klipper",
-                 "Waiting for Lubos to finish the new autostart levels",
-                 Continue);
 
     KAutostart autostart(service);
     QCOMPARE((int)autostart.startPhase(), startPhase);
