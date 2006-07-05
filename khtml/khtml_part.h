@@ -222,7 +222,12 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
-  Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
+
+  /*
+   *
+   * Don't add setOnlyLocalReferences here. It shouldn't be accessible via DCOP.
+   *
+   **/
   Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
   Q_PROPERTY( bool modified READ isModified )
 
