@@ -29,6 +29,7 @@
 #include "kdebug.h"
 #include "kglobal.h"
 #include "klocale.h"
+#include "kstandarddirs.h"
 #include "kstringhandler.h"
 
 #include <qcolor.h>
@@ -268,6 +269,11 @@ QString KConfigBase::readEntry( const char *pKey,
           QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
 
           QString result;
+          QByteArray oldpath = qgetenv( "PATH" );
+          QByteArray newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
+          newpath += KPATH_SEPARATOR;
+          newpath += oldpath;
+          setenv( "PATH", newpath, 1/*overwrite*/ );
           FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
           if (fs)
           {
@@ -277,6 +283,7 @@ QString KConfigBase::readEntry( const char *pKey,
              }
              pclose(fs);
           }
+          setenv( "PATH", oldpath, 1/*overwrite*/ );
           aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
         } else if( (aValue)[nDollarPos+1] != '$' ) {
           int nEndPos = nDollarPos+1;
