@@ -43,7 +43,7 @@ public:
   static bool supports( KFileItemList _items );
 
 private Q_SLOTS:
-  void currentPageChanged( QWidget* );
+  void currentPageChanged( KPageWidgetItem *, KPageWidgetItem * );
 
 private:
   KFileMetaPreview* preview;
