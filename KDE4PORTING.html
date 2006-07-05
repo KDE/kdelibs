@@ -579,17 +579,17 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 </ul>
 
 <h4><a name="KAction">KAction</a></h4>
-<p>Making KAction a subclass of QAction brings KDE more into line with the Qt way of creating user interfaces, improves accessibility, and removes code duplication.</p>
+<p>Making KAction a subclass of QAction (actually QWidgetAction) brings KDE more into line with the Qt way of creating user interfaces, improves accessibility, and removes code duplication.</p>
 <p>QAction in Qt4 is a true 1st class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
-<li>KAction is now a subclass of QAction.</li>
+<li>KAction is now a subclass of QWidgetAction.</li>
 <li>Don't use setIconSet() anymore, use setIcon(KIcon(iconName)) instead</li>
 <li>New constructors more closely model QAction (old constructors deprecated)</li>
 <li>Constructors now take a QString instead of const char* for action names</li>
 <li>You should never rename the objectName() of a KAction - as KActionCollection holds a map, and it is not told of name changes (thus the setObjectName() functions are made private)</li>
 <li>"icon" property is now a QIcon, use iconName() / setIconName() for KDE named icons</li>
 <li>KShortcuts supported by shortcut/setShortcut (hides QAction's shortcut/setShortcut). Automatically sets alternateShortcuts() in QAction.</li>
-<li>plug(), unplug() deprecated - use QWidget::addAction() and QWidget::removeAction() instead (To provide custom widgets for toolbars, provide a QActionWidgetFactory to setToolBarWidgetFactory() (i use multiple inheritance on that action)</li>
+<li>plug(), unplug() deprecated - use QWidget::addAction() and QWidget::removeAction() instead (To provide custom widgets for toolbars, use the facilities from QWidgetAction, the parent class)</li>
 <li>containerCount(), container() deprecated - use associatedWidgets() instead</li>
 <li>activated(), activated(int) signals deprecated - use triggered() signal instead</li>
 <li>activate() is now trigger(), as in QAction</li>
@@ -1179,8 +1179,7 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 
 <h4>KWidgetAction</h4>
 <ul>
-<li>deprecated, instead assign a QActionWidgetFactory to a {K|Q}Action so the action can be plugged into mutiple toolbars.</li>
-<li>Renamed to K3WidgetAction</li>
+<li>Removed, instead use a KAction or QWidgetAction and utilise its widget-setting capabilities.</li>
 </ul>
 
 <h4>KWizard</h4>
@@ -1427,9 +1426,9 @@ to pass a KUrl to most methods instead.</li>
 <ul>
 <li>KTrader has been split up into two classes: KServiceTypeTrader and KMimeTypeTrader.</li>
 <li>So KTrader::query() should be ported to KMimeTypeTrader::query() when it's about mimetypes
-(finding the application or part for a give mimetype), and to KServiceTypeTrader::query() when 
+(finding the application or part for a give mimetype), and to KServiceTypeTrader::query() when
 it's about pure service types (plugins, kcmodules, etc.)</li>
-<li>In other terms, KTrader::query(1 or 2 args) -&gt; KServiceTypeTypeTrader::query and 
+<li>In other terms, KTrader::query(1 or 2 args) -&gt; KServiceTypeTypeTrader::query and
                     KTrader::query(4 args but the last one was always QString::null) -&gt; KMimeTypeTrader::query</li>
 <li>In both cases, query() now returns KService::List instead of an OfferList, adjust the type of the variable</li>
 <li>Constraints like "'RenameDlg/Plugin' in ServiceTypes" should be turned into

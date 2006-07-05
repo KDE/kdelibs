@@ -34,7 +34,6 @@ set(kdeui_LIB_SRCS
  ktoolbarpopupaction.cpp
  ktoggletoolbaraction.cpp
  ktogglefullscreenaction.cpp
- k3widgetaction.cpp
  kpastetextaction.cpp
  kseparatoraction.cpp
  kurllabel.cpp
@@ -245,7 +244,6 @@ install( FILES
  ktoolbarpopupaction.h
  ktoggletoolbaraction.h
  ktogglefullscreenaction.h
- k3widgetaction.h
  kpastetextaction.h
  khelpmenu.h
  kcmodule.h
