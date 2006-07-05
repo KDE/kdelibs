@@ -19,7 +19,6 @@ kio/kio/configure.in.in
 kio/misc/kpac/configure.in.in
 kio/kssl/configure.in.in
 kdesu/configure.in.in
-kspell2/plugins/configure.in.in
 kdecore/configure.in.in
 kdecore/malloc/configure.in.in
 khtml/configure.in.in
