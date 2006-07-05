@@ -175,7 +175,7 @@ void KDialog::Private::appendButton( ButtonCode key, const KGuiItem &item )
   if ( role == QDialogButtonBox::InvalidRole )
     return;
 
-  KPushButton *button = new KPushButton( item, mButtonBox );
+  KPushButton *button = new KPushButton( item );
   mButtonBox->addButton( button, role );
 
   mButtonList.insert( key, button );
@@ -229,8 +229,10 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   if ( buttonMask & Details )
     buttonMask &= ~Default;
 
-  if ( buttonMask == 0 )
+  if ( buttonMask == None ) {
+    d->setupLayout();
     return; // When we want no button box
+  }
 
   d->mEscapeButton = (buttonMask & Cancel) ? Cancel : Close;
   d->mButtonBox = new QDialogButtonBox( this );
@@ -263,6 +265,8 @@ void KDialog::setButtons( ButtonCodes buttonMask )
     d->appendButton( Details, QString() );
     setDetails( false );
   }
+
+  d->setupLayout();
 }
 
 

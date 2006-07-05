@@ -134,6 +134,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 
     enum ButtonCode
     {
+      None    = 0x00000000,
       Help    = 0x00000001, ///< Show Help button. (this button wil run the help set with setHelp)
       Default = 0x00000002, ///< Show Default button.
       Ok      = 0x00000004, ///< Show Ok button. (this button accept the dialog)
@@ -147,7 +148,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       User1   = 0x00001000, ///< Show User defined button 1.
       User2   = 0x00002000, ///< Show User defined button 2.
       User3   = 0x00004000, ///< Show User defined button 3.
-      NoDefault             ///< Used when specifying a default button; indicates that no button should be marked by default. 
+      NoDefault = 0x00008000 ///< Used when specifying a default button; indicates that no button should be marked by default. 
     };
     Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
 
