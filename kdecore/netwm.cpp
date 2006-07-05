@@ -3326,7 +3326,7 @@ void NETWinInfo::setStartupId(const char* id) {
         strlen( p->startup_id ));
 }
 
-void NETWinInfo::setOpacity(long opacity) {
+void NETWinInfo::setOpacity(unsigned long opacity) {
     if (role != Client) return;
 
     p->opacity = opacity;
@@ -4326,7 +4326,7 @@ const char* NETWinInfo::startupId() const {
     return p->startup_id;
 }
 
-long NETWinInfo::opacity() const {
+unsigned long NETWinInfo::opacity() const {
     return p->opacity;
 }
 

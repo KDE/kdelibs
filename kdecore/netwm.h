@@ -1225,12 +1225,12 @@ public:
     /**
      * Sets opacity (0 = transparent, 0xffffffff = opaque ) on the window.
      */
-    void setOpacity( long opacity );
+    void setOpacity( unsigned long opacity );
 
     /**
      * Returns the opacity of the window.
      */
-    long opacity() const;
+    unsigned long opacity() const;
 
     /**
      * Sets actions that the window manager allows for the window.
