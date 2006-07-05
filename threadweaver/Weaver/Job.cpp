@@ -105,6 +105,11 @@ void Job::execute(Thread *th)
     debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
 }
 
+int Job::priority () const
+{
+  return 0;
+}
+
 void Job::freeQueuePolicyResources()
 {
     for ( int index = 0; index < m_queuePolicies->size(); ++index )

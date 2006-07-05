@@ -47,6 +47,7 @@ namespace ThreadWeaver {
     class Job : public QObject
     {
         Q_OBJECT
+
     public:
         friend class JobRunHelper;
 
@@ -64,6 +65,22 @@ namespace ThreadWeaver {
             Do not overload this method to create your own Job
             implementation, overload run(). */
         virtual void execute(Thread*);
+
+      /** The queueing priority of the job. 
+	  Jobs will be sorted by their queueing priority when
+	  enqueued. A higher queueing priority will place the job in
+	  front of all lower-priority jobs in the queue. 
+
+	  Note: A higher or lower priority does not influence queue
+	  policies. For example, a high-priority job that has an
+	  unresolved dependency will not be executed, which means an
+	  available lower-priority job will take precedence. 
+
+	  The default implementation returns zero. Only if this method
+	  is overloaded for some job classes, priorities will
+	  influence the execution order of jobs. 
+      */
+      virtual int priority() const;
 
         /** Return whether the Job finished successfully or not.
             The default implementation simply returns true. Overload in

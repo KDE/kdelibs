@@ -159,7 +159,18 @@ void WeaverImpl::enqueue(Job* job)
     {
       QMutexLocker l (m_mutex);
       job->aboutToBeQueued ( this );
-      m_assignments.append(job);
+      // find positiEon for insertion:;
+      // FIXME optimize: factor out queue nanagement into own class,
+      // and use binary search for insertion (not done yet because
+      // refactoring already planned):
+      int i = m_assignments.size();
+      if (i > 0)
+	{
+	  while ( i > 0 && m_assignments.at(i - 1)->priority() < job->priority() ) --i;
+	  m_assignments.insert( i, (job) );
+	} else {
+	  m_assignments.append (job);
+	}
     }
   assignJobs();
 }
@@ -374,7 +385,8 @@ void WeaverImpl::dumpJobs()
   debug( 0, "WeaverImpl::dumpJobs: current jobs:\n" );
   for ( int index = 0; index < m_assignments.size(); ++index )
     {
-      debug( 0, "--> %4i: %p %s\n", index, m_assignments.at( index ),
-	     m_assignments.at( index )->metaObject()->className() );
+      debug( 0, "--> %4i: %p %s (priority %i)\n", index, m_assignments.at( index ),
+	     m_assignments.at( index )->metaObject()->className(),
+	     m_assignments.at(index)->priority() );
     }
 }

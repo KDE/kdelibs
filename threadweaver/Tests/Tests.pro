@@ -1,14 +1,8 @@
-TEMPLATE = app
-TARGET = JobTests
-DEPENDPATH += .
-INCLUDEPATH += ../Weaver ../Experimental 
-LIBS += -L../Weaver -lThreadWeaver -L../Experimental -lThreadWeaverExperimental
-CONFIG += qtestlib
+TEMPLATE = subdirs
+SUBDIRS = JobTests.pro QueueTests.pro
+OPTIONS += ordered
 
-test.target = test
-unix:test.commands = LD_LIBRARY_PATH=../Weaver:../Experimental ./$(TARGET)
-macx:test.commands = DYLD_LIBRARY_PATH=../Weaver:../Experimental ./$(TARGET)
-test.depends = $(TARGET)
+test.target=test
+test.commands= make -f Makefile.JobTests test && make -f Makefile.QueueTests test
 QMAKE_EXTRA_TARGETS += test
 
-SOURCES += JobTests.cpp
