@@ -3327,7 +3327,7 @@ void NETWinInfo::setStartupId(const char* id) {
 }
 
 void NETWinInfo::setOpacity(unsigned long opacity) {
-    if (role != Client) return;
+//    if (role != Client) return;
 
     p->opacity = opacity;
     XChangeProperty(p->display, p->window, net_wm_window_opacity, XA_CARDINAL, 32,
