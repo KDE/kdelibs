@@ -84,6 +84,7 @@ static Atom net_startup_id           = 0;
 static Atom net_wm_allowed_actions   = 0;
 static Atom wm_window_role           = 0;
 static Atom net_frame_extents        = 0;
+static Atom net_wm_window_opacity    = 0;
 
 // KDE extensions
 static Atom kde_net_system_tray_windows       = 0;
@@ -231,7 +232,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 77;
+static const int netAtomCount = 78;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -274,6 +275,7 @@ static void create_atoms(Display *d) {
             "_NET_WM_TAKE_ACTIVITY",
             "WM_WINDOW_ROLE",
             "_NET_FRAME_EXTENTS",
+            "_NET_WM_WINDOW_OPACITY",
 
 	    "_NET_WM_WINDOW_TYPE_NORMAL",
 	    "_NET_WM_WINDOW_TYPE_DESKTOP",
@@ -362,6 +364,7 @@ static void create_atoms(Display *d) {
             &net_wm_take_activity,
             &wm_window_role,
             &net_frame_extents,
+            &net_wm_window_opacity,
 
 	    &net_wm_window_type_normal,
 	    &net_wm_window_type_desktop,
@@ -1227,6 +1230,9 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS2 ] & WM2StartupId)
 	atoms[pnum++] = net_startup_id;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2Opacity)
+	atoms[pnum++] = net_wm_window_opacity;
+
     if (p->properties[ PROTOCOLS2 ] & WM2AllowedActions) {
         atoms[pnum++] = net_wm_allowed_actions;
 
@@ -1444,6 +1450,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_startup_id )
         p->properties[ PROTOCOLS2 ] |= WM2StartupId;
+
+    else if( atom == net_wm_window_opacity )
+        p->properties[ PROTOCOLS2 ] |= WM2Opacity;
 
     else if( atom == net_wm_allowed_actions )
         p->properties[ PROTOCOLS2 ] |= WM2AllowedActions;
@@ -2659,6 +2668,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->user_time = -1U;
     p->startup_id = NULL;
     p->transient_for = None;
+    p->opacity = 0xffffffff;
     p->window_group = None;
     p->allowed_actions = 0;
     p->has_net_support = false;
@@ -2721,6 +2731,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->user_time = -1U;
     p->startup_id = NULL;
     p->transient_for = None;
+    p->opacity = 0xffffffff;
     p->window_group = None;
     p->allowed_actions = 0;
     p->has_net_support = false;
@@ -3315,6 +3326,14 @@ void NETWinInfo::setStartupId(const char* id) {
         strlen( p->startup_id ));
 }
 
+void NETWinInfo::setOpacity(long opacity) {
+    if (role != Client) return;
+
+    p->opacity = opacity;
+    XChangeProperty(p->display, p->window, net_wm_window_opacity, XA_CARDINAL, 32,
+        PropModeReplace, reinterpret_cast< unsigned char* >( &p->opacity ), 1);
+}
+
 void NETWinInfo::setAllowedActions( unsigned long actions ) {
     if( role != WindowManager )
         return;
@@ -3591,6 +3610,8 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty |= WMHandledIcons;
 	    else if (pe.xproperty.atom == net_startup_id)
 		dirty2 |= WM2StartupId;
+	    else if (pe.xproperty.atom == net_wm_window_opacity)
+		dirty2 |= WM2Opacity;
 	    else if (pe.xproperty.atom == net_wm_allowed_actions)
 		dirty2 |= WM2AllowedActions;
 	    else if (pe.xproperty.atom == kde_net_wm_system_tray_window_for)
@@ -4072,6 +4093,22 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	}
     }
 
+    if (dirty2 & WM2Opacity)
+    {
+        p->opacity = 0xffffffff;
+	if (XGetWindowProperty(p->display, p->window, net_wm_window_opacity, 0l,
+			       MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
+			       &format_ret, &nitems_ret, &unused, &data_ret)
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
+		p->opacity = *((long*)data_ret);
+	    }
+
+	    if( data_ret )
+		XFree(data_ret);
+	}
+    }
+
     if( dirty2 & WM2AllowedActions ) {
         p->allowed_actions = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_allowed_actions, 0l, 2048l,
@@ -4287,6 +4324,10 @@ Time NETWinInfo::userTime() const {
 
 const char* NETWinInfo::startupId() const {
     return p->startup_id;
+}
+
+long NETWinInfo::opacity() const {
+    return p->opacity;
 }
 
 unsigned long NETWinInfo::allowedActions() const {

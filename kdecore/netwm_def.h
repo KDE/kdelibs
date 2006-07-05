@@ -593,6 +593,8 @@ public:
         @li WM2WindowClass  WM_CLASS
         @li WM2WindowRole   WM_WINDOW_ROLE
         @li WM2ClientMachine WM_CLIENT_MACHINE
+        @li WM2ShowingDesktop
+        @li WM2Opacity _NET_WM_WINDOW_OPACITY
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
@@ -608,7 +610,8 @@ public:
         WM2WindowClass         = 1<<10,
         WM2WindowRole          = 1<<11,
         WM2ClientMachine       = 1<<12,
-        WM2ShowingDesktop      = 1<<13
+        WM2ShowingDesktop      = 1<<13,
+        WM2Opacity             = 1<<14
     };
 
     /**

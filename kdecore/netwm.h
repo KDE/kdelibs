@@ -1223,6 +1223,16 @@ public:
     const char* startupId() const;
 
     /**
+     * Sets opacity (0 = transparent, 0xffffffff = opaque ) on the window.
+     */
+    void setOpacity( long opacity );
+
+    /**
+     * Returns the opacity of the window.
+     */
+    long opacity() const;
+
+    /**
      * Sets actions that the window manager allows for the window.
      */
     void setAllowedActions( unsigned long actions );
