@@ -76,7 +76,7 @@ void MetaInfoJob::removeItem(const KFileItem* item)
 {
     if (d->items.at( d->currentItem ) == item)
     {
-        KIO::Job* job = subjobs().first();
+        KJob* job = subjobs().first();
         job->kill();
         removeSubjob( job );
         determineNextFile();

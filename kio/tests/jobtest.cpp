@@ -177,6 +177,7 @@ void JobTest::get()
     KUrl u; u.setPath( filePath );
     m_result = -1;
     KIO::StoredTransferJob* job = KIO::storedGet( u );
+    job->setUiDelegate( 0 );
     connect( job, SIGNAL( result( KJob* ) ),
             this, SLOT( slotGetResult( KJob* ) ) );
     enterLoop();
@@ -492,6 +493,7 @@ void JobTest::listRecursive()
     KUrl u;
     u.setPath( src );
     KIO::ListJob* job = KIO::listRecursive( u );
+    job->setUiDelegate( 0 );
     connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
              SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );

@@ -150,6 +150,7 @@ set(kdecore_LIB_SRCS
    kcrash.cpp
    kurl.cpp
    kjob.cpp
+   kcompositejob.cpp
    kjobuidelegate.cpp
    kglobal.cpp
    kglobalsettings.cpp
@@ -313,6 +314,7 @@ install( FILES
    kurl.h
    kaboutdata.h
    kjob.h
+   kcompositejob.h
    kjobuidelegate.h
    kcmdlineargs.h
    kconfigbackend.h

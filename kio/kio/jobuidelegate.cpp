@@ -42,7 +42,10 @@ KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
 
 KIO::JobUiDelegate::~JobUiDelegate()
 {
-
+    if ( d->showProgressInfo )
+    {
+        Observer::self()->jobFinished( job()->progressId() );
+    }
 }
 
 void KIO::JobUiDelegate::setWindow(QWidget *window)

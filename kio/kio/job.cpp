@@ -93,7 +93,7 @@ public:
     int m_extraFlags;
 };
 
-Job::Job(bool showProgressInfo) : KJob(0), m_speedTimer(0), d( new JobPrivate )
+Job::Job(bool showProgressInfo) : KCompositeJob(0), m_speedTimer(0), d( new JobPrivate )
 {
     setUiDelegate( new JobUiDelegate( showProgressInfo ) );
 }
@@ -117,17 +117,12 @@ int& Job::extraFlags()
 void Job::addSubjob(Job *job, bool inheritMetaData)
 {
     //kDebug(7007) << "addSubjob(" << job << ") this = " << this << endl;
-    m_subjobs.append(job);
 
-    connect( job, SIGNAL(result(KJob*)),
-             SLOT(slotResult(KJob*)) );
+    KCompositeJob::addSubjob( job );
 
     // Forward information from that subjob.
     connect( job, SIGNAL(speed( KIO::Job*, unsigned long )),
              SLOT(slotSpeed(KIO::Job*, unsigned long)) );
-
-    connect( job, SIGNAL(infoMessage( KJob*, const QString &, const QString & )),
-             SLOT(slotInfoMessage(KJob*, const QString &)) );
 
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
@@ -148,7 +143,8 @@ void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
     // Merge metadata from subjob
     if ( mergeMetaData )
         m_incomingMetaData += job->metaData();
-    m_subjobs.removeAll(job);
+
+    KCompositeJob::removeSubjob( job );
 }
 
 void Job::emitSpeed( unsigned long bytes_per_second )
@@ -167,38 +163,19 @@ bool Job::doKill()
 {
   kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " progressId()=" << progressId() << endl;
   // kill all subjobs, without triggering their result slot
-  QList<Job *>::const_iterator it = m_subjobs.begin();
-  const QList<Job *>::const_iterator end = m_subjobs.end();
+  QList<KJob *>::const_iterator it = subjobs().begin();
+  const QList<KJob *>::const_iterator end = subjobs().end();
   for ( ; it != end ; ++it )
     (*it)->kill( KJob::Quietly );
-  m_subjobs.clear();
+  subjobs().clear();
 
   return true;
-}
-
-void Job::slotResult( KJob *job )
-{
-    // Did job have an error ?
-    if ( job->error() && !error() )
-    {
-        // Store it in the parent only if first error
-        setError( job->error() );
-        setErrorText( job->errorText() );
-    }
-    removeSubjob(job);
-    if ( m_subjobs.isEmpty() )
-        emitResult();
 }
 
 void Job::slotSpeed( KIO::Job*, unsigned long speed )
 {
   //kDebug(7007) << "Job::slotSpeed " << speed << endl;
   emitSpeed( speed );
-}
-
-void Job::slotInfoMessage( KJob*, const QString & msg )
-{
-  emit infoMessage( this, msg );
 }
 
 void Job::slotSpeedTimeout()
@@ -378,7 +355,7 @@ void SimpleJob::start(Slave *slave)
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
-    if (ui()->window())
+    if (ui() && ui()->window())
     {
        QString id;
        addMetaData("window-id", id.setNum((ulong)ui()->window()->winId()));
@@ -1029,22 +1006,14 @@ void TransferJob::slotResult( KJob *job)
 {
    // This can only be our suburl.
    assert(job == m_subJob);
-   // Did job have an error ?
-   if ( job->error() )
-   {
-      setError( job->error() );
-      setErrorText( job->errorText() );
 
-      emitResult();
-      return;
-   }
+   SimpleJob::slotResult( job );
 
-   if (job == m_subJob)
+   if (!error() && job == m_subJob)
    {
       m_subJob = 0; // No action required
       resume(); // Make sure we get the remaining data.
    }
-   removeSubjob(job);
 }
 
 TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )

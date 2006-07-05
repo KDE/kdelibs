@@ -266,7 +266,7 @@ void PreviewJob::removeItem( const KFileItem *item )
 
     if (d->currentItem.item == item)
     {
-        KIO::Job* job = subjobs().first();
+        KJob* job = subjobs().first();
         job->kill();
         removeSubjob( job );
         determineNextFile();

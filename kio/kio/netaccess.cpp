@@ -374,7 +374,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString command,
 bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* data,
                                         KUrl* finalURL, QMap<QString,QString>* metaData )
 {
-  job->ui()->setWindow( window );
+  if ( job->ui() ) job->ui()->setWindow( window );
 
   m_metaData = metaData;
   if ( m_metaData ) {

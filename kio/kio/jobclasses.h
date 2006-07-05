@@ -33,7 +33,7 @@
 #include <kurl.h>
 #include <kio/global.h>
 
-#include <kjob.h>
+#include <kcompositejob.h>
 
 class Observer;
 class QTimer;
@@ -62,12 +62,12 @@ namespace KIO {
      *
      * \code
      *  if ( job->error() )
-     *      job->showErrorDialog( this or 0L  );
+     *      job->ui()->showErrorDialog();
      * \endcode
      * @see KIO::Scheduler
      * @see KIO::Slave
      */
-    class KIO_EXPORT Job : public KJob {
+    class KIO_EXPORT Job : public KCompositeJob {
         Q_OBJECT
 
     protected:
@@ -240,30 +240,12 @@ namespace KIO {
 
     protected Q_SLOTS:
         /**
-         * Called whenever a subjob finishes.
-         * Default implementation checks for errors and propagates
-         * to parent job, then calls removeSubjob.
-         * Override if you don't want subjobs errors to be propagated,
-         * or if you want this job to keep running after the last subjob finished.
-	 * @param job the subjob
-	 * @see result()
-         */
-        virtual void slotResult( KJob *job );
-
-        /**
          * Forward signal from subjob.
 	 * @param job the subjob
 	 * @param speed the speed in bytes/s
 	 * @see speed()
          */
         void slotSpeed( KIO::Job *job, unsigned long speed );
-        /**
-         * Forward signal from subjob.
-	 * @param job the subjob
-	 * @param msg the info message
-	 * @see infoMessage()
-         */
-        void slotInfoMessage( KJob *job, const QString &msg );
 
         /**
          * Remove speed information.
@@ -294,16 +276,6 @@ namespace KIO {
         void removeSubjob( KJob *job, bool mergeMetaData = false );
 
         /**
-         * @return true if we still have subjobs running
-         */
-        bool hasSubjobs() const { return !m_subjobs.isEmpty(); }
-
-        /**
-         * @return the full list of sub jobs
-         */
-        QList<Job *> subjobs() const { return m_subjobs; }
-
-        /**
          * Utility function for inherited jobs.
          * Emits the speed signal and starts the timer for removing that info
 	 *
@@ -328,8 +300,6 @@ namespace KIO {
     protected:
 	virtual void virtual_hook( int id, void* data );
     private:
-        // Could be a QSet, but well, it's very typical to have only one item in this list.
-        QList<Job *> m_subjobs;
         QTimer *m_speedTimer;
         QPointer<QWidget> m_window;
 
