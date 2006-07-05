@@ -337,8 +337,8 @@ public:
      *
      * Example:
      * \code
-     * perlSplit(QRegExp("[! ]", "Split me up ! I'm bored ! OK ?", 3)
-     * QStringList contains: "Split", "me", "up ! I'm bored, OK ?"
+     * perlSplit(QRegExp("[! ]"), "Split me up ! I'm bored ! OK ?", 3)
+     * QStringList contains: "Split", "me", "up ! I'm bored ! OK ?"
      * \endcode
      *
      * @param sep is the regular expression to use to delimit s.

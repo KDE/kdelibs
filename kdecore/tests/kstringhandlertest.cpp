@@ -82,3 +82,19 @@ void KStringHandlerTest::tagURLs()
 	 "&lt;a href=<a href=\"www.foo.com\">www.foo.com</a>&gt;" );
 #endif
 }
+
+void KStringHandlerTest::perlSplit()
+{
+  QStringList expected;
+  expected << "some" << "string" << "for" << "you__here";
+  QCOMPARE(KStringHandler::perlSplit("__","some__string__for__you__here", 4),expected);
+
+  expected.clear();
+  expected << "kparts" << "reaches" << "the parts other parts can't";
+  QCOMPARE(KStringHandler::perlSplit(' ',"kparts reaches the parts other parts can't", 3),expected);
+
+  expected.clear();
+  expected << "Split" << "me" << "up ! I'm bored ! OK ?";
+  QCOMPARE(KStringHandler::perlSplit(QRegExp("[! ]"), "Split me up ! I'm bored ! OK ?", 3),expected);
+}
+

@@ -17,6 +17,7 @@ private Q_SLOTS:
     void reverse();
     void center();
     void tagURLs();
+    void perlSplit();
 
 private:
     static QString test;
