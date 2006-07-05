@@ -144,7 +144,7 @@ void WeaverImpl::unlock()
   m_mutex->unlock();
 }
 
-int WeaverImpl::noOfThreads ()
+int WeaverImpl::numberOfThreads () const
 {
   QMutexLocker l (m_mutex);
   return m_inventory.count ();
@@ -167,7 +167,7 @@ void WeaverImpl::enqueue(Job* job)
 void WeaverImpl::adjustInventory ( int noOfNewJobs )
 {
   // no of threads that can be created:
-  const int reserve = m_inventoryMax - noOfThreads();
+  const int reserve = m_inventoryMax - numberOfThreads();
   if ( reserve > 0 )
     {
       QMutexLocker l (m_mutex);
@@ -184,7 +184,7 @@ void WeaverImpl::adjustInventory ( int noOfNewJobs )
 
 	  th->start ();
 	  debug ( 2, "WeaverImpl::adjustInventory: thread created, "
-		  "%i threads in inventory.\n", noOfThreads() );
+		  "%i threads in inventory.\n", numberOfThreads() );
 	}
     }
 }
@@ -249,7 +249,7 @@ void WeaverImpl::assignJobs()
   m_jobAvailable.wakeAll();
 }
 
-bool WeaverImpl::isEmpty()
+bool WeaverImpl::isEmpty() const
 {
   QMutexLocker l (m_mutex);
   return  m_assignments.isEmpty();
@@ -326,13 +326,13 @@ void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
   debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
 }
 
-int WeaverImpl::queueLength()
+int WeaverImpl::queueLength() const
 {
   QMutexLocker l (m_mutex);
   return m_assignments.count();
 }
 
-bool WeaverImpl::isIdle ()
+bool WeaverImpl::isIdle () const
 {
   QMutexLocker l (m_mutex);
   return isEmpty() && m_active == 0;

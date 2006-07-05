@@ -102,19 +102,19 @@ namespace ThreadWeaver {
         virtual void resume () = 0;
         /** Is the queue empty?
 	    The queue is empty if no more jobs are queued. */
-        virtual bool isEmpty () = 0;
+        virtual bool isEmpty () const = 0;
 	/** Is the weaver idle?
 	    The weaver is idle if no jobs are queued and no jobs are processed
             by the threads (m_active is zero). */
-        virtual bool isIdle () = 0;
+        virtual bool isIdle () const = 0;
 	/** Returns the number of pending jobs.
             This will return the number of queued jobs. Jobs that are
 	    currently being executed are not part of the queue. All jobs in
 	    the queue are waiting to be executed.
         */
-        virtual int queueLength () = 0;
+        virtual int queueLength () const = 0;
 	/** Returns the current number of threads in the inventory. */
-        virtual int noOfThreads () = 0;
+        virtual int numberOfThreads () const = 0;
         /** Request aborts of the currently executed jobs.
             It is important to understand that aborts are requested, but
 	    cannot be guaranteed, as not all Job classes support it. It is up

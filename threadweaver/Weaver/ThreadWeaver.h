@@ -69,10 +69,10 @@ namespace ThreadWeaver {
 	virtual void finish();
         virtual void suspend( );
         virtual void resume();
-        bool isEmpty ();
-	bool isIdle ();
-	int queueLength ();
-	int noOfThreads ();
+        bool isEmpty () const;
+	bool isIdle () const;
+	int queueLength () const;
+	int numberOfThreads () const;
         void requestAbort();
     protected:
         WeaverInterface *m_weaverinterface;

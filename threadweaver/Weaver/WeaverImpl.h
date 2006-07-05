@@ -54,9 +54,9 @@ namespace ThreadWeaver {
 	virtual void finish();
         virtual void suspend( );
         virtual void resume();
-        bool isEmpty ();
-	bool isIdle ();
-        int queueLength ();
+        bool isEmpty () const;
+	bool isIdle () const;
+        int queueLength () const;
         /** Assign a job to the calling thread.
 	    This is supposed to be called from the Thread objects in
 	    the inventory. Do not call this method from your code.
@@ -91,7 +91,7 @@ namespace ThreadWeaver {
             This will try to distribute as many jobs as possible
             to all idle threads. */
         void assignJobs();
-	int noOfThreads ();
+	int numberOfThreads () const;
         void requestAbort();
 
         /** Dump the current jobs to the console. */

@@ -324,24 +324,24 @@ namespace ThreadWeaver {
         return m_weaverinterface->resume();
     }
 
-    bool Weaver::isEmpty()
+    bool Weaver::isEmpty() const
     {
         return m_weaverinterface->isEmpty();
     }
 
-    bool Weaver::isIdle()
+    bool Weaver::isIdle() const
     {
         return m_weaverinterface->isIdle();
     }
 
-    int Weaver::queueLength()
+    int Weaver::queueLength() const
     {
         return m_weaverinterface->queueLength();
     }
 
-    int Weaver::noOfThreads()
+    int Weaver::numberOfThreads() const
     {
-        return m_weaverinterface->noOfThreads();
+      return m_weaverinterface->numberOfThreads();
     }
 
     void Weaver::requestAbort()

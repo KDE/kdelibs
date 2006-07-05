@@ -76,7 +76,7 @@ private slots:
   void WeaverInitializationTest()
   { // this one mostly tests the sanity of the startup behaviour
     ThreadWeaver::Weaver weaver;
-    QCOMPARE (weaver.noOfThreads(), 0);
+    QCOMPARE (weaver.numberOfThreads(), 0);
     QVERIFY (weaver.isEmpty());
     QVERIFY(weaver.isIdle());
     QVERIFY(weaver.queueLength() == 0);
@@ -87,12 +87,12 @@ private slots:
   {
     ThreadWeaver::Weaver weaver;
     QString sequence;
-    QCOMPARE (weaver.noOfThreads(), 0);
+    QCOMPARE (weaver.numberOfThreads(), 0);
     AppendCharacterJob a( QChar('a'), &sequence, this);
     weaver.enqueue( & a);
     weaver.finish();
     QVERIFY(a.isFinished());
-    QCOMPARE (weaver.noOfThreads(), 1);
+    QCOMPARE (weaver.numberOfThreads(), 1);
   }
 
     void SimpleJobTest() {
