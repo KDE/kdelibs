@@ -70,33 +70,6 @@
 #endif
 Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
 
-class DCOPClient;
-
-KToolInvocation* KToolInvocation::s_self = 0L;
-
-KToolInvocation::KToolInvocation(QObject *parent):QObject(parent) {
-}
-
-KToolInvocation *KToolInvocation::self() {
-    QMutexLocker locker(mutex());
-    if (s_self==0) {
-        Q_ASSERT(qApp);
-        if (!qApp)
-            qFatal("KToolInvocation::self(): No application object");
-        s_self = new KToolInvocation(qApp);
-    }
-    return s_self;
-}
-
-KToolInvocation::~KToolInvocation() {
-    QMutexLocker locker(mutex());
-    s_self=0;
-}
-/*
-DCOPClient *KToolInvocation::dcopClient() {
-	return 0;
-}
-*/
 static int
 startServiceInternal(DCOPClient *dcopClient, const QByteArray &function,
               const QString& _name, const QStringList &URLs,

@@ -44,11 +44,13 @@ class KDECORE_EXPORT KToolInvocation : public QObject
 
   Q_OBJECT
 private:
-	KToolInvocation(QObject *parent);
-	~KToolInvocation();
+	KToolInvocation();
 	static KToolInvocation *s_self;
 public:
+	// @internal
+	~KToolInvocation();
 	static KToolInvocation *self();
+
 public Q_SLOTS:
   /**
    * Invokes the KHelpCenter HTML help viewer from docbook sources.

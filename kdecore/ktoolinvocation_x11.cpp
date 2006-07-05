@@ -76,15 +76,12 @@
 #endif
 
 #include <QThread>
-#include <QMutex>
-#include <QMutexLocker>
 #include <qglobal.h>
 #include "kstandarddirs.h"
 #include <QFile>
 #ifdef __GNUC__
 #warning used non public api for now
 #endif
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
 
 static void printError(const QString& text, QString* error)
 {
@@ -96,43 +93,13 @@ static void printError(const QString& text, QString* error)
 
 static bool isMainThreadActive(QString* error = 0)
 {
-    if (!qApp)
-    {
-        printError(i18n("QApplication required."), error);
-        return false;
-    }
-
-    if (qApp->thread() != QThread::currentThread())
+    if (qApp && qApp->thread() != QThread::currentThread())
     {
         printError(i18n("Function must be called from the main thread."), error);
         return false;
     }
 
     return true;
-}
-
-KToolInvocation* KToolInvocation::s_self = 0L;
-
-KToolInvocation::KToolInvocation(QObject *parent):QObject(parent)
-{
-}
-
-KToolInvocation *KToolInvocation::self()
-{
-    QMutexLocker locker(mutex());
-    if (s_self==0) {
-        Q_ASSERT(qApp);
-        if (!qApp)
-            qFatal("KToolInvocation::self(): No application object");
-        s_self = new KToolInvocation(qApp);
-    }
-    return s_self;
-}
-
-KToolInvocation::~KToolInvocation()
-{
-    QMutexLocker locker(mutex());
-    s_self=0;
 }
 
 void KToolInvocation::invokeHelp( const QString& anchor,
@@ -505,7 +472,9 @@ startServiceInternal(const char *_function,
     QDBusMessage reply = QDBus::sessionBus().call(msg);
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
-        printError(i18n("KLauncher could not be reached via D-Bus, error when calling %1\n",function), error);
+
+        printError(i18n("KLauncher could not be reached via D-Bus, error when calling %1:\n%2\n",function,
+                        reply.at(0).toString()), error);
         //qDebug() << reply;
         return EINVAL;
     }
