@@ -28,7 +28,7 @@
 class KWalletDAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.kde.KWalletD")
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KWallet")
     KWalletD *parent;
 public:
     inline KWalletDAdaptor(KWalletD *p)
@@ -182,6 +182,6 @@ Q_SIGNALS:
     void folderUpdated(const QString&, const QString&);
     void applicationDisconnected(const QString& wallet, const QString& application);
 };
-    
+
 #endif
 
