@@ -30,7 +30,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_line.h"
 
-#include <q3ptrvector.h>
+#include <qvector.h>
 #include <assert.h>
 
 class QPainter;
@@ -131,17 +131,6 @@ private:
         m_reversed = false;
     };
     friend class RenderText;
-};
-
-class InlineTextBoxArray : public Q3PtrVector<InlineTextBox>
-{
-public:
-    InlineTextBoxArray();
-
-    InlineTextBox* first();
-
-    int	  findFirstMatching( Item ) const;
-    virtual int compareItems( Item, Item );
 };
 
 class RenderText : public RenderObject
@@ -252,12 +241,20 @@ public:
      */
     virtual long maxOffset() const;
 
+
+    /** container for the inline text boxes
+     */
+    typedef QVector<InlineTextBox*> InlineTextBoxVector;
+
     /** returns the number of inline text boxes
      */
     unsigned inlineTextBoxCount() const { return m_lines.count(); }
-    /** returns the array of inline text boxes for this render text.
+    
+    /** returns the QVector of inline text boxes for this render text.
      */
-    const InlineTextBoxArray &inlineTextBoxes() const { return m_lines; }
+    const InlineTextBoxVector &inlineTextBoxes() const { return m_lines; }
+
+    static int findFirstMatching(InlineTextBoxVector* tboxes, InlineTextBox* d);
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -273,9 +270,9 @@ public:
      */
     InlineTextBox * findInlineTextBox( int offset, int &pos,
     					bool checkFirstLetter = false );
-
+	
 protected: // members
-    InlineTextBoxArray m_lines;
+    InlineTextBoxVector m_lines;
     DOM::DOMStringImpl *str; //
 
     short m_lineHeight;

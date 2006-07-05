@@ -485,23 +485,10 @@ long InlineTextBox::maxOffset() const
 
 // -----------------------------------------------------------------------------
 
-InlineTextBoxArray::InlineTextBoxArray()
-{
-    setAutoDelete(false);
-}
-
-int InlineTextBoxArray::compareItems( Item d1, Item d2 )
-{
-    assert(d1);
-    assert(d2);
-
-    return static_cast<InlineTextBox*>(d1)->m_y - static_cast<InlineTextBox*>(d2)->m_y;
-}
-
 // remove this once QVector::bsearch is fixed
-int InlineTextBoxArray::findFirstMatching(Item d) const
+int RenderText::findFirstMatching(InlineTextBoxVector* tboxes, InlineTextBox* d)
 {
-    int len = count();
+    int len = tboxes->count();
 
     if ( !len )
 	return -1;
@@ -514,10 +501,10 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
     while ( n1 <= n2 ) {
 	int  res;
 	mid = (n1 + n2)/2;
-	if ( (*this)[mid] == 0 )			// null item greater
+	if ( (*tboxes)[mid] == 0 )			// null item greater
 	    res = -1;
 	else
-	    res = ((Q3GVector*)this)->compareItems( d, (*this)[mid] );
+	    res = d != (*tboxes)[mid] ;
 	if ( res < 0 )
 	    n2 = mid - 1;
 	else if ( res > 0 )
@@ -530,12 +517,11 @@ int InlineTextBoxArray::findFirstMatching(Item d) const
     /* if ( !found )
 	return -1; */
     // search to first one equal or bigger
-    while ( found && (mid > 0) && !((Q3GVector*)this)->compareItems(d, (*this)[mid-1]) )
+    while ( found && (mid > 0) && !( d != (*tboxes)[mid-1]) )
 	mid--;
     return mid;
 }
 
-// -------------------------------------------------------------------------------------
 
 RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
     : RenderObject(node)
@@ -585,20 +571,19 @@ RenderText::~RenderText()
 
 void RenderText::deleteInlineBoxes(RenderArena* arena)
 {
-    // this is a slight variant of QArray::clear().
     // We don't delete the array itself here because its
     // likely to be used in the same size later again, saves
-    // us resize() calls
-    unsigned int len = m_lines.size();
+    // us reserve() calls
+    int len = m_lines.capacity();
     if (len) {
         if (!arena)
             arena = renderArena();
-        for(unsigned int i=0; i < len; i++) {
+        for(int i = 0; i < len; i++) {
             InlineTextBox* s = m_lines.at(i);
             if (s)
                 s->detach(arena);
-            m_lines.remove(i);
         }
+        m_lines.clear();
     }
 
     KHTMLAssert(m_lines.count() == 0);
@@ -725,7 +710,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     int lastOffset = 0;
     FindSelectionResult lastResult = SelectionPointAfter;
 
-    for(unsigned int si = 0; si < m_lines.count(); si++)
+    for(int si = 0; si < m_lines.count(); si++)
     {
         InlineTextBox* s = m_lines[si];
         FindSelectionResult result;
@@ -890,7 +875,7 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
     InlineTextBox f(0, pI.r.top()-ty);
-    int si = m_lines.findFirstMatching(&f);
+    int si = RenderText::findFirstMatching(&m_lines, &f);
     // something matching found, find the first one to paint
     bool isStatic = canvas()->staticMode();
     if (isStatic && pI.phase == PaintActionSelection) return;
@@ -1116,7 +1101,8 @@ int RenderText::minXPos() const
     if (!m_lines.count())
 	return 0;
     int retval=6666666;
-    for (unsigned i=0;i < m_lines.count(); i++)
+    int lim = m_lines.count();
+    for (int i = 0; i < lim; i++)
     {
 	retval = qMin ( retval, int( m_lines[i]->m_x ));
     }
@@ -1231,10 +1217,10 @@ void RenderText::position(InlineBox* box, int from, int len, bool reverse)
     s->m_reversed = reverse;
     //kDebug(6040) << "m_start: " << s->m_start << " m_len: " << s->m_len << endl;
 
-    if(m_lines.count() == m_lines.size())
-        m_lines.resize(m_lines.size()*2+1);
+    if(m_lines.count() == m_lines.capacity())
+        m_lines.reserve(m_lines.capacity()*2+1);
 
-    m_lines.insert(m_lines.count(), s);
+    m_lines.replace(m_lines.count(), s);
     //kDebug(6040) << this << " " << renderName() << "::position inserted" << endl;
 }
 
@@ -1267,7 +1253,8 @@ short RenderText::width() const
     int minx = 100000000;
     int maxx = 0;
     // slooow
-    for(unsigned int si = 0; si < m_lines.count(); si++) {
+    int lim = m_lines.count();
+    for(int si = 0; si < lim; si++) {
         InlineTextBox* s = m_lines[si];
         if(s->m_x < minx)
             minx = s->m_x;
@@ -1446,7 +1433,8 @@ void RenderText::dump(QTextStream &stream, const QString &ind) const
 {
     RenderObject::dump( stream, ind );
 
-    for (unsigned int i = 0; i < m_lines.count(); i++) {
+    int lim = m_lines.count();
+    for (int i = 0; i < lim; i++) {
         stream << endl << ind << "   ";
         writeTextRun(stream, *this, *m_lines[i]);
     }
