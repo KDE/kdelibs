@@ -52,13 +52,6 @@ void KLauncherAdaptor::exec_blind(const QString &name, const QStringList &arg_li
     static_cast<KLauncher *>(parent())->exec_blind(name, arg_list, envs, startup_id);
 }
 
-int KLauncherAdaptor::kdeinit_exec(const QString &app, const QStringList &args, const QDBusMessage &msg, QString &, QString &, int &)
-{
-    // handle method call org.kde.KLauncher.kdeinit_exec
-    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, msg);
-    return 0;                   // delayed reply
-}
-
 int KLauncherAdaptor::kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QDBusMessage &msg, QString &, QString &, int &)
 {
     // handle method call org.kde.KLauncher.kdeinit_exec
@@ -97,17 +90,6 @@ void KLauncherAdaptor::setLaunchEnv(const QString &name, const QString &value)
     static_cast<KLauncher *>(parent())->setLaunchEnv(name, value);
 }
 
-int KLauncherAdaptor::start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid)
-{
-    // handle method call org.kde.KLauncher.start_service_by_desktop_name
-    KLauncher *p = static_cast<KLauncher *>(parent());
-    p->start_service_by_desktop_name(serviceName, urls, msg);
-    dbusServiceName = p->requestResult.dcopName;
-    error = p->requestResult.error;
-    pid = p->requestResult.pid;
-    return p->requestResult.result;
-}
-
 int KLauncherAdaptor::start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid)
 {
     // handle method call org.kde.KLauncher.start_service_by_desktop_name
@@ -119,33 +101,11 @@ int KLauncherAdaptor::start_service_by_desktop_name(const QString &serviceName, 
     return p->requestResult.result;
 }
 
-int KLauncherAdaptor::start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid)
-{
-    // handle method call org.kde.KLauncher.start_service_by_desktop_path
-    KLauncher *p = static_cast<KLauncher *>(parent());
-    p->start_service_by_desktop_path(serviceName, urls, msg);
-    dbusServiceName = p->requestResult.dcopName;
-    error = p->requestResult.error;
-    pid = p->requestResult.pid;
-    return p->requestResult.result;
-}
-
 int KLauncherAdaptor::start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid)
 {
     // handle method call org.kde.KLauncher.start_service_by_desktop_path
     KLauncher *p = static_cast<KLauncher *>(parent());
     p->start_service_by_desktop_path(serviceName, urls, envs, startup_id, blind, msg);
-    dbusServiceName = p->requestResult.dcopName;
-    error = p->requestResult.error;
-    pid = p->requestResult.pid;
-    return p->requestResult.result;
-}
-
-int KLauncherAdaptor::start_service_by_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg, QString &dbusServiceName, QString &error, int &pid)
-{
-    // handle method call org.kde.KLauncher.start_service_by_name
-    KLauncher *p = static_cast<KLauncher *>(parent());
-    p->start_service_by_name(serviceName, urls, msg);
     dbusServiceName = p->requestResult.dcopName;
     error = p->requestResult.error;
     pid = p->requestResult.pid;

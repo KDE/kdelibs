@@ -27,15 +27,6 @@
       <arg type="i" direction="out"/>
       <arg name="app" type="s" direction="in"/>
       <arg name="args" type="as" direction="in"/>
-      <arg name="startup_id" type="s" direction="in"/>
-      <arg name="dbusServiceName" type="s" direction="out"/>
-      <arg name="error" type="s" direction="out"/>
-      <arg name="pid" type="i" direction="out"/>
-    </method>
-    <method name="kdeinit_exec">
-      <arg type="i" direction="out"/>
-      <arg name="app" type="s" direction="in"/>
-      <arg name="args" type="as" direction="in"/>
       <arg name="env" type="as" direction="in"/>
       <arg name="startup_id" type="s" direction="in"/>
       <arg name="dbusServiceName" type="s" direction="out"/>
@@ -74,14 +65,6 @@
       <arg type="i" direction="out"/>
       <arg name="serviceName" type="s" direction="in"/>
       <arg name="urls" type="as" direction="in"/>
-      <arg name="dbusServiceName" type="s" direction="out"/>
-      <arg name="error" type="s" direction="out"/>
-      <arg name="pid" type="i" direction="out"/>
-    </method>
-    <method name="start_service_by_desktop_name">
-      <arg type="i" direction="out"/>
-      <arg name="serviceName" type="s" direction="in"/>
-      <arg name="urls" type="as" direction="in"/>
       <arg name="envs" type="as" direction="in"/>
       <arg name="startup_id" type="s" direction="in"/>
       <arg name="blind" type="b" direction="in"/>
@@ -93,25 +76,9 @@
       <arg type="i" direction="out"/>
       <arg name="serviceName" type="s" direction="in"/>
       <arg name="urls" type="as" direction="in"/>
-      <arg name="dbusServiceName" type="s" direction="out"/>
-      <arg name="error" type="s" direction="out"/>
-      <arg name="pid" type="i" direction="out"/>
-    </method>
-    <method name="start_service_by_desktop_path">
-      <arg type="i" direction="out"/>
-      <arg name="serviceName" type="s" direction="in"/>
-      <arg name="urls" type="as" direction="in"/>
       <arg name="envs" type="as" direction="in"/>
       <arg name="startup_id" type="s" direction="in"/>
       <arg name="blind" type="b" direction="in"/>
-      <arg name="dbusServiceName" type="s" direction="out"/>
-      <arg name="error" type="s" direction="out"/>
-      <arg name="pid" type="i" direction="out"/>
-    </method>
-    <method name="start_service_by_name">
-      <arg type="i" direction="out"/>
-      <arg name="serviceName" type="s" direction="in"/>
-      <arg name="urls" type="as" direction="in"/>
       <arg name="dbusServiceName" type="s" direction="out"/>
       <arg name="error" type="s" direction="out"/>
       <arg name="pid" type="i" direction="out"/>

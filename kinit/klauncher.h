@@ -130,14 +130,6 @@ protected:
    bool start_service(KService::Ptr service, const QStringList &urls,
        const QStringList &envs, const QString &startup_id,
        bool blind, bool autoStart, const QDBusMessage &msg );
-#if 0
-   bool start_service_by_name(const QString &serviceName, const QStringList &urls,
-       const QStringList &envs, const QString& startup_id, bool blind, const QDBusMessage &msg);
-   bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
-       const QStringList &envs, const QString& startup_id, bool blind, const QDBusMessage &msg);
-   bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
-       const DCOPCStringList &envs, const DCOPCString& startup_id, bool blind, const QDBusMessage &msg);
-#endif
    bool kdeinit_exec(const QString &app, const QStringList &args,
        const QStringList &envs, const QString &startup_id, bool wait, const QDBusMessage &msg);
 
@@ -163,22 +155,14 @@ public: // remote methods, called by KLauncherAdaptor
     { exec_blind(name, arg_list, QStringList(), QLatin1String("0")); }
     inline void kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QDBusMessage &msg)
     { kdeinit_exec(app, args, env, QString(), false, msg); }
-    inline void kdeinit_exec(const QString &app, const QStringList &args, const QDBusMessage &msg)
-    { kdeinit_exec(app, args, QStringList(), QString(), false, msg); }
     inline void kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg)
     { kdeinit_exec(app, args, env, startup_id, true, msg); }
 
     void reparseConfiguration();
     void setLaunchEnv(const QString &name, const QString &value);
     bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
-    inline bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg)
-    { return start_service_by_desktop_name(serviceName, urls, QStringList(), QString(), false, msg); }
     bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
-    inline bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg)
-    { return start_service_by_desktop_path(serviceName, urls, QStringList(), QString(), false, msg); }
     bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg);
-    inline bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QDBusMessage &msg)
-    { return start_service_by_name(serviceName, urls, QStringList(), QString(), false, msg); }
     pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
 
     pid_t requestSlave(const QString &protocol, const QString &host,
