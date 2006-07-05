@@ -1328,6 +1328,7 @@ and subjobs.isEmpty() with !hasSubjobs()</li>
 <li><code>job->isAutoWarningHandlingEnabled()</code> becomes <code>job->ui()->isAutoWarningHandlingEnabled()</code></li>
 <li><code>job->setWindow(QWidget*)</code> becomes <code>job->ui()->setWindow(QWidget*)</code></li>
 <li><code>job->window()</code> becomes <code>job->ui()->window()</code></li>
+<li><code>job->setInteractive( false )</code> becomes <code>job->setUiDelegate( 0 )</code></li>
 </ul>
 
 <h4>KIO::UDSEntry</h4>
