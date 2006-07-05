@@ -7,11 +7,13 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+ ${CMAKE_CURRENT_SOURCE_DIR}/widgets
 )
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 add_subdirectory( findreplace )
+add_subdirectory( widgets )
 add_subdirectory( tests )
 add_subdirectory( liveui/tests )
 add_subdirectory( about )
@@ -20,7 +22,6 @@ add_subdirectory( about )
 ########### next target ###############
 
 set(kdeui_LIB_SRCS
- kmenu.cpp
  ktoolbar.cpp
  kaction.cpp
  kstdaction.cpp
@@ -39,36 +40,25 @@ set(kdeui_LIB_SRCS
  kurllabel.cpp
  kmenubar.cpp
  kinputdialog.cpp
- knuminput.cpp
- klineedit.cpp
  k3listview.cpp
  knotificationrestrictions.cpp
  kprogressdialog.cpp
- kprogressbar.cpp
  kcolordialog.cpp
  kselector_p.cpp
- kdatepicker.cpp
  kdatetable.cpp
- kfontrequester.cpp
  kfontdialog.cpp
  ktabctl.cpp
  kstatusbar.cpp
  kmainwindow.cpp
- keditlistbox.cpp
  kseparator.cpp
  krestrictedline.cpp
- kcolorbutton.cpp
  ksystemtray.cpp
- kbuttonbox.cpp
  keditcl1.cpp
  keditcl2.cpp
- kled.cpp
  kshortcutdialog.cpp
- kkeybutton.cpp
  kkeydialog.cpp
  kruler.cpp
  kcursor.cpp
- kcharselect.cpp
  kcolormimedata.cpp
  knumvalidator.cpp
  kdialog.cpp
@@ -86,7 +76,6 @@ set(kdeui_LIB_SRCS
  klistbox.cpp
  kwordwrap.cpp
  kbugreport.cpp
- kcombobox.cpp
  kpassworddialog.cpp
  kxmlguiclient.cpp
  kxmlguifactory.cpp
@@ -97,40 +86,28 @@ set(kdeui_LIB_SRCS
  kanimwidget.cpp
  kaboutkde.cpp
  kaboutapplication.cpp
- kcolorcombo.cpp
- kpushbutton.cpp
- kcompletionbox.cpp
- ksqueezedtextlabel.cpp
  kcmodule.cpp
  kcommand.cpp
  kwindowlistmenu.cpp
  ktip.cpp
- kdatewidget.cpp
  karrowbutton.cpp
  kmainwindowiface.cpp
  kguiitem.cpp
  kstdguiitem.cpp
  kstringvalidator.cpp
  kactivelabel.cpp
- ktextedit.cpp
  kpassivepopup.cpp
  ktoolbarhandler.cpp
- kdatetimewidget.cpp
- ktimezonewidget.cpp
- ktabbar.cpp
- ktabwidget.cpp
  ksplashscreen.cpp
  kconfigdialog.cpp
  kactionselector.cpp
  klanguagebutton.cpp
  k3listviewsearchline.cpp
- kpixmapregionselectorwidget.cpp
- kpixmapregionselectordialog.cpp
  kwhatsthismanager.cpp
  k3iconviewsearchline.cpp
+ kpixmapregionselectorwidget.cpp
+ kpixmapregionselectordialog.cpp
  ktoolbarlabelaction.cpp
- khbox.cpp
- kvbox.cpp
  kconfigdialogmanager.cpp
  knotification.cpp
  knotificationmanager.cpp
@@ -145,12 +122,37 @@ set(kdeui_LIB_SRCS
  kcompletion.cpp
  kmessageboxmessagehandler.cpp
  kpassivepopupmessagehandler.cpp
- kbuttongroup.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
  liveui/kliveui.cpp
+ widgets/kbuttonbox.cpp
+ widgets/kbuttongroup.cpp
+ widgets/kcharselect.cpp
+ widgets/kcolorbutton.cpp
+ widgets/kcolorcombo.cpp
+ widgets/kcombobox.cpp
+ widgets/kcompletionbox.cpp
+ widgets/kdatepicker.cpp
+ widgets/kdatetimewidget.cpp
+ widgets/kdatewidget.cpp
+ widgets/keditlistbox.cpp
+ widgets/kfontrequester.cpp
+ widgets/khbox.cpp
+ widgets/kkeybutton.cpp
+ widgets/kled.cpp
+ widgets/klineedit.cpp
+ widgets/kmenu.cpp
+ widgets/knuminput.cpp
+ widgets/kprogressbar.cpp
+ widgets/kpushbutton.cpp
+ widgets/ksqueezedtextlabel.cpp
+ widgets/ktabbar.cpp
+ widgets/ktabwidget.cpp
+ widgets/ktextedit.cpp
+ widgets/ktimezonewidget.cpp
+ widgets/kvbox.cpp
 )
 
 if (Q_WS_X11)
@@ -189,38 +191,26 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 install( FILES aboutkde.png ktip-bulb.png ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
- kprogressbar.h
  kprogressdialog.h
  kcolordialog.h
- kdatepicker.h
  kdatetable.h
  kfontdialog.h
- kmenu.h
- kfontrequester.h
  ktabctl.h
  kstatusbar.h
  kmainwindow.h
  ktoolbar.h
  kmenubar.h
- knuminput.h
  knotificationrestrictions.h
  kseparator.h
- klineedit.h
  krestrictedline.h
- kcolorbutton.h
  ksystemtray.h
- kbuttonbox.h
  keditcl.h
- kled.h
- keditlistbox.h
  kkeydialog.h
- kkeybutton.h
  kurllabel.h
  kruler.h
  kcursor.h
  kinputdialog.h
  kactivelabel.h
- kcharselect.h
  kcolormimedata.h
  knumvalidator.h
  kdialog.h
@@ -248,7 +238,6 @@ install( FILES
  khelpmenu.h
  kcmodule.h
  kstdaction.h
- kcombobox.h
  k3iconview.h
  k3listview.h
  klistbox.h
@@ -262,25 +251,15 @@ install( FILES
  kanimwidget.h
  kaboutkde.h
  kaboutapplication.h
- kpushbutton.h
- kcolorcombo.h
- kcompletionbox.h
- ksqueezedtextlabel.h
  kcommand.h
  kwindowlistmenu.h
  kaccelgen.h
  ktip.h
- kdatewidget.h
  karrowbutton.h
  kguiitem.h
  kstdguiitem.h
  kstringvalidator.h
- ktextedit.h
  kpassivepopup.h
- kdatetimewidget.h
- ktimezonewidget.h
- ktabbar.h
- ktabwidget.h
  ksplashscreen.h
  kconfigdialog.h
  kactionselector.h
@@ -291,8 +270,6 @@ install( FILES
  k3iconviewsearchline.h
  ktoolbarlabelaction.h
  kshortcutdialog.h
- khbox.h
- kvbox.h
  kconfigdialogmanager.h
  knotification.h
  kiconengine.h
@@ -306,7 +283,6 @@ install( FILES
  kcompletion.h
  kmessageboxmessagehandler.h
  kpassivepopupmessagehandler.h
- kbuttongroup.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
