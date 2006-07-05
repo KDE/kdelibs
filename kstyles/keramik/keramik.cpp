@@ -684,6 +684,6 @@ public:
 
 };
 
-K_EXPORT_STYLE("Keramik-KStyle4", KeramikStyle)
+K_EXPORT_STYLE("Keramik", KeramikStyle)
 
 // kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

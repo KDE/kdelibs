@@ -74,7 +74,7 @@
 // #include "plastik.moc"
 #include "misc.h"
 
-K_EXPORT_STYLE("Plastik4", PlastikStyle)
+K_EXPORT_STYLE("Plastik", PlastikStyle)
 
 // some bitmaps for the radio button so it's easier to handle the circle stuff...
 // 13x13
