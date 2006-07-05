@@ -41,18 +41,9 @@ ImplClass=KDialogPreview
 ToolTip=Class for simple Dialogs (KDE)
 Group=Container (KDE)
 
-[KDualColorButton]
-ToolTip=A widget for selecting two related colors (KDE)
-Group=Graphics (KDE)
-
 [KEditListBox]
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)
-
-[KFontCombo]
-ToolTip=Font Combo Box (KDE)
-WhatsThis=A QCombo Box showing the installed system fonts (with preview)
-Group=Input (KDE)
 
 [KFontChooser]
 IncludeFile=kfontdialog.h
@@ -67,21 +58,11 @@ ToolTip=Font Requester (KDE)
 WhatsThis=A compact font selection and preview widget
 Group=Input (KDE)
 
-[KGradientSelector]
-IncludeFile=kselector.h
-WhatsThis=A widget that allows the user to select two colors to form a gradient
-Group=Graphics (KDE)
-
 [KHistoryCombo]
 IncludeFile=kcombobox.h
 ToolTip=A combobox for offering a history and completion (KDE)
 WhatsThis=A combobox which implements a history like a unix shell
 Group=Input (KDE)
-
-[KHSSelector]
-IncludeFile=kcolordialog.h
-ToolTip=Widget for Hue/Saturation selection (KDE)
-Group=Graphics (KDE)
 
 [KLed]
 ToolTip=LED Widget (KDE)
@@ -254,17 +235,6 @@ IncludeFile=kactionselector.h
 ToolTip=A widget for selecting and arranging actions/objects
 Group=Views (KDE)
 
-[KWritePermsIcon]
-IncludeFile=kauthicon.h
-ToolTip=Auth icon for write permission display.
-ConstructorArgs=("", parent)
-Group=Display (KDE)
-
-[KRootPermsIcon]
-IncludeFile=kauthicon.h
-ToolTip=Icon to show whether or not a user has root permissions.
-Group=Display (KDE)
-
 [KColorPatch]
 IncludeFile=kcolordialog.h
 ToolTip=The KColorPatch widget is a (usually small) widget showing a selected color.
@@ -294,11 +264,6 @@ IncludeFile=kanimwidget.h
 ToolTip=An extended version of QToolButton which can display an animated icon.
 Group=Display (KDE)
 ConstructorArgs=(parent)
-
-[KValueSelector]
-IncludeFile=kcolordialog.h
-ToolTip=Widget for color value selection.
-Group=Graphics (KDE)
 
 [KSeparator]
 IncludeFile=kseparator.h
