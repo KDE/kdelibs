@@ -52,7 +52,6 @@ set(kdeui_LIB_SRCS
  kmainwindow.cpp
  kseparator.cpp
  krestrictedline.cpp
- ksystemtray.cpp
  keditcl1.cpp
  keditcl2.cpp
  kshortcutdialog.cpp
@@ -148,6 +147,7 @@ set(kdeui_LIB_SRCS
  widgets/kprogressbar.cpp
  widgets/kpushbutton.cpp
  widgets/ksqueezedtextlabel.cpp
+ widgets/ksystemtray.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
  widgets/ktextedit.cpp
@@ -203,7 +203,6 @@ install( FILES
  knotificationrestrictions.h
  kseparator.h
  krestrictedline.h
- ksystemtray.h
  keditcl.h
  kkeydialog.h
  kurllabel.h
@@ -283,6 +282,7 @@ install( FILES
  kcompletion.h
  kmessageboxmessagehandler.h
  kpassivepopupmessagehandler.h
+ widgets/ksystemtray.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
