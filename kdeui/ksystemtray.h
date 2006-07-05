@@ -18,7 +18,7 @@
 #ifndef KSYSTEMTRAY_H
 #define KSYSTEMTRAY_H
 
-#include <QLabel>
+#include <QSystemTrayIcon>
 
 #include <kglobal.h>
 
@@ -42,26 +42,9 @@ class KSystemTrayPrivate;
  * right mouse button, she gets a popupmenu with application specific
  * commands, including "Minimize/Restore" and "Quit".
  *
- * Docking happens magically when calling show(). The window undocks
- * with either hide() or when it is destroyed.
- *
- * KSystemTray inherits methods such as setPixmap() and setMovie() to
- * specify an icon or movie (animated icon) respectively. It is
- * designed to be usable "as is", without the need to subclass it. In
- * case you need to provide something special (such as an additional
- * popupmenu on a click with the left mouse button), you can subclass
- * anyway, of course.
- *
- * Having an icon on the system tray is a useful technique for
- * daemon-like applications that may run for some time without user
- * interaction but have to be there immediately when the user needs
- * them. Examples are kppp, kisdn, kscd, kmix or knotes. With kppp and
- * kisdn, the docked icon even provides real-time information about
- * the network status.
- *
  * @author Matthias Ettrich <ettrich@kde.org>
  **/
-class KDEUI_EXPORT KSystemTray : public QLabel
+class KDEUI_EXPORT KSystemTray : public QSystemTrayIcon
 {
     Q_OBJECT
 public:
@@ -87,32 +70,10 @@ public:
     ~KSystemTray();
 
     /**
-       Access to the context menu. This makes it easy to add new items
-       to it.
-     */
-    KMenu* contextMenu() const;
-
-    /**
        Easy access to the actions in the context menu
        Currently includes KStdAction::Quit and minimizeRestore
     */
     KActionCollection* actionCollection();
-
-    /**
-     * Changes the tray's icon.
-     */
-    virtual void setPixmap( const QPixmap& icon );
-
-    /**
-     * Changes the tray's text description (which can be seen e.g. in the systray
-     * configuration dialog). The default value is KAboutData::programName().
-     */
-    virtual void setWindowTitle( const QString& title );
-
-    /**
-      * @deprecated use setWindowTitle
-      */
-    inline KDE_DEPRECATED void setCaption( const QString& title ) { setWindowTitle(title); };
 
     /**
      * Loads an icon @p icon using the icon loader class of the given instance @p instance.
@@ -129,48 +90,7 @@ Q_SIGNALS:
      */
     void quitSelected();
 
-public Q_SLOTS:
-
-    /**
-     * Toggles the state of the window associated with this system tray icon (hides it,
-     * shows it or activates it depending on the window state). The default implementation
-     * of mousePressEvent() calls toggleActive() when the tray icon is left-clicked, use
-     * it when reimplementing mousePressEvent().
-     */
-    void toggleActive();
-    /**
-     * Activates the window associated with this system tray icon, regardless of its current state.
-     */
-    void setActive();
-    /**
-     * Hides the window associated with this system tray icon, regardless of its current state.
-     */
-    void setInactive();
-
 protected:
-
-    /**
-       Reimplemented to provide the standard show/raise behavior
-       for the parentWidget() and the context menu.
-
-       Feel free to reimplement this if you need something special.
-     */
-    void mousePressEvent( QMouseEvent * );
-
-    /**
-       Reimplemented to provide the standard show/raise behavior
-       for the parentWidget() and the context menu.
-
-       Feel free to reimplement this if you need something special.
-     */
-    void mouseReleaseEvent( QMouseEvent * );
-
-    /**
-       Makes it easy to adjust some menu items right before the
-       context menu becomes visible.
-     */
-    virtual void contextMenuAboutToShow( KMenu* menu );
-
     /**
        Reimplemented for internal reasons.
      */
@@ -178,15 +98,14 @@ protected:
 
 
 private Q_SLOTS:
+    void contextMenuAboutToShow();
     void minimizeRestoreAction();
     void maybeQuit();
 
 private:
-    void activateOrHide();
+    void activateOrHide( int reasonCalled );
     void minimizeRestore( bool restore );
-    KMenu* menu;
-    uint hasQuit :1;
-private:
+
     KSystemTrayPrivate* d;
 };
 

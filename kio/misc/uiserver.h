@@ -196,7 +196,7 @@ class QHideEvent;
 class QShowEvent;
 class ProgressConfigDialog;
 class QMenu;
-class UIServerSystemTray;
+class KSystemTray;
 
 /**
  * It's purpose is to show progress of IO operations.
@@ -406,7 +406,7 @@ private:
   bool m_bUpdateNewJob;
   ProgressConfigDialog *m_configDialog;
   QMenu* m_contextMenu;
-  UIServerSystemTray *m_systemTray;
+  KSystemTray *m_systemTray;
 
   QAction *m_toolCancel, *m_toolConfigure;
 

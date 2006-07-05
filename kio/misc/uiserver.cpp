@@ -85,21 +85,6 @@ static const int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
                                     450  // URL
 };
 
-class UIServerSystemTray:public KSystemTray
-{
-   public:
-      UIServerSystemTray(UIServer* uis)
-         :KSystemTray(uis)
-      {
-         KMenu* pop= contextMenu();
-         pop->addAction(i18n("Settings..."), uis, SLOT(slotConfigure()));
-         pop->addAction(i18n("Remove"), uis, SLOT(slotRemoveSystemTrayIcon()));
-         setPixmap(loadIcon("filesave"));
-         //actionCollection()->action("file_quit")->setEnabled(true);
-         KStdAction::quit(uis, SLOT(slotQuit()), actionCollection());
-      }
-};
-
 class ProgressConfigDialog:public KDialog
 {
    public:
@@ -660,15 +645,19 @@ UIServer::~UIServer() {
 
 void UIServer::applySettings()
 {
-  if ((m_showSystemTray) && (m_systemTray==0))
+  if (m_showSystemTray && m_systemTray == 0)
   {
-     m_systemTray=new UIServerSystemTray(this);
+     m_systemTray = new KSystemTray(this);
+     QMenu* pop = m_systemTray->contextMenu();
+     pop->addAction(i18n("Settings..."), this, SLOT(slotConfigure()));
+     pop->addAction(i18n("Remove"), this, SLOT(slotRemoveSystemTrayIcon()));
+     m_systemTray->setIcon(KSystemTray::loadIcon("filesave"));
      m_systemTray->show();
   }
-  else if ((m_showSystemTray==false) && (m_systemTray!=0))
+  else if (m_showSystemTray == false && m_systemTray != 0)
   {
      delete m_systemTray;
-     m_systemTray=0;
+     m_systemTray = 0;
   }
 
   if (m_showStatusBar==false)
