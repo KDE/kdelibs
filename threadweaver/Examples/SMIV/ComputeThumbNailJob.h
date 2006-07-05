@@ -32,7 +32,10 @@ public:
     ComputeThumbNailJob ( QImageLoaderJob *imageLoader,
 			  QObject *parent = 0);
     /** Returns the "ready made" thumbnail. */
-    QImage thumb();
+  QImage thumb();
+
+  /** reimpl */
+  int priority () const;
 protected:
     void run();
     QImage m_thumb;

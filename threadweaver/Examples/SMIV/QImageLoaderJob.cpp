@@ -36,6 +36,11 @@ namespace ThreadWeaver {
         P_ASSERT ( isFinished() );
         return m_image;
     }
+  
+  int QImageLoaderJob::priority() const 
+  {
+    return 1;
+  }
 
     void QImageLoaderJob::run()
     {

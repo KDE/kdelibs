@@ -42,6 +42,8 @@ namespace ThreadWeaver {
             returned. If an error occured (for example, the data in file is a
             corrupted image), null will be returned, too. */
         QImage image() const;
+      /** reimpl */
+      int priority() const;
     protected:
         void run();
 

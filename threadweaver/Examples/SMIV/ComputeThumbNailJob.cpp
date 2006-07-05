@@ -35,6 +35,11 @@ QImage ComputeThumbNailJob::thumb()
     return m_thumb;
 }
 
+int ComputeThumbNailJob::priority() const 
+{
+  return 2;
+}
+
 void ComputeThumbNailJob::run()
 {
     P_ASSERT ( m_image->isFinished() );
