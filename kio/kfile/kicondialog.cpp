@@ -12,7 +12,7 @@
  */
 
 #include "kicondialog.h"
-
+#include <kbuttongroup.h>
 #include <k3iconviewsearchline.h>
 
 #include <kapplication.h>
@@ -267,9 +267,13 @@ void KIconDialog::init()
     QVBoxLayout *top = new QVBoxLayout(main);
     top->setSpacing( spacingHint() );
 
-    Q3ButtonGroup *bgroup = new Q3ButtonGroup(0, Qt::Vertical, i18n("Icon Source"), main);
-    bgroup->layout()->setSpacing(KDialog::spacingHint());
-    bgroup->layout()->setMargin(KDialog::marginHint());
+    KButtonGroup *bgroup = new KButtonGroup(main );
+    bgroup->setTitle(  i18n("Icon Source"));
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->setSpacing(KDialog::spacingHint());
+    vbox->setMargin(KDialog::marginHint());
+    //vbox->setCaption(
+    bgroup->setLayout( vbox );
     top->addWidget(bgroup);
     connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
     QGridLayout *grid = new QGridLayout();
