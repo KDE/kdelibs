@@ -32,10 +32,6 @@
 #include <kpushbutton.h>
 #include <kstdguiitem.h>
 
-#ifdef Q_WS_X11
-#include <kwin.h>
-#endif
-
 using namespace KIO;
 
 SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool _modal )
@@ -57,13 +53,6 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
   }
 
   connect( this, SIGNAL( cancelClicked() ), SLOT( b0Pressed() ) );
-
-  // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
-  // i.e. in a separate process.
-#ifdef Q_WS_X11 //FIXME(E): Implement for QT Embedded, mac & win32
-  if ( modal )
-    KWin::setState( winId(), NET::StaysOnTop );
-#endif
 
   setMainWidget( new QLabel( _error_text, this ) );
 

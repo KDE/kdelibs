@@ -48,10 +48,6 @@
 #include <kguiitem.h>
 #include <ksqueezedtextlabel.h>
 
-#ifdef Q_WS_X11
-#include <kwin.h>
-#endif
-
 using namespace KIO;
 
 class RenameDlg::RenameDlgPrivate
