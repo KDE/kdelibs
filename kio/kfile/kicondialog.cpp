@@ -416,14 +416,6 @@ int KIconDialog::iconSize() const
     return (mGroupOrSize < 0) ? -mGroupOrSize : 0;
 }
 
-#ifndef KDE_NO_COMPAT
-QString KIconDialog::selectIcon(K3Icon::Group group, K3Icon::Context context, bool user)
-{
-    setup( group, context, false, 0, user );
-    return openDialog();
-}
-#endif
-
 void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
                         bool strictIconSize, int iconSize, bool user )
 {
