@@ -145,7 +145,7 @@ bool KGzipFilter::readHeader()
     if ((flags & ORIG_NAME) != 0) // skip original file name
     {
 #ifdef DEBUG_GZIP
-        kDebug(7005) << "ORIG_NAME=" << p << endl;
+        kDebug(7005) << "ORIG_NAME=" << (char*)p << endl;
 #endif
         while( (i > 0) && (*p))
         {

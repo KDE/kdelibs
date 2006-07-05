@@ -24,6 +24,7 @@
 #include <qtest_kde.h>
 #include <qfileinfo.h>
 #include <kdebug.h>
+#include <kfilterdev.h>
 
 QTEST_KDEMAIN( KArchiveTest, NoGUI )
 
@@ -193,6 +194,33 @@ void KArchiveTest::testReadTar()
 
     ok = tar.close();
     QVERIFY( ok );
+}
+
+// This tests the decompression using kfilterdev, basically.
+// To debug KTarPrivate::fillTempFile().
+void KArchiveTest::testUncompress()
+{
+    // testCreateTar must have been run first.
+    QVERIFY( QFile::exists( s_tarFileName ) );
+    QIODevice *filterDev = KFilterDev::deviceForFile( s_tarFileName, "application/x-gzip", true );
+    QVERIFY( filterDev );
+    QByteArray buffer;
+    buffer.resize(8*1024);
+    kDebug() << "buffer.size()=" << buffer.size() << endl;
+    QVERIFY( filterDev->open( QIODevice::ReadOnly ) );
+
+    qint64 totalSize = 0;
+    qint64 len = -1;
+    while ( !filterDev->atEnd() && len != 0 ) {
+        len = filterDev->read(buffer.data(), buffer.size());
+        QVERIFY( len >= 0 );
+        totalSize += len;
+        kDebug() << "read len=" << len << " totalSize=" << totalSize << endl;
+    }
+    filterDev->close();
+    delete filterDev;
+    kDebug() << "totalSize=" << totalSize << endl;
+    QVERIFY( totalSize > 26000 ); // 27648 here when using gunzip
 }
 
 void KArchiveTest::testTarFileData()
@@ -380,4 +408,3 @@ void KArchiveTest::testZipMaxLength()
     ok = zip.close();
     QVERIFY( ok );
 }
-

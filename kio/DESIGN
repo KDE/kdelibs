@@ -165,7 +165,7 @@ are popup dialogs (most are annoyed by them, like me :) or a kicker applet
 or something completely different. This would also remove the dependency on
 libkdeui (I hope).
 Conclusion: kio_uiserver is this single GUI daemon, but the dependency on
-libkdeui couldn't be removed (for many reasons, including Job::showErrorDialog())
+libkdeui couldn't be removed (for many reasons, including rename/skip dialogs)
 
 A. progress handling
 ---------------------

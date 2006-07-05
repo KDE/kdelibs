@@ -28,8 +28,6 @@
 
 #include <kdebug.h>
 #include <ksavefile.h>
-#include <kfilterdev.h>
-#include <kfilterbase.h>
 #include <kde_file.h>
 
 #include <q3ptrlist.h>
@@ -66,6 +64,9 @@ public:
     bool deviceOwned; // if true, we (KArchive) own m_dev and must delete it
 };
 
+#ifdef __GNUC__
+#warning KDE4 TODO port this Q3PtrList and add unit test copyTo()
+#endif
 // ### KDE4 TODO port me and add unit test
 class PosSortedPtrList : public Q3PtrList<KArchiveFile> {
 protected:

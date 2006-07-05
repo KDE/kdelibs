@@ -9,6 +9,7 @@ class KArchiveTest : public QObject
 private Q_SLOTS:
     void testCreateTar();
     void testReadTar();
+    void testUncompress();
     void testTarFileData();
     void testTarMaxLength();
 

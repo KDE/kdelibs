@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000, 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -200,8 +200,10 @@ bool KFilterDev::seek( qint64 pos )
 
 bool KFilterDev::atEnd() const
 {
-    return filter->device()->atEnd() && (d->result == KFilterBase::END)
-                                     && d->ungetchBuffer.isEmpty();
+    return (d->result == KFilterBase::END)
+        && QIODevice::atEnd() // take QIODevice's internal buffer into account
+        && filter->device()->atEnd()
+        && d->ungetchBuffer.isEmpty();
 }
 
 qint64 KFilterDev::readData( char *data, qint64 maxlen )
