@@ -23,7 +23,6 @@
 #define KJOBUIPROXY_H
 
 #include <qobject.h>
-#include <qwidget.h>
 #include <kdelibs_export.h>
 
 class KJob;
