@@ -1521,6 +1521,7 @@ void KStandardDirs::addKDEDefaults()
 	addResourceType(types[index], kde_default(types[index]));
 	index++;
     }
+    addResourceType( "exe", "lib/kde4/libexec/" );
 
     addResourceDir("home", QDir::homePath(), false);
 }
