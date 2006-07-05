@@ -798,7 +798,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
        reply = kps.call("queryAuthInfo", data, errorMsg, qlonglong(windowId), s_seqNr);
 
 
-    if ( !reply.type() == QDBusMessage::ReplyMessage )
+    if ( reply.type() != QDBusMessage::ReplyMessage )
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
        return false;
