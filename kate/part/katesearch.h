@@ -113,7 +113,7 @@ class KateSearch : public QObject
      * @param flags OR'd combination of KFindDialog::Options
      */
     void replace( const QString &pattern, const QString &replacement, long flags );
-    void findAgain( bool back );
+    void findAgain( bool reverseDirection );
 
   private slots:
     void replaceSlot();

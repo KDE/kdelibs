@@ -216,7 +216,7 @@ void KateSearch::replace( const QString& pattern, const QString &replacement, lo
   search( searchFlags );
 }
 
-void KateSearch::findAgain( bool back )
+void KateSearch::findAgain( bool reverseDirection )
 {
   SearchFlags searchFlags;
   searchFlags.caseSensitive = KateViewConfig::global()->searchFlags() & KFindDialog::CaseSensitive;
@@ -231,7 +231,9 @@ void KateSearch::findAgain( bool back )
   searchFlags.regExp = KateViewConfig::global()->searchFlags() & KFindDialog::RegularExpression;
   searchFlags.useBackRefs = KateViewConfig::global()->searchFlags() & KReplaceDialog::BackReference;
 
-  searchFlags.backward = searchFlags.backward != back;
+  if (reverseDirection)
+    searchFlags.backward = !searchFlags.backward;
+
   searchFlags.fromBeginning = false;
   searchFlags.prompt = true; // ### why is the above assignment there?
   s.cursor = getCursor();
