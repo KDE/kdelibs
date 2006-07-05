@@ -258,7 +258,6 @@ void KIconDialog::init()
 {
     mGroupOrSize = K3Icon::Desktop;
     mContext = K3Icon::Any;
-    mType = 0;
     mFileList = KGlobal::dirs()->findAllResources("appicon", QLatin1String("*.png"));
 
     QWidget *main = new QWidget( this );
@@ -267,26 +266,27 @@ void KIconDialog::init()
     QVBoxLayout *top = new QVBoxLayout(main);
     top->setSpacing( spacingHint() );
 
-    KButtonGroup *bgroup = new KButtonGroup(main );
+    QGroupBox *bgroup = new QGroupBox(main );
     bgroup->setTitle(  i18n("Icon Source"));
     QVBoxLayout *vbox = new QVBoxLayout;
     vbox->setSpacing(KDialog::spacingHint());
     vbox->setMargin(KDialog::marginHint());
-    //vbox->setCaption(
     bgroup->setLayout( vbox );
     top->addWidget(bgroup);
-    connect(bgroup, SIGNAL(clicked(int)), SLOT(slotButtonClicked(int)));
     QGridLayout *grid = new QGridLayout();
     bgroup->layout()->addItem(grid);
     grid->addItem(new QSpacerItem(0, 15), 0, 0);
     mpRb1 = new QRadioButton(i18n("S&ystem icons:"), bgroup);
+    connect( mpRb1, SIGNAL( clicked() ), SLOT( slotSystemIconClicked() ) );
     grid->addWidget(mpRb1, 1, 0);
     mpCombo = new QComboBox(bgroup);
     connect(mpCombo, SIGNAL(activated(int)), SLOT(slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);
     mpRb2 = new QRadioButton(i18n("O&ther icons:"), bgroup);
+    connect( mpRb2, SIGNAL( clicked() ), SLOT( slotOtherIconClicked() ) );
     grid->addWidget(mpRb2, 2, 0);
     mpBrowseBut = new QPushButton(i18n("&Browse..."), bgroup);
+    connect( mpBrowseBut, SIGNAL(clicked()), this, SLOT( slotBrowse() ) );
     grid->addWidget(mpBrowseBut, 2, 1);
 
     //
@@ -346,6 +346,7 @@ void KIconDialog::init()
 
     // Make the dialog a little taller
     incrementInitialSize(QSize(0,100));
+    connect( this, SIGNAL( okClicked() ), this, SLOT( slotOk() ) );
 }
 
 
@@ -364,7 +365,7 @@ void KIconDialog::showIcons()
 {
     mpCanvas->clear();
     QStringList filelist;
-    if (mType == 0)
+    if (mpRb1->isChecked())
 	if (d->m_bStrictIconSize)
             filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
         else
@@ -428,7 +429,6 @@ void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
 {
     d->m_bStrictIconSize = strictIconSize;
     mGroupOrSize = (iconSize == 0) ? group : -iconSize;
-    mType = user ? 1 : 0;
     mpRb1->setChecked(!user);
     mpRb2->setChecked(user);
     mpCombo->setEnabled(!user);
@@ -445,7 +445,6 @@ void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
     d->m_bLockUser = lockUser;
     d->m_bLockCustomDir = lockCustomDir;
     mGroupOrSize = (iconSize == 0) ? group : -iconSize;
-    mType = user ? 1 : 0;
     mpRb1->setChecked(!user);
     mpRb1->setEnabled( !lockUser || !user );
     mpRb2->setChecked(user);
@@ -470,7 +469,7 @@ QString KIconDialog::openDialog()
         if (!d->custom.isNull())
             return d->custom;
 	QString name = mpCanvas->getCurrent();
-	if (name.isEmpty() || (mType == 1))
+	if (name.isEmpty() || (mpRb2->isChecked()))
 	    return name;
 	QFileInfo fi(name);
 	return fi.baseName();
@@ -495,7 +494,7 @@ void KIconDialog::slotOk()
     else
     {
         name = mpCanvas->getCurrent();
-        if (!name.isEmpty() && (mType != 1))
+        if (!name.isEmpty() && (mpRb2->isChecked()))
         {
             QFileInfo fi(name);
             name = fi.baseName();
@@ -519,58 +518,44 @@ QString KIconDialog::getIcon(K3Icon::Group group, K3Icon::Context context,
     return dlg.openDialog();
 }
 
-void KIconDialog::slotButtonClicked(int id)
+void KIconDialog::slotBrowse()
 {
-    QString file;
+    // Create a file dialog to select a PNG, XPM or SVG file,
+    // with the image previewer shown.
+    // KFileDialog::getImageOpenURL doesn't allow svg.
+    KUrl emptyUrl;
+    KFileDialog dlg( emptyUrl, i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
+                     this);
+    dlg.setOperationMode( KFileDialog::Opening );
+    dlg.setCaption( i18n("Open") );
+    dlg.setMode( KFile::File );
 
-    switch (id)
+    KImageFilePreview *ip = new KImageFilePreview( &dlg );
+    dlg.setPreviewWidget( ip );
+    dlg.exec();
+
+    QString file = dlg.selectedFile();
+    if (!file.isEmpty())
     {
-    case 0:
-        if(mType!=0)
-        {
-            mType = 0;
-            mpBrowseBut->setEnabled(false);
-            mpCombo->setEnabled(true);
-            showIcons();
-        }
-	break;
-
-    case 1:
-        if(mType!=1)
-        {
-            mType = 1;
-            mpBrowseBut->setEnabled( !d->m_bLockCustomDir );
-            mpCombo->setEnabled(false);
-            showIcons();
-        }
-        break;
-    case 2:
-        {
-            // Create a file dialog to select a PNG, XPM or SVG file,
-            // with the image previewer shown.
-            // KFileDialog::getImageOpenURL doesn't allow svg.
-            KUrl emptyUrl;
-            KFileDialog dlg( emptyUrl, i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"),
-                            this);
-            dlg.setOperationMode( KFileDialog::Opening );
-            dlg.setCaption( i18n("Open") );
-            dlg.setMode( KFile::File );
-
-            KImageFilePreview *ip = new KImageFilePreview( &dlg );
-            dlg.setPreviewWidget( ip );
-            dlg.exec();
-
-            file = dlg.selectedFile();
-            if (!file.isEmpty())
-            {
-                d->custom = file;
-                if ( mType == 1 )
-                  d->customLocation = QFileInfo( file ).absolutePath();
-                slotOk();
-            }
-        }
-        break;
+        d->custom = file;
+        if ( mpRb1->isChecked() )
+            d->customLocation = QFileInfo( file ).absolutePath();
+        slotOk();
     }
+}
+
+void KIconDialog::slotSystemIconClicked()
+{
+    mpBrowseBut->setEnabled(false);
+    mpCombo->setEnabled(true);
+    showIcons();
+}
+
+void KIconDialog::slotOtherIconClicked()
+{
+    mpBrowseBut->setEnabled( !d->m_bLockCustomDir );
+    mpCombo->setEnabled(false);
+    showIcons();
 }
 
 void KIconDialog::slotContext(int id)

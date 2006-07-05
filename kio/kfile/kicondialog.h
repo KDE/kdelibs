@@ -206,19 +206,21 @@ protected Q_SLOTS:
     void slotOk();
 
 private Q_SLOTS:
-    void slotButtonClicked(int);
     void slotContext(int);
     void slotStartLoading(int);
     void slotProgress(int);
     void slotFinished();
     void slotAcceptIcons();
+    void slotBrowse();
+    void slotOtherIconClicked();
+    void slotSystemIconClicked();
+
 private:
     void init();
     void showIcons();
 
     int mGroupOrSize;
     K3Icon::Context mContext;
-    int mType;
 
     QStringList mFileList;
     QComboBox *mpCombo;
