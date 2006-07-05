@@ -997,6 +997,9 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     ops->setViewConfig(d->viewConfigGroup);
     readConfig(d->viewConfigGroup);
     setSelection(d->selection);
+
+
+dumpObjectTree ();
 }
 
 void KFileDialog::initSpeedbar()
@@ -1022,6 +1025,8 @@ void KFileDialog::initGUI()
     d->boxLayout = new QVBoxLayout( d->mainWidget);
     d->boxLayout->setSpacing(KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
+    d->boxLayout->setMargin(0); // no additional margin to the already existing
+    layout()->setMargin(KDialog::marginHint());
 
     d->urlBarLayout = new QHBoxLayout();
     d->boxLayout->addItem(d->urlBarLayout ); // needed for the urlBar that may appear
@@ -1043,6 +1048,7 @@ void KFileDialog::initGUI()
     lafBox->addWidget(d->cancelButton, 1, 2, Qt::AlignVCenter);
 
     lafBox->setColumnStretch(1, 4);
+    lafBox->setMargin(5);
 
     vbox->addLayout(lafBox, 0);
     vbox->addSpacing(3);

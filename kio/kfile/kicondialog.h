@@ -132,14 +132,6 @@ public:
      */
     int iconSize() const;
 
-#ifndef KDE_NO_COMPAT
-    /**
-     * @deprecated in KDE 3.0, use the static method getIcon instead.
-     */
-    QString selectIcon(K3Icon::Group group=K3Icon::Desktop, K3Icon::Context
-	    context=K3Icon::Application, bool user=false);
-#endif
-
     /**
      * Allows you to set the same parameters as in the class method
      * getIcon().
