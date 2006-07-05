@@ -20,7 +20,6 @@
  *
  */
 
-#include <QLabel>
 #include <QList>
 #include <QPixmap>
 
@@ -28,7 +27,7 @@
 #include <kaboutdialog_p.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include <kactivelabel.h>
+#include <qlabel.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kurllabel.h>
@@ -97,7 +96,8 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
     if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty ())
     {
       QString text;
-      KActiveLabel* activeLabel = new KActiveLabel( authorPage );
+      QLabel* activeLabel = new QLabel( authorPage );
+      activeLabel->setOpenExternalLinks(true);
       if (!aboutData->customAuthorTextEnabled())
       {
         if ( aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
@@ -116,7 +116,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
       {
         text = aboutData->customAuthorRichText();
       }
-      activeLabel->setHtml( text );
+      activeLabel->setText( text );
       authorPage->addWidget( activeLabel );
     }
 
