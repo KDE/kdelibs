@@ -283,7 +283,7 @@ public:
    * @return the X11 Display
    * @deprecated use QX11Info::display()
    */
-  static inline KDE_DEPRECATED Display *getDisplay() { return QX11Info::display(); } ;
+  static inline KDE_DEPRECATED Display *getDisplay() { return QX11Info::display(); }
 #endif
 #endif
 
@@ -310,7 +310,7 @@ public:
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    * @deprecated Use KMath::random()
    */
-  static inline KDE_DEPRECATED int random() { return KRandom::random(); } ;
+  static inline KDE_DEPRECATED int random() { return KRandom::random(); }
 
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
@@ -318,7 +318,7 @@ public:
    * @return the random string
    * @deprecated use KRandom::randomString() instead.
    */
-  static inline KDE_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); } ;
+  static inline KDE_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); }
 #endif
 
   /**
