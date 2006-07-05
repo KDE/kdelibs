@@ -271,7 +271,8 @@ QString KConfigBase::readEntry( const char *pKey,
           QString result;
           QByteArray oldpath = qgetenv( "PATH" );
           QByteArray newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
-          newpath += KPATH_SEPARATOR;
+          if( !newpath.isEmpty() && !oldpath.isEmpty() )
+                  newpath += KPATH_SEPARATOR;
           newpath += oldpath;
           setenv( "PATH", newpath, 1/*overwrite*/ );
           FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
