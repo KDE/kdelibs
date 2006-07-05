@@ -1357,18 +1357,6 @@ namespace KIO {
          */
         void setDefaultPermissions( bool b );
 
-        /**
-         * When an error happens while copying/moving a file, the user will be presented with
-         * a dialog for skipping the file that can't be copied/moved.
-         * Or if the error is that the destination file already exists, the standard
-         * rename dialog is shown.
-         * If the program doesn't want CopyJob to show dialogs, but to simply fail on error,
-         * call setInteractive( false ).
-         *
-         * KDE4: remove, already in Job
-         */
-        void setInteractive( bool b );
-
     Q_SIGNALS:
 
         /**
