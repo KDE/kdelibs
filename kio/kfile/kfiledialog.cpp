@@ -764,6 +764,8 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     initStatic();
     d = new KFileDialogPrivate();
 
+    setButtons( 0 );
+
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
