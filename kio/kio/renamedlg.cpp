@@ -33,7 +33,6 @@
 
 #include <kmessagebox.h>
 #include <kpushbutton.h>
-#include <kapplication.h>
 #include <kio/global.h>
 #include <kmimetypetrader.h>
 #include <klibloader.h>
@@ -544,8 +543,6 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
                                       time_t mtimeSrc,
                                       time_t mtimeDest)
 {
-  Q_ASSERT(kapp);
-
   RenameDlg dlg( 0, _caption, _src, _dest, _mode,
                  sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
   int i = dlg.exec();
@@ -555,8 +552,3 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
 }
 
 #include "renamedlg.moc"
-
-
-
-
-
