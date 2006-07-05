@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     KUrlBar *urlBar = dlg->speedBar();
     if ( urlBar )
     {
-        urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"), 
+        urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"),
                                    QLatin1String("KDE FTP Server") );
     }
 
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 
     else if ( argv1 == QLatin1String("eventloop") )
     {
-        KFDTest *test = new KFDTest( startDir );
+        new KFDTest( startDir );
         return a.exec();
     }
 

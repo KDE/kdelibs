@@ -6,7 +6,7 @@
 #include <kmessagebox.h>
 #include <qtimer.h>
 
-KFDTest::KFDTest( const QString& startDir, QObject *parent, const char *name )
+KFDTest::KFDTest( const KUrl& startDir, QObject *parent, const char *name )
     : QObject( parent ),
       m_startDir( startDir )
 {
@@ -27,7 +27,7 @@ void KFDTest::doit()
     {
         KMessageBox::information(0, QString::fromLatin1("You selected the file: %1").arg( dlg->selectedUrl().prettyUrl() ));
     }
-    
+
 //     qApp->quit();
 }
 

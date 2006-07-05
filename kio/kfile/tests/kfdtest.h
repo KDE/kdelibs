@@ -8,19 +8,20 @@
 #define KFDTEST_H
 
 #include <qobject.h>
+#include <kurl.h>
 
 class KFDTest : public QObject
 {
     Q_OBJECT
 
 public:
-    KFDTest( const QString& startDir, QObject *parent = 0, const char *name = 0);
+    KFDTest( const KUrl& startDir, QObject *parent = 0, const char *name = 0);
 
 public Q_SLOTS:
     void doit();
 
 private:
-    QString m_startDir;
+    KUrl m_startDir;
 };
 
 
