@@ -131,14 +131,6 @@ namespace KIO {
                                          int method = -1) const;
 
         /**
-         * Enable or disable the message display from the job.
-         *
-         * The default is true.
-         * @param enable enable or disable message display
-         */
-        void setInteractive(bool enable);
-
-        /**
          * Returns whether message display is enabled or disabled.
          * See also setInteractive .
          * @return true if message display is enabled
