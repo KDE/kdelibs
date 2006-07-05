@@ -373,7 +373,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
           rect.y() + ( rect.height() - sh.height() ) / 2 );
   }
 
-  KSeparator* sep = new KSeparator( Qt::Horizontal, this );
+  KSeparator* sep = new KSeparator( Qt::Horizontal );
   vbox->addWidget( sep );
 
   QHBoxLayout *hbox2 = new QHBoxLayout();
@@ -382,18 +382,18 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   vbox->addLayout( hbox2 );
 
-  d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ), this );
+  d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ) );
   hbox2->addWidget( d->tipOnStart, 1 );
 
-  KPushButton *prev = new KPushButton( KStdGuiItem::back( KStdGuiItem::UseRTL ), this );
+  KPushButton *prev = new KPushButton( KStdGuiItem::back( KStdGuiItem::UseRTL ) );
   prev->setText( i18n( "&Previous" ) );
   hbox2->addWidget( prev );
 
-  KPushButton *next = new KPushButton( KStdGuiItem::forward( KStdGuiItem::UseRTL ), this );
+  KPushButton *next = new KPushButton( KStdGuiItem::forward( KStdGuiItem::UseRTL ));
   next->setText( i18nc( "Opposite to Previous", "&Next" ) );
   hbox2->addWidget( next );
 
-  KPushButton *ok = new KPushButton( KStdGuiItem::close(), this );
+  KPushButton *ok = new KPushButton( KStdGuiItem::close());
   ok->setDefault( true );
   hbox2->addWidget( ok );
 
