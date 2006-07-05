@@ -224,7 +224,9 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
-  Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
+  /*
+   * don't add setOnlyLocalReferences. its not supposed to be accessible via D-BUS
+   */
   Q_PROPERTY( bool modified READ isModified )
   Q_PROPERTY( QString encoding READ encoding WRITE setEncoding )
   Q_PROPERTY( QString lastModified READ lastModified )
