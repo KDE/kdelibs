@@ -141,12 +141,15 @@ void BackendSelection::selectionChanged()
 			break;
 		}
 	}
-	m_icon->setPixmap( KIcon( service->icon() ).pixmap( 32 ) );
-	m_name->setText( service->name() );
-	m_comment->setText( service->comment() );
-	m_website->setText( service->property( "X-KDE-PhononBackendInfo-Website" ).toString() );
-	//m_website->setURL( m_website->text() );
-	m_version->setText( service->property( "X-KDE-PhononBackendInfo-Version" ).toString() );
+	if( service )
+	{
+		m_icon->setPixmap( KIcon( service->icon() ).pixmap( 32 ) );
+		m_name->setText( service->name() );
+		m_comment->setText( service->comment() );
+		m_website->setText( service->property( "X-KDE-PhononBackendInfo-Website" ).toString() );
+		//m_website->setURL( m_website->text() );
+		m_version->setText( service->property( "X-KDE-PhononBackendInfo-Version" ).toString() );
+	}
 }
 
 void BackendSelection::up()
