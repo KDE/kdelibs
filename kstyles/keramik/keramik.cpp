@@ -140,126 +140,7 @@ public:
 		bool disabled = !(flags & State_Enabled);
 		switch (widgetType)
 		{
-			case WT_PushButton:
-			{
-				switch (primitive)
-				{
-					case Generic::Bevel:
-					{
-						const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
-						if (bOpt &&  //### helper function in KStyle?
-							(bOpt->features & QStyleOptionButton::DefaultButton))
-							return; //The default indicator does the job for us.
 
-						bool sunken   = (flags & State_On) || (flags & State_Sunken);
-						bool disabled = !(flags & State_Enabled);
-
-						int  name;
-
-						if (sunken)
-							name = keramik_pushbutton_pressed;
-						else
-							name =  keramik_pushbutton;
-
-						if (flags & State_MouseOver && name == keramik_pushbutton )
-							name = keramik_pushbutton_hov;
-
-						Keramik::RectTilePainter( name, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
-						//, pmode() );
-
-						return;
-					}
-
-					case PushButton::DefaultButtonBevel:
-					{
-						bool sunken = (flags & State_On) || (flags & State_Sunken);
-
-						int id;
-						if ( sunken ) id  = keramik_pushbutton_default_pressed;
-						else id = keramik_pushbutton_default;
-
-						if (flags & State_MouseOver && id == keramik_pushbutton_default )
-							id = keramik_pushbutton_default_hov;
-
-
-						Keramik::RectTilePainter( id, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
-						//,  pmode() );
-						break;
-
-						return;
-					}
-				}
-			}
-			break;
-
-			case WT_Splitter:
-			{
-				if (primitive == Generic::Bevel)
-				{
-					int x,y,w,h;
-					r.getRect(&x, &y, &w, &h);
-					int x2 = x+w-1;
-					int y2 = y+h-1;
-
-					//### should probably use color() directly to avoid creating a brush
-					p->setPen(pal.dark().color());
-					p->drawRect( r );
-					p->setPen(pal.background().color());
-					p->drawPoint(x, y);
-					p->drawPoint(x2, y);
-					p->drawPoint(x, y2);
-					p->drawPoint(x2, y2);
-					p->setPen(pal.color(QPalette::Light));
-					p->drawLine(x+1, y+1, x+1, y2-1);
-					p->drawLine(x+1, y+1, x2-1, y+1);
-					p->setPen(pal.midlight().color());
-					p->drawLine(x+2, y+2, x+2, y2-2);
-					p->drawLine(x+2, y+2, x2-2, y+2);
-					p->setPen(pal.mid().color());
-					p->drawLine(x2-1, y+1, x2-1, y2-1);
-					p->drawLine(x+1, y2-1, x2-1, y2-1);
-					p->fillRect(x+3, y+3, w-5, h-5, pal.brush(QPalette::Background));
-
-					return;
-				}
-				break;
-			}
-
-			case WT_CheckBox:
-			{
-				switch (primitive)
-				{
-					case CheckBox::CheckOn:
-						Keramik::CenteredPainter(keramik_checkbox_on).draw(p, r, pal.color(QPalette::Button),
-										pal.background().color(), disabled);//, pmode() );
-						return;
-					case CheckBox::CheckOff:
-						Keramik::CenteredPainter(keramik_checkbox_off).draw(p, r, pal.color(QPalette::Button),
-										pal.background().color(), disabled);//, pmode() );
-						return;
-					case CheckBox::CheckTriState:
-						Keramik::CenteredPainter(keramik_checkbox_tri).draw(p, r, pal.color(QPalette::Button),
-						pal.background().color(), disabled);//, pmode() );
-						return;
-				}
-				break;
-			}
-
-			case WT_RadioButton:
-			{
-				switch (primitive)
-				{
-					case RadioButton::RadioOn:
-						Keramik::CenteredPainter(keramik_radiobutton_on).draw(p, r, pal.color(QPalette::Button),
-												pal.background().color(), disabled);//, pmode() );
-						return;
-					case RadioButton::RadioOff:
-						Keramik::CenteredPainter(keramik_radiobutton_off).draw(p, r, pal.color(QPalette::Button),
-						pal.background().color(), disabled);//, pmode() );
-						return;
-				}
-				break;
-			}
 
 			case WT_ProgressBar:
 			{
@@ -277,22 +158,12 @@ public:
 			}
 			break;
 
-			case WT_MenuBar:
-			{
-				switch (primitive)
-				{
-					case Generic::Bevel:
-						Keramik::GradientPainter::renderGradient( p, r, pal.color(QPalette::Button), true, true);
-						return;
-				}
-			}
-			break;
 
 			case WT_MenuBarItem:
 			{
 				switch (primitive)
 				{
-					case Generic::Bevel:
+					case MenuBarItem::Panel:
 					{
 						const QStyleOptionMenuItem* miOpt = ::qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
 						bool active  = flags & State_Selected;
@@ -324,15 +195,6 @@ public:
 						p->fillRect( r, pal.background().color().light( 105 ) );
 						return;
 					}
-
-					case Menu::TearOff:
-					{
-						//### hmm,may be KStyle should do a default for this.
-						//### FIXME
-						return;
-					}
-
-					//TODO:scrollr
 				}
 			}
 			break;
@@ -368,45 +230,6 @@ public:
 				bool down = (flags & State_Sunken);
 				switch (primitive)
 				{
-					case ScrollBar::SliderVert:
-					case ScrollBar::SliderHor:
-					{
-						bool horizontal = (primitive == ScrollBar::SliderHor);
-
-						bool active     = (flags & State_Sunken);
-						int name = KeramikSlider1;
-						unsigned int count = 3;
-
-						int w = r.width();
-						int h = r.height();
-
-						if ( horizontal )
-						{
-							if ( w > ( loader.size( keramik_scrollbar_hbar+KeramikSlider1 ).width() +
-									loader.size( keramik_scrollbar_hbar+KeramikSlider4 ).width() +
-									loader.size( keramik_scrollbar_hbar+KeramikSlider3 ).width() + 2 ) )
-								count = 5;
-						}
-						else if ( h > ( loader.size( keramik_scrollbar_vbar+KeramikSlider1 ).height() +
-										loader.size( keramik_scrollbar_vbar+KeramikSlider4 ).height() +
-										loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
-								count = 5;
-
-						QColor col = pal.color(QPalette::Highlight);
-
-						//### what to do with the customScrollMode stuff?
-						//I suppose KStyle can take care of it, somehow?
-						//if (customScrollMode || !highlightScrollBar)
-						//	col = pal.button();
-
-						if (!active)
-							Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, pal.background().color(), false);
-						else
-							Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, 												Keramik::ColorUtil::lighten(col ,110),
-													pal.background().color(), false );
-						return;
-					}
-
 					case ScrollBar::DoubleButtonHor:
 					{
 						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
@@ -491,16 +314,6 @@ public:
 												pal.background().color(), disabled);
 						return;
 					}
-
-					case ScrollBar::GrooveAreaVert:
-						Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
-									p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
-						return;
-
-					case ScrollBar::GrooveAreaHor:
-						Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
-									p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
-						return;
 				}
 
 				if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft)
@@ -652,6 +465,221 @@ public:
 
 		KStyle::drawKStylePrimitive(widgetType, primitive, opt,
 					    r, pal, flags, p, widget, kOpt);
+	}
+
+	void drawControl (ControlElement elem, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
+	{
+		State flags = opt->state;
+		QRect      r     = opt->rect;
+		QPalette   pal   = opt->palette;
+		const bool disabled = !(flags & State_Enabled);
+
+		switch (elem)
+		{
+			case CE_Splitter:
+			{
+				int x,y,w,h;
+				r.getRect(&x, &y, &w, &h);
+				int x2 = x+w-1;
+				int y2 = y+h-1;
+
+					//### should probably use color() directly to avoid creating a brush
+				p->setPen(pal.dark().color());
+				p->drawRect( r );
+				p->setPen(pal.background().color());
+				p->drawPoint(x, y);
+				p->drawPoint(x2, y);
+				p->drawPoint(x, y2);
+				p->drawPoint(x2, y2);
+				p->setPen(pal.color(QPalette::Light));
+				p->drawLine(x+1, y+1, x+1, y2-1);
+				p->drawLine(x+1, y+1, x2-1, y+1);
+				p->setPen(pal.midlight().color());
+				p->drawLine(x+2, y+2, x+2, y2-2);
+				p->drawLine(x+2, y+2, x2-2, y+2);
+				p->setPen(pal.mid().color());
+				p->drawLine(x2-1, y+1, x2-1, y2-1);
+				p->drawLine(x+1, y2-1, x2-1, y2-1);
+				p->fillRect(x+3, y+3, w-5, h-5, pal.brush(QPalette::Background));
+
+				return;
+			}
+
+			case CE_MenuBarEmptyArea:
+			{
+				Keramik::GradientPainter::renderGradient( p, r, pal.color(QPalette::Button), true, true);
+
+				return;
+			}
+
+			case CE_MenuTearoff:
+			{
+				//### hmm,may be KStyle should do a default for this.
+				//### FIXME
+
+					
+				return;
+			}
+
+			case CE_MenuScroller:
+			{
+				//TODO:scrollr
+
+				return;
+			}
+
+			case CE_ScrollBarSlider:
+			{
+				bool horizontal = (flags & State_Horizontal);
+
+				bool active     = (flags & State_Sunken);
+				int name = KeramikSlider1;
+				unsigned int count = 3;
+
+				int w = r.width();
+				int h = r.height();
+
+				if ( horizontal )
+				{
+					if ( w > ( loader.size( keramik_scrollbar_hbar+KeramikSlider1 ).width() +
+										loader.size( keramik_scrollbar_hbar+KeramikSlider4 ).width() +
+										loader.size( keramik_scrollbar_hbar+KeramikSlider3 ).width() + 2 ) )
+						count = 5;
+				}
+				else if ( h > ( loader.size( keramik_scrollbar_vbar+KeramikSlider1 ).height() +
+									  loader.size( keramik_scrollbar_vbar+KeramikSlider4 ).height() +
+									  loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
+					count = 5;
+
+				QColor col = pal.color(QPalette::Highlight);
+
+						//### what to do with the customScrollMode stuff?
+						//I suppose KStyle can take care of it, somehow?
+						//if (customScrollMode || !highlightScrollBar)
+						//	col = pal.button();
+
+				if (!active)
+					Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, pal.background().color(), false);
+				else
+					Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, 												Keramik::ColorUtil::lighten(col ,110),
+				pal.background().color(), false );
+
+				return;
+			}
+
+			case CE_ScrollBarAddPage:
+			case CE_ScrollBarSubPage:
+			{
+				if ( flags & State_Horizontal )
+				{
+					Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
+							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
+				}
+				else
+				{
+					Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
+							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
+				}
+
+				return;
+			}
+			
+			default:
+				break;
+		}
+
+		KStyle::drawControl(elem, opt, p, widget);
+	}
+
+	void drawPrimitive(PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
+	{
+		State flags = opt->state;
+		QRect      r     = opt->rect;
+		QPalette   pal   = opt->palette;
+		const bool disabled = !(flags & State_Enabled);
+
+		switch (elem)
+		{
+			case PE_PanelButtonCommand:
+			{
+				const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
+				if (bOpt &&  //### helper function in KStyle?
+								(bOpt->features & QStyleOptionButton::DefaultButton))
+					return; //The default indicator does the job for us.
+
+				bool sunken   = (flags & State_On) || (flags & State_Sunken);
+				bool disabled = !(flags & State_Enabled);
+
+				int  name;
+
+				if (sunken)
+					name = keramik_pushbutton_pressed;
+				else
+					name =  keramik_pushbutton;
+
+				if (flags & State_MouseOver && name == keramik_pushbutton )
+					name = keramik_pushbutton_hov;
+
+				Keramik::RectTilePainter( name, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
+						//, pmode() );
+
+				return;
+			}
+
+			case PE_FrameDefaultButton:
+			{
+				bool sunken = (flags & State_On) || (flags & State_Sunken);
+
+				int id;
+				if ( sunken ) id  = keramik_pushbutton_default_pressed;
+				else id = keramik_pushbutton_default;
+
+				if (flags & State_MouseOver && id == keramik_pushbutton_default )
+					id = keramik_pushbutton_default_hov;
+
+
+				Keramik::RectTilePainter( id, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
+						//,  pmode() );
+				break; // TODO!! this break seems suspicious, have a look at it later (giessl)
+
+				return;
+			}
+
+			case PE_IndicatorCheckBox:
+			{
+				if ( flags & State_NoChange ) {
+					// tristate
+					Keramik::CenteredPainter(keramik_checkbox_tri).draw(p, r, pal.color(QPalette::Button),
+					pal.background().color(), disabled);//, pmode() );
+				} else if ( flags & State_On ) {
+					Keramik::CenteredPainter(keramik_checkbox_on).draw(p, r, pal.color(QPalette::Button),
+					pal.background().color(), disabled);//, pmode() );
+				} else {
+					Keramik::CenteredPainter(keramik_checkbox_off).draw(p, r, pal.color(QPalette::Button),
+					pal.background().color(), disabled);//, pmode() );
+				}
+
+				return;
+			}
+
+			case PE_IndicatorRadioButton:
+			{
+				if ( flags & State_On ) {
+					Keramik::CenteredPainter(keramik_radiobutton_on).draw(p, r, pal.color(QPalette::Button),
+					pal.background().color(), disabled);//, pmode() );
+				} else {
+					Keramik::CenteredPainter(keramik_radiobutton_off).draw(p, r, pal.color(QPalette::Button),
+					pal.background().color(), disabled);//, pmode() );
+				}
+
+				return;
+			}
+
+			default:
+				break;
+		}
+
+		KStyle::drawPrimitive(elem, opt, p, widget);
 	}
 
 };

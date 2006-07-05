@@ -69,6 +69,9 @@ public:
                                      const QWidget* widget = 0,
                                      Option* kOpt = 0) const;
 
+    void drawControl (ControlElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
+    void drawPrimitive (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
+
 
 
 
@@ -85,14 +88,7 @@ public:
 //                              const QColorGroup &cg,
 //                              SFlags flags = Style_Default,
 //                              const QStyleOption& = QStyleOption::Default ) const;
-// 
-//     void drawPrimitive(PrimitiveElement pe,
-//                        QPainter *p,
-//                        const QRect &r,
-//                        const QColorGroup &cg,
-//                        SFlags flags = Style_Default,
-//                        const QStyleOption &opt = QStyleOption::Default ) const;
-// 
+
 //     void drawControl(ControlElement element,
 //                      QPainter *p,
 //                      const QWidget *widget,
@@ -229,10 +225,15 @@ protected:
                       bool khtmlMode = false) const;
 
     // TODO: cleanup helper methods...
+    enum CheckState {
+        CheckOn,
+        CheckOff,
+        CheckTristate
+    };
     void renderCheckBox(QPainter *p, const QRect &r, const QPalette &pal,
-                        bool enabled, bool mouseOver, int primitive) const;
+                        bool enabled, bool mouseOver, CheckState state) const;
     void renderRadioButton(QPainter *p, const QRect &r, const QPalette &pal,
-                           bool enabled, bool mouseOver, int primitive) const;
+                           bool enabled, bool mouseOver, CheckState state) const;
 
     void renderPanel(QPainter *p,
                      const QRect &r,
@@ -369,3 +370,6 @@ private:
 };
 
 #endif // __PLASTIK_H
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
+

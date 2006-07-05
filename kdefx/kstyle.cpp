@@ -1,7 +1,7 @@
 /**
  * KStyle for KDE4
  * Copyright (C) 2004-2005 Maksim Orlovich <maksim@kde.org>
- * Copyright (C) 2005      Sandro Giessl <sandro@giessl.com>
+ * Copyright (C) 2005,2006 Sandro Giessl <giessl@kde.org>
  *
  * Based in part on the following software:
  *  KStyle for KDE3
@@ -252,16 +252,6 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                         textOpts->text);
         p->setPen(old);
     }
-    else if (primitive == Generic::Bevel)
-    {
-        //### TODO: use proper cg. Actually, why aren't we passing a CG?
-        //p->fillRect(r, Qt::red);
-
-        //p->setPen(Qt::white);
-        p->fillRect(r, pal.color( QPalette::Button) );
-        //p->drawRect(r);
-
-    }
     else if (primitive == Generic::Icon)
     {
         KStyle::IconOption* iconOpts = extractOption<KStyle::IconOption*>(kOpt);
@@ -426,27 +416,6 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_FrameFocusRect:
             drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, option, r, pal, flags, painter, widget);
             return;
-        case PE_IndicatorCheckBox:
-            if (flags & State_NoChange)
-                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckTriState, option, r, pal, flags, painter, widget);
-            else if (flags & State_On)
-                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckOn, option, r, pal, flags, painter, widget);
-            else
-                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckOff, option, r, pal, flags, painter, widget);
-            return;
-        case PE_IndicatorRadioButton:
-            if (flags & State_On)
-                drawKStylePrimitive(WT_RadioButton, RadioButton::RadioOn, option, r, pal, flags, painter, widget);
-            else
-                drawKStylePrimitive(WT_RadioButton, RadioButton::RadioOff, option, r, pal, flags, painter, widget);
-            return;
-        case PE_PanelButtonCommand:
-        //case PE_PanelButtonBevel: // ### CHECKME
-            drawKStylePrimitive(WT_PushButton, Generic::Bevel, option, r, pal, flags, painter, widget);
-            return;
-        case PE_FrameDefaultButton:
-            drawKStylePrimitive(WT_PushButton, PushButton::DefaultButtonBevel, option, r, pal, flags, painter, widget);
-            return;
         case PE_IndicatorArrowUp:
             drawKStylePrimitive(WT_Generic, Generic::ArrowUp, option, r, pal, flags, painter, widget);
             return;
@@ -571,10 +540,6 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             drawKStylePrimitive(WT_ToolBar, ToolBar::Panel,option,r,pal,flags,painter,widget);
             return;
 
-        case PE_PanelButtonTool:
-            drawKStylePrimitive(WT_ToolButton, Generic::Bevel,option,r,pal,flags,painter,widget);
-            return;
-
         case PE_IndicatorButtonDropDown:
             drawKStylePrimitive(WT_ToolButton, Generic::ArrowDown, option, r, pal, flags, painter, widget);
             return;
@@ -638,10 +603,11 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
         case CE_PushButtonBevel:
         {
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
+            if (!bOpt) return;
 
             //Check whether we should draw default indicator.
             if (bOpt->features & QStyleOptionButton::DefaultButton)
-                drawKStylePrimitive(WT_PushButton, PushButton::DefaultButtonBevel, option, r, pal, flags, p, widget);
+                drawPrimitive(PE_FrameDefaultButton, option, p, widget);
 
             QRect bevelRect = r;
             //Exclude the margin if default or auto-default
@@ -649,7 +615,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 bevelRect = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin);
 
             //Now draw the bevel itself.
-            drawKStylePrimitive(WT_PushButton, Generic::Bevel, option, bevelRect, pal, flags, p, widget);
+            QStyleOptionButton bOptTmp = *bOpt;
+            bOptTmp.rect = bevelRect;
+            drawPrimitive(PE_PanelButtonCommand, &bOptTmp, p, widget);
+
             return;
         }
 
@@ -745,17 +714,11 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (!dwOpt) return;
 
             QRect textRect = insideMargin(r, WT_DockWidgetTitle, DockWidgetTitle::Margin);
-            drawKStylePrimitive(WT_DockWidgetTitle, Generic::Bevel, option, r, pal, flags, p, widget);
+            drawKStylePrimitive(WT_DockWidgetTitle, DockWidgetTitle::Panel, option, r, pal, flags, p, widget);
 
             TextOption lbOpt(dwOpt->title);
             lbOpt.color = QPalette::HighlightedText;
             drawKStylePrimitive(WT_DockWidgetTitle, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
-            return;
-        }
-
-        case CE_Splitter:
-        {
-            drawKStylePrimitive(WT_Splitter, Generic::Bevel, option, r, pal, flags, p, widget);
             return;
         }
 
@@ -767,15 +730,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //Draw the checkbox
             QRect checkBox = subElementRect(SE_CheckBoxIndicator, option, widget);
-            if (flags & State_NoChange)
-                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckTriState, option, handleRTL(bOpt, checkBox),
-                                    pal, flags, p, widget);
-            else if (flags & State_On)
-                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckOn, option, handleRTL(bOpt, checkBox),
-                                    pal, flags, p, widget);
-            else
-                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckOff, option, handleRTL(bOpt, checkBox),
-                                    pal, flags, p, widget);
+            QStyleOptionButton bOptTmp = *bOpt;
+            bOptTmp.rect = handleRTL(bOpt, checkBox);
+            drawPrimitive(PE_IndicatorCheckBox, &bOptTmp, p, widget);
 
             //Draw the label, if there is one
             if (!bOpt->text.isEmpty())
@@ -804,7 +761,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             TextOption lbOpt(bOpt->text);
             drawKStylePrimitive(WT_CheckBox, Generic::Text, option, r,
-                                pal, flags, p, widget, &lbOpt);
+                                pal, flags, p, widget, &lbOpt); // TODO: Qt::TextShowMnemonic...?
             return;
         }
 
@@ -816,12 +773,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //Draw the indicator
             QRect indicator = subElementRect(SE_RadioButtonIndicator, option, widget);
-            if (flags & State_On)
-                drawKStylePrimitive(WT_RadioButton, RadioButton::RadioOn, option, handleRTL(bOpt, indicator),
-                                    pal, flags, p, widget);
-            else
-                drawKStylePrimitive(WT_RadioButton, RadioButton::RadioOff, option, handleRTL(bOpt, indicator),
-                                    pal, flags, p, widget);
+            QStyleOptionButton bOptTmp = *bOpt;
+            bOptTmp.rect = handleRTL(bOpt, indicator);
+            drawPrimitive(PE_IndicatorRadioButton, &bOptTmp, p, widget);
 
             //Draw the label, if there is one
             if (!bOpt->text.isEmpty())
@@ -856,13 +810,6 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
         //The CE_ProgressBar implementation inside QCommonStyle is acceptible.
         //We just implement the subElementRect's it uses
-
-        case CE_ProgressBarGroove:
-        {
-            drawKStylePrimitive(WT_ProgressBar, Generic::Bevel, option, r,
-                                pal, flags, p, widget);
-            return;
-        }
 
         case CE_ProgressBarContents:
         {
@@ -997,20 +944,13 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             return;
         }
 
-        case CE_MenuBarEmptyArea:
-        {
-            drawKStylePrimitive(WT_MenuBar, Generic::Bevel, option, r,
-                                pal, flags, p, widget);
-            return;
-        }
-
         case CE_MenuBarItem:
         {
             const QStyleOptionMenuItem* mOpt = ::qstyleoption_cast<const QStyleOptionMenuItem*>(option);
             if (!mOpt) return;
 
             //Bevel...
-            drawKStylePrimitive(WT_MenuBarItem, Generic::Bevel, option, r,
+            drawKStylePrimitive(WT_MenuBarItem, MenuBarItem::Panel, option, r,
                                 pal, flags, p, widget);
 
             //Text...
@@ -1021,20 +961,6 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             drawKStylePrimitive(WT_MenuBarItem, Generic::Text, option, textRect,
                                 pal, flags, p, widget, &lbOpt);
 
-            return;
-        }
-
-        case CE_MenuScroller:
-        {
-            drawKStylePrimitive(WT_Menu, Menu::Scroller, option, r,
-                                pal, flags, p, widget);
-            return;
-        }
-
-        case CE_MenuTearoff:
-        {
-            drawKStylePrimitive(WT_Menu, Menu::TearOff, option, r,
-                                pal, flags, p, widget);
             return;
         }
 
@@ -1409,22 +1335,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             return;
         }
 
-        case CE_ScrollBarAddPage:
-        case CE_ScrollBarSubPage:
-        case CE_ScrollBarFirst:
-        case CE_ScrollBarLast:
-            drawKStylePrimitive(WT_ScrollBar, (flags & State_Horizontal) ?
-                                                    ScrollBar::GrooveAreaHor  :
-                                                    ScrollBar::GrooveAreaVert,
-                                option, r, pal, flags, p, widget);
-            return;
-
-        case CE_ScrollBarSlider:
-            drawKStylePrimitive(WT_ScrollBar, (flags & State_Horizontal) ?
-                                                    ScrollBar::SliderHor  :
-                                                    ScrollBar::SliderVert,
-                                option, r, pal, flags, p, widget);
-            return;
+// TODO: what about CE_ScrollBarFirst, CE_ScrollBarLast...?
+//         case CE_ScrollBarFirst:
+//         case CE_ScrollBarLast:
 
         //QCS's CE_TabBarTab is perfectly fine, so we just handle the subbits
 

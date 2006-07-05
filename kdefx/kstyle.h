@@ -1,7 +1,7 @@
 /**
  * KStyle for KDE4
  * Copyright (C) 2004-2005 Maksim Orlovich <maksim@kde.org>
- * Copyright (C) 2005      Sandro Giessl <sandro@giessl.com>
+ * Copyright (C) 2005,2006 Sandro Giessl <giessl@kde.org>
  *
  * Based in part on the following software:
  *  KStyle for KDE3
@@ -43,6 +43,26 @@ class QStyleOptionProgressBar;
 class QStyleOptionTab;
 
 #include <kdelibs_export.h>
+
+/**
+ * Makes style coding more convenient and allows to style KDE specific widgets.
+ *
+ * \par Maintainer: Sandro Giessl (giessl@kde.org)
+ */
+// TODO: From 'Qt4 Themes' discussion on kde-devel
+// - Remi Villatel: extend QStyle enums for KColorButton, KColorCombo, KKeyButton, split PE_HeaderSection into KPopupTitle, PopupMenuTitle, TaskContainer)
+// - RV: KLineEdit "plays with its colors" - related to KStyle?
+// - RV: KMulitTabBarTab ... does it need support from KStyle (instead of manual button rotation etc.)? Or is it dumped already?
+// - RV: KTabCtl draws itself mimicking QDrawShadeThingies
+// - RV: fixed colors (e.g. Konqueror, KToolbarButton label text ->KPE_ToolbarButton?): To prevent hacks like "preventing any PaletteChange()"... mor related to KDE4 color schemes... I guess
+// - Luciano Montanaro: Many apps assume fixed border size; make pixelMetric() used pervasively: Performance and Documentation disadvantage of current KStyle
+// - LM: make current KStyle layoutMetrics not stored in QVector, but in a method with switches... so they don't need to be constant (e.g. dependent of widget text size)
+// - LM: User interface guidelines... related to KStyle?
+// - e.g. drawFancyPE() in kdeui for KDE widgets: check "qobject_cast<KStyle*>(style())", or fallback drawing...
+// TODO: implement standardIcon().. and what about standardPalette()?
+// TODO: maybe the arrow in CE_PushButtonLabel should be painted in CE_PushButtonBevel like QCommonStyle
+// TODO: have a look at generic::text... really necessary or is sth like drawItemText() enough?
+// TODO: couldn't the option classes be based on QStyleOption?
 
 /*
  ### ### TODO:Where does visualRect fit in? Probably should be done already before calling drawKStylePrimitive?
@@ -350,12 +370,10 @@ protected:
 	 Primitive drawing operations.
 	 @note the arrows are centering primitives
 	 @todo explain what a centering primitive is
-	 @todo fix explanation of bevel
 	*/
         enum Primitive
         {
-            Bevel = 0xFFFF, ///< A bevel is a lodent that chops down tlees
-            Text,           ///< Passes in TextOption
+            Text = 0xFFFF,  ///< Passes in TextOption
             Icon,           ///< Passes in IconOption
             FocusIndicator, ///< Indication that this widget has focus
             Frame,          ///< Frame around widget
@@ -365,15 +383,22 @@ protected:
             ArrowLeft       ///< Left arrow
         };
     };
-    
+
     /**
-     * Layout properties and primitives relevant for rendering buttons
+     * Layout properties and primitives relevant for rendering buttons, like QPushButton
      *
-     * Generic primitives used:
-     * @li @c Bevel
+     * Generic KStyle primitives used:
      * @li @c Text
      * @li @c FocusIndicator
      * @li @c ArrowDown
+     *
+     * @note some primitives here may be called without a QStyleOptionButton. TODO: check if this is actually the case...
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_PanelButtonCommand Panel of a button, e.g. a QPushButton
+     * @li @c QStyle::PE_FrameDefaultButton Frame indicating default button. The normal
+     * button panel is drawn inside/above it.
+     * @li @c QStyle::CE_PushButtonBevel Implemented by KStyle to compose the above primitives
      */
     struct PushButton
     {
@@ -402,21 +427,13 @@ protected:
             MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu
             TextToIconSpace ///< Space between the icon and the text if both exist
         };
-
-        /**
-         * @note some primitives here may be called without a QStyleOptionButton.
-         */
-        enum Primitive
-        {
-            DefaultButtonBevel ///< Bevel indicating a default button
-        };
     };
 
     /**
-     * Layout properties and primitives relevant for rendering splitters
+     * Layout properties and primitives relevant for rendering splitters, like QSplitter
      *
-     * Generic primitives used:
-     * @li @c Bevel used to draw splitters
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_Splitter flags that should be of interest: (State_Enabled&&State_MouseOver for mouseOver), State_Horizontal for orientation (TODO: get this documentation upstream to QStyle)
      */
     // TODO: Implement splitters...!!
     struct Splitter
@@ -426,10 +443,22 @@ protected:
             Size ///< Size of the splitter handle
         };
     };
-    
+
     /**
-     From default primitives, Text and FocusIndicator are used
+     * Layout properties and primitives relevant for rendering checkboxes, like QCheckBox
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     * @li @c FocusIndicator
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_IndicatorCheckBox Check state indicator. Interesting
+     * flags: State_NoChange for tristate (neither off nor on), else if State_On for
+     * checked, else not checked (TODO: code example)
+     * @li @c QStyle::CE_CheckBox Where KStyle composes a check box, also using the
+     * above indicator primitive. Styles usually don't need to implement this.
      */
+    // TODO: shouldn't PE_IndicatorCheckBox only render the check-mark and the checkbox bevel should be painted in CE_CheckBox...?!
     struct CheckBox
     {
 	/** Layout properties for checkboxes. */
@@ -441,18 +470,20 @@ protected:
                                 ///< paint the focus rectangle in case of a labelless checkbox
             FocusMargin = NoLabelFocusMargin + MarginInc
         };
-        
-	/** Primitive state of the checkbox, translated to drawing style. */
-        enum Primitive
-        {
-            CheckOff,      ///< The check is off
-            CheckOn,       ///< The check is on
-            CheckTriState  ///< The check is tristate and neither off nor on
-        };
     };
 
     /**
-    From default primitives, Text and FocusIndicator are used
+     * Layout properties and primitives relevant for rendering radiobuttons, like QRadioButton
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     * @li @c FocusIndicator
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_IndicatorRadioButton Radio button state indicator. Interesting
+     * flags: State_On for checked, else not checked (TODO: code example)
+     * @li @c QStyle::CE_RadioButton Where KStyle composes a radio button, also using the
+     * above indicator primitive. Styles usually don't need to implement this.
      */
     struct RadioButton
     {
@@ -463,29 +494,44 @@ protected:
             BoxTextSpace,
             FocusMargin
         };
-        
-        enum Primitive
-        {
-            RadioOff,
-            RadioOn
-        };
     };
     
+
     /**
-     From default primitives, Text, Bevel are used
-    */
+     * Layout properties and primitives relevant for rendering the title of a dock widget
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_DockWidgetTitle Reimplemented by KStyle to split the element
+     * into KStyle primitives
+     */
     struct DockWidgetTitle
     {
         /** Enumerate the layout properties in the expected way. */
+        // TODO: need to add a few more layout properties/pixel metric values for dock widgets...
         enum LayoutProp
         {
             Margin ///<Margin for the title: note that this is a symmetric margin always!
         };
+
+        enum Primitive
+        {
+            Panel       ///< The panel/background of the title bar
+        };
     };
-    
+
     /**
-     From default primitives, Text, Bevel are used
-    */
+     * Layout properties and primitives relevant for rendering progress bars
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_ProgressBarGroove The groove where progress indicator
+     * is drawn in
+     */
     struct ProgressBar
     {
 	/** Layour properties for the progress bar. */
@@ -499,7 +545,8 @@ protected:
             MaxBusyIndicatorSize ///<Size limit on the busy indicator size;
             
         };
-    
+
+        // TODO: support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
         enum Primitive
         {
             Indicator,
@@ -508,8 +555,11 @@ protected:
     };
 
     /**
-     From default primitives, Bevel is used
-    */
+     * Layout properties and primitives relevant for rendering menubars, like QMenuBar
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_MenuBarEmptyArea Empty area of a menu bar, e.g. background color or menubar separators (?)...
+     */
     struct MenuBar
     {
         enum LayoutProp
@@ -520,8 +570,11 @@ protected:
     };
 
     /**
-     From default primitives, Text & Bevel are used
-    */
+     * Layout properties and primitives relevant for rendering menubar items
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     */
     struct MenuBarItem
     {
         enum LayoutProp
@@ -529,11 +582,23 @@ protected:
             Margin,                    //Margin rectangle to allocate for any bevel, etc. (Text will be drawn with the inside rect)
             Dummy = Margin + MarginInc //Paranoia about underlying type
         };
+
+        enum Primitive
+        {
+            Panel       ///< The panel/background of a menubar item. Interesting flags: State_Selected && State_HasFocus for mouseOver, State_Sunken for pressed state.
+        };
     };
 
     /**
-     From default primitives, Frame is used
-    */
+     * Layout properties and primitives relevant for rendering menus
+     *
+     * Generic KStyle primitives used:
+     * @li @c Frame
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_MenuTearoff Paints the area where a menu can be teared off
+     * @li @c QStyle::CE_MenuScroller Scrolling areas in a QMenu
+     */
     struct Menu
     {
         enum LayoutProp
@@ -546,9 +611,7 @@ protected:
 
         enum Primitive
         {
-            Background, //Menu and menu item background
-            TearOff,
-            Scroller
+            Background //Menu and menu item background
         };
     };
 
@@ -609,8 +672,17 @@ protected:
     };
 
     /**
-        Generic primitives used: the arrows
-    */
+     * Layout properties and primitives relevant for rendering scrollbars, like QScrollBar
+     *
+     * Generic KStyle primitives used:
+     * @li The Arrows
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_ScrollBarSlider Interesting flags: State_Horizontal for
+     * orientation, State_Sunken for pressed state (TODO: get this documentation
+     * upstream to QStyle?)
+     * @li @c CE_ScrollBarAddPage @c CE_ScrollBarSubPage The scrollbar groove area. Interesting flags: State_Horizontal, State_On&&State_Sunken for pressed state
+     */
     struct ScrollBar
     {
         /**
@@ -641,10 +713,6 @@ protected:
             DoubleButtonHor,                                //Used to draw a 2-button bevel, horizontal
                                                             //The above 2 are passed a DoubleButtonOption,
                                                             // to say which button is pressed
-            GrooveAreaVert,                                 //### is this enough, or also provide split version?
-            GrooveAreaHor,
-            SliderVert,
-            SliderHor
         };
     };
 
@@ -902,6 +970,16 @@ protected:
         };
     };
 
+    /**
+     * Layout properties and primitives relevant for rendering tool buttons, like QToolButton
+     *
+     * Generic KStyle primitives used:
+     * @li @c ArrowDown
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_PanelButtonTool Panel of a tool button, usually
+     * used inside a QToolBar
+     */
     struct ToolButton
     {
         /**
@@ -917,22 +995,39 @@ protected:
         // TODO: implement CE_ToolButtonLabel to have own Generic::Text,
         //        Generic::Icon, and LayoutProps PressedShiftHorizontal,
         //        PressedShiftVertical, TextToIconSpace, MenuIndicatorSize...
-
-        /**
-        From generic primitives, Bevel, ArrowDown are used.
-        */
     };
 
     ///Interface for the style to configure various metrics that KStyle has customizable.
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
-    
+
     /**
-     This is called to draw things, with the common Qt option parameters unpacked for convenience, and information
-     from KStyle passed as a KStyleOption.
-      Note that you should make sure to use the r parameter for the rectangle,
-     since the QStyleOption is generally unaltered from the original request, even if layout indicates
-     a different painting rectangle
-    */
+     * @brief Draws primitives which are used inside KStyle.
+     *
+     * KStyle implements various elements of QStyle::ComplexControl
+     * and QStyle::ControlElement for convenience. Usually complex drawing is
+     * split into smaller pieces, which can be text, icons, or other KStyle primitives.
+     * These are painted by this method.
+     *
+     * Common Qt option parameters are unpacked for convenience, and information
+     * from KStyle are passed as a KStyleOption.
+     *
+     * @note This method is not meant to be accessible from outside KStyle.
+     * @note You should make sure to use the @p r parameter for the rectangle,
+     * since the QStyleOption is generally unaltered from the original request,
+     * even if layout indicates a different painting rectangle.
+     *
+     * @param widgetType the widget context in which this call is happening in
+     * @param primitive the primitive which should be called. Primitives from the Generic
+     * struct are not directly coupled to the @p widgetType , other primitives are usually
+     * defined in the struct corresponding to the widget type.
+     * @param opt Qt option parameters
+     * @param r parameter for the rectangle
+     * @param pal the palette extracted from @p opt for convenience
+     * @param flags state flags extracted from @p opt for convenience
+     * @param p used to draw the primitive
+     * @param widget the widget which is painted on
+     * @param kOpt information passed from KStyle
+     */
     virtual void drawKStylePrimitive(WidgetType widgetType, int primitive, 
                                      const QStyleOption* opt,
                                      QRect r, QPalette pal, State flags,
