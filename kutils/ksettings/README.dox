@@ -96,7 +96,6 @@ Icon=myapp
 Type=Service
 ServiceTypes=KCModule
 
-X-KDE-ModuleType=Library
 X-KDE-Library=myappconfig
 X-KDE-FactoryName=MyAppConfigFactory
 X-KDE-ParentApp=myapp
@@ -109,7 +108,7 @@ Comment=General configuration of my app
 
 
 Some explanation for those keys:
-- You just keep 'Encoding', 'Type', 'ServiceTypes' and 'X-KDE-ModuleType' like
+- You just keep 'Encoding', 'Type' and 'ServiceTypes' like
   in the example. For very special needs you might add another ServiceType to
   the list...
 - Icon is the icon that will be used in the listview/iconview for your page.

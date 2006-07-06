@@ -55,7 +55,6 @@ namespace KSettings
    Type=Service
    ServiceTypes=KCModule
 
-   X-KDE-ModuleType=Library
    X-KDE-Library=myapppluginconfig
    X-KDE-FactoryName=MyAppPluginConfigFactory
    X-KDE-ParentApp=myapp

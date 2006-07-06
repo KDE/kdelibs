@@ -3,7 +3,6 @@ Encoding=UTF-8
 Type=Service
 
 ServiceTypes=KDEDModule
-X-KDE-ModuleType=Library
 X-KDE-Library=test
 X-KDE-Factory=test
 X-KDE-Kded-autoload=false

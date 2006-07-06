@@ -8,7 +8,6 @@ Comment=Password caching support
 Comment[fr]=Gestion du cache des mots de passe
 Comment[x-test]=xxPassword caching supportxx
 ServiceTypes=KDEDModule
-X-KDE-ModuleType=Library
 X-KDE-Library=kpasswdserver
 X-KDE-FactoryName=kpasswdserver
 X-KDE-Kded-autoload=false

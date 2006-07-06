@@ -2,7 +2,6 @@
 Encoding=UTF-8
 Type=Service
 ServiceTypes=KDEDModule
-X-KDE-ModuleType=Library
 X-KDE-Library=kwalletd
 X-KDE-FactoryName=kwalletd
 X-KDE-Kded-autoload=false

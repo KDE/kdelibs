@@ -117,7 +117,6 @@ the following line in the .desktop file:
 	X-KDE-Kded-load-on-demand=false
 
 Further it should contain:
-	X-KDE-ModuleType=Library
 	X-KDE-Library=foo
 	X-KDE-FactoryName=foo
 
