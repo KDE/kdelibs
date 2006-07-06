@@ -19,14 +19,13 @@
 #include "avcapture.h"
 #include "avcapture_p.h"
 #include "factory.h"
-#include "audiocapturedevice.h"
-#include "videocapturedevice.h"
+#include "objectdescription.h"
 
 namespace Phonon
 {
 PHONON_HEIR_IMPL( AvCapture, AbstractMediaProducer )
 
-AudioCaptureDevice AvCapture::audioCaptureDevice() const
+ObjectDescription AvCapture::audioCaptureDevice() const
 {
 	K_D( const AvCapture );
 	int index;
@@ -34,10 +33,10 @@ AudioCaptureDevice AvCapture::audioCaptureDevice() const
 		BACKEND_GET( int, index, "audioCaptureDevice" );
 	else
 		index = d->audioCaptureDevice;
-	return AudioCaptureDevice::fromIndex( index );
+	return ObjectDescription::fromIndex( ObjectDescription::AudioCaptureDevice, index );
 }
 
-void AvCapture::setAudioCaptureDevice( const AudioCaptureDevice& audioCaptureDevice )
+void AvCapture::setAudioCaptureDevice( const ObjectDescription& audioCaptureDevice )
 {
 	K_D( AvCapture );
 	if( d->backendObject )
@@ -55,7 +54,7 @@ void AvCapture::setAudioCaptureDevice( int audioCaptureDeviceIndex )
 		d->audioCaptureDevice = audioCaptureDeviceIndex;
 }
 
-VideoCaptureDevice AvCapture::videoCaptureDevice() const
+ObjectDescription AvCapture::videoCaptureDevice() const
 {
 	K_D( const AvCapture );
 	int index;
@@ -63,10 +62,10 @@ VideoCaptureDevice AvCapture::videoCaptureDevice() const
 		BACKEND_GET( int, index, "videoCaptureDevice" );
 	else
 		index = d->videoCaptureDevice;
-	return VideoCaptureDevice::fromIndex( index );
+	return ObjectDescription::fromIndex( ObjectDescription::VideoCaptureDevice, index );
 }
 
-void AvCapture::setVideoCaptureDevice( const VideoCaptureDevice& videoCaptureDevice )
+void AvCapture::setVideoCaptureDevice( const ObjectDescription& videoCaptureDevice )
 {
 	K_D( AvCapture );
 	if( d->backendObject )

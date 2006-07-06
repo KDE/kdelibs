@@ -37,9 +37,9 @@ AbstractMediaProducer::~AbstractMediaProducer()
 {
 	K_D( AbstractMediaProducer );
 	foreach( VideoPath* vp, d->videoPaths )
-		vp->removeDestructionHandler( this );
+		vp->removeDestructionHandler( d );
 	foreach( AudioPath* ap, d->audioPaths )
-		ap->removeDestructionHandler( this );
+		ap->removeDestructionHandler( d );
 }
 
 bool AbstractMediaProducer::addVideoPath( VideoPath* videoPath )
@@ -54,7 +54,7 @@ bool AbstractMediaProducer::addVideoPath( VideoPath* videoPath )
 		BACKEND_GET1( bool, success, "addVideoPath", QObject*, videoPath->iface() );
 		if( success )
 		{
-			videoPath->addDestructionHandler( this );
+			videoPath->addDestructionHandler( d );
 			d->videoPaths.append( videoPath );
 			return true;
 		}
@@ -74,7 +74,7 @@ bool AbstractMediaProducer::addAudioPath( AudioPath* audioPath )
 		BACKEND_GET1( bool, success, "addAudioPath", QObject*, audioPath->iface() );
 		if( success )
 		{
-			audioPath->addDestructionHandler( this );
+			audioPath->addDestructionHandler( d );
 			d->audioPaths.append( audioPath );
 			return true;
 		}
@@ -123,13 +123,13 @@ void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, Vid
 
 PHONON_SETTER( AbstractMediaProducer, setTickInterval, tickInterval, qint32 )
 
-const QList<VideoPath*>& AbstractMediaProducer::videoPaths() const
+QList<VideoPath*> AbstractMediaProducer::videoPaths() const
 {
 	K_D( const AbstractMediaProducer );
 	return d->videoPaths;
 }
 
-const QList<AudioPath*>& AbstractMediaProducer::audioPaths() const
+QList<AudioPath*> AbstractMediaProducer::audioPaths() const
 {
 	K_D( const AbstractMediaProducer );
 	return d->audioPaths;
@@ -212,52 +212,49 @@ void AbstractMediaProducer::setupIface()
 			break;
 		case PlayingState:
 		case BufferingState:
-			QTimer::singleShot( 0, this, SLOT( resumePlay() ) );
+			QTimer::singleShot( 0, this, SLOT( _k_resumePlay() ) );
 			break;
 		case PausedState:
-			QTimer::singleShot( 0, this, SLOT( resumePause() ) );
+			QTimer::singleShot( 0, this, SLOT( _k_resumePause() ) );
 			break;
 	}
 	BACKEND_GET( Phonon::State, d->state, "state" );
 }
 
-void AbstractMediaProducer::resumePlay()
+void AbstractMediaProducerPrivate::_k_resumePlay()
 {
-	K_D( AbstractMediaProducer );
-	BACKEND_CALL( "play" );
-	if( d->currentTime > 0 )
-		BACKEND_CALL1( "seek", qint64, d->currentTime );
+	pBACKEND_CALL( "play" );
+	if( currentTime > 0 )
+		pBACKEND_CALL1( "seek", qint64, currentTime );
 }
 
-void AbstractMediaProducer::resumePause()
+void AbstractMediaProducerPrivate::_k_resumePause()
 {
-	K_D( AbstractMediaProducer );
-	BACKEND_CALL( "play" );
-	if( d->currentTime > 0 )
-		BACKEND_CALL1( "seek", qint64, d->currentTime );
-	BACKEND_CALL( "pause" );
+	pBACKEND_CALL( "play" );
+	if( currentTime > 0 )
+		pBACKEND_CALL1( "seek", qint64, currentTime );
+	pBACKEND_CALL( "pause" );
 }
 
-void AbstractMediaProducer::phononObjectDestroyed( Base* o )
+void AbstractMediaProducerPrivate::phononObjectDestroyed( Base* o )
 {
 	// this method is called from Phonon::Base::~Base(), meaning the AudioPath
 	// dtor has already been called, also virtual functions don't work anymore
 	// (therefore qobject_cast can only downcast from Base)
-	K_D( AbstractMediaProducer );
 	Q_ASSERT( o );
 	AudioPath* audioPath = static_cast<AudioPath*>( o );
 	VideoPath* videoPath = static_cast<VideoPath*>( o );
-	if( d->audioPaths.contains( audioPath ) )
+	if( audioPaths.contains( audioPath ) )
 	{
-		if( d->backendObject )
-			BACKEND_CALL1( "removeAudioPath", QObject*, audioPath->iface() );
-		d->audioPaths.removeAll( audioPath );
+		if( backendObject )
+			pBACKEND_CALL1( "removeAudioPath", QObject*, audioPath->iface() );
+		audioPaths.removeAll( audioPath );
 	}
-	else if( d->videoPaths.contains( videoPath ) )
+	else if( videoPaths.contains( videoPath ) )
 	{
-		if( d->backendObject )
-			BACKEND_CALL1( "removeVideoPath", QObject*, videoPath->iface() );
-		d->videoPaths.removeAll( videoPath );
+		if( backendObject )
+			pBACKEND_CALL1( "removeVideoPath", QObject*, videoPath->iface() );
+		videoPaths.removeAll( videoPath );
 	}
 }
 

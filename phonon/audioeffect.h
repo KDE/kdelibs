@@ -23,7 +23,7 @@
 #include "effect.h"
 #include "phonondefs.h"
 #include <QObject>
-#include "audioeffectdescription.h"
+#include "objectdescription.h"
 
 class QString;
 class QStringList;
@@ -33,7 +33,6 @@ namespace Phonon
 {
 	class EffectParameter;
 	class AudioEffectPrivate;
-	class AudioEffectDescription;
 
 	/**
 	 * \short Audio effects that can be inserted into an AudioPath.
@@ -55,9 +54,9 @@ namespace Phonon
 			 *
 			 * \param parent QObject parent
 			 */
-			AudioEffect( const AudioEffectDescription& type, QObject* parent = 0 );
+			AudioEffect( const ObjectDescription& type, QObject* parent = 0 );
 
-			AudioEffectDescription type() const;
+			ObjectDescription type() const;
 			virtual QList<EffectParameter> parameterList() const;
 
 		protected:
@@ -67,7 +66,7 @@ namespace Phonon
 			 * Constructs new audio effect with private data \p dd and a
 			 * \p parent.
 			 */
-			AudioEffect( AudioEffectPrivate& dd, QObject* parent, const AudioEffectDescription& type = AudioEffectDescription() );
+			AudioEffect( AudioEffectPrivate& dd, QObject* parent, const ObjectDescription& type = ObjectDescription() );
 
 			/**
 			 * \internal

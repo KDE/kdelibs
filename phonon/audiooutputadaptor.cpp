@@ -46,15 +46,10 @@ void AudioOutputAdaptor::setVolume(double value)
     parent()->setProperty("volume", QVariant::fromValue(static_cast<float>(value)));
 }
 
-QString AudioOutputAdaptor::categoryName()
+QString AudioOutputAdaptor::category()
 {
-    // handle method call org.kde.Phonon.AudioOutput.categoryName
-    QString categoryName;
-    //QMetaObject::invokeMethod(parent(), "categoryName", Q_RETURN_ARG(QString, categoryName));
-
-    // Alternative:
-    categoryName = static_cast<Phonon::AudioOutput *>(parent())->categoryName();
-    return categoryName;
+    // handle method call org.kde.Phonon.AudioOutput.category
+    return Phonon::categoryToString( static_cast<Phonon::AudioOutput *>( parent() )->category() );
 }
 
 QString AudioOutputAdaptor::name()

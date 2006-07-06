@@ -17,16 +17,17 @@
 
 */
 
-#ifndef PHONON_NAMEDESCRIPTIONTUPLE_H
-#define PHONON_NAMEDESCRIPTIONTUPLE_H
+#ifndef PHONON_OBJECTDESCRIPTION_H
+#define PHONON_OBJECTDESCRIPTION_H
 
 #include <QtGlobal>
 #include <kdelibs_export.h>
+#include <QSharedDataPointer>
 class QString;
 
 namespace Phonon
 {
-	class NameDescriptionTuplePrivate;
+	class ObjectDescriptionPrivate;
 
 /**
  * \short Provides a tuple of enduser visible name and description.
@@ -40,24 +41,30 @@ namespace Phonon
  * \see AudioCaptureDevice
  * \see VideoCaptureDevice
  */
-class PHONONCORE_EXPORT NameDescriptionTuple
+class PHONONCORE_EXPORT ObjectDescription
 {
-	Q_DECLARE_PRIVATE( NameDescriptionTuple )
 	public:
-		/**
-		 * Constructs a tuple that is a copy of \p tuple.
-		 *
-		 * \see isValid
-		 */
-		NameDescriptionTuple( const NameDescriptionTuple& tuple );
+		enum Type
+		{
+			AudioOutputDevice,
+			AudioCaptureDevice,
+			VideoOutputDevice,
+			VideoCaptureDevice,
+			AudioEffect,
+			VideoEffect,
+			AudioCodec,
+			VideoCodec,
+			ContainerFormat,
+			Visualization
+		};
+
+		ObjectDescription();
 
 		/**
-		 * Assigns a copy of the tuple \p tuple to this tuple, and returns a
-		 * reference to it.
+		 * Returns \c true if this ObjectDescription describes the same
+		 * as \p otherDescription; otherwise returns \c false.
 		 */
-		NameDescriptionTuple& operator=( const NameDescriptionTuple& tuple );
-
-		~NameDescriptionTuple();
+		bool operator==( const ObjectDescription& otherDescription ) const;
 
 		/**
 		 * Returns the name of the capture source.
@@ -91,20 +98,31 @@ class PHONONCORE_EXPORT NameDescriptionTuple
 		 */
 		bool isValid() const;
 
+		/**
+		 * \internal
+		 * Returns a new description object that describes the
+		 * device/effect/codec/...  with the given \p index.
+		 *
+		 * \param type The type of description you want.
+		 */
+		static ObjectDescription fromIndex( Type type, int index );
+
 	protected:
 		/**
 		 * \internal
 		 * Sets the data.
 		 */
-		NameDescriptionTuple( NameDescriptionTuplePrivate &dd, int index,
-				const QString& name, const QString& description );
+		ObjectDescription( Type type, int index, const QString& name, const QString& description );
+
+	private:
 		/**
 		 * \internal
-		 * private data pointer
+		 * The data is implicitly shared.
 		 */
-		NameDescriptionTuplePrivate* d_ptr;
+		QSharedDataPointer<ObjectDescriptionPrivate> d;
 };
 } //namespace Phonon
+#include "objectdescription_p.h"
 
-#endif // PHONON_NAMEDESCRIPTIONTUPLE_H
+#endif // PHONON_OBJECTDESCRIPTION_H
 // vim: sw=4 ts=4 noet tw=80

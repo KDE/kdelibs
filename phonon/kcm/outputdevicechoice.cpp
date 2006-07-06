@@ -19,9 +19,7 @@
 
 #include "outputdevicechoice.h"
 #include <phonon/backendcapabilities.h>
-#include <phonon/audiooutputdevice.h>
-#include <phonon/audiocapturedevice.h>
-#include <phonon/videocapturedevice.h>
+#include <phonon/objectdescription.h>
 
 OutputDeviceChoice::OutputDeviceChoice( QWidget* parent )
 	: QWidget( parent )
@@ -43,7 +41,7 @@ OutputDeviceChoice::OutputDeviceChoice( QWidget* parent )
 
 void OutputDeviceChoice::load()
 {
-	QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
+	QList<Phonon::ObjectDescription> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
 	m_notificationModel.setModelData( list );
 	m_musicModel.setModelData( list );
 	m_videoModel.setModelData( list );
@@ -56,7 +54,7 @@ void OutputDeviceChoice::save()
 
 void OutputDeviceChoice::defaults()
 {
-	QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
+	QList<Phonon::ObjectDescription> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
 	m_notificationModel.setModelData( list );
 	m_musicModel.setModelData( list );
 	m_videoModel.setModelData( list );

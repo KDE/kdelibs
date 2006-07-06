@@ -111,22 +111,32 @@ throughout this documentation simply called Backend:
 
 \li \ref phonon_Backend "Backend"
 
-\subsection phonon_PlaybackClasses The Playback Classes
+\subsection phonon_mediaproducingclasses The classes producing media data (sources)
 
-\li \ref phonon_MediaObject "MediaObject"
+\li \ref phonon_AbstractMediaProducer "common methods/signals for media producing classes"
+\li \ref phonon_AvCapture "AvCapture"
 \li \ref phonon_ByteStream "ByteStream"
+\li \ref phonon_MediaObject "MediaObject"
+
+\subsection phonon_pathclasses The path classes
+
 \li \ref phonon_AudioPath "AudioPath"
-\li \ref phonon_AudioOutput "AudioOutput"
 \li \ref phonon_VideoPath "VideoPath"
+
+\subsection phonon_outputclasses The output classes
+\li \ref phonon_AudioDataOutput "AudioDataOutput"
+\li \ref phonon_AudioOutput "AudioOutput"
+\li \ref phonon_VideoDataOutput "VideoDataOutput"
 \li \ref phonon_VideoWidget "VideoWidget"
 
-\subsection phonon_EffectClasses The Effect Classes
+\subsection phonon_EffectClasses The effect classes
 
 \li \ref phonon_AudioEffect "AudioEffect"
-\li \ref phonon_VideoEffect "VideoEffect"
-\li \ref phonon_VolumeFaderEffect "VolumeFaderEffect"
 \li \ref phonon_BrightnessControl "BrightnessControl"
+\li \ref phonon_VideoEffect "VideoEffect"
 \li \ref phonon_Visualization "Visualization"
+\li \ref phonon_VolumeFaderEffect "VolumeFaderEffect"
+
 
 */
 // DOXYGEN_REFERENCES = kdecore kio phonon/ui

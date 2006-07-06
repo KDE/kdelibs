@@ -31,9 +31,9 @@ VideoPath::~VideoPath()
 {
 	K_D( VideoPath );
 	foreach( AbstractVideoOutput* vo, d->outputs )
-		vo->removeDestructionHandler( this );
+		vo->removeDestructionHandler( d );
 	foreach( VideoEffect* ve, d->effects )
-		ve->removeDestructionHandler( this );
+		ve->removeDestructionHandler( d );
 }
 
 bool VideoPath::addOutput( AbstractVideoOutput* videoOutput )
@@ -48,7 +48,7 @@ bool VideoPath::addOutput( AbstractVideoOutput* videoOutput )
 		BACKEND_GET1( bool, success, "addOutput", QObject*, videoOutput->iface() );
 		if( success )
 		{
-			videoOutput->addDestructionHandler( this );
+			videoOutput->addDestructionHandler( d );
 			d->outputs << videoOutput;
 			return true;
 		}
@@ -95,7 +95,7 @@ bool VideoPath::insertEffect( VideoEffect* newEffect, VideoEffect* insertBefore 
 		BACKEND_GET2( bool, success, "insertEffect", QObject*, newEffect->iface(), QObject*, insertBefore ? insertBefore->iface() : 0 );
 		if( success )
 		{
-			newEffect->addDestructionHandler( this );
+			newEffect->addDestructionHandler( d );
 			if( insertBefore )
 				d->effects.insert( d->effects.indexOf( insertBefore ), newEffect );
 			else
@@ -160,26 +160,25 @@ void VideoPath::setupIface()
 	}
 }
 
-void VideoPath::phononObjectDestroyed( Base* o )
+void VideoPathPrivate::phononObjectDestroyed( Base* o )
 {
 	// this method is called from Phonon::Base::~Base(), meaning the VideoEffect
 	// dtor has already been called, also virtual functions don't work anymore
 	// (therefore qobject_cast can only downcast from Base)
-	K_D( VideoPath );
 	Q_ASSERT( o );
 	AbstractVideoOutput* output = static_cast<AbstractVideoOutput*>( o );
 	VideoEffect* videoEffect = static_cast<VideoEffect*>( o );
-	if( d->outputs.contains( output ) )
+	if( outputs.contains( output ) )
 	{
-		if( d->backendObject )
-			BACKEND_CALL1( "removeOutput", QObject*, output->iface() );
-		d->outputs.removeAll( output );
+		if( backendObject )
+			pBACKEND_CALL1( "removeOutput", QObject*, output->iface() );
+		outputs.removeAll( output );
 	}
-	else if( d->effects.contains( videoEffect ) )
+	else if( effects.contains( videoEffect ) )
 	{
-		if( d->backendObject )
-			BACKEND_CALL1( "removeEffect", QObject*, videoEffect->iface() );
-		d->effects.removeAll( videoEffect );
+		if( backendObject )
+			pBACKEND_CALL1( "removeEffect", QObject*, videoEffect->iface() );
+		effects.removeAll( videoEffect );
 	}
 }
 

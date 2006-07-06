@@ -40,7 +40,7 @@ namespace Phonon
 	 * @author Matthias Kretz <kretz@kde.org>
 	 * @see MediaObject
 	 */
-	class PHONONCORE_EXPORT AbstractMediaProducer : public QObject, public Base, private BaseDestructionHandler
+	class PHONONCORE_EXPORT AbstractMediaProducer : public QObject, public Base
 	{
 		friend class MediaObjectPrivate;
 		Q_OBJECT
@@ -149,7 +149,7 @@ namespace Phonon
 			 *
 			 * @see addVideoPath
 			 */
-			const QList<VideoPath*>& videoPaths() const;
+			QList<VideoPath*> videoPaths() const;
 
 			/**
 			 * Returns the list of all connected AudioPath objects.
@@ -158,7 +158,7 @@ namespace Phonon
 			 *
 			 * @see addAudioPath
 			 */
-			const QList<AudioPath*>& audioPaths() const;
+			QList<AudioPath*> audioPaths() const;
 
 			/**
 			 * Returns the selected audio stream for the given AudioPath object.
@@ -333,15 +333,9 @@ namespace Phonon
 			 */
 			void tick( qint64 time );
 
-		private Q_SLOTS:
-			void resumePlay();
-			void resumePause();
-
 		private:
-			/**
-			 * \internal
-			 */
-			virtual void phononObjectDestroyed( Base* );
+			Q_PRIVATE_SLOT( k_func(), void _k_resumePlay() )
+			Q_PRIVATE_SLOT( k_func(), void _k_resumePause() )
 	};
 } //namespace Phonon
 

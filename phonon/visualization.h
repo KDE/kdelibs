@@ -30,12 +30,7 @@ namespace Phonon
 	class VisualizationPrivate;
 	class AudioPath;
 	class AbstractVideoOutput;
-	class VisualizationEffect;
-
-	namespace Ifaces
-	{
-		class Visualization;
-	}
+	class ObjectDescription;
 
 /**
  * \short A class to create visual effects from an audio signal.
@@ -48,7 +43,7 @@ namespace Phonon
  * The following example code takes the first effect from the list and uses that
  * to display a visualization on a new VideoWidget.
  * \code
- * QList<VisualizationEffect> list = BackendCapabilities::availableVisualizationEffects();
+ * QList<ObjectDescription> list = BackendCapabilities::availableVisualizationEffects();
  * if( list.size() > 0 )
  * {
  *   VideoWidget* visWidget = new VideoWidget( parent );
@@ -63,12 +58,12 @@ namespace Phonon
  * \see AudioDataOutput
  * \see BackendCapabilities::availableVisualizationEffects()
  */
-class PHONONCORE_EXPORT Visualization : public QObject, public Base, private BaseDestructionHandler
+class PHONONCORE_EXPORT Visualization : public QObject, public Base
 {
 	Q_OBJECT
 	K_DECLARE_PRIVATE( Visualization )
 	PHONON_OBJECT( Visualization )
-	Q_PROPERTY( VisualizationEffect visualization READ visualization WRITE setVisualization )
+	Q_PROPERTY( ObjectDescription visualization READ visualization WRITE setVisualization )
 
 	public:
 		~Visualization();
@@ -79,8 +74,8 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base, private Bas
 		AbstractVideoOutput* videoOutput() const;
 		void setVideoOutput( AbstractVideoOutput* output );
 
-		VisualizationEffect visualization() const;
-		void setVisualization( const VisualizationEffect& newVisualization );
+		ObjectDescription visualization() const;
+		void setVisualization( const ObjectDescription& newVisualization );
 
 		/**
 		 * Returns whether the selected visualization effect can be configured
@@ -96,12 +91,6 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base, private Bas
 		 * \param parent The parent widget for the new widget.
 		 */
 		//QWidget* createParameterWidget( QWidget* parent = 0 );
-
-	private:
-		/**
-		 * \internal
-		 */
-		void phononObjectDestroyed( Base* );
 };
 
 } // namespace Phonon

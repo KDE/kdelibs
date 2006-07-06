@@ -31,8 +31,8 @@ class AudioOutputAdaptor: public QDBusAbstractAdaptor
 "    <method name=\"name\" >\n"
 "      <arg direction=\"out\" type=\"s\" name=\"name\" />\n"
 "    </method>\n"
-"    <method name=\"categoryName\" >\n"
-"      <arg direction=\"out\" type=\"s\" name=\"categoryName\" />\n"
+"    <method name=\"category\" >\n"
+"      <arg direction=\"out\" type=\"s\" name=\"category\" />\n"
 "    </method>\n"
 "    <property access=\"readwrite\" type=\"d\" name=\"volume\" />\n"
 "  </interface>\n"
@@ -47,7 +47,7 @@ public: // PROPERTIES
     void setVolume(double value);
 
 public Q_SLOTS: // METHODS
-    QString categoryName();
+    QString category();
     QString name();
 Q_SIGNALS: // SIGNALS
 };

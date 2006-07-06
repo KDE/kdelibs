@@ -2,15 +2,14 @@
 Encoding=UTF-8
 Exec=kcmshell kcm_phonon
 Icon=phonon
-Type=Application
+Type=Service
+ServiceTypes=KCModule
 DocPath=kcontrol/phonon/index.html
 
-X-KDE-Library=phonon
-X-KDE-FactoryName=phonon
+X-KDE-Library=kcm_phonon
+X-KDE-FactoryName=kcm_phonon
 X-KDE-ParentApp=kcontrol
 
 Name=Phonon
 Comment=Sound System Configuration
 Keywords=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine
-
-Categories=Qt;KDE;X-KDE-settings-sound;

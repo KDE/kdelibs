@@ -19,7 +19,7 @@
 
 #include <qtest_kde.h>
 #include "videocapturedevicetest.h"
-#include "../videocapturedevice.h"
+#include "../objectdescription.h"
 
 using namespace Phonon;
 
@@ -29,12 +29,12 @@ void VideoCaptureDeviceTest::initTestCase()
 
 void VideoCaptureDeviceTest::sensibleValues()
 {
-	VideoCaptureDevice a;
+	ObjectDescription a;
 	QCOMPARE( a.isValid(), false );
-	VideoCaptureDevice b( a );
+	ObjectDescription b( a );
 	QCOMPARE( a, b );
 	QCOMPARE( b.isValid(), false );
-	VideoCaptureDevice c = VideoCaptureDevice::fromIndex( 1 ); //no backend loaded -> invalid
+	ObjectDescription c = ObjectDescription::fromIndex( ObjectDescription::VideoCaptureDevice, 1 ); //no backend loaded -> invalid
 	QCOMPARE( c.isValid(), false );
 	c = a;
 	QCOMPARE( a, c );

@@ -24,18 +24,8 @@ add_subdirectory( kcm )
 ########### next target ###############
 
 set(phononcore_LIB_SRCS
-	namedescriptiontuple.cpp
-	namedescriptiontuplemodel.cpp
-	audiooutputdevice.cpp
-	audiocapturedevice.cpp
-	videooutputdevice.cpp
-	videocapturedevice.cpp
-	audioeffectdescription.cpp
-	videoeffectdescription.cpp
-	visualizationeffect.cpp
-	audiocodec.cpp
-	videocodec.cpp
-	containerformat.cpp
+	objectdescription.cpp
+	objectdescriptionmodel.cpp
 	phononnamespace.cpp
 	base.cpp
 	abstractmediaproducer.cpp
@@ -58,7 +48,7 @@ set(phononcore_LIB_SRCS
 	abstractvideooutput.cpp
 	videodataoutput.cpp
 	visualization.cpp
-	simpleplayer.cpp
+	audioplayer.cpp
 	backendcapabilities.cpp
 	factory.cpp
 	)
@@ -76,18 +66,8 @@ install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
-	namedescriptiontuple.h
-	namedescriptiontuplemodel.h
-	audiooutputdevice.h
-	audiocapturedevice.h
-	videooutputdevice.h
-	videocapturedevice.h
-	audioeffectdescription.h
-	videoeffectdescription.h
-	visualizationeffect.h
-	audiocodec.h
-	videocodec.h
-	containerformat.h
+	objectdescription.h
+	objectdescriptionmodel.h
 	phononnamespace.h
 	base.h
 	basedestructionhandler.h
@@ -111,7 +91,7 @@ install( FILES
 	videoframe.h
 	videodataoutput.h
 	visualization.h
-	simpleplayer.h
+	audioplayer.h
 	backendcapabilities.h
 	phonondefs.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)

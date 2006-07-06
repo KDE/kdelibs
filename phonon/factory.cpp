@@ -31,6 +31,7 @@
 #include <kstaticdeleter.h>
 
 #include <QtDBus/QtDBus>
+#include "objectdescription.h"
 
 static KStaticDeleter<Phonon::Factory> sd;
 
@@ -45,6 +46,7 @@ class Factory::Private
 			: backend( 0 )
 		{
 			qRegisterMetaType<qint64>( "qint64" );
+			qRegisterMetaType<ObjectDescription::Type>( "ObjectDescription::Type" );
 		}
 
 		void createBackend()

@@ -21,7 +21,7 @@
 #define OUTPUTDEVICECHOICE_H_STUPID_UIC
 
 #include "ui_outputdevicechoice.h"
-#include <phonon/namedescriptiontuplemodel.h>
+#include <phonon/objectdescriptionmodel.h>
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {
@@ -44,7 +44,7 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 		void updateButtonsEnabled();
 
 	private:
-		Phonon::NameDescriptionTupleModel m_notificationModel, m_musicModel,
+		Phonon::ObjectDescriptionModel m_notificationModel, m_musicModel,
 			m_videoModel, m_communicationModel;
 };
 

@@ -17,82 +17,46 @@
 
 */
 
-#include "namedescriptiontuplemodel.h"
-#include "namedescriptiontuplemodel_p.h"
+#include "objectdescriptionmodel.h"
+#include "objectdescriptionmodel_p.h"
 #include <QList>
-#include "audiooutputdevice.h"
-#include "audiocapturedevice.h"
-#include "videocapturedevice.h"
+#include "objectdescription.h"
 
 namespace Phonon
 {
 
-NameDescriptionTupleModel::NameDescriptionTupleModel( QObject* parent )
+ObjectDescriptionModel::ObjectDescriptionModel( QObject* parent )
 	: QAbstractListModel( parent )
-	, d_ptr( new NameDescriptionTupleModelPrivate )
+	, d_ptr( new ObjectDescriptionModelPrivate )
 {
 	d_ptr->q_ptr = this;
 }
 
-NameDescriptionTupleModel::NameDescriptionTupleModel( NameDescriptionTupleModelPrivate& d, QObject* parent )
-	: QAbstractListModel( parent )
-	, d_ptr( &d )
-{
-	d_ptr->q_ptr = this;
-}
-
-NameDescriptionTupleModel::~NameDescriptionTupleModel()
+ObjectDescriptionModel::~ObjectDescriptionModel()
 {
 	delete d_ptr;
 	d_ptr = 0;
 }
 
-void NameDescriptionTupleModel::setModelData( const QList<NameDescriptionTuple>& newData )
+void ObjectDescriptionModel::setModelData( const QList<ObjectDescription>& newData )
 {
-	Q_D( NameDescriptionTupleModel );
+	Q_D( ObjectDescriptionModel );
 	d->data = newData;
 	reset();
 }
 
-void NameDescriptionTupleModel::setModelData( const QList<AudioOutputDevice>& newData )
-{
-	Q_D( NameDescriptionTupleModel );
-	d->data.clear();
-	for( int i = 0; i < newData.size(); ++i )
-		d->data.append( newData[ i ] );
-	reset();
-}
-
-void NameDescriptionTupleModel::setModelData( const QList<AudioCaptureDevice>& newData )
-{
-	Q_D( NameDescriptionTupleModel );
-	d->data.clear();
-	for( int i = 0; i < newData.size(); ++i )
-		d->data.append( newData[ i ] );
-	reset();
-}
-
-void NameDescriptionTupleModel::setModelData( const QList<VideoCaptureDevice>& newData )
-{
-	Q_D( NameDescriptionTupleModel );
-	d->data.clear();
-	for( int i = 0; i < newData.size(); ++i )
-		d->data.append( newData[ i ] );
-	reset();
-}
-
-int NameDescriptionTupleModel::rowCount( const QModelIndex& parent ) const
+int ObjectDescriptionModel::rowCount( const QModelIndex& parent ) const
 {
 	if( parent.isValid() )
 		return 0;
 
-	Q_D( const NameDescriptionTupleModel );
+	Q_D( const ObjectDescriptionModel );
 	return d->data.size();
 }
 
-QVariant NameDescriptionTupleModel::data( const QModelIndex& index, int role ) const
+QVariant ObjectDescriptionModel::data( const QModelIndex& index, int role ) const
 {
-	Q_D( const NameDescriptionTupleModel );
+	Q_D( const ObjectDescriptionModel );
 	if( !index.isValid() || index.row() >= d->data.size() || index.column() != 0 )
 		return QVariant();
 
@@ -110,9 +74,9 @@ QVariant NameDescriptionTupleModel::data( const QModelIndex& index, int role ) c
 	}
 }
 
-void NameDescriptionTupleModel::moveUp( const QModelIndex& index )
+void ObjectDescriptionModel::moveUp( const QModelIndex& index )
 {
-	Q_D( NameDescriptionTupleModel );
+	Q_D( ObjectDescriptionModel );
 	if( !index.isValid() || index.row() >= d->data.size() || index.row() < 1 || index.column() != 0 )
 		return;
 
@@ -125,9 +89,9 @@ void NameDescriptionTupleModel::moveUp( const QModelIndex& index )
 	emit dataChanged( above, index );
 }
 
-void NameDescriptionTupleModel::moveDown( const QModelIndex& index )
+void ObjectDescriptionModel::moveDown( const QModelIndex& index )
 {
-	Q_D( NameDescriptionTupleModel );
+	Q_D( ObjectDescriptionModel );
 	if( !index.isValid() || index.row() >= d->data.size() - 1 || index.column() != 0 )
 		return;
 
@@ -140,21 +104,21 @@ void NameDescriptionTupleModel::moveDown( const QModelIndex& index )
 	emit dataChanged( index, below );
 }
 
-QList<int> NameDescriptionTupleModel::tupleIndexOrder() const
+QList<int> ObjectDescriptionModel::tupleIndexOrder() const
 {
-	Q_D( const NameDescriptionTupleModel );
+	Q_D( const ObjectDescriptionModel );
 	QList<int> ret;
 	for( int i = 0; i < d->data.size(); ++i )
 		ret.append( d->data.at( i ).index() );
 	return ret;
 }
 
-int NameDescriptionTupleModel::tupleIndexAtPositionIndex( int positionIndex ) const
+int ObjectDescriptionModel::tupleIndexAtPositionIndex( int positionIndex ) const
 {
 	return d_func()->data.at( positionIndex ).index();
 }
 
 }
 
-#include "namedescriptiontuplemodel.moc"
+#include "objectdescriptionmodel.moc"
 // vim: sw=4 ts=4 noet

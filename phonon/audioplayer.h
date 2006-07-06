@@ -17,8 +17,8 @@
 
 */
 
-#ifndef Phonon_SIMPLEPLAYER_H
-#define Phonon_SIMPLEPLAYER_H
+#ifndef Phonon_AUDIOPLAYER_H
+#define Phonon_AUDIOPLAYER_H
 
 #include <QObject>
 #include "phononnamespace.h"
@@ -32,41 +32,41 @@ namespace Phonon
 /**
  * \short Playback class for simple tasks.
  *
- * With %SimplePlayer you can get results quickly and easily. You can do the standard
+ * With %AudioPlayer you can get results quickly and easily. You can do the standard
  * playback tasks like play, pause and stop, but also set a playback volume and
  * seek (there's no guarantee that the seek will work, though).
  *
- * Keep in mind that when the %SimplePlayer instance is deleted the playback will
+ * Keep in mind that when the %AudioPlayer instance is deleted the playback will
  * stop.
  *
  * A play and forget code example:
  * \code
- * SimplePlayer* player = new SimplePlayer( Phonon::NotificationCategory );
+ * AudioPlayer* player = new AudioPlayer( Phonon::NotificationCategory );
  * connect( player, SIGNAL( finished() ), player, SLOT( deleteLater() ) );
  * player->play( url );
  * \endcode
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
-class PHONONCORE_EXPORT SimplePlayer : public QObject
+class PHONONCORE_EXPORT AudioPlayer : public QObject
 {
 	Q_OBJECT
 	public:
 		/**
-		 * Constructs a new %SimplePlayer instance.
+		 * Constructs a new %AudioPlayer instance.
 		 *
 		 * \param category The category used for the audio output device.
 		 * \param parent The QObject parent.
 		 */
-		SimplePlayer( Phonon::Category category, QObject* parent = 0 );
+		AudioPlayer( Phonon::Category category, QObject* parent = 0 );
 
 		/**
 		 * On destruction the playback is stopped, also the audio output is
 		 * removed so that the desktop mixer will not show the application
 		 * anymore. If you need a persistent audio output don't use
-		 * %SimplePlayer but MediaObject, AudioPath and AudioOutput.
+		 * %AudioPlayer but MediaObject, AudioPath and AudioOutput.
 		 */
-		~SimplePlayer();
+		~AudioPlayer();
 
 		/**
 		 * Get the total time (in milliseconds) of the file currently being played.
@@ -96,6 +96,15 @@ class PHONONCORE_EXPORT SimplePlayer : public QObject
 
 	public Q_SLOTS:
 		/**
+		 * Starts preloading the media data and fill audiobuffers in the
+		 * backend.
+		 *
+		 * When there's already a media playing (or paused) it will be stopped
+		 * (the finished signal will not be emitted).
+		 */
+		void load( const KUrl& url );
+
+		/**
 		 * Play the media at the given URL. Starts playback as fast as possible.
 		 * This can take a considerable time depending on the URL and the
 		 * backend.
@@ -104,11 +113,11 @@ class PHONONCORE_EXPORT SimplePlayer : public QObject
 		 * starting to play on your output device you need to use MediaObject
 		 * and be able to set the URL before calling play(). Note that
 		 * \code
-		 * mediaObject->setUrl( url );
-		 * mediaObject->play();
+		 * audioPlayer->load( url );
+		 * audioPlayer->play();
 		 * \endcode
-		 * doesn't make a difference, the application should be idle between the
-		 * setUrl and play calls so that the backend can start preloading the
+		 * doesn't make a difference: the application should be idle between the
+		 * load and play calls so that the backend can start preloading the
 		 * media and fill audio buffers.
 		 */
 		void play( const KUrl& url );
@@ -146,15 +155,14 @@ class PHONONCORE_EXPORT SimplePlayer : public QObject
 		 */
 		void finished();
 
-	private Q_SLOTS:
-		void stateChanged( Phonon::State, Phonon::State );
-
 	private:
 		class Private;
 		Private * d;
+
+		Q_PRIVATE_SLOT( d, void _k_stateChanged( Phonon::State, Phonon::State ) );
 };
 
 } //namespace Phonon
 
-#endif // Phonon_SIMPLEPLAYER_H
+#endif // Phonon_AUDIOPLAYER_H
 // vim: sw=4 ts=4 noet tw=80

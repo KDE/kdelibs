@@ -17,7 +17,7 @@
 
 */
 
-#include "simpleplayer.h"
+#include "audioplayer.h"
 #include "mediaobject.h"
 #include "audiopath.h"
 #include "audiooutput.h"
@@ -29,7 +29,7 @@
 namespace Phonon
 {
 
-class SimplePlayer::Private
+class AudioPlayer::Private
 {
 	public:
 		Private()
@@ -41,9 +41,11 @@ class SimplePlayer::Private
 		AudioPath* path;
 		AudioOutput* output;
 		KUrl url;
+
+		void _k_stateChanged( Phonon::State, Phonon::State );
 };
 
-SimplePlayer::SimplePlayer( Phonon::Category category, QObject* parent )
+AudioPlayer::AudioPlayer( Phonon::Category category, QObject* parent )
 	: QObject( parent )
 	, d( new Private )
 {
@@ -53,19 +55,26 @@ SimplePlayer::SimplePlayer( Phonon::Category category, QObject* parent )
 	d->player = new MediaObject( this );
 	d->player->addAudioPath( d->path );
 
-	connect( d->player, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
-			SLOT( stateChanged( Phonon::State, Phonon::State ) ) );
+	connect( d->player, SIGNAL( _k_stateChanged( Phonon::State, Phonon::State ) ),
+			SLOT( _k_stateChanged( Phonon::State, Phonon::State ) ) );
 	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
 }
 
-SimplePlayer::~SimplePlayer()
+AudioPlayer::~AudioPlayer()
 {
 	delete d->player;
 	delete d->path;
 	delete d->output;
 }
 
-void SimplePlayer::play( const KUrl & url )
+void AudioPlayer::load( const KUrl& url )
+{
+	// new URL
+	d->player->setUrl( url );
+	d->url = url;
+}
+
+void AudioPlayer::play( const KUrl& url )
 {
 	if( url == d->url )
 	{
@@ -85,64 +94,64 @@ void SimplePlayer::play( const KUrl & url )
 		d->player->play();
 }
 
-void SimplePlayer::play()
+void AudioPlayer::play()
 {
 	play( d->url );
 }
 
-void SimplePlayer::pause()
+void AudioPlayer::pause()
 {
 	d->player->pause();
 }
 
-void SimplePlayer::stop()
+void AudioPlayer::stop()
 {
 	d->player->stop();
 }
 
-qint64 SimplePlayer::totalTime() const
+qint64 AudioPlayer::totalTime() const
 {
 	return d->player->totalTime();
 }
 
-qint64 SimplePlayer::currentTime() const
+qint64 AudioPlayer::currentTime() const
 {
 	return d->player->currentTime();
 }
 
-void SimplePlayer::seek( qint64 ms )
+void AudioPlayer::seek( qint64 ms )
 {
 	d->player->seek( ms );
 }
 
-float SimplePlayer::volume() const
+float AudioPlayer::volume() const
 {
 	return d->output->volume();
 }
 
-void SimplePlayer::setVolume( float v )
+void AudioPlayer::setVolume( float v )
 {
 	d->output->setVolume( v );
 }
 
-bool SimplePlayer::isPlaying() const
+bool AudioPlayer::isPlaying() const
 {
 	return ( d->player->state() == PlayingState );
 }
 
-bool SimplePlayer::isPaused() const
+bool AudioPlayer::isPaused() const
 {
 	return ( d->player->state() == PausedState );
 }
 
-void SimplePlayer::stateChanged( State ns, State os )
+void AudioPlayer::Private::_k_stateChanged( State ns, State os )
 {
 	if( os == LoadingState && ns == StoppedState )
-		d->player->play();
+		player->play();
 }
 
 } // namespaces
 
-#include "simpleplayer.moc"
+#include "audioplayer.moc"
 
 // vim: sw=4 ts=4 noet

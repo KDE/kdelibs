@@ -30,11 +30,7 @@ class AudioOutputAdaptor;
 namespace Phonon
 {
 	class AudioOutputPrivate;
-	class AudioOutputDevice;
-	namespace Ifaces
-	{
-		class AudioOutput;
-	}
+	class ObjectDescription;
 
 	/**
 	 * \short Class for audio output to the soundcard.
@@ -89,7 +85,7 @@ namespace Phonon
 		 *
 		 * \see outputDeviceChanged
 		 */
-		Q_PROPERTY( AudioOutputDevice outputDevice READ outputDevice WRITE setOutputDevice )
+		Q_PROPERTY( ObjectDescription outputDevice READ outputDevice WRITE setOutputDevice )
 		public:
 			/**
 			 * Creates a new AudioOutput that defines output to a physical
@@ -118,14 +114,9 @@ namespace Phonon
 			 * \see AudioOutput( Phonon::Category, QObject* )
 			 */
 			Phonon::Category category() const;
-			AudioOutputDevice outputDevice() const;
+			ObjectDescription outputDevice() const;
 
 		protected:
-			/**
-			 * \internal
-			 */
-			AudioOutput( AudioOutputPrivate& dd, QObject* parent );
-
 			/**
 			 * \internal
 			 * After construction of the Iface object this method is called
@@ -133,15 +124,13 @@ namespace Phonon
 			 * properties that were already set on the frontend objects.
 			 */
 			void setupIface();
-		private:
-			QString categoryName() const;
 
 		public Q_SLOTS:
 			void setName( const QString& newName );
 			float volume() const;
 			void setVolume( float newVolume );
 			void setVolumeDecibel( double newVolumeDecibel );
-			void setOutputDevice( const AudioOutputDevice& newAudioOutputDevice );
+			void setOutputDevice( const ObjectDescription& newAudioOutputDevice );
 
 		Q_SIGNALS:
 			/**
@@ -161,7 +150,7 @@ namespace Phonon
 			 *
 			 * \see outputDevice
 			 */
-			void outputDeviceChanged( const AudioOutputDevice& newAudioOutputDevice );
+			void outputDeviceChanged( const ObjectDescription& newAudioOutputDevice );
 	};
 } //namespace Phonon
 

@@ -28,12 +28,7 @@ class QStringList;
 namespace Phonon
 {
 	class AvCapturePrivate;
-	class AudioCaptureDevice;
-	class VideoCaptureDevice;
-	namespace Ifaces
-	{
-		class AvCapture;
-	}
+	class ObjectDescription;
 
 	/**
 	 * @short Media data from a soundcard, soundserver, camera or any other
@@ -54,73 +49,73 @@ namespace Phonon
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AvCapture )
 		PHONON_HEIR( AvCapture )
-		Q_PROPERTY( AudioCaptureDevice audioCaptureDevice READ audioCaptureDevice WRITE setAudioCaptureDevice )
-		Q_PROPERTY( VideoCaptureDevice videoCaptureDevice READ videoCaptureDevice WRITE setVideoCaptureDevice )
+		Q_PROPERTY( ObjectDescription audioCaptureDevice READ audioCaptureDevice WRITE setAudioCaptureDevice )
+		Q_PROPERTY( ObjectDescription videoCaptureDevice READ videoCaptureDevice WRITE setVideoCaptureDevice )
 		public:
 			/**
 			 * Returns the currently used capture source for the audio signal.
 			 *
-			 * @see AudioCaptureDevice
-			 * @see setAudioCaptureDevice( const AudioCaptureDevice& )
+			 * @see ObjectDescription
+			 * @see setAudioCaptureDevice( const ObjectDescription& )
 			 * @see setAudioCaptureDevice( int )
 			 */
-			AudioCaptureDevice audioCaptureDevice() const;
+			ObjectDescription audioCaptureDevice() const;
 
 			/**
 			 * Returns the currently used capture source for the video signal.
 			 *
-			 * @see VideoCaptureDevice
-			 * @see setVideoCaptureDevice( const VideoCaptureDevice& )
+			 * @see ObjectDescription
+			 * @see setVideoCaptureDevice( const ObjectDescription& )
 			 * @see setVideoCaptureDevice( int )
 			 */
-			VideoCaptureDevice videoCaptureDevice() const;
+			ObjectDescription videoCaptureDevice() const;
 
 		public Q_SLOTS:
 			/**
 			 * Sets the audio capture source to use.
 			 *
-			 * @param source An object of class AudioCaptureDevice. A list of
+			 * @param source An object of class ObjectDescription. A list of
 			 * available objects can be queried from
 			 * BackendCapabilities::availableAudioCaptureDevices.
 			 *
 			 * @see audioCaptureDevice
 			 * @see setAudioCaptureDevice( int )
 			 */
-			void setAudioCaptureDevice( const AudioCaptureDevice& source );
+			void setAudioCaptureDevice( const ObjectDescription& source );
 
 			/**
 			 * Sets the capture source to use.
 			 *
 			 * @param sourceIndex An index corresponding an object of class
-			 * AudioCaptureDevice. A list of available objects can be queried from
+			 * ObjectDescription. A list of available objects can be queried from
 			 * BackendCapabilities::availableAudioCaptureDevices.
 			 *
 			 * @see audioCaptureDevice
-			 * @see setAudioCaptureDevice( const AudioCaptureDevice& )
+			 * @see setAudioCaptureDevice( const ObjectDescription& )
 			 */
 			void setAudioCaptureDevice( int sourceIndex );
 
 			/**
 			 * Sets the video capture source to use.
 			 *
-			 * @param source An object of class VideoCaptureDevice. A list of
+			 * @param source An object of class ObjectDescription. A list of
 			 * available objects can be queried from
 			 * BackendCapabilities::availableVideoCaptureDevices.
 			 *
 			 * @see videoCaptureDevice
 			 * @see setVideoCaptureDevice( int )
 			 */
-			void setVideoCaptureDevice( const VideoCaptureDevice& source );
+			void setVideoCaptureDevice( const ObjectDescription& source );
 
 			/**
 			 * Sets the capture source to use.
 			 *
 			 * @param sourceIndex An index corresponding an object of class
-			 * VideoCaptureDevice. A list of available objects can be queried from
+			 * ObjectDescription. A list of available objects can be queried from
 			 * BackendCapabilities::availableVideoCaptureDevices.
 			 *
 			 * @see videoCaptureDevice
-			 * @see setVideoCaptureDevice( const VideoCaptureDevice& )
+			 * @see setVideoCaptureDevice( const ObjectDescription& )
 			 */
 			void setVideoCaptureDevice( int sourceIndex );
 	};

@@ -20,12 +20,11 @@
 #include "videoeffect_p.h"
 #include "effectparameter.h"
 #include "factory.h"
-#include "videoeffectdescription.h"
 
 namespace Phonon
 {
 
-VideoEffect::VideoEffect( const VideoEffectDescription& type, QObject* parent )
+VideoEffect::VideoEffect( const ObjectDescription& type, QObject* parent )
 	: QObject( parent )
 	, Base( *new VideoEffectPrivate )
 {
@@ -34,7 +33,7 @@ VideoEffect::VideoEffect( const VideoEffectDescription& type, QObject* parent )
 	d->createIface();
 }
 
-VideoEffect::VideoEffect( VideoEffectPrivate& dd, QObject* parent, const VideoEffectDescription& type )
+VideoEffect::VideoEffect( VideoEffectPrivate& dd, QObject* parent, const ObjectDescription& type )
 	: QObject( parent )
 	, Base( dd )
 {
@@ -52,10 +51,10 @@ void VideoEffectPrivate::createIface()
 		q->setupIface();
 }
 
-VideoEffectDescription VideoEffect::type() const
+ObjectDescription VideoEffect::type() const
 {
 	K_D( const VideoEffect );
-	return VideoEffectDescription::fromIndex( d->type );
+	return ObjectDescription::fromIndex( ObjectDescription::VideoEffect, d->type );
 }
 
 QList<EffectParameter> VideoEffect::parameterList() const

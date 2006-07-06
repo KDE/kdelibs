@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_NAMEDESCRIPTIONTUPLEMODEL_H
-#define PHONON_NAMEDESCRIPTIONTUPLEMODEL_H
+#ifndef PHONON_OBJECTDESCRIPTIONMODEL_H
+#define PHONON_OBJECTDESCRIPTIONMODEL_H
 
 #include <QAbstractListModel>
 #include <kdelibs_export.h>
@@ -27,28 +27,25 @@ template<class t> class QList;
 
 namespace Phonon
 {
-	class NameDescriptionTuple;
-	class AudioOutputDevice;
-	class AudioCaptureDevice;
-	class VideoCaptureDevice;
-	class NameDescriptionTupleModelPrivate;
+	class ObjectDescription;
+	class ObjectDescriptionModelPrivate;
 
 	/**
-	 * \short The NameDescriptionTupleModel class provides a model from
-	 * a list of NameDescriptionTuple objects.
+	 * \short The ObjectDescriptionModel class provides a model from
+	 * a list of ObjectDescription objects.
 	 *
-	 * NameDescriptionTupleModel is a readonly model that supplies a list
-	 * using NameDescriptionTuple::name() for the text and
-	 * NameDescriptionTuple::description() for the tooltip. It also provides
+	 * ObjectDescriptionModel is a readonly model that supplies a list
+	 * using ObjectDescription::name() for the text and
+	 * ObjectDescription::description() for the tooltip. It also provides
 	 * the methods moveUp() and moveDown() to order the list. The resulting
-	 * order of the NameDescriptionTuple::index() values can then be retrieved
+	 * order of the ObjectDescription::index() values can then be retrieved
 	 * using tupleIndexOrder().
 	 *
 	 * An example use case would be to give the user a QComboBox to select
 	 * the output device:
 	 * \code
 	 * QComboBox* cb = new QComboBox( parentWidget );
-	 * NameDescriptionTupleModel* model = new NameDescriptionTupleModel( cb );
+	 * ObjectDescriptionModel* model = new ObjectDescriptionModel( cb );
 	 * model->setModelData( BackendCapabilities::availableAudioOutputDevices() );
 	 * cb->setModel( model );
 	 * cb->setCurrentIndex( 0 ); // select first entry
@@ -63,58 +60,25 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONONCORE_EXPORT NameDescriptionTupleModel : public QAbstractListModel
+	class PHONONCORE_EXPORT ObjectDescriptionModel : public QAbstractListModel
 	{
 		Q_OBJECT
-		Q_DECLARE_PRIVATE( NameDescriptionTupleModel )
+		Q_DECLARE_PRIVATE( ObjectDescriptionModel )
 		public:
 			/**
-			 * Constructs a NameDescriptionTuple model with the
+			 * Constructs a ObjectDescription model with the
 			 * given \p parent.
 			 */
-			NameDescriptionTupleModel( QObject* parent = 0 );
+			ObjectDescriptionModel( QObject* parent = 0 );
 
-			virtual ~NameDescriptionTupleModel();
+			virtual ~ObjectDescriptionModel();
 
 			/**
 			 * Sets the model data using the list provided by \p data.
 			 *
 			 * All previous model data is cleared.
 			 */
-			void setModelData( const QList<NameDescriptionTuple>& data );
-
-			/**
-			 * Sets the model data using the list provided by \p data.
-			 *
-			 * All previous model data is cleared.
-			 *
-			 * Same as above, provided for convenience that you don't have to
-			 * convert a QList<AudioOutputDevice> to QList<NameDescriptionTuple>
-			 * yourself.
-			 */
-			void setModelData( const QList<AudioOutputDevice>& data );
-
-			/**
-			 * Sets the model data using the list provided by \p data.
-			 *
-			 * All previous model data is cleared.
-			 *
-			 * Same as above, provided for convenience that you don't have to
-			 * convert a QList<AudioCaptureDevice> to QList<NameDescriptionTuple>
-			 * yourself.
-			 */
-			void setModelData( const QList<AudioCaptureDevice>& data );
-
-			/**
-			 * Sets the model data using the list provided by \p data.
-			 *
-			 * All previous model data is cleared.
-			 *
-			 * Same as above, provided for convenience that you don't have to
-			 * convert a QList<VideoCaptureDevice> to QList<NameDescriptionTuple>
-			 * yourself.
-			 */
-			void setModelData( const QList<VideoCaptureDevice>& data );
+			void setModelData( const QList<ObjectDescription>& data );
 
 			/**
 			 * Returns the number of rows in the model. This value corresponds
@@ -161,7 +125,7 @@ namespace Phonon
 
 			/**
 			 * Returns a list of indexes in the same order as they are in the
-			 * model. The indexes come from the NameDescriptionTuple::index
+			 * model. The indexes come from the ObjectDescription::index
 			 * method.
 			 *
 			 * This is useful to let the user define a list of preference.
@@ -169,7 +133,7 @@ namespace Phonon
 			QList<int> tupleIndexOrder() const;
 
 			/**
-			 * Returns the NameDescriptionTuple::index for the tuple
+			 * Returns the ObjectDescription::index for the tuple
 			 * at the given position \p positionIndex. For example a
 			 * QComboBox will give you the currentIndex as the
 			 * position in the list. But to select the according
@@ -181,10 +145,9 @@ namespace Phonon
 			int tupleIndexAtPositionIndex( int positionIndex ) const;
 
 		protected:
-			NameDescriptionTupleModel( NameDescriptionTupleModelPrivate& d, QObject* parent = 0 );
-			NameDescriptionTupleModelPrivate* d_ptr;
+			ObjectDescriptionModelPrivate* d_ptr;
 	};
 }
 
-#endif // PHONON_NAMEDESCRIPTIONTUPLEMODEL_H
+#endif // PHONON_OBJECTDESCRIPTIONMODEL_H
 // vim: sw=4 ts=4 noet tw=80

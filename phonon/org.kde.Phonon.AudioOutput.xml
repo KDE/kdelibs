@@ -5,8 +5,8 @@
     <method name="name">
       <arg name="name" type="s" direction="out" />
     </method>
-    <method name="categoryName">
-      <arg name="categoryName" type="s" direction="out" />
+    <method name="category">
+      <arg name="category" type="s" direction="out" />
     </method>
     <property name = "volume" type="d" access="readwrite" />
   </interface>

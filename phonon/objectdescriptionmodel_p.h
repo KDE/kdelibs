@@ -17,19 +17,25 @@
 
 */
 
-#ifndef PHONON_AUDIOOUTPUTDEVICE_P_H
-#define PHONON_AUDIOOUTPUTDEVICE_P_H
+#ifndef PHONON_OBJECTDESCRIPTIONMODEL_P_H
+#define PHONON_OBJECTDESCRIPTIONMODEL_P_H
 
-#include "namedescriptiontuple_p.h"
+#include "objectdescriptionmodel.h"
+#include <QList>
+#include "objectdescription.h"
 
 namespace Phonon
 {
-	class AudioOutputDevicePrivate : public NameDescriptionTuplePrivate
-	{
-		Q_DECLARE_PUBLIC( AudioOutputDevice )
-		protected:
-	};
-} // namespace Phonon
 
-#endif // PHONON_AUDIOOUTPUTDEVICE_P_H
-// vim: sw=4 ts=4 noet tw=80
+class ObjectDescriptionModelPrivate
+{
+	Q_DECLARE_PUBLIC( ObjectDescriptionModel )
+	protected:
+		ObjectDescriptionModel* q_ptr;
+
+		QList<ObjectDescription> data;
+};
+
+}
+#endif // PHONON_OBJECTDESCRIPTIONMODEL_P_H
+// vim: sw=4 ts=4 tw=80

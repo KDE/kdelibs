@@ -19,7 +19,7 @@
 #include "audiooutput.h"
 #include "audiooutput_p.h"
 #include "factory.h"
-#include "audiooutputdevice.h"
+#include "objectdescription.h"
 #include "audiooutputadaptor.h"
 
 #include <kglobal.h>
@@ -38,11 +38,6 @@ AudioOutput::AudioOutput( Phonon::Category category, QObject* parent )
 	d->createIface();
 	new AudioOutputAdaptor( this );
 	for( int i = 0; !QDBus::sessionBus().registerObject( "/AudioOutputs/" + QString::number( i ), this ); ++i );
-}
-
-AudioOutput::AudioOutput( AudioOutputPrivate& dd, QObject* parent )
-	: AbstractAudioOutput( dd, parent )
-{
 }
 
 void AudioOutputPrivate::createIface()
@@ -88,13 +83,7 @@ Category AudioOutput::category() const
 	return d->category;
 }
 
-QString AudioOutput::categoryName() const
-{
-	K_D( const AudioOutput );
-	return Phonon::categoryToString( d->category );
-}
-
-AudioOutputDevice AudioOutput::outputDevice() const
+ObjectDescription AudioOutput::outputDevice() const
 {
 	K_D( const AudioOutput );
 	int index;
@@ -102,10 +91,10 @@ AudioOutputDevice AudioOutput::outputDevice() const
 		BACKEND_GET( int, index, "outputDevice" );
 	else
 		index = d->outputDeviceIndex;
-	return AudioOutputDevice::fromIndex( index );
+	return ObjectDescription::fromIndex( ObjectDescription::AudioOutputDevice, index );
 }
 
-void AudioOutput::setOutputDevice( const AudioOutputDevice& newAudioOutputDevice )
+void AudioOutput::setOutputDevice( const ObjectDescription& newAudioOutputDevice )
 {
 	K_D( AudioOutput );
 	if( iface() )

@@ -27,7 +27,7 @@
 
 namespace Phonon
 {
-class AbstractMediaProducerPrivate : public BasePrivate
+class AbstractMediaProducerPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( AbstractMediaProducer )
 	PHONON_PRIVATEABSTRACTCLASS( AbstractMediaProducer, Base )
@@ -46,6 +46,12 @@ class AbstractMediaProducerPrivate : public BasePrivate
 		QHash<AudioPath*, QString> selectedAudioStream;
 		QHash<VideoPath*, QString> selectedVideoStream;
 		QHash<VideoPath*, QString> selectedSubtitleStream;
+
+	private:
+		void _k_resumePlay();
+		void _k_resumePause();
+
+		virtual void phononObjectDestroyed( Base* );
 };
 } //namespace Phonon
 

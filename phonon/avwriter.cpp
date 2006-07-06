@@ -31,14 +31,6 @@ AvWriter::AvWriter( QObject* parent )
 	d->q_ptr = this;
 }
 
-AvWriter::AvWriter( AvWriterPrivate& dd, QObject* parent )
-	: QObject( parent )
-	, d_ptr( &dd )
-{
-	Q_D( AvWriter );
-	d->q_ptr = this;
-}
-
 } //namespace Phonon
 
 #include "avwriter.moc"

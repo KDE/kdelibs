@@ -32,12 +32,6 @@ VideoDataOutput::VideoDataOutput( QObject* parent )
 	d->createIface();
 }
 
-VideoDataOutput::VideoDataOutput( VideoDataOutputPrivate& dd, QObject* parent )
-	: QObject( parent )
-	, AbstractVideoOutput( dd )
-{
-}
-
 void VideoDataOutputPrivate::createIface()
 {
 	if( backendObject )

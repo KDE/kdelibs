@@ -20,11 +20,10 @@
 #include "audioeffect_p.h"
 #include "effectparameter.h"
 #include "factory.h"
-#include "audioeffectdescription.h"
 
 namespace Phonon
 {
-AudioEffect::AudioEffect( const AudioEffectDescription& type, QObject* parent )
+AudioEffect::AudioEffect( const ObjectDescription& type, QObject* parent )
 	: QObject( parent )
 	, Base( *new AudioEffectPrivate )
 {
@@ -33,7 +32,7 @@ AudioEffect::AudioEffect( const AudioEffectDescription& type, QObject* parent )
 	d->createIface();
 }
 
-AudioEffect::AudioEffect( AudioEffectPrivate& dd, QObject* parent, const AudioEffectDescription& type )
+AudioEffect::AudioEffect( AudioEffectPrivate& dd, QObject* parent, const ObjectDescription& type )
 	: QObject( parent )
 	, Base( dd )
 {
@@ -51,10 +50,10 @@ void AudioEffectPrivate::createIface()
 		q->setupIface();
 }
 
-AudioEffectDescription AudioEffect::type() const
+ObjectDescription AudioEffect::type() const
 {
 	K_D( const AudioEffect );
-	return AudioEffectDescription::fromIndex( d->type );
+	return ObjectDescription::fromIndex( ObjectDescription::AudioEffect, d->type );
 }
 
 QList<EffectParameter> AudioEffect::parameterList() const

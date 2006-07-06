@@ -23,7 +23,7 @@
 #include "phonondefs.h"
 #include <QObject>
 #include "effect.h"
-#include "videoeffectdescription.h"
+#include "objectdescription.h"
 
 class QString;
 
@@ -44,9 +44,9 @@ namespace Phonon
 			 *
 			 * \param parent QObject parent
 			 */
-			VideoEffect( const VideoEffectDescription& type, QObject* parent = 0 );
+			VideoEffect( const ObjectDescription& type, QObject* parent = 0 );
 
-			VideoEffectDescription type() const;
+			ObjectDescription type() const;
 			virtual QList<EffectParameter> parameterList() const;
 
 		protected:
@@ -56,7 +56,7 @@ namespace Phonon
 			 * Constructs new video effect with private data \p dd and a
 			 * \p parent.
 			 */
-			VideoEffect( VideoEffectPrivate& dd, QObject* parent, const VideoEffectDescription& type = VideoEffectDescription() );
+			VideoEffect( VideoEffectPrivate& dd, QObject* parent, const ObjectDescription& type = ObjectDescription() );
 
 			/**
 			 * \internal

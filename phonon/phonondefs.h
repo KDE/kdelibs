@@ -121,13 +121,6 @@ public: \
 protected: \
 	/**
 	 * \internal
-	 *
-	 * Constructs new instance of this class with private data \p dd and a
-	 * \p parent.
-	 */ \
-	classname( classname ## Private& dd, QObject* parent ); \
-	/**
-	 * \internal
 	 * After construction of the Iface object this method is called
 	 * throughout the complete class hierarchy in order to set up the
 	 * properties that were already set on the public interface.
@@ -173,7 +166,6 @@ public: \
 	 */ \
 	classname( QObject* parent = 0 ); \
 protected: \
-	classname( classname ## Private& dd, QObject* parent ); \
 	/**
 	 * \internal
 	 * After construction of the Iface object this method is called
@@ -200,11 +192,6 @@ classname::classname( QObject* parent ) \
 	K_D( classname ); \
 	d->createIface(); \
 } \
-classname::classname( classname ## Private& dd, QObject* parent ) \
-	: QObject( parent ) \
-	, Base( dd ) \
-{ \
-} \
 void classname ## Private::createIface() \
 { \
 	if( backendObject ) \
@@ -221,10 +208,6 @@ classname::classname( QObject* parent ) \
 { \
 	K_D( classname ); \
 	d->createIface(); \
-} \
-classname::classname( classname ## Private& dd, QObject* parent ) \
-	: parentclass( dd, parent ) \
-{ \
 } \
 void classname ## Private::createIface() \
 { \

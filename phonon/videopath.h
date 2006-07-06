@@ -50,7 +50,7 @@ namespace Phonon
 	 * \author Matthias Kretz <kretz@kde.org>
 	 * \see AudioPath
 	 */
-	class PHONONCORE_EXPORT VideoPath : public QObject, public Base, private BaseDestructionHandler
+	class PHONONCORE_EXPORT VideoPath : public QObject, public Base
 	{
 		friend class AbstractMediaProducer;
 		friend class AbstractMediaProducerPrivate;
@@ -157,12 +157,6 @@ namespace Phonon
 			 * \see removeEffect
 			 */
 			const QList<VideoEffect*>& effects() const;
-
-		private:
-			/**
-			 * \internal
-			 */
-			virtual void phononObjectDestroyed( Base* );
 	};
 } //namespace Phonon
 

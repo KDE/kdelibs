@@ -19,16 +19,7 @@
 
 #include "backendcapabilities.h"
 #include "factory.h"
-#include "audiooutputdevice.h"
-#include "videooutputdevice.h"
-#include "audiocapturedevice.h"
-#include "videocapturedevice.h"
-#include "visualizationeffect.h"
-#include "audioeffectdescription.h"
-#include "videoeffectdescription.h"
-#include "audiocodec.h"
-#include "videocodec.h"
-#include "containerformat.h"
+#include "objectdescription.h"
 #include <QList>
 #include <QSet>
 #include <QStringList>
@@ -58,7 +49,7 @@ BackendCapabilities::BackendCapabilities()
 	: d( 0 ) //when changing this also uncomment the delete in the dtor
 {
 	m_self = this;
-	connect( Factory::self(), SIGNAL( backendChanged() ), SLOT( slotBackendChanged() ) );
+	connect( Factory::self(), SIGNAL( backendChanged() ), SLOT( _k_slotBackendChanged() ) );
 }
 
 BackendCapabilities::~BackendCapabilities()
@@ -123,58 +114,32 @@ bool BackendCapabilities::isMimeTypeKnown( QString mimeType )
 	}
 }
 
-#define availableDevicesImpl( classname, indexesMethod ) \
-QList<classname> BackendCapabilities::available ## classname ## s() \
+#define availableDevicesImpl( type ) \
+QList<ObjectDescription> BackendCapabilities::available ## type ## s() \
 { \
 	QObject* backendObject = Factory::self()->backend(); \
-	QList<classname> ret; \
+	QList<ObjectDescription> ret; \
 	if( backendObject ) \
 	{ \
 		QSet<int> deviceIndexes; \
-		pBACKEND_GET( QSet<int>, deviceIndexes, #indexesMethod ); \
+		pBACKEND_GET1( QSet<int>, deviceIndexes, "objectDescriptionIndexes", ObjectDescription::Type, ObjectDescription::type ); \
 		foreach( int i, deviceIndexes ) \
-			ret.append( classname::fromIndex( i ) ); \
+			ret.append( ObjectDescription::fromIndex( ObjectDescription::type, i ) ); \
 	} \
 	return ret; \
 }
-availableDevicesImpl( AudioOutputDevice, audioOutputDeviceIndexes )
-availableDevicesImpl( AudioCaptureDevice, audioCaptureDeviceIndexes )
-availableDevicesImpl( VideoOutputDevice, videoOutputDeviceIndexes )
-availableDevicesImpl( VideoCaptureDevice, videoCaptureDeviceIndexes )
-availableDevicesImpl( VisualizationEffect, visualizationIndexes )
-availableDevicesImpl( AudioCodec, audioCodecIndexes )
-availableDevicesImpl( VideoCodec, videoCodecIndexes )
-availableDevicesImpl( ContainerFormat, containerFormatIndexes )
+availableDevicesImpl( AudioOutputDevice )
+availableDevicesImpl( AudioCaptureDevice )
+availableDevicesImpl( VideoOutputDevice )
+availableDevicesImpl( VideoCaptureDevice )
+availableDevicesImpl( Visualization )
+availableDevicesImpl( AudioCodec )
+availableDevicesImpl( VideoCodec )
+availableDevicesImpl( ContainerFormat )
+availableDevicesImpl( AudioEffect )
+availableDevicesImpl( VideoEffect )
 
-QList<AudioEffectDescription> BackendCapabilities::availableAudioEffects()
-{
-	QObject* backendObject = Factory::self()->backend();
-	QList<AudioEffectDescription> ret;
-	if( backendObject )
-	{
-		QSet<int> deviceIndexes;
-		pBACKEND_GET( QSet<int>, deviceIndexes, "audioEffectIndexes" );
-		foreach( int i, deviceIndexes )
-			ret.append( AudioEffectDescription::fromIndex( i ) );
-	}
-	return ret;
-}
-
-QList<VideoEffectDescription> BackendCapabilities::availableVideoEffects()
-{
-	QObject* backendObject = Factory::self()->backend();
-	QList<VideoEffectDescription> ret;
-	if( backendObject )
-	{
-		QSet<int> deviceIndexes;
-		pBACKEND_GET( QSet<int>, deviceIndexes, "videoEffectIndexes" );
-		foreach( int i, deviceIndexes )
-			ret.append( VideoEffectDescription::fromIndex( i ) );
-	}
-	return ret;
-}
-
-void BackendCapabilities::slotBackendChanged()
+void BackendCapabilities::_k_slotBackendChanged()
 {
 	emit capabilitiesChanged();
 }

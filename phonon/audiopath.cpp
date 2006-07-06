@@ -31,9 +31,9 @@ AudioPath::~AudioPath()
 {
 	K_D( AudioPath );
 	foreach( AbstractAudioOutput* ao, d->outputs )
-		ao->removeDestructionHandler( this );
+		ao->removeDestructionHandler( d );
 	foreach( AudioEffect* ae, d->effects )
-		ae->removeDestructionHandler( this );
+		ae->removeDestructionHandler( d );
 }
 
 bool AudioPath::addOutput( AbstractAudioOutput* audioOutput )
@@ -48,7 +48,7 @@ bool AudioPath::addOutput( AbstractAudioOutput* audioOutput )
 		BACKEND_GET1( bool, success, "addOutput", QObject*, audioOutput->iface() );
 		if( success )
 		{
-			audioOutput->addDestructionHandler( this );
+			audioOutput->addDestructionHandler( d );
 			d->outputs << audioOutput;
 			return true;
 		}
@@ -95,7 +95,7 @@ bool AudioPath::insertEffect( AudioEffect* newEffect, AudioEffect* insertBefore 
 		BACKEND_GET2( bool, success, "insertEffect", QObject*, newEffect->iface(), QObject*, insertBefore ? insertBefore->iface() : 0 );
 		if( success )
 		{
-			newEffect->addDestructionHandler( this );
+			newEffect->addDestructionHandler( d );
 			if( insertBefore )
 				d->effects.insert( d->effects.indexOf( insertBefore ), newEffect );
 			else
@@ -160,26 +160,25 @@ void AudioPath::setupIface()
 	}
 }
 
-void AudioPath::phononObjectDestroyed( Base* o )
+void AudioPathPrivate::phononObjectDestroyed( Base* o )
 {
 	// this method is called from Phonon::Base::~Base(), meaning the AudioEffect
 	// dtor has already been called, also virtual functions don't work anymore
 	// (therefore qobject_cast can only downcast from Base)
-	K_D( AudioPath );
 	Q_ASSERT( o );
 	AbstractAudioOutput* output = static_cast<AbstractAudioOutput*>( o );
 	AudioEffect* audioEffect = static_cast<AudioEffect*>( o );
-	if( d->outputs.contains( output ) )
+	if( outputs.contains( output ) )
 	{
-		if( d->backendObject )
-			BACKEND_CALL1( "removeOutput", QObject*, output->iface() );
-		d->outputs.removeAll( output );
+		if( backendObject )
+			pBACKEND_CALL1( "removeOutput", QObject*, output->iface() );
+		outputs.removeAll( output );
 	}
-	else if( d->effects.contains( audioEffect ) )
+	else if( effects.contains( audioEffect ) )
 	{
-		if( d->backendObject )
-			BACKEND_CALL1( "removeEffect", QObject*, audioEffect->iface() );
-		d->effects.removeAll( audioEffect );
+		if( backendObject )
+			pBACKEND_CALL1( "removeEffect", QObject*, audioEffect->iface() );
+		effects.removeAll( audioEffect );
 	}
 }
 

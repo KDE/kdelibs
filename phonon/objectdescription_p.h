@@ -17,52 +17,39 @@
 
 */
 
-#ifndef PHONON_NAMEDESCRIPTIONTUPLE_P_H
-#define PHONON_NAMEDESCRIPTIONTUPLE_P_H
+#ifndef PHONON_OBJECTDESCRIPTION_P_H
+#define PHONON_OBJECTDESCRIPTION_P_H
 
 #include <QString>
 #include <kdebug.h>
+#include <QSharedData>
 
 namespace Phonon
 {
-	class NameDescriptionTuplePrivate
+	class ObjectDescriptionPrivate : public QSharedData
 	{
-		Q_DECLARE_PUBLIC( NameDescriptionTuple )
-		protected:
-			NameDescriptionTuplePrivate()
-				: index( -1 )
+		public:
+			ObjectDescriptionPrivate( ObjectDescription::Type _type, int _index, const QString& _name, const QString& _desc )
+				: index( _index )
+				, name( _name )
+				, description( _desc )
+				, type( _type )
 			{
 			}
 
-			NameDescriptionTuplePrivate( const NameDescriptionTuplePrivate* cpy )
-				: index( cpy->index )
-				, name( cpy->name )
-				, description( cpy->description )
+			bool operator==( const ObjectDescriptionPrivate& rhs ) const
 			{
-			}
-
-			NameDescriptionTuplePrivate& operator=( const NameDescriptionTuplePrivate& rhs )
-			{
-				index = rhs.index;
-				name = rhs.name;
-				description = rhs.description;
-				return *this;
-			}
-
-			bool operator==( const NameDescriptionTuplePrivate& rhs ) const
-			{
-				if( index == rhs.index && ( name != rhs.name || description != rhs.description ) )
+				if( type == rhs.type && index == rhs.index && ( name != rhs.name || description != rhs.description ) )
 					kError( 600 ) << "Same index (" << index <<
 						"), but different name/description. This is a bug in the Phonon backend." << endl;
-				return index == rhs.index;// && name == rhs.name && description == rhs.description;
+				return type == rhs.type && index == rhs.index;// && name == rhs.name && description == rhs.description;
 			}
 
 			int index;
 			QString name, description;
-
-			NameDescriptionTuple* q_ptr;
+			ObjectDescription::Type type;
 	};
 } // namespace Phonon
 
-#endif // PHONON_NAMEDESCRIPTIONTUPLE_P_H
+#endif // PHONON_OBJECTDESCRIPTION_P_H
 // vim: sw=4 ts=4 noet tw=80

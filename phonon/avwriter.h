@@ -70,12 +70,6 @@ class PHONONCORE_EXPORT AvWriter : public QObject
 
 	public Q_SLOTS:
 		void setContainerFormat( ContainerFormat format );
-
-	protected:
-		/**
-		 * \internal
-		 */
-		AvWriter( AvWriterPrivate& dd, QObject* parent );
 };
 
 } // namespace Phonon

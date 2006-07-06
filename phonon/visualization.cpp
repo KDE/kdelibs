@@ -19,7 +19,7 @@
 
 #include "visualization.h"
 #include "visualization_p.h"
-#include "visualizationeffect.h"
+#include "objectdescription.h"
 #include "audiopath.h"
 #include "abstractvideooutput.h"
 
@@ -31,9 +31,9 @@ Visualization::~Visualization()
 {
 	K_D( Visualization );
 	if( d->audioPath )
-		d->audioPath->removeDestructionHandler( this );
+		d->audioPath->removeDestructionHandler( d );
 	if( d->videoOutput )
-		d->videoOutput->removeDestructionHandler( this );
+		d->videoOutput->removeDestructionHandler( d );
 }
 
 AudioPath* Visualization::audioPath() const
@@ -46,6 +46,7 @@ void Visualization::setAudioPath( AudioPath* audioPath )
 {
 	K_D( Visualization );
 	d->audioPath = audioPath;
+	d->audioPath->addDestructionHandler( d );
 	if( iface() )
 		BACKEND_CALL1( "setAudioPath", QObject*, audioPath->iface() );
 }
@@ -60,11 +61,12 @@ void Visualization::setVideoOutput( AbstractVideoOutput* videoOutput )
 {
 	K_D( Visualization );
 	d->videoOutput = videoOutput;
+	d->videoOutput->addDestructionHandler( d );
 	if( iface() )
 		BACKEND_CALL1( "setVideoOutput", QObject*, videoOutput->iface() );
 }
 
-VisualizationEffect Visualization::visualization() const
+ObjectDescription Visualization::visualization() const
 {
 	K_D( const Visualization );
 	int index;
@@ -72,10 +74,10 @@ VisualizationEffect Visualization::visualization() const
 		BACKEND_GET( int, index, "visualization" );
 	else
 		index = d->visualizationIndex;
-	return VisualizationEffect::fromIndex( index );
+	return ObjectDescription::fromIndex( ObjectDescription::Visualization, index );
 }
 
-void Visualization::setVisualization( const VisualizationEffect& newVisualization )
+void Visualization::setVisualization( const ObjectDescription& newVisualization )
 {
 	K_D( Visualization );
 	if( iface() )
@@ -110,19 +112,24 @@ QWidget* Visualization::createParameterWidget( QWidget* parent )
 }
 */
 
-void Visualization::phononObjectDestroyed( Base* o )
+void VisualizationPrivate::phononObjectDestroyed( Base* o )
 {
 	// this method is called from Phonon::Base::~Base(), meaning the AudioEffect
 	// dtor has already been called, also virtual functions don't work anymore
 	// (therefore qobject_cast can only downcast from Base)
-	K_D( Visualization );
 	Q_ASSERT( o );
 	AudioPath* path = static_cast<AudioPath*>( o );
 	AbstractVideoOutput* output = static_cast<AbstractVideoOutput*>( o );
-	if( d->audioPath == path )
-		d->audioPath = 0;
-	else if( d->videoOutput == output )
-		d->videoOutput = 0;
+	if( audioPath == path )
+	{
+		pBACKEND_CALL1( "setAudioPath", QObject*, static_cast<QObject*>( 0 ) );
+		audioPath = 0;
+	}
+	else if( videoOutput == output )
+	{
+		pBACKEND_CALL1( "setVideoOutput", QObject*, static_cast<QObject*>( 0 ) );
+		videoOutput = 0;
+	}
 }
 
 bool VisualizationPrivate::aboutToDeleteIface()

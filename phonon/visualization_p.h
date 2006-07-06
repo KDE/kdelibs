@@ -25,7 +25,7 @@
 
 namespace Phonon
 {
-class VisualizationPrivate : public BasePrivate
+class VisualizationPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( Visualization )
 	PHONON_PRIVATECLASS( Visualization, Base )
@@ -40,6 +40,9 @@ class VisualizationPrivate : public BasePrivate
 		AudioPath* audioPath;
 		AbstractVideoOutput* videoOutput;
 		int visualizationIndex;
+
+	private:
+		void phononObjectDestroyed( Base* );
 };
 } // namespace Phonon
 

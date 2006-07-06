@@ -11,5 +11,5 @@ target_link_libraries(kcm_phonon  ${KDE4_KDECORE_LIBS} phononcore )
 install(TARGETS kcm_phonon  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
-install( FILES kcm_phonon.desktop  DESTINATION  ${XDG_APPS_DIR} )
+install( FILES kcm_phonon.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
