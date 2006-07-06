@@ -110,15 +110,16 @@ QStringList VFolderMenu::allDirectories()
 static void
 track(const QString &menuId, const QString &menuName, const QHash<QString,KService::Ptr>& includeList, const QHash<QString,KService::Ptr>& excludeList, const QHash<QString,KService::Ptr>& itemList, const QString &comment)
 {
-   if (itemList.find(menuId))
-      printf("%s: %s INCL %d EXCL %d\n", qPrintable(menuName), qPrintable(comment), includeList.find(menuId) ? 1 : 0, excludeList.find(menuId) ? 1 : 0);
+   if (itemList.contains(menuId))
+      printf("%s: %s INCL %d EXCL %d\n", qPrintable(menuName), qPrintable(comment), includeList.contains(menuId) ? 1 : 0, excludeList.contains(menuId) ? 1 : 0);
 }
 
 void
 VFolderMenu::includeItems(QHash<QString,KService::Ptr>& items1, const QHash<QString,KService::Ptr>& items2)
 {
-   foreach (KService::Ptr p, items2)
+   foreach (KService::Ptr p, items2) {
        items1.insert(p->menuId(), p);
+   }
 }
 
 void
@@ -127,7 +128,7 @@ VFolderMenu::matchItems(QHash<QString,KService::Ptr>& items1, const QHash<QStrin
    foreach (KService::Ptr p, items1)
    {
        QString id = p->menuId();
-       if (!items2.find(id))
+       if (!items2.contains(id))
           items1.remove(id);
    }
 }
@@ -359,7 +360,7 @@ VFolderMenu::buildApplicationIndex(bool unusedOnly)
       while (it.hasNext())
       {
          KService::Ptr s = it.next().value();
-         if (unusedOnly && m_usedAppsDict.find(s->menuId()))
+         if (unusedOnly && m_usedAppsDict.contains(s->menuId()))
          {
             // Remove and skip this one
             it.remove();
