@@ -28,7 +28,7 @@
 #include <QPointer>
 #include <QStringList>
 #include <QTextEdit>
-
+#include <QStyle>
 #include <Q3GroupBox>
 #include <Q3SimpleRichText>
 
@@ -215,16 +215,17 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
              pref_width = used_width;
        }
     }
-    KActiveLabel *label2 = new KActiveLabel( qt_text, contents );
+    QLabel *label2 = new QLabel( qt_text, contents );
+    label2->setOpenExternalLinks(true);
+    label2->setTextInteractionFlags(Qt::TextInteractionFlags(label2->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
+
     if (!(options & KMessageBox::AllowLink))
     {
        QObject::disconnect(label2, SIGNAL(anchorClicked (const QUrl &)),
                         label2, SLOT(setSource(const QUrl &)));
     }
 
-    // We add 10 pixels extra to compensate for some KActiveLabel margins.
-    // TODO: find out why this is 10.
-    label2->setFixedSize(QSize(pref_width+10, pref_height));
+    label2->setFixedSize(QSize(pref_width, pref_height));
     lay->addWidget( label2 );
     lay->addStretch();
 
@@ -250,8 +251,9 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
        Q3GroupBox *detailsGroup = new Q3GroupBox( i18n("Details"), dialog);
        detailsGroup->setOrientation(Qt::Vertical);
        if ( details.length() < 512 ) {
-         KActiveLabel *label3 = new KActiveLabel(qrichtextify(details),
-                                                 detailsGroup);
+         QLabel *label3 = new QLabel(qrichtextify(details), detailsGroup);
+         label3->setOpenExternalLinks(true);
+         label3->setTextInteractionFlags(Qt::TextInteractionFlags(label3->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
          label3->setMinimumSize(label3->sizeHint());
          if (!(options & KMessageBox::AllowLink))
          {

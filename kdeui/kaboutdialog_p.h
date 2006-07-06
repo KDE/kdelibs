@@ -20,47 +20,16 @@
  *
  */
 
-#ifndef _KABOUTDIALOG_PRIVATE_H_
-#define _KABOUTDIALOG_PRIVATE_H_
+#ifndef KABOUTDIALOG_P_H
+#define KABOUTDIALOG_P_H
 
-#include <qlabel.h>
+#include <qwidget.h>
 
+class QLabel;
 class QFrame;
 class QTabWidget;
 class QVBoxLayout;
-
-/**
- * Used internally by KAboutContainerBase
- * @internal
- */
-class KImageTrackLabel : public QLabel
-{
-  Q_OBJECT
-
-  public:
-    enum MouseMode
-    {
-      MousePress = 1,
-      MouseRelease,
-      MouseDoubleClick,
-      MouseMove
-    };
-
-  public:
-    KImageTrackLabel( QWidget * parent, Qt::WFlags f=0 );
-
-  Q_SIGNALS:
-    void mouseTrack( int mode, const QMouseEvent *e );
-
-  protected:
-    virtual void mousePressEvent( QMouseEvent *e );
-    virtual void mouseReleaseEvent( QMouseEvent *e );
-    virtual void mouseDoubleClickEvent( QMouseEvent *e );
-    virtual void mouseMoveEvent ( QMouseEvent *e );
-};
-
 class KAboutContainer;
-
 class KAboutContainerBasePrivate;
 
 /**
@@ -88,8 +57,7 @@ class KAboutContainerBase : public QWidget
 
   public:
     KAboutContainerBase( int layoutType, QWidget *parent = 0 );
-    virtual void show( void );
-    virtual QSize sizeHint( void ) const;
+    QSize sizeHint( void ) const;
 
     void setTitle( const QString &title );
     void setImage( const QString &fileName );
@@ -113,32 +81,22 @@ class KAboutContainerBase : public QWidget
 
     KAboutContainer *addContainer( Qt::Alignment childAlignment, Qt::Alignment innerAlignment );
 
-  public Q_SLOTS:
-    virtual void slotMouseTrack( int mode, const QMouseEvent *e );
-    virtual void slotUrlClick( const QString &url );
-    virtual void slotMailClick( const QString &name, const QString &address );
-
   protected:
-    virtual void fontChange( const QFont &oldFont );
-
-  Q_SIGNALS:
-    void mouseTrack( int mode, const QMouseEvent *e );
-    void urlClick( const QString &url );
-    void mailClick( const QString &name, const QString &address );
+    void fontChange( const QFont &oldFont );
 
   private:
     QVBoxLayout *mTopLayout;
-    KImageTrackLabel *mImageLabel;
-    QLabel  *mTitleLabel;
-    QLabel  *mIconLabel;
-    QLabel  *mVersionLabel;
-    QLabel  *mAuthorLabel;
-    QFrame  *mImageFrame;
+    QLabel *mImageLabel;
+    QLabel *mTitleLabel;
+    QLabel *mIconLabel;
+    QLabel *mVersionLabel;
+    QLabel *mAuthorLabel;
+    QFrame *mImageFrame;
     QTabWidget *mPageTab;
-    QFrame  *mPlainSpace;
+    QFrame *mPlainSpace;
 
     KAboutContainerBasePrivate* const d;
 };
 
-
 #endif
+

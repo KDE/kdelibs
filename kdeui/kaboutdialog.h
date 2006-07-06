@@ -31,13 +31,14 @@
 #define KABOUTDIALOG_H
 
 #include <QFrame>
-
 #include <kdialog.h>
+
+#include <kdelibs_export.h>
 
 class QLabel;
 class QVBoxLayout;
 class QTabWidget;
-class KUrlLabel;
+class QLabel;
 class KAboutContainer;
 class KAboutContainerBase;
 
@@ -73,21 +74,6 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
 
   protected:
     virtual void childEvent( QChildEvent *e );
-
-  Q_SIGNALS:
-    /**
-     * Emitted when the user clicks on a (highlighted) URL in the
-     * aboutbox. The @p url is passed in the signal.
-     */
-    void urlClick( const QString &url );
-
-    /**
-     * Emitted when the user clicks on a mailto: link in the aboutbox.
-     * The mail address is passed as @p address; the parameter @p name
-     * might be the name of the person being mailed (so that you can
-     * build a complete address of the form name \<address\>.
-     */
-    void mailClick( const QString &name, const QString &address );
 
   private:
     class Private;
@@ -134,15 +120,6 @@ class KDEUI_EXPORT KAboutContributor : public QFrame
 
   protected:
     virtual void fontChange( const QFont &oldFont );
-
-  protected Q_SLOTS:
-    void urlClickedSlot( const QString& );
-    void emailClickedSlot( const QString& emailAddress );
-
-
-  Q_SIGNALS:
-    void sendEmail( const QString& name, const QString& email );
-    void openUrl( const QString& url );
 
   private:
     class Private;
@@ -202,28 +179,6 @@ class KDEUI_EXPORT KAboutWidget : public QWidget
      * Sets the text describing the version.
      */
     void setVersion( const QString& name );
-
-  Q_SIGNALS:
-    /**
-     * An email address has been selected by the user.
-     */
-    void sendEmail(const QString& name, const QString& email);
-
-    /**
-     * An URL has been clicked.
-     */
-    void openUrl(const QString& url);
-
-  protected Q_SLOTS:
-    /**
-     * Catches the signals from the contributors elements.
-     */
-    void sendEmailSlot(const QString& name, const QString& email);
-
-    /**
-     * Catches the clicked URLs.
-     */
-    void openUrlSlot(const QString& url);
 
   protected:
     /**
@@ -567,20 +522,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
                           const QString &path, const QColor &imageColor,
                           const QString &url );
 
-  Q_SIGNALS:
-    /**
-     * Send an email to this person.
-     *
-     * The application must provide the
-     *  functionality.
-     */
-    void sendEmail( const QString& name, const QString& email );
-
-    /**
-     * Open the selected URL.
-     */
-    void openUrl( const QString& url );
-
   protected:
     /**
      * The main widget (Constructor I)
@@ -591,24 +532,6 @@ class KDEUI_EXPORT KAboutDialog : public KDialog
      * The main widget (Constructor II)
      */
     KAboutContainerBase *mContainerBase;
-
-  protected Q_SLOTS:
-    /**
-     * Connected to widget->sendEmail.
-     */
-    void sendEmailSlot( const QString& name, const QString& email );
-
-    /**
-     * Open this URL.
-     */
-    void openUrlSlot( const QString& url );
-
-    /**
-     * (Constructor II only)
-     * Tells the position of the mouse cursor when the left mouse button
-     * is pressed above an image
-     */
-    virtual void mouseTrackSlot( int mode, const QMouseEvent *e );
 
   private:
     class Private;

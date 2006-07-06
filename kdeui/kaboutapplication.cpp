@@ -30,7 +30,7 @@
 #include <qlabel.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kurllabel.h>
+#include <qstyle.h>
 
 KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
   :KAboutDialog( Tabbed|Product, aboutData->programName(), parent ),
@@ -78,12 +78,11 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
 
   if (!aboutData->homepage().isEmpty())
   {
-    KUrlLabel *url = new KUrlLabel();
-    url->setText(aboutData->homepage());
-    url->setUrl(aboutData->homepage());
+    QLabel *url = new QLabel(appPage);
+    url->setOpenExternalLinks(true);
+    url->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    url->setText(QString("<a href=\"%1\">%1</a>").arg(aboutData->homepage()));
     appPage->addWidget( url );
-    connect( url, SIGNAL(leftClickedUrl(const QString &)),
-             this, SLOT(openUrlSlot(const QString &)));
   }
 
   int authorCount = aboutData->authors().count();
@@ -98,6 +97,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
       QString text;
       QLabel* activeLabel = new QLabel( authorPage );
       activeLabel->setOpenExternalLinks(true);
+      activeLabel->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
       if (!aboutData->customAuthorTextEnabled())
       {
         if ( aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
