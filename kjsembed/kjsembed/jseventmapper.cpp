@@ -271,7 +271,7 @@ QEvent::Type JSEventMapper::findEventType( const KJS::Identifier &name ) const
 
 bool JSEventMapper::isEventHandler( const KJS::Identifier &name ) const
 {
-    return m_handlerToEvent.find( name.qstring() ) ? true : false;
+    return m_handlerToEvent.contains( name.qstring() );
 }
 
 KJS::Identifier JSEventMapper::findEventHandler( QEvent::Type t ) const

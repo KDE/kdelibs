@@ -49,7 +49,7 @@ void KTimeout::removeTimer(int id) {
 
 
 void KTimeout::addTimer(int id, int timeout) {
-	if (_timers.find(id) != 0L) {
+	if (_timers.contains(id)) {
 		return;
 	}
 

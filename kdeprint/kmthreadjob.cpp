@@ -154,7 +154,7 @@ void KMThreadJob::createJob(KMJob *job)
 	if (job->id() > 0)
 	{
 		loadJobs();
-		if (!m_jobs.find(job->id()))
+		if (!m_jobs.contains(job->id()))
 		{
 			m_jobs.insert(job->id(),job);
 			saveJobs();

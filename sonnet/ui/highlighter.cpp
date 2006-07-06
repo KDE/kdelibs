@@ -264,7 +264,7 @@ QString Highlighter::currentLanguage() const
 
 void Highlighter::setCurrentLanguage(const QString &lang)
 {
-    if (!d->dictCache.find(lang)) {
+    if (!d->dictCache.contains(lang)) {
         Speller *dict = d->loader->createSpeller(lang);
         if ( dict ) {
             d->dictCache.insert(lang, dict);

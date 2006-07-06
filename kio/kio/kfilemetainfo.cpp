@@ -973,7 +973,7 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
 			++i;
         }
         // Hopefully the above includes the mimetype we asked for!
-        if ( m_pendingMimetypeInfos.find( mimeType ) == 0 )
+        if ( !m_pendingMimetypeInfos.contains( mimeType ) )
             kWarning(7033) << plugin->metaObject()->className() << " was created for " << mimeType << " but doesn't call addMimeTypeInfo for it!" << endl;
     }
     m_pendingMimetypeInfos.clear();

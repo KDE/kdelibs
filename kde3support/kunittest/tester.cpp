@@ -91,7 +91,7 @@ namespace KUnitTest
 
     TestResults *SlotTester::results(const char *sl)
     {
-        if ( m_resultsList.find(sl) == 0 )
+        if ( !m_resultsList.contains(sl) )
             m_resultsList.insert(sl, new TestResults());
 
         return m_resultsList[sl];

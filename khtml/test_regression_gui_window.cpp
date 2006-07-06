@@ -378,7 +378,7 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 			QTreeWidgetItem *testItem = new QTreeWidgetItem(parent, QStringList(KUrl(test).path()));
 
 			// Remember name <-> item pair...
-			assert(m_itemMap.constFind(cacheName) != m_directoryMap.constEnd());
+			assert(m_itemMap.contains(cacheName));
 			m_itemMap.insert(cacheName, testItem);
 
 			bool ignore = (hasIgnores && m_ignoreMap[directory].contains(test));
