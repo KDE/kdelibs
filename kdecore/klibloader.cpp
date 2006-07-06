@@ -156,13 +156,16 @@ QString KLibrary::fileName() const
     return m_filename;
 }
 
-KLibFactory* KLibrary::factory()
+KLibFactory* KLibrary::factory( const char* factoryname )
 {
     if ( m_factory )
         return m_factory;
 
     QByteArray symname = "init_";
-    symname += name().toLatin1();
+    if( factoryname )
+        symname += factoryname;
+    else
+        symname += name().toLatin1();
 
     void* sym = symbol( symname );
     if ( !sym )

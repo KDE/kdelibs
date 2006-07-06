@@ -69,9 +69,12 @@ public:
 
     /**
      * Returns the factory of the library.
+     * @param factoryname The postfix to the init_ symbol used to create the
+     * factory object. It corresponds to the first parameter to
+     * K_EXPORT_COMPONENT_FACTORY.
      * @return The factory of the library if there is any, otherwise 0
      */
-    KLibFactory* factory();
+    KLibFactory* factory( const char* factoryname = 0 );
 
     /**
      * Looks up a symbol from the library. This is a very low level
