@@ -977,7 +977,7 @@ QByteArray KStartupInfo::createNewStartupId()
 #endif
     QByteArray id = QString::fromLatin1( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).toUtf8();
-    kDebug( 172 ) << "creating: " << id << ":" << qAppName() << endl;
+    kDebug( 172 ) << "creating: " << id << ":" << (qApp ? qAppName() : QString("unnamed app") /* e.g. kdeinit */) << endl;
     return id;
     }
 
