@@ -4,6 +4,7 @@ THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING SVN
 http://edu.kde.org/development/port2kde4.php )
 
 What you need
+==================
 
 Make sure you get the following stuff from SVN:
 
@@ -15,9 +16,10 @@ Make sure you get the following stuff from SVN:
 It is important that you compile AND INSTALL the above packages in the above
 order.
 
-Further you will need GNU make, a working C++ compiler (e.g. gcc 3.3.x or later).
+Further you will need GNU make, a working C++ compiler (e.g. gcc 3.3.x or later) and CMake 2.4.1 or later 
 
 Preparations
+==================
 
 Before you start you must decide two things:
 
@@ -55,11 +57,40 @@ For configuring Qt, the magic sequence is:
 ./configure -system-zlib -qt-gif -system-libjpeg -system-libpng -no-exceptions -debug -fast
 make
 
-Compiling KDE
+Installing CMake:
 
-... see the file COMPILING-WITH-CMAKE.
+Get the latest version of CMake from http://www.cmake.org/
+unpack, run "./configure && make && make install" will install into /usr/local.
+
+Ensure cmake is in your $PATH.
+
+Compiling KDE
+==================
+
+Use a separate builddir to build KDE modules, not the sourcedir (example below).
+
+To get regular debugging, pass -DCMAKE_BUILD_TYPE=debug
+To get full debugging, pass -DCMAKE_BUILD_TYPE=debugfull
+
+If something hasn't been found, use "cd builddir; ccmake sourcedir" to set the
+missing (or wrong) things manually.
+
+Short example:
+mkdir build-kdelibs
+cd build-kdelibs
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/kde4 -DCMAKE_BUILD_TYPE=debugfull /path/to/kdelibs/sources
+make
+make install
+
+CMake documentation:
+-read the cmake manpage
+-visit http://www.cmake.org/HTML/Documentation.html and go through the
+ contents you find there, start with "Writing CMakeLists.txt".
+-visit the cmake wiki at http://www.cmake.org/Wiki/CMake, it contains
+ a lot of useful information.
 
 Common problems
+==================
 
 One of the biggest problems is picking up the correct version of Qt, especially
 if your system has more version of Qt installed. Be aware that information
