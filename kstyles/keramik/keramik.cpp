@@ -96,38 +96,50 @@ class KeramikStyle: public KStyle
 public:
 	KeramikStyle()
 	{
+	}
+
+	int widgetLayoutProp(int metric, const QStyleOption* opt, const QWidget* w) const
+	{
+		switch (metric) {
 		//Just for the heck of it, make the focus rect's RHS nearly flush
-		setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin, 3);
-		setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Right, 2);
-		setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
-		setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
+			case LP_PushButton_FocusMargin:         return 3;
+			case LP_PushButton_FocusMargin + Right: return 2;
+			case LP_PushButton_FocusMargin + Top:   return 2;
+			case LP_PushButton_FocusMargin + Bot:   return 2;
 
-		setWidgetLayoutProp(WT_MenuBar, MenuBar::ItemSpacing,   10);
+			case LP_MenuBar_ItemSpacing: return 10;
 
-		setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin + Left,  2);
-		setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin + Right, 2);
+			case LP_MenuBarItem_Margin + Left:  return  2;
+			case LP_MenuBarItem_Margin + Right: return 2;
 
-		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight,
-						loader.size( keramik_scrollbar_vbar + KeramikSlider1 ).height() +
-						loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height());
+			case LP_ScrollBar_MinimumSliderHeight:
+				return loader.size( keramik_scrollbar_vbar + KeramikSlider1 ).height() +
+										loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height();
 
 
-		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor,
-							ColorMode(ColorMode::BWAutoContrastMode, QPalette::Button));
+			case LP_ScrollBar_ArrowColor:
+				return ColorMode(ColorMode::BWAutoContrastMode, QPalette::Button);
 
-		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor,
-							ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText));
+			case LP_ScrollBar_ActiveArrowColor:
+				return ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText);
 
-		//### HACK,for now.
-		//setWidgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin, 8);
+		//### HACK: returnfor now.
+		//case LP_DockWidgetTitle_Margin: return 8;
 
-		//setWidgetLayoutProp(WT_ProgressBar, ProgressBar::SideText, 1);
+		//case LP_ProgressBar_SideText: return 1;
 
-		setWidgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight,
-								loader.size(keramik_scrollbar_vbar_arrow1).height());
+			case LP_ScrollBar_SingleButtonHeight:
+				return loader.size(keramik_scrollbar_vbar_arrow1).height();
 
-		setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 12);
-		setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, loader.size(keramik_slider).height());
+			case LP_Slider_HandleLength: return 12;
+			case LP_Slider_HandleThickness:
+				return loader.size(keramik_slider).height();
+
+			default:
+				break;
+		}
+
+		return KStyle::widgetLayoutProp(metric, opt, w);
 	}
 
 	void drawKStylePrimitive(WidgetType widgetType, int primitive,
@@ -146,11 +158,11 @@ public:
 			{
 				switch (primitive)
 				{
-					case ProgressBar::BusyIndicator:
+					case KPE_ProgressBar_BusyIndicator:
 						Keramik::RowPainter(keramik_progressbar).draw(p, r,
 										 pal.color(QPalette::Highlight), pal.background().color());
 						return;
-					case ProgressBar::Indicator:
+					case KPE_ProgressBar_Indicator:
 						Keramik::ProgressBarPainter(keramik_progressbar, opt->direction == Qt::RightToLeft).draw(p, r,
 							pal.color(QPalette::Highlight), pal.background().color());
 						return;
@@ -163,7 +175,7 @@ public:
 			{
 				switch (primitive)
 				{
-					case MenuBarItem::Panel:
+					case KPE_MenuBarItem_Panel:
 					{
 						const QStyleOptionMenuItem* miOpt = ::qstyleoption_cast<const QStyleOptionMenuItem*>(opt);
 						bool active  = flags & State_Selected;
@@ -184,13 +196,13 @@ public:
 			{
 				switch (primitive)
 				{
-					case Generic::Frame:
+					case KPE_Generic_Frame:
 					{
 						qDrawShadePanel(p, r, pal);
 						return;
 					}
 
-					case Menu::Background:
+					case KPE_Menu_Background:
 					{
 						p->fillRect( r, pal.background().color().light( 105 ) );
 						return;
@@ -203,7 +215,7 @@ public:
 			{
 				switch (primitive)
 				{
-					case MenuItem::Separator:
+					case KPE_MenuItem_Separator:
 					{
 						r = centerRect(r, r.width(), 2); //Center...
 						p->setPen( pal.mid().color() );
@@ -213,12 +225,12 @@ public:
 						return;
 					}
 
-					case MenuItem::ItemIndicator:
+					case KPE_MenuItem_ItemIndicator:
 					{
 						if (flags & State_Enabled)
 							Keramik::RowPainter( keramik_menuitem ).draw(p, r, pal.color(QPalette::Highlight), pal.background().color());
 						else
-							drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
+							drawKStylePrimitive(WT_Generic, KPE_Generic_FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
 						return;
 					}
 				}
@@ -230,7 +242,7 @@ public:
 				bool down = (flags & State_Sunken);
 				switch (primitive)
 				{
-					case ScrollBar::DoubleButtonHor:
+					case KPE_ScrollBar_DoubleButtonHor:
 					{
 						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
 
@@ -264,7 +276,7 @@ public:
 						return;
 					}
 
-					case ScrollBar::DoubleButtonVert:
+					case KPE_ScrollBar_DoubleButtonVert:
 					{
 						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
 
@@ -299,7 +311,7 @@ public:
 						return;
 					}
 
-					case ScrollBar::SingleButtonHor:
+					case KPE_ScrollBar_SingleButtonHor:
 					{
 						Keramik::CenteredPainter painter(keramik_scrollbar_hbar_arrow1 );
 						painter.draw( p, r, down? pal.buttonText().color() : pal.color(QPalette::Button),
@@ -307,7 +319,7 @@ public:
 						return;
 					}
 
-					case ScrollBar::SingleButtonVert:
+					case KPE_ScrollBar_SingleButtonVert:
 					{
 						Keramik::CenteredPainter painter(keramik_scrollbar_vbar_arrow1 );
 						painter.draw( p, r, down? pal.buttonText().color() : pal.color(QPalette::Button),
@@ -316,7 +328,7 @@ public:
 					}
 				}
 
-				if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft)
+				if (primitive >= KPE_Generic_ArrowUp && primitive <= KPE_Generic_ArrowLeft)
 				{
 					KStyle::ColorOption* colorOpt   = extractOption<KStyle::ColorOption*>(kOpt);
 					QColor               arrowColor = colorOpt->color.color(pal);
@@ -324,15 +336,15 @@ public:
 					QPolygon poly;
 					switch (primitive)
 					{
-						case Generic::ArrowUp:
+						case KPE_Generic_ArrowUp:
 							poly.setPoints(POLY_LEN(keramik_up_arrow), keramik_up_arrow);
 							break;
 
-						case Generic::ArrowDown:
+						case KPE_Generic_ArrowDown:
 							poly.setPoints(POLY_LEN(keramik_down_arrow), keramik_down_arrow);
 							break;
 
-						case Generic::ArrowLeft:
+						case KPE_Generic_ArrowLeft:
 							poly.setPoints(POLY_LEN(keramik_left_arrow), keramik_left_arrow);
 							break;
 
@@ -371,8 +383,8 @@ public:
 				const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
 				switch (primitive)
 				{
-					case TabBar::NorthTab:
-					case TabBar::SouthTab:
+					case KPE_TabBar_NorthTab:
+					case KPE_TabBar_SouthTab:
 					{
 						QStyleOptionTab::TabPosition pos = tabOpt->position;
 						//Adjust for RTL
@@ -392,7 +404,7 @@ public:
 							if (pos != QStyleOptionTab::End)
 									tabRect.setWidth( tabRect.width() + 1);
 
-							Keramik::ActiveTabPainter(primitive == TabBar::SouthTab).draw(p, tabRect,
+							Keramik::ActiveTabPainter(primitive == KPE_TabBar_SouthTab).draw(p, tabRect,
 									pal.color(QPalette::Button).light(110), pal.background().color(),
 									disabled);
 						}
@@ -400,7 +412,7 @@ public:
 						{
 							int x, y, w, h;
 							r.getRect(&x, &y, &w, &h);
-							if (primitive == TabBar::SouthTab)
+							if (primitive == KPE_TabBar_SouthTab)
 							{
 								Keramik::InactiveTabPainter(pos, true).draw(
 									p, x, y, w, h - 3, pal.color(QPalette::Button), pal.background().color(),
@@ -427,18 +439,18 @@ public:
 			{
 				switch (primitive)
 				{
-					case Slider::GrooveVert:
+					case KPE_Slider_GrooveVert:
 						Keramik::RectTilePainter(keramik_slider_vgroove, true, false).draw(
 							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
-					case Slider::GrooveHor:
+					case KPE_Slider_GrooveHor:
 						Keramik::RectTilePainter(keramik_slider_hgroove, false).draw(
 							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
-					case Slider::HandleVert:
-					case Slider::HandleHor:
+					case KPE_Slider_HandleVert:
+					case KPE_Slider_HandleHor:
 					{
-						if (primitive == Slider::HandleHor)
+						if (primitive == KPE_Slider_HandleHor)
 							r.setY(r.y() + 2);
 						else
 							r.setX(r.x() + 2);
@@ -447,7 +459,7 @@ public:
 						if (!disabled && flags & State_Active)
 							hl = Keramik::ColorUtil::lighten(pal.color(QPalette::Highlight) ,110);
 
-						int primCode = (primitive == Slider::HandleVert) ?
+						int primCode = (primitive == KPE_Slider_HandleVert) ?
 											keramik_vslider : keramik_slider;
 
 						Keramik::ScaledPainter(primCode).draw(

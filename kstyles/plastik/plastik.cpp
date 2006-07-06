@@ -134,57 +134,6 @@ PlastikStyle::PlastikStyle() :
 //     kornMode(false),
     flatMode(false)
 {
-    setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
-
-    // TODO: change this when double buttons are implemented
-    setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
-
-    setWidgetLayoutProp(WT_PushButton, PushButton::DefaultIndicatorMargin, 1);
-    setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin + Left, 4);
-    setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin + Right, 4);
-    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin, 3);
-    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Left, 2);
-    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Right, 2);
-    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
-    setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
-
-    setWidgetLayoutProp(WT_CheckBox, CheckBox::Size, 13);
-    setWidgetLayoutProp(WT_RadioButton, RadioButton::Size, 13);
-
-    setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon, 1);
-    setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, 13);
-
-    setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
-
-    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1);
-
-    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
-
-    setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20/*15*/);
-    setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 11);
-
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth, 2);
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth, 2+16+1);
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing, 1);
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Left, 2);
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Right, 1);
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Top, 1);
-    setWidgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin+Bot, 1);
-
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, 2);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonWidth, 2+16+1);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Left, 2);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Right, 1);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
-    setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
-
-    setWidgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, 1);
-    setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, 1);
-    setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, 0);
-
-    setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 4);
-    setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
-
 //     hoverTab = 0;
 //
 //     horizontalDots = 0;
@@ -259,6 +208,66 @@ PlastikStyle::~PlastikStyle()
 //     delete verticalLine;
 }
 
+int PlastikStyle::widgetLayoutProp(int metric, const QStyleOption* opt, const QWidget* w) const
+{
+    switch (metric) {
+        case LP_Generic_DefaultFrameWidth: return 2;
+
+    // TODO: change this when double buttons are implemented
+        case LP_ScrollBar_DoubleBotButton: return 0;
+
+        case LP_PushButton_DefaultIndicatorMargin: return 1;
+        case LP_PushButton_ContentsMargin + Left:  return 4;
+        case LP_PushButton_ContentsMargin + Right: return 4;
+        case LP_PushButton_FocusMargin:         return 3;
+        case LP_PushButton_FocusMargin + Left:  return 2;
+        case LP_PushButton_FocusMargin + Right: return 2;
+        case LP_PushButton_FocusMargin + Top:   return 2;
+        case LP_PushButton_FocusMargin + Bot:   return 2;
+
+        case LP_CheckBox_Size:    return 13;
+        case LP_RadioButton_Size: return 13;
+
+        case LP_MenuItem_CheckAlongsideIcon: return 1;
+        case LP_MenuItem_CheckWidth: return 13;
+
+        case LP_ProgressBar_BusyIndicatorSize: return 10;
+
+        case LP_TabBar_TabOverlap: return 1;
+
+        case LP_TabWidget_FrameWidth: return 2;
+
+        case LP_Slider_HandleThickness: return 20/*15*/;
+        case LP_Slider_HandleLength: return 11;
+
+        case LP_SpinBox_FrameWidth: return 2;
+        case LP_SpinBox_ButtonWidth: return 2+16+1;
+        case LP_SpinBox_ButtonSpacing: return 1;
+        case LP_SpinBox_ButtonMargin+Left:  return 2;
+        case LP_SpinBox_ButtonMargin+Right: return 1;
+        case LP_SpinBox_ButtonMargin+Top:   return 1;
+        case LP_SpinBox_ButtonMargin+Bot:   return 1;
+
+        case LP_ComboBox_FrameWidth: return 2;
+        case LP_ComboBox_ButtonWidth: return 2+16+1;
+        case LP_ComboBox_ButtonMargin+Left:  return 2;
+        case LP_ComboBox_ButtonMargin+Right: return 1;
+        case LP_ComboBox_ButtonMargin+Top:   return 1;
+        case LP_ComboBox_ButtonMargin+Bot:   return 1;
+
+        case LP_ToolBar_PanelFrameWidth: return 1;
+        case LP_ToolBar_ItemSpacing: return 1;
+        case LP_ToolBar_ItemMargin: return 0;
+
+        case LP_ToolButton_ContentsMargin: return 4;
+        case LP_ToolButton_FocusMargin: return 3;
+
+        default:
+            break;
+    }
+
+    return KStyle::widgetLayoutProp(metric, opt, w);
+}
 
 void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                        const QStyleOption* opt,
@@ -286,7 +295,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case ProgressBar::BusyIndicator:
+                case KPE_ProgressBar_BusyIndicator:
                 {
                     renderContour( p, r/*QRect( r.x()+progress, r.y(), barWidth, r.height() )*/,
                                    bg, fg.dark(160),
@@ -302,7 +311,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case ProgressBar::Indicator:
+                case KPE_ProgressBar_Indicator:
                 {
                     QRect Rcontour = r;
                     QRect Rsurface(Rcontour.left()+1, Rcontour.top()+1, Rcontour.width()-2, Rcontour.height()-2);
@@ -397,7 +406,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case MenuBarItem::Panel:
+                case KPE_MenuBarItem_Panel:
                 {
                     bool active  = flags & State_Selected;
                     bool focused = flags & State_HasFocus;
@@ -420,14 +429,14 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Generic::Frame:
+                case KPE_Generic_Frame:
                 {
                     renderContour(p, r, pal.color(QPalette::Background), pal.color(QPalette::Background).dark(200),
                           Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
                     return;
                 }
 
-                case Menu::Background:
+                case KPE_Menu_Background:
                 {
                     p->fillRect( r, pal.color(QPalette::Background).light( 105 ) );
                     return;
@@ -440,7 +449,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case MenuItem::Separator:
+                case KPE_MenuItem_Separator:
                 {
                     p->setPen( pal.mid().color() );
                     p->drawLine( r.x()+5, r.y() /*+ 1*/, r.right()-5, r.y() );
@@ -450,50 +459,50 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case MenuItem::ItemIndicator:
+                case KPE_MenuItem_ItemIndicator:
                 {
                     if (enabled) {
                         renderSurface(p, r, pal.color(QPalette::Background), pal.color(QPalette::Highlight), pal.color(QPalette::Highlight),
                                 _contrast+3, Draw_Top|Draw_Bottom|Is_Horizontal);
                     }
                     else {
-                        drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
+                        drawKStylePrimitive(WT_Generic, KPE_Generic_FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
                     }
 
                     return;
                 }
 
-                case MenuItem::CheckColumn:
+                case KPE_MenuItem_CheckColumn:
                 {
                     // empty
                     return;
                 }
 
-                case MenuItem::CheckOn:
+                case KPE_MenuItem_CheckOn:
                 {
                     renderCheckBox(p, r, pal, enabled, mouseOver, CheckOn);
                     return;
                 }
 
-                case MenuItem::CheckOff:
+                case KPE_MenuItem_CheckOff:
                 {
                     renderCheckBox(p, r, pal, enabled, mouseOver, CheckOff);
                     return;
                 }
 
-                case MenuItem::RadioOn:
+                case KPE_MenuItem_RadioOn:
                 {
                     renderRadioButton(p, r, pal, enabled, mouseOver, CheckOn);
                     return;
                 }
 
-                case MenuItem::RadioOff:
+                case KPE_MenuItem_RadioOff:
                 {
                     renderRadioButton(p, r, pal, enabled, mouseOver, CheckOff);
                     return;
                 }
 
-                case MenuItem::CheckIcon:
+                case KPE_MenuItem_CheckIcon:
                 {
                     // TODO
                     renderButton(p, r, pal, true /*sunken*/);
@@ -509,19 +518,19 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case ScrollBar::DoubleButtonHor:
+                case KPE_ScrollBar_DoubleButtonHor:
                 {
                     // TODO
                 }
                 break;
 
-                case ScrollBar::DoubleButtonVert:
+                case KPE_ScrollBar_DoubleButtonVert:
                 {
                     // TODO
                 }
                 break;
 
-                case ScrollBar::SingleButtonHor:
+                case KPE_ScrollBar_SingleButtonHor:
                 {
                     bool down = flags&State_Sunken;
 
@@ -547,7 +556,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 }
                 break;
 
-                case ScrollBar::SingleButtonVert:
+                case KPE_ScrollBar_SingleButtonVert:
                 {
                     bool down = flags&State_Sunken;
 
@@ -584,8 +593,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case TabBar::NorthTab:
-                case TabBar::SouthTab:
+                case KPE_TabBar_NorthTab:
+                case KPE_TabBar_SouthTab:
                 {
                     // TODO: check if tabOpt != 0...
                     QStyleOptionTab::TabPosition pos = tabOpt->position;
@@ -599,7 +608,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 }
 
-                // TODO: TabBar::EastTab, TabBar::WestTab, TabBar::BaseFrame, TabBar::ScrollButton
+                // TODO: KPE_TabBar_EastTab, KPE_TabBar_WestTab, KPE_TabBar_BaseFrame, KPE_TabBar_ScrollButton
 
             }
 
@@ -610,7 +619,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Generic::Frame:
+                case KPE_Generic_Frame:
                 {
                     renderPanel(p, r, pal, true, flags&State_Sunken);
                     return;
@@ -625,11 +634,11 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Slider::HandleHor:
-                case Slider::HandleVert:
+                case KPE_Slider_HandleHor:
+                case KPE_Slider_HandleVert:
                 {
 
-                    bool horizontal = primitive == Slider::HandleHor;
+                    bool horizontal = primitive == KPE_Slider_HandleHor;
 
                     const bool pressed = (flags&State_Sunken);
                     const WidgetState s = enabled?(pressed?IsPressed:IsEnabled):IsDisabled;
@@ -746,11 +755,11 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case Slider::GrooveHor:
-                case Slider::GrooveVert:
+                case KPE_Slider_GrooveHor:
+                case KPE_Slider_GrooveVert:
                 {
 
-                    bool horizontal = primitive == Slider::GrooveHor;
+                    bool horizontal = primitive == KPE_Slider_GrooveHor;
 
                     if (horizontal) {
                         int center = r.y()+r.height()/2;
@@ -784,7 +793,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case Generic::Frame:
+                case KPE_Generic_Frame:
                 {
                     QRect editField = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxEditField, widget);
 
@@ -863,7 +872,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case SpinBox::UpButton:
+                case KPE_SpinBox_UpButton:
                 {
                     QRect upRect = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxUp, widget);
 
@@ -885,7 +894,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case SpinBox::DownButton:
+                case KPE_SpinBox_DownButton:
                 {
                     QRect downRect = subControlRect(CC_SpinBox, qstyleoption_cast<const QStyleOptionComplex*>(opt), SC_SpinBoxDown, widget);
 
@@ -925,7 +934,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
-                case Generic::Frame:
+                case KPE_Generic_Frame:
                 {
                     // TODO: pressed state
 
@@ -1027,13 +1036,13 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case ComboBox::EditField:
+                case KPE_ComboBox_EditField:
                 {
                     // empty
                     return;
                 }
 
-                case ComboBox::Button:
+                case KPE_ComboBox_Button:
                 {
                     uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|Is_Horizontal;
                     if(reverseLayout) {
@@ -1062,11 +1071,11 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Header::SectionHor:
-                case Header::SectionVert:
+                case KPE_Header_SectionHor:
+                case KPE_Header_SectionVert:
                 {
                     if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(opt)) {
-                        bool isFirst = (primitive==Header::SectionHor)&&(header->position == QStyleOptionHeader::Beginning);
+                        bool isFirst = (primitive==KPE_Header_SectionHor)&&(header->position == QStyleOptionHeader::Beginning);
 
                         uint contourFlags = Draw_Right|Draw_Top|Draw_Bottom;
                         if (isFirst)
@@ -1100,8 +1109,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Tree::VerticalBranch:
-                case Tree::HorizontalBranch:
+                case KPE_Tree_VerticalBranch:
+                case KPE_Tree_HorizontalBranch:
                 {
                 //### FIXME: set sane color.
                     QBrush brush(Qt::Dense4Pattern);
@@ -1109,8 +1118,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     p->fillRect(r, brush);
                     return;
                 }
-                case Tree::ExpanderOpen:
-                case Tree::ExpanderClosed:
+                case KPE_Tree_ExpanderOpen:
+                case KPE_Tree_ExpanderClosed:
                 {
                     int radius = (r.width() - 4) / 2;
                     int centerx = r.x() + r.width()/2;
@@ -1123,13 +1132,13 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     {
                         // plus or minus
                         p->drawLine( centerx - radius, centery, centerx + radius, centery );
-                        if (primitive == Tree::ExpanderClosed) // Collapsed = On
+                        if (primitive == KPE_Tree_ExpanderClosed) // Collapsed = On
                             p->drawLine( centerx, centery - radius, centerx, centery + radius );
                     } else {
-                        if(primitive == Tree::ExpanderClosed)
-                            drawKStylePrimitive(WT_Generic, Generic::ArrowRight, opt, QRect(r.x()+1,r.y()+1,r.width(),r.height()), pal, flags, p, widget);
+                        if(primitive == KPE_Tree_ExpanderClosed)
+                            drawKStylePrimitive(WT_Generic, KPE_Generic_ArrowRight, opt, QRect(r.x()+1,r.y()+1,r.width(),r.height()), pal, flags, p, widget);
                         else
-                            drawKStylePrimitive(WT_Generic, Generic::ArrowDown, opt, QRect(r.x()+1,r.y()+1,r.width(),r.height()), pal, flags, p, widget);
+                            drawKStylePrimitive(WT_Generic, KPE_Generic_ArrowDown, opt, QRect(r.x()+1,r.y()+1,r.width(),r.height()), pal, flags, p, widget);
                     }
 
                     return;
@@ -1144,7 +1153,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Generic::Frame:
+                case KPE_Generic_Frame:
                 {
                     const bool isReadOnly = flags & State_ReadOnly;
                     const bool isEnabled = flags & State_Enabled;
@@ -1188,7 +1197,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case LineEdit::Panel:
+                case KPE_LineEdit_Panel:
                 {
                     if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame*>(opt))
                     {
@@ -1209,7 +1218,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case Generic::Frame:
+                case KPE_Generic_Frame:
                 {
                     renderPanel(p, r, pal, false);
 
@@ -1224,7 +1233,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case ToolBar::Handle:
+                case KPE_ToolBar_Handle:
                 {
                     int counter = 1;
 
@@ -1253,7 +1262,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case ToolBar::Separator:
+                case KPE_ToolBar_Separator:
                 {
                     if(_drawToolBarItemSeparator) {
                         if(flags & State_Horizontal) {
@@ -1274,7 +1283,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case ToolBar::Panel:
+                case KPE_ToolBar_Panel:
                 {
                     return;
                 }
@@ -1286,23 +1295,23 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
 
     // Arrows
-    if (primitive >= Generic::ArrowUp && primitive <= Generic::ArrowLeft) {
+    if (primitive >= KPE_Generic_ArrowUp && primitive <= KPE_Generic_ArrowLeft) {
         QPolygon a;
 
         switch (primitive) {
-            case Generic::ArrowUp: {
+            case KPE_Generic_ArrowUp: {
                 a.setPoints(7, u_arrow);
                 break;
             }
-            case Generic::ArrowDown: {
+            case KPE_Generic_ArrowDown: {
                 a.setPoints(7, d_arrow);
                 break;
             }
-            case Generic::ArrowLeft: {
+            case KPE_Generic_ArrowLeft: {
                 a.setPoints(7, l_arrow);
                 break;
             }
-            case Generic::ArrowRight: {
+            case KPE_Generic_ArrowRight: {
                 a.setPoints(7, r_arrow);
                 break;
             }
@@ -1325,8 +1334,8 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         a.translate((r.x()+r.width()/2), (r.y()+r.height()/2));
 //                     // extra-pixel-shift, correcting some visual tics...
 //                     switch(pe) {
-//                         case Generic::ArrowLeft:
-//                         case Generic::ArrowRight:
+//                         case KPE_Generic_ArrowLeft:
+//                         case KPE_Generic_ArrowRight:
 //                             a.translate(0, -1);
 //                             break;
 //                         case PE_SpinWidgetUp:

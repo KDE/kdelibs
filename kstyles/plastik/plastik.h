@@ -62,6 +62,8 @@ public:
     PlastikStyle();
     virtual ~PlastikStyle();
 
+    virtual int widgetLayoutProp(int metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+
     virtual void drawKStylePrimitive(WidgetType widgetType, int primitive,
                                      const QStyleOption* opt,
                                      QRect r, QPalette pal, State flags,
