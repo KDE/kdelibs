@@ -72,7 +72,7 @@ that we would like to make for the next binary incompatible release.
 
 - Use of the C++ keyword "explicit". Make all ctors explicit which can be used
   with one parameter to minimize wrong use of the class (i.e. have a look at 
-  Dirk's work on KURL).
+  Dirk's work on KUrl).
   KGuiItem has one of these dangerous ctors, too. KUser has a whole bunch
   of them.
   (André Wöbbeking)
@@ -99,9 +99,6 @@ that we would like to make for the next binary incompatible release.
   the other way around. E.g.: ReaderPart? ViewerPart?
   (David)
 
-- KParts: Remove "const char* name"-arguments from the api, for example in
-  kparts/componentfactory.h
-
 - Other ideas in this thread: http://lists.kde.org/?l=kde-core-devel&m=107608067302571&w=2
   (Contributors to that thread, please add specific items here.)
   (Waldo)
@@ -120,7 +117,7 @@ that we would like to make for the next binary incompatible release.
 - Do we need to have factory arguments in the KCM API? (who would use it anyway?)
   (Frans)
 
-- KCModuleInfo should use d-pointer. Perhaps there is more classes.
+- KCModuleInfo should use d-pointer. Perhaps there are more classes.
   (Frans)
 
 - The config options in kdeglobals needs to be cleaned up a little. Perhaps I'm being picky..
@@ -134,8 +131,7 @@ that we would like to make for the next binary incompatible release.
 	* Perhaps an own font section?
   (Frans)
 
-- kpassdlg.h needs to be renamed to kpassworddialog.h - consistent with other classes(it won't 
-  break many apps) (DONE) . The class needs a facelift - see the comments in kpassdlg.{h,cpp}
+- kpassworddialog.h needs a facelift - see the comments in kpassworddialog.{h,cpp}
   (Frans)
 
 - Replace KPasswordEdit with KLineEdit and adjust KPasswordDialog accordingly.
@@ -167,9 +163,6 @@ that we would like to make for the next binary incompatible release.
   the about information seems to be duplicated.
   (Scott)
 
-- Make API use US English, (eg. KCatalogue -> KCatalog [done])
-  (Stephan Binner)
-
 - KKeyDialog needs to be improved. It should simplify using KKeyChooser by not having to instantiate
   KDialogBase without restricting the possibilities of KKeyChooser (for instance, being able to
   configure global and application accels in one dialog). If there is only little time, simply
@@ -177,14 +170,14 @@ that we would like to make for the next binary incompatible release.
   (Michael Brade)
 
 - Fix the APIs taking Matthias Ettrich's hints into account, most importantly fix the massive
-  amount of bool-usage in the CTORs (see KDialogBase, for instance)
+  amount of bool-usage in the CTORs
   (Michael Brade)
 
 - Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
   (André Wöbbeking)
 
 - Split KProtocolInfo into KProtocolInfoBase in kdecore (with almost everything) 
-  and KProtocolInfo in kio (with the methods taking a KURL, which need KProtocolManager)
+  and KProtocolInfo in kio (with the methods taking a KUrl, which need KProtocolManager)
   (David)
 
 - Rename KDirNotify_stub and update API (no need for '*' arguments anymore)
@@ -204,11 +197,6 @@ that we would like to make for the next binary incompatible release.
   an alternative help->contents action)
   (George Staikos)
 
-- Merge all K*Label classes into one that offers all the features such as ellipsis (this time for 
-  center, middle and right in order to allow for sqeezing the text), links and selectable text 
-  with a consistant API.
-  (Matt Rogers)
-
 - Make sure all GUI classes adopt well to palette changes.
   (Danimo)
 
@@ -218,7 +206,7 @@ that we would like to make for the next binary incompatible release.
   done by its parent.
   (Aaron)
 
-- Fix KURLRequester API to use KURL for urls instead of QString to make clear that
+- Fix KUrlRequester API to use KUrl for urls instead of QString to make clear that
   we work with URLs and not with paths.
   (Waldo)
 
@@ -235,9 +223,6 @@ that we would like to make for the next binary incompatible release.
   to have here for later doing.
   (Matt Rogers)
 
-- Move KRichTextLabel into kdeui if still required with Qt 4.
-  (Waldo)
-
 - Add the concept of a session to KIO, in particular for KHTML so that it can
   have all of its jobs associated in some way (a unique key of sorts).  Will
   make SSL much easier to implement and allow removal of many hacks, mostly
@@ -246,6 +231,7 @@ that we would like to make for the next binary incompatible release.
 
 - KDE 4: Check if QTemporaryFile is good enough to dump KTempFile
   (Albert Astals Cid)
+
 - Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
   (Coolo)
   Maybe just make sure we don't emit multiple copies of per-class data (vtable,RTTI), then
