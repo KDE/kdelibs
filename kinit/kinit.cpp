@@ -784,7 +784,7 @@ static void init_signals()
 static void init_kdeinit_socket()
 {
   struct sockaddr_un sa;
-  struct sockaddr_un sa_old;
+  //struct sockaddr_un sa_old;
   kde_socklen_t socklen;
   long options;
   const char *home_dir = getenv("HOME");
@@ -1483,6 +1483,7 @@ static void kdeinit_library_path()
 #endif
 
    display.replace(":","_");
+   // WARNING, if you change the socket name, adjust kwrapper too
    QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdeinit4_%1").arg(QLatin1String(display)), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
    {
