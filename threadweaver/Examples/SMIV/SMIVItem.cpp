@@ -30,7 +30,7 @@
 
 static QueuePolicy* resourceRestriction()
 {
-    static ResourceRestrictionPolicy policy( 3 );
+    static ResourceRestrictionPolicy policy( 4 );
     return &policy;
 }
 
