@@ -715,21 +715,9 @@ public:
 	static bool checkAccess(const QString& pathname, int mode);
 
  private:
-
-	QStringList prefixes;
-
-	// Directory dictionaries
-	QMap<QByteArray, QStringList> absolutes;
-	QMap<QByteArray, QStringList> relatives;
-
-	mutable QMap<QByteArray, QStringList> dircache;
-	mutable QMap<QByteArray, QString> savelocations;
-
 	// Disallow assignment and copy-construction
 	KStandardDirs( const KStandardDirs& );
 	KStandardDirs& operator= ( const KStandardDirs& );
-
-	bool addedCustoms;
 
 	class KStandardDirsPrivate;
 	KStandardDirsPrivate* const d;
