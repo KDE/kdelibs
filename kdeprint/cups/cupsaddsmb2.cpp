@@ -59,7 +59,8 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_bar = new QProgressBar(this);
 	m_text = new QLabel(this);
         m_text->setOpenExternalLinks(true);
-	QLabel	*m_title = new QLabel(i18n("Export Printer Driver to Windows Clients"), this);
+        m_text->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+        QLabel	*m_title = new QLabel(i18n("Export Printer Driver to Windows Clients"), this);
 	setCaption(m_title->text());
 	QFont	f(m_title->font());
 	f.setBold(true);
