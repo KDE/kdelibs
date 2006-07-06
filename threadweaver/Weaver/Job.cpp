@@ -99,8 +99,8 @@ void Job::execute(Thread *th)
     connect ( &helper,  SIGNAL ( done ( Job* ) ), SIGNAL ( done ( Job* ) ) );
     connect ( &helper, SIGNAL( failed( Job* ) ), SIGNAL( failed( Job* ) ) );
 
-    debug(3, "Job::execute: executing job of type %s in thread %i.\n",
-          metaObject()->className(), th->id());
+    debug(3, "Job::execute: executing job of type %s %s in thread %i.\n",
+          metaObject()->className(), objectName().isEmpty() ? "" : qPrintable( objectName() ), th->id());
     helper.runTheJob( th, this );
     debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
 }

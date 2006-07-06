@@ -20,6 +20,7 @@
 #include <QFileInfo>
 
 #include <DebuggingAids.h>
+#include <ResourceRestrictionPolicy.h>
 
 #include "SMIVItemDelegate.h"
 #include "FileLoaderJob.h"
@@ -27,11 +28,18 @@
 
 #include "SMIVItem.h"
 
+static QueuePolicy* resourceRestriction()
+{
+    static ResourceRestrictionPolicy policy( 3 );
+    return &policy;
+}
+
+
 SMIVItem::SMIVItem ( Weaver *weaver,
                      const QString& path,  QObject *parent )
-    : QObject ( parent ),
-      m_path ( path ),
-      m_weaver ( weaver )
+    : QObject ( parent )
+    , m_path ( path )
+    , m_weaver ( weaver )
 {
     QFileInfo fi ( path );
     if ( fi.isFile() && fi.isReadable() )
@@ -41,26 +49,24 @@ SMIVItem::SMIVItem ( Weaver *weaver,
         m_name = fi.baseName();
         m_desc2 = fi.absoluteFilePath();
         m_fileloader = new FileLoaderJob ( fi.absoluteFilePath(),  this );
+        m_fileloader->setObjectName ( tr ( "load file: " ) + fi.baseName() );
         connect ( m_fileloader,  SIGNAL ( done( Job* ) ),
                   SLOT ( fileLoaderReady ( Job* ) ) );
+        m_fileloader->assignQueuePolicy( resourceRestriction() );
         m_imageloader = new QImageLoaderJob ( m_fileloader,  this );
         connect ( m_imageloader,  SIGNAL ( done( Job* ) ),
                   SLOT ( imageLoaderReady ( Job* ) ) );
+        m_imageloader->setObjectName( tr( "load image: " ) + fi.baseName() );
         m_thumb = new ComputeThumbNailJob ( m_imageloader,  this );
         connect ( m_thumb,  SIGNAL ( done( Job* ) ),
                   SLOT ( computeThumbReady ( Job* ) ) );
-
+        m_thumb->setObjectName ( tr( "scale image: " ) + fi.baseName() );
         m_sequence->addJob ( m_fileloader );
-        connect ( m_fileloader,  SIGNAL ( failed ( Job* ) ),
-                  m_sequence,  SLOT ( stop ( Job* ) ) );
         m_sequence->addJob ( m_imageloader );
         m_sequence->addJob ( m_thumb );
         weaver->enqueue ( m_sequence );
-//         weaver->enqueue( m_fileloader );
-//         weaver->enqueue ( m_imageloader );
-//         weaver->enqueue ( m_thumb );
     } else {
-        // @TODO: error handling
+        // in this wee little program, we just ignore that we cannot access the file
     }
 }
 
@@ -89,7 +95,8 @@ void SMIVItem::imageLoaderReady( Job* )
 {
     debug ( 3, "SMIVItem::imageLoaderReady: %s processed.\n",
             qPrintable ( m_name ) );
-    delete m_fileloader; m_fileloader = 0;
+    // freem the memory held by the file loader, it is now redundant:
+    m_fileloader->freeMemory();
     // this event has to be receive *before* computeThumbReady:
     P_ASSERT ( m_imageloader != 0 );
     QSize size = m_imageloader->image().size();
@@ -102,7 +109,8 @@ void SMIVItem::computeThumbReady( Job* )
 {
     debug ( 3, "SMIVItem::computeThumbReady: %s scaled.\n",
             qPrintable ( m_name ) );
-    delete m_imageloader; m_imageloader = 0;
+    //   delete m_imageloader; m_imageloader = 0;
+    m_imageloader->resetImageData();
     emit ( thumbReady ( this ) );
 }
 

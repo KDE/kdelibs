@@ -36,8 +36,8 @@ namespace ThreadWeaver {
         P_ASSERT ( isFinished() );
         return m_image;
     }
-  
-  int QImageLoaderJob::priority() const 
+
+  int QImageLoaderJob::priority() const
   {
     return 1;
   }
@@ -52,6 +52,11 @@ namespace ThreadWeaver {
 	} else {
 	    m_image.loadFromData ( (const uchar*) m_file->data(), m_file->size() );
 	}
+    }
+
+    void QImageLoaderJob::resetImageData()
+    {
+        m_image = QImage();
     }
 
 }

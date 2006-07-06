@@ -33,10 +33,11 @@ namespace ThreadWeaver {
 
     void JobSequence::internalJobDone( Job* job)
     {
-      JobCollection::internalJobDone(job);
-      if ( ! job->success() )
-	{
-	  stop( job );
+        REQUIRE ( job != 0 );
+        JobCollection::internalJobDone(job);
+        if ( ! job->success() )
+        {
+            stop( job );
 	}
     }
 

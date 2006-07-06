@@ -17,8 +17,9 @@
 #ifndef SMIV_H
 #define SMIV_H
 
-#include <QWidget>
+#include <QTime>
 #include <QList>
+#include <QWidget>
 
 #include <ThreadWeaver.h>
 
@@ -41,7 +42,8 @@ private:
     Ui::SMIVBase ui;
     Weaver *weaver;
     int m_noOfJobs;
-    bool m_quit; 
+    bool m_quit;
+    QTime m_startTime;
 private slots:
     void on_pbSelectFiles_clicked();
     void on_pbCancel_clicked();

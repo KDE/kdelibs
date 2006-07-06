@@ -171,8 +171,8 @@ void WeaverImpl::enqueue(Job* job)
 	} else {
 	  m_assignments.append (job);
 	}
+      assignJobs();
     }
-  assignJobs();
 }
 
 void WeaverImpl::adjustInventory ( int noOfNewJobs )
@@ -275,7 +275,9 @@ void WeaverImpl::incActiveThreadCount()
 void WeaverImpl::decActiveThreadCount()
 {
   adjustActiveThreadCount ( -1 );
-  m_jobFinished.wakeOne();
+  // the done job could have freed another set of jobs, and we do not know how
+  // many - therefore we need to wake all threads:
+  m_jobFinished.wakeAll();
 }
 
 void WeaverImpl::adjustActiveThreadCount( int diff )

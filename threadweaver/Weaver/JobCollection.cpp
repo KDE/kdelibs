@@ -17,235 +17,246 @@ using namespace ThreadWeaver;
 */
 class ThreadWeaver::JobCollectionJobRunner : public Job
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  JobCollectionJobRunner ( JobCollection* collection, Job* payload, QObject* parent )
-    : Job( parent )
-    , m_payload( payload )
-    , m_collection( collection )
-  {
-    Q_ASSERT ( payload ); // will not accept zero jobs
-    if ( ! m_payload->objectName().isEmpty() )
-      {   // this is most useful for debugging...
-	setObjectName ( tr( "JobRunner executing " ) + m_payload->objectName() );
-      }
-  }
+    JobCollectionJobRunner ( JobCollection* collection, Job* payload, QObject* parent )
+        : Job( parent )
+        , m_payload( payload )
+        , m_collection( collection )
+    {
+        Q_ASSERT ( payload ); // will not accept zero jobs
 
-  bool canBeExecuted()
-  {   // the JobCollectionJobRunner object never have any dependencies:
-    return m_payload->canBeExecuted();
-  }
+        if ( ! m_payload->objectName().isEmpty() )
+        {   // this is most useful for debugging...
+            setObjectName( tr( "JobRunner executing " ) + m_payload->objectName() );
+        } else {
+            setObjectName( tr( "JobRunner (unnamed payload)" ) );
+        }
+    }
 
-  Job* payload ()
-  {
-    return m_payload;
-  }
+    bool canBeExecuted()
+    {   // the JobCollectionJobRunner object never have any dependencies:
+        return m_payload->canBeExecuted();
+    }
 
-  void aboutToBeQueued ( WeaverInterface *weaver )
-  {
-    m_payload->aboutToBeQueued( weaver );
-  }
+    Job* payload ()
+    {
+        return m_payload;
+    }
 
-  void aboutToBeDequeued ( WeaverInterface *weaver )
-  {
-    m_payload->aboutToBeDequeued( weaver );
-  }
+    void aboutToBeQueued ( WeaverInterface *weaver )
+    {
+        m_payload->aboutToBeQueued( weaver );
+    }
 
-  void execute ( Thread *t )
-  {
-    if ( m_payload )
-      {
-	m_payload->execute ( t );
-	m_collection->internalJobDone ( m_payload);
-      } else {
-	debug ( 1, "JobCollection: job in collection has been deleted." );
-      }
-    Job::execute ( t );
-  }
+    void aboutToBeDequeued ( WeaverInterface *weaver )
+    {
+        m_payload->aboutToBeDequeued( weaver );
+    }
+
+    void execute ( Thread *t )
+    {
+        if ( m_payload )
+        {
+            m_payload->execute ( t );
+            m_collection->internalJobDone ( m_payload);
+        } else {
+            debug ( 1, "JobCollection: job in collection has been deleted." );
+        }
+        Job::execute ( t );
+    }
+
+    int priority () const
+    {
+        return m_payload->priority();
+    }
 
 private:
-  void run () {}
+    void run () {}
 
-  QPointer<Job> m_payload;
-  JobCollection* m_collection;
+    QPointer<Job> m_payload;
+    JobCollection* m_collection;
 };
 
 class JobCollection::JobList : public QList <JobCollectionJobRunner*> {};
 
 JobCollection::JobCollection ( QObject *parent )
-  : Job ( parent )
-  , m_elements ( new JobList() )
-  , m_weaver ( 0 )
-  , m_jobCounter (0)
+    : Job ( parent )
+    , m_elements ( new JobList() )
+    , m_weaver ( 0 )
+    , m_jobCounter (0)
 {
 }
 
 JobCollection::~JobCollection()
 {   // dequeue all remaining jobs:
-  dequeueElements();  
-  delete m_elements;
-  // QObject cleanup takes care of the job runners
+    dequeueElements();
+    delete m_elements;
+    // QObject cleanup takes care of the job runners
 }
 
 void JobCollection::addJob ( Job *job )
 {
-  REQUIRE( m_weaver == 0 );
-  REQUIRE( job != 0);
-  m_elements->append ( new JobCollectionJobRunner( this, job, this ) );
+    REQUIRE( m_weaver == 0 );
+    REQUIRE( job != 0);
+    m_elements->append ( new JobCollectionJobRunner( this, job, this ) );
 }
 
 void JobCollection::stop( Job *job )
 {   // this only works if there is an event queue executed by the main
     // thread, and it is not blocked:
-  Q_UNUSED( job );
+    Q_UNUSED( job );
 
-  if ( m_weaver != 0 )
+    if ( m_weaver != 0 )
     {
-      debug( 4, "JobCollection::stop: dequeueing %p.\n", this);
-      m_weaver->dequeue( this );
+        debug( 4, "JobCollection::stop: dequeueing %p.\n", this);
+        m_weaver->dequeue( this );
     }
 }
 
 void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
 {
-  REQUIRE ( m_weaver == 0 ); // never queue twice
-  m_weaver = weaver;
-   
-  if ( m_elements->size() > 0 )
+    REQUIRE ( m_weaver == 0 ); // never queue twice
+
+    m_weaver = weaver;
+
+    if ( m_elements->size() > 0 )
     {
-      m_elements->at( 0 )->aboutToBeQueued( weaver );
+        m_elements->at( 0 )->aboutToBeQueued( weaver );
     }
-  ENSURE(m_weaver != 0);
+
+    ENSURE(m_weaver != 0);
 }
 
 void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
 {
-  //  Q_ASSERT ( m_weaver != 0 ); 
-  // I thought: "must have been queued first" 
-  // but the user can queue and dequeue in a suspended Weaver
 
-  if ( m_weaver )
+    //  Q_ASSERT ( m_weaver != 0 );
+    // I thought: "must have been queued first"
+    // but the user can queue and dequeue in a suspended Weaver
+
+    if ( m_weaver )
     {
-      dequeueElements();
+        dequeueElements();
 
-      m_elements->at( 0 )->aboutToBeDequeued( weaver );
+        m_elements->at( 0 )->aboutToBeDequeued( weaver );
     }
 
-  m_weaver = 0;
+    m_weaver = 0;
+
+    ENSURE ( m_weaver == 0 );
 }
 
 void JobCollection::execute ( Thread *t )
 {
-  REQUIRE ( m_weaver != 0);
-  
-  // FIXME make sure this is async:
-  emit (started (this));
+    REQUIRE ( m_weaver != 0);
 
-  if ( ! m_elements->isEmpty() )
+    // FIXME make sure this is async:
+    emit (started (this));
+
+    if ( ! m_elements->isEmpty() )
     { // m_elements is supposedly constant at this time, since we are
-      // already queued 
+      // already queued
       // set job counter:
-      m_jobCounter = m_elements->size();
+        m_jobCounter = m_elements->size();
 
-      // queue elements:
-      for (int index = 1; index < m_elements->size(); ++index)
+        // queue elements:
+        for (int index = 1; index < m_elements->size(); ++index)
 	{
-	  m_weaver->enqueue (m_elements->at(index));
+            m_weaver->enqueue (m_elements->at(index));
 	}
-      
-      // this is a hack (but a good one): instead of queueing (this), we
-      // execute the last job, to avoid to have (this) wait for an
-      // available thread (the last operation does not get queued in
-      // aboutToBeQueued() )
-      // NOTE: this also calls internalJobDone()
-      m_elements->at( 0 )->execute ( t );
+
+        // this is a hack (but a good one): instead of queueing (this), we
+        // execute the last job, to avoid to have (this) wait for an
+        // available thread (the last operation does not get queued in
+        // aboutToBeQueued() )
+        // NOTE: this also calls internalJobDone()
+        m_elements->at( 0 )->execute ( t );
     } else {
-      // otherwise, we are just a regular, empty job (sob...):
-      Job::execute( t );
+        // otherwise, we are just a regular, empty job (sob...):
+        Job::execute( t );
     }
 
-  // do not emit done, done is emitted when the last job called
-  // internalJobDone()
-  // also, do not free the queue policies yet, since not the whole job
-  // is done
+    // do not emit done, done is emitted when the last job called
+    // internalJobDone()
+    // also, do not free the queue policies yet, since not the whole job
+    // is done
 }
 
 Job* JobCollection::jobAt( int i )
 {
-  REQUIRE ( i >= 0 && i < m_elements->size() );
-  return m_elements->at( i )->payload();
+    REQUIRE ( i >= 0 && i < m_elements->size() );
+    return m_elements->at( i )->payload();
 }
 
 const int JobCollection::jobListLength()
 {
-  return m_elements->size();
+    return m_elements->size();
 }
 
 bool JobCollection::canBeExecuted()
 {
-  bool inheritedCanRun = true;
+    bool inheritedCanRun = true;
 
-  if ( m_elements->size() > 0 )
+    if ( m_elements->size() > 0 )
     {
-      inheritedCanRun = m_elements->at( 0 )->canBeExecuted();
+        inheritedCanRun = m_elements->at( 0 )->canBeExecuted();
     }
 
-  return Job::canBeExecuted() && inheritedCanRun;
+    return Job::canBeExecuted() && inheritedCanRun;
 }
 
 void JobCollection::internalJobDone ( Job* job )
 {
-  REQUIRE (job != 0);
-  REQUIRE (m_weaver != 0); // ... queued
-  REQUIRE (m_jobCounter > 0); // ... still jobs left
-  Q_UNUSED (job);
-  --m_jobCounter;
+    REQUIRE (job != 0);
+    REQUIRE (m_weaver != 0); // ... queued
+    REQUIRE (m_jobCounter > 0); // ... still jobs left
+    Q_UNUSED (job);
+    --m_jobCounter;
 
-  if (m_jobCounter == 0)
+    if (m_jobCounter == 0)
     {
-      finalCleanup();
+        finalCleanup();
 
-      if (! success())
+        if (! success())
 	{
-	  emit failed(this);
+            emit failed(this);
 	}
     }
-  ENSURE (m_jobCounter >= 0);
+    ENSURE (m_jobCounter >= 0);
 }
 
 void JobCollection::finalCleanup()
 {
-  freeQueuePolicyResources();
-  setFinished(true);
-  emit done(this);
+    freeQueuePolicyResources();
+    setFinished(true);
+    emit done(this);
 }
 
 void JobCollection::dequeueElements()
 {   // dequeue everything:
-  if ( m_weaver != 0 )
+    if ( m_weaver != 0 )
     {
-      for ( int index = 1; index < m_elements->size(); ++index )
+        for ( int index = 1; index < m_elements->size(); ++index )
 	{
-	  if ( m_elements->at( index ) && ! m_elements->at( index )->isFinished() ) // ... a QPointer
+            if ( m_elements->at( index ) && ! m_elements->at( index )->isFinished() ) // ... a QPointer
 	    {
-	      debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n", m_elements->at( index ) );
-	      m_weaver->dequeue ( m_elements->at( index ) );
+                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n", m_elements->at( index ) );
+                m_weaver->dequeue ( m_elements->at( index ) );
 	    } else {
-	      debug( 5, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
-		     m_elements->at( index ) );
-	      // this returns false if the job was not in the queue, which we assume:
-	      Q_ASSERT ( ! m_weaver->dequeue ( m_elements->at( index ) ) );
+                debug( 5, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+                       m_elements->at( index ) );
 	    }
 	}
-      
-      if (m_jobCounter != 0)
+
+        if (m_jobCounter != 0)
 	{ // if jobCounter is not zero, then we where waiting for the
 	  // last job to finish before we would have freed our queue
 	  // policies, but in this case we have to do it here:
-	  finalCleanup();
+            finalCleanup();
 	}
-      m_jobCounter = 0;
+        m_jobCounter = 0;
     }
 }
 

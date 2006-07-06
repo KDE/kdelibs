@@ -39,7 +39,8 @@ namespace ThreadWeaver {
 	data() is only valid after
         the done signal has been emitted, and it is valid until the object
         gets deleted. Objects of this class are not meant to be reused.
-	The allocated memory gets freed on destruction of the object.
+	The allocated memory gets freed on destruction of the object, or when
+	freeMemory() is called.
     */
     class FileLoaderJob : public Job
     {
@@ -60,6 +61,8 @@ namespace ThreadWeaver {
 	const int size () const;
 	/** Returns the filename. */
 	const QString filename() const;
+        /** Free the memory that holds the files content. */
+        void freeMemory();
     protected:
         void run();
 

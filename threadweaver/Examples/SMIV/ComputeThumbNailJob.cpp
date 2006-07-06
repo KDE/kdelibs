@@ -35,9 +35,9 @@ QImage ComputeThumbNailJob::thumb()
     return m_thumb;
 }
 
-int ComputeThumbNailJob::priority() const 
+int ComputeThumbNailJob::priority() const
 {
-  return 2;
+  return 1;
 }
 
 void ComputeThumbNailJob::run()

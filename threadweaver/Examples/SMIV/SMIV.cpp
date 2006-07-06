@@ -14,12 +14,13 @@
    $Id: SMIV.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include <QApplication>
+#include <QtDebug>
 #include <QFileDialog>
+#include <QApplication>
 
-#include <DebuggingAids.h>
-#include <WeaverImpl.h>
 #include <State.h>
+#include <ThreadWeaver.h>
+#include <DebuggingAids.h>
 
 #include "SMIV.h"
 #include "SMIVItem.h"
@@ -27,12 +28,12 @@
 using namespace ThreadWeaver;
 
 SMIV::SMIV ()
-    : QWidget(),
-      m_noOfJobs ( 0 ),
-      m_quit ( false )
+    : QWidget()
+    , m_noOfJobs ( 0 )
+    , m_quit ( false )
 {
     ui.setupUi ( this );
-    weaver = new Weaver ( this );
+    weaver = new Weaver ( this, 8 );
     connect ( weaver,  SIGNAL ( finished() ),  SLOT ( slotJobsDone() ) );
     connect ( weaver,  SIGNAL ( jobDone ( Job* ) ), SLOT( slotJobDone( Job* ) ) );
     connect ( weaver,  SIGNAL ( suspended () ),  SLOT ( weaverSuspended() ) );
@@ -69,6 +70,7 @@ void SMIV::on_pbSelectFiles_clicked()
             connect ( item,  SIGNAL( thumbReady(SMIVItem* ) ),
                       SLOT ( slotThumbReady( SMIVItem* ) ) );
         }
+        m_startTime.start();
         weaver->resume();
 
         ui.pbSelectFiles->setEnabled(false);
@@ -129,6 +131,11 @@ void SMIV::slotJobDone ( Job* )
 
 void SMIV::slotJobsDone ()
 {
+    if ( ! m_startTime.isNull() )
+    {
+        qDebug() << "SMIV::slotJobsDone: elapsed time: " << m_startTime.elapsed() << " msecs";
+    }
+
     if ( m_quit )
     {
         QApplication::instance()->quit();
@@ -160,6 +167,7 @@ int main ( int argc,  char** argv )
 {
     QApplication app ( argc,  argv );
     ThreadWeaver::setDebugLevel ( true, 1 );
+
     SMIV smiv;
     smiv.show();
     return app.exec();

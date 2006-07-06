@@ -125,5 +125,12 @@ namespace ThreadWeaver {
     {
         return m_filename;
     }
+
+    void FileLoaderJob::freeMemory()
+    {
+        free ( m_data );
+        m_data = 0;
+    }
+
 }
 

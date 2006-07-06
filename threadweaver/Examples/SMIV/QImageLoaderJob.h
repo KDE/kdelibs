@@ -44,6 +44,9 @@ namespace ThreadWeaver {
         QImage image() const;
       /** reimpl */
       int priority() const;
+
+        /** lear the image data. */
+        void resetImageData();
     protected:
         void run();
 
