@@ -96,8 +96,8 @@ KWalletD::KWalletD()
 
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
-		connect(QDBus::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-				SLOT(slotNameOwnerChanged(QString,QString,QString)));
+		connect(QDBus::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
+				SLOT(slotServiceUnregistered(QString)));
 	_dw = new KDirWatch(this );
 		_dw->setObjectName( "KWallet Directory Watcher" );
 	_dw->addDir(KGlobal::dirs()->saveLocation("kwallet"));
@@ -1048,7 +1048,7 @@ int KWalletD::removeEntry(int handle, const QString& folder, const QString& key,
 }
 
 
-void KWalletD::slotNameOwnerChanged(const QString& app) {
+void KWalletD::slotServiceUnregistered(const QString& app) {
 	if (_handles.contains(app)) {
 		QList<int> l = _handles[app];
 		for (QList<int>::Iterator i = l.begin(); i != l.end(); ++i) {

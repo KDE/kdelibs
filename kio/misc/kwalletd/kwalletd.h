@@ -158,7 +158,7 @@ class KWalletD : public KDEDModule {
 		void applicationDisconnected(const QString& wallet, const QString& application);
 
 	private Q_SLOTS:
-		void slotNameOwnerChanged(const QString& name);
+		void slotServiceUnregistered(const QString& name);
 		void emitWalletListDirty();
 		void timedOut(int);
 		void notifyFailures();
