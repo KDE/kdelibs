@@ -277,7 +277,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       if (changedIt != s_changedMap->end())
       {
         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
-            !qobject_cast<QGroupBox*>(childWidget))
+            !qobject_cast<QGroupBox*>(childWidget) &&!qobject_cast<QTabWidget*>(childWidget) )
           kDebug(178) << "Widget '" << widgetName << "' (" << childWidget->metaObject()->className() << ") remains unmanaged." << endl;
       }
     }
