@@ -22,10 +22,6 @@
 #ifndef KIO_JOBUI_H
 #define KIO_JOBUI_H
 
-#include <qobject.h>
-#include <qwidget.h>
-#include <kio/global.h>
-
 #include <kjobuidelegate.h>
 
 class KJob;

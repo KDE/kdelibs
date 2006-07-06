@@ -46,6 +46,8 @@ KIO::JobUiDelegate::~JobUiDelegate()
     {
         Observer::self()->jobFinished( job()->progressId() );
     }
+
+    delete d;
 }
 
 void KIO::JobUiDelegate::setWindow(QWidget *window)
