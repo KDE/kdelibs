@@ -101,7 +101,7 @@ void KJobUiDelegate::slotFinished( KJob */*job*/, int /*id*/ )
         showErrorMessage();
 }
 
-void KJobUiDelegate::slotWarning( KJob */*job*/, const QString &errorText )
+void KJobUiDelegate::slotWarning( KJob */*job*/, const QString &/*errorText*/ )
 {
 
 }
