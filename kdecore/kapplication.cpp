@@ -193,7 +193,6 @@ public:
   {
   }
 
-
   KCheckAccelerators* checkAccelerators;
   QString overrideStyle;
   QByteArray startup_id;
@@ -1038,8 +1037,6 @@ public:
 
 
 
-static bool kapp_block_user_input = false;
-
 #ifdef Q_WS_X11
 bool KApplication::x11EventFilter( XEvent *_event )
 {
@@ -1078,21 +1075,6 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 }
         }
 	default: break;
-    }
-
-    if ( kapp_block_user_input ) {
-        switch ( _event->type  ) {
-        case ButtonPress:
-        case ButtonRelease:
-        case XKeyPress:
-        case XKeyRelease:
-        case MotionNotify:
-        case EnterNotify:
-        case LeaveNotify:
-            return true;
-        default:
-            break;
-        }
     }
 
     if (x11Filter) {
