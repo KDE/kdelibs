@@ -570,7 +570,6 @@ void KAboutContainerBase::setTitle(const QString &title)
     kDebug(291) << "setTitle: " << "Invalid layout" << endl;
     return;
   }
-  qDebug() << "KAboutContainerBase::setTitl" << title;
   mTitleLabel->setText(title);
 }
 
@@ -839,7 +838,6 @@ void KAboutContainer::addTitle(const QString &title, Qt::Alignment alignment,
 {
 
   QLabel* const label = new QLabel(title, this);
-  qDebug() << "addTitle" << title;
   label->setObjectName("title");
   if (showBold )
   {
