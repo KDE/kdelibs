@@ -17,16 +17,19 @@
 
 */
 
-#include "audioplayer.h"
-#include "mediaobject.h"
-#include "audiopath.h"
-#include "audiooutput.h"
+#include "videoplayer.h"
+#include "../mediaobject.h"
+#include "../audiopath.h"
+#include "../audiooutput.h"
+#include "../videopath.h"
+#include "videowidget.h"
 #include <kurl.h>
+#include <QVBoxLayout>
 
 namespace Phonon
 {
 
-class AudioPlayer::Private
+class VideoPlayer::Private
 {
 	public:
 		Private()
@@ -35,43 +38,52 @@ class AudioPlayer::Private
 		}
 
 		MediaObject* player;
-		AudioPath* path;
-		AudioOutput* output;
+		AudioPath* apath;
+		VideoPath* vpath;
+		AudioOutput* aoutput;
+		VideoWidget* voutput;
+
 		KUrl url;
 
 		void _k_stateChanged( Phonon::State, Phonon::State );
 };
 
-AudioPlayer::AudioPlayer( Phonon::Category category, QObject* parent )
-	: QObject( parent )
+VideoPlayer::VideoPlayer( Phonon::Category category, QWidget* parent )
+	: QWidget( parent )
 	, d( new Private )
 {
-	d->output = new AudioOutput( category, this );
-	d->path = new AudioPath( this );
-	d->path->addOutput( d->output );
+	QVBoxLayout* layout = new QVBoxLayout( this );
+
+	d->aoutput = new AudioOutput( category, this );
+	d->apath = new AudioPath( this );
+	d->apath->addOutput( d->aoutput );
+
+	d->voutput = new VideoWidget( this );
+	layout->addWidget( d->voutput );
+	d->vpath = new VideoPath( this );
+	d->vpath->addOutput( d->voutput );
+
 	d->player = new MediaObject( this );
-	d->player->addAudioPath( d->path );
+	d->player->addAudioPath( d->apath );
+	d->player->addVideoPath( d->vpath );
 
 	connect( d->player, SIGNAL( _k_stateChanged( Phonon::State, Phonon::State ) ),
 			SLOT( _k_stateChanged( Phonon::State, Phonon::State ) ) );
 	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
 }
 
-AudioPlayer::~AudioPlayer()
+VideoPlayer::~VideoPlayer()
 {
-	delete d->player;
-	delete d->path;
-	delete d->output;
 }
 
-void AudioPlayer::load( const KUrl& url )
+void VideoPlayer::load( const KUrl& url )
 {
 	// new URL
 	d->player->setUrl( url );
 	d->url = url;
 }
 
-void AudioPlayer::play( const KUrl& url )
+void VideoPlayer::play( const KUrl& url )
 {
 	if( url == d->url )
 	{
@@ -91,57 +103,57 @@ void AudioPlayer::play( const KUrl& url )
 		d->player->play();
 }
 
-void AudioPlayer::play()
+void VideoPlayer::play()
 {
 	play( d->url );
 }
 
-void AudioPlayer::pause()
+void VideoPlayer::pause()
 {
 	d->player->pause();
 }
 
-void AudioPlayer::stop()
+void VideoPlayer::stop()
 {
 	d->player->stop();
 }
 
-qint64 AudioPlayer::totalTime() const
+qint64 VideoPlayer::totalTime() const
 {
 	return d->player->totalTime();
 }
 
-qint64 AudioPlayer::currentTime() const
+qint64 VideoPlayer::currentTime() const
 {
 	return d->player->currentTime();
 }
 
-void AudioPlayer::seek( qint64 ms )
+void VideoPlayer::seek( qint64 ms )
 {
 	d->player->seek( ms );
 }
 
-float AudioPlayer::volume() const
+float VideoPlayer::volume() const
 {
-	return d->output->volume();
+	return d->aoutput->volume();
 }
 
-void AudioPlayer::setVolume( float v )
+void VideoPlayer::setVolume( float v )
 {
-	d->output->setVolume( v );
+	d->aoutput->setVolume( v );
 }
 
-bool AudioPlayer::isPlaying() const
+bool VideoPlayer::isPlaying() const
 {
 	return ( d->player->state() == PlayingState );
 }
 
-bool AudioPlayer::isPaused() const
+bool VideoPlayer::isPaused() const
 {
 	return ( d->player->state() == PausedState );
 }
 
-void AudioPlayer::Private::_k_stateChanged( State ns, State os )
+void VideoPlayer::Private::_k_stateChanged( State ns, State os )
 {
 	if( os == LoadingState && ns == StoppedState )
 		player->play();
@@ -149,6 +161,6 @@ void AudioPlayer::Private::_k_stateChanged( State ns, State os )
 
 } // namespaces
 
-#include "audioplayer.moc"
+#include "videoplayer.moc"
 
 // vim: sw=4 ts=4 noet

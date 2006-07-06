@@ -6,6 +6,7 @@ add_subdirectory( tests )
 set(phononui_LIB_SRCS
    factory.cpp
    videowidget.cpp
+   videoplayer.cpp
    seekslider.cpp
    mediacontrols.cpp
    volumeslider.cpp
@@ -26,6 +27,7 @@ install(TARGETS phononui  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES
 	videowidget.h
+	videoplayer.h
 	seekslider.h
 	mediacontrols.h
 	volumeslider.h
