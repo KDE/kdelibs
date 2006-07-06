@@ -93,6 +93,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
     }
     else
     {
+      QString libFileName = lib->fileName();
       lib->unload();
       return reportError( report, i18n("<qt>There was an error when loading the module '%1'.<br><br>"
           "The desktop file (%2) as well as the library (%3) was found but "
@@ -101,7 +102,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
           "create_* function was missing.</qt>")
           .arg( mod.moduleName() )
           .arg( mod.fileName() )
-          .arg( lib->fileName() ),
+          .arg( libFileName ),
           QString::null, parent );
     }
 
