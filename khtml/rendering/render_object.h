@@ -145,6 +145,8 @@ public:
     RenderObject *previousRenderer() const; 
 
     virtual bool childAllowed() const { return false; }
+    virtual int borderTopExtra() const { return 0; }
+    virtual int borderBottomExtra() const { return 0; }
 
     virtual RenderLayer* layer() const { return 0; }
     RenderLayer* enclosingLayer() const;
@@ -156,7 +158,7 @@ public:
                                bool checkParent=true);
     virtual void positionChildLayers() { }
     virtual bool requiresLayer() const {
-        return isRoot() || (!isTableCell() && (isPositioned() || isRelPositioned() || hasOverflowClip()));
+        return isRoot()/* ### */ || isPositioned() || isRelPositioned() || hasOverflowClip();
     }
 
     // ### rename to overflowClipRect and clipRect
@@ -553,7 +555,7 @@ public:
     /** the position of the object from where it begins drawing, including
      * its negative overflow
      */
-    int effectiveYPos() const { return yPos() + (hasOverflowClip() ? 0 : overflowTop()); }
+    int effectiveYPos() const { return yPos() + (hasOverflowClip() ? -borderTopExtra() : kMin(overflowTop(), -borderTopExtra())); }
 
     /** Leftmost coordinate of this inline element relative to containing
      * block. Always zero for non-inline elements.
@@ -565,7 +567,7 @@ public:
     virtual int inlineYPos() const { return 0; }
 
     // calculate client position of box
-    virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false);
+    virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool fixed = false) const;
 
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
@@ -585,7 +587,8 @@ public:
      * Returns the height that is effectively considered when contemplating the
      * object as a whole -- usually the overflow height, or the height if clipped.
      */
-    int effectiveHeight() const { return hasOverflowClip() ? height() : overflowHeight() - overflowTop(); }
+    int effectiveHeight() const { return hasOverflowClip() ? height() + borderTopExtra() + borderBottomExtra() : 
+                                         kMax(overflowHeight() - overflowTop(),  height() + borderTopExtra() + borderBottomExtra()); }
     /**
      * Returns the width that is effectively considered when contemplating the
      * object as a whole -- usually the overflow width, or the width if clipped.
@@ -594,7 +597,7 @@ public:
 
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }
-    virtual int offsetHeight() const { return height(); }
+    virtual int offsetHeight() const { return height() + borderTopExtra() + borderBottomExtra(); }
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
     virtual RenderObject* offsetParent() const;

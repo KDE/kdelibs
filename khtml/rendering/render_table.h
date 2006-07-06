@@ -94,8 +94,8 @@ public:
 
     virtual void calcWidth();
 
-    virtual int borderTopExtra();
-    virtual int borderBottomExtra();
+    virtual int borderTopExtra() const;
+    virtual int borderBottomExtra() const;
 
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
@@ -261,6 +261,8 @@ public:
     virtual bool canClear(RenderObject *child, PageBreakLevel level);
     void addSpaceAt(int pos, int dy);
 
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside);
+
     // this gets a cell grid data structure. changing the number of
     // columns is done by the table
     QMemArray<RowStruct> grid;
@@ -303,7 +305,13 @@ public:
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
+    virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside);
+
     virtual void layout();
+
+    // The only time rows get a layer is when they have transparency.
+    virtual bool requiresLayer() const { return /* style()->opacity() < 1.0f; */ false ; }
+    virtual void paint(PaintInfo& i, int tx, int ty);
 
     void paintRow( PaintInfo& i, int tx, int ty, int w, int h);
 
@@ -346,6 +354,7 @@ public:
     virtual void calcWidth();
     virtual void setWidth( int width );
     virtual void setStyle( RenderStyle *style );
+    virtual bool requiresLayer() const;
 
     int borderLeft() const;
     int borderRight() const;
@@ -370,6 +379,7 @@ public:
     virtual void paint( PaintInfo& i, int tx, int ty);
 
     void paintCollapsedBorder(QPainter* p, int x, int y, int w, int h);
+    void paintBackgroundsBehindCell(PaintInfo& i, int _tx, int _ty, RenderObject* backgroundObject);
 
     virtual void close();
 
@@ -377,7 +387,7 @@ public:
     virtual int yPos() const { return m_y + _topExtra; }
 
     virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
-    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false) const;
 
     virtual short baselinePosition( bool = false ) const;
 
@@ -407,8 +417,8 @@ public:
 
 protected:
     virtual void paintBoxDecorations(PaintInfo& p, int _tx, int _ty);
-    virtual int borderTopExtra() { return _topExtra; }
-    virtual int borderBottomExtra() { return _bottomExtra; }
+    virtual int borderTopExtra() const { return _topExtra; }
+    virtual int borderBottomExtra() const { return _bottomExtra; }
 
     short _row;
     short _col;
@@ -436,6 +446,7 @@ public:
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
     virtual void layout() {}
+    virtual bool requiresLayer() const { return false; }
 
     virtual void updateFromElement();
 

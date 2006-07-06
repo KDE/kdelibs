@@ -102,24 +102,12 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case NONE:
         break;
     case INLINE:
-    case INLINE_BLOCK:
-    case BLOCK:
-        // In compat mode, if <td> has a display of block, build a table cell instead.
-        // This corrects erroneous HTML.  A better fix would be to implement full-blown
-        // CSS2 anonymous table render object construction, but until then, this will have
-        // to suffice. -dwh
-        if (style->display() == BLOCK && node->id() == ID_TD && style->htmlHacks())
-            o = new (arena) RenderTableCell(node);
-        // In quirks mode if <table> has a display of block, make a table. If it has
-        // a display of inline, make an inline-table.
-        else if (node->id() == ID_TABLE && style->htmlHacks())
-            o = new (arena) RenderTable(node);
-        else if (style->display() == INLINE)
-            o = new (arena) RenderInline(node);
-        else
-            o = new (arena) RenderBlock(node);
+        o = new (arena) RenderInline(node);
         break;
-    case TABLE_CAPTION:
+    case BLOCK:
+        o = new (arena) RenderBlock(node);
+        break;
+    case INLINE_BLOCK:
         o = new (arena) RenderBlock(node);
         break;
     case LIST_ITEM:
@@ -148,6 +136,9 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         break;
     case TABLE_CELL:
         o = new (arena) RenderTableCell(node);
+        break;
+    case TABLE_CAPTION:
+        o = new (arena) RenderBlock(node);
         break;
     }
     return o;
@@ -596,7 +587,7 @@ void RenderObject::markContainingBlocksForLayout()
 
 RenderBlock *RenderObject::containingBlock() const
 {
-    if(isTableCell())
+    if(isTableCell() && !(m_style->position() == ABSOLUTE || m_style->position() == FIXED))
         return static_cast<RenderBlock*>( parent()->parent()->parent() );
     if (isCanvas())
         return const_cast<RenderBlock*>( static_cast<const RenderBlock*>(this) );
@@ -1113,10 +1104,15 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, 
 QString RenderObject::information() const
 {
     QString str;
+    int x; int y;
+    absolutePosition(x,y);
+    x += inlineXPos();
+    y += inlineYPos();
     QTextStream ts( &str, IO_WriteOnly );
     ts << renderName()
         << "(" << (style() ? style()->refCount() : 0) << ")"
        << ": " << (void*)this << "  ";
+    ts << "{" << x << " " << y << "} ";
     if (isInline()) ts << "il ";
     if (childrenInline()) ts << "ci ";
     if (isFloating()) ts << "fl ";
@@ -1427,7 +1423,7 @@ QRect RenderObject::viewRect() const
     return containingBlock()->viewRect();
 }
 
-bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f) const
 {
     RenderObject* p = parent();
     if(p) {

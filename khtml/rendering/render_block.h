@@ -154,8 +154,6 @@ public:
     int leftmostAbsolutePosition() const;
     int rightmostAbsolutePosition() const;
 
-    virtual bool absolutePosition(int &xPos, int &yPos, bool=false);
-
     int rightOffset() const;
     int rightRelOffset(int y, int fixedOffset, bool applyTextIndent=true, int *heightRemaining = 0, bool *canClearLine = 0) const;
     int rightOffset(int y, bool *canClearLine = 0) const { return rightRelOffset(y, rightOffset(), true, 0, canClearLine); }
@@ -176,10 +174,6 @@ public:
 
     virtual int getBaselineOfFirstLineBox();
     virtual InlineFlowBox* getFirstLineBox();
-
-    // overrides RenderObject
-    virtual bool requiresLayer() const { return isRoot() || (!isTableCell() &&
-        (isPositioned() || isRelPositioned() || style()->hidesOverflow())); }
 
     bool inRootBlockContext() const;
 

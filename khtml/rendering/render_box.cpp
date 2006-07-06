@@ -643,7 +643,7 @@ QRect RenderBox::getOverflowClipRect(int tx, int ty)
     int clipx = tx+bl;
     int clipy = ty+bt;
     int clipw = m_width-bl-br;
-    int cliph = m_height-bt-bb;
+    int cliph = m_height-bt-bb+borderTopExtra()+borderBottomExtra();
 
     // Substract out scrollbars if we have them.
     if (m_layer) {
@@ -722,30 +722,33 @@ short RenderBox::containingBlockWidth() const
         return cb->contentWidth();
 }
 
-bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderBox::absolutePosition(int &_xPos, int &_yPos, bool f) const
 {
     if ( style()->position() == FIXED )
 	f = true;
     RenderObject *o = container();
-    if( o && o->absolutePosition(xPos, yPos, f))
+    if( o && o->absolutePosition(_xPos, _yPos, f))
     {
         if ( o->layer() ) {
             if (o->style()->hidesOverflow())
-                o->layer()->subtractScrollOffset( xPos, yPos );
+                o->layer()->subtractScrollOffset( _xPos, _yPos );
             if (isPositioned())
-                o->layer()->checkInlineRelOffset(this, xPos, yPos);
+                o->layer()->checkInlineRelOffset(this, _xPos, _yPos);
         }
 
-        if(!isInline() || isReplaced())
-            xPos += m_x, yPos += m_y;
+        if(!isInline() || isReplaced()) {
+            _xPos += xPos(), 
+            _yPos += yPos();
+        }
 
         if(isRelPositioned())
-            relativePositionOffset(xPos, yPos);
+            relativePositionOffset(_xPos, _yPos);
         return true;
     }
     else
     {
-        xPos = yPos = 0;
+        _xPos = 0;
+        _yPos = 0;
         return false;
     }
 }

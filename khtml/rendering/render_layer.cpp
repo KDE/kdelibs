@@ -125,16 +125,26 @@ void RenderLayer::updateLayerPosition()
         return;
 
     int x = m_object->xPos();
-    int y = m_object->yPos();
+    int y = m_object->yPos() - m_object->borderTopExtra();
 
     if (!m_object->isPositioned()) {
         // We must adjust our position by walking up the render tree looking for the
         // nearest enclosing object with a layer.
         RenderObject* curr = m_object->parent();
         while (curr && !curr->layer()) {
-            x += curr->xPos();
-            y += curr->yPos();
+            if (!curr->isTableRow()) {
+                // Rows and cells share the same coordinate space (that of the section).
+                // Omit them when computing our xpos/ypos.
+                x += curr->xPos();
+                y += curr->yPos();
+            }
             curr = curr->parent();
+        }
+        y += curr->borderTopExtra();
+        if (curr->isTableRow()) {
+            // Put ourselves into the row coordinate space.
+            x -= curr->xPos();
+            y -= curr->yPos();
         }
     }
 
@@ -285,7 +295,7 @@ short RenderLayer::width() const
 
 int RenderLayer::height() const
 {
-    int h = m_object->height();
+    int h = m_object->height() + m_object->borderTopExtra() + m_object->borderBottomExtra();
     if (!m_object->style()->hidesOverflow())
         h = kMax(m_object->overflowHeight(), h);
     return h;
@@ -858,7 +868,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             // Paint the background.
             RenderObject::PaintInfo paintInfo(p, damageRect, PaintActionElementBackground);
             renderer()->paint(paintInfo,
-                              x - renderer()->xPos(), y - renderer()->yPos());
+                              x - renderer()->xPos(), y - renderer()->yPos() + renderer()->borderTopExtra());
 
             // Position our scrollbars.
             positionScrollbars(layerBounds);
@@ -888,22 +898,25 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
         setClip(p, paintDirtyRect, clipRectToApply);
 
         RenderObject::PaintInfo paintInfo(p, clipRectToApply, PaintActionSelection);
+        
+        int tx = x - renderer()->xPos();
+        int ty = y - renderer()->yPos() + renderer()->borderTopExtra();               
 
         if (selectionOnly)
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
         else {
             paintInfo.phase = PaintActionChildBackgrounds;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             paintInfo.phase = PaintActionFloat;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             paintInfo.phase = PaintActionForeground;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             paintInfo.phase = PaintActionOutline;
-            renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+            renderer()->paint(paintInfo, tx, ty);
             RenderCanvas *rc = static_cast<RenderCanvas*>(renderer()->document()->renderer());
             if (rc->selectionStart() && rc->selectionEnd()) {
                 paintInfo.phase = PaintActionSelection;
-                renderer()->paint(paintInfo, x - renderer()->xPos(), y - renderer()->yPos());
+                renderer()->paint(paintInfo, tx, ty);
             }
         }
 
@@ -1005,8 +1018,8 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
 
     if (containsPoint(xMousePos, yMousePos, fgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
-                                layerBounds.x() - renderer()->xPos(),
-                                layerBounds.y() - renderer()->yPos(),
+                            layerBounds.x() - renderer()->xPos() + m_object->borderLeft(), 
+                            layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra() - m_object->borderBottom(),
                                 HitTestChildrenOnly)) {
 	if (info.innerNode() != m_object->element())
 	    return this;
@@ -1026,8 +1039,8 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
     // Next we want to see if the mouse pos is inside this layer but not any of its children.
     if (containsPoint(xMousePos, yMousePos, bgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
-                                layerBounds.x() - renderer()->xPos(),
-                                layerBounds.y() - renderer()->yPos(),
+                                layerBounds.x() - renderer()->xPos() + m_object->borderLeft(), 
+                                layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra() - m_object->borderBottom(),
                                 HitTestSelfOnly))
         return this;
 

@@ -255,7 +255,7 @@ QRect NodeImpl::getRect() const
     int _x, _y;
     if(m_render && m_render->absolutePosition(_x, _y))
         return QRect( _x + m_render->inlineXPos(), _y + m_render->inlineYPos(),
-        		m_render->width(), m_render->height() );
+        		m_render->width(), m_render->height() + renderer()->borderTopExtra() + renderer()->borderBottomExtra() );
 
     return QRect();
 }
@@ -1465,7 +1465,7 @@ bool NodeBaseImpl::getLowerRightCorner(int &xPos, int &yPos) const
     {
         o->absolutePosition( xPos, yPos );
         xPos += o->width();
-        yPos += o->height();
+        yPos += o->height() + o->borderTopExtra() + o->borderBottomExtra();
         return true;
     }
     // find the last text/image child, to get a position

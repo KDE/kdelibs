@@ -837,17 +837,9 @@ long RenderText::maxOffset() const
   return m_lines[count - 1]->m_start + m_lines[count - 1]->m_len;
 }
 
-bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
+bool RenderText::absolutePosition(int &xPos, int &yPos, bool) const
 {
     return RenderObject::absolutePosition(xPos, yPos, false);
-
-    if(parent() && parent()->absolutePosition(xPos, yPos, false)) {
-        xPos -= paddingLeft() + borderLeft();
-        yPos -= borderTop() + paddingTop();
-        return true;
-    }
-    xPos = yPos = 0;
-    return false;
 }
 
 bool RenderText::posOfChar(int chr, int &x, int &y)

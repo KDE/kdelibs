@@ -63,7 +63,7 @@ public:
     virtual short contentWidth() const;
     virtual int contentHeight() const;
 
-    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
+    virtual bool absolutePosition(int &xPos, int &yPos, bool f = false) const;
 
     virtual void setPos( int xPos, int yPos );
 
@@ -149,9 +149,6 @@ protected:
                                          int /*w*/, int /*height*/, int /*bleft*/, int /*bright*/, int /*pleft*/, int /*pright*/ );
 
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
-
-    virtual int borderTopExtra() { return 0; }
-    virtual int borderBottomExtra() { return 0; }
 
     void calcAbsoluteHorizontal();
     void calcAbsoluteVertical();

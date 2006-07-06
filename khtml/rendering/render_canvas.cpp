@@ -251,7 +251,7 @@ void RenderCanvas::repaintViewRectangle(int x, int y, int w, int h)
   view()->scheduleRepaint( x, y, w, h );
 }
 
-bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f) const
 {
     if ( f && m_pagedMode) {
         xPos = 0;

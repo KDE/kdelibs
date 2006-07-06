@@ -546,7 +546,7 @@ void RenderTable::close()
     setNeedsLayoutAndMinMaxRecalc();
 }
 
-int RenderTable::borderTopExtra()
+int RenderTable::borderTopExtra() const
 {
     if (tCaption && tCaption->style()->captionSide()!=CAPBOTTOM)
         return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
@@ -555,7 +555,7 @@ int RenderTable::borderTopExtra()
 
 }
 
-int RenderTable::borderBottomExtra()
+int RenderTable::borderBottomExtra() const
 {
     if (tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
         return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
@@ -1305,6 +1305,10 @@ int RenderTableSection::layoutRows( int toAdd )
     int totalRows = grid.size();
     int hspacing = table()->borderHSpacing();
     int vspacing = table()->borderVSpacing();
+    
+    // Set the width of our section now.  The rows will also be this width.
+    m_width = table()->contentWidth();
+    
     if (markedForRepaint()) {
         repaintDuringLayout();
         setMarkedForRepaint(false);
@@ -1403,6 +1407,14 @@ int RenderTableSection::layoutRows( int toAdd )
     {
 	Row *row = grid[r].row;
 	int totalCols = row->size();
+
+        // Set the row's x/y position and width/height.
+        if (grid[r].rowRenderer) {
+            grid[r].rowRenderer->setPos(0, rowPos[r]);
+            grid[r].rowRenderer->setWidth(m_width);
+            grid[r].rowRenderer->setHeight(rowPos[r+1] - rowPos[r] - vspacing);
+        }
+
         for ( int c = 0; c < nEffCols; c++ )
         {
             RenderTableCell *cell = cellAt(r, c);
@@ -1683,15 +1695,43 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
 		c--;
 	    for ( ; c < endcol; c++ ) {
 		RenderTableCell *cell = (*row)[c];
-		if (!cell || cell == (RenderTableCell *)-1 )
+		if ( !cell || cell == (RenderTableCell *)-1 || nextrow && (*nextrow)[c] == cell )
 		    continue;
-		if ( nextrow && (*nextrow)[c] == cell )
-		    continue;
-
 #ifdef TABLE_PRINT
 		kdDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
-		cell->paint( pI, tx, ty);
+                if (pI.phase == PaintActionElementBackground || pI.phase == PaintActionChildBackground) {
+                    // We need to handle painting a stack of backgrounds.  This stack (from bottom to top) consists of
+                    // the column group, column, row group, row, and then the cell.
+                    RenderObject* col = table()->colElement(c);
+                    RenderObject* colGroup = 0;
+                    if (col) {
+                        RenderStyle *style = col->parent()->style();
+                        if (style->display() == TABLE_COLUMN_GROUP)
+                            colGroup = col->parent();
+                    }
+                    RenderObject* row = cell->parent();
+                    
+                    // ###
+                    // Column groups and columns first.
+                    // FIXME: Columns and column groups do not currently support opacity, and they are being painted "too late" in
+                    // the stack, since we have already opened a transparency layer (potentially) for the table row group.
+                    // Note that we deliberately ignore whether or not the cell has a layer, since these backgrounds paint "behind" the
+                    // cell.
+                    cell->paintBackgroundsBehindCell(pI, tx, ty, colGroup);
+                    cell->paintBackgroundsBehindCell(pI, tx, ty, col);
+
+                    // Paint the row group next.
+                    cell->paintBackgroundsBehindCell(pI, tx, ty, this);
+
+                    // Paint the row next, but only if it doesn't have a layer.  If a row has a layer, it will be responsible for
+                    // painting the row background for the cell.
+                    if (!row->layer())
+                        cell->paintBackgroundsBehindCell(pI, tx, ty, row);
+                }
+
+                if ((!cell->layer() && !cell->parent()->layer()) || pI.phase == PaintActionCollapsedTableBorders)
+                    cell->paint(pI, tx, ty);
 	    }
 	}
     }
@@ -1915,6 +1955,28 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
     return SelectionPointBefore;
 }
 
+// Hit Testing
+bool RenderTableSection::nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside)
+{
+    // Table sections cannot ever be hit tested.  Effectively they do not exist.
+    // Just forward to our children always.
+    tx += m_x;
+    ty += m_y;
+
+    for (RenderObject* child = lastChild(); child; child = child->previousSibling()) {
+        // FIXME: We have to skip over inline flows, since they can show up inside table rows
+        // at the moment (a demoted inline <form> for example). If we ever implement a
+        // table-specific hit-test method (which we should do for performance reasons anyway),
+        // then we can remove this check.
+        if (!child->layer() && !child->isInlineFlow() && child->nodeAtPoint(info, x, y, tx, ty, action, inside)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 // -------------------------------------------------------------------------
 
 RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
@@ -2084,6 +2146,43 @@ void RenderTableRow::paintRow( PaintInfo& pI, int tx, int ty, int w, int h )
         paintOutline(pI.p, tx, ty, w, h, style());
 }
 
+void RenderTableRow::paint(PaintInfo& i, int tx, int ty)
+{
+    KHTMLAssert(layer());
+    if (!layer())
+        return;
+
+    for (RenderObject* child = firstChild(); child; child = child->nextSibling()) {
+        if (child->isTableCell()) {
+            // Paint the row background behind the cell.
+            if (i.phase == PaintActionElementBackground || i.phase == PaintActionChildBackground) {
+                RenderTableCell* cell = static_cast<RenderTableCell*>(child);
+                cell->paintBackgroundsBehindCell(i, tx, ty, this);
+            }
+            if (!child->layer())
+                child->paint(i, tx, ty);
+        }
+    }
+}
+
+// Hit Testing
+bool RenderTableRow::nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction action, bool inside)
+{
+    // Table rows cannot ever be hit tested.  Effectively they do not exist.
+    // Just forward to our children always.
+    for (RenderObject* child = lastChild(); child; child = child->previousSibling()) {
+        // FIXME: We have to skip over inline flows, since they can show up inside table rows
+        // at the moment (a demoted inline <form> for example). If we ever implement a
+        // table-specific hit-test method (which we should do for performance reasons anyway),
+        // then we can remove this check.
+        if (!child->layer() && !child->isInlineFlow() && child->nodeAtPoint(info, x, y, tx, ty, action, inside)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // -------------------------------------------------------------------------
 
 RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
@@ -2183,18 +2282,23 @@ void RenderTableCell::close()
 #endif
 }
 
+bool RenderTableCell::requiresLayer() const {
+    // table-cell display is never positioned (css 2.1-9.7), so the only time a layer is needed
+    // is when overflow != visible (or when there is opacity when we support it)
+    return /* style()->opacity() < 1.0f || */ hasOverflowClip();
+}
 
 void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
 {
     RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, immediate, f);
 }
 
-bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f)
+bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f) const
 {
-    bool ret = RenderBlock::absolutePosition(xPos, yPos, f);
-    if (ret)
-      yPos += _topExtra;
-    return ret;
+    bool result = RenderBlock::absolutePosition(xPos, yPos, f);
+    xPos -= parent()->xPos(); // Rows are in the same coordinate space, so don't add their offset in.
+    yPos -= parent()->yPos();
+    return result;
 }
 
 int RenderTableCell::pageTopAfter(int y) const
@@ -2740,6 +2844,48 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
     }
 }
 
+void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty, RenderObject* backgroundObject)
+{
+    if (!backgroundObject)
+        return;
+
+    RenderTable* tableElt = table();
+    if (backgroundObject != this) {
+        _tx += m_x;
+        _ty += m_y + _topExtra;
+    }
+
+    int w = width();
+    int h = height() + borderTopExtra() + borderBottomExtra();
+    _ty -= borderTopExtra();
+
+    int my = kMax(_ty,pI.r.y());
+    int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
+    int mh = end - my;
+
+    QColor c = backgroundObject->style()->backgroundColor();
+    const BackgroundLayer* bgLayer = backgroundObject->style()->backgroundLayers();
+
+    if (bgLayer->hasImage() || c.isValid()) {
+        // We have to clip here because the background would paint
+        // on top of the borders otherwise.  This only matters for cells and rows.
+        bool hasLayer = backgroundObject->layer() && (backgroundObject == this || backgroundObject == parent());
+        if (hasLayer && tableElt->collapseBorders()) {
+            pI.p->save();
+            QRect clipRect(_tx + borderLeft(), _ty + borderTop(), w - borderLeft() - borderRight(), h - borderTop() - borderBottom());
+            clipRect = pI.p->xForm(clipRect);
+            QRegion creg(clipRect);
+            QRegion old = pI.p->clipRegion();
+            if (!old.isNull())
+                creg = old.intersect(creg);
+            pI.p->setClipRegion(creg);
+        }                                                                            
+	paintBackground(pI.p, c, bgLayer, my, mh, _tx, _ty, w, h);
+        if (hasLayer && tableElt->collapseBorders())
+            pI.p->restore();
+    }
+}
+
 void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
     RenderTable* tableElt = table();
@@ -2750,57 +2896,12 @@ void RenderTableCell::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
         drawBorders = false;
     if (!style()->htmlHacks() && !drawBorders) return;
 
+    // Paint our cell background.
+    paintBackgroundsBehindCell(pI, _tx, _ty, this);
+
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
     _ty -= borderTopExtra();
-
-    QColor c = style()->backgroundColor();
-    if ( !c.isValid() && parent() ) // take from row
-        c = parent()->style()->backgroundColor();
-    if ( !c.isValid() && parent() && parent()->parent() ) // take from rowgroup
-        c = parent()->parent()->style()->backgroundColor();
-    if ( !c.isValid() ) {
-	// see if we have a col or colgroup for this
-	RenderTableCol *col = table()->colElement( _col );
-	if ( col ) {
-	    c = col->style()->backgroundColor();
-	    if ( !c.isValid() ) {
-		// try column group
-		RenderStyle *style = col->parent()->style();
-		if ( style->display() == TABLE_COLUMN_GROUP )
-		    c = style->backgroundColor();
-	    }
-	}
-    }
-
-    // FIXME: This code is just plain wrong.  Rows and columns should paint their backgrounds
-    // independent from the cell.
-    // ### get offsets right in case the bgimage is inherited.
-    const BackgroundLayer* bgLayer = style()->backgroundLayers();
-    if (!bgLayer->hasImage() && parent())
-        bgLayer = parent()->style()->backgroundLayers();
-    if (!bgLayer->hasImage() && parent() && parent()->parent())
-        bgLayer = parent()->parent()->style()->backgroundLayers();
-    if (!bgLayer->hasImage()) {
-	// see if we have a col or colgroup for this
-	RenderTableCol* col = table()->colElement(_col);
-	if (col) {
-	    bgLayer = col->style()->backgroundLayers();
-	    if (!bgLayer->hasImage()) {
-		// try column group
-		RenderStyle *style = col->parent()->style();
-		if (style->display() == TABLE_COLUMN_GROUP)
-		    bgLayer = style->backgroundLayers();
-	    }
-	}
-    }
-
-    int my = kMax(_ty,pI.r.y());
-    int end = kMin( pI.r.y() + pI.r.height(),  _ty + h );
-    int mh = end - my;
-
-    if (bgLayer->hasImage() || c.isValid())
-	paintBackground(pI.p, c, bgLayer, my, mh, _tx, _ty, w, h);
 
     if (drawBorders && style()->hasBorder() && !tableElt->collapseBorders())
         paintBorder(pI.p, _tx, _ty, w, h, style());

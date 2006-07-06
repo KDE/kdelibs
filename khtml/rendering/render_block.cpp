@@ -2238,11 +2238,6 @@ int RenderBlock::leftmostAbsolutePosition() const
     return left;
 }
 
-bool RenderBlock::absolutePosition(int &xPos, int &yPos, bool f)
-{
-    return RenderFlow::absolutePosition(xPos, yPos, f);
-}
-
 int
 RenderBlock::leftBottom()
 {
@@ -2479,9 +2474,9 @@ bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
 
     if (m_layer->verticalScrollbarWidth()) {
         QRect vertRect(_tx + width() - borderRight() - m_layer->verticalScrollbarWidth(),
-                       _ty + borderTop(),
+                       _ty + borderTop() - borderTopExtra(),
                        m_layer->verticalScrollbarWidth(),
-                       height()-borderTop()-borderBottom());
+                       height() + borderTopExtra() + borderBottomExtra()-borderTop()-borderBottom());
         if (vertRect.contains(_x, _y)) {
 #ifdef APPLE_CHANGES
             RenderLayer::gScrollBar = m_layer->verticalScrollbar();
@@ -2492,7 +2487,7 @@ bool RenderBlock::isPointInScrollbar(int _x, int _y, int _tx, int _ty)
 
     if (m_layer->horizontalScrollbarHeight()) {
         QRect horizRect(_tx + borderLeft(),
-                        _ty + height() - borderBottom() - m_layer->horizontalScrollbarHeight(),
+                        _ty + height() + borderTop() + borderBottomExtra() - borderBottom() - m_layer->horizontalScrollbarHeight(),
                         width()-borderLeft()-borderRight(),
                         m_layer->horizontalScrollbarHeight());
         if (horizRect.contains(_x, _y)) {
