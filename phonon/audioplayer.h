@@ -159,7 +159,7 @@ class PHONONCORE_EXPORT AudioPlayer : public QObject
 		class Private;
 		Private * d;
 
-		Q_PRIVATE_SLOT( d, void _k_stateChanged( Phonon::State, Phonon::State ) );
+		Q_PRIVATE_SLOT( d, void _k_stateChanged( Phonon::State, Phonon::State ) )
 };
 
 } //namespace Phonon
