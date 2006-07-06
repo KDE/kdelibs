@@ -71,6 +71,23 @@ public:
 KSystemTray::KSystemTray( QWidget* parent )
     : QSystemTrayIcon( parent )
 {
+    init( parent );
+}
+
+KSystemTray::KSystemTray( const QString& icon, QWidget* parent )
+    : QSystemTrayIcon( loadIcon( icon ), parent )
+{
+    init( parent );
+}
+
+KSystemTray::KSystemTray( const QIcon& icon, QWidget* parent )
+    : QSystemTrayIcon( icon, parent )
+{
+    init( parent );
+}
+
+void KSystemTray::init( QWidget* parent )
+{
     d = new KSystemTrayPrivate( this, parent );
 
     d->menu = new KMenu( parent );
@@ -106,33 +123,30 @@ KSystemTray::~KSystemTray()
     delete d;
 }
 
-void KSystemTray::showEvent( QShowEvent * )
-{
-    if ( d->hasQuit )
-    {
-        return;
-    }
-
-    d->menu->addSeparator();
-    KAction* action = d->actionCollection->action( "minimizeRestore" );
-
-    if ( action )
-    {
-        d->menu->addAction( action );
-    }
-
-    action = d->actionCollection->action( KStdAction::name( KStdAction::Quit ) );
-
-    if ( action )
-    {
-        d->menu->addAction( action );
-    }
-
-    d->hasQuit = true;
-}
-
 void KSystemTray::contextMenuAboutToShow( )
 {
+    if ( !d->hasQuit )
+    {
+        // we need to add the actions to the menu afterwards so that these items
+        // appear at the _END_ of the menu
+        d->menu->addSeparator();
+        KAction* action = d->actionCollection->action( "minimizeRestore" );
+
+        if ( action )
+        {
+            d->menu->addAction( action );
+        }
+
+        action = d->actionCollection->action( KStdAction::name( KStdAction::Quit ) );
+
+        if ( action )
+        {
+            d->menu->addAction( action );
+        }
+
+        d->hasQuit = true;
+    }
+
     if ( d->window )
     {
         KAction* action = d->actionCollection->action("minimizeRestore");

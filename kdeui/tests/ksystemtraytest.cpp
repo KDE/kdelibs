@@ -10,8 +10,7 @@ int main(int argc, char **argv)
 	KCmdLineArgs::init(argc, argv, &aboutData);
         KApplication app;
 	QLabel *l = new QLabel("System Tray Main Window", 0L);
-	KSystemTray *tray = new KSystemTray( l );
-	tray->setText("Test");
+	KSystemTray *tray = new KSystemTray( "test", l );
 	l->show();
 	tray->show();
 

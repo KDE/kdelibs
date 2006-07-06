@@ -50,7 +50,7 @@ class KDEUI_EXPORT KSystemTray : public QSystemTrayIcon
 public:
 
     /**
-     * Construct a KSystemTray widget just like any other widget.
+     * Construct a system tray icon.
      *
      * The parent widget @p parent has a special meaning:
      * Besides owning the tray window, the parent widget will
@@ -63,6 +63,18 @@ public:
      * button.
      **/
     explicit KSystemTray( QWidget* parent = 0 );
+
+    /**
+     * Same as above but allows one to define the icon by name that should
+     * be used for the system tray icon.
+     */
+    KSystemTray( const QString& icon, QWidget* parent = 0 );
+
+    /**
+     * Same as above but allows one to define the icon by name that should
+     * be used for the system tray icon.
+     */
+    KSystemTray( const QIcon& icon, QWidget* parent = 0 );
 
     /*
       Destructor
@@ -90,24 +102,18 @@ Q_SIGNALS:
      */
     void quitSelected();
 
-protected:
-    /**
-       Reimplemented for internal reasons.
-     */
-    void showEvent( QShowEvent * );
-
-
 private Q_SLOTS:
     void contextMenuAboutToShow();
     void minimizeRestoreAction();
     void maybeQuit();
 
 private:
+    void init( QWidget* );
     void activateOrHide( int reasonCalled );
     void minimizeRestore( bool restore );
 
     KSystemTrayPrivate* d;
 };
 
-
 #endif
+
