@@ -50,6 +50,7 @@ KJob::KJob( QObject *parent )
 
 KJob::~KJob()
 {
+    delete d->uiDelegate;
     delete d;
 
     KGlobal::deref();
@@ -59,11 +60,7 @@ void KJob::setUiDelegate( KJobUiDelegate *delegate )
 {
     if ( delegate == 0 || delegate->setJob( this ) )
     {
-        if ( d->uiDelegate )
-        {
-            delete d->uiDelegate;
-        }
-
+        delete d->uiDelegate;
         d->uiDelegate = delegate;
     }
 }
