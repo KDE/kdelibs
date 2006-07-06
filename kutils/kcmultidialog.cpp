@@ -1,7 +1,7 @@
 /*
    Copyright (c) 2000 Matthias Elter <elter@kde.org>
    Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
-   Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
+   Copyright (c) 2003,2006 Matthias Kretz <kretz@kde.org>
    Copyright (c) 2004 Frans Englich <frans.englich@telia.com>
    Copyright (c) 2006 Tobias Koenig <tokoe@kde.org>
 
@@ -33,26 +33,22 @@
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
 #include <krun.h>
-#include <kuser.h>
 
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
 
-
 #include "kcmultidialog.h"
-
 
 class KCMultiDialog::Private
 {
   public:
 
     Private( KCMultiDialog *_parent )
-      : hasRootKCM( false ), currentModule( 0 ),
+      : currentModule( 0 ),
         parent( _parent )
     {
     }
 
-    bool hasRootKCM;
     KCModuleProxy* currentModule;
     KCMultiDialog* parent;
 
@@ -66,14 +62,12 @@ class KCMultiDialog::Private
     typedef QList<CreatedModule> ModuleList;
     ModuleList modules;
 
-    void slotCurrentPageChanged( KPageWidgetItem* );
-    void clientChanged( bool state );
-    void disableRModeButton();
-    void rootExit();
-    void dialogClosed();
+    void _k_slotCurrentPageChanged( KPageWidgetItem* );
+    void _k_clientChanged( bool state );
+    void _k_dialogClosed();
 };
 
-void KCMultiDialog::Private::slotCurrentPageChanged( KPageWidgetItem *item )
+void KCMultiDialog::Private::_k_slotCurrentPageChanged( KPageWidgetItem *item )
 {
   kDebug(710) << k_funcinfo << endl;
 
@@ -90,28 +84,15 @@ void KCMultiDialog::Private::slotCurrentPageChanged( KPageWidgetItem *item )
 
   if ( !module )
     return;
+  kDebug(710) << "found module for page: " << module->moduleInfo().moduleName() << endl;
 
   currentModule = module;
 
   parent->enableButton( KDialog::Help, currentModule->buttons() & KCModule::Help );
   parent->enableButton( KDialog::Default, currentModule->buttons() & KCModule::Default );
-
-  disconnect( parent, SIGNAL( user2Clicked() ), 0, 0 );
-
-  if ( currentModule->moduleInfo().needsRootPrivileges() ) {
-    if ( !currentModule->rootMode() ) {
-      /**
-       * Enable the Admin Mode button
-       */
-      parent->enableButton( User2, true );
-      connect( parent, SIGNAL( user2Clicked() ), currentModule, SLOT( runAsRoot() ) );
-      connect( parent, SIGNAL( user2Clicked() ), parent, SLOT( disableRModeButton() ) );
-    } else
-      parent->enableButton( User2, false);
-  }
 }
 
-void KCMultiDialog::Private::clientChanged( bool )
+void KCMultiDialog::Private::_k_clientChanged( bool )
 {
   for ( int i = 0; i < modules.count(); ++i ) {
     if ( modules[ i ].kcm->changed() ) {
@@ -123,18 +104,7 @@ void KCMultiDialog::Private::clientChanged( bool )
   parent->enableButton( Apply, false );
 }
 
-void KCMultiDialog::Private::rootExit()
-{
-  parent->enableButton( User2, true );
-}
-
-void KCMultiDialog::Private::disableRModeButton()
-{
-  parent->enableButton( User2, false );
-  connect( currentModule, SIGNAL( childClosed() ), parent, SLOT( rootExit() ) );
-}
-
-void KCMultiDialog::Private::dialogClosed()
+void KCMultiDialog::Private::_k_dialogClosed()
 {
   kDebug(710) << k_funcinfo << endl;
 
@@ -152,24 +122,21 @@ KCMultiDialog::KCMultiDialog( QWidget *parent )
   : KPageDialog( parent ),
     d( new Private( this ) )
 {
-  setFaceType( List );
+  setFaceType( Auto );
   setCaption( i18n("Configure") );
-  setButtons( Help | Default |Cancel | Apply | Ok | User1 | User2 );
+  setButtons( Help | Default |Cancel | Apply | Ok | User1 );
   setButtonGuiItem( User1, KStdGuiItem::reset() );
-  setButtonGuiItem( User2, KStdGuiItem::adminMode() );
   setDefaultButton( Ok );
   setModal( false );
   showButtonSeparator( true );
 
-  connect( this, SIGNAL( finished() ), SLOT( dialogClosed() ) );
+  connect( this, SIGNAL( finished() ), SLOT( _k_dialogClosed() ) );
 
   showButton( User1, false );
-  showButton( User2, false );
   enableButton( Apply, false );
 
   connect( this, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
-           this, SLOT( slotCurrentPageChanged( KPageWidgetItem* ) ) );
-
+           this, SLOT( _k_slotCurrentPageChanged( KPageWidgetItem* ) ) );
 
   connect( this, SIGNAL( applyClicked() ), SLOT( slotApplyClicked() ) );
   connect( this, SIGNAL( okClicked() ), SLOT( slotOkClicked() ) );
@@ -194,7 +161,7 @@ void KCMultiDialog::slotDefaultClicked()
   for ( int i = 0; i < d->modules.count(); ++i ) {
     if ( d->modules[ i ].item == item ) {
       d->modules[ i ].kcm->defaults();
-      d->clientChanged( true );
+      d->_k_clientChanged( true );
       return;
     }
   }
@@ -209,7 +176,7 @@ void KCMultiDialog::slotUser1Clicked()
   for ( int i = 0; i < d->modules.count(); ++i ) {
     if ( d->modules[ i ].item == item ) {
       d->modules[ i ].kcm->load();
-      d->clientChanged( false );
+      d->_k_clientChanged( false );
       return;
     }
   }
@@ -288,7 +255,7 @@ void KCMultiDialog::slotHelpClicked()
 }
 
 
-KPageWidgetItem* KCMultiDialog::addModule( const QString& path, bool withFallback )
+KPageWidgetItem* KCMultiDialog::addModule( const QString& path )
 {
   QString complete = path;
 
@@ -297,22 +264,17 @@ KPageWidgetItem* KCMultiDialog::addModule( const QString& path, bool withFallbac
 
   KService::Ptr service = KService::serviceByStorageId( complete );
 
-  return addModule( KCModuleInfo( service ), 0, withFallback );
+  return addModule( KCModuleInfo( service ), 0 );
 }
 
 KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
-                                           KPageWidgetItem *parentItem,
-                                           bool withFallback )
+                                           KPageWidgetItem *parentItem )
 {
   if ( !moduleInfo.service() )
     return 0;
 
-  if ( !KAuthorized::authorizeControlModule( moduleInfo.service()->menuId() ) )
-    return 0;
-
-  if ( !KCModuleLoader::testModule( moduleInfo ) )
-    return 0;
-
+  //KAuthorized::authorizeControlModule( moduleInfo.service()->menuId() ) is
+  //checked in noDisplay already
   if ( moduleInfo.service()->noDisplay() )
     return 0;
 
@@ -327,9 +289,9 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   else
     addPage( item );
 
-  KCModuleProxy *kcm = new KCModuleProxy( moduleInfo, withFallback, widget );
+  KCModuleProxy *kcm = new KCModuleProxy( moduleInfo, widget );
 
-  connect( kcm, SIGNAL( changed( bool ) ), this, SLOT( clientChanged( bool ) ) );
+  connect( kcm, SIGNAL( changed( bool ) ), this, SLOT( _k_clientChanged( bool ) ) );
 
 
   Private::CreatedModule cm;
@@ -340,13 +302,6 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
   if ( d->modules.count() == 1 )
     setCurrentPage( item );
-
-  if ( moduleInfo.needsRootPrivileges() && !d->hasRootKCM && !KUser().isSuperUser() ) {
-    d->hasRootKCM = true;
-    showButton( User2, true );
-
-    setCurrentPage( item );
-  }
 
   return item;
 }
@@ -362,7 +317,7 @@ void KCMultiDialog::clear()
 
   d->modules.clear();
 
-  d->clientChanged( false );
+  d->_k_clientChanged( false );
 }
 
 

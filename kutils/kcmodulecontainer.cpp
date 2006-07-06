@@ -38,6 +38,7 @@
 #include <kstdguiitem.h>
 
 #include "kcmodulecontainer.h"
+#include <kicon.h>
 #include "kcmodulecontainer.moc"
 
 /***********************************************************************/
@@ -47,19 +48,12 @@ class KCModuleContainer::KCModuleContainerPrivate
 		KCModuleContainerPrivate( const QStringList& mods )
 			: modules( mods )
 			, tabWidget( 0 )
-			, buttons( 0 )
-			, hasRootKCM( false )
-			, btnRootMode( 0 )
-			, btnLayout( 0 )
 			, topLayout( 0 )
 			{};
 
 		QStringList modules;
 		QTabWidget *tabWidget;
-		int buttons;
-		bool hasRootKCM: 1;
-		KPushButton *btnRootMode;
-		QHBoxLayout *btnLayout;
+		KCModule::Buttons buttons;
 		QVBoxLayout *topLayout;
 
 
@@ -87,11 +81,11 @@ KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
 void KCModuleContainer::init()
 {
 	d->topLayout = new QVBoxLayout( this );
-  d->topLayout->setMargin( 0 );
-  d->topLayout->setSpacing( KDialog::spacingHint() );
-  d->topLayout->setObjectName( "topLayout" );
+	d->topLayout->setMargin( 0 );
+	d->topLayout->setSpacing( KDialog::spacingHint() );
+	d->topLayout->setObjectName( "topLayout" );
 	d->tabWidget = new QTabWidget(this);
-  d->tabWidget->setObjectName( "tabWidget");
+	d->tabWidget->setObjectName( "tabWidget");
 	connect( d->tabWidget, SIGNAL( currentChanged( QWidget* ) ), SLOT( tabSwitched( QWidget* ) ));
 	d->topLayout->addWidget( d->tabWidget );
 
@@ -100,30 +94,6 @@ void KCModuleContainer::init()
 		/* Add our modules */
 		for ( QStringList::Iterator it = d->modules.begin(); it != d->modules.end(); ++it )
 			addModule( (*it) );
-
-		finalize();
-	}
-
-}
-
-void KCModuleContainer::finalize()
-{
-	setButtons( d->buttons );
-	if ( d->hasRootKCM ) /* Add a root mode button */
-	{
-		if(!d->btnLayout) /* It could already be added */
-		{
-			d->btnLayout = new QHBoxLayout(this);
-      d->btnLayout->setMargin(0);
-      d->btnLayout->setSpacing(0);
-      d->btnLayout->setObjectName("btnLayout");
-			d->btnRootMode = new KPushButton(KStdGuiItem::adminMode(), this);
-                        d->btnRootMode->setObjectName("btnRootMode");
-					
-			d->btnLayout->addWidget( d->btnRootMode );
-			d->btnLayout->addStretch();
-			d->topLayout->addLayout( d->btnLayout );
-		}
 	}
 }
 
@@ -133,24 +103,24 @@ void KCModuleContainer::addModule( const QString& module )
 	 * This allows people to easily extend containers.
 	 * For example, KCM monitor gamma can be in kdegraphics.
 	 */
-	if ( !KService::serviceByDesktopName( module ) )
+	KService::Ptr service = KService::serviceByDesktopName( module );
+	if ( !service )
 	{
 		kDebug(713) << "KCModuleContainer: module '" << 
 			module << "' was not found and thus not loaded" << endl;
 		return;
 	}
 
-	if( !KCModuleLoader::testModule( module ))
+	if ( service->noDisplay() )
 		return;
 
-	KCModuleProxy* proxy = new KCModuleProxy( module, false, d->tabWidget );
+	KCModuleProxy* proxy = new KCModuleProxy( service, d->tabWidget );
 	allModules.append( proxy );
 
 	proxy->setObjectName( module.toLatin1() );
 
-	d->tabWidget->addTab( proxy, QIcon(KGlobal::iconLoader()->loadIcon(
-					proxy->moduleInfo().icon(), K3Icon::Desktop)),
-			/* QT eats ampersands for dinner. But not this time. */
+	d->tabWidget->addTab( proxy, KIcon( proxy->moduleInfo().icon() ),
+			/* Qt eats ampersands for dinner. But not this time. */
 			proxy->moduleInfo().moduleName().replace( "&", "&&" ));
 
 	d->tabWidget->setTabToolTip( d->tabWidget->indexOf( proxy ), proxy->moduleInfo().comment() );
@@ -158,53 +128,14 @@ void KCModuleContainer::addModule( const QString& module )
 	connect( proxy, SIGNAL(changed(KCModuleProxy *)), SLOT(moduleChanged(KCModuleProxy *)));
 
 	/* Collect our buttons - we go for the common deliminator */
-	d->buttons = d->buttons | proxy->realModule()->buttons();
-
-	/* If we should add an Administrator Mode button */
-	if ( proxy->moduleInfo().needsRootPrivileges() )
-		d->hasRootKCM=true;
-
-
+	setButtons( buttons() | proxy->realModule()->buttons() );
 }
 
 void KCModuleContainer::tabSwitched( QWidget * module )
 {
-	if ( !d->hasRootKCM )
-		return;
-
-	/* Not like this. Not like this. */
-	disconnect( d->btnRootMode, 0, 0, 0 );
-	/* Welcome to the real world huh baby? */
-	
 	KCModuleProxy* mod = (KCModuleProxy *) module;
-
-	if ( mod->moduleInfo().needsRootPrivileges() && !mod->rootMode() )
-	{
-		d->btnRootMode->setEnabled( true );
-		connect( d->btnRootMode, SIGNAL( clicked() ), 
-				SLOT( runAsRoot() ));
-		connect( mod, SIGNAL( childClosed() ), 
-				SLOT ( rootExited() ));
-	}
-	else
-		d->btnRootMode->setEnabled( false );
-
 	setQuickHelp( mod->quickHelp() );
-	setAboutData( const_cast<KAboutData*>(mod->aboutData()) );
-
-}
-
-void KCModuleContainer::runAsRoot()
-{
-	if ( d->tabWidget->currentWidget() )
-		( (KCModuleProxy *) d->tabWidget->currentWidget() )->runAsRoot();
-	d->btnRootMode->setEnabled( false );
-}
-
-void KCModuleContainer::rootExited()
-{
-	connect( d->btnRootMode, SIGNAL( clicked() ), SLOT( runAsRoot() ));
-	d->btnRootMode->setEnabled( true );
+	setAboutData( mod->aboutData() );
 }
 
 void KCModuleContainer::save()

@@ -115,15 +115,6 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		void defaults();
 
 	protected:
-
-		/**
-		 * Sets this KCM's buttons and adds a AdminMode button
-		 * if necessary. If KCModuleContainer is subclassed finalize()
-		 * should be called in the constructor after all calls to addModule
-		 * have been done. Call it once.
-		 */
-		void finalize();
-
 		typedef QList<KCModuleProxy*> ModuleList;
 
 		/**
@@ -145,16 +136,6 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		void tabSwitched( QWidget * module );
 
 		void moduleChanged(KCModuleProxy *proxy);
-
-		/**
-		 * Called when the user clicks our custom root button.
-		 */
-		void runAsRoot();
-
-		/**
-		 * Enables the admin mode button
-		 */
-		void rootExited();
 
 	private:
 

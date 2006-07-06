@@ -24,11 +24,11 @@
 #include <qwidget.h>
 #include <qstringlist.h>
 
+#include <kcmodule.h>
 #include <kservice.h>
 #include <kdelibs_export.h>
 
 class KAboutData;
-class KCModule;
 class KCModuleInfo;
 class KInstance;
 class KProcess;
@@ -38,8 +38,8 @@ class KProcess;
  * @brief Encapsulates a KCModule for embedding.
  *
  * KCModuleProxy is a wrapper for KCModule intended for cases where
- * modules are to be displayed. It ensures layout is consistent, handles
- * root/administrator modules and in general takes care of the details
+ * modules are to be displayed. It ensures layout is consistent
+ * and in general takes care of the details
  * needed for making a module available in an interface. A KCModuleProxy
  * can be treated as a QWidget, without worrying about the details specific
  * for modules such as library loading. KCModuleProxy is not a sub class of KCModule
@@ -67,26 +67,17 @@ class KProcess;
 class KUTILS_EXPORT KCModuleProxy : public QWidget
 {
 Q_OBJECT
-
-	friend class KCModuleProxyRootCommunicatorImpl;
-
 public:
-
 	/**
 	 * Constructs a KCModuleProxy from a KCModuleInfo class.
 	 *
 	 * @param info The KCModuleInfo to construct the module from.
-	 * @param withFallback If set to true and loading of the module fails,
-	 * a alternative will be tried, resulting in the module appearing in its
-	 * own window, if at all.
-	 * The embedded module will be load()ed.
 	 * @param parent the parent QWidget.
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
-	KCModuleProxy( const KCModuleInfo & info, bool withFallback = true,
-			QWidget * parent = 0,
-			const QStringList & args = QStringList() );
+	KCModuleProxy( const KCModuleInfo& info, QWidget* parent = 0,
+			const QStringList& args = QStringList() );
 
 	/**
 	 * Constructs a KCModuleProxy from a module's service name, which is
@@ -94,33 +85,23 @@ public:
 	 * Otherwise equal to the one above.
 	 *
 	 * @param serviceName The module's service name to construct from.
-	 * @param withFallback If set to true and loading of the module fails,
-	 * a alternative will be tried, resulting in the module appearing in its
-	 * own window, if at all.
-	 * The embedded module will be load()ed.
 	 * @param parent the parent QWidget.
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
-	KCModuleProxy( const QString& serviceName, bool withFallback = true,
-			QWidget * parent = 0,
-			const QStringList & args = QStringList() );
+	KCModuleProxy( const QString& serviceName, QWidget* parent = 0,
+			const QStringList& args = QStringList() );
 
 	/**
 	 * Constructs a KCModuleProxy from KService. Otherwise equal to the one above.
 	 *
 	 * @param service The KService to construct from.
-	 * @param withFallback If set to true and loading of the module fails,
-	 * a alternative will be tried, resulting in the module appearing in its
-	 * own window, if at all.
-	 * The embedded module will be load()ed.
 	 * @param parent the parent QWidget.
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
-	KCModuleProxy( const KService::Ptr& service, bool withFallback = true,
-			QWidget  * parent = 0,
-			const QStringList & args = QStringList() );
+	KCModuleProxy( const KService::Ptr& service, QWidget* parent = 0,
+			const QStringList& args = QStringList() );
 
 	/**
 	 * Default destructor
@@ -156,24 +137,24 @@ public:
 	 * @return what buttons the module
 	 * needs
 	 */
-	int buttons() const;
+	KCModule::Buttons buttons() const;
 
 	/**
 	 * @return The module's custom root
 	 * message, if it has one
 	 * @deprecated
 	 */
-	QString rootOnlyMsg() const;
+	QString rootOnlyMessage() const;
 	//KDE4 remove. There's a limit for convenience functions,
-	// this one's available via moduleInfo()-> and realModule()->
+	// this one's available via realModule()->
 
 	/**
 	 * @return If the module is a root module.
 	 * @deprecated
 	 */
-	bool useRootOnlyMsg() const;
+	bool useRootOnlyMessage() const;
 	//KDE4 remove. There's a limit for convenience functions,
-	// this one's available via moduleInfo()-> and realModule()->
+	// this one's available via realModule()->
 
 	/**
 	 * Returns the embedded KCModule's KInstance.
@@ -189,17 +170,6 @@ public:
 	 * and needs to be saved.
 	 */
 	bool changed() const;
-
-	/**
-	 * Returns whether the module is running in root mode. A module is in root mode
-	 * when runAsRoot() has been called. A session under root user will never reach
-	 * root mode.
-	 *
-	 * @note realModule() will return null when the module is running in root mode.
-	 *
-	 * @return true if the module is running with root privileges
-	 */
-	bool rootMode() const;
 
 	/**
 	 * Access to the actual module. However, if the module is
@@ -225,12 +195,6 @@ public:
 	QString dbusPath() const;
 
 public Q_SLOTS:
-
-	/**
-	 * Calling this will cause the module to be run in
-	 * "administrator mode".
-	 */
-	void runAsRoot();
 
 	/**
 	 * Calling it will cause the contained module to
@@ -293,20 +257,6 @@ protected:
 
 private Q_SLOTS:
 
-   /**
-	* Calls the function @p function of the root module's KCModuleProxy
-	* DCOP interface.
-	*
-	* @param function the function signature of the function to call.
-	*/
-	void callRootModule( const QString& function );
-
-	/**
-	 * This is called when the module exits from root mode. It zeroes
-	 * pointers, deletes the embed window, and so forth.
-	 */
-	void rootExited();
-
 	/**
 	 * Makes sure the proper variables is set and signals are emitted.
 	 */
@@ -326,8 +276,8 @@ private Q_SLOTS:
 
 private:
 
-	class KCModuleProxyPrivate;
-	KCModuleProxyPrivate * d;
+	class Private;
+	Private* d;
 };
 
 #endif // KCMODULEPROXY_H

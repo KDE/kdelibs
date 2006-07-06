@@ -107,40 +107,32 @@ public:
   /**
    * @return the filename of the .desktop file that describes the KCM
    */
-  QString fileName() const { return _fileName; };
+  QString fileName() const;
 
   /**
    * @return the keywords associated with this KCM.
    */
-  const QStringList &keywords() const { return _keywords; };
-
-  /**
-   * Returns the module's factory name, if it's set. If not, the library
-   * name is returned.
-   * @returns the module's factory name
-   */
-  QString factoryName() const;
+  QStringList keywords() const;
 
   /**
    * @return the module\'s (translated) name
    */
-  QString moduleName() const { return _name; };
-  // changed from name() to avoid ambiguity with QObject::name() on multiple inheritance
+  QString moduleName() const;
 
   /**
    * @return a KSharedPtr to KService created from the modules .desktop file
    */
-  KService::Ptr service() const { return _service; };
+  KService::Ptr service() const;
 
   /**
    * @return the module's (translated) comment field
    */
-  QString comment() const { return _comment; };
+  QString comment() const;
 
   /**
    * @return the module's icon name
    */
-  QString icon() const { return _icon; };
+  QString icon() const;
 
   /**
    * @return the path of the module's documentation
@@ -150,10 +142,11 @@ public:
   /**
    * @return the library name
    */
-  QString library() const { return _lib; };
+  QString library() const;
 
   /**
-   * @return a handle (usually the contents of the FactoryName field)
+   * @return a handle (the contents of the X-KDE-FactoryName field if it exists,
+   * else the same as the library name)
    */
   QString handle() const;
 
@@ -163,126 +156,9 @@ public:
    */
   int weight() const;
 
-  /**
-   * @return whether the module might require root permissions
-   */
-  bool needsRootPrivileges() const;
-
-  /**
-   * @deprecated
-   * @return the isHiddenByDefault attribute.
-   */
-  KDE_DEPRECATED bool isHiddenByDefault() const;
-
-
-  /**
-   * @returns true if the module should be conditionally
-   * loaded.
-   */
-  bool needsTest() const;
-
-
-protected:
-
-  /**
-   * Sets the object's keywords.
-   * @param keyword the new keywords
-   */
-  void setKeywords(const QStringList &keyword) { _keywords = keyword; };
-
-  /**
-   * Sets the object's name.
-   * @param name the new name
-   */
-  void setName(const QString &name) { _name = name; };
-
-  /**
-   * Sets the object's name.
-   * @param comment the new comment
-   */
-  void setComment(const QString &comment) { _comment = comment; };
-
-  /**
-   * Sets the object's icon.
-   * @param icon the name of the new icon
-   */
-  void setIcon(const QString &icon) { _icon = icon; };
-
-  /**
-   * Set the object's library
-   * @param lib the name of the new library without any extensions or prefixs.
-   */
-  void setLibrary(const QString &lib) { _lib = lib; };
-
-  /**
-   * Sets the factory name
-   * @param handle The new factory name
-   */
-  void setHandle(const QString &handle) { _handle = handle; };
-
-  /**
-   * Sets the object's weight property which determines in what
-   * order modules will be displayed. Default is 100.
-   *
-   * @param weight the new weight
-   */
-  void setWeight(int weight) { _weight = weight; };
-
-
-  /**
-   * Sets if the module should be tested for loading.
-   * @param val the value to set
-   */
-  void setNeedsTest( bool val );
-
-  /**
-   * Toggles whether the represented module needs root privileges.
-   * Use with caution.
-   * @param needsRootPrivileges if module needs root privilges
-   */
-  void setNeedsRootPrivileges(bool needsRootPrivileges)
-  { _needsRootPrivileges = needsRootPrivileges; };
-
-  /**
-   * @deprecated
-   */
-  void setIsHiddenByDefault(bool isHiddenByDefault)
-  { _isHiddenByDefault = isHiddenByDefault; };
-
-  /**
-   * Sets the object's documentation path
-   * @param p the new documentation path
-   */
-  void setDocPath(const QString &p) { _doc = p; };
-
-  /**
-   * Reads the service entries specific for KCModule from the desktop file.
-   * The usual desktop entries are read in init.
-   */
-  void loadAll();
-
 private:
-
-  /**
-   * Reads the service entries. Called by the constructors.
-   */
-  void init(KService::Ptr s);
-
-private:
-
-  // KDE4 These needs to be moved to KCModuleInfoPrivate
-  QStringList _keywords;
-  QString     _name, _icon, _lib, _handle, _fileName, _doc, _comment;
-  bool        _needsRootPrivileges : 1;
-  bool        _isHiddenByDefault : 1;
-  bool        _allLoaded : 1;
-  int         _weight;
-
-  KService::Ptr _service;
-
-  class KCModuleInfoPrivate;
-  KCModuleInfoPrivate *d;
-
+  class Private;
+  Private *d;
 };
 
 #endif // KCMODULEINFO_H

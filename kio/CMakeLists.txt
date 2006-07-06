@@ -258,7 +258,7 @@ install(TARGETS kio  DESTINATION ${LIB_INSTALL_DIR} )
 install( FILES useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
 install( FILES magic  DESTINATION  ${MIME_INSTALL_DIR} )
-install( FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
+install( FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop kcmoduleinit.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
 install( FILES kpasswdserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 install( FILES renamedlgplugin.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )

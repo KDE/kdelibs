@@ -1,7 +1,7 @@
 /*
    Copyright (c) 2000 Matthias Elter <elter@kde.org>
    Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
-   Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
+   Copyright (c) 2003,2006 Matthias Kretz <kretz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -56,12 +56,9 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      * @param module Specify the name of the module that is to be added
      *               to the list of modules the dialog will show.
      *
-     * @param withfallback Try harder to load the module. Might result
-     *                     in the module appearing outside the dialog.
-     *
      * @returns The @see KPageWidgetItem associated with the new dialog page.
      **/
-    KPageWidgetItem* addModule( const QString& module, bool withfallback = true );
+    KPageWidgetItem* addModule( const QString& module );
 
     /**
      * Add a module.
@@ -72,12 +69,8 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      *
      * @param parent The @see KPageWidgetItem that should appear as parents
      *               in the tree view or a 0 pointer if there is no parent.
-     *
-     * @param withfallback Try harder to load the module. Might result
-     *                     in the module appearing outside the dialog.
      **/
-    KPageWidgetItem* addModule( const KCModuleInfo& moduleinfo, KPageWidgetItem *parent = 0,
-                                bool withfallback = false );
+    KPageWidgetItem* addModule( const KCModuleInfo& moduleinfo, KPageWidgetItem *parent = 0 );
 
     /**
      * Removes all modules from the dialog.
@@ -162,11 +155,9 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT( d, void slotCurrentPageChanged( KPageWidgetItem* ) )
-    Q_PRIVATE_SLOT( d, void clientChanged( bool ) )
-    Q_PRIVATE_SLOT( d, void disableRModeButton() )
-    Q_PRIVATE_SLOT( d, void rootExit() )
-    Q_PRIVATE_SLOT( d, void dialogClosed() )
+    Q_PRIVATE_SLOT( d, void _k_slotCurrentPageChanged( KPageWidgetItem* ) )
+    Q_PRIVATE_SLOT( d, void _k_clientChanged( bool ) )
+    Q_PRIVATE_SLOT( d, void _k_dialogClosed() )
 };
 
 #endif

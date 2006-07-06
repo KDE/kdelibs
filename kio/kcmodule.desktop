@@ -2,15 +2,13 @@
 Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModule
-Name=KDE Control Module
+Name=KDE Configuration Module
 Name[fr]=Module de configuration de KDE
 Name[x-test]=xxKDE Control Modulexx
 
+# the name of the method (with or without the init_ prefix) returning the factory object
 [PropertyDef::X-KDE-FactoryName]
 Type=QString
-
-[PropertyDef::X-KDE-RootOnly]
-Type=bool
 
 # a list of all components this KCM belongs to
 [PropertyDef::X-KDE-ParentComponents]
@@ -23,10 +21,3 @@ Type=QString
 # sets the order of the modules in the TreeList/IconList
 [PropertyDef::X-KDE-Weight]
 Type=int
-
-[PropertyDef::X-KDE-RootOnly]
-Type=bool
-
-### KDE4 remove - this property is deprecated
-[PropertyDef::X-KDE-IsHiddenByDefault]
-Type=bool

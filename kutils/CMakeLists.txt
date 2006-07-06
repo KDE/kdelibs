@@ -27,8 +27,7 @@ kmultitabbar.cpp
 kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
-kcmoduleproxyIface.cpp
-kcmoduleproxyIfaceImpl.cpp
+ksettingswidgetadaptor.cpp
 ${ksettings_STAT_SRCS}
 )
 

@@ -207,8 +207,7 @@ bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginName ) const
 QWidget * KPluginSelectionWidget::insertKCM( QWidget * parent,
         const KCModuleInfo & moduleinfo )
 {
-    KCModuleProxy * module = new KCModuleProxy( moduleinfo, false,
-            parent );
+    KCModuleProxy * module = new KCModuleProxy( moduleinfo, parent );
     if( !module->realModule() )
     {
         //FIXME: not very verbose

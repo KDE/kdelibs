@@ -1,7 +1,7 @@
 /*
    This file is part of the KDE libraries
 
-<<<Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
+   Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
    Copyright (C) 2004 Frans Englich <frans.englich@telia.com>
 
    This library is free software; you can redistribute it and/or
@@ -21,7 +21,12 @@
 
 */
 
+#define KDE3_SUPPORT
+#include "kcmodule.h"
+#undef KDE3_SUPPORT
+
 #include <qlayout.h>
+#include <QTimer>
 
 #include <kaboutdata.h>
 #include <kconfigskeleton.h>
@@ -31,25 +36,22 @@
 #include <kinstance.h>
 #include <klocale.h>
 
-#define KDE3_SUPPORT
-#include "kcmodule.h"
-#include "kcmodule.moc"
-#undef KDE3_SUPPORT
-
 class KCModulePrivate
 {
 public:
     KCModulePrivate():
+        _buttons( KCModule::Help | KCModule::Default | KCModule::Apply ),
         _about( 0 ),
-        _useRootOnlyMsg( false ),
-        _hasOwnInstance( true ),
+        _useRootOnlyMessage( false ),
+        _hasOwnInstance( false ),
         _unmanagedWidgetChangeState( false )
         { }
 
+    KCModule::Buttons _buttons;
     KInstance *_instance;
-    KAboutData *_about;
-    QString _rootOnlyMsg;
-    bool _useRootOnlyMsg;
+    const KAboutData *_about;
+    QString _rootOnlyMessage;
+    bool _useRootOnlyMessage;
     bool _hasOwnInstance;
     QList<KConfigDialogManager*> managers;
     QString _quickHelp;
@@ -61,38 +63,37 @@ public:
     bool _unmanagedWidgetChangeState;
 };
 
-KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
+KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
     : QWidget(parent), d(new KCModulePrivate)
 {
-    init();
     if (name && strlen(name)) {
         d->_instance = new KInstance(name);
         KGlobal::locale()->insertCatalog(name);
     } else
         d->_instance = new KInstance("kcmunnamed");
-    KGlobal::setActiveInstance(this->instance());
-
-
+    d->_hasOwnInstance = true;
+    QTimer::singleShot( 0, this, SLOT( load() ) );
 }
-    
-KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
+
+KCModule::KCModule( KInstance *instance, QWidget *parent, const QStringList& )
     : QWidget( parent ), d(new KCModulePrivate)
 {
-    if ( instance )
-    {
-        setObjectName( instance->instanceName() );
-        KGlobal::locale()->insertCatalog(instance->instanceName());
-    }
+    Q_ASSERT( instance );
 
-    init();
+    KGlobal::locale()->insertCatalog(instance->instanceName());
+
     d->_instance = instance;
-    d->_hasOwnInstance = false;
-    KGlobal::setActiveInstance(this->instance());
+    QTimer::singleShot( 0, this, SLOT( load() ) );
 }
 
-void KCModule::init()
+KCModule::Buttons KCModule::buttons() const
 {
-   _btn = Help|Default|Apply;
+    return d->_buttons;
+}
+
+void KCModule::setButtons( Buttons buttons )
+{
+    d->_buttons = buttons;
 }
 
 KConfigDialogManager* KCModule::addConfig( KConfigSkeleton *config, QWidget* widget )
@@ -164,30 +165,30 @@ const KAboutData *KCModule::aboutData() const
     return d->_about;
 }
 
-void KCModule::setAboutData( KAboutData* about )
+void KCModule::setAboutData( const KAboutData* about )
 {
     delete d->_about;
     d->_about = about;
 }
 
-void KCModule::setRootOnlyMsg(const QString& msg)
+void KCModule::setRootOnlyMessage(const QString& message)
 {
-    d->_rootOnlyMsg = msg;
+    d->_rootOnlyMessage = message;
 }
 
-QString KCModule::rootOnlyMsg() const
+QString KCModule::rootOnlyMessage() const
 {
-    return d->_rootOnlyMsg;
+    return d->_rootOnlyMessage;
 }
 
-void KCModule::setUseRootOnlyMsg(bool on)
+void KCModule::setUseRootOnlyMessage(bool on)
 {
-    d->_useRootOnlyMsg = on;
+    d->_useRootOnlyMessage = on;
 }
 
-bool KCModule::useRootOnlyMsg() const
+bool KCModule::useRootOnlyMessage() const
 {
-    return d->_useRootOnlyMsg;
+    return d->_useRootOnlyMessage;
 }
 
 void KCModule::changed()
@@ -211,11 +212,10 @@ QString KCModule::quickHelp() const
     return d->_quickHelp;
 }
 
-
 const QList<KConfigDialogManager*>& KCModule::configs() const
 {
     return d->managers;
 }
 
-
+#include "kcmodule.moc"
 // vim: sw=4 et sts=4

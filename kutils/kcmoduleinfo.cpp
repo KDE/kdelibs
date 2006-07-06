@@ -31,80 +31,81 @@
 
 #include "kcmoduleinfo.h"
 
-class KCModuleInfo::KCModuleInfoPrivate
+class KCModuleInfo::Private
 {
   public:
-    KCModuleInfoPrivate() :
-      testModule( false )
-    {}
-    ~KCModuleInfoPrivate()
-    {}
+    Private();
+    Private( KService::Ptr );
 
-    QString factoryName;
-    bool testModule;
+    QStringList keywords;
+    QString     name, icon, lib, handle, fileName, doc, comment;
+    bool        allLoaded;
+    int         weight;
 
+    KService::Ptr service;
+
+    /**
+     * Reads the service entries specific for KCModule from the desktop file.
+     * The usual desktop entries are read in the Private ctor.
+     */
+    void loadAll();
 };
+
+KCModuleInfo::Private::Private()
+{
+}
+
+KCModuleInfo::Private::Private( KService::Ptr s )
+  : allLoaded( false )
+  , service( s )
+{
+  if ( !service )
+  {
+    kDebug(712) << "Could not find the service." << endl;
+    return;
+  }
+
+  // set the modules simple attributes
+  name = service->name();
+  comment = service->comment();
+  icon = service->icon();
+  fileName = service->desktopEntryPath();
+  lib = service->library();
+  if( !lib.startsWith( QLatin1String( "kcm_" ) ) )
+    lib = QLatin1String( "kcm_" ) + lib;
+  keywords = service->keywords();
+}
 
 KCModuleInfo::KCModuleInfo()
 {
-  _allLoaded = false;
-  d = new KCModuleInfoPrivate;
+  d = new Private;
 }
 
 KCModuleInfo::KCModuleInfo(const QString& desktopFile)
 {
-  init( KService::serviceByStorageId(desktopFile) );
+  d = new Private( KService::serviceByStorageId(desktopFile) );
 }
 
 KCModuleInfo::KCModuleInfo( KService::Ptr moduleInfo )
 {
-  init(moduleInfo);
+  d = new Private( moduleInfo );
 }
 
 KCModuleInfo::KCModuleInfo( const KCModuleInfo &rhs )
 {
-    d = new KCModuleInfoPrivate;
+    d = new Private;
     ( *this ) = rhs;
 }
 
-// this re-implementation exists to ensure that other code always calls
-// our re-implementation, so in case we add data to the d pointer in the future
-// we can be sure that we get called when we are copied.
 KCModuleInfo &KCModuleInfo::operator=( const KCModuleInfo &rhs )
 {
-    _keywords = rhs._keywords;
-    _name = rhs._name;
-    _icon = rhs._icon;
-    _lib = rhs._lib;
-    _handle = rhs._handle;
-    _fileName = rhs._fileName;
-    _doc = rhs._doc;
-    _comment = rhs._comment;
-    _needsRootPrivileges = rhs._needsRootPrivileges;
-    _isHiddenByDefault = rhs._isHiddenByDefault;
-    _allLoaded = rhs._allLoaded;
-    _service = rhs._service;
-
     *d = *(rhs.d);
-
     return *this;
-}
-
-QString KCModuleInfo::factoryName() const
-{
-  if( d->factoryName.isEmpty() )
-  {
-    d->factoryName = _service->property("X-KDE-FactoryName", QVariant::String).toString();
-    if ( d->factoryName.isEmpty() )
-      d->factoryName = library();
-  }
-
-  return d->factoryName;
 }
 
 bool KCModuleInfo::operator==( const KCModuleInfo & rhs ) const
 {
-  return ( ( _name == rhs._name ) && ( _lib == rhs._lib ) && ( _fileName == rhs._fileName ) );
+  return ( ( d->name == rhs.d->name ) && ( d->lib == rhs.d->lib ) && ( d->fileName == rhs.d->fileName ) );
 }
 
 bool KCModuleInfo::operator!=( const KCModuleInfo & rhs ) const
@@ -117,124 +118,83 @@ KCModuleInfo::~KCModuleInfo()
   delete d;
 }
 
-void KCModuleInfo::init(KService::Ptr s)
+void KCModuleInfo::Private::loadAll()
 {
-  _allLoaded = false;
-  d = new KCModuleInfoPrivate;
+  allLoaded = true;
 
-  if ( s )
-    _service = s;
-  else
-  {
-    kDebug(712) << "Could not find the service." << endl;
+  if( !service ) /* We have a bogus service. All get functions will return empty/zero values */
     return;
-  }
-
-  // set the modules simple attributes
-  setName(_service->name());
-  setComment(_service->comment());
-  setIcon(_service->icon());
-
-  _fileName = ( _service->desktopEntryPath() );
-
-  // library and factory
-  setLibrary(_service->library());
-
-  // get the keyword list
-  setKeywords(_service->keywords());
-}
-
-void
-KCModuleInfo::loadAll()
-{
-  if( !_service ) /* We have a bogus service. All get functions will return empty/zero values */
-    return;
-
-  _allLoaded = true;
-
-  // library and factory
-  setHandle(_service->property("X-KDE-FactoryName", QVariant::String).toString());
-
-  QVariant tmp;
-
-  // read weight
-  tmp = _service->property( "X-KDE-Weight", QVariant::Int );
-  setWeight( tmp.isValid() ? tmp.toInt() : 100 );
-
-  // does the module need super user privileges?
-  tmp = _service->property( "X-KDE-RootOnly", QVariant::Bool );
-  setNeedsRootPrivileges( tmp.isValid() ? tmp.toBool() : false );
-
-  // does the module need to be shown to root only?
-  // Deprecated ! KDE 4
-  tmp = _service->property( "X-KDE-IsHiddenByDefault", QVariant::Bool );
-  setIsHiddenByDefault( tmp.isValid() ? tmp.toBool() : false );
 
   // get the documentation path
-  setDocPath( _service->property( "DocPath", QVariant::String ).toString() );
+  doc = service->property( "DocPath", QVariant::String ).toString();
 
-  tmp = _service->property( "X-KDE-Test-Module", QVariant::Bool );
-  setNeedsTest( tmp.isValid() ? tmp.toBool() : false );
+  // read weight
+  QVariant tmp = service->property( "X-KDE-Weight", QVariant::Int );
+  weight = tmp.isValid() ? tmp.toInt() : 100;
+
+  // factory handle
+  tmp = service->property("X-KDE-FactoryName", QVariant::String);
+  handle = tmp.isValid() ? tmp.toString() : lib.right( lib.length() - 4 ); // lib without kcm_ prefix
+
 }
 
-QString
-KCModuleInfo::docPath() const
+QString KCModuleInfo::fileName() const
 {
-  if (!_allLoaded)
-    const_cast<KCModuleInfo*>(this)->loadAll();
-
-  return _doc;
+  return d->fileName;
 }
 
-QString
-KCModuleInfo::handle() const
+QStringList KCModuleInfo::keywords() const
 {
-  if (!_allLoaded)
-    const_cast<KCModuleInfo*>(this)->loadAll();
-
-  if (_handle.isEmpty())
-     return _lib;
-
-  return _handle;
+  return d->keywords;
 }
 
-int
-KCModuleInfo::weight() const
+QString KCModuleInfo::moduleName() const
 {
-  if (!_allLoaded)
-    const_cast<KCModuleInfo*>(this)->loadAll();
-
-  return _weight;
+  return d->name;
 }
 
-bool
-KCModuleInfo::needsRootPrivileges() const
+KService::Ptr KCModuleInfo::service() const
 {
-  if (!_allLoaded)
-    const_cast<KCModuleInfo*>(this)->loadAll();
-
-  return _needsRootPrivileges;
+  return d->service;
 }
 
-bool
-KCModuleInfo::isHiddenByDefault() const
+QString KCModuleInfo::comment() const
 {
-  if (!_allLoaded)
-    const_cast<KCModuleInfo*>(this)->loadAll();
-
-  return _isHiddenByDefault;
+  return d->comment;
 }
 
-bool KCModuleInfo::needsTest() const
+QString KCModuleInfo::icon() const
 {
-  return d->testModule;
+  return d->icon;
 }
 
-void KCModuleInfo::setNeedsTest( bool val )
+QString KCModuleInfo::library() const
 {
-  d->testModule = val;
+  return d->lib;
 }
 
+QString KCModuleInfo::docPath() const
+{
+  if (!d->allLoaded)
+    d->loadAll();
 
+  return d->doc;
+}
+
+QString KCModuleInfo::handle() const
+{
+  if (!d->allLoaded)
+    d->loadAll();
+
+  return d->handle;
+}
+
+int KCModuleInfo::weight() const
+{
+  if (!d->allLoaded)
+    d->loadAll();
+
+  return d->weight;
+}
 
 // vim: ts=2 sw=2 et

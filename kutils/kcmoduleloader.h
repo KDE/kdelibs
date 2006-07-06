@@ -71,26 +71,22 @@ class KUTILS_EXPORT KCModuleLoader
      * Loads a @ref KCModule. If loading fails a zero pointer is returned.
      * @param module what module to load
      * @param report see ErrorReporting
-     * @param withFallback if true and loading failed a separate window
-     * with the module may appear and a zero pointer is a returned
      *
      * @return a pointer to the loaded @ref KCModule
      */
     static KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
-        report, bool withFallback=true, QWidget * parent = 0,
-        const char * name = 0, const QStringList & args = QStringList() );
+        report, QWidget * parent = 0, const QStringList& args = QStringList() );
 
     /**
      * Loads a @ref KCModule. If loading fails a zero pointer is returned.
+     *
      * @param module what module to load
      * @param report see ErrorReporting
-     * with the module may appear and a zero pointer is a returned
      *
      * @return a pointer to the loaded @ref KCModule
      */
-    static KCModule *loadModule(const QString &module, ErrorReporting
-        report, QWidget *parent = 0, const char *name = 0,
-        const QStringList & args = QStringList());
+    static KCModule *loadModule( const QString &module, ErrorReporting report,
+        QWidget *parent = 0, const QStringList& args = QStringList() );
 
     /**
      * Unloads the module's library
@@ -106,44 +102,6 @@ class KUTILS_EXPORT KCModuleLoader
      * message box like this function did.
      */
     static KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
-
-
-    /**
-     * Checks whether an KCModule should be shown by running its 
-     * test function. If it is unsure whether a module should be shown, it should 
-     * be made available, leaving the decision to the user.
-     * If false is returned, the module should not be loaded in any interface.
-     * 
-     * A module declares it needs to be tested by having "X-KDE-Test-Module=true" in 
-     * its desktop file. When that line exists, the following code must be available 
-     * in the module's library:
-     *
-     * \code
-     * extern "C"
-     * {
-     *    bool test_moduleName()
-     *    {
-     *      // Code testing for hardware/software presence.
-     *      return true; // and the modue will be loaded.
-     *    }
-     *
-     * }
-     * \endcode
-     *
-     * where moduleName is the library name for the module.
-     *
-     * @param module the module to check
-     * @returns true if the module should be loaded
-     */
-    static bool testModule( const QString& module );
-
-    /**
-     * Convenience function, essentially the same as above.
-     *
-     * @param module the module to check
-     * @returns true if the module should be loaded
-     */
-    static bool testModule( const KCModuleInfo& module );
 
     /**
      * Returns a KCModule containing the messages @p report and @p text.
@@ -163,9 +121,8 @@ class KUTILS_EXPORT KCModuleLoader
      * Internal loader called by the public loaders.
      * @internal
      */
-    static KCModule* load(const KCModuleInfo &mod, const QString &libname, 
-        KLibLoader *loader, ErrorReporting report, QWidget * parent = 0,
-        const char * name = 0, const QStringList & args = QStringList() );
+    static KCModule* load( const KCModuleInfo& mod, QByteArray libprefix,
+        ErrorReporting report, QWidget* parent, const QStringList& );
 
 };
 

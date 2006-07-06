@@ -35,10 +35,10 @@ class KCModulePrivate;
 class KInstance;
 
 /**
- * The base class for control center modules.
+ * The base class for configuration modules.
  *
- * Starting from KDE 2.0, control center modules are realized as shared
- * libraries that are loaded into the control center at runtime.
+ * Configuration modules are realized as plugins that are loaded only when
+ * needed.
  *
  * The module in principle is a simple widget displaying the
  * item to be changed. The module has a very small interface.
@@ -58,7 +58,36 @@ class KInstance;
  * \endcode
  *
  * The parameter "name_of_the_po_file" has to correspond with the messages target
- * that you created in your Makefile.am.
+ * that you created in your Makefile.am. Instead of using the library name for
+ * \p yourLibName you can also use another name which you specify in the desktop
+ * file with \p X-KDE-FactoryName. This is useful to have more than one factory
+ * in one lib.
+ *
+ * The constructor of the KCModule then looks like this:
+ * \code
+ * YourKCModule::YourKCModule( QWidget* parent )
+ *   : KCModule( YourKCModuleFactory::instance(), parent )
+ * {
+ *   KAboutData *about = new KAboutData(
+ *     <kcm name>, I18N_NOOP( "..." ),
+ *     KDE_VERSION_STRING, 0, KAboutData::License_GPL,
+ *     I18N_NOOP( "Copyright 2006 ..." ) );
+ *   about->addAuthor( ... );
+ *   setAboutData( about );
+ *   .
+ *   .
+ *   .
+ * }
+ * \endcode
+ *
+ * If you want to make the KCModule available only conditionally (i.e. show in
+ * the list of available modules only if some test succeeds) then you can use
+ * Hidden in the .desktop file. An example:
+ * \code
+ * Hidden[$e]=$(if test -e /dev/js*; then echo "false"; else echo "true"; fi)
+ * \endcode
+ * The example executes the given code in a shell and uses the stdout output for
+ * the Hidden value (so it's either Hidden=true or Hidden=false).
  *
  * See http://developer.kde.org/documentation/other/kcm_howto.html
  * for more detailed documentation.
@@ -77,28 +106,92 @@ public:
    *
    * @see KCModule::buttons @see KCModule::setButtons
    */
-  enum Button {Help=1, Default=2, Apply=16,
-               Reset=4, /* obsolete, do not use! */
-               Cancel=8, /* obsolete, do not use! */
-               Ok=32, /* obsolete, do not use! */
-  	       SysDefault=64 /* obsolete, do not use! */ };
+  enum Button { Help=1, Default=2, Apply=4 };
+  Q_DECLARE_FLAGS( Buttons, Button )
+
+#ifdef KDE3_SUPPORT
+  KDE_CONSTRUCTOR_DEPRECATED KCModule( QWidget *parent, const char *name, const QStringList& args = QStringList() );
+#endif
 
   /*
    * Base class for all KControlModules.
-   * Make sure you have a QStringList argument in your
-   * implementation.
    */
-#ifdef KDE3_SUPPORT
-  KCModule(QWidget *parent, const char *name, const QStringList &args=QStringList() );
-#endif
-  
-  explicit KCModule(KInstance *instance, QWidget *parent=0, const QStringList &args=QStringList() );
+  explicit KCModule( KInstance *instance, QWidget *parent = 0, const QStringList& args = QStringList() );
 
   /*
    * Destroys the module.
    */
   ~KCModule();
 
+  /**
+   * Return a quick-help text.
+   *
+   * This method is called when the module is docked.
+   * The quick-help text should contain a short description of the module and
+   * links to the module's help files. You can use QML formatting tags in the text.
+   *
+   * @note make sure the quick help text gets translated (use i18n()).
+   */
+  virtual QString quickHelp() const;
+
+  /**
+   * This is generally only called for the KBugReport.
+   * If you override you should  have it return a pointer to a constant.
+   *
+   *
+   * @returns the KAboutData for this module
+   */
+  virtual const KAboutData *aboutData() const;
+
+  /**
+   * This sets the KAboutData returned by aboutData()
+   */
+  void setAboutData( const KAboutData* about );
+
+  /**
+   * Indicate which buttons will be used.
+   *
+   * The return value is a value or'ed together from
+   * the Button enumeration type.
+   *
+   * @see KCModule::setButtons
+   */
+  Buttons buttons() const;
+
+  /**
+   * Get the RootOnly message for this module.
+   *
+   * When the module must be run as root, or acts differently
+   * for root and a normal user, it is sometimes useful to
+   * customize the message that appears at the top of the module
+   * when used as a normal user. This function returns this
+   * customized message. If none has been set, a default message
+   * will be used.
+   *
+   * @see KCModule::setRootOnlyMessage
+   */
+  QString rootOnlyMessage() const;
+
+  /**
+   * Tell if KControl should show a RootOnly message when run as
+   * a normal user.
+   *
+   * In some cases, the module don't want a RootOnly message to
+   * appear (for example if it has already one). This function
+   * tells KControl if a RootOnly message should be shown
+   *
+   * @see KCModule::setUseRootOnlyMessage
+   */
+  bool useRootOnlyMessage() const;
+
+  KInstance *instance() const;
+
+  /**
+   * @return a list of @ref KConfigDialogManager's in use, if any.
+   */
+  const QList<KConfigDialogManager*>& configs() const;
+
+public Q_SLOTS:
   /**
    * Load the configuration data into the module.
    *
@@ -110,17 +203,9 @@ public:
    * (most of the times from a config file) and update the user interface.
    * This happens when the user clicks the "Reset" button in the control
    * center, to undo all of his changes and restore the currently valid
-   * settings.
-   *
-   * If you use KConfigXT, loading is taken care of automatically and
-   * you do not need to do it manually. However, if you for some reason reimplement it and
-   * also are using KConfigXT, you must call this function otherwise the loading of KConfigXT
-   * options will not work.
-   *
+   * settings. It is also called right after construction.
    */
   virtual void load();
-  // ### KDE 4: Call load() automatically through a single-shot timer
-  //            from the constructor // and change documentation
 
   /**
    * Save the configuration data.
@@ -156,75 +241,6 @@ public:
    */
   virtual void defaults();
 
-
-  /**
-   * Return a quick-help text.
-   *
-   * This method is called when the module is docked.
-   * The quick-help text should contain a short description of the module and
-   * links to the module's help files. You can use QML formatting tags in the text.
-   *
-   * @note make sure the quick help text gets translated (use i18n()).
-   */
-  virtual QString quickHelp() const;
-
-  /**
-   * This is generally only called for the KBugReport.
-   * If you override you should  have it return a pointer to a constant.
-   *
-   *
-   * @returns the KAboutData for this module
-   */
-  virtual const KAboutData *aboutData() const;
-
-  /**
-   * This sets the KAboutData returned by aboutData()
-   */
-   void setAboutData( KAboutData* about );
-
-  /**
-   * Indicate which buttons will be used.
-   *
-   * The return value is a value or'ed together from
-   * the Button enumeration type.
-   *
-   * @see KCModule::setButtons
-   */
-  int buttons() const { return _btn; };
-
-  /**
-   * Get the RootOnly message for this module.
-   *
-   * When the module must be run as root, or acts differently
-   * for root and a normal user, it is sometimes useful to
-   * customize the message that appears at the top of the module
-   * when used as a normal user. This function returns this
-   * customized message. If none has been set, a default message
-   * will be used.
-   *
-   * @see KCModule::setRootOnlyMsg
-   */
-  QString rootOnlyMsg() const;
-
-  /**
-   * Tell if KControl should show a RootOnly message when run as
-   * a normal user.
-   *
-   * In some cases, the module don't want a RootOnly message to
-   * appear (for example if it has already one). This function
-   * tells KControl if a RootOnly message should be shown
-   *
-   * @see KCModule::setUseRootOnlyMsg
-   */
-  bool useRootOnlyMsg() const;
-
-  KInstance *instance() const;
-
-  /**
-   * @return a list of @ref KConfigDialogManager's in use, if any.
-   */
-  const QList<KConfigDialogManager*>& configs() const;
-
 protected:
   /**
    * Adds a KConfigskeleton @p config to watch the widget @p widget
@@ -248,7 +264,7 @@ Q_SIGNALS:
    * Indicate that the state of the modules contents has changed.
    *
    * This signal is emitted whenever the state of the configuration
-   * shown in the module changes. It allows the control center to
+   * shown in the module changes. It allows the module container to
    * keep track of unsaved changes.
    */
   void changed(bool state);
@@ -290,18 +306,17 @@ protected:
    *
    * @see KCModule::buttons
    */
-  void setButtons(int btn) { _btn = btn; };
+  void setButtons(Buttons btn);
 
   /**
    * Sets the RootOnly message.
    *
-   * This message will be shown at the top of the module of the
-   * corresponding desktop file contains the line X-KDE-RootOnly=true.
-   * If no message is set, a default one will be used.
+   * This message will be shown at the top of the module if useRootOnlyMessage is
+   * set. If no message is set, a default one will be used.
    *
-   * @see KCModule::rootOnlyMsg
+   * @see KCModule::rootOnlyMessage
    */
-  void setRootOnlyMsg(const QString& msg);
+  void setRootOnlyMessage(const QString& message);
 
   /**
    * Change whether or not the RootOnly message should be shown.
@@ -309,9 +324,9 @@ protected:
    * Following the value of @p on, the RootOnly message will be
    * shown or not.
    *
-   * @see KCModule::useRootOnlyMsg
+   * @see KCModule::useRootOnlyMessage
    */
-  void setUseRootOnlyMsg(bool on);
+  void setUseRootOnlyMessage(bool on);
 
   /**
    * Returns the changed state of automatically managed widgets in this dialog
@@ -325,17 +340,10 @@ protected:
   void unmanagedWidgetChangeState(bool);
 
 private:
-
-  int _btn;
-private:
   KCModulePrivate *const d;
-
-  /**
-   * Internal function for initialization of the class.
-   */
-  void init();
-
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( KCModule::Buttons )
 
 #endif //KCMODULE_H
 

@@ -54,6 +54,7 @@
 #include <kglobal.h>
 
 #include "main.h"
+#include <kicon.h>
 #include "main.moc"
 
 using namespace std;
@@ -65,8 +66,6 @@ static KCmdLineOptions options[] =
     { "list", I18N_NOOP("List all possible modules"), 0},
     { "+module", I18N_NOOP("Configuration module to open"), 0 },
     { "lang <language>", I18N_NOOP("Specify a particular language"), 0 },
-    { "embed <id>", I18N_NOOP("Embeds the module with buttons in window with id <id>"), 0 },
-    { "embed-proxy <id>", I18N_NOOP("Embeds the module without buttons in window with id <id>"), 0 },
     { "silent", I18N_NOOP("Do not display main window"), 0 },
     KCmdLineLastOption
 };
@@ -74,7 +73,7 @@ static KCmdLineOptions options[] =
 
 static void listModules()
 {
-  const KService::List services = KServiceTypeTrader::self()->query( "Application", "[X-KDE-ParentApp] == 'kcontrol' or [X-KDE-ParentApp] == 'kinfocenter'" );
+  const KService::List services = KServiceTypeTrader::self()->query( "KCModule", "[X-KDE-ParentApp] == 'kcontrol' or [X-KDE-ParentApp] == 'kinfocenter'" );
   for( KService::List::const_iterator it = services.begin();
        it != services.end(); it++)
   {
@@ -99,9 +98,9 @@ static KService::Ptr locateModule(const QByteArray& module)
         return KService::Ptr();
     }
 
-    if(!KCModuleLoader::testModule( module ))
+    if ( service->noDisplay() )
     {
-        kDebug(780) << "According to \"" << module << "\"'s test function, it should Not be loaded." << endl;
+        kDebug(780) << module << " should not be loaded." << endl;
         return KService::Ptr();
     }
 
@@ -121,7 +120,7 @@ bool KCMShell::isRunning()
     QDBusReply<void> reply = iface.call("activate", kapp->startupId());
     if (!reply.isSuccess())
     {
-        kDebug(780) << "Calling DCOP function dialog::activate() failed." << endl;
+        kDebug(780) << "Calling D-Bus function dialog::activate() failed." << endl;
         return false; // Error, we have to do it ourselves.
     }
 
@@ -149,14 +148,9 @@ void KCMShellMultiDialog::activate( const QByteArray& asn_id )
 #endif
 }
 
-void KCMShell::setServiceName(const QString &dcopName, bool rootMode )
+void KCMShell::setServiceName(const QString &dbusName )
 {
-    m_serviceName = "org.kde.kcmshell_";
-    if( rootMode )
-        m_serviceName += "rootMode_";
-
-    m_serviceName += dcopName;
-
+    m_serviceName = QLatin1String( "org.kde.kcmshell_" ) + dbusName;
     QDBus::sessionBus().registerService(m_serviceName);
 }
 
@@ -257,10 +251,8 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
         }
     }
 
-    /* Check if this particular module combination is already running, but
-     * allow the same module to run when embedding(root mode) */
-    app.setServiceName(serviceName,
-            ( args->isSet( "embed-proxy" ) || args->isSet( "embed" )));
+    /* Check if this particular module combination is already running */
+    app.setServiceName(serviceName);
     if( app.isRunning() )
     {
         app.waitForExit();
@@ -274,68 +266,20 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     else if( modules.count() > 1 )
         ftype = KPageDialog::List;
 
-    bool idValid;
-    int id;
-
-#ifdef Q_WS_X11
-    if ( args->isSet( "embed-proxy" ))
-    {
-        id = args->getOption( "embed-proxy" ).toInt(&idValid);
-        if( idValid )
-        {
-            KCModuleProxy *module = new KCModuleProxy( modules.first()->desktopEntryName() );
-            module->realModule();
-            QX11EmbedContainer *container = new QX11EmbedContainer(module);
-            QVBoxLayout *vbox = new QVBoxLayout(module);
-            vbox->addWidget(container);
-            container->embedClient( id );
-            app.exec();
-            delete module;
-        }
-        else
-            kDebug(780) << "Supplied id '" << id << "' is not valid." << endl;
-
-        return 0;
-
-    }
-#endif
-
-    KCMShellMultiDialog *dlg = new KCMShellMultiDialog( KPageDialog::List,
+    KCMShellMultiDialog *dlg = new KCMShellMultiDialog( ftype,
             i18n("Configure - %1", kapp->caption()), 0, "", true );
 
     for (KService::List::ConstIterator it = modules.begin(); it != modules.end(); ++it)
-        dlg->addModule(KCModuleInfo(*it));
+        dlg->addModule(*it);
 
-#ifdef Q_WS_X11
-    if ( args->isSet( "embed" ))
+    if ( !args->isSet( "icon" ) && modules.count() == 1)
     {
-        id = args->getOption( "embed" ).toInt(&idValid);
-        if( idValid )
-        {
-            QX11EmbedContainer *container = new QX11EmbedContainer(dlg);
-            QVBoxLayout *vbox = new QVBoxLayout(dlg);
-            vbox->addWidget(container);
-            container->embedClient( id );
-            dlg->exec();
-            delete dlg;
-        }
-        else
-            kDebug(780) << "Supplied id '" << id << "' is not valid." << endl;
-
+        QString iconName = KCModuleInfo(modules.first()).icon();
+        dlg->setWindowIcon( KIcon(iconName) );
     }
-    else
-#endif
-    {
-        if ( !args->isSet( "icon" ) && modules.count() == 1)
-        {
-            QString iconName = KCModuleInfo( modules.first()).icon();
-            QPixmap icon = DesktopIcon(iconName);
-            dlg->setWindowIcon( QIcon(icon) );
-        }
 
-        dlg->exec();
-        delete dlg;
-    }
+    dlg->exec();
+    delete dlg;
 
     return 0;
 }

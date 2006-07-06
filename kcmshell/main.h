@@ -40,9 +40,8 @@ public:
      * and then registers with D-BUS.
      *
      * @param serviceName name to set the D-BUS name to
-     * @param rootMode true if the kcmshell is embedding
      */
-    void setServiceName(const QString &serviceName, bool rootMode );
+    void setServiceName(const QString &serviceName );
 
     /**
      * Waits until the last instance of kcmshell with the same
@@ -64,7 +63,7 @@ private Q_SLOTS:
 private:
 
     /**
-     * The DCOP name which actually is registered.
+     * The D-Bus name which actually is registered.
      * For example "kcmshell_mouse".
      */
     QString m_serviceName;

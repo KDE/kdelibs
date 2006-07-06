@@ -57,46 +57,41 @@ class KCMError : public KCModule
 
 
 
-KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
-    KLibLoader *loader, ErrorReporting report, QWidget * parent,
-    const char * name, const QStringList & args )
+KCModule* KCModuleLoader::load(const KCModuleInfo &mod, QByteArray libprefix,
+    ErrorReporting report, QWidget * parent, const QStringList& args )
 {
-  // attempt to load modules with ComponentFactory, only if the symbol init_<lib> exists
-  // (this is because some modules, e.g. kcmkio with multiple modules in the library,
-  // cannot be ported to KGenericFactory)
-  KLibrary *lib = loader->library(QFile::encodeName(libname.arg(mod.library())));
-  if (lib) {
-    QString initSym("init_");
-    initSym += libname.arg(mod.library());
+  // get the library loader instance
+  KLibLoader* loader = KLibLoader::self();
+  QByteArray libname = libprefix + QFile::encodeName( mod.library() );
 
-    if ( lib->hasSymbol(QFile::encodeName(initSym)) )
+  KLibrary* lib = loader->library( libname );
+  if (lib)
+  {
+    KLibFactory *factory = lib->factory( mod.handle().toLatin1() );
+    if ( factory )
     {
-      KLibFactory *factory = lib->factory();
-      if ( factory )
-      {
-        KCModule *module = factory->create<KCModule>( parent, args );
-        if (module) {
-          module->setObjectName( mod.handle() );
-          return module;
-        }
-      }
-      // else do a fallback
-      kDebug(1208) << "Unable to load module using ComponentFactory. Falling back to old loader." << endl;
+      KCModule *module = factory->create<KCModule>( parent, args );
+      if ( module )
+        return module;
     }
+    // else do a fallback
+    kDebug(1208) << "Unable to load module using ComponentFactory. Falling back to old loader." << endl;
 
     // get the create_ function
-    QString factory("create_%1");
-    void *create = lib->symbol(QFile::encodeName(factory.arg(mod.handle())));
+    QByteArray factorymethod( "create_" );
+    factorymethod += mod.handle().toLatin1();
+    void *create = lib->symbol( factorymethod );
 
     if (create)
     {
       // create the module
-      KCModule* (*func)(QWidget *, const char *);
-      func = (KCModule* (*)(QWidget *, const char *)) create;
-      return  func( parent, name ? name : mod.handle().toLatin1().data() );
+      KCModule* (*func)(QWidget *, const char*);
+      func = (KCModule* (*)(QWidget *, const char*)) create;
+      return func( parent, mod.handle().toLatin1() );
     }
     else
     {
+      QString libFileName = lib->fileName();
       lib->unload();
       return reportError( report, i18n("<qt>There was an error when loading the module '%1'.<br><br>"
           "The desktop file (%2) as well as the library (%3) was found but "
@@ -105,7 +100,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
           "create_* function was missing.</qt>",
             mod.moduleName() ,
             mod.fileName() ,
-            lib->fileName() ),
+            libFileName ),
           QString(), parent );
     }
 
@@ -113,10 +108,14 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname,
   }
   return reportError( report, i18n("The specified library %1 could not be found.",
         mod.library() ), QString(), parent );
-  return 0;
 }
 
-KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting report, bool withfallback, QWidget * parent, const char * name, const QStringList & args )
+KCModule* KCModuleLoader::loadModule( const QString& module, ErrorReporting report, QWidget* parent, const QStringList& args )
+{
+  return loadModule( KCModuleInfo( module ), report, parent, args );
+}
+
+KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting report, QWidget* parent, const QStringList& args )
 {
   /*
    * Simple libraries as modules are the easiest case:
@@ -125,25 +124,23 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
    */
 
   if ( !mod.service() )
-  {
     return reportError( report,
         i18n("The module %1 could not be found.",
           mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 could not be found.</qt>", mod.fileName()), parent );
-  }
+  if( mod.service()->noDisplay() )
+    return reportError( report, i18n( "The module %1 is disabled.", mod.moduleName() ),
+        i18n( "<qt><p>Either the hardware/software the module configures is not available or the module has been disabled by the administrator.</p></qt>" ),
+        parent );
 
   if (!mod.library().isEmpty())
   {
-    // get the library loader instance
-
-    KLibLoader *loader = KLibLoader::self();
-
-    KCModule *module = load(mod, "kcm_%1", loader, report, parent, name, args );
+    KCModule *module = load(mod, "", report, parent, args );
     /*
      * Only try to load libkcm_* if it exists, otherwise KLibLoader::lastErrorMessage would say
      * "libkcm_foo not found" instead of the real problem with loading kcm_foo.
      */
     if (!KLibLoader::findLibrary( QByteArray( "libkcm_" ) + QFile::encodeName( mod.library() ) ).isEmpty() )
-      module = load(mod, "libkcm_%1", loader, report, parent, name, args );
+      module = load(mod, "lib", report, parent, args );
     if (module)
       return module;
     return reportError( report,
@@ -159,26 +156,11 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
    * (startService calls kcmshell which calls modloader which calls startService...)
    *
    */
-  if(withfallback)
-  {
-    KToolInvocation::startServiceByDesktopPath(mod.fileName(), QString());
-  }
-  else
-  {
-    return reportError( report,
-        i18n("The module %1 is not a valid configuration module.",
-          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 does not specify a library.</qt>", mod.fileName()), parent );
-  }
-
-  return 0;
+  return reportError( report,
+      i18n("The module %1 is not a valid configuration module.", mod.moduleName() ),
+      i18n("<qt><p>The diagnostics is:<br>The desktop file %1 does not specify a library.</qt>", mod.fileName()), parent );
 }
 
-
-KCModule* KCModuleLoader::loadModule(const QString &module, ErrorReporting
-    report, QWidget *parent, const char *name, const QStringList & args)
-{
-  return loadModule(KCModuleInfo(module), report, false, parent, name, args);
-}
 
 void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
 {
@@ -204,62 +186,6 @@ void KCModuleLoader::showLastLoaderError(QWidget *parent)
         "your distributor or packager.</p></qt>",
        KLibLoader::self()->lastErrorMessage()));
 
-}
-
-bool KCModuleLoader::testModule( const QString& module )
-{
-  return testModule( KCModuleInfo( module ) );
-}
-
-bool KCModuleLoader::testModule( const KCModuleInfo& module )
-{
-  if (!module.service())
-  {
-    kDebug(1208) << "Module '" << module.fileName() << "' not found." << endl;
-    return true;
-  }
-
-//  if (module.service()-
-
-  bool doLoad = module.service()->property( "X-KDE-Test-Module", QVariant::Bool ).toBool();
-  if( !doLoad )
-  {
-    return true;
-  }
-  else
-  {
-    /**
-     * If something fails we return true - we can't risk functionality becoming
-     * unavailable because of a buggy test. Furthermore, the error needs to
-     * show so it is discovered. KCModuleProxy will detect the error and load
-     * a corresponding KCMError.
-     * */
-    KLibLoader* loader = KLibLoader::self();
-    KLibrary* library = loader->library( QFile::encodeName((QString("kcm_%1").arg(module.library()))) );
-    if( library )
-    {
-      void *test_func = library->symbol( QString("test_%1").arg(module.factoryName()).toUtf8() );
-      if( test_func )
-      {
-        bool (*func)() = (bool(*)())test_func;
-        if( func() )
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
-      }
-      else
-      {
-        kDebug(1208) << "The test function for module '" << module.fileName() << "' could not be found." << endl;
-        return true;
-      }
-    }
-    kDebug(1208) << "The library '" << module.library() << "' could not be found." << endl;
-    return true;
-  }
 }
 
 KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & text,
