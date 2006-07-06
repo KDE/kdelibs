@@ -189,6 +189,19 @@ void Job::slotSpeedTimeout()
 
 //Job::errorString is implemented in global.cpp
 
+void Job::showErrorDialog( QWidget *parent )
+{
+    if ( ui() )
+    {
+        ui()->setWindow( parent );
+        ui()->showErrorMessage();
+    }
+    else
+    {
+        kError() << errorString() << endl;
+    }
+}
+
 bool Job::isInteractive() const
 {
   return uiDelegate() != 0;
