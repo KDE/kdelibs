@@ -176,21 +176,13 @@ that we would like to make for the next binary incompatible release.
 - Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
   (André Wöbbeking)
 
-- Split KProtocolInfo into KProtocolInfoBase in kdecore (with almost everything) 
-  and KProtocolInfo in kio (with the methods taking a KUrl, which need KProtocolManager)
-  (David)
-
-- Rename KDirNotify_stub and update API (no need for '*' arguments anymore)
-  (David)
-
 - KWallet::Wallet::* functions - remove the default = 0 argument for mainwindow for the dialog
   (Lubos)
 
 - Make libkwalletclient part of libkio and get rid of libkwalletclient.
   (Waldo)
 
-- Get rid of libkdesu dependency in libkio, get rid of SessionData::AuthData*,
-  get rid of SlaveInterface::authorizationKey and SlaveInterface::delAuthorization
+- Get rid of libkdesu dependency in libkio, get rid of KIO::SessionData::AuthData*
   (Waldo)
 
 - Make functions in KHelpMenu virtual so they can be overridden (ex: to provide
@@ -216,7 +208,7 @@ that we would like to make for the next binary incompatible release.
 
 - Move KIO::findDeviceMountPoint, findPathMoundPoint, probably_slow_mounted, and testFileSystemFlag to KMountPoint,
   to merge that code.
-  (David)
+  (David / Joseph Wenninger)
 
 - Rename the parameters to KDEDesktopMimeType::pixmap so that they use meaningful names rather than
   just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
@@ -285,9 +277,7 @@ that we would like to make for the next binary incompatible release.
   Unless we rename them all anyway, see next item.
 
 - Keep in mind the big picture: http://developer.kde.org/~danimo/kde4foundation.png
-  components/core, components/gui, framework/core, framework/gui
-  instead of just kdecore, kdeui. Let's delay this reorganization until after
-  the QMainWindow work branch is merged in and the final build-system is chosen.
+  i.e. core/gui separation, and possibly components/framework separation.
 
   Many KIO classes are "core only" and should move to kdecore
   KArchive and derivatives, KACL -> core (probably components/core)
