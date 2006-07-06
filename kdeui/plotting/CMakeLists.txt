@@ -20,11 +20,11 @@ install(TARGETS kdeeduplot  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-install_files(${INCLUDE_INSTALL_DIR}/libkdeedu FILES
+install(FILES
    libkdeedu_plot_export.h
    kplotobject.h
    kplotaxis.h
-   kplotwidget.h
+   kplotwidget.h DESTINATION ${INCLUDE_INSTALL_DIR}/libkdeedu
 )
 
 
