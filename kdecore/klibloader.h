@@ -116,12 +116,6 @@ private:
      */
     ~KLibrary();
 
-    QString m_libname;
-    QString m_filename;
-    KLibFactory* m_factory;
-    void * m_handle;
-    QList<QObject*> m_objs;
-    QTimer *m_timer;
     KLibraryPrivate *d;
 };
 

@@ -109,63 +109,73 @@ QObject* KLibFactory::create( QObject* _parent, const char* classname, const QSt
 
 // -----------------------------------------------
 
+class KLibraryPrivate
+{
+public:
+    QString libname;
+    QString filename;
+    QHash<QByteArray, KLibFactory*> factories;
+    void* handle;
+    QList<QObject*> objs;
+    QTimer* timer;
+};
+
 KLibrary::KLibrary( const QString& libname, const QString& filename, void * handle )
 {
     /* Make sure, we have a KLibLoader */
     (void) KLibLoader::self();
-    m_libname = libname;
-    m_filename = filename;
-    m_handle = handle;
-    m_factory = 0;
-    m_timer = 0;
+    d = new KLibraryPrivate;
+    d->libname = libname;
+    d->filename = filename;
+    d->handle = handle;
+    d->timer = 0;
 }
 
 KLibrary::~KLibrary()
 {
-//    kDebug(150) << "Deleting KLibrary " << this << "  " << m_libname << endl;
-    if ( m_timer && m_timer->isActive() )
-	m_timer->stop();
+//    kDebug(150) << "Deleting KLibrary " << this << "  " << d->libname << endl;
+    if ( d->timer && d->timer->isActive() )
+	d->timer->stop();
 
     // If any object is remaining, delete
-    if ( !m_objs.isEmpty() )
+    if ( !d->objs.isEmpty() )
 	{
-	    while (!m_objs.isEmpty())
+	    while (!d->objs.isEmpty())
 		{
-		    QObject *obj = m_objs.takeFirst();
-		    kDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << m_libname << endl;
+		    QObject *obj = d->objs.takeFirst();
+		    kDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << d->libname << endl;
 		    disconnect( obj, SIGNAL( destroyed() ),
 				this, SLOT( slotObjectDestroyed() ) );
 		    delete obj;
 		}
 	}
 
-    if ( m_factory ) {
-//	kDebug(150) << " ... deleting the factory " << m_factory << endl;
-	delete m_factory;
-        m_factory = 0L;
-    }
+    qDeleteAll( d->factories );
+    d->factories.clear();
+    delete d;
+    d = 0;
 }
 
 QString KLibrary::name() const
 {
-    return m_libname;
+    return d->libname;
 }
 
 QString KLibrary::fileName() const
 {
-    return m_filename;
+    return d->filename;
 }
 
 KLibFactory* KLibrary::factory( const char* factoryname )
 {
-    if ( m_factory )
-        return m_factory;
-
     QByteArray symname = "init_";
     if( factoryname )
         symname += factoryname;
     else
         symname += name().toLatin1();
+
+    if ( d->factories.contains( symname ) )
+        return d->factories[ symname ];
 
     void* sym = symbol( symname );
     if ( !sym )
@@ -177,24 +187,25 @@ KLibFactory* KLibrary::factory( const char* factoryname )
 
     typedef KLibFactory* (*t_func)();
     t_func func = (t_func)sym;
-    m_factory = func();
+    KLibFactory* factory = func();
 
-    if( !m_factory )
+    if( !factory )
     {
         KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer a KDE compatible factory." ,  name() );
         kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
+    d->factories.insert( symname, factory );
 
-    connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
+    connect( factory, SIGNAL( objectCreated( QObject * ) ),
              this, SLOT( slotObjectCreated( QObject * ) ) );
 
-    return m_factory;
+    return factory;
 }
 
 void* KLibrary::symbol( const char* symname ) const
 {
-    void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
+    void* sym = lt_dlsym( (lt_dlhandle) d->handle, symname );
     if ( !sym )
     {
         KLibLoader::self()->d->errorMessage = QLatin1String("KLibrary: ") + QString::fromLocal8Bit( lt_dlerror() );
@@ -207,7 +218,7 @@ void* KLibrary::symbol( const char* symname ) const
 
 bool KLibrary::hasSymbol( const char* symname ) const
 {
-    void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
+    void* sym = lt_dlsym( (lt_dlhandle) d->handle, symname );
     return (sym != 0L );
 }
 
@@ -222,46 +233,46 @@ void KLibrary::slotObjectCreated( QObject *obj )
   if ( !obj )
     return;
 
-  if ( m_timer && m_timer->isActive() )
-    m_timer->stop();
+  if ( d->timer && d->timer->isActive() )
+    d->timer->stop();
 
-  if ( m_objs.contains( obj ) )
+  if ( d->objs.contains( obj ) )
       return; // we know this object already
 
   connect( obj, SIGNAL( destroyed() ),
            this, SLOT( slotObjectDestroyed() ) );
 
-  m_objs.append( obj );
+  d->objs.append( obj );
 }
 
 void KLibrary::slotObjectDestroyed()
 {
-  m_objs.removeAll( sender() );
+  d->objs.removeAll( sender() );
 
-  if ( m_objs.count() == 0 )
+  if ( d->objs.count() == 0 )
   {
 //    kDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
 //                 << endl;
 
-    if ( !m_timer )
+    if ( !d->timer )
     {
-      m_timer = new QTimer( this );
-      m_timer->setObjectName( QLatin1String("klibrary_shutdown_timer") );
-      m_timer->setSingleShot(true);
-      connect( m_timer, SIGNAL( timeout() ),
+      d->timer = new QTimer( this );
+      d->timer->setObjectName( QLatin1String("klibrary_shutdown_timer") );
+      d->timer->setSingleShot(true);
+      connect( d->timer, SIGNAL( timeout() ),
                this, SLOT( slotTimeout() ) );
     }
 
     // as long as it's not stable make the timeout short, for debugging
     // pleasure (matz)
-    //m_timer->start( 1000*60 );
-    m_timer->start( 1000*10 );
+    //d->timer->start( 1000*60 );
+    d->timer->start( 1000*10 );
   }
 }
 
 void KLibrary::slotTimeout()
 {
-  if ( m_objs.count() != 0 )
+  if ( d->objs.count() != 0 )
     return;
 
   /* Don't go through KLibLoader::unloadLibrary(), because that uses the
@@ -590,3 +601,4 @@ QString KLibLoader::errorString( int componentLoadingError )
 }
 
 #include "klibloader.moc"
+// vim: sw=4 sts=4 et
