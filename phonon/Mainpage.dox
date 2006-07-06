@@ -21,7 +21,7 @@ between producer and output.
 \li \ref phonon_tut4 "show videos"
 
 \section phonon_frontend The Frontend API
-\li for simple playback use \ref Phonon::SimplePlayer
+\li for simple playback use \ref Phonon::AudioPlayer
 \li add ref to overview of frontend objects
 \li \ref Phonon "The Phonon namespace"
 \li \ref Phonon::MediaObject "The central class for playback functionality (MediaObject)"
