@@ -138,9 +138,10 @@ public:
    * @param header - Header text use in the list modes. Ignored in Tabbed
    *        mode. If empty, the itemName text is used when needed.
    * @param manage - Whether KConfigDialogManager should manage the page or not.
+   * @returns The KPageWidgetItem associated with the page.
    */
   // KDE4: Add a default value for itemName & pixmapName
-  void addPage( QWidget *page, const QString &itemName,
+  KPageWidgetItem* addPage( QWidget *page, const QString &itemName,
                 const QString &pixmapName,
                 const QString &header=QString(),
                 bool manage=true );
@@ -160,9 +161,10 @@ public:
    * @param pixmapName - Name of the pixmap that should be used if needed.
    * @param header - Header text use in the list modes. Ignored in Tabbed
    *        mode. If empty, the itemName text is used when needed.
+   * @returns The KPageWidgetItem associated with the page.
    */
   // KDE4: Add a default value for itemName & pixmapName
-  void addPage( QWidget *page, KConfigSkeleton *config,
+  KPageWidgetItem* addPage( QWidget *page, KConfigSkeleton *config,
                 const QString &itemName,
                 const QString &pixmapName,
                 const QString &header=QString() );
@@ -244,7 +246,7 @@ private:
   /**
    * Internal function with common addPage code.
    */
-  void addPageInternal(QWidget *page, const QString &itemName,
+  KPageWidgetItem* addPageInternal(QWidget *page, const QString &itemName,
                            const QString &pixmapName, const QString &header);
 
   /**

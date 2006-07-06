@@ -90,29 +90,31 @@ KConfigDialog::~KConfigDialog()
   delete d;
 }
 
-void KConfigDialog::addPage(QWidget *page,
+KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
                                 const QString &itemName,
                                 const QString &pixmapName,
                                 const QString &header,
                                 bool manage)
 {
-  addPageInternal(page, itemName, pixmapName, header);
+  KPageWidgetItem* item = addPageInternal(page, itemName, pixmapName, header);
   if(manage)
     d->manager->addWidget(page);
+  return item;
 }
 
-void KConfigDialog::addPage(QWidget *page,
+KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
                                 KConfigSkeleton *config,
                                 const QString &itemName,
                                 const QString &pixmapName,
                                 const QString &header)
 {
-  addPageInternal(page, itemName, pixmapName, header);
+  KPageWidgetItem* item = addPageInternal(page, itemName, pixmapName, header);
   d->managerForPage[page] = new KConfigDialogManager(page, config);
   setupManagerConnections(d->managerForPage[page]);
+  return item;
 }
 
-void KConfigDialog::addPageInternal(QWidget *page,
+KPageWidgetItem* KConfigDialog::addPageInternal(QWidget *page,
                                         const QString &itemName,
                                         const QString &pixmapName,
                                         const QString &header)
@@ -120,7 +122,7 @@ void KConfigDialog::addPageInternal(QWidget *page,
   if(d->shown)
   {
     kDebug(240) << "KConfigDialog::addPage: can not add a page after the dialog has been shown.";
-    return;
+    return 0;
   }
 
   KVBox *frame = new KVBox();
@@ -133,6 +135,8 @@ void KConfigDialog::addPageInternal(QWidget *page,
   item->setIcon( KIcon( pixmapName ) );
 
   KPageDialog::addPage( item );
+  
+  return item;
 }
 
 void KConfigDialog::setupManagerConnections(KConfigDialogManager *manager)
