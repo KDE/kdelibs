@@ -177,7 +177,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
    {
       // Sever error!
       qDebug("KLauncher: Fatal error, can't create tempfile!");
-      ::exit(1);
+      ::_exit(1);
    }
    mPoolSocketName = domainname.name();
 #ifdef __CYGWIN__
@@ -240,7 +240,7 @@ KLauncher::destruct(int exit_code)
 {
    if (kapp) ((KLauncher*)kapp)->close();
    // We don't delete kapp here, that's intentional.
-   ::exit(exit_code);
+   ::_exit(exit_code);
 }
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
