@@ -18,11 +18,11 @@ public Q_SLOTS:
   void stateChangedSlot(int newstate);
   void gotErrorSlot(int errorcode);
   void hostFoundSlot();
-  void boundSlot(const KResolverEntry& target);
-  void aboutToConnectSlot(const KResolverEntry& target);
-  void connectedSlot(const KResolverEntry& target);
+  void boundSlot(const KNetwork::KResolverEntry& target);
+  void aboutToConnectSlot(const KNetwork::KResolverEntry& target);
+  void connectedSlot(const KNetwork::KResolverEntry& target);
   void timedOutSlot();
-  void closedSlot();    
+  void closedSlot();
   void readyReadSlot();
   void readyWriteSlot();
 };

@@ -8,6 +8,7 @@
 #include "streamsockettest.h"
 
 #include <iostream>
+#include <kdebug.h>
 using namespace std;
 using namespace KNetwork;
 
@@ -18,12 +19,12 @@ Test::Test(QString host, QString service, QString lhost, QString lservice, bool 
   QObject::connect(&socket, SIGNAL(stateChanged(int)), this, SLOT(stateChangedSlot(int)));
   QObject::connect(&socket, SIGNAL(gotError(int)), this, SLOT(gotErrorSlot(int)));
   QObject::connect(&socket, SIGNAL(hostFound()), this, SLOT(hostFoundSlot()));
-  QObject::connect(&socket, SIGNAL(bound(const KResolverEntry&)), 
-		   this, SLOT(boundSlot(const KResolverEntry&)));
-  QObject::connect(&socket, SIGNAL(aboutToConnect(const KResolverEntry&, bool&)),
-		   this, SLOT(aboutToConnectSlot(const KResolverEntry&)));
-  QObject::connect(&socket, SIGNAL(connected(const KResolverEntry&)), 
-		   this, SLOT(connectedSlot(const KResolverEntry&)));
+  QObject::connect(&socket, SIGNAL(bound(KNetwork::KResolverEntry)),
+		   this, SLOT(boundSlot(KNetwork::KResolverEntry)));
+  QObject::connect(&socket, SIGNAL(aboutToConnect(KNetwork::KResolverEntry, bool&)),
+		   this, SLOT(aboutToConnectSlot(KNetwork::KResolverEntry)));
+  QObject::connect(&socket, SIGNAL(connected(KNetwork::KResolverEntry)),
+		   this, SLOT(connectedSlot(KNetwork::KResolverEntry)));
   QObject::connect(&socket, SIGNAL(timedOut()),  this, SLOT(timedOutSlot()));
   QObject::connect(&socket, SIGNAL(closed()), this, SLOT(closedSlot()));
   QObject::connect(&socket, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
@@ -57,18 +58,18 @@ void Test::hostFoundSlot()
        << socket.peerResolver().results().count() << " peer results" << endl;
 }
 
-void Test::boundSlot(const KResolverEntry& target)
+void Test::boundSlot(const KNetwork::KResolverEntry& target)
 {
-  cout << "Socket has bound to " << target.address().toString().toLatin1().constData() 
+  cout << "Socket has bound to " << target.address().toString().toLatin1().constData()
        << " (really " << socket.localAddress().toString().toLatin1().constData() << ")" << endl;
 }
 
-void Test::aboutToConnectSlot(const KResolverEntry& target)
+void Test::aboutToConnectSlot(const KNetwork::KResolverEntry& target)
 {
   cout << "Socket is about to connect to " << target.address().toString().toLatin1().constData() << endl;
 }
 
-void Test::connectedSlot(const KResolverEntry& target)
+void Test::connectedSlot(const KNetwork::KResolverEntry& target)
 {
   cout << "Socket has connected to " << target.address().toString().toLatin1().constData() << endl;
 }
@@ -84,7 +85,7 @@ void Test::closedSlot()
   cout << "Socket has closed" << endl;
   QCoreApplication::exit();
 }
-    
+
 void Test::readyReadSlot()
 {
   char buf[512];
@@ -100,10 +101,10 @@ void Test::readyWriteSlot()
   QByteArray data("GET / HTTP/1.0\r\nHost: ");
   data += socket.peerResolver().results().at(0).encodedName();
   data += "\r\n\r\n";
-  
+
   cout << endl << "Socket is ready for writing; will write: " << endl;
   cout << data.data() << endl;
-  
+
   socket.write(data.data(), data.length());
   socket.enableWrite(false);
 }
@@ -134,7 +135,7 @@ int main(int argc, char **argv)
     lhost = QString::fromLocal8Bit(argv[optind + 2]);
   if (argc - optind >= 4)
     lservice = QString::fromLocal8Bit(argv[optind + 3]);
-  Test test(QString::fromLocal8Bit(argv[optind]), QString::fromLocal8Bit(argv[optind + 1]), 
+  Test test(QString::fromLocal8Bit(argv[optind]), QString::fromLocal8Bit(argv[optind + 1]),
 	    lhost, lservice, blocking);
 
   return a.exec();

@@ -10,7 +10,7 @@
  *  permit persons to whom the Software is furnished to do so, subject to
  *  the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included 
+ *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
  *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -168,12 +168,12 @@ public:
    * well as their services.
    *
    * If the blocking mode for this object is on, this function will
-   * wait for the lookup results to be available (by calling the 
+   * wait for the lookup results to be available (by calling the
    * @ref KResolver::wait method on the resolver objects).
    *
    * When the lookup is done, the signal @ref hostFound will be
    * emitted (only once, even if we're doing a double lookup).
-   * If the lookup failed (for any of the two lookups) the 
+   * If the lookup failed (for any of the two lookups) the
    * @ref gotError signal will be emitted with the appropriate
    * error condition (see @ref KSocketBase::SocketError).
    *
@@ -224,7 +224,7 @@ public:
    * return when all the resolved peer addresses have been tried or when
    * a connection is established.
    *
-   * Upon successfully connecting, the @ref connected signal 
+   * Upon successfully connecting, the @ref connected signal
    * will be emitted. If an error is found, the @ref gotError
    * signal will be emitted.
    *
@@ -251,7 +251,7 @@ public:
    * @overload
    * Reimplemented from KSocketBase.
    */
-  virtual bool connect(const KResolverEntry& address, 
+  virtual bool connect(const KResolverEntry& address,
 		       OpenMode mode = ReadWrite);
 
   /**
@@ -277,7 +277,7 @@ public:
   virtual void close();
 
   /**
-   * This call is not supported on unbuffered sockets. 
+   * This call is not supported on unbuffered sockets.
    * Reimplemented from QIODevice.
    */
   virtual bool flush()
@@ -335,7 +335,7 @@ protected Q_SLOTS:
 
   /**
    * This slot is connected to the read notifier's signal meaning
-   * the socket can read more data. 
+   * the socket can read more data.
    *
    * The default implementation only emits the readyRead signal.
    *
@@ -387,12 +387,12 @@ Q_SIGNALS:
    *
    * @param local	the local address we bound to
    */
-  void bound(const KResolverEntry& local);
+  void bound(const KNetwork::KResolverEntry& local);
 
   /**
    * This signal is emitted when the socket is about to connect
    * to an address (but before doing so).
-   * 
+   *
    * The @p skip parameter can be used to make the loop skip this address.
    * Its value is initially false: change it to true if you want to
    * skip the current address (as given by @p remote).
@@ -434,7 +434,7 @@ Q_SIGNALS:
 #endif
 
   /**
-   * This signal is emitted whenever the socket is ready for 
+   * This signal is emitted whenever the socket is ready for
    * writing -- i.e., whenever there's space available in the buffers
    * to receive more data. The subsequent write operation is
    * guaranteed to be non-blocking.
@@ -475,7 +475,7 @@ protected:
    * actions to be done when the state changes.
    *
    * The default implementation acts for these states only:
-   *  - Connected: it sets up the socket notifiers to fire readyRead and 
+   *  - Connected: it sets up the socket notifiers to fire readyRead and
    *               readyWrite signals.
    */
   virtual void stateChanging(SocketState newState);
