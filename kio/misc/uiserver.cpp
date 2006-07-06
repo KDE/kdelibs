@@ -1009,7 +1009,7 @@ void UIServer::unmounting( int id, QString point )
 void UIServer::killJob( const QString &observerAppId, int progressId )
 {
     // Contact the object "KIO::Observer" in the application <appId>
-    QDBusInterface observer( observerAppId, "/KIO.Observer", "org.kde.KIO.Observer" );
+    QDBusInterface observer( observerAppId, "/KIO/Observer", "org.kde.KIO.Observer" );
     // Tell it to kill the job
     observer.call("killJob", progressId );
 }
