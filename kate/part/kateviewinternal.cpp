@@ -2365,7 +2365,7 @@ void KateViewInternal::placeCursor( const QPoint& p, bool keepSelection, bool up
 
   KateTextCursor c(realLine, 0);
 
-  int x = QMIN(QMAX(0, p.x() - thisRange.xOffset()), lineMaxCursorX(thisRange) - thisRange.startX);
+  int x = QMIN(QMAX(-m_startX, p.x() - thisRange.xOffset()), lineMaxCursorX(thisRange) - thisRange.startX);
 
   m_view->renderer()->textWidth( c, startX() + x, startCol);
 
