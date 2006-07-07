@@ -18,7 +18,7 @@
 
 #include "kfilemetainfowidget.h"
 
-#include <keditcl.h>
+#include <qtextedit.h>
 #include <klocale.h>
 #include <knuminput.h>
 #include <kcombobox.h>
@@ -257,8 +257,9 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
     }
 
     if ( m_item.attributes() & KFileMimeTypeInfo::MultiLine ) {
-        KEdit *edit = new KEdit( this );
-        edit->setText( m_item.value().toString() );
+        QTextEdit *edit = new QTextEdit( this );
+        edit->setAcceptRichText(false);
+        edit->setPlainText( m_item.value().toString() );
         connect( edit, SIGNAL( textChanged() ),
                  this, SLOT( slotMultiLineEditChanged() ));
         // can't use a validator with a QTextEdit, but we may need to delete it
@@ -350,8 +351,8 @@ void KFileMetaInfoWidget::slotLineEditChanged(const QString& value)
 // that may be a little expensive for long texts, but what can we do?
 void KFileMetaInfoWidget::slotMultiLineEditChanged()
 {
-    Q_ASSERT(qobject_cast<Q3TextEdit*>(m_widget));
-    m_value = QVariant( static_cast<const Q3TextEdit*>( sender() )->text() );
+    Q_ASSERT(qobject_cast<QTextEdit*>(m_widget));
+    m_value = QVariant( static_cast<const QTextEdit*>( sender() )->toPlainText() );
     emit valueChanged(m_value);
     m_dirty = true;
 }
