@@ -162,260 +162,161 @@ QStringList Backend::knownMimeTypes() const
 	return m_supportedMimeTypes;
 }
 
-QSet<int> Backend::audioOutputDeviceIndexes() const
+QSet<int> Backend::objectDescriptionIndexes( ObjectDescription::Type type ) const
 {
 	QSet<int> set;
-	set << 10000 << 10001;
+	switch( type )
+	{
+		case ObjectDescription::AudioOutputDevice:
+			set << 10000 << 10001;
+			break;
+		case ObjectDescription::AudioCaptureDevice:
+			set << 20000 << 20001;
+			break;
+		case ObjectDescription::VideoOutputDevice:
+			set << 40000 << 40001 << 40002 << 40003;
+			break;
+		case ObjectDescription::VideoCaptureDevice:
+			set << 30000 << 30001;
+			break;
+		case ObjectDescription::Visualization:
+		case ObjectDescription::AudioCodec:
+		case ObjectDescription::VideoCodec:
+		case ObjectDescription::ContainerFormat:
+			break;
+		case ObjectDescription::AudioEffect:
+			set << 0x7F000001;
+			break;
+		case ObjectDescription::VideoEffect:
+			set << 0x7E000001;
+			break;
+	}
 	return set;
 }
 
-QString Backend::audioOutputDeviceName( int index ) const
+QString Backend::objectDescriptionName( ObjectDescription::Type type, int index ) const
 {
-	switch( index )
+	switch( type )
 	{
-		case 10000:
-			return "internal Soundcard";
-		case 10001:
-			return "USB Headset";
+		case ObjectDescription::AudioOutputDevice:
+			switch( index )
+			{
+				case 10000:
+					return "internal Soundcard";
+				case 10001:
+					return "USB Headset";
+			}
+			break;
+		case ObjectDescription::AudioCaptureDevice:
+			switch( index )
+			{
+				case 20000:
+					return "Soundcard";
+				case 20001:
+					return "DV";
+			}
+			break;
+		case ObjectDescription::VideoOutputDevice:
+			switch( index )
+			{
+				case 40000:
+					return "XVideo";
+				case 40001:
+					return "XShm";
+				case 40002:
+					return "X11";
+				case 40003:
+					return "SDL";
+			}
+			break;
+		case ObjectDescription::VideoCaptureDevice:
+			switch( index )
+			{
+				case 30000:
+					return "USB Webcam";
+				case 30001:
+					return "DV";
+				default:
+					return QString();
+			}
+			break;
+		case ObjectDescription::Visualization:
+			break;
+		case ObjectDescription::AudioCodec:
+			break;
+		case ObjectDescription::VideoCodec:
+			break;
+		case ObjectDescription::ContainerFormat:
+			break;
+		case ObjectDescription::AudioEffect:
+			switch( index )
+			{
+				case 0x7F000001:
+					return "Delay";
+			}
+			break;
+		case ObjectDescription::VideoEffect:
+			switch( index )
+			{
+				case 0x7E000001:
+					return "VideoEffect1";
+			}
+			break;
 	}
 	return QString();
 }
 
-QString Backend::audioOutputDeviceDescription( int index ) const
+QString Backend::objectDescriptionDescription( ObjectDescription::Type type, int index ) const
 {
-	Q_UNUSED( index );
-	return QString(); // no description
-}
-
-QSet<int> Backend::audioCaptureDeviceIndexes() const
-{
-	QSet<int> set;
-	set << 20000 << 20001;
-	return set;
-}
-
-QString Backend::audioCaptureDeviceName( int index ) const
-{
-	switch( index )
+	switch( type )
 	{
-		case 20000:
-			return "Soundcard";
-		case 20001:
-			return "DV";
-		default:
-			return QString();
+		case ObjectDescription::AudioOutputDevice:
+			break;
+		case ObjectDescription::AudioCaptureDevice:
+			switch( index )
+			{
+				case 20000:
+					return "first description";
+				case 20001:
+					return "second description";
+			}
+			break;
+		case ObjectDescription::VideoOutputDevice:
+			break;
+		case ObjectDescription::VideoCaptureDevice:
+			switch( index )
+			{
+				case 30000:
+					return "first description";
+				case 30001:
+					return "second description";
+				default:
+					return QString();
+			}
+			break;
+		case ObjectDescription::Visualization:
+			break;
+		case ObjectDescription::AudioCodec:
+			break;
+		case ObjectDescription::VideoCodec:
+			break;
+		case ObjectDescription::ContainerFormat:
+			break;
+		case ObjectDescription::AudioEffect:
+			switch( index )
+			{
+				case 0x7F000001:
+					return "Simple delay effect with time, feedback and level controls.";
+			}
+			break;
+		case ObjectDescription::VideoEffect:
+			switch( index )
+			{
+				case 0x7E000001:
+					return "Description 1";
+			}
+			break;
 	}
-}
-
-QString Backend::audioCaptureDeviceDescription( int index ) const
-{
-	switch( index )
-	{
-		case 20000:
-			return "first description";
-		case 20001:
-			return "second description";
-		default:
-			return QString();
-	}
-}
-
-int Backend::audioCaptureDeviceVideoIndex( int index ) const
-{
-	switch( index )
-	{
-		case 20001:
-			return 30001;
-		default:
-			return -1;
-	}
-}
-
-QSet<int> Backend::videoOutputDeviceIndexes() const
-{
-	QSet<int> set;
-	set << 40000 << 40001 << 40002 << 40003;
-	return set;
-}
-
-QString Backend::videoOutputDeviceName( int index ) const
-{
-	switch( index )
-	{
-		case 40000:
-			return "XVideo";
-		case 40001:
-			return "XShm";
-		case 40002:
-			return "X11";
-		case 40003:
-			return "SDL";
-	}
-	return QString();
-}
-
-QString Backend::videoOutputDeviceDescription( int index ) const
-{
-	Q_UNUSED( index );
-	return QString(); // no description
-}
-
-QSet<int> Backend::videoCaptureDeviceIndexes() const
-{
-	QSet<int> set;
-	set << 30000 << 30001;
-	return set;
-}
-
-QString Backend::videoCaptureDeviceName( int index ) const
-{
-	switch( index )
-	{
-		case 30000:
-			return "USB Webcam";
-		case 30001:
-			return "DV";
-		default:
-			return QString();
-	}
-}
-
-QString Backend::videoCaptureDeviceDescription( int index ) const
-{
-	switch( index )
-	{
-		case 30000:
-			return "first description";
-		case 30001:
-			return "second description";
-		default:
-			return QString();
-	}
-}
-
-int Backend::videoCaptureDeviceAudioIndex( int index ) const
-{
-	switch( index )
-	{
-		case 30001:
-			return 20001;
-		default:
-			return -1;
-	}
-}
-
-QSet<int> Backend::visualizationIndexes() const
-{
-	QSet<int> ret;
-	return ret;
-}
-
-QString Backend::visualizationName( int index ) const
-{
-	return QString();
-}
-
-QString Backend::visualizationDescription( int index ) const
-{
-	return QString();
-}
-
-QSet<int> Backend::audioEffectIndexes() const
-{
-	QSet<int> ret;
-	ret << 0x7F000001;
-	return ret;
-}
-
-QString Backend::audioEffectName( int index ) const
-{
-	switch( index )
-	{
-		case 0x7F000001:
-			return "Delay";
-	}
-	return QString();
-}
-
-QString Backend::audioEffectDescription( int index ) const
-{
-	switch( index )
-	{
-		case 0x7F000001:
-			return "Simple delay effect with time, feedback and level controls.";
-	}
-	return QString();
-}
-
-QSet<int> Backend::videoEffectIndexes() const
-{
-	QSet<int> ret;
-	ret << 0x7E000001;
-	return ret;
-}
-
-QString Backend::videoEffectName( int index ) const
-{
-	switch( index )
-	{
-		case 0x7E000001:
-			return "VideoEffect1";
-	}
-	return QString();
-}
-
-QString Backend::videoEffectDescription( int index ) const
-{
-	switch( index )
-	{
-		case 0x7E000001:
-			return "Description 1";
-	}
-	return QString();
-}
-
-QSet<int> Backend::audioCodecIndexes() const
-{
-	return QSet<int>();
-}
-
-QString Backend::audioCodecName( int index ) const
-{
-	return QString();
-}
-
-QString Backend::audioCodecDescription( int index ) const
-{
-	return QString();
-}
-
-QSet<int> Backend::videoCodecIndexes() const
-{
-	return QSet<int>();
-}
-
-QString Backend::videoCodecName( int index ) const
-{
-	return QString();
-}
-
-QString Backend::videoCodecDescription( int index ) const
-{
-	return QString();
-}
-
-QSet<int> Backend::containerFormatIndexes() const
-{
-	return QSet<int>();
-}
-
-QString Backend::containerFormatName( int index ) const
-{
-	return QString();
-}
-
-QString Backend::containerFormatDescription( int index ) const
-{
 	return QString();
 }
 

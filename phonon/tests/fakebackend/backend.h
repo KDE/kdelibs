@@ -24,6 +24,7 @@
 #include <QList>
 #include <QPointer>
 #include <QStringList>
+#include <phonon/objectdescription.h>
 
 class KUrl;
 
@@ -65,47 +66,9 @@ namespace Fake
 
 			void freeSoundcardDevices();
 
-			Q_INVOKABLE QSet<int> audioOutputDeviceIndexes() const;
-			Q_INVOKABLE QString audioOutputDeviceName( int index ) const;
-			Q_INVOKABLE QString audioOutputDeviceDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> audioCaptureDeviceIndexes() const;
-			Q_INVOKABLE QString audioCaptureDeviceName( int index ) const;
-			Q_INVOKABLE QString audioCaptureDeviceDescription( int index ) const;
-			Q_INVOKABLE qint32 audioCaptureDeviceVideoIndex( int index ) const;
-
-			Q_INVOKABLE QSet<int> videoOutputDeviceIndexes() const;
-			Q_INVOKABLE QString videoOutputDeviceName( int index ) const;
-			Q_INVOKABLE QString videoOutputDeviceDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> videoCaptureDeviceIndexes() const;
-			Q_INVOKABLE QString videoCaptureDeviceName( int index ) const;
-			Q_INVOKABLE QString videoCaptureDeviceDescription( int index ) const;
-			Q_INVOKABLE qint32 videoCaptureDeviceAudioIndex( int index ) const;
-
-			Q_INVOKABLE QSet<int> visualizationIndexes() const;
-			Q_INVOKABLE QString visualizationName( int index ) const;
-			Q_INVOKABLE QString visualizationDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> audioEffectIndexes() const;
-			Q_INVOKABLE QString audioEffectName( int index ) const;
-			Q_INVOKABLE QString audioEffectDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> videoEffectIndexes() const;
-			Q_INVOKABLE QString videoEffectName( int index ) const;
-			Q_INVOKABLE QString videoEffectDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> audioCodecIndexes() const;
-			Q_INVOKABLE QString audioCodecName( int index ) const;
-			Q_INVOKABLE QString audioCodecDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> videoCodecIndexes() const;
-			Q_INVOKABLE QString videoCodecName( int index ) const;
-			Q_INVOKABLE QString videoCodecDescription( int index ) const;
-
-			Q_INVOKABLE QSet<int> containerFormatIndexes() const;
-			Q_INVOKABLE QString containerFormatName( int index ) const;
-			Q_INVOKABLE QString containerFormatDescription( int index ) const;
+			Q_INVOKABLE QSet<int> objectDescriptionIndexes( ObjectDescription::Type type ) const;
+			Q_INVOKABLE QString objectDescriptionName( ObjectDescription::Type type, int index ) const;
+			Q_INVOKABLE QString objectDescriptionDescription( ObjectDescription::Type type, int index ) const;
 
 			Q_INVOKABLE char const* uiLibrary() const;
 			// Q_INVOKABLE char* uiSymbol() const;
