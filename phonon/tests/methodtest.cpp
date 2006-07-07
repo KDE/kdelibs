@@ -43,17 +43,8 @@ void MethodTest::checkAvCaptureMethods_data() { addColumns();
 }
 void MethodTest::checkBackendMethods_data() { addColumns();
 #include "methods/factory.cpp"
-#include "methods/audiocapturedevice.cpp"
-#include "methods/audiocodec.cpp"
-#include "methods/audioeffectdescription.cpp"
-#include "methods/audiooutputdevice.cpp"
+#include "methods/objectdescription.cpp"
 #include "methods/backendcapabilities.cpp"
-#include "methods/containerformat.cpp"
-#include "methods/videocapturedevice.cpp"
-#include "methods/videocodec.cpp"
-#include "methods/videoeffectdescription.cpp"
-#include "methods/videooutputdevice.cpp"
-#include "methods/visualizationeffect.cpp"
 addMethod( "bool", "supportsFourcc(quint32)" );
 }
 void MethodTest::checkBrightnessControlMethods_data() { addColumns();
