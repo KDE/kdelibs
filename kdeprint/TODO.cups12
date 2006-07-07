@@ -1,0 +1,293 @@
+
+TODO.cups12
+===========
+
+This is a list of features that need to be implemented in KDEPrint for 
+KDE4.
+
+Many gaps have opened by the continuing CUPS 1.1.x development already 
+(which added quite some new parameters and features), while KDEPrint
+development got dormant in recent years. Plus, even more new gaps by 
+the recent CUPS 1.2 release (which added even more new features).
+
+
+            ---------------------------
+              In General:
+            ---------------------------
+* a GUI to configure client.conf is missing [1.1]
+* a GUI to configure snmp.conf is missing [1.2]
+* a GUI to configure subscriptions.conf is missing [1.2]
+
+Other stuff that's new:
+
+- port monitor support [1.2]
+- unique job IDs support [1.2]
+- print a self test page (if driver supports CUPS command file format, 
+  you can now print the printer's self-test page) [1.2]
+- perform a self-cleaning of print heads (if driver supports CUPS 
+  command file format, you can now clean print heads) [1.2]
+- per-printer sharing support [1.2]
+- per-printer error policy support [1.2]
+- per-printer operation policy support [1.2]
+- IPP notifications support [1.2]
+- cupsd.conf environment variable support [1.2]
+- driver interfaces support (CUPS 1.2 supports "driver interfaces" 
+  which allow a driver to advertise the printers it supports and 
+  automatically generate the PPD file as needed) [1.2]
+- improved error handling support (CUPS 1.2 API provides convenience 
+  functions to get full error message of last request) [1.2]
+- improved "backchannel" support (CUPS 1.2 API provides backends and 
+  filters with access to information sent back from a printer) [1.2]
+- globalized PPD support [1.2]
+- custom PPD option support [1.2]
+- extended PPD API support (CUPS 1.2 PPD API got added new functions:
+  reading from CUPS files; localization of globalized PPD files; 
+  emitting of arbitrary ranges of options; custom option support [like
+  passwords, passcodes, curves, integers, points, reals and strings];
+  enhanced JCL support; and access to all options in a PPD file) [1.2]
+- CUPS ICC profiles support [1.2]
+
+
+          --------------------------------
+            More specifically:
+          --------------------------------
+
+kprinter
+--------
+
+* add support for "-U username somebody" (or, in a more IPP-conforming 
+  syntax:  "-o job-originating-username=username").
+
+* add support for multilanguage PPD files
+
+* add support for other CUPS extensions re. PPD parameters; especially
+  important is support for handling custom PPD options!
+
+
+kaddprinterwizard
+-----------------
+
+* add support for IPv6 syntax when specifying or parsing network 
+  addresses
+
+* add support for new "snmp" backend in CUPS 1.2.
+
+  The snmp backend can auto-discover most printer types which are 
+  attached to the LAN with a NIC. For a sort of introduction to its
+  features see http://www.kdedevelopers.org/node/2138/.
+
+  To check it from the commandline, just run it without any parameter:
+  "/usr/lib/cups/backend/snmp" (Ubuntu Dapper users have it disabled 
+  by default; just run "/usr/lib/cups/backend-available/snmp". If you
+  have network printers in your LAN, you'll likely see an output like
+
+    network ipp://10.162.2.92:631/ipp "Ricoh IPP Printer v2.0" "Ricoh IPP Printer v2.0 10.162.2.92" ""
+    network socket://10.162.2.93 "infotec  ISC824" "infotec  ISC824 10.162.2.93" ""
+    network lpd://10.162.2.94/passthru "Canon iR5000-6000" "Canon iR5000-6000 10.162.2.94" ""
+
+  kaddprintwizard should be able to parse the CUPS snmp backend's
+  output for adding the auto-discovered network printers to the 
+  local setup.
+
+* add support for the following parameters in printers.conf (which
+  where newly added in CUPS 1.2.0):
+  - ErrorPolicy
+  - OpPolicy
+  - Option
+  - PortMonitor
+  - Shared
+  - StateTime
+  For information purposes: currently supported parameters are:
+  - Accepting
+  - AllowUser
+  - DenyUser
+  - DeviceURI
+  - Info
+  - JobSheets
+  - KLimit
+  - Location
+  - PageLimit
+  - QuotaPeriod
+  - State
+  - StateMessage
+
+
+
+kaddprinterwizard --kdeconfig
+-----------------------------
+
+* add support for unix domain socket support (was added in CUPS 1.2.x)
+
+  CUPS 1.2 newly introduced the option to communicate via "unix 
+  domain sockets" for local cases (CUPS client and server on the
+  same host [=localhost]. That means, you can now have 2 types of
+  "Listen" directives (concurrently):
+    Listen localhost:631
+    Listen /path/to/domain.sock.name
+
+  Support for unix domain socket communication should be added at
+  "CUPS Server Settings" --> "Server information".
+
+
+kaddprinterwizard --serverconfig
+--------------------------------
+
+* Add support for currently unsupported cupsd.conf 1.1.x parameters.
+  All in all 15 unsupported parameters:
+  - ConfigFilePerm
+  - FaxRetryInterval
+  - FaxRetryLimit
+  - FileDevice
+  - FilterNice
+  - Include
+  - LimitRequestBody
+  - LogFilePerm
+  - MaxClientsPerHost
+  - MaxCopies
+  - PrintcapGUI
+  - ReloadTimeout
+  - RootCertDuration
+  - RunAsUser
+  - ServerTokens
+
+* add support for cupsd.conf parameters newly introduced in CUPS 1.2.0.
+  Note, "RunAsUser" is no longer supported in CUPS 1.2.x!
+  All in all about 18 new parameters (on top of the 15 unsupported ones
+  from CUPS 1.1.x):
+  - BrowseLDAPBindDN
+  - BrowseLDAPDN
+  - BrowseLDAPPassword
+  - BrowseLDAPServer
+  - BrowseLocalOptions
+  - BrowseLocalProtocols
+  - BrowseRemoteOptions
+  - BrowseRemoteProtocols
+  - DefaultEncryption
+  - DefaultPolicy
+  - DefaultShared
+  - JobRetryInterval
+  - JobRetryLimit
+  - PassEnv
+  - Policy
+  - SetEnv
+  - UseNetworkDefault
+
+
+Complete list of 1.2.0 cupsd.conf directives
+--------------------------------------------
+
+This is a complete list of all cupsd.conf parameters that may be 
+used in CUPS 1.2.x, alongside a listing if they are supported in
+KDEPrint 3.5.3:
+
+
+  ++ = supported
+  -- = unsupported
+
+ ------------+-----------------------------------------------------
+  Supported? | cupsd.conf directive
+ ------------+-----------------------------------------------------
+  ++         | AccessLog
+  ++         | Allow
+  ++         | AuthClass
+  ++         | AuthGroupName
+  ++         | AuthType
+  ++         | AutoPurgeJobs
+  ++         | BrowseAddress
+  ++         | BrowseAllow
+  ++         | BrowseDeny
+  ++         | BrowseInterval
+  -- (1.2)   | BrowseLDAPBindDN
+  -- (1.2)   | BrowseLDAPDN
+  -- (1.2)   | BrowseLDAPPassword
+  -- (1.2)   | BrowseLDAPServer
+  -- (1.2)   | BrowseLocalOptions
+  -- (1.2)   | BrowseLocalProtocols
+  ++         | BrowseOrder
+  ++         | BrowsePoll
+  ++         | BrowsePort
+  ++         | BrowseProtocols
+  ++         | BrowseRelay
+  ++         | BrowseRemoteOptions
+  ++         | BrowseRemoteProtocols
+  ++         | BrowseShortNames
+  ++         | BrowseTimeout
+  ++         | Browsing
+  ++         | Classification
+  ++         | ClassifyOverride
+  -- (1.1)   | ConfigFilePerm
+  ++         | DataDir
+  ++         | DefaultAuthType
+  ++         | DefaultCharset
+  -- (1.2)   | DefaultEncryption
+  ++         | DefaultLanguage
+  -- (1.2)   | DefaultPolicy
+  -- (1.2)   | DefaultShared
+  ++         | Deny
+  ++         | DocumentRoot
+  ++         | Encryption
+  ++         | ErrorLog
+  -- (1.1)   | FileDevice
+  ++         | FilterLimit
+  -- (1.1)   | FilterNice
+  ++         | FontPath
+  ++         | Group
+  ++         | HideImplicitMembers
+  ++         | HostNameLookups
+  ++         | ImplicitAnyClasses
+  ++         | ImplicitClasses
+  -- (1.1)   | Include
+  -- (1.2)   | JobRetryInterval      # 1.1 had "FaxRetryInterval"
+  -- (1.2)   | JobRetryLimit         # 1.1 had "FaxRetryLimit"
+  ++         | KeepAlive
+  ++         | KeepAliveTimeout
+  ++         | Limit (Location)
+  ++         | Limit (Policy)
+  ++         | LimitExcept
+  -- (1.1)   | LimitRequestBody
+  ++         | Listen
+  ++         | ListenBackLog
+  ++         | Location
+  -- (1.1)   | LogFilePerm
+  ++         | LogLevel
+  ++         | MaxClients
+  -- (1.1)   | MaxClientsPerHost
+  -- (1.1)   | MaxCopies
+  ++         | MaxJobs
+  ++         | MaxJobsPerPrinter
+  ++         | MaxJobsPerUser
+  ++         | MaxLogSize
+  ++         | MaxRequestSize
+  ++         | Order
+  ++         | PageLog
+  ++         | PassEnv
+  -- (1.2)   | Policy
+  ++         | Port
+  ++         | PreserveJobFiles
+  ++         | PreserveJobHistory
+  ++         | Printcap
+  ++         | PrintcapFormat
+  -- (1.1)   | PrintcapGUI
+  -- (1.1)   | ReloadTimeout
+  ++         | RemoteRoot
+  ++         | RequestRoot
+  ++         | Require
+  ++         | RIPCache
+  -- (1.1)   | RootCertDuration
+  --(removed)| (RunAsUser)       # present in 1.1
+  ++         | Satisfy
+  ++         | ServerAdmin
+  ++         | ServerBin
+  ++         | ServerCertificate
+  ++         | ServerKey
+  ++         | ServerRoot
+  -- (1.1)   | ServerTokens
+  ++         | SetEnv
+  -- (1.2)   | SSLListen
+  ++         | SSLPort
+  ++         | SystemGroup
+  ++         | TempDir
+  ++         | Timeout
+  -- (1.2)   | UseNetworkDefault
+  ++         | User
+ ------------+-----------------------------------------------------
