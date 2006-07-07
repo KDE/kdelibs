@@ -2132,8 +2132,6 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
 void KateViewInternal::updateCursor( const KateTextCursor& newCursor, bool force, bool center, bool calledExternally )
 {
-  KateTextLine::Ptr l = textLine( newCursor.line() );
-
   if ( !force && (cursor == newCursor) )
   {
     if ( !m_madeVisible )
