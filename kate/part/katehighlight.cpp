@@ -65,8 +65,10 @@ static const int KATE_DYNAMIC_CONTEXTS_RESET_DELAY = 30 * 1000;
 
 inline bool kateInsideString (const QString &str, QChar ch)
 {
-  for (uint i=0; i < str.length(); i++)
-    if (*(str.unicode()+i) == ch)
+  const QChar *unicode = str.unicode();
+  const uint len = str.length();
+  for (uint i=0; i < len; i++)
+    if (unicode[i] == ch)
       return true;
 
   return false;
