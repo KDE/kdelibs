@@ -236,6 +236,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   : KDialog( parent ),
     d( new Private( this ) )
 {
+  setButtons( KDialog::None );
   setCaption( i18n( "Tip of the Day" ) );
 
   /**
@@ -279,7 +280,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   QFrame *frame = new QFrame( this );
   setMainWidget( frame );
   QVBoxLayout *vbox = new QVBoxLayout( frame );
-  vbox->setMargin( marginHint() );
+  vbox->setMargin( 0 );
   vbox->setSpacing( spacingHint() );
 
   if ( isTipDialog ) {
@@ -312,12 +313,17 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   KHBox *hbox = new KHBox;
   hbox->setSpacing( 0 );
   hbox->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  QPalette pal;
+  pal.setColor( QPalette::Window, d->blendedColor );
+  hbox->setPalette( pal );
+  hbox->setAutoFillBackground( true );
   vbox->addWidget( hbox );
 
   KHBox *tl = new KHBox( hbox );
   tl->setMargin( 7 );
   QPalette palette = tl->palette();
   palette.setColor( QPalette::Window, d->blendedColor );
+  tl->setAutoFillBackground( true );
   tl->setPalette( palette );
 
   KHBox *topLeft = new KHBox( tl );
@@ -325,6 +331,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   palette = topLeft->palette();
   palette.setColor( QPalette::Window, d->baseColor );
   topLeft->setPalette( palette );
+  topLeft->setAutoFillBackground( true );
 
   d->tipText = new KTextBrowser( topLeft );
 
