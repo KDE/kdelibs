@@ -139,7 +139,7 @@ class KateSearch : public QObject
     void skipOne();
 
     QString getSearchText();
-    KateTextCursor getCursor();
+    KateTextCursor getCursor( SearchFlags flags );
     bool doSearch( const QString& text );
     void exposeFound( KateTextCursor &cursor, int slen );
 

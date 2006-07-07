@@ -141,7 +141,7 @@ void KateSearch::find( const QString &pattern, long flags, bool add, bool showno
     s.selEnd   = KateTextCursor( m_view->selEndLine(),   m_view->selEndCol()   );
     s.cursor   = s.flags.backward ? s.selEnd : s.selBegin;
   } else {
-    s.cursor = getCursor();
+    s.cursor = getCursor( searchFlags );
   }
 
   s.wrappedEnd = s.cursor;
@@ -207,7 +207,7 @@ void KateSearch::replace( const QString& pattern, const QString &replacement, lo
     s.selEnd   = KateTextCursor( m_view->selEndLine(), m_view->selEndCol()   );
     s.cursor   = s.flags.backward ? s.selEnd : s.selBegin;
   } else {
-    s.cursor = getCursor();
+    s.cursor = getCursor( searchFlags );
   }
 
   s.wrappedEnd = s.cursor;
@@ -236,8 +236,8 @@ void KateSearch::findAgain( bool reverseDirection )
 
   searchFlags.fromBeginning = false;
   searchFlags.prompt = true; // ### why is the above assignment there?
-  s.cursor = getCursor();
 
+  s.cursor = getCursor( searchFlags );
   search( searchFlags );
 }
 
@@ -547,8 +547,15 @@ QString KateSearch::getSearchText()
   return str;
 }
 
-KateTextCursor KateSearch::getCursor()
+KateTextCursor KateSearch::getCursor( SearchFlags flags )
 {
+  if (flags.backward && !flags.selected && view()->hasSelection())
+  {
+    // We're heading backwards (and not within a selection),
+    // the selection might start before the cursor.
+    return KMIN( KateTextCursor(view()->selStartLine(), view()->selStartCol()),
+                 KateTextCursor(view()->cursorLine(), view()->cursorColumnReal()));
+  }
   return KateTextCursor(view()->cursorLine(), view()->cursorColumnReal());
 }
 
@@ -585,6 +592,21 @@ bool KateSearch::doSearch( const QString& text )
   bool found = false;
   //kdDebug() << "Searching at " << line << ", " << col << endl;
 //   kdDebug()<<"KateSearch::doSearch: "<<line<<", "<<col<<", "<<backward<<endl;
+
+  if (backward)
+  {
+    KateDocCursor docCursor(line, col, doc());
+
+    // If we're at the top of the document, we're not gonna find anything, so bail.
+    if (docCursor.line() == 0 && docCursor.col() == 0)
+      return false;
+
+    // Move one step backward before searching, if this is a "find again", we don't
+    // want to find the same match.
+    docCursor.moveBackward(1);
+    line = docCursor.line();
+    col = docCursor.col();
+  }
 
   do {
       if( regExp ) {
