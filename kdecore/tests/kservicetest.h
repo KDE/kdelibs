@@ -28,7 +28,6 @@ private Q_SLOTS:
     void testByName();
     void testAllServiceTypes();
     void testAllServices();
-    void testAllInitServices();
     void testServiceTypeTraderForReadOnlyPart();
     void testHasServiceType1();
     void testHasServiceType2();

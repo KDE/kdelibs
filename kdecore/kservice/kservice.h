@@ -115,13 +115,6 @@ public:
    *         or QString() if not set
    */
   QString library() const { return m_strLibrary; }
-  /**
-   * Returns the name of the init function to call (KControl modules).
-   * @return the name of the init function to call in this service
-   *         during startup of KDE. (KControl modules only),
-   *         or QString() if not set
-   */
-  QString init() const { return m_strInit; }
 
   /**
    * Returns the name of the icon.
@@ -486,14 +479,6 @@ public:
   static List allServices();
 
   /**
-   * Returns all services that require initialization.
-   *
-   * Only needed by "kcminit"
-   * @return the list of all services that need to be initialized
-   */
-  static List allInitServices();
-
-  /**
    * Returns a path that can be used to create a new KService based
    * on @p suggestedName.
    * @param showInMenu true, if the service should be shown in the KDE menu
@@ -596,7 +581,6 @@ private:
   DCOPServiceType_t m_DCOPServiceType;
   QMap<QString,QVariant> m_mapProps;
   QStringList m_lstKeywords;
-  QString m_strInit;
   QString m_strGenName;
   bool m_bAllowAsDefault;
   bool m_bTerminal;

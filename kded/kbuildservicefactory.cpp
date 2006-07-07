@@ -103,7 +103,6 @@ KBuildServiceFactory::saveHeader(QDataStream &str)
    str << (qint32) m_nameDictOffset;
    str << (qint32) m_relNameDictOffset;
    str << (qint32) m_offerListOffset;
-   str << (qint32) m_initListOffset;
    str << (qint32) m_menuIdDictOffset;
 }
 
@@ -119,7 +118,6 @@ KBuildServiceFactory::save(QDataStream &str)
    m_relNameDict->save(str);
 
    saveOfferList(str);
-   saveInitList(str);
 
    m_menuIdDictOffset = str.device()->pos();
    m_menuIdDict->save(str);
@@ -314,32 +312,6 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
    }
 
    str << (qint32) 0;               // End of list marker (0)
-}
-
-void
-KBuildServiceFactory::saveInitList(QDataStream &str)
-{
-   m_initListOffset = str.device()->pos();
-
-   KService::List initList;
-
-   for(KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
-       itserv != m_entryDict->end();
-       ++itserv)
-   {
-      const KService::Ptr service = KService::Ptr::staticCast(*itserv);
-      if ( !service->init().isEmpty() )
-      {
-          initList.append(service);
-      }
-   }
-   str << (qint32) initList.count(); // Nr of init services.
-   for(KService::List::const_iterator it = initList.begin();
-       it != initList.end();
-       ++it)
-   {
-      str << (qint32) (*it)->offset();
-   }
 }
 
 void

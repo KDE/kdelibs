@@ -100,35 +100,13 @@ void KServiceTest::testAllServices()
         if ( type == "Application" )
         {
             const QString menuId = service->menuId();
+            if ( menuId.isEmpty() )
+                qWarning( "%s has an empty menuId!", qPrintable( dep ) );
             QVERIFY( !menuId.isEmpty() );
             lookedupService = KService::serviceByMenuId( menuId );
             QVERIFY( lookedupService ); // not null
             QCOMPARE( lookedupService->menuId(), menuId );
         }
-    }
-}
-
-void KServiceTest::testAllInitServices()
-{
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
-    const KService::List lst = KService::allInitServices();
-    if ( lst.isEmpty() )
-        QSKIP( "no init services available", SkipAll ); // this happens when only kdelibs is installed
-
-    for ( KService::List::ConstIterator it = lst.begin();
-          it != lst.end(); ++it ) {
-        const KService::Ptr service = (*it);
-        QVERIFY( service->isType( KST_KService ) );
-
-        const QString name = service->name();
-        const QString dep = service->desktopEntryPath();
-        qDebug( "%s %s (type=%s init=%s)", qPrintable( name ), qPrintable( dep ), qPrintable( service->type() ), qPrintable( service->init() ) );
-        QVERIFY( !name.isEmpty() );
-        QVERIFY( !dep.isEmpty() );
-
-        const QString init = service->init();
-        QVERIFY( !init.isEmpty() ); // kbuildservicefactory.cpp ensures that only services with init not empty are put in the init list
     }
 }
 

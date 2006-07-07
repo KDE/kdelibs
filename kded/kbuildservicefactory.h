@@ -54,7 +54,7 @@ public:
    */
   virtual KSycocaEntry * createEntry(const QString &file, const char *resource);
 
-  virtual KService * createEntry( int ) { assert(0); return 0L; }
+  virtual KService * createEntry( int ) { assert(0); return 0; }
 
   /**
    * Add a new entry.
@@ -83,7 +83,6 @@ public:
 
 private:
   void saveOfferList(QDataStream &str);
-  void saveInitList(QDataStream &str);
   void addServiceOffer( const QString& serviceType, const KServiceOffer& offer );
 
   QHash<QString, KService::Ptr> m_serviceDict;

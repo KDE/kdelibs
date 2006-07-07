@@ -201,8 +201,6 @@ KService::init( const KDesktopFile *config )
   entryMap.remove("Categories");
   m_strLibrary = config->readEntry( "X-KDE-Library" );
   entryMap.remove("X-KDE-Library");
-  m_strInit = config->readEntry("X-KDE-Init" );
-  entryMap.remove("X-KDE-Init");
 
   m_lstServiceTypes = config->readEntry( "ServiceTypes", QStringList() );
   entryMap.remove("ServiceTypes");
@@ -273,24 +271,21 @@ void KService::load( QDataStream& s )
   // dummies are here because of fields that were removed, to keep bin compat.
   // Feel free to re-use, but fields for Applications only (not generic services)
   // should rather be added to application.desktop
-  qint8 def, term, dummy1, dummy2;
+  qint8 def, term;
   qint8 dst, initpref;
-  QString dummyStr1, dummyStr2;
-  int dummyI1, dummyI2;
-  quint32 dummyUI32;
 
-  // WARNING: IN KDE 3.x THIS NEEDS TO REMAIN COMPATIBLE WITH KDE 2.x!
+  // WARNING: THIS NEEDS TO REMAIN COMPATIBLE WITH PREVIOUS KDE 4.x VERSIONS!
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
   s >> m_strType >> m_strName >> m_strExec >> m_strIcon
     >> term >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> def >> m_mapProps
-    >> m_strLibrary >> dummyI1 >> dummyI2
+    >> m_strLibrary
     >> dst
     >> m_strDesktopEntryName
-    >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2
-    >> m_lstKeywords >> m_strInit >> dummyUI32 >> m_strGenName
+    >> initpref
+    >> m_lstKeywords >> m_strGenName
     >> d->categories >> d->menuId;
 
   m_bAllowAsDefault = def;
@@ -307,23 +302,19 @@ void KService::save( QDataStream& s )
   qint8 def = m_bAllowAsDefault, initpref = m_initialPreference;
   qint8 term = m_bTerminal;
   qint8 dst = (qint8) m_DCOPServiceType;
-  qint8 dummy1 = 0, dummy2 = 0; // see ::load
-  QString dummyStr1, dummyStr2;
-  int dummyI1 = 0, dummyI2 = 0;
-  quint32 dummyUI32 = 0;
 
-  // WARNING: IN KDE 3.x THIS NEEDS TO REMAIN COMPATIBLE WITH KDE 2.x!
+  // WARNING: THIS NEEDS TO REMAIN COMPATIBLE WITH PREVIOUS KDE 4.x VERSIONS!
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
   s << m_strType << m_strName << m_strExec << m_strIcon
     << term << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << def << m_mapProps
-    << m_strLibrary << dummyI1 << dummyI2
+    << m_strLibrary
     << dst
     << m_strDesktopEntryName
-    << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2
-    << m_lstKeywords << m_strInit << dummyUI32 << m_strGenName
+    << initpref
+    << m_lstKeywords << m_strGenName
     << d->categories << d->menuId;
 }
 
@@ -590,11 +581,6 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
   service = KService::serviceByDesktopName(tmp);
 
   return service;
-}
-
-KService::List KService::allInitServices()
-{
-  return KServiceFactory::self()->allInitServices();
 }
 
 bool KService::substituteUid() const {

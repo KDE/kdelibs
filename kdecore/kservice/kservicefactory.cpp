@@ -49,8 +49,6 @@ KServiceFactory::KServiceFactory()
       (*m_str) >> i;
       m_offerListOffset = i;
       (*m_str) >> i;
-      m_initListOffset = i;
-      (*m_str) >> i;
       m_menuIdDictOffset = i;
 
       const int saveOffset = m_str->device()->pos();
@@ -219,36 +217,6 @@ KService::List KServiceFactory::allServices()
          result.append( KService::Ptr::staticCast( entry ) );
    }
    return result;
-}
-
-KService::List KServiceFactory::allInitServices()
-{
-   KService::List list;
-   if (!m_str) return list;
-
-   // Assume we're NOT building a database
-
-   m_str->device()->seek(m_initListOffset);
-   qint32 entryCount;
-   (*m_str) >> entryCount;
-
-   // offsetList is needed because createEntry() modifies the stream position
-   qint32 *offsetList = new qint32[entryCount];
-   for(int i = 0; i < entryCount; i++)
-   {
-      (*m_str) >> offsetList[i];
-   }
-
-   for(int i = 0; i < entryCount; i++)
-   {
-      KService *newEntry = createEntry(offsetList[i]);
-      if (newEntry)
-      {
-         list.append( KService::Ptr( newEntry ) );
-      }
-   }
-   delete [] offsetList;
-   return list;
 }
 
 QList<KServiceOffer> KServiceFactory::offers( int serviceTypeOffset, int serviceOffersOffset )

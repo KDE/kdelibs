@@ -438,7 +438,10 @@ KSycocaDict::save(QDataStream &str)
 	    for(QList<string_entry*>::Iterator dup = dups->begin(); dup != dups->end(); ++dup)
             {
                const qint32 offset = (*dup)->payload->offset();
-               Q_ASSERT( offset ); // save() must have been called on the entry
+               // save() must have been called on the entry
+               Q_ASSERT_X( offset, "KSycocaDict::save",
+                           QByteArray("entry offset is 0, save() wasn't called on ")
+                           + (*dup)->payload->name().toLatin1() );
                str << offset ;                       // Positive ID
                str << (*dup)->keyStr;                // Key (QString)
             }
