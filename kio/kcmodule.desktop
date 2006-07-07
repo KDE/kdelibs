@@ -3,8 +3,6 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModule
 Name=KDE Configuration Module
-Name[fr]=Module de configuration de KDE
-Name[x-test]=xxKDE Control Modulexx
 
 # the name of the method (with or without the init_ prefix) returning the factory object
 [PropertyDef::X-KDE-FactoryName]
