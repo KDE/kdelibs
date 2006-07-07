@@ -95,11 +95,7 @@ check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
 
 check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 
-if (X11_XTest_FOUND)                                                   # kdecore
-  set(HAVE_XTEST 1)
-else (X11_XTest_FOUND)
-  set(HAVE_XTEST 0)
-endif (X11_XTest_FOUND)
+macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                                   # kdecore
 
 
 # Use check_symbol_exists to check for symbols in a reliable
