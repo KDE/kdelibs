@@ -1285,7 +1285,7 @@ void KateViewInternal::end( bool sel )
   int lc = l->lastChar();
 
   if (lc < 0 || c.col() == (lc + 1)) {
-    c.setCol(currentRange().endCol - 1);
+    c.setCol(currentRange().endCol);
   } else {
     c.setCol(lc + 1);
   }
