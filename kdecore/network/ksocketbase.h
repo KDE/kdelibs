@@ -302,10 +302,10 @@ public:
 
   /**
    * Sets this socket's NoDelay flag.
-   * 
-   * Stream-oriented protocols, like TCP, have an internal algorithm 
+   *
+   * Stream-oriented protocols, like TCP, have an internal algorithm
    * (called Nagle's algorithm) that collects data in a buffer so that
-   * the transmission doesn't occur after every single write operation. 
+   * the transmission doesn't occur after every single write operation.
    * The side-effect is that the transmission of short messages is
    * delayed.
    *
@@ -512,11 +512,11 @@ public:
    *
    * @param address		the address to connect to
    * @param mode                mode for connection, from QIODevice
-   * 
+   *
    * @returns true if the connection was successful or has been successfully
    *          queued; false if an error occurred.
    */
-  virtual bool connect(const KResolverEntry& address, 
+  virtual bool connect(const KResolverEntry& address,
 		       OpenMode mode = ReadWrite) = 0;
 
   /**
@@ -535,6 +535,12 @@ public:
    * @return true if the socket is now disconnected or false on error.
    */
   virtual bool disconnect() = 0;
+
+  /**
+   * Sockets are sequential
+   */
+  virtual bool isSequential() const
+  { return true; }
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
