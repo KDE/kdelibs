@@ -4,169 +4,197 @@
 
 <node name="/org/kde/KSpeech">
     <interface name="org.kde.KSpeech">
+    
+        <property name="version" type="s" access="read"/>
 
-        <method name="supportsMarkup">
-            <arg name="talker" type="s" direction="in"/>
-            <arg name="markupType" type="u" direction="in"/>
-            <arg type="b" direction="out"/>
+        <property name="isSpeaking" type="b" access="read"/>
+        
+        <method name="applicationName">
+            <arg type="s" direction="out"/>
         </method>
-
-        <method name="supportsMarkers">
-            <arg name="talker" type="s" direction="in"/>
-            <arg type="b" direction="out"/>
-        </method>
-
-        <method name="sayScreenReaderOutput">
-            <arg name="msg" type="s" direction="in"/>
-            <arg name="talker" type="s" direction="in"/>
+        <method name="setApplicationName">
+            <arg name="applicationName" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="defaultTalker">
+            <arg type="s" direction="out"/>
+        </method>
+        <method name="setDefaultTalker">
+            <arg name="defaultTalker" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="defaultPriority">
+            <arg type="i" direction="out"/>
+        </method>
+        <method name="setDefaultPriority">
+            <arg name="defaultPriority" type="i" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="sentenceDelimiter">
+            <arg type="s" direction="out"/>
+        </method>
+        <method name="setSentenceDelimiter">
+            <arg name="sentenceDelimiter" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="filteringOn">
+            <arg type="b" direction="out"/>
+        </method>
+        <method name="setFilteringOn">
+            <arg name="filteringOn" type="b" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="autoConfigureTalkersOn">
+            <arg type="b" direction="out"/>
+        </method>
+        <method name="setAutoConfigureTalkersOn">
+            <arg name="autoConfigureTalkersOn" type="b" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+
+        <method name="isApplicationPaused">
+            <arg type="b" direction="out"/>
+        </method>
+        
+        <method name="htmlFilterXsltFile">
+            <arg type="s" direction="out"/>
+        </method>
+        <method name="setHtmlFilterXsltFile">
+            <arg name="htmlFilterXsltFile" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+        
+        <method name="ssmlFilterXsltFile">
+            <arg type="s" direction="out"/>
+        </method>
+        <method name="setSsmlFilterXsltFile">
+            <arg name="ssmlFilterXsltFile" type="s" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+
+        <method name="isSystemManager">
+            <arg type="b" direction="out"/>
+        </method>
+        <method name="setIsSystemManager">
+            <arg name="isSystemManager" type="b" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+
+        <method name="say">
+            <arg name="text" type="s" direction="in"/>
+            <arg name="options" type="i" direction="in"/>
+            <arg type="i" direction="out"/>
+        </method>
+        
+        <method name="sayFile">
+            <arg name="filename" type="s" direction="in"/>
+            <arg name="encoding" type="s" direction="in"/>
+            <arg type="i" direction="out"/>
+        </method>
+
+        <method name="sayClipboard">
+            <arg type="i" direction="out"/>
         </method>        
 
-        <method name="sayWarning">
-            <arg name="warning" type="s" direction="in"/>
-            <arg name="talker" type="s" direction="in"/>
+        <method name="pause">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
 
-        <method name="sayMessage">
-            <arg name="message" type="s" direction="in"/>
-            <arg name="talker" type="s" direction="in"/>
+        <method name="resume">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-
-        <method name="setSentenceDelimiter">
-            <arg name="delimiter" type="s" direction="in"/>
+        
+        <method name="removeJob">
+            <arg name="jobNum" type="i" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-
-        <method name="setText">
-            <arg name="text" type="s" direction="in"/>
-            <arg name="talker" type="s" direction="in"/>
-            <arg type="u" direction="out"/>
+        
+        <method name="removeAllJobs">
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-
-        <method name="sayText">
-            <arg name="text" type="s" direction="in"/>
-            <arg name="talker" type="s" direction="in"/>
-            <arg type="u" direction="out"/>
-        </method>
-
-        <method name="appendText">
-            <arg name="text" type="s" direction="in"/>
-            <arg name="jobNum" type="u" direction="in"/>
+        
+        <method name="getSentenceCount">
+            <arg name="jobNum" type="i" direction="in"/>
             <arg type="i" direction="out"/>
         </method>
 
-        <method name="setFile">
-            <arg name="filename" type="s" direction="in"/>
-            <arg name="talker" type="s" direction="in"/>
-            <arg name="encoding" type="s" direction="in"/>
-            <arg type="u" direction="out"/>
-        </method>
-
-        <method name="getTextCount">
-            <arg name="jobNum" type="u" direction="in"/>
+        <method name="getCurrentJob">
             <arg type="i" direction="out"/>
         </method>
 
-        <method name="getCurrentTextJob">
-            <arg type="u" direction="out"/>
-        </method>
-
-        <method name="getTextJobCount">
-            <arg type="u" direction="out"/>
-        </method>
-
-        <method name="getTextJobNumbers">
-            <arg type="s" direction="out"/>
-        </method>
-
-        <method name="getTextJobState">
-            <arg name="jobNum" type="u" direction="in"/>
+        <method name="getJobCount">
+            <arg name="priority" type="i" direction="in"/>
             <arg type="i" direction="out"/>
         </method>
 
-        <method name="getTextJobInfo">
-            <arg name="jobNum" type="u" direction="in"/>
-            <arg type="ay" direction="out"/>
-        </method>
-
-        <method name="talkerCodeToTalkerId">
-            <arg name="talkerCode" type="s" direction="in"/>
-            <arg type="s" direction="out"/>
-        </method>
-
-        <method name="getTextJobSentence">
-            <arg name="jobNum" type="u" direction="in"/>
-            <arg name="seq" type="u" direction="in"/>
-            <arg type="s" direction="out"/>
-        </method>
-
-        <method name="isSpeakingText">
-            <arg type="b" direction="out"/>
-        </method>
-
-        <method name="removeText">
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="startText">
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="stopText">
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="pauseText">
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="resumeText">
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="getTalkers">
+        <method name="getJobNumbers">
+            <arg name="priority" type="i" direction="in"/>
             <arg type="as" direction="out"/>
         </method>
 
-        <method name="changeTextTalker">
-            <arg name="talker" type="s" direction="in"/>
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="userDefaultTalker">
-            <arg type="s" direction="out"/>
-        </method>
-
-        <method name="moveTextLater">
-            <arg name="jobNum" type="u" direction="in"/>
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
-
-        <method name="jumpToTextPart">
-            <arg name="partNum" type="i" direction="in"/>
-            <arg name="jobNum" type="u" direction="in"/>
+        <method name="getJobState">
+            <arg name="jobNum" type="i" direction="in"/>
             <arg type="i" direction="out"/>
         </method>
 
-        <method name="moveRelTextSentence">
-            <arg name="n" type="i" direction="in"/>
-            <arg name="jobNum" type="u" direction="in"/>
-            <arg type="u" direction="out"/>
+        <method name="getJobInfo">
+            <arg name="jobNum" type="i" direction="in"/>
+            <arg type="ay" direction="out"/>
         </method>
 
-        <method name="speakClipboard">
+        <method name="getJobSentence">
+            <arg name="jobNum" type="i" direction="in"/>
+            <arg name="seq" type="i" direction="in"/>
+            <arg type="s" direction="out"/>
+        </method>
+
+        <method name="getTalkerCodes">
+            <arg type="as" direction="out"/>
+        </method>
+    
+        <method name="talkerToTalkerId">
+            <arg name="talker" type="s" direction="in"/>
+            <arg type="s" direction="out"/>
+        </method>
+
+        <method name="getTalkerCapabilities1">
+            <arg name="talker" type="s" direction="in"/>
+            <arg type="i" direction="out"/>
+        </method>
+        
+        <method name="getTalkerCapabilities2">
+            <arg name="talker" type="s" direction="in"/>
+            <arg type="i" direction="out"/>
+        </method>
+        
+        <method name="getTalkerVoices">
+            <arg name="talker" type="s" direction="in"/>
+            <arg type="as" direction="out"/>
+        </method>
+
+        <method name="changeJobTalker">
+            <arg name="jobNum" type="i" direction="in"/>
+            <arg name="talker" type="s" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
 
-        <method name="showDialog">
+        <method name="moveJobLater">
+            <arg name="jobNum" type="i" direction="in"/>
+            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+        </method>
+
+        <method name="moveRelSentence">
+            <arg name="jobNum" type="i" direction="in"/>
+            <arg name="n" type="i" direction="in"/>
+            <arg type="i" direction="out"/>
+        </method>
+
+        <method name="showManagerDialog">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
 
@@ -177,72 +205,23 @@
         <method name="reinit">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
-
-        <method name="version">
-            <arg type="s" direction="out"/>
-        </method>
-
+        
         <signal name="kttsdStarted"/>
         
         <signal name="kttsdExiting"/>
         
-        <signal name="markerSeen">
+        <signal name="jobStateChanged">
             <arg name="appId" type="s"/>
-            <arg name="markerName" type="s"/>
+            <arg name="jobNum" type="i"/>
+            <arg name="state" type="i"/>
         </signal>
         
-        <signal name="sentenceStarted">
+        <signal name="marker">
             <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-            <arg name="seq" type="u"/>
+            <arg name="jobNum" type="i"/>
+            <arg name="markerType" type="i"/>
+            <arg name="markerData" type="s"/>
         </signal>
         
-        <signal name="sentenceFinished">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-            <arg name="seq" type="u"/>
-        </signal>
-
-        <signal name="textSet">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-
-        <signal name="textAppended">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-            <arg name="partNum" type="i"/>
-        </signal>
-
-        <signal name="textStarted">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-        
-        <signal name="textFinished">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-
-        <signal name="textStopped">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-        
-        <signal name="textPaused">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-
-        <signal name="textResumed">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-
-        <signal name="textRemoved">
-            <arg name="appId" type="s"/>
-            <arg name="jobNum" type="u"/>
-        </signal>
-
     </interface>
 </node>
