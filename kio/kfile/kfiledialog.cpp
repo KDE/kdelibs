@@ -764,7 +764,7 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     initStatic();
     d = new KFileDialogPrivate();
 
-    setButtons( 0 );
+    setButtons( KDialog::None );
 
     d->boxLayout = 0;
     d->keepLocation = false;
