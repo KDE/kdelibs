@@ -574,7 +574,7 @@ void RenderText::deleteInlineBoxes(RenderArena* arena)
     // We don't delete the array itself here because its
     // likely to be used in the same size later again, saves
     // us reserve() calls
-    int len = m_lines.capacity();
+    int len = m_lines.size();
     if (len) {
         if (!arena)
             arena = renderArena();
@@ -1220,7 +1220,7 @@ void RenderText::position(InlineBox* box, int from, int len, bool reverse)
     if(m_lines.count() == m_lines.capacity())
         m_lines.reserve(m_lines.capacity()*2+1);
 
-    m_lines.replace(m_lines.count(), s);
+    m_lines.append(s);
     //kDebug(6040) << this << " " << renderName() << "::position inserted" << endl;
 }
 
