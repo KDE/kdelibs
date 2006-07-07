@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
-             (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
+             (c) 2002,2003 Maksim Orlovich <maksim@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -290,13 +290,17 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 	else
 		result = new QPixmap(img->smoothScale( width ? width : img->width(),
 											   height ? height: img->height()));
+	delete img;
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
 
-	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
-
-	delete img;
+	if (!m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8)) {
+		QPixmap toRet = *result;
+		delete toAdd;
+		return toRet;
+	}
+	
 	return *result;
 }
 
