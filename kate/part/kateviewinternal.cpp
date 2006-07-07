@@ -690,7 +690,7 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     // if we lose the ability to scroll horizontally, move view to the far-left
     if (max == 0)
     {
-      m_startX = 0;
+      scrollColumns(0);
     }
 
     // disable scrollbar
