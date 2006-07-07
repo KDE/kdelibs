@@ -33,7 +33,7 @@
  *
  * Use normally as you would with a QGroupBox.
  *
- * @author Pino Toscano <tosca.pino@tiscali.it>
+ * @author Pino Toscano <toscano.pino@tiscali.it>
  */
 class KDEUI_EXPORT KButtonGroup
   : public QGroupBox
