@@ -681,8 +681,6 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
       lineRanges[z].clear();
     }
 
-    m_columnScroll->blockSignals(true);
-
     int max = maxLen(startLine()) - width();
     if (max < 0)
       max = 0;
@@ -692,6 +690,8 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
     {
       scrollColumns(0);
     }
+
+    m_columnScroll->blockSignals(true);
 
     // disable scrollbar
     m_columnScroll->setDisabled (max == 0);
