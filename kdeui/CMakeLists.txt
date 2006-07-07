@@ -8,15 +8,17 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+ ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 add_subdirectory( findreplace )
 add_subdirectory( widgets )
-add_subdirectory( tests )
+add_subdirectory( itemviews )
 add_subdirectory( liveui/tests )
 add_subdirectory( about )
+add_subdirectory( tests )
 
 
 ########### next target ###############
@@ -40,7 +42,6 @@ set(kdeui_LIB_SRCS
  kurllabel.cpp
  kmenubar.cpp
  kinputdialog.cpp
- k3listview.cpp
  knotificationrestrictions.cpp
  kprogressdialog.cpp
  kcolordialog.cpp
@@ -71,8 +72,6 @@ set(kdeui_LIB_SRCS
  kmessagebox.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
- k3iconview.cpp
- klistbox.cpp
  kwordwrap.cpp
  kbugreport.cpp
  kpassworddialog.cpp
@@ -101,9 +100,7 @@ set(kdeui_LIB_SRCS
  kconfigdialog.cpp
  kactionselector.cpp
  klanguagebutton.cpp
- k3listviewsearchline.cpp
  kwhatsthismanager.cpp
- k3iconviewsearchline.cpp
  kpixmapregionselectorwidget.cpp
  kpixmapregionselectordialog.cpp
  ktoolbarlabelaction.cpp
@@ -115,7 +112,6 @@ set(kdeui_LIB_SRCS
  ktoolbarspaceraction.cpp
  kmanagerselection.cpp
  kglobalaccel.cpp
- ktreewidgetsearchline.cpp
  kkeyserver.cpp
  kcompletionbase.cpp
  kcompletion.cpp
@@ -126,6 +122,12 @@ set(kdeui_LIB_SRCS
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
  liveui/kliveui.cpp
+ itemviews/k3iconview.cpp
+ itemviews/k3iconviewsearchline.cpp
+ itemviews/k3listview.cpp
+ itemviews/k3listviewsearchline.cpp
+ itemviews/klistbox.cpp
+ itemviews/ktreewidgetsearchline.cpp
  widgets/kbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
@@ -237,9 +239,6 @@ install( FILES
  khelpmenu.h
  kcmodule.h
  kstdaction.h
- k3iconview.h
- k3listview.h
- klistbox.h
  kbugreport.h
  kpassworddialog.h
  kxmlguiclient.h
@@ -263,10 +262,8 @@ install( FILES
  kconfigdialog.h
  kactionselector.h
  klanguagebutton.h
- k3listviewsearchline.h
  kpixmapregionselectorwidget.h
  kpixmapregionselectordialog.h
- k3iconviewsearchline.h
  ktoolbarlabelaction.h
  kshortcutdialog.h
  kconfigdialogmanager.h
@@ -276,7 +273,6 @@ install( FILES
  ktoolbarspaceraction.h
  kmanagerselection.h
  kglobalaccel.h
- ktreewidgetsearchline.h
  kkeyserver_x11.h
  kkeyserver.h
  kcompletion.h
