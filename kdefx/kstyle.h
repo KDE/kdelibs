@@ -47,362 +47,8 @@ class QStyleOptionTab;
 /**
  * Makes style coding more convenient and allows to style KDE specific widgets.
  *
- * KStyle strives to ease style layout handling. Based on information obtained
- * from widgetLayoutProperty(), it implements many elements
- * of QStyle::subElementRect(), QStyle::sizeFromContents() (TODO: and
- * QStyle::pixelMetric()?).
- *
- * KStyle implements various elements of QStyle::drawComplexControl()
- * and QStyle::drawControl() for convenience. Usually complex drawing is
- * split into smaller pieces, which can be text, icons, or other KStyle primitives.
- * Drawing of these primitives is done in drawKStylePrimitive(). During this
- * 'composition' of primitives, metrics from widgetLayoutProperty() are
- * respected as well.
- *
- * \par PushButton
- * Draw widgets like QPushButton.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text the button's text
- * - @c KPE_Generic_FocusIndicator indicating that the button has keyboard focus
- * - @c KPE_Generic_ArrowDown indicating that the button has a popup menu associated to it
- * - @c QStyle::PE_PanelButtonCommand Panel of a button, e.g. a QPushButton
- * - @c QStyle::PE_FrameDefaultButton Frame indicating default button. The normal
- *      button panel is drawn inside/above it.
- * - LayoutProperties prefixed with LP_PushButton_
- * - @c WT_PushButton
- * - KStyle implements @c QStyle::CE_PushButtonBevel to compose the above primitives.
- *   Styles usually don't need to implement this.
- *
- * @note some KStyle primitives (KPE_*) here may be called without a QStyleOptionButton. @todo: check if this is actually the case...
- *
- * The layout of a PushButton is structured as follows:
- * -# Between the very outside and the bevel is the default indicator
- *    area, controlled by the @c LP_PushButton_DefaultIndicatorMargin .
- * -# From the bevel, the content and focus rect margins are measured.
- *    Only the content margin is used to size the content area.
- * -# Inside the content area, @c LP_PushButton_MenuIndicatorSize is allocated to the down
- *    arrow if there is a popup menu.
- * -# @c LP_PushButton_TextToIconSpace is allocated between icon and text if both exist
- *
- * @todo create diagrams to illustrate the meaning of the metrics...?
- *
- *
- * \par Splitter
- * Draw widgets like QSplitter.
- *
- * Relevant elements:
- * - @c QStyle::CE_Splitter draws the splitter handle. Interesting flags:
- *     - State_Enabled&&State_MouseOver for mouseOver
- *     - State_Horizontal for orientation
- * - LayoutProperties prefixed with LP_Splitter_
- *
- *
- * \par CheckBox
- * Draw widgets like QCheckBox.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text the CheckBox label alongside the CheckBox
- * - @c KPE_Generic_FocusIndicator the focus indicator. Usually drawn around the
- *      text label. If no label exists, it is drawn around the CheckBox.
- * - @c QStyle::PE_IndicatorCheckBox Check state indicator. Interesting
- *      flags:
- *     - State_NoChange for tristate (neither off nor on),
- *     - else if State_On for checked,
- *     - else not checked
- * - LayoutProperties prefixed with LP_CheckBox_
- * - KStyle implements @c QStyle::CE_CheckBox to compose a CheckBox, using the
- *     mentioned primitives. Styles usually don't need to implement this.
- *
- * @todo code example for the PE_IndicatorCheckBox switch...
- * @todo shouldn't PE_IndicatorCheckBox only render the check-mark and the
- *       checkbox bevel should be painted in CE_CheckBox...?!
- *
- *
- * \par RadioButton
- * Draw widgets like QRadioButton.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text the RadioButton label alongside the RadioButton
- * - @c KPE_Generic_FocusIndicator the keyboard focus indicator
- * - @c QStyle::PE_IndicatorRadioButton Radio button state indicator. Interesting
- *      flags:
- *     - State_On for checked,
- *     - else not checked
- * - LayoutProperties prefixed with LP_RadioButton_
- * - KStyle implements @c QStyle::CE_RadioButton to compose a RadioButton, using the
- *   mentioned primitives. Styles usually don't need to implement this.
- *
- * @todo code example for the PE_IndicatorRadioButton flag switch...
- *
- *
- * \par DockWidgetTitle
- * Draw the title of a dock widget.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text the title text
- * - LayoutProperties prefixed with LP_DockWidgetTitle_
- * - KStylePrimitiveElements prefixed with KPE_DockWidgetTitle_
- * - KStyle implements @c QStyle::CE_DockWidgetTitle to split it into KStyle primitives.
- *
- * @todo need to add a few more layout properties/pixel metric values for dock widgets...
- *
- * @todo Create doxygen modules for each widget for some detailed information...?
- *
- * \par Generic Primitives
- * Basic primitive drawing operations. The only KStylePrimitiveElements which
- * are intended to be used in every WidgetType combination.
- *
- * Relevant elements:
- * - KStylePrimitiveElements prefixed with KPE_Generic_
- *
- * @note the arrows are centering primitives
- * @todo explain what a centering primitive is
- *
- *
- * \par ProgressBar
- * Draw widgets like QProgressBar.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text the progress label
- * - @c QStyle::CE_ProgressBarGroove The groove where progress indicator
- *      is drawn in
- * - LayoutProperties prefixed with LP_ProgressBar_
- * - KStylePrimitiveElements prefixed with KPE_ProgressBar_
- *
- * @todo support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
- *
- *
- * \par MenuBar
- * Draw widgets like QMenuBar.
- *
- * Relevant elements:
- * - @c QStyle::CE_MenuBarEmptyArea Empty area of a menu bar, e.g. background
- *      color or menubar separators (?)...
- * - LayoutProperties prefixed with LP_MenuBar_
- *
- *
- * \par MenuBarItem
- * Draw MenuBar items.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text text appearing as menubar entry
- * - LayoutProperties prefixed with LP_MenuBarItem_
- * - KStylePrimitiveElements prefixed with KPE_MenuBarItem_
- *
- *
- * \par Menu
- * Draw a menu.
- *
- * Relevant elements:
- * - @c KPE_Generic_Frame frame around the menu panel
- * - @c QStyle::CE_MenuTearoff Paints the area where a menu can be teared off
- * - @c QStyle::CE_MenuScroller Scrolling areas in a QMenu
- * - LayoutProperties prefixed with LP_Menu_
- * - KStylePrimitiveElements prefixed with KPE_Menu_
- *
- *
- * \par MenuItem
- * Draw an item in a menu.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text the text of the menu item
- * - @c KPE_Generic_ArrowLeft @c KPE_Generic_ArrowRight arrows indicating a sub-menu
- * - LayoutProperties prefixed with LP_MenuItem_
- * - KStylePrimitiveElements prefixed with KPE_MenuItem_
- *
- * MenuItems are layouted like this:
- * -# There are two MenuItem modes, toggled by @c LP_MenuItem_CheckAlongsideIcon.
- *    Horizontal layout inside the items is as follow:
- *     - @c LP_MenuItem_CheckAlongsideIcon disabled:
- *          |icon/checkmark|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
- *     - @c LP_MenuItem_CheckAlongsideIcon enabled:
- *          |checkmark|CheckSpace|icon|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
- * -# The icon/checkmark column is at least @c LP_MenuItem_CheckWidth wide in all cases.
- * -# Then the margin is applied outside that.
- *
- * @note For the subprimitives the passed rect is their own.
- *
- *
- * \par ScrollBar
- * Draw widgets like QScrollBar.
- *
- * Relevant elements:
- * - The @c KPE_Generic_ arrows
- * - @c QStyle::CE_ScrollBarSlider Interesting flags:
- *     - @c State_Horizontal for orientation,
- *     - @c State_Sunken for pressed state
- * - @c CE_ScrollBarAddPage @c CE_ScrollBarSubPage The scrollbar groove area.
- *      Interesting flags:
- *     - @c State_Horizontal for scrollbar orientation,
- *     - @c State_On&&State_Sunken for pressed state
- * - LayoutProperties prefixed with LP_ScrollBar_
- * - KStylePrimitiveElements prefixed with KPE_ScrollBar_
- *
- * @note Dimensions of LayoutProperties are generally specified with respect
- *       to the vertical scrollbar. Of course, for horizontal ones they're flipped.
- *
- *
- * \par TabBar
- * Draw a tab bar.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text for the TabBar labels
- * - @c KPE_Generic_FocusIndicator for focussed tabs
- * - @c KPE_Generic_Icon for icons associated to tabs
- * - LayoutProperties prefixed with LP_TabBar_
- * - KStylePrimitiveElements prefixed with KPE_TabBar_
- *
- * Each tab is basically built hiearchically out of the following areas:
- * -# Content area, one of the following layouts:
- *     - Icon <- TextToIconSpace -> Text
- *     - Icon
- *     - Text
- * -# Bevel: @c LP_TabBar_TabContentsMargin outside of the content area
- * -# Focus indicator is placed @c LP_TabBar_TabFocusMargin inside the bevel
- *
- * @note The side tabs just have those rotated, bottom tabs have the margins reversed.
- *
- *
- * \par TabWidget
- * Draw a tab widget (frame).
- *
- * Relevant elements:
- * - @c KPE_Generic_Frame for the frame/panel of the TabWidget
- * - LayoutProperties prefixed with LP_TabWidget_
- *
- *
- * \par Slider
- * Draw a slider, like QSlider.
- *
- * Relevant elements:
- * - @c KPE_Generic_FocusIndicator indicating keyboard focus
- * - LayoutProperties prefixed with LP_Slider_
- * - KStylePrimitiveElements prefixed with KPE_Slider_
- *
- * @todo Custom slider tickmarks?
- *
- *
- * \par Tree
- * Draw an expandable tree, e.g. in a QListView.
- *
- * Relevant elements:
- * - LayoutProperties prefixed with LP_Tree_
- * - KStylePrimitiveElements prefixed with KPE_Tree_
- *
- * For trees, all the control we provide here is to provide a cap on the size
- * of the expander widget, which is always square. There are 4 primitives to
- * implement: open and closed expander, and horizontal and vertical lines.
- * If you're using dots, it's suggested you use global brush alignment to
- * keep it all nicely aligned.
- *
- * The default implementation has a Windows-like look.
- *
- * @note If you set MaxExpanderSize to a value less than 9, designer will
- *       look funny. The value should also be odd, or value - 1 will be used.
- *
- *
- * \par SpinBox,
- * Draw a widget like QSpinBox.
- *
- * Relevant elements:
- * - @c KPE_Generic_Frame for the area around text input field and buttons
- * - @c KPE_Generic_ArrowUp @c KPE_Generic_ArrowDown drawn on the buttons
- * - LayoutProperties prefixed with LP_SpinBox_
- * - KStylePrimitiveElements prefixed with KPE_SpinBox_
- *
- * @note The description applies to LTR (left to right) mode.
- *
- * -# @c LP_SpinBox_FrameWidth and @c LP_SpinBox_ButtonWidth are used to size
- * the contents area. To the EditField, @c LP_SpinBox_FrameWidth
- * is added at the left, top, bottom while @c LP_SpinBox_ButtonWidth is added
- * at the right.
- * -# The @c LP_SpinBox_ButtonMargin is measured from the right side of the
- * EditField and the outside. Inside it, the up and down buttons are aligned with
- * spacing ButtonSpacing.
- * -# To make sure that both buttons are always of the same height, enable
- * @c LP_SpinBox_SymmetricButtons.
- *
- *
- * \par ComboBox
- * Draw a widget like QComboBox.
- *
- * Relevant elements:
- * - @c KPE_Generic_Frame for the area around text input field and button
- * - @c KPE_Generic_ArrowDown drawn on the button
- * - @c KPE_Generic_FocusIndicator to indicate keyboard focus
- * - LayoutProperties prefixed with LP_ComboBox_
- * - KStylePrimitiveElements prefixed with KPE_ComboBox_
- *
- * @note The description applies to LTR (left to right) mode.
- *
- * -# @c LP_ComboBox_FrameWidth and @c LP_ComboBox_ButtonWidth are used to size
- * the contents area. To the EditField, @c LP_ComboBox_FrameWidth
- * is added at the left, top, bottom while @c LP_ComboBox_ButtonWidth is added
- * at the right.
- * -# The @c LP_ComboBox_ButtonMargin is measured from the right side of the
- * EditField and the outside. Inside it, the button is aligned.
- * -# The FocusMargin is measured from the EditField rect.
- *
- *
- * \par Header
- * Draw a list header, like in QListView.
- *
- * Relevant elements:
- * - @c KPE_Generic_Text for the header text label
- * - @c KPE_Generic_ArrowUp @c KPE_Generic_ArrowDown to indicate the sorting of the column
- * - @c KPE_Generic_FocusIndicator for header drag&drop? (TODO: I'm not sure)
- * - LayoutProperties prefixed with LP_Header_
- * - KStylePrimitiveElements prefixed with KPE_Header_
- *
- * \par LineEdit
- * Draw a text edit widget like QLineEdit.
- *
- * Relevant elements:
- * - @c KPE_Generic_Frame (?)
- * - KStylePrimitiveElements prefixed with KPE_LineEdit_ (Panel)
- *
- * @todo Add property for the specific FrameWidth of a LineEdit?
- * @todo Use the PE_ elements directly instead of KPE_...
- *
- *
- * \par GroupBox
- * Draw something like QGroupBox.
- *
- * Relevant elements:
- * - @c KPE_Generic_Frame
- *
- * @todo What about frame width etc.?
- * @todo Use PE_FrameGroupBox instead...!
- *
- *
- * \par ToolBar
- * Draw a tool bar.
- *
- * Relevant elements:
- * - LayoutProperties prefixed with LP_ToolBar_
- * - KStylePrimitiveElements prefixed with KPE_ToolBar_
- *
- * @todo Use PE_IndicatorToolBarHandle, PE_IndicatorToolBarSeparator,
- *       KPE_ToolBar_Separator instead...!
- *
- *
- * \par ToolButton
- * Draw widgets like QToolButton (usually inside a QToolBar).
- *
- * Relevant elements:
- * - @c KPE_Generic_ArrowDown indicating an associated sub-menu
- * - @c QStyle::PE_PanelButtonTool Panel of a tool button
- *
- * @c LP_ToolButton_ContentsMargin is used to size the contents.
- *
- * @todo Implement CE_ToolButtonLabel to have own Generic::Text, Generic::Icon,
- *       and LayoutProps PressedShiftHorizontal, PressedShiftVertical,
- *       TextToIconSpace, MenuIndicatorSize...
- *
- * \par Maintainer: Sandro Giessl (giessl\@kde.org)
+ * \par Maintainer: Sandro Giessl (giessl@kde.org)
  */
-
 // TODO: From 'Qt4 Themes' discussion on kde-devel
 // - Remi Villatel: extend QStyle enums for KColorButton, KColorCombo, KKeyButton, split PE_HeaderSection into KPopupTitle, PopupMenuTitle, TaskContainer)
 // - RV: KLineEdit "plays with its colors" - related to KStyle?
@@ -410,6 +56,7 @@ class QStyleOptionTab;
 // - RV: KTabCtl draws itself mimicking QDrawShadeThingies
 // - RV: fixed colors (e.g. Konqueror, KToolbarButton label text ->KPE_ToolbarButton?): To prevent hacks like "preventing any PaletteChange()"... mor related to KDE4 color schemes... I guess
 // - Luciano Montanaro: Many apps assume fixed border size; make pixelMetric() used pervasively: Performance and Documentation disadvantage of current KStyle
+// - LM: make current KStyle layoutMetrics not stored in QVector, but in a method with switches... so they don't need to be constant (e.g. dependent of widget text size)
 // - LM: User interface guidelines... related to KStyle?
 // - e.g. drawFancyPE() in kdeui for KDE widgets: check "qobject_cast<KStyle*>(style())", or fallback drawing...
 // TODO: implement standardIcon().. and what about standardPalette()?
@@ -669,7 +316,7 @@ protected:
     enum WidgetType
     {
         WT_Generic,       
-        WT_PushButton,      ///< Like QPushButton
+        WT_PushButton,    ///Push button and similar
         WT_Splitter,      
         WT_CheckBox,
         WT_RadioButton,
@@ -698,7 +345,7 @@ protected:
     /**
      These constants describe how to access various fields of a margin property.
      For example, to set an additional top margin of 2 pixels, use
-     setWidgetLayoutProp(WT_SomeWidget, SomeMargin + Top, 2); // TODO: update example to new API
+     setWidgetLayoutProp(WT_SomeWidget, SomeMargin + Top, 2);
     */
     enum MarginOffsets
     {
@@ -709,234 +356,657 @@ protected:
         Right,
         MarginInc
     };
-
-    /**
-     * Properties which are used by KStyle to adjust widget layout etc.
-     *
-     * @sa widgetLayoutProp()
-     */
-    enum LayoutProperties
+       
+    ///Basic primitives, which may be used with everything
+    struct Generic
     {
-        LP_Generic_DefaultFrameWidth, ///< The FrameWidth used by LineEdit, ... TODO: find a better place for the layoutProp... TODO: simple use QStyle pixelMetric()?
+	/** Layout properties. These can be set with setWidgetLayoutProp() */
+        enum LayoutProp
+        {
+            DefaultFrameWidth   ///< The FrameWidth used by LineEdit, ... TODO: find a better place for the layoutProp
+        };
 
-        LP_PushButton_ContentsMargin, ///< Space between the bevel and the button contents
-        LP_PushButton_FocusMargin = LP_PushButton_ContentsMargin + MarginInc, ///< Used to calculate the area of the focus indicator. Measured from the bevel.
-        LP_PushButton_DefaultIndicatorMargin = LP_PushButton_FocusMargin    + MarginInc, ///< Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake.
-        LP_PushButton_PressedShiftHorizontal = LP_PushButton_DefaultIndicatorMargin + MarginInc, ///< Horizontal contents shift for pressed buttons
-        LP_PushButton_PressedShiftVertical, ///< Vertical contents shift for pressed buttons
-        LP_PushButton_MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu
-        LP_PushButton_TextToIconSpace, ///< Space between the icon and the text if both exist
-
-        LP_Splitter_Size, ///< Size of the splitter handle
-
-        LP_CheckBox_Size,               ///< Size of the checkbox
-        LP_CheckBox_BoxTextSpace,       ///< Space to leave between checkbox and text
-        LP_CheckBox_NoLabelFocusMargin, ///< Rectangle to apply to the checkbox rectangle to get where to
-                                ///< paint the focus rectangle in case of a labelless checkbox
-        LP_CheckBox_FocusMargin = LP_CheckBox_NoLabelFocusMargin + MarginInc,
-
-        LP_RadioButton_Size = LP_CheckBox_FocusMargin + MarginInc,
-        LP_RadioButton_BoxTextSpace,
-
-    /** @defgroup group3 The Third Group
-         *  This is the third group
-     */
-
-        /**
-         * @ingroup group3
-         * This is some element for focus margin... TODO: fix description.
-         */
-        LP_RadioButton_FocusMargin,
-
-        LP_DockWidgetTitle_Margin = LP_RadioButton_FocusMargin + MarginInc, ///<Margin for the title: note that this is a symmetric margin always!
-
-        LP_ProgressBar_GrooveMargin = LP_DockWidgetTitle_Margin + MarginInc,        ///<Margin to allocate for the groove. Content area will be inside of it.
-        LP_ProgressBar_SideText = LP_ProgressBar_GrooveMargin + MarginInc, ///<Set this to true to have the text positionned to the side
-        LP_ProgressBar_SideTextSpace,       ///<Extra space besides that needed for text to allocate to side indicator (on both sides)
-        LP_ProgressBar_Precision,           ///<The indicator size will always be a multiple of this (modulo busy indicator size clamping)
-        LP_ProgressBar_BusyIndicatorSize,   ///<The busy indicator size, in percent of area size
-        LP_ProgressBar_MaxBusyIndicatorSize, ///<Size limit on the busy indicator size;
-
-
-        LP_MenuBar_Margin,         //Margin rectangle for the contents.
-        LP_MenuBar_ItemSpacing = LP_MenuBar_Margin + MarginInc, //Space between items
-
-        LP_MenuBarItem_Margin,                    //Margin rectangle to allocate for any bevel, etc. (Text will be drawn with the inside rect)
-
-        LP_Menu_FrameWidth = LP_MenuBarItem_Margin + MarginInc, ///< The width of the frame, note that this does not affect the layout.
-        LP_Menu_Margin,     ///< The margin of the menu
-        LP_Menu_ScrollerHeight = LP_Menu_Margin + MarginInc,
-        LP_Menu_TearOffHeight,
-
-        LP_MenuItem_Margin,       //Margin for each entry
-        LP_MenuItem_CheckAlongsideIcon = LP_MenuItem_Margin + MarginInc, //Set to non-zero to have checkmarks painted separate from icons
-        LP_MenuItem_CheckWidth,                      //Size of the checkmark column (CheckAlongsideButton enabled)
-        LP_MenuItem_CheckSpace,                      //Space between the checkmark column and the icon column (CheckAlongsideButton enabled)
-        LP_MenuItem_IconWidth,                       //Minimum size of the icon column
-        LP_MenuItem_IconSpace,                       //Space between the icon column and text one
-        LP_MenuItem_AccelSpace,                      //Space between text and accel
-        LP_MenuItem_ArrowSpace,                      //Space to reserve for the menu arrow
-        LP_MenuItem_ArrowWidth,
-        LP_MenuItem_SeparatorHeight,                  //Heigh of separator
-        LP_MenuItem_MinHeight,                        //Limit on the size of item content
-        LP_MenuItem_ActiveTextColor,                  //Color for active text and arrow
-        LP_MenuItem_TextColor,                        //Color for inactive text and arrow
-        LP_MenuItem_DisabledTextColor,                //Color for inactive + disabled text and arrow
-        LP_MenuItem_ActiveDisabledTextColor,           //Color for active + disabled text and arrow
-
-        LP_ScrollBar_DoubleTopButton, //Set to non-zero to have two buttons on top
-        LP_ScrollBar_DoubleBotButton, //Set to non-zero to have two buttons on bottom
-        LP_ScrollBar_SingleButtonHeight,
-        LP_ScrollBar_DoubleButtonHeight,
-        LP_ScrollBar_BarWidth,
-        LP_ScrollBar_MinimumSliderHeight, //Note: if the scrollbar is too small to accommodate
-                                 //this, this will not be enforced
-        LP_ScrollBar_ArrowColor,
-        LP_ScrollBar_ActiveArrowColor,
-
-        LP_TabBar_TabContentsMargin,
-        LP_TabBar_TabFocusMargin     = LP_TabBar_TabContentsMargin + MarginInc,
-        LP_TabBar_TabTextToIconSpace = LP_TabBar_TabFocusMargin    + MarginInc,
-        LP_TabBar_TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed.
-        LP_TabBar_BaseHeight,        // The height of the tabBar's base. usually the frame width.
-        LP_TabBar_BaseOverlap,       // The number of pixels the tabs overlap with the base (i.e. tabWidget frame).
-        LP_TabBar_ScrollButtonWidth,  // Buttons which are shown when there's not enough space for tabs.
-
-        LP_TabWidget_FrameWidth,  // TODO: this is ignored for now. See SE_TabWidgetTabContents comment.
-
-        LP_Slider_HandleThickness,                        // The height of a slider in horizontal direction
-        LP_Slider_HandleLength,                            // The width of a slider in horizontal direction
-
-        LP_Tree_MaxExpanderSize,
-
-        LP_SpinBox_FrameWidth,
-        LP_SpinBox_ButtonWidth,
-        LP_SpinBox_ButtonMargin,
-        LP_SpinBox_ButtonSpacing = LP_SpinBox_ButtonMargin + MarginInc,
-        LP_SpinBox_SymmetricButtons,  // Set to non-zero to make sure both buttons are always of the same
-                               // height. To achieve this, the spacing of the buttons will be reduced
-                               // by 1 if necessary to avoid rounding problems. Needs to be handled
-                               // in your drawing code.
-        LP_SpinBox_SupportFrameless,   // Set to non-zero to indicate that you are able to handle frame-less
-                               // SpinBoxes. For a SpinBox with no frame, FrameWidth and
-                               // Top/Bottom/Right ButtonMargin is ignored.
-
-        LP_ComboBox_FrameWidth,
-        LP_ComboBox_ButtonWidth,
-        LP_ComboBox_ButtonMargin,
-        LP_ComboBox_FocusMargin = LP_ComboBox_ButtonMargin + MarginInc,    // Focus margin for ComboBoxes that aren't editable
-        LP_ComboBox_SupportFrameless = LP_ComboBox_FocusMargin + MarginInc, // Set to non-zero to indicate that you are able to handle frame-less
-                               // ComboBoxes. For a ComboBox with no frame, FrameWidth and
-                               // Top/Bottom/Right ButtonMargin is ignored.
-
-        LP_Header_ContentsMargin,                                // used to size the contents.
-        LP_Header_TextToIconSpace = LP_Header_ContentsMargin + MarginInc,  // space that is allocated between icon and text if both exist
-        LP_Header_IndicatorSize,
-
-        LP_ToolBar_HandleExtent,       // The width(hor)/height(vert) of a ToolBar handle
-        LP_ToolBar_SeparatorExtent,    // The width/height of a ToolBar separator
-        LP_ToolBar_ExtensionExtent,    // The width/height of a ToolBar extender, when there is not enough room for toolbar buttons
-        LP_ToolBar_PanelFrameWidth,
-        LP_ToolBar_ItemMargin,
-        LP_ToolBar_ItemSpacing,
-
-        LP_ToolButton_ContentsMargin,
-        LP_ToolButton_FocusMargin = LP_ToolButton_ContentsMargin + MarginInc,
-        LP_ToolButton_Dummy       = LP_ToolButton_FocusMargin + MarginInc,
-
-        LP_Limit = 0xFFFF ///For enum extensibility...
+	/**
+	 Primitive drawing operations.
+	 @note the arrows are centering primitives
+	 @todo explain what a centering primitive is
+	*/
+        enum Primitive
+        {
+            Text = 0xFFFF,  ///< Passes in TextOption
+            Icon,           ///< Passes in IconOption
+            FocusIndicator, ///< Indication that this widget has focus
+            Frame,          ///< Frame around widget
+            ArrowUp,        ///< Up arrow (pointing up)
+            ArrowDown,      ///< Down arrow
+            ArrowRight,     ///< Right arrow
+            ArrowLeft       ///< Left arrow
+        };
     };
 
     /**
-     * Primitives which are used by KStyle to paint QStyle elements.
+     * Layout properties and primitives relevant for rendering buttons, like QPushButton
      *
-     * @sa drawKStylePrimitive()
+     * Generic KStyle primitives used:
+     * @li @c Text
+     * @li @c FocusIndicator
+     * @li @c ArrowDown
+     *
+     * @note some primitives here may be called without a QStyleOptionButton. TODO: check if this is actually the case...
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_PanelButtonCommand Panel of a button, e.g. a QPushButton
+     * @li @c QStyle::PE_FrameDefaultButton Frame indicating default button. The normal
+     * button panel is drawn inside/above it.
+     * @li @c QStyle::CE_PushButtonBevel Implemented by KStyle to compose the above primitives
      */
-    enum KStylePrimitiveElements
+    struct PushButton
     {
-        KPE_Generic_Text,  ///< Passes in TextOption
-        KPE_Generic_Icon,           ///< Passes in IconOption
-        KPE_Generic_FocusIndicator, ///< Indication that this widget has focus
-        KPE_Generic_Frame,          ///< Frame around widget
-        KPE_Generic_ArrowUp,        ///< Up arrow (pointing up)
-        KPE_Generic_ArrowDown,      ///< Down arrow
-        KPE_Generic_ArrowRight,     ///< Right arrow
-        KPE_Generic_ArrowLeft,       ///< Left arrow
+        /**
+         Push button. These are structured as follows:
+         
+         1. Between the very outside and the bevel is the default indicator 
+         area, controlled by the DefaultIndicatorMargin. 
+         
+         2. From the bevel, the content and focus rect margins are measured.
+         Only the content margin is used to size the content area.
+         
+         Inside the content area, MenuIndicatorSize is allocated to the down
+         arrow if there is a popup menu.
+         
+         TextToIconSpace is allocated between icon and text if both exist
+        */
+        // TODO: create diagrams to illustrate the meaning of the metrics...?
+        enum LayoutProp
+        {
+            ContentsMargin, ///< Space between the bevel and the button contents
+            FocusMargin            = ContentsMargin + MarginInc, ///< Used to calculate the area of the focus indicator. Measured from the bevel.
+            DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake.
+            PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc, ///< Horizontal contents shift for pressed buttons
+            PressedShiftVertical, ///< Vertical contents shift for pressed buttons
+            MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu
+            TextToIconSpace ///< Space between the icon and the text if both exist
+        };
+    };
 
-        KPE_DockWidgetTitle_Panel,  ///< The panel/background of the title bar
+    /**
+     * Layout properties and primitives relevant for rendering splitters, like QSplitter
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_Splitter flags that should be of interest: (State_Enabled&&State_MouseOver for mouseOver), State_Horizontal for orientation (TODO: get this documentation upstream to QStyle)
+     */
+    // TODO: Implement splitters...!!
+    struct Splitter
+    {
+        enum LayoutProp
+        {
+            Size ///< Size of the splitter handle
+        };
+    };
 
-        KPE_ProgressBar_Indicator,
-        KPE_ProgressBar_BusyIndicator,
+    /**
+     * Layout properties and primitives relevant for rendering checkboxes, like QCheckBox
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     * @li @c FocusIndicator
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_IndicatorCheckBox Check state indicator. Interesting
+     * flags: State_NoChange for tristate (neither off nor on), else if State_On for
+     * checked, else not checked (TODO: code example)
+     * @li @c QStyle::CE_CheckBox Where KStyle composes a check box, also using the
+     * above indicator primitive. Styles usually don't need to implement this.
+     */
+    // TODO: shouldn't PE_IndicatorCheckBox only render the check-mark and the checkbox bevel should be painted in CE_CheckBox...?!
+    struct CheckBox
+    {
+	/** Layout properties for checkboxes. */
+        enum LayoutProp
+        {
+            Size,               ///< Size of the checkbox
+            BoxTextSpace,       ///< Space to leave between checkbox and text
+            NoLabelFocusMargin, ///< Rectangle to apply to the checkbox rectangle to get where to
+                                ///< paint the focus rectangle in case of a labelless checkbox
+            FocusMargin = NoLabelFocusMargin + MarginInc
+        };
+    };
 
-        KPE_MenuBarItem_Panel,      ///< The panel/background of a menubar item. Interesting flags: State_Selected && State_HasFocus for mouseOver, State_Sunken for pressed state.
+    /**
+     * Layout properties and primitives relevant for rendering radiobuttons, like QRadioButton
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     * @li @c FocusIndicator
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_IndicatorRadioButton Radio button state indicator. Interesting
+     * flags: State_On for checked, else not checked (TODO: code example)
+     * @li @c QStyle::CE_RadioButton Where KStyle composes a radio button, also using the
+     * above indicator primitive. Styles usually don't need to implement this.
+     */
+    struct RadioButton
+    {
+        //See CheckBox for description of the metrics
+        enum LayoutProp
+        {
+            Size,
+            BoxTextSpace,
+            FocusMargin
+        };
+    };
+    
 
-        KPE_Menu_Background, //Menu and menu item background
+    /**
+     * Layout properties and primitives relevant for rendering the title of a dock widget
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_DockWidgetTitle Reimplemented by KStyle to split the element
+     * into KStyle primitives
+     */
+    struct DockWidgetTitle
+    {
+        /** Enumerate the layout properties in the expected way. */
+        // TODO: need to add a few more layout properties/pixel metric values for dock widgets...
+        enum LayoutProp
+        {
+            Margin ///<Margin for the title: note that this is a symmetric margin always!
+        };
 
-        KPE_MenuItem_CheckColumn, //Background of the checkmark/icon column
-        KPE_MenuItem_CheckOn,     //The checkmark - on
-        KPE_MenuItem_CheckOff,    //The checkmark - off
-        KPE_MenuItem_RadioOn,     //The checkmark of exclusive actions - on
-        KPE_MenuItem_RadioOff,    //The checkmark of exclusive actions - off
-        KPE_MenuItem_CheckIcon,   //Checked mark, painted below the icon when LayoutProp CheckAlongsideButton is disabled.
-        KPE_MenuItem_Separator,   //A separator item.
-        KPE_MenuItem_ItemIndicator, //Shows the active item
+        enum Primitive
+        {
+            Panel       ///< The panel/background of the title bar
+        };
+    };
 
+    /**
+     * Layout properties and primitives relevant for rendering progress bars
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_ProgressBarGroove The groove where progress indicator
+     * is drawn in
+     */
+    struct ProgressBar
+    {
+	/** Layour properties for the progress bar. */
+        enum LayoutProp
+        {
+            GrooveMargin,        ///<Margin to allocate for the groove. Content area will be inside of it.
+            SideText = GrooveMargin + MarginInc, ///<Set this to true to have the text positionned to the side
+            SideTextSpace,       ///<Extra space besides that needed for text to allocate to side indicator (on both sides)
+            Precision,           ///<The indicator size will always be a multiple of this (modulo busy indicator size clamping)
+            BusyIndicatorSize,   ///<The busy indicator size, in percent of area size
+            MaxBusyIndicatorSize ///<Size limit on the busy indicator size;
+            
+        };
+
+        // TODO: support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
+        enum Primitive
+        {
+            Indicator,
+            BusyIndicator
+        };
+    };
+
+    /**
+     * Layout properties and primitives relevant for rendering menubars, like QMenuBar
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_MenuBarEmptyArea Empty area of a menu bar, e.g. background color or menubar separators (?)...
+     */
+    struct MenuBar
+    {
+        enum LayoutProp
+        {
+            Margin,         //Margin rectangle for the contents.
+            ItemSpacing = Margin + MarginInc //Space between items
+        };
+    };
+
+    /**
+     * Layout properties and primitives relevant for rendering menubar items
+     *
+     * Generic KStyle primitives used:
+     * @li @c Text
+     */
+    struct MenuBarItem
+    {
+        enum LayoutProp
+        {
+            Margin,                    //Margin rectangle to allocate for any bevel, etc. (Text will be drawn with the inside rect)
+            Dummy = Margin + MarginInc //Paranoia about underlying type
+        };
+
+        enum Primitive
+        {
+            Panel       ///< The panel/background of a menubar item. Interesting flags: State_Selected && State_HasFocus for mouseOver, State_Sunken for pressed state.
+        };
+    };
+
+    /**
+     * Layout properties and primitives relevant for rendering menus
+     *
+     * Generic KStyle primitives used:
+     * @li @c Frame
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_MenuTearoff Paints the area where a menu can be teared off
+     * @li @c QStyle::CE_MenuScroller Scrolling areas in a QMenu
+     */
+    struct Menu
+    {
+        enum LayoutProp
+        {
+            FrameWidth, ///< The width of the frame, note that this does not affect the layout.
+            Margin,     ///< The margin of the menu
+            ScrollerHeight = Margin + MarginInc,
+            TearOffHeight
+        };
+
+        enum Primitive
+        {
+            Background //Menu and menu item background
+        };
+    };
+
+    /**
+     Note: bg is erased with WT_Menu/Menu::Background.
+     The Generic::Text, Generic::ArrowLeft/Right primitives
+     are also used
+
+     There are two MenuItem modes, toggled by CheckAlongsideButton.
+     Horizontal layout inside the items is as follow:
+     - CheckAlongsideButton disabled:
+
+                  |icon/checkmark|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
+
+     - Layout with CheckAlongsideButton enabled:
+
+       |checkmark|CheckSpace|icon|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
+
+     The icon/checkmark column is at least CheckWidth wide in all cases.
+
+     Then the margin is applied outside that
+
+     Note that for the subprimitives the passed rect is their
+     own, 
+    */
+    struct MenuItem
+    {
+        enum LayoutProp
+        {
+            Margin,       //Margin for each entry
+            CheckAlongsideIcon = Margin + MarginInc, //Set to non-zero to have checkmarks painted separate from icons
+            CheckWidth,                      //Size of the checkmark column (CheckAlongsideButton enabled)
+            CheckSpace,                      //Space between the checkmark column and the icon column (CheckAlongsideButton enabled)
+            IconWidth,                       //Minimum size of the icon column
+            IconSpace,                       //Space between the icon column and text one
+            AccelSpace,                      //Space between text and accel
+            ArrowSpace,                      //Space to reserve for the menu arrow
+            ArrowWidth,
+            SeparatorHeight,                  //Heigh of separator
+            MinHeight,                        //Limit on the size of item content
+            ActiveTextColor,                  //Color for active text and arrow
+            TextColor,                        //Color for inactive text and arrow
+            DisabledTextColor,                //Color for inactive + disabled text and arrow
+            ActiveDisabledTextColor           //Color for active + disabled text and arrow
+        };
+
+        enum Primitive
+        {
+            CheckColumn, //Background of the checkmark/icon column
+            CheckOn,     //The checkmark - on
+            CheckOff,    //The checkmark - off
+            RadioOn,     //The checkmark of exclusive actions - on
+            RadioOff,    //The checkmark of exclusive actions - off
+            CheckIcon,   //Checked mark, painted below the icon when LayoutProp CheckAlongsideButton is disabled.
+            Separator,   //A separator item.
+            ItemIndicator //Shows the active item
+        };
+    };
+
+    /**
+     * Layout properties and primitives relevant for rendering scrollbars, like QScrollBar
+     *
+     * Generic KStyle primitives used:
+     * @li The Arrows
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::CE_ScrollBarSlider Interesting flags: State_Horizontal for
+     * orientation, State_Sunken for pressed state (TODO: get this documentation
+     * upstream to QStyle?)
+     * @li @c CE_ScrollBarAddPage @c CE_ScrollBarSubPage The scrollbar groove area. Interesting flags: State_Horizontal, State_On&&State_Sunken for pressed state
+     */
+    struct ScrollBar
+    {
+        /**
+          Note: dimensions are generally specified with respect to the vertical scrollbar.
+          Of course, for horizontal ones they're flipped
+        */
+        enum LayoutProp
+        {
+            DoubleTopButton, //Set to non-zero to have two buttons on top
+            DoubleBotButton, //Set to non-zero to have two buttons on bottom
+            SingleButtonHeight,
+            DoubleButtonHeight,
+            BarWidth,
+            MinimumSliderHeight, //Note: if the scrollbar is too small to accommodate
+                                 //this, this will not be enforced
+            ArrowColor,
+            ActiveArrowColor
+        };
+
+        enum Primitive
+        {
             //Note: when drawing the double-buttons, you need to check
             //the active subcontrol inside the QStyleOption, to determine
             //which half is active.
-        KPE_ScrollBar_SingleButtonVert, //Used to draw a 1-button bevel, vertical
-        KPE_ScrollBar_SingleButtonHor,                                //Used to draw a 1-button bevel, horizontal
-        KPE_ScrollBar_DoubleButtonVert,                               //Used to draw a 2-button bevel, vertical
-        KPE_ScrollBar_DoubleButtonHor,                                //Used to draw a 2-button bevel, horizontal
+            SingleButtonVert, //Used to draw a 1-button bevel, vertical
+            SingleButtonHor,                                //Used to draw a 1-button bevel, horizontal
+            DoubleButtonVert,                               //Used to draw a 2-button bevel, vertical
+            DoubleButtonHor,                                //Used to draw a 2-button bevel, horizontal
                                                             //The above 2 are passed a DoubleButtonOption,
                                                             // to say which button is pressed
-
-        KPE_TabBar_EastText, //Special rotated text for east tabs.
-        KPE_TabBar_WestText, //Special rotated text for west tabs.
-        KPE_TabBar_NorthTab,
-        KPE_TabBar_EastTab,
-        KPE_TabBar_WestTab,
-        KPE_TabBar_SouthTab,
-        KPE_TabBar_BaseFrame,
-        KPE_TabBar_ScrollButton,
-
-        KPE_Slider_HandleVert,   // A vertical slider handle
-        KPE_Slider_HandleHor,    // A horizontal slider handle
-        KPE_Slider_GrooveVert,   // A vertical slider groove
-        KPE_Slider_GrooveHor,     // A horizontal slider groove
-
-        KPE_Tree_ExpanderClosed,
-        KPE_Tree_ExpanderOpen,
-        KPE_Tree_HorizontalBranch,
-        KPE_Tree_VerticalBranch,
-
-        KPE_SpinBox_EditField,
-        KPE_SpinBox_UpButton,
-        KPE_SpinBox_DownButton,
-        KPE_SpinBox_PlusSymbol,        // SymbolPlus and SymbolMinus are centering primitives
-        KPE_SpinBox_MinusSymbol,
-        KPE_SpinBox_ButtonArea,         // Are including both of the buttons, painted before them
-
-        KPE_ComboBox_EditField,
-        KPE_ComboBox_Button,
-
-        KPE_Header_SectionHor,
-        KPE_Header_SectionVert,
-
-        KPE_LineEdit_Panel,     // The panel for (usually disabled) lineedits.
-
-        KPE_ToolBar_Handle, // TODO: handlehor, handlevert?
-        KPE_ToolBar_Separator,
-        KPE_ToolBar_Panel,
-
-        
-
-        KPE_Limit = 0xFFFF ///For enum extensibility...
+        };
     };
 
+    struct TabBar
+    {
+        /**
+         Each tab is basically built hiearchically out of the following areas:
+
+         Content area:
+            Icon <- TextToIconSpace -> Text
+            -or- Icon -or- Text
+         Bevel:
+            ContentsMargin outside of the content area
+         Focus indicator is placed FocusMargin inside the bevel
+
+         The side tabs just have those rotated, bottom tabs have
+         the margins reversed
+        */
+        enum LayoutProp
+        {
+            TabContentsMargin,
+            TabFocusMargin     = TabContentsMargin + MarginInc,
+            TabTextToIconSpace = TabFocusMargin    + MarginInc,
+            TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed.
+            BaseHeight,        // The height of the tabBar's base. usually the frame width.
+            BaseOverlap,       // The number of pixels the tabs overlap with the base (i.e. tabWidget frame).
+            ScrollButtonWidth  // Buttons which are shown when there's not enough space for tabs.
+        };
+    
+        /**
+         From generic primitives, Text, FocusIndicator, Icon are also used
+        */
+        enum Primitive
+        {
+            EastText, //Special rotated text for east tabs.
+            WestText, //Special rotated text for west tabs.
+            NorthTab,
+            EastTab,
+            WestTab,
+            SouthTab,
+            BaseFrame,
+            ScrollButton
+        };
+    };
+
+    struct TabWidget
+    {
+        /**
+
+        */
+        enum LayoutProp
+        {
+            FrameWidth      // TODO: this is ignored for now. See SE_TabWidgetTabContents comment.
+        };
+
+        /**
+         From generic primitives, Frame is used
+        */
+    };
+
+    struct Slider
+    {
+        // TODO: custom slider tickmarks?
+
+        enum LayoutProp
+        {
+            HandleThickness,                        // The height of a slider in horizontal direction
+            HandleLength                            // The width of a slider in horizontal direction
+        };
+
+        /**
+         From generic primitives, FocusIndicator is used
+        */
+        enum Primitive
+        {
+            HandleVert,   // A vertical slider handle
+            HandleHor,    // A horizontal slider handle
+            GrooveVert,   // A vertical slider groove
+            GrooveHor     // A horizontal slider groove
+        };
+    };
+
+    /**
+     For trees, all the control we provide here is to provide a cap on the size
+     of the expander widget, which is always square. There are 4 primitives to
+     implement: open and closed expander, and horizontal and vertical lines.
+     If you're using dots, it's suggested you use global brush alignment to
+     keep it all nicely aligned.
+
+     The default implementation has a Windows-like look
+
+     Note: if you set MaxExpanderSize to a value less than 9, designer will
+     look funny. The value should also be odd, or value - 1 will be used.
+    */
+    struct Tree
+    {
+        enum LayoutProp
+        {
+            MaxExpanderSize
+        };
+    
+        enum Primitive
+        {
+            ExpanderClosed,
+            ExpanderOpen,
+            HorizontalBranch,
+            VerticalBranch
+        };
+    };
+
+    struct SpinBox
+    {
+        /**
+         The description applies to LTR mode.
+
+         FrameWidth and ButtonWidth are used to size of the contents area. To
+         the EditField, FrameWidth is added at the left, top, bottom while
+         ButtonWidth is added at the right.
+
+         The ButtonMargin is measured from the right side of the EditField and
+         the outside. Inside it, the up and down buttons are aligned with
+         spacing ButtonSpacing.
+
+         To make sure that both buttons are always of the same height, 
+        */
+        enum LayoutProp
+        {
+            FrameWidth,
+            ButtonWidth,
+            ButtonMargin,
+            ButtonSpacing = ButtonMargin + MarginInc,
+            SymmetricButtons,  // Set to non-zero to make sure both buttons are always of the same
+                               // height. To achieve this, the spacing of the buttons will be reduced
+                               // by 1 if necessary to avoid rounding problems. Needs to be handled
+                               // in your drawing code.
+            SupportFrameless   // Set to non-zero to indicate that you are able to handle frame-less
+                               // SpinBoxes. For a SpinBox with no frame, FrameWidth and
+                               // Top/Bottom/Right ButtonMargin is ignored.
+        };
+
+        /**
+         From generic primitives, Frame, ArrowUp and ArrowDown are also used
+        */
+        enum Primitive
+        {
+            EditField,
+            UpButton,
+            DownButton,
+            PlusSymbol,        // SymbolPlus and SymbolMinus are centering primitives
+            MinusSymbol,
+            ButtonArea         // Are including both of the buttons, painted before them
+        };
+    };
+
+    struct ComboBox
+    {
+        /**
+        The description applies to LTR mode.
+
+        FrameWidth and ButtonWidth are used to size of the contents area. To
+        the EditField, FrameWidth is added at the left, top, bottom while
+        ButtonWidth is added at the right.
+
+        The ButtonMargin is measured from the right side of the EditField and
+        the outside. Inside it, the button is aligned.
+
+        The FocusMargin is measured from the EditField rect.
+
+        To make sure that both buttons are always of the same height,
+         */
+        enum LayoutProp
+        {
+            FrameWidth,
+            ButtonWidth,
+            ButtonMargin,
+            FocusMargin = ButtonMargin + MarginInc,    // Focus margin for ComboBoxes that aren't editable
+            SupportFrameless = FocusMargin + MarginInc // Set to non-zero to indicate that you are able to handle frame-less
+                               // ComboBoxes. For a ComboBox with no frame, FrameWidth and
+                               // Top/Bottom/Right ButtonMargin is ignored.
+        };
+
+        /**
+        From generic primitives, Frame, ArrowDown and FocusIndicator are also used
+         */
+        enum Primitive
+        {
+            EditField,
+            Button
+        };
+    };
+
+    struct Header
+    {
+        enum LayoutProp
+        {
+            ContentsMargin,                                // used to size the contents.
+            TextToIconSpace = ContentsMargin + MarginInc,  // space that is allocated between icon and text if both exist
+            IndicatorSize
+        };
+
+        /**
+        From generic primitives, text, ArrowUp, ArrowDown and FocusIndicator are also used
+         */
+        enum Primitive
+        {
+            SectionHor,
+            SectionVert
+        };
+    };
+
+    struct LineEdit
+    {
+        /**
+        No LayoutProps for now.
+        TODO: Add FrameWidth property...
+        */
+
+        /**
+        From generic primitives, Frame is used
+         */
+        enum Primitive
+        {
+            Panel     // The panel for (usually disabled) lineedits.
+        };
+    };
+
+    struct GroupBox
+    {
+        /**
+        No LayoutProps for now.
+        */
+
+        /**
+        From generic primitives, Frame is used
+         */
+    };
+
+    struct ToolBar
+    {
+        enum LayoutProps
+        {
+            HandleExtent,       // The width(hor)/height(vert) of a ToolBar handle
+            SeparatorExtent,    // The width/height of a ToolBar separator
+            ExtensionExtent,    // The width/height of a ToolBar extender, when there is not enough room for toolbar buttons
+            PanelFrameWidth,
+            ItemMargin,
+            ItemSpacing
+        };
+
+        enum Primitive
+        {
+            Handle, // TODO: handlehor, handlevert?
+            Separator,
+            Panel
+        };
+    };
+
+    /**
+     * Layout properties and primitives relevant for rendering tool buttons, like QToolButton
+     *
+     * Generic KStyle primitives used:
+     * @li @c ArrowDown
+     *
+     * Relevant QStyle elements:
+     * @li @c QStyle::PE_PanelButtonTool Panel of a tool button, usually
+     * used inside a QToolBar
+     */
+    struct ToolButton
+    {
+        /**
+        ContentsMargin is used to size the contents.
+        */
+        enum LayoutProps
+        {
+            ContentsMargin,
+            FocusMargin            = ContentsMargin + MarginInc,
+            DummyProp      = FocusMargin + MarginInc
+        };
+
+        // TODO: implement CE_ToolButtonLabel to have own Generic::Text,
+        //        Generic::Icon, and LayoutProps PressedShiftHorizontal,
+        //        PressedShiftVertical, TextToIconSpace, MenuIndicatorSize...
+    };
+
+    ///Interface for the style to configure various metrics that KStyle has customizable.
+    void setWidgetLayoutProp(WidgetType widget, int metric, int value);
 
     /**
      * @brief Draws primitives which are used inside KStyle.
+     *
+     * KStyle implements various elements of QStyle::ComplexControl
+     * and QStyle::ControlElement for convenience. Usually complex drawing is
+     * split into smaller pieces, which can be text, icons, or other KStyle primitives.
+     * These are painted by this method.
      *
      * Common Qt option parameters are unpacked for convenience, and information
      * from KStyle are passed as a KStyleOption.
@@ -964,17 +1034,6 @@ protected:
                                      QPainter* p, 
                                      const QWidget* widget = 0,
                                      Option* kOpt    = 0) const;
-
-    /**
-     * Used to obtain information about KStyle layout properties and metrics.
-     *
-     * @note This method is not meant to be accessible from outside KStyle.
-     *
-     * @param metric the value of this property is requested
-     * @param opt Qt option parameters. TODO: remove? almost not provided ATM
-     * @param widget the actual widget this call is related to. TODO: remove? almost not provided ATM
-     */
-    virtual int widgetLayoutProp(int metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
 private:
     ///Should we use a side text here?
     bool useSideText(const QStyleOptionProgressBar* opt)     const;
@@ -1006,12 +1065,14 @@ private:
     ///Storage for metrics/flags
     QVector<QVector<int> > metrics;
     
+    int widgetLayoutProp(WidgetType widget, int metric) const;
+    
     ///Expands out the dimension to make sure it incorporates the margins
-    QSize expandDim(QSize orig, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric) const;
     
     ///Calculates the contents rectangle by subtracting out the appropriate margins
     ///from the outside
-    QRect insideMargin(QRect orig, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric) const;
 
     ///Internal subrect calculations, for e.g. scrollbar arrows,
     ///where we fake our output to get Qt to do what we want
