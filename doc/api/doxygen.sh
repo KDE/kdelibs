@@ -484,10 +484,6 @@ apidox_toplevel()
 }
 
 ### Handle the Doxygen processing of a non-toplevel directory.
-#
-# $1 is empty (false) or non-empty (true) controlling whether 
-#    to generate HTML (if true) or not.
-#
 apidox_subdir()
 {
 	echo ""
@@ -552,15 +548,76 @@ apidox_subdir()
 		echo "EXCLUDE               += $dirs" >> "$subdir/Doxyfile"
 	fi
 
-	apidox_local
+	echo "TAGFILES = \\" >> "$subdir/Doxyfile"
+	## For now, don't support \ continued references lines
+	tags=`extract_line DOXYGEN_REFERENCES`
+	for i in $tags qt ; do
+		tagsubdir=`dirname $i` ; tag=`basename $i`
+		tagpath=""
+		not_found=""
 
-	if test -z "$1" ; then
-		echo "GENERATE_HTML=NO" >> "$subdir/Doxyfile"
-		echo "	$subdir/$subdirname.tag \\" >> subdirs.tag
-	else
-		echo "GENERATE_HTML=YES" >> "$subdir/Doxyfile"
-		test -s subdirs.tag && cat subdirs.tag >> "$subdir/Doxyfile"
-	fi
+		if test "x$tagsubdir" = "x." ; then
+			tagsubdir=""
+		else
+			tagsubdir="$tagsubdir/"
+		fi
+
+		# Find location of tag file
+		if test -f "$tagsubdir$tag/$tag.tag" ; then
+			file="$tagsubdir$tag/$tag.tag"
+			loc="$tagsubdir$tag/html"
+		else
+			# This checks for dox built with_out_ --no-modulename
+			# in the same build dir as this dox run was started in.
+			file=`ls -1 ../*-apidocs/"$tagsubdir$tag/$tag.tag" 2> /dev/null`
+
+			if test -n "$file" ; then
+				loc=`echo "$file" | sed -e "s/$tag.tag\$/html/"`
+			else
+				# If the tag file doesn't exist yet, but should
+				# because we have the right dirs here, queue
+				# this directory for re-processing later.
+				if test -d "$top_srcdir/$tagsubdir$tag" ; then
+					echo "* Need to re-process $subdir for tag $i"
+					echo "$subdir" >> "subdirs.later"
+				else
+					# Re-check in $PREFIX if needed.
+					test -n "$PREFIX" && \
+					file=`cd "$PREFIX" && \
+					ls -1 *-apidocs/"$tagsubdir$tag/$tag.tag" 2> /dev/null`
+
+					# If something is found, patch it up. The location must be
+					# relative to the installed location of the dox and the
+					# file must be absolute.
+					if test -n "$file" ; then
+						loc=`echo "../$file" | sed -e "s/$tag.tag\$/html/"`
+						file="$PREFIX/$file"
+						echo "* Tags for $tagsubdir$tag will only work when installed."
+						not_found="YES"
+					fi
+				fi
+			fi
+		fi
+		if test "$tag" = "qt" ; then
+			if test -z "$QTDOCDIR" ; then
+				echo "  $file" >> "$subdir/Doxyfile"
+			else
+				if test -z "$file" ; then
+					# Really no Qt tags
+					echo "" >> "$subdir/Doxyfile"
+				else
+					echo "  $file=$QTDOCDIR" >> "$subdir/Doxyfile"
+				fi
+			fi
+		else
+			if test -n "$file"  ; then
+				test -z "$not_found" && echo "* Found tag $file"
+				echo "  $file=../$top_builddir$loc \\" >> "$subdir/Doxyfile"
+			fi
+		fi
+	done
+
+	apidox_local
 
 	if grep '^DOXYGEN_EMPTY' "$srcdir/Mainpage.dox" > /dev/null 2>&1 ; then
 		# This directory is empty, so don't process it, but
@@ -569,15 +626,11 @@ apidox_subdir()
 	else
 		# Regular processing
 		doxygen "$subdir/Doxyfile"
-		test -z "$1" || doxyndex
+		doxyndex
 	fi
 }
 
 ### Run a given subdir by setting up global variables first.
-#
-# $1 is the given subdir
-# $2 is passed to apidox_subdir to control whether to build HTML
-#
 do_subdir()
 {
 	subdir=`echo "$1" | sed -e 's+/$++'`
@@ -589,7 +642,7 @@ do_subdir()
 		return
 	fi
 	top_builddir=`echo "/$subdir" | sed -e 's+/[^/]*+../+g'`
-	apidox_subdir "$2"
+	apidox_subdir
 }
 
 
@@ -758,26 +811,21 @@ do_subdirs_re()
 		mkdir -p "$i" 2> /dev/null
 	done
 	) > subdirs.sort
-
-	echo "TAGFILES = \\" > subdirs.tag
 	for i in `cat subdirs.sort`
 	do
-		# This run just makes tag files
 		do_subdir "$i"
 	done
-	if test -z "$QTDOCDIR" ; then
-		echo "	qt.tag" >> subdirs.tag
-	else
-		echo "	qt.tag=$QTDOCDIR" >> subdirs.tag
-	fi
 
-	# Now that we have all the tag files, re-generate
-	# but with HTML output this time.
-	for i in `cat subdirs.sort`
-	do
-		# This run just makes tag files
-		do_subdir "$i" true
-	done
+	if test -s "subdirs.later" ; then
+		sort subdirs.later | uniq > subdirs.sort
+		for i in `cat subdirs.sort`
+		do
+			: > subdirs.later
+			echo "*** Reprocessing $i"
+			do_subdir "$i"
+			test -s "subdirs.later" && echo "* Some tag files were still not found."
+		done
+	fi
 }
 
 if test "x." = "x$top_builddir" ; then
