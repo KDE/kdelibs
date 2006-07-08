@@ -1085,7 +1085,7 @@ public Q_SLOTS: // METHODS
     *   - int state         Job state.
     *   - QString appId     DBUS senderId of the application that requested the speech job.
     *   - QString talker    Talker code as requested by application.
-    *   - int seq           Current sentence being spoken.  Sentences are numbered starting at 1.
+    *   - int sentenceNum   Current sentence being spoken.  Sentences are numbered starting at 1.
     *   - int sentenceCount Total number of sentences in the job.
     *   - QString applicationName Application's friendly name (if provided by app)
     *
@@ -1118,12 +1118,11 @@ public Q_SLOTS: // METHODS
     * Return a sentence of a job.
     * @param jobNum             Job Number.  If 0, the last job submitted by
     *                           the application.
-    * @param seq            Sequence number of the sentence.  Sequence numbers
-    *                       start at 1.
+    * @param sentenceNum    Sentence Number.  Sentence numbers start at 1.
     * @return               The specified sentence in the specified job.  If no such
     *                       job or sentence, returns "".
     */
-    QString getJobSentence(int jobNum, int seq);
+    QString getJobSentence(int jobNum, int sentenceNum);
 
     /**
     * Return a list of full Talker Codes for configured talkers.
@@ -1200,11 +1199,11 @@ public Q_SLOTS: // METHODS
     *                           the application.
     * @param n              Number of sentences to advance (positive) or rewind (negative)
     *                       in the job.
-    * @return               Sequence number of the sentence actually moved to.  Sequence numbers
+    * @return               Number of the sentence actually moved to.  Sentence numbers
     *                       are numbered starting at 1.
     *
     * If no such job, does nothing and returns 0.
-    * If n is zero, returns the current sequence number of the job.
+    * If n is zero, returns the current sentence number of the job.
     * Does not affect the current speaking/not-speaking state of the job.
     *
     * Since ScreenReaderOutput jobs are not split into sentences, this method
@@ -1260,8 +1259,8 @@ Q_SIGNALS: // SIGNALS
     * @param markerType    The type of marker.
     *                      Currently either mtSentenceBegin or mtSentenceEnd.
     * @param markerData    Data for the marker.
-    *                      Currently, this is the sequence number of the sentence
-    *                      begun or ended.  Sequence numbers begin at 1.
+    *                      Currently, this is the sentence number of the sentence
+    *                      begun or ended.  Sentence numbers begin at 1.
     */
     void marker(const QString &appId, int jobNum, int markerType, const QString &markerData);
 

@@ -149,7 +149,7 @@
 
         <method name="getJobSentence">
             <arg name="jobNum" type="i" direction="in"/>
-            <arg name="seq" type="i" direction="in"/>
+            <arg name="sentenceNum" type="i" direction="in"/>
             <arg type="s" direction="out"/>
         </method>
 
