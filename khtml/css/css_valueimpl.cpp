@@ -755,7 +755,17 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
             break;
         }
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
-	    text = QColor(m_value.rgbcolor).name();
+	    if (qAlpha(m_value.rgbcolor) != 0xFF) {
+		if (m_value.rgbcolor == khtml::transparentColor)
+		    text = "transparent";
+		else
+		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + "," 
+				   + QString::number(qBlue (m_value.rgbcolor)) + "," 
+				   + QString::number(qGreen(m_value.rgbcolor)) + "," 
+				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";
+	    } else {
+		text = QColor(m_value.rgbcolor).name();
+	    }
 	    break;
         case CSSPrimitiveValue::CSS_PAIR:
             text = m_value.pair->first()->cssText();
