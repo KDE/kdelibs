@@ -1259,6 +1259,11 @@ public:
   const KConfig *config() const;
 
   /**
+   * Set the @ref KSharedConfig object used for reading and writing the settings.
+   */
+  void setSharedConfig(KSharedConfig::Ptr pConfig);
+
+  /**
    * Return list of items managed by this KConfigSkeleton object.
    */
   KConfigSkeletonItem::List items() const

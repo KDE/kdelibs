@@ -65,7 +65,7 @@ void KConfigSkeleton::ItemString::readConfig( KConfig *config )
   {
     mReference = config->readPathEntry( mKey, mDefault );
   }
-  else if ( mType == Password ) 
+  else if ( mType == Password )
   {
     QString val = config->readEntry( mKey,
                                        KStringHandler::obscure( mDefault ) );
@@ -752,7 +752,7 @@ void KConfigSkeleton::ItemIntList::setProperty(const QVariant &)
 QVariant KConfigSkeleton::ItemIntList::property() const
 {
   // TODO: Not yet supported
-  return QVariant();  
+  return QVariant();
 }
 
 
@@ -803,6 +803,11 @@ const KConfig *KConfigSkeleton::config() const
   return mConfig.data();
 }
 
+void KConfigSkeleton::setSharedConfig(KSharedConfig::Ptr pConfig)
+{
+    mConfig = pConfig;
+}
+
 bool KConfigSkeleton::useDefaults(bool b)
 {
   if (b == mUseDefaults)
@@ -832,7 +837,7 @@ void KConfigSkeleton::setDefaults()
 void KConfigSkeleton::readConfig()
 {
   kDebug(177) << "KConfigSkeleton::readConfig()" << endl;
-  
+
   QString origGroup = mConfig->group();
 
   mConfig->reparseConfiguration();
@@ -843,7 +848,7 @@ void KConfigSkeleton::readConfig()
   }
 
   usrReadConfig();
-  
+
   mConfig->setGroup(origGroup);
 }
 
