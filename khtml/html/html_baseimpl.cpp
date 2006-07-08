@@ -453,12 +453,13 @@ HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
 {
     //### this is likely not quite right since we may be effectively "overriding" some old value,
     //which needs to be recomputed, but this is better than crashing...
-    if (m_onLoad && getDocument()->getHTMLEventListener(EventImpl::LOAD_EVENT) == m_onLoad)
-        getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT, 0);
+    if (getDocument()) {
+        if (m_onLoad && getDocument()->getHTMLEventListener(EventImpl::LOAD_EVENT) == m_onLoad)
+            getDocument()->setHTMLEventListener(EventImpl::LOAD_EVENT, 0);
 
-    if (m_onUnLoad && getDocument()->getHTMLEventListener(EventImpl::UNLOAD_EVENT) == m_onUnLoad)
-        getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, 0);
-
+        if (m_onUnLoad && getDocument()->getHTMLEventListener(EventImpl::UNLOAD_EVENT) == m_onUnLoad)
+            getDocument()->setHTMLEventListener(EventImpl::UNLOAD_EVENT, 0);
+    }
 
     delete [] m_rows;
     delete [] m_cols;
