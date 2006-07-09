@@ -140,7 +140,57 @@ public:
 		bool disabled = !(flags & State_Enabled);
 		switch (widgetType)
 		{
+			case WT_PushButton:
+			{
+				switch (primitive)
+				{
+					case PushButton::Panel:
+					{
+						const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
+						if (bOpt &&  //### helper function in KStyle?
+											  (bOpt->features & QStyleOptionButton::DefaultButton))
+							return; //The default indicator does the job for us.
 
+						bool sunken   = (flags & State_On) || (flags & State_Sunken);
+						bool disabled = !(flags & State_Enabled);
+
+						int  name;
+
+						if (sunken)
+							name = keramik_pushbutton_pressed;
+						else
+							name =  keramik_pushbutton;
+
+						if (flags & State_MouseOver && name == keramik_pushbutton )
+							name = keramik_pushbutton_hov;
+
+						Keramik::RectTilePainter( name, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
+						//, pmode() );
+
+						return;
+					}
+
+					case PushButton::DefaultButtonFrame:
+					{
+						bool sunken = (flags & State_On) || (flags & State_Sunken);
+
+						int id;
+						if ( sunken ) id  = keramik_pushbutton_default_pressed;
+						else id = keramik_pushbutton_default;
+
+						if (flags & State_MouseOver && id == keramik_pushbutton_default )
+							id = keramik_pushbutton_default_hov;
+
+
+						Keramik::RectTilePainter( id, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
+						//,  pmode() );
+						break; // TODO!! this break seems strange, have a look at it later (giessl)
+
+						return;
+					}
+				}
+			}
+			break;
 
 			case WT_ProgressBar:
 			{
@@ -219,6 +269,52 @@ public:
 							Keramik::RowPainter( keramik_menuitem ).draw(p, r, pal.color(QPalette::Highlight), pal.background().color());
 						else
 							drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, opt, r, pal, flags, p, widget, kOpt);
+						return;
+					}
+				}
+			}
+			break;
+
+			case WT_CheckBox:
+			{
+				switch(primitive)
+				{
+					case CheckBox::CheckOn:
+					{
+						Keramik::CenteredPainter(keramik_checkbox_on).draw(p, r, pal.color(QPalette::Button),
+						pal.background().color(), disabled);//, pmode() );
+						return;
+					}
+					case CheckBox::CheckOff:
+					{
+						Keramik::CenteredPainter(keramik_checkbox_off).draw(p, r, pal.color(QPalette::Button),
+						pal.background().color(), disabled);//, pmode() );
+						return;
+					}
+					case CheckBox::CheckTriState:
+					{
+						Keramik::CenteredPainter(keramik_checkbox_tri).draw(p, r, pal.color(QPalette::Button),
+						pal.background().color(), disabled);//, pmode() );
+						return;
+					}
+				}
+			}
+			break;
+
+			case WT_RadioButton:
+			{
+				switch(primitive)
+				{
+					case RadioButton::RadioOn:
+					{
+						Keramik::CenteredPainter(keramik_radiobutton_on).draw(p, r, pal.color(QPalette::Button),
+						pal.background().color(), disabled);//, pmode() );
+						return;
+					}
+					case RadioButton::RadioOff:
+					{
+						Keramik::CenteredPainter(keramik_radiobutton_off).draw(p, r, pal.color(QPalette::Button),
+						pal.background().color(), disabled);//, pmode() );
 						return;
 					}
 				}
@@ -589,97 +685,6 @@ public:
 		}
 
 		KStyle::drawControl(elem, opt, p, widget);
-	}
-
-	void drawPrimitive(PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
-	{
-		State flags = opt->state;
-		QRect      r     = opt->rect;
-		QPalette   pal   = opt->palette;
-		const bool disabled = !(flags & State_Enabled);
-
-		switch (elem)
-		{
-			case PE_PanelButtonCommand:
-			{
-				const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
-				if (bOpt &&  //### helper function in KStyle?
-								(bOpt->features & QStyleOptionButton::DefaultButton))
-					return; //The default indicator does the job for us.
-
-				bool sunken   = (flags & State_On) || (flags & State_Sunken);
-				bool disabled = !(flags & State_Enabled);
-
-				int  name;
-
-				if (sunken)
-					name = keramik_pushbutton_pressed;
-				else
-					name =  keramik_pushbutton;
-
-				if (flags & State_MouseOver && name == keramik_pushbutton )
-					name = keramik_pushbutton_hov;
-
-				Keramik::RectTilePainter( name, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
-						//, pmode() );
-
-				return;
-			}
-
-			case PE_FrameDefaultButton:
-			{
-				bool sunken = (flags & State_On) || (flags & State_Sunken);
-
-				int id;
-				if ( sunken ) id  = keramik_pushbutton_default_pressed;
-				else id = keramik_pushbutton_default;
-
-				if (flags & State_MouseOver && id == keramik_pushbutton_default )
-					id = keramik_pushbutton_default_hov;
-
-
-				Keramik::RectTilePainter( id, false ).draw(p, r, pal.color(QPalette::Button), pal.background().color(), !(flags & State_Enabled));
-						//,  pmode() );
-				break; // TODO!! this break seems suspicious, have a look at it later (giessl)
-
-				return;
-			}
-
-			case PE_IndicatorCheckBox:
-			{
-				if ( flags & State_NoChange ) {
-					// tristate
-					Keramik::CenteredPainter(keramik_checkbox_tri).draw(p, r, pal.color(QPalette::Button),
-					pal.background().color(), disabled);//, pmode() );
-				} else if ( flags & State_On ) {
-					Keramik::CenteredPainter(keramik_checkbox_on).draw(p, r, pal.color(QPalette::Button),
-					pal.background().color(), disabled);//, pmode() );
-				} else {
-					Keramik::CenteredPainter(keramik_checkbox_off).draw(p, r, pal.color(QPalette::Button),
-					pal.background().color(), disabled);//, pmode() );
-				}
-
-				return;
-			}
-
-			case PE_IndicatorRadioButton:
-			{
-				if ( flags & State_On ) {
-					Keramik::CenteredPainter(keramik_radiobutton_on).draw(p, r, pal.color(QPalette::Button),
-					pal.background().color(), disabled);//, pmode() );
-				} else {
-					Keramik::CenteredPainter(keramik_radiobutton_off).draw(p, r, pal.color(QPalette::Button),
-					pal.background().color(), disabled);//, pmode() );
-				}
-
-				return;
-			}
-
-			default:
-				break;
-		}
-
-		KStyle::drawPrimitive(elem, opt, p, widget);
 	}
 
 };

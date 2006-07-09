@@ -70,9 +70,6 @@ public:
                                      Option* kOpt = 0) const;
 
     void drawControl (ControlElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-    void drawPrimitive (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-
-
 
 
     
@@ -225,15 +222,10 @@ protected:
                       bool khtmlMode = false) const;
 
     // TODO: cleanup helper methods...
-    enum CheckState {
-        CheckOn,
-        CheckOff,
-        CheckTristate
-    };
     void renderCheckBox(QPainter *p, const QRect &r, const QPalette &pal,
-                        bool enabled, bool mouseOver, CheckState state) const;
+                        bool enabled, bool mouseOver, int checkPrimitive) const;
     void renderRadioButton(QPainter *p, const QRect &r, const QPalette &pal,
-                           bool enabled, bool mouseOver, CheckState state) const;
+                           bool enabled, bool mouseOver, int radioPrimitive) const;
 
     void renderPanel(QPainter *p,
                      const QRect &r,

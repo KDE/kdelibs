@@ -75,14 +75,10 @@ class QStyleOptionTab;
 // - RV: KMulitTabBarTab ... does it need support from KStyle (instead of manual button rotation etc.)? Or is it dumped already?
 // - RV: KTabCtl draws itself mimicking QDrawShadeThingies
 // - RV: fixed colors (e.g. Konqueror, KToolbarButton label text ->KPE_ToolbarButton?): To prevent hacks like "preventing any PaletteChange()"... mor related to KDE4 color schemes... I guess
-// - Luciano Montanaro: Many apps assume fixed border size; make pixelMetric() used pervasively: Performance and Documentation disadvantage of current KStyle
-// - LM: make current KStyle layoutMetrics not stored in QVector, but in a method with switches... so they don't need to be constant (e.g. dependent of widget text size)
 // - LM: User interface guidelines... related to KStyle?
 // - e.g. drawFancyPE() in kdeui for KDE widgets: check "qobject_cast<KStyle*>(style())", or fallback drawing...
 // TODO: implement standardIcon().. and what about standardPalette()?
 // TODO: maybe the arrow in CE_PushButtonLabel should be painted in CE_PushButtonBevel like QCommonStyle
-// TODO: have a look at generic::text... really necessary or is sth like drawItemText() enough?
-// TODO: couldn't the option classes be based on QStyleOption?
 
 /*
  ### ### TODO:Where does visualRect fit in? Probably should be done already before calling drawKStylePrimitive?
@@ -91,8 +87,6 @@ All the  basic PE_Primitive calls are also broken down to KStylePrimitive calls 
  
  PE_FocusRect -> WT_Generic, Generic::FocusIndicator
  ### TODO, actually
- 
- Note that those not mentionned here are not redirected
 */
 class KDEFX_EXPORT KStyle: public QCommonStyle
 {
@@ -141,10 +135,10 @@ protected:
     public:
         /**
          KStyle understands two kinds of colors:
-         1. Palette entries. This means the item must be painted with a specific
-            color role from the palette
-         2. Auto-selected black or white, dependent on the brightness of a certain
-            color role from the palette
+         * -# Palette entries. This means the item must be painted with a specific
+         *    color role from the palette.
+         * -# Auto-selected black or white, dependent on the brightness of a certain
+         *    color role from the palette.
         */
         enum Mode
         {
@@ -441,18 +435,9 @@ protected:
     };
 
     /**
-     * Describes widgets like QPushButton.
+     * @brief Describes widgets like QPushButton.
      *
-     * Relevant elements:
-     * - @c Generic::Text the button's text
-     * - @c Generic::FocusIndicator indicating that the button has keyboard focus
-     * - @c Generic::ArrowDown indicating that the button has a popup menu associated to it
-     * - @c QStyle::PE_PanelButtonCommand Panel of a button, e.g. a QPushButton @todo make KStylePrimitive
-     * - @c QStyle::PE_FrameDefaultButton Frame indicating default button. The normal
-     *      button panel is drawn inside/above it. @todo make KStylePrimitive
-     * - @c WT_PushButton
-     * - KStyle implements @c QStyle::CE_PushButtonBevel to compose the above primitives.
-     *   Styles usually don't need to implement this.
+     * @sa WT_PushButton
      */
     struct PushButton
     {
@@ -480,6 +465,25 @@ protected:
             MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu [sets QStyle::PM_MenuButtonIndicator]
             TextToIconSpace ///< Space between the icon and the text if both exist
         };
+
+        /**
+         * Relevant Generic elements:
+         * - @c Generic::Text the button's text
+         * - @c Generic::FocusIndicator indicating that the button has keyboard focus
+         * - @c Generic::ArrowDown indicating that the button has a popup menu associated to it
+         *
+         * [KStyle implements @c QStyle::CE_PushButtonBevel to compose the primitives]
+         *
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            Panel,              /**< the pushbutton panel
+                                 * [implements QStyle::PE_PanelButtonCommand] */
+            DefaultButtonFrame  /**< frame indicating a default button, painted before
+                                 * the button Panel
+                                 * [implements QStyle::PE_FrameDefaultButton] */
+        };
     };
 
     /**
@@ -491,7 +495,7 @@ protected:
      *     - State_Horizontal for orientation
      *     - @todo make KStylePrimitive
      *
-     * @sa WT_CheckBox
+     * @sa WT_Splitter
      */
     struct Splitter
     {
@@ -506,23 +510,6 @@ protected:
 
     /**
      * Describes widgets like QCheckBox.
-     *
-     * Relevant elements:
-     * - @c Generic::Text the CheckBox label alongside the CheckBox
-     * - @c Generic::FocusIndicator the focus indicator. Usually drawn around the
-     *      text label. If no label exists, it is drawn around the CheckBox.
-     * - @c QStyle::PE_IndicatorCheckBox Check state indicator. Interesting
-     *      flags:
-     *     - State_NoChange for tristate (neither off nor on),
-     *     - else if State_On for checked,
-     *     - else not checked
-     *     - @todo Make splitted KStylePrimitive
-     * - KStyle implements @c QStyle::CE_CheckBox to compose a CheckBox, using the
-     *     mentioned primitives. Styles usually don't need to implement this.
-     *
-     * @todo code example for the PE_IndicatorCheckBox switch...
-     * @todo shouldn't PE_IndicatorCheckBox only render the check-mark and the
-     *       checkbox bevel should be painted in CE_CheckBox...?!
      *
      * @sa WT_CheckBox
      */
@@ -540,22 +527,29 @@ protected:
                                  * case of a labelless checkbox */
             FocusMargin = NoLabelFocusMargin + MarginInc ///< Margin around the checkbox contents reserved for the focus rect
         };
+
+        /**
+         * Relevant elements:
+         * - @c Generic::Text the CheckBox label alongside the CheckBox
+         * - @c Generic::FocusIndicator the focus indicator. Usually drawn around the
+         *      text label. If no label exists, it is drawn around the CheckBox.
+         *
+         * [check primitives implement QStyle::PE_IndicatorCheckBox]
+         * [KStyle implements QStyle::CE_CheckBox to compose a CheckBox using
+         *  the mentioned primitives]
+         *
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            CheckOn,        ///< checkbox which is checked
+            CheckOff,       ///< checkbox which is not checked
+            CheckTriState   ///< tristate checkbox (neither off nor on)
+        };
     };
 
     /**
      * Describes widgets like QRadioButton.
-     *
-     * Relevant elements:
-     * - @c Generic::Text the RadioButton label alongside the RadioButton
-     * - @c Generic::FocusIndicator the keyboard focus indicator
-     * - @c QStyle::PE_IndicatorRadioButton Radio button state indicator. Interesting
-     *      flags:
-     *     - State_On for checked,
-     *     - else not checked
-     * - KStyle implements @c QStyle::CE_RadioButton to compose a RadioButton, using the
-     *   mentioned primitives. Styles usually don't need to implement this.
-     *
-     * @todo code example for the PE_IndicatorRadioButton flag switch...
      */
     struct RadioButton
     {
@@ -564,10 +558,28 @@ protected:
          */
         enum LayoutProp
         {
-            Size, /**< [sets QStyle::PM_ExclusiveIndicatorWidth, QStyle::PM_ExclusiveIndicatorHeight]
+            Size, /**< [sets QStyle::PM_ExclusiveIndicatorWidth,
+                   *    QStyle::PM_ExclusiveIndicatorHeight]
                    * @sa CheckBox::Size */
             BoxTextSpace, ///< @sa CheckBox::BoxTextSpace
             FocusMargin   ///< @sa CheckBox::FocusMargin
+        };
+
+        /**
+         * Relevant Generic elements:
+         * - @c Generic::Text the RadioButton label alongside the RadioButton
+         * - @c Generic::FocusIndicator the keyboard focus indicator
+         *
+         * [check primitives implement QStyle::PE_IndicatorRadioButton]
+         * [KStyle implements QStyle::CE_RadioButton to compose a RadioButton using
+         *  the mentioned primitives]
+         *
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            RadioOn,        ///< radiobutton which is checked
+            RadioOff        ///< radiobutton which is not checked
         };
     };
     
@@ -1170,13 +1182,7 @@ protected:
     /**
      * @brief Describes widgets like QToolButton (usually inside a QToolBar).
      *
-     * Relevant elements:
-     * - @c Generic::ArrowDown indicating an associated sub-menu
-     * - @c QStyle::PE_PanelButtonTool Panel of a tool button @todo use KStylePrimitive
-     *
-     * @todo Implement CE_ToolButtonLabel to have own Generic::Text, Generic::Icon,
-     *       and LayoutProps PressedShiftHorizontal, PressedShiftVertical,
-     *       TextToIconSpace, MenuIndicatorSize...
+     * @sa WT_ToolButton
      */
     struct ToolButton
     {
@@ -1185,12 +1191,28 @@ protected:
          */
         enum LayoutProps
         {
-            ContentsMargin,  /** Margin reserved around the contents size of
+            ContentsMargin,  /**< Margin reserved around the contents size of
                               * a toolbutton. Used to size the contents. */
             FocusMargin            = ContentsMargin + MarginInc,
-                             /** Where the focus rect will be drawn, measured
+                             /**< Where the focus rect will be drawn, measured
                               * from the widget sides */
             DummyProp      = FocusMargin + MarginInc
+        };
+
+        /**
+         * Relevant Generic elements:
+         * - @c Generic::ArrowDown indicating an associated sub-menu
+         *
+         * @todo Implement CE_ToolButtonLabel to have own Generic::Text, Generic::Icon,
+         *       and LayoutProps PressedShiftHorizontal, PressedShiftVertical,
+         *       TextToIconSpace, MenuIndicatorSize...
+         *
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            Panel           /**< the toolbutton panel
+                             * [implements QStyle::PE_PanelButtonTool] */
         };
     };
 //@}

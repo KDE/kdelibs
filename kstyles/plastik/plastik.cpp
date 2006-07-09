@@ -275,6 +275,45 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
     switch (widgetType)
     {
 
+        case WT_PushButton:
+        {
+            switch (primitive)
+            {
+                case PushButton::Panel:
+                {
+                    bool sunken   = (flags & State_On) || (flags & State_Sunken);
+
+                    // TODO: set different background color for default buttons (Bevel is drawn on top of DefaultButtonBevel)
+//                     const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
+//                     if (bOpt &&  //### helper function in KStyle?
+//                         (bOpt->features & QStyleOptionButton::DefaultButton)) {
+//             QColorGroup g2 = cg;
+//             if (isDefault)
+//                 g2.setColor(QPalette::Background, cg.background().dark(120) );
+//                     }
+
+                    renderButton(p, r, pal, sunken,
+                                 mouseOver/*,
+                                         bool horizontal,
+                                         bool enabled,
+                                         bool khtmlMode*/);
+
+                    return;
+                }
+
+                case PushButton::DefaultButtonFrame:
+                {
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+                            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+                    if(!enabled) contourFlags|=Is_Disabled;
+                    renderContour(p, r, pal.color(QPalette::Background), pal.color(QPalette::Background).dark(120), contourFlags);
+
+                    return;
+                }
+            }
+        }
+        break;
+
         case WT_ProgressBar:
         {
 //             const Q3ProgressBar *pb = dynamic_cast<const Q3ProgressBar*>(widget);
@@ -471,25 +510,25 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 case MenuItem::CheckOn:
                 {
-                    renderCheckBox(p, r, pal, enabled, mouseOver, CheckOn);
+                    renderCheckBox(p, r, pal, enabled, mouseOver, CheckBox::CheckOn);
                     return;
                 }
 
                 case MenuItem::CheckOff:
                 {
-                    renderCheckBox(p, r, pal, enabled, mouseOver, CheckOff);
+                    renderCheckBox(p, r, pal, enabled, mouseOver, CheckBox::CheckOff);
                     return;
                 }
 
                 case MenuItem::RadioOn:
                 {
-                    renderRadioButton(p, r, pal, enabled, mouseOver, CheckOn);
+                    renderRadioButton(p, r, pal, enabled, mouseOver, RadioButton::RadioOn);
                     return;
                 }
 
                 case MenuItem::RadioOff:
                 {
-                    renderRadioButton(p, r, pal, enabled, mouseOver, CheckOff);
+                    renderRadioButton(p, r, pal, enabled, mouseOver, RadioButton::RadioOff);
                     return;
                 }
 
@@ -500,6 +539,36 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
             }
+        }
+        break;
+
+        case WT_CheckBox:
+        {
+            switch(primitive)
+            {
+                case CheckBox::CheckOn:
+                case CheckBox::CheckOff:
+                case CheckBox::CheckTriState:
+                {
+                    renderCheckBox(p, r, pal, enabled, mouseOver, primitive);
+                    return;
+                }
+            }
+        }
+        break;
+
+        case WT_RadioButton:
+        {
+            switch(primitive)
+            {
+                case RadioButton::RadioOn:
+                case RadioButton::RadioOff:
+                {
+                    renderRadioButton(p, r, pal, enabled, mouseOver, primitive);
+                    return;
+                }
+            }
+
         }
         break;
 
@@ -1282,6 +1351,22 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         break;
 
+        case WT_ToolButton:
+        {
+            switch (primitive)
+            {
+                case ToolButton::Panel:
+                {
+                    if (flags&State_Enabled)
+                        renderButton(p, r, pal, flags&State_Sunken||flags&State_On);
+
+                    return;
+                }
+            }
+
+        }
+        break;
+
     }
 
 
@@ -1561,91 +1646,6 @@ void PlastikStyle::drawControl (ControlElement elem, const QStyleOption* opt, QP
     }
 
     KStyle::drawControl(elem, opt, p, widget);
-}
-
-void PlastikStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
-{
-    State flags = opt->state;
-    QRect      r     = opt->rect;
-    QPalette   pal   = opt->palette;
-
-    const bool reverseLayout = opt->direction == Qt::RightToLeft;
-    const bool enabled = flags & State_Enabled;
-    const bool mouseOver(enabled && (flags & State_MouseOver));
-
-    switch (elem)
-    {
-        case PE_PanelButtonCommand:
-        {
-            bool sunken   = (flags & State_On) || (flags & State_Sunken);
-
-                    // TODO: set different background color for default buttons (Bevel is drawn on top of DefaultButtonBevel)
-//                     const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
-//                     if (bOpt &&  //### helper function in KStyle?
-//                         (bOpt->features & QStyleOptionButton::DefaultButton)) {
-//             QColorGroup g2 = cg;
-//             if (isDefault)
-//                 g2.setColor(QPalette::Background, cg.background().dark(120) );
-//                     }
-
-            renderButton(p, r, pal, sunken,
-                         mouseOver/*,
-                                 bool horizontal,
-                                 bool enabled,
-                                 bool khtmlMode*/);
-
-            return;
-        }
-
-        case PE_FrameDefaultButton:
-        {
-            uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-                    Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
-            if(!enabled) contourFlags|=Is_Disabled;
-            renderContour(p, r, pal.color(QPalette::Background), pal.color(QPalette::Background).dark(120), contourFlags);
-
-            return;
-        }
-
-        case PE_PanelButtonTool:
-        {
-            if (flags&State_Enabled)
-                renderButton(p, r, pal, flags&State_Sunken||flags&State_On);
-
-            return;
-        }
-
-        case PE_IndicatorCheckBox:
-        {
-            CheckState st = CheckOff;
-            if (flags & State_NoChange) {
-                st = CheckTristate;
-            } else if (flags & State_On) {
-                st = CheckOn;
-            }
-
-            renderCheckBox(p, r, pal, enabled, mouseOver, st);
-
-            return;
-        }
-
-        case PE_IndicatorRadioButton:
-        {
-            CheckState st = CheckOff;
-            if (flags & State_On) {
-                st = CheckOn;
-            }
-
-            renderRadioButton(p, r, pal, enabled, mouseOver, st);
-
-            return;
-        }
-
-        default:
-            break;
-    }
-
-    KStyle::drawPrimitive(elem, opt, p, widget);
 }
 
 //
@@ -2200,7 +2200,7 @@ void PlastikStyle::renderButton(QPainter *p,
 }
 
 void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette &pal,
-                                  bool enabled, bool mouseOver, CheckState state) const
+                                  bool enabled, bool mouseOver, int primitive) const
 {
     QColor contentColor = enabled?pal.color(QPalette::Base):pal.color(QPalette::Background);
 
@@ -2237,9 +2237,9 @@ void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette
 
     QBitmap bmp;
 
-    switch (state)
+    switch (primitive)
     {
-        case CheckOn:
+        case CheckBox::CheckOn:
         {
             bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), checkmark_dark_bits);
             bmp.setMask(bmp);
@@ -2257,13 +2257,13 @@ void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette
             return;
         }
 
-        case CheckOff:
+        case CheckBox::CheckOff:
         {
                     // empty
             return;
         }
 
-        case CheckTristate:
+        case CheckBox::CheckTriState:
         {
             bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), checkmark_tristate_bits);
             bmp.setMask(bmp);
@@ -2276,7 +2276,7 @@ void PlastikStyle::renderCheckBox(QPainter *p, const QRect &rect, const QPalette
 }
 
 void PlastikStyle::renderRadioButton(QPainter *p, const QRect &r, const QPalette &pal,
-                                        bool enabled, bool mouseOver, CheckState state) const
+                                        bool enabled, bool mouseOver, int prim) const
 {
 
 
@@ -2340,9 +2340,9 @@ void PlastikStyle::renderRadioButton(QPainter *p, const QRect &r, const QPalette
     }
 
             // draw the radio mark
-    switch (state)
+    switch (prim)
     {
-        case CheckOn:
+        case RadioButton::RadioOn:
         {
             bmp = QBitmap::fromData(QSize( CHECKMARKSIZE, CHECKMARKSIZE ), radiomark_dark_bits);
             bmp.setMask(bmp);
@@ -2359,7 +2359,7 @@ void PlastikStyle::renderRadioButton(QPainter *p, const QRect &r, const QPalette
 
             return;
         }
-        case CheckOff:
+        case RadioButton::RadioOff:
         {
                 // empty
             return;

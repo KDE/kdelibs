@@ -439,6 +439,20 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             //### check flags
             drawKStylePrimitive(WT_MenuItem, MenuItem::CheckOn, option, r, pal, flags, painter, widget);
             return;
+        case PE_IndicatorCheckBox:
+            if (flags & State_NoChange)
+                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckTriState, option, r, pal, flags, painter, widget);
+            else if (flags & State_On)
+                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckOn, option, r, pal, flags, painter, widget);
+            else
+                drawKStylePrimitive(WT_CheckBox, CheckBox::CheckOff, option, r, pal, flags, painter, widget);
+            return;
+        case PE_IndicatorRadioButton:
+            if (flags & State_On)
+                drawKStylePrimitive(WT_RadioButton, RadioButton::RadioOn, option, r, pal, flags, painter, widget);
+            else
+                drawKStylePrimitive(WT_RadioButton, RadioButton::RadioOff, option, r, pal, flags, painter, widget);
+            return;
         case PE_IndicatorBranch:
         {
             int centerX = r.x() + r.width()/2;
@@ -545,6 +559,18 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
 
         case PE_PanelToolBar:
             drawKStylePrimitive(WT_ToolBar, ToolBar::Panel,option,r,pal,flags,painter,widget);
+            return;
+
+        case PE_PanelButtonCommand:
+           //case PE_PanelButtonBevel: // ### CHECKME   
+            drawKStylePrimitive(WT_PushButton, PushButton::Panel, option, r, pal, flags, painter, widget);
+            return;
+        case PE_FrameDefaultButton:
+            drawKStylePrimitive(WT_PushButton, PushButton::DefaultButtonFrame, option, r, pal, flags, painter, widget);
+            return;
+
+        case PE_PanelButtonTool:
+            drawKStylePrimitive(WT_ToolButton, ToolButton::Panel,option,r,pal,flags,painter,widget);
             return;
 
         case PE_IndicatorButtonDropDown:
