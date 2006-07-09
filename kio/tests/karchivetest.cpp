@@ -174,17 +174,21 @@ void KArchiveTest::testReadTar()
     QVERIFY( dir != 0 );
     const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
 
+    QFileInfo localFileData("test3");
+
     QCOMPARE( listing.count(), 13 );
-    QCOMPARE( listing[ 0], QString("mode=40777 user=dfaure group=dfaure path=dir type=dir") );
-    QCOMPARE( listing[ 1], QString("mode=40777 user=dfaure group=dfaure path=dir/subdir type=dir") );
+    QCOMPARE( listing[ 0],
+	      QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 1],
+	      QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 2], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100") );
     QCOMPARE( listing[ 3], QString("mode=100644 user=weis group=users path=empty type=file size=0") );
     QCOMPARE( listing[ 4], QString("mode=100644 user=user group=group path=hugefile type=file size=20000") );
     QCOMPARE( listing[ 5], QString("mode=100644 user=user group=group path=mediumfile type=file size=100") );
-    QCOMPARE( listing[ 6], QString("mode=40777 user=dfaure group=dfaure path=my type=dir") );
-    QCOMPARE( listing[ 7], QString("mode=40777 user=dfaure group=dfaure path=my/dir type=dir") );
+    QCOMPARE( listing[ 6], QString("mode=40777 user=%1 group=%2 path=my type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 8], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29") );
-    QCOMPARE( listing[ 9], QString("mode=40777 user=dfaure group=dfaure path=mydir type=dir") );
+    QCOMPARE( listing[ 9], QString("mode=40777 user=%1 group=%2 path=mydir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     // This one was added with addLocalFile, so ignore mode/user/group.
     QString str = listing[10];
     str.replace(QRegExp("mode.*path"), "path" );
@@ -215,11 +219,11 @@ void KArchiveTest::testUncompress()
         len = filterDev->read(buffer.data(), buffer.size());
         QVERIFY( len >= 0 );
         totalSize += len;
-        kDebug() << "read len=" << len << " totalSize=" << totalSize << endl;
+        // kDebug() << "read len=" << len << " totalSize=" << totalSize << endl;
     }
     filterDev->close();
     delete filterDev;
-    kDebug() << "totalSize=" << totalSize << endl;
+    // kDebug() << "totalSize=" << totalSize << endl;
     QVERIFY( totalSize > 26000 ); // 27648 here when using gunzip
 }
 
@@ -408,3 +412,12 @@ void KArchiveTest::testZipMaxLength()
     ok = zip.close();
     QVERIFY( ok );
 }
+
+void KArchiveTest::cleanupTestCase()
+{
+    QVERIFY( QFile::remove("karchivetest-maxlength.tar.gz") );
+    QVERIFY( QFile::remove("karchivetest-maxlength.zip") );
+    QVERIFY( QFile::remove("karchivetest.tar.gz") );
+    QVERIFY( QFile::remove("karchivetest.zip") );
+}
+  
