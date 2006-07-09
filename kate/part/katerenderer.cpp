@@ -867,8 +867,8 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
 
 uint KateRenderer::textWidth(const KateTextCursor &cursor)
 {
-  int line = QMIN(QMAX(0, cursor.line()), (int)m_doc->numLines() - 1);
-  int col = QMAX(0, cursor.col());
+  int line = kMin(kMax(0, cursor.line()), (int)m_doc->numLines() - 1);
+  int col = kMax(0, cursor.col());
 
   return textWidth(m_doc->kateTextLine(line), col);
 }

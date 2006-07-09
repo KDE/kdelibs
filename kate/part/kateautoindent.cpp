@@ -353,7 +353,7 @@ uint KateNormalIndent::measureIndent (KateDocCursor &cur) const
 QString KateNormalIndent::tabString(uint pos) const
 {
   QString s;
-  pos = QMIN (pos, 80); // sanity check for large values of pos
+  pos = kMin (pos, 80U); // sanity check for large values of pos
 
   if (!useSpaces || mixedIndent)
   {

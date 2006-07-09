@@ -434,7 +434,7 @@ void KateSelectConfigTab::apply ()
 
   KateDocumentConfig::global()->setConfigFlags(configFlags);
 
-  KateViewConfig::global()->setAutoCenterLines(QMAX(0, e4->value()));
+  KateViewConfig::global()->setAutoCenterLines(kMax(0, e4->value()));
   KateDocumentConfig::global()->setPageUpDownMovesCursor(e6->isChecked());
 
   KateViewConfig::global()->setPersistentSelection (m_tabs->id (m_tabs->selected()) == 1);

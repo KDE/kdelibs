@@ -789,7 +789,7 @@ void KateIconBorder::updateFont()
   // 48 is ascii '0'
   for (int i = 48; i < 58; i++) {
     int charWidth = fm->width( QChar(i) );
-    m_maxCharWidth = QMAX(m_maxCharWidth, charWidth);
+    m_maxCharWidth = kMax(m_maxCharWidth, charWidth);
   }
 }
 
@@ -798,7 +798,7 @@ int KateIconBorder::lineNumberWidth() const
   int width = m_lineNumbersOn ? ((int)log10((double)(m_view->doc()->numLines())) + 1) * m_maxCharWidth + 4 : 0;
 
   if (m_view->dynWordWrap() && m_dynWrapIndicatorsOn) {
-    width = QMAX(style().scrollBarExtent().width() + 4, width);
+    width = kMax(style().scrollBarExtent().width() + 4, width);
 
     if (m_cachedLNWidth != width || m_oldBackgroundColor != m_view->renderer()->config()->iconBarColor()) {
       int w = style().scrollBarExtent().width();

@@ -341,12 +341,12 @@ void KateViewInternal::scrollViewLines(int offset)
 
 void KateViewInternal::scrollNextPage()
 {
-  scrollViewLines(QMAX( linesDisplayed() - 1, 0 ));
+  scrollViewLines(kMax( linesDisplayed() - 1, 0 ));
 }
 
 void KateViewInternal::scrollPrevPage()
 {
-  scrollViewLines(-QMAX( (int)linesDisplayed() - 1, 0 ));
+  scrollViewLines(-kMax( (int)linesDisplayed() - 1, 0 ));
 }
 
 void KateViewInternal::scrollPrevLine()
@@ -415,7 +415,7 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force, bool calledExter
     int lines = linesDisplayed();
     if ((int)m_doc->numVisLines() < lines) {
       KateTextCursor end(m_doc->numVisLines() - 1, m_doc->lineLength(m_doc->getRealLine(m_doc->numVisLines() - 1)));
-      lines = QMIN((int)linesDisplayed(), displayViewLine(end) + 1);
+      lines = kMin((int)linesDisplayed(), displayViewLine(end) + 1);
     }
 
     Q_ASSERT(lines >= 0);
@@ -964,11 +964,11 @@ public:
   CalculatingCursor& operator--() { return operator-=( 1 ); }
 
   void makeValid() {
-    m_line = QMAX( 0, QMIN( int( m_vi->m_doc->numLines() - 1 ), line() ) );
+    m_line = kMax( 0, kMin( int( m_vi->m_doc->numLines() - 1 ), line() ) );
     if (m_vi->m_view->wrapCursor())
-      m_col = QMAX( 0, QMIN( m_vi->m_doc->lineLength( line() ), col() ) );
+      m_col = kMax( 0, kMin( m_vi->m_doc->lineLength( line() ), col() ) );
     else
-      m_col = QMAX( 0, col() );
+      m_col = kMax( 0, col() );
     Q_ASSERT( valid() );
   }
 
@@ -1034,7 +1034,7 @@ public:
       m_col = m_vi->m_doc->lineLength( line() );
     }
 
-    m_col = QMAX( 0, col() );
+    m_col = kMax( 0, col() );
 
     Q_ASSERT( valid() );
     return *this;
@@ -1524,7 +1524,7 @@ uint KateViewInternal::viewLineCount(uint realLine)
 KateTextCursor KateViewInternal::viewLineOffset(const KateTextCursor& virtualCursor, int offset, bool keepX)
 {
   if (!m_view->dynWordWrap()) {
-    KateTextCursor ret(QMIN((int)m_doc->visibleLines() - 1, virtualCursor.line() + offset), 0);
+    KateTextCursor ret(kMin((int)m_doc->visibleLines() - 1, virtualCursor.line() + offset), 0);
 
     if (ret.line() < 0)
       ret.setLine(0);
@@ -1537,7 +1537,7 @@ KateTextCursor KateViewInternal::viewLineOffset(const KateTextCursor& virtualCur
         cXPos = m_currentMaxX;
 
       if (m_view->wrapCursor())
-        cXPos = QMIN(cXPos, (int)m_view->renderer()->textWidth(textLine(realLine), m_doc->lineLength(realLine)));
+        cXPos = kMin(cXPos, (int)m_view->renderer()->textWidth(textLine(realLine), m_doc->lineLength(realLine)));
 
       m_view->renderer()->textWidth(ret, cXPos);
     }
@@ -1614,7 +1614,7 @@ KateTextCursor KateViewInternal::viewLineOffset(const KateTextCursor& virtualCur
 
           cXPos = xOffset + visibleX;
 
-          cXPos = QMIN(cXPos, lineMaxCursorX(thisRange));
+          cXPos = kMin(cXPos, lineMaxCursorX(thisRange));
 
           m_view->renderer()->textWidth(ret, cXPos);
         }
@@ -1699,7 +1699,7 @@ void KateViewInternal::cursorUp(bool sel)
     visibleX -= pRange.xOffset();
 
     // Limit to >= 0
-    visibleX = QMAX(0, visibleX);
+    visibleX = kMax(0, visibleX);
 
     startCol = pRange.startCol;
     xOffset = pRange.startX;
@@ -1714,9 +1714,9 @@ void KateViewInternal::cursorUp(bool sel)
 
     cXPos = xOffset + visibleX;
 
-    cXPos = QMIN(cXPos, lineMaxCursorX(pRange));
+    cXPos = kMin(cXPos, lineMaxCursorX(pRange));
 
-    newCol = QMIN((int)m_view->renderer()->textPos(newLine, visibleX, startCol), lineMaxCol(pRange));
+    newCol = kMin((int)m_view->renderer()->textPos(newLine, visibleX, startCol), lineMaxCol(pRange));
 
   } else {
     newLine = m_doc->getRealLine(displayCursor.line() - 1);
@@ -1766,7 +1766,7 @@ void KateViewInternal::cursorDown(bool sel)
     visibleX -= nRange.xOffset();
 
     // Limit to >= 0
-    visibleX = QMAX(0, visibleX);
+    visibleX = kMax(0, visibleX);
 
     if (!thisRange.wrap) {
       newLine = m_doc->getRealLine(displayCursor.line() + 1);
@@ -1784,9 +1784,9 @@ void KateViewInternal::cursorDown(bool sel)
 
     cXPos = xOffset + visibleX;
 
-    cXPos = QMIN(cXPos, lineMaxCursorX(nRange));
+    cXPos = kMin(cXPos, lineMaxCursorX(nRange));
 
-    newCol = QMIN((int)m_view->renderer()->textPos(newLine, visibleX, startCol), lineMaxCol(nRange));
+    newCol = kMin((int)m_view->renderer()->textPos(newLine, visibleX, startCol), lineMaxCol(nRange));
 
   } else {
     newLine = m_doc->getRealLine(displayCursor.line() + 1);
@@ -1862,7 +1862,7 @@ void KateViewInternal::scrollDown()
 void KateViewInternal::setAutoCenterLines(int viewLines, bool updateView)
 {
   m_autoCenterLines = viewLines;
-  m_minLinesVisible = QMIN(int((linesDisplayed() - 1)/2), m_autoCenterLines);
+  m_minLinesVisible = kMin(int((linesDisplayed() - 1)/2), m_autoCenterLines);
   if (updateView)
     KateViewInternal::updateView();
 }
@@ -1885,7 +1885,7 @@ void KateViewInternal::pageUp( bool sel )
   if (cursorStart < m_minLinesVisible)
     lineadj -= m_minLinesVisible - cursorStart;
 
-  int linesToScroll = -QMAX( ((int)linesDisplayed() - 1) - lineadj, 0 );
+  int linesToScroll = -kMax( ((int)linesDisplayed() - 1) - lineadj, 0 );
   m_preserveMaxX = true;
 
   if (!m_doc->pageUpDownMovesCursor () && !atTop) {
@@ -1903,7 +1903,7 @@ void KateViewInternal::pageUp( bool sel )
     if (m_currentMaxX - newLine.xOffset() > xPos)
       xPos = m_currentMaxX - newLine.xOffset();
 
-    cXPos = QMIN(newLine.startX + xPos, lineMaxCursorX(newLine));
+    cXPos = kMin(newLine.startX + xPos, lineMaxCursorX(newLine));
 
     m_view->renderer()->textWidth( newPos, cXPos );
 
@@ -1934,7 +1934,7 @@ void KateViewInternal::pageDown( bool sel )
   if (cursorStart > 0)
     lineadj -= cursorStart;
 
-  int linesToScroll = QMAX( (linesDisplayed() - 1) - lineadj, 0 );
+  int linesToScroll = kMax( (linesDisplayed() - 1) - lineadj, 0 );
   m_preserveMaxX = true;
 
   if (!m_doc->pageUpDownMovesCursor () && !atEnd) {
@@ -1952,7 +1952,7 @@ void KateViewInternal::pageDown( bool sel )
     if (m_currentMaxX - newLine.xOffset() > xPos)
       xPos = m_currentMaxX - newLine.xOffset();
 
-    cXPos = QMIN(newLine.startX + xPos, lineMaxCursorX(newLine));
+    cXPos = kMin(newLine.startX + xPos, lineMaxCursorX(newLine));
 
     m_view->renderer()->textWidth( newPos, cXPos );
 
@@ -1981,7 +1981,7 @@ int KateViewInternal::maxLen(uint startLine)
 
     KateLineRange thisRange = range((int)m_doc->getRealLine(virtualLine));
 
-    maxLen = QMAX(maxLen, thisRange.endX);
+    maxLen = kMax(maxLen, thisRange.endX);
   }
 
   return maxLen;
@@ -2359,11 +2359,11 @@ void KateViewInternal::placeCursor( const QPoint& p, bool keepSelection, bool up
   int visibleLine = thisRange.virtualLine;
   uint startCol = thisRange.startCol;
 
-  visibleLine = QMAX( 0, QMIN( visibleLine, int(m_doc->numVisLines()) - 1 ) );
+  visibleLine = kMax( 0, kMin( visibleLine, int(m_doc->numVisLines()) - 1 ) );
 
   KateTextCursor c(realLine, 0);
 
-  int x = QMIN(QMAX(-m_startX, p.x() - thisRange.xOffset()), lineMaxCursorX(thisRange) - thisRange.startX);
+  int x = kMin(kMax(-m_startX, p.x() - thisRange.xOffset()), lineMaxCursorX(thisRange) - thisRange.startX);
 
   m_view->renderer()->textWidth( c, startX() + x, startCol);
 

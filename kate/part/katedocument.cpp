@@ -1079,7 +1079,7 @@ bool KateDocument::wrapText (uint startLine, uint endLine)
           break;
       }
 
-      uint searchStart = KMIN (z2, l->length()-1);
+      uint searchStart = kMin (z2, l->length()-1);
 
       // If where we are wrapping is an end of line and is a space we don't
       // want to wrap there
@@ -2946,7 +2946,7 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
 
 
   if (config()->configFlags()  & KateDocument::cfOvr)
-    removeText (view->cursorLine(), view->cursorColumnReal(), view->cursorLine(), QMIN( view->cursorColumnReal()+buf.length(), textLine->length() ) );
+    removeText (view->cursorLine(), view->cursorColumnReal(), view->cursorLine(), kMin( view->cursorColumnReal()+buf.length(), textLine->length() ) );
 
   insertText (view->cursorLine(), view->cursorColumnReal(), buf);
   m_indenter->processChar(c);
@@ -3051,8 +3051,8 @@ void KateDocument::backspace( KateView *view, const KateTextCursor& c )
     return;
   }
 
-  uint col = QMAX( c.col(), 0 );
-  uint line = QMAX( c.line(), 0 );
+  uint col = kMax( c.col(), 0 );
+  uint line = kMax( c.line(), 0 );
 
   if ((col == 0) && (line == 0))
     return;
@@ -4087,7 +4087,7 @@ void KateDocument::newBracketMark( const KateTextCursor& cursor, KateBracketRang
   const int tw = config()->tabWidth();
   const int indentStart = m_buffer->plainLine(bm.start().line())->indentDepth(tw);
   const int indentEnd = m_buffer->plainLine(bm.end().line())->indentDepth(tw);
-  bm.setIndentMin(QMIN(indentStart, indentEnd));
+  bm.setIndentMin(kMin(indentStart, indentEnd));
 }
 
 bool KateDocument::findMatchingBracket( KateTextCursor& start, KateTextCursor& end, int maxLines )
@@ -4528,13 +4528,13 @@ void KateDocument::readVariables(bool onlyViewAndRenderer)
     v->renderer()->config()->configStart();
   }
   // read a number of lines in the top/bottom of the document
-  for (uint i=0; i < QMIN( 9, numLines() ); ++i )
+  for (uint i=0; i < kMin( 9U, numLines() ); ++i )
   {
     readVariableLine( textLine( i ), onlyViewAndRenderer );
   }
   if ( numLines() > 10 )
   {
-    for ( uint i = QMAX(10, numLines() - 10); i < numLines(); ++i )
+    for ( uint i = kMax(10U, numLines() - 10); i < numLines(); ++i )
     {
       readVariableLine( textLine( i ), onlyViewAndRenderer );
     }
@@ -4872,7 +4872,7 @@ void KateDocument::removeTrailingSpace( uint line )
     if ( ! ln ) return;
 
     if ( line == activeView()->cursorLine()
-         && activeView()->cursorColumnReal() >= (uint)QMAX(0,ln->lastChar()) )
+         && activeView()->cursorColumnReal() >= (uint)kMax(0,ln->lastChar()) )
       return;
 
     if ( ln->length() )

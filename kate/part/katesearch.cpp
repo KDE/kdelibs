@@ -284,8 +284,8 @@ void KateSearch::wrapSearch()
     // recalc for block sel, to have start with lowest col, end with highest
     if (m_view->blockSelectionMode())
     {
-      start.setCol (QMIN(s.selBegin.col(), s.selEnd.col()));
-      end.setCol (QMAX(s.selBegin.col(), s.selEnd.col()));
+      start.setCol (kMin(s.selBegin.col(), s.selEnd.col()));
+      end.setCol (kMax(s.selBegin.col(), s.selEnd.col()));
     }
 
     s.cursor = s.flags.backward ? end : start;
@@ -393,7 +393,7 @@ void KateSearch::replaceOne()
           kdDebug()<<"KateSearch::replaceOne(): you don't have "<<ccap<<" backreferences in regexp '"<<m_re.pattern()<<"'"<<endl;
         }
       }
-      pos = br.search( replaceWith, pos+QMAX(br.matchedLength(), (int)sc.length()) );
+      pos = br.search( replaceWith, pos+kMax(br.matchedLength(), (int)sc.length()) );
     }
   }
 
@@ -553,7 +553,7 @@ KateTextCursor KateSearch::getCursor( SearchFlags flags )
   {
     // We're heading backwards (and not within a selection),
     // the selection might start before the cursor.
-    return KMIN( KateTextCursor(view()->selStartLine(), view()->selStartCol()),
+    return kMin( KateTextCursor(view()->selStartLine(), view()->selStartCol()),
                  KateTextCursor(view()->cursorLine(), view()->cursorColumnReal()));
   }
   return KateTextCursor(view()->cursorLine(), view()->cursorColumnReal());
@@ -657,8 +657,8 @@ bool KateSearch::doSearch( const QString& text )
       // recalc for block sel, to have start with lowest col, end with highest
       if (m_view->blockSelectionMode())
       {
-        start.setCol (QMIN(s.selBegin.col(), s.selEnd.col()));
-        end.setCol (QMAX(s.selBegin.col(), s.selEnd.col()));
+        start.setCol (kMin(s.selBegin.col(), s.selEnd.col()));
+        end.setCol (kMax(s.selBegin.col(), s.selEnd.col()));
       }
 
       if ( !s.flags.backward && KateTextCursor( foundLine, foundCol ) >= end

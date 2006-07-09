@@ -318,7 +318,7 @@ bool KatePrinter::print (KateDocument *doc)
          int _items ( 0 );
          while ( ( _d = it.current()) != 0 )
          {
-           _widest = QMAX( _widest, ((QFontMetrics)(
+           _widest = kMax( _widest, ((QFontMetrics)(
                                 _d->bold() ?
                                   _d->italic() ?
                                     renderer.config()->fontStruct()->myFontMetricsBI :
