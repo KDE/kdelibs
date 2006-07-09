@@ -119,13 +119,14 @@ protected:
         return centerRect(in, size.width(), size.height());
     }
 
-    ///END Helper methods
+    ////END Helper methods
 
-    ///BEGIN Representation of options passed when drawing things
+    ////BEGIN Representation of options passed when drawing things
 
     /**
-     A representation for colors. This marshals to and from integers
-     to be able to be stored as a widget layout property.
+     * @brief A representation for colors for use as a widget layout property.
+     *
+     * This marshals to and from integers.
     */
     class KDEFX_EXPORT ColorMode
     {
@@ -1192,6 +1193,23 @@ protected:
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
 
     /**
+     * Used to obtain information about KStyle layout properties and metrics.
+     *
+     * The default implementation returns values which are set
+     * using setWidgetLayoutProp(), so normally it's not necessary to implement
+     * it yourself.
+     *
+     * @note This method is not meant to be accessible from outside KStyle.
+     *
+     * @param widgetType the widget type context where the @p metric property belongs to
+     * @param metric the value of this property is requested
+     * @param opt Qt option parameters
+     * @param w the actual widget this call is related to
+     */
+    virtual int widgetLayoutProp(WidgetType widgetType, int metric,
+                                 const QStyleOption* opt = 0, const QWidget* w = 0) const;
+
+    /**
      * @brief Draws primitives which are used inside KStyle.
      *
      * KStyle implements various elements of QStyle::ComplexControl
@@ -1256,14 +1274,12 @@ private:
     ///Storage for metrics/flags
     QVector<QVector<int> > metrics;
     
-    int widgetLayoutProp(WidgetType widget, int metric) const;
-    
     ///Expands out the dimension to make sure it incorporates the margins
-    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric) const;
+    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
     
     ///Calculates the contents rectangle by subtracting out the appropriate margins
     ///from the outside
-    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric) const;
+    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
 
     ///Internal subrect calculations, for e.g. scrollbar arrows,
     ///where we fake our output to get Qt to do what we want

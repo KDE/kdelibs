@@ -347,8 +347,13 @@ void KStyle::setWidgetLayoutProp(WidgetType widget, int metric, int value)
     widgetMetrics[metric] = value;
 }
 
-int KStyle::widgetLayoutProp(WidgetType widget, int metric) const
+int KStyle::widgetLayoutProp(WidgetType widget, int metric,
+                             const QStyleOption* opt,
+                             const QWidget* w ) const
 {
+    Q_UNUSED(opt)
+    Q_UNUSED(w)
+
     if (metrics.size() <= widget)
         return 0;
 
@@ -359,37 +364,39 @@ int KStyle::widgetLayoutProp(WidgetType widget, int metric) const
     return widgetMetrics[metric];
 }
 
-QSize KStyle::expandDim(QSize orig, WidgetType widget, int baseMarginMetric) const
+QSize KStyle::expandDim(QSize orig, WidgetType wt, int baseMarginMetric,
+                        const QStyleOption* opt, const QWidget* w) const
 {
-    int width = orig.width() +  2*widgetLayoutProp(widget, baseMarginMetric + MainMargin) +
-                                  widgetLayoutProp(widget, baseMarginMetric + Left) +
-                                  widgetLayoutProp(widget, baseMarginMetric + Right);
+    int width = orig.width() +  2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +
+                                  widgetLayoutProp(wt, baseMarginMetric + Left, opt, w) +
+                                  widgetLayoutProp(wt, baseMarginMetric + Right, opt, w);
 
-    int height = orig.height() + 2*widgetLayoutProp(widget, baseMarginMetric + MainMargin) +
-                                   widgetLayoutProp(widget, baseMarginMetric + Top) +
-                                   widgetLayoutProp(widget, baseMarginMetric + Bot);
+    int height = orig.height() + 2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +
+                                   widgetLayoutProp(wt, baseMarginMetric + Top, opt, w) +
+                                   widgetLayoutProp(wt, baseMarginMetric + Bot, opt, w);
 
     return QSize(width, height);
 }
 
-QRect KStyle::insideMargin(QRect orig, WidgetType widget, int baseMarginMetric) const
+QRect KStyle::insideMargin(QRect orig, WidgetType wt, int baseMarginMetric,
+                           const QStyleOption* opt, const QWidget* w) const
 {
     int x1 = orig.topLeft().x();
     int y1 = orig.topLeft().y();
     int x2 = orig.bottomRight().x();
     int y2 = orig.bottomRight().y();
 
-    x1 += widgetLayoutProp(widget, baseMarginMetric + MainMargin);
-    x1 += widgetLayoutProp(widget, baseMarginMetric + Left);
+    x1 += widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w);
+    x1 += widgetLayoutProp(wt, baseMarginMetric + Left, opt, w);
 
-    y1 += widgetLayoutProp(widget, baseMarginMetric + MainMargin);
-    y1 += widgetLayoutProp(widget, baseMarginMetric + Top);
+    y1 += widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w);
+    y1 += widgetLayoutProp(wt, baseMarginMetric + Top, opt, w);
 
-    x2 -= widgetLayoutProp(widget, baseMarginMetric + MainMargin);
-    x2 -= widgetLayoutProp(widget, baseMarginMetric + Right);
+    x2 -= widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w);
+    x2 -= widgetLayoutProp(wt, baseMarginMetric + Right, opt, w);
 
-    y2 -= widgetLayoutProp(widget, baseMarginMetric + MainMargin);
-    y2 -= widgetLayoutProp(widget, baseMarginMetric + Bot);
+    y2 -= widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w);
+    y2 -= widgetLayoutProp(wt, baseMarginMetric + Bot, opt, w);
 
     return QRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
 }
@@ -443,7 +450,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             {
                 //How large should we make it?
                 int sizeLimit = qMin(qMin(r.width(), r.height()),
-                                     widgetLayoutProp(WT_Tree, Tree::MaxExpanderSize));
+                                     widgetLayoutProp(WT_Tree, Tree::MaxExpanderSize, option, widget));
                 if ((sizeLimit & 1) == 0)
                     --sizeLimit;
 
@@ -636,15 +643,15 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             bool active = (flags & State_On) || (flags & State_Sunken);
             if (active)
             {
-                x += widgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal);
-                y += widgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical);
+                x += widgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal, option, widget);
+                y += widgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical, option, widget);
             }
 
             //Layout the stuff. Do we need space for indicator?
             //we do this separately, and push it to the end, removing its space from layout.
             if (bOpt->features & QStyleOptionButton::HasMenu)
             {
-                int indicatorWidth = widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize);
+                int indicatorWidth = widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize, option, widget);
                 w -= indicatorWidth;
 
                 //Draw the arrow...
@@ -664,7 +671,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                 if (!bOpt->text.isEmpty())
                 {
-                    int margin = widgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace);
+                    int margin = widgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace, option, widget);
                     //Center text + icon w/margin in between..
 
                     //Calculate length of both.
@@ -828,7 +835,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //Calculate width fraction
             double widthFrac;
             if (busyIndicator)
-                widthFrac = widgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize) / 100.0;
+                widthFrac = widgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, option, widget) / 100.0;
             else
                 widthFrac = progress / steps;
 
@@ -838,8 +845,8 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (busyIndicator)
             {
                 //Clamp to upper width limit
-                if (width > widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize))
-                    width = widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize);
+                if (width > widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, option, widget))
+                    width = widgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, option, widget);
 
                 if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
 
@@ -887,7 +894,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         lbOpt.hAlign = Qt::AlignLeft;
 
                     //Handle side margin.
-                    int marWidth = widgetLayoutProp(WT_ProgressBar, ProgressBar::SideTextSpace);
+                    int marWidth = widgetLayoutProp(WT_ProgressBar, ProgressBar::SideTextSpace, option, widget);
 
                     drawKStylePrimitive(WT_ProgressBar, Generic::Text, option,
                             QRect(r.x() + marWidth, r.y(), r.width() - 2*marWidth, r.height()),
@@ -990,22 +997,22 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //First, figure out the left column width. When CheckAlongsideIcon is disabled it's just
             // the icon column width. Otherwise it consists of CheckWidth+CheckSpace+icon column width.
             int iconColW = miOpt->maxIconWidth;
-            iconColW     = qMax(iconColW, widgetLayoutProp(WT_MenuItem, MenuItem::IconWidth));
-            int checkColW = widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth);
-            int checkSpace = widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace);
+            iconColW     = qMax(iconColW, widgetLayoutProp(WT_MenuItem, MenuItem::IconWidth, option, widget));
+            int checkColW = widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, option, widget);
+            int checkSpace = widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace, option, widget);
 
             int leftColW = iconColW;
             // only use the additional check row if the menu has checkable menuItems.
             bool checkAlongsideIcon = (miOpt->menuHasCheckableItems &&
-                    widgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon) );
+                    widgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon, option, widget) );
             if (checkAlongsideIcon)
             {
                 leftColW = checkColW + checkSpace + iconColW;
             }
 
             //And the right arrow column...
-            int rightColW = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace) +
-                            widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth);
+            int rightColW = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace, option, widget) +
+                            widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth, option, widget);
 
             //Render left column background. This is a bit tricky, since we don't use the V margin.
             QRect leftColRect(ir.x(), r.y(), leftColW, r.height());
@@ -1029,10 +1036,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             ColorMode textColor = (flags & State_Enabled) ? (widgetLayoutProp(WT_MenuItem, active ?
                                                                   MenuItem::ActiveTextColor :
-                                                                  MenuItem::TextColor))
+                                                                          MenuItem::TextColor, option, widget))
                                                           : (widgetLayoutProp(WT_MenuItem, active ?
                                                                   MenuItem::ActiveDisabledTextColor:
-                                                                  MenuItem::DisabledTextColor));
+                                                                          MenuItem::DisabledTextColor, option, widget));
 
             //Readjust the column rectangle back to proper height
             leftColRect = QRect(ir.x(), ir.y(), leftColW, ir.height());
@@ -1099,7 +1106,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             }
 
             //Now include the spacing when calculating the next columns
-            leftColW += widgetLayoutProp(WT_MenuItem, MenuItem::IconSpace);
+            leftColW += widgetLayoutProp(WT_MenuItem, MenuItem::IconSpace, option, widget);
 
             //Render the text, including any accel.
             QString text = miOpt->text;
@@ -1132,7 +1139,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 ColorOption arrowColor;
                 arrowColor.color = textColor;
 
-                int aw = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth);
+                int aw = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth, option, widget);
 
                 QRect arrowRect(ir.x() + ir.width() - aw, ir.y(), aw, ir.height());
                 drawKStylePrimitive(WT_MenuItem, option->direction == Qt::LeftToRight ?
@@ -1158,9 +1165,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             bool doubleButton = false;
 
             //See whether we're a double-button...
-            if (element == CE_ScrollBarAddLine && widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton))
+            if (element == CE_ScrollBarAddLine && widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, option, widget))
                 doubleButton = true;
-            if (element == CE_ScrollBarSubLine && widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton))
+            if (element == CE_ScrollBarSubLine && widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton, option, widget))
                 doubleButton = true;
 
             if (doubleButton)
@@ -1199,9 +1206,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     QRect leftSubButton = QRect(r.x(), r.y(), r.width()/2, r.height());
 
                     ColorOption colOpt;
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor, option, widget);
                     if (ab == DoubleButtonOption::Left)
-                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
+                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor, option, widget);
 
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowLeft, option, leftSubButton, pal,
                                         flags, p, widget, &colOpt);
@@ -1213,9 +1220,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     rightSubButton.setTop        (r.top());
 
                     //Chose proper color
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor, option, widget);
                     if (ab == DoubleButtonOption::Right)
-                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
+                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor, option, widget);
 
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowRight, option, rightSubButton, pal,
                                         flags, p, widget, &colOpt);
@@ -1238,10 +1245,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                     //Paint top button.
                     ColorOption colOpt;
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor, option, widget);
 
                     if (ab == DoubleButtonOption::Top)
-                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
+                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor, option, widget);
 
 
                     QRect topSubButton = QRect(r.x(), r.y(), r.width(), r.height()/2);
@@ -1254,10 +1261,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     botSubButton.setLeft       (r.left());
                     botSubButton.setTop        (topSubButton.bottom() + 1);
 
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor, option, widget);
 
                     if (ab == DoubleButtonOption::Bottom)
-                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
+                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor, option, widget);
 
                     drawKStylePrimitive(WT_ScrollBar, Generic::ArrowDown, option, botSubButton, pal,
                                         flags, p, widget, &colOpt);
@@ -1295,9 +1302,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     }
 
                     ColorOption colOpt;
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor, option, widget);
                     if (active)
-                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
+                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor, option, widget);
 
                     drawKStylePrimitive(WT_ScrollBar, primitive, option, r, pal,
                                         flags, p, widget, &colOpt);
@@ -1324,9 +1331,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     }
 
                     ColorOption colOpt;
-                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor);
+                    colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ArrowColor, option, widget);
                     if (active)
-                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor);
+                        colOpt.color = widgetLayoutProp(WT_ScrollBar, ScrollBar::ActiveArrowColor, option, widget);
 
                     drawKStylePrimitive(WT_ScrollBar, primitive, option, r, pal,
                                         flags, p, widget, &colOpt);
@@ -1406,7 +1413,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                         //Adjust the text rect.
                         labelRect.setLeft(labelRect.x() + iconSize +
-                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                     else
                     {
@@ -1416,7 +1423,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
                         //Adjust the text rect
                         labelRect.setWidth(labelRect.width() - iconSize -
-                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                 }
                 else
@@ -1432,14 +1439,14 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         iconRect = QRect(labelRect.x(), labelRect.y(),
                                          labelRect.width(), iconSize);
                         labelRect.setTop(labelRect.x() + iconSize +
-                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                     else
                     {
                         iconRect = QRect(labelRect.x(), labelRect.height() - iconSize,
                                          labelRect.width(), iconSize);
                         labelRect.setHeight(labelRect.height() - iconSize -
-                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace));
+                            widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                 }
 
@@ -1506,7 +1513,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     drawKStylePrimitive(WT_Header, Generic::Icon, option, iconRect, pal, flags, p, widget, &iconOpt);
 
                     // adjust the rect for the text...
-                    int spacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace);
+                    int spacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace, option, widget);
                     if (reverseLayout)
                     {
                         textRect.setRight(r.right()-iconRect.width()-spacing );
@@ -1551,34 +1558,34 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
     switch (metric)
     {
         case PM_DefaultFrameWidth:
-            return widgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth);
+            return widgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, option, widget);
 
         case PM_ButtonMargin:
             return 0; //Better not return anything here since we already
             //incorporated this into SE_PushButtonContents
         case PM_ButtonShiftHorizontal:
-            return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal);
+            return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal, option, widget);
         case PM_ButtonShiftVertical:
-            return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical);
+            return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical, option, widget);
         case PM_MenuButtonIndicator:
-            return widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize);
+            return widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize, option, widget);
 
         case PM_SplitterWidth:
-            return widgetLayoutProp(WT_Splitter, Splitter::Size);
+            return widgetLayoutProp(WT_Splitter, Splitter::Size, option, widget);
 
         case PM_IndicatorWidth:
         case PM_IndicatorHeight:
-            return widgetLayoutProp(WT_CheckBox, CheckBox::Size);
+            return widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget);
 
         case PM_ExclusiveIndicatorWidth:
         case PM_ExclusiveIndicatorHeight:
-            return widgetLayoutProp(WT_RadioButton, RadioButton::Size);
+            return widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
 
         case PM_DockWidgetFrameWidth:
-            return widgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin);
+            return widgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin, option, widget);
 
         case PM_ProgressBarChunkWidth:
-            return widgetLayoutProp(WT_ProgressBar, ProgressBar::Precision);
+            return widgetLayoutProp(WT_ProgressBar, ProgressBar::Precision, option, widget);
 
         case PM_MenuBarPanelWidth:
             return 0; //Simplification: just one primitive is used and it includes the border
@@ -1587,7 +1594,7 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         {
             //Calculate how much extra space we need besides the frame size. We use the left margin
             //here, and adjust the total rect by the difference between it and the right margin
-            int spaceL = widgetLayoutProp(WT_MenuBar, MenuBar::Margin) + widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Left);
+            int spaceL = widgetLayoutProp(WT_MenuBar, MenuBar::Margin, option, widget) + widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Left, option, widget);
 
             return spaceL;
         }
@@ -1595,26 +1602,26 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_MenuBarVMargin:
         {
             //As above, we return the top one, and fudge the total size for the bottom.
-            int spaceT = widgetLayoutProp(WT_MenuBar, MenuBar::Margin) + widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Top);
+            int spaceT = widgetLayoutProp(WT_MenuBar, MenuBar::Margin, option, widget) + widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Top, option, widget);
             return spaceT;
         }
 
         case PM_MenuBarItemSpacing:
-            return widgetLayoutProp(WT_MenuBar, MenuBar::ItemSpacing);
+            return widgetLayoutProp(WT_MenuBar, MenuBar::ItemSpacing, option, widget);
 
         case PM_MenuDesktopFrameWidth:
             return 0; //### CHECKME
 
         case PM_MenuPanelWidth:
-            return widgetLayoutProp(WT_Menu, Menu::FrameWidth);
+            return widgetLayoutProp(WT_Menu, Menu::FrameWidth, option, widget);
 
             /* ### seems to trigger Qt bug. So we loose the margins for now
         case PM_MenuHMargin:
         {
             //Calculate how much extra space we need besides the frame size. We use the left margin
             //here, and adjust the total rect by the difference between it and the right margin
-            int spaceL = widgetLayoutProp(WT_Menu, Menu::Margin) + widgetLayoutProp(WT_Menu, Menu::Margin + Left) -
-                    widgetLayoutProp(WT_Menu, Menu::FrameWidth);
+            int spaceL = widgetLayoutProp(WT_Menu, Menu::Margin, option, widget) + widgetLayoutProp(WT_Menu, Menu::Margin + Left, option, widget) -
+                    widgetLayoutProp(WT_Menu, Menu::FrameWidth, option, widget);
 
             return spaceL;
         }
@@ -1622,16 +1629,16 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_MenuVMargin:
         {
             //As above, we return the top one, and fudge the total size for the bottom.
-            int spaceT = widgetLayoutProp(WT_Menu, Menu::Margin) + widgetLayoutProp(WT_Menu, Menu::Margin + Top) -
-                widgetLayoutProp(WT_Menu, Menu::FrameWidth);
+            int spaceT = widgetLayoutProp(WT_Menu, Menu::Margin, option, widget) + widgetLayoutProp(WT_Menu, Menu::Margin + Top, option, widget) -
+                widgetLayoutProp(WT_Menu, Menu::FrameWidth, option, widget);
             return spaceT;
         }     */
 
         case PM_MenuScrollerHeight:
-            return widgetLayoutProp(WT_Menu, Menu::ScrollerHeight);
+            return widgetLayoutProp(WT_Menu, Menu::ScrollerHeight, option, widget);
 
         case PM_MenuTearoffHeight:
-            return widgetLayoutProp(WT_Menu, Menu::TearOffHeight);
+            return widgetLayoutProp(WT_Menu, Menu::TearOffHeight, option, widget);
 
         case PM_TabBarTabHSpace:
         {
@@ -1645,56 +1652,56 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
                     return 0;
             }
 
-            return widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace);
+            return widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget);
         }
 
         case PM_TabBarTabVSpace:
             return 0;
 
         case PM_TabBarBaseHeight:
-            return widgetLayoutProp(WT_TabBar, TabBar::BaseHeight);
+            return widgetLayoutProp(WT_TabBar, TabBar::BaseHeight, option, widget);
 
         case PM_TabBarBaseOverlap:
-            return widgetLayoutProp(WT_TabBar, TabBar::BaseOverlap);
+            return widgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, option, widget);
 
         case PM_TabBarTabOverlap:
-            return widgetLayoutProp(WT_TabBar, TabBar::TabOverlap);
+            return widgetLayoutProp(WT_TabBar, TabBar::TabOverlap, option, widget);
 
         case PM_TabBarScrollButtonWidth:
-            return widgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth);
+            return widgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, option, widget);
 
         case PM_SliderControlThickness:
-            return widgetLayoutProp(WT_Slider, Slider::HandleThickness);
+            return widgetLayoutProp(WT_Slider, Slider::HandleThickness, option, widget);
 
         case PM_SliderLength:
-            return widgetLayoutProp(WT_Slider, Slider::HandleLength);
+            return widgetLayoutProp(WT_Slider, Slider::HandleLength, option, widget);
 
         case PM_SliderThickness:
         {
             // not sure what the difference to PM_SliderControlThickness actually is
-            return widgetLayoutProp(WT_Slider, Slider::HandleThickness);
+            return widgetLayoutProp(WT_Slider, Slider::HandleThickness, option, widget);
         }
 
         case PM_SpinBoxFrameWidth:
-            return widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth);
+            return widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth, option, widget);
 
         case PM_ComboBoxFrameWidth:
-            return widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth);
+            return widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, option, widget);
 
         case PM_HeaderMarkSize:
-            return widgetLayoutProp(WT_Header, Header::IndicatorSize);
+            return widgetLayoutProp(WT_Header, Header::IndicatorSize, option, widget);
 
         case PM_ToolBarFrameWidth:
-            return widgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth);
+            return widgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, option, widget);
 
         case PM_ToolBarHandleExtent:
-            return widgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent);
+            return widgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent, option, widget);
 
         case PM_ToolBarItemMargin:
-            return widgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin);
+            return widgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, option, widget);
 
         case PM_ToolBarItemSpacing:
-            return widgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing);
+            return widgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, option, widget);
 
         default:
             break;
@@ -1857,7 +1864,7 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
             if (!bOpt) return r;
 
-            int size = widgetLayoutProp(WT_CheckBox, CheckBox::Size);
+            int size = widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget);
 
             if (bOpt->text.isEmpty())
                 return centerRect(r, size, size);
@@ -1867,22 +1874,22 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
 
         case SE_RadioButtonIndicator:
         {
-            int size = widgetLayoutProp(WT_RadioButton, RadioButton::Size);
+            int size = widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
 
             return QRect(r.x(), r.y(), size, r.height());
         }
 
         case SE_CheckBoxContents:
         {
-            r.setX(r.x() + widgetLayoutProp(WT_CheckBox, CheckBox::Size) +
-                           widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace));
+            r.setX(r.x() + widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget) +
+                           widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, option, widget));
             return r;
         }
 
         case SE_RadioButtonContents:
         {
-            r.setX(r.x() + widgetLayoutProp(WT_RadioButton, RadioButton::Size) +
-                    widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace));
+            r.setX(r.x() + widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget) +
+                    widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget));
             return r;
         }
 
@@ -1952,7 +1959,7 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
 //             // QCommonStyle always assumes a frame width of 2. For a custom frame width, we can
 //             // simply re-adjust the rect and don't need to calculate the rect ourself.
 //             QRect contents = QCommonStyle::subElementRect(sr, option, widget).adjusted(-2,-2,2,2);
-//             int fw = widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth);
+//             int fw = widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, option, widget);
 //             return contents.adjusted(fw,fw,-fw,-fw);
 //         }
         default:
@@ -2287,7 +2294,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 
 
 QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOptionComplex* option,
-                                       SubControl subControl, const QWidget* /*w*/) const
+                                       SubControl subControl, const QWidget* widget) const
 {
     QRect r = option->rect;
 
@@ -2299,10 +2306,10 @@ QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOption
             case SC_ScrollBarSubLine:
             {
                 int majorSize;
-                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton))
-                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleButtonHeight);
+                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton, option, widget))
+                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleButtonHeight, option, widget);
                 else
-                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight);
+                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight, option, widget);
 
                 if (option->state & State_Horizontal)
                     return handleRTL(option, QRect(r.x(), r.y(), majorSize, r.height()));
@@ -2315,10 +2322,10 @@ QRect KStyle::internalSubControlRect (ComplexControl control, const QStyleOption
             case SC_ScrollBarAddLine:
             {
                 int majorSize;
-                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton))
-                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleButtonHeight);
+                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, option, widget))
+                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleButtonHeight, option, widget);
                 else
-                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight);
+                    majorSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::SingleButtonHeight, option, widget);
 
                 if (option->state & State_Horizontal)
                     return handleRTL(option, QRect(r.right() - majorSize + 1, r.y(), majorSize, r.height()));
@@ -2400,8 +2407,8 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     int sliderSize = int(space * float(slOpt->pageStep) /
                                             (slOpt->maximum - slOpt->minimum + slOpt->pageStep));
 
-                    if (sliderSize < widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight))
-                        sliderSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight);
+                    if (sliderSize < widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight, option, widget))
+                        sliderSize = widgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight, option, widget);
 
                     if (sliderSize > space)
                         sliderSize = space;
@@ -2458,16 +2465,16 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
         {
             if (const QStyleOptionSpinBox *sb = qstyleoption_cast<const QStyleOptionSpinBox *>(option)) {
 
-                int fw = widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth);
-                int bw = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth);
-                int bm = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin);
-                int bml = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Left);
-                int bmr = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Right);
-                int bmt = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Top);
-                int bmb = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Bot);
-                int bs = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing);
-                bool symmButtons = widgetLayoutProp(WT_SpinBox, SpinBox::SymmetricButtons);
-                bool supportFrameless = widgetLayoutProp(WT_SpinBox, SpinBox::SupportFrameless);
+                int fw = widgetLayoutProp(WT_SpinBox, SpinBox::FrameWidth, option, widget);
+                int bw = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonWidth, option, widget);
+                int bm = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin, option, widget);
+                int bml = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Left, option, widget);
+                int bmr = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Right, option, widget);
+                int bmt = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Top, option, widget);
+                int bmb = bm + widgetLayoutProp(WT_SpinBox, SpinBox::ButtonMargin + Bot, option, widget);
+                int bs = widgetLayoutProp(WT_SpinBox, SpinBox::ButtonSpacing, option, widget);
+                bool symmButtons = widgetLayoutProp(WT_SpinBox, SpinBox::SymmetricButtons, option, widget);
+                bool supportFrameless = widgetLayoutProp(WT_SpinBox, SpinBox::SupportFrameless, option, widget);
 
                 // SpinBox without a frame, set the corresponding layout values to 0, reduce button width.
                 if (supportFrameless && !sb->frame)
@@ -2521,14 +2528,14 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
         {
             if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
 
-                int fw = widgetLayoutProp(WT_ComboBox, SpinBox::FrameWidth);
-                int bw = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonWidth);
-                int bm = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin);
-                int bml = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Left);
-                int bmr = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Right);
-                int bmt = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Top);
-                int bmb = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Bot);
-                bool supportFrameless = widgetLayoutProp(WT_ComboBox, SpinBox::SupportFrameless);
+                int fw = widgetLayoutProp(WT_ComboBox, SpinBox::FrameWidth, option, widget);
+                int bw = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonWidth, option, widget);
+                int bm = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin, option, widget);
+                int bml = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Left, option, widget);
+                int bmr = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Right, option, widget);
+                int bmt = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Top, option, widget);
+                int bmb = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Bot, option, widget);
+                bool supportFrameless = widgetLayoutProp(WT_ComboBox, SpinBox::SupportFrameless, option, widget);
 
                 // ComboBox without a frame, set the corresponding layout values to 0, reduce button width.
                 if (supportFrameless && !cb->frame)
@@ -2628,7 +2635,7 @@ QStyle::SubControl KStyle::hitTestComplexControl(ComplexControl cc, const QStyle
             if (preceeds(pt, groove, opt))
             {
                 //"Upper" button
-                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton))
+                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleTopButton, 0, w))
                 {
                     QRect buttonRect = internalSubControlRect(CC_ScrollBar, opt, SC_ScrollBarSubLine, w);
                     return buttonPortion(buttonRect, pt, opt);
@@ -2639,7 +2646,7 @@ QStyle::SubControl KStyle::hitTestComplexControl(ComplexControl cc, const QStyle
             else
             {
                 //"Bottom" button
-                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton))
+                if (widgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0, w))
                 {
                     QRect buttonRect = internalSubControlRect(CC_ScrollBar, opt, SC_ScrollBarAddLine, w);
                     return buttonPortion(buttonRect, pt, opt);
@@ -2680,8 +2687,8 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
         case CT_CheckBox:
         {
             //Add size for indicator ### handle empty case differently?
-            int indicator = widgetLayoutProp(WT_CheckBox, CheckBox::Size);
-            int spacer    = widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace);
+            int indicator = widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget);
+            int spacer    = widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, option, widget);
 
             //Make sure we include space for the focus rect margin
             QSize size = expandDim(contentsSize, WT_CheckBox, CheckBox::FocusMargin);
@@ -2698,8 +2705,8 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
         case CT_RadioButton:
         {
             //Add size for indicator
-            int indicator = widgetLayoutProp(WT_RadioButton, RadioButton::Size);
-            int spacer    = widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace);
+            int indicator = widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
+            int spacer    = widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget);
 
             //Make sure we include space for the focus rect margin
             QSize size = expandDim(contentsSize, WT_RadioButton, RadioButton::FocusMargin);
@@ -2730,22 +2737,22 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
         case CT_MenuBar:
         {
-            int extraW = widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Right) -
-                            widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Left);
+            int extraW = widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Right, option, widget) -
+                            widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Left, option, widget);
 
-            int extraH = widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Bot) -
-                            widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Top);
+            int extraH = widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Bot, option, widget) -
+                            widgetLayoutProp(WT_MenuBar, MenuBar::Margin + Top, option, widget);
 
             return QSize(contentsSize.width() + extraW, contentsSize.height() + extraH);
         }
 
         case CT_Menu:
         {
-            int extraW = widgetLayoutProp(WT_Menu, Menu::Margin + Right) -
-                            widgetLayoutProp(WT_Menu, Menu::Margin + Left);
+            int extraW = widgetLayoutProp(WT_Menu, Menu::Margin + Right, option, widget) -
+                            widgetLayoutProp(WT_Menu, Menu::Margin + Left, option, widget);
 
-            int extraH = widgetLayoutProp(WT_Menu, Menu::Margin + Bot) -
-                            widgetLayoutProp(WT_Menu, Menu::Margin + Top);
+            int extraH = widgetLayoutProp(WT_Menu, Menu::Margin + Bot, option, widget) -
+                            widgetLayoutProp(WT_Menu, Menu::Margin + Top, option, widget);
 
             return QSize(contentsSize.width() + extraW, contentsSize.height() + extraH);
         }
@@ -2765,21 +2772,21 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 case QStyleOptionMenuItem::SubMenu:
                 {
                     int iconColW = miOpt->maxIconWidth;
-                    iconColW     = qMax(iconColW, widgetLayoutProp(WT_MenuItem, MenuItem::IconWidth));
+                    iconColW     = qMax(iconColW, widgetLayoutProp(WT_MenuItem, MenuItem::IconWidth, option, widget));
 
                     int leftColW = iconColW;
                     if (miOpt->menuHasCheckableItems &&
-                        widgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon) )
+                        widgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon, option, widget) )
                     {
-                        leftColW = widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth) +
-                                widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace) +
+                        leftColW = widgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, option, widget) +
+                                widgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace, option, widget) +
                                 iconColW;
                     }
 
-                    leftColW     += widgetLayoutProp(WT_MenuItem, MenuItem::IconSpace);
+                    leftColW     += widgetLayoutProp(WT_MenuItem, MenuItem::IconSpace, option, widget);
 
-                    int rightColW = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace) +
-                                    widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth);
+                    int rightColW = widgetLayoutProp(WT_MenuItem, MenuItem::ArrowSpace, option, widget) +
+                                    widgetLayoutProp(WT_MenuItem, MenuItem::ArrowWidth, option, widget);
 
                     QFontMetrics fm(miOpt->font);
 
@@ -2797,18 +2804,18 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
                         textW = fm.width(text) +
                                 fm.width(accl) +
-                                widgetLayoutProp(WT_MenuItem, MenuItem::AccelSpace);
+                                widgetLayoutProp(WT_MenuItem, MenuItem::AccelSpace, option, widget);
                     }
 
 
-                    int h = qMax(contentsSize.height(), widgetLayoutProp(WT_MenuItem, MenuItem::MinHeight));
+                    int h = qMax(contentsSize.height(), widgetLayoutProp(WT_MenuItem, MenuItem::MinHeight, option, widget));
                     insideSize = QSize(leftColW + textW + rightColW, h);
                     break;
                 }
 
                 case QStyleOptionMenuItem::Separator:
                 {
-                    insideSize = QSize(10, widgetLayoutProp(WT_MenuItem, MenuItem::SeparatorHeight));
+                    insideSize = QSize(10, widgetLayoutProp(WT_MenuItem, MenuItem::SeparatorHeight, option, widget));
                 }
                 break;
 
@@ -2838,8 +2845,8 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 // TODO: see SE_TabWidgetTabContents comment.
 //         case CT_TabWidget:
 //         {
-//             return contentsSize + QSize (2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth),
-//                                          2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth) );
+//             return contentsSize + QSize (2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, option, widget),
+//                                          2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, option, widget) );
 //         }
 
         case CT_HeaderSection:
@@ -2847,7 +2854,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
                 QSize iconSize = header->icon.isNull() ? QSize(0,0) : QSize(22,22);
                 QSize textSize = header->fontMetrics.size(0, header->text);
-                int iconSpacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace);
+                int iconSpacing = widgetLayoutProp(WT_Header, Header::TextToIconSpace, option, widget);
                 int w = iconSize.width() + iconSpacing + textSize.width();
                 int h = qMax(iconSize.height(), textSize.height() );
 
