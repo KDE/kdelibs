@@ -77,7 +77,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     /**
      * Returns true if spell checking is enabled for this text edit.
      * Note that it even returns true if this is a read-only KTextEdit,
-     * where spell checking is actually disabled.
+     * where spell checking is actually disabled.  By default spell checking is disabled.
      *
      @ see setCheckSpellingEnabled()
      */
