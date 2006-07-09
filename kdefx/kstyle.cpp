@@ -162,12 +162,12 @@ KStyle::KStyle()
 
     setWidgetLayoutProp(WT_Header, Header::ContentsMargin, 3);
     setWidgetLayoutProp(WT_Header, Header::TextToIconSpace, 3);
-    setWidgetLayoutProp(WT_Header, Header::IndicatorSize, 9);
+    setWidgetLayoutProp(WT_Header, Header::MarkSize, 9);
 
     setWidgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent, 6);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::SeparatorExtent, 6);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::ExtensionExtent, 10);
-    setWidgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, 2);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::FrameWidth, 2);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, 3);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, 1);
 
@@ -550,8 +550,15 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         }
 
         case PE_IndicatorToolBarHandle:
-            drawKStylePrimitive(WT_ToolBar, ToolBar::Handle,option,r,pal,flags,painter,widget);
+        {
+            if (flags & State_Horizontal)
+                drawKStylePrimitive(WT_ToolBar, ToolBar::HandleHor,
+                                    option,r,pal,flags,painter,widget);
+            else
+                drawKStylePrimitive(WT_ToolBar, ToolBar::HandleVert,
+                                    option,r,pal,flags,painter,widget);
             return;
+        }
 
         case PE_IndicatorToolBarSeparator:
             drawKStylePrimitive(WT_ToolBar, ToolBar::Separator,option,r,pal,flags,painter,widget);
@@ -1757,19 +1764,31 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             return widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, option, widget);
 
         case PM_HeaderMarkSize:
-            return widgetLayoutProp(WT_Header, Header::IndicatorSize, option, widget);
+            return widgetLayoutProp(WT_Header, Header::MarkSize, option, widget);
+
+        case PM_HeaderMargin:
+            return widgetLayoutProp(WT_Header, Header::TextToIconSpace, option, widget);
 
         case PM_ToolBarFrameWidth:
-            return widgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, option, widget);
+            return widgetLayoutProp(WT_ToolBar, ToolBar::FrameWidth, option, widget);
 
         case PM_ToolBarHandleExtent:
             return widgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent, option, widget);
+
+        case PM_ToolBarSeparatorExtent:
+            return widgetLayoutProp(WT_ToolBar, ToolBar::SeparatorExtent, option, widget);
+
+        case PM_ToolBarExtensionExtent:
+            return widgetLayoutProp(WT_ToolBar, ToolBar::ExtensionExtent, option, widget);
 
         case PM_ToolBarItemMargin:
             return widgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, option, widget);
 
         case PM_ToolBarItemSpacing:
             return widgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, option, widget);
+
+        case PM_ScrollBarExtent:
+            return widgetLayoutProp(WT_ScrollBar, ScrollBar::BarWidth, option, widget);
 
         default:
             break;

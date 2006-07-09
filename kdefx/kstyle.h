@@ -821,15 +821,17 @@ protected:
          */
         enum LayoutProp
         {
-            DoubleTopButton, //Set to non-zero to have two buttons on top
-            DoubleBotButton, //Set to non-zero to have two buttons on bottom
-            SingleButtonHeight,
-            DoubleButtonHeight,
-            BarWidth, ///< @todo currently not implemented @todo PM_ScrollBarExtent
-            MinimumSliderHeight, //Note: if the scrollbar is too small to accommodate
-                                 //this, this will not be enforced
-            ArrowColor,
-            ActiveArrowColor
+            DoubleTopButton,    ///< set to non-zero to have two buttons on top
+            DoubleBotButton,    ///< set to non-zero to have two buttons on bottom
+            SingleButtonHeight, ///< height of a single button
+            DoubleButtonHeight, ///< height of a double button
+            BarWidth,           ///< width of a scrollbar [sets QStyle::PM_ScrollBarExtent]
+            MinimumSliderHeight,/**< the minimum slider height
+                                 * @note If the scrollbar is too small to accommodate
+                                 *       this, this will not be enforced. */
+            ArrowColor,         /**< color mode of a button arrow
+                                 * @sa ColorMode */
+            ActiveArrowColor    /**< color mode of a pressed button arrow (?) */
         };
 
         /**
@@ -843,8 +845,8 @@ protected:
          */
         enum Primitive
         {
-            SingleButtonVert, //Used to draw a 1-button bevel, vertical
-            SingleButtonHor,                                //Used to draw a 1-button bevel, horizontal
+            SingleButtonVert,   ///< used to draw a 1-button bevel, vertical
+            SingleButtonHor,    ///< used to draw a 1-button bevel, horizontal
             DoubleButtonVert,           /**< Used to draw a 2-button bevel, vertical.
                                          * A DoubleButtonOption is passed to say which
                                          * button is pressed. */
@@ -1015,10 +1017,7 @@ protected:
         enum LayoutProp
         {
             FrameWidth,        /**< Space reserved left, top, bottom of the SpinBox
-                                * @todo PM_SpinBoxFrameWidth
-                                * @todo merge FrameWidth, ButtonWidth
-                                * to a margin, and note that only FrameMargin is
-                                * reported with PM_SpinBoxFrameWidth? */
+                                * [sets QStyle::PM_SpinBoxFrameWidth] */
             ButtonWidth,       ///< Space reserved for the widget, right of the EditField
             ButtonMargin,      /**< Where the up/down buttons are located, measured
                                 * from right of the edit field and the top/right/bottom
@@ -1115,19 +1114,22 @@ protected:
             TextToIconSpace = ContentsMargin + MarginInc,
                                  /**< space that is allocated between icon and text
                                   * if both exist
-                                  * @todo PM_HeaderMargin is supposed to do the same */
-            IndicatorSize        ///< [sets QStyle::PM_HeaderMarkSize] @todo rename to MarkSize?
+                                  * [sets QStyle::PM_HeaderMargin] */
+            MarkSize             /**< size of the sort indicator in a header
+                                  * [sets QStyle::PM_HeaderMarkSize] */
         };
 
         /**
          * Relevant Generic elements:
          * - @c Generic::Text for the header text label
          * - @c Generic::ArrowUp @c Generic::ArrowDown to indicate the sorting of the column
+         *
+         * [the Sections implement QStyle::CE_HeaderSection]
          */
         enum Primitive
         {
-            SectionHor, ///< @todo CE_HeaderSection @todo merge hor/vert?
-            SectionVert
+            SectionHor, ///< header section, horizontal
+            SectionVert ///< header section, vertical
         };
     };
 
@@ -1179,19 +1181,22 @@ protected:
         enum LayoutProps
         {
             HandleExtent,       ///< the width(hor)/height(vert) of a ToolBar handle [sets QStyle::PM_ToolBarHandleExtent]
-            SeparatorExtent,    ///< The width/height of a ToolBar separator @todo PM_ToolBarSeparatorExtent @todo not implemented!!
-            ExtensionExtent,    ///< The width/height of a ToolBar extender, when there is not enough room for toolbar buttons @todo PM_ToolBarExtensionExtent @todo not implemented!!
-            PanelFrameWidth,    ///< [sets QStyle::PM_ToolBarFrameWidth] @todo rename to FrameWidth?
+            SeparatorExtent,    ///< the width/height of a ToolBar separator [sets QStyle::PM_ToolBarSeparatorExtent]
+            ExtensionExtent,    ///< The width/height of a ToolBar extender, when there is not enough room for toolbar buttons [sets PM_ToolBarExtensionExtent]
+            FrameWidth,    /**< width of the frame around toolbars
+                            * [sets QStyle::PM_ToolBarFrameWidth] */
             ItemMargin,         ///< [sets QStyle::PM_ToolBarItemMargin]
             ItemSpacing         ///< [sets QStyle::PM_ToolBarItemSpacing]
         };
 
         /**
+         * [the Handles implement QStyle::PE_IndicatorToolBarHandle]
          * @sa drawKStylePrimitive()
          */
         enum Primitive
         {
-            Handle, ///< @todo handlehor, handlevert? [implements QStyle::PE_IndicatorToolBarHandle]
+            HandleHor, ///< handle of a toolbar, horizontal
+            HandleVert, ///< handle of a toolbar, vertical
             Separator, ///< [implements QStyle::PE_IndicatorToolBarSeparator]
             Panel      ///< [implements QStyle::PE_PanelToolBar]
         };

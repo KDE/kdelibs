@@ -178,7 +178,7 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Top, 1);
     setWidgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin+Bot, 1);
 
-    setWidgetLayoutProp(WT_ToolBar, ToolBar::PanelFrameWidth, 1);
+    setWidgetLayoutProp(WT_ToolBar, ToolBar::FrameWidth, 1);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemSpacing, 1);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::ItemMargin, 0);
 
@@ -1495,11 +1495,10 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             switch (primitive)
             {
-                case ToolBar::Handle:
+                case ToolBar::HandleHor:
                 {
                     int counter = 1;
 
-                    if(flags & State_Horizontal) {
                         int center = r.left()+r.width()/2;
                         for(int j = r.top()+2; j <= r.bottom()-3; j+=3) {
                             if(counter%2 == 0) {
@@ -1509,7 +1508,12 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                             }
                             counter++;
                         }
-                    } else {
+                    return;
+                }
+                case ToolBar::HandleVert:
+                {
+                    int counter = 1;
+
                         int center = r.top()+r.height()/2;
                         for(int j = r.left()+2; j <= r.right()-3; j+=3) {
                             if(counter%2 == 0) {
@@ -1519,7 +1523,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                             }
                             counter++;
                         }
-                    }
 
                     return;
                 }
