@@ -821,7 +821,7 @@ protected:
             DoubleButtonVert,           /**< Used to draw a 2-button bevel, vertical.
                                          * A DoubleButtonOption is passed to say which
                                          * button is pressed. */
-            DoubleButtonHor,            /** @see DoubleButtonVert */
+            DoubleButtonHor             /** @see DoubleButtonVert */
         };
     };
 
