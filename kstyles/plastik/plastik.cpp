@@ -325,6 +325,24 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             switch (primitive)
             {
+                case ProgressBar::Groove:
+                {
+                    QColor bg = enabled?pal.color(QPalette::Base):pal.color(QPalette::Background); // background
+
+                    renderContour(p, r, pal.color(QPalette::Background), getColor(pal, ButtonContour, enabled) );
+                    p->setPen(bg.dark(105) );
+                    p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1 );
+                    p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
+                    p->setPen(bg.light(105) );
+                    p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1 );
+                    p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
+
+            // fill background
+                    p->fillRect(r.adjusted(2,2,-2,-2), bg );
+
+                    return;
+                }
+
                 case ProgressBar::BusyIndicator:
                 {
                     renderContour( p, r/*QRect( r.x()+progress, r.y(), barWidth, r.height() )*/,
@@ -432,6 +450,41 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         break;
 
+        case WT_MenuBar:
+        {
+            switch (primitive)
+            {
+                case MenuBar::EmptyArea:
+                {
+                    p->fillRect(r, pal.window());
+
+                    if ( _drawToolBarSeparator ) {
+                        p->setPen( getColor(pal, PanelDark) );
+                        p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
+                    }
+
+
+            // TODO: use this for _tool_ bar separators...?
+//             if ( _drawToolBarSeparator ) {
+//                 if ( r.width() > r.height() ) {
+//                     p->setPen( getColor(pal, PanelLight) );
+//                     p->drawLine( r.left(), r.top(), r.right(), r.top() );
+//                     p->setPen( getColor(pal, PanelDark) );
+//                     p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
+//                 }
+//                 else {
+//                     p->setPen( getColor(pal, PanelLight) );
+//                     p->drawLine( r.left(), r.top(), r.left(), r.bottom() );
+//                     p->setPen( getColor(pal, PanelDark) );
+//                     p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
+//                 }
+//             }
+                    return;
+                }
+            }
+        }
+        break;
+
         case WT_MenuBarItem:
         {
             switch (primitive)
@@ -469,6 +522,19 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 case Menu::Background:
                 {
                     p->fillRect( r, pal.color(QPalette::Background).light( 105 ) );
+                    return;
+                }
+
+                case Menu::TearOff:
+                {
+                    // TODO: See Keramik...
+
+                    return;
+                }
+
+                case Menu::Scroller:
+                {
+                    // TODO
                     return;
                 }
             }
@@ -642,6 +708,108 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 }
                 break;
 
+                case ScrollBar::GrooveAreaVert:
+                case ScrollBar::GrooveAreaHor:
+                {
+                    bool hor = flags & State_Horizontal;
+                    bool on = flags&State_On;
+                    bool down = flags&State_Sunken;
+
+                    // TODO: double buffering still needed?
+                    // draw double buffered to avoid flickr...
+                    QPixmap buffer;
+                    if(hor) {
+                        buffer = QPixmap(2, r.height() );
+                    } else {
+                        buffer = QPixmap(r.width(), 2 );
+                    }
+                    QRect br(buffer.rect() );
+                    QPainter bp(&buffer);
+
+                    if (on || down) {
+                        bp.fillRect(br, QBrush(pal.mid().color().dark()));
+                    } else {
+                        if(hor) {
+                            bp.setPen(pal.color( QPalette::Background ).dark(106));
+                            bp.drawLine(br.left(), br.top(), br.right(), br.top());
+                            bp.setPen(pal.color( QPalette::Background ).light(106));
+                            bp.drawLine(br.left(), br.bottom(), br.right(), br.bottom());
+                            bp.fillRect(br.left(), br.top()+1, br.width(), br.height()-2,pal.color( QPalette::Background ));
+                        } else {
+                            bp.setPen(pal.color( QPalette::Background ).dark(106));
+                            bp.drawLine(br.left(), br.top(), br.left(), br.bottom());
+                            bp.setPen(pal.color( QPalette::Background ).light(106));
+                            bp.drawLine(br.right(), br.top(), br.right(), br.bottom());
+                            bp.fillRect(br.left()+1, br.top(), br.width()-2, br.height(),pal.color( QPalette::Background ));
+                        }
+                    }
+
+                    bp.fillRect(br, QBrush(pal.color(QPalette::Background).light(), Qt::Dense4Pattern));
+
+                    bp.end();
+
+                    p->drawTiledPixmap(r, buffer, QPoint(0, r.top()%2));
+
+                    return;
+                }
+
+                case ScrollBar::SliderVert:
+                case ScrollBar::SliderHor:
+                {
+                    bool down = (flags & State_Sunken);
+                    bool horizontal = (flags & State_Horizontal);
+
+                    const WidgetState s = enabled?(down?IsPressed:IsEnabled):IsDisabled;
+                    const QColor surface = getColor(pal, DragButtonSurface, s);
+
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+                    if(!enabled) contourFlags|=Is_Disabled;
+                    renderContour(p, r, pal.color(QPalette::Background), getColor(pal, DragButtonContour, s),
+                                  contourFlags);
+
+                    uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
+                    if(horizontal) surfaceFlags|=Is_Horizontal;
+                    if(!enabled) surfaceFlags|=Is_Disabled;
+                    if(r.height() >= 4)
+                        renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
+                                      pal.color( QPalette::Background ), surface, pal.color( QPalette::Background ),
+                                      _contrast+3, surfaceFlags);
+
+            // set contour-like color for the case _scrollBarLines is set and we paint lines instead of dots.
+                    p->setPen(alphaBlendColors(pal.color(QPalette::Background), surface.dark(enabled?140:120), 50) );
+
+                    const int d = 4;
+                    int n = ((horizontal?r.width():r.height())-8)/d;
+                    if(n>5) n=5;
+                    if(!horizontal) {
+                        for(int j = 0; j < n; j++) {
+                            int yPos = r.center().y()-(n*d)/2+d*j+1;
+                            if(_scrollBarLines)
+                                p->drawLine(r.x()+1, yPos, r.right()-1, yPos);
+                            else
+                            {
+                                for(int k = 3; k <= 13; k+=4) {
+                                    renderDot(p, QPoint(k, yPos), surface, false, true );
+                                }
+                            }
+                        }
+                    } else {
+                        for(int j = 0; j < n; j++) {
+                            int xPos = r.center().x()-(n*d)/2+d*j+1;
+                            if(_scrollBarLines)
+                                p->drawLine(xPos, r.y()+1, xPos, r.bottom()-1);
+                            else
+                            {
+                                for(int k = 3; k <= 13; k+=4) {
+                                    renderDot(p, QPoint(xPos, k), surface, false, true );
+                                }
+                            }
+                        }
+                    }
+
+                    return;
+                }
+
             }
 
         }
@@ -687,6 +855,40 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
             }
 
+        }
+        break;
+
+        case WT_Splitter:
+        {
+            switch (primitive)
+            {
+                case Splitter::HandleHor:
+                case Splitter::HandleVert:
+                {
+                    int w = r.width();
+                    int h = r.height();
+
+                    QColor color = (mouseOver)?pal.color(QPalette::Background).light(100+_contrast):pal.color(QPalette::Background);
+                    p->fillRect(r, color);
+                    if (flags & State_Horizontal) {
+                        if (w > 4) {
+                            int xcenter = r.width()/2;
+                            for(int k = 2*r.height()/10; k < 8*r.height()/10; k+=5) {
+                                renderDot(p, QPoint(xcenter-1, k), color, false, true);
+                            }
+                        }
+                    } else {
+                        if (h > 4) {
+                            int ycenter = r.height()/2;
+                            for(int k = 2*r.width()/10; k < 8*r.width()/10; k+=5) {
+                                renderDot(p, QPoint(k, ycenter-1), color, false, true);
+                            }
+                        }
+                    }
+
+                    return;
+                }
+            }
         }
         break;
 
@@ -1438,214 +1640,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
     // default fallback
     KStyle::drawKStylePrimitive(widgetType, primitive, opt,
                                 r, pal, flags, p, widget, kOpt);
-}
-
-void PlastikStyle::drawControl (ControlElement elem, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
-{
-    State flags = opt->state;
-    QRect      r     = opt->rect;
-    QPalette   pal   = opt->palette;
-
-    const bool reverseLayout = opt->direction == Qt::RightToLeft;
-    const bool enabled = flags & State_Enabled;
-    const bool mouseOver(enabled && (flags & State_MouseOver));
-
-    switch (elem)
-    {
-        case CE_Splitter:
-        {
-            int w = r.width();
-            int h = r.height();
-
-            QColor color = (mouseOver)?pal.color(QPalette::Background).light(100+_contrast):pal.color(QPalette::Background);
-            p->fillRect(r, color);
-            if (flags & State_Horizontal) {
-                if (w > 4) {
-                    int xcenter = r.width()/2;
-                    for(int k = 2*r.height()/10; k < 8*r.height()/10; k+=5) {
-                        renderDot(p, QPoint(xcenter-1, k), color, false, true);
-                    }
-                }
-            } else {
-                if (h > 4) {
-                    int ycenter = r.height()/2;
-                    for(int k = 2*r.width()/10; k < 8*r.width()/10; k+=5) {
-                        renderDot(p, QPoint(k, ycenter-1), color, false, true);
-                    }
-                }
-            }
-
-            return;
-        }
-
-        case CE_MenuBarEmptyArea:
-        {
-            p->fillRect(r, pal.window());
-
-            if ( _drawToolBarSeparator ) {
-                p->setPen( getColor(pal, PanelDark) );
-                p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
-            }
-
-
-            // TODO: use this for _tool_ bar separators...?
-//             if ( _drawToolBarSeparator ) {
-//                 if ( r.width() > r.height() ) {
-//                     p->setPen( getColor(pal, PanelLight) );
-//                     p->drawLine( r.left(), r.top(), r.right(), r.top() );
-//                     p->setPen( getColor(pal, PanelDark) );
-//                     p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
-//                 }
-//                 else {
-//                     p->setPen( getColor(pal, PanelLight) );
-//                     p->drawLine( r.left(), r.top(), r.left(), r.bottom() );
-//                     p->setPen( getColor(pal, PanelDark) );
-//                     p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
-//                 }
-//             }
-
-            return;
-        }
-
-        case CE_MenuTearoff:
-        {
-            // TODO: See Keramik...
-
-            return;
-        }
-
-        case CE_MenuScroller:
-        {
-            // TODO
-
-            return;
-        }
-
-        case CE_ProgressBarGroove:
-        {
-            QColor bg = enabled?pal.color(QPalette::Base):pal.color(QPalette::Background); // background
-
-            renderContour(p, r, pal.color(QPalette::Background), getColor(pal, ButtonContour, enabled) );
-            p->setPen(bg.dark(105) );
-            p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1 );
-            p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
-            p->setPen(bg.light(105) );
-            p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1 );
-            p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
-
-            // fill background
-            p->fillRect(r.adjusted(2,2,-2,-2), bg );
-
-
-            return;
-        }
-
-        case CE_ScrollBarSlider:
-        {
-            bool down = (flags & State_Sunken);
-            bool horizontal = (flags & State_Horizontal);
-
-            const WidgetState s = enabled?(down?IsPressed:IsEnabled):IsDisabled;
-            const QColor surface = getColor(pal, DragButtonSurface, s);
-
-            uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-            if(!enabled) contourFlags|=Is_Disabled;
-            renderContour(p, r, pal.color(QPalette::Background), getColor(pal, DragButtonContour, s),
-                          contourFlags);
-
-            uint surfaceFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom;
-            if(horizontal) surfaceFlags|=Is_Horizontal;
-            if(!enabled) surfaceFlags|=Is_Disabled;
-            if(r.height() >= 4)
-                renderSurface(p, QRect(r.left()+1, r.top()+1, r.width()-2, r.height()-2),
-                              pal.color( QPalette::Background ), surface, pal.color( QPalette::Background ),
-                              _contrast+3, surfaceFlags);
-
-            // set contour-like color for the case _scrollBarLines is set and we paint lines instead of dots.
-            p->setPen(alphaBlendColors(pal.color(QPalette::Background), surface.dark(enabled?140:120), 50) );
-
-            const int d = 4;
-            int n = ((horizontal?r.width():r.height())-8)/d;
-            if(n>5) n=5;
-            if(!horizontal) {
-                for(int j = 0; j < n; j++) {
-                    int yPos = r.center().y()-(n*d)/2+d*j+1;
-                    if(_scrollBarLines)
-                        p->drawLine(r.x()+1, yPos, r.right()-1, yPos);
-                    else
-                    {
-                        for(int k = 3; k <= 13; k+=4) {
-                            renderDot(p, QPoint(k, yPos), surface, false, true );
-                        }
-                    }
-                }
-            } else {
-                for(int j = 0; j < n; j++) {
-                    int xPos = r.center().x()-(n*d)/2+d*j+1;
-                    if(_scrollBarLines)
-                        p->drawLine(xPos, r.y()+1, xPos, r.bottom()-1);
-                    else
-                    {
-                        for(int k = 3; k <= 13; k+=4) {
-                            renderDot(p, QPoint(xPos, k), surface, false, true );
-                        }
-                    }
-                }
-            }
-
-            return;
-        }
-
-        case CE_ScrollBarAddPage:
-        case CE_ScrollBarSubPage:
-        {
-            bool hor = flags & State_Horizontal;
-            bool on = flags&State_On;
-            bool down = flags&State_Sunken;
-
-                    // TODO: double buffering still needed?
-                    // draw double buffered to avoid flickr...
-            QPixmap buffer;
-            if(hor) {
-                buffer = QPixmap(2, r.height() );
-            } else {
-                buffer = QPixmap(r.width(), 2 );
-            }
-            QRect br(buffer.rect() );
-            QPainter bp(&buffer);
-
-            if (on || down) {
-                bp.fillRect(br, QBrush(pal.mid().color().dark()));
-            } else {
-                if(hor) {
-                    bp.setPen(pal.color( QPalette::Background ).dark(106));
-                    bp.drawLine(br.left(), br.top(), br.right(), br.top());
-                    bp.setPen(pal.color( QPalette::Background ).light(106));
-                    bp.drawLine(br.left(), br.bottom(), br.right(), br.bottom());
-                    bp.fillRect(br.left(), br.top()+1, br.width(), br.height()-2,pal.color( QPalette::Background ));
-                } else {
-                    bp.setPen(pal.color( QPalette::Background ).dark(106));
-                    bp.drawLine(br.left(), br.top(), br.left(), br.bottom());
-                    bp.setPen(pal.color( QPalette::Background ).light(106));
-                    bp.drawLine(br.right(), br.top(), br.right(), br.bottom());
-                    bp.fillRect(br.left()+1, br.top(), br.width()-2, br.height(),pal.color( QPalette::Background ));
-                }
-            }
-
-            bp.fillRect(br, QBrush(pal.color(QPalette::Background).light(), Qt::Dense4Pattern));
-
-            bp.end();
-
-            p->drawTiledPixmap(r, buffer, QPoint(0, r.top()%2));
-
-            return;
-        }
-
-        default:
-            break;
-    }
-
-    KStyle::drawControl(elem, opt, p, widget);
 }
 
 //

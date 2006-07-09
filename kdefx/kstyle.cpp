@@ -844,6 +844,13 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
         //The CE_ProgressBar implementation inside QCommonStyle is acceptible.
         //We just implement the subElementRect's it uses
 
+        case CE_ProgressBarGroove:
+        {
+            drawKStylePrimitive(WT_ProgressBar, ProgressBar::Groove,  option, r,
+                                pal, flags, p, widget);
+            return;
+        }
+
         case CE_ProgressBarContents:
         {
             const QStyleOptionProgressBar* pbOpt = qstyleoption_cast<const QStyleOptionProgressBar*>(option);
@@ -994,6 +1001,13 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             drawKStylePrimitive(WT_MenuBarItem, Generic::Text, option, textRect,
                                 pal, flags, p, widget, &lbOpt);
 
+            return;
+        }
+
+        case CE_MenuBarEmptyArea:
+        {
+            drawKStylePrimitive(WT_MenuBar, MenuBar::EmptyArea,  option, r,
+                                pal, flags, p, widget);
             return;
         }
 
@@ -1372,6 +1386,25 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 //         case CE_ScrollBarFirst:
 //         case CE_ScrollBarLast:
 
+        case CE_ScrollBarSlider:
+        {
+            drawKStylePrimitive(WT_ScrollBar,
+                                (flags & State_Horizontal) ? ScrollBar::SliderHor  :
+                                        ScrollBar::SliderVert,
+                                option, r, pal, flags, p, widget);
+            return;
+        }
+
+        case CE_ScrollBarAddPage:
+        case CE_ScrollBarSubPage:
+        {
+            drawKStylePrimitive(WT_ScrollBar,
+                                (flags & State_Horizontal) ? ScrollBar::GrooveAreaHor :
+                                        ScrollBar::GrooveAreaVert,
+                                option, r, pal, flags, p, widget);
+            return;
+        }
+
         //QCS's CE_TabBarTab is perfectly fine, so we just handle the subbits
 
         case CE_TabBarTabShape:
@@ -1554,6 +1587,15 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 lbOpt.hAlign = header->textAlignment;
                 drawKStylePrimitive(WT_Header, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
             }
+            return;
+        }
+
+        case CE_Splitter:
+        {
+            if (flags&State_Horizontal)
+                drawKStylePrimitive(WT_Splitter, Splitter::HandleHor, option, r, pal, flags, p, widget);
+            else
+                drawKStylePrimitive(WT_Splitter, Splitter::HandleVert, option, r, pal, flags, p, widget);
             return;
         }
 

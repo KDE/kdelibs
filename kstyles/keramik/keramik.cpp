@@ -245,6 +245,70 @@ public:
 						p->fillRect( r, pal.background().color().light( 105 ) );
 						return;
 					}
+
+					case Menu::TearOff:
+					{
+				//### hmm,may be KStyle should do a default for this.
+				//### FIXME
+						return;
+					}
+
+					case Menu::Scroller:
+					{
+				//TODO:scrollr
+
+						return;
+					}
+				}
+			}
+			break;
+
+			case WT_MenuBar:
+			{
+				switch (primitive)
+				{
+					case MenuBar::EmptyArea:
+					{
+						Keramik::GradientPainter::renderGradient( p, r, pal.color(QPalette::Button), true, true);
+						return;
+					}
+				}
+			}
+			break;
+
+			case WT_Splitter:
+			{
+				switch (primitive)
+				{
+					case Splitter::HandleHor:
+					case Splitter::HandleVert:
+					{
+						int x,y,w,h;
+						r.getRect(&x, &y, &w, &h);
+						int x2 = x+w-1;
+						int y2 = y+h-1;
+
+					//### should probably use color() directly to avoid creating a brush
+						p->setPen(pal.dark().color());
+						p->drawRect( r );
+						p->setPen(pal.background().color());
+						p->drawPoint(x, y);
+						p->drawPoint(x2, y);
+						p->drawPoint(x, y2);
+						p->drawPoint(x2, y2);
+						p->setPen(pal.color(QPalette::Light));
+						p->drawLine(x+1, y+1, x+1, y2-1);
+						p->drawLine(x+1, y+1, x2-1, y+1);
+						p->setPen(pal.midlight().color());
+						p->drawLine(x+2, y+2, x+2, y2-2);
+						p->drawLine(x+2, y+2, x2-2, y+2);
+						p->setPen(pal.mid().color());
+						p->drawLine(x2-1, y+1, x2-1, y2-1);
+						p->drawLine(x+1, y2-1, x2-1, y2-1);
+						p->fillRect(x+3, y+3, w-5, h-5, pal.brush(QPalette::Background));
+
+						return;
+					}
 				}
 			}
 			break;
@@ -326,6 +390,58 @@ public:
 				bool down = (flags & State_Sunken);
 				switch (primitive)
 				{
+					case ScrollBar::SliderHor:
+					case ScrollBar::SliderVert:
+					{
+						bool horizontal = (flags & State_Horizontal);
+
+						bool active     = (flags & State_Sunken);
+						int name = KeramikSlider1;
+						unsigned int count = 3;
+
+						int w = r.width();
+						int h = r.height();
+
+						if ( horizontal )
+						{
+							if ( w > ( loader.size( keramik_scrollbar_hbar+KeramikSlider1 ).width() +
+													  loader.size( keramik_scrollbar_hbar+KeramikSlider4 ).width() +
+													  loader.size( keramik_scrollbar_hbar+KeramikSlider3 ).width() + 2 ) )
+								count = 5;
+						}
+						else if ( h > ( loader.size( keramik_scrollbar_vbar+KeramikSlider1 ).height() +
+													loader.size( keramik_scrollbar_vbar+KeramikSlider4 ).height() +
+													loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
+							count = 5;
+
+						QColor col = pal.color(QPalette::Highlight);
+
+						//### what to do with the customScrollMode stuff?
+						//I suppose KStyle can take care of it, somehow?
+						//if (customScrollMode || !highlightScrollBar)
+						//	col = pal.button();
+
+						if (!active)
+							Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, pal.background().color(), false);
+						else
+							Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, 												Keramik::ColorUtil::lighten(col ,110),
+						pal.background().color(), false );
+
+						return;
+					}
+					case ScrollBar::GrooveAreaHor:
+					{
+						Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
+								p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
+						return;
+					}
+					case ScrollBar::GrooveAreaVert:
+					{
+						Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
+								p, r, pal.color(QPalette::Button), pal.background().color(), disabled);	
+						return;
+					}
+
 					case ScrollBar::DoubleButtonHor:
 					{
 						const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(kOpt);
@@ -561,130 +677,6 @@ public:
 
 		KStyle::drawKStylePrimitive(widgetType, primitive, opt,
 					    r, pal, flags, p, widget, kOpt);
-	}
-
-	void drawControl (ControlElement elem, const QStyleOption* opt, QPainter* p, const QWidget* widget) const
-	{
-		State flags = opt->state;
-		QRect      r     = opt->rect;
-		QPalette   pal   = opt->palette;
-		const bool disabled = !(flags & State_Enabled);
-
-		switch (elem)
-		{
-			case CE_Splitter:
-			{
-				int x,y,w,h;
-				r.getRect(&x, &y, &w, &h);
-				int x2 = x+w-1;
-				int y2 = y+h-1;
-
-					//### should probably use color() directly to avoid creating a brush
-				p->setPen(pal.dark().color());
-				p->drawRect( r );
-				p->setPen(pal.background().color());
-				p->drawPoint(x, y);
-				p->drawPoint(x2, y);
-				p->drawPoint(x, y2);
-				p->drawPoint(x2, y2);
-				p->setPen(pal.color(QPalette::Light));
-				p->drawLine(x+1, y+1, x+1, y2-1);
-				p->drawLine(x+1, y+1, x2-1, y+1);
-				p->setPen(pal.midlight().color());
-				p->drawLine(x+2, y+2, x+2, y2-2);
-				p->drawLine(x+2, y+2, x2-2, y+2);
-				p->setPen(pal.mid().color());
-				p->drawLine(x2-1, y+1, x2-1, y2-1);
-				p->drawLine(x+1, y2-1, x2-1, y2-1);
-				p->fillRect(x+3, y+3, w-5, h-5, pal.brush(QPalette::Background));
-
-				return;
-			}
-
-			case CE_MenuBarEmptyArea:
-			{
-				Keramik::GradientPainter::renderGradient( p, r, pal.color(QPalette::Button), true, true);
-
-				return;
-			}
-
-			case CE_MenuTearoff:
-			{
-				//### hmm,may be KStyle should do a default for this.
-				//### FIXME
-
-					
-				return;
-			}
-
-			case CE_MenuScroller:
-			{
-				//TODO:scrollr
-
-				return;
-			}
-
-			case CE_ScrollBarSlider:
-			{
-				bool horizontal = (flags & State_Horizontal);
-
-				bool active     = (flags & State_Sunken);
-				int name = KeramikSlider1;
-				unsigned int count = 3;
-
-				int w = r.width();
-				int h = r.height();
-
-				if ( horizontal )
-				{
-					if ( w > ( loader.size( keramik_scrollbar_hbar+KeramikSlider1 ).width() +
-										loader.size( keramik_scrollbar_hbar+KeramikSlider4 ).width() +
-										loader.size( keramik_scrollbar_hbar+KeramikSlider3 ).width() + 2 ) )
-						count = 5;
-				}
-				else if ( h > ( loader.size( keramik_scrollbar_vbar+KeramikSlider1 ).height() +
-									  loader.size( keramik_scrollbar_vbar+KeramikSlider4 ).height() +
-									  loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
-					count = 5;
-
-				QColor col = pal.color(QPalette::Highlight);
-
-						//### what to do with the customScrollMode stuff?
-						//I suppose KStyle can take care of it, somehow?
-						//if (customScrollMode || !highlightScrollBar)
-						//	col = pal.button();
-
-				if (!active)
-					Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, col, pal.background().color(), false);
-				else
-					Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, 												Keramik::ColorUtil::lighten(col ,110),
-				pal.background().color(), false );
-
-				return;
-			}
-
-			case CE_ScrollBarAddPage:
-			case CE_ScrollBarSubPage:
-			{
-				if ( flags & State_Horizontal )
-				{
-					Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
-							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
-				}
-				else
-				{
-					Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
-							p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
-				}
-
-				return;
-			}
-			
-			default:
-				break;
-		}
-
-		KStyle::drawControl(elem, opt, p, widget);
 	}
 
 };

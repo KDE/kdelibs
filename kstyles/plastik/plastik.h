@@ -69,10 +69,6 @@ public:
                                      const QWidget* widget = 0,
                                      Option* kOpt = 0) const;
 
-    void drawControl (ControlElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-
-
-    
 // 
 //     void polish(QApplication* app );
     virtual void polish(QWidget* widget);

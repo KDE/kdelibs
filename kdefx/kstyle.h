@@ -489,12 +489,6 @@ protected:
     /**
      * Describes widgets like QSplitter.
      *
-     * Relevant elements:
-     * - @c QStyle::CE_Splitter draws the splitter handle. Interesting flags:
-     *     - State_Enabled&&State_MouseOver for mouseOver
-     *     - State_Horizontal for orientation
-     *     - @todo make KStylePrimitive
-     *
      * @sa WT_Splitter
      */
     struct Splitter
@@ -505,6 +499,17 @@ protected:
         enum LayoutProp
         {
             Size ///< Size of the splitter handle [sets QStyle::PM_SplitterWidth] @todo rename?
+        };
+
+        /**
+         * [the Handles implement QStyle::CE_Splitter]
+         *
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            HandleHor,      /**< The splitter handle, horizontal. Flags: @c State_Enabled&&State_MouseOver for mouseOver */
+            HandleVert      /**< The splitter handle, vertical. Flags: @c State_Enabled&&State_MouseOver for mouseOver */
         };
     };
 
@@ -615,11 +620,6 @@ protected:
     /**
      * Describes widgets like QProgressBar.
      *
-     * Relevant elements:
-     * - @c Generic::Text the progress label
-     * - @c QStyle::CE_ProgressBarGroove The groove where progress indicator
-     *      is drawn in @todo make KStylePrimitive
-     *
      * @todo support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
      */
     struct ProgressBar
@@ -638,10 +638,15 @@ protected:
         };
 
         /**
+         * Relevant Generic elements:
+         * - @c Generic::Text the progress label
+         *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
         {
+            Groove,         /**< the progressbar groove, drawn before the progress
+                             * Indicator [implements QStyle::CE_ProgressBarGroove] */
             Indicator,      ///< The actual bar indicating the progress...
             BusyIndicator   /**< Used to indicate business, for example when
                              * no progress is known (minimum and maximum values
@@ -651,11 +656,9 @@ protected:
 
 
     /**
-     * Describes widgets like QMenuBar.
+     * @brief Describes widgets like QMenuBar.
      *
-     * Relevant elements:
-     * - @c QStyle::CE_MenuBarEmptyArea Empty area of a menu bar, e.g. background
-     *      color or menubar separators (?)... @todo make KStylePrimitive
+     * @sa WT_MenuBar
      */
     struct MenuBar
     {
@@ -666,6 +669,16 @@ protected:
         {
             Margin,                          ///< Margin rectangle for the contents.
             ItemSpacing = Margin + MarginInc ///< Space between items [sets QStyle::PM_MenuBarItemSpacing]
+        };
+
+        /**
+         * @sa drawKStylePrimitive()
+         */
+        enum Property
+        {
+            EmptyArea /**< Empty area of a menu bar, e.g. background
+                       * color. Maybe the place to fake toolbar separators (?)
+                       * [implements QStyle::CE_MenuBarEmptyArea] */
         };
     };
 
@@ -701,10 +714,7 @@ protected:
     /**
      * Describes a menu.
      *
-     * Relevant elements:
-     * - @c Generic::Frame frame around the menu panel
-     * - @c QStyle::CE_MenuTearoff Paints the area where a menu can be teared off @todo make KStylePrimitive
-     * - @c QStyle::CE_MenuScroller Scrolling areas in a QMenu @todo make KStylePrimitive
+     * @sa WT_Menu
      */
     struct Menu
     {
@@ -720,11 +730,18 @@ protected:
         };
 
         /**
+         * Relevant Generic elements:
+         * - @c Generic::Frame frame around the menu panel
+         *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
         {
-            Background ///< Menu and MenuItem background
+            Background, ///< Menu and MenuItem background
+            TearOff,    /**< paints the area where a menu can be teared off
+                         * [implements QStyle::CE_MenuTearoff] */
+            Scroller    /**< scrolling areas in a QMenu
+                         * [implements QStyle::CE_MenuScroller] */
         };
     };
 
@@ -792,15 +809,7 @@ protected:
     /**
      * Describes widgets like QScrollBar.
      *
-     * Relevant elements:
-     * - The @c Generic arrows
-     * - @c QStyle::CE_ScrollBarSlider Interesting flags: @todo make KStylePrimitive
-     *     - @c State_Horizontal for orientation,
-     *     - @c State_Sunken for pressed state
-     * - @c CE_ScrollBarAddPage @c CE_ScrollBarSubPage The scrollbar groove area. @todo make KStylePrimitive
-     *      Interesting flags:
-     *     - @c State_Horizontal for scrollbar orientation,
-     *     - @c State_On&&State_Sunken for pressed state
+     * @sa WT_ScrollBar
      */
     struct ScrollBar
     {
@@ -824,6 +833,12 @@ protected:
         };
 
         /**
+         * Relevant Generic elements:
+         * - The @c Generic arrows
+         *
+         * [Groove Areas implement QStyle::CE_ScrollBarAddPage and QStyle::CE_ScrollBarSubPage]
+         * [Sliders implement QStyle::CE_ScrollBarSlider]
+         *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
@@ -833,7 +848,11 @@ protected:
             DoubleButtonVert,           /**< Used to draw a 2-button bevel, vertical.
                                          * A DoubleButtonOption is passed to say which
                                          * button is pressed. */
-            DoubleButtonHor             /** @see DoubleButtonVert */
+            DoubleButtonHor,            /** @see DoubleButtonVert */
+            GrooveAreaVert,   ///< scrollbar groove area, vertical. An interesting flag is @c State_Sunken for pressed state
+            GrooveAreaHor,    ///< scrollbar groove area, horizontal. Flags: @c State_Sunken for pressed state
+            SliderVert,       ///< scrollbar slider, vertical. Flags: @c State_On&&State_Sunken for pressed state
+            SliderHor         ///< scrollbar slider, horizontal. Flags: @c State_On&&State_Sunken for pressed state
         };
     };
 
