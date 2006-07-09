@@ -1322,14 +1322,14 @@ with ServiceType as QImageIOPlugins</li>
 <code>if ( !hasSubjobs() ) emitResult();</code> to emulate the old behavior that.</li>
 <li>subjobs is now private. This means you should replace subjobs.remove(job) with removeSubjob(job),
 and subjobs.isEmpty() with !hasSubjobs()</li>
-<li><code>job->showErrorDialog(QWidget*)</code> becomes <code>job->ui()->showErrorMessage()</code>. The parent QWidget should be set immediately after creating the job by <code>job->ui()->setWindow(QWidget*)</code></li>
-<li><code>job->setAutoErrorHandlingEnabled(bool,QWidget*)</code> becomes <code>job->ui()->setAutoErrorHandlingEnabled(bool)</code></li>
-<li><code>job->isAutoErrorHandlingEnabled()</code> becomes <code>job->ui()->isAutoErrorHandlingEnabled()</code></li>
-<li><code>job->setAutoWarningHandlingEnabled(bool)</code> becomes <code>job->ui()->setAutoWarningHandlingEnabled(bool)</code></li>
-<li><code>job->isAutoWarningHandlingEnabled()</code> becomes <code>job->ui()->isAutoWarningHandlingEnabled()</code></li>
-<li><code>job->setWindow(QWidget*)</code> becomes <code>job->ui()->setWindow(QWidget*)</code></li>
-<li><code>job->window()</code> becomes <code>job->ui()->window()</code></li>
-<li><code>job->setInteractive( false )</code> becomes <code>job->setUiDelegate( 0 )</code></li>
+<li><code>job-&gt;showErrorDialog(QWidget*)</code> becomes <code>job-&gt;ui()-&gt;showErrorMessage()</code>. The parent QWidget should be set immediately after creating the job by <code>job-&gt;ui()-&gt;setWindow(QWidget*)</code></li>
+<li><code>job-&gt;setAutoErrorHandlingEnabled(bool,QWidget*)</code> becomes <code>job-&gt;ui()-&gt;setAutoErrorHandlingEnabled(bool)</code></li>
+<li><code>job-&gt;isAutoErrorHandlingEnabled()</code> becomes <code>job-&gt;ui()-&gt;isAutoErrorHandlingEnabled()</code></li>
+<li><code>job-&gt;setAutoWarningHandlingEnabled(bool)</code> becomes <code>job-&gt;ui()-&gt;setAutoWarningHandlingEnabled(bool)</code></li>
+<li><code>job-&gt;isAutoWarningHandlingEnabled()</code> becomes <code>job-&gt;ui()-&gt;isAutoWarningHandlingEnabled()</code></li>
+<li><code>job-&gt;setWindow(QWidget*)</code> becomes <code>job-&gt;ui()-&gt;setWindow(QWidget*)</code></li>
+<li><code>job-&gt;window()</code> becomes <code>job-&gt;ui()-&gt;window()</code></li>
+<li><code>job-&gt;setInteractive( false )</code> becomes <code>job-&gt;setUiDelegate( 0 )</code></li>
 </ul>
 
 <h4>KIO::UDSEntry</h4>
@@ -1433,13 +1433,13 @@ to pass a KUrl to most methods instead.</li>
 <ul>
 <li>KTrader has been split up into two classes: KServiceTypeTrader and KMimeTypeTrader.</li>
 <li>So KTrader::query() should be ported to KMimeTypeTrader::query() when it's about mimetypes
-(finding the application or part for a give mimetype), and to KServiceTypeTrader::query() when
+(finding the application or part for a given mimetype), and to KServiceTypeTrader::query() when
 it's about pure service types (plugins, kcmodules, etc.)</li>
 <li>In other terms, KTrader::query(1 or 2 args) -&gt; KServiceTypeTypeTrader::query and
                     KTrader::query(4 args but the last one was always QString::null) -&gt; KMimeTypeTrader::query</li>
 <li>In both cases, query() now returns KService::List instead of an OfferList, adjust the type of the variable</li>
 <li>Constraints like "'RenameDlg/Plugin' in ServiceTypes" should be turned into
-  KMimeTypeTrader::self()->query(mimetype,"RenameDlg/Plugin")</li>
+  KMimeTypeTrader::self()-&gt;query(mimetype,"RenameDlg/Plugin")</li>
 </ul>
 
 <h4>PasswordDialog</h4>
@@ -1514,8 +1514,29 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h3><a name="kcontrol">Changes in KControl</a></h3>
 <ul>
-<li>KCModule does no longer take a name argument, but directly a KInstance (having the correct
-   name for the translations to work.</li>
+  <li>KCModules need to have Type=Service and ServiceTypes=KCModule in the
+  .desktop file now - was Type=Application before</li>
+  <li>KCModules that should show up in KControl or kcmshell --list need to have
+  X-KDE-ParentApp=kcontrol or kinfocenter</li>
+  <li>If the KCModule should be used by kcminit you have to add KCModuleInit to
+  ServiceTypes (i.e. ServiceTypes=KCModule,KCModuleInit then)</li>
+  <li>The kcm_ prefix in X-KDE-Library is now optional (in KDE3 the
+  X-KDE-Library value was automatically prefixed with kcm_)</li>
+  <li>If the kcminit code is in a different lib than the other KCM code the
+  X-KDE-Init-Library was used. The library name has to be prefixed with kcminit_
+  now, but the prefix is optional in the .desktop file.</li>
+  <li>The kcminit symbol now has to be prefixed with kcminit_ (in the code). The
+  rest of the symbol name is specified with X-KDE-Init-Symbol (was X-KDE-Init
+  before).</li>
+  <li>It is now possible to use multiple K_EXPORT_GENERIC_FACTORY calls in one
+  library. The first parameter to the macro has to be the same as
+  X-KDE-FactoryName then.</li>
+  <li>KCModule does no longer take a name argument, but directly a KInstance (having the correct
+  name for the translations to work.</li>
+  <li>The X-KDE-RunAsRoot and X-KDE-IsHiddenByDefault keys are removed.</li>
+  <li>KCModules will not be embedded running with root privileges anymore.
+  Instead the GUI code will run with user privileges as every other KCM. Only in
+  order to write or call programs should the KCM elevate its privileges.</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
