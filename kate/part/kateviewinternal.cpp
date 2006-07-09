@@ -341,7 +341,7 @@ void KateViewInternal::scrollViewLines(int offset)
 
 void KateViewInternal::scrollNextPage()
 {
-  scrollViewLines(kMax( linesDisplayed() - 1, 0 ));
+  scrollViewLines(kMax( (int)linesDisplayed() - 1, 0 ));
 }
 
 void KateViewInternal::scrollPrevPage()
@@ -1934,7 +1934,7 @@ void KateViewInternal::pageDown( bool sel )
   if (cursorStart > 0)
     lineadj -= cursorStart;
 
-  int linesToScroll = kMax( (linesDisplayed() - 1) - lineadj, 0 );
+  int linesToScroll = kMax( ((int)linesDisplayed() - 1) - lineadj, 0 );
   m_preserveMaxX = true;
 
   if (!m_doc->pageUpDownMovesCursor () && !atEnd) {
