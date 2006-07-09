@@ -238,6 +238,8 @@ class KateView : public Kate::View,
     void selectLine(   const KateTextCursor& cursor );
     void selectLength( const KateTextCursor& cursor, int length );
 
+    void syncSelectionCache();
+
   //
   // KTextEditor::BlockSelectionInterface stuff
   //

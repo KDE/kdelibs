@@ -1373,6 +1373,12 @@ bool KateView::setSelection( uint startLine, uint startCol, uint endLine, uint e
   return setSelection( KateTextCursor(startLine, startCol), KateTextCursor(endLine, endCol) );
 }
 
+void KateView::syncSelectionCache()
+{
+  m_viewInternal->selStartCached = selectStart;
+  m_viewInternal->selEndCached = selectEnd;
+}
+
 bool KateView::clearSelection()
 {
   return clearSelection(true);

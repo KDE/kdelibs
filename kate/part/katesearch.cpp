@@ -736,6 +736,7 @@ void KateSearch::exposeFound( KateTextCursor &cursor, int slen )
 {
   view()->setCursorPositionInternal ( cursor.line(), cursor.col() + slen, 1 );
   view()->setSelection( cursor.line(), cursor.col(), cursor.line(), cursor.col() + slen );
+  view()->syncSelectionCache();
 }
 //END KateSearch
 
