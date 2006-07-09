@@ -45,20 +45,24 @@ class QStyleOptionTab;
 #include <kdelibs_export.h>
 
 /**
- * Makes style coding more convenient and allows to style KDE specific widgets.
+ * Makes style coding more convenient.
  *
- * KStyle strives to ease style layout handling. Based on information obtained
- * from widgetLayoutProperty(), it implements many elements
- * of QStyle::subElementRect(), QStyle::sizeFromContents() (TODO: and
- * QStyle::pixelMetric()?).
- * @todo setWidgetLayoutProp() preferred
+ * @todo and allows to style KDE specific widgets.
  *
- * KStyle implements various elements of QStyle::drawComplexControl()
- * and QStyle::drawControl() for convenience. Usually complex drawing is
- * split into smaller pieces, which can be text, icons, or other KStyle primitives.
- * Drawing of these primitives is done in drawKStylePrimitive(). During this
- * 'composition' of primitives, metrics from widgetLayoutProperty() are
- * respected as well.
+ * KStyle strives to ease style development by implementing various QStyle
+ * methods. These implementations are based on
+ * -# the concept of Layout Properties. These properties can be set using
+ *    setWidgetLayoutProp(). KStyle uses this information to respect various
+ *    metrics (like space between primitives or margins around widget contents)
+ *    or turn specific features on or off.
+ * -# the concept of KStyle Primitives. These can be implemented by overriding
+ *    drawKStylePrimitive() and providing drawing methods for specific
+ *    primitives. Often, the drawing of more complex widgets consists of
+ *    several primitives.
+ *
+ * In the following modules, information about related members is collected:
+ * - \ref OptionGroup
+ * - \ref WidgetGroup
  *
  * @author Maksim Orlovich (maksim\@kde.org)
  * @author Sandro Giessl (giessl\@kde.org)
@@ -96,8 +100,10 @@ public:
     KStyle();
     
 protected:
-    ///BEGIN Helper methods
-
+    /** @name Helper Methods
+    * These are methods helping with QRect handling, for example.
+    */
+//@{
     /**
      Draws inside the rectangle using a thinkness 0 pen. This is what drawRect in Qt3 used to do.
     */
@@ -118,11 +124,13 @@ protected:
     {
         return centerRect(in, size.width(), size.height());
     }
+//@}
 
-    ////END Helper methods
-
-    ////BEGIN Representation of options passed when drawing things
-
+/**
+ * \defgroup OptionGroup KStyle option representation
+ * Things related to the representation of options passed when drawing things.
+ */
+//@{
     /**
      * @brief A representation for colors for use as a widget layout property.
      *
@@ -185,6 +193,7 @@ protected:
                 return palColor;
         }
     };
+
     
     /**
      Base for our own option classes. 
@@ -334,7 +343,13 @@ protected:
             hAlign = Qt::AlignLeft; //NOTE: Check BIDI?
         }
     };
+//@}
 
+/**
+ * \defgroup WidgetGroup KStyle widget representation
+ * Things related to the representation of widgets.
+ */
+//@{
     /**
      This enum is used to represent KStyle's concept of
      a widget, and to associate drawing requests and metrics
@@ -438,9 +453,6 @@ protected:
      * - @c WT_PushButton
      * - KStyle implements @c QStyle::CE_PushButtonBevel to compose the above primitives.
      *   Styles usually don't need to implement this.
-     *
-     * @note some KStyle primitives (KPE_*) here may be called without a QStyleOptionButton. @todo: check if this is actually the case...
-     *
      */
     struct PushButton
     {
@@ -595,8 +607,6 @@ protected:
      * - @c Generic::Text the progress label
      * - @c QStyle::CE_ProgressBarGroove The groove where progress indicator
      *      is drawn in @todo make KStylePrimitive
-     * - LayoutProperties prefixed with LP_ProgressBar_
-     * - KStylePrimitiveElements prefixed with KPE_ProgressBar_
      *
      * @todo support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
      */
@@ -1082,7 +1092,6 @@ protected:
          * Relevant Generic elements:
          * - @c Generic::Text for the header text label
          * - @c Generic::ArrowUp @c Generic::ArrowDown to indicate the sorting of the column
-         * - @c Generic::FocusIndicator for header drag&drop? @todo I'm not sure
          */
         enum Primitive
         {
@@ -1092,7 +1101,7 @@ protected:
     };
 
     /**
-     * Describes a text edit widget like QLineEdit.
+     * @brief Describes a text edit widget like QLineEdit.
      *
      * @todo Add property for the specific FrameWidth of a LineEdit?
      */
@@ -1111,7 +1120,7 @@ protected:
     };
 
     /**
-     * Describes something like QGroupBox.
+     * @brief Describes something like QGroupBox.
      *
      * Relevant Generic elements:
      * - @c Generic::Frame
@@ -1120,7 +1129,6 @@ protected:
      * @sa Generic::FrameWidth
      *
      * @todo What about frame width etc.?
-     * @todo Use PE_FrameGroupBox instead...!
      */
     struct GroupBox
     {
@@ -1130,10 +1138,7 @@ protected:
     };
 
     /**
-     * Describes a tool bar.
-     *
-     * @todo Use PE_IndicatorToolBarHandle, PE_IndicatorToolBarSeparator,
-     *       KPE_ToolBar_Separator instead...!
+     * @brief Describes a tool bar.
      */
     struct ToolBar
     {
@@ -1163,7 +1168,7 @@ protected:
 
 
     /**
-     * Describes widgets like QToolButton (usually inside a QToolBar).
+     * @brief Describes widgets like QToolButton (usually inside a QToolBar).
      *
      * Relevant elements:
      * - @c Generic::ArrowDown indicating an associated sub-menu
@@ -1188,6 +1193,7 @@ protected:
             DummyProp      = FocusMargin + MarginInc
         };
     };
+//@}
 
     ///Interface for the style to configure various metrics that KStyle has customizable.
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
@@ -1275,10 +1281,12 @@ private:
     QVector<QVector<int> > metrics;
     
     ///Expands out the dimension to make sure it incorporates the margins
+    /// @todo no default arguments!
     QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
     
     ///Calculates the contents rectangle by subtracting out the appropriate margins
     ///from the outside
+    /// @todo no default arguments!
     QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
 
     ///Internal subrect calculations, for e.g. scrollbar arrows,
@@ -1287,40 +1295,26 @@ private:
                                                     SubControl subControl, const QWidget* w) const;
 
 public:
-    /*
-     The methods below implement the QStyle interface
-    */
-    /** Reimplemented from QStyle */
+/** @name QStyle Methods
+ * These are methods reimplemented from QStyle. Usually it's not necessary to
+ * reimplement them yourself.
+ */
+//@{
     void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-    
-    /** Reimplemented from QStyle */
     void drawPrimitive    (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-    
-    /** Reimplemented from QStyle */
     int  pixelMetric      (PixelMetric    metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
-    
-    /** Reimplemented from QStyle */
     QRect subElementRect  (SubElement    subRect, const QStyleOption* opt, const QWidget* w) const;
-    
-    /** Reimplemented from QStyle */
     QSize sizeFromContents(ContentsType     type, const QStyleOption* opt,
                                                 const QSize& contentsSize, const QWidget* w) const;
-    
-    /** Reimplemented from QStyle */
     int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
                                                                QStyleHintReturn* returnData) const;
-                                                               
-    /** Reimplemented from QStyle */
     QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
                                                     SubControl subControl, const QWidget* w) const;
-
-    /** Reimplemented from QStyle */
     SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
                                              const QPoint& pt, const QWidget* w) const;
-
-    /** Reimplemented from QStyle */
     void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
                                              QPainter *p,      const QWidget* w) const;
+//@}
 };
 
 template<typename T>
