@@ -580,10 +580,10 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //Move inside of default indicator margin if need be
             if ((bOpt->features & QStyleOptionButton::DefaultButton) || (bOpt->features & QStyleOptionButton::AutoDefaultButton))
-                labelRect = insideMargin(labelRect, WT_PushButton, PushButton::DefaultIndicatorMargin);
+                labelRect = insideMargin(labelRect, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
             //now get the contents area
-            labelRect = insideMargin(labelRect, WT_PushButton, PushButton::ContentsMargin);
+            labelRect = insideMargin(labelRect, WT_PushButton, PushButton::ContentsMargin, option, widget);
 
             //### do we do anything for RTL here?
 
@@ -594,7 +594,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //Finally, renderer the focus indicator if need be
             if (flags & State_HasFocus)
             {
-                QRect focusRect = insideMargin(r, WT_PushButton, PushButton::FocusMargin);
+                QRect focusRect = insideMargin(r, WT_PushButton, PushButton::FocusMargin, option, widget);
 
                 QStyleOptionFocusRect foOpts;
                 foOpts.palette         = pal;
@@ -619,7 +619,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             QRect bevelRect = r;
             //Exclude the margin if default or auto-default
             if ((bOpt->features & QStyleOptionButton::DefaultButton) || (bOpt->features & QStyleOptionButton::AutoDefaultButton))
-                bevelRect = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin);
+                bevelRect = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
             //Now draw the bevel itself.
             QStyleOptionButton bOptTmp = *bOpt;
@@ -720,7 +720,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionDockWidget* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidget*>(option);
             if (!dwOpt) return;
 
-            QRect textRect = insideMargin(r, WT_DockWidgetTitle, DockWidgetTitle::Margin);
+            QRect textRect = insideMargin(r, WT_DockWidgetTitle, DockWidgetTitle::Margin, option, widget);
             drawKStylePrimitive(WT_DockWidgetTitle, DockWidgetTitle::Panel, option, r, pal, flags, p, widget);
 
             TextOption lbOpt(dwOpt->title);
@@ -961,7 +961,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                                 pal, flags, p, widget);
 
             //Text...
-            QRect textRect = insideMargin(r, WT_MenuBarItem, MenuBarItem::Margin);
+            QRect textRect = insideMargin(r, WT_MenuBarItem, MenuBarItem::Margin, option, widget);
 
 
             TextOption lbOpt(mOpt->text);
@@ -991,7 +991,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (!miOpt || miOpt->menuItemType == QStyleOptionMenuItem::EmptyArea) return;
 
             //Remove the margin (for everything but the column background)
-            QRect ir = insideMargin(r, WT_MenuItem, MenuItem::Margin);
+            QRect ir = insideMargin(r, WT_MenuItem, MenuItem::Margin, option, widget);
 
 
             //First, figure out the left column width. When CheckAlongsideIcon is disabled it's just
@@ -1768,7 +1768,7 @@ QRect KStyle::marginAdjustedTab(const QStyleOptionTab* tabOpt, int property) con
     QRect idializedGeometry = vertical ? QRect(0, 0, r.height(), r.width())
                                         : QRect(0, 0, r.width(),  r.height());
 
-    QRect contentArea = insideMargin(idializedGeometry, WT_TabBar, property);
+    QRect contentArea = insideMargin(idializedGeometry, WT_TabBar, property, tabOpt, 0);
 
     int leftMargin  = contentArea.x();
     int rightMargin = idializedGeometry.width() - 1 - contentArea.right();
@@ -1843,9 +1843,9 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             if (!bOpt) return r;
 
             if ((bOpt->features & QStyleOptionButton::DefaultButton) || (bOpt->features & QStyleOptionButton::AutoDefaultButton))
-                r = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin);
+                r = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
-            return insideMargin(r, WT_PushButton, PushButton::ContentsMargin);
+            return insideMargin(r, WT_PushButton, PushButton::ContentsMargin, option, widget);
         }
 
         case SE_PushButtonFocusRect:
@@ -1854,9 +1854,9 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             if (!bOpt) return r;
 
             if ((bOpt->features & QStyleOptionButton::DefaultButton) || (bOpt->features & QStyleOptionButton::AutoDefaultButton))
-                r = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin);
+                r = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
-            return insideMargin(r, WT_PushButton, PushButton::FocusMargin);
+            return insideMargin(r, WT_PushButton, PushButton::FocusMargin, option, widget);
         }
 
         case SE_CheckBoxIndicator:
@@ -1901,19 +1901,19 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             if (bOpt->text.isEmpty())
             {
                 QRect checkRect = subElementRect(SE_CheckBoxIndicator, option, widget);
-                return insideMargin(checkRect, WT_CheckBox, CheckBox::NoLabelFocusMargin);
+                return insideMargin(checkRect, WT_CheckBox, CheckBox::NoLabelFocusMargin, option, widget);
             }
             else
             {
                 QRect contentsRect = subElementRect(SE_CheckBoxContents, option, widget);
-                return insideMargin(contentsRect, WT_CheckBox, CheckBox::FocusMargin);
+                return insideMargin(contentsRect, WT_CheckBox, CheckBox::FocusMargin, option, widget);
             }
         }
 
         case SE_RadioButtonFocusRect:
         {
             QRect contentsRect = subElementRect(SE_RadioButtonContents, option, widget);
-            return insideMargin(contentsRect, WT_RadioButton, RadioButton::FocusMargin);
+            return insideMargin(contentsRect, WT_RadioButton, RadioButton::FocusMargin, option, widget);
         }
 
         case SE_ProgressBarGroove:
@@ -1932,7 +1932,7 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
         case SE_ProgressBarContents:
         {
             QRect grooveRect = subElementRect(SE_ProgressBarGroove, option, widget);
-            return insideMargin(grooveRect, WT_ProgressBar, ProgressBar::GrooveMargin);
+            return insideMargin(grooveRect, WT_ProgressBar, ProgressBar::GrooveMargin, option, widget);
         }
 
         case SE_ProgressBarLabel:
@@ -2208,7 +2208,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     // focus indicator
                     if (cb->state & State_HasFocus) {
                         QRect editField = subControlRect(CC_ComboBox, opt, SC_ComboBoxEditField, w);
-                        QRect focusRect = insideMargin(editField, WT_ComboBox, ComboBox::FocusMargin);
+                        QRect focusRect = insideMargin(editField, WT_ComboBox, ComboBox::FocusMargin, opt, w);
                         drawKStylePrimitive(WT_ComboBox, Generic::FocusIndicator, opt, focusRect, pal, flags, p, w, 0);
                     }
                 }
@@ -2271,7 +2271,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 }
 
                 if (flags & State_HasFocus) {
-                    QRect focusRect = insideMargin(r, WT_ToolButton, ToolButton::FocusMargin);
+                    QRect focusRect = insideMargin(r, WT_ToolButton, ToolButton::FocusMargin, opt, w);
                     tOpt.rect = focusRect;
                     tOpt.state = bflags;
                     drawKStylePrimitive(WT_ToolButton, Generic::FocusIndicator, &tOpt, focusRect, pal, bflags, p, w);
@@ -2673,15 +2673,15 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             QSize size = contentsSize;
 
             if ((bOpt->features & QStyleOptionButton::DefaultButton) || (bOpt->features & QStyleOptionButton::AutoDefaultButton))
-                size = expandDim(size, WT_PushButton, PushButton::DefaultIndicatorMargin);
+                size = expandDim(size, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
             //### TODO: Handle minimum size limits, extra spacing as in current styles ??
-            return expandDim(size, WT_PushButton, PushButton::ContentsMargin);
+            return expandDim(size, WT_PushButton, PushButton::ContentsMargin, option, widget);
         }
 
         case CT_ToolButton:
         {
-            return expandDim(contentsSize, WT_ToolButton, ToolButton::ContentsMargin);
+            return expandDim(contentsSize, WT_ToolButton, ToolButton::ContentsMargin, option, widget);
         }
 
         case CT_CheckBox:
@@ -2691,7 +2691,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             int spacer    = widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, option, widget);
 
             //Make sure we include space for the focus rect margin
-            QSize size = expandDim(contentsSize, WT_CheckBox, CheckBox::FocusMargin);
+            QSize size = expandDim(contentsSize, WT_CheckBox, CheckBox::FocusMargin, option, widget);
 
             //Make sure we can fit the indicator (### an extra margin around that?)
             size.setHeight(qMax(size.height(), indicator));
@@ -2709,7 +2709,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             int spacer    = widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget);
 
             //Make sure we include space for the focus rect margin
-            QSize size = expandDim(contentsSize, WT_RadioButton, RadioButton::FocusMargin);
+            QSize size = expandDim(contentsSize, WT_RadioButton, RadioButton::FocusMargin, option, widget);
 
             //Make sure we can fit the indicator (### an extra margin around that?)
             size.setHeight(qMax(size.height(), indicator));
@@ -2830,17 +2830,17 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
 
             //...now apply the outermost margin.
-            return expandDim(insideSize, WT_MenuItem, MenuItem::Margin);
+            return expandDim(insideSize, WT_MenuItem, MenuItem::Margin, option, widget);
         }
 
         case CT_MenuBarItem:
-            return expandDim(contentsSize, WT_MenuBarItem, MenuBarItem::Margin);
+            return expandDim(contentsSize, WT_MenuBarItem, MenuBarItem::Margin, option, widget);
 
         case CT_TabBarTab:
             //With our PM_TabBarTabHSpace/VSpace, Qt should give us what we want for
             //contentsSize, so we just expand that. Qt also takes care of
             //the vertical thing.
-            return expandDim(contentsSize, WT_TabBar, TabBar::TabContentsMargin);
+            return expandDim(contentsSize, WT_TabBar, TabBar::TabContentsMargin, option, widget);
 
 // TODO: see SE_TabWidgetTabContents comment.
 //         case CT_TabWidget:
@@ -2858,7 +2858,7 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 int w = iconSize.width() + iconSpacing + textSize.width();
                 int h = qMax(iconSize.height(), textSize.height() );
 
-                return expandDim(QSize(w, h), WT_Header, Header::ContentsMargin);
+                return expandDim(QSize(w, h), WT_Header, Header::ContentsMargin, option, widget);
             }
         }
         default:

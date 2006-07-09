@@ -1281,13 +1281,11 @@ private:
     QVector<QVector<int> > metrics;
     
     ///Expands out the dimension to make sure it incorporates the margins
-    /// @todo no default arguments!
-    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
     
     ///Calculates the contents rectangle by subtracting out the appropriate margins
     ///from the outside
-    /// @todo no default arguments!
-    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
 
     ///Internal subrect calculations, for e.g. scrollbar arrows,
     ///where we fake our output to get Qt to do what we want
