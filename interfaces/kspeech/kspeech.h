@@ -660,6 +660,12 @@
 
 class KSpeechPrivate;
 
+/**
+* KSpeech -- the KDE Text-to-Speech API.
+* Note: Applications do not use the class directly.  Instead,
+* use the KSpeechInterface object as described above.
+* @see programming
+*/
 class KSpeech : public QObject
 {
 Q_OBJECT
@@ -794,20 +800,20 @@ public:
 
 public: // PROPERTIES
     Q_PROPERTY(bool isSpeaking READ isSpeaking)
+    Q_PROPERTY(QString version READ version)
+
+public Q_SLOTS: // METHODS
     /**
     * Returns true if KTTSD is currently speaking.
     * @return               True if currently speaking.
     */
     bool isSpeaking() const;
 
-    Q_PROPERTY(QString version READ version)
-    /*
+    /**
     * Returns the version number of KTTSD.
     * @return               Version number string.
     */
     QString version() const;
-
-public Q_SLOTS: // METHODS
     /**
     * Returns the friendly display name for the application.
     * @return               Application display name.
@@ -1231,8 +1237,10 @@ public Q_SLOTS: // METHODS
     */
     void reinit();
     
-    // Called by DBusAdaptor so that KTTSD knows the application that
-    // called it.
+    /** Called by DBusAdaptor so that KTTSD knows the application that
+    * called it.
+    * @param appId              DBUS connection name that called KSpeech.
+    */
     void setCallingAppId(const QString& appId);
         
 Q_SIGNALS: // SIGNALS
