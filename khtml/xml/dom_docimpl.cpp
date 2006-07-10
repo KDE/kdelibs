@@ -826,6 +826,8 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_HR:
         n = new HTMLHRElementImpl(docPtr());
         break;
+    case ID_PLAINTEXT:
+    case ID_XMP:
     case ID_PRE:
         n = new HTMLPreElementImpl(docPtr(), id);
         break;
@@ -948,8 +950,6 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_WBR:
     case ID_BDO:
     case ID_NOFRAMES:
-    case ID_PLAINTEXT:
-    case ID_XMP:
         n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
