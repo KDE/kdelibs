@@ -56,8 +56,8 @@ class QTimer;
 
 class PlastikStyle : public KStyle
 {
-//     Q_OBJECT
-// 
+    Q_OBJECT
+
 public:
     PlastikStyle();
     virtual ~PlastikStyle();
@@ -102,9 +102,6 @@ public:
 //                             SCFlags active = SC_None,
 //                             const QStyleOption& = QStyleOption::Default ) const;
 // 
-//     int pixelMetric(PixelMetric m,
-//                     const QWidget *widget = 0 ) const;
-// 
 //     QRect subRect(SubRect r,
 //                   const QWidget *widget ) const;
 
@@ -122,7 +119,9 @@ public:
 //     int styleHint(StyleHint, const QWidget * = 0,
 //                   const QStyleOption & = QStyleOption::Default,
 //                   QStyleHintReturn * = 0 ) const;
-// 
+    virtual int styleHint(StyleHint hint, const QStyleOption * option = 0,
+                          const QWidget * widget = 0, QStyleHintReturn * returnData = 0) const;
+
 protected:
     enum TabPosition
     {
@@ -254,26 +253,19 @@ protected:
 // 
 //     virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
 //                                         const Q3PopupMenu* popup ) const;
-//     
-//     bool eventFilter(QObject *, QEvent *);
-// 
-// protected Q_SLOTS:
-//     void khtmlWidgetDestroyed(QObject* w);
-// 
-//     //Animation slots.
-//     void updateProgressPos();
-//     void progressBarDestroyed(QObject* bar);
-// 
+
+    bool eventFilter(QObject *, QEvent *);
+
+protected Q_SLOTS:
+    //Animation slots.
+    void updateProgressPos();
+    void progressBarDestroyed(QObject* bar);
+
     inline QColor getColor(const QPalette &pal, const ColorType t, const bool enabled = true)const;
     inline QColor getColor(const QPalette &pal, const ColorType t, const WidgetState s)const;
 private:
-// // Disable copy constructor and = operator
-//     PlastikStyle( const PlastikStyle & );
-//     PlastikStyle& operator=( const PlastikStyle & );
-// 
-//     bool kickerMode, kornMode;
     mutable bool flatMode;
-// 
+
     int _contrast;
     bool _scrollBarLines;
     bool _animateProgressBar;
@@ -288,15 +280,12 @@ private:
     QColor _overHighlightColor;
     QColor _focusHighlightColor;
     QColor _checkMarkColor;
-// 
-//     QTab *hoverTab;
-// 
-//     // track khtml widgets.
-//     QMap<const QWidget*,bool> khtmlWidgets;
-// 
-//     //Animation support.
-//     QMap<QWidget*, int> progAnimWidgets;
-// 
+
+    //Animation support.
+    QMap<QWidget*, int> progAnimWidgets;
+    // For progress bar animation
+    QTimer *animationTimer;
+
     // pixmap cache.
     enum CacheEntryType {
         cSurface,
@@ -352,9 +341,6 @@ private:
         }
     };
     QCache<int, CacheEntry> *pixmapCache;
-
-//     // For progress bar animation
-//     QTimer *animationTimer;
 };
 
 #endif // __PLASTIK_H

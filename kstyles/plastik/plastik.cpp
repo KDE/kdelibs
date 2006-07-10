@@ -38,40 +38,23 @@
    Boston, MA 02110-1301, USA.
  */
 
-// #include <qimage.h>
-// #include <qstylefactory.h>
-// #include <q3pointarray.h>
-#include <qpainter.h>
-// #include <qtabbar.h>
-// #include <q3progressbar.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
-// #include <q3cleanuphandler.h>
-// #include <q3header.h>
-// #include <qlineedit.h>
-// #include <q3listbox.h>
-// #include <qscrollbar.h>
-// #include <qstyleplugin.h>
-#include <qpushbutton.h>
-// #include <qtabwidget.h>
-// #include <qtimer.h>
-// #include <qtoolbutton.h>
-// #include <q3toolbar.h>
-// #include <qmenubar.h>
-// #include <q3popupmenu.h>
-// #include <qdrawutil.h>
-// #include <qapplication.h>
-// #include <qvariant.h>
-#include <qradiobutton.h>
-// #include <qregion.h>
-// #include <qslider.h>
-#include <qsettings.h>
-#include <qsplitter.h>
-// #include <kpixmap.h>
+#include <QDebug>
+
+#include <QPainter>
+#include <QTimer>
+#include <QEvent>
+#include <QSettings>
 #include <QStyleOption>
 
+#include <QCheckBox>
+#include <QComboBox>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSplitter>
+
 #include "plastik.h"
-// #include "plastik.moc"
+#include "plastik.moc"
 #include "misc.h"
 
 K_EXPORT_STYLE("Plastik", PlastikStyle)
@@ -138,6 +121,7 @@ PlastikStyle::PlastikStyle() :
 
     // TODO: change this when double buttons are implemented
     setWidgetLayoutProp(WT_ScrollBar, ScrollBar::DoubleBotButton, 0);
+    setWidgetLayoutProp(WT_ScrollBar, ScrollBar::MinimumSliderHeight, 21);
 
     setWidgetLayoutProp(WT_PushButton, PushButton::DefaultIndicatorMargin, 1);
     setWidgetLayoutProp(WT_PushButton, PushButton::ContentsMargin + Left, 4);
@@ -147,16 +131,26 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Right, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Top, 2);
     setWidgetLayoutProp(WT_PushButton, PushButton::FocusMargin + Bot, 2);
+    setWidgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal, 1);
+    setWidgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical,   1);
+
+    setWidgetLayoutProp(WT_Splitter, Splitter::Width, 6);
 
     setWidgetLayoutProp(WT_CheckBox, CheckBox::Size, 13);
     setWidgetLayoutProp(WT_RadioButton, RadioButton::Size, 13);
+
+    setWidgetLayoutProp(WT_MenuBar, MenuBar::ItemSpacing, 6);
+
+    setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin, 3);
+    setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin+Left, 3);
+    setWidgetLayoutProp(WT_MenuBarItem, MenuBarItem::Margin+Right, 3);
 
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckAlongsideIcon, 1);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, 13);
 
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
 
-    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1);
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1); // doesn't work, bugged the trolls about it.
 
     setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
 
@@ -195,9 +189,9 @@ PlastikStyle::PlastikStyle() :
 //
     QSettings settings;
     _contrast = settings.value("/Qt/KDE/contrast", 6).toInt();
-//     settings.beginGroup("/plastikstyle/Settings");
+    settings.beginGroup("/plastikstyle/Settings");
     _scrollBarLines = settings.value("/scrollBarLines", false).toBool();
-    _animateProgressBar = settings.value("/animateProgressBar", false).toBool();
+    _animateProgressBar = settings.value("/animateProgressBar", true).toBool();
     _drawToolBarSeparator = settings.value("/drawToolBarSeparator", true).toBool();
     _drawToolBarItemSeparator = settings.value("/drawToolBarItemSeparator", true).toBool();
     _drawFocusRect = settings.value("/drawFocusRect", true).toBool();
@@ -210,46 +204,46 @@ PlastikStyle::PlastikStyle() :
     _customCheckMarkColor = settings.value("/customCheckMarkColor", false).toBool();
     _checkMarkColor.setNamedColor( settings.value("/checkMarkColor", "black").toString() );
     settings.endGroup();
-//
-//     // setup pixmap cache...
+
+    // setup pixmap cache...
     pixmapCache = new QCache<int, CacheEntry>(327680);
-//
-//     if ( _animateProgressBar )
-//     {
-//         animationTimer = new QTimer( this );
-//         connect( animationTimer, SIGNAL(timeout()), this, SLOT(updateProgressPos()) );
-//     }
+
+    if ( _animateProgressBar )
+    {
+        animationTimer = new QTimer( this );
+        connect( animationTimer, SIGNAL(timeout()), this, SLOT(updateProgressPos()) );
+    }
 }
 
-//
-//
-// void PlastikStyle::updateProgressPos()
-// {
-//     Q3ProgressBar* pb;
-//     //Update the registered progressbars.
-//     QMap<QWidget*, int>::iterator iter;
-//     bool visible = false;
-//     for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); ++iter)
-//     {
-//         if ( !qobject_cast<Q3ProgressBar>(iter.key()) )
-//             continue;
-//
-//         pb = dynamic_cast<Q3ProgressBar*>(iter.key());
-//         if ( iter.key() -> isEnabled() &&
-//              pb -> progress() != pb->totalSteps() )
-//         {
-//             // update animation Offset of the current Widget
-//             iter.data() = (iter.data() + 1) % 20;
-//             iter.key()->update();
-//         }
-//         if (iter.key()->isVisible())
-//             visible = true;
-//     }
-//     if (!visible)
-//         animationTimer->stop();
-// }
-//
-//
+
+void PlastikStyle::updateProgressPos()
+{
+    QProgressBar* pb;
+    //Update the registered progressbars.
+    QMap<QWidget*, int>::iterator iter;
+    bool visible = false;
+    for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); ++iter)
+    {
+        pb = dynamic_cast<QProgressBar*>(iter.key());
+
+        if ( !pb )
+            continue;
+
+        if ( iter.key() -> isEnabled() &&
+             pb->value() != pb->maximum() )
+        {
+            // update animation Offset of the current Widget
+            iter.value() = (iter.value() + 1) % 20;
+            iter.key()->update();
+        }
+        if (iter.key()->isVisible())
+            visible = true;
+    }
+    if (!visible)
+        animationTimer->stop();
+}
+
+
 PlastikStyle::~PlastikStyle()
 {
     delete pixmapCache;
@@ -421,13 +415,11 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     if (!_animateProgressBar) {
                         staticShift = (reverseLayout ? Rsurface.left() : Rsurface.right()) % 40 - 40;
                     } else {
-                        // TODO
-//                         // find the animation Offset for the current Widget
-//                         QWidget* nonConstWidget = const_cast<QWidget*>(widget);
-//                         QMapConstIterator<QWidget*, int> iter = progAnimWidgets.find(nonConstWidget);
-//                         if (iter != progAnimWidgets.end())
-//                             animShift = iter.data();
-                        animShift = 0;
+                        // find the animation Offset for the current Widget
+                        QWidget* nonConstWidget = const_cast<QWidget*>(widget);
+                        QMap<QWidget*, int>::const_iterator iter = progAnimWidgets.find(nonConstWidget);
+                        if (iter != progAnimWidgets.end())
+                            animShift = iter.value();
                     }
                     while((counter*10) < (Rsurface.width()+20)) {
                         counter++;
@@ -1647,32 +1639,9 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                 r, pal, flags, p, widget, kOpt);
 }
 
-//
-// void PlastikStyle::polish(QApplication* app)
-// {
-//     if (!qstrcmp(app->argv()[0], "kicker"))
-//         kickerMode = true;
-//     else if (!qstrcmp(app->argv()[0], "korn"))
-//         kornMode = true;
-// }
-//
 void PlastikStyle::polish(QWidget* widget)
 {
-//     if( !strcmp(widget->name(), "__khtml") ) { // is it a khtml widget...?
-//         khtmlWidgets[widget] = true;
-//         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(khtmlWidgetDestroyed(QObject*)));
-//     }
-//
-//     // use qt_cast where possible to check if the widget inheits one of the classes. might improve
-//     // performance compared to QObject::inherits()
-//     if ( qobject_cast<QPushButton>(widget) || qobject_cast<QComboBox>(widget) ||
-//             qobject_cast<Q3SpinWidget>(widget) || qobject_cast<QSlider>(widget) ||
-//             qobject_cast<QCheckBox>(widget) || qobject_cast<QRadioButton>(widget) ||
-//             qobject_cast<QToolButton>(widget) || widget->inherits("QSplitterHandle") )
-//     {
-// //         widget->setBackgroundMode(PaletteBackground);
-//         widget->installEventFilter(this);
-//     } else if (qobject_cast<QLineEdit>(widget)) {
+//     if (qobject_cast<QLineEdit>(widget)) {
 //         widget->installEventFilter(this);
 //     } else if (qobject_cast<QTabBar>(widget)) {
 //         widget->setMouseTracking(true);
@@ -1683,15 +1652,16 @@ void PlastikStyle::polish(QWidget* widget)
 //         widget->installEventFilter(this);
 //     }
 //
-//     if( _animateProgressBar && qobject_cast<Q3ProgressBar>(widget) )
-//     {
-//         widget->installEventFilter(this);
-//         progAnimWidgets[widget] = 0;
-//         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
-//         if (!animationTimer->isActive())
-//             animationTimer->start( 50, false );
-//     }
-//
+
+    if( _animateProgressBar && qobject_cast<QProgressBar*>(widget) )
+    {
+        widget->installEventFilter(this);
+        progAnimWidgets[widget] = 0;
+        connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
+        if (!animationTimer->isActive())
+            animationTimer->start( 50, false );
+    }
+
     if (qobject_cast<QPushButton*>(widget)
         || qobject_cast<QComboBox*>(widget)
         || qobject_cast<QAbstractSpinBox*>(widget)
@@ -1708,20 +1678,7 @@ void PlastikStyle::polish(QWidget* widget)
 
 void PlastikStyle::unpolish(QWidget* widget)
 {
-//     if( !strcmp(widget->name(), "__khtml") ) { // is it a khtml widget...?
-//         khtmlWidgets.remove(widget);
-//     }
-//
-//     // use qt_cast to check if the widget inheits one of the classes.
-//     if ( qobject_cast<QPushButton>(widget) || qobject_cast<QComboBox>(widget) ||
-//             qobject_cast<Q3SpinWidget>(widget) || qobject_cast<QSlider>(widget) ||
-//             qobject_cast<QCheckBox>(widget) || qobject_cast<QRadioButton>(widget) ||
-//             qobject_cast<QToolButton>(widget) || qobject_cast<QLineEdit>(widget) ||
-//             widget->inherits("QSplitterHandle") )
-//     {
-//         widget->removeEventFilter(this);
-//     }
-//     else if (qobject_cast<QTabBar>(widget)) {
+//     if (qobject_cast<QTabBar>(widget)) {
 //         widget->setMouseTracking(false);
 //         widget->removeEventFilter(this);
 //     } else if (qobject_cast<Q3PopupMenu>(widget)) {
@@ -1730,10 +1687,10 @@ void PlastikStyle::unpolish(QWidget* widget)
 //         widget->removeEventFilter(this);
 //     }
 //
-//     if ( qobject_cast<Q3ProgressBar>(widget) )
-//     {
-//         progAnimWidgets.remove(widget);
-//     }
+    if ( qobject_cast<QProgressBar*>(widget) )
+    {
+        progAnimWidgets.remove(widget);
+    }
 
     if (qobject_cast<QPushButton*>(widget)
         || qobject_cast<QComboBox*>(widget)
@@ -1746,17 +1703,12 @@ void PlastikStyle::unpolish(QWidget* widget)
 
     KStyle::unpolish(widget);
 }
-//
-// void PlastikStyle::khtmlWidgetDestroyed(QObject* obj)
-// {
-//     khtmlWidgets.remove(static_cast<QWidget*>(obj));
-// }
-//
-// void PlastikStyle::progressBarDestroyed(QObject* obj)
-// {
-//     progAnimWidgets.remove(static_cast<QWidget*>(obj));
-// }
-//
+
+void PlastikStyle::progressBarDestroyed(QObject* obj)
+{
+    progAnimWidgets.remove(static_cast<QWidget*>(obj));
+}
+
 void PlastikStyle::renderContour(QPainter *p,
                                 const QRect &r,
                                 const QColor &backgroundColor,
@@ -1897,35 +1849,8 @@ void PlastikStyle::renderContour(QPainter *p,
     }
 
 }
-//
-// void PlastikStyle::renderMask(QPainter *p,
-//                               const QRect &r,
-//                               const QColor &color,
-//                               const uint flags) const
-// {
-//     if((r.width() <= 0)||(r.height() <= 0))
-//         return;
-//
-//     const bool roundUpperLeft = flags&Round_UpperLeft;
-//     const bool roundUpperRight = flags&Round_UpperRight;
-//     const bool roundBottomLeft = flags&Round_BottomLeft;
-//     const bool roundBottomRight = flags&Round_BottomRight;
-//
-//
-//     p->fillRect (QRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2) , color);
-//
-//     p->setPen(color);
-//     // sides
-//     p->drawLine(roundUpperLeft?r.x()+1:r.x(), r.y(),
-//                 roundUpperRight?r.right()-1:r.right(), r.y() );
-//     p->drawLine(roundBottomLeft?r.x()+1:r.x(), r.bottom(),
-//                 roundBottomRight?r.right()-1:r.right(), r.bottom() );
-//     p->drawLine(r.x(), roundUpperLeft?r.y()+1:r.y(),
-//                 r.x(), roundBottomLeft?r.bottom()-1:r.bottom() );
-//     p->drawLine(r.right(), roundUpperLeft?r.y()+1:r.y(),
-//                 r.right(), roundBottomLeft?r.bottom()-1:r.bottom() );
-// }
-//
+
+
 void PlastikStyle::renderSurface(QPainter *p,
                                  const QRect &r,
                                  const QColor &backgroundColor,
@@ -2493,24 +2418,6 @@ void PlastikStyle::renderPanel(QPainter *p,
     r.getRect(&x,&y,&w,&h);
     r.getCoords(&x, &y, &x2, &y2);
 
-//     if (kickerMode &&
-//             p->device() && p->device()->devType() == QInternal::Widget &&
-//             QByteArray(static_cast<QWidget*>(p->device())->className()) == "FittsLawFrame") {
-//     //  Stolen wholesale from Keramik. I don't like it, but oh well.
-//         if (sunken) {
-//             const QCOORD corners[] = { x2, y, x2, y2, x, y2, x, y };
-//             p->setPen(pal.color(QPalette::Background).dark());
-//             p->drawConvexPolygon(Q3PointArray(4, corners));
-//             p->setPen(pal.color(QPalette::Background).light());
-//             p->drawPolyline(Q3PointArray(4, corners), 0, 3);
-//         } else {
-//             const QCOORD corners[] = { x, y2, x, y, x2, y, x2, y2 };
-//             p->setPen(pal.color(QPalette::Background).dark());
-//             p->drawPolygon(Q3PointArray(4, corners));
-//             p->setPen(pal.color(QPalette::Background).light());
-//             p->drawPolyline(Q3PointArray(4, corners), 0, 3);
-//         }
-//     } else {
         renderContour(p, r, pal.color(QPalette::Background), getColor(pal, PanelContour) );
 
         if(pseudo3d) {
@@ -2532,12 +2439,7 @@ void PlastikStyle::renderPanel(QPainter *p,
 //     }
 }
 
-// void PlastikStyle::renderMenuBlendPixmap( KPixmap &pix, const QColorGroup &cg,
-//     const Q3PopupMenu* /* popup */ ) const
-// {
-//     pix.fill( cg.background().light(105) );
-// }
-//
+
 void PlastikStyle::renderTab(QPainter *p,
                             const QRect &r,
                             const QPalette &pal,
@@ -2805,47 +2707,6 @@ void PlastikStyle::renderTab(QPainter *p,
 //                                 SFlags flags,
 //                                 const QStyleOption &opt ) const
 // {
-//     bool down   = flags & Style_Down;
-//     bool on     = flags & Style_On;
-//     bool sunken = flags & Style_Sunken;
-//     bool horiz  = flags & Style_Horizontal;
-//     const bool enabled = flags & Style_Enabled;
-//     const bool mouseOver = flags & Style_MouseOver;
-//
-//     bool hasFocus = flags & Style_HasFocus;
-//
-//     int x = r.x();
-//     int y = r.y();
-//     int w = r.width();
-//     int h = r.height();
-//
-//     int x2, y2;
-//     r.getCoords(&x, &y, &x2, &y2);
-
-//
-//     // CHECKBOXES
-//     // ----------
-//
-//         case PE_IndicatorMask: {
-//             p->fillRect (r, Qt::color1);
-//             break;
-//         }
-//
-//     // RADIOBUTTONS
-//     // ------------
-
-//
-//         case PE_ExclusiveIndicatorMask: {
-//             p->fillRect(r, Qt::color0);
-//
-//             QBitmap bmp;
-//             bmp = QBitmap(13, 13, radiobutton_mask_bits, true);
-//             bmp.setMask(bmp);
-//             p->setPen(Qt::color1);
-//             p->drawPixmap(x, y, bmp);
-//
-//             break;
-//         }
 
 //         case PE_WindowFrame:
 //         case PE_Panel: {
@@ -2861,38 +2722,6 @@ void PlastikStyle::renderTab(QPainter *p,
 //             break;
 //         }
 
-//     // MENU / TOOLBAR PANEL
-//     // --------------------
-//         case PE_PanelMenuBar:
-//         case PE_PanelDockWindow: {
-//             // fix for toolbar lag (from Mosfet Liquid)
-//             QWidget* w = dynamic_cast<QWidget*>(p->device());
-//             if(w && w->backgroundMode() == Qt::PaletteButton)
-//                 w->setBackgroundMode(Qt::PaletteBackground);
-//             p->fillRect(r, cg.brush(QPalette::Background));
-//
-//             if ( _drawToolBarSeparator ) {
-//                 if ( r.width() > r.height() ) {
-//                     p->setPen( getColor(cg, PanelLight) );
-//                     p->drawLine( r.left(), r.top(), r.right(), r.top() );
-//                     p->setPen( getColor(cg, PanelDark) );
-//                     p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
-//                 }
-//                 else {
-//                     p->setPen( getColor(cg, PanelLight) );
-//                     p->drawLine( r.left(), r.top(), r.left(), r.bottom() );
-//                     p->setPen( getColor(cg, PanelDark) );
-//                     p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
-//                 }
-//             }
-//
-//             break;
-//         }
-
-//
-//         default: {
-//             return KStyle::drawPrimitive(pe, p, r, cg, flags, opt);
-//         }
 //     }
 // }
 //
@@ -2924,148 +2753,24 @@ void PlastikStyle::renderTab(QPainter *p,
 //           KStyle::drawControl(element, p, widget, r, cg, flags, opt);
 //     }
 // }
-//
-// void PlastikStyle::drawControlMask(ControlElement element,
-//                                   QPainter *p,
-//                                   const QWidget *w,
-//                                   const QRect &r,
-//                                   const QStyleOption &opt) const
-// {
-//     switch (element) {
-//         case CE_PushButton: {
-//                     p->fillRect (r, Qt::color0);
-//                     renderMask(p, r, Qt::color1,
-//                             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight);
-//                     break;
-//         }
-//
-//         default: {
-//             KStyle::drawControlMask (element, p, w, r, opt);
-//         }
-//     }
-// }
-//
-// void PlastikStyle::drawComplexControlMask(ComplexControl c,
-//                                          QPainter *p,
-//                                          const QWidget *w,
-//                                          const QRect &r,
-//                                          const QStyleOption &o) const
-// {
-//     switch (c) {
-//         case CC_SpinWidget:
-//         case CC_ListView:
-//         case CC_ComboBox: {
-//                 p->fillRect (r, Qt::color0);
-//                 renderMask(p, r, Qt::color1,
-//                         Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight);
-//             break;
-//         }
-//         default: {
-//             KStyle::drawComplexControlMask (c, p, w, r, o);
-//         }
-//     }
-// }
 
-// int PlastikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
-// {
-//     switch(m) {
-//     // TABS
-//     // ----
-//         case PM_TabBarTabVSpace: {
-//             const QTabBar * tb = (const QTabBar *) widget;
-//             if (tb->shape() == QTabBar::RoundedNorth ||
-//                 tb->shape() == QTabBar:: RoundedSouth)
-//                 return 12;
-//             else
-//                 return 4;
-//         }
-//
-//         case PM_TabBarTabOverlap: {
-//             return 1;
-//         }
-//
-//     // extra space between menubar items
-//         case PM_MenuBarItemSpacing: {
-//             return 6;
-//         }
+int PlastikStyle::styleHint(StyleHint hint, const QStyleOption * option,
+                            const QWidget * widget, QStyleHintReturn * returnData) const
+{
+    switch (hint) {
+        case SH_Menu_SubMenuPopupDelay:
+            return 96; // Motif-like delay...
 
-//     // SCROLL BAR
-//         case PM_ScrollBarSliderMin: {
-//             return 21;
-//         }
-//         case PM_ScrollBarExtent: {
-//             return 16;
-//         }
-//
-//         case PM_DockWindowSeparatorExtent:
-//             return 6;
-//
-//     // SPLITTERS
-//     // ---------
-//         case PM_SplitterWidth: {
-//             return 6;
-//         }
-//
-//     // PROGRESSBARS
-//     // ------------
-//         case PM_ProgressBarChunkWidth:
-//             return 10;
-//
-//     // MENU INDICATOR
-//     // --------------
-//         case PM_MenuButtonIndicator:
-//             return 8;
+        default:
+            return KStyle::styleHint(hint, option, widget, returnData);
+    }
+}
 
-//     // FRAMES
-//     // ------
+bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
+{
+    if (KStyle::eventFilter(obj, ev) )
+        return true;
 
-//         case PM_MenuBarFrameWidth:
-//             return 1;
-//
-//         case PM_DefaultFrameWidth: {
-//             if(widget && qobject_cast<Q3PopupMenu>(widget))
-//                 return 1;
-//             else
-//                 return 2;
-//         }
-//
-//         case PM_ButtonDefaultIndicator: {
-//             return 0;
-//         }
-//
-//         case PM_ButtonMargin: {
-//             return 2;
-//         }
-//
-//         case PM_ButtonShiftVertical:
-//         case PM_ButtonShiftHorizontal: {
-//             return 1;
-//         }
-//
-//         default:
-//             return KStyle::pixelMetric(m, widget);
-//     }
-// }
-
-// int PlastikStyle::styleHint( StyleHint stylehint,
-//                                    const QWidget *widget,
-//                                    const QStyleOption &option,
-//                                    QStyleHintReturn* returnData ) const
-// {
-//     switch (stylehint) {
-//         case SH_PopupMenu_SubMenuPopupDelay:
-//             return 96; // Motif-like delay...
-//
-//         default:
-//             return KStyle::styleHint(stylehint, widget, option, returnData);
-//     }
-// }
-//
-// bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
-// {
-//     if (KStyle::eventFilter(obj, ev) )
-//         return true;
-//
 //     if (!obj->isWidgetType() ) return false;
 //
 //     // focus highlight
@@ -3126,14 +2831,14 @@ void PlastikStyle::renderTab(QPainter *p,
 //         }
 //         return false;
 //     }
-//     // Track show events for progress bars
-//     if ( _animateProgressBar && qobject_cast<Q3ProgressBar>(obj) )
-//     {
-//         if ((ev->type() == QEvent::Show) && !animationTimer->isActive())
-//         {
-//             animationTimer->start( 50, false );
-//         }
-//     }
+    // Track show events for progress bars
+    if ( _animateProgressBar && qobject_cast<QProgressBar*>(obj) )
+    {
+        if ((ev->type() == QEvent::Show) && !animationTimer->isActive())
+        {
+            animationTimer->start( 50 );
+        }
+    }
 //     if ( !qstrcmp(obj->name(), "kde toolbar widget") )
 //     {
 //         QWidget* lb = static_cast<QWidget*>(obj);
@@ -3141,10 +2846,10 @@ void PlastikStyle::renderTab(QPainter *p,
 //             lb->setBackgroundMode(Qt::PaletteBackground);
 //         lb->removeEventFilter(this);
 //     }
-//
-//     return false;
-// }
-//
+
+    return false;
+}
+
 QColor PlastikStyle::getColor(const QPalette &pal, const ColorType t, const bool enabled)const
 {
     return getColor(pal, t, enabled?IsEnabled:IsDisabled);
