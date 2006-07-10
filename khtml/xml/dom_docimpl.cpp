@@ -946,16 +946,16 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_SPAN:
     case ID_NOBR:
     case ID_WBR:
+    case ID_BDO:
+    case ID_NOFRAMES:
+    case ID_PLAINTEXT:
+    case ID_XMP:
         n = new HTMLGenericElementImpl(docPtr(), id);
         break;
 
     case ID_MARQUEE:
         n = new HTMLMarqueeElementImpl(docPtr());
         break;
-
-    case ID_BDO:
-        break;
-
 // text
     case ID_TEXT:
         kdDebug( 6020 ) << "Use document->createTextNode()" << endl;
