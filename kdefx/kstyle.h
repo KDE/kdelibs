@@ -1195,13 +1195,15 @@ protected:
         /**
          * [the Handles implement QStyle::PE_IndicatorToolBarHandle]
          * @sa drawKStylePrimitive()
+         * [the Panels implement QStyle::CE_ToolBar]
          */
         enum Primitive
         {
             HandleHor, ///< handle of a toolbar, horizontal
             HandleVert, ///< handle of a toolbar, vertical
             Separator, ///< [implements QStyle::PE_IndicatorToolBarSeparator]
-            Panel      ///< [implements QStyle::PE_PanelToolBar]
+            PanelHor,  ///< the actual toolbar, horizontal
+            PanelVert  ///< the actual toolbar, vertical
         };
     };
 

@@ -463,22 +463,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                         p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
                     }
 
-
-            // TODO: use this for _tool_ bar separators...?
-//             if ( _drawToolBarSeparator ) {
-//                 if ( r.width() > r.height() ) {
-//                     p->setPen( getColor(pal, PanelLight) );
-//                     p->drawLine( r.left(), r.top(), r.right(), r.top() );
-//                     p->setPen( getColor(pal, PanelDark) );
-//                     p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
-//                 }
-//                 else {
-//                     p->setPen( getColor(pal, PanelLight) );
-//                     p->drawLine( r.left(), r.top(), r.left(), r.bottom() );
-//                     p->setPen( getColor(pal, PanelDark) );
-//                     p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
-//                 }
-//             }
                     return;
                 }
             }
@@ -1548,8 +1532,26 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     return;
                 }
 
-                case ToolBar::Panel:
+                case ToolBar::PanelHor:
                 {
+                    p->fillRect(r, pal.window()); // TODO: simply set other background mode instead.?
+                    if ( _drawToolBarSeparator ) {
+                        p->setPen( getColor(pal, PanelLight) );
+                        p->drawLine( r.left(), r.top(), r.right(), r.top() );
+                        p->setPen( getColor(pal, PanelDark) );
+                        p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
+                    }
+                    return;
+                }
+                case ToolBar::PanelVert:
+                {
+                    p->fillRect(r, pal.window());
+                    if ( _drawToolBarSeparator ) {
+                        p->setPen( getColor(pal, PanelLight) );
+                        p->drawLine( r.left(), r.top(), r.left(), r.bottom() );
+                        p->setPen( getColor(pal, PanelDark) );
+                        p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
+                    }
                     return;
                 }
             }

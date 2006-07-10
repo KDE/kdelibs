@@ -564,10 +564,6 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             drawKStylePrimitive(WT_ToolBar, ToolBar::Separator,option,r,pal,flags,painter,widget);
             return;
 
-        case PE_PanelToolBar:
-            drawKStylePrimitive(WT_ToolBar, ToolBar::Panel,option,r,pal,flags,painter,widget);
-            return;
-
         case PE_PanelButtonCommand:
            //case PE_PanelButtonBevel: // ### CHECKME   
             drawKStylePrimitive(WT_PushButton, PushButton::Panel, option, r, pal, flags, painter, widget);
@@ -801,7 +797,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             TextOption lbOpt(bOpt->text);
             drawKStylePrimitive(WT_CheckBox, Generic::Text, option, r,
-                                pal, flags, p, widget, &lbOpt); // TODO: Qt::TextShowMnemonic...?
+                                pal, flags, p, widget, &lbOpt);
             return;
         }
 
@@ -1548,6 +1544,16 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 drawKStylePrimitive(WT_TabBar, Generic::FocusIndicator, option, focusRect,
                                     pal, flags, p, widget);
             }
+            return;
+        }
+
+        case CE_ToolBar:
+        {
+            if (flags & State_Horizontal)
+                drawKStylePrimitive(WT_ToolBar, ToolBar::PanelHor,option,r,pal,flags,p,widget);
+            else
+                drawKStylePrimitive(WT_ToolBar, ToolBar::PanelVert,option,r,pal,flags,p,widget);
+
             return;
         }
 
