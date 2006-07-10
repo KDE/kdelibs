@@ -451,15 +451,13 @@ protected:
          *    arrow if there is a popup menu.
          * -# @c PushButton::TextToIconSpace is allocated between icon and text if both exist
          *
-         * @todo create diagrams to illustrate the meaning of the metrics...?
-         *
          * @sa setWidgetLayoutProp()
          */
         enum LayoutProp
         {
             ContentsMargin, ///< Space between the bevel and the button contents
             FocusMargin            = ContentsMargin + MarginInc, ///< Used to calculate the area of the focus indicator. Measured from the bevel.
-            DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake. @todo related but unused: PM_ButtonDefaultIndicator
+            DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake. [the MainMargin sets QStyle::PM_ButtonDefaultIndicator]
             PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc, ///< Horizontal contents shift for pressed buttons [sets QStyle::PM_ButtonShiftHorizontal]
             PressedShiftVertical, ///< Vertical contents shift for pressed buttons [sets QStyle::PM_ButtonShiftVertical]
             MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu [sets QStyle::PM_MenuButtonIndicator]
@@ -498,7 +496,7 @@ protected:
          */
         enum LayoutProp
         {
-            Size ///< Size of the splitter handle [sets QStyle::PM_SplitterWidth] @todo rename?
+            Width ///< Size of the splitter handle [sets QStyle::PM_SplitterWidth]
         };
 
         /**
@@ -632,7 +630,7 @@ protected:
             GrooveMargin,        ///<Margin to allocate for the groove. Content area will be inside of it.
             SideText = GrooveMargin + MarginInc, ///<Set this to true to have the text positionned to the side
             SideTextSpace,       ///<Extra space besides that needed for text to allocate to side indicator (on both sides)
-            Precision,           ///<The indicator size will always be a multiple of this (modulo busy indicator size clamping) [sets QStyle::PM_ProgressBarChunkWidth] @todo rename to ChunkWidth?
+            Precision,           ///<The indicator size will always be a multiple of this (modulo busy indicator size clamping) [sets QStyle::PM_ProgressBarChunkWidth]
             BusyIndicatorSize,   ///<The busy indicator size, in percent of area size
             MaxBusyIndicatorSize ///<Size limit on the busy indicator size;
         };
@@ -878,9 +876,12 @@ protected:
          */
         enum LayoutProp
         {
-            TabContentsMargin,
+            TabContentsMargin,  ///< margin around the tab contents, used to size the tab
             TabFocusMargin     = TabContentsMargin + MarginInc,
+                                /**< where the tab focus rect is placed, measured from the
+                                 * tab sides (?) */
             TabTextToIconSpace = TabFocusMargin    + MarginInc,
+                                /**< space between icon and text if the tab contains both */
             TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed.
             BaseHeight,        ///< the height of the tabBar's base, usually the frame width [sets QStyle::PM_TabBarBaseHeight]
             BaseOverlap,       ///< the number of pixels the tabs overlap with the base (i.e. tabWidget frame) [sets QStyle::PM_TabBarBaseOverlap]
@@ -892,6 +893,7 @@ protected:
          * - @c Generic::Text for the TabBar labels
          * - @c Generic::FocusIndicator for focussed tabs
          * - @c Generic::Icon for icons associated to tabs
+         * - @c ToolButton::Panel paints the scroll button (when the tabs don't fit the tab bar)
          */
         enum Primitive
         {
@@ -903,7 +905,10 @@ protected:
             WestTab,
             SouthTab,
             BaseFrame,      ///< [implements QStyle::PE_FrameTabBarBase]
-            ScrollButton    ///< [implements PE_IndicatorTabTear] @todo I think this is wrong, PE_IndicatorTabTear seems to be something different from its description, have a closer look (giessl).
+            IndicatorTear   /**< painted in the left edge of a tabbar when the left
+                             * tab is scrolled out
+                             * [implements PE_IndicatorTabTear]
+                             * @todo KStyle default implementation...? */
         };
     };
 
@@ -926,8 +931,6 @@ protected:
 
     /**
      * Describes a slider, like QSlider.
-     *
-     * @todo Custom slider tickmarks?
      */
     struct Slider
     {
@@ -1041,9 +1044,9 @@ protected:
          */
         enum Primitive
         {
-            EditField,          /**< The text input area.
-                                 * @todo I think this has only an effect for
-                                 * disabled spinboxes, need to test. */
+            EditField,          /**< the text contents area, painted after Generic::Frame
+                                 * @note This is respected only if the combobox is not
+                                 * editable. */
             UpButton,           /**< Panel of the spinbox button which increases the value */
             DownButton,         /**< Panel of the spinbox button which decreases the value */
             ButtonArea,         /**< Can be used in addition or instead of
@@ -1136,19 +1139,19 @@ protected:
     /**
      * @brief Describes a text edit widget like QLineEdit.
      *
-     * @todo Add property for the specific FrameWidth of a LineEdit?
+     * The frame width of lineedits is determined using Generic::DefaultFrameWidth
      */
     struct LineEdit
     {
         /**
-         * Relevant elements:
-         * - @c Generic::Frame (?)
+         * Relevant Generic elements:
+         * - @c Generic::Frame paints a lineedit frame only [implements QStyle::PE_FrameLineEdit]
          *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
         {
-            Panel     ///< the panel for (usually disabled) lineedits [implements PE_PanelLineEdit]
+            Panel     ///< the panel for a QLineEdit (including frame...) [implements QStyle::PE_PanelLineEdit]
         };
     };
 
@@ -1159,9 +1162,9 @@ protected:
      * - @c Generic::Frame
      *
      * No LayoutProps for now.
-     * @sa Generic::FrameWidth
+     * @sa Generic::DefaultFrameWidth
      *
-     * @todo What about frame width etc.?
+     * @todo What about frame width etc.? CT_GroupBox, CC_GroupBox sizeFromContents(), subControlRect()
      */
     struct GroupBox
     {

@@ -83,7 +83,7 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize,      8);
     setWidgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace,        6);
 
-    setWidgetLayoutProp(WT_Splitter, Splitter::Size, 6); //As KStyle in KDE3
+    setWidgetLayoutProp(WT_Splitter, Splitter::Width, 6); //As KStyle in KDE3
 
     setWidgetLayoutProp(WT_CheckBox, CheckBox::Size, 16);
     setWidgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, 6);
@@ -522,7 +522,7 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         }
         case PE_IndicatorTabTear:
         {
-            drawKStylePrimitive(WT_TabBar, TabBar::ScrollButton,option,r,pal,flags,painter,widget);
+            drawKStylePrimitive(WT_TabBar, TabBar::IndicatorTear,option,r,pal,flags,painter,widget);
             return;
         }
         case PE_FrameTabWidget:
@@ -1638,6 +1638,11 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_ButtonMargin:
             return 0; //Better not return anything here since we already
             //incorporated this into SE_PushButtonContents
+        case PM_ButtonDefaultIndicator:
+            // PushButton::DefaultIndicatorMargin is used throughout KStyle button
+            // implementation code, so this probably is not necessary.
+            // return it in case Apps rely on this metric, though.
+            return widgetLayoutProp(WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
         case PM_ButtonShiftHorizontal:
             return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftHorizontal, option, widget);
         case PM_ButtonShiftVertical:
@@ -1646,7 +1651,7 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             return widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize, option, widget);
 
         case PM_SplitterWidth:
-            return widgetLayoutProp(WT_Splitter, Splitter::Size, option, widget);
+            return widgetLayoutProp(WT_Splitter, Splitter::Width, option, widget);
 
         case PM_IndicatorWidth:
         case PM_IndicatorHeight:
