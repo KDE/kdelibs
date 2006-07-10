@@ -106,6 +106,8 @@ KStyle::KStyle()
 
     setWidgetLayoutProp(WT_Menu, Menu::FrameWidth, 1);
     setWidgetLayoutProp(WT_Menu, Menu::Margin,     3);
+    setWidgetLayoutProp(WT_Menu, Menu::ScrollerHeight, 10);
+    setWidgetLayoutProp(WT_Menu, Menu::TearOffHeight, 10);
 
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckWidth, 12);
     setWidgetLayoutProp(WT_MenuItem, MenuItem::CheckSpace, 3);

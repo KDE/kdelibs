@@ -413,7 +413,7 @@ protected:
          */
         enum LayoutProp
         {
-            DefaultFrameWidth   ///< The FrameWidth used by LineEdit, ... [sets QStyle::PM_DefaultFrameWidth]
+            DefaultFrameWidth   ///< The FrameWidth used by LineEdit, etc..., default is \b 2 [sets QStyle::PM_DefaultFrameWidth]
         };
 
         /**
@@ -455,13 +455,13 @@ protected:
          */
         enum LayoutProp
         {
-            ContentsMargin, ///< Space between the bevel and the button contents
-            FocusMargin            = ContentsMargin + MarginInc, ///< Used to calculate the area of the focus indicator. Measured from the bevel.
-            DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake. [the MainMargin sets QStyle::PM_ButtonDefaultIndicator]
-            PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc, ///< Horizontal contents shift for pressed buttons [sets QStyle::PM_ButtonShiftHorizontal]
-            PressedShiftVertical, ///< Vertical contents shift for pressed buttons [sets QStyle::PM_ButtonShiftVertical]
-            MenuIndicatorSize, ///< Space inside the content area, which is allocated to the down arrow if there is a popup menu [sets QStyle::PM_MenuButtonIndicator]
-            TextToIconSpace ///< Space between the icon and the text if both exist
+            ContentsMargin, ///< (\b 5) space between the bevel and the button contents
+            FocusMargin            = ContentsMargin + MarginInc, ///< (\b 3) Used to calculate the area of the focus indicator. Measured from the bevel.
+            DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< (\b 0 ?) Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake. [the MainMargin sets QStyle::PM_ButtonDefaultIndicator]
+            PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc, ///< (\b 2) horizontal contents shift for pressed buttons [sets QStyle::PM_ButtonShiftHorizontal]
+            PressedShiftVertical, ///< (\b 2) vertical contents shift for pressed buttons [sets QStyle::PM_ButtonShiftVertical]
+            MenuIndicatorSize, ///< (\b 8) Space inside the content area, which is allocated to the down arrow if there is a popup menu [sets QStyle::PM_MenuButtonIndicator]
+            TextToIconSpace ///< (\b 6) space between the icon and the text if both exist
         };
 
         /**
@@ -485,7 +485,7 @@ protected:
     };
 
     /**
-     * Describes widgets like QSplitter.
+     * @brief Describes widgets like QSplitter.
      *
      * @sa WT_Splitter
      */
@@ -496,7 +496,7 @@ protected:
          */
         enum LayoutProp
         {
-            Width ///< Size of the splitter handle [sets QStyle::PM_SplitterWidth]
+            Width ///< (\b 6) size of the splitter handle [sets QStyle::PM_SplitterWidth]
         };
 
         /**
@@ -512,7 +512,7 @@ protected:
     };
 
     /**
-     * Describes widgets like QCheckBox.
+     * @brief Describes widgets like QCheckBox.
      *
      * @sa WT_CheckBox
      */
@@ -523,12 +523,12 @@ protected:
          */
         enum LayoutProp
         {
-            Size,               ///< Size of the checkbox [sets PM_IndicatorWidth, PM_IndicatorHeight]
-            BoxTextSpace,       ///< Space to leave between checkbox and text
-            NoLabelFocusMargin, /**< Rectangle to apply to the checkbox rectangle
+            Size,               ///< (\b 16) size of the checkbox [sets PM_IndicatorWidth, PM_IndicatorHeight]
+            BoxTextSpace,       ///< (\b 6) space to leave between checkbox and text
+            NoLabelFocusMargin, /**< (\b 0) rectangle to apply to the checkbox rectangle
                                  * to get where to paint the focus rectangle in
                                  * case of a labelless checkbox */
-            FocusMargin = NoLabelFocusMargin + MarginInc ///< Margin around the checkbox contents reserved for the focus rect
+            FocusMargin = NoLabelFocusMargin + MarginInc ///< (\b 0) margin around the checkbox contents reserved for the focus rect
         };
 
         /**
@@ -552,7 +552,7 @@ protected:
     };
 
     /**
-     * Describes widgets like QRadioButton.
+     * @brief Describes widgets like QRadioButton.
      */
     struct RadioButton
     {
@@ -588,7 +588,7 @@ protected:
     
 
     /**
-     * Describes the title of a dock widget.
+     * @brief Describes the title of a dock widget.
      *
      * Relevant elements:
      * - @c Generic::Text the title text
@@ -603,7 +603,7 @@ protected:
          */
         enum LayoutProp
         {
-            Margin ///<Margin for the title: note that this is a symmetric margin always (only MainMargin is respected)! [sets QStyle::PM_DockWidgetFrameWidth]
+            Margin ///< (\b 0) Margin for the title: note that this is a symmetric margin always (only MainMargin is respected)! [sets QStyle::PM_DockWidgetFrameWidth]
         };
 
         /**
@@ -616,7 +616,7 @@ protected:
     };
 
     /**
-     * Describes widgets like QProgressBar.
+     * @brief Describes widgets like QProgressBar.
      *
      * @todo support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
      */
@@ -627,12 +627,12 @@ protected:
          */
         enum LayoutProp
         {
-            GrooveMargin,        ///<Margin to allocate for the groove. Content area will be inside of it.
-            SideText = GrooveMargin + MarginInc, ///<Set this to true to have the text positionned to the side
-            SideTextSpace,       ///<Extra space besides that needed for text to allocate to side indicator (on both sides)
-            Precision,           ///<The indicator size will always be a multiple of this (modulo busy indicator size clamping) [sets QStyle::PM_ProgressBarChunkWidth]
-            BusyIndicatorSize,   ///<The busy indicator size, in percent of area size
-            MaxBusyIndicatorSize ///<Size limit on the busy indicator size;
+            GrooveMargin,        ///< (\b 2) Margin to allocate for the groove. Content area will be inside of it.
+            SideText = GrooveMargin + MarginInc, ///< (\b false) set this to true to have the text positionned to the side
+            SideTextSpace,       ///< (\b 3) Extra space besides that needed for text to allocate to side indicator (on both sides).
+            Precision,           ///< (\b 1) The indicator size will always be a multiple of this (modulo busy indicator size clamping). [sets QStyle::PM_ProgressBarChunkWidth]
+            BusyIndicatorSize,   ///< (\b 10) The busy indicator size, in percent of area size.
+            MaxBusyIndicatorSize ///< (\b 10000) size limit on the busy indicator size
         };
 
         /**
@@ -665,8 +665,9 @@ protected:
          */
         enum LayoutProp
         {
-            Margin,                          ///< Margin rectangle for the contents.
-            ItemSpacing = Margin + MarginInc ///< Space between items [sets QStyle::PM_MenuBarItemSpacing]
+            Margin,           /**< (MainMargin \b 2, Left \b 4, Right \b 4)
+                               * Margin rectangle for the contents. */
+            ItemSpacing = Margin + MarginInc ///< (\b 14) Space between items [sets QStyle::PM_MenuBarItemSpacing]
         };
 
         /**
@@ -682,7 +683,7 @@ protected:
 
 
     /**
-     * Describes MenuBar items.
+     * @brief Describes MenuBar items.
      *
      * Relevant elements:
      * - @c Generic::Text text appearing as menubar entry
@@ -694,10 +695,10 @@ protected:
          */
         enum LayoutProp
         {
-            Margin,                    /**< Margin rectangle to allocate for any
+            Margin,                    /**< (\b 1) Margin rectangle to allocate for any
                                         * bevel, etc. (Text will be drawn with
-                                        * the inside rect) */
-            Dummy = Margin + MarginInc //Paranoia about underlying type, TODO: ask maks if this should be done everywhere, giessl
+                                        * the inside rect). */
+            Dummy = Margin + MarginInc //Paranoia about underlying type
         };
 
         /**
@@ -710,7 +711,7 @@ protected:
     };
 
     /**
-     * Describes a menu.
+     * @brief Describes a menu.
      *
      * @sa WT_Menu
      */
@@ -721,10 +722,10 @@ protected:
          */
         enum LayoutProp
         {
-            FrameWidth, ///< The width of the frame, note that this does not affect the layout.
-            Margin,     ///< The margin of the menu @todo have a look at comments at PM_MenuHMargin...
-            ScrollerHeight = Margin + MarginInc, ///< Height of a menu scroller [sets QStyle::PM_MenuScrollerHeight]
-            TearOffHeight ///< Height of the TearOff area [sets QStyle::PM_MenuTearoffHeight]
+            FrameWidth, ///< (\b 1) The width of the frame, note that this does not affect the layout.
+            Margin,     ///< (\b 3) The margin of the menu. @todo have a look at comments at PM_MenuHMargin...
+            ScrollerHeight = Margin + MarginInc, ///< (\b 10) Height of a menu scroller. [sets QStyle::PM_MenuScrollerHeight]
+            TearOffHeight ///< (\b 10) Height of the TearOff area. [sets QStyle::PM_MenuTearoffHeight]
         };
 
         /**
@@ -744,7 +745,7 @@ protected:
     };
 
     /**
-     * Describes an item in a menu.
+     * @brief Describes an item in a menu.
      *
      * Relevant elements:
      * - @c KPE_Generic_Text the text of the menu item
@@ -758,7 +759,7 @@ protected:
      *     - @c LP_MenuItem_CheckAlongsideIcon enabled:
      *          |checkmark|CheckSpace|icon|IconSpace|text|AccelSpace|accel|ArrowSpace|ArrowWidth|
      * -# The icon/checkmark column is at least @c LP_MenuItem_CheckWidth wide in all cases.
-     * -# Then the margin is applied outside that.
+     * -# Then Margin is applied outside that.
      *
      * @note For the subprimitives the passed rect is their own.
      * @note Background is erased with WT_Menu/Menu::Background.
@@ -770,21 +771,25 @@ protected:
          */
         enum LayoutProp
         {
-            Margin,       //Margin for each entry
-            CheckAlongsideIcon = Margin + MarginInc, //Set to non-zero to have checkmarks painted separate from icons
-            CheckWidth,                      //Size of the checkmark column (CheckAlongsideButton enabled)
-            CheckSpace,                      //Space between the checkmark column and the icon column (CheckAlongsideButton enabled)
-            IconWidth,                       //Minimum size of the icon column
-            IconSpace,                       //Space between the icon column and text one
-            AccelSpace,                      //Space between text and accel
-            ArrowSpace,                      //Space to reserve for the menu arrow
-            ArrowWidth,
-            SeparatorHeight,                  //Heigh of separator
-            MinHeight,                        //Limit on the size of item content
-            ActiveTextColor,                  //Color for active text and arrow
-            TextColor,                        //Color for inactive text and arrow
-            DisabledTextColor,                //Color for inactive + disabled text and arrow
-            ActiveDisabledTextColor           //Color for active + disabled text and arrow
+            Margin,         ///< (\b 2) margin for each entry
+            CheckAlongsideIcon = Margin + MarginInc,
+                            /**< (\b 0) Set to non-zero to have checkmarks painted
+                             * separate from icons. */
+            CheckWidth,     /**< (\b 12) size of the checkmark column
+                             * (CheckAlongsideButton enabled). */
+            CheckSpace,     /**< (\b 3) Space between the checkmark column and the icon
+                             * column (CheckAlongsideButton enabled).*/
+            IconWidth,      ///< (\b 12) minimum size of the icon column
+            IconSpace,      ///< (\b 3) space between the icon column and text column
+            AccelSpace,     ///< (\b 0 ?) space between text and accel
+            ArrowSpace,     ///< (\b 3) space between the text column and arrow column (indicating sub menus)
+            ArrowWidth,     ///< (\b 11) space to reserve for the menu arrow
+            SeparatorHeight,///< (\b 0) heigh of separator
+            MinHeight,      ///< (\b 16) limit on the size of item content
+            ActiveTextColor,///< (\b ColorMode(QPalette::HighlightedText)) color for active text and arrow
+            TextColor,      ///< (\b ColorMode(QPalette::Text)) color for inactive text and arrow
+            DisabledTextColor, ///< (\b ColorMode(QPalette::Text)) color for inactive + disabled text and arrow
+            ActiveDisabledTextColor ///< (\b ColorMode(QPalette::Text)) color for active + disabled text and arrow
         };
 
         /**
@@ -805,7 +810,7 @@ protected:
 
 
     /**
-     * Describes widgets like QScrollBar.
+     * @brief Describes widgets like QScrollBar.
      *
      * @sa WT_ScrollBar
      */
@@ -819,17 +824,17 @@ protected:
          */
         enum LayoutProp
         {
-            DoubleTopButton,    ///< set to non-zero to have two buttons on top
-            DoubleBotButton,    ///< set to non-zero to have two buttons on bottom
-            SingleButtonHeight, ///< height of a single button
-            DoubleButtonHeight, ///< height of a double button
-            BarWidth,           ///< width of a scrollbar [sets QStyle::PM_ScrollBarExtent]
-            MinimumSliderHeight,/**< the minimum slider height
+            DoubleTopButton,    ///< (\b 0) set to non-zero to have two buttons on top
+            DoubleBotButton,    ///< (\b 1) set to non-zero to have two buttons on bottom
+            SingleButtonHeight, ///< (\b 16) height of a single button
+            DoubleButtonHeight, ///< (\b 32) height of a double button
+            BarWidth,           ///< (\b 16) width of a scrollbar [sets QStyle::PM_ScrollBarExtent]
+            MinimumSliderHeight,/**< (\b 0 ?) the minimum slider height
                                  * @note If the scrollbar is too small to accommodate
                                  *       this, this will not be enforced. */
-            ArrowColor,         /**< color mode of a button arrow
+            ArrowColor,         /**< (\b ColorMode(ColorMode::BWAutoContrastMode, QPalette::Button)) color mode of a button arrow
                                  * @sa ColorMode */
-            ActiveArrowColor    /**< color mode of a pressed button arrow (?) */
+            ActiveArrowColor    /**< (\b ColorMode(ColorMode::BWAutoContrastMode, QPalette::ButtonText)) color mode of a pressed button arrow (?) */
         };
 
         /**
@@ -857,7 +862,7 @@ protected:
     };
 
     /**
-     * Describes a tab bar.
+     * @brief Describes a tab bar.
      */
     struct TabBar
     {
@@ -876,16 +881,16 @@ protected:
          */
         enum LayoutProp
         {
-            TabContentsMargin,  ///< margin around the tab contents, used to size the tab
+            TabContentsMargin,  ///< (\b 6) margin around the tab contents, used to size the tab
             TabFocusMargin     = TabContentsMargin + MarginInc,
-                                /**< where the tab focus rect is placed, measured from the
+                                /**< (\b 3) where the tab focus rect is placed, measured from the
                                  * tab sides (?) */
             TabTextToIconSpace = TabFocusMargin    + MarginInc,
-                                /**< space between icon and text if the tab contains both */
-            TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed.
-            BaseHeight,        ///< the height of the tabBar's base, usually the frame width [sets QStyle::PM_TabBarBaseHeight]
-            BaseOverlap,       ///< the number of pixels the tabs overlap with the base (i.e. tabWidget frame) [sets QStyle::PM_TabBarBaseOverlap]
-            ScrollButtonWidth  ///< buttons which are shown when there's not enough space for tabs [sets QStyle::PM_TabBarScrollButtonWidth]
+                                /**< (\b 0 ?) space between icon and text if the tab contains both */
+            TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed. (\b 0) 
+            BaseHeight,        ///< (\b 2) the height of the tabBar's base, usually the frame width [sets QStyle::PM_TabBarBaseHeight]
+            BaseOverlap,       ///< (\b 2) the number of pixels the tabs overlap with the base (i.e. tabWidget frame) [sets QStyle::PM_TabBarBaseOverlap]
+            ScrollButtonWidth  ///< (\b 10) buttons which are shown when there's not enough space for tabs [sets QStyle::PM_TabBarScrollButtonWidth]
         };
 
         /**
@@ -913,7 +918,7 @@ protected:
     };
 
     /**
-     * Describes a tab widget (frame).
+     * @brief Describes a tab widget (frame).
      *
      * Relevant elements:
      * - @c Generic::Frame for the frame/panel of the TabWidget
@@ -925,23 +930,25 @@ protected:
          */
         enum LayoutProp
         {
-            FrameWidth      // TODO: this is ignored for now. See SE_TabWidgetTabContents comment.
+            FrameWidth      // TODO: this is ignored for now. See SE_TabWidgetTabContents comment. (\b 2) 
         };
     };
 
     /**
-     * Describes a slider, like QSlider.
+     * @brief Describes a slider, like QSlider.
      */
     struct Slider
     {
 
         /**
+         * @note The description applies to horizontal sliders.
+         *
          * @sa setWidgetLayoutProp()
          */
         enum LayoutProp
         {
-            HandleThickness,                        // The height of a slider in horizontal direction
-            HandleLength                            ///< The width of a slider in horizontal direction [sets QStyle::PM_SliderLength]
+            HandleThickness, ///< (\b 20) The height of a slider handle
+            HandleLength     ///< (\b 16) The width of a slider handle [sets QStyle::PM_SliderLength]
         };
 
         /**
@@ -961,7 +968,7 @@ protected:
 
 
     /**
-     * Describes an expandable tree, e.g. in a QListView.
+     * @brief Describes an expandable tree, e.g. in a QListView.
      */
     struct Tree
     {
@@ -976,7 +983,7 @@ protected:
          */
         enum LayoutProp
         {
-            MaxExpanderSize      /**< @note If you set MaxExpanderSize to a value less
+            MaxExpanderSize      /**< (\b 9) @note If you set MaxExpanderSize to a value less
                                   * than 9, designer will look funny. The value should also
                                   * be odd, or value - 1 will be used.
                                   */
@@ -998,7 +1005,7 @@ protected:
     };
 
     /**
-     * Describes a widget like QSpinBox.
+     * @brief Describes a widget like QSpinBox.
      */
     struct SpinBox
     {
@@ -1019,19 +1026,20 @@ protected:
          */
         enum LayoutProp
         {
-            FrameWidth,        /**< Space reserved left, top, bottom of the SpinBox
+            FrameWidth,        /**< (\b 1) Space reserved left, top, bottom of the SpinBox
                                 * [sets QStyle::PM_SpinBoxFrameWidth] */
-            ButtonWidth,       ///< Space reserved for the widget, right of the EditField
-            ButtonMargin,      /**< Where the up/down buttons are located, measured
+            ButtonWidth,       ///< (\b 16) Space reserved for the widget, right of the EditField
+            ButtonMargin,      /**< (MainMargin \b 0, Right Top Bot \b 1)
+                                * Where the up/down buttons are located, measured
                                 * from right of the edit field and the top/right/bottom
                                 * widget edges. */
-            ButtonSpacing = ButtonMargin + MarginInc, ///< spacing between up/down buttons
-            SymmetricButtons,  /**< Set to non-zero to make sure both buttons are
+            ButtonSpacing = ButtonMargin + MarginInc, ///< (\b 1) spacing between up/down buttons
+            SymmetricButtons,  /**< (\b 0) Set to non-zero to make sure both buttons are
                                 * always of the same height. To achieve this, the
                                 * spacing of the buttons will be reduced by 1 if
                                 * necessary to avoid rounding problems. Needs to be
                                 * handled in your drawing code. */
-            SupportFrameless   /**< Set to non-zero to indicate that you are able to
+            SupportFrameless   /**< (\b 0) Set to non-zero to indicate that you are able to
                                 * handle frame-less SpinBoxes. For a SpinBox with no
                                 * frame, FrameWidth and Top/Bottom/Right ButtonMargin
                                 * is ignored. */
@@ -1060,7 +1068,7 @@ protected:
     };
 
     /**
-     * Describes a widget like QComboBox.
+     * @brief Describes a widget like QComboBox.
      */
     struct ComboBox
     {
@@ -1077,14 +1085,15 @@ protected:
          */
         enum LayoutProp
         {
-            FrameWidth,         /**< @see SpinBox::FrameWidth */
-            ButtonWidth,        /**< @see SpinBox::ButtonWidth */
-            ButtonMargin,       /**< @see SpinBox::ButtonMargin */
+            FrameWidth,         /**< (\b 1) @see SpinBox::FrameWidth */
+            ButtonWidth,        /**< (\b 16) @see SpinBox::ButtonWidth */
+            ButtonMargin,       /**< (MainMargin \b 0, Right Top Bot \b 1)
+                                 * @see SpinBox::ButtonMargin */
             FocusMargin = ButtonMargin + MarginInc,
-                                /**< Focus margin for ComboBoxes that aren't
+                                /**< (\b 1) Focus margin for ComboBoxes that aren't
                                  * editable, measured from the EditField rect */
             SupportFrameless = FocusMargin + MarginInc
-                                /**< @see LP_SpinBox_SupportFrameless same description
+                                /**< (\b 0) @see LP_SpinBox_SupportFrameless same description
                                  * applies here */
         };
 
@@ -1104,7 +1113,7 @@ protected:
     };
 
     /**
-     * Describes a list header, like in QListView.
+     * @brief Describes a list header, like in QListView.
      */
     struct Header
     {
@@ -1113,12 +1122,12 @@ protected:
          */
         enum LayoutProp
         {
-            ContentsMargin,      /**< margin around contents used to size the header. */
+            ContentsMargin,      /**< (\b 3) margin around contents used to size the header. */
             TextToIconSpace = ContentsMargin + MarginInc,
-                                 /**< space that is allocated between icon and text
+                                 /**< (\b 3) space that is allocated between icon and text
                                   * if both exist
                                   * [sets QStyle::PM_HeaderMargin] */
-            MarkSize             /**< size of the sort indicator in a header
+            MarkSize             /**< (\b 9) size of the sort indicator in a header
                                   * [sets QStyle::PM_HeaderMarkSize] */
         };
 
@@ -1183,19 +1192,20 @@ protected:
          */
         enum LayoutProps
         {
-            HandleExtent,       ///< the width(hor)/height(vert) of a ToolBar handle [sets QStyle::PM_ToolBarHandleExtent]
-            SeparatorExtent,    ///< the width/height of a ToolBar separator [sets QStyle::PM_ToolBarSeparatorExtent]
-            ExtensionExtent,    ///< The width/height of a ToolBar extender, when there is not enough room for toolbar buttons [sets PM_ToolBarExtensionExtent]
-            FrameWidth,    /**< width of the frame around toolbars
+            HandleExtent,       ///< (\b 6) the width(hor)/height(vert) of a ToolBar handle [sets QStyle::PM_ToolBarHandleExtent]
+            SeparatorExtent,    ///< (\b 6) the width/height of a ToolBar separator [sets QStyle::PM_ToolBarSeparatorExtent]
+            ExtensionExtent,    ///< (\b 10) the width/height of a ToolBar extender, when there is not enough room for toolbar buttons [sets PM_ToolBarExtensionExtent]
+            FrameWidth,    /**< (\b 2) width of the frame around toolbars
                             * [sets QStyle::PM_ToolBarFrameWidth] */
-            ItemMargin,         ///< [sets QStyle::PM_ToolBarItemMargin]
-            ItemSpacing         ///< [sets QStyle::PM_ToolBarItemSpacing]
+            ItemMargin,         ///< (\b 1) [sets QStyle::PM_ToolBarItemMargin]
+            ItemSpacing         ///< (\b 3) [sets QStyle::PM_ToolBarItemSpacing]
         };
 
         /**
          * [the Handles implement QStyle::PE_IndicatorToolBarHandle]
-         * @sa drawKStylePrimitive()
          * [the Panels implement QStyle::CE_ToolBar]
+         *
+         * @sa drawKStylePrimitive()
          */
         enum Primitive
         {
@@ -1220,10 +1230,10 @@ protected:
          */
         enum LayoutProps
         {
-            ContentsMargin,  /**< Margin reserved around the contents size of
+            ContentsMargin,  /**< (\b 5) Margin reserved around the contents size of
                               * a toolbutton. Used to size the contents. */
             FocusMargin            = ContentsMargin + MarginInc,
-                             /**< Where the focus rect will be drawn, measured
+                             /**< (\b 3) Where the focus rect will be drawn, measured
                               * from the widget sides */
             DummyProp      = FocusMargin + MarginInc
         };
@@ -1250,7 +1260,7 @@ protected:
     void setWidgetLayoutProp(WidgetType widget, int metric, int value);
 
     /**
-     * Used to obtain information about KStyle layout properties and metrics.
+     * @brief Used to obtain information about KStyle layout properties and metrics.
      *
      * The default implementation returns values which are set
      * using setWidgetLayoutProp(), so normally it's not necessary to implement
