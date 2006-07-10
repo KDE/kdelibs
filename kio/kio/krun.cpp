@@ -332,6 +332,11 @@ KRunMX2::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
 QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool tempFiles, const QString& suggestedFileName)
 {
   QString exec = _service.exec();
+  if ( exec.isEmpty() ) {
+      kWarning() << "KRun: no Exec field in `" << _service.desktopEntryPath() << "' !" << endl;
+      return QStringList();
+  }
+
   QStringList result;
   bool appHasTempFileOption;
 
