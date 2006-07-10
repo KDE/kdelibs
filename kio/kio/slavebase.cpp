@@ -784,8 +784,10 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     kDebug(7019) << "SlaveBase::openPassDlg window-id=" << windowId << endl;
 
-    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver" );
+    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 
+    // #### TODO rewrite this with QDBusArgument streaming operators
+    // and QDBusReply.
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream << info;
@@ -800,7 +802,8 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
 
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
-       kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
+       kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!" << endl;
+       kDebug(7019) << reply.at(0).toString() << endl;
        return false;
     }
 
@@ -1073,7 +1076,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
 
-    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver" );
+    QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 
     QByteArray data;
     {
@@ -1084,7 +1087,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     if ( !reply.isValid() )
     {
-       kWarning(7019) << "Can't communicate with kded_kpasswdserver!" << endl;
+       kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!" << endl;
+       kDebug(7019) << reply.error().message() << endl;
        return false;
     }
 
@@ -1110,7 +1114,7 @@ bool SlaveBase::cacheAuthentication( const AuthInfo& info )
     QDataStream stream(&params, QIODevice::WriteOnly);
     stream << info;
 
-    QDBusInterface( "org.kde.kded", "/modules/kpasswdserver" ).
+    QDBusInterface( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" ).
        call("addAuthInfo", params, windowId);
 
     return true;

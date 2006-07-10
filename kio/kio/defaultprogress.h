@@ -27,6 +27,7 @@
 #include "progressbase.h"
 
 class KLineEdit;
+class KPushButton;
 
 namespace KIO {
 
@@ -150,6 +151,7 @@ private Q_SLOTS:
   void slotKeepOpenToggled(bool);
   void slotOpenFile();
   void slotOpenLocation();
+  void slotPauseResumeClicked();
 };
 
 } /* namespace */

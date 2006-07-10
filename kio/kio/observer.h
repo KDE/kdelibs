@@ -42,7 +42,7 @@ namespace KIO {
  * "observes" what jobs do and forwards this information
  * to the progress-info server.
  *
- * It is a DCOP object so that the UI server can call the
+ * It is a DBus object so that the UI server can call the
  * kill method when the user presses Cancel.
  *
  * Usually jobs are automatically registered by the
@@ -98,7 +98,7 @@ public:
 
   /**
    * Popup a message box. See KIO::SlaveBase.
-   * This doesn't use DCOP anymore, it shows the dialog in the application's process.
+   * This doesn't use DBus anymore, it shows the dialog in the application's process.
    * Otherwise, other apps would block when trying to communicate with UIServer.
    * @param progressId the progress ID of the job, as returned by newJob()
    * @param type the type of the message box
@@ -112,7 +112,7 @@ public:
 
   /**
    * Popup a message box. See KIO::SlaveBase.
-   * This doesn't use DCOP anymore, it shows the dialog in the application's process.
+   * This doesn't use DBus anymore, it shows the dialog in the application's process.
    * Otherwise, other apps would block when trying to communicate with UIServer.
    * @param progressId the progress ID of the job, as returned by newJob()
    * @param type the type of the message box
@@ -153,13 +153,25 @@ public:
 
 public Q_SLOTS:
   /**
-   * Called by the UI Server (using DCOP) if the user presses cancel.
+   * Called by the UI Server (using DBus) if the user presses cancel.
    * @param progressId the progress ID of the job, as returned by newJob()
    */
   Q_SCRIPTABLE void killJob( int progressId );
 
   /**
-   * Called by the UI Server (using DCOP) to get all the metadata of the job
+   * Called by the UI Server (using DBus) if the user presses "pause".
+   * @param progressId the progress ID of the job, as returned by newJob()
+   */
+  Q_SCRIPTABLE void suspend( int progressId );
+
+  /**
+   * Called by the UI Server (using DBus) if the user presses "pause".
+   * @param progressId the progress ID of the job, as returned by newJob()
+   */
+  Q_SCRIPTABLE void resume( int progressId );
+
+  /**
+   * Called by the UI Server (using DBus) to get all the metadata of the job
    * @param progressId the progress IDof the job, as returned by newJob()
    */
   Q_SCRIPTABLE QVariantMap metadata( int progressId );

@@ -18,6 +18,11 @@
    Boston, MA 02110-1301, USA.
 */
 // -*- mode: c++; c-basic-offset: 4 -*-
+// TODO:
+//
+// Use ProgressItem
+// Add suspend/resume
+// Better icon for systray icon
 
 #include <qtimer.h>
 #include <qregexp.h>
@@ -185,8 +190,10 @@ ProgressItem::ProgressItem( ListProgress* view, Q3ListViewItem *after, QByteArra
   // create dialog, but don't show it
   defaultProgress = new KIO::DefaultProgress( false );
   defaultProgress->setOnlyClean( true );
-  connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
-  connect ( &m_showTimer, SIGNAL( timeout() ), this, SLOT(slotShowDefaultProgress()) );
+  connect( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
+  connect( defaultProgress, SIGNAL( suspend() ), this, SLOT( slotSuspend() ) );
+  connect( defaultProgress, SIGNAL( resume() ), this, SLOT( slotResume() ) );
+  connect( &m_showTimer, SIGNAL( timeout() ), this, SLOT(slotShowDefaultProgress()) );
 
   if ( showDefault ) {
     m_showTimer.setSingleShot( true );
@@ -391,6 +398,14 @@ void ProgressItem::setCanResume( KIO::filesize_t offset ) {
 
 void ProgressItem::slotCanceled() {
   emit jobCanceled( this );
+}
+
+void ProgressItem::slotSuspend() {
+  emit jobSuspended( this );
+}
+
+void ProgressItem::slotResume() {
+  emit jobResumed( this );
 }
 
 // Called 0.5s after the job has been started
@@ -762,6 +777,10 @@ int UIServer::newJob( const QString &observerAppId, bool showProgress )
   ProgressItem *item = new ProgressItem( listProgress, it.current(), observerAppId.toLatin1(), s_jobId, show );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
            SLOT( slotJobCanceled( ProgressItem* ) ) );
+  connect( item, SIGNAL( jobSuspended( ProgressItem* ) ),
+           SLOT( slotJobSuspended( ProgressItem* ) ) );
+  connect( item, SIGNAL( jobResumed( ProgressItem* ) ),
+           SLOT( slotJobResumed( ProgressItem* ) ) );
 
   if ( m_bShowList && !updateTimer->isActive() )
     updateTimer->start( 1000 );
@@ -1006,24 +1025,30 @@ void UIServer::unmounting( int id, QString point )
   }
 }
 
-void UIServer::killJob( const QString &observerAppId, int progressId )
+void UIServer::callObserver( const QString &observerAppId, int progressId, const char* method )
 {
-    // Contact the object "KIO::Observer" in the application <appId>
+    // Contact the object "KIO::Observer" in the application <observerAppId>
     QDBusInterface observer( observerAppId, "/KIO/Observer", "org.kde.KIO.Observer" );
-    // Tell it to kill the job
-    observer.call("killJob", progressId );
+    // Call this method
+    observer.call( method, progressId );
 }
 
 void UIServer::slotJobCanceled( ProgressItem *item ) {
-  kDebug(7024) << "UIServer::slotJobCanceled appid=" << item->appId() << " jobid=" << item->jobId() << endl;
   // kill the corresponding job
-  killJob( item->appId(), item->jobId() );
+  callObserver( item->appId(), item->jobId(), "killJob" );
 
   // KIO::Job, when killed, should call back jobFinished(), but we can't
   // really rely on that - the app may have crashed
   delete item;
 }
 
+void UIServer::slotJobSuspended( ProgressItem* item ) {
+  callObserver( item->appId(), item->jobId(), "suspend" );
+}
+
+void UIServer::slotJobResumed( ProgressItem* item ) {
+  callObserver( item->appId(), item->jobId(), "resume" );
+}
 
 void UIServer::slotQuit()
 {
@@ -1316,7 +1341,7 @@ void UIServer::slotCancelCurrent() {
   {
     if ( it.current()->isSelected() ) {
       item = (ProgressItem*) it.current();
-      killJob( item->appId(), item->jobId() );
+      callObserver( item->appId(), item->jobId(), "killJob" );
       return;
     }
   }

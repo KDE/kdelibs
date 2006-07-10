@@ -99,6 +99,23 @@ namespace KIO {
         virtual bool doKill();
 
         /**
+         * Suspend this job
+         * @see resume
+         */
+        virtual void suspend();
+
+        /**
+         * Resume this job
+         * @see suspend
+         */
+        virtual void resume();
+
+        /**
+         * @return true if this job was suspended by suspend()
+         */
+        bool isSuspended() const;
+
+        /**
          * Converts an error code and a non-i18n error message into an
          * error message in the current language. The low level (non-i18n)
          * error message (usually a url) is put into the translated error
@@ -343,7 +360,19 @@ namespace KIO {
 
         ~SimpleJob();
 
-        void start();
+        virtual void start();
+
+        /**
+         * Suspend this job
+         * @see resume
+         */
+        virtual void suspend();
+
+        /**
+         * Resume this job
+         * @see suspend
+         */
+        virtual void resume();
 
         /**
 	 * Returns the SimpleJob's URL
@@ -705,19 +734,17 @@ namespace KIO {
         /**
          * Flow control. Suspend data processing from the slave.
          */
-        void suspend();
+        void internalSuspend();
 
         /**
          * Flow control. Resume data processing from the slave.
          */
-        void resume();
+        void internalResume();
 
         /**
-         * Flow control.
-	 * @return true if the job is suspended
+         * Reimplemented for internal reasons
          */
-	bool isSuspended() const { return m_suspended; }
-
+        virtual void resume();
 
         /**
 	 * Checks whether we got an error page. This currently only happens
@@ -832,8 +859,10 @@ namespace KIO {
         void slotPostRedirection();
 
     protected:
-        bool m_suspended;
+        bool m_internalSuspended;
         bool m_errorPage;
+        bool m_unused1;
+        bool m_unused2;
         QByteArray staticData;
         KUrl m_redirectionURL;
         KUrl::List m_redirectionList;
@@ -1330,6 +1359,11 @@ namespace KIO {
          * TODO KDE4: consider adding this as bool to copy/copyAs?
          */
         void setDefaultPermissions( bool b );
+
+        /**
+         * Reimplemented for internal reasons
+         */
+        virtual void suspend();
 
     Q_SIGNALS:
 

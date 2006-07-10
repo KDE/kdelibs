@@ -169,6 +169,19 @@ void ProgressBase::slotStop() {
   emit stopped();
 }
 
+void ProgressBase::slotPause() {
+  if ( m_pJob ) {
+    m_pJob->suspend();
+  }
+  emit suspend();
+}
+
+void ProgressBase::slotResume() {
+  if ( m_pJob ) {
+    m_pJob->resume();
+  }
+  emit resume();
+}
 
 void ProgressBase::slotClean() {
   hide();

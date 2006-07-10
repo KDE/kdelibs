@@ -56,6 +56,8 @@ public:
   QCheckBox   *keepOpen;
   KUrl        location;
   QTime       startTime;
+  KPushButton* pauseButton;
+  bool suspended;
 };
 
 DefaultProgress::DefaultProgress( bool showNow )
@@ -117,8 +119,16 @@ void DefaultProgress::init()
   destEdit->setSqueezedTextEnabled(true);
   grid->addWidget(destEdit, 1, 2);
 
+  QHBoxLayout *progressHBox = new QHBoxLayout();
+  topLayout->addLayout( progressHBox );
+
   m_pProgressBar = new QProgressBar(this);
-  topLayout->addWidget( m_pProgressBar );
+  progressHBox->addWidget( m_pProgressBar );
+
+  d->suspended = false;
+  d->pauseButton = new KPushButton( i18n( "Pause" ), this );
+  connect( d->pauseButton, SIGNAL( clicked() ), SLOT( slotPauseResumeClicked() ) );
+  progressHBox->addWidget( d->pauseButton );
 
   // processed info
   QHBoxLayout *hBox = new QHBoxLayout();
@@ -498,7 +508,20 @@ void DefaultProgress::slotOpenLocation()
   proc.start(KProcess::DontCare);
 }
 
-void DefaultProgress::virtual_hook( int id, void* data )
+void DefaultProgress::slotPauseResumeClicked()
+{
+    if ( !d->suspended ) {
+        d->pauseButton->setText( i18n( "Resume" ) );
+        slotPause();
+        d->suspended = true;
+    } else {
+        d->pauseButton->setText( i18n( "Pause" ) );
+        slotResume();
+        d->suspended = false;
+    }
+}
+
+    void DefaultProgress::virtual_hook( int id, void* data )
 { ProgressBase::virtual_hook( id, data ); }
 
 } /* namespace */

@@ -159,9 +159,13 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
   void slotCanceled();
+  void slotSuspend();
+  void slotResume();
 
 Q_SIGNALS:
   void jobCanceled( ProgressItem* );
+  void jobSuspended( ProgressItem* );
+  void jobResumed( ProgressItem* );
 
 protected:
   void updateVisibility();
@@ -367,6 +371,8 @@ protected Q_SLOTS:
   void slotSelection();
 
   void slotJobCanceled( ProgressItem * );
+  void slotJobSuspended( ProgressItem* );
+  void slotJobResumed( ProgressItem* );
   void slotApplyConfig();
   void slotShowContextMenu(K3ListView*, Q3ListViewItem *item, const QPoint& pos);
 
@@ -390,7 +396,7 @@ protected:
   void writeSettings();
 private:
 
-  void killJob( const QString &observerAppId, int progressId );
+  void callObserver( const QString &observerAppId, int progressId, const char* method );
 
   int m_initWidth;
   int m_initHeight;

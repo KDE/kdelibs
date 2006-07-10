@@ -135,6 +135,16 @@ public Q_SLOTS:
    */
   void slotStop();
   /**
+   * This method should be called for pause/resume
+   * Connect this to the progress widgets buttons etc.
+   */
+  void slotPause();
+  /**
+   * This method should be called for pause/resume
+   * Connect this to the progress widgets buttons etc.
+   */
+  void slotResume();
+  /**
    * This method is called when the widget should be cleaned (after job is finished).
    * redefine this for custom behavior.
    */
@@ -242,9 +252,17 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   /**
-   * Called when the operation stopped.
+   * Called when the user aborted the operation
    */
   void stopped();
+  /**
+   * Called when the user suspended the operation
+   */
+  void suspend();
+  /**
+   * Called when the user resumed the operation
+   */
+  void resume();
 
 protected Q_SLOTS:
   void slotFinished( KJob* );

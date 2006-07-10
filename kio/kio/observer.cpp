@@ -98,6 +98,22 @@ void Observer::killJob( int progressId )
     job->kill( KJob::EmitResult /* not quietly */ );
 }
 
+void Observer::suspend( int progressId )
+{
+    kDebug() << k_funcinfo << progressId << endl;
+    KIO::Job * job = m_dctJobs.value( progressId );
+    if ( job )
+        job->suspend();
+}
+
+void Observer::resume( int progressId )
+{
+    kDebug() << k_funcinfo << progressId << endl;
+    KIO::Job * job = m_dctJobs.value( progressId );
+    if ( job )
+        job->resume();
+}
+
 QVariantMap Observer::metadata( int progressId )
 {
     KIO::Job * job = m_dctJobs.value( progressId );

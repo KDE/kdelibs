@@ -83,10 +83,11 @@ using namespace KIO;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_interactive( true ), m_parentJob( 0L ), m_extraFlags(0)
+    JobPrivate() : m_interactive( true ), m_suspended( false ), m_parentJob( 0L ), m_extraFlags(0)
                    {}
 
     bool m_interactive;
+    bool m_suspended;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
     Job* m_parentJob;
@@ -139,7 +140,7 @@ void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
         return;
     }
 
-    //kDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << m_subjobs.count() << endl;
+    //kDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs().count() << endl;
     // Merge metadata from subjob
     if ( mergeMetaData )
         m_incomingMetaData += job->metaData();
@@ -170,6 +171,35 @@ bool Job::doKill()
   clearSubjobs();
 
   return true;
+}
+
+void Job::suspend()
+{
+    if ( !d->m_suspended )
+    {
+        d->m_suspended = true;
+        QList<KJob *>::const_iterator it = subjobs().begin();
+        const QList<KJob *>::const_iterator end = subjobs().end();
+        for ( ; it != end ; ++it )
+            static_cast<KIO::Job*>( *it )->suspend();
+    }
+}
+
+void Job::resume()
+{
+    if ( d->m_suspended )
+    {
+        d->m_suspended = false;
+        QList<KJob *>::const_iterator it = subjobs().begin();
+        const QList<KJob *>::const_iterator end = subjobs().end();
+        for ( ; it != end ; ++it )
+            static_cast<KIO::Job*>( *it )->resume();
+    }
+}
+
+bool Job::isSuspended() const
+{
+  return d->m_suspended;
 }
 
 void Job::slotSpeed( KIO::Job*, unsigned long speed )
@@ -291,7 +321,6 @@ SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
 
 void SimpleJob::start()
 {
-
 }
 
 bool SimpleJob::doKill()
@@ -299,6 +328,22 @@ bool SimpleJob::doKill()
     Scheduler::cancelJob( this ); // deletes the slave if not 0
     m_slave = 0; // -> set to 0
     return true;
+}
+
+void SimpleJob::suspend()
+{
+    Q_ASSERT( m_slave );
+    if ( m_slave )
+        m_slave->suspend();
+    Job::suspend();
+}
+
+void SimpleJob::resume()
+{
+    Q_ASSERT( m_slave );
+    if ( m_slave )
+        m_slave->resume();
+    Job::resume();
 }
 
 void SimpleJob::putOnHold()
@@ -739,7 +784,7 @@ TransferJob::TransferJob( const KUrl& url, int command,
                           bool showProgressInfo)
     : SimpleJob(url, command, packedArgs, showProgressInfo), staticData( _staticData)
 {
-    m_suspended = false;
+    m_internalSuspended = false;
     m_errorPage = false;
     m_subJob = 0L;
     if ( showProgressInfo )
@@ -801,7 +846,7 @@ void TransferJob::slotFinished()
         m_incomingMetaData.clear();
         if (queryMetaData("cache") != "reload")
             addMetaData("cache","refresh");
-        m_suspended = false;
+        m_internalSuspended = false;
         m_url = m_redirectionURL;
         m_redirectionURL = KUrl();
         // The very tricky part is the packed arguments business
@@ -920,8 +965,8 @@ void TransferJob::slotDataReq()
     if (m_subJob)
     {
        // Bitburger protocol in action
-       suspend(); // Wait for more data from subJob.
-       m_subJob->resume(); // Ask for more!
+       internalSuspend(); // Wait for more data from subJob.
+       m_subJob->internalResume(); // Ask for more!
     }
 }
 
@@ -932,18 +977,25 @@ void TransferJob::slotMimetype( const QString& type )
 }
 
 
-void TransferJob::suspend()
+void TransferJob::internalSuspend()
 {
-    m_suspended = true;
+    m_internalSuspended = true;
     if (m_slave)
        m_slave->suspend();
 }
 
+void TransferJob::internalResume()
+{
+    m_internalSuspended = false;
+    if ( m_slave && !isSuspended() )
+       m_slave->resume();
+}
+
 void TransferJob::resume()
 {
-    m_suspended = false;
-    if (m_slave)
-       m_slave->resume();
+    SimpleJob::resume();
+    if ( m_internalSuspended )
+        internalSuspend();
 }
 
 void TransferJob::start(Slave *slave)
@@ -978,7 +1030,7 @@ void TransferJob::start(Slave *slave)
     }
 
     SimpleJob::start(slave);
-    if (m_suspended)
+    if (m_internalSuspended)
        slave->suspend();
 }
 
@@ -986,7 +1038,7 @@ void TransferJob::slotNeedSubURLData()
 {
     // Job needs data from subURL.
     m_subJob = KIO::get( m_subUrl, false, false);
-    suspend(); // Put job on hold until we have some data.
+    internalSuspend(); // Put job on hold until we have some data.
     connect(m_subJob, SIGNAL( data(KIO::Job*,const QByteArray &)),
             SLOT( slotSubURLData(KIO::Job*,const QByteArray &)));
     addSubjob(m_subJob);
@@ -996,8 +1048,8 @@ void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
 {
     // The Alternating Bitburg protocol in action again.
     staticData = data;
-    m_subJob->suspend(); // Put job on hold until we have delivered the data.
-    resume(); // Activate ourselves again.
+    m_subJob->internalSuspend(); // Put job on hold until we have delivered the data.
+    internalResume(); // Activate ourselves again.
 }
 
 void TransferJob::slotMetaData( const KIO::MetaData &_metaData) {
@@ -1025,7 +1077,7 @@ void TransferJob::slotResult( KJob *job)
    if (!error() && job == m_subJob)
    {
       m_subJob = 0; // No action required
-      resume(); // Make sure we get the remaining data.
+      internalResume(); // Make sure we get the remaining data.
    }
 }
 
@@ -1305,7 +1357,7 @@ void MimetypeJob::slotFinished( )
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, m_url, m_redirectionURL);
         staticData.truncate(0);
-        m_suspended = false;
+        m_internalSuspended = false;
         m_url = m_redirectionURL;
         m_redirectionURL = KUrl();
         m_packedArgs.truncate(0);
@@ -1608,10 +1660,10 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             }
             m_putJob->slave()->setOffset( offset );
 
-            m_putJob->suspend();
+            m_putJob->internalSuspend();
             addSubjob( m_getJob );
             connectSubjob( m_getJob ); // Progress info depends on get
-            m_getJob->resume(); // Order a beer
+            m_getJob->internalResume(); // Order a beer
 
             connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
                      SLOT( slotData(KIO::Job *, const QByteArray&)));
@@ -1640,8 +1692,8 @@ void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
    //kDebug(7007) << " data size : " << data.size() << endl;
    assert(m_putJob);
    if (!m_putJob) return; // Don't crash
-   m_getJob->suspend();
-   m_putJob->resume(); // Drink the beer
+   m_getJob->internalSuspend();
+   m_putJob->internalResume(); // Drink the beer
    m_buffer = data;
 
    // On the first set of data incoming, we tell the "put" slave about our
@@ -1668,8 +1720,8 @@ void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
    }
    if (m_getJob)
    {
-      m_getJob->resume(); // Order more beer
-      m_putJob->suspend();
+      m_getJob->internalResume(); // Order more beer
+      m_putJob->internalSuspend();
    }
    data = m_buffer;
    m_buffer = QByteArray();
@@ -1732,7 +1784,7 @@ void FileCopyJob::slotResult( KJob *job)
    {
       m_getJob = 0; // No action required
       if (m_putJob)
-         m_putJob->resume();
+         m_putJob->internalResume();
    }
 
    if (job == m_putJob)
@@ -1742,7 +1794,7 @@ void FileCopyJob::slotResult( KJob *job)
       if (m_getJob)
       {
          kWarning(7007) << "WARNING ! Get still going on..." << endl;
-         m_getJob->resume();
+         m_getJob->internalResume();
       }
       if (m_move)
       {
@@ -2208,8 +2260,16 @@ void CopyJob::slotResultStating( KJob *job )
     }
 }
 
+void CopyJob::suspend()
+{
+    slotReport();
+    Job::suspend();
+}
+
 void CopyJob::slotReport()
 {
+    if ( isSuspended() )
+        return;
     // If showProgressInfo was set, progressId() is > 0.
     Observer * observer = progressId() ? Observer::self() : 0L;
     switch (state) {
