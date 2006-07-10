@@ -1517,6 +1517,10 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
   <li>The Button enum in KCModule only contains the Help, Default and Apply
   values. The other buttons are not optional. If your KCM specified the button
   flags just remove everything except those three.</li>
+  <li>The functions setRootOnlyMsg, rootOnlyMsg, setUseRootOnlyMsg and
+  useRootOnlyMsg have been renamed to
+  setRootOnlyMessage, rootOnlyMessage, setUseRootOnlyMessage and
+  useRootOnlyMessage.</li>
   <li>KCModules need to have Type=Service and ServiceTypes=KCModule in the
   .desktop file now - was Type=Application before</li>
   <li>KCModules that should show up in KControl or kcmshell --list need to have
