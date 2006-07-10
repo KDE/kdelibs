@@ -45,7 +45,6 @@ set(kdeui_LIB_SRCS
  knotificationrestrictions.cpp
  kprogressdialog.cpp
  kcolordialog.cpp
- kselector_p.cpp
  kdatetable.cpp
  kfontdialog.cpp
  ktabctl.cpp
@@ -133,6 +132,7 @@ set(kdeui_LIB_SRCS
  widgets/kcharselect.cpp
  widgets/kcolorbutton.cpp
  widgets/kcolorcombo.cpp
+ widgets/kcolorvalueselector.cpp
  widgets/kcombobox.cpp
  widgets/kcompletionbox.cpp
  widgets/kdatepicker.cpp
@@ -148,6 +148,7 @@ set(kdeui_LIB_SRCS
  widgets/knuminput.cpp
  widgets/kprogressbar.cpp
  widgets/kpushbutton.cpp
+ widgets/kselector.cpp
  widgets/ksqueezedtextlabel.cpp
  widgets/ksystemtray.cpp
  widgets/ktabbar.cpp

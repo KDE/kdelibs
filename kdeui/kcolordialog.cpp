@@ -65,7 +65,8 @@
 #include <config.h>
 #include <kdebug.h>
 
-#include "kselector_p.h"
+#include "kselector.h"
+#include "kcolorvalueselector.h"
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -171,45 +172,47 @@ KColor::setRgb(int _r, int _g, int _b)
 void
 KColor::rgb(int *_r, int *_g, int *_b) const
 {
-  *_r = r; *_g = g; *_b = b;
+    *_r = r; *_g = g; *_b = b;
 }
 
 void
 KColor::hsv(int *_h, int *_s, int *_v) const
 {
-  *_h = h; *_s = s; *_v = v;
+    *_h = h; *_s = s; *_v = v;
 }
 
 
-static QColor *standardPalette = 0;
-static KStaticDeleter<QColor> spd;
+static QVector<QColor> *s_standardPalette = 0;
+static KStaticDeleter<QVector<QColor> > spd;
 
-static void createStandardPalette()
+// Shared with KColorValueSelector
+KDEUI_EXPORT QVector<QColor> kdeui_standardPalette()
 {
-    if ( standardPalette )
-	return;
+    if ( !s_standardPalette ) {
+        spd.setObject(s_standardPalette, new QVector<QColor>);
 
-    spd.setObject(standardPalette, new QColor [STANDARD_PAL_SIZE], true/*array*/);
+        int i = 0;
+        s_standardPalette->resize( STANDARD_PAL_SIZE );
 
-    int i = 0;
-
-    standardPalette[i++] = Qt::red;
-    standardPalette[i++] = Qt::green;
-    standardPalette[i++] = Qt::blue;
-    standardPalette[i++] = Qt::cyan;
-    standardPalette[i++] = Qt::magenta;
-    standardPalette[i++] = Qt::yellow;
-    standardPalette[i++] = Qt::darkRed;
-    standardPalette[i++] = Qt::darkGreen;
-    standardPalette[i++] = Qt::darkBlue;
-    standardPalette[i++] = Qt::darkCyan;
-    standardPalette[i++] = Qt::darkMagenta;
-    standardPalette[i++] = Qt::darkYellow;
-    standardPalette[i++] = Qt::white;
-    standardPalette[i++] = Qt::lightGray;
-    standardPalette[i++] = Qt::gray;
-    standardPalette[i++] = Qt::darkGray;
-    standardPalette[i++] = Qt::black;
+        (*s_standardPalette)[i++] = Qt::red;
+        (*s_standardPalette)[i++] = Qt::green;
+        (*s_standardPalette)[i++] = Qt::blue;
+        (*s_standardPalette)[i++] = Qt::cyan;
+        (*s_standardPalette)[i++] = Qt::magenta;
+        (*s_standardPalette)[i++] = Qt::yellow;
+        (*s_standardPalette)[i++] = Qt::darkRed;
+        (*s_standardPalette)[i++] = Qt::darkGreen;
+        (*s_standardPalette)[i++] = Qt::darkBlue;
+        (*s_standardPalette)[i++] = Qt::darkCyan;
+        (*s_standardPalette)[i++] = Qt::darkMagenta;
+        (*s_standardPalette)[i++] = Qt::darkYellow;
+        (*s_standardPalette)[i++] = Qt::white;
+        (*s_standardPalette)[i++] = Qt::lightGray;
+        (*s_standardPalette)[i++] = Qt::gray;
+        (*s_standardPalette)[i++] = Qt::darkGray;
+        (*s_standardPalette)[i++] = Qt::black;
+    }
+    return *s_standardPalette;
 }
 
 class KHSSelector : public KXYSelector
@@ -282,127 +285,12 @@ void KHSSelector::drawPalette( QPixmap *pixmap )
 
 	if ( pixmap->depth() <= 8 )
 	{
-		createStandardPalette();
-		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
+                const QVector<QColor> standardPalette = kdeui_standardPalette();
+		KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
 	}
 	*pixmap=QPixmap::fromImage( image );
 }
 
-
-//-----------------------------------------------------------------------------
-
-class KValueSelector : public KSelector
-{
-public:
-  /**
-   * Constructs a widget for color selection.
-   */
-  KValueSelector( QWidget *parent=0 );
-  /**
-   * Constructs a widget for color selection with a given orientation
-   */
-  KValueSelector( Qt::Orientation o, QWidget *parent = 0 );
-
-  int hue() const
-        { return _hue; }
-  void setHue( int h )
-        { _hue = h; }
-  int saturation() const
-        { return _sat; }
-  void setSaturation( int s )
-        { _sat = s; }
-
-  void updateContents();
-protected:
-  /**
-   * Draws the contents of the widget on a pixmap,
-   * which is used for buffering.
-   */
-  virtual void drawPalette( QPixmap *pixmap );
-  virtual void resizeEvent( QResizeEvent * );
-
-  /**
-   * Reimplemented from KSelector. The drawing is
-   * buffered in a pixmap here. As real drawing
-   * routine, drawPalette() is used.
-   */
-  virtual void drawContents( QPainter *painter );
-
-private:
-  int _hue;
-  int _sat;
-  QPixmap pixmap;
-};
-
-KValueSelector::KValueSelector( QWidget *parent )
-	: KSelector( Qt::Vertical, parent ), _hue(0), _sat(0)
-{
-	setRange( 0, 255 );
-}
-
-KValueSelector::KValueSelector(Qt::Orientation o, QWidget *parent )
-	: KSelector( o, parent ), _hue(0), _sat(0)
-{
-	setRange( 0, 255 );
-}
-
-void KValueSelector::updateContents()
-{
-	drawPalette(&pixmap);
-}
-
-void KValueSelector::resizeEvent( QResizeEvent * )
-{
-	updateContents();
-}
-
-void KValueSelector::drawContents( QPainter *painter )
-{
-	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
-}
-
-void KValueSelector::drawPalette( QPixmap *pixmap )
-{
-	int xSize = contentsRect().width(), ySize = contentsRect().height();
-	QImage image( QSize(xSize, ySize), QImage::Format_RGB32 );
-	QColor col;
-	uint *p;
-	QRgb rgb;
-
-	if ( orientation() == Qt::Horizontal )
-	{
-		for ( int v = 0; v < ySize; v++ )
-		{
-			p = (uint *) image.scanLine( ySize - v - 1 );
-
-			for( int x = 0; x < xSize; x++ )
-			{
-				col.setHsv( _hue, _sat, 255*x/((xSize == 1) ? 1 : xSize-1) );
-				rgb = col.rgb();
-				*p++ = rgb;
-			}
-		}
-	}
-
-	if( orientation() == Qt::Vertical )
-	{
-		for ( int v = 0; v < ySize; v++ )
-		{
-			p = (uint *) image.scanLine( ySize - v - 1 );
-			col.setHsv( _hue, _sat, 255*v/((ySize == 1) ? 1 : ySize-1) );
-			rgb = col.rgb();
-			for ( int i = 0; i < xSize; i++ )
-				*p++ = rgb;
-		}
-	}
-
-	if ( pixmap->depth() <= 8 )
-	{
-		createStandardPalette();
-		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
-	}
-	*pixmap=QPixmap::fromImage( image );
-}
 
 //-----------------------------------------------------------------------------
 
@@ -991,7 +879,7 @@ public:
     KColorPatch *patch;
     KHSSelector *hsSelector;
     KPalette *palette;
-    KValueSelector *valuePal;
+    KColorValueSelector *valuePal;
     QVBoxLayout* l_right;
     QGridLayout* tl_layout;
     QCheckBox *cbDefaultColor;
@@ -1085,7 +973,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   connect( d->hsSelector, SIGNAL( valueChanged( int, int ) ),
 	   SLOT( slotHSChanged( int, int ) ) );
 
-  d->valuePal = new KValueSelector( page );
+  d->valuePal = new KColorValueSelector( page );
   d->valuePal->setMinimumSize(26, 70);
   l_ltop->addWidget(d->valuePal, 1);
   connect( d->valuePal, SIGNAL( valueChanged( int ) ),

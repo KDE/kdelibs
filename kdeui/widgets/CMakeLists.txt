@@ -25,4 +25,6 @@ install( FILES
  khbox.h
  kvbox.h
  kbuttongroup.h
+ kselector.h
+ kcolorvalueselector.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
