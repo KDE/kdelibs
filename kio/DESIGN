@@ -224,7 +224,7 @@ Streaming
 
  1. We currently support a streaming "GET": e.g. file:/tmp/test.gz#gzip:/
     works. The following should also work: file:/tmp/test.gz.gz#gzip:/#gzip:/
-    The current approach makes a TrasnferJob for gzip:/ and then adds a
+    The current approach makes a TransferJob for gzip:/ and then adds a
     subjob for "file:/tmp/test.gz.gz#gzip:/" which itself adds a subjob
     for "file:/tmp/test.gz.gz".
  2. This doesn't extend very well to PUT, because there the order should
@@ -269,4 +269,11 @@ So when the slave supports resume for "put" it has to check after the first
 dataRequest() whether it has got a canResume() back from the app. If it did 
 it must resume. Otherwise it must start from 0.
 
+Protocols
+=========
+
+Most KIO slaves (but not all) are implementing internet protocols.
+In this case, the slave name matches the URI name for the protocol.
+A list of such URIs can be found here, as per RFC 4395:
+http://www.iana.org/assignments/uri-schemes.html
 
