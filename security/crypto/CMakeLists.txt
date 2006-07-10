@@ -17,7 +17,7 @@ install(TARGETS kcm_crypto  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES crypto.desktop  DESTINATION  ${XDG_APPS_DIR} )
+install( FILES crypto.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 
