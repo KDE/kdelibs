@@ -18,18 +18,18 @@
 #define SuspendingState_H
 
 
-#include "State.h"
+#include "StateImplementation.h"
 
 namespace ThreadWeaver {
 
     /** SuspendingState is the state after suspend() has been called, but
         before all threads finished executing the current job and blocked.
     */
-    class SuspendingState : public State
+    class SuspendingState : public StateImplementation
     {
     public:
 	explicit SuspendingState( WeaverImpl *weaver)
-	    : State (weaver)
+	    : StateImplementation (weaver)
 	    {
 	    }
 	/** Suspend job processing. */

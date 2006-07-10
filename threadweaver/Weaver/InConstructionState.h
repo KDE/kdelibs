@@ -3,7 +3,7 @@
    This file declares the InConstructionState class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -18,18 +18,20 @@
 #define InConstructionState_H
 
 
-#include "State.h"
+#include "StateImplementation.h"
 
 namespace ThreadWeaver {
+
+    class WeaverImpl;
 
     /** InConstructionState handles the calls to the WeaverImpl
         object until the constructor has finished.
     */
-    class InConstructionState : public State
+    class InConstructionState : public StateImplementation
     {
     public:
-	explicit InConstructionState( WeaverImpl *weaver)
-	    : State (weaver)
+	explicit InConstructionState( WeaverInterface *weaver)
+	    : StateImplementation (weaver)
 	    {
 	    }
 	/** Suspend job processing. */

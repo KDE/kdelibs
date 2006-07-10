@@ -1,3 +1,19 @@
+/* -*- C++ -*-
+
+   This file implements the DependencyPolicy class.
+
+   $ Author: Mirko Boehm $
+   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+   $ Contact: mirko@kde.org
+         http://www.kde.org
+         http://www.hackerbuero.org $
+   $ License: LGPL with the following explicit clarification:
+         This code may be linked against any version of the Qt toolkit
+         from Trolltech, Norway. $
+
+   $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
+*/
+
 #ifndef DEPENDENCYPOLICY_H
 #define DEPENDENCYPOLICY_H
 

@@ -3,7 +3,7 @@
    This file declares the ShuttingDownState class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -17,18 +17,18 @@
 #ifndef ShuttingDownState_H
 #define ShuttingDownState_H
 
-#include "State.h"
+#include "StateImplementation.h"
 
 namespace ThreadWeaver {
 
     /** ShuttingDownState is enabled when the Weaver destructor is entered. It
         prevents threads from still accessing queue management methods.
     */
-    class ShuttingDownState : public State
+    class ShuttingDownState : public StateImplementation
     {
     public:
-	explicit ShuttingDownState( WeaverImpl *weaver)
-	    : State (weaver)
+	explicit ShuttingDownState( WeaverInterface *weaver)
+	    : StateImplementation (weaver)
 	    {
 	    }
 	/** Suspend job processing. */

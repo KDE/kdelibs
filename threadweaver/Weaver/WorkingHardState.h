@@ -17,17 +17,17 @@
 #ifndef WorkingHardState_H
 #define WorkingHardState_H
 
-#include "State.h"
+#include "StateImplementation.h"
 
 namespace ThreadWeaver {
 
     /* WorkingHardState handles the state dependent calls in the state where
        jobs are executed.  */
-    class WorkingHardState : public State
+    class WorkingHardState : public StateImplementation
     {
     public:
 	explicit WorkingHardState( WeaverImpl *weaver)
-	    : State (weaver)
+	    : StateImplementation (weaver)
 	    {
 	    }
 	/** Suspend job processing. */

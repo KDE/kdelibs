@@ -1,3 +1,19 @@
+/* -*- C++ -*-
+
+   This file implements the DependencyPolicy class.
+
+   $ Author: Mirko Boehm $
+   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+   $ Contact: mirko@kde.org
+         http://www.kde.org
+         http://www.hackerbuero.org $
+   $ License: LGPL with the following explicit clarification:
+         This code may be linked against any version of the Qt toolkit
+         from Trolltech, Norway. $
+
+   $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
+*/
+
 #include <QMutex>
 #include <QtDebug>
 
@@ -28,7 +44,7 @@ public:
         static QMutex s_mutex;
         return s_mutex;
     }
-  
+
 };
 
 DependencyPolicy::DependencyPolicy()
@@ -43,14 +59,14 @@ DependencyPolicy::~DependencyPolicy()
 }
 
 void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
-{   
+{
     // jobA depends on jobB
     REQUIRE (jobA != 0 && jobB != 0);
     jobA->assignQueuePolicy( this );
     jobB->assignQueuePolicy( this );
     QMutexLocker l( & d->mutex() );
     d->dependencies().insert( jobA, jobB );
-    
+
     ENSURE ( d->dependencies().contains (jobA));
 }
 
@@ -72,7 +88,7 @@ bool DependencyPolicy::removeDependency( Job* jobA, Job* jobB )
 		break;
 	    }
 	}
-    
+
     ENSURE ( ! d->dependencies().keys(jobB).contains(jobA) );
     return result;
 }

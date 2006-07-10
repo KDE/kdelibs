@@ -19,8 +19,6 @@
 
 #include <QObject>
 
-#include "State.h"
-
 namespace ThreadWeaver {
 
     class Job;
@@ -35,6 +33,7 @@ namespace ThreadWeaver {
 
     class WeaverInterface : public QObject {
         Q_OBJECT
+
     public:
         explicit WeaverInterface ( QObject* parent = 0 );
         virtual ~WeaverInterface() {}

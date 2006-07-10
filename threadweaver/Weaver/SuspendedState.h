@@ -3,7 +3,7 @@
    This file declares the SuspendedState class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -17,17 +17,17 @@
 #ifndef SuspendedState_H
 #define SuspendedState_H
 
-#include "State.h"
+#include "StateImplementation.h"
 
 namespace ThreadWeaver {
 
     /** In SuspendedState, jobs are queued, but will not be executed. All
         thread remains blocked.  */
-    class SuspendedState : public State
+    class SuspendedState : public StateImplementation
     {
     public:
 	explicit SuspendedState( WeaverImpl *weaver)
-	    : State (weaver)
+	    : StateImplementation (weaver)
 	    {
 	    }
 	/** Suspend job processing. */
@@ -41,7 +41,7 @@ namespace ThreadWeaver {
 
         /** reimpl */
         StateId stateId() const;
-};
+    };
 
 }
 

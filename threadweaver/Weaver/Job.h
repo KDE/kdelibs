@@ -3,7 +3,7 @@
    This file declares the Job class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2004, 2005 Mirko Boehm $
+   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -13,6 +13,7 @@
 
    $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 */
+
 #ifndef THREADWEAVER_JOB_H
 #define THREADWEAVER_JOB_H
 
@@ -66,19 +67,19 @@ namespace ThreadWeaver {
             implementation, overload run(). */
         virtual void execute(Thread*);
 
-      /** The queueing priority of the job. 
+      /** The queueing priority of the job.
 	  Jobs will be sorted by their queueing priority when
 	  enqueued. A higher queueing priority will place the job in
-	  front of all lower-priority jobs in the queue. 
+	  front of all lower-priority jobs in the queue.
 
 	  Note: A higher or lower priority does not influence queue
 	  policies. For example, a high-priority job that has an
 	  unresolved dependency will not be executed, which means an
-	  available lower-priority job will take precedence. 
+	  available lower-priority job will take precedence.
 
 	  The default implementation returns zero. Only if this method
 	  is overloaded for some job classes, priorities will
-	  influence the execution order of jobs. 
+	  influence the execution order of jobs.
       */
       virtual int priority() const;
 

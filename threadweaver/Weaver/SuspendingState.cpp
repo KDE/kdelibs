@@ -29,30 +29,30 @@ void SuspendingState::suspend()
 
 void SuspendingState::resume()
 {
-    m_weaver->setState ( WorkingHard );
+    weaver()->setState ( WorkingHard );
 }
 
 void SuspendingState::activated()
 {
-    if ( m_weaver->activeThreadCount() == 0 )
+    if ( weaver()->activeThreadCount() == 0 )
     {
-        m_weaver->setState( Suspended );
+        weaver()->setState( Suspended );
     }
 }
 
 Job* SuspendingState::applyForWork ( Thread *th,  Job* previous )
 {
-    if ( m_weaver->activeThreadCount() == 0 )
+    if ( weaver()->activeThreadCount() == 0 )
     {
-        m_weaver->setState ( Suspended );
+        weaver()->setState ( Suspended );
     }
-    m_weaver->waitForAvailableJob ( th );
-    return m_weaver->applyForWork ( th,  previous );
+    weaver()->waitForAvailableJob ( th );
+    return weaver()->applyForWork ( th,  previous );
 }
 
 void SuspendingState::waitForAvailableJob ( Thread *th )
 {
-    m_weaver->blockThreadUntilJobsAreBeingAssigned( th );
+    weaver()->blockThreadUntilJobsAreBeingAssigned( th );
 }
 
 StateId SuspendingState::stateId() const

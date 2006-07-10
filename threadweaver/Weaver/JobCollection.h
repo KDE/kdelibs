@@ -1,3 +1,19 @@
+/* -*- C++ -*-
+
+   This file declares the JobCollection class.
+
+   $ Author: Mirko Boehm $
+   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+   $ Contact: mirko@kde.org
+         http://www.kde.org
+         http://www.hackerbuero.org $
+   $ License: LGPL with the following explicit clarification:
+         This code may be linked against any version of the Qt toolkit
+         from Trolltech, Norway. $
+
+   $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
+*/
+
 #ifndef JOBCOLLECTION_H
 #define JOBCOLLECTION_H
 
@@ -64,6 +80,8 @@ namespace ThreadWeaver {
 	void finalCleanup();
 
     private:
+        // FIXME pimpl
+
         /** Overload the execute method. */
         void execute ( Thread * );
 
@@ -89,9 +107,9 @@ namespace ThreadWeaver {
         /** The Weaver interface this collection is queued in. */
         WeaverInterface *m_weaver;
 
-	/** Counter for the finished jobs. 
-	    Set to the number of elements when started. 
-	    When zero, all elements are done. 
+	/** Counter for the finished jobs.
+	    Set to the number of elements when started.
+	    When zero, all elements are done.
 	*/
 	int m_jobCounter;
     };

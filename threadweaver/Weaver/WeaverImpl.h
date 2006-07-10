@@ -16,10 +16,6 @@
 #ifndef WeaverImpl_H
 #define WeaverImpl_H
 
-// #ifndef THREADWEAVER_H
-// #error WeaverImpl.h is not supposed to be included directly, use ThreadWeaver.h!
-// #endif
-
 #include <QObject>
 #include <QWaitCondition>
 

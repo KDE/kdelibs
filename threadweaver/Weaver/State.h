@@ -3,7 +3,7 @@
    This file implements the state handling in ThreadWeaver.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -23,7 +23,7 @@ namespace ThreadWeaver {
 
     class Job;
     class Thread;
-    class WeaverImpl;
+    class WeaverInterface;
 
     /** All weaver objects maintain a state of operation which can be
         queried by the application. See the threadweaver documentation on
@@ -54,8 +54,6 @@ namespace ThreadWeaver {
         NoOfStates
     };
 
-    extern const QString StateNames[];
-
     /** We use a State pattern to handle the system state in ThreadWeaver.
      */
     class State
@@ -63,7 +61,7 @@ namespace ThreadWeaver {
     public:
         /** Default constructor. */
         // FIXME remove second param
-        explicit State( WeaverImpl *weaver );
+        explicit State( WeaverInterface *weaver );
 
 	/** Destructor. */
         virtual ~State();
@@ -88,9 +86,13 @@ namespace ThreadWeaver {
         /** The state has been changed so that this object is responsible for
          * state handling. */
         virtual void activated();
+
     protected:
-        /** The Weaver we relate to. */
-        WeaverImpl *m_weaver;
+        /** The Weaver interface this state handles. */
+        WeaverInterface* weaver();
+
+        class Private;
+        Private *d;
     };
 }
 

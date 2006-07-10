@@ -29,12 +29,12 @@ using namespace ThreadWeaver;
 
 void WorkingHardState::activated()
 {
-    m_weaver->assignJobs();
+    weaver()->assignJobs();
 }
 
 void WorkingHardState::suspend()
 {
-    m_weaver->setState ( Suspending );
+    weaver()->setState ( Suspending );
 }
 
 void WorkingHardState::resume()
@@ -45,27 +45,27 @@ Job* WorkingHardState::applyForWork ( Thread *th,  Job* )
 {   // beware: this code is executed in the applying thread!
     debug ( 2, "WorkingHardState::applyForWork: thread %i applies for work "
             "in %s state.\n", th->id(),
-            qPrintable ( m_weaver->state().stateName() ) );
+            qPrintable ( weaver()->state().stateName() ) );
 
-    Job *next = m_weaver->takeFirstAvailableJob();
+    Job *next = weaver()->takeFirstAvailableJob();
 
     if ( next )
     {
-        m_weaver->incActiveThreadCount();
+        weaver()->incActiveThreadCount();
         return next;
     } else {
         debug ( 2, "WorkingHardState::applyForWork: no work for thread %i, "
                 "blocking it.\n", th->id() );
-        m_weaver->waitForAvailableJob( th );
+        weaver()->waitForAvailableJob( th );
         // this is no infinite recursion: the state may have changed
         // meanwhile, or jobs may have come available:
-        return m_weaver->applyForWork( th,  0 );
+        return weaver()->applyForWork( th,  0 );
     }
 }
 
 void WorkingHardState::waitForAvailableJob ( Thread *th )
 {
-    m_weaver->blockThreadUntilJobsAreBeingAssigned ( th );
+    weaver()->blockThreadUntilJobsAreBeingAssigned ( th );
 }
 
 StateId WorkingHardState::stateId() const

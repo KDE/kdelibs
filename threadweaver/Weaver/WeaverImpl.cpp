@@ -134,16 +134,6 @@ void WeaverImpl::registerObserver ( WeaverObserver *ext )
 	    ext,  SIGNAL ( threadExited ( Thread* ) ) );
 }
 
-// void WeaverImpl::lock()
-// {
-//   m_mutex->lock();
-// }
-
-// void WeaverImpl::unlock()
-// {
-//   m_mutex->unlock();
-// }
-
 int WeaverImpl::numberOfThreads () const
 {
   QMutexLocker l (m_mutex);

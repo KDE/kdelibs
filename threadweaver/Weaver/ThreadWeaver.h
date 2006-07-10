@@ -74,7 +74,9 @@ namespace ThreadWeaver {
 	int queueLength () const;
 	int numberOfThreads () const;
         void requestAbort();
+
     protected:
+        // FIXME pimpl
         WeaverInterface *m_weaverinterface;
         /** The factory method to create the actual Weaver implementation.
             Overload this method to use a different or adapted implementation.

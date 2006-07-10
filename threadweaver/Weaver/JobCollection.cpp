@@ -1,3 +1,19 @@
+/* -*- C++ -*-
+
+   This file implements the JobCollection class.
+
+   $ Author: Mirko Boehm $
+   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+   $ Contact: mirko@kde.org
+         http://www.kde.org
+         http://www.hackerbuero.org $
+   $ License: LGPL with the following explicit clarification:
+         This code may be linked against any version of the Qt toolkit
+         from Trolltech, Norway. $
+
+   $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
+*/
+
 #include <WeaverInterface.h>
 #include <DebuggingAids.h>
 
@@ -242,10 +258,11 @@ void JobCollection::dequeueElements()
 	{
             if ( m_elements->at( index ) && ! m_elements->at( index )->isFinished() ) // ... a QPointer
 	    {
-                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n", m_elements->at( index ) );
+                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
+                       m_elements->at( index ) );
                 m_weaver->dequeue ( m_elements->at( index ) );
 	    } else {
-                debug( 5, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+                debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
                        m_elements->at( index ) );
 	    }
 	}
