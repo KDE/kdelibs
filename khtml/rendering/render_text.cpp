@@ -567,7 +567,7 @@ void RenderText::setStyle(RenderStyle *_style)
         RenderObject::setStyle( _style );
         m_lineHeight = RenderObject::lineHeight(false);
 
-        if (changedText) {
+        if (!isBR() && changedText) {
             DOM::DOMStringImpl* textToTransform = originalString();
             if (textToTransform)
                 setText(textToTransform, true);
