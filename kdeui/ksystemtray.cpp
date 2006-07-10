@@ -46,76 +46,59 @@
 class KSystemTrayPrivate
 {
 public:
-    KSystemTrayPrivate(KSystemTray* trayIcon, QWidget* parent)
+    KSystemTrayPrivate()
     {
-        actionCollection = new KActionCollection( trayIcon );
-        hasQuit = false;
-        onAllDesktops = false;
-        menu = new KMenu;
-        window = parent;
+        actionCollection = 0;
     }
 
     ~KSystemTrayPrivate()
     {
         delete actionCollection;
-        delete menu;
     }
 
     KActionCollection* actionCollection;
-    KMenu* menu;
-    QWidget* window;
-    bool onAllDesktops; // valid only when the parent widget was hidden
-    bool hasQuit;
+    bool on_all_desktops; // valid only when the parent widget was hidden
 };
 
 KSystemTray::KSystemTray( QWidget* parent )
-    : QSystemTrayIcon( parent )
+    : QLabel( parent, Qt::Window )
 {
-    init( parent );
-}
+#ifdef Q_WS_X11
+    #warning KDE4 porting: reinstate when the new QXEmbed is ready
+    //QXEmbed::initialize();
+#endif
 
-KSystemTray::KSystemTray( const QString& icon, QWidget* parent )
-    : QSystemTrayIcon( loadIcon( icon ), parent )
-{
-    init( parent );
-}
+    d = new KSystemTrayPrivate;
+    d->actionCollection = new KActionCollection(this);
 
-KSystemTray::KSystemTray( const QIcon& icon, QWidget* parent )
-    : QSystemTrayIcon( icon, parent )
-{
-    init( parent );
-}
+#ifdef Q_WS_X11
+    KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): QX11Info::appRootWindow() );
+#endif
+    setBackgroundRole(QPalette::NoRole);
+    setForegroundRole(QPalette::NoRole);
+    hasQuit = 0;
+    menu = new KMenu( this );
+    menu->addTitle( qApp->windowIcon(), KInstance::caption() );
+    move( -1000, -1000 );
+    KStdAction::quit(this, SLOT(maybeQuit()), d->actionCollection);
 
-void KSystemTray::init( QWidget* parent )
-{
-    d = new KSystemTrayPrivate( this, parent );
-
-    d->menu = new KMenu( parent );
-    d->menu->addTitle( qApp->windowIcon(), KInstance::caption() );
-    d->menu->setTitle( KGlobal::instance()->aboutData()->programName() );
-    connect( d->menu, SIGNAL( aboutToShow() ), this, SLOT( contextMenuAboutToShow() ) );
-    setContextMenu( d->menu );
-
-    KStdAction::quit( this, SLOT( maybeQuit() ), d->actionCollection );
-
-    if ( parent )
+    if (parentWidget())
     {
-        KAction *action = new KAction( i18n( "Minimize" ), d->actionCollection, "minimizeRestore");
+        KAction *action = new KAction(i18n("Minimize"), d->actionCollection, "minimizeRestore");
         connect( action, SIGNAL( triggered( bool ) ), this, SLOT( minimizeRestoreAction() ) );
 
 #ifdef Q_WS_X11
-        KWin::WindowInfo info = KWin::windowInfo( parent->winId() );
-        d->onAllDesktops = info.onAllDesktops();
+	KWin::WindowInfo info = KWin::windowInfo( parentWidget()->winId());
+	d->on_all_desktops = info.onAllDesktops();
 #else
-        d->onAllDesktops = false;
+	d->on_all_desktops = false;
 #endif
     }
     else
     {
-        d->onAllDesktops = false;
+        d->on_all_desktops = false;
     }
-
-    connect( this, SIGNAL( activated( int ) ), this, SLOT( activateOrHide( int ) ) );
+    setWindowTitle( KGlobal::instance()->aboutData()->programName());
 }
 
 KSystemTray::~KSystemTray()
@@ -123,42 +106,71 @@ KSystemTray::~KSystemTray()
     delete d;
 }
 
-void KSystemTray::contextMenuAboutToShow( )
+
+void KSystemTray::showEvent( QShowEvent * )
 {
-    if ( !d->hasQuit )
-    {
-        // we need to add the actions to the menu afterwards so that these items
-        // appear at the _END_ of the menu
-        d->menu->addSeparator();
-        KAction* action = d->actionCollection->action( "minimizeRestore" );
-
-        if ( action )
-        {
-            d->menu->addAction( action );
-        }
-
-        action = d->actionCollection->action( KStdAction::name( KStdAction::Quit ) );
-
-        if ( action )
-        {
-            d->menu->addAction( action );
-        }
-
-        d->hasQuit = true;
-    }
-
-    if ( d->window )
-    {
+    if ( !hasQuit ) {
+        menu->addSeparator();
         KAction* action = d->actionCollection->action("minimizeRestore");
-        if ( d->window->isVisible() )
+
+        if (action)
         {
-            action->setText( i18n("&Minimize") );
+            menu->addAction(action);
         }
-        else
+
+        action = d->actionCollection->action(KStdAction::name(KStdAction::Quit));
+
+        if (action)
         {
-            action->setText( i18n("&Restore") );
+            menu->addAction(action);
         }
+
+	hasQuit = 1;
     }
+}
+
+
+KMenu* KSystemTray::contextMenu() const
+{
+    return menu;
+}
+
+
+void KSystemTray::mousePressEvent( QMouseEvent *e )
+{
+    if ( !rect().contains( e->pos() ) )
+	return;
+
+    switch ( e->button() ) {
+    case Qt::LeftButton:
+        toggleActive();
+	break;
+    case Qt::MidButton:
+	// fall through
+    case Qt::RightButton:
+	if ( parentWidget() ) {
+            KAction* action = d->actionCollection->action("minimizeRestore");
+	    if ( parentWidget()->isVisible() )
+		action->setText( i18n("&Minimize") );
+	    else
+		action->setText( i18n("&Restore") );
+	}
+	contextMenuAboutToShow( menu );
+	menu->exec( e->globalPos() );
+	break;
+    default:
+	// nothing
+	break;
+    }
+}
+
+void KSystemTray::mouseReleaseEvent( QMouseEvent * )
+{
+}
+
+
+void KSystemTray::contextMenuAboutToShow( KMenu* )
+{
 }
 
 // called from the popup menu - always do what the menu entry says,
@@ -166,10 +178,9 @@ void KSystemTray::contextMenuAboutToShow( )
 // entry is "minimize", otherwise it's "restore"
 void KSystemTray::minimizeRestoreAction()
 {
-    if ( d->window )
-    {
-        bool restore = !( d->window->isVisible() );
-        minimizeRestore( restore );
+    if ( parentWidget() ) {
+        bool restore = !( parentWidget()->isVisible() );
+	minimizeRestore( restore );
     }
 }
 
@@ -178,7 +189,7 @@ void KSystemTray::maybeQuit()
     QString caption = KInstance::caption();
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>",
                          caption);
-    if (KMessageBox::warningContinueCancel(d->window, query,
+    if (KMessageBox::warningContinueCancel(this, query,
                                      i18n("Confirm Quit From System Tray"),
                                      KStdGuiItem::quit(),
                                      QString("systemtrayquit%1")
@@ -192,20 +203,30 @@ void KSystemTray::maybeQuit()
     qApp->quit();
 }
 
+void KSystemTray::toggleActive()
+{
+    activateOrHide();
+}
+
+void KSystemTray::setActive()
+{
+    minimizeRestore( true );
+}
+
+void KSystemTray::setInactive()
+{
+    minimizeRestore( false );
+}
+
+// called when left-clicking the tray icon
 // if the window is not the active one, show it if needed, and activate it
 // (just like taskbar); otherwise hide it
-void KSystemTray::activateOrHide( int reasonCalled )
+void KSystemTray::activateOrHide()
 {
-    if ( reasonCalled != QSystemTrayIcon::Trigger )
-    {
-        return;
-    }
+    QWidget *pw = parentWidget();
 
-    QWidget *pw = d->window;
     if ( !pw )
-    {
-        return;
-    }
+	return;
 
 #ifdef Q_WS_X11
     KWin::WindowInfo info1 = KWin::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
@@ -251,14 +272,14 @@ void KSystemTray::activateOrHide( int reasonCalled )
 
 void KSystemTray::minimizeRestore( bool restore )
 {
-    QWidget* pw = d->window;
+    QWidget* pw = parentWidget();
     if( !pw )
 	return;
 #ifdef Q_WS_X11
     KWin::WindowInfo info = KWin::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
     if ( restore )
     {
-	if( d->onAllDesktops )
+	if( d->on_all_desktops )
 	    KWin::setOnAllDesktops( pw->winId(), true );
 	else
 	    KWin::setCurrentDesktop( info.desktop() );
@@ -267,7 +288,7 @@ void KSystemTray::minimizeRestore( bool restore )
         pw->raise();
 	KWin::activateWindow( pw->winId() );
     } else {
-	d->onAllDesktops = info.onAllDesktops();
+	d->on_all_desktops = info.onAllDesktops();
 	pw->hide();
     }
 #endif
@@ -285,5 +306,18 @@ QPixmap KSystemTray::loadIcon( const QString &icon, KInstance *instance )
     return instance->iconLoader()->loadIcon( icon, K3Icon::Panel, iconWidth );
 }
 
-#include "ksystemtray.moc"
+void KSystemTray::setPixmap( const QPixmap& p )
+{
+    QLabel::setPixmap( p );
+#ifdef Q_WS_X11
+    KWin::setIcons( winId(), p, QPixmap());
+#endif
+}
 
+void KSystemTray::setWindowTitle( const QString& s )
+{
+    QLabel::setWindowTitle( s );
+}
+
+
+#include "ksystemtray.moc"
