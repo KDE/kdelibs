@@ -156,6 +156,7 @@ set(kdeui_LIB_SRCS
  widgets/ktextedit.cpp
  widgets/ktimezonewidget.cpp
  widgets/kvbox.cpp
+ widgets/kxyselector.cpp
 )
 
 if (Q_WS_X11)

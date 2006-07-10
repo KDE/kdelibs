@@ -27,4 +27,5 @@ install( FILES
  kbuttongroup.h
  kselector.h
  kcolorvalueselector.h
+ kxyselector.h
  DESTINATION ${INCLUDE_INSTALL_DIR})

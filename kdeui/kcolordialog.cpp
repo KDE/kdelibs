@@ -57,16 +57,15 @@
 #include <kmessagebox.h>
 #include <kseparator.h>
 #include <kpalette.h>
-#include <kimageeffect.h>
 
 #include "kcolordialog.h"
 #include "kcolormimedata.h"
-#include "kstaticdeleter.h"
 #include <config.h>
 #include <kdebug.h>
 
 #include "kselector.h"
 #include "kcolorvalueselector.h"
+#include "kxyselector.h"
 
 #include "config.h"
 #ifdef Q_WS_X11
@@ -116,8 +115,6 @@ public:
 
 };
 
-
-#define STANDARD_PAL_SIZE 17
 
 KColor::KColor()
 : QColor()
@@ -180,117 +177,6 @@ KColor::hsv(int *_h, int *_s, int *_v) const
 {
     *_h = h; *_s = s; *_v = v;
 }
-
-
-static QVector<QColor> *s_standardPalette = 0;
-static KStaticDeleter<QVector<QColor> > spd;
-
-// Shared with KColorValueSelector
-KDEUI_EXPORT QVector<QColor> kdeui_standardPalette()
-{
-    if ( !s_standardPalette ) {
-        spd.setObject(s_standardPalette, new QVector<QColor>);
-
-        int i = 0;
-        s_standardPalette->resize( STANDARD_PAL_SIZE );
-
-        (*s_standardPalette)[i++] = Qt::red;
-        (*s_standardPalette)[i++] = Qt::green;
-        (*s_standardPalette)[i++] = Qt::blue;
-        (*s_standardPalette)[i++] = Qt::cyan;
-        (*s_standardPalette)[i++] = Qt::magenta;
-        (*s_standardPalette)[i++] = Qt::yellow;
-        (*s_standardPalette)[i++] = Qt::darkRed;
-        (*s_standardPalette)[i++] = Qt::darkGreen;
-        (*s_standardPalette)[i++] = Qt::darkBlue;
-        (*s_standardPalette)[i++] = Qt::darkCyan;
-        (*s_standardPalette)[i++] = Qt::darkMagenta;
-        (*s_standardPalette)[i++] = Qt::darkYellow;
-        (*s_standardPalette)[i++] = Qt::white;
-        (*s_standardPalette)[i++] = Qt::lightGray;
-        (*s_standardPalette)[i++] = Qt::gray;
-        (*s_standardPalette)[i++] = Qt::darkGray;
-        (*s_standardPalette)[i++] = Qt::black;
-    }
-    return *s_standardPalette;
-}
-
-class KHSSelector : public KXYSelector
-{
-public:
-  /**
-   * Constructs a hue/saturation selection widget.
-   */
-  KHSSelector( QWidget *parent=0);
-
-protected:
-  /**
-   * Draws the contents of the widget on a pixmap,
-   * which is used for buffering.
-   */
-  virtual void drawPalette( QPixmap *pixmap );
-  virtual void resizeEvent( QResizeEvent * );
-
-  /**
-   * Reimplemented from KXYSelector. This drawing is
-   * buffered in a pixmap here. As real drawing
-   * routine, drawPalette() is used.
-   */
-  virtual void drawContents( QPainter *painter );
-
-private:
-  void updateContents();
-  QPixmap pixmap;
-};
-
-KHSSelector::KHSSelector( QWidget *parent )
-	: KXYSelector( parent )
-{
-	setRange( 0, 0, 359, 255 );
-}
-
-void KHSSelector::updateContents()
-{
-	drawPalette(&pixmap);
-}
-
-void KHSSelector::resizeEvent( QResizeEvent * )
-{
-	updateContents();
-}
-
-void KHSSelector::drawContents( QPainter *painter )
-{
-	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
-}
-
-void KHSSelector::drawPalette( QPixmap *pixmap )
-{
-	int xSize = contentsRect().width(), ySize = contentsRect().height();
-	QImage image( QSize(xSize, ySize), QImage::Format_RGB32 );
-	QColor col;
-	int h, s;
-	uint *p;
-
-	for ( s = ySize-1; s >= 0; s-- )
-	{
-		p = (uint *) image.scanLine( ySize - s - 1 );
-		for( h = 0; h < xSize; h++ )
-		{
-			col.setHsv( 359*h/(xSize-1), 255*s/((ySize == 1) ? 1 : ySize-1), 192 );
-			*p = col.rgb();
-			p++;
-		}
-	}
-
-	if ( pixmap->depth() <= 8 )
-	{
-                const QVector<QColor> standardPalette = kdeui_standardPalette();
-		KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
-	}
-	*pixmap=QPixmap::fromImage( image );
-}
-
 
 //-----------------------------------------------------------------------------
 
@@ -877,7 +763,7 @@ public:
     KColorSpinBox *gedit;
     KColorSpinBox *bedit;
     KColorPatch *patch;
-    KHSSelector *hsSelector;
+    KHueSaturationSelector *hsSelector;
     KPalette *palette;
     KColorValueSelector *valuePal;
     QVBoxLayout* l_right;
@@ -967,7 +853,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   //
   // the palette and value selector go into the H-box
   //
-  d->hsSelector = new KHSSelector( page );
+  d->hsSelector = new KHueSaturationSelector( page );
   d->hsSelector->setMinimumSize(140, 70);
   l_ltop->addWidget(d->hsSelector, 8);
   connect( d->hsSelector, SIGNAL( valueChanged( int, int ) ),
