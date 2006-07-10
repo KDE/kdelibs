@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
-             (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
+             (c) 2002,2003 Maksim Orlovich <maksim@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -246,49 +246,54 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 
 QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& color,  const QColor& bg, bool disabled, bool blend )
 {
-	KeramikCacheEntry entry(name, color, bg, disabled, blend, width, height);
-	KeramikCacheEntry* cacheEntry;
+    KeramikCacheEntry entry(name, color, bg, disabled, blend, width, height);
+    KeramikCacheEntry* cacheEntry;
 
-	int key = entry.key();
+    int key = entry.key();
 
-	if ((cacheEntry = m_pixmapCache.take(key)))
-	{
-		if (entry == *cacheEntry) //True match!
-			return *cacheEntry->m_pixmap;
-	}
+    if ((cacheEntry = m_pixmapCache.take(key)))
+    {
+        if (entry == *cacheEntry) //True match!
+            return *cacheEntry->m_pixmap;
+    }
 
 
-	QImage* img = 0;
-	QPixmap* result = 0;
+    QImage* img = 0;
+    QPixmap* result = 0;
 
-	if (disabled)
-		img = getDisabled(name, color, bg, blend);
-	else
-		img = getColored(name, color, bg, blend);
+    if (disabled)
+        img = getDisabled(name, color, bg, blend);
+    else
+        img = getColored(name, color, bg, blend);
 
-	if (!img)
-	{
-		KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
-		toAdd->m_pixmap = new QPixmap();
-		m_pixmapCache.insert(key, toAdd, 16);
-		return QPixmap();
-	}
+    if (!img)
+    {
+        KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
+        toAdd->m_pixmap = new QPixmap();
+        m_pixmapCache.insert(key, toAdd, 16);
+        return QPixmap();
+    }
 
-	if (width == 0 && height == 0)
-		result = new QPixmap(QPixmap::fromImage(*img));
-	else
-		result = new QPixmap(QPixmap::fromImage(img->scaled(width  ? width  : img->width(),
-										 height ? height : img->height())));//,
-										//Qt::IgnoreAspectRatio,
-										//Qt::SmoothTransformation));
+    if (width == 0 && height == 0)
+        result = new QPixmap(QPixmap::fromImage(*img));
+    else
+        result = new QPixmap(QPixmap::fromImage(img->scaled(width  ? width  : img->width(),
+                        height ? height : img->height())));//,
+    //Qt::IgnoreAspectRatio,
+    //Qt::SmoothTransformation));
 
-	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
-	toAdd->m_pixmap = result;
+    KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
+    toAdd->m_pixmap = result;
+    delete img;
 
-	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
+    if (!m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8)) {
 
-	delete img;
-	return *result;
+        QPixmap toRet = *result;
+        delete toAdd;
+        return toRet;
+    }
+
+    return *result;
 }
 
 QSize PixmapLoader::size( int id )
