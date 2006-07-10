@@ -238,6 +238,8 @@ class KateView : public Kate::View,
     void selectLine(   const KateTextCursor& cursor );
     void selectLength( const KateTextCursor& cursor, int length );
 
+    // this method will sync the KateViewInternal's sel{Start,End}Cached and selectAnchor
+    // with the current selection, to make it "stick" instead of reverting back to sel*Cached
     void syncSelectionCache();
 
   //

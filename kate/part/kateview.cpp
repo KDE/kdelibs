@@ -1377,6 +1377,7 @@ void KateView::syncSelectionCache()
 {
   m_viewInternal->selStartCached = selectStart;
   m_viewInternal->selEndCached = selectEnd;
+  m_viewInternal->selectAnchor = selectEnd;
 }
 
 bool KateView::clearSelection()
