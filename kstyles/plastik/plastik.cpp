@@ -1562,7 +1562,7 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             {
                 case ToolButton::Panel:
                 {
-                    if (flags&State_Enabled)
+//                     if (flags&State_Enabled)
                         renderButton(p, r, pal, flags&State_Sunken||flags&State_On);
 
                     return;
