@@ -4,7 +4,7 @@
 
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
    http://www.kde.org
    http://www.hackerbuero.org $
@@ -20,19 +20,19 @@
 #include <QMutex>
 #include <QtDebug>
 
-#include "ThreadWeaver.h"
-#include "WeaverObserver.h"
-#include "WeaverImpl.h"
-#include "Thread.h"
 #include "Job.h"
-#include "DebuggingAids.h"
 #include "State.h"
-#include "DestructedState.h"
-#include "InConstructionState.h"
-#include "ShuttingDownState.h"
+#include "Thread.h"
+#include "WeaverImpl.h"
+#include "ThreadWeaver.h"
+#include "DebuggingAids.h"
+#include "WeaverObserver.h"
 #include "SuspendedState.h"
 #include "SuspendingState.h"
+#include "DestructedState.h"
 #include "WorkingHardState.h"
+#include "ShuttingDownState.h"
+#include "InConstructionState.h"
 
 using namespace ThreadWeaver;
 
@@ -134,15 +134,15 @@ void WeaverImpl::registerObserver ( WeaverObserver *ext )
 	    ext,  SIGNAL ( threadExited ( Thread* ) ) );
 }
 
-void WeaverImpl::lock()
-{
-  m_mutex->lock();
-}
+// void WeaverImpl::lock()
+// {
+//   m_mutex->lock();
+// }
 
-void WeaverImpl::unlock()
-{
-  m_mutex->unlock();
-}
+// void WeaverImpl::unlock()
+// {
+//   m_mutex->unlock();
+// }
 
 int WeaverImpl::numberOfThreads () const
 {

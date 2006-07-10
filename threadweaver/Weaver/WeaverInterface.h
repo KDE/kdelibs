@@ -3,7 +3,7 @@
    This file declares the WeaverInterface class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -18,7 +18,6 @@
 #define WeaverInterface_H
 
 #include <QObject>
-// #include <QList>
 
 #include "State.h"
 

@@ -3,7 +3,7 @@
    This file implements the public interfaces of the WeaverImpl class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -94,7 +94,7 @@ namespace ThreadWeaver {
 	int numberOfThreads () const;
         void requestAbort();
 
-        /** Dump the current jobs to the console. */
+        /** Dump the current jobs to the console. Not part of the API. */
         void dumpJobs();
 
     signals:
@@ -131,9 +131,9 @@ namespace ThreadWeaver {
 	/** Lock the mutex for this weaver. The threads in the
 	    inventory need to lock the weaver's mutex to synchronize
 	    the job management. */
-	void lock ();
-	/** Unlock. See lock(). */
-	void unlock ();
+// 	void lock ();
+// 	/** Unlock. See lock(). */
+// 	void unlock ();
         /** The thread inventory. */
         QList<Thread*> m_inventory;
         /** The job queue. */

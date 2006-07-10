@@ -3,7 +3,7 @@
    This file declares the WeaverObserver class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -21,9 +21,9 @@
 
 namespace ThreadWeaver {
 
-    class Thread;
     class Job;
     class State;
+    class Thread;
 
     /** Observers provides signals on different weaver events that are
         otherwise only available through objects of different classes
