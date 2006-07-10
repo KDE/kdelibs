@@ -3,7 +3,7 @@
    This file implements the SuspendingState class.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005, 2006 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
          http://www.hackerbuero.org $
@@ -19,44 +19,43 @@
 #include "ThreadWeaver.h"
 #include "SuspendingState.h"
 
-namespace ThreadWeaver {
+using namespace ThreadWeaver;
 
-    void SuspendingState::suspend()
-    {
-        // this request is not handled in Suspending state (we are already
-        // suspending...)
-    }
+void SuspendingState::suspend()
+{
+    // this request is not handled in Suspending state (we are already
+    // suspending...)
+}
 
-    void SuspendingState::resume()
-    {
-        m_weaver->setState ( WorkingHard );
-    }
+void SuspendingState::resume()
+{
+    m_weaver->setState ( WorkingHard );
+}
 
-    void SuspendingState::activated()
+void SuspendingState::activated()
+{
+    if ( m_weaver->activeThreadCount() == 0 )
     {
-        if ( m_weaver->activeThreadCount() == 0 )
-        {
-            m_weaver->setState( Suspended );
-        }
+        m_weaver->setState( Suspended );
     }
+}
 
-    Job* SuspendingState::applyForWork ( Thread *th,  Job* previous )
+Job* SuspendingState::applyForWork ( Thread *th,  Job* previous )
+{
+    if ( m_weaver->activeThreadCount() == 0 )
     {
-        if ( m_weaver->activeThreadCount() == 0 )
-        {
-            m_weaver->setState ( Suspended );
-        }
-        m_weaver->waitForAvailableJob ( th );
-        return m_weaver->applyForWork ( th,  previous );
+        m_weaver->setState ( Suspended );
     }
+    m_weaver->waitForAvailableJob ( th );
+    return m_weaver->applyForWork ( th,  previous );
+}
 
-    void SuspendingState::waitForAvailableJob ( Thread *th )
-    {
-        m_weaver->blockThreadUntilJobsAreBeingAssigned( th );
-    }
+void SuspendingState::waitForAvailableJob ( Thread *th )
+{
+    m_weaver->blockThreadUntilJobsAreBeingAssigned( th );
+}
 
-    StateId SuspendingState::stateId() const
-    {
-        return Suspending;
-    }
+StateId SuspendingState::stateId() const
+{
+    return Suspending;
 }

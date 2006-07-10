@@ -25,127 +25,140 @@
 #include "Job.h"
 #include "DebuggingAids.h"
 
-namespace ThreadWeaver {
+using namespace ThreadWeaver;
 
-    class ThreadRunHelper : public QObject
+class Thread::Private
+{
+public:
+    explicit Private ( WeaverImpl* theParent )
+        : parent ( theParent )
+        , runhelper ( 0 )
+        , id ( makeId() )
+    {}
+
+    WeaverImpl *parent;
+
+    ThreadRunHelper* runhelper;
+
+    const unsigned int id;
+
+    static unsigned int makeId()
     {
-        Q_OBJECT
-    public:
-        explicit ThreadRunHelper ()
-            : QObject ( 0 )
-            , m_job( 0 )
-        {
-        }
-
-    signals: // see Thread:
-
-        /** The thread has been started. */
-        void started ( Thread* );
-        /** The thread started to process a job. */
-        void jobStarted ( Thread*,  Job* );
-        /** The thread finished to execute a job. */
-        void jobDone ( Job* );
-
-    private:
-        Job* m_job;
-
-    public:
-        void run ( WeaverImpl *parent, Thread* th )
-        {
-            Q_ASSERT ( thread() == th );
-            emit ( started ( th) );
-
-            while (true)
-            {
-                debug ( 3, "Thread::run [%u]: trying to execute the next job.\n", th->id() );
-
-                // this is the *only* assignment to m_job  in the Thread class!
-                Job* job = parent->applyForWork ( th, m_job );
-
-                if (job == 0)
-                {
-                    break;
-                } else {
-                    m_job = job;
-                    emit ( jobStarted ( th,  m_job ) );
-                    m_job->execute (th);
-                    emit ( jobDone ( m_job ) );
-                }
-            }
-        }
-
-        void requestAbort()
-        {
-            Job* job = m_job;
-            if ( job )
-            {
-                job->requestAbort();
-            }
-        }
-    };
-
-    unsigned int Thread::sm_Id;
-    QMutex Thread::sm_mutex;
-
-    Thread::Thread (WeaverImpl *parent)
-        : QThread ()
-        , m_parent ( parent )
-        , m_runhelper ( 0 )
-        , m_id ( makeId() )
-    {
-    }
-
-    Thread::~Thread()
-    {
-    }
-
-    unsigned int Thread::makeId()
-    {
+        static unsigned int s_id;
+        static QMutex sm_mutex;
         QMutexLocker l (&sm_mutex);
-        return ++sm_Id;
+        return ++s_id;
+    }
+};
+
+
+class ThreadWeaver::ThreadRunHelper : public QObject
+{
+    Q_OBJECT
+public:
+    explicit ThreadRunHelper ()
+        : QObject ( 0 )
+        , m_job( 0 )
+    {
     }
 
-    const unsigned int Thread::id()
+signals: // see Thread:
+
+    /** The thread has been started. */
+    void started ( Thread* );
+    /** The thread started to process a job. */
+    void jobStarted ( Thread*,  Job* );
+    /** The thread finished to execute a job. */
+    void jobDone ( Job* );
+
+private:
+    Job* m_job;
+
+public:
+    void run ( WeaverImpl *parent, Thread* th )
     {
-        return m_id;
-    }
+        Q_ASSERT ( thread() == th );
+        emit ( started ( th) );
 
-    void Thread::run()
-    {
-        Q_ASSERT ( thread() != this ); // this is created and owned by the main thread
-        debug ( 3, "Thread::run [%u]: running.\n", id() );
-
-        ThreadRunHelper helper;
-        m_runhelper = &helper;
-
-        connect ( &helper, SIGNAL ( started ( Thread* ) ),
-                  SIGNAL ( started ( Thread* ) ) );
-        connect ( &helper, SIGNAL ( jobStarted ( Thread*, Job* ) ),
-                  SIGNAL ( jobStarted ( Thread*, Job* ) ) );
-        connect ( &helper, SIGNAL ( jobDone ( Job* ) ),
-                  SIGNAL ( jobDone ( Job* ) ) );
-        helper.run( m_parent,  this );
-
-        m_runhelper = 0;
-        debug ( 3, "Thread::run [%u]: exiting.\n", id() );
-    }
-
-    void Thread::msleep(unsigned long msec)
-    {
-        QThread::msleep(msec);
-    }
-
-
-    void Thread::requestAbort ()
-    {
-        if ( m_runhelper )
+        while (true)
         {
-            m_runhelper->requestAbort();
-        } else {
-            qDebug ( "Thread::requestAbort: not running." );
+            debug ( 3, "Thread::run [%u]: trying to execute the next job.\n", th->id() );
+
+            // this is the *only* assignment to m_job  in the Thread class!
+            Job* job = parent->applyForWork ( th, m_job );
+
+            if (job == 0)
+            {
+                break;
+            } else {
+                m_job = job;
+                emit ( jobStarted ( th,  m_job ) );
+                m_job->execute (th);
+                emit ( jobDone ( m_job ) );
+            }
         }
     }
 
+    void requestAbort()
+    {
+        Job* job = m_job;
+        if ( job )
+        {
+            job->requestAbort();
+        }
+    }
+};
+
+Thread::Thread (WeaverImpl *parent)
+    : QThread ()
+    , d ( new Private ( parent ) )
+{
+}
+
+Thread::~Thread()
+{
+    delete d; d = 0;
+}
+
+const unsigned int Thread::id()
+{
+    return d->id;
+}
+
+void Thread::run()
+{
+    Q_ASSERT ( thread() != this ); // this is created and owned by the main thread
+    debug ( 3, "Thread::run [%u]: running.\n", id() );
+
+    ThreadRunHelper helper;
+    d->runhelper = &helper;
+
+    connect ( &helper, SIGNAL ( started ( Thread* ) ),
+              SIGNAL ( started ( Thread* ) ) );
+    connect ( &helper, SIGNAL ( jobStarted ( Thread*, Job* ) ),
+              SIGNAL ( jobStarted ( Thread*, Job* ) ) );
+    connect ( &helper, SIGNAL ( jobDone ( Job* ) ),
+              SIGNAL ( jobDone ( Job* ) ) );
+    helper.run( d->parent,  this );
+
+    d->runhelper = 0;
+    debug ( 3, "Thread::run [%u]: exiting.\n", id() );
+}
+
+void Thread::msleep(unsigned long msec)
+{
+    QThread::msleep(msec);
+}
+
+
+void Thread::requestAbort ()
+{
+    if ( d->runhelper )
+    {
+        d->runhelper->requestAbort();
+    } else {
+        qDebug ( "Thread::requestAbort: not running." );
+    }
 }
 
 #include "Thread.moc"
