@@ -1299,29 +1299,25 @@ protected:
   /**
    * Implemented by subclasses that use special defaults.
    * It should replace the default values with the actual
-   * values and vice versa.
+   * values and vice versa.  Called from @ref useDefaults()
+   * @param b If true this object reflects the default values.
+   * @return The state prior to this call
    */
-  virtual void usrUseDefaults(bool)
-  {
-  }
+  virtual bool usrUseDefaults(bool b);
 
-  virtual void usrSetDefaults()
-  {
-  }
+  virtual void usrSetDefaults();
 
   /**
    * Implemented by subclasses that read special config values.
+   * Called from @ref readConfig()
    */
-  virtual void usrReadConfig()
-  {
-  }
+  virtual void usrReadConfig();
 
   /**
    * Implemented by subclasses that write special config values.
+   * Called from @ref writeConfig()
    */
-  virtual void usrWriteConfig()
-  {
-  }
+  virtual void usrWriteConfig();
 
 private:
   QString mCurrentGroup;

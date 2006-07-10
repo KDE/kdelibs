@@ -810,6 +810,28 @@ void KConfigSkeleton::setSharedConfig(KSharedConfig::Ptr pConfig)
 
 bool KConfigSkeleton::useDefaults(bool b)
 {
+  return usrUseDefaults(b);
+}
+
+void KConfigSkeleton::setDefaults()
+{
+  usrSetDefaults();
+}
+
+void KConfigSkeleton::readConfig()
+{
+  kDebug(177) << "KConfigSkeleton::readConfig()" << endl;
+  usrReadConfig();
+}
+
+void KConfigSkeleton::writeConfig()
+{
+  kDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
+  usrWriteConfig();
+}
+
+bool KConfigSkeleton::usrUseDefaults(bool b)
+{
   if (b == mUseDefaults)
      return mUseDefaults;
 
@@ -819,25 +841,19 @@ bool KConfigSkeleton::useDefaults(bool b)
   {
     (*it)->swapDefault();
   }
-
-  usrUseDefaults(b);
   return !mUseDefaults;
 }
 
-void KConfigSkeleton::setDefaults()
+void KConfigSkeleton::usrSetDefaults()
 {
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = mItems.begin(); it != mItems.end(); ++it ) {
     (*it)->setDefault();
   }
-
-  usrSetDefaults();
 }
 
-void KConfigSkeleton::readConfig()
+void KConfigSkeleton::usrReadConfig()
 {
-  kDebug(177) << "KConfigSkeleton::readConfig()" << endl;
-
   QString origGroup = mConfig->group();
 
   mConfig->reparseConfiguration();
@@ -847,15 +863,11 @@ void KConfigSkeleton::readConfig()
     (*it)->readConfig( mConfig.data() );
   }
 
-  usrReadConfig();
-
   mConfig->setGroup(origGroup);
 }
 
-void KConfigSkeleton::writeConfig()
+void KConfigSkeleton::usrWriteConfig()
 {
-  kDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
-
   QString origGroup = mConfig->group();
 
   KConfigSkeletonItem::List::ConstIterator it;
@@ -863,8 +875,6 @@ void KConfigSkeleton::writeConfig()
   {
     (*it)->writeConfig( mConfig.data() );
   }
-
-  usrWriteConfig();
 
   mConfig->sync();
 
