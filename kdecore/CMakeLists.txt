@@ -14,9 +14,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 # hack for kacceleratormanager
 include_directories( ${CMAKE_SOURCE_DIR}/kdeui )
 
-# our own subdirs
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/network )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kservice )
+include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
