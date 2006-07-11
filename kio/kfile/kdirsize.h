@@ -95,8 +95,6 @@ private:
   KIO::filesize_t m_totalFiles;
   KIO::filesize_t m_totalSubdirs;
   KFileItemList m_lstItems;
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class KDirSize* d;
 };

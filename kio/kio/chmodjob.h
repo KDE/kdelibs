@@ -77,8 +77,6 @@ namespace KIO {
         bool m_recursive;
         KFileItemList m_lstItems;
         QLinkedList<ChmodInfo> m_infos; // linkedlist since we keep removing the first item
-    protected:
-	virtual void virtual_hook( int id, void* data );
     private:
 	class ChmodJobPrivate* d;
     };

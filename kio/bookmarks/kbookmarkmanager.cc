@@ -543,7 +543,7 @@ void KBookmarkManager::emitConfigChanged()
     emit bookmarkConfigChanged();
 }
 
-void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
+void KBookmarkManager::notifyCompleteChange( QString caller ) // DBUS call
 {
     if (!m_update) return;
 
@@ -556,14 +556,14 @@ void KBookmarkManager::notifyCompleteChange( QString caller ) // DCOP call
     emit changed( "", caller );
 }
 
-void KBookmarkManager::notifyConfigChanged() // DCOP call
+void KBookmarkManager::notifyConfigChanged() // DBUS call
 {
     kDebug() << "reloaded bookmark config!" << endl;
     KBookmarkSettings::self()->readSettings();
     parse(); // reload, and thusly recreate the menus
 }
 
-void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &msg ) // DCOP call
+void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &msg ) // DBUS call
 {
     if (!m_update) return;
 

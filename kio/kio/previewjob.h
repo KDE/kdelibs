@@ -121,8 +121,6 @@ namespace KIO {
         void emitPreview(const QImage &thumb);
         void emitFailed(const KFileItem *item = 0);
 
-    protected:
-	virtual void virtual_hook( int id, void* data );
     private:
         struct PreviewJobPrivate* const d;
     };
