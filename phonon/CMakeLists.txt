@@ -67,6 +67,7 @@ install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES
 	objectdescription.h
+	objectdescription_p.h
 	objectdescriptionmodel.h
 	phononnamespace.h
 	base.h
