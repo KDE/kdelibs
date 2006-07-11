@@ -377,7 +377,7 @@ QSize KDialog::minimumSizeHint() const
   // The button box
   //
   if ( d->mButtonBox ) {
-    s2 = d->mButtonBox->minimumSize();
+    s2 = d->mButtonBox->minimumSizeHint();
     if ( d->mButtonOrientation == Qt::Horizontal ) {
       s1.rwidth()   = qMax( s1.rwidth(), s2.rwidth() );
       s1.rheight() += s2.rheight();
