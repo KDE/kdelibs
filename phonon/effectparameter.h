@@ -46,8 +46,6 @@ namespace Ifaces
  */
 class PHONONCORE_EXPORT EffectParameter
 {
-	friend class EffectParameterPrivate;
-	friend class Phonon::Ifaces::Effect;
 	friend class AudioEffect;
 	friend class AudioEffectPrivate;
 	friend class VideoEffect;
@@ -170,8 +168,10 @@ class PHONONCORE_EXPORT EffectParameter
 		 */
 		bool operator>( const EffectParameter& rhs ) const;
 
-		/* default cctor, operator=, and ~EffectParameter
-		 * are sufficient */
+		/* cctor and operator= for forward decl of EffectParameterPrivate */
+		EffectParameter( const EffectParameter& rhs );
+		EffectParameter& operator=( const EffectParameter& rhs );
+		/* default ~EffectParameter is sufficient */
 
 		/**
 		 * Only for backend developers:
@@ -252,21 +252,6 @@ class PHONONCORE_EXPORT EffectParameter
 		 * The data is implicitly shared.
 		 */
 		QSharedDataPointer<EffectParameterPrivate> d;
-};
-
-#include <QSharedData>
-
-class EffectParameterPrivate : public QSharedData
-{
-	public:
-		Effect* effect;
-		int parameterId;
-		QVariant min;
-		QVariant max;
-		QVariant defaultValue;
-		QString name;
-		QString description;
-		EffectParameter::Hints hints;
 };
 
 } // namespace Phonon

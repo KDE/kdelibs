@@ -18,6 +18,7 @@
 */
 
 #include "effectparameter.h"
+#include "effectparameter_p.h"
 #include "effect.h"
 
 namespace Phonon
@@ -47,6 +48,17 @@ EffectParameter::EffectParameter( int parameterId, const QString& name, Hints hi
 	d->name = name;
 	d->description = description;
 	d->hints = hints;
+}
+
+EffectParameter::EffectParameter( const EffectParameter& rhs )
+	: d( rhs.d )
+{
+}
+
+EffectParameter& EffectParameter::operator=( const EffectParameter& rhs )
+{
+	d = rhs.d;
+	return *this;
 }
 
 void EffectParameter::setEffect( Effect* effect )
