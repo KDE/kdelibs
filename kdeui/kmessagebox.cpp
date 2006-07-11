@@ -155,13 +155,15 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
                              const QString &ask, bool *checkboxReturn, Options options,
                              const QString &details, QMessageBox::Icon notifyType)
 {
-    KVBox *topcontents = new KVBox (dialog);
-    topcontents->setSpacing(KDialog::spacingHint()*2);
-    topcontents->setMargin(KDialog::marginHint());
+    QWidget *topcontents = new QWidget (dialog);
+    QVBoxLayout* toplayout = new QVBoxLayout( topcontents );
+    toplayout->setSpacing( KDialog::spacingHint()*2 );
+    toplayout->setMargin( KDialog::marginHint() );
 
     QWidget *contents = new QWidget(topcontents);
     QHBoxLayout * lay = new QHBoxLayout(contents);
     lay->setSpacing(KDialog::spacingHint());
+    toplayout->addWidget(contents);
 
     QLabel *label1 = new QLabel( contents);
 
@@ -173,6 +175,11 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     // Enforce <p>text</p> otherwise the word-wrap doesn't work well
     QString qt_text = qrichtextify( text );
 
+    QLabel *label2 = new QLabel( qt_text, contents );
+    label2->setOpenExternalLinks(true);
+    label2->setTextInteractionFlags(Qt::TextInteractionFlags(label2->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
+    label2->setWordWrap(true);
+
     int pref_width = 0;
     int pref_height = 0;
     // Calculate a proper size for the text.
@@ -181,6 +188,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
        QRect d = KGlobalSettings::desktopGeometry(dialog);
 
        pref_width = d.width() / 3;
+       pref_height = label2->heightForWidth(pref_width);
+   
        rt.setWidth(pref_width);
        int used_width = rt.widthUsed();
        pref_height = rt.height();
@@ -214,10 +223,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
           else
              pref_width = used_width;
        }
-    }
-    QLabel *label2 = new QLabel( qt_text, contents );
-    label2->setOpenExternalLinks(true);
-    label2->setTextInteractionFlags(Qt::TextInteractionFlags(label2->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
+   }
 
     if (!(options & KMessageBox::AllowLink))
     {
@@ -226,6 +232,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     }
 
     label2->setFixedSize(QSize(pref_width, pref_height));
+
     lay->addWidget( label2 );
     lay->addStretch();
 
@@ -233,15 +240,17 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     if (!strlist.isEmpty())
     {
        listbox=new KListBox( topcontents );
+       toplayout->addWidget(listbox);
        listbox->insertStringList( strlist );
        listbox->setSelectionMode( Q3ListBox::NoSelection );
-       topcontents->setStretchFactor(listbox, 1);
+       toplayout->setStretchFactor(listbox, 1);
     }
 
     QPointer<QCheckBox> checkbox = 0;
     if (!ask.isEmpty())
     {
        checkbox = new QCheckBox(ask, topcontents);
+       toplayout->addWidget(checkbox);
        if (checkboxReturn)
          checkbox->setChecked(*checkboxReturn);
     }
@@ -270,7 +279,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
 
     dialog->setMainWidget(topcontents);
     dialog->showButtonSeparator(false);
-    if (!listbox)
+    if (!listbox && false)
         dialog->setFixedSize( dialog->sizeHint() );
 
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
