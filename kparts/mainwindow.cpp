@@ -85,7 +85,7 @@ void MainWindow::createGUI( Part * part )
 
   assert( factory );
 
-  setUpdatesEnabled( false );
+  //setUpdatesEnabled( false );
 
   if ( d->m_activePart )
   {
@@ -128,7 +128,7 @@ void MainWindow::createGUI( Part * part )
         applyMainWindowSettings( KGlobal::config(), autoSaveGroup() );
   }
 
-  setUpdatesEnabled( true );
+  //setUpdatesEnabled( true );
 
   d->m_activePart = part;
 }
