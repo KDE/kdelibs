@@ -1767,7 +1767,8 @@ void PlastikStyle::renderContour(QPainter *p,
     }
 
 // sides
-    p->setPen( alphaBlendColors(backgroundColor, contourColor, 50) );
+    contourColor.setAlphaF(0.8);
+    p->setPen( contourColor );
     if(drawLeft)
         p->drawLine(r.left(), drawTop?r.top()+2:r.top(), r.left(), drawBottom?r.bottom()-2:r.bottom());
     if(drawRight)
@@ -1778,10 +1779,7 @@ void PlastikStyle::renderContour(QPainter *p,
         p->drawLine(drawLeft?r.left()+2:r.left(), r.bottom(), drawRight?r.right()-2:r.right(), r.bottom());
 
 // edges
-    const int alphaAA = 110; // the alpha value for anti-aliasing...
-
     // first part...
-    p->setPen(alphaBlendColors(backgroundColor, contourColor, 50) );
     if(drawLeft && drawTop) {
         switch(flags&Round_UpperLeft) {
             case false:
@@ -1823,62 +1821,47 @@ void PlastikStyle::renderContour(QPainter *p,
         }
     }
 
-    // second part... fill edges in case we don't paint alpha-blended
-    p->setPen( backgroundColor );
-    if (!alphaBlend) {
-        if(flags&Round_UpperLeft && drawLeft && drawTop) {
-            p->drawPoint( r.x(), r.y() );
-        }
-        if(flags&Round_BottomLeft && drawLeft && drawBottom) {
-            p->drawPoint( r.x(), r.bottom() );
-        }
-        if(flags&Round_UpperRight && drawRight && drawTop) {
-            p->drawPoint( r.right(), r.y() );
-        }
-        if(flags&Round_BottomRight && drawRight && drawBottom) {
-            p->drawPoint( r.right(), r.bottom() );
-        }
-    }
-
     // third part... anti-aliasing...
+    contourColor.setAlphaF(0.4);
+    p->setPen( contourColor );
+
     if(drawLeft && drawTop) {
         switch(flags&Round_UpperLeft) {
             case false:
-                renderPixel(p,QPoint(r.left(),r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                break;
+                p->drawPoint(r.left(),r.top() );
             default:
-                renderPixel(p,QPoint(r.left()+1,r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.left(),r.top()+1),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.left()+1,r.top() );
+                p->drawPoint(r.left(),r.top()+1 );
         }
     }
     if(drawLeft && drawBottom) {
         switch(flags&Round_BottomLeft) {
             case false:
-                renderPixel(p,QPoint(r.left(),r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.left(),r.bottom() );
                 break;
             default:
-                renderPixel(p,QPoint(r.left()+1,r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.left(),r.bottom()-1),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.left()+1,r.bottom());
+                p->drawPoint(r.left(),r.bottom()-1);
         }
     }
     if(drawRight && drawTop) {
         switch(flags&Round_UpperRight) {
             case false:
-                renderPixel(p,QPoint(r.right(),r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.right(),r.top());
                 break;
             default:
-                renderPixel(p,QPoint(r.right()-1,r.top()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.right(),r.top()+1),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.right()-1,r.top());
+                p->drawPoint(r.right(),r.top()+1);
         }
     }
     if(drawRight && drawBottom) {
         switch(flags&Round_BottomRight) {
             case false:
-                renderPixel(p,QPoint(r.right(),r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.right(),r.bottom());
                 break;
             default:
-                renderPixel(p,QPoint(r.right()-1,r.bottom()),alphaAA,contourColor,backgroundColor,alphaBlend);
-                renderPixel(p,QPoint(r.right(),r.bottom()-1),alphaAA,contourColor,backgroundColor,alphaBlend);
+                p->drawPoint(r.right()-1,r.bottom());
+                p->drawPoint(r.right(),r.bottom()-1);
         }
     }
 
@@ -2012,35 +1995,40 @@ void PlastikStyle::renderSurface(QPainter *p,
 
 
 // highlighting...
+    QColor hl = highlightColor;
+    hl.setAlphaF(0.6);
+    p->setPen(hl);
     if(highlightTop) {
-        p->setPen(alphaBlendColors(colorTop1 , highlightColor, 80) );
         p->drawLine((roundUpperLeft&&drawLeft)?r.left()+1:r.left(), r.top(),
                     (roundUpperRight&&drawRight)?r.right()-1:r.right(), r.top() );
-        p->setPen(alphaBlendColors(colorTop2 , highlightColor, 150) );
+    }
+    if(highlightBottom) {
+        p->drawLine((roundBottomLeft&&drawLeft)?r.left()+1:r.left(), r.bottom(),
+                    (roundBottomRight&&drawRight)?r.right()-1:r.right(), r.bottom() );
+    }
+    if(highlightLeft) {
+        p->drawLine(r.left(), (roundUpperLeft&&drawTop)?r.top()+1:r.top(),
+                    r.left(), (roundBottomLeft&&drawBottom)?r.bottom()-1:r.bottom() );
+    }
+    if(highlightRight) {
+        p->drawLine(r.right(), (roundUpperRight&&drawTop)?r.top()+1:r.top(),
+                    r.right(), (roundBottomRight&&drawBottom)?r.bottom()-1:r.bottom() );
+    }
+    hl.setAlphaF(0.3);
+    p->setPen(hl);
+    if(highlightTop) {
         p->drawLine(highlightLeft?r.left()+1:r.left(), r.top()+1,
                     highlightRight?r.right()-1:r.right(), r.top()+1 );
     }
     if(highlightBottom) {
-        p->setPen(alphaBlendColors(colorBottom1 , highlightColor, 80) );
-        p->drawLine((roundBottomLeft&&drawLeft)?r.left()+1:r.left(), r.bottom(),
-                    (roundBottomRight&&drawRight)?r.right()-1:r.right(), r.bottom() );
-        p->setPen(alphaBlendColors(colorBottom2 , highlightColor, 150) );
         p->drawLine(highlightLeft?r.left()+1:r.left(), r.bottom()-1,
                     highlightRight?r.right()-1:r.right(), r.bottom()-1 );
     }
     if(highlightLeft) {
-        p->setPen(alphaBlendColors(colorTop1 , highlightColor, 80) );
-        p->drawLine(r.left(), (roundUpperLeft&&drawTop)?r.top()+1:r.top(),
-                    r.left(), (roundBottomLeft&&drawBottom)?r.bottom()-1:r.bottom() );
-        p->setPen(alphaBlendColors(colorTop2 , highlightColor, 150) );
         p->drawLine(r.left()+1, highlightTop?r.top()+1:r.top(),
                     r.left()+1, highlightBottom?r.bottom()-1:r.bottom() );
     }
     if(highlightRight) {
-        p->setPen(alphaBlendColors(colorBottom1 , highlightColor, 80) );
-        p->drawLine(r.right(), (roundUpperRight&&drawTop)?r.top()+1:r.top(),
-                    r.right(), (roundBottomRight&&drawBottom)?r.bottom()-1:r.bottom() );
-        p->setPen(alphaBlendColors(colorBottom2 , highlightColor, 150) );
         p->drawLine(r.right()-1, highlightTop?r.top()+1:r.top(),
                     r.right()-1, highlightBottom?r.bottom()-1:r.bottom() );
     }
