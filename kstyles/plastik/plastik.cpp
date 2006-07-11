@@ -150,7 +150,7 @@ PlastikStyle::PlastikStyle() :
 
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::BusyIndicatorSize, 10);
 
-    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1); // doesn't work, bugged the trolls about it.
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1);
 
     setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
 
@@ -805,7 +805,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     // TODO: tab painting needs a lot of work in order to handle east and west tabs.
                     // TODO: handle triangular...
-                    // TODO: either overlap tabs 1 pixel, or adapt painting.
                     renderTab(p, r, pal, mouseOver, flags&State_Selected, false, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
 
                     return;
