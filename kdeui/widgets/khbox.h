@@ -23,7 +23,7 @@
 
 #include <kdelibs_export.h>
 
-class QEvent;
+class QChildEvent;
 
 /**
  * A container widget which arranges its children horizontally.
@@ -56,6 +56,7 @@ class KDEUI_EXPORT KHBox : public QFrame
     void setStretchFactor( QWidget* widget, int stretch );
 
     virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
 
   protected:
     /*
@@ -63,7 +64,7 @@ class KDEUI_EXPORT KHBox : public QFrame
      */
     KHBox( bool vertical, QWidget* parent );
 
-    virtual bool event( QEvent* ev );
+    virtual void childEvent( QChildEvent* ev );
 
   private:
     class Private;

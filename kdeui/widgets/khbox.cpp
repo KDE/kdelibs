@@ -46,7 +46,7 @@ KHBox::KHBox( bool /*vertical*/, QWidget* parent )
   setLayout( layout );
 }
 
-bool KHBox::event( QEvent* event )
+void KHBox::childEvent( QChildEvent* event )
 {
   switch ( event->type() ) {
     case QEvent::ChildAdded:
@@ -57,7 +57,7 @@ bool KHBox::event( QEvent* event )
         static_cast<QBoxLayout *>( layout() )->addWidget( widget );
       }
 
-      return QFrame::event( event );
+      break;
     }
     case QEvent::ChildRemoved:
     {
@@ -67,11 +67,12 @@ bool KHBox::event( QEvent* event )
         static_cast<QBoxLayout *>( layout() )->removeWidget( widget );
       }
 
-      return QFrame::event( event );
+      break;
     }
     default:
-      return QFrame::event( event );
+	break;
   }
+  QFrame::childEvent(event);
 }
 
 QSize KHBox::sizeHint() const
@@ -80,6 +81,14 @@ QSize KHBox::sizeHint() const
   QApplication::sendPostedEvents( that, QEvent::ChildAdded );
 
   return QFrame::sizeHint();
+}
+
+QSize KHBox::minimumSizeHint() const
+{
+  KHBox* that = const_cast<KHBox *>( this );
+  QApplication::sendPostedEvents( that, QEvent::ChildAdded );
+
+  return QFrame::minimumSizeHint();
 }
 
 void KHBox::setSpacing( int spacing )
