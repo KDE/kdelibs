@@ -213,7 +213,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     connect(m_regExpItem, SIGNAL(clicked()), this, SLOT(showPatterns()));
     connect(m_backRefItem, SIGNAL(clicked()), this, SLOT(showPlaceholders()));
 
-    connect(m_find, SIGNAL(textChanged ( const QString & )),this, SLOT(textSearchChanged( const QString & )));
+    connect(m_find, SIGNAL(editTextChanged(const QString &)),this, SLOT(textSearchChanged(const QString &)));
 
     // tab order
     setTabOrder(m_find, m_regExp);
