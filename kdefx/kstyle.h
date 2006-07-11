@@ -426,7 +426,9 @@ protected:
             Text = 0xFFFF,  ///< Passes in TextOption
             Icon,           ///< Passes in IconOption
             FocusIndicator, ///< Indication that this widget has focus
-            Frame,          ///< Frame around widget
+            Frame,          /**< Frame around widget
+                             * @note QFrame derived widgets are painted using
+                             * WT_Generic widget type and this Generic::Frame primitive. */
             ArrowUp,        ///< Up arrow (pointing up)
             ArrowDown,      ///< Down arrow
             ArrowRight,     ///< Right arrow

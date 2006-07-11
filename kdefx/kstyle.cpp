@@ -551,6 +551,12 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
         }
 
+        case PE_Frame:
+        {
+            drawKStylePrimitive(WT_Generic, Generic::Frame,option,r,pal,flags,painter,widget);
+            return;
+        }
+
         case PE_IndicatorToolBarHandle:
         {
             if (flags & State_Horizontal)

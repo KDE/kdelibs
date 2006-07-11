@@ -1632,6 +1632,24 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         return;
     }
 
+    switch (primitive)
+    {
+        case Generic::Frame:
+        {
+            // WT_Generic and other fallen-through frames...
+            // QFrame, Qt item views, etc.: sunken..
+            if (flags & State_Sunken) {
+                renderPanel(p, r, pal, true, true);
+            } else if (flags & State_Raised) {
+                renderPanel(p, r, pal, true, false);
+            } else {
+                renderPanel(p, r, pal, false);
+            }
+
+            return;
+        }
+    }
+
     // default fallback
     KStyle::drawKStylePrimitive(widgetType, primitive, opt,
                                 r, pal, flags, p, widget, kOpt);
@@ -2686,7 +2704,6 @@ void PlastikStyle::renderTab(QPainter *p,
 // {
 
 //         case PE_WindowFrame:
-//         case PE_Panel: {
 //             if ( opt.isDefault() || opt.lineWidth() <= 0 )
 //                 break;
 //             renderPanel(p, r, cg, true, sunken);
