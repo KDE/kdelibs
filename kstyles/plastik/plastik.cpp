@@ -606,6 +606,23 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         break;
 
+        case WT_StatusBar:
+        {
+            switch (primitive)
+            {
+                case Generic::Frame:
+                {
+                    qDebug() << "WT_StatusBar frame...!";
+                    renderContour(p, r, pal.color( QPalette::Background ),
+                                  pal.color( QPalette::Background ).dark(160),
+                                  Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
+
+                    return;
+                }
+            }
+        }
+        break;
+
         case WT_CheckBox:
         {
             switch(primitive)
@@ -2729,12 +2746,6 @@ void PlastikStyle::renderTab(QPainter *p,
 //             if ( opt.isDefault() || opt.lineWidth() <= 0 )
 //                 break;
 //             renderPanel(p, r, cg, true, sunken);
-//             break;
-//         }
-
-//         case PE_StatusBarSection: {
-//             renderContour(p, r, cg.background(), cg.background().dark(160),
-//                           Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
 //             break;
 //         }
 

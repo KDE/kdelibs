@@ -187,14 +187,16 @@ void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
 }
 
 void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
-                                 const QStyleOption* /*opt*/,
+                                 const QStyleOption* opt,
                                  QRect r, QPalette pal, State flags,
                                  QPainter* p,
                                  const QWidget* /*widget*/,
                                  KStyle::Option* kOpt) const
 {
-    if (widgetType == WT_Tree)
+    switch (widgetType)
     {
+        case WT_Tree:
+        {
         switch (primitive)
         {
             case Tree::VerticalBranch:
@@ -218,9 +220,12 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             default:
                 break;
         }
-    }
-    else if (widgetType == WT_SpinBox)
-    {
+
+        break;
+        }
+
+        case WT_SpinBox:
+        {
         switch (primitive)
         {
             case SpinBox::PlusSymbol:
@@ -241,6 +246,22 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             default:
                 break;
         }
+
+        break;
+        }
+
+        case WT_GroupBox:
+        {
+            QPen oldPen = p->pen();
+            p->setPen(pal.color(QPalette::WindowText) );
+            p->drawLine(r.topLeft(), r.topRight() );
+            p->setPen(oldPen);
+
+            break;
+        }
+
+        default:
+            break;
     }
 
     if (primitive == Generic::Text)
@@ -551,7 +572,23 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
 
         case PE_FrameGroupBox:
         {
-            drawKStylePrimitive(WT_GroupBox, Generic::Frame,option,r,pal,flags,painter,widget);
+            if (const QStyleOptionFrame *fOpt =
+                qstyleoption_cast<const QStyleOptionFrame *>(option))
+            {
+                QStyleOptionFrameV2 fOpt2(*fOpt);
+
+                if (fOpt2.features & QStyleOptionFrameV2::Flat) {
+                    drawKStylePrimitive(WT_GroupBox, GroupBox::FlatFrame,option,r,pal,flags,painter,widget);
+                } else {
+                    drawKStylePrimitive(WT_GroupBox, Generic::Frame,option,r,pal,flags,painter,widget);
+                }
+            }
+            return;
+        }
+
+        case PE_FrameStatusBar:
+        {
+            drawKStylePrimitive(WT_StatusBar, Generic::Frame,option,r,pal,flags,painter,widget);
             return;
         }
 

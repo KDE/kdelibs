@@ -373,6 +373,7 @@ protected:
         WT_Header,          ///< @sa Header
         WT_LineEdit,        ///< @sa LineEdit
         WT_GroupBox,        ///< @sa GroupBox
+        WT_StatusBar,       ///< @sa StatusBar
         WT_ToolBar,         ///< @sa ToolBar
         WT_ToolButton,      ///< @sa ToolButton
         WT_Limit = 0xFFFF ///< For enum extensibility
@@ -1184,18 +1185,45 @@ protected:
      * @brief Describes something like QGroupBox.
      *
      * Relevant Generic elements:
-     * - @c Generic::Frame
+     * - @c Generic::Frame frame around the group box
+     *
+     * [the Frames implement QStyle::PE_FrameGroupBox]
      *
      * No LayoutProps for now.
      * @sa Generic::DefaultFrameWidth
      *
      * @todo What about frame width etc.? CT_GroupBox, CC_GroupBox sizeFromContents(), subControlRect()
+     *
+     * @sa WT_GroupBox
      */
     struct GroupBox
     {
         /**
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            FlatFrame  /**< For groupboxes which are set to be 'flat' (usually
+                        * a divider line from top left to top right). KStyle
+                        * has a basic default implementation */
+        };
+    };
+
+    /**
+     * @brief Describes a status bar section.
+     *
+     * Relevant Generic elements:
+     * - @c Generic::Frame paints the status bar section [implements QStyle::PE_FrameStatusBar]
+     *
+     * No LayoutProps for now.
+     *
+     * @sa WT_StatusBar
+     */
+    struct StatusBar
+    {
+        /**
         No LayoutProps for now.
-        */
+         */
     };
 
     /**
