@@ -326,12 +326,13 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
   QLabel *label =  qobject_cast<QLabel*>(w);
   if ( label  ) {
       if ( !label->buddy() )
-          label = 0;
+          return;
       else {
+	  kDebug() << "label-text " << label->textFormat() << endl;
           if ( label->textFormat() == Qt::RichText ||
                ( label->textFormat() == Qt::AutoText &&
                  Qt::mightBeRichText( label->text() ) ) )
-              label = 0;
+              return;
       }
   }
 
