@@ -1,0 +1,7 @@
+
+#define KDE_COMPILER_VERSION "${CMAKE_C_COMPILER}"
+
+#define KDE_COMPILING_OS  "${CMAKE_SYSTEM}"
+
+#define KDE_DISTRIBUTION_TEXT "compiled sources"
+

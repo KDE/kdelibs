@@ -58,6 +58,8 @@
 #include <qtextstream.h>
 #include <qfile.h>
 
+#include <config-compiler.h>
+
 class KBugReportPrivate {
 public:
     KComboBox *appcombo;

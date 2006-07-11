@@ -230,9 +230,6 @@ check_type_size("struct ucred" HAVE_STRUCT_UCRED)                # kdesu
 
 set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
-set(CONFIG_QT_DOCDIR "\"${QT_DOC_DIR}/html/\"")
-set(CONFIG_KDELIBS_DOXYDIR "\"/tmp/\"")
-
 check_cxx_source_compiles("
   #include <sys/types.h>
   #include <sys/statvfs.h>

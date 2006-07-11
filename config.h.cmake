@@ -11,17 +11,7 @@
 
 #define kde_socklen_t socklen_t
 
-#define QT_DOCDIR ${CONFIG_QT_DOCDIR}
-
-#define KDELIBS_DOXYDIR ${CONFIG_KDELIBS_DOXYDIR}
-
 #define KDELIBSUFF "${KDELIBSUFF}"
-
-#define KDE_COMPILING_OS  "${CMAKE_SYSTEM}"
-
-#define KDE_DISTRIBUTION_TEXT "compiled sources"
-
-#define KDE_COMPILER_VERSION "${CMAKE_C_COMPILER}"
 
 /****************************/
 
