@@ -58,6 +58,8 @@ class PHONONCORE_EXPORT ObjectDescription
 			Visualization
 		};
 
+		ObjectDescription( const ObjectDescription& rhs );
+		ObjectDescription& operator=( const ObjectDescription& rhs );
 		ObjectDescription();
 
 		/**
@@ -122,7 +124,6 @@ class PHONONCORE_EXPORT ObjectDescription
 		QSharedDataPointer<ObjectDescriptionPrivate> d;
 };
 } //namespace Phonon
-#include "objectdescription_p.h"
 
 #endif // PHONON_OBJECTDESCRIPTION_H
 // vim: sw=4 ts=4 noet tw=80

@@ -20,7 +20,6 @@ add_subdirectory( ui )
 add_subdirectory( tests )
 add_subdirectory( kcm )
 
-
 ########### next target ###############
 
 set(phononcore_LIB_SRCS
@@ -67,7 +66,6 @@ install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES
 	objectdescription.h
-	objectdescription_p.h
 	objectdescriptionmodel.h
 	phononnamespace.h
 	base.h
@@ -95,6 +93,7 @@ install( FILES
 	audioplayer.h
 	backendcapabilities.h
 	phonondefs.h
+	bytestreaminterface.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
 install( FILES  phononbackend.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 

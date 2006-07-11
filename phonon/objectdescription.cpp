@@ -18,6 +18,7 @@
 */
 
 #include "objectdescription.h"
+#include "objectdescription_p.h"
 #include <QString>
 #include <QObject>
 #include <QSet>
@@ -34,6 +35,17 @@ ObjectDescription::ObjectDescription()
 ObjectDescription::ObjectDescription( Type type, int index, const QString& name, const QString& description )
 	: d( new ObjectDescriptionPrivate( type, index, name, description ) )
 {
+}
+
+ObjectDescription::ObjectDescription( const ObjectDescription& rhs )
+	: d( rhs.d )
+{
+}
+
+ObjectDescription& ObjectDescription::operator=( const ObjectDescription& rhs )
+{
+	d = rhs.d;
+	return *this;
 }
 
 bool ObjectDescription::operator==( const ObjectDescription& otherDescription ) const
