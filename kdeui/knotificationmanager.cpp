@@ -94,7 +94,7 @@ void KNotificationManager::notificationClosed( int id )
 void KNotificationManager::close( int id )
 {
     QDBusReply<void> reply = d->knotify->call("closeNotification", id);
-    if (reply.isError())
+    if (!reply.isValid())
     {
         kWarning(299) << k_funcinfo << "error while contacting knotify server" << endl;
     }

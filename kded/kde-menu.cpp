@@ -96,7 +96,7 @@ static void findMenuEntry(KServiceGroup::Ptr parent, const QString &name, const 
             {
                QDBusInterface kicker( "org.kde.kicker", "/kicker", "org.kde.Kicker" );
                QDBusReply<void> result = kicker.call( "highlightMenuItem", menuId );
-               if (!result.isSuccess())
+               if (!result.isValid())
                   error(3, i18n("Menu item '%1' could not be highlighted.", menuId).toLocal8Bit());
             }
             exit(0);
