@@ -619,6 +619,8 @@ protected:
      * @brief Describes widgets like QProgressBar.
      *
      * @todo support for Qt > 4.1 orientation, bottomToTop, invertedAppearance properties!
+     *
+     * @sa WT_ProgressBar
      */
     struct ProgressBar
     {
@@ -887,7 +889,11 @@ protected:
                                  * tab sides (?) */
             TabTextToIconSpace = TabFocusMargin    + MarginInc,
                                 /**< (\b 0 ?) space between icon and text if the tab contains both */
-            TabOverlap, // TODO: PM_TabBarTabOverlap seems to be completely ignored by qt styles/tabbar. remove if it doesn't get fixed. (\b 0) 
+            TabOverlap,         /**< (\b 0) Amount of pixels tabs should overlap. The
+                                 * paint rectangle will be extended to the left for
+                                 * all tabs which are not at the beginning (accordingly
+                                 * extended to the right in RightToLeft mode; extended
+                                 * to the top for East/West tabs). */
             BaseHeight,        ///< (\b 2) the height of the tabBar's base, usually the frame width [sets QStyle::PM_TabBarBaseHeight]
             BaseOverlap,       ///< (\b 2) the number of pixels the tabs overlap with the base (i.e. tabWidget frame) [sets QStyle::PM_TabBarBaseOverlap]
             ScrollButtonWidth  ///< (\b 10) buttons which are shown when there's not enough space for tabs [sets QStyle::PM_TabBarScrollButtonWidth]

@@ -1417,6 +1417,27 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(option);
             if (!tabOpt) return;
 
+            // TabOverlap handling
+            int tabOverlap = pixelMetric(PM_TabBarTabOverlap, option, widget);
+            bool beginning = tabOpt->position == QStyleOptionTab::Beginning;
+            bool onlyOne = tabOpt->position == QStyleOptionTab::OnlyOneTab;
+            if (!beginning && !onlyOne) {
+                switch (tabSide(tabOpt)) {
+                    case North:
+                    case South:
+                        if (option->direction == Qt::LeftToRight)
+                            r.adjust(-tabOverlap, 0, 0, 0);
+                        else
+                            r.adjust(0, 0, tabOverlap, 0);
+                        break;
+                    case East:
+                    case West:
+                        r.adjust(0, -tabOverlap, 0, 0);
+                    default:
+                        break;
+                }
+            }
+
             int prim;
             switch (tabSide(tabOpt))
             {
@@ -1432,7 +1453,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             drawKStylePrimitive(WT_TabBar, prim, option, r, pal, flags, p, widget);
 
-            break;
+            return;
         }
 
         case CE_TabBarTabLabel:
