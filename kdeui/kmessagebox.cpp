@@ -279,7 +279,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
 
     dialog->setMainWidget(topcontents);
     dialog->showButtonSeparator(false);
-    if (!listbox && false)
+    if (!listbox)
         dialog->setFixedSize( dialog->sizeHint() );
 
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
