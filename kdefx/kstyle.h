@@ -376,6 +376,7 @@ protected:
         WT_StatusBar,       ///< @sa StatusBar
         WT_ToolBar,         ///< @sa ToolBar
         WT_ToolButton,      ///< @sa ToolButton
+        WT_ToolBoxTab,      ///< @sa ToolBoxTab
         WT_Limit = 0xFFFF ///< For enum extensibility
     };
 
@@ -1258,6 +1259,35 @@ protected:
             Separator, ///< [implements QStyle::PE_IndicatorToolBarSeparator]
             PanelHor,  ///< the actual toolbar, horizontal
             PanelVert  ///< the actual toolbar, vertical
+        };
+    };
+
+
+    /**
+     * @brief Describes a tab for a tool box, like QToolBox.
+     *
+     * @sa WT_ToolBoxTab
+     */
+    struct ToolBoxTab
+    {
+        /**
+         * @sa setWidgetLayoutProp()
+         */
+        enum LayoutProps
+        {
+            Margin  /**< (\b 0) used to specify the
+                     * position of the tab contents, doesn't influence the tab size
+                     * [sets QStyle::SE_ToolBoxTabContents] */
+        };
+
+        /**
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            Panel   /**< the panel of a toolbox tab, KStyles default implementation
+                     * paints WT_PushButton/PushButton::Panel
+                     * [implements CE_ToolBoxTab] */
         };
     };
 

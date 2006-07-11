@@ -179,6 +179,8 @@ KStyle::KStyle()
 
     setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 5);
     setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
+
+    setWidgetLayoutProp(WT_ToolBoxTab, ToolBoxTab::Margin, 0);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -190,7 +192,7 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                  const QStyleOption* opt,
                                  QRect r, QPalette pal, State flags,
                                  QPainter* p,
-                                 const QWidget* /*widget*/,
+                                 const QWidget* widget,
                                  KStyle::Option* kOpt) const
 {
     switch (widgetType)
@@ -252,10 +254,21 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
         case WT_GroupBox:
         {
-            QPen oldPen = p->pen();
-            p->setPen(pal.color(QPalette::WindowText) );
-            p->drawLine(r.topLeft(), r.topRight() );
-            p->setPen(oldPen);
+            if (primitive == GroupBox::FlatFrame) {
+                QPen oldPen = p->pen();
+                p->setPen(pal.color(QPalette::WindowText) );
+                p->drawLine(r.topLeft(), r.topRight() );
+                p->setPen(oldPen);
+            }
+
+            break;
+        }
+
+        case WT_ToolBoxTab:
+        {
+            if (primitive == ToolBoxTab::Panel) {
+                drawKStylePrimitive(WT_PushButton, PushButton::Panel, opt, r, pal, flags, p, widget);
+            }
 
             break;
         }
@@ -810,6 +823,12 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             TextOption lbOpt(dwOpt->title);
             lbOpt.color = QPalette::HighlightedText;
             drawKStylePrimitive(WT_DockWidget, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
+            return;
+        }
+
+        case CE_ToolBoxTab:
+        {
+            drawKStylePrimitive(WT_ToolBoxTab, ToolBoxTab::Panel, option, r, pal, flags, p, widget);
             return;
         }
 
@@ -2037,6 +2056,11 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
                 r = insideMargin(r, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
             return insideMargin(r, WT_PushButton, PushButton::FocusMargin, option, widget);
+        }
+
+        case SE_ToolBoxTabContents:
+        {
+            return insideMargin(r, WT_ToolBoxTab, ToolBoxTab::Margin, option, widget);
         }
 
         case SE_CheckBoxIndicator:

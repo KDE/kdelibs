@@ -277,20 +277,37 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 {
                     bool sunken   = (flags & State_On) || (flags & State_Sunken);
 
-                    // TODO: set different background color for default buttons (Bevel is drawn on top of DefaultButtonBevel)
-//                     const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(opt);
-//                     if (bOpt &&  //### helper function in KStyle?
-//                         (bOpt->features & QStyleOptionButton::DefaultButton)) {
-//             QColorGroup g2 = cg;
-//             if (isDefault)
-//                 g2.setColor(QPalette::Background, cg.background().dark(120) );
-//                     }
-
                     renderButton(p, r, pal, sunken,
                                  mouseOver/*,
                                          bool horizontal,
                                          bool enabled,
                                          bool khtmlMode*/);
+
+                    return;
+                }
+
+                case PushButton::DefaultButtonFrame:
+                {
+                    uint contourFlags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
+                            Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight;
+                    if(!enabled) contourFlags|=Is_Disabled;
+                    renderContour(p, r, pal.color(QPalette::Background), pal.color(QPalette::Background).dark(120), contourFlags);
+
+                    return;
+                }
+            }
+        }
+        break;
+
+        case WT_ToolBoxTab:
+        {
+            switch (primitive)
+            {
+                case ToolBoxTab::Panel:
+                {
+                    bool sunken   = (flags & State_On) || (flags & State_Sunken) || (flags & State_Selected);
+
+                    renderButton(p, r, pal, sunken, mouseOver);
 
                     return;
                 }
