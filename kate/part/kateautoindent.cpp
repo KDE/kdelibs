@@ -568,8 +568,9 @@ bool KateCSmartIndent::handleDoxygen (KateDocCursor &begin)
       QString filler = tabString (indent);
 
       bool doxygenAutoInsert = doc->config()->configFlags() & KateDocumentConfig::cfDoxygenAutoTyping;
+
       if ( doxygenAutoInsert &&
-           (!textLine->stringAtPos(first, "*/") && !textLine->stringAtPos(first, "*")))
+           ((first < 0) || (!textLine->stringAtPos(first, "*/") && !textLine->stringAtPos(first, "*"))))
       {
         filler = filler + " * ";
       }
