@@ -168,10 +168,10 @@ class PHONONCORE_EXPORT EffectParameter
 		 */
 		bool operator>( const EffectParameter& rhs ) const;
 
-		/* cctor and operator= for forward decl of EffectParameterPrivate */
+		/* dtor, cctor and operator= for forward decl of EffectParameterPrivate */
+		~EffectParameter();
 		EffectParameter( const EffectParameter& rhs );
 		EffectParameter& operator=( const EffectParameter& rhs );
-		/* default ~EffectParameter is sufficient */
 
 		/**
 		 * Only for backend developers:

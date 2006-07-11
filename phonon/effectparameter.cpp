@@ -50,6 +50,10 @@ EffectParameter::EffectParameter( int parameterId, const QString& name, Hints hi
 	d->hints = hints;
 }
 
+EffectParameter::~EffectParameter()
+{
+}
+
 EffectParameter::EffectParameter( const EffectParameter& rhs )
 	: d( rhs.d )
 {
