@@ -118,7 +118,7 @@ bool KCMShell::isRunning()
 
     QDBusInterface iface(m_serviceName, "/KCModule/dialog", "org.kde.KCMShellMultiDialog");
     QDBusReply<void> reply = iface.call("activate", kapp->startupId());
-    if (!reply.isSuccess())
+    if (!reply.isValid())
     {
         kDebug(780) << "Calling D-Bus function dialog::activate() failed." << endl;
         return false; // Error, we have to do it ourselves.
