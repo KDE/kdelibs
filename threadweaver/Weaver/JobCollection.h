@@ -80,8 +80,6 @@ namespace ThreadWeaver {
 	void finalCleanup();
 
     private:
-        // FIXME pimpl
-
         /** Overload the execute method. */
         void execute ( Thread * );
 
@@ -93,25 +91,10 @@ namespace ThreadWeaver {
             Note: This will not dequeue the collection itself.
         */
         void dequeueElements();
+      
+      class Private;
+      Private* d;
 
-	/** The elements of the collection. */
-        class JobList;
-        JobList* m_elements;
-
-        /** True if this collection has been queued in the Job queue of a
-            Weaver. */
-        bool m_queued;
-
-        /** A guard job used to manage recursive dependencies. */
-        Job* m_guard;
-        /** The Weaver interface this collection is queued in. */
-        WeaverInterface *m_weaver;
-
-	/** Counter for the finished jobs.
-	    Set to the number of elements when started.
-	    When zero, all elements are done.
-	*/
-	int m_jobCounter;
     };
 
 }

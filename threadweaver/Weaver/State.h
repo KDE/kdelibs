@@ -60,7 +60,6 @@ namespace ThreadWeaver {
     {
     public:
         /** Default constructor. */
-        // FIXME remove second param
         explicit State( WeaverInterface *weaver );
 
 	/** Destructor. */

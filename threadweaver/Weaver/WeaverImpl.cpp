@@ -150,7 +150,7 @@ void WeaverImpl::enqueue(Job* job)
       QMutexLocker l (m_mutex);
       job->aboutToBeQueued ( this );
       // find positiEon for insertion:;
-      // FIXME optimize: factor out queue nanagement into own class,
+      // FIXME (after 0.6) optimize: factor out queue nanagement into own class,
       // and use binary search for insertion (not done yet because
       // refactoring already planned):
       int i = m_assignments.size();

@@ -157,7 +157,7 @@ namespace ThreadWeaver {
         virtual bool canBeExecuted();
 
         /** Returns true if the jobs's execute method finished. */
-        bool isFinished() const { return m_finished; }
+        bool isFinished() const;
 
         /** Assign a queue policy.
             Queue Policies customize the queueing (running) behaviour of sets
@@ -186,11 +186,12 @@ namespace ThreadWeaver {
         void failed( Job* );
 
     protected:
-        // FIXME pimpl
+      class Private;
+      Private* d;
 
-        /** Free the queue policies acquired before this job has been
-            executed. */
-        void freeQueuePolicyResources();
+      /** Free the queue policies acquired before this job has been
+	  executed. */
+      void freeQueuePolicyResources();
 
         /** The method that actually performs the job. It is called from
             execute(). This method is the one to overload it with the
@@ -202,22 +203,10 @@ namespace ThreadWeaver {
 	    Do not confuse with QObject::thread() const !
 	    //  @todo rename to executingThread()
 	    */
-	inline Thread *thread() { return m_thread; }
+      Thread *thread();
+      
 	/** Call with status = true to mark this job as done. */
-	inline void setFinished ( bool status ) { m_finished = status; }
-
-        /** The thread that executes this job.
-            Zero when the job is not executed.
-        */
-        Thread * m_thread;
-
-        /** The list of QueuePolicies assigned to this Job. */
-        QueuePolicyList* m_queuePolicies;
-
-    private:
-	QMutex *m_mutex;
-	/** m_finished is set to true when the Job has been executed. */
-        bool m_finished;
+      void setFinished ( bool status );
 
     };
 }

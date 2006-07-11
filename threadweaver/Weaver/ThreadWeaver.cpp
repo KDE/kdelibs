@@ -245,18 +245,30 @@ Multithreaded Image Viewer (SMIV) example shows the use of job
 dependencies.</p>
 */
 
+class Weaver::Private
+{
+public:
+  Private ()
+    : weaverinterface ( 0)
+  {}
+
+  WeaverInterface* weaverinterface;
+};
+
 Weaver::Weaver ( QObject* parent, int inventoryMax )
     : WeaverInterface( parent )
+    , d (new Private)
 {
-    m_weaverinterface = makeWeaverImpl ( inventoryMax );
-    connect ( m_weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
-    connect ( m_weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
-    connect ( m_weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
+  d->weaverinterface = makeWeaverImpl (inventoryMax);
+  connect ( d->weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
+  connect ( d->weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
+  connect ( d->weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
 }
 
 Weaver::~Weaver()
 {
-    delete m_weaverinterface;
+  delete d->weaverinterface;
+    delete d;
 }
 
 WeaverInterface* Weaver::makeWeaverImpl( int inventoryMax )
@@ -266,12 +278,12 @@ WeaverInterface* Weaver::makeWeaverImpl( int inventoryMax )
 
 const State& Weaver::state() const
 {
-    return m_weaverinterface->state();
+    return d->weaverinterface->state();
 }
 
 void Weaver::registerObserver ( WeaverObserver *ext )
 {
-    m_weaverinterface->registerObserver ( ext );
+    d->weaverinterface->registerObserver ( ext );
 }
 
 Weaver* Weaver::instance()
@@ -296,57 +308,57 @@ Weaver* Weaver::instance()
 
 void Weaver::enqueue (Job* j)
 {
-    m_weaverinterface->enqueue ( j );
+    d->weaverinterface->enqueue ( j );
 }
 
 bool Weaver::dequeue (Job* j)
 {
-    return m_weaverinterface->dequeue ( j );
+    return d->weaverinterface->dequeue ( j );
 }
 
 void Weaver::dequeue ()
 {
-    return m_weaverinterface->dequeue();
+    return d->weaverinterface->dequeue();
 }
 
 void Weaver::finish ()
 {
-    return m_weaverinterface->finish ();
+    return d->weaverinterface->finish ();
 }
 
 void Weaver::suspend ()
 {
-    return m_weaverinterface->suspend();
+    return d->weaverinterface->suspend();
 }
 
 void Weaver::resume ()
 {
-    return m_weaverinterface->resume();
+    return d->weaverinterface->resume();
 }
 
 bool Weaver::isEmpty() const
 {
-    return m_weaverinterface->isEmpty();
+    return d->weaverinterface->isEmpty();
 }
 
 bool Weaver::isIdle() const
 {
-    return m_weaverinterface->isIdle();
+    return d->weaverinterface->isIdle();
 }
 
 int Weaver::queueLength() const
 {
-    return m_weaverinterface->queueLength();
+    return d->weaverinterface->queueLength();
 }
 
 int Weaver::numberOfThreads() const
 {
-    return m_weaverinterface->numberOfThreads();
+    return d->weaverinterface->numberOfThreads();
 }
 
 void Weaver::requestAbort()
 {
-    m_weaverinterface->requestAbort();
+    d->weaverinterface->requestAbort();
 }
 
 

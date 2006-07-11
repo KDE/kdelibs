@@ -32,21 +32,41 @@ using namespace ThreadWeaver;
 
 class ThreadWeaver::QueuePolicyList : public QList<QueuePolicy*> {};
 
+class Job::Private 
+{
+public:
+  Private ()    
+    : thread (0)
+    , queuePolicies ( new QueuePolicyList )
+    , mutex (new QMutex (QMutex::NonRecursive) )
+    , finished (false)
+  {}
+
+  /* The thread that executes this job. Zero when the job is not executed. */
+  Thread * thread;
+
+  /* The list of QueuePolicies assigned to this Job. */
+  QueuePolicyList* queuePolicies;
+
+  QMutex *mutex;
+  /* d->finished is set to true when the Job has been executed. */
+  bool finished;
+};
+
 Job::Job ( QObject *parent )
     : QObject (parent)
-    , m_thread (0)
-    , m_queuePolicies ( new QueuePolicyList )
-    , m_mutex (new QMutex (QMutex::NonRecursive) )
-    , m_finished (false)
+    , d(new Private())
 {
 }
 
 Job::~Job()
 {
-    for ( int index = 0; index < m_queuePolicies->size(); ++index )
+    for ( int index = 0; index < d->queuePolicies->size(); ++index )
     {
-        m_queuePolicies->at( index )->destructed( this );
+        d->queuePolicies->at( index )->destructed( this );
     }
+
+    delete d;
 }
 
 class ThreadWeaver::JobRunHelper : public QObject
@@ -68,18 +88,18 @@ public:
     void runTheJob ( Thread* th, Job* job )
     {
         P_ASSERT ( th == thread() );
-        job->m_mutex->lock();
-        job->m_thread = th;
-        job->m_mutex->unlock();
+        job->d->mutex->lock();
+        job->d->thread = th;
+        job->d->mutex->unlock();
 
         emit ( started ( job ) );
 
         job->run();
 
-        job->m_mutex->lock();
-        job->m_thread = 0;
+        job->d->mutex->lock();
+        job->d->thread = 0;
         job->setFinished (true);
-        job->m_mutex->unlock();
+        job->d->mutex->unlock();
         job->freeQueuePolicyResources();
 
         if ( ! job->success() )
@@ -112,9 +132,9 @@ int Job::priority () const
 
 void Job::freeQueuePolicyResources()
 {
-    for ( int index = 0; index < m_queuePolicies->size(); ++index )
+    for ( int index = 0; index < d->queuePolicies->size(); ++index )
     {
-        m_queuePolicies->at( index )->free( this );
+        d->queuePolicies->at( index )->free( this );
     }
 }
 
@@ -132,15 +152,15 @@ bool Job::canBeExecuted()
 
     bool success = true;
 
-    if ( m_queuePolicies->size() > 0 )
+    if ( d->queuePolicies->size() > 0 )
     {
         debug( 4, "Job::canBeExecuted: acquiring permission from %i queue %s.\n",
-               m_queuePolicies->size(), m_queuePolicies->size()==1 ? "policy" : "policies" );
-        for ( int index = 0; index < m_queuePolicies->size(); ++index )
+               d->queuePolicies->size(), d->queuePolicies->size()==1 ? "policy" : "policies" );
+        for ( int index = 0; index < d->queuePolicies->size(); ++index )
         {
-            if ( m_queuePolicies->at( index )->canRun( this ) )
+            if ( d->queuePolicies->at( index )->canRun( this ) )
             {
-                acquired.append( m_queuePolicies->at( index ) );
+                acquired.append( d->queuePolicies->at( index ) );
             } else {
                 success = false;
                 break;
@@ -150,7 +170,8 @@ bool Job::canBeExecuted()
         debug( 4, "Job::canBeExecuted: queue policies returned %s.\n", success ? "true" : "false" );
 
         if ( ! success )
-        {   // FIXME maybe this hase to be done in reverse order?
+        {   
+
             for ( int index = 0; index < acquired.size(); ++index )
             {
                 acquired.at( index )->release( this );
@@ -165,19 +186,34 @@ bool Job::canBeExecuted()
 
 void Job::assignQueuePolicy( QueuePolicy* policy )
 {
-    if ( ! m_queuePolicies->contains( policy ) )
+    if ( ! d->queuePolicies->contains( policy ) )
     {
-        m_queuePolicies->append( policy );
+        d->queuePolicies->append( policy );
     }
 }
 
 void Job::removeQueuePolicy( QueuePolicy* policy )
 {
-    int index = m_queuePolicies->indexOf( policy );
+    int index = d->queuePolicies->indexOf( policy );
     if ( index != -1 )
     {
-        m_queuePolicies->removeAt( index );
+        d->queuePolicies->removeAt( index );
     }
+}
+
+bool Job::isFinished() const
+{
+  return d->finished; 
+}
+
+Thread* Job::thread()
+{
+  return d->thread; 
+}
+
+void Job::setFinished ( bool status ) 
+{
+  d->finished = status; 
 }
 
 #include "Job.moc"

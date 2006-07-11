@@ -76,8 +76,9 @@ namespace ThreadWeaver {
         void requestAbort();
 
     protected:
-        // FIXME pimpl
-        WeaverInterface *m_weaverinterface;
+      
+      class Private;
+      Private* d;
         /** The factory method to create the actual Weaver implementation.
             Overload this method to use a different or adapted implementation.
             */
