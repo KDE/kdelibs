@@ -189,6 +189,13 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
     QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+
+    // We shouldn't have non-plugins though
+    QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
+
+    offers = KMimeTypeTrader::self()->query("text/x-diff", "Application");
+    QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
+
 }
 
 void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()

@@ -212,7 +212,7 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferLi
     {
         const KService::Ptr servPtr = (*it).service();
         //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->name() << endl;
-        if ( genericServiceTypePtr ||
+        if ( !genericServiceTypePtr ||
              // Expand servPtr->hasServiceType( genericServiceTypePtr ) to avoid lookup each time:
              KServiceFactory::self()->hasOffer( genericServiceTypePtr->offset(),
                                                 genericServiceTypePtr->serviceOffersOffset(),
