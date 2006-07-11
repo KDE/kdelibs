@@ -808,7 +808,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     renderTab(p, r, pal, mouseOver, flags&State_Selected, false, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
 
                     return;
-
                 }
 
                 // TODO: TabBar::EastTab, TabBar::WestTab, TabBar::BaseFrame, TabBar::ScrollButton
@@ -1640,18 +1639,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
 void PlastikStyle::polish(QWidget* widget)
 {
-//     if (qobject_cast<QLineEdit>(widget)) {
-//         widget->installEventFilter(this);
-//     } else if (qobject_cast<QTabBar>(widget)) {
-//         widget->setMouseTracking(true);
-//         widget->installEventFilter(this);
-//     } else if (qobject_cast<Q3PopupMenu>(widget)) {
-//         widget->setBackgroundMode( Qt::NoBackground );
-//     } else if ( !qstrcmp(widget->name(), "kde toolbar widget") ) {
-//         widget->installEventFilter(this);
-//     }
-//
-
     if( _animateProgressBar && qobject_cast<QProgressBar*>(widget) )
     {
         widget->installEventFilter(this);
@@ -1677,15 +1664,6 @@ void PlastikStyle::polish(QWidget* widget)
 
 void PlastikStyle::unpolish(QWidget* widget)
 {
-//     if (qobject_cast<QTabBar>(widget)) {
-//         widget->setMouseTracking(false);
-//         widget->removeEventFilter(this);
-//     } else if (qobject_cast<Q3PopupMenu>(widget)) {
-//         widget->setBackgroundMode( Qt::PaletteBackground );
-//     } else if ( !qstrcmp(widget->name(), "kde toolbar widget") ) {
-//         widget->removeEventFilter(this);
-//     }
-//
     if ( qobject_cast<QProgressBar*>(widget) )
     {
         progAnimWidgets.remove(widget);
@@ -2770,66 +2748,6 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
     if (KStyle::eventFilter(obj, ev) )
         return true;
 
-//     if (!obj->isWidgetType() ) return false;
-//
-//     // focus highlight
-//     if ( qobject_cast<QLineEdit>(obj) ) {
-//         QWidget* widget = static_cast<QWidget*>(obj);
-//
-//         if ( qobject_cast<Q3SpinWidget>(widget->parentWidget()) )
-//         {
-//             QWidget* spinbox = widget->parentWidget();
-//             if ((ev->type() == QEvent::FocusIn) || (ev->type() == QEvent::FocusOut))
-//             {
-//                 spinbox->repaint(false);
-//             }
-//             return false;
-//         }
-//
-//         if ((ev->type() == QEvent::FocusIn) || (ev->type() == QEvent::FocusOut))
-//         {
-//             widget->repaint(false);
-//         }
-//         return false;
-//     }
-//
-//     if ( qobject_cast<QTabBar>(obj) ) {
-//         if ((ev->type() == QEvent::Enter) && static_cast<QWidget*>(obj)->isEnabled())
-//         {
-//             QWidget* tabbar = static_cast<QWidget*>(obj);
-//             hoverWidget = tabbar;
-//             hoverTab = 0;
-//             tabbar->repaint(false);
-//         }
-//         else if (ev->type() == QEvent::MouseMove)
-//         {
-//             QTabBar *tabbar = dynamic_cast<QTabBar*>(obj);
-//             QMouseEvent *me = dynamic_cast<QMouseEvent*>(ev);
-//
-//             if (tabbar && me) {
-//                 // avoid unnecessary repaints (which otherwise would occour on every
-//                 // MouseMove event causing high cpu load).
-//
-//                 bool repaint = true;
-//
-//                 QTab *tab = tabbar->selectTab(me->pos() );
-//                 if (hoverTab == tab)
-//                     repaint = false;
-//                 hoverTab = tab;
-//
-//                 if (repaint)
-//                     tabbar->repaint(false);
-//             }
-//         }
-//         else if (ev->type() == QEvent::Leave)
-//         {
-//             QWidget* tabbar = static_cast<QWidget*>(obj);
-//             hoverWidget = 0;
-//             hoverTab = 0;
-//             tabbar->repaint(false);
-//         }
-//         return false;
-//     }
     // Track show events for progress bars
     if ( _animateProgressBar && qobject_cast<QProgressBar*>(obj) )
     {
@@ -2838,13 +2756,6 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
             animationTimer->start( 50 );
         }
     }
-//     if ( !qstrcmp(obj->name(), "kde toolbar widget") )
-//     {
-//         QWidget* lb = static_cast<QWidget*>(obj);
-//         if (lb->backgroundMode() == Qt::PaletteButton)
-//             lb->setBackgroundMode(Qt::PaletteBackground);
-//         lb->removeEventFilter(this);
-//     }
 
     return false;
 }
