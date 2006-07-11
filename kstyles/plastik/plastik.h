@@ -184,12 +184,6 @@ protected:
                        const uint flags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
                                Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight) const;
 
-//     void renderMask(QPainter *p,
-//                     const QRect &r,
-//                     const QColor &color,
-//                     const uint flags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
-//                             Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight) const;
-// 
     void renderSurface(QPainter *p,
                         const QRect &r,
                         const QColor &backgroundColor,
@@ -199,13 +193,6 @@ protected:
                         const uint flags = Draw_Left|Draw_Right|Draw_Top|Draw_Bottom|
                                 Round_UpperLeft|Round_UpperRight|Round_BottomLeft|Round_BottomRight|
                                 Is_Horizontal) const;
-
-    inline void renderPixel(QPainter *p,
-            const QPoint &pos,
-            const int alpha,
-            const QColor &color,
-            const QColor &background = QColor(),
-            bool fullAlphaBlend = true) const;
 
     void renderButton(QPainter *p,
                       const QRect &r,
@@ -226,7 +213,8 @@ protected:
                      const QRect &r,
                      const QPalette &pal,
                      const bool pseudo3d = true,
-                     const bool sunken = true) const;
+                     const bool sunken = true,
+                     const bool focusHighlight = false) const;
 
     void renderDot(QPainter *p,
                    const QPoint &point,

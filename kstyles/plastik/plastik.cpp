@@ -1677,10 +1677,11 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             // WT_Generic and other fallen-through frames...
             // QFrame, Qt item views, etc.: sunken..
+            bool focusHighlight = flags&State_HasFocus/* && flags&State_Enabled*/;
             if (flags & State_Sunken) {
-                renderPanel(p, r, pal, true, true);
+                renderPanel(p, r, pal, true, true, focusHighlight);
             } else if (flags & State_Raised) {
-                renderPanel(p, r, pal, true, false);
+                renderPanel(p, r, pal, true, false, focusHighlight);
             } else {
                 renderPanel(p, r, pal, false);
             }
@@ -2034,63 +2035,6 @@ void PlastikStyle::renderSurface(QPainter *p,
     }
 }
 
-void PlastikStyle::renderPixel(QPainter *p,
-            const QPoint &pos,
-            const int alpha,
-            const QColor &color,
-            const QColor &background,
-            bool fullAlphaBlend) const
-{
-    if(fullAlphaBlend)
-    // full alpha blend: paint into an image with alpha buffer and convert to a pixmap ...
-    {
-        QRgb rgb = color.rgb();
-        // generate a quite unique key -- use the unused width field to store the alpha value.
-        CacheEntry search(cAlphaDot, alpha, 0, rgb);
-        int key = search.key();
-
-        CacheEntry *cacheEntry;
-        if( (cacheEntry = pixmapCache->take(key)) ) {
-            if( search == *cacheEntry ) { // match! we can draw now...
-                if(cacheEntry->pixmap)
-                    p->drawPixmap(pos, *(cacheEntry->pixmap) );
-                return;
-            } else { //Remove old entry in case of a conflict!
-                pixmapCache->remove( key );
-            }
-        }
-
-
-        QImage aImg(1,1,QImage::Format_ARGB32); // 1x1
-        aImg.setPixel(0,0,qRgba(qRed(rgb),qGreen(rgb),qBlue(rgb),alpha));
-        QPixmap *result = new QPixmap(QPixmap::fromImage( aImg ));
-
-        p->drawPixmap(pos, *result);
-
-        // add to the cache...
-        CacheEntry *toAdd = new CacheEntry(search);
-        toAdd->pixmap = result;
-        bool insertOk = pixmapCache->insert( key, toAdd, result->depth()/8);
-        if(!insertOk)
-            delete result;
-    } else
-    // don't use an alpha buffer: calculate the resulting color from the alpha value, the fg- and the bg-color.
-    {
-        QRgb rgb_a = color.rgb();
-        QRgb rgb_b = background.rgb();
-        int a = alpha;
-        if(a>255) a = 255;
-        if(a<0) a = 0;
-        int a_inv = 255 - a;
-
-        QColor res  = QColor( qRgb(qRed(rgb_b)*a_inv/255 + qRed(rgb_a)*a/255,
-                              qGreen(rgb_b)*a_inv/255 + qGreen(rgb_a)*a/255,
-                              qBlue(rgb_b)*a_inv/255 + qBlue(rgb_a)*a/255) );
-        p->setPen(res);
-        p->drawPoint(pos);
-    }
-}
-
 void PlastikStyle::renderButton(QPainter *p,
                                const QRect &r,
                                const QPalette &pal,
@@ -2434,26 +2378,40 @@ void PlastikStyle::renderPanel(QPainter *p,
                               const QRect &r,
                               const QPalette &pal,
                               const bool pseudo3d,
-                              const bool sunken) const
+                              const bool sunken,
+                              const bool focusHighlight) const
 {
     int x, x2, y, y2, w, h;
     r.getRect(&x,&y,&w,&h);
     r.getCoords(&x, &y, &x2, &y2);
 
-        renderContour(p, r, pal.color(QPalette::Background), getColor(pal, PanelContour) );
+    if ( focusHighlight )
+    {
+        renderContour(p, r, pal.color(QPalette::Background),
+                      getColor(pal,FocusHighlight) );
+    }
+    else
+    {
+        renderContour(p, r, pal.color(QPalette::Background),
+                      getColor(pal, PanelContour) );
+    }
 
         if(pseudo3d) {
+            QColor dark = focusHighlight ?
+                    getColor(pal,FocusHighlight).dark(130) : getColor(pal, PanelDark);
+            QColor light = focusHighlight ?
+                    getColor(pal,FocusHighlight).light(130) : getColor(pal, PanelLight);
             if (sunken) {
-                p->setPen(getColor(pal, PanelDark) );
+                p->setPen(dark);
             } else {
-                p->setPen(getColor(pal, PanelLight) );
+                p->setPen(light);
             }
             p->drawLine(r.left()+2, r.top()+1, r.right()-2, r.top()+1);
             p->drawLine(r.left()+1, r.top()+2, r.left()+1, r.bottom()-2);
             if (sunken) {
-                p->setPen(getColor(pal, PanelLight) );
+                p->setPen(light);
             } else {
-                p->setPen(getColor(pal, PanelDark) );
+                p->setPen(dark);
             }
             p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1);
             p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
