@@ -529,12 +529,12 @@ void KPropertiesDialog::insertPages()
     return;
 
   QString query = QString::fromLatin1(
-      "('KPropsDlg/Plugin' in ServiceTypes) and "
       "((not exist [X-KDE-Protocol]) or "
-      " ([X-KDE-Protocol] == '%1'  )   )"          ).arg(item->url().protocol());
+      " ([X-KDE-Protocol] == '%1'  )   )"
+      ).arg(item->url().protocol());
 
   kDebug( 250 ) << "trader query: " << query << endl;
-  KService::List offers = KMimeTypeTrader::self()->query( mimetype, query );
+  KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropsDlg/Plugin", query );
   KService::List::ConstIterator it = offers.begin();
   KService::List::ConstIterator end = offers.end();
   for (; it != end; ++it )
