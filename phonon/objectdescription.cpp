@@ -42,6 +42,10 @@ ObjectDescription::ObjectDescription( const ObjectDescription& rhs )
 {
 }
 
+ObjectDescription::~ObjectDescription()
+{
+}
+
 ObjectDescription& ObjectDescription::operator=( const ObjectDescription& rhs )
 {
 	d = rhs.d;

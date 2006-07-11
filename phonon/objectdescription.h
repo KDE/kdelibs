@@ -61,6 +61,7 @@ class PHONONCORE_EXPORT ObjectDescription
 		ObjectDescription( const ObjectDescription& rhs );
 		ObjectDescription& operator=( const ObjectDescription& rhs );
 		ObjectDescription();
+		~ObjectDescription();
 
 		/**
 		 * Returns \c true if this ObjectDescription describes the same
