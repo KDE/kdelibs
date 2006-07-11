@@ -33,6 +33,7 @@
 #include <qpixmap.h>
 #include <qimage.h>
 #include <qlayout.h>
+#include <qsizepolicy.h>
 #include <qvalidator.h>
 
 /*
@@ -93,7 +94,13 @@ void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
                 m_widget->setObjectName(QLatin1String("info label"));
         }
 
-    (new QHBoxLayout(this))->addWidget(m_widget);
+    QHBoxLayout* lay = new QHBoxLayout(this);
+    lay->setMargin(0);
+    lay->addWidget(m_widget);
+
+    QSizePolicy sp = sizePolicy();
+    sp.setVerticalPolicy(QSizePolicy::Minimum);
+    setSizePolicy(sp);
 }
 
 KFileMetaInfoWidget::~KFileMetaInfoWidget()

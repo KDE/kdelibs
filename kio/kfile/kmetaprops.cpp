@@ -31,7 +31,7 @@
 #include <qlabel.h>
 #include <qfileinfo.h>
 #include <qdatetime.h>
-#include <q3groupbox.h>
+#include <qgroupbox.h>
 #include <QResizeEvent>
 #include <qlinkedlist.h>
 #include <Q3ScrollView>
@@ -132,6 +132,7 @@ void KFileMetaPropsPlugin::createLayout()
     properties->addPage(topframe, i18n("&Meta Info"));
     topframe->setFrameStyle(QFrame::NoFrame);
     QVBoxLayout* tmp = new QVBoxLayout(topframe);
+    tmp->setMargin(0);
 
     // create a scroll view in the page
     MetaPropsScrollView* view = new MetaPropsScrollView(topframe);
@@ -152,9 +153,11 @@ void KFileMetaPropsPlugin::createLayout()
         if (itemList.isEmpty())
             continue;
 
-        Q3GroupBox *groupBox = new Q3GroupBox(2, Qt::Horizontal,
+        QGroupBox *groupBox = new QGroupBox(
             Qt::escape(mtinfo->groupInfo(*git)->translatedName()),
             d->m_frame);
+        QGridLayout *grouplayout = new QGridLayout(groupBox);
+        grouplayout->activate();
 
         toplayout->addWidget(groupBox);
 
@@ -176,17 +179,21 @@ void KFileMetaPropsPlugin::createLayout()
         }
 
         KFileMetaInfoWidget* w = 0L;
+        int row = 0;
         // then first add the editable items to the layout
         for (QLinkedList<KFileMetaInfoItem>::Iterator iit= editItems.begin();
                 iit!=editItems.end(); ++iit)
         {
             QLabel* l = new QLabel((*iit).translatedKey() + ':', groupBox);
+            grouplayout->addWidget(l, row, 0);
             l->setAlignment( static_cast<Qt::Alignment>( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs ) );
             QValidator* val = mtinfo->createValidator(*git, (*iit).key());
             if (!val) kDebug(7033) << "didn't get a validator for " << *git << "/" << (*iit).key() << endl;
             w = new KFileMetaInfoWidget(*iit, val, groupBox);
+            grouplayout->addWidget(w, row, 1);
             d->m_editWidgets.append( w );
             connect(w, SIGNAL(valueChanged(const QVariant&)), this, SIGNAL(changed()));
+            ++row;
         }
 
         // and then the read only items
@@ -194,8 +201,11 @@ void KFileMetaPropsPlugin::createLayout()
                 iit!=readItems.end(); ++iit)
         {
             QLabel* l = new QLabel((*iit).translatedKey() + ':', groupBox);
+            grouplayout->addWidget(l, row, 0);
             l->setAlignment( static_cast<Qt::Alignment>( Qt::AlignLeft | Qt::AlignTop | Qt::TextExpandTabs ) );
-            (new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox));
+            w = new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox);
+            grouplayout->addWidget(w, row, 1);
+            ++row;
         }
     }
 
