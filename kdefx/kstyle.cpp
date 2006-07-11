@@ -91,6 +91,10 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_RadioButton, RadioButton::Size, 16);
     setWidgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, 6);
 
+    setWidgetLayoutProp(WT_DockWidget, DockWidget::TitleMargin, 3);
+    setWidgetLayoutProp(WT_DockWidget, DockWidget::FrameWidth, 3);
+    setWidgetLayoutProp(WT_DockWidget, DockWidget::SeparatorExtent, 6);
+
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::GrooveMargin,  2);
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::SideTextSpace, 3); //(Matches QCommonStyle)
     setWidgetLayoutProp(WT_ProgressBar, ProgressBar::MaxBusyIndicatorSize, 10000);
@@ -551,6 +555,12 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
         }
 
+        case PE_FrameDockWidget:
+        {
+            drawKStylePrimitive(WT_DockWidget, Generic::Frame,option,r,pal,flags,painter,widget);
+            return;
+        }
+
         case PE_Frame:
         {
             drawKStylePrimitive(WT_Generic, Generic::Frame,option,r,pal,flags,painter,widget);
@@ -757,12 +767,12 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionDockWidget* dwOpt = ::qstyleoption_cast<const QStyleOptionDockWidget*>(option);
             if (!dwOpt) return;
 
-            QRect textRect = insideMargin(r, WT_DockWidgetTitle, DockWidgetTitle::Margin, option, widget);
-            drawKStylePrimitive(WT_DockWidgetTitle, DockWidgetTitle::Panel, option, r, pal, flags, p, widget);
+            QRect textRect = insideMargin(r, WT_DockWidget, DockWidget::TitleMargin, option, widget);
+            drawKStylePrimitive(WT_DockWidget, DockWidget::TitlePanel, option, r, pal, flags, p, widget);
 
             TextOption lbOpt(dwOpt->title);
             lbOpt.color = QPalette::HighlightedText;
-            drawKStylePrimitive(WT_DockWidgetTitle, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
+            drawKStylePrimitive(WT_DockWidget, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
             return;
         }
 
@@ -1697,7 +1707,13 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
             return widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
 
         case PM_DockWidgetFrameWidth:
-            return widgetLayoutProp(WT_DockWidgetTitle, DockWidgetTitle::Margin, option, widget);
+            return widgetLayoutProp(WT_DockWidget, DockWidget::FrameWidth, option, widget);
+
+        case PM_DockWidgetSeparatorExtent:
+            return widgetLayoutProp(WT_DockWidget, DockWidget::SeparatorExtent, option, widget);
+
+        case PM_DockWidgetTitleMargin:
+            return widgetLayoutProp(WT_DockWidget, DockWidget::TitleMargin, option, widget);
 
         case PM_ProgressBarChunkWidth:
             return widgetLayoutProp(WT_ProgressBar, ProgressBar::Precision, option, widget);

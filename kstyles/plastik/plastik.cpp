@@ -584,6 +584,28 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         }
         break;
 
+        case WT_DockWidget:
+        {
+            switch (primitive)
+            {
+                case Generic::Frame:
+                {
+                    renderContour(p, r, pal.color( QPalette::Background ),
+                                  pal.color( QPalette::Background ).dark(160),
+                                  Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
+
+                    return;
+                }
+
+                case DockWidget::TitlePanel:
+                {
+                    // TODO
+                    return;
+                }
+            }
+        }
+        break;
+
         case WT_CheckBox:
         {
             switch(primitive)

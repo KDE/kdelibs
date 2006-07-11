@@ -357,7 +357,7 @@ protected:
         WT_Splitter,        ///< @sa Splitter
         WT_CheckBox,        ///< @sa CheckBox
         WT_RadioButton,     ///< @sa RadioButton
-        WT_DockWidgetTitle, ///< @sa DockWidgetTitle
+        WT_DockWidget,      ///< @sa DockWidget
         WT_ProgressBar,     ///< @sa ProgressBar
         WT_MenuBar,         ///< @sa MenuBar
         WT_MenuBarItem,     ///< @sa MenuBarItem
@@ -592,20 +592,28 @@ protected:
     /**
      * @brief Describes the title of a dock widget.
      *
-     * Relevant elements:
+     * Relevant Generic elements:
      * - @c Generic::Text the title text
-     * - KStyle implements @c QStyle::CE_DockWidgetTitle to split it into KStyle primitives.
+     * - @c Generic::Frame the frame around floating dockwidgets
+     *
+     * [KStyle implements @c QStyle::CE_DockWidgetTitle to split it into KStyle primitives]
+     *
+     * @sa WT_DockWidget
      */
-    struct DockWidgetTitle
+    struct DockWidget
     {
         /**
          * @todo need to add a few more layout properties/pixel metric values for dock widgets...
+         *
+         * @todo play with PM_DockWidgetHandleExtent and see what it does
          *
          * @sa setWidgetLayoutProp()
          */
         enum LayoutProp
         {
-            Margin ///< (\b 0) Margin for the title: note that this is a symmetric margin always (only MainMargin is respected)! [sets QStyle::PM_DockWidgetFrameWidth]
+            TitleMargin, ///< (\b 3) Margin for the title: note that this is a symmetric margin always (only MainMargin is respected)! [sets QStyle::PM_DockWidgetFrameWidth]
+            FrameWidth,  ///< (\b 3) width of the frame around floating dockwidgets
+            SeparatorExtent ///< (\b 6) width of the area which separates the (docked) dock window from the window contents [sets QStyle::PM_DockWidgetSeparatorExtent]
         };
 
         /**
@@ -613,7 +621,7 @@ protected:
          */
         enum Primitive
         {
-            Panel       ///< The panel/background of the title bar
+            TitlePanel ///< the panel/background of the title bar
         };
     };
 
