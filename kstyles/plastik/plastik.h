@@ -69,56 +69,9 @@ public:
                                      const QWidget* widget = 0,
                                      Option* kOpt = 0) const;
 
-// 
-//     void polish(QApplication* app );
     virtual void polish(QWidget* widget);
     virtual void unpolish(QWidget* widget);
-// 
-//     void drawKStylePrimitive(KStylePrimitive kpe,
-//                              QPainter* p,
-//                              const QWidget* widget,
-//                              const QRect &r,
-//                              const QColorGroup &cg,
-//                              SFlags flags = Style_Default,
-//                              const QStyleOption& = QStyleOption::Default ) const;
 
-//     void drawControl(ControlElement element,
-//                      QPainter *p,
-//                      const QWidget *widget,
-//                      const QRect &r,
-//                      const QColorGroup &cg,
-//                      SFlags flags = Style_Default,
-//                      const QStyleOption& = QStyleOption::Default ) const;
-// 
-//     void drawControlMask( ControlElement, QPainter *, const QWidget *, const QRect &, const QStyleOption &) const;
-// 
-//     void drawComplexControl(ComplexControl control,
-//                             QPainter *p,
-//                             const QWidget *widget,
-//                             const QRect &r,
-//                             const QColorGroup &cg,
-//                             SFlags flags = Style_Default,
-//                             SCFlags controls = SC_All,
-//                             SCFlags active = SC_None,
-//                             const QStyleOption& = QStyleOption::Default ) const;
-// 
-//     QRect subRect(SubRect r,
-//                   const QWidget *widget ) const;
-
-//     void drawComplexControlMask(QStyle::ComplexControl c,
-//                                 QPainter *p,
-//                                 const QWidget *w,
-//                                 const QRect &r,
-//                                 const QStyleOption &o=QStyleOption::Default) const;
-// 
-//     QSize sizeFromContents(QStyle::ContentsType t,
-//                            const QWidget *w,
-//                            const QSize &s,
-//                            const QStyleOption &o) const;
-// 
-//     int styleHint(StyleHint, const QWidget * = 0,
-//                   const QStyleOption & = QStyleOption::Default,
-//                   QStyleHintReturn * = 0 ) const;
     virtual int styleHint(StyleHint hint, const QStyleOption * option = 0,
                           const QWidget * widget = 0, QStyleHintReturn * returnData = 0) const;
 
@@ -238,9 +191,6 @@ protected:
                    const bool triangular = false,
                    const bool cornerWidget = false,
                    const bool reverseLayout = false) const;
-// 
-//     virtual void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup& cg, 
-//                                         const Q3PopupMenu* popup ) const;
 
     bool eventFilter(QObject *, QEvent *);
 

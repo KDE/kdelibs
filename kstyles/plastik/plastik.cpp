@@ -38,8 +38,6 @@
    Boston, MA 02110-1301, USA.
  */
 
-#include <QDebug>
-
 #include <QPainter>
 #include <QTimer>
 #include <QEvent>
@@ -871,7 +869,20 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 }
 
             }
+        }
+        break;
 
+        case WT_Window:
+        {
+            switch (primitive)
+            {
+                case Generic::Frame:
+                {
+                    renderPanel(p, r, pal, true, flags&State_Sunken);
+                    return;
+                }
+
+            }
         }
         break;
 
@@ -2697,53 +2708,6 @@ void PlastikStyle::renderTab(QPainter *p,
         }
     }
 }
-
-// void PlastikStyle::drawPrimitive(PrimitiveElement pe,
-//                                 QPainter *p,
-//                                 const QRect &r,
-//                                 const QColorGroup &cg,
-//                                 SFlags flags,
-//                                 const QStyleOption &opt ) const
-// {
-
-//         case PE_WindowFrame:
-//             if ( opt.isDefault() || opt.lineWidth() <= 0 )
-//                 break;
-//             renderPanel(p, r, cg, true, sunken);
-//             break;
-//         }
-
-//     }
-// }
-//
-//
-// void PlastikStyle::drawControl(ControlElement element,
-//                               QPainter *p,
-//                               const QWidget *widget,
-//                               const QRect &r,
-//                               const QColorGroup &cg,
-//                               SFlags flags,
-//                               const QStyleOption& opt) const
-// {
-//     const bool reverseLayout = QApplication::isRightToLeft();
-//
-//     const bool enabled = (flags & Style_Enabled);
-//
-//     switch (element) {
-//
-
-
-//     // Menu and dockwindow empty space
-//     //
-//         case CE_DockWindowEmptyArea:
-//             p->fillRect(r, cg.background());
-//             break;
-
-//
-//         default:
-//           KStyle::drawControl(element, p, widget, r, cg, flags, opt);
-//     }
-// }
 
 int PlastikStyle::styleHint(StyleHint hint, const QStyleOption * option,
                             const QWidget * widget, QStyleHintReturn * returnData) const
