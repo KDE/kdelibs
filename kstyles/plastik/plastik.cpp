@@ -614,7 +614,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             {
                 case Generic::Frame:
                 {
-                    qDebug() << "WT_StatusBar frame...!";
                     renderContour(p, r, pal.color( QPalette::Background ),
                                   pal.color( QPalette::Background ).dark(160),
                                   Draw_Left|Draw_Right|Draw_Top|Draw_Bottom);
@@ -835,18 +834,19 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         case WT_TabBar:
         {
             const QStyleOptionTab* tabOpt = qstyleoption_cast<const QStyleOptionTab*>(opt);
+            if (!tabOpt) break;
 
             switch (primitive)
             {
                 case TabBar::NorthTab:
                 case TabBar::SouthTab:
                 {
-                    // TODO: check if tabOpt != 0...
                     QStyleOptionTab::TabPosition pos = tabOpt->position;
+                    bool bottom = primitive == TabBar::SouthTab;
 
                     // TODO: tab painting needs a lot of work in order to handle east and west tabs.
                     // TODO: handle triangular...
-                    renderTab(p, r, pal, mouseOver, flags&State_Selected, false, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
+                    renderTab(p, r, pal, mouseOver, flags&State_Selected, bottom, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
 
                     return;
                 }
