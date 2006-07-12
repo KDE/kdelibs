@@ -843,10 +843,16 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 {
                     QStyleOptionTab::TabPosition pos = tabOpt->position;
                     bool bottom = primitive == TabBar::SouthTab;
+                    bool cornerWidget = reverseLayout ?
+                            (tabOpt->cornerWidgets&QStyleOptionTab::LeftCornerWidget) :
+                            (tabOpt->cornerWidgets&QStyleOptionTab::RightCornerWidget);
+
+                    // TODO kstyle helper for triangular tabs...? TabOpt...?
+                    bool triangular = (tabOpt->shape==QTabBar::TriangularNorth) ||
+                            (tabOpt->shape==QTabBar::TriangularSouth);
 
                     // TODO: tab painting needs a lot of work in order to handle east and west tabs.
-                    // TODO: handle triangular...
-                    renderTab(p, r, pal, mouseOver, flags&State_Selected, bottom, pos, true /*triangular*/, false/*cornerWidget*/, reverseLayout);
+                    renderTab(p, r, pal, mouseOver, flags&State_Selected, bottom, pos, triangular, cornerWidget, reverseLayout);
 
                     return;
                 }
