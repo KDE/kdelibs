@@ -23,6 +23,7 @@
 
 #include <Q3ButtonGroup>
 #include <QComboBox>
+#include <QGroupBox>
 #include <QLabel>
 #include <QMetaObject>
 #include <QMetaProperty>
@@ -245,7 +246,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
                     this, SIGNAL(widgetModified()));
 	  }
         }
-        Q3GroupBox *gb = qobject_cast<Q3GroupBox *>(childWidget);
+        QGroupBox *gb = qobject_cast<QGroupBox *>(childWidget);
         if (!gb)
           bParseChildren = false;
         else
