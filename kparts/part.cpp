@@ -291,7 +291,8 @@ public:
 
   KIO::FileCopyJob * m_job;
   KIO::FileCopyJob * m_uploadJob;
-  KURL m_originalURL;
+  KURL m_originalURL; // for saveAs
+  QString m_originalFilePath; // for saveAs
   bool m_showProgressInfo : 1;
   bool m_saveOk : 1;
   bool m_waitForSave : 1;
@@ -559,6 +560,7 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   }
   d->m_duringSaveAs = true;
   d->m_originalURL = m_url;
+  d->m_originalFilePath = m_file;
   m_url = kurl; // Store where to upload in saveToURL
   prepareSaving();
   bool result = save(); // Save local file and upload local file
@@ -567,8 +569,10 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   else
   {
     m_url = d->m_originalURL;
+    m_file = d->m_originalFilePath;
     d->m_duringSaveAs = false;
     d->m_originalURL = KURL();
+    d->m_originalFilePath = QString::null;
   }
 
   return result;
@@ -611,6 +615,7 @@ bool ReadWritePart::saveToURL()
     d->m_saveOk = true;
     d->m_duringSaveAs = false;
     d->m_originalURL = KURL();
+    d->m_originalFilePath = QString::null;
     return true; // Nothing to do
   }
   else
@@ -646,8 +651,10 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
     unlink(QFile::encodeName(d->m_uploadJob->srcURL().path()));
     QString error = d->m_uploadJob->errorString();
     d->m_uploadJob = 0;
-    if (d->m_duringSaveAs)
+    if (d->m_duringSaveAs) {
       m_url = d->m_originalURL;
+      m_file = d->m_originalFilePath;
+    }
     emit canceled( error );
   }
   else
@@ -664,6 +671,7 @@ void ReadWritePart::slotUploadFinished( KIO::Job * )
   }
   d->m_duringSaveAs = false;
   d->m_originalURL = KURL();
+  d->m_originalFilePath = QString::null;
   if (d->m_waitForSave)
   {
      qApp->exit_loop();
