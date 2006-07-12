@@ -48,10 +48,12 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QMenuBar>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSplitter>
+#include <QToolBar>
 
 #include "plastik.h"
 #include "plastik.moc"
@@ -179,14 +181,6 @@ PlastikStyle::PlastikStyle() :
     setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 4);
     setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
 
-//     hoverTab = 0;
-//
-//     horizontalDots = 0;
-//     verticalDots = 0;
-//
-//     horizontalLine = 0;
-//     verticalLine = 0;
-//
     QSettings settings;
     _contrast = settings.value("/Qt/KDE/contrast", 6).toInt();
     settings.beginGroup("/plastikstyle/Settings");
@@ -247,10 +241,6 @@ void PlastikStyle::updateProgressPos()
 PlastikStyle::~PlastikStyle()
 {
     delete pixmapCache;
-//     delete horizontalDots;
-//     delete verticalDots;
-//     delete horizontalLine;
-//     delete verticalLine;
 }
 
 
@@ -487,9 +477,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     bool active  = flags & State_Selected;
                     bool focused = flags & State_HasFocus;
                     bool down = flags & State_Sunken;
-
-                    // TODO: set Background palette instead...
-                    p->fillRect(r, pal.color(QPalette::Background) );
 
                     if (active && focused) {
                         renderButton(p, r, pal, down, mouseOver, true);
@@ -1580,7 +1567,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                 case ToolBar::PanelHor:
                 {
-                    p->fillRect(r, pal.window()); // TODO: simply set other background mode instead.?
                     if ( _drawToolBarSeparator ) {
                         p->setPen( getColor(pal, PanelLight) );
                         p->drawLine( r.left(), r.top(), r.right(), r.top() );
@@ -1734,6 +1720,14 @@ void PlastikStyle::polish(QWidget* widget)
         widget->setAttribute(Qt::WA_Hover);
     }
 
+    if (qobject_cast<QMenuBar*>(widget)
+        || widget->inherits("Q3ToolBar")
+        || qobject_cast<QToolBar*>(widget)
+        || (widget && qobject_cast<QToolBar *>(widget->parent())) )
+    {
+        widget->setBackgroundRole(QPalette::Background);
+    }
+
     KStyle::polish(widget);
 }
 
@@ -1751,6 +1745,14 @@ void PlastikStyle::unpolish(QWidget* widget)
         || qobject_cast<QSplitterHandle*>(widget)
         || qobject_cast<QRadioButton*>(widget)) {
         widget->setAttribute(Qt::WA_Hover, false);
+    }
+
+    if (qobject_cast<QMenuBar*>(widget)
+        || widget->inherits("Q3ToolBar")
+        || qobject_cast<QToolBar*>(widget)
+        || (widget && qobject_cast<QToolBar *>(widget->parent())) )
+    {
+        widget->setBackgroundRole(QPalette::Button);
     }
 
     KStyle::unpolish(widget);
@@ -2433,7 +2435,6 @@ void PlastikStyle::renderPanel(QPainter *p,
             p->drawLine(r.left()+2, r.bottom()-1, r.right()-2, r.bottom()-1);
             p->drawLine(r.right()-1, r.top()+2, r.right()-1, r.bottom()-2);
         }
-//     }
 }
 
 
