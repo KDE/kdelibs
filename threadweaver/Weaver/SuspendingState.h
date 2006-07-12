@@ -17,6 +17,9 @@
 #ifndef SuspendingState_H
 #define SuspendingState_H
 
+#ifndef THREADWEAVER_PRIVATE_API
+#define THREADWEAVER_PRIVATE_API
+#endif
 
 #include "StateImplementation.h"
 

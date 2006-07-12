@@ -19,6 +19,10 @@
 
 #include "StateImplementation.h"
 
+#ifndef THREADWEAVER_PRIVATE_API
+#define THREADWEAVER_PRIVATE_API
+#endif
+
 namespace ThreadWeaver {
 
     /* WorkingHardState handles the state dependent calls in the state where

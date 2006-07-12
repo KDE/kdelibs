@@ -17,6 +17,9 @@
 #ifndef InConstructionState_H
 #define InConstructionState_H
 
+#ifndef THREADWEAVER_PRIVATE_API
+#define THREADWEAVER_PRIVATE_API
+#endif
 
 #include "StateImplementation.h"
 

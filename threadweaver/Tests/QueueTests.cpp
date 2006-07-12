@@ -8,7 +8,20 @@
 #include "AppendCharacterJob.h" 
 
 #include <Job.h>
+#include <State.h>
+#include <QueuePolicy.h>
+#include <JobSequence.h>
+#include <JobCollection.h>
+#include <DebuggingAids.h>
+#include <WeaverObserver.h>
+#include <DependencyPolicy.h>
+#include <ResourceRestrictionPolicy.h>
+
 #include <ThreadWeaver.h>
+
+#ifdef THREADWEAVER_PRIVATE_API
+#error "PARTS OF THREADWEAVER'S PRIVATE API ARE INCLUDED IN PUBLIC HEADERS!"
+#endif
 
 QMutex s_GlobalMutex;
 

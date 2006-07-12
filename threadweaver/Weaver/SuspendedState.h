@@ -17,6 +17,10 @@
 #ifndef SuspendedState_H
 #define SuspendedState_H
 
+#ifndef THREADWEAVER_PRIVATE_API
+#define THREADWEAVER_PRIVATE_API
+#endif
+
 #include "StateImplementation.h"
 
 namespace ThreadWeaver {
