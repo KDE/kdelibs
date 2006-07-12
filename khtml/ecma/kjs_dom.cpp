@@ -182,6 +182,46 @@ Value DOMNode::tryGet(ExecState *exec, const Identifier &propertyName) const
   return DOMObjectLookupGetValue<DOMNode, DOMObject>(exec, propertyName, &DOMNodeTable, this);
 }
 
+static khtml::RenderObject* handleBodyRootQuirk(const DOM::Node& node, khtml::RenderObject* rend, int token)
+{
+  //This emulates the quirks of various height/width properties on the viewport and root. Note that it 
+  //is (mostly) IE-compatible in quirks, and mozilla-compatible in strict.
+  if (!rend) return 0;
+
+  bool quirksMode = rend->style() && rend->style()->htmlHacks();
+  
+  //There are a couple quirks here. One is that in quirks mode body is always forwarded to root...
+  //This is relevant for even the scrollTop/scrollLeft type properties.
+  if (quirksMode && node.handle()->id() == ID_BODY) {
+    while (rend->parent() && !rend->isRoot())
+      rend = rend->parent();
+  }
+
+  //Also, some properties of the root are really done in terms of the viewport.
+  //These are  {offset/client}{Height/Width}. The offset versions do it only in 
+  //quirks mode, the client always.
+  if (!rend->isRoot()) return rend; //Don't care about non-root things here!
+  bool needViewport = false;
+
+  switch (token) {
+    case DOMNode::OffsetHeight:
+    case DOMNode::OffsetWidth:
+      needViewport = quirksMode;
+      break;
+    case DOMNode::ClientHeight:
+    case DOMNode::ClientWidth:
+      needViewport = true;
+      break;
+  }
+  
+  if (needViewport) {
+    //Scan up to find the new target
+    while (rend->parent())
+      rend = rend->parent();
+  }
+  return rend;
+}
+
 Value DOMNode::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
@@ -286,6 +326,9 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     }
 
     khtml::RenderObject *rend = node.handle()->renderer();
+
+    //In quirks mode, may need to forward if to body.
+    rend = handleBodyRootQuirk(node, rend, token);
 
     switch (token) {
     case OffsetLeft:
@@ -426,6 +469,9 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
       docimpl->updateLayout();
 
     khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
+
+    //In quirks mode, may need to forward.
+    rend = handleBodyRootQuirk(node, rend, token);
 
     switch (token) {
       case ScrollLeft:

@@ -676,10 +676,6 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
 # IE extension
-  scrollLeft	KJS::HTMLElement::BodyScrollLeft DontDelete
-  scrollTop	KJS::HTMLElement::BodyScrollTop	 DontDelete
-  scrollWidth   KJS::HTMLElement::BodyScrollWidth DontDelete|ReadOnly
-  scrollHeight  KJS::HTMLElement::BodyScrollHeight DontDelete|ReadOnly
   onload        KJS::HTMLElement::BodyOnLoad     DontDelete
 @end
 @begin HTMLFormElementTable 11
@@ -1257,20 +1253,6 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         Value nodeValue(kjsDocNode);
         return kjsDocNode->getListener( DOM::EventImpl::LOAD_EVENT );
     }
-    default:
-      // Update the document's layout before we compute these attributes.
-      DOM::DocumentImpl* docimpl = node.handle()->getDocument();
-      if (docimpl)
-        docimpl->updateLayout();
-
-      switch( token ) {
-      case BodyScrollLeft:
-        return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsX() : 0);
-      case BodyScrollTop:
-        return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsY() : 0);
-      case BodyScrollHeight:   return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsHeight() : 0);
-      case BodyScrollWidth:    return Number(body.ownerDocument().view() ? body.ownerDocument().view()->contentsWidth() : 0);
-      }
     }
   }
   break;
@@ -2487,21 +2469,6 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value&
       case BodyLink:            { body.setLink(str); return; }
       case BodyText:            { body.setText(str); return; }
       case BodyVLink:           { body.setVLink(str); return; }
-      case BodyScrollLeft:
-      case BodyScrollTop: {
-        QScrollView* sview = body.ownerDocument().view();
-        if (sview) {
-          // Update the document's layout before we compute these attributes.
-          DOM::DocumentImpl* docimpl = body.handle()->getDocument();
-          if (docimpl)
-            docimpl->updateLayout();
-          if (token == BodyScrollLeft)
-            sview->setContentsPos(value.toInteger(exec), sview->contentsY());
-          else
-            sview->setContentsPos(sview->contentsX(), value.toInteger(exec));
-          }
-        return;
-      }
       case BodyOnLoad:
         DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(node.ownerDocument().handle());
         if (doc && checkNodeSecurity(exec, node))
