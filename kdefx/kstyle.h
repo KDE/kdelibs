@@ -310,7 +310,30 @@ protected:
         DoubleButtonOption(ActiveButton ab): activeButton(ab)
         {}
     };
-    
+
+    /**
+     * Option for drawing WT_Window titlebar buttons, indicating whether
+     * the button is pressed, and containing the window icon
+     * @sa Window
+     */
+    struct KDEFX_EXPORT TitleButtonOption: public OptionBase<TitleButtonOption, Option>
+    {
+        bool active;  ///< whether the button is pressed
+        QIcon icon;   ///< window Icon
+//         /// whether the button is hovered, this doesn't work at the moment (not even in any Qt style)...
+//         bool hover;
+
+        TitleButtonOption(): active(false)/*, hover(false)*/
+        {}
+
+        /**
+         * Convenience constructor.
+         *
+         * @param act initializes the active button property
+         */
+        TitleButtonOption(bool act): active(act)
+        {}
+    };
     
     ///Option representing text drawing info. For Generic::Text. 
     struct KDEFX_EXPORT TextOption: public OptionBase<TextOption, ColorOption>
@@ -377,6 +400,7 @@ protected:
         WT_ToolBar,         ///< @sa ToolBar
         WT_ToolButton,      ///< @sa ToolButton
         WT_ToolBoxTab,      ///< @sa ToolBoxTab
+        WT_Window,          ///< @sa Window
         WT_Limit = 0xFFFF ///< For enum extensibility
     };
 
@@ -1286,7 +1310,7 @@ protected:
         enum Primitive
         {
             Panel   /**< the panel of a toolbox tab, KStyles default implementation
-                     * paints WT_PushButton/PushButton::Panel
+                     * paints WT_ToolButton/ToolButton::Panel
                      * [implements CE_ToolBoxTab] */
         };
     };
@@ -1326,6 +1350,59 @@ protected:
         {
             Panel           /**< the toolbutton panel
                              * [implements QStyle::PE_PanelButtonTool] */
+        };
+    };
+
+
+    /**
+     * @brief Describes windows, like in QWorkspace.
+     *
+     * @todo SP_TitleBar* pixmaps
+     *
+     * @sa WT_Window
+     */
+    struct Window
+    {
+        /**
+         * @sa setWidgetLayoutProp()
+         */
+        enum LayoutProps
+        {
+            TitleTextColor, ///< (\b ColorMode(QPalette::HighlightedText)) color mode of the titlebar text
+            TitleHeight, ///< (\b 20) height of the titlebar [sets QStyle::PM_TitleBarHeight]
+            NoTitleFrame, /**< (\b 0) if set to non-zero, the frame primitive is not
+                           * expected to paint around the titlebar area
+                           * [sets QStyle::SH_TitleBar_NoBorder] */
+            TitleMargin,  /**< (\b 2) margin around titlebar contents (buttons,
+                           * text label), used to position them and determine the
+                           * height of titlebar buttons, doesn't influence size */
+            ButtonWidth = TitleMargin + MarginInc, ///< (\b 16) width of a titlebar button
+            ButtonSpace,      ///< (\b 2) space between titlebar buttons
+            ButtonToTextSpace ///< (\b 3) space between buttons and the title text
+        };
+
+        /**
+         * Relevant Generic elements:
+         * - @c Generic::Text paints the titlebar text label
+         * - @c Generic::Frame indicating an associated sub-menu
+         *
+         * [titlebar elements implement CC_TitleBar]
+         *
+         * @todo KStyleOption for button hover!
+         *
+         * @sa drawKStylePrimitive()
+         */
+        enum Primitive
+        {
+            TitlePanel,  ///< whole titlebar panel/background, by KStyle default it's filled with plain highlight color
+            ButtonMenu,     ///< system menu button, passes TitleButtonOption @todo KStyle default implementation
+            ButtonMin,      ///< minimize button, passes TitleButtonOption
+            ButtonMax,      ///< maximize button, passes TitleButtonOption
+            ButtonRestore,  ///< restore button, passes TitleButtonOption @todo split min/max restore
+            ButtonClose,    ///< close button, passes TitleButtonOption
+            ButtonShade,    ///< shade button, passes TitleButtonOption
+            ButtonUnshade,  ///< button to remove the shade state, passes TitleButtonOption
+            ButtonHelp      ///< context help button, passes TitleButtonOption
         };
     };
 //@}

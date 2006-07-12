@@ -181,6 +181,14 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
 
     setWidgetLayoutProp(WT_ToolBoxTab, ToolBoxTab::Margin, 0);
+
+    setWidgetLayoutProp(WT_Window, Window::TitleTextColor, ColorMode(QPalette::HighlightedText));
+    setWidgetLayoutProp(WT_Window, Window::TitleHeight, 20);
+    setWidgetLayoutProp(WT_Window, Window::TitleMargin, 2);
+    setWidgetLayoutProp(WT_Window, Window::NoTitleFrame, 0);
+    setWidgetLayoutProp(WT_Window, Window::ButtonWidth, 16);
+    setWidgetLayoutProp(WT_Window, Window::ButtonSpace, 2);
+    setWidgetLayoutProp(WT_Window, Window::ButtonToTextSpace, 3);
 }
 
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
@@ -267,7 +275,56 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         case WT_ToolBoxTab:
         {
             if (primitive == ToolBoxTab::Panel) {
-                drawKStylePrimitive(WT_PushButton, PushButton::Panel, opt, r, pal, flags, p, widget);
+                drawKStylePrimitive(WT_ToolButton, ToolButton::Panel, opt, r, pal, flags, p, widget);
+            }
+
+            break;
+        }
+
+        case WT_Window:
+        {
+            switch (primitive)
+            {
+                case Window::TitlePanel:
+                    p->fillRect(r, pal.color(QPalette::Highlight) );
+                    return;
+
+                case Window::ButtonMenu:
+                {
+                    KStyle::TitleButtonOption* tbkOpts =
+                            extractOption<KStyle::TitleButtonOption*>(kOpt);
+                    if (!tbkOpts->icon.isNull()) {
+                        tbkOpts->icon.paint(p, r);
+                    } else {
+                        QStyleOption tool(0);
+                        tool.palette = pal;
+                        // TODO: give it a nice KDE logo.
+                        QPixmap pm = standardPixmap(SP_TitleBarMenuButton, &tool, widget);
+                        tool.rect = r;
+                        p->save();
+                        drawItemPixmap(p, r, Qt::AlignCenter, pm);
+                        p->restore();
+                    }
+                    return;
+                }
+
+                case Window::ButtonMin:
+                case Window::ButtonMax:
+                case Window::ButtonRestore:
+                case Window::ButtonClose:
+                case Window::ButtonShade:
+                case Window::ButtonUnshade:
+                case Window::ButtonHelp:
+                {
+                    KStyle::TitleButtonOption* tbkOpts =
+                            extractOption<KStyle::TitleButtonOption*>(kOpt);
+                    State bflags = flags;
+                    bflags &= ~State_Sunken;
+                    if (tbkOpts->active)
+                        bflags |= State_Sunken;
+                    drawKStylePrimitive(WT_ToolButton, ToolButton::Panel, opt, r, pal, bflags, p, widget);
+                    return;
+                }
             }
 
             break;
@@ -608,6 +665,12 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_FrameDockWidget:
         {
             drawKStylePrimitive(WT_DockWidget, Generic::Frame,option,r,pal,flags,painter,widget);
+            return;
+        }
+
+        case PE_FrameWindow:
+        {
+            drawKStylePrimitive(WT_Window, Generic::Frame,option,r,pal,flags,painter,widget);
             return;
         }
 
@@ -1722,6 +1785,10 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         case SH_MenuBar_MouseTracking:
         case SH_Menu_MouseTracking:
             return true;
+
+        case SH_TitleBar_NoBorder:
+            return widgetLayoutProp(WT_Window, Window::NoTitleFrame, option, widget);
+
         default:
             break;
     };
@@ -1901,6 +1968,9 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_ScrollBarExtent:
             return widgetLayoutProp(WT_ScrollBar, ScrollBar::BarWidth, option, widget);
+
+        case PM_TitleBarHeight:
+            return widgetLayoutProp(WT_Window, Window::TitleHeight, option, widget);
 
         default:
             break;
@@ -2489,6 +2559,112 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             break;
         } //CC_ToolButton
 
+        case CC_TitleBar:
+        {
+            const QStyleOptionTitleBar *tb =
+                    qstyleoption_cast<const QStyleOptionTitleBar *>(opt);
+            if (!tb)
+                break;
+
+            // title bar
+            drawKStylePrimitive(WT_Window, Window::TitlePanel, opt, r, pal, flags, p, w);
+
+            // draw title text
+            QRect textRect = subControlRect(CC_TitleBar, tb, SC_TitleBarLabel, w);
+            TextOption textOpt(tb->text);
+            textOpt.color = widgetLayoutProp(WT_Window, Window::TitleTextColor, opt, w);
+            drawKStylePrimitive(WT_Window, Generic::Text, opt, textRect,
+                                pal, flags, p, w, &textOpt);
+
+            TitleButtonOption buttonKOpt;
+            buttonKOpt.icon = tb->icon;
+
+            if ((tb->subControls & SC_TitleBarSysMenu) &&
+                 (tb->titleBarFlags & Qt::WindowSystemMenuHint))
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarSysMenu)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarSysMenu, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonMenu, opt, br, pal, flags, p, w,
+                                   &buttonKOpt);
+            }
+
+            if ((tb->subControls & SC_TitleBarMinButton) &&
+                 (tb->titleBarFlags & Qt::WindowMinimizeButtonHint))
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarMinButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarMinButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonMin, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            if ((tb->subControls & SC_TitleBarMaxButton) &&
+                 (tb->titleBarFlags & Qt::WindowMaximizeButtonHint))
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarMaxButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarMaxButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonMax, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            if ((tb->subControls & SC_TitleBarCloseButton) &&
+                 (tb->titleBarFlags & Qt::WindowSystemMenuHint))
+            {
+//                 bool hover = (tb->activeSubControls & SC_TitleBarCloseButton)
+//                         && (tb->state & State_MouseOver);
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarCloseButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarCloseButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonClose, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            if ((tb->subControls & SC_TitleBarNormalButton) &&
+                 (((tb->titleBarFlags & Qt::WindowMinimizeButtonHint) &&
+                 (tb->titleBarState & Qt::WindowMinimized)) ||
+                 ((tb->titleBarFlags & Qt::WindowMaximizeButtonHint) &&
+                 (tb->titleBarState & Qt::WindowMaximized))))
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarNormalButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarNormalButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonRestore, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            if (tb->subControls & SC_TitleBarShadeButton)
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarShadeButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarShadeButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonShade, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            if (tb->subControls & SC_TitleBarUnshadeButton)
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarUnshadeButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarUnshadeButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonUnshade, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            if ((tb->subControls & SC_TitleBarContextHelpButton)
+                && (tb->titleBarFlags & Qt::WindowContextHelpButtonHint))
+            {
+                buttonKOpt.active = (tb->activeSubControls & SC_TitleBarContextHelpButton)
+                        && (tb->state & State_Sunken);
+                QRect br = subControlRect(CC_TitleBar, tb, SC_TitleBarContextHelpButton, w);
+                drawKStylePrimitive(WT_Window, Window::ButtonHelp, opt, br, pal, flags, p, w,
+                                    &buttonKOpt);
+            }
+
+            return;
+        } // CC_TitleBar
+
         default:
             break;
     } //switch
@@ -2768,6 +2944,134 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                 }
             } //option ok
         } //CC_ComboBox
+
+        case CC_TitleBar:
+        {
+            const QStyleOptionTitleBar *tbOpt =
+                    qstyleoption_cast<const QStyleOptionTitleBar *>(option);
+            if (!tbOpt)
+                break;
+
+            QRect ret = insideMargin(r, WT_Window, Window::TitleMargin, option, widget);
+
+            const int btnHeight = ret.height();
+            const int btnWidth = widgetLayoutProp(WT_Window, Window::ButtonWidth, option, widget);
+            const int btnSpace = widgetLayoutProp(WT_Window, Window::ButtonSpace, option, widget);
+            const int titleSpace = widgetLayoutProp(WT_Window, Window::ButtonToTextSpace, option, widget);
+
+            bool isMinimized = tbOpt->titleBarState & Qt::WindowMinimized;
+            bool isMaximized = tbOpt->titleBarState & Qt::WindowMaximized;
+
+            // button layout:  menu -title- help,shade,min,max,close
+
+            int btnOffsetCount = 0; // for button rects; count the position in the button bar
+
+            switch (subControl) {
+                case SC_TitleBarLabel:
+                {
+                    if (tbOpt->titleBarFlags & Qt::WindowTitleHint)
+                    {
+                        int cLeft = 0; // count buttons in the button bar
+                        int cRight = 0;
+                        // TODO: merge this with button stuff...
+                        if (tbOpt->titleBarFlags & Qt::WindowSystemMenuHint) {
+                            // menu and close button
+                            ++cLeft;
+                            ++cRight;
+                        }
+                        if (!isMinimized &&
+                             (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
+                            ++cRight;
+                        if (isMinimized &&
+                            (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
+                            ++cRight;
+                        if (isMinimized &&
+                            (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
+                            ++cRight;
+                        else if (isMaximized &&
+                                 (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
+                            ++cRight;
+                        if (!isMaximized &&
+                             (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
+                            ++cRight;
+                        if (!isMinimized &&
+                             (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
+                            ++cRight;
+                        if (isMinimized &&
+                            (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
+                            ++cRight;
+                        if (tbOpt->titleBarFlags & Qt::WindowContextHelpButtonHint)
+                            ++cRight;
+
+                        ret.adjust( cLeft*btnWidth+(cLeft-1)*btnSpace+titleSpace, 0,
+                                    -(titleSpace+cRight*btnWidth+(cRight-1)*btnSpace), 0 );
+                    }
+                    break;
+                }
+
+                case SC_TitleBarSysMenu:
+                {
+                    if (tbOpt->titleBarFlags & Qt::WindowSystemMenuHint) {
+                        ret.setRect(ret.left(), ret.top(), btnWidth, btnHeight);
+                    }
+                    break;
+                }
+
+                case SC_TitleBarContextHelpButton:
+                    if (tbOpt->titleBarFlags & Qt::WindowContextHelpButtonHint)
+                        ++btnOffsetCount;
+                case SC_TitleBarMinButton:
+                    if (!isMinimized &&
+                         (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
+                        ++btnOffsetCount;
+                    else if (subControl == SC_TitleBarMinButton)
+                        return QRect();
+                case SC_TitleBarNormalButton:
+                    if (isMinimized &&
+                        (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
+                        ++btnOffsetCount;
+                    else if (isMaximized &&
+                             (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
+                        ++btnOffsetCount;
+                    else if (subControl == SC_TitleBarNormalButton)
+                        return QRect();
+                case SC_TitleBarMaxButton:
+                    if (!isMaximized &&
+                         (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
+                        ++btnOffsetCount;
+                    else if (subControl == SC_TitleBarMaxButton)
+                        return QRect();
+                case SC_TitleBarShadeButton:
+                    if (!isMinimized &&
+                         (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
+                        ++btnOffsetCount;
+                    else if (subControl == SC_TitleBarShadeButton)
+                        return QRect();
+                case SC_TitleBarUnshadeButton:
+                    if (isMinimized &&
+                        (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
+                        ++btnOffsetCount;
+                    else if (subControl == SC_TitleBarUnshadeButton)
+                        return QRect();
+                case SC_TitleBarCloseButton:
+                {
+                    if (tbOpt->titleBarFlags & Qt::WindowSystemMenuHint)
+                        ++btnOffsetCount;
+                    else if (subControl == SC_TitleBarCloseButton)
+                        return QRect();
+                    // set the rect for all buttons that fell through:
+                    ret.setRect(ret.right()-btnOffsetCount*btnWidth-(btnOffsetCount-1)*btnSpace,
+                                ret.top(), btnWidth, btnHeight);
+                    break;
+                }
+
+                default:
+                    return QRect();
+            }
+
+            return visualRect(tbOpt->direction, tbOpt->rect, ret);
+
+        } // CC_TitleBar
 
         default:
             break;
