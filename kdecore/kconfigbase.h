@@ -33,7 +33,7 @@
 // it is a base class of an exported class. This must be 
 // known here to avoid an additional instantiation. 
 #ifdef Q_CC_MSVC
-#include <dbus/qdbusmessage.h>
+#include <QtDBus/qdbusmessage.h>
 #endif
 
 template <typename KT, typename KV> class QMap;
