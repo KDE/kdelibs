@@ -171,6 +171,8 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_Header, Header::TextToIconSpace, 3);
     setWidgetLayoutProp(WT_Header, Header::MarkSize, 9);
 
+    setWidgetLayoutProp(WT_GroupBox, GroupBox::FrameWidth, 2);
+    setWidgetLayoutProp(WT_GroupBox, GroupBox::TextAlignTop, false);
     setWidgetLayoutProp(WT_GroupBox, GroupBox::TitleTextColor, ColorMode(QPalette::Text));
 
     setWidgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent, 6);

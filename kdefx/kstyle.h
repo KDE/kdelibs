@@ -1214,8 +1214,6 @@ protected:
      *
      * @sa Generic::DefaultFrameWidth
      *
-     * @todo What about frame width etc.? CT_GroupBox, CC_GroupBox sizeFromContents(), subControlRect()
-     *
      * @sa WT_GroupBox
      */
     struct GroupBox
