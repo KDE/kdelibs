@@ -83,7 +83,7 @@ enum K3SpellClients {
  * @see K3Spell
  * @deprecated use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED K3SpellConfig : public QWidget
+class KDE3SUPPORT_EXPORT_DEPRECATED K3SpellConfig : public QWidget
 {
   Q_OBJECT
 

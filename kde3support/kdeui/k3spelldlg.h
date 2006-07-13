@@ -46,7 +46,7 @@ enum KS_RESULT {
 /**
  * @deprecated, use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED K3SpellDlg : public KDialog
+class KDE3SUPPORT_EXPORT_DEPRECATED K3SpellDlg : public KDialog
 {
   Q_OBJECT
 

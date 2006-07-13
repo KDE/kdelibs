@@ -43,7 +43,7 @@ class K3SpellDlg;
  *
  * @deprecated, use kspell2 instead
  */
-class KDEUI_EXPORT_DEPRECATED K3Spell : public QObject
+class KDE3SUPPORT_EXPORT_DEPRECATED K3Spell : public QObject
 {
   Q_OBJECT
 
