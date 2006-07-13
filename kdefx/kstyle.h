@@ -80,14 +80,6 @@ class QStyleOptionTab;
 // TODO: implement standardIcon().. and what about standardPalette()?
 // TODO: maybe the arrow in CE_PushButtonLabel should be painted in CE_PushButtonBevel like QCommonStyle
 
-/*
- ### ### TODO:Where does visualRect fit in? Probably should be done already before calling drawKStylePrimitive?
- ...
-All the  basic PE_Primitive calls are also broken down to KStylePrimitive calls by default, as follows:
- 
- PE_FocusRect -> WT_Generic, Generic::FocusIndicator
- ### TODO, actually
-*/
 class KDEFX_EXPORT KStyle: public QCommonStyle
 {
 public:
@@ -554,7 +546,7 @@ protected:
         {
             Size,               ///< (\b 16) size of the checkbox [sets PM_IndicatorWidth, PM_IndicatorHeight]
             BoxTextSpace,       ///< (\b 6) space to leave between checkbox and text (and icon between them in case there is one)
-            NoLabelFocusMargin, /**< (\b 0) rectangle to apply to the checkbox rectangle
+            NoLabelFocusMargin, /**< (\b 1) rectangle to apply to the checkbox rectangle
                                  * to get where to paint the focus rectangle in
                                  * case of a labelless checkbox */
             FocusMargin = NoLabelFocusMargin + MarginInc ///< (\b 0) margin around the checkbox contents reserved for the focus rect @todo have a look, it isn't as nice as plastique etc.
@@ -970,7 +962,7 @@ protected:
          */
         enum LayoutProp
         {
-            FrameWidth      // TODO: this is ignored for now. See SE_TabWidgetTabContents comment. (\b 2) 
+            FrameWidth      ///< (\b 2) width of the frame around a tab widget [sets QStyle::SE_TabWidgetTabContents]
         };
     };
 
