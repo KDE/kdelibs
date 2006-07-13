@@ -94,6 +94,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert("QDateEdit", SIGNAL(valueChanged(const QDate &)));
     s_changedMap->insert("QDateTimeEdit", SIGNAL(valueChanged(const QDateTime &)));
     s_changedMap->insert("QDial", SIGNAL(valueChanged (int)));
+    s_changedMap->insert("QDoubleSpinBox", SIGNAL(valueChanged(double)));
     s_changedMap->insert("QLineEdit", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert("QSlider", SIGNAL(valueChanged(int)));
     s_changedMap->insert("QSpinBox", SIGNAL(valueChanged(int)));
