@@ -380,17 +380,15 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget)
 {
   if (!s_propertyMap->contains(widget->metaObject()->className())) {
     const QMetaObject *metaObject = widget->metaObject();
-    int propertyCount = metaObject->propertyCount();
-    int i;
-    for ( i = 0; i < propertyCount; ++i ) {
-      const QMetaProperty metaProperty = metaObject->property(i);
-      if (metaProperty.isUser()) {
-        s_propertyMap->insert( widget->metaObject()->className(), metaProperty.name() );
-//	kDebug(178) << "class name: '" << widget->metaObject()->className() << " 's USER property: " << metaProperty.name() << endl;
-        break;
-      }
+    const QMetaProperty user = metaObject->userProperty();
+    if ( user.isValid() ) {
+        s_propertyMap->insert( widget->metaObject()->className(), user.name() );
+        //kDebug(178) << "class name: '" << widget->metaObject()->className()
+        //<< " 's USER property: " << metaProperty.name() << endl;
     }
-    if ( i == propertyCount ) return QByteArray(); //no USER property
+    else {
+        return QByteArray(); //no USER property
+    }
   }
   return s_propertyMap->value( widget->metaObject()->className() );
 }
