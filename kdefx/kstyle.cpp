@@ -53,8 +53,6 @@
 #include <QVariant>
 //#include <QStyleOptionButton>
 
-#include <stdio.h> //###debug
-
 
 //### FIXME: Who to credit these to?
 static const qint32 u_arrow[]={-1,-3, 0,-3, -2,-2, 1,-2, -3,-1, 2,-1, -4,0, 3,0, -4,1, 3,1};
@@ -828,9 +826,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
             //### do we do anything for RTL here?
 
-            //### ugly
-            const_cast<QStyleOption*>(option)->rect = labelRect;
-            drawControl(CE_PushButtonLabel, option, p, widget);
+            QStyleOptionButton bOptTmp = *bOpt;
+            bOptTmp.rect = labelRect;
+            drawControl(CE_PushButtonLabel, &bOptTmp, p, widget);
 
             //Finally, renderer the focus indicator if need be
             if (flags & State_HasFocus)
@@ -979,7 +977,6 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
         case CE_CheckBox:
         {
-            //### FIXME: Icon labels???
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
             if (!bOpt) return;
 
@@ -989,15 +986,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             bOptTmp.rect = handleRTL(bOpt, checkBox);
             drawPrimitive(PE_IndicatorCheckBox, &bOptTmp, p, widget);
 
-            //Draw the label, if there is one
-            if (!bOpt->text.isEmpty())
-            {
-                QRect labelBox = subElementRect(SE_CheckBoxContents, option, widget);
-
-                TextOption lbOpt(bOpt->text);
-                drawKStylePrimitive(WT_CheckBox, Generic::Text, option, handleRTL(bOpt, labelBox),
-                                    pal, flags, p, widget, &lbOpt);
-            }
+            // pixmap and text label...
+            bOptTmp.rect = subElementRect(SE_CheckBoxContents, option, widget);
+            drawControl(CE_CheckBoxLabel, &bOptTmp, p, widget);
 
             //Draw the focus rect...
             if (flags & State_HasFocus)
@@ -1014,15 +1005,38 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
             if (!bOpt) return;
 
-            TextOption lbOpt(bOpt->text);
-            drawKStylePrimitive(WT_CheckBox, Generic::Text, option, r,
-                                pal, flags, p, widget, &lbOpt);
+            int textShift = 0; // shift text in case there is a label pixmap
+            // draw the pixmap, if there is one
+            if (!bOpt->icon.isNull())
+            {
+                int iconSize = pixelMetric(PM_SmallIconSize);
+                IconOption icoOpt;
+                icoOpt.icon   = bOpt->icon;
+                icoOpt.active = flags & State_HasFocus;
+
+                QRect iconRect(r.x(), r.y() + (r.height()-iconSize)/2,
+                               iconSize, iconSize);
+                drawKStylePrimitive(WT_CheckBox, Generic::Icon, option,
+                                    handleRTL(bOpt, iconRect),
+                                    pal, flags, p, widget, &icoOpt);
+
+                textShift = iconSize +
+                        widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget);
+            }
+
+
+            if (!bOpt->text.isEmpty() ) {
+                TextOption lbOpt(bOpt->text);
+                drawKStylePrimitive(WT_CheckBox, Generic::Text, option,
+                                    handleRTL(bOpt, r.adjusted(textShift,0,0,0)),
+                                    pal, flags, p, widget, &lbOpt);
+            }
+
             return;
         }
 
         case CE_RadioButton:
         {
-            //### FIXME: Icon labels???
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
             if (!bOpt) return;
 
@@ -1032,15 +1046,9 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             bOptTmp.rect = handleRTL(bOpt, indicator);
             drawPrimitive(PE_IndicatorRadioButton, &bOptTmp, p, widget);
 
-            //Draw the label, if there is one
-            if (!bOpt->text.isEmpty())
-            {
-                QRect labelBox = subElementRect(SE_RadioButtonContents, option, widget);
-
-                TextOption lbOpt(bOpt->text);
-                drawKStylePrimitive(WT_RadioButton, Generic::Text, option, handleRTL(bOpt, labelBox),
-                                    pal, flags, p, widget, &lbOpt);
-            }
+            // pixmap and text label...
+            bOptTmp.rect = subElementRect(SE_RadioButtonContents, option, widget);
+            drawControl(CE_RadioButtonLabel, &bOptTmp, p, widget);
 
             //Draw the focus rect...
             if (flags & State_HasFocus)
@@ -1057,8 +1065,28 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
             if (!bOpt) return;
 
+            int textShift = 0; // shift text in case there is a label pixmap
+            // draw the pixmap, if there is one
+            if (!bOpt->icon.isNull())
+            {
+                int iconSize = pixelMetric(PM_SmallIconSize);
+                IconOption icoOpt;
+                icoOpt.icon   = bOpt->icon;
+                icoOpt.active = flags & State_HasFocus;
+
+                QRect iconRect(r.x(), r.y() + (r.height()-iconSize)/2,
+                               iconSize, iconSize);
+                drawKStylePrimitive(WT_RadioButton, Generic::Icon, option,
+                                    handleRTL(bOpt, iconRect),
+                                    pal, flags, p, widget, &icoOpt);
+
+                textShift = iconSize +
+                        widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, option, widget);
+            }
+
             TextOption lbOpt(bOpt->text);
-            drawKStylePrimitive(WT_RadioButton, Generic::Text, option, r,
+            drawKStylePrimitive(WT_RadioButton, Generic::Text, option,
+                                handleRTL(bOpt, r.adjusted(textShift,0,0,0)),
                                 pal, flags, p, widget, &lbOpt);
             return;
         }

@@ -553,11 +553,11 @@ protected:
         enum LayoutProp
         {
             Size,               ///< (\b 16) size of the checkbox [sets PM_IndicatorWidth, PM_IndicatorHeight]
-            BoxTextSpace,       ///< (\b 6) space to leave between checkbox and text
+            BoxTextSpace,       ///< (\b 6) space to leave between checkbox and text (and icon between them in case there is one)
             NoLabelFocusMargin, /**< (\b 0) rectangle to apply to the checkbox rectangle
                                  * to get where to paint the focus rectangle in
                                  * case of a labelless checkbox */
-            FocusMargin = NoLabelFocusMargin + MarginInc ///< (\b 0) margin around the checkbox contents reserved for the focus rect
+            FocusMargin = NoLabelFocusMargin + MarginInc ///< (\b 0) margin around the checkbox contents reserved for the focus rect @todo have a look, it isn't as nice as plastique etc.
         };
 
         /**
