@@ -2031,10 +2031,10 @@ int WindowQObject::installTimeout(ValueImp *func, List args, int t, bool singleS
 
 void WindowQObject::clearTimeout(int timerId)
 {
-  QListIterator<ScheduledAction*> it(scheduledActions);
-  for (; it.current(); ++it) {
-    ScheduledAction *action = it.current();
-    if (action->timerId == timerId) {
+  foreach (ScheduledAction *action, scheduledActions)
+  {
+    if (action->timerId == timerId)
+    {
       scheduledActions.removeAll(action);
       if (!action->executing)
         delete action;
@@ -2050,9 +2050,10 @@ bool WindowQObject::hasTimers() const
 
 void WindowQObject::mark()
 {
-  QListIterator<ScheduledAction*> it(scheduledActions);
-  for (; it.current(); ++it)
-    it.current()->mark();
+  foreach (ScheduledAction *action, scheduledActions)
+  {
+    action->mark();
+  }
 }
 
 void WindowQObject::timerEvent(QTimerEvent *)
@@ -2071,18 +2072,15 @@ void WindowQObject::timerEvent(QTimerEvent *)
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
   QList<ScheduledAction*> toExecute;
-  QListIterator<ScheduledAction*> it(scheduledActions);
-  for (; it.current(); ++it)
+  foreach (ScheduledAction *action, scheduledActions)
   {
-    ScheduledAction *action = it.current();
     if (currentAdjusted >= action->nextTime)
       toExecute.append(action);
   }
 
   // ### verify that the window can't be closed (and action deleted) during execution
-  it = QListIterator<ScheduledAction*>(toExecute);
-  for (; it.current(); ++it) {
-    ScheduledAction *action = it.current();
+  foreach (ScheduledAction *action, toExecute)
+  {
     if (!scheduledActions.count(action)) // removed by clearTimeout()
       continue;
 
@@ -2180,10 +2178,11 @@ void WindowQObject::setNextTimer()
     return;
 
   QListIterator<ScheduledAction*> it(scheduledActions);
-  DateTimeMS nextTime = it.current()->nextTime;
-  for (++it; it.current(); ++it)
-    if (nextTime > it.current()->nextTime)
-      nextTime = it.current()->nextTime;
+  DateTimeMS nextTime = it.next()->nextTime;
+  while (it.hasNext())
+    if (nextTime > it.next()->nextTime)
+      nextTime = it.next()->nextTime;
+
 
   DateTimeMS nextTimeActual = nextTime.addMSecs(pausedTime);
   int nextInterval = DateTimeMS::now().msecsTo(nextTimeActual);
