@@ -2154,26 +2154,6 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             return insideMargin(r, WT_ToolBoxTab, ToolBoxTab::Margin, option, widget);
         }
 
-        case SE_CheckBoxIndicator:
-        {
-            const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
-            if (!bOpt) return r;
-
-            int size = widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget);
-
-            if (bOpt->text.isEmpty())
-                return centerRect(r, size, size);
-            else
-                return QRect(r.x(), r.y(), size, r.height());
-        }
-
-        case SE_RadioButtonIndicator:
-        {
-            int size = widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
-
-            return QRect(r.x(), r.y(), size, r.height());
-        }
-
         case SE_CheckBoxContents:
         {
             r.setX(r.x() + widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget) +
