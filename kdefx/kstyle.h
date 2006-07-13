@@ -92,7 +92,8 @@ class KDEFX_EXPORT KStyle: public QCommonStyle
 {
 public:
     KStyle();
-    
+    ~KStyle();
+
 protected:
     /** @name Helper Methods
     * These are methods helping with QRect handling, for example.
@@ -1505,6 +1506,9 @@ public:
 /** @name QStyle Methods
  * These are methods reimplemented from QStyle. Usually it's not necessary to
  * reimplement them yourself.
+ *
+ * Some of them are there for binary compatibility reasons only; all they do is to call
+ * the implementation from QCommonStyle.
  */
 //@{
     void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
@@ -1521,6 +1525,26 @@ public:
                                              const QPoint& pt, const QWidget* w) const;
     void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
                                              QPainter *p,      const QWidget* w) const;
+
+    void polish(QWidget *);
+    void unpolish(QWidget *);
+    void polish(QApplication *);
+    void unpolish(QApplication *);
+    void polish(QPalette &);
+    QRect itemTextRect(const QFontMetrics &fm, const QRect &r,
+                           int flags, bool enabled,
+                           const QString &text) const;
+    QRect itemPixmapRect(const QRect &r, int flags, const QPixmap &pixmap) const;
+    void drawItemText(QPainter *painter, const QRect &rect,
+                              int flags, const QPalette &pal, bool enabled,
+                              const QString &text, QPalette::ColorRole textRole = QPalette::NoRole) const;
+    void drawItemPixmap(QPainter *painter, const QRect &rect,
+                                int alignment, const QPixmap &pixmap) const;
+    QPalette standardPalette() const;
+    QPixmap standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
+                                   const QWidget *widget = 0) const;
+    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
+                                   const QStyleOption *opt) const;
 //@}
 };
 

@@ -193,10 +193,74 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_Window, Window::ButtonToTextSpace, 3);
 }
 
+KStyle::~KStyle()
+{
+}
+
+
+void KStyle::polish(QWidget *w)
+{
+    QCommonStyle::polish(w);
+}
+void KStyle::unpolish(QWidget *w)
+{
+    QCommonStyle::unpolish(w);
+}
+void KStyle::polish(QApplication *a)
+{
+    QCommonStyle::polish(a);
+}
+void KStyle::unpolish(QApplication *a)
+{
+    QCommonStyle::unpolish(a);
+}
+void KStyle::polish(QPalette &pal)
+{
+    QCommonStyle::polish(pal);
+}
+QRect KStyle::itemTextRect(const QFontMetrics &fm, const QRect &r,
+                       int flags, bool enabled,
+                       const QString &text) const
+{
+    return QCommonStyle::itemTextRect(fm, r, flags, enabled, text);
+}
+QRect KStyle::itemPixmapRect(const QRect &r, int flags, const QPixmap &pixmap) const
+{
+    return QCommonStyle::itemPixmapRect(r, flags, pixmap);
+}
+void KStyle::drawItemText(QPainter *painter, const QRect &rect,
+                      int flags, const QPalette &pal, bool enabled,
+                      const QString &text, QPalette::ColorRole textRole) const
+{
+    QCommonStyle::drawItemText(painter, rect, flags, pal, enabled,
+                               text, textRole);
+}
+void KStyle::drawItemPixmap(QPainter *painter, const QRect &rect,
+                            int alignment, const QPixmap &pixmap) const
+{
+    QCommonStyle::drawItemPixmap(painter, rect, alignment, pixmap);
+}
+QPalette KStyle::standardPalette() const
+{
+    return QCommonStyle::standardPalette();
+}
+QPixmap KStyle::standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
+                               const QWidget *widget) const
+{
+    return QCommonStyle::standardPixmap(standardPixmap, opt, widget);
+}
+QPixmap KStyle::generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
+                                    const QStyleOption *opt) const
+{
+    return QCommonStyle::generatedIconPixmap(iconMode, pixmap, opt);
+}
+
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
 {
     p->drawRect(r.x(), r.y(), r.width() - 1, r.height() - 1);
 }
+
+
 
 void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                  const QStyleOption* opt,
