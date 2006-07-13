@@ -344,7 +344,6 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   stackLayout->setRowStretch( 1, 10 ); // Only list will stretch
 
   d->pList = new KListView( this );
-  d->pList->setFocus();
   listViewSearch->setListView(d->pList); // Plug into search line
   QValueList<int> columns;
   columns.append(0);
