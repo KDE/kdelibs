@@ -91,7 +91,9 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_RadioButton, RadioButton::Size, 16);
     setWidgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, 6);
 
-    setWidgetLayoutProp(WT_DockWidget, DockWidget::TitleMargin, 3);
+    setWidgetLayoutProp(WT_DockWidget, DockWidget::TitleTextColor,
+                        ColorMode(QPalette::HighlightedText));
+    setWidgetLayoutProp(WT_DockWidget, DockWidget::TitleMargin, 2);
     setWidgetLayoutProp(WT_DockWidget, DockWidget::FrameWidth, 3);
     setWidgetLayoutProp(WT_DockWidget, DockWidget::SeparatorExtent, 6);
 
@@ -276,6 +278,21 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         {
             if (primitive == ToolBoxTab::Panel) {
                 drawKStylePrimitive(WT_ToolButton, ToolButton::Panel, opt, r, pal, flags, p, widget);
+            }
+
+            break;
+        }
+
+        case WT_DockWidget:
+        {
+            switch (primitive)
+            {
+                case DockWidget::TitlePanel:
+                    p->fillRect(r, pal.color(QPalette::Highlight) );
+                    return;
+
+                default:
+                    break;
             }
 
             break;
@@ -884,7 +901,8 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             drawKStylePrimitive(WT_DockWidget, DockWidget::TitlePanel, option, r, pal, flags, p, widget);
 
             TextOption lbOpt(dwOpt->title);
-            lbOpt.color = QPalette::HighlightedText;
+            lbOpt.color = widgetLayoutProp(WT_DockWidget, DockWidget::TitleTextColor,
+                                           option, widget);
             drawKStylePrimitive(WT_DockWidget, Generic::Text, option, textRect, pal, flags, p, widget, &lbOpt);
             return;
         }
@@ -1834,6 +1852,9 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
 
         case PM_DockWidgetSeparatorExtent:
             return widgetLayoutProp(WT_DockWidget, DockWidget::SeparatorExtent, option, widget);
+
+        // handle extent only used somewhere in Qt3support, don't care.
+        // case PM_DockWidgetHandleExtent:
 
         case PM_DockWidgetTitleMargin:
             return widgetLayoutProp(WT_DockWidget, DockWidget::TitleMargin, option, widget);

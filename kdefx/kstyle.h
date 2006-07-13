@@ -618,31 +618,28 @@ protected:
     /**
      * @brief Describes the title of a dock widget.
      *
-     * Relevant Generic elements:
-     * - @c Generic::Text the title text
-     * - @c Generic::Frame the frame around floating dockwidgets
-     *
-     * [KStyle implements @c QStyle::CE_DockWidgetTitle to split it into KStyle primitives]
-     *
      * @sa WT_DockWidget
      */
     struct DockWidget
     {
         /**
-         * @todo need to add a few more layout properties/pixel metric values for dock widgets...
-         *
-         * @todo play with PM_DockWidgetHandleExtent and see what it does
-         *
          * @sa setWidgetLayoutProp()
          */
         enum LayoutProp
         {
-            TitleMargin, ///< (\b 3) Margin for the title: note that this is a symmetric margin always (only MainMargin is respected)! [sets QStyle::PM_DockWidgetFrameWidth]
-            FrameWidth,  ///< (\b 3) width of the frame around floating dockwidgets
+            TitleTextColor, ///< (\b ColorMode(QPalette::HighlightedText)) color mode of the title text
+            TitleMargin, ///< (\b 2) Margin around title contents: Note that the symmetric margin (MainMargin) is used to size the title! Additional the Left and Right margins can be used to position the title text a little, though (to set Top and Bottom is not advisable). [the MainMargin sets QStyle::PM_DockWidgetTitleMargin]
+            FrameWidth = TitleMargin + MarginInc,  ///< (\b 3) width of the frame around floating dockwidgets [sets QStyle::PM_DockWidgetFrameWidth]
             SeparatorExtent ///< (\b 6) width of the area which separates the (docked) dock window from the window contents [sets QStyle::PM_DockWidgetSeparatorExtent]
         };
 
         /**
+         * Relevant Generic elements:
+         * - @c Generic::Text the title text
+         * - @c Generic::Frame the frame around floating dockwidgets
+         *
+         * [KStyle implements @c QStyle::CE_DockWidgetTitle to split it into KStyle primitives]
+         *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
