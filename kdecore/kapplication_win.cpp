@@ -22,6 +22,8 @@
 #include <klocale.h>
 
 #include <QTranslator>
+#include <QLocale>
+#include <QLibraryInfo>
 
 /**
  * MS Windows-related actions for KApplication startup.
@@ -34,10 +36,14 @@
 */
 void KApplication_init_windows()
 {
-	QString qt_transl_file = ::locate( "locale", KGlobal::locale()->language()
-		+ "/LC_MESSAGES/qt_" + KGlobal::locale()->language() + ".qm" );
+	//QString qt_transl_file = ::locate( "locale", KGlobal::locale()->language()
+	//	+ "/LC_MESSAGES/qt_" + KGlobal::locale()->language() + ".qm" );
+
+	QString qt_transl_file = QString("qt_") + QLocale::system().name();
+	qt_transl_file.truncate(5);
 	QTranslator *qt_transl = new QTranslator();
-	if (qt_transl->load( qt_transl_file, ""))
+	if (qt_transl->load( qt_transl_file, 
+		QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
 		qApp->installTranslator( qt_transl );
 	else
 		delete qt_transl;
