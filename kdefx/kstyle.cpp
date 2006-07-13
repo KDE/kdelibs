@@ -1109,7 +1109,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //We layout as if LTR, relying on visualRect to fix it up
             double progress    = pbOpt->progress - pbOpt->minimum;
             int steps          = pbOpt->maximum  - pbOpt->minimum + 1;
-            bool busyIndicator = (steps <= 1); //### not only min = 0 / max = 0
+            bool busyIndicator = (pbOpt->minimum == 0 && pbOpt->maximum == 0);
 
             //Do we have to draw anything?
             if (!progress && ! busyIndicator)
