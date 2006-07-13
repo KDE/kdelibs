@@ -152,7 +152,7 @@ PlastikStyle::PlastikStyle() :
 
     setWidgetLayoutProp(WT_TabBar, TabBar::TabOverlap, 1);
 
-    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
+    setWidgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin, 2);
 
     setWidgetLayoutProp(WT_Slider, Slider::HandleThickness, 20/*15*/);
     setWidgetLayoutProp(WT_Slider, Slider::HandleLength, 11);
