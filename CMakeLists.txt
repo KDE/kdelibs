@@ -122,14 +122,32 @@ add_subdirectory( dnssd )
 
 ########### install files ###############
 
+macro(MAKE_INSTALL_PATH_ABSOLUTE out in)
+   if (UNIX)
+      if ("${in}" MATCHES "^/.*")
+         set(${out} ${in})
+      else ("${in}" MATCHES "^/.*")
+         set(${out} ${CMAKE_INSTALL_PREFIX}/${in})
+      endif ("${in}" MATCHES "^/.*")
+   else (UNIX)
+      set(${out} ${in})
+   endif (UNIX)
+endmacro(MAKE_INSTALL_PATH_ABSOLUTE out in)
+
+make_install_path_absolute(KDE4_INSTALL_DIR         ${CMAKE_INSTALL_PREFIX})
+make_install_path_absolute(KDE4_LIB_INSTALL_DIR     ${LIB_INSTALL_DIR})
+make_install_path_absolute(KDE4_INCLUDE_INSTALL_DIR ${INCLUDE_INSTALL_DIR})
+make_install_path_absolute(KDE4_BIN_INSTALL_DIR     ${BIN_INSTALL_DIR})
+make_install_path_absolute(KDE4_DATA_INSTALL_DIR    ${DATA_INSTALL_DIR})
+
 # write the installdirs into a cmake file which will be installed
 file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake 
 "# this file was generated during the kdelibs build process
-set(KDE4_INSTALL_DIR         \"${CMAKE_INSTALL_PREFIX}\")
-set(KDE4_LIB_INSTALL_DIR     \"${LIB_INSTALL_DIR}\")
-set(KDE4_INCLUDE_INSTALL_DIR \"${INCLUDE_INSTALL_DIR}\")
-set(KDE4_BIN_INSTALL_DIR     \"${BIN_INSTALL_DIR}\")
-set(KDE4_DATA_INSTALL_DIR    \"${DATA_INSTALL_DIR}\")
+set(KDE4_INSTALL_DIR         \"${KDE4_INSTALL_PREFIX}\")
+set(KDE4_LIB_INSTALL_DIR     \"${KDE4_LIB_INSTALL_DIR}\")
+set(KDE4_INCLUDE_INSTALL_DIR \"${KDE4_INCLUDE_INSTALL_DIR}\")
+set(KDE4_BIN_INSTALL_DIR     \"${KDE4_BIN_INSTALL_DIR}\")
+set(KDE4_DATA_INSTALL_DIR    \"${KDE4_DATA_INSTALL_DIR}\")
 ")
 
 # ...and append all library dependencies
