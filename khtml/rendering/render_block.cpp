@@ -693,11 +693,6 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         m_layer->moveScrollbarsAside();
     }
 
-    // A quirk that has become an unfortunate standard.  Positioned elements, floating elements
-    // and table cells don't ever collapse their margins with either themselves or their
-    // children.
-    bool canCollapseOwnMargins = !isPositioned() && !isFloating() && !isTableCell();
-
     setContainsPageBreak(false);
 
     if (childrenInline())
@@ -770,21 +765,6 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     // Always ensure our overflow width/height are at least as large as our width/height.
     m_overflowWidth = kMax(m_overflowWidth, (int)m_width);
     m_overflowHeight = kMax(m_overflowHeight, m_height);
-
-    if (canCollapseOwnMargins && m_height == 0) {
-        // We are a block with no border and padding and a computed height
-        // of 0.  The CSS spec states that zero-height blocks collapse their margins
-        // together.
-        // When blocks are self-collapsing, we just use the top margin values and set the
-        // bottom margin max values to 0.  This way we don't factor in the values
-        // twice when we collapse with our previous vertically adjacent and
-        // following vertically adjacent blocks.
-        if (m_maxBottomPosMargin > m_maxTopPosMargin)
-            m_maxTopPosMargin = m_maxBottomPosMargin;
-        if (m_maxBottomNegMargin > m_maxTopNegMargin)
-            m_maxTopNegMargin = m_maxBottomNegMargin;
-        m_maxBottomNegMargin = m_maxBottomPosMargin = 0;
-    }
 
     // Update our scrollbars if we're overflow:auto/scroll now that we know if
     // we overflow or not.
