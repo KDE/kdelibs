@@ -115,11 +115,9 @@ set(kiocore_STAT_SRCS
   kio/kbuildsycocaprogressdialog.cpp
 )
 
+set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp)
 if(UNIX)
-    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
-    ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp 
-    ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp
-)
+   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/kio/kautomount.cpp)
 endif(UNIX)
 
 
