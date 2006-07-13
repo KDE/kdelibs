@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+// TODO: http://mail.kde.org/pipermail/kde-buildsystem/2006-July/003147.html
 #include "ktoolinvocation_x11.cpp"
 
 #if 0
