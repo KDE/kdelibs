@@ -23,7 +23,6 @@
 
 #include <kdebug.h>
 #include <kpassivepopup.h>
-#include <kactivelabel.h>
 #include <kiconloader.h>
 #include <kdialog.h>
 #include <khbox.h>
@@ -92,11 +91,12 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 			linkCode+=QString::fromLatin1("&nbsp;<a href=\"%1/%2\">%3</a> ").arg( id ).arg( i ).arg( Qt::escape(it) );
 		}
 		linkCode+=QString::fromLatin1("</p>");
-		KActiveLabel *link = new KActiveLabel(linkCode , vb );
+		QLabel *link = new QLabel(linkCode , vb );
+		link->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+		link->setOpenExternalLinks(true);
 		//link->setAlignment( AlignRight );
-		link->setNotifyClick(true);
-		QObject::connect(link, SIGNAL(urlClick(const QString &)), this, SLOT(slotLinkClicked(const QString& ) ) );
-		QObject::connect(link, SIGNAL(urlClick(const QString &)), pop, SLOT(hide()));
+		QObject::connect(link, SIGNAL(linkActivated(const QString &)), this, SLOT(slotLinkClicked(const QString& ) ) );
+		QObject::connect(link, SIGNAL(linkActivated(const QString &)), pop, SLOT(hide()));
 	}
 
 	pop->setAutoDelete( true );

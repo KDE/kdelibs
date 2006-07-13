@@ -351,8 +351,7 @@ public:
 
     /**
      * This method auto-detects URLs in strings, and adds HTML markup to them
-     * so that richtext or HTML-enabled widgets (such as KActiveLabel)
-     * will display the URL correctly.
+     * so that richtext or HTML-enabled widgets will display the URL correctly.
      * @param text the string which may contain URLs
      * @return the resulting text
      */

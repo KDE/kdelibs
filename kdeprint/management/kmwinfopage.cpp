@@ -23,7 +23,6 @@
 #include <qlabel.h>
 #include <qlayout.h>
 #include <klocale.h>
-#include <kactivelabel.h>
 
 KMWInfoPage::KMWInfoPage(QWidget *parent)
     : KMWizardPage(parent)
@@ -32,8 +31,8 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 	m_title = i18n("Introduction");
 	m_nextpage = KMWizard::Backend;
 
-	KActiveLabel	*label = new KActiveLabel(this);
-	label->setHtml(i18n("<p>Welcome,</p><br>"
+	QLabel	*label = new QLabel(this);
+	label->setText(i18n("<p>Welcome,</p><br>"
 		"<p>This wizard will help to install a new printer on your computer. "
 		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
@@ -41,6 +40,8 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 		"<p>We hope you'll enjoy this tool!</p><br>"
 		"<p align=right><a href=\"http://printing.kde.org\"><i>"
 		"The KDE printing team</i></a>.</p>"));
+	label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+	label->setOpenExternalLinks(true);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
 	main_->setMargin(0);

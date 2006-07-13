@@ -21,13 +21,14 @@
 #include "kmfactory.h"
 #include "kxmlcommand.h"
 
-#include <qtoolbutton.h>
-#include <qlayout.h>
+#include <QToolButton>
+#include <QLayout>
 #include <QTreeWidget>
+#include <QLabel>
+
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
-#include <kactivelabel.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <kdialog.h>
@@ -160,10 +161,10 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	connect(m_configure,SIGNAL(clicked()),SLOT(slotConfigureClicked()));
 	connect(m_view,SIGNAL(itemActivated(QTreeWidgetItem*, int)),SLOT(slotConfigureClicked()));
 
-	m_info = new KActiveLabel(this);
+	m_info = new QLabel(this);
 	m_info->setWhatsThis(whatsThisFilterInfoPane);
-	m_info->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-	m_info->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+// 	m_info->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+// 	m_info->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
 	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 
@@ -419,7 +420,7 @@ void KPFilterPage::updateInfo()
 		if ( !f->comment().isEmpty() )
 			txt.append( "<br>" ).append( f->comment() );
 	}
-	m_info->setHtml(txt);
+	m_info->setText(txt);
 }
 
 #include "kpfilterpage.moc"

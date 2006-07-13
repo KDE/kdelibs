@@ -41,7 +41,6 @@
 #include <klocale.h>
 #include <knotification.h>
 #include <kstdguiitem.h>
-#include <kactivelabel.h>
 #include <kiconloader.h>
 #include <kvbox.h>
 #include <kpushbutton.h>
@@ -227,8 +226,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
 
     if (!(options & KMessageBox::AllowLink))
     {
-       QObject::disconnect(label2, SIGNAL(anchorClicked (const QUrl &)),
-                        label2, SLOT(setSource(const QUrl &)));
+        label2->setOpenExternalLinks(false);
     }
 
     label2->setFixedSize(QSize(pref_width, pref_height));

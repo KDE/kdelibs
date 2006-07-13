@@ -26,7 +26,6 @@
 #include "kwalletd.h"
 #include "ktimeout.h"
 
-#include <kactivelabel.h>
 #include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kconfig.h>

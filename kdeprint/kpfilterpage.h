@@ -28,7 +28,7 @@
 class QTreeWidget;
 class KXmlCommand;
 class QToolButton;
-class KTextBrowser;
+class QLabel;
 
 class KPFilterPage : public KPrintDialogPage
 {
@@ -61,7 +61,7 @@ private:
 	QHash<QString, KXmlCommand*>	m_activefilters;
 	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
 	bool			m_valid;
-	KTextBrowser		*m_info;
+	QLabel			*m_info;
 };
 
 #endif
