@@ -182,7 +182,9 @@ QWidget* KFontAction::createWidget(QWidget* _parent)
     if (!parent)
         return KSelectAction::createWidget(_parent);
 
+#ifdef __GNUC__
 #warning FIXME: items need to be converted
+#endif
     QFontComboBox *cb = new QFontComboBox( parent );
     connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SIGNAL(slotFontChanged( const QFont&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
