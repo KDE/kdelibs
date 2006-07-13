@@ -983,7 +983,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //Draw the checkbox
             QRect checkBox = subElementRect(SE_CheckBoxIndicator, option, widget);
             QStyleOptionButton bOptTmp = *bOpt;
-            bOptTmp.rect = handleRTL(bOpt, checkBox);
+            bOptTmp.rect = checkBox;
             drawPrimitive(PE_IndicatorCheckBox, &bOptTmp, p, widget);
 
             // pixmap and text label...
@@ -994,7 +994,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (flags & State_HasFocus)
             {
                 QRect focusRect = subElementRect(SE_CheckBoxFocusRect, option, widget);
-                drawKStylePrimitive(WT_CheckBox, Generic::FocusIndicator, option, handleRTL(bOpt, focusRect),
+                drawKStylePrimitive(WT_CheckBox, Generic::FocusIndicator, option, focusRect,
                                     pal, flags, p, widget);
             }
             return;
@@ -1043,7 +1043,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //Draw the indicator
             QRect indicator = subElementRect(SE_RadioButtonIndicator, option, widget);
             QStyleOptionButton bOptTmp = *bOpt;
-            bOptTmp.rect = handleRTL(bOpt, indicator);
+            bOptTmp.rect = indicator;
             drawPrimitive(PE_IndicatorRadioButton, &bOptTmp, p, widget);
 
             // pixmap and text label...
@@ -1054,7 +1054,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             if (flags & State_HasFocus)
             {
                 QRect focusRect = subElementRect(SE_RadioButtonFocusRect, option, widget);
-                drawKStylePrimitive(WT_RadioButton, Generic::FocusIndicator, option, handleRTL(bOpt, focusRect),
+                drawKStylePrimitive(WT_RadioButton, Generic::FocusIndicator, option, focusRect,
                                     pal, flags, p, widget);
             }
             return;
@@ -2250,14 +2250,14 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
         {
             r.setX(r.x() + widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget) +
                            widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, option, widget));
-            return r;
+            return handleRTL(option, r);
         }
 
         case SE_RadioButtonContents:
         {
             r.setX(r.x() + widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget) +
                     widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget));
-            return r;
+            return handleRTL(option, r);
         }
 
         case SE_CheckBoxFocusRect:
@@ -2265,22 +2265,36 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             const QStyleOptionButton* bOpt = qstyleoption_cast<const QStyleOptionButton*>(option);
             if (!bOpt) return r;
 
+            QRect ret;
+
             if (bOpt->text.isEmpty())
             {
-                QRect checkRect = subElementRect(SE_CheckBoxIndicator, option, widget);
-                return insideMargin(checkRect, WT_CheckBox, CheckBox::NoLabelFocusMargin, option, widget);
+                // first convert, so we can deal with logical coords
+                QRect checkRect =
+                        handleRTL(option, subElementRect(SE_CheckBoxIndicator, option, widget) );
+                ret = insideMargin(checkRect, WT_CheckBox, CheckBox::NoLabelFocusMargin, option, widget);
             }
             else
             {
-                QRect contentsRect = subElementRect(SE_CheckBoxContents, option, widget);
-                return insideMargin(contentsRect, WT_CheckBox, CheckBox::FocusMargin, option, widget);
+                // first convert, so we can deal with logical coords
+                QRect contentsRect =
+                        handleRTL(option, subElementRect(SE_CheckBoxContents, option, widget) );
+                ret = insideMargin(contentsRect, WT_CheckBox, CheckBox::FocusMargin, option, widget);
             }
+            // convert back to screen coords
+            return handleRTL(option, ret);
         }
 
         case SE_RadioButtonFocusRect:
         {
-            QRect contentsRect = subElementRect(SE_RadioButtonContents, option, widget);
-            return insideMargin(contentsRect, WT_RadioButton, RadioButton::FocusMargin, option, widget);
+            // first convert it back to logical coords
+            QRect contentsRect =
+                    handleRTL(option, subElementRect(SE_RadioButtonContents, option, widget) );
+
+            // modify the rect and convert back to screen coords
+            return handleRTL(option,
+                             insideMargin(contentsRect, WT_RadioButton,
+                                          RadioButton::FocusMargin, option, widget) );
         }
 
         case SE_ProgressBarGroove:
