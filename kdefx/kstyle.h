@@ -963,14 +963,14 @@ protected:
          */
         enum LayoutProp
         {
-            FrameMargin,      /**< (\b 2) Width of the frame around a tab widget.
+            ContentsMargin,      /**< (\b 2) Width of the frame around a tab widget.
                                * Margins for a tabwidget with tab position 'North' are
                                * specified as expected. For other positions, the
                                * sides are rotated accordingly, e.g. the left margin
                                * of a 'West' tabwidget is the same as top for a 'North'
                                * tabwidget.
                                * [sets QStyle::SE_TabWidgetTabContents] */
-            DummyProp = FrameMargin+MarginInc
+            DummyProp = ContentsMargin+MarginInc
         };
     };
 
@@ -1212,7 +1212,6 @@ protected:
      *
      * [the Frames implement QStyle::PE_FrameGroupBox]
      *
-     * No LayoutProps for now.
      * @sa Generic::DefaultFrameWidth
      *
      * @todo What about frame width etc.? CT_GroupBox, CC_GroupBox sizeFromContents(), subControlRect()
@@ -1221,6 +1220,17 @@ protected:
      */
     struct GroupBox
     {
+        /**
+         * @sa setWidgetLayoutProp()
+         */
+        enum LayoutProps
+        {
+            FrameWidth, /**< (\b 2) width of a groupbox frame */
+            TextAlignTop, /**< (\b 0) set to non-zero, the title will be aligned
+                          * above the groupbox frame, not vertically centered
+                          * [sets QStyle::SH_GroupBox_TextLabelVerticalAlignment] */
+            TitleTextColor
+        };
         /**
          * @sa drawKStylePrimitive()
          */

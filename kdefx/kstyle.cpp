@@ -146,7 +146,7 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, 10);
 
-    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin, 2);
+    setWidgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin, 2);
 
     setWidgetLayoutProp(WT_Tree, Tree::MaxExpanderSize, 9);
 
@@ -170,6 +170,8 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_Header, Header::ContentsMargin, 3);
     setWidgetLayoutProp(WT_Header, Header::TextToIconSpace, 3);
     setWidgetLayoutProp(WT_Header, Header::MarkSize, 9);
+
+    setWidgetLayoutProp(WT_GroupBox, GroupBox::TitleTextColor, ColorMode(QPalette::Text));
 
     setWidgetLayoutProp(WT_ToolBar, ToolBar::HandleExtent, 6);
     setWidgetLayoutProp(WT_ToolBar, ToolBar::SeparatorExtent, 6);
@@ -1900,6 +1902,19 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         case SH_TitleBar_NoBorder:
             return widgetLayoutProp(WT_Window, Window::NoTitleFrame, option, widget);
 
+        case SH_GroupBox_TextLabelVerticalAlignment:
+            if (widgetLayoutProp(WT_GroupBox, GroupBox::TextAlignTop, option, widget) )
+                return Qt::AlignTop;
+            else
+                return Qt::AlignVCenter;
+
+        case SH_GroupBox_TextLabelColor:
+        {
+            ColorMode cm( widgetLayoutProp(WT_GroupBox, GroupBox::TitleTextColor,
+                          option, widget) );
+            return cm.color(option->palette).rgba();
+        }
+
         default:
             break;
     };
@@ -1912,7 +1927,10 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
     switch (metric)
     {
         case PM_DefaultFrameWidth:
-            return widgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, option, widget);
+            if (qstyleoption_cast<const QStyleOptionGroupBox *>(option) )
+                return widgetLayoutProp(WT_GroupBox, GroupBox::FrameWidth, option, widget);
+            else
+                return widgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, option, widget);
 
         case PM_ButtonMargin:
             return 0; //Better not return anything here since we already
@@ -2339,14 +2357,14 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
             // use QCommonStyle's SE_TabWidgetTabPane, and adjust the result
             // according to the custom frame width.
             QRect pane = QCommonStyle::subElementRect(SE_TabWidgetTabPane, option, widget);
-            int m   = widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin, option, widget);
-            int top = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Top,
+            int m   = widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin, option, widget);
+            int top = m+widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Top,
                                          option, widget);
-            int bot = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Bot,
+            int bot = m+widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Bot,
                                          option, widget);
-            int left = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Left,
+            int left = m+widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Left,
                                          option, widget);
-            int right = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Right,
+            int right = m+widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Right,
                                          option, widget);
 
             switch (tabOpt->shape) {
@@ -3469,13 +3487,13 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
             const QStyleOptionTabWidgetFrame* tabOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(option);
             if (!tabOpt) break;
 
-            int m = widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin, option, widget);
+            int m = widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin, option, widget);
             int vert = 2*m +
-                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Top, option, widget) +
-                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Bot, option, widget);
+                    widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Top, option, widget) +
+                    widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Bot, option, widget);
             int hor = 2*m +
-                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Left, option, widget) +
-                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Right, option, widget);
+                    widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Left, option, widget) +
+                    widgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin+Right, option, widget);
 
             switch (tabOpt->shape) {
                 case QTabBar::RoundedNorth:
