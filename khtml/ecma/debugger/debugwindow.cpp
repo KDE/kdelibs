@@ -267,6 +267,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
             m_documents[key] = document;
 
             m_tempInterpreter = exec->interpreter();
+            m_localVariables->display(exec->interpreter());
 //        }
     }
     else
