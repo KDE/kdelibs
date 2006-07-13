@@ -3,11 +3,6 @@ project(kdelibs)
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-# search packages used by KDE
-if (WIN32)
-   find_package(GNUWIN32)
-endif (WIN32)
-
 find_package(KDE4Internal REQUIRED)
 find_package(ZLIB REQUIRED)
 

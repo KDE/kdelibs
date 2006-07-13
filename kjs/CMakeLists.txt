@@ -14,9 +14,6 @@ configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kxmlcore ${QT_INCLUDES} )
-if(WIN32)
-  include_directories( ${KDEWIN32_INCLUDES} )
-endif(WIN32)
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)

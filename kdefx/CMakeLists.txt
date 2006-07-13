@@ -5,10 +5,7 @@ configure_file(config-processor.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-proce
 
 include(kdefx.cmake)
 
-include_directories( ${QT_INCLUDES} )
-if(WIN32)
-  include_directories( ${KDEWIN32_INCLUDES} )
-endif(WIN32)
+include_directories( ${QT_INCLUDES} ${_KDE4_PLATFORM_INCLUDE_DIRS} )
 
 ########### next target ###############
 
