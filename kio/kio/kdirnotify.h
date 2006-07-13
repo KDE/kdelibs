@@ -19,11 +19,12 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
+#include <kdelibs_export.h>
 
 /*
  * Proxy class for interface org.kde.KDirNotify
  */
-class __attribute__ ((visibility("default"))) OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
+class KIO_EXPORT OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
