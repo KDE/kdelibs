@@ -17,7 +17,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-//#include "ktoolinvocation_x11.cpp"
+#include "ktoolinvocation_x11.cpp"
+
+#if 0
 
 #define THREADGUARD
 #include "config.h"
@@ -373,3 +375,6 @@ void KToolInvocation::startKdeinit()
 }
 
 #endif
+
+
+#endif //#if 0
