@@ -958,11 +958,19 @@ protected:
     struct TabWidget
     {
         /**
+         * @todo how are tabbar panels like the one in mosfet's liquid implemented? maybe convert the FrameWidth prop to a Margin which rotates with tabbar orientation, to make things like this possible?
          * @sa setWidgetLayoutProp()
          */
         enum LayoutProp
         {
-            FrameWidth      ///< (\b 2) width of the frame around a tab widget [sets QStyle::SE_TabWidgetTabContents]
+            FrameMargin,      /**< (\b 2) Width of the frame around a tab widget.
+                               * Margins for a tabwidget with tab position 'North' are
+                               * specified as expected. For other positions, the
+                               * sides are rotated accordingly, e.g. the left margin
+                               * of a 'West' tabwidget is the same as top for a 'North'
+                               * tabwidget.
+                               * [sets QStyle::SE_TabWidgetTabContents] */
+            DummyProp = FrameMargin+MarginInc
         };
     };
 

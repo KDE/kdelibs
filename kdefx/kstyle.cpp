@@ -146,7 +146,7 @@ KStyle::KStyle()
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, 10);
 
-    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, 2);
+    setWidgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin, 2);
 
     setWidgetLayoutProp(WT_Tree, Tree::MaxExpanderSize, 9);
 
@@ -2333,11 +2333,36 @@ QRect KStyle::subElementRect(SubElement sr, const QStyleOption* option, const QW
         // SE_TabWidgetTabPane implementation in QCommonStyle is perfectly fine.
         case SE_TabWidgetTabContents:
         {
+            const QStyleOptionTabWidgetFrame* tabOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(option);
+            if (!tabOpt) break;
+
             // use QCommonStyle's SE_TabWidgetTabPane, and adjust the result
             // according to the custom frame width.
-            int fw = widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, option, widget);
-            return QCommonStyle::subElementRect(SE_TabWidgetTabPane, option, widget)
-                    .adjusted(fw,fw,-fw,-fw);
+            QRect pane = QCommonStyle::subElementRect(SE_TabWidgetTabPane, option, widget);
+            int m   = widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin, option, widget);
+            int top = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Top,
+                                         option, widget);
+            int bot = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Bot,
+                                         option, widget);
+            int left = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Left,
+                                         option, widget);
+            int right = m+widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Right,
+                                         option, widget);
+
+            switch (tabOpt->shape) {
+                case QTabBar::RoundedNorth:
+                case QTabBar::TriangularNorth:
+                    return pane.adjusted(left,top,-right,-bot);
+                case QTabBar::RoundedEast:
+                case QTabBar::TriangularEast:
+                    return pane.adjusted(bot,left, -top,-right);
+                case QTabBar::RoundedSouth:
+                case QTabBar::TriangularSouth:
+                    return pane.adjusted(right,bot, -left,-top);
+                case QTabBar::RoundedWest:
+                case QTabBar::TriangularWest:
+                    return pane.adjusted(top,right, -bot,-left);
+            }
         }
         default:
             break;
@@ -3441,9 +3466,29 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
         case CT_TabWidget:
         {
-            return contentsSize +
-                    QSize (2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, option, widget),
-                           2*widgetLayoutProp(WT_TabWidget, TabWidget::FrameWidth, option, widget) );
+            const QStyleOptionTabWidgetFrame* tabOpt = qstyleoption_cast<const QStyleOptionTabWidgetFrame*>(option);
+            if (!tabOpt) break;
+
+            int m = widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin, option, widget);
+            int vert = 2*m +
+                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Top, option, widget) +
+                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Bot, option, widget);
+            int hor = 2*m +
+                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Left, option, widget) +
+                    widgetLayoutProp(WT_TabWidget, TabWidget::FrameMargin+Right, option, widget);
+
+            switch (tabOpt->shape) {
+                case QTabBar::RoundedNorth:
+                case QTabBar::TriangularNorth:
+                case QTabBar::RoundedWest:
+                case QTabBar::TriangularWest:
+                    return contentsSize + QSize(hor, vert);
+                case QTabBar::RoundedSouth:
+                case QTabBar::TriangularSouth:
+                case QTabBar::RoundedEast:
+                case QTabBar::TriangularEast:
+                    return contentsSize + QSize(vert,hor);
+            }
         }
 
         case CT_HeaderSection:
