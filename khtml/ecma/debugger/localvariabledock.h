@@ -6,6 +6,7 @@
 
 namespace KJS { class Interpreter; }
 class QTreeWidget;
+class ObjectModel;
 
 class VariableItem : public QTreeWidgetItem
 {
@@ -25,7 +26,6 @@ private:
 
 };
 
-
 class LocalVariablesDock : public QDockWidget
 {
     Q_OBJECT
@@ -36,7 +36,9 @@ public:
     void display(KJS::Interpreter *interpreter);
 
 private:
-    QTreeWidget *m_widget;
+    QTreeView   *m_widget;
+    ObjectModel *m_model;
+//    QTreeWidget *m_widget;
 
 };
 

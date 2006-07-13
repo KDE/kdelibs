@@ -189,10 +189,8 @@ ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
   case Width:
     return Number(sg.width());
   case ColorDepth:
-  case PixelDepth: {
-    Q3PaintDeviceMetrics m(thisWidget);
-    return Number(m.depth());
-  }
+  case PixelDepth:
+    return Number(thisWidget->depth());
   case AvailLeft: {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     QRect clipped = info.workArea().intersect(sg);
@@ -1999,9 +1997,8 @@ void WindowQObject::parentDestroyed()
 {
   killTimers();
 
-  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
-  for (; it.current(); ++it)
-    delete it.current();
+  while (!scheduledActions.isEmpty())
+    delete scheduledActions.takeFirst();
   scheduledActions.clear();
 }
 
@@ -2024,7 +2021,7 @@ int WindowQObject::installTimeout(ValueImp *func, List args, int t, bool singleS
     return 0;
   int id = ++lastTimerId;
   if (t < 10) t = 10;
-  
+
   DateTimeMS nextTime = DateTimeMS::now().addMSecs(-pausedTime + t);
   ScheduledAction *action = new ScheduledAction(objFunc,args,nextTime,t,singleShot,id);
   scheduledActions.append(action);
@@ -2034,13 +2031,13 @@ int WindowQObject::installTimeout(ValueImp *func, List args, int t, bool singleS
 
 void WindowQObject::clearTimeout(int timerId)
 {
-  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
+  QListIterator<ScheduledAction*> it(scheduledActions);
   for (; it.current(); ++it) {
     ScheduledAction *action = it.current();
     if (action->timerId == timerId) {
-      scheduledActions.removeRef(action);
+      scheduledActions.removeAll(action);
       if (!action->executing)
-	delete action;
+        delete action;
       return;
     }
   }
@@ -2053,7 +2050,7 @@ bool WindowQObject::hasTimers() const
 
 void WindowQObject::mark()
 {
-  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
+  QListIterator<ScheduledAction*> it(scheduledActions);
   for (; it.current(); ++it)
     it.current()->mark();
 }
@@ -2073,17 +2070,20 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
-  Q3PtrList<ScheduledAction> toExecute;
-  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
+  QList<ScheduledAction*> toExecute;
+  QListIterator<ScheduledAction*> it(scheduledActions);
   for (; it.current(); ++it)
-    if (currentAdjusted >= it.current()->nextTime)
-      toExecute.append(it.current());
+  {
+    ScheduledAction *action = it.current();
+    if (currentAdjusted >= action->nextTime)
+      toExecute.append(action);
+  }
 
   // ### verify that the window can't be closed (and action deleted) during execution
-  it = Q3PtrListIterator<ScheduledAction>(toExecute);
+  it = QListIterator<ScheduledAction*>(toExecute);
   for (; it.current(); ++it) {
     ScheduledAction *action = it.current();
-    if (!scheduledActions.containsRef(action)) // removed by clearTimeout()
+    if (!scheduledActions.count(action)) // removed by clearTimeout()
       continue;
 
     action->executing = true; // prevent deletion in clearTimeout()
@@ -2091,16 +2091,15 @@ void WindowQObject::timerEvent(QTimerEvent *)
     if (parent->part()) {
       bool ok = action->execute(parent);
       if ( !ok ) // e.g. JS disabled
-        scheduledActions.removeRef( action );
+        scheduledActions.removeAll( action );
     }
 
-    if (action->singleShot) {
-      scheduledActions.removeRef(action);
-    }
+    if (action->singleShot)
+      scheduledActions.removeAll(action);
 
     action->executing = false;
 
-    if (!scheduledActions.containsRef(action))
+    if (!scheduledActions.count(action))
       delete action;
     else
       action->nextTime = action->nextTime.addMSecs(action->interval);
@@ -2180,7 +2179,7 @@ void WindowQObject::setNextTimer()
   if (scheduledActions.isEmpty())
     return;
 
-  Q3PtrListIterator<ScheduledAction> it(scheduledActions);
+  QListIterator<ScheduledAction*> it(scheduledActions);
   DateTimeMS nextTime = it.current()->nextTime;
   for (++it; it.current(); ++it)
     if (nextTime > it.current()->nextTime)

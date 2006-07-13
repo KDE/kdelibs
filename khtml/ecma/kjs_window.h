@@ -264,7 +264,7 @@ namespace KJS {
     void killTimers();
   private:
     Window *parent;
-    Q3PtrList<ScheduledAction> scheduledActions;
+    QList<ScheduledAction*> scheduledActions;
     int pausedTime;
     int lastTimerId;
     QList<int> timerIds;

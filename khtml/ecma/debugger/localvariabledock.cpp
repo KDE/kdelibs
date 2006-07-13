@@ -9,13 +9,15 @@
 #include <kjs/object.h>
 
 //#include "jsobjectmodel.h"
+#include "objectmodel.h"
 #include "localvariabledock.h"
 #include "localvariabledock.moc"
 
 LocalVariablesDock::LocalVariablesDock(QWidget *parent)
     : QDockWidget("Local Variables", parent)
 {
-    m_widget = new QTreeWidget;
+//    m_widget = new QTreeWidget;
+    m_widget = new QTreeView;
     setWidget(m_widget);
 }
 
@@ -25,11 +27,16 @@ LocalVariablesDock::~LocalVariablesDock()
 
 void LocalVariablesDock::display(KJS::Interpreter *interpreter)
 {
+    m_model = new ObjectModel(interpreter);
+    m_widget->setModel(m_model);
+
+/*
     m_widget->clear();
 
     KJS::ExecState *exec = interpreter->globalExec();
     KJS::Context context = exec->context();
     KJS::ScopeChain chain = context.scopeChain();
+*/
 
 /*
     for( KJS::ScopeChainIterator obj = chain.begin();
