@@ -2985,6 +2985,18 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
 
             // button layout:  menu -title- help,shade,min,max,close
 
+            bool menuCloseBtn = tbOpt->titleBarFlags & Qt::WindowSystemMenuHint;
+            bool minBtn = !isMinimized &&
+                    (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint);
+            bool maxBtn = !isMaximized &&
+                    (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint);
+            bool restoreBtn =
+                    (isMinimized && (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint)) ||
+                    (isMaximized && (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint));
+            bool shadeBtn = tbOpt->titleBarFlags & Qt::WindowShadeButtonHint;
+            bool helpBtn = tbOpt->titleBarFlags & Qt::WindowContextHelpButtonHint;
+
+
             int btnOffsetCount = 0; // for button rects; count the position in the button bar
 
             switch (subControl) {
@@ -2994,35 +3006,17 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                     {
                         int cLeft = 0; // count buttons in the button bar
                         int cRight = 0;
-                        // TODO: merge this with button stuff...
-                        if (tbOpt->titleBarFlags & Qt::WindowSystemMenuHint) {
+
+                        if (menuCloseBtn) {
                             // menu and close button
                             ++cLeft;
                             ++cRight;
                         }
-                        if (!isMinimized &&
-                             (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
-                            ++cRight;
-                        if (isMinimized &&
-                            (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
-                            ++cRight;
-                        if (isMinimized &&
-                            (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
-                            ++cRight;
-                        else if (isMaximized &&
-                                 (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
-                            ++cRight;
-                        if (!isMaximized &&
-                             (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
-                            ++cRight;
-                        if (!isMinimized &&
-                             (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
-                            ++cRight;
-                        if (isMinimized &&
-                            (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
-                            ++cRight;
-                        if (tbOpt->titleBarFlags & Qt::WindowContextHelpButtonHint)
-                            ++cRight;
+                        if (minBtn)     ++cRight;
+                        if (restoreBtn) ++cRight;
+                        if (maxBtn)     ++cRight;
+                        if (shadeBtn)   ++cRight;
+                        if (helpBtn)    ++cRight;
 
                         ret.adjust( cLeft*btnWidth+(cLeft-1)*btnSpace+titleSpace, 0,
                                     -(titleSpace+cRight*btnWidth+(cRight-1)*btnSpace), 0 );
@@ -3039,44 +3033,36 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                 }
 
                 case SC_TitleBarContextHelpButton:
-                    if (tbOpt->titleBarFlags & Qt::WindowContextHelpButtonHint)
+                    if (helpBtn)
                         ++btnOffsetCount;
                 case SC_TitleBarMinButton:
-                    if (!isMinimized &&
-                         (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
+                    if (minBtn)
                         ++btnOffsetCount;
                     else if (subControl == SC_TitleBarMinButton)
                         return QRect();
                 case SC_TitleBarNormalButton:
-                    if (isMinimized &&
-                        (tbOpt->titleBarFlags & Qt::WindowMinimizeButtonHint))
-                        ++btnOffsetCount;
-                    else if (isMaximized &&
-                             (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
+                    if (restoreBtn)
                         ++btnOffsetCount;
                     else if (subControl == SC_TitleBarNormalButton)
                         return QRect();
                 case SC_TitleBarMaxButton:
-                    if (!isMaximized &&
-                         (tbOpt->titleBarFlags & Qt::WindowMaximizeButtonHint))
+                    if (maxBtn)
                         ++btnOffsetCount;
                     else if (subControl == SC_TitleBarMaxButton)
                         return QRect();
                 case SC_TitleBarShadeButton:
-                    if (!isMinimized &&
-                         (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
+                    if (!isMinimized && shadeBtn)
                         ++btnOffsetCount;
                     else if (subControl == SC_TitleBarShadeButton)
                         return QRect();
                 case SC_TitleBarUnshadeButton:
-                    if (isMinimized &&
-                        (tbOpt->titleBarFlags & Qt::WindowShadeButtonHint))
+                    if (isMinimized && shadeBtn)
                         ++btnOffsetCount;
                     else if (subControl == SC_TitleBarUnshadeButton)
                         return QRect();
                 case SC_TitleBarCloseButton:
                 {
-                    if (tbOpt->titleBarFlags & Qt::WindowSystemMenuHint)
+                    if (menuCloseBtn)
                         ++btnOffsetCount;
                     else if (subControl == SC_TitleBarCloseButton)
                         return QRect();
