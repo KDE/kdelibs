@@ -19,7 +19,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <sys/dir.h>
 #include <dirent.h>
 #include <stdlib.h> // getenv
 #include <config.h>
@@ -34,6 +33,9 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qregexp.h>
+#ifndef Q_OS_WIN
+#include <sys/dir.h>
+#endif
 
 #include "vfolder_menu.h"
 
