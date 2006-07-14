@@ -143,7 +143,6 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
 
   QByteArray uniqueName = QFile::encodeName( uniqueFile.name() );
 
-#ifdef Q_OS_UNIX
   // Create lock file
   result = ::link( uniqueName, lockFileName );
   if (result != 0)
@@ -151,10 +150,6 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
 
   if (!linkCountSupport)
      return KLockFile::LockOK;
-#else
-  //TODO for win32
-  return KLockFile::LockOK;
-#endif
 
   KDE_struct_stat st_buf2;
   result = KDE_lstat( uniqueName, &st_buf2 );
