@@ -598,12 +598,6 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
 
                     return;
                 }
-
-                case DockWidget::TitlePanel:
-                {
-                    // TODO
-                    return;
-                }
             }
         }
         break;
