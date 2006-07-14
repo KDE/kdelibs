@@ -397,7 +397,7 @@ bool initializeMods()
 
 uint modXShift()      { return ShiftMask; }
 uint modXCtrl()       { return ControlMask; }
-uint modXAlt()        { return g_alt_mask; }
+uint modXAlt()        { if( !g_bInitializedMods ) { initializeMods(); } return g_alt_mask; }
 uint modXMeta()       { if( !g_bInitializedMods ) { initializeMods(); } return g_meta_mask; }
 
 uint modXNumLock()    { if( !g_bInitializedMods ) { initializeMods(); } return g_modXNumLock; }

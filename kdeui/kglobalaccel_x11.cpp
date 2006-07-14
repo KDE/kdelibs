@@ -105,7 +105,9 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	if( !keyCodeX )
 		return false;
 
-    kDebug(125) << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask) << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString() << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
+    kDebug(125) << "grabKey keyQt " << (keyQt & ~Qt::KeyboardModifierMask)
+        << " mod " << (keyQt & Qt::KeyboardModifierMask) << " ( key: '" << QKeySequence(keyQt).toString()
+        << "', grab: " << grab << " ): keyCodeX: " << keyCodeX << " keyModX: " << keyModX << endl;
 
 #ifdef Q_WS_X11
 	KXErrorHandler handler( XGrabErrorHandler );
