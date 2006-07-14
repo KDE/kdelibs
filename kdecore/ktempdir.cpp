@@ -53,7 +53,7 @@
 #include <kdebug.h>
 #include "kde_file.h"
 
-class KTempDir::Private
+class KTempDir::KTempDirPrivate
 {
 public:
    int _error;
@@ -66,7 +66,7 @@ public:
 #define bAutoDelete d->_autoDelete
 };
 
-KTempDir::KTempDir(QString directoryPrefix, int mode) : d(new Private)
+KTempDir::KTempDir(QString directoryPrefix, int mode) : d(new KTempDirPrivate)
 {
    bAutoDelete = false;
    bExists = false;

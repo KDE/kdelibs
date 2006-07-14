@@ -26,7 +26,7 @@
 
 void KTempDirTest::testBasic()
 {
-	KTempDir dir = KTempDir("test");
+	KTempDir dir("test");
 	QVERIFY(dir.status() == 0);
 	QVERIFY(dir.exists());
 	QVERIFY(QDir(dir.name()).exists());
@@ -51,7 +51,7 @@ void KTempDirTest::testAutoDelete()
 
 void KTempDirTest::testCreateSubDir()
 {
-	KTempDir dir = KTempDir("test");
+	KTempDir dir("test");
 	dir.setAutoDelete(true);
 	QVERIFY(dir.status() == 0);
 	QVERIFY(dir.exists());

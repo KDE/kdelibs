@@ -10,6 +10,7 @@ that we would like to make for the next binary incompatible release.
   help prevent mistakes where developers forget to delete the pointer. Maybe make use of
   Qt4 helper macros? 
   (Frerich)
+  Use KDE_PIMPL_EN(DIS)ABLE_COPY to avoid compiler generated copy functions (Kümmel)
 
 - Move all utility functions away from KApplication. TBD: Make KApplication 
   a very thin wrapper around QApplication. Ideally, KApplication should go 

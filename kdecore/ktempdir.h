@@ -161,8 +161,7 @@ protected:
    void setError(int error);
 
 private:
-   class Private;
-   Private *const d;
+   KDE_PIMPL_DISABLE_COPY(KTempDir);
 };
 
 #endif
