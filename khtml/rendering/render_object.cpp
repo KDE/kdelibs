@@ -2242,9 +2242,9 @@ QRegion RenderObject::visibleFlowRegion(int x, int y) const
             if (ro->isRelPositioned())
                 static_cast<const RenderBox*>(ro)->relativePositionOffset(x,y);
             if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() )
-                r += QRect(x + ro->effectiveXPos(),y + ro->yPos(), ro->effectiveWidth(), ro->effectiveHeight());
+                r += QRect(x + ro->effectiveXPos(),y + ro->effectiveYPos(), ro->effectiveWidth(), ro->effectiveHeight());
             else
-                r += ro->visibleFlowRegion(x+ro->effectiveXPos(),y+ro->yPos());
+                r += ro->visibleFlowRegion(x+ro->xPos(), y+ro->yPos());
         }
     }
     return r;

@@ -132,20 +132,11 @@ void RenderLayer::updateLayerPosition()
         // nearest enclosing object with a layer.
         RenderObject* curr = m_object->parent();
         while (curr && !curr->layer()) {
-            if (!curr->isTableRow()) {
-                // Rows and cells share the same coordinate space (that of the section).
-                // Omit them when computing our xpos/ypos.
-                x += curr->xPos();
-                y += curr->yPos();
-            }
+            x += curr->xPos();
+            y += curr->yPos();
             curr = curr->parent();
         }
         y += curr->borderTopExtra();
-        if (curr->isTableRow()) {
-            // Put ourselves into the row coordinate space.
-            x -= curr->xPos();
-            y -= curr->yPos();
-        }
     }
 
     if (m_object->isRelPositioned())

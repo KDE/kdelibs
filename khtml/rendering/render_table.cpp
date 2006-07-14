@@ -317,7 +317,7 @@ void RenderTable::layout()
 
     // ### collapse caption margin
     if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM) {
-        tCaption->setPos(tCaption->marginLeft(), m_height);
+        tCaption->setPos(tCaption->marginLeft(), tCaption->marginTop()+m_height);
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
@@ -384,7 +384,7 @@ void RenderTable::layout()
     m_height += bpBottom;
 
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM) {
-        tCaption->setPos(tCaption->marginLeft(), m_height);
+        tCaption->setPos(tCaption->marginLeft(), tCaption->marginTop()+m_height);
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
@@ -502,8 +502,15 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 void RenderTable::paintBoxDecorations(PaintInfo &pI, int _tx, int _ty)
 {
     int w = width();
-    int h = height() + borderTopExtra() + borderBottomExtra();
-    _ty -= borderTopExtra();
+    int h = height();
+
+    // Account for the caption.
+    if (tCaption) {
+        int captionHeight = (tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
+        h -= captionHeight;
+        if (tCaption->style()->captionSide() != CAPBOTTOM)
+            _ty += captionHeight;
+    }
 
     int my = kMax(_ty,pI.r.y());
     int mh;
@@ -531,8 +538,11 @@ void RenderTable::calcMinMaxWidth()
 
     tableLayout->calcMinMaxWidth();
 
-    if (tCaption && tCaption->minWidth() > m_minWidth)
-        m_minWidth = tCaption->minWidth();
+    if (tCaption) {
+        tCaption->calcWidth();
+        if (tCaption->marginLeft()+tCaption->marginRight()+tCaption->minWidth() > m_minWidth)
+            m_minWidth = tCaption->marginLeft()+tCaption->marginRight()+tCaption->minWidth();
+    }
 
     setMinMaxKnown();
 #ifdef DEBUG_LAYOUT
@@ -545,24 +555,6 @@ void RenderTable::close()
 //    kdDebug( 6040 ) << "RenderTable::close()" << endl;
     setNeedsLayoutAndMinMaxRecalc();
 }
-
-int RenderTable::borderTopExtra() const
-{
-    if (tCaption && tCaption->style()->captionSide()!=CAPBOTTOM)
-        return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
-    else
-        return 0;
-
-}
-
-int RenderTable::borderBottomExtra() const
-{
-    if (tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
-        return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
-    else
-        return 0;
-}
-
 
 void RenderTable::splitColumn( int pos, int firstSpan )
 {
@@ -1408,12 +1400,18 @@ int RenderTableSection::layoutRows( int toAdd )
 	Row *row = grid[r].row;
 	int totalCols = row->size();
 
+#ifdef APPLE_CHANGES
+        // in WC, rows and cells share the same coordinate space, so that rows can have
+        // dimensions in the layer system. This is of dubious value, and a heavy maintenance burden 
+        // (RenderObject's coordinates can't be used deterministically anymore) so we'll consider other options.
+
         // Set the row's x/y position and width/height.
         if (grid[r].rowRenderer) {
             grid[r].rowRenderer->setPos(0, rowPos[r]);
             grid[r].rowRenderer->setWidth(m_width);
             grid[r].rowRenderer->setHeight(rowPos[r+1] - rowPos[r] - vspacing);
         }
+#endif
 
         for ( int c = 0; c < nEffCols; c++ )
         {

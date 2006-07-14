@@ -94,9 +94,6 @@ public:
 
     virtual void calcWidth();
 
-    virtual int borderTopExtra() const;
-    virtual int borderBottomExtra() const;
-
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );

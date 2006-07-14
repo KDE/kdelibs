@@ -1666,8 +1666,7 @@ void RenderBox::calcAbsoluteVertical()
         // m_staticY should already have been set through layout of the parent()
         int staticTop = m_staticY - containerBlock->borderTop();
         for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent()) {
-            if (!po->isTableRow())
-                staticTop += po->yPos();
+            staticTop += po->yPos();
         }
         top.setValue(Fixed, staticTop);
     }
@@ -2067,8 +2066,7 @@ void RenderBox::calcAbsoluteVerticalReplaced()
         // m_staticY should already have been set through layout of the parent().
         int staticTop = m_staticY - containerBlock->borderTop();
         for (RenderObject* po = parent(); po && po != containerBlock; po = po->parent()) {
-            if (!po->isTableRow())
-                staticTop += po->yPos();
+            staticTop += po->yPos();
         }
         top.setValue(Fixed, staticTop);
     }
