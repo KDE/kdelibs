@@ -93,7 +93,7 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 		linkCode+=QString::fromLatin1("</p>");
 		QLabel *link = new QLabel(linkCode , vb );
 		link->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-		link->setOpenExternalLinks(true);
+		link->setOpenExternalLinks(false);
 		//link->setAlignment( AlignRight );
 		QObject::connect(link, SIGNAL(linkActivated(const QString &)), this, SLOT(slotLinkClicked(const QString& ) ) );
 		QObject::connect(link, SIGNAL(linkActivated(const QString &)), pop, SLOT(hide()));
