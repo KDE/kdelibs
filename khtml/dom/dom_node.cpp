@@ -273,7 +273,7 @@ Node Node::replaceChild( const Node &newChild, const Node &oldChild )
     NodeImpl *r = impl->replaceChild( newChild.impl, oldChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
-    if (!newChild.impl->closed()) newChild.impl->close();
+    if (newChild.impl && !newChild.impl->closed()) newChild.impl->close();
     return r;
 }
 
