@@ -129,8 +129,6 @@ bool KGlobalAccel::readSettings( KConfigBase* config )
 			continue;
 		}
 	}
-	
-	config->sync();
 
 	return true;
 }
