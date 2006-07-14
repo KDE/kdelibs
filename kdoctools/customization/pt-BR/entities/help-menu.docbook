@@ -6,10 +6,10 @@
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Ajuda</guimenu>
-<guimenuitem>Conteúdo...</guimenuitem>
+<guimenuitem>Manual do &kappname;</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invoca a ajuda do KDE</action>, niniciando a ajuda do &kappname;.</para></listitem>
+<listitem><para><action>Invoca a ajuda do KDE</action>, iniciando a ajuda do &kappname;.</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -21,7 +21,7 @@
 <guimenuitem>O que é Isto?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Muda o cursor do mouse para uma mistura de uma seta com um ponto de interrogação.</action>  Ao clicar nos itens do &kappname; irás abrir uma janela de ajuda (se existir alguma para o item em particular) que explica a função do item.</para></listitem>
+<listitem><para><action>Muda o cursor do mouse para uma mistura de uma seta com um ponto de interrogação.</action>  Clicando nos itens do &kappname; você irá abrir uma janela de ajuda (se existir alguma para o item em particular) explicando a função do item.</para></listitem>
 </varlistentry>
 
 
