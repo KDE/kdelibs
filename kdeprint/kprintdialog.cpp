@@ -254,6 +254,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 
 	d->m_printer = 0;
 	setCaption(i18n("Print"));
+	setButtons( KDialog::None );
 
 	// widget creation
 	Q3GroupBox	*m_pbox = new Q3GroupBox(0,Qt::Vertical,i18n("Printer"), this);
@@ -342,8 +343,10 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	QWidget::setTabOrder( d->m_ok, m_cancel );
 
 	// layout creation
-	QVBoxLayout	*l1 = new QVBoxLayout(this);
-	l1->setMargin(10);
+	QWidget *main = new QWidget();
+	setMainWidget(main);
+	QVBoxLayout	*l1 = new QVBoxLayout(main);
+	l1->setMargin(5);
 	l1->setSpacing(10);
 	l1->addWidget(m_pbox,0);
 	l1->addWidget(d->m_dummy,1);
