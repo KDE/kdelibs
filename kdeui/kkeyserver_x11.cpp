@@ -521,6 +521,7 @@ bool keyQtToSymX( int keyQt, int& keySym )
 
 bool symXToKeyQt( uint keySym, int& keyQt )
 {
+	keyQt = Qt::Key_unknown;
 	if( keySym < 0x1000 ) {
 		if( keySym >= 'a' && keySym <= 'z' )
 			keyQt = QChar(keySym).toLower().unicode();
