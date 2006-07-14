@@ -32,7 +32,7 @@
 # AbortFatal=1
 #
 
-# KAccel debug info off
+# KGlobalAccel debug info off
 [125]
 InfoOutput=4
 

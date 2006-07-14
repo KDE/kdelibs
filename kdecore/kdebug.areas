@@ -5,6 +5,7 @@
 #
 #Format : number<tab>description
 
+125        kdecore (KGlobalAccel)
 126        kdecore (KUrl)
 127        kio (KProtocolInfo)
 129        kdecore (KAction)
