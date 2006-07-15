@@ -248,7 +248,7 @@ bool XMLHandler::characters( const QString& ch )
     }
     else {
         // Don't worry about white-space violating DTD
-        if (ch.stripWhiteSpace().isEmpty()) return true;
+        if (ch.trimmed().isEmpty()) return true;
 
         return false;
     }
