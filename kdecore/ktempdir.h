@@ -161,7 +161,10 @@ protected:
    void setError(int error);
 
 private:
-   KDE_PIMPL_DISABLE_COPY(KTempDir);
+   class KTempDirPrivate;
+   KTempDirPrivate * const d;
+   KTempDir(const KTempDir&);
+   KTempDir& operator=(const KTempDir&);
 };
 
 #endif
