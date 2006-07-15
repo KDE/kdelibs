@@ -30,7 +30,9 @@
 #include <QWidgetAction>
 #include <QLabel>
 #include <QStyle>
+#include <QHBoxLayout>
 
+#include "khbox.h"
 #include "kmenu.h"
 
 #include <kdebug.h>
@@ -138,12 +140,21 @@ QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before
 {
     QWidgetAction* action = new QWidgetAction(this);
     action->setEnabled(false);
-    QLabel* label = new QLabel(this);
-    action->setDefaultWidget(label);
-    label->setFrameShape(QFrame::Box);
-    label->setText(text);
+    QFrame *hbox = new QFrame( this );
+    QHBoxLayout *layout = new QHBoxLayout( hbox );
+    layout->setMargin( 3 );
+    layout->setSpacing( 5 );
+    QLabel* pix_label = new QLabel(hbox);
+    layout->insertWidget( -1, pix_label, 0 );
     int iconSize = style()->pixelMetric(QStyle::PM_SmallIconSize, 0, this);
-    label->setPixmap(icon.pixmap(QSize(iconSize, iconSize)));
+    pix_label->setPixmap(icon.pixmap(QSize(iconSize, iconSize)));
+
+    QLabel *label = new QLabel( hbox );
+    layout->insertWidget( -1, label, 20 );
+    action->setDefaultWidget(hbox);
+    hbox->setFrameShape(QFrame::Box);
+    label->setText(text);
+
     QFont f = label->font();
     f.setBold(true);
     label->setFont(f);
