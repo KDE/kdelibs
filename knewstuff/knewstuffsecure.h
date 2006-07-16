@@ -36,7 +36,7 @@ to the standard KNewStuff class.
 
 @author Andras Mantia <amantia@kde.org>
 */
-class KNEWSTUFF_EXPORT KNewStuffSecure : public  QObject, public KNewStuff
+class KDE_EXPORT KNewStuffSecure : public  QObject, public KNewStuff
 {
   Q_OBJECT
 
