@@ -122,17 +122,10 @@ SlaveInterface::~SlaveInterface()
 
 static KIO::filesize_t readFilesize_t(QDataStream &stream)
 {
-   KIO::filesize_t result;
-   quint32 ul; // TODO: this was a long and possibly it was meant to be
-   stream >> ul;
-   result = ul;
-   if (stream.atEnd())
-      return result;
-   stream >> ul;
-   result += ((KIO::filesize_t)ul) << 32;
-   return result;
+    KIO::filesize_t result;
+    stream >> result;
+    return result;
 }
-
 
 bool SlaveInterface::dispatch()
 {
