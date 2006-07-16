@@ -5,7 +5,7 @@
 
 #include "objectmodel.h"
 
-ObjectNode::ObjectNode(const QByteArray &name, KJS::JSObject *instance, ObjectNode *parent)
+ObjectNode::ObjectNode(const QString &name, KJS::JSObject *instance, ObjectNode *parent)
 {
     itemName = name;
     itemInstance = instance;
@@ -14,7 +14,9 @@ ObjectNode::ObjectNode(const QByteArray &name, KJS::JSObject *instance, ObjectNo
 
 ObjectNode::~ObjectNode()
 {
-    qDeleteAll(childItems);
+    while (!childItems.isEmpty())
+        delete childItems.takeFirst();
+    childItems.clear();
 }
 
 void ObjectNode::appendChild(ObjectNode *item)
@@ -38,7 +40,7 @@ int ObjectNode::columnCount() const
 //    return itemData.count();
 }
 
-QByteArray ObjectNode::name() const
+QString ObjectNode::name() const
 {
     return itemName;
 }
@@ -66,25 +68,24 @@ int ObjectNode::row() const
 
 
 
+void ObjectModel::update(KJS::Interpreter *interpreter)
+{
+    if (!interpreter)
+        return;
 
+    KJS::JSObject *instance = interpreter->globalObject();
+    KJS::ExecState *exec = interpreter->globalExec();
+    QString name = instance->toString(exec).qstring();
+    rootItem = new ObjectNode(name, instance);
 
-
-
-
-
-
-
+    setupModelData(interpreter, rootItem);
+}
 
 
 ObjectModel::ObjectModel(KJS::Interpreter *interpreter, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    KJS::JSObject *instance = interpreter->globalObject();
-    KJS::ExecState *exec = interpreter->globalExec();
-    QByteArray name = instance->toString(exec).ascii();
-    rootItem = new ObjectNode(name, instance);
-
-    setupModelData(interpreter, rootItem);
+    update(interpreter);
 }
 
 ObjectModel::~ObjectModel()
@@ -102,32 +103,44 @@ int ObjectModel::columnCount(const QModelIndex &parent) const
 
 QVariant ObjectModel::data(const QModelIndex &index, int role) const
 {
+//     if (!index.isValid())
+//         return QVariant();
+// 
+//     ObjectNode *item = static_cast<ObjectNode*>(index.internalPointer());
+//     KJS::JSObject *instance = item->instance();
+// 
+//     if (role == Qt::DecorationRole )
+//     {
+//         if( instance->implementsConstruct() )
+//             return QPixmap(":/images/class.png");
+//         else if( instance->implementsCall() )
+//             return QPixmap(":/images/method.png");
+//         else
+//             return QPixmap(":/images/property.png");
+//     }
+//     if( role == Qt::TextColorRole )
+//     {
+//         if( instance->implementsConstruct() )
+//             return QColor("blue");
+//         else if( instance->implementsCall() )
+//             return QColor("green");
+//         else
+//             return QColor("black");
+//     }
+//     if (role == Qt::DisplayRole)
+//         return "item";
+// //        return item->name();
+// 
+
+
     if (!index.isValid())
         return QVariant();
 
-    ObjectNode *item = static_cast<ObjectNode*>(index.internalPointer());
-    KJS::JSObject *instance = item->instance();
+    if (role != Qt::DisplayRole)
+        return QVariant();
 
-    if (role == Qt::DecorationRole )
-    {
-        if( instance->implementsConstruct() )
-            return QPixmap(":/images/class.png");
-        else if( instance->implementsCall() )
-            return QPixmap(":/images/method.png");
-        else
-            return QPixmap(":/images/property.png");
-    }
-    if( role == Qt::TextColorRole )
-    {
-        if( instance->implementsConstruct() )
-            return QColor("blue");
-        else if( instance->implementsCall() )
-            return QColor("green");
-        else
-            return QColor("black");
-    }
-    if (role == Qt::DisplayRole)
-        return item->name();
+    ObjectNode *item = static_cast<ObjectNode*>(index.internalPointer());
+    return item->name();
 }
 
 Qt::ItemFlags ObjectModel::flags(const QModelIndex &index) const
@@ -166,6 +179,7 @@ QModelIndex ObjectModel::index(int row, int column, const QModelIndex &parent) c
         return QModelIndex();
 }
 
+
 QModelIndex ObjectModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -199,11 +213,14 @@ void ObjectModel::setupModelData(KJS::Interpreter *interpreter, ObjectNode *pare
     KJS::ReferenceList props = parent->propList(exec);
     for( KJS::ReferenceListIterator ref = props.begin(); ref != props.end(); ref++)
     {
-        QByteArray name = ref->getPropertyName(exec).ascii();
-        KJS::JSObject *instance = parent->get(exec, name.constData())->toObject(exec);
+        KJS::Identifier id = ref->getPropertyName(exec);
+        QString name = id.qstring();
+        KJS::JSObject* instance = parent->get(exec, id)->toObject(exec);
 
         kDebug() << "refrence list object: " << name << endl;
-        ObjectNode *child = new ObjectNode(name, instance, parentNode);
+        ObjectNode *child = new ObjectNode(name, instance);
+        parentNode->appendChild(child);
+
     }
 }
 

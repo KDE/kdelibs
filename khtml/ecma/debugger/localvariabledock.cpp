@@ -7,6 +7,7 @@
 #include <kjs/reference_list.h>
 #include <kjs/scope_chain.h>
 #include <kjs/object.h>
+#include <kdebug.h>
 
 //#include "jsobjectmodel.h"
 #include "objectmodel.h"
@@ -27,8 +28,13 @@ LocalVariablesDock::~LocalVariablesDock()
 
 void LocalVariablesDock::display(KJS::Interpreter *interpreter)
 {
-    m_model = new ObjectModel(interpreter);
+    // kDebug("::display(..) called for interpreter: %p", interpreter);
+
+    m_model = new ObjectModel(interpreter, this);
     m_widget->setModel(m_model);
+
+//     if (m_model)
+//         m_model->update(interpreter);
 
 /*
     m_widget->clear();

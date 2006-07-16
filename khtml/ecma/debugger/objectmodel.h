@@ -14,7 +14,7 @@ namespace KJS
 class ObjectNode
 {
 public:
-    ObjectNode(const QByteArray &name, KJS::JSObject *instance, ObjectNode *parent = 0);
+    ObjectNode(const QString &name, KJS::JSObject *instance, ObjectNode *parent = 0);
     ~ObjectNode();
 
     void appendChild(ObjectNode *child);
@@ -23,18 +23,18 @@ public:
     int childCount() const;
     int columnCount() const;
 
-    QByteArray name() const;
+    QString name() const;
     KJS::JSObject *instance() const;
 
     int row() const;
     ObjectNode *parent();
 
 private:
+    ObjectNode *parentItem;
     QList<ObjectNode*> childItems;
 
-    QByteArray itemName;
+    QString        itemName;
     KJS::JSObject *itemInstance;
-    ObjectNode *parentItem;
 };
 
 class ObjectModel : public QAbstractItemModel
@@ -52,6 +52,9 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+
+    void update(KJS::Interpreter *interpreter);
 
 private:
     void setupModelData(KJS::Interpreter *interpreter, ObjectNode *parent);
