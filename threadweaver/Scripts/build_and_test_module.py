@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import sys
 import buildinator_common
 
@@ -21,7 +22,7 @@ try:
     Module = sys.argv[2]
     ProFileName = sys.argv[3]
 except:
-    print "Usage: " + sys.argv[0] + " <SVN revision to test>"
+    print "Usage: " + sys.argv[0] + " <SVN revision to test> <SvnURL> <ProFileName>"
     print "Example: " + sys.argv[0] \
           + ' 452230 svn+ssh://svn.kde.org/home/kde/trunk/kdenonbeta/threadweaver ' \
           + 'ThreadWeaver.pro'
@@ -29,5 +30,5 @@ except:
 else:
 #    if (Revision < 452230):
 #        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
-    buildinator_common.ExecuteBuildAndTest ( Revision, Module, ProFileName)
+    buildinator_common.ExecuteBuildAndTest ( os.getcwd(), Revision, Module, ProFileName)
     

@@ -44,11 +44,11 @@ def Test (BuildDir, Prefix, LogDir):
                      + " > " + LogDir + "/make-test-" + Prefix + ".log 2>&1 )")
 
 # the entry point for the whole build test process:
-def ExecuteBuildAndTest ( Revision, Module, ProFileName):
+def ExecuteBuildAndTest ( WorkDir, Revision, Module, ProFileName):
     """This function runs the sequence of checking out, building and testing a revision"""
-    SrcDir = os.getcwd() + "/Src"
-    BuildDir = os.getcwd() + "/Build"
-    LogDir = os.getcwd() + "/Logs"
+    SrcDir = WorkDir+ "/Src"
+    BuildDir = WorkDir + "/Build"
+    LogDir = WorkDir + "/Logs"
     MinimumTestRevision = -1
 
     print "Module:   " + Module
@@ -113,3 +113,4 @@ def GetRevisionList( Lines ):
             Revisions = Revisions + [ int(Revision) ]
     Revisions.sort()
     return Revisions
+
