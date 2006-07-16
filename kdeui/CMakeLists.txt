@@ -129,6 +129,7 @@ set(kdeui_LIB_SRCS
  itemviews/klistbox.cpp
  itemviews/ktreewidgetsearchline.cpp
  widgets/kbuttonbox.cpp
+ widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
  widgets/kcolorbutton.cpp

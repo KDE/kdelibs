@@ -23,7 +23,7 @@
 #include <qpushbutton.h>
 #include <qdir.h>
 
-#include <kbuttonbox.h>
+#include <kdialogbuttonbox.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kiconloader.h>
@@ -99,11 +99,11 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
    m_listView->addColumn(i18n("Menu"));
    m_listView->setFullWidth(true);
    m_listView->setSorting(-1);
-   KButtonBox *buttonBox = new KButtonBox(page, Qt::Vertical);
-   buttonBox->addButton(i18n("New..."), this, SLOT(slotNewItem()));
-   d->pbRemove=buttonBox->addButton(i18n("Remove"), this, SLOT(slotRemoveItem()));
-   d->pbMoveUp=buttonBox->addButton(i18n("Move Up"), this, SLOT(slotMoveUp()));
-   d->pbMoveDown=buttonBox->addButton(i18n("Move Down"), this, SLOT(slotMoveDown()));
+   KDialogButtonBox *buttonBox = new KDialogButtonBox(page, Qt::Vertical);
+   buttonBox->addButton(i18n("New..."),QDialogButtonBox::ActionRole, this, SLOT(slotNewItem()));
+   d->pbRemove=buttonBox->addButton(i18n("Remove"),QDialogButtonBox::DestructiveRole, this, SLOT(slotRemoveItem()));
+   d->pbMoveUp=buttonBox->addButton(i18n("Move Up"),QDialogButtonBox::ActionRole, this, SLOT(slotMoveUp()));
+   d->pbMoveDown=buttonBox->addButton(i18n("Move Down"),QDialogButtonBox::ActionRole, this, SLOT(slotMoveDown()));
    buttonBox->layout();
    connect( m_listView, SIGNAL( selectionChanged () ), this, SLOT( refreshButton() ) );
    refreshButton();

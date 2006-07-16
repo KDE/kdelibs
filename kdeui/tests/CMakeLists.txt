@@ -31,15 +31,15 @@ target_link_libraries(kblendtest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kbuttonboxtest_SRCS
-kbuttonboxtest.cpp
+set(kdialogbuttonboxtest_SRCS
+kdialogbuttonboxtest.cpp
 )
 
-kde4_automoc(${kbuttonboxtest_SRCS})
+kde4_automoc(${kdialogbuttonboxtest_SRCS})
 
-kde4_add_executable(kbuttonboxtest RUN_UNINSTALLED ${kbuttonboxtest_SRCS})
+kde4_add_executable(kdialogbuttonboxtest RUN_UNINSTALLED ${kdialogbuttonboxtest_SRCS})
 
-target_link_libraries(kbuttonboxtest ${KDE4_KDEUI_LIBS})
+target_link_libraries(kdialogbuttonboxtest ${KDE4_KDEUI_LIBS})
 
 
 ########### next target ###############

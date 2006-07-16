@@ -7,6 +7,7 @@ install( FILES
  klineedit.h
  kcolorbutton.h
  kbuttonbox.h
+ kdialogbuttonbox.h
  kled.h
  keditlistbox.h
  kkeybutton.h

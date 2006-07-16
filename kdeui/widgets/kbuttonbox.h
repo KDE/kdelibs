@@ -36,10 +36,12 @@ class KButtonBoxPrivate;
  * is now @p 0 (making it easier to deal with layouts). The space
  * between buttons is now more Motif compliant.
  *
+ * @deprecated use KDialogButtonBox
+ *
  * @author Mario Weilguni <mweilguni@sime.com>
  **/
 
-class KDEUI_EXPORT KButtonBox : public QWidget
+class KDEUI_EXPORT_DEPRECATED KButtonBox : public QWidget
 {
   Q_OBJECT
 
