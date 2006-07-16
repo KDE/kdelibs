@@ -256,7 +256,7 @@ void KDirWatchPrivate::slotActivated()
             e->wd = 0;
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
-            Entry* sub_entry;
+            Entry* sub_entry = 0;
             Q_FOREACH(sub_entry, e->m_entries)
               if (sub_entry->path == e->path + "/" + path) break;
 
