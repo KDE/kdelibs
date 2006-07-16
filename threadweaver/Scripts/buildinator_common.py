@@ -43,36 +43,13 @@ def Test (BuildDir, Prefix, LogDir):
     return os.system("(cd " + BuildPath + " && make test " \
                      + " > " + LogDir + "/make-test-" + Prefix + ".log 2>&1 )")
 
-# "main":
-
-# parse command line args to find the revision to test:
-print """Build and test a subversion revision of a module. (C) Mirko Boehm, 2006
-This script is licensed as a part of the ThreadWeaver multithreading suite
-under the LGPL.
-Run this script in an empty directory.
-"""
-
-SrcDir = os.getcwd() + "/Src"
-BuildDir = os.getcwd() + "/Build"
-LogDir = os.getcwd() + "/Logs"
-Module = ''
-ProFileName = ''
-
-Revision = 0
-MinimumTestRevision = -1
-try:
-    Revision = int (sys.argv[1])
-    Module = sys.argv[2]
-    ProFileName = sys.argv[3]
-except:
-    print "Usage: " + sys.argv[0] + " <SVN revision to test>"
-    print "Example: " + sys.argv[0] \
-          + ' 452230 svn+ssh://svn.kde.org/home/kde/trunk/kdenonbeta/threadweaver ' \
-          + 'ThreadWeaver.pro'
-    sys.exit (-1)
-else:
-#    if (Revision < 452230):
-#        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
+# the entry point for the whole build test process:
+def ExecuteBuildAndTest ( Revision, Module, ProFileName):
+    """This function runs the sequence of checking out, building and testing a revision"""
+    SrcDir = os.getcwd() + "/Src"
+    BuildDir = os.getcwd() + "/Build"
+    LogDir = os.getcwd() + "/Logs"
+    MinimumTestRevision = -1
 
     print "Module:   " + Module
     print "Project:  " + ProFileName
@@ -92,8 +69,11 @@ else:
 
     print "Checking out revision " + str(Revision)
     CheckoutSubversionRevision (Module, Revision, SrcDir, LogDir)
+
+    # a dictionary with the configuration name and qmake options:
     Options = { "Debug" : "CONFIG+=debug",
                 "Release" : "CONFIG+=release" }
+
     for Prefix, Option in Options.items():
         print 'Building with options "' + Option + '" in ' + Prefix
         if Build (SrcDir, BuildDir, Prefix, Option, ProFileName, LogDir) != 0:
@@ -109,7 +89,27 @@ else:
             # run multiple tests
         else:
             print "Tests failed!"
-            
-    # print "Cleaning up..."
-    # CleanUp (SrcDir, BuildDir)
-    # print "Done, results in " + LogDir
+
+    print "Cleaning up (deleting all in SrcDir and BuildDir, leave Logs) ..."
+    CleanUp (SrcDir, BuildDir)
+    print "Done, results in " + LogDir
+
+    # FIXME: return something useful
+
+def GetSvnLog ( SvnUrl ):
+    """Retrieve the subversion log for a subversion URL and return it in a list."""
+    Cmd = "svn log " + SvnUrl
+    File = os.popen (Cmd, 'r')
+    return File.readlines()
+
+def GetRevisionList( Lines ):
+    """Make an integer list of revisions, sorted lowest-to-highest"""
+    RevisionLine = re.compile( '^r\d+\s')
+    Revisions = []
+    for Line in Lines:
+        Match = RevisionLine.match( Line )
+        if Match:
+            Revision = Match.group().rstrip()[1:]
+            Revisions = Revisions + [ int(Revision) ]
+    Revisions.sort()
+    return Revisions
