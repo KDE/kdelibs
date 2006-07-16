@@ -71,8 +71,8 @@ except:
           + 'ThreadWeaver.pro'
     sys.exit (-1)
 else:
-    if (Revision < 452230):
-        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
+#    if (Revision < 452230):
+#        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
 
     print "Module:   " + Module
     print "Project:  " + ProFileName
@@ -110,6 +110,6 @@ else:
         else:
             print "Tests failed!"
             
-    print "Cleaning up..."
-    CleanUp (SrcDir, BuildDir)
-    print "Done, results in " + LogDir
+    # print "Cleaning up..."
+    # CleanUp (SrcDir, BuildDir)
+    # print "Done, results in " + LogDir
