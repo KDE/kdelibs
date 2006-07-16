@@ -85,10 +85,7 @@ protected:
   virtual void drawContents( QPainter * );
   /**
    * Override this function to draw the cursor which
-   * indicates the current value. This function is
-   * always called twice, once with argument show=false
-   * to clear the old cursor, once with argument show=true
-   * to draw the new one.
+   * indicates the current value.
    */
   virtual void drawArrow( QPainter *painter, const QPoint &pos );
 

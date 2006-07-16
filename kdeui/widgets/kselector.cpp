@@ -35,6 +35,8 @@
  * See KColorDialog for example.
  */
 
+#define ARROWWINGSIZE 2
+
 struct KSelector::Private
 {
   QPoint m_previousPos;
@@ -78,7 +80,8 @@ bool KSelector::indent() const
 QRect KSelector::contentsRect() const
 {
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  int iw = (w < 5) ? 5 : w;
+  int iw = (w < ARROWWINGSIZE) ? ARROWWINGSIZE : w;
+
   if ( orientation() == Qt::Vertical )
     return QRect( w, iw, width() - w * 2 - 5, height() - 2 * iw );
   else
@@ -89,7 +92,7 @@ void KSelector::paintEvent( QPaintEvent * )
 {
   QPainter painter;
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  int iw = (w < 5) ? 5 : w;
+  int iw = (w < ARROWWINGSIZE) ? ARROWWINGSIZE : w;
 
   painter.begin( this );
 
@@ -97,20 +100,21 @@ void KSelector::paintEvent( QPaintEvent * )
 
   QBrush brush;
 
+  QPoint pos = calcArrowPos( value() );
+  drawArrow( &painter, pos );
+
   if ( indent() )
   {
     QStyleOptionFrame opt;
     opt.initFrom( this );
     opt.state = QStyle::State_Sunken;
     if ( orientation() == Qt::Vertical )
-      opt.rect.adjust( 0, iw - w, -iw, w - iw );
+      opt.rect.adjust( 0, iw - w, -5, w - iw );
     else
-      opt.rect.adjust(iw - w, 0, w - iw, -iw);
+      opt.rect.adjust(iw - w, 0, w - iw, -5);
     style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
   }
 
-  QPoint pos = calcArrowPos( value() );
-  drawArrow( &painter, pos );
 
   painter.end();
 }
@@ -142,40 +146,39 @@ void KSelector::wheelEvent( QWheelEvent *e )
 
 void KSelector::moveArrow( const QPoint &pos )
 {
-  int val;
-  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-  int iw = (w < 5) ? 5 : w;
+    int val;
+    int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    int iw = (w < ARROWWINGSIZE) ? ARROWWINGSIZE : w;
 
-  if ( orientation() == Qt::Vertical )
-    val = ( maximum() - minimum() ) * (height() - pos.y() - 5 + w)
+    if ( orientation() == Qt::Vertical )
+        val = ( maximum() - minimum() ) * (height() - pos.y() - iw)
             / (height() - iw * 2) + minimum();
-  else
-    val = ( maximum() - minimum() ) * ( pos.x() - 5 + w)
+    else
+        val = ( maximum() - minimum() ) * ( pos.x() - iw)
             / (width() - iw * 2) + minimum();
 
-  setValue( val );
+    setValue( val );
     update();
 }
 
 QPoint KSelector::calcArrowPos( int val )
 {
-  QPoint p;
-  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  int iw = ( w < 5 ) ? 5 : w;
-  if ( orientation() == Qt::Vertical )
-  {
-    p.setY( height() - ( (height() - 2 * iw) * val
-        / ( maximum() - minimum() ) + 5 ) );
-    p.setX( width() - 5 );
-  }
-  else
-  {
-    p.setX( (width() - 2 * iw) * val
-        / ( maximum() - minimum() ) + 5  );
-    p.setY( height() - 5 );
-  }
+    QPoint p;
+    int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
+    int iw = ( w < ARROWWINGSIZE ) ? ARROWWINGSIZE : w;
 
-  return p;
+    if ( orientation() == Qt::Vertical )
+    {
+        p.setY( height() - iw - 1 - (height() - 2 * iw - 1) * val  / ( maximum() - minimum() ) );
+        p.setX( width() - 5 );
+    }
+    else
+    {
+        p.setX( iw + (width() - 2 * iw - 1) * val  / ( maximum() - minimum() ) );
+        p.setY( height() - 5 );
+    }
+
+    return p;
 }
 
 void KSelector::drawContents( QPainter * )
@@ -183,6 +186,8 @@ void KSelector::drawContents( QPainter * )
 
 void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 {
+#if 0
+
     QPolygon array(3);
 
     painter->setPen( QPen() );
@@ -199,6 +204,25 @@ void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
     }
 
     painter->drawPolygon( array );
+#else
+    QPolygon array(3);
+
+    painter->setPen( QPen() );
+    painter->setBrush( QBrush( palette().color(QPalette::ButtonText) ) );
+    array.setPoint( 0, pos.x()+0, pos.y()+0 );
+    if ( orientation() == Qt::Vertical )
+    {
+      array.setPoint( 1, pos.x()+5, pos.y() + ARROWWINGSIZE + 1 );
+      array.setPoint( 2, pos.x()+5, pos.y() - ARROWWINGSIZE - 1 );
+    }
+    else
+    {
+      array.setPoint( 1, pos.x() + ARROWWINGSIZE + 1, pos.y() + 5 );
+      array.setPoint( 2, pos.x() - ARROWWINGSIZE -1, pos.y() + 5 );
+    }
+
+    painter->drawPolygon( array );
+#endif
 }
 
 //----------------------------------------------------------------------------

@@ -31,15 +31,22 @@
  * The contents of the selector are drawn by derived class.
  */
 
+struct KXYSelector::Private
+{
+  QColor m_markerColor;
+};
+
 KXYSelector::KXYSelector( QWidget *parent )
   : QWidget( parent )
+    , d(new Private)
 {
-  xPos = 0;
-  yPos = 0;
-  minX = 0;
-  minY = 0;
-  maxX = 100;
-  maxY = 100;
+    xPos = 0;
+    yPos = 0;
+    minX = 0;
+    minY = 0;
+    maxX = 100;
+    maxY = 100;
+    d->m_markerColor = Qt::white;
 }
 
 
@@ -92,15 +99,20 @@ void KXYSelector::setValues( int _xPos, int _yPos )
   setPosition( xp, yp );
 }
 
+void KXYSelector::setMarkerColor( const QColor &col )
+{
+    d->m_markerColor =  col;
+}
+
 QRect KXYSelector::contentsRect() const
 {
-  int w = qMax( style()->pixelMetric(QStyle::PM_DefaultFrameWidth), 5 );
+  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
   return rect().adjusted(w, w, -w, -w);
 }
 
 QSize KXYSelector::minimumSizeHint() const
 {
-  int w = qMax( style()->pixelMetric(QStyle::PM_DefaultFrameWidth), 5 );
+  int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
   return QSize( 2 * w, 2 * w );
 }
 
@@ -114,15 +126,16 @@ void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
     w = 5 - w;
   }
   opt.rect.adjust( w, w, -w, -w );
+
   opt.state = QStyle::State_Sunken;
 
   QPainter painter;
   painter.begin( this );
 
-  style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
-
   drawContents( &painter );
-  drawCursor( &painter, px, py );
+  drawMarker( &painter, px, py );
+
+  style()->drawPrimitive( QStyle::PE_Frame, &opt, &painter, this );
 
   painter.end();
 }
@@ -155,7 +168,7 @@ void KXYSelector::wheelEvent( QWheelEvent *e )
 void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 {
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  if ( w < 5 ) w = 5;
+
   xVal = ( ( maxX - minX ) * ( x - w ) ) / ( width() - 2 * w );
   yVal = maxY - ( ( ( maxY - minY ) * (y - w) ) / ( height() - 2 * w ) );
 
@@ -173,7 +186,7 @@ void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const
 void KXYSelector::setPosition( int xp, int yp )
 {
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  if (w < 5) w = 5;
+
   if ( xp < w )
     xp = w;
   else if ( xp > width() - w )
@@ -194,14 +207,18 @@ void KXYSelector::drawContents( QPainter * )
 {}
 
 
-void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
+void KXYSelector::drawMarker( QPainter *p, int xp, int yp )
 {
-  p->setPen( QPen( Qt::white ) );
+    QPen pen( d->m_markerColor );
+    p->setPen( pen );
 
+/*
   p->drawLine( xp - 6, yp - 6, xp - 2, yp - 2 );
   p->drawLine( xp - 6, yp + 6, xp - 2, yp + 2 );
   p->drawLine( xp + 6, yp - 6, xp + 2, yp - 2 );
   p->drawLine( xp + 6, yp + 6, xp + 2, yp + 2 );
+*/
+    p->drawEllipse(xp - 4, yp - 4, 8, 8);
 }
 
 static QVector<QColor> *s_standardPalette = 0;

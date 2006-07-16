@@ -56,7 +56,7 @@ public:
    * Sets the current values in horizontal and
    * vertical direction.
    * @param xPos the horizontal value
-   * @param yPos the veritcal value
+   * @param yPos the vertical value
    */
   void setValues( int xPos, int yPos );
 
@@ -68,7 +68,7 @@ public:
 
   /**
    * Sets the current vertical value
-   * @param yPos the veritcal value
+   * @param yPos the vertical value
    */
   void setYValue( int yPos );
 
@@ -76,6 +76,12 @@ public:
    * Sets the range of possible values.
    */
   void setRange( int minX, int minY, int maxX, int maxY );
+
+  /**
+    * Sets the color used to draw the marker
+   * @param col the color
+    */
+  void setMarkerColor( const QColor &col );
 
   /**
    * @return the current value in horizontal direction.
@@ -111,11 +117,12 @@ protected:
    * Draw within contentsRect() only.
    */
   virtual void drawContents( QPainter * );
+
   /**
-   * Override this function to draw the cursor which
+   * Override this function to draw the marker which
    * indicates the currently selected value pair.
    */
-  virtual void drawCursor( QPainter *p, int xp, int yp );
+  virtual void drawMarker( QPainter *p, int xp, int yp );
 
   virtual void paintEvent( QPaintEvent *e );
   virtual void mousePressEvent( QMouseEvent *e );
@@ -139,8 +146,8 @@ private:
   int maxY;
 
 private:
-  class KXYSelectorPrivate;
-  KXYSelectorPrivate *d;
+  class Private;
+  Private * const d;
 };
 
 class KDEUI_EXPORT KHueSaturationSelector : public KXYSelector
