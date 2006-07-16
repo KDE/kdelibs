@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import buildinator_common
 
 # "main":
@@ -8,15 +9,13 @@ import buildinator_common
 print """Build and test a subversion revision of a module. (C) Mirko Boehm, 2006
 This script is licensed as a part of the ThreadWeaver multithreading suite
 under the LGPL.
-Run this script in an empty directory. It will create folders and files in
-this folder, assuming nothing in it needs to be preserved.
+Run this script in an empty directory.
 """
 
 Module = ''
 ProFileName = ''
-
 Revision = 0
-MinimumTestRevision = -1
+
 try:
     Revision = int (sys.argv[1])
     Module = sys.argv[2]
@@ -28,4 +27,7 @@ except:
           + 'ThreadWeaver.pro'
     sys.exit (-1)
 else:
-    ExecuteBuildAndTest ( Revision, Module, ProFileName)
+#    if (Revision < 452230):
+#        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
+    buildinator_common.ExecuteBuildAndTest ( Revision, Module, ProFileName)
+    
