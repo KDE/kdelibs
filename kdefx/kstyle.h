@@ -775,10 +775,6 @@ protected:
     /**
      * @brief Describes an item in a menu.
      *
-     * Relevant elements:
-     * - @c KPE_Generic_Text the text of the menu item
-     * - @c KPE_Generic_ArrowLeft @c KPE_Generic_ArrowRight arrows indicating a sub-menu
-     *
      * MenuItems are layouted like this:
      * -# There are two MenuItem modes, toggled by @c LP_MenuItem_CheckAlongsideIcon.
      *    Horizontal layout inside the items is as follow:
@@ -791,6 +787,8 @@ protected:
      *
      * @note For the subprimitives the passed rect is their own.
      * @note Background is erased with WT_Menu/Menu::Background.
+     *
+     * @sa WT_MenuItem
      */
     struct MenuItem
     {
@@ -809,9 +807,9 @@ protected:
                              * column (CheckAlongsideButton enabled).*/
             IconWidth,      ///< (\b 12) minimum size of the icon column
             IconSpace,      ///< (\b 3) space between the icon column and text column
-            AccelSpace,     ///< (\b 0 ?) space between text and accel
+            AccelSpace,     ///< (\b 0 ?) space between text and keyboard accelerator label
             ArrowSpace,     ///< (\b 3) space between the text column and arrow column (indicating sub menus)
-            ArrowWidth,     ///< (\b 11) space to reserve for the menu arrow
+            ArrowWidth,     ///< (\b 11) space to reserve for the menu arrow column
             SeparatorHeight,///< (\b 0) heigh of separator
             MinHeight,      ///< (\b 16) limit on the size of item content
             ActiveTextColor,///< (\b ColorMode(QPalette::HighlightedText)) color for active text and arrow
@@ -821,6 +819,10 @@ protected:
         };
 
         /**
+         * Relevant Generic elements:
+         * - @c Generic::Text the text of the menu item
+         * - @c Generic::ArrowLeft @c Generic::ArrowRight arrows indicating a sub-menu
+         *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
@@ -891,6 +893,8 @@ protected:
 
     /**
      * @brief Describes a tab bar.
+     *
+     * @sa WT_TabBar
      */
     struct TabBar
     {
@@ -920,9 +924,9 @@ protected:
                                  * all tabs which are not at the beginning (accordingly
                                  * extended to the right in RightToLeft mode; extended
                                  * to the top for East/West tabs). */
-            BaseHeight,        ///< (\b 2) the height of the tabBar's base, usually the frame width [sets QStyle::PM_TabBarBaseHeight]
+            BaseHeight,        ///< (\b 2) the height of the tabBar's base, usually the frame width [sets QStyle::PM_TabBarBaseHeight] @todo is this used for things like I intended TabWidget::ContentsMargin for?
             BaseOverlap,       ///< (\b 2) the number of pixels the tabs overlap with the base (i.e. tabWidget frame) [sets QStyle::PM_TabBarBaseOverlap]
-            ScrollButtonWidth  ///< (\b 10) buttons which are shown when there's not enough space for tabs [sets QStyle::PM_TabBarScrollButtonWidth]
+            ScrollButtonWidth  ///< (\b 10) buttons which are shown when there's not enough space for tabs (A ToolButton is used for this) [sets QStyle::PM_TabBarScrollButtonWidth]
         };
 
         /**
@@ -954,11 +958,12 @@ protected:
      *
      * Relevant elements:
      * - @c Generic::Frame for the frame/panel of the TabWidget
+     *
+     * @sa WT_TabWidget
      */
     struct TabWidget
     {
         /**
-         * @todo how are tabbar panels like the one in mosfet's liquid implemented? maybe convert the FrameWidth prop to a Margin which rotates with tabbar orientation, to make things like this possible?
          * @sa setWidgetLayoutProp()
          */
         enum LayoutProp
@@ -976,6 +981,8 @@ protected:
 
     /**
      * @brief Describes a slider, like QSlider.
+     *
+     * @sa WT_Slider
      */
     struct Slider
     {
@@ -1154,6 +1161,8 @@ protected:
 
     /**
      * @brief Describes a list header, like in QListView.
+     *
+     * @sa WT_Header
      */
     struct Header
     {
@@ -1227,7 +1236,7 @@ protected:
             TextAlignTop, /**< (\b 0) set to non-zero, the title will be aligned
                           * above the groupbox frame, not vertically centered
                           * [sets QStyle::SH_GroupBox_TextLabelVerticalAlignment] */
-            TitleTextColor
+            TitleTextColor ///< (\b ColorMode(QPalette::Text)) color of the title text label
         };
         /**
          * @sa drawKStylePrimitive()
@@ -1259,6 +1268,8 @@ protected:
 
     /**
      * @brief Describes a tool bar.
+     *
+     * @sa WT_ToolBar
      */
     struct ToolBar
     {
@@ -1394,17 +1405,15 @@ protected:
          *
          * [titlebar elements implement CC_TitleBar]
          *
-         * @todo KStyleOption for button hover!
-         *
          * @sa drawKStylePrimitive()
          */
         enum Primitive
         {
             TitlePanel,  ///< whole titlebar panel/background, by KStyle default it's filled with plain highlight color
-            ButtonMenu,     ///< system menu button, passes TitleButtonOption @todo KStyle default implementation
+            ButtonMenu,     ///< system menu button, passes TitleButtonOption
             ButtonMin,      ///< minimize button, passes TitleButtonOption
             ButtonMax,      ///< maximize button, passes TitleButtonOption
-            ButtonRestore,  ///< restore button, passes TitleButtonOption @todo split min/max restore
+            ButtonRestore,  ///< restore button, passes TitleButtonOption @todo split min/max restore?
             ButtonClose,    ///< close button, passes TitleButtonOption
             ButtonShade,    ///< shade button, passes TitleButtonOption
             ButtonUnshade,  ///< button to remove the shade state, passes TitleButtonOption

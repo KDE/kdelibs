@@ -1086,7 +1086,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                                     pal, flags, p, widget, &icoOpt);
 
                 textShift = iconSize +
-                        widgetLayoutProp(WT_CheckBox, CheckBox::BoxTextSpace, option, widget);
+                        widgetLayoutProp(WT_RadioButton, RadioButton::BoxTextSpace, option, widget);
             }
 
             TextOption lbOpt(bOpt->text);
@@ -2717,6 +2717,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             // title bar
             drawKStylePrimitive(WT_Window, Window::TitlePanel, opt, r, pal, flags, p, w);
 
+            // TODO: different color depending on Active/inactive state
             // draw title text
             QRect textRect = subControlRect(CC_TitleBar, tb, SC_TitleBarLabel, w);
             TextOption textOpt(tb->text);
