@@ -53,12 +53,12 @@ static void addUnique( KServiceOfferList &lst, const KServiceOfferList &newLst, 
 {
     KServiceOfferList::const_iterator it = newLst.begin();
     const KServiceOfferList::const_iterator end = newLst.end();
-    const KServiceOfferList::const_iterator exisend = lst.end();
     for( ; it != end; ++it )
     {
         KServiceOffer offer = *it;
         KService::Ptr service = offer.service();
         KServiceOfferList::const_iterator exisit = lst.begin();
+        const KServiceOfferList::const_iterator exisend = lst.end();
         bool alreadyThere = false;
         for( ; exisit != exisend && !alreadyThere; ++exisit )
         {
