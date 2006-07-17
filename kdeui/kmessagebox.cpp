@@ -175,7 +175,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     QString qt_text = qrichtextify( text );
 
     QLabel *label2 = new QLabel( qt_text, contents );
-    label2->setOpenExternalLinks(true);
+    label2->setOpenExternalLinks(options & KMessageBox::AllowLink);
     label2->setTextInteractionFlags(Qt::TextInteractionFlags(label2->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
     label2->setWordWrap(true);
 
@@ -224,11 +224,6 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
        }
    }
 
-    if (!(options & KMessageBox::AllowLink))
-    {
-        label2->setOpenExternalLinks(false);
-    }
-
     label2->setFixedSize(QSize(pref_width, pref_height));
 
     lay->addWidget( label2 );
@@ -259,18 +254,15 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
        detailsGroup->setOrientation(Qt::Vertical);
        if ( details.length() < 512 ) {
          QLabel *label3 = new QLabel(qrichtextify(details), detailsGroup);
-         label3->setOpenExternalLinks(true);
+         label3->setOpenExternalLinks(options & KMessageBox::AllowLink);
          label3->setTextInteractionFlags(Qt::TextInteractionFlags(label3->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
          label3->setMinimumSize(label3->sizeHint());
-         if (!(options & KMessageBox::AllowLink))
-         {
-           QObject::disconnect(label3, SIGNAL(anchorClicked (const QUrl &)),
-                            label3, SLOT(setSource(const QUrl &)));
-         }
+         detailsGroup->layout()->addWidget(label3);
        } else {
          QTextEdit* te = new QTextEdit(details, detailsGroup);
          te->setReadOnly( true );
          te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
+         detailsGroup->layout()->addWidget(te);
        }
        dialog->setDetailsWidget(detailsGroup);
     }
@@ -278,7 +270,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     dialog->setMainWidget(topcontents);
     dialog->showButtonSeparator(false);
     if (!listbox)
-        dialog->setFixedSize( dialog->sizeHint() );
+        dialog->layout()->setSizeConstraint( QLayout::SetFixedSize );
 
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
     if ( defaultCode != KDialog::NoDefault )
