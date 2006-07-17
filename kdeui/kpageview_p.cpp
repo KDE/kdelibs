@@ -291,8 +291,11 @@ void KPageTabbedView::layoutChanged()
     return;
 
   // add new tabs
-  for ( int i = 0; i < model()->rowCount(); ++i )
-    mTabBar->addTab( model()->data( model()->index( i, 0 ) ).toString() );
+  for ( int i = 0; i < model()->rowCount(); ++i ) {
+    const QString title = model()->data( model()->index( i, 0 ) ).toString();
+    const QIcon icon = model()->data( model()->index( i, 0 ), Qt::DecorationRole ).value<QIcon>();
+    mTabBar->addTab( icon, title );
+  }
 
   mTabBar->setCurrentIndex( pos );
 
