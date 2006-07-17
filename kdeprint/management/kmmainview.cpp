@@ -191,28 +191,28 @@ void KMMainView::initActions()
 
 	KActionMenu	*stateAct = new KActionMenu(KIcon("kdeprint_printstate"), i18n("Start/Stop Printer"), m_actions, "printer_state_change");
 	stateAct->setDelayed(false);
-  KAction *action = new KAction(i18n("&Start Printer"), m_actions,"printer_start");
-  action->setIcon( KIcon( "kdeprint_enableprinter" ) );
-  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
-	stateAct->insert(action);
+	KAction *action = new KAction(i18n("&Start Printer"), m_actions,"printer_start");
+	action->setIcon( KIcon( "kdeprint_enableprinter" ) );
+	connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->addAction(action);
 
-  action = new KAction(i18n("Sto&p Printer"), m_actions,"printer_stop");
-  action->setIcon( KIcon( "kdeprint_stopprinter" ) );
-  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
-	stateAct->insert(action);
+	action = new KAction(i18n("Sto&p Printer"), m_actions,"printer_stop");
+	action->setIcon( KIcon( "kdeprint_stopprinter" ) );
+	connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->addAction(action);
 
 	stateAct = new KActionMenu(KIcon("kdeprint_queuestate"), i18n("Enable/Disable Job Spooling"), m_actions, "printer_spool_change");
 	stateAct->setDelayed(false);
 
-  action = new KAction(i18n("&Enable Job Spooling"), m_actions,"printer_enable");
-  action->setIcon( KIcon( "kdeprint_enableprinter" ) );
-  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
-	stateAct->insert(action);
+	action = new KAction(i18n("&Enable Job Spooling"), m_actions,"printer_enable");
+	action->setIcon( KIcon( "kdeprint_enableprinter" ) );
+	connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->addAction(action);
 
-  action = new KAction(i18n("&Disable Job Spooling"), m_actions,"printer_disable");
-  action->setIcon( KIcon( "kdeprint_stopprinter" ) );
-  connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
-	stateAct->insert(action);
+	action = new KAction(i18n("&Disable Job Spooling"), m_actions,"printer_disable");
+	action->setIcon( KIcon( "kdeprint_stopprinter" ) );
+	connect( action, SIGNAL( triggered( bool ) ),this,SLOT(slotChangePrinterState()) );
+	stateAct->addAction(action);
 
   action = new KAction(i18n("&Remove"), m_actions,"printer_remove");
   action->setIcon( KIcon( "edittrash" ) );
@@ -294,14 +294,14 @@ void KMMainView::initActions()
 
 	KActionMenu	*mact = new KActionMenu(KIcon("package_utilities"), i18n("Pri&nter Tools"), m_actions, "printer_tool");
 	mact->setDelayed(false);
-	connect(mact->popupMenu(), SIGNAL(triggered(QAction*)), SLOT(slotToolSelected(QAction*)));
+	connect(mact->menu(), SIGNAL(triggered(QAction*)), SLOT(slotToolSelected(QAction*)));
 	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/tools/*.desktop");
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 	{
 		KSimpleConfig	conf(*it);
 		conf.setGroup("Desktop Entry");
-		QAction *action = mact->popupMenu()->addAction(conf.readEntry("Name", "Unnamed"));
-		action->setData(mact->popupMenu()->actions().count());
+		QAction *action = mact->menu()->addAction(conf.readEntry("Name", "Unnamed"));
+		action->setData(mact->menu()->actions().count());
 		m_toollist << conf.readEntry("X-KDE-Library");
 	}
 
@@ -333,14 +333,14 @@ void KMMainView::initActions()
 	m_toolbar->addAction( m_actions->action("view_pfilter") );
 
 	// add actions to the menu bar
-	QMenu *menu = new QMenu( this );
+	KMenu *menu = new KMenu( this );
 	m_actions->action( "printer_add" )->plug( menu );
 	m_actions->action( "printer_add_special" )->plug( menu );
 	//m_menubar->insertItem( i18n( "Add" ), menu );
 	KActionMenu* actionMenu = new KActionMenu(i18n( "Add" ), m_actions, "wizard");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction( actionMenu );
-	menu = new QMenu( this );
+	menu = new KMenu( this );
 	menu->addAction( m_actions->action("printer_state_change") );
 	menu->addAction( m_actions->action("printer_spool_change") );
 	menu->addSeparator();
@@ -356,21 +356,21 @@ void KMMainView::initActions()
 	actionMenu = new KActionMenu(i18n( "Printer" ), m_actions, "printer1");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
-	menu = new QMenu( this );
+	menu = new KMenu( this );
 	menu->addAction( m_actions->action("server_restart") );
 	menu->addAction( m_actions->action("server_configure") );
 	//m_menubar->insertItem( i18n( "Server" ), menu );
 	actionMenu = new KActionMenu(i18n( "Print Server" ), m_actions, "misc");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
-	menu = new QMenu( this );
+	menu = new KMenu( this );
 	menu->addAction( m_actions->action("manager_configure") );
 	menu->addAction( m_actions->action("view_refresh") );
 	//m_menubar->insertItem( i18n( "Manager" ), menu );
 	actionMenu = new KActionMenu(i18n( "Print Manager" ), m_actions, "kdeprint_configmgr");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
-	menu = new QMenu( this );
+	menu = new KMenu( this );
 	menu->addAction( m_actions->action("view_printerinfos") );
 	menu->addAction( m_actions->action("view_change") );
 	menu->addAction( m_actions->action("orientation_change") );
@@ -383,7 +383,7 @@ void KMMainView::initActions()
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
-	menu = new QMenu( this );
+	menu = new KMenu( this );
 	m_actions->action( "invoke_help" )->plug( menu );
 	m_actions->action( "invoke_web" )->plug( menu );
 	actionMenu = new KActionMenu(i18n( "Documentation" ), m_actions, "help");

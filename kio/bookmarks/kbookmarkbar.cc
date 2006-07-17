@@ -223,7 +223,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             KGlobal::config()->setGroup( "Settings" );
             bool addEntriesBookmarkBar = KGlobal::config()->readEntry("AddEntriesBookmarkBar", true);
 
-            KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->kMenu(),
+            KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->menu(),
                                                     m_actionCollection, false, addEntriesBookmarkBar,
                                                     bm.address());
             connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ),

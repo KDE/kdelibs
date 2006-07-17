@@ -59,8 +59,8 @@ KPrintAction::~KPrintAction()
 
 void KPrintAction::initialize(PrinterType type, QWidget *parentWidget)
 {
-	connect(kMenu(), SIGNAL(aboutToShow()), SLOT(slotAboutToShow()));
-	connect(kMenu(), SIGNAL(triggered(QAction*)), SLOT(slotActivated(QAction*)));
+	connect(menu(), SIGNAL(aboutToShow()), SLOT(slotAboutToShow()));
+	connect(menu(), SIGNAL(triggered(QAction*)), SLOT(slotActivated(QAction*)));
 
 	d->type = type;
 	d->parentWidget = parentWidget;
@@ -68,7 +68,7 @@ void KPrintAction::initialize(PrinterType type, QWidget *parentWidget)
 
 void KPrintAction::slotAboutToShow()
 {
-	kMenu()->clear();
+	menu()->clear();
 	d->printers.clear();
 	QList<KMPrinter*>	prts = KMManager::self()->printerList();
 	if (!prts.isEmpty())
@@ -83,11 +83,11 @@ void KPrintAction::slotAboutToShow()
 			{
 				if (d->type == All && !first && printer->isSpecial())
 				{
-					if (kMenu()->actions().count() > 0)
-						kMenu()->addSeparator();
+					if (menu()->actions().count() > 0)
+						menu()->addSeparator();
 					first = true;
 				}
-				QAction *action = kMenu()->addAction(SmallIconSet(printer->pixmap()), printer->name());
+				QAction *action = menu()->addAction(SmallIconSet(printer->pixmap()), printer->name());
 				action->setData(ID++);
 				d->printers.append(printer->name());
 			}

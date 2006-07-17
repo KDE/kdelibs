@@ -308,7 +308,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paSetEncoding->popupMenu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
 
-  d->m_paSetEncoding->insert( new KSeparatorAction( actionCollection() ) );
+  d->m_paSetEncoding->addAction( new KSeparatorAction( actionCollection() ) );
 
 
   d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), actionCollection(), "manualDetection" );
@@ -316,7 +316,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   d->m_manualDetection->setItems( encodings );
   d->m_manualDetection->setCurrentItem( -1 );
-  d->m_paSetEncoding->insert( d->m_manualDetection );
+  d->m_paSetEncoding->addAction( d->m_manualDetection );
 
 
   KConfig *config = KGlobal::config();

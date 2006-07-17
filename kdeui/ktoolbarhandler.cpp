@@ -99,7 +99,7 @@ namespace
         KActionMenu *menuAction = new KActionMenu( i18n( "Toolbars" ), m_actionCollection, "toolbars_submenu_action" );
 
         foreach ( KAction* action, m_toolBarActions )
-          menuAction->kMenu()->addAction( action );
+          menuAction->menu()->addAction( action );
 
         actions.append( menuAction );
 

@@ -502,7 +502,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
             static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
             connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
 
-            providerList->insert(action);
+            providerList->addAction(action);
           }
         }
       }

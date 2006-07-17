@@ -103,29 +103,14 @@ QWidget * KActionMenu::createWidget( QWidget * _parent )
   return button;
 }
 
-void KActionMenu::insert( KAction* cmd, QAction* before )
-{
-  if (!menu())
-    kMenu();
-
-  if ( cmd )
-    menu()->insertAction(before, cmd);
-}
-
 void KActionMenu::remove( KAction* cmd )
 {
-  if (!menu())
-    kMenu();
-
   if ( cmd )
     menu()->removeAction(cmd);
 }
 
 void KActionMenu::addAction( QAction * action )
 {
-  if (!menu())
-    kMenu();
-
   menu()->addAction(action);
 }
 
@@ -147,17 +132,11 @@ QAction* KActionMenu::insertSeparator(QAction* before)
 
 void KActionMenu::insertAction( QAction * before, QAction * action )
 {
-  if (!menu())
-    kMenu();
-
   menu()->insertAction(before, action);
 }
 
 void KActionMenu::removeAction( QAction * action )
 {
-  if (!menu())
-    kMenu();
-
   menu()->removeAction(action);
 }
 
@@ -177,12 +156,17 @@ void KActionMenu::setStickyMenu(bool sticky) {
     d->m_stickyMenu = sticky;
 }
 
-KMenu* KActionMenu::kMenu()
+KMenu* KActionMenu::menu()
 {
-  if (!menu())
+  if (!KAction::menu())
     setMenu(new KMenu());
 
-  return qobject_cast<KMenu*>(menu());
+  return qobject_cast<KMenu*>(KAction::menu());
+}
+
+void KActionMenu::setMenu(KMenu *menu)
+{
+    KAction::setMenu( menu );
 }
 
 /* vim: et sw=2 ts=2

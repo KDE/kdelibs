@@ -188,7 +188,7 @@ void KDirOperator::insertViewDependentActions()
    if( !m_fileView )
       return;
 
-   if ( (viewActionMenu->kMenu()->actions().count() == 0) || 			// Not yet initialized or...
+   if ( (viewActionMenu->menu()->actions().count() == 0) || 			// Not yet initialized or...
         (viewActionCollection != m_fileView->actionCollection()) )	// ...changed since.
    {
       if (viewActionCollection)
@@ -199,7 +199,7 @@ void KDirOperator::insertViewDependentActions()
                this, SLOT( slotViewActionRemoved( KAction * )));
       }
 
-      viewActionMenu->kMenu()->clear();
+      viewActionMenu->menu()->clear();
 //      viewActionMenu->addAction( shortAction );
 //      viewActionMenu->addAction( detailedAction );
 //      viewActionMenu->addAction( actionSeparator );
@@ -1306,7 +1306,7 @@ void KDirOperator::setupActions()
 
     // the view menu actions
     viewActionMenu = new KActionMenu( i18n("&View"), myActionCollection, "view menu" );
-    connect( viewActionMenu->kMenu(), SIGNAL( aboutToShow() ), SLOT( insertViewDependentActions() ));
+    connect( viewActionMenu->menu(), SIGNAL( aboutToShow() ), SLOT( insertViewDependentActions() ));
 
     shortAction = new KAction(i18n("Short View"), myActionCollection, "short view");
     shortAction->setIcon( KIcon( QLatin1String("view_multicolumn") ) );
@@ -1346,7 +1346,7 @@ void KDirOperator::setupMenu()
 void KDirOperator::setupMenu(int whichActions)
 {
     // first fill the submenus (sort and view)
-    sortActionMenu->kMenu()->clear();
+    sortActionMenu->menu()->clear();
     sortActionMenu->addAction( byNameAction );
     sortActionMenu->addAction( byDateAction );
     sortActionMenu->addAction( bySizeAction );
@@ -1356,7 +1356,7 @@ void KDirOperator::setupMenu(int whichActions)
     sortActionMenu->addAction( caseInsensitiveAction );
 
     // now plug everything into the popupmenu
-    actionMenu->kMenu()->clear();
+    actionMenu->menu()->clear();
     if (whichActions & NavActions)
     {
         actionMenu->addAction( upAction );
@@ -1609,7 +1609,7 @@ void KDirOperator::clearHistory()
 
 void KDirOperator::slotViewActionAdded( KAction *action )
 {
-    if ( viewActionMenu->kMenu()->actions().count() == 5 ) // need to add a separator
+    if ( viewActionMenu->menu()->actions().count() == 5 ) // need to add a separator
         viewActionMenu->addAction( d->viewActionSeparator );
 
     viewActionMenu->addAction( action );
@@ -1619,7 +1619,7 @@ void KDirOperator::slotViewActionRemoved( KAction *action )
 {
     viewActionMenu->removeAction( action );
 
-    if ( viewActionMenu->kMenu()->actions().count() == 6 ) // remove the separator
+    if ( viewActionMenu->menu()->actions().count() == 6 ) // remove the separator
         viewActionMenu->removeAction( d->viewActionSeparator );
 }
 

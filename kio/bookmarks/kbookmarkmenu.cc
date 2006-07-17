@@ -522,14 +522,14 @@ void KBookmarkMenu::fillBookmarkMenu()
        m_actions.append( actionMenu );
 
        KBookmarkMenu *subMenu =
-          new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->kMenu(),
+          new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->menu(),
                              m_actionCollection, false,
                              m_bAddBookmark, QString() );
        connect( subMenu, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
                 this, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers ) ));
        m_lstSubMenus.append( subMenu );
 
-       connect(actionMenu->kMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
+       connect(actionMenu->menu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
     }
   }
 
@@ -576,7 +576,7 @@ void KBookmarkMenu::fillBookmarkMenu()
       m_parentMenu->addAction(actionMenu);
       m_actions.append( actionMenu );
 
-      KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->kMenu(),
+      KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->menu(),
                                                   m_actionCollection, false,
                                                   m_bAddBookmark,
                                                   bm.address() );
@@ -940,7 +940,7 @@ void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QStri
   KActionMenu * actionMenu = new KActionMenu( KIcon("folder"), _text, m_actionCollection, 0L );
   mstack.top()->m_parentMenu->addAction(actionMenu);
   mstack.top()->m_actions.append( actionMenu );
-  KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_menu->m_pOwner, actionMenu->kMenu(),
+  KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_menu->m_pOwner, actionMenu->menu(),
                                               m_actionCollection, false,
                                               m_menu->m_bAddBookmark, QString() );
   connect( subMenu, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers ) ),

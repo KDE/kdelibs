@@ -56,7 +56,6 @@ public:
     KActionMenu(const KIcon& icon, const QString& text, KActionCollection* parent, const QString& name);
     virtual ~KActionMenu();
 
-    KDE_DEPRECATED void insert( KAction*, QAction* before = 0L );
     KDE_DEPRECATED void remove( KAction* );
 
     void addAction(QAction* action);
@@ -70,13 +69,18 @@ public:
      * If none exists, one will be created.
      * @deprecated use kMenu() instead.
      */
-    inline KDE_DEPRECATED KMenu* popupMenu() { return kMenu(); }
+    inline KDE_DEPRECATED KMenu* popupMenu() { return menu(); }
 
     /**
      * Returns this action's menu as a KMenu, if it is one.
      * If none exists, one will be created.
      */
-    KMenu* kMenu();
+    KMenu* menu();
+
+    /*
+     * Overload of QAction::setMenu to make sure a KMenu is passed
+     **/
+    void setMenu( KMenu *menu );
 
     /**
      * Returns true if this action creates a delayed popup menu

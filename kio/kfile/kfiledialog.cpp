@@ -916,7 +916,7 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     menu->addAction( coll->action( "separate dirs" ));
 
     menu->setDelayed( false );
-    connect( menu->kMenu(), SIGNAL( aboutToShow() ),
+    connect( menu->menu(), SIGNAL( aboutToShow() ),
              ops, SLOT( updateSelectionDependentActions() ));
     toolbar->addAction( menu );
 
