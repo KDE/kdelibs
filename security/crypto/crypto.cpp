@@ -294,12 +294,12 @@ QString whatstr;
   grid->addWidget(cwbg, 3, 0, 1, 2 );
   QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: <ul>");
 
-  cwcb->insertItem(QString());
-  cwcb->insertItem(i18n("Strong Ciphers Only"));
+  cwcb->addItem(QString());
+  cwcb->addItem(i18n("Strong Ciphers Only"));
   whatStr += i18n("<li><b>Strong Ciphers Only:</b> Select only the strong (&gt;= 128 bit) encryption ciphers.</li>");
-  cwcb->insertItem(i18n("Export Ciphers Only"));
+  cwcb->addItem(i18n("Export Ciphers Only"));
   whatStr += i18n("<li><b>Export Ciphers Only:</b> Select only the weak ciphers (&lt;= 56 bit).</li>");
-  cwcb->insertItem(i18n("Enable All"));
+  cwcb->addItem(i18n("Enable All"));
   whatStr += i18n("<li><b>Enable All:</b> Select all SSL ciphers and methods.</li></ul>");
 
   cwcb->setWhatsThis( whatStr);
