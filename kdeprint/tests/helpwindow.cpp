@@ -138,7 +138,7 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     //setDockEnabled( Qt::DockLeft, false );
     //setDockEnabled( Qt::DockRight, false );
 
-    pathCombo->insertItem( home_ );
+    pathCombo->addItem( home_ );
 
     browser->setFocus();
 }
@@ -173,7 +173,7 @@ void HelpWindow::textChanged()
 	    }
 	}
 	if ( !exists ) {
-	    pathCombo->insertItem( selectedURL, 0 );
+	    pathCombo->insertItem( 0, selectedURL );
 	    pathCombo->setCurrentItem( 0 );
 	    mHistory[ hist->insertItem( selectedURL ) ] = selectedURL;
 	} else

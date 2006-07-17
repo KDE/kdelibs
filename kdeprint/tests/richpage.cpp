@@ -22,7 +22,7 @@ RichPage::RichPage(QWidget *parent)
 	fontname_ = new QComboBox(this);
 	QFontDatabase	db;
 	QStringList	fonts = db.families();
-	fontname_->insertStringList(fonts);
+	fontname_->addItems(fonts);
 	fontname_->setCurrentItem(fonts.findIndex(QLatin1String("times")));
 	if (fontname_->currentItem() < 0) fontname_->setCurrentItem(0);
 
