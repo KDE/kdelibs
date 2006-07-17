@@ -761,7 +761,7 @@ RenderTableSection* RenderTable::sectionAbove(const RenderTableSection* section,
 {
     if (section == head)
         return 0;
-    RenderObject *prevSection = (section == foot ? lastChild() : section)->previousSibling();
+    RenderObject *prevSection = (section == foot ? lastChild() : const_cast<RenderTableSection *>(section))->previousSibling();
     while (prevSection) {
         if (prevSection->isTableSection() && prevSection != head && prevSection != foot && (!skipEmptySections || static_cast<RenderTableSection*>(prevSection)->numRows()))
             break;
@@ -776,7 +776,7 @@ RenderTableSection* RenderTable::sectionBelow(const RenderTableSection* section,
 {
     if (section == foot)
         return 0;
-    RenderObject *nextSection = (section == head ? firstChild() : section)->nextSibling();
+    RenderObject *nextSection = (section == head ? firstChild() : const_cast<RenderTableSection *>(section))->nextSibling();
     while (nextSection) {
         if (nextSection->isTableSection() && nextSection != head && nextSection != foot && (!skipEmptySections || static_cast<RenderTableSection*>(nextSection)->numRows()))
             break;
