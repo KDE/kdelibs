@@ -192,11 +192,11 @@ ktnef
 <!ENTITY kopete-miejscownik    '<application>Kopete</application>'>
 
 <!ENTITY korganizer-mianownik    '<application>Korganizer</application>'>
-<!ENTITY korganizer-dopelniacz    '<application>Koganizera</application>'>
-<!ENTITY korganizer-celownik    '<application>Koganizerowi</application>'>
-<!ENTITY korganizer-biernik    '<application>Koganizera</application>'>
-<!ENTITY korganizer-narzednik    '<application>Koganizerem</application>'>
-<!ENTITY korganizer-miejscownik    '<application>Koganizerze</application>'>
+<!ENTITY korganizer-dopelniacz    '<application>Korganizera</application>'>
+<!ENTITY korganizer-celownik    '<application>Korganizerowi</application>'>
+<!ENTITY korganizer-biernik    '<application>Korganizera</application>'>
+<!ENTITY korganizer-narzednik    '<application>Korganizerem</application>'>
+<!ENTITY korganizer-miejscownik    '<application>Korganizerze</application>'>
 
 <!ENTITY ksysguard-mianownik    '<application>Ksysguard</application>'>
 <!ENTITY ksysguard-dopelniacz    '<application>Ksysguarda</application>'>
