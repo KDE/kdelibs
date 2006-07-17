@@ -387,6 +387,7 @@ doxyndex()
 				< "$i"  | sed -e "s+@topdir@+$htmltop+g" > "$i.new" && mv "$i.new" "$i"
 			sed -e "s+<!-- cmenu -->+$CMENU+" < "$i" > "$i.new"
 			test -s "$i.new" && mv "$i.new" "$i"
+			echo "* Added menus to $i"
 		fi
 	done
 
@@ -395,8 +396,9 @@ doxyndex()
 	do
 		test "$htmldir/classes.html" = "$i" && continue
 		if test -f "$i" ; then
-			grep -l 'bc.html#_bc' "$i" > /dev/null ||
+			grep -l 'bc.html#_bc' "$i" > /dev/null || \
 			{ sed -e 's+<!-- BC -->+<div class="bic">This class is not guaranteed to be binary compatible across releases.</div>+' "$i" > "$i.new" ; test -s "$i.new" && mv "$i.new" "$i" ; }
+			echo "* Added BC warning to $i"
 		fi
 	done
 }
@@ -484,10 +486,22 @@ apidox_toplevel()
 }
 
 ### Handle the Doxygen processing of a non-toplevel directory.
+#
+# $1 is empty to generate tag files only.
+# $1 is non-empty to generate HTML.
+#
+# Additionally, the environment variable $NO_APPEND_TAG may be set 
+# to a non-empty value to suppress adding the tag for this subdir
+# to the list of tag files (used when re-generating a single subdir).
+#
 apidox_subdir()
 {
 	echo ""
-	echo "*** Creating apidox in $subdir"
+	if test -z "$1" ; then
+		echo "*** Creating tag file in $subdir"
+	else
+		echo "*** Creating apidox in $subdir"
+	fi
 	echo "*"
 	rm -f "$subdir/Doxyfile"
 	if test ! -d "$top_srcdir/$subdir" ; then
@@ -520,7 +534,6 @@ apidox_subdir()
 		echo "RECURSIVE              = NO"
 	fi
 	echo "HTML_OUTPUT            = $subdir/html"
-	echo "GENERATE_TAGFILE       = $subdir/$subdirname.tag"
 	test -d "$top_srcdir/doc/api" && \
 		echo "IMAGE_PATH             = $top_srcdir/doc/api"
 	} >> "$subdir/Doxyfile"
@@ -619,6 +632,15 @@ apidox_subdir()
 
 	apidox_local
 
+	if test -z "$1" ; then
+		echo "GENERATE_HTML=NO" >> "$subdir/Doxyfile"
+		echo "GENERATE_TAGFILE=$subdir/$subdirname.tag" >> "$subdir/Doxyfile"
+		test -z "$NO_APPEND_TAG" && echo "	$subdir/$subdirname.tag \\" >> subdirs.tag
+	else
+		echo "GENERATE_HTML=YES" >> "$subdir/Doxyfile"
+		test -s subdirs.tag && grep -v "$subdir/$subdirname.tag" subdirs.tag >> "$subdir/Doxyfile"
+	fi
+
 	if grep '^DOXYGEN_EMPTY' "$srcdir/Mainpage.dox" > /dev/null 2>&1 ; then
 		# This directory is empty, so don't process it, but
 		# *do* handle subdirs that might have dox.
@@ -626,11 +648,17 @@ apidox_subdir()
 	else
 		# Regular processing
 		doxygen "$subdir/Doxyfile"
-		doxyndex
+		if test -n "$1" ; then
+			doxyndex
+		fi
 	fi
 }
 
 ### Run a given subdir by setting up global variables first.
+#
+# $1 is the subdir to process
+# $2 is the flag for apidox_subdir
+#
 do_subdir()
 {
 	subdir=`echo "$1" | sed -e 's+/$++'`
@@ -642,7 +670,7 @@ do_subdir()
 		return
 	fi
 	top_builddir=`echo "/$subdir" | sed -e 's+/[^/]*+../+g'`
-	apidox_subdir
+	apidox_subdir "$2"
 }
 
 
@@ -811,21 +839,19 @@ do_subdirs_re()
 		mkdir -p "$i" 2> /dev/null
 	done
 	) > subdirs.sort
+
+	# Run once for the tags
 	for i in `cat subdirs.sort`
 	do
 		do_subdir "$i"
 	done
 
-	if test -s "subdirs.later" ; then
-		sort subdirs.later | uniq > subdirs.sort
-		for i in `cat subdirs.sort`
-		do
-			: > subdirs.later
-			echo "*** Reprocessing $i"
-			do_subdir "$i"
-			test -s "subdirs.later" && echo "* Some tag files were still not found."
-		done
-	fi
+	# Run again for the HTML
+	for i in `cat subdirs.sort`
+	do
+		do_subdir "$i" true
+	done
+
 }
 
 if test "x." = "x$top_builddir" ; then
@@ -855,7 +881,8 @@ else
 	if test "x$recurse" = "x1" ; then
 		do_subdirs_re "$subdir"
 	else
-		do_subdir "$subdir"
+		NO_APPEND_TAG=true do_subdir "$subdir"
+		do_subdir "$subdir" true
 	fi
 fi
 
