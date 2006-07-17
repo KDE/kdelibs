@@ -463,13 +463,6 @@ public Q_SLOTS:
      */
     void setCurrentItem( const QString& item, bool insert = false, int index = -1 );
 
-    /**
-     * Simply calls QComboBox' implementation. Only here to not become
-     * shadowed.
-     * @deprecated since 4.0
-     */
-    QT_MOC_COMPAT void setCurrentItem(int index) { QComboBox::setCurrentIndex(index); }
-
 protected Q_SLOTS:
 
     /**
