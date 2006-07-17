@@ -41,7 +41,7 @@ public:
    * @param name The name of the catalog
    * @param language The language of this catalog
    */
-  explicit KCatalog( const QString &name, const QString &language );
+  KCatalog( const QString &name, const QString &language );
 
   /**
    * Copy constructor.
