@@ -103,36 +103,34 @@ int ObjectModel::columnCount(const QModelIndex &parent) const
 
 QVariant ObjectModel::data(const QModelIndex &index, int role) const
 {
-//     if (!index.isValid())
-//         return QVariant();
-// 
-//     ObjectNode *item = static_cast<ObjectNode*>(index.internalPointer());
-//     KJS::JSObject *instance = item->instance();
-// 
-//     if (role == Qt::DecorationRole )
-//     {
-//         if( instance->implementsConstruct() )
-//             return QPixmap(":/images/class.png");
-//         else if( instance->implementsCall() )
-//             return QPixmap(":/images/method.png");
-//         else
-//             return QPixmap(":/images/property.png");
-//     }
-//     if( role == Qt::TextColorRole )
-//     {
-//         if( instance->implementsConstruct() )
-//             return QColor("blue");
-//         else if( instance->implementsCall() )
-//             return QColor("green");
-//         else
-//             return QColor("black");
-//     }
-//     if (role == Qt::DisplayRole)
-//         return "item";
-// //        return item->name();
-// 
+    if (!index.isValid())
+        return QVariant();
 
+/*
+    ObjectNode *item = static_cast<ObjectNode*>(index.internalPointer());
+    KJS::JSObject *instance = item->instance();
 
+    if (role == Qt::DisplayRole)
+       return item->name();
+    else if (role == Qt::DecorationRole )
+    {
+        if( instance->implementsConstruct() )
+            return QPixmap(":/images/class.png");
+        else if( instance->implementsCall() )
+            return QPixmap(":/images/method.png");
+        else
+            return QPixmap(":/images/property.png");
+    }
+    else if( role == Qt::TextColorRole )
+    {
+        if( instance->implementsConstruct() )
+            return QColor("blue");
+        else if( instance->implementsCall() )
+            return QColor("green");
+        else
+            return QColor("black");
+    }
+*/
     if (!index.isValid())
         return QVariant();
 
@@ -186,7 +184,12 @@ QModelIndex ObjectModel::parent(const QModelIndex &index) const
         return QModelIndex();
 
     ObjectNode *childItem = static_cast<ObjectNode*>(index.internalPointer());
+    if (!childItem)
+        return QModelIndex();
+
     ObjectNode *parentItem = childItem->parent();
+    if (!parentItem)
+        return QModelIndex();
 
     if (parentItem == rootItem)
         return QModelIndex();

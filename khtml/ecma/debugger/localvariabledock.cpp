@@ -30,32 +30,44 @@ void LocalVariablesDock::display(KJS::Interpreter *interpreter)
 {
     // kDebug("::display(..) called for interpreter: %p", interpreter);
 
-    m_model = new ObjectModel(interpreter, this);
-    m_widget->setModel(m_model);
-
-//     if (m_model)
-//         m_model->update(interpreter);
-
 /*
-    m_widget->clear();
+    if (!m_model)
+    {
+        m_model = new ObjectModel(interpreter, this);
+        m_widget->setModel(m_model);
+    }
+
+    m_model->update(interpreter);
+*/
+//    m_widget->clear();
+
+    kDebug() << "Doing a full ScopeChain dump:" << endl;
 
     KJS::ExecState *exec = interpreter->globalExec();
     KJS::Context context = exec->context();
     KJS::ScopeChain chain = context.scopeChain();
-*/
 
-/*
     for( KJS::ScopeChainIterator obj = chain.begin();
          obj != chain.end();
          ++obj)
     {
-        QString name = (*obj)->className().qstring();
         KJS::JSObject *object = (*obj);
+        if (!object)
+            break;
 
-        VariableItem *child = new VariableItem(name, object);
-        m_widget->addTopLevelItem(child);
+        QString name = object->toString(exec).qstring();
+        kDebug() << "scope list object: " << name << endl;
+
+        KJS::ReferenceList props = object->propList(exec);
+        for( KJS::ReferenceListIterator ref = props.begin(); ref != props.end(); ref++)
+        {
+            KJS::Identifier id = ref->getPropertyName(exec);
+            QString refName = id.qstring();
+            // KJS::JSValue* instance = object->get(exec, id);
+
+            kDebug() << "    refrence list object: " << refName << endl;
+        }
     }
-*/
 /*
 
     KJS::JSObject *parentInstance = interpreter->globalObject();

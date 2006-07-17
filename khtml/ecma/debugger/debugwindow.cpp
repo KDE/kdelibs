@@ -209,8 +209,7 @@ void DebugWindow::createStatusBar()
 void DebugWindow::stopExecution()
 {
 //    KMessageBox::information(this, "Stop!");
-    // m_localVariables->display(m_tempInterpreter);
-
+    m_localVariables->display(m_tempInterpreter);
 }
 
 void DebugWindow::continueExecution()
