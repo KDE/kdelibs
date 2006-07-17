@@ -32,11 +32,11 @@ kde4_add_library(solidifaces SHARED ${solidifaces_LIB_SRCS})
 target_link_libraries(solidifaces  ${KDE4_KDECORE_LIBS} )
 
 set_target_properties(solidifaces PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${LIB_INSTALL_DIR} solidifaces )
+install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 
 ########### install files ###############
 
-install_files( /include/solid/ifaces FILES  devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h abstractcapability.h powermanager.h )
+install( FILES devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h abstractcapability.h powermanager.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
 
 

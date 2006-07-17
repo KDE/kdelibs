@@ -35,16 +35,16 @@ kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid  ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} solidifaces )
+target_link_libraries(solid  ${KDE4_KIO_LIBS} solidifaces )
 
 set_target_properties(solid PROPERTIES VERSION 4.2.0 SOVERSION 4 )
-install_targets(${LIB_INSTALL_DIR} solid )
+install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install_files( ${SERVICETYPES_INSTALL_DIR} FILES  soliddevicemanager.desktop solidpowermanager.desktop )
-install_files( /include/solid FILES  device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h )
+install( FILES  soliddevicemanager.desktop solidpowermanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
+install( FILES device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h DESTINATION ${INCLUDE_INSTALL_DIR})
 
 ########### parser build ###############
 
