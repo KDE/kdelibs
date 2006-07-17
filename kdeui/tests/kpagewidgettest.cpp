@@ -19,11 +19,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QApplication>
 #include <QtGui/QGridLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 
+#include <kaboutdata.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kicon.h>
 
 #include "kpagewidgetmodel.h"
@@ -196,7 +198,10 @@ void KPageWidgetTest::pageToggled( KPageWidgetItem *item, bool checked )
 
 int main( int argc, char **argv )
 {
-  QApplication app( argc, argv );
+  KAboutData about("KPageWidgetTest", "KPageWidgetTest", "version");
+  KCmdLineArgs::init( argc, argv, &about );
+
+  KApplication app;
 
   KPageWidgetTest testWidget( 0 );
   testWidget.show();
