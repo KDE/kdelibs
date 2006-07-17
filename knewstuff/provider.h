@@ -25,6 +25,7 @@
 #include <qstring.h>
 
 #include <kurl.h>
+#include <kdelibs_export.h>
 
 class KJob;
 namespace KIO { class Job; }

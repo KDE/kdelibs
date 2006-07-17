@@ -21,7 +21,7 @@
 #define KNEWSTUFF_DOWNLOADDIALOG_H
 
 #include <kpagedialog.h>
-#include <knewstuff/provider.h>
+#include "provider.h"
 
 #include <qmap.h>
 

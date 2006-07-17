@@ -27,6 +27,7 @@
 #include <qstringlist.h>
 
 #include <kurl.h>
+#include <kdelibs_export.h>
 
 namespace KNS {
 
