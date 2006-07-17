@@ -66,6 +66,26 @@ public:
   virtual ~KConfig();
 
   /**
+   * Add a local file to the merge stack. The stack is last in first out with
+   * the top of the stack being the most specific config file.
+   * @param _fileName The full path of the local config file to add to the stack.
+   */
+  void addFileToMergeStack( const QString &_fileName);
+
+  /**
+   * Remove a local file from the merge stack. The stack is last in first out with
+   * the top of the stack being the most specific config file.
+   * @param _fileName The full path of the local config file to remove from the stack.
+   */
+  void removeFileFromMergeStack( const QString &_fileName) const;
+
+  /**
+   * Remove all files from merge stack. This does not include the local file that
+   * was specified in the constructor.
+   */
+  void clearMergeStack() const;
+
+  /**
    * Clears all entries out of the @p dirtyEntryMap, so the
    * values will not be written to disk on a later call to
    * sync().

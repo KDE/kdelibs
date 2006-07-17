@@ -89,6 +89,15 @@ KConfig::~KConfig()
   delete backEnd;
 }
 
+void KConfig::addFileToMergeStack( const QString &_fileName)
+{ backEnd->addFileToMergeStack(_fileName); }
+
+void KConfig::removeFileFromMergeStack( const QString &_fileName) const
+{ backEnd->removeFileFromMergeStack(_fileName); }
+
+void KConfig::clearMergeStack() const
+{ backEnd->clearMergeStack(); }
+
 void KConfig::rollback(bool bDeep)
 {
   KConfigBase::rollback(bDeep);
@@ -232,10 +241,10 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
   KEntryMapConstIterator aIt = aEntryMap.find(_key);
   if (aIt != aEntryMap.end())
   {
-    if (!aIt->bDeleted) 
+    if (!aIt->bDeleted)
        return *aIt;
   }
-  
+
   return KEntry();
 }
 

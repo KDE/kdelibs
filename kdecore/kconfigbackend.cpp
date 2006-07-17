@@ -249,6 +249,14 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
    d->globalLockFile = 0;
 }
 
+void KConfigBackEnd::addFileToMergeStack( const QString &_fileName)
+{ mMergeStack.push(_fileName); }
+
+void KConfigBackEnd::removeFileFromMergeStack( const QString &_fileName)
+{ mMergeStack.remove(mMergeStack.indexOf(_fileName)); }
+
+void KConfigBackEnd::clearMergeStack() { mMergeStack.clear(); }
+
 KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
 {
    if (bGlobal)
@@ -267,9 +275,11 @@ KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
       if (d->localLockFile)
          return d->localLockFile;
 
-      if (!mLocalFileName.isEmpty())
+      QString fileName = mMergeStack.count() ? mMergeStack.top()
+                                             : mLocalFileName;
+      if (!fileName.isEmpty())
       {
-         d->localLockFile = new KLockFile(mLocalFileName+".lock");
+         d->localLockFile = new KLockFile(fileName+".lock");
          return d->localLockFile;
       }
    }
@@ -296,13 +306,12 @@ void KConfigBackEnd::setFileWriteMode(int mode)
   mFileMode = mode;
 }
 
-bool KConfigINIBackEnd::parseConfigFiles()
+void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString &localFileName)
 {
   // Check if we can write to the local file.
-  mConfigState = KConfigBase::ReadOnly;
-  if (!mLocalFileName.isEmpty() && !pConfig->isReadOnly())
+  if (!localFileName.isEmpty() && !pConfig->isReadOnly())
   {
-     if (KStandardDirs::checkAccess(mLocalFileName, W_OK))
+     if (KStandardDirs::checkAccess(localFileName, W_OK))
      {
         mConfigState = KConfigBase::ReadWrite;
      }
@@ -310,20 +319,72 @@ bool KConfigINIBackEnd::parseConfigFiles()
      {
         // Create the containing dir, maybe it wasn't there
         KUrl path;
-        path.setPath(mLocalFileName);
+        path.setPath(localFileName);
         QString dir=path.directory();
         KStandardDirs::makeDir(dir);
 
-        if (KStandardDirs::checkAccess(mLocalFileName, W_OK))
+        if (KStandardDirs::checkAccess(localFileName, W_OK))
         {
            mConfigState = KConfigBase::ReadWrite;
         }
      }
-     QFileInfo info(mLocalFileName);
+     QFileInfo info(localFileName);
      d->localLastModified = info.lastModified();
      d->localLastSize = info.size();
   }
 
+  bool bReadFile = !fileName.isEmpty();
+  while(bReadFile) {
+    bReadFile = false;
+    QString bootLanguage;
+    if (useKDEGlobals && localeString.isEmpty() && !KGlobal::_locale) {
+       // Boot strap language
+       bootLanguage = KLocale::_initLanguage(pConfig);
+       setLocaleString(bootLanguage.toUtf8());
+    }
+
+    bFileImmutable = false;
+    QStringList list;
+    if ( !QDir::isRelativePath(fileName) )
+       list << fileName;
+    else
+       list = KGlobal::dirs()->findAllResources(resType, fileName);
+
+    QListIterator<QString> it( list );
+    it.toBack();
+    while (it.hasPrevious()) {
+      QFile aConfigFile( it.previous() );
+      // we can already be sure that this file exists
+
+      bool bIsLocal = (aConfigFile.fileName() == localFileName);
+      bool isMostSpecific = !mMergeStack.count() || fileName == mMergeStack.top();
+      bool bDefaults = (!bIsLocal || !isMostSpecific);
+      if (aConfigFile.open( QIODevice::ReadOnly )) {
+         parseSingleConfigFile( aConfigFile, 0L, false, bDefaults );
+         aConfigFile.close();
+         if (bFileImmutable)
+            break;
+      }
+    }
+    if (KGlobal::dirs()->isRestrictedResource(resType, fileName))
+       bFileImmutable = true;
+    QString currentLanguage;
+    if (!bootLanguage.isEmpty())
+    {
+       currentLanguage = KLocale::_initLanguage(pConfig);
+       // If the file changed the language, we need to read the file again
+       // with the new language setting.
+       if (bootLanguage != currentLanguage)
+       {
+          bReadFile = true;
+          setLocaleString(currentLanguage.toUtf8());
+       }
+    }
+  }
+}
+
+bool KConfigINIBackEnd::parseConfigFiles()
+{
   // Parse all desired files from the least to the most specific.
   bFileImmutable = false;
 
@@ -358,51 +419,15 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
   }
 
-  bool bReadFile = !mfileName.isEmpty();
-  while(bReadFile) {
-    bReadFile = false;
-    QString bootLanguage;
-    if (useKDEGlobals && localeString.isEmpty() && !KGlobal::_locale) {
-       // Boot strap language
-       bootLanguage = KLocale::_initLanguage(pConfig);
-       setLocaleString(bootLanguage.toUtf8());
-    }
+  mConfigState = KConfigBase::ReadOnly;
+  parseLocalConfig( mfileName, mLocalFileName );
 
-    bFileImmutable = false;
-    QStringList list;
-    if ( !QDir::isRelativePath(mfileName) )
-       list << mfileName;
-    else
-       list = KGlobal::dirs()->findAllResources(resType, mfileName);
-
-    QListIterator<QString> it( list );
-    it.toBack();
-    while (it.hasPrevious()) {
-      QFile aConfigFile( it.previous() );
-      // we can already be sure that this file exists
-      bool bIsLocal = (aConfigFile.fileName() == mLocalFileName);
-      if (aConfigFile.open( QIODevice::ReadOnly )) {
-         parseSingleConfigFile( aConfigFile, 0L, false, !bIsLocal );
-         aConfigFile.close();
-         if (bFileImmutable)
-            break;
-      }
-    }
-    if (KGlobal::dirs()->isRestrictedResource(resType, mfileName))
-       bFileImmutable = true;
-    QString currentLanguage;
-    if (!bootLanguage.isEmpty())
-    {
-       currentLanguage = KLocale::_initLanguage(pConfig);
-       // If the file changed the language, we need to read the file again
-       // with the new language setting.
-       if (bootLanguage != currentLanguage)
-       {
-          bReadFile = true;
-          setLocaleString(currentLanguage.toUtf8());
-       }
-    }
+  foreach(QString fileName, mMergeStack)
+  {
+     mConfigState = KConfigBase::ReadOnly;
+     parseLocalConfig( fileName, fileName );
   }
+
   if (bFileImmutable)
      mConfigState = KConfigBase::ReadOnly;
 
@@ -710,7 +735,6 @@ qWarning("SIGBUS while reading %s", rFile.fileName().toLatin1().data());
 #endif
 }
 
-
 void KConfigINIBackEnd::sync(bool bMerge)
 {
   // write-sync is only necessary if there are dirty entries
@@ -721,13 +745,15 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
+  QString fileName = mMergeStack.count() ? mMergeStack.top()
+                                         : mLocalFileName;
 
-  if (!mfileName.isEmpty()) {
+  if (!fileName.isEmpty()) {
     // Create the containing dir if needed
-    if ((resType!="config") && !QDir::isRelativePath(mLocalFileName))
+    if ((resType!="config") && !QDir::isRelativePath(fileName))
     {
        KUrl path;
-       path.setPath(mLocalFileName);
+       path.setPath(fileName);
        QString dir=path.directory();
        KStandardDirs::makeDir(dir);
     }
@@ -736,13 +762,13 @@ void KConfigINIBackEnd::sync(bool bMerge)
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
     // it wasn't SUID.
-    if (KStandardDirs::checkAccess(mLocalFileName, W_OK)) {
+    if (KStandardDirs::checkAccess(fileName, W_OK)) {
       // File is writable
       KLockFile::Ptr lf;
 
-      bool mergeLocalFile = bMerge;
+      bool mergeFile = bMerge;
       // Check if the file has been updated since.
-      if (mergeLocalFile)
+      if (mergeFile)
       {
          lf = lockFile(false); // Lock file for local file
          if (lf && lf->isLocked())
@@ -754,12 +780,12 @@ void KConfigINIBackEnd::sync(bool bMerge)
             // But what if the locking failed? Ignore it for now...
          }
 
-         QFileInfo info(mLocalFileName);
+         QFileInfo info(fileName);
          if ((d->localLastSize == info.size()) &&
              (d->localLastModified == info.lastModified()))
          {
             // Not changed, don't merge.
-            mergeLocalFile = false;
+            mergeFile = false;
          }
          else
          {
@@ -769,7 +795,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
          }
       }
 
-      bEntriesLeft = writeConfigFile( mLocalFileName, false, mergeLocalFile );
+      bEntriesLeft = writeConfigFile( fileName, false, mergeFile );
 
       // Only if we didn't have to merge anything can we use our in-memory state
       // the next time around. Otherwise the config-file may contain entries
@@ -779,9 +805,9 @@ void KConfigINIBackEnd::sync(bool bMerge)
       // state when writing the config to disk. We only do so when
       // KCOnfig::reparseConfiguration() is called.
       // For KDE 4.0 we may wish to reconsider that.
-      if (!mergeLocalFile)
+      if (!mergeFile)
       {
-         QFileInfo info(mLocalFileName);
+         QFileInfo info(fileName);
          d->localLastModified = info.lastModified();
          d->localLastSize = info.size();
       }

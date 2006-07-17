@@ -22,6 +22,8 @@
 #ifndef KCONFIGBACKEND_H
 #define KCONFIGBACKEND_H
 
+#include <QStack>
+
 #include <kdelibs_export.h>
 #include <kconfigbase.h>
 #include <klockfile.h>
@@ -144,6 +146,26 @@ public:
   bool checkConfigFilesWritable(bool warnUser);
 
   /**
+   * Add a local file to the merge stack. The stack is last in first out with
+   * the top of the stack being the most specific config file.
+   * @param _fileName The full path of the local config file to add to the stack.
+   */
+  void addFileToMergeStack( const QString &_fileName);
+
+  /**
+   * Remove a local file from the merge stack. The stack is last in first out with
+   * the top of the stack being the most specific config file.
+   * @param _fileName The full path of the local config file to remove from the stack.
+   */
+  void removeFileFromMergeStack( const QString &_fileName);
+
+  /**
+   * Remove all files from merge stack. This does not include the local file that
+   * was specified in the constructor.
+   */
+  void clearMergeStack();
+
+  /**
    * Returns a lock file object for the configuration file
    * @param bGlobal If true, returns a lock file object for kdeglobals
    */
@@ -159,6 +181,9 @@ protected:
   QByteArray localeString;
   QString mLocalFileName;
   QString mGlobalFileName;
+
+  QStack<QString> mMergeStack;
+
   KConfigBase::ConfigState mConfigState;
   int mFileMode;
 
@@ -280,6 +305,8 @@ protected:
       binary compatibility. Unused in this class.
   */
   virtual void virtual_hook( int id, void* data );
+private:
+  void parseLocalConfig(const QString &fileName, const QString &localFileName);
 private:
   class Private;
   Private *not_d;
