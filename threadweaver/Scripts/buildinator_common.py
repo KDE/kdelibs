@@ -1,12 +1,11 @@
-#!/usr/bin/python
-
 import re
 import os
 import sys
 import time
 import platform
+from buildinator_build_status import BuildStatus
 
-def CheckoutSubversionRevision (Module, Revision, SrcDir, LogDir):
+def CheckoutSubversionRevision (BuildStatus, Module, Revision, SrcDir, LogDir):
     """Checks a certain revision of threadweaver out of KDESVN into SrcDir"""
     Cmd="svn co -r" + str(Revision) + ' ' + Module + ' ' \
          + SrcDir + ' ' \
@@ -15,33 +14,50 @@ def CheckoutSubversionRevision (Module, Revision, SrcDir, LogDir):
     ReturnCode = 0
     try:
         ReturnCode = os.system (Cmd)
+        BuildStatus.checkoutStatus = 1 # success
     except:
-        pass
-    
+        BuildStatus.checkoutStatus = 2 # failed
+
     if ReturnCode != 0:
         raise "Cannot check out revision " + str(Revision)
 
-def CleanUp (SrcDir, BuildDir):
+def CleanUp (BuildStatus, SrcDir, BuildDir):
     """Delete temporary src and build directories"""
+    # build status is ignored here, but we may want to skip cleanup if some step of the build failed
     os.system ("rm -Rf " + SrcDir)
     os.system ("rm -Rf " + BuildDir)
 
-def Build (SrcDir, BuildDir, Prefix, Options, ProFileName, LogDir):
+def Build (BuildStatus, SrcDir, BuildDir, Prefix, Options, ProFileName, LogDir):
     """Build the sources in SrcDir in BuildDir/Prefix using Options for qmake"""
     BuildPath = BuildDir + "/" + Prefix
     # if exceptions occur, stop the script (no catching):
     os.system("mkdir -p " + BuildPath)
-    os.system("(cd " + BuildPath + " && qmake " \
-              + Options + " " + SrcDir + '/' + ProFileName + ')' \
-              + " > " + LogDir + "/qmake-" + Prefix + ".log 2>&1")
-    return os.system("(cd " + BuildPath + " && make all " \
-                     + " > " + LogDir + "/make-all-" + Prefix + ".log 2>&1 )")
+    rc = os.system("(cd " + BuildPath + " && qmake " \
+                   + Options + " " + SrcDir + '/' + ProFileName + ')' \
+                   + " > " + LogDir + "/qmake-" + Prefix + ".log 2>&1")
+    if rc == 0:
+        BuildStatus.configureStatus = 1 # success
+    else:
+        BuildStatus.configureStatus = 2 # failure
+    rc = os.system("(cd " + BuildPath + " && make all " \
+                   + " > " + LogDir + "/make-all-" + Prefix + ".log 2>&1 )")
+    # FIXME: find out about "success with warnings"
+    if rc == 0:
+        BuildStatus.compileStatus = 1 # success
+    else:
+        BuildStatus.compileStatus = 3 # failure
+    return rc
     
-def Test (BuildDir, Prefix, LogDir):
+def Test (BuildStatus, BuildDir, Prefix, LogDir):
     """Run the unit tests in BuildDir/Prefix"""
     BuildPath = BuildDir + "/" + Prefix
-    return os.system("(cd " + BuildPath + " && make test " \
-                     + " > " + LogDir + "/make-test-" + Prefix + ".log 2>&1 )")
+    rc =os.system("(cd " + BuildPath + " && make test " \
+                  + " > " + LogDir + "/make-test-" + Prefix + ".log 2>&1 )")
+    if rc == 0:
+        BuildStatus.initialTestStatus = 1 # success
+    else:
+        BuildStatus.initialTestStatus = 2 # failed
+    return rc
 
 # the entry point for the whole build test process:
 def ExecuteBuildAndTest ( WorkDir, Revision, Module, ProFileName):
@@ -50,6 +66,10 @@ def ExecuteBuildAndTest ( WorkDir, Revision, Module, ProFileName):
     BuildDir = WorkDir + "/Build"
     LogDir = WorkDir + "/Logs"
     MinimumTestRevision = -1
+    # common object, will be copied for multiple runs
+    Status = BuildStatus()
+    Status.platform = platform.platform()
+    Status.revision = Revision
 
     print "Module:   " + Module
     print "Project:  " + ProFileName
@@ -68,15 +88,19 @@ def ExecuteBuildAndTest ( WorkDir, Revision, Module, ProFileName):
         sys.exit (-2)
 
     print "Checking out revision " + str(Revision)
-    CheckoutSubversionRevision (Module, Revision, SrcDir, LogDir)
+    CheckoutSubversionRevision ( Status, Module, Revision, SrcDir, LogDir)
 
     # a dictionary with the configuration name and qmake options:
     Options = { "Debug" : "CONFIG+=debug",
                 "Release" : "CONFIG+=release" }
 
     for Prefix, Option in Options.items():
+        # copy status over from status of common steps:
+        IndividualStatus = Status
+        IndividualStatus.options = Option
+        IndividualStatus.prefix = Prefix
         print 'Building with options "' + Option + '" in ' + Prefix
-        if Build (SrcDir, BuildDir, Prefix, Option, ProFileName, LogDir) != 0:
+        if Build (IndividualStatus, SrcDir, BuildDir, Prefix, Option, ProFileName, LogDir) != 0:
             print "Build failed, no testing"
             continue
         print "Build successful"
@@ -84,15 +108,18 @@ def ExecuteBuildAndTest ( WorkDir, Revision, Module, ProFileName):
             print "Not testing, no unit test in revisions below " + MinimumTestRevision
             continue
         print "Executing initial unit test run"
-        if Test (BuildDir, Prefix, LogDir) == 0:
+        if Test (IndividualStatus, BuildDir, Prefix, LogDir) == 0:
             print "Tests successful"
             # run multiple tests
         else:
             print "Tests failed!"
 
-    print "Cleaning up (deleting all in SrcDir and BuildDir, leave Logs) ..."
-    CleanUp (SrcDir, BuildDir)
+        IndividualStatus.dumpBuildStatus()
+
+    # print "Cleaning up (deleting all in SrcDir and BuildDir, leave Logs) ..."
+    # CleanUp (Status, SrcDir, BuildDir)
     print "Done, results in " + LogDir
+    
 
     # FIXME: return something useful
 
