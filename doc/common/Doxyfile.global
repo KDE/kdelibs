@@ -175,7 +175,8 @@ ALIASES = \
 	"bsd=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#5\">BSD</a>" \
 	"x11=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#3\">X11</a>" \
 	"gpl=<a href=\"http://www.fsf.org/licensing/licenses/gpl.html#SEC1\">GPL</a>" \
-	"lgpl=<a href=\"http://www.fsf.org/licensing/licenses/lgpl.html#SEC1\">LGPL</a>"
+	"lgpl=<a href=\"http://www.fsf.org/licensing/licenses/lgpl.html#SEC1\">LGPL</a>" \
+	"qpl=<a href=\"http://www.trolltech.com/products/qt/licenses\">QPL</a>"
 
 HTML_ALIGN_MEMBERS     = YES
 REFERENCED_BY_RELATION = NO
