@@ -130,7 +130,8 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 
     toolbar->addSeparator();
 
-    pathCombo = new QComboBox( true, toolbar );
+    pathCombo = new QComboBox(toolbar );
+    pathCombo->setEditable( true );
     connect( pathCombo, SIGNAL( activated( const QString & ) ),
 	     this, SLOT( pathSelected( const QString & ) ) );
     //toolbar->setStretchableWidget( pathCombo );
