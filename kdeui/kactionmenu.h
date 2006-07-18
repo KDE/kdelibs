@@ -67,7 +67,7 @@ public:
     /**
      * Returns this action's menu as a KMenu, if it is one.
      * If none exists, one will be created.
-     * @deprecated use kMenu() instead.
+     * @deprecated use menu() instead.
      */
     inline KDE_DEPRECATED KMenu* popupMenu() { return menu(); }
 
