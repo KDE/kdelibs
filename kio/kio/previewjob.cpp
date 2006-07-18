@@ -225,7 +225,7 @@ void PreviewJob::startPreview()
             d->items.append(item);
             if (!bNeedCache && d->bSave &&
                 ((*kit)->url().protocol() != "file" ||
-                 !(*kit)->url().directory( false ).startsWith(d->thumbRoot)) &&
+                 !(*kit)->url().directory( KUrl::AppendTrailingSlash ).startsWith(d->thumbRoot)) &&
                 (*plugin)->property("CacheThumbnail").toBool())
                 bNeedCache = true;
         }
@@ -465,7 +465,7 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
     bool save = d->bSave &&
                 d->currentItem.plugin->property("CacheThumbnail").toBool() &&
                 (d->currentItem.item->url().protocol() != "file" ||
-                 !d->currentItem.item->url().directory( false ).startsWith(d->thumbRoot));
+                 !d->currentItem.item->url().directory( KUrl::AppendTrailingSlash ).startsWith(d->thumbRoot));
     QImage thumb;
 #ifdef Q_OS_UNIX
     if (d->shmaddr)
