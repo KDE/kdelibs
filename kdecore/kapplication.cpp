@@ -373,7 +373,7 @@ QString KApplication::sessionConfigName() const
     QString sessKey = sessionKey();
     if ( sessKey.isEmpty() && !d->sessionKey.isEmpty() )
         sessKey = d->sessionKey;
-    return QString("session/%1_%2_%3").arg(applicationName()).arg(sessionId()).arg(sessKey);
+    return QString(QLatin1String("session/%1_%2_%3")).arg(applicationName()).arg(sessionId()).arg(sessKey);
 }
 
 #ifdef Q_WS_X11
@@ -390,7 +390,7 @@ KApplication::KApplication( bool GUIenabled ) :
 {
 
     read_app_startup_id();
-    setApplicationName(instanceName());
+    setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
@@ -404,7 +404,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
   KInstance( KCmdLineArgs::about ), d (new Private)
 {
     read_app_startup_id();
-    setApplicationName(instanceName());
+    setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
@@ -418,7 +418,7 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
   KInstance( _instance ), d (new Private)
 {
     read_app_startup_id();
-    setApplicationName(instanceName());
+    setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( aboutData()->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
@@ -432,7 +432,7 @@ KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
   KInstance( _instance ), d (new Private)
 {
     read_app_startup_id();
-    setApplicationName(instanceName());
+    setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( aboutData()->organizationDomain() );
     installSigpipeHandler();
     parseCommandLine( );
@@ -446,7 +446,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
 {
     Q_UNUSED(GUIenabled);
     read_app_startup_id();
-    setApplicationName(rAppName);
+    setApplicationName(QLatin1String(rAppName));
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
     parseCommandLine( );
@@ -498,7 +498,7 @@ class KDETranslator : public QTranslator
 public:
   KDETranslator(QObject *parent) : QTranslator(parent)
   {
-    setObjectName("kdetranslator");
+    setObjectName(QLatin1String("kdetranslator"));
   }
 
   virtual QString translate(const char* context,
@@ -575,14 +575,14 @@ void KApplication::init()
               reversedDomain.prepend(QLatin1Char('.'));
               reversedDomain.prepend(s);
           }
-      const QString pidSuffix = QString::number( getpid() ).prepend( '_' );
+      const QString pidSuffix = QString::number( getpid() ).prepend( QLatin1Char('_') );
       const QString serviceName = reversedDomain + applicationName() + pidSuffix;
       if ( bus->registerService(serviceName) == QDBusConnectionInterface::ServiceNotRegistered ) {
           kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
           ::exit(126);
       }
   }
-  QDBus::sessionBus().registerObject("/MainApplication", this,
+  QDBus::sessionBus().registerObject(QLatin1String("/MainApplication"), this,
                                      QDBusConnection::ExportSlots |
                                      QDBusConnection::ExportProperties |
                                      QDBusConnection::ExportAdaptors);
@@ -604,7 +604,7 @@ void KApplication::init()
   QByteArray readOnly = getenv("KDE_HOME_READONLY");
   if (readOnly.isEmpty() && applicationName() != QLatin1String("kdialog"))
   {
-    if (KAuthorized::authorize("warn_unwritable_config"))
+    if (KAuthorized::authorize(QLatin1String("warn_unwritable_config")))
        config->checkConfigFilesWritable(true);
   }
 
@@ -683,7 +683,7 @@ void KApplication::init()
   if (i18nc( "Dear Translator! Translate this string to the string 'LTR' in "
 	 "left-to-right languages (as english) or to 'RTL' in right-to-left "
 	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
-         "LTR" ) == "RTL")
+         "LTR" ) == QLatin1String("RTL"))
       rtl = !rtl;
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
@@ -870,8 +870,8 @@ void KApplication::saveState( QSessionManager& sm )
         if (! displayname.isNull()) {
             // only store the command if we actually have a DISPLAY
             // environment variable
-            restartCommand.append("-display");
-            restartCommand.append(displayname);
+            restartCommand.append(QLatin1String("-display"));
+            restartCommand.append(QLatin1String(displayname));
         }
         sm.setRestartCommand( restartCommand );
     }
@@ -889,10 +889,10 @@ void KApplication::saveState( QSessionManager& sm )
     if ( pSessionConfig ) {
         pSessionConfig->sync();
         QStringList discard;
-        discard  << "rm" << KStandardDirs::locateLocal("config", sessionConfigName());
+        discard  << QLatin1String("rm") << KStandardDirs::locateLocal("config", sessionConfigName());
         sm.setDiscardCommand( discard );
     } else {
-	sm.setDiscardCommand( QStringList( "" ) );
+	sm.setDiscardCommand( QStringList( QLatin1String("") ) );
     }
 
     if ( canceled )
@@ -915,14 +915,14 @@ void KApplication::parseCommandLine( )
     if ( type() != Tty ) {
         if (args && args->isSet("icon"))
         {
-            QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
+            QPixmap largeIcon = DesktopIcon(QFile::decodeName(args->getOption("icon")));
             QIcon icon = windowIcon();
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             setWindowIcon(icon);
         }
         else {
             QIcon icon = windowIcon();
-            QPixmap largeIcon = DesktopIcon(instanceName());
+            QPixmap largeIcon = DesktopIcon(QFile::decodeName(instanceName()));
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             setWindowIcon(icon);
         }
@@ -941,7 +941,7 @@ void KApplication::parseCommandLine( )
     {
 
        QStringList styles = QStyleFactory::keys();
-       QString reqStyle(args->getOption("style").toLower());
+       QString reqStyle(QLatin1String(args->getOption("style").toLower()));
 
 	   for (QStringList::ConstIterator it = styles.begin(); it != styles.end(); ++it)
 		   if ((*it).toLower() == reqStyle)
@@ -961,7 +961,7 @@ void KApplication::parseCommandLine( )
         KCrash::setCrashHandler(KCrash::defaultCrashHandler);
         KCrash::setEmergencySaveFunction(NULL);
 
-        KCrash::setApplicationName(QString(args->appName()));
+        KCrash::setApplicationName(QLatin1String(args->appName()));
     }
 
 #ifdef Q_WS_X11
@@ -988,7 +988,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("smkey"))
     {
-        d->sessionKey = args->getOption("smkey");
+        d->sessionKey = QLatin1String(args->getOption("smkey"));
     }
 
 }
@@ -1191,7 +1191,9 @@ void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 #if defined Q_WS_X11
     if( time == 0 )
         time = QX11Info::appUserTime();
-    QDBusInterface(service, "/MainApplication", "org.kde.KApplication").call("updateUserTimestamp", time);
+    QDBusInterface(service, QLatin1String("/MainApplication"), 
+            QString(QLatin1String("org.kde.KApplication")))
+        .call(QLatin1String("updateUserTimestamp"), time);
 #endif
 }
 
@@ -1221,7 +1223,7 @@ void KApplication::applyGUIStyle()
 #ifdef Q_WS_MACX
     QString defaultStyle = "macintosh";
 #else
-    QString defaultStyle = "plastique";// = KStyle::defaultStyle(); ### wait for KStyle4
+    QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
 #endif
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
@@ -1372,9 +1374,9 @@ void KApplication::kdisplaySetFont()
 
     // "patch" standard QStyleSheet to follow our fonts
     Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
-    sheet->item ("pre")->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item ("code")->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item ("tt")->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item (QLatin1String("pre"))->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item (QLatin1String("code"))->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
 
     emit kdisplayFontChanged();
     emit appearanceChanged();
@@ -1431,12 +1433,12 @@ QString KApplication::tempSaveName( const QString& pFilename )
   if( QDir::isRelativePath(pFilename) )
     {
       kWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
-      aFilename = QFileInfo( QDir( "." ), pFilename ).absoluteFilePath();
+      aFilename = QFileInfo( QDir( QLatin1String(".") ), pFilename ).absoluteFilePath();
     }
   else
     aFilename = pFilename;
 
-  QDir aAutosaveDir( QDir::homePath() + "/autosave/" );
+  QDir aAutosaveDir( QDir::homePath() + QLatin1String("/autosave/") );
   if( !aAutosaveDir.exists() )
     {
       if( !aAutosaveDir.mkdir( aAutosaveDir.absolutePath() ) )
@@ -1446,7 +1448,10 @@ QString KApplication::tempSaveName( const QString& pFilename )
         }
     }
 
-  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absolutePath() );
+  aFilename.replace( QLatin1String("/"), QLatin1String("\\!") )
+    .prepend( QLatin1Char('#') )
+    .append( QLatin1Char('#') )
+    .prepend( QLatin1Char('/') ).prepend( aAutosaveDir.absolutePath() );
 
   return aFilename;
 }
@@ -1460,12 +1465,12 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
   if( QDir::isRelativePath(pFilename) )
     {
       kWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
-      aFilename = QFileInfo( QDir( "." ), pFilename ).absoluteFilePath();
+      aFilename = QFileInfo( QDir( QLatin1String(".") ), pFilename ).absoluteFilePath();
     }
   else
     aFilename = pFilename;
 
-  QDir aAutosaveDir( QDir::homePath() + "/autosave/" );
+  QDir aAutosaveDir( QDir::homePath() + QLatin1String("/autosave/") );
   if( !aAutosaveDir.exists() )
     {
       if( !aAutosaveDir.mkdir( aAutosaveDir.absolutePath() ) )
@@ -1475,7 +1480,11 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
         }
     }
 
-  aFilename.replace( "/", "\\!" ).prepend( "#" ).append( "#" ).prepend( "/" ).prepend( aAutosaveDir.absolutePath() );
+  aFilename.replace( QLatin1String("/"), QLatin1String("\\!") )
+      .prepend( QLatin1Char('#') )
+      .append( QLatin1Char('#') )
+      .prepend( QLatin1Char('/') )
+      .prepend( aAutosaveDir.absolutePath() );
 
   if( QFile( aFilename ).exists() )
     {
