@@ -246,11 +246,36 @@ static void testReplaceBackRef( int options, int button = 0 )
     }
 }
 
+static void testReplacementHistory( const QStringList& findHistory, const QStringList& replaceHistory )
+{
+    KReplaceDialog dlg( 0, 0, 0, findHistory, replaceHistory );
+    dlg.show();
+    kDebug() << "testReplacementHistory:" << dlg.replacementHistory() << endl;
+    assert( dlg.replacementHistory() == replaceHistory );
+}
+
+static void testReplacementHistory()
+{
+    QStringList findHistory;
+    QStringList replaceHistory;
+    findHistory << "foo" << "bar";
+    replaceHistory << "FOO" << "BAR";
+    testReplacementHistory( findHistory, replaceHistory );
+
+    findHistory.clear();
+    replaceHistory.clear();
+    findHistory << "foo" << "bar";
+    replaceHistory << QString() << "baz"; // #130831
+    testReplacementHistory( findHistory, replaceHistory );
+}
+
 int main( int argc, char **argv )
 {
     KCmdLineArgs::init(argc, argv, "kreplacetest", "KReplaceTest", "kreplace test", 0);
     //KApplication::disableAutoDcopRegistration();
     KApplication app;
+
+    testReplacementHistory(); // #130831
 
     testReplaceBlank( 0 );
     testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
