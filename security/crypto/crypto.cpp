@@ -95,7 +95,7 @@
 using namespace KNetwork;
 
 typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_crypto, KryptoFactory("kcmcrypto") )
+K_EXPORT_COMPONENT_FACTORY( crypto, KryptoFactory("kcmcrypto") )
 
 CipherItem::CipherItem( Q3ListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
