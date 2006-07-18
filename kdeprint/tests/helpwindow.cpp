@@ -174,10 +174,10 @@ void HelpWindow::textChanged()
 	}
 	if ( !exists ) {
 	    pathCombo->insertItem( 0, selectedURL );
-	    pathCombo->setCurrentItem( 0 );
+	    pathCombo->setCurrentIndex( 0 );
 	    mHistory[ hist->insertItem( selectedURL ) ] = selectedURL;
 	} else
-	    pathCombo->setCurrentItem( i );
+	    pathCombo->setCurrentIndex( i );
 	selectedURL.clear();
     }
 }
