@@ -436,7 +436,6 @@ apidox_toplevel()
 		echo "INPUT                  = $top_srcdir"
 		echo "DOTFILE_DIRS           = $top_srcdir"
 		echo "OUTPUT_DIRECTORY       = $top_builddir"
-		echo "FILE_PATTERNS          = *.dox"
 		echo "RECURSIVE              = NO"
 		echo "ALPHABETICAL_INDEX     = NO"
 		echo "HTML_OUTPUT            = ." 
