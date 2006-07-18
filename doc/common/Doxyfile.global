@@ -167,8 +167,15 @@ ALIASES = \
 	"requirement=\xrefitem requirements \"Requirement(s)\" \"Requirements\"" \
 	"faq=\xrefitem FAQ \"F.A.Q.\" \"F.A.Q.\"" \
 	"authors=\xrefitem authors \"Author(s)\" \"Authors\"" \
+        "acronym=\b "\
+	"licenses=\xrefitem licenses \"License(s)\" \"Licenses\"" \
 	"FIXME=\xrefitem fixme \"Fixme\" \"Fixme\"" \
-	"bc=\xrefitem bc \"Binary Compatible\" \"Binary Compatible\""
+	"bc=\xrefitem bc \"Binary Compatible\" \"Binary Compatible\"" \
+	"artistic=<a href=\"http://www.opensource.org/licenses/artistic-license.php\">Artistic</a>" \
+	"bsd=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#5\">BSD</a>" \
+	"x11=<a href=\"http://www.xfree86.org/3.3.6/COPYRIGHT2.html#3\">X11</a>" \
+	"gpl=<a href=\"http://www.fsf.org/licensing/licenses/gpl.html#SEC1\">GPL</a>" \
+	"lgpl=<a href=\"http://www.fsf.org/licensing/licenses/lgpl.html#SEC1\">LGPL</a>"
 
 HTML_ALIGN_MEMBERS     = YES
 REFERENCED_BY_RELATION = NO
