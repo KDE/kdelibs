@@ -890,6 +890,11 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
     {
         if( p->id() == ID_FORM )
             return static_cast<HTMLFormElementImpl *>(p);
+        if( p->parentNode() && p->parentNode()->id() == ID_TABLE && p->previousSibling() )
+        {
+            p = p->previousSibling();
+            continue;
+        }
         p = p->parentNode();
     }
 #ifdef FORMS_DEBUG
