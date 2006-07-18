@@ -28,6 +28,7 @@
 #include <kcombobox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kdebug.h>
 
 /**
  * we need to insert the strings after the dialog is set
@@ -101,7 +102,11 @@ QString KReplaceDialog::replacement() const
 
 QStringList KReplaceDialog::replacementHistory() const
 {
-    return m_replace->historyItems();
+    QStringList lst = m_replace->historyItems();
+    // historyItems() doesn't tell us about the case of replacing with an empty string
+    if ( m_replace->lineEdit()->text().isEmpty() )
+        lst.prepend( QString::null );
+    return lst;
 }
 
 void KReplaceDialog::setOptions(long options)
