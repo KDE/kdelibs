@@ -255,9 +255,11 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_printer = 0;
 	setCaption(i18n("Print"));
 	setButtons( KDialog::None );
+	
+	QWidget *main = new QWidget();
 
 	// widget creation
-	Q3GroupBox	*m_pbox = new Q3GroupBox(0,Qt::Vertical,i18n("Printer"), this);
+	Q3GroupBox	*m_pbox = new Q3GroupBox(0,Qt::Vertical,i18n("Printer"), main);
 	d->m_type = new QLabel(m_pbox);
 	d->m_type->setWhatsThis(whatsThisPrinterType);
 	d->m_state = new QLabel(m_pbox);
@@ -283,7 +285,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	m_printerlabel->setBuddy(d->m_printers);
 	d->m_properties = new KPushButton(KGuiItem(i18n("P&roperties"), "edit"), m_pbox);
 	d->m_properties->setWhatsThis(whatsThisPrintJobProperties);
-	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions"), "kdeprint_configmgr"), this);
+	d->m_options = new KPushButton(KGuiItem(i18n("System Op&tions"), "kdeprint_configmgr"), main);
 	d->m_options->setWhatsThis(whatsThisSystemOptions);
 	d->m_default = new KPushButton(KGuiItem(i18n("Set as &Default"), "kdeprint_defaultsoft"), m_pbox);
 	d->m_default->setWhatsThis(whatsThisSetDefaultPrinter);
@@ -299,11 +301,11 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_wizard->setMinimumSize(QSize(d->m_printers->minimumHeight(),d->m_printers->minimumHeight()));
 	d->m_wizard->setToolTip(i18n("Add printer..."));
 	d->m_wizard->setWhatsThis(whatsThisAddPrinterWizard);
-	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), this);
+	d->m_ok = new KPushButton(KGuiItem(i18n("&Print"), "fileprint"), main);
         d->m_ok->setWhatsThis(whatsThisPrintButton);
 	d->m_ok->setDefault(true);
 	d->m_ok->setEnabled( false );
-	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), this);
+	QPushButton	*m_cancel = new KPushButton(KStdGuiItem::cancel(), main);
         m_cancel->setWhatsThis(whatsThisCancelButton);
 	d->m_preview = new QCheckBox(i18n("Previe&w"), m_pbox);
 	d->m_preview->setWhatsThis(whatsThisPreviewCheckBox);
@@ -324,9 +326,9 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	d->m_extbtn = new KPushButton(this);
 	d->m_extbtn->setToolTip(i18n("Show/hide advanced options"));
 	d->m_extbtn->setWhatsThis(whatsThisOptions);
-	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), this);
+	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), main);
         d->m_persistent->setWhatsThis(whatsThisKeepDialogOpenCheckbox);
-	QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), this);
+		QPushButton	*m_help = new KPushButton(KStdGuiItem::help(), main);
         m_help->setWhatsThis(whatsThisHelpButton);
 
 	QWidget::setTabOrder( d->m_printers, d->m_filter );
@@ -343,7 +345,6 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	QWidget::setTabOrder( d->m_ok, m_cancel );
 
 	// layout creation
-	QWidget *main = new QWidget();
 	setMainWidget(main);
 	QVBoxLayout	*l1 = new QVBoxLayout(main);
 	l1->setMargin(5);
@@ -353,9 +354,9 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	l1->addWidget(d->m_plugin,0);
 	l1->addWidget(d->m_persistent);
 	QHBoxLayout	*l2 = new QHBoxLayout();
+	l1->addLayout(l2);
 	l2->setMargin(0);
 	l2->setSpacing(10);
-	l1->addLayout(l2);
 	l2->addWidget(d->m_extbtn,0);
 	l2->addWidget(d->m_options,0);
 	l2->addWidget(m_help,0);
@@ -369,18 +370,18 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	l3->setColumnStretch(1,1);
 	l3->setRowStretch(0,1);
 	QGridLayout	*l4 = new QGridLayout();
+	l3->addLayout(l4,0,0,1,2);
 	l4->setMargin(0);
 	l4->setSpacing(5);
-	l3->addLayout(l4,0,0,1,2);
 	l4->addWidget(m_printerlabel,0,0);
 	l4->addWidget(m_statelabel,1,0);
 	l4->addWidget(m_typelabel,2,0);
 	l4->addWidget(m_locationlabel,3,0);
 	l4->addWidget(m_commentlabel,4,0);
 	QHBoxLayout	*ll4 = new QHBoxLayout();
+	l4->addLayout(ll4,0,1);
 	ll4->setMargin(0);
 	ll4->setSpacing(3);
-	l4->addLayout(ll4,0,1);
 	ll4->addWidget(d->m_printers,1);
 	ll4->addWidget(d->m_filter,0);
 	ll4->addWidget(d->m_wizard,0);
@@ -391,9 +392,9 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	l4->addWidget(d->m_comment,4,1);
 	l4->setColumnStretch(1,1);
 	QVBoxLayout	*l5 = new QVBoxLayout();
+	l3->addLayout(l5,0,2);
 	l5->setMargin(0);
 	l5->setSpacing(10);
-	l3->addLayout(l5,0,2);
 	l5->addWidget(d->m_properties,0);
 	l5->addWidget(d->m_default,0);
 	l5->addWidget(d->m_preview,0);
@@ -403,7 +404,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	l3->addWidget(d->m_file,1,1);
 	//***
 	l3->addWidget(d->m_cmdlabel,2,0);
-	l3->addWidget(d->m_cmd,2,2,1,2);
+	l3->addWidget(d->m_cmd,2,1,1,2);
 
 	// connections
 	connect(d->m_ok,SIGNAL(clicked()),SLOT(accept()));

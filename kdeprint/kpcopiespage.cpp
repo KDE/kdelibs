@@ -247,7 +247,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	l5->setRowStretch(4,1);
 	l5->addWidget(m_copieslabel,0,0);
 	l5->addWidget(m_copies,0,1);
-	l5->addWidget(m_collatepix,1,2,0,0);
+	l5->addWidget(m_collatepix,1,0,2,1);
 	l5->addWidget(m_collate,1,1);
 	l5->addWidget(m_order,2,1);
 
