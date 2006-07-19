@@ -278,10 +278,10 @@ void KMJobViewer::initActions()
 
 	KActionMenu *mact = new KActionMenu(KIcon("fileprint"),i18n("&Move to Printer"),actionCollection(),"job_move");
 	mact->setDelayed(false);
-	connect(mact->popupMenu(),SIGNAL(triggered(QAction*)),SLOT(slotMove(QAction*)));
-	connect(mact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
-	connect(mact->popupMenu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
-	connect(mact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowMoveMenu()));
+	connect(mact->menu(),SIGNAL(triggered(QAction*)),SLOT(slotMove(QAction*)));
+	connect(mact->menu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
+	connect(mact->menu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
+	connect(mact->menu(),SIGNAL(aboutToShow()),SLOT(slotShowMoveMenu()));
 	KToggleAction	*tact = new KToggleAction(i18n("&Toggle Completed Jobs"), actionCollection(),"view_completed");
   tact->setIcon( KIcon( "history" ) );
 	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
@@ -316,10 +316,10 @@ void KMJobViewer::initActions()
 	// Filter actions
 	KActionMenu	*fact = new KActionMenu(KIcon("kdeprint_printer"), i18n("&Select Printer"), actionCollection(), "filter_modify");
 	fact->setDelayed(false);
-	connect(fact->popupMenu(),SIGNAL(triggered(QAction*)),SLOT(slotPrinterSelected(QAction*)));
-	connect(fact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
-	connect(fact->popupMenu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
-	connect(fact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowPrinterMenu()));
+	connect(fact->menu(),SIGNAL(triggered(QAction*)),SLOT(slotPrinterSelected(QAction*)));
+	connect(fact->menu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
+	connect(fact->menu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
+	connect(fact->menu(),SIGNAL(aboutToShow()),SLOT(slotShowPrinterMenu()));
 
 	if (!m_standalone)
 	{
@@ -390,13 +390,13 @@ void KMJobViewer::buildPrinterMenu(QMenu *menu, bool use_all, bool use_specials)
 
 void KMJobViewer::slotShowMoveMenu()
 {
-	QMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->popupMenu();
+	QMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("job_move"))->menu();
 	buildPrinterMenu(menu, false, false);
 }
 
 void KMJobViewer::slotShowPrinterMenu()
 {
-	QMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->popupMenu();
+	QMenu	*menu = static_cast<KActionMenu*>(actionCollection()->action("filter_modify"))->menu();
 	buildPrinterMenu(menu, true, true);
 }
 

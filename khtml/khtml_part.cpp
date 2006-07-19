@@ -306,7 +306,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   connect( d->m_automaticDetection, SIGNAL( activated( int ) ), this, SLOT( slotAutomaticDetectionLanguage( int ) ) );
 
-  d->m_paSetEncoding->popupMenu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
+  d->m_paSetEncoding->menu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
 
   d->m_paSetEncoding->addAction( new KSeparatorAction( actionCollection() ) );
 
@@ -361,7 +361,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
     int _id = config->readEntry( "AutomaticDetectionLanguage", static_cast<int>(language) );
     d->m_automaticDetection->setItemChecked( _id, true );
-    d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
+    d->m_paSetEncoding->menu()->setItemChecked( 0, true );
 
     d->m_autoDetectLanguage = static_cast< khtml::Decoder::AutoDetectLanguage >( _id );
   }
@@ -4201,8 +4201,8 @@ void KHTMLPart::slotSaveFrame()
 void KHTMLPart::slotSetEncoding()
 {
   d->m_automaticDetection->setItemChecked( int( d->m_autoDetectLanguage ), false );
-  d->m_paSetEncoding->popupMenu()->setItemChecked( 0, false );
-  d->m_paSetEncoding->popupMenu()->actions()[2]->setChecked(true);
+  d->m_paSetEncoding->menu()->setItemChecked( 0, false );
+  d->m_paSetEncoding->menu()->actions()[2]->setChecked(true);
 
   QString enc = KGlobal::charsets()->encodingForName( d->m_manualDetection->currentText() );
   setEncoding( enc, true );
@@ -7039,13 +7039,13 @@ void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
       d->m_automaticDetection->setItemChecked( i, false );
   }
 
-  d->m_paSetEncoding->popupMenu()->setItemChecked( 0, true );
+  d->m_paSetEncoding->menu()->setItemChecked( 0, true );
 
   setEncoding( QString(), false );
 
   if( d->m_manualDetection )
     d->m_manualDetection->setCurrentItem( -1 );
-  d->m_paSetEncoding->popupMenu()->actions()[2]->setChecked(false);
+  d->m_paSetEncoding->menu()->actions()[2]->setChecked(false);
 }
 
 khtml::Decoder *KHTMLPart::createDecoder()
