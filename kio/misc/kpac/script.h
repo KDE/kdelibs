@@ -44,10 +44,11 @@ namespace KPAC
         };
 
         Script( const QString& code );
+        ~Script();
         QString evaluate( const KUrl& );
 
     private:
-        KJS::Interpreter m_interpreter;
+        KJS::Interpreter* m_interpreter;
     };
 }
 

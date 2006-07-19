@@ -421,19 +421,26 @@ namespace KPAC
 {
     Script::Script( const QString& code )
     {
-        ExecState* exec = m_interpreter.globalExec();
-        JSObject* global = m_interpreter.globalObject();
+        m_interpreter = new KJS::Interpreter();
+        m_interpreter->ref();
+        ExecState* exec  = m_interpreter->globalExec();
+        JSObject* global = m_interpreter->globalObject();
         registerFunctions( exec, global );
 
-        Completion result = m_interpreter.evaluate( "", 0, code );
+        Completion result = m_interpreter->evaluate( "", 0, code );
         if ( result.complType() == Throw )
             throw Error( result.value()->toString( exec ).qstring() );
+    }
+    
+    Script::~Script()
+    {
+        m_interpreter->deref();
     }
 
     QString Script::evaluate( const KUrl& url )
     {
-        ExecState *exec = m_interpreter.globalExec();
-        JSValue *findFunc = m_interpreter.globalObject()->get( exec, "FindProxyForURL" );
+        ExecState *exec = m_interpreter->globalExec();
+        JSValue *findFunc = m_interpreter->globalObject()->get( exec, "FindProxyForURL" );
         JSObject *findObj = findFunc->getObject();
         if (!findObj || !findObj->implementsCall())
             throw Error( "No such function FindProxyForURL" );
