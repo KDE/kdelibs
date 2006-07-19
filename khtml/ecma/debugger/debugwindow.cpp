@@ -238,7 +238,7 @@ DebugWindow::~DebugWindow()
 
 // -------------------------------------------------------------
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-                               const UString &source, int errorLine)
+                               const UString &source, int startingLineNumber, int errorLine)
 {
     Q_UNUSED(exec);
 
@@ -252,7 +252,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
              << "*********************************************************************************************" << endl;
 
     // Determine key
-    QString key = QString("%1|%2").arg((long)exec->interpreter()).arg(m_nextUrl);
+    QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(m_nextUrl);
 
     DebugDocument *document = 0;
     if (!m_nextUrl.isEmpty())
@@ -262,10 +262,10 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 //        if (!m_nextUrl.isEmpty()) // Not in our cache, but has a URL
 //        {
 
-            document = new DebugDocument(m_nextUrl, exec->interpreter());
+            document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
             m_documents[key] = document;
 
-            m_tempInterpreter = exec->interpreter();
+            m_tempInterpreter = exec->dynamicInterpreter();
             // m_localVariables->display(exec->interpreter());
 //        }
     }

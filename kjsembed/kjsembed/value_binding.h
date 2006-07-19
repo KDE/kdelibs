@@ -177,7 +177,7 @@ namespace KJSEmbed
         //if( exec->context().imp() != 0 )
         //	parent = exec->context().thisValue();
         //else
-        parent = exec->interpreter()->globalObject();
+        parent = exec->dynamicInterpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
         //qDebug( "Created classname %s" , returnValue.className().ascii() );
         if( returnValue )

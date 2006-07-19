@@ -1,7 +1,7 @@
-// -*- c-basic-offset: 2 -*-
+// -*- mode: c++; c-basic-offset: 4 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -31,28 +31,28 @@
 #include <setjmp.h>
 #include <algorithm>
 
-#ifdef __APPLE__
+#if PLATFORM(DARWIN)
 
 #include <pthread.h>
 #include <mach/mach_port.h>
 #include <mach/task.h>
 #include <mach/thread_act.h>
 
-#elif defined(_WIN32) || defined(_WIN64)
+#elif PLATFORM(WIN_OS)
 
 #include <windows.h>
 
-#else
+#elif PLATFORM(UNIX)
 
 #include <pthread.h>
 
-#ifdef HAVE_PTHREAD_NP_H
-
+#if HAVE(PTHREAD_NP_H)
 #include <pthread_np.h>
-
 #endif
 
 #endif
+
+#define DEBUG_COLLECTOR 0
 
 using std::max;
 
@@ -96,7 +96,7 @@ struct CollectorHeap {
   size_t numBlocks;
   size_t usedBlocks;
   size_t firstBlockWithPossibleSpace;
-
+  
   CollectorCell **oversizeCells;
   size_t numOversizeCells;
   size_t usedOversizeCells;
@@ -119,7 +119,7 @@ void* Collector::allocate(size_t s)
     collect();
     numLiveObjects = heap.numLiveObjects;
   }
-
+  
   if (s > CELL_SIZE) {
     // oversize allocator
 
@@ -131,7 +131,7 @@ void* Collector::allocate(size_t s)
       heap.numOversizeCells = numOversizeCells;
       heap.oversizeCells = static_cast<CollectorCell **>(fastRealloc(heap.oversizeCells, numOversizeCells * sizeof(CollectorCell *)));
     }
-
+    
     void *newCell = fastMalloc(s);
     heap.oversizeCells[usedOversizeCells] = static_cast<CollectorCell *>(newCell);
     heap.usedOversizeCells = usedOversizeCells + 1;
@@ -139,9 +139,9 @@ void* Collector::allocate(size_t s)
 
     return newCell;
   }
-
+  
   // slab allocator
-
+  
   size_t usedBlocks = heap.usedBlocks;
 
   size_t i = heap.firstBlockWithPossibleSpace;
@@ -162,7 +162,6 @@ void* Collector::allocate(size_t s)
   } else {
 allocateNewBlock:
     // didn't find one, need to allocate a new block
-
     size_t numBlocks = heap.numBlocks;
     if (usedBlocks == numBlocks) {
       numBlocks = max(MIN_ARRAY_SIZE, numBlocks * GROWTH_FACTOR);
@@ -177,10 +176,10 @@ allocateNewBlock:
     heap.usedBlocks = usedBlocks + 1;
     heap.firstBlockWithPossibleSpace = usedBlocks;
   }
-
+  
   // find a free spot in the block and detach it from the free list
   CollectorCell *newCell = targetBlock->freeList;
-
+  
   // "next" field is a byte offset -- 0 means next cell, so a zeroed block is already initialized
   // could avoid the casts by using a cell offset, but this avoids a relatively-slow multiply
   targetBlock->freeList = reinterpret_cast<CollectorCell *>(reinterpret_cast<char *>(newCell + 1) + newCell->u.freeCell.next);
@@ -191,7 +190,7 @@ allocateNewBlock:
   return newCell;
 }
 
-#if KJS_MULTIPLE_THREADS
+#if USE(MULTIPLE_THREADS)
 
 struct Collector::Thread {
   Thread(pthread_t pthread, mach_port_t mthread) : posixThread(pthread), machThread(mthread) {}
@@ -203,8 +202,8 @@ struct Collector::Thread {
 pthread_key_t registeredThreadKey;
 pthread_once_t registeredThreadKeyOnce = PTHREAD_ONCE_INIT;
 Collector::Thread *registeredThreads;
-
-static void destroyRegisteredThread(void *data)
+  
+static void destroyRegisteredThread(void *data) 
 {
   Collector::Thread *thread = (Collector::Thread *)data;
 
@@ -261,10 +260,10 @@ void Collector::markStackObjectsConservatively(void *start, void *end)
   assert(((char *)end - (char *)start) < 0x1000000);
   assert(IS_POINTER_ALIGNED(start));
   assert(IS_POINTER_ALIGNED(end));
-
+  
   char **p = (char **)start;
   char **e = (char **)end;
-
+  
   size_t usedBlocks = heap.usedBlocks;
   CollectorBlock **blocks = heap.blocks;
   size_t usedOversizeCells = heap.usedOversizeCells;
@@ -300,37 +299,28 @@ void Collector::markCurrentThreadConservatively()
     jmp_buf registers;
     setjmp(registers);
 
-#ifdef __APPLE__
+#if PLATFORM(DARWIN)
     pthread_t thread = pthread_self();
     void *stackBase = pthread_get_stackaddr_np(thread);
-#elif defined(_WIN32) || defined(_WIN64)
+#elif PLATFORM(WIN_OS) && PLATFORM(X86) && COMPILER(MSVC)
     NT_TIB *pTib;
-#ifdef __GNUC__
-    __asm__("movl  %%fs:0x18,%0"
-            : "=r" (pTib)
-    );
-#else
     __asm {
         MOV EAX, FS:[18h]
         MOV pTib, EAX
     }
-#endif
     void *stackBase = (void *)pTib->StackBase;
-#else
+#elif PLATFORM(UNIX)
     static void *stackBase = 0;
     static pthread_t stackThread;
     pthread_t thread = pthread_self();
     if (stackBase == 0 || thread != stackThread) {
         pthread_attr_t sattr;
-#if defined(HAVE_PTHREAD_ATTR_GET_NP)
-        // FreeBSD, NetBSD
+#if HAVE(PTHREAD_NP_H)
+        // e.g. on FreeBSD 5.4, neundorf@kde.org
         pthread_attr_get_np(thread, &sattr);
-#elif defined(HAVE_PTHREAD_GETATTR_NP)
-        // Linux
-        pthread_getattr_np(thread, &sattr);
 #else
-        // FIXME: other POSIX systems may have different np alternatives
-#error Unknown pthreads api
+        // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
+        pthread_getattr_np(thread, &sattr);
 #endif
         // Should work but fails on Linux (?)
         //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
@@ -338,6 +328,8 @@ void Collector::markCurrentThreadConservatively()
         assert(stackBase);
         stackThread = thread;
     }
+#else
+#error Need a way to get the stack base on this platform
 #endif
 
     int dummy;
@@ -346,7 +338,7 @@ void Collector::markCurrentThreadConservatively()
     markStackObjectsConservatively(stackPointer, stackBase);
 }
 
-#if KJS_MULTIPLE_THREADS
+#if USE(MULTIPLE_THREADS)
 
 typedef unsigned long usword_t; // word size, assumed to be either 32 or 64 bit
 
@@ -354,15 +346,19 @@ void Collector::markOtherThreadConservatively(Thread *thread)
 {
   thread_suspend(thread->machThread);
 
-#if KJS_CPU_X86
+#if PLATFORM(X86)
   i386_thread_state_t regs;
   unsigned user_count = sizeof(regs)/sizeof(int);
   thread_state_flavor_t flavor = i386_THREAD_STATE;
-#elif KJS_CPU_PPC
+#elif PLATFORM(X86_64)
+  x86_thread_state64_t  regs;
+  unsigned user_count = x86_THREAD_STATE64_COUNT;
+  thread_state_flavor_t flavor = x86_THREAD_STATE64;
+#elif PLATFORM(PPC)
   ppc_thread_state_t  regs;
   unsigned user_count = PPC_THREAD_STATE_COUNT;
   thread_state_flavor_t flavor = PPC_THREAD_STATE;
-#elif KJS_CPU_PPC64
+#elif PLATFORM(PPC64)
   ppc_thread_state64_t  regs;
   unsigned user_count = PPC_THREAD_STATE64_COUNT;
   thread_state_flavor_t flavor = PPC_THREAD_STATE64;
@@ -371,14 +367,22 @@ void Collector::markOtherThreadConservatively(Thread *thread)
 #endif
   // get the thread register state
   thread_get_state(thread->machThread, flavor, (thread_state_t)&regs, &user_count);
-
+  
   // scan the registers
   markStackObjectsConservatively((void *)&regs, (void *)((char *)&regs + (user_count * sizeof(usword_t))));
-
+   
   // scan the stack
-#if KJS_CPU_X86
+#if PLATFORM(X86) && __DARWIN_UNIX03
+  markStackObjectsConservatively((void *)regs.__esp, pthread_get_stackaddr_np(thread->posixThread));
+#elif PLATFORM(X86)
   markStackObjectsConservatively((void *)regs.esp, pthread_get_stackaddr_np(thread->posixThread));
-#elif KJS_CPU_PPC || KJS_CPU_PPC64
+#elif PLATFORM(X86_64) && __DARWIN_UNIX03
+  markStackObjectsConservatively((void *)regs.__rsp, pthread_get_stackaddr_np(thread->posixThread));
+#elif PLATFORM(X86_64)
+  markStackObjectsConservatively((void *)regs.rsp, pthread_get_stackaddr_np(thread->posixThread));
+#elif (PLATFORM(PPC) || PLATFORM(PPC64)) && __DARWIN_UNIX03
+  markStackObjectsConservatively((void *)regs.__r1, pthread_get_stackaddr_np(thread->posixThread));
+#elif PLATFORM(PPC) || PLATFORM(PPC64)
   markStackObjectsConservatively((void *)regs.r1, pthread_get_stackaddr_np(thread->posixThread));
 #else
 #error Unknown Architecture
@@ -393,7 +397,7 @@ void Collector::markStackObjectsConservatively()
 {
   markCurrentThreadConservatively();
 
-#if KJS_MULTIPLE_THREADS
+#if USE(MULTIPLE_THREADS)
   for (Thread *thread = registeredThreads; thread != NULL; thread = thread->next) {
     if (thread->posixThread != pthread_self()) {
       markOtherThreadConservatively(thread);
@@ -432,7 +436,6 @@ void Collector::unprotect(JSValue *k)
     protectedValues().remove(k->downcast());
 }
 
-
 void Collector::markProtectedObjects()
 {
   ProtectCounts& pv = protectedValues();
@@ -440,21 +443,26 @@ void Collector::markProtectedObjects()
   for (ProtectCounts::iterator it = pv.begin(); it != end; ++it) {
     JSCell *val = it->first;
     if (!val->marked())
-       val->mark();
-    }
+      val->mark();
+  }
 }
 
 bool Collector::collect()
 {
   assert(JSLock::lockCount() > 0);
 
-  if (InterpreterImp::s_hook) {
-    InterpreterImp *scr = InterpreterImp::s_hook;
+#if USE(MULTIPLE_THREADS)
+    bool currentThreadIsMainThread = !pthread_is_threaded_np() || pthread_main_np();
+#else
+    bool currentThreadIsMainThread = true;
+#endif
+    
+  if (Interpreter::s_hook) {
+    Interpreter* scr = Interpreter::s_hook;
     do {
-      //fprintf( stderr, "Collector marking interpreter %p\n",(void*)scr);
-      scr->mark();
+      scr->mark(currentThreadIsMainThread);
       scr = scr->next;
-    } while (scr != InterpreterImp::s_hook);
+    } while (scr != Interpreter::s_hook);
   }
 
   // MARK: first mark all referenced objects recursively starting out from the set of root objects
@@ -464,7 +472,7 @@ bool Collector::collect()
   List::markProtectedLists();
 
   // SWEEP: delete everything with a zero refcount (garbage) and unmark everything else
-
+  
   size_t emptyBlocks = 0;
   size_t numLiveObjects = heap.numLiveObjects;
 
@@ -481,7 +489,7 @@ bool Collector::collect()
         JSCell *imp = reinterpret_cast<JSCell *>(cell);
         if (imp->m_marked) {
           imp->m_marked = false;
-        } else {
+        } else if (currentThreadIsMainThread || imp->m_destructorIsThreadSafe) {
           imp->~JSCell();
           --usedCells;
           --numLiveObjects;
@@ -502,7 +510,7 @@ bool Collector::collect()
           JSCell *imp = reinterpret_cast<JSCell *>(cell);
           if (imp->m_marked) {
             imp->m_marked = false;
-          } else {
+          } else if (currentThreadIsMainThread || imp->m_destructorIsThreadSafe) {
             imp->~JSCell();
             --usedCells;
             --numLiveObjects;
@@ -515,7 +523,7 @@ bool Collector::collect()
         }
       }
     }
-
+    
     curBlock->usedCells = usedCells;
     curBlock->freeList = freeList;
 
@@ -531,7 +539,7 @@ bool Collector::collect()
         block--; // Don't move forward a step in this case
 
         if (heap.numBlocks > MIN_ARRAY_SIZE && heap.usedBlocks < heap.numBlocks / LOW_WATER_FACTOR) {
-          heap.numBlocks = heap.numBlocks / GROWTH_FACTOR;
+          heap.numBlocks = heap.numBlocks / GROWTH_FACTOR; 
           heap.blocks = (CollectorBlock **)fastRealloc(heap.blocks, heap.numBlocks * sizeof(CollectorBlock *));
         }
       }
@@ -540,12 +548,12 @@ bool Collector::collect()
 
   if (heap.numLiveObjects != numLiveObjects)
     heap.firstBlockWithPossibleSpace = 0;
-
+  
   size_t cell = 0;
   while (cell < heap.usedOversizeCells) {
     JSCell *imp = (JSCell *)heap.oversizeCells[cell];
-
-    if (!imp->m_marked) {
+    
+    if (!imp->m_marked && (currentThreadIsMainThread || imp->m_destructorIsThreadSafe)) {
       imp->~JSCell();
 #if DEBUG_COLLECTOR
       heap.oversizeCells[cell]->u.freeCell.zeroIfFree = 0;
@@ -560,7 +568,7 @@ bool Collector::collect()
       numLiveObjects--;
 
       if (heap.numOversizeCells > MIN_ARRAY_SIZE && heap.usedOversizeCells < heap.numOversizeCells / LOW_WATER_FACTOR) {
-        heap.numOversizeCells = heap.numOversizeCells / GROWTH_FACTOR;
+        heap.numOversizeCells = heap.numOversizeCells / GROWTH_FACTOR; 
         heap.oversizeCells = (CollectorCell **)fastRealloc(heap.oversizeCells, heap.numOversizeCells * sizeof(CollectorCell *));
       }
     } else {
@@ -568,20 +576,20 @@ bool Collector::collect()
       cell++;
     }
   }
-
+  
   bool deleted = heap.numLiveObjects != numLiveObjects;
 
   heap.numLiveObjects = numLiveObjects;
   heap.numLiveObjectsAtLastCollect = numLiveObjects;
-
+  
   memoryFull = (numLiveObjects >= KJS_MEM_LIMIT);
 
   return deleted;
 }
 
-size_t Collector::size()
+size_t Collector::size() 
 {
-  return heap.numLiveObjects;
+  return heap.numLiveObjects; 
 }
 
 #ifdef KJS_DEBUG_MEM
@@ -593,12 +601,12 @@ void Collector::finalCheck()
 size_t Collector::numInterpreters()
 {
   size_t count = 0;
-  if (InterpreterImp::s_hook) {
-    InterpreterImp *scr = InterpreterImp::s_hook;
+  if (Interpreter::s_hook) {
+    Interpreter* scr = Interpreter::s_hook;
     do {
       ++count;
       scr = scr->next;
-    } while (scr != InterpreterImp::s_hook);
+    } while (scr != Interpreter::s_hook);
   }
   return count;
 }
@@ -643,14 +651,14 @@ static const char *typeName(JSCell *val)
 
 HashCountedSet<const char*>* Collector::rootObjectTypeCounts()
 {
-   HashCountedSet<const char*>* counts = new HashCountedSet<const char*>;
- 
-   ProtectCounts& pv = protectedValues();
-   ProtectCounts::iterator end = pv.end();
-   for (ProtectCounts::iterator it = pv.begin(); it != end; ++it)
+    HashCountedSet<const char*>* counts = new HashCountedSet<const char*>;
+
+    ProtectCounts& pv = protectedValues();
+    ProtectCounts::iterator end = pv.end();
+    for (ProtectCounts::iterator it = pv.begin(); it != end; ++it)
         counts->add(typeName(it->first));
- 
-   return counts;
+
+    return counts;
 }
 
 } // namespace KJS

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _ARRAY_OBJECT_H_
-#define _ARRAY_OBJECT_H_
+#ifndef ARRAY_OBJECT_H_
+#define ARRAY_OBJECT_H_
 
 #include "array_instance.h"
 #include "internal.h"

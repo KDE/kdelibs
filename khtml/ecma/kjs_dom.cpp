@@ -42,6 +42,7 @@
 #include "kjs_events.h"
 #include "kjs_views.h"
 #include "kjs_window.h"
+#include <kjs/PropertyNameArray.h>
 #include "dom/dom_exception.h"
 #include "kjs_dom.lut.h"
 #include "khtmlpart_p.h"
@@ -670,17 +671,14 @@ bool DOMNodeList::getOwnPropertySlot(ExecState *exec, const Identifier& property
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-ReferenceList DOMNodeList::propList(ExecState *exec, bool recursive)
+void DOMNodeList::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  ReferenceList properties = ObjectImp::propList(exec,recursive);
+  for (unsigned i = 0; i < m_impl->length(); ++i)
+      propertyNames.add(Identifier::from(i));
 
-  for (unsigned i = 0; i < m_impl->length(); ++i) {
-      properties.append(Reference(this, i));
-  }
+  propertyNames.add(lengthPropertyName);
 
-  properties.append(Reference(this, lengthPropertyName));
-
-  return properties;
+  JSObject::getPropertyNames(exec, propertyNames);
 }
 
 // Need to support both get and call, so that list[0] and list(0) work.
@@ -813,9 +811,9 @@ AttrImpl *toAttr(ValueImp *val)
   loadXML            DOMDocument::LoadXML                      DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE(DOMDocumentProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMDocumentProto, DOMNodeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMDocumentProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMDocument",DOMDocumentProto, DOMDocumentProtoFunc, DOMNodeProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMDocument",DOMDocumentProto, DOMDocumentProtoFunc)
 
 const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTable, 0 };
 
@@ -1007,7 +1005,7 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
     if (khtmlpart) {
       // Security: only allow documents to be loaded from the same host
       QString dstUrl = khtmlpart->htmlDocument().completeURL(s).string();
-      KParts::ReadOnlyPart *part = static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part();
+      KParts::ReadOnlyPart *part = static_cast<KJS::ScriptInterpreter*>(exec->dynamicInterpreter())->part();
       if (part->url().host() == KUrl(dstUrl).host()) {
 	kDebug(6070) << "JavaScript: access granted for document.load() of " << dstUrl << endl;
 	doc.load(dstUrl);
@@ -1049,9 +1047,9 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
   hasAttributeNS	DOMElement::HasAttributeNS	DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE(DOMElementProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMElementProto, DOMNodeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMElement",DOMElementProto,DOMElementProtoFunc,DOMNodeProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMElement",DOMElementProto,DOMElementProtoFunc)
 
 const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable, 0 };
 /* Source for DOMElementTable.
@@ -1223,7 +1221,7 @@ ValueImp* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, ObjectI
   case DOMDOMImplementation::CreateDocument: { // DOM2
     // Initially set the URL to document of the creator... this is so that it resides in the same
     // host/domain for security checks. The URL will be updated if Document.load() is called.
-    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->interpreter())->part());
+    KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<KJS::ScriptInterpreter*>(exec->dynamicInterpreter())->part());
     if (part) {
       //### this should probably be pushed to the impl
       DOM::NodeImpl* supposedDocType = toNode(args[2]);
@@ -1519,7 +1517,7 @@ ValueImp* KJS::getDOMNode(ExecState *exec, DOM::NodeImpl* n)
   DOMObject *ret = 0;
   if (!n)
     return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   if ((ret = interp->getDOMObject(n)))
     return ret;
 
@@ -1805,9 +1803,9 @@ const ClassInfo DOMCharacterData::info = { "CharacterImp",
   replaceData	DOMCharacterData::ReplaceData	DontDelete|Function 2
 @end
 */
-KJS_DEFINE_PROTOTYPE(DOMCharacterDataProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMCharacterDataProto, DOMNodeProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMCharacterData",DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto,DOMCharacterDataProtoFunc)
 
 DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d)
  : DOMNode(exec, d)
@@ -1884,9 +1882,9 @@ const ClassInfo DOMText::info = { "Text",
   splitText	DOMText::SplitText	DontDelete|Function 1
 @end
 */
-KJS_DEFINE_PROTOTYPE(DOMTextProto)
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextProto, DOMCharacterDataProto)
 KJS_IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT("DOMText",DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
+KJS_IMPLEMENT_PROTOTYPE("DOMText",DOMTextProto,DOMTextProtoFunc)
 
 DOMText::DOMText(ExecState *exec, DOM::TextImpl* t)
   : DOMCharacterData(exec, t)

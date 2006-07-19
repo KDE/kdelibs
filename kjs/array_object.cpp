@@ -23,21 +23,15 @@
 
 #include "config.h"
 #include "array_object.h"
-
-#include "error_object.h"
-#include "internal.h"
-#include "interpreter.h"
-#include "object.h"
-#include "operations.h"
-#include "reference_list.h"
-#include "types.h"
-#include "value.h"
-#include <kxmlcore/HashSet.h>
-
 #include "array_object.lut.h"
 
+#include "error_object.h"
+#include "lookup.h"
+#include "operations.h"
+#include "PropertyNameArray.h"
+#include <kxmlcore/HashSet.h>
 #include <stdio.h>
-#include <assert.h>
+
 
 using namespace KJS;
 
@@ -75,12 +69,12 @@ ArrayInstance::~ArrayInstance()
   fastFree(storage);
 }
 
-JSValue *ArrayInstance::lengthGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   return jsNumber(static_cast<ArrayInstance *>(slot.slotBase())->length);
 }
 
-bool ArrayInstance::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
   if (propertyName == lengthPropertyName) {
     slot.setCustom(this, lengthGetter);
@@ -205,21 +199,18 @@ bool ArrayInstance::deleteProperty(ExecState *exec, unsigned index)
   return JSObject::deleteProperty(exec, Identifier::from(index));
 }
 
-ReferenceList ArrayInstance::propList(ExecState *exec, bool recursive)
+void ArrayInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  ReferenceList properties = JSObject::propList(exec,recursive);
-
   // avoid fetching this every time through the loop
-  JSValue *undefined = jsUndefined();
-
-  //### FIXME: should avoid duplicates with prototype
+  JSValue* undefined = jsUndefined();
+  
   for (unsigned i = 0; i < storageLength; ++i) {
-    JSValue *imp = storage[i];
-    if (imp && imp != undefined) {
-      properties.append(Reference(this, i));
-    }
+    JSValue* value = storage[i];
+    if (value && value != undefined)
+      propertyNames.add(Identifier::from(i));
   }
-  return properties;
+ 
+  JSObject::getPropertyNames(exec, propertyNames);
 }
 
 void ArrayInstance::resizeStorage(unsigned newLength)
@@ -251,18 +242,18 @@ void ArrayInstance::setLength(unsigned newLength, ExecState *exec)
   }
 
   if (newLength < length) {
-    ReferenceList sparseProperties;
+    PropertyNameArray sparseProperties;
     
-    _prop.addSparseArrayPropertiesToReferenceList(sparseProperties, this);
+    _prop.getSparseArrayPropertyNames(sparseProperties);
     
-    ReferenceListIterator it = sparseProperties.begin();
-    while (it != sparseProperties.end()) {
-      Reference ref = it++;
+    PropertyNameArrayIterator end = sparseProperties.end();
+    
+    for (PropertyNameArrayIterator it = sparseProperties.begin(); it != end; ++it) {
+      Identifier name = *it;
       bool ok;
-      unsigned index = ref.getPropertyName(exec).toArrayIndex(&ok);
-      if (ok && index > newLength) {
-        ref.deleteValue(exec);
-      }
+      unsigned index = name.toArrayIndex(&ok);
+      if (ok && index > newLength)
+        deleteProperty(exec, name);
     }
   }
   
@@ -368,21 +359,20 @@ unsigned ArrayInstance::pushUndefinedObjectsToEnd(ExecState *exec)
             o++;
         }
     }
+   
+    PropertyNameArray sparseProperties;
+    _prop.getSparseArrayPropertyNames(sparseProperties);
+    unsigned newLength = o + sparseProperties.size();
     
-    ReferenceList sparseProperties;
-    _prop.addSparseArrayPropertiesToReferenceList(sparseProperties, this);
-    unsigned newLength = o + sparseProperties.length();
-
-    if (newLength > storageLength) {
-      resizeStorage(newLength);
-    } 
-
-    ReferenceListIterator it = sparseProperties.begin();
-    while (it != sparseProperties.end()) {
-      Reference ref = it++;
-      storage[o] = ref.getValue(exec);
-      JSObject::deleteProperty(exec, ref.getPropertyName(exec));
-      o++;
+    if (newLength > storageLength)
+        resizeStorage(newLength);
+    
+    PropertyNameArrayIterator end = sparseProperties.end();
+    for (PropertyNameArrayIterator it = sparseProperties.begin(); it != end; ++it) {
+        Identifier name = *it;
+        storage[o] = get(exec, name);
+        JSObject::deleteProperty(exec, name);
+        o++;
     }
     
     if (newLength != storageLength)
@@ -419,14 +409,13 @@ const ClassInfo ArrayPrototype::info = {"Array", &ArrayInstance::info, &arrayTab
 */
 
 // ECMA 15.4.4
-ArrayPrototype::ArrayPrototype(ExecState *exec,
-                                     ObjectPrototype *objProto)
+ArrayPrototype::ArrayPrototype(ExecState*, ObjectPrototype* objProto)
   : ArrayInstance(objProto, 0)
 {
   setInternalValue(jsNull());
 }
 
-bool ArrayPrototype::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool ArrayPrototype::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
   return getStaticFunctionSlot<ArrayProtoFunc, ArrayInstance>(exec, &arrayTable, this, propertyName, slot);
 }

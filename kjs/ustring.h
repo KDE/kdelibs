@@ -30,15 +30,6 @@
 #include <kxmlcore/RefPtr.h>
 #include <kxmlcore/PassRefPtr.h>
 
-#ifdef __APPLE__
-#include <sys/types.h>
-#ifndef KWQ_UNSIGNED_TYPES_DEFINED
-#define KWQ_UNSIGNED_TYPES_DEFINED
-typedef unsigned char uchar;
-typedef unsigned long ulong;
-#endif
-#endif
-
 #include <stdint.h>
 
 /**
@@ -95,15 +86,6 @@ namespace KJS {
      * @return the 16 bit Unicode value of the character
      */
     unsigned short unicode() const { return uc; }
-  public:
-    /**
-     * @return The character converted to lower case.
-     */
-    UChar toLower() const;
-    /**
-     * @return The character converted to upper case.
-     */
-    UChar toUpper() const;
 
     unsigned short uc;
   };
@@ -152,14 +134,6 @@ namespace KJS {
      * @return Higher byte.
      */
     unsigned char high() const { return ref().uc >> 8; }
-    /**
-     * @return Character converted to lower case.
-     */
-    UChar toLower() const { return ref().toLower(); }
-    /**
-     * @return Character converted to upper case.
-     */
-    UChar toUpper() const  { return ref().toUpper(); }
   private:
     // not implemented, can only be constructed from UString
     UCharReference();
@@ -178,7 +152,7 @@ namespace KJS {
   public:
     CString() : data(0), length(0) { }
     CString(const char *c);
-    CString(const char *c, int len);
+    CString(const char *c, size_t len);
     CString(const CString &);
 
     ~CString();
@@ -188,11 +162,11 @@ namespace KJS {
     CString &operator=(const CString &);
     CString &operator+=(const CString &c) { return append(c); }
 
-    int size() const { return length; }
+    size_t size() const { return length; }
     const char *c_str() const { return data; }
   private:
     char *data;
-    int length;
+    size_t length;
   };
 
   /**
@@ -220,7 +194,7 @@ namespace KJS {
       static unsigned computeHash(const UChar *, int length);
       static unsigned computeHash(const char *);
 
-      void ref() { ++rc; }
+      Rep* ref() { ++rc; return this; }
       void deref() { if (--rc == 0) destroy(); }
 
       // unshared data

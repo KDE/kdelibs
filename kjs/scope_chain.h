@@ -87,6 +87,10 @@ namespace KJS {
         
         void mark();
         
+#ifndef NDEBUG        
+        void print();
+#endif
+
     private:
         ScopeChainNode *_node;
         

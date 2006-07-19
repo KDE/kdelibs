@@ -77,7 +77,7 @@ namespace KJSEmbed
         public:
             template <typename T>
             ScalarBinding( KJS::ExecState *exec, const char *typeName, T val )
-                : KJS::JSObject(exec->interpreter()->builtinObjectPrototype()),
+                : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
                   m_name(typeName)
             {
                 m_value = new Scalar<T>(val);
@@ -167,7 +167,7 @@ namespace KJSEmbed
     template< typename T>
     KJS::JSValue *createScalar(KJS::ExecState *exec, const KJS::UString &className, const T &value)
     {
-        KJS::JSObject *parent = exec->interpreter()->globalObject();
+        KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
         if( returnValue )
         {

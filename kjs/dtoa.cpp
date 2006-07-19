@@ -170,9 +170,10 @@
  */
 
 #include "config.h"
+#include "global.h"
 #include "dtoa.h"
 
-#ifdef WORDS_BIGENDIAN
+#if PLATFORM(BIG_ENDIAN)
 #define IEEE_MC68k
 #else
 #define IEEE_8087
@@ -527,7 +528,7 @@ Balloc
 #else
 		len = (sizeof(Bigint) + (x-1)*sizeof(ULong) + sizeof(double) - 1)
 			/sizeof(double);
-		if (pmem_next - private_mem + len <= PRIVATE_mem) {
+		if (pmem_next - private_mem + len <= (unsigned)PRIVATE_mem) {
 			rv = (Bigint*)pmem_next;
 			pmem_next += len;
 			}

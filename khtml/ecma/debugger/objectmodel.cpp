@@ -1,6 +1,6 @@
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
-#include <kjs/reference_list.h>
+#include <kjs/PropertyNameArray.h>
 #include <kdebug.h>
 
 #include "objectmodel.h"
@@ -213,10 +213,11 @@ void ObjectModel::setupModelData(KJS::Interpreter *interpreter, ObjectNode *pare
 {
     KJS::JSObject *parent = parentNode->instance();
     KJS::ExecState *exec = interpreter->globalExec();
-    KJS::ReferenceList props = parent->propList(exec);
-    for( KJS::ReferenceListIterator ref = props.begin(); ref != props.end(); ref++)
+    KJS::PropertyNameArray props;
+    parent->getPropertyNames(exec, props);
+    for( KJS::PropertyNameArrayIterator ref = props.begin(); ref != props.end(); ref++)
     {
-        KJS::Identifier id = ref->getPropertyName(exec);
+        KJS::Identifier id = *ref;
         QString name = id.qstring();
         KJS::JSObject* instance = parent->get(exec, id)->toObject(exec);
 

@@ -51,6 +51,7 @@
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_context2d.h"
 #include "kjs_html.lut.h"
+#include <kjs/PropertyNameArray.h>
 
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
@@ -372,7 +373,7 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
       // Disable document.scripts unless we try to be IE-compatible
       // Especially since it's not implemented, so
       // if (document.scripts) shouldn't return true.
-      if ( exec->interpreter()->compatMode() != Interpreter::IECompat )
+      if ( exec->dynamicInterpreter()->compatMode() != Interpreter::IECompat )
         return Undefined();
       // To be implemented. Meanwhile, return an object with a length property set to 0
       // This gets some code going on IE-specific pages.
@@ -385,10 +386,10 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
     }
     case All:
       // Disable document.all when we try to be Netscape-compatible
-      if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
+      if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat )
         return Undefined();
       else
-      if ( exec->interpreter()->compatMode() == Interpreter::IECompat )
+      if ( exec->dynamicInterpreter()->compatMode() == Interpreter::IECompat )
         return getHTMLCollection(exec,doc.all());
       else // enabled but hidden
         return getHTMLCollection(exec,doc.all(), true);
@@ -1942,10 +1943,10 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,element.ownerDocument());
   case ElementAll:
     // Disable element.all when we try to be Netscape-compatible
-    if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
+    if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat )
       return Undefined();
     else
-    if ( exec->interpreter()->compatMode() == Interpreter::IECompat )
+    if ( exec->dynamicInterpreter()->compatMode() == Interpreter::IECompat )
       return getHTMLCollection(exec,new HTMLCollectionImpl(&element, HTMLCollectionImpl::DOC_ALL));
     else // Enabled but hidden by default
       return getHTMLCollection(exec,new HTMLCollectionImpl(&element, HTMLCollectionImpl::DOC_ALL), true);
@@ -2095,7 +2096,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
               block = false;
 
           } else if ( block && policy == KHTMLSettings::KJSWindowOpenSmart ) {
-            if( static_cast<KJS::ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed() ) {
+            if( static_cast<KJS::ScriptInterpreter *>(exec->dynamicInterpreter())->isWindowOpenAllowed() ) {
               // This submission has been triggered by the user
               block = false;
             }
@@ -2601,17 +2602,14 @@ ValueImp* HTMLCollection::indexGetter(ExecState *exec, unsigned index)
   return getDOMNode(exec, m_impl->item(index));
 }
 
-ReferenceList KJS::HTMLCollection::propList(ExecState *exec, bool recursive)
+void KJS::HTMLCollection::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  ReferenceList properties = ObjectImp::propList(exec,recursive);
+  for (unsigned i = 0; i < m_impl->length(); ++i) 
+      propertyNames.add(Identifier::from(i));
 
-  for (unsigned i = 0; i < m_impl->length(); ++i) {
-      properties.append(Reference(this, i));
-  }
+  propertyNames.add(lengthPropertyName);
 
-  properties.append(Reference(this, lengthPropertyName));
-
-  return properties;
+  ObjectImp::getPropertyNames(exec, propertyNames);
 }
 
 ValueImp *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
@@ -2997,7 +2995,7 @@ ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, D
   assert(!c || c->getType() == HTMLCollectionImpl::SELECT_OPTIONS);
   DOMObject *ret;
   if (!c) return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   if ((ret = interp->getDOMObject(c)))
     return ret;
   else {

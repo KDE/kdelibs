@@ -24,6 +24,10 @@
 #ifndef KJS_VALUE_H
 #define KJS_VALUE_H
 
+#include "JSImmediate.h"
+#include "ustring.h"
+#include <stddef.h> // for size_t
+
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
 // Uncomment this to enable very verbose output from KJS
@@ -33,20 +37,12 @@
 
 #endif
 
-#include "global.h"
-#include "JSImmediate.h"
-#include "JSType.h"
-#include "kxmlcore/Assertions.h"
-#include "ustring.h"
-
-#include <stdlib.h> // for size_t
-
 namespace KJS {
 
 struct ClassInfo;
 class ExecState;
-class JSCell;
 class JSObject;
+class JSCell;
 
 /**
  * JSValue is the base type for all primitives (Undefined, Null, Boolean,
@@ -98,7 +94,8 @@ public:
 
     // Integer conversions.
     double toInteger(ExecState *exec) const;
-    int32_t toInt32(ExecState *exec) const;
+    int32_t toInt32(ExecState*) const;
+    int32_t toInt32(ExecState*, bool& ok) const;
     uint32_t toUInt32(ExecState *exec) const;
     uint16_t toUInt16(ExecState *exec) const;
 
@@ -110,6 +107,7 @@ private:
     // Implementation details.
     JSCell *downcast();
     const JSCell *downcast() const;
+    inline int32_t toInt32Inline(ExecState*, bool& ok) const;
 
     // Give a compile time error if we try to copy one of these.
     JSValue(const JSValue&);
@@ -123,7 +121,7 @@ class KJS_EXPORT JSCell : public JSValue {
     friend class JSObject;
     friend class GetterSetterImp;
 private:
-    JSCell();
+    explicit JSCell(bool destructorIsThreadSafe = true);
     virtual ~JSCell();
 public:
     // Querying the type.
@@ -157,17 +155,11 @@ public:
     bool marked() const;
 
 private:
-    bool m_marked;
+    bool m_destructorIsThreadSafe : 1;
+    bool m_marked : 1;
 };
 
-KJS_EXPORT JSValue *jsUndefined();
-KJS_EXPORT JSValue *jsNull();
-
-KJS_EXPORT JSValue *jsBoolean(bool);
-
 KJS_EXPORT JSValue *jsNumberCell(double);
-KJS_EXPORT JSValue *jsNumber(double);
-KJS_EXPORT JSValue *jsNaN();
 
 KJS_EXPORT JSCell *jsString(const UString &); // returns empty string if passed null string
 KJS_EXPORT JSCell *jsString(const char * = ""); // returns empty string if passed 0
@@ -210,8 +202,9 @@ inline JSValue::~JSValue()
 {
 }
 
-inline JSCell::JSCell()
-    : m_marked(false)
+inline JSCell::JSCell(bool destructorIsThreadSafe)
+    : m_destructorIsThreadSafe(destructorIsThreadSafe)
+    , m_marked(false)
 {
 }
 
@@ -347,7 +340,7 @@ inline bool JSValue::getUInt32(uint32_t& v) const
         if (!(d >= 0) || d > 0xFFFFFFFFUL) // true for NaN
             return false;
         v = static_cast<uint32_t>(d);
-        return true;
+        return JSImmediate::isNumber(this);
     }
     return downcast()->getUInt32(v);
 }
@@ -415,6 +408,7 @@ inline JSValue *Boolean(bool b) { return jsBoolean(b); }
 inline JSValue *Number(double n) { return jsNumber(n); }
 inline JSValue *String(const UString& s) { return jsString(s); }
 inline JSValue *String(const char *s) { return jsString(s); }
+
 
 } // namespace
 

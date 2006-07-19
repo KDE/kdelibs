@@ -24,7 +24,6 @@
 #define _KJSLOOKUP_H_
 
 #include "interpreter.h"
-#include "nodes.h"
 #include "internal.h"
 #include "identifier.h"
 #include "function_object.h"
@@ -32,6 +31,7 @@
 #include <stdio.h>
 
 namespace KJS {
+  class FunctionPrototype;
 
   /**
    * An entry in a hash table.
@@ -133,7 +133,7 @@ namespace KJS {
         return cachedVal;
 
       const HashEntry *entry = slot.staticEntry();
-      FuncImp *val = new FuncImp(exec, entry->value, entry->params, propertyName);
+      JSValue *val = new FuncImp(exec, entry->value, entry->params, propertyName);
       thisObj->putDirect(propertyName, val, entry->attr);
       return val;
   }
@@ -143,10 +143,10 @@ namespace KJS {
    * Helper for getStaticValueSlot and getStaticPropertySlot
    */
   template <class ThisImp>
-  inline JSValue *staticValueGetter(ExecState *exec, JSObject * /*originalObject*/, const Identifier&, const PropertySlot& slot)
+  inline JSValue *staticValueGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot)
   {
-      ThisImp *thisObj = static_cast<ThisImp *>(slot.slotBase());
-      const HashEntry *entry = slot.staticEntry();
+      ThisImp* thisObj = static_cast<ThisImp*>(slot.slotBase());
+      const HashEntry* entry = slot.staticEntry();
       return thisObj->getValueProperty(exec, entry->value);
   }
 
@@ -228,18 +228,19 @@ namespace KJS {
 
   /**
    * This one is for "put".
-   * Lookup hash entry for property to be set, and set the value.
+   * It looks up a hash entry for the property to be set.  If an entry
+   * is found it sets the value and returns true, else it returns false.
    */
-  template <class ThisImp, class ParentImp>
-  inline void lookupPut(ExecState *exec, const Identifier &propertyName,
-                        JSValue *value, int attr,
+  template <class ThisImp>
+  inline bool lookupPut(ExecState* exec, const Identifier &propertyName,
+                        JSValue* value, int attr,
                         const HashTable* table, ThisImp* thisObj)
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
+    if (!entry)
+      return false;
 
-    if (!entry) // not found: forward to parent
-      thisObj->ParentImp::put(exec, propertyName, value, attr);
-    else if (entry->attr & Function) // function: put as override property
+    if (entry->attr & Function) // function: put as override property
       thisObj->JSObject::put(exec, propertyName, value, attr);
     else if (entry->attr & ReadOnly) // readonly! Can't put!
 #ifdef KJS_VERBOSE
@@ -249,8 +250,24 @@ namespace KJS {
 #endif
     else
       thisObj->putValueProperty(exec, entry->value, value, attr);
+
+    return true;
   }
   
+  /**
+   * This one is for "put".
+   * It calls lookupPut<ThisImp>() to set the value.  If that call
+   * returns false (meaning no entry in the hash table was found),
+   * then it calls put() on the ParentImp class.
+   */
+  template <class ThisImp, class ParentImp>
+  inline void lookupPut(ExecState* exec, const Identifier &propertyName,
+                        JSValue* value, int attr,
+                        const HashTable* table, ThisImp* thisObj)
+  {
+    if (!lookupPut<ThisImp>(exec, propertyName, value, attr, table, thisObj))
+      thisObj->ParentImp::put(exec, propertyName, value, attr); // not found: forward to parent
+  }
 } // namespace
 
 /*
@@ -276,7 +293,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     return static_cast<KJS::JSObject *>(obj);
   }
   KJS::JSObject *newObject = new ClassCtor(exec);
-  globalObject->put(exec, propertyName, newObject, KJS::Internal);
+  globalObject->put(exec, propertyName, newObject, KJS::Internal | KJS::DontEnum);
   return newObject;
 }
 
@@ -294,16 +311,17 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
  * KJS_IMPLEMENT_PROTOTYPE("DOMNode", DOMNodeProto,DOMNodeProtoFunc)
  * and use DOMNodeProto::self(exec) as prototype in the DOMNode constructor.
  * If the prototype has a "parent prototype", e.g. DOMElementProto falls back on DOMNodeProto,
- * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
+ * then the first line will use KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE, with DOMNodeProto as the second argument.
  */
  
 // Work around a bug in GCC 4.1 
-#if !__GNUC__ 
+#if !COMPILER(GCC)
 #define KJS_GCC_ROOT_NS_HACK :: 
 #else 
 #define KJS_GCC_ROOT_NS_HACK 
 #endif 
- 	
+
+// These macros assume that a prototype's only properties are functions
 #define KJS_DEFINE_PROTOTYPE(ClassProto) \
   class ClassProto : public KJS::JSObject { \
     friend KJS::JSObject *KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName); \
@@ -314,41 +332,39 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     bool getOwnPropertySlot(KJS::ExecState *, const KJS::Identifier&, KJS::PropertySlot&); \
   protected: \
     ClassProto(KJS::ExecState *exec) \
-      : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()) { } \
+      : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()) { } \
     \
     static Identifier* s_name; \
     static Identifier* name(); \
   };
+  
+#define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
+    class ClassProto : public KJS::JSObject { \
+        friend KJS::JSObject* KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(KJS::ExecState* exec, const KJS::Identifier& propertyName); \
+    public: \
+        static KJS::JSObject* self(KJS::ExecState* exec); \
+        virtual const KJS::ClassInfo* classInfo() const { return &info; } \
+        static const KJS::ClassInfo info; \
+        bool getOwnPropertySlot(KJS::ExecState*, const KJS::Identifier&, KJS::PropertySlot&); \
+    protected: \
+        ClassProto(KJS::ExecState* exec) \
+            : KJS::JSObject(ClassProtoProto::self(exec)) { } \
+    \
+    static Identifier* s_name; \
+    static Identifier* name(); \
+    };
+
 
 #define KJS_IMPLEMENT_PROTOTYPE(ClassName, ClassProto,ClassFunc) \
     const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
     Identifier* ClassProto::s_name = 0; \
     JSObject *ClassProto::self(ExecState *exec) \
     { \
-      return KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(exec, *name()); \
+      return ::cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
     bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
     { \
-      return getStaticFunctionSlot<ClassFunc,JSObject>(exec, &ClassProto##Table, this, propertyName, slot); \
-    } \
-    Identifier* ClassProto::name() \
-    { \
-      if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
-      return s_name; \
-    } 
-
-#define KJS_IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassName, ClassProto,ClassFunc,ParentProto)  \
-    const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
-    Identifier* ClassProto::s_name = 0; \
-    JSObject *ClassProto::self(ExecState *exec) \
-    { \
-      return  KJS_GCC_ROOT_NS_HACK cacheGlobalObject<ClassProto>(exec, *name()); \
-    } \
-    bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
-    { \
-      if (getStaticFunctionSlot<ClassFunc,JSObject>(exec, &ClassProto##Table, this, propertyName, slot)) \
-          return true; \
-      return ParentProto::self(exec)->getOwnPropertySlot(exec, propertyName, slot); \
+      return getStaticFunctionSlot<ClassFunc, JSObject>(exec, &ClassProto##Table, this, propertyName, slot); \
     } \
     Identifier* ClassProto::name() \
     { \
@@ -358,7 +374,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
 
 
 #define KJS_IMPLEMENT_PROTOFUNC(ClassFunc) \
-  class ClassFunc: public InternalFunctionImp { \
+  class ClassFunc : public InternalFunctionImp { \
   public: \
     ClassFunc(ExecState* exec, int i, int len, const Identifier& name) \
       : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name) \

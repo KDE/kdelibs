@@ -2,7 +2,8 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2004 Apple Computer, Inc.
+ *  Copyright (C) 2004-2006 Apple Computer, Inc.
+ *  Copyright (C) 2006 Björn Graf (bjoern.graf@gmail.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,20 +23,24 @@
  */
 
 #include "config.h"
+#include "collector.h"
 
-#include "kxmlcore/HashTraits.h"
+#include <kxmlcore/HashTraits.h>
 #include "JSLock.h"
-#include "interpreter.h"
 #include "object.h"
-#include "types.h"
-#include "value.h"
 
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#if HAVE_SYS_TIME_H
+#if HAVE(SYS_TIME_H)
 #include <sys/time.h>
+#endif
+
+#include "protect.h"
+
+#if PLATFORM(WIN_OS)
+#include <windows.h>
+#include <crtdbg.h>
 #endif
 
 using namespace KJS;
@@ -52,7 +57,10 @@ public:
     long getElapsedMS(); // call stop() first
     
 private:
-#if !WIN32
+#if PLATFORM(WIN_OS)
+    DWORD m_startTime;
+    DWORD m_stopTime;
+#else
     // Windows does not have timeval, disabling this class for now (bug 7399)
     timeval m_startTime;
     timeval m_stopTime;
@@ -61,27 +69,31 @@ private:
 
 void StopWatch::start()
 {
-#if !WIN32
+#if PLATFORM(WIN_OS)
+    m_startTime = timeGetTime();
+#else
     gettimeofday(&m_startTime, 0);
 #endif
 }
 
 void StopWatch::stop()
 {
-#if !WIN32
+#if PLATFORM(WIN_OS)
+    m_stopTime = timeGetTime();
+#else
     gettimeofday(&m_stopTime, 0);
 #endif
 }
 
 long StopWatch::getElapsedMS()
 {
-#if !WIN32
+#if PLATFORM(WIN_OS)
+    return m_stopTime - m_startTime;
+#else
     timeval elapsedTime;
     timersub(&m_stopTime, &m_startTime, &elapsedTime);
     
     return elapsedTime.tv_sec * 1000 + lroundf(elapsedTime.tv_usec / 1000.0);
-#else
-    return 0;
 #endif
 }
 
@@ -148,9 +160,94 @@ JSValue* TestFunctionImp::callAsFunction(ExecState* exec, JSObject*, const List 
     default:
       abort();
   }
+  return 0;
 }
 
+#if PLATFORM(WIN_OS)
+
+// Use SEH for Release builds only to get rid of the crash report dialog
+// (luckyly the same tests fail in Release and Debug builds so far). Need to
+// be in a separate main function because the kjsmain function requires object
+// unwinding.
+
+#if defined(_DEBUG)
+#define TRY
+#define EXCEPT(x)
+#else
+#define TRY       __try {
+#define EXCEPT(x) } __except (EXCEPTION_EXECUTE_HANDLER) { x; }
+#endif
+
+#else
+
+#define TRY
+#define EXCEPT(x)
+
+#endif
+
+int kjsmain(int argc, char** argv);
+
 int main(int argc, char** argv)
+{
+#if defined(_DEBUG) && PLATFORM(WIN_OS)
+    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+#endif
+
+    int res = 0;
+    TRY
+        res = kjsmain(argc, argv);
+    EXCEPT(res = 3)
+    return res;
+}
+
+
+bool doIt(int argc, char** argv)
+{
+  bool success = true;
+  GlobalImp* global = new GlobalImp();
+
+  // create interpreter
+  RefPtr<Interpreter> interp = new Interpreter(global);
+  // add debug() function
+  global->put(interp->globalExec(), "debug", new TestFunctionImp(TestFunctionImp::Debug, 1));
+  // add "print" for compatibility with the mozilla js shell
+  global->put(interp->globalExec(), "print", new TestFunctionImp(TestFunctionImp::Print, 1));
+  // add "quit" for compatibility with the mozilla js shell
+  global->put(interp->globalExec(), "quit", new TestFunctionImp(TestFunctionImp::Quit, 0));
+  // add "gc" for compatibility with the mozilla js shell
+  global->put(interp->globalExec(), "gc", new TestFunctionImp(TestFunctionImp::GC, 0));
+  // add "version" for compatibility with the mozilla js shell 
+  global->put(interp->globalExec(), "version", new TestFunctionImp(TestFunctionImp::Version, 1));
+  global->put(interp->globalExec(), "run", new TestFunctionImp(TestFunctionImp::Run, 1));
+  
+  Interpreter::setShouldPrintExceptions(true);
+  
+  for (int i = 1; i < argc; i++) {
+    const char* fileName = argv[i];
+    if (strcmp(fileName, "-f") == 0) // mozilla test driver script uses "-f" prefix for files
+      continue;
+    
+    char* script = createStringWithContentsOfFile(fileName);
+    if (!script) {
+      success = false;
+      break; // fail early so we can catch missing files
+    }
+    
+    Completion completion = interp->evaluate(fileName, 0, script);
+    success = success && completion.complType() != Throw;
+    free(script);
+  }
+
+  return success;
+}
+
+
+int kjsmain(int argc, char** argv)
 {
   if (argc < 2) {
     fprintf(stderr, "Usage: testkjs file1 [file2...]\n");
@@ -159,46 +256,13 @@ int main(int argc, char** argv)
 
   testIsInteger();
 
-  bool success = true;
-  {
-    JSLock lock;
-    
-    GlobalImp* global = new GlobalImp();
+  JSLock lock;
 
-    // create interpreter
-    Interpreter interp(global);
-    // add debug() function
-    global->put(interp.globalExec(), "debug", new TestFunctionImp(TestFunctionImp::Debug, 1));
-    // add "print" for compatibility with the mozilla js shell
-    global->put(interp.globalExec(), "print", new TestFunctionImp(TestFunctionImp::Print, 1));
-    // add "quit" for compatibility with the mozilla js shell
-    global->put(interp.globalExec(), "quit", new TestFunctionImp(TestFunctionImp::Quit, 0));
-    // add "gc" for compatibility with the mozilla js shell
-    global->put(interp.globalExec(), "gc", new TestFunctionImp(TestFunctionImp::GC, 0));
-    // add "version" for compatibility with the mozilla js shell 
-    global->put(interp.globalExec(), "version", new TestFunctionImp(TestFunctionImp::Version, 1));
-    global->put(interp.globalExec(), "run", new TestFunctionImp(TestFunctionImp::Run, 1));
+  bool success = doIt(argc, argv);
 
-    Interpreter::setShouldPrintExceptions(true);
-    
-    for (int i = 1; i < argc; i++) {
-      const char* fileName = argv[i];
-      if (strcmp(fileName, "-f") == 0) // mozilla test driver script uses "-f" prefix for files
-        continue;
-      
-      char* script = createStringWithContentsOfFile(fileName);
-      if (!script) {
-        success = false;
-        break; // fail early so we can catch missing files
-      }
-
-      Completion completion = interp.evaluate(fileName, 0, script);
-      success = success && completion.complType() != Throw;
-      free(script);
-    }
-    
-    delete global;
-  } // end block, so that interpreter gets deleted
+#ifndef NDEBUG
+  Collector::collect();
+#endif
 
   if (success)
     fprintf(stderr, "OK.\n");

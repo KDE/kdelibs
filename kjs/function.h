@@ -25,13 +25,13 @@
 #define KJS_FUNCTION_H
 
 #include "internal.h"
-#include "array_instance.h"
 #include <kxmlcore/OwnPtr.h>
 
 namespace KJS {
 
-  class Parameter;
   class ActivationImp;
+  class FunctionBodyNode;
+  class Parameter;
 
   /**
    * @short Implementation class for internal Functions.
@@ -39,7 +39,7 @@ namespace KJS {
   class KJS_EXPORT FunctionImp : public InternalFunctionImp {
     friend class ActivationImp;
   public:
-    FunctionImp(ExecState *exec, const Identifier &n = Identifier::null());
+    FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b);
     virtual ~FunctionImp();
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
@@ -58,6 +58,9 @@ namespace KJS {
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
+
+    RefPtr<FunctionBodyNode> body;
+
   protected:
     OwnPtr<Parameter> param;
 
@@ -72,17 +75,17 @@ namespace KJS {
   class KJS_EXPORT DeclaredFunctionImp : public FunctionImp {
   public:
     DeclaredFunctionImp(ExecState *exec, const Identifier &n,
-			FunctionBodyNode *b, const ScopeChain &sc);
+                        FunctionBodyNode *b, const ScopeChain &sc);
 
     bool implementsConstruct() const;
     JSObject *construct(ExecState *exec, const List &args);
 
     virtual Completion execute(ExecState *exec);
     CodeType codeType() const { return FunctionCode; }
-    RefPtr<FunctionBodyNode> body;
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
+
   private:
     virtual void processVarDecls(ExecState *exec);
   };
@@ -151,7 +154,7 @@ namespace KJS {
     enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape,
            DecodeURI, DecodeURIComponent, EncodeURI, EncodeURIComponent
 #ifndef NDEBUG
-	   , KJSPrint
+           , KJSPrint
 #endif
 };
   private:

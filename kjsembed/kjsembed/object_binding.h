@@ -93,7 +93,7 @@ namespace KJSEmbed
         public:
             template <typename T>
             ObjectBinding( KJS::ExecState *exec, const char *typeName, T *ptr )
-                : KJS::JSObject(exec->interpreter()->builtinObjectPrototype()),
+                : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
                   m_name(typeName)
             {
                 StaticBinding::publish( exec, this, ValueFactory::methods() );
@@ -193,7 +193,7 @@ namespace KJSEmbed
         if ( 0 == value )
             return KJS::Null();
 
-        KJS::JSObject *parent = exec->interpreter()->globalObject();
+        KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
         if( returnValue )
         {

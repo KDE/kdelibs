@@ -19,6 +19,15 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+ 
+#include <config.h>
+#if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+
+#include <valgrind/memcheck.h>
+#define VALGRIND_SUPPORT
+
+#endif
+
 
 #include "kjs_binding.h"
 #include "kjs_dom.h"
@@ -31,6 +40,8 @@
 
 #include <kdebug.h>
 #include <kparts/browserextension.h>
+#include <kmessagebox.h>
+
 #include <QList>
 
 #include <assert.h>
@@ -79,9 +90,9 @@ void ScriptInterpreter::forgetDOMObject( void* objectHandle )
     interpreterList->at(i)->deleteDOMObject( objectHandle );
 }
 
-void ScriptInterpreter::mark()
+void ScriptInterpreter::mark(bool isMain)
 {
-  Interpreter::mark();
+  Interpreter::mark(isMain);
 #ifdef KJS_VERBOSE
   kDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects" << endl;
 #endif
@@ -128,6 +139,35 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
       kDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
   }
   return false;
+}
+
+bool ScriptInterpreter::s_disableCPUGuard = false;
+
+void ScriptInterpreter::startCPUGuard()
+{
+  if (s_disableCPUGuard) return;
+
+  unsigned time = 5000;
+#ifdef VALGRIND_SUPPORT
+    if (RUNNING_ON_VALGRIND)
+        time *= 50;
+#endif
+
+  setTimeoutTime(time);
+  startTimeoutCheck();
+}
+
+void ScriptInterpreter::stopCPUGuard()
+{
+   if (s_disableCPUGuard) return;
+   stopTimeoutCheck();
+}
+
+
+bool ScriptInterpreter::shouldInterruptScript() const
+{
+    kDebug(6070) << "alarmhandler" << endl;
+  return KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), i18n("&Abort"), KStdGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes;
 }
 
 UString::UString(const QString &d)

@@ -28,14 +28,14 @@
 #include <stdlib.h>
 #include "global.h"
 
-#include <kjs/reference_list.h>
+#include <kjs/PropertyNameArray.h>
 
 using namespace KJSEmbed;
 
 const KJS::ClassInfo ValueBinding::info = { "ValueBinding", 0, 0, 0 };
 
 ValueBinding::ValueBinding( KJS::ExecState *exec, const QVariant &value )
-    : KJS::JSObject(exec->interpreter()->builtinObjectPrototype()),
+    : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
       m_value(value)
 {
     StaticBinding::publish( exec, this, ValueFactory::methods() );
@@ -125,12 +125,13 @@ QMap<QString, QVariant> KJSEmbed::convertArrayToMap( KJS::ExecState *exec, KJS::
 {
     QMap<QString, QVariant> returnMap;
     KJS::JSObject *obj = value->toObject(exec);
-    KJS::ReferenceList lst = obj->propList(exec,false);
-    KJS::ReferenceListIterator idx = lst.begin();
+    KJS::PropertyNameArray lst;
+    obj->getPropertyNames(exec, lst); 
+    KJS::PropertyNameArrayIterator idx = lst.begin();
     for( ; idx != lst.end(); idx++ )
     {
-        KJS::Identifier id = idx->getPropertyName(exec);
-        KJS::JSValue *val = idx->getValue(exec);
+        KJS::Identifier id = *idx;
+        KJS::JSValue *val  = obj->get(exec, id);
         returnMap[id.qstring()] = convertToVariant(exec,val);
     }
     return returnMap;
@@ -298,7 +299,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             {
                 items.append( KJS::String( ( *idx ) ) );
             }
-            returnValue = exec->interpreter()->builtinArray()->construct( exec, items );
+            returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
             break;
         }
         case QVariant::List:
@@ -309,14 +310,14 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             {
                 items.append( convertToValue( exec, item ) );
             }
-            returnValue = exec->interpreter()->builtinArray()->construct( exec, items );
+            returnValue = exec->lexicalInterpreter()->builtinArray()->construct( exec, items );
             break;
         }
         case QVariant::Map:
         {
             QMap<QString,QVariant> map = value.toMap();
             QMap<QString,QVariant>::Iterator idx = map.begin();
-            KJS::JSObject *array = exec->interpreter()->builtinArray()->construct( exec, KJS::List() );
+            KJS::JSObject *array = exec->lexicalInterpreter()->builtinArray()->construct( exec, KJS::List() );
             for ( ; idx != map.end(); ++idx )
             {
                 array->put(exec, KJS::Identifier( idx.key() ), convertToValue( exec,  idx.value() ) );
@@ -344,7 +345,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
             items.append( KJS::Number( dt.time().minute() ) );
             items.append( KJS::Number( dt.time().second() ) );
             items.append( KJS::Number( dt.time().msec() ) );
-            returnValue = exec->interpreter()->builtinDate()->construct( exec, items );
+            returnValue = exec->lexicalInterpreter()->builtinDate()->construct( exec, items );
             break;
         }
         default:

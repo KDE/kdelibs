@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003 Apple Computer, Inc
+ *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -22,44 +22,23 @@
  *
  */
 
-#ifndef _KJS_COMPLETION_H_
-#define _KJS_COMPLETION_H_
-
-#include "identifier.h"
-#include "value.h"
+#include "context.h"
+#include "ExecState.h"
+#include "internal.h"
 
 namespace KJS {
 
-  /**
-   * Completion types.
-   */
-  enum ComplType { Normal, Break, Continue, ReturnValue, Throw, Interrupted };
+Interpreter* ExecState::lexicalInterpreter() const
+{
+  if (!m_context)
+    return dynamicInterpreter();
 
-  /**
-   * Completion objects are used to convey the return status and value
-   * from functions.
-   *
-   * See FunctionImp::execute()
-   *
-   * @see FunctionImp
-   *
-   * @short Handle for a Completion type.
-   */
-  class Completion {
-  public:
-    Completion(ComplType c = Normal, JSValue *v = NULL, const Identifier &t = Identifier::null())
-        : comp(c), val(v), tar(t) { }
+  Interpreter* result = Interpreter::interpreterWithGlobalObject(m_context->scopeChain().bottom());
 
-    ComplType complType() const { return comp; }
-    JSValue *value() const { return val; }
-    Identifier target() const { return tar; }
-    bool isValueCompletion() const { return val; }
-  private:
-    ComplType comp;
-    JSValue *val;
-    Identifier tar;
-  };
+  if (!result)
+    return dynamicInterpreter();
 
+  return result;
 }
 
-#endif 
+} // namespace KJS

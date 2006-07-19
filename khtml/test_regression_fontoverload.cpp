@@ -23,6 +23,7 @@
 #include "ecma/kjs_proxy.h"
 
 #define QT_NO_FONTCONFIG 1
+#define QT_NO_FREETYPE   1
 #include <private/qfontengine_p.h>
 #include <qfontdatabase.h>
 #include <qfont.h>
@@ -544,7 +545,7 @@ QString KProtocolInfo::exec( const QString& _protocol )
 
     return prot->m_exec;
 }
-
+/*
 #include <dcopclient.h>
 
 bool DCOPClient::attach()
@@ -559,7 +560,7 @@ bool DCOPClient::isAttached() const
 
 void DCOPClient::processSocketData( int )
 {
-}
+}*/
 
 #include <qapplication.h>
 #include <qpalette.h>
@@ -581,10 +582,10 @@ KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
 #endif
 
 #include <kapplication.h>
-void KApplication::dcopFailure( const QString & )
-{
-    qDebug( "KApplication::dcopFailure" );
-}
+// void KApplication::dcopFailure( const QString & )
+// {
+//     qDebug( "KApplication::dcopFailure" );
+// }
 
 #include <kparts/historyprovider.h>
 
@@ -593,11 +594,6 @@ bool KParts::HistoryProvider::contains( const QString& t ) const
     return ( t == "http://www.kde.org/" || t == "http://www.google.com/");
 }
 
-
-bool KJSCPUGuard::confirmTerminate()
-{
-    return false;
-}
 
 #include <ksslsettings.h>
 

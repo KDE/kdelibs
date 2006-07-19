@@ -2,7 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -145,7 +145,7 @@ JSValue *FunctionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, c
 
 // ------------------------------ FunctionObjectImp ----------------------------
 
-FunctionObjectImp::FunctionObjectImp(ExecState *exec, FunctionPrototype *funcProto)
+FunctionObjectImp::FunctionObjectImp(ExecState*, FunctionPrototype* funcProto)
   : InternalFunctionImp(funcProto)
 {
   putDirect(prototypePropertyName, funcProto, DontEnum|DontDelete|ReadOnly);
@@ -164,7 +164,7 @@ bool FunctionObjectImp::implementsConstruct() const
 }
 
 // ECMA 15.3.2 The Function Constructor
-JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args, const UString &sourceURL, int lineNumber)
+JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const Identifier& functionName, const UString& sourceURL, int lineNumber)
 {
   UString p("");
   UString body;
@@ -187,10 +187,10 @@ JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args, const 
   RefPtr<ProgramNode> progNode = Parser::parse(sourceURL, lineNumber, body.data(),body.size(),&sid,&errLine,&errMsg);
 
   // notify debugger that source has been parsed
-  Debugger *dbg = exec->dynamicInterpreter()->imp()->debugger();
+  Debugger *dbg = exec->dynamicInterpreter()->debugger();
   if (dbg) {
     // send empty sourceURL to indicate constructed code
-    bool cont = dbg->sourceParsed(exec,sid,UString(),body,errLine);
+    bool cont = dbg->sourceParsed(exec, sid, UString(), body, lineNumber, errLine, errMsg);
     if (!cont) {
       dbg->imp()->abort();
       return new JSObject();
@@ -201,13 +201,13 @@ JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args, const 
   if (!progNode)
     // we can't return a Completion(Throw) here, so just set the exception
     // and return it
-    return throwError(exec, SyntaxError, errMsg, errLine, sid, &sourceURL);
+    return throwError(exec, SyntaxError, errMsg, errLine, sid, sourceURL);
 
   ScopeChain scopeChain;
-  scopeChain.push(exec->dynamicInterpreter()->globalObject());
+  scopeChain.push(exec->lexicalInterpreter()->globalObject());
   FunctionBodyNode *bodyNode = progNode.get();
 
-  FunctionImp *fimp = new DeclaredFunctionImp(exec, Identifier::null(), bodyNode, scopeChain);
+  FunctionImp* fimp = new DeclaredFunctionImp(exec, functionName, bodyNode, scopeChain);
   
   // parse parameter list. throw syntax error on illegal identifiers
   int len = p.size();
@@ -250,13 +250,13 @@ JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args, const 
 }
 
 // ECMA 15.3.2 The Function Constructor
-JSObject *FunctionObjectImp::construct(ExecState *exec, const List &args)
+JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args)
 {
-  return FunctionObjectImp::construct(exec, args, UString(), 0);
+  return construct(exec, args, "anonymous", UString(), 0);
 }
 
 // ECMA 15.3.1 The Function Constructor Called as a Function
-JSValue *FunctionObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+JSValue* FunctionObjectImp::callAsFunction(ExecState* exec, JSObject* /*thisObj*/, const List &args)
 {
-  return construct(exec,args);
+  return construct(exec, args);
 }

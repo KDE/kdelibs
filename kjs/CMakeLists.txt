@@ -31,6 +31,7 @@ else(PCRE_FOUND)
 endif(PCRE_FOUND)
 
 ########### next target ###############
+add_definitions(-DBUILDING_KDE__)
 
 set(CREATE_HASH_TABLE ${CMAKE_CURRENT_SOURCE_DIR}/create_hash_table )
 
@@ -66,6 +67,9 @@ set(kjs_LIB_SRCS
    bool_object.cpp
    number_object.cpp
    internal.cpp
+   Context.cpp
+   ExecState.cpp
+   Parser.cpp
    array_object.cpp
    math_object.cpp
    object_object.cpp
@@ -81,13 +85,12 @@ set(kjs_LIB_SRCS
    property_slot.cpp
    nodes2string.cpp
    identifier.cpp
-   reference.cpp
-   reference_list.cpp
    scope_chain.cpp
    dtoa.cpp
    fpconst.cpp
    JSLock.cpp
    JSImmediate.cpp
+   PropertyNameArray.cpp
    )
 
 kde4_automoc(${kjs_LIB_SRCS})
@@ -133,6 +136,6 @@ if(KDE4_BUILD_TESTS)
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
-install( FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h ${CMAKE_CURRENT_BINARY_DIR}/global.h identifier.h property_map.h           property_slot.h reference.h reference_list.h completion.h            scope_chain.h list.h function.h JSLock.h JSImmediate.h JSType.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
+install( FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h ${CMAKE_CURRENT_BINARY_DIR}/global.h identifier.h property_map.h           property_slot.h completion.h            scope_chain.h list.h function.h JSLock.h JSImmediate.h JSType.h PropertyNameArray.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
 
 

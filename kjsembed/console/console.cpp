@@ -24,7 +24,6 @@
 #include <QFile>
 
 #include <kjs/interpreter.h>
-#include <kjs/reference.h>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 

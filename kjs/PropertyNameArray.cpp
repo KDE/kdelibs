@@ -1,7 +1,6 @@
-// -*- c-basic-offset: 4 -*-
+// -*- mode: c++; c-basic-offset: 4 -*-
 /*
- *  This file is part of the KDE libraries
- *  Copyright (C) 2005 Apple Computer, Inc.
+ *  Copyright (C) 2006 Apple Computer, Inc
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -15,26 +14,23 @@
  *
  *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  the Free Software Foundation, Inc., 51 Franklin Steet, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  *
  */
 
-
 #include "config.h"
-#include "property_slot.h"
-#include "object.h"
+#include "PropertyNameArray.h"
 
 namespace KJS {
 
-JSValue *PropertySlot::undefinedGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot&)
+void PropertyNameArray::add(const Identifier& ident)
 {
-    return jsUndefined();
+    if (!m_set.add(ident.ustring().rep()).second)
+        return;
+    
+    m_vector.append(ident);
 }
 
-JSValue *PropertySlot::functionGetter(ExecState* exec, JSObject* originalObject, const Identifier&, const PropertySlot& slot)
-{
-    return slot.m_data.getterFunc->call(exec, originalObject, List::empty());
-}
+} // namespace KJS
 
-}

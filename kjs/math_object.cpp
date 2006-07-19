@@ -20,21 +20,14 @@
  */
 
 #include "config.h"
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
-#include <assert.h>
-
-#include "value.h"
-#include "object.h"
-#include "types.h"
-#include "interpreter.h"
-#include "operations.h"
 #include "math_object.h"
-
 #include "math_object.lut.h"
 
-#if (defined(_WIN32) || defined(_WIN64)) && !defined(__GNUC__)
+#include "operations.h"
+#include <math.h>
+#include <time.h>
+
+#if PLATFORM(WIN_OS)
 
 #include <float.h>
 static int signbit(double d)
@@ -149,7 +142,7 @@ JSValue *MathObjectImp::getValueProperty(ExecState *, int token) const
   return jsNumber(d);
 }
 
-// ------------------------------ MathFuncImp --------------------------------
+// ------------------------------ MathObjectImp --------------------------------
 
 static bool randomSeeded = false;
 
@@ -160,7 +153,7 @@ MathFuncImp::MathFuncImp(ExecState* exec, int i, int l, const Identifier& name)
   putDirect(lengthPropertyName, l, DontDelete|ReadOnly|DontEnum);
 }
 
-JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject */*thisObj*/, const List &args)
 {
   double arg = args[0]->toNumber(exec);
   double arg2 = args[1]->toNumber(exec);
@@ -231,36 +224,20 @@ JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, co
     // ECMA 15.8.2.1.13 (::pow takes care of most of the critera)
     if (isNaN(arg2))
       result = NaN;
-#ifndef APPLE_CHANGES
-    else if (arg2 == 0)
-      result = 1;
-#endif
     else if (isNaN(arg) && arg2 != 0)
       result = NaN;
-#ifndef APPLE_CHANGES
-    else if (::fabs(arg) > 1 && KJS::isPosInf(arg2))
-      result = Inf;
-    else if (::fabs(arg) > 1 && KJS::isNegInf(arg2))
-      result = +0;
-#endif
     else if (::fabs(arg) == 1 && KJS::isInf(arg2))
       result = NaN;
-#ifndef APPLE_CHANGES
-    else if (::fabs(arg) < 1 && KJS::isPosInf(arg2))
-      result = +0;
-    else if (::fabs(arg) < 1 && KJS::isNegInf(arg2))
-      result = Inf;
-#endif
     else
       result = ::pow(arg, arg2);
     break;
   case MathObjectImp::Random:
-    if (!randomSeeded) {
-        srand(time(0));
-        randomSeeded = true;
-    }
-    result = (double)rand() / RAND_MAX;
-    break;
+      if (!randomSeeded) {
+          srand(time(0));
+          randomSeeded = true;
+      }
+      result = (double)rand() / RAND_MAX;
+      break;
   case MathObjectImp::Round:
     if (signbit(arg) && arg >= -0.5)
         result = -0.0;

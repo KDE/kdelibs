@@ -24,7 +24,7 @@
 
 #include "object.h"
 #include "protect.h"
-#include "reference_list.h"
+#include "PropertyNameArray.h"
 #include <algorithm>
 #include <kxmlcore/FastMalloc.h>
 #include <kxmlcore/Vector.h>
@@ -36,8 +36,8 @@ using std::max;
 #define DUMP_STATISTICS 0
 #define USE_SINGLE_ENTRY 1
 
-// At the time I added USE_SINGLE_ENTRY, the optimization still gave a 1.5%
-// performance boost to the iBench JavaScript benchmark so I didn't remove it.
+// 2/28/2006 ggaren: super accurate JS iBench says that USE_SINGLE_ENTRY is a
+// 3.2% performance boost.
 
 // FIXME: _singleEntry.index is unused.
 
@@ -74,7 +74,7 @@ PropertyMapStatisticsExitLogger::~PropertyMapStatisticsExitLogger()
 #endif
 
 // lastIndexUsed is an ever-increasing index used to identify the order items
-// were inserted into the property map. It's vital that addEnumerablesToReferenceList
+// were inserted into the property map. It's vital that getEnumerablePropertyNames
 // return the properties in the order they were added for compatibility with other
 // browsers' JavaScript implementations.
 struct PropertyMapHashTable
@@ -99,6 +99,15 @@ SavedProperties::~SavedProperties() { }
 
 // Algorithm concepts from Algorithms in C++, Sedgewick.
 
+// This is a method rather than a variable to work around <rdar://problem/4462053>
+static inline UString::Rep* deletedSentinel() { return reinterpret_cast<UString::Rep*>(0x1); }
+
+// Returns true if the key is not null or the deleted sentinel, false otherwise
+static inline bool isValid(UString::Rep* key)
+{
+    return reinterpret_cast<uintptr_t>(key) & ~0x1;
+}
+
 PropertyMap::~PropertyMap()
 {
     if (!_table) {
@@ -114,9 +123,10 @@ PropertyMap::~PropertyMap()
     Entry *entries = _table->entries;
     for (int i = 0; i < minimumKeysToProcess; i++) {
         UString::Rep *key = entries[i].key;
-        if (key)
-            key->deref();
-        else
+        if (key) {
+            if (key != deletedSentinel())
+                key->deref();
+        } else
             ++minimumKeysToProcess;
     }
     fastFree(_table);
@@ -139,7 +149,7 @@ void PropertyMap::clear()
     Entry *entries = _table->entries;
     for (int i = 0; i < size; i++) {
         UString::Rep *key = entries[i].key;
-        if (key) {
+        if (isValid(key)) {
             key->deref();
             entries[i].key = 0;
             entries[i].value = 0;
@@ -157,7 +167,7 @@ bool PropertyMap::isEmpty() const
         return !_table->keyCount;
 }
 
-JSValue *PropertyMap::get(const Identifier &name, int &attributes) const
+JSValue *PropertyMap::get(const Identifier &name, unsigned &attributes) const
 {
     assert(!name.isNull());
     
@@ -350,7 +360,7 @@ void PropertyMap::put(const Identifier &name, JSValue *value, int attributes, bo
             return;
         }
         // If we find the deleted-element sentinel, remember it for use later.
-        if (key == &UString::Rep::null && !foundDeletedElement) {
+        if (key == deletedSentinel() && !foundDeletedElement) {
             foundDeletedElement = true;
             deletedElementIndex = i;
         }
@@ -365,7 +375,6 @@ void PropertyMap::put(const Identifier &name, JSValue *value, int attributes, bo
     // Use either the deleted element or the 0 at the end of the chain.
     if (foundDeletedElement) {
         i = deletedElementIndex;
-        entries[i].key->deref();
         --_table->sentinelCount;
     }
 
@@ -394,7 +403,7 @@ void PropertyMap::insert(UString::Rep *key, JSValue *value, int attributes, int 
     numCollisions += entries[i].key && entries[i].key != key;
 #endif
     while (entries[i].key) {
-        assert(entries[i].key != &UString::Rep::null);
+        assert(entries[i].key != deletedSentinel());
         if (k == 0)
             k = 1 | (h % sizeMask);
         i = (i + k) & sizeMask;
@@ -452,15 +461,10 @@ void PropertyMap::rehash(int newTableSize)
     for (int i = 0; i != oldTableSize; ++i) {
         Entry &entry = oldTable->entries[i];
         UString::Rep *key = entry.key;
-        if (key) {
-            // Don't copy deleted-element sentinels.
-            if (key == &UString::Rep::null)
-                key->deref();
-            else {
-                int index = entry.index;
-                lastIndexUsed = max(index, lastIndexUsed);
-                insert(key, entry.value, entry.attributes, index);
-            }
+        if (isValid(key)) {
+            int index = entry.index;
+            lastIndexUsed = max(index, lastIndexUsed);
+            insert(key, entry.value, entry.attributes, index);
         }
     }
     _table->lastIndexUsed = lastIndexUsed;
@@ -516,12 +520,10 @@ void PropertyMap::remove(const Identifier &name)
     if (!key)
         return;
     
-    // Replace this one element with the deleted sentinel,
-    // &UString::Rep::null; also set value to 0 and attributes to DontEnum
+    // Replace this one element with the deleted sentinel. Also set value to 0 and attributes to DontEnum
     // to help callers that iterate all keys not have to check for the sentinel.
     key->deref();
-    key = &UString::Rep::null;
-    key->ref();
+    key = deletedSentinel();
     entries[i].key = key;
     entries[i].value = 0;
     entries[i].attributes = DontEnum;
@@ -576,7 +578,7 @@ bool PropertyMap::containsGettersOrSetters() const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
-        return ((_singleEntry.attributes & GetterSetter) != 0);
+        return _singleEntry.attributes & GetterSetter;
 #endif
         return false;
     }
@@ -589,13 +591,13 @@ bool PropertyMap::containsGettersOrSetters() const
     return false;
 }
 
-void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, JSObject *base) const
+void PropertyMap::getEnumerablePropertyNames(PropertyNameArray& propertyNames) const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
         if (key && !(_singleEntry.attributes & DontEnum))
-            list.append(Reference(base, Identifier(key)));
+            propertyNames.add(Identifier(key));
 #endif
         return;
     }
@@ -616,12 +618,12 @@ void PropertyMap::addEnumerablesToReferenceList(ReferenceList &list, JSObject *b
     // Sort the entries by index.
     qsort(sortedEnumerables.data(), p - sortedEnumerables.data(), sizeof(Entry*), comparePropertyMapEntryIndices);
 
-    // Put the keys of the sorted entries into the reference list.
+    // Put the keys of the sorted entries into the list.
     for (Entry** q = sortedEnumerables.data(); q != p; ++q)
-        list.append(Reference(base, Identifier((*q)->key)));
+        propertyNames.add(Identifier(q[0]->key));
 }
 
-void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, JSObject *base) const
+void PropertyMap::getSparseArrayPropertyNames(PropertyNameArray& propertyNames) const
 {
     if (!_table) {
 #if USE_SINGLE_ENTRY
@@ -631,7 +633,7 @@ void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, J
             bool fitsInUInt32;
             k.toUInt32(&fitsInUInt32);
             if (fitsInUInt32)
-                list.append(Reference(base, Identifier(key)));
+                propertyNames.add(Identifier(key));
         }
 #endif
         return;
@@ -641,12 +643,12 @@ void PropertyMap::addSparseArrayPropertiesToReferenceList(ReferenceList &list, J
     Entry *entries = _table->entries;
     for (int i = 0; i != size; ++i) {
         UString::Rep *key = entries[i].key;
-        if (key && key != &UString::Rep::null) {
+        if (isValid(key)) {
             UString k(key);
             bool fitsInUInt32;
             k.toUInt32(&fitsInUInt32);
             if (fitsInUInt32)
-                list.append(Reference(base, Identifier(key)));
+                propertyNames.add(Identifier(key));
         }
     }
 }
@@ -664,7 +666,7 @@ void PropertyMap::save(SavedProperties &p) const
         int size = _table->size;
         Entry *entries = _table->entries;
         for (int i = 0; i != size; ++i)
-            if (entries[i].key && !(entries[i].attributes & (ReadOnly | Function)))
+            if (isValid(entries[i].key) && !(entries[i].attributes & (ReadOnly | Function)))
                 ++count;
     }
 
@@ -700,7 +702,7 @@ void PropertyMap::save(SavedProperties &p) const
         Entry* entries = _table->entries;
         for (int i = 0; i != size; ++i) {
             Entry *e = &entries[i];
-            if (e->key && !(e->attributes & (ReadOnly | Function)))
+            if (isValid(e->key) && !(e->attributes & (ReadOnly | Function)))
                 *p++ = e;
         }
         assert(p - sortedEntries.data() == count);
@@ -737,7 +739,7 @@ void PropertyMap::checkConsistency()
         UString::Rep *rep = _table->entries[j].key;
         if (!rep)
             continue;
-        if (rep == &UString::Rep::null) {
+        if (rep == deletedSentinel()) {
             ++sentinelCount;
             continue;
         }

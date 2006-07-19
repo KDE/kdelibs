@@ -21,6 +21,8 @@
 
 #include "config.h"
 #include "scope_chain.h"
+#include "PropertyNameArray.h"
+#include "object.h"
 
 namespace KJS {
 
@@ -33,5 +35,28 @@ void ScopeChain::push(const ScopeChain &c)
         tail = &newNode->next;
     }
 }
+
+#ifndef NDEBUG
+
+void ScopeChain::print()
+{
+    ScopeChainIterator scopeEnd = end();
+    for (ScopeChainIterator scopeIter = begin(); scopeIter != scopeEnd; ++scopeIter) {
+        JSObject* o = *scopeIter;
+        PropertyNameArray propertyNames;
+        // FIXME: should pass ExecState here!
+        o->getPropertyNames(0, propertyNames);
+        PropertyNameArrayIterator propEnd = propertyNames.end();
+
+        fprintf(stderr, "----- [scope %p] -----\n", o);
+        for (PropertyNameArrayIterator propIter = propertyNames.begin(); propIter != propEnd; propIter++) {
+            Identifier name = *propIter;
+            fprintf(stderr, "%s, ", name.ascii());
+        }
+        fprintf(stderr, "\n");
+    }
+}
+
+#endif
 
 } // namespace KJS

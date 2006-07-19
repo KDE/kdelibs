@@ -24,24 +24,11 @@
 #include "lexer.h"
 
 #include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
-#include "value.h"
-#include "object.h"
-#include "types.h"
 #include "interpreter.h"
 #include "nodes.h"
-#include "identifier.h"
-#include "lookup.h"
-#include "internal.h"
-#ifdef APPLE_CHANGES
-#include <unicode/uchar.h>
-#else
-#include <QChar>
-#endif
+#include <kxmlcore/unicode/Unicode.h>
 
 static bool isDecimalDigit(unsigned short c);
 
@@ -54,6 +41,7 @@ static Lexer *currLexer = 0;
 #include "grammar.h"
 #endif
 
+#include "lookup.h"
 #include "lexer.lut.h"
 
 extern YYLTYPE kjsyylloc; // global bison variable holding token info
@@ -137,15 +125,11 @@ void Lexer::shift(unsigned int p)
     next2 = next3;
     do {
       if (pos >= length) {
-	next3 = 0;
-	break;
+        next3 = -1;
+        break;
       }
       next3 = code[pos++].uc;
-#ifdef APPLE_CHANGES
-    } while (u_charType(next3) == U_FORMAT_CHAR);
-#else
-    } while (QChar(next3).category() == QChar::Other_Format);
-#endif
+    } while (KXMLCore::Unicode::isFormatChar(next3));
   }
 }
 
@@ -204,7 +188,7 @@ int Lexer::lex()
       } else if (current == '/' && next1 == '*') {
         shift(1);
         state = InMultiLineComment;
-      } else if (current == 0) {
+      } else if (current == -1) {
         if (!terminator && !delimited) {
           // automatic semicolon insertion if program incomplete
           token = ';';
@@ -261,7 +245,7 @@ int Lexer::lex()
       if (current == stringType) {
         shift(1);
         setDone(String);
-      } else if (current == 0 || isLineTerminator()) {
+      } else if (isLineTerminator() || current == -1) {
         setDone(Bad);
       } else if (current == '\\') {
         state = InEscapeSequence;
@@ -336,12 +320,12 @@ int Lexer::lex()
           setDone(Other);
         } else
           state = Start;
-      } else if (current == 0) {
+      } else if (current == -1) {
         setDone(Eof);
       }
       break;
     case InMultiLineComment:
-      if (current == 0) {
+      if (current == -1) {
         setDone(Bad);
       } else if (isLineTerminator()) {
         nextLine();
@@ -578,11 +562,7 @@ int Lexer::lex()
 
 bool Lexer::isWhiteSpace() const
 {
-#ifdef APPLE_CHANGES
-    return (current == '\t' || current == 0x0b || current == 0x0c || u_charType(current) == U_SPACE_SEPARATOR);
-#else
-    return (current == '\t' || current == 0x0b || current == 0x0c || QChar(current).category() == QChar::Separator_Space);
-#endif
+  return current == '\t' || current == 0x0b || current == 0x0c || KXMLCore::Unicode::isSeparatorSpace(current);
 }
 
 bool Lexer::isLineTerminator()
@@ -598,40 +578,26 @@ bool Lexer::isLineTerminator()
 
 bool Lexer::isIdentStart(unsigned short c)
 {
-#ifdef APPLE_CHANGES
-  return (U_GET_GC_MASK(c) & (U_GC_L_MASK | U_GC_NL_MASK)) || c == '$' || c == '_';
-#else
-  if (c == '$' || c == '_') return true;
-  switch (QChar(c).category()) {
-    case QChar::Letter_Uppercase:
-    case QChar::Letter_Lowercase:
-    case QChar::Letter_Titlecase:
-    case QChar::Letter_Modifier:
-    case QChar::Letter_Other:
-      return true;
-    default:
-      return false;
-  }
-#endif
+  return (KXMLCore::Unicode::category(c) & (KXMLCore::Unicode::Letter_Uppercase
+        | KXMLCore::Unicode::Letter_Lowercase
+        | KXMLCore::Unicode::Letter_Titlecase
+        | KXMLCore::Unicode::Letter_Modifier
+        | KXMLCore::Unicode::Letter_Other))
+    || c == '$' || c == '_';
 }
 
 bool Lexer::isIdentPart(unsigned short c)
 {
-#ifdef APPLE_CHANGES
-   return (U_GET_GC_MASK(c) & (U_GC_L_MASK | U_GC_NL_MASK | U_GC_MN_MASK | U_GC_MC_MASK | U_GC_ND_MASK | U_GC_PC_MASK)) || c == '$' || c == '_';
-#else
-  if (isIdentStart(c)) return true;
-  
-  switch (QChar(c).category()) {
-    case QChar::Mark_NonSpacing:
-    case QChar::Mark_SpacingCombining:
-    case QChar::Number_DecimalDigit:
-    case QChar::Punctuation_Connector:
-        return true;
-    default:
-        return false;
-  }
-#endif
+  return (KXMLCore::Unicode::category(c) & (KXMLCore::Unicode::Letter_Uppercase
+        | KXMLCore::Unicode::Letter_Lowercase
+        | KXMLCore::Unicode::Letter_Titlecase
+        | KXMLCore::Unicode::Letter_Modifier
+        | KXMLCore::Unicode::Letter_Other
+        | KXMLCore::Unicode::Mark_NonSpacing
+        | KXMLCore::Unicode::Mark_SpacingCombining
+        | KXMLCore::Unicode::Number_DecimalDigit
+        | KXMLCore::Unicode::Punctuation_Connector))
+    || c == '$' || c == '_';
 }
 
 static bool isDecimalDigit(unsigned short c)
@@ -836,6 +802,13 @@ void Lexer::record8(unsigned short c)
   buffer8[pos8++] = (char) c;
 }
 
+void Lexer::record16(int c)
+{
+  ASSERT(c >= 0);
+  ASSERT(c <= USHRT_MAX);
+  record16(UChar(static_cast<unsigned short>(c)));
+}
+
 void Lexer::record16(KJS::UChar c)
 {
   // enlarge buffer if full
@@ -857,7 +830,7 @@ bool Lexer::scanRegExp()
   bool inBrackets = false;
 
   while (1) {
-    if (isLineTerminator() || current == 0)
+    if (isLineTerminator() || current == -1)
       return false;
     else if (current != '/' || lastWasEscape == true || inBrackets == true)
     {
@@ -913,7 +886,8 @@ void Lexer::doneParsing()
 const int initialCapacity = 64;
 const int growthFactor = 2;
 
-Identifier *Lexer::makeIdentifier(KJS::UChar *buffer, unsigned int pos)
+// FIXME: this completely ignores its parameters, instead using buffer16 and pos16 - wtf?
+Identifier *Lexer::makeIdentifier(KJS::UChar*, unsigned int)
 {
   if (numIdentifiers == identifiersCapacity) {
     identifiersCapacity = (identifiersCapacity == 0) ? initialCapacity : identifiersCapacity *growthFactor;
@@ -925,7 +899,8 @@ Identifier *Lexer::makeIdentifier(KJS::UChar *buffer, unsigned int pos)
   return identifier;
 }
  
-UString *Lexer::makeUString(KJS::UChar *buffer, unsigned int pos)
+// FIXME: this completely ignores its parameters, instead using buffer16 and pos16 - wtf?
+UString *Lexer::makeUString(KJS::UChar*, unsigned int)
 {
   if (numStrings == stringsCapacity) {
     stringsCapacity = (stringsCapacity == 0) ? initialCapacity : stringsCapacity *growthFactor;

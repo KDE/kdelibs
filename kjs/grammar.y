@@ -3,6 +3,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -37,7 +38,8 @@
 
 /* default values for bison */
 #define YYDEBUG 0
-#ifndef APPLE_CHANGES /* work around the fact that YYERROR_VERBOSE causes a compiler warning in bison code */
+#if !PLATFORM(DARWIN)
+    // avoid triggering warnings in older bison
 #define YYERROR_VERBOSE
 #endif
 
@@ -46,7 +48,7 @@ int kjsyyerror(const char *);
 static bool allowAutomaticSemicolon();
 
 #define AUTO_SEMICOLON do { if (!allowAutomaticSemicolon()) YYABORT; } while (0)
-#define DBG(l, s, e) (l)->setLoc((s).first_line, (e).last_line, Parser::sid)
+#define DBG(l, s, e) (l)->setLoc((s).first_line, (e).last_line)
 
 using namespace KJS;
 
@@ -74,7 +76,6 @@ static Node *makeDeleteNode(Node *expr);
   ProgramNode         *prog;
   AssignExprNode      *init;
   SourceElementsNode  *srcs;
-  StatListNode        *slist;
   ArgumentsNode       *args;
   ArgumentListNode    *alist;
   VarDeclNode         *decl;
@@ -93,7 +94,6 @@ static Node *makeDeleteNode(Node *expr);
 
 /* literals */
 %token NULLTOKEN TRUETOKEN FALSETOKEN
-%token STRING NUMBER
 
 /* keywords */
 %token BREAK CASE DEFAULT FOR NEW VAR CONST CONTINUE
@@ -101,6 +101,7 @@ static Node *makeDeleteNode(Node *expr);
 %token IF THIS DO WHILE IN INSTANCEOF TYPEOF
 %token SWITCH WITH RESERVED
 %token THROW TRY CATCH FINALLY
+%token DEBUGGER
 
 /* give an if without an else higher precedence than an else to resolve the ambiguity */
 %nonassoc IF_WITHOUT_ELSE
@@ -161,9 +162,9 @@ static Node *makeDeleteNode(Node *expr);
 %type <stat>  BreakStatement ReturnStatement WithStatement
 %type <stat>  SwitchStatement LabelledStatement
 %type <stat>  ThrowStatement TryStatement
+%type <stat>  DebuggerStatement
 %type <stat>  SourceElement
 
-%type <slist> StatementList
 %type <init>  Initializer InitializerNoIn
 %type <func>  FunctionDeclaration
 %type <funcExpr>  FunctionExpr
@@ -625,16 +626,12 @@ Statement:
   | LabelledStatement
   | ThrowStatement
   | TryStatement
+  | DebuggerStatement
 ;
 
 Block:
     '{' '}'                             { $$ = new BlockNode(0); DBG($$, @2, @2); }
   | '{' SourceElements '}'              { $$ = new BlockNode($2); DBG($$, @3, @3); }
-;
-
-StatementList:
-    Statement                           { $$ = new StatListNode($1); }
-  | StatementList Statement             { $$ = new StatListNode($1, $2); }
 ;
 
 VariableStatement:
@@ -782,12 +779,12 @@ CaseClauses:
 
 CaseClause:
     CASE Expr ':'                       { $$ = new CaseClauseNode($2); }
-  | CASE Expr ':' StatementList         { $$ = new CaseClauseNode($2, $4); }
+  | CASE Expr ':' SourceElements        { $$ = new CaseClauseNode($2, $4); }
 ;
 
 DefaultClause:
     DEFAULT ':'                         { $$ = new CaseClauseNode(0); }
-  | DEFAULT ':' StatementList           { $$ = new CaseClauseNode(0, $3); }
+  | DEFAULT ':' SourceElements          { $$ = new CaseClauseNode(0, $3); }
 ;
 
 LabelledStatement:
@@ -804,6 +801,11 @@ TryStatement:
   | TRY Block CATCH '(' IDENT ')' Block { $$ = new TryNode($2, *$5, $7, 0); DBG($$, @1, @2); }
   | TRY Block CATCH '(' IDENT ')' Block FINALLY Block
                                         { $$ = new TryNode($2, *$5, $7, $9); DBG($$, @1, @2); }
+;
+
+DebuggerStatement:
+    DEBUGGER ';'                           { $$ = new EmptyStatementNode(); DBG($$, @1, @2); }
+  | DEBUGGER error                         { $$ = new EmptyStatementNode(); DBG($$, @1, @1); AUTO_SEMICOLON; }
 ;
 
 FunctionDeclaration:

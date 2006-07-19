@@ -25,9 +25,7 @@
 #include <string.h>
 
 #include "lookup.h"
-
-#ifdef HAVE_CONFIG_H
-#endif
+#include <kxmlcore/Assertions.h>
 
 using namespace KJS;
 
@@ -49,6 +47,8 @@ static inline const HashEntry* findEntry(const struct HashTable *table, unsigned
     return 0;
   }
 #endif
+  ASSERT(table->hashSize != 0);
+    
   hash %= table->hashSize;
 
   const HashEntry *e = &table->entries[hash];

@@ -28,10 +28,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#ifdef HAVE_STRING_H
+#if HAVE(STRING_H)
 #include <string.h>
 #endif
-#ifdef HAVE_STRINGS_H
+#if HAVE(STRINGS_H)
 #include <strings.h>
 #endif
 
@@ -43,12 +43,6 @@
 #include <kxmlcore/Vector.h>
 
 using std::max;
-
-#ifdef APPLE_CHANGES
-#include <unicode/uchar.h>
-#else
-#include <QChar>
-#endif
 
 namespace KJS {
 
@@ -62,7 +56,7 @@ CString::CString(const char *c)
   memcpy(data, c, length + 1);
 }
 
-CString::CString(const char *c, int len)
+CString::CString(const char *c, size_t len)
 {
   length = len;
   data = new char[len+1];
@@ -73,13 +67,12 @@ CString::CString(const char *c, int len)
 CString::CString(const CString &b)
 {
   length = b.length;
-  if (length > 0 && b.data) {
+  if (b.data) {
     data = new char[length+1];
     memcpy(data, b.data, length + 1);
   }
-  else {
+  else
     data = 0;
-  }
 }
 
 CString::~CString()
@@ -123,51 +116,29 @@ CString &CString::operator=(const CString &str)
   if (data)
     delete [] data;
   length = str.length;
-  if (length > 0 && str.data) {
+  if (str.data) {
     data = new char[length + 1];
     memcpy(data, str.data, length + 1);
   }
-  else {
+  else
     data = 0;
-  }
 
   return *this;
 }
 
 bool operator==(const CString& c1, const CString& c2)
 {
-  int len = c1.size();
+  size_t len = c1.size();
   return len == c2.size() && (len == 0 || memcmp(c1.c_str(), c2.c_str(), len) == 0);
 }
 
 // Hack here to avoid a global with a constructor; point to an unsigned short instead of a UChar.
 static unsigned short almostUChar;
-static UChar *const nonNullUCharPointer = reinterpret_cast<UChar *>(&almostUChar);
 UString::Rep UString::Rep::null = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-UString::Rep UString::Rep::empty = { 0, 0, 1, 0, 0, 0, nonNullUCharPointer, 0, 0, 0, 0 };
+UString::Rep UString::Rep::empty = { 0, 0, 1, 0, 0, 0, reinterpret_cast<UChar*>(&almostUChar), 0, 0, 0, 0 };
 const int normalStatBufferSize = 4096;
 static char *statBuffer = 0;
 static int statBufferSize = 0;
-
-UChar UChar::toLower() const
-{
-#ifdef APPLE_CHANGES
-  return static_cast<unsigned short>(u_tolower(uc));
-#else
-  // This is broken and needs to go away.
-  return (unsigned short)QChar(uc).toLower().unicode();
-#endif
-}
-
-UChar UChar::toUpper() const
-{
-#ifdef APPLE_CHANGES
-  return static_cast<unsigned short>(u_toupper(uc));
-#else
-  // This is broken and needs to go away.
-  return (unsigned short)QChar(uc).toUpper().unicode();
-#endif
-}
 
 UCharReference& UCharReference::operator=(UChar c)
 {
@@ -577,6 +548,10 @@ UString UString::from(long l)
 
 UString UString::from(double d)
 {
+  // avoid ever printing -NaN, in JS conceptually there is only one NaN value
+  if (isNaN(d))
+    return "NaN";
+
   char buf[80];
   int decimalPoint;
   int sign;
@@ -1190,13 +1165,14 @@ int compare(const UString& s1, const UString& s2)
     c2++;
     l++;
   }
+
   if (l < lmin)
     return (c1->uc > c2->uc) ? 1 : -1;
 
-  if (l1 == l2) {
+  if (l1 == l2)
     return 0;
-  }
-  return (l1 < l2) ? 1 : -1;
+
+  return (l1 > l2) ? 1 : -1;
 }
 
 inline int inlineUTF8SequenceLengthNonASCII(char b0)

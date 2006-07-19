@@ -28,7 +28,6 @@
 #include "xml/dom_xmlimpl.h"
 
 #include "ecma/kjs_binding.h"
-#include <kjs/reference_list.h>
 
 namespace KJS {
 
@@ -82,7 +81,7 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
     virtual ValueImp* callAsFunction(ExecState *exec, ObjectImp* thisObj, const List&args);
     virtual bool implementsCall() const { return true; }
-    virtual ReferenceList propList(ExecState *exec, bool recursive);
+    virtual void getPropertyNames(ExecState* exec, PropertyNameArray& names);
 
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }

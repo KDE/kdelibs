@@ -23,28 +23,21 @@
 #ifndef _KJS_OPERATIONS_H_
 #define _KJS_OPERATIONS_H_
 
-#ifdef __APPLE__
+#include "global.h"
 #include <math.h>
-#endif
 
 namespace KJS {
 
   class ExecState;
   class JSValue;
 
-#ifdef __APPLE__
+#if PLATFORM(DARWIN)
   inline bool isNaN(double d) { return isnan(d); }
   inline bool isInf(double d) { return isinf(d); }
   inline bool isPosInf(double d) { return isinf(d) && d > 0; }
   inline bool isNegInf(double d) { return isinf(d) && d < 0; }
 #else
-  /**
-   * @return True if d is not a number (platform support required).
-   */
   bool isNaN(double d);
-  /**
-   * @return True if d is infinite (platform support required).
-   */
   bool isInf(double d);
   bool isPosInf(double d);
   bool isNegInf(double d);

@@ -24,35 +24,14 @@
 #include "config.h"
 #include "value.h"
 
-#include "object.h"
-#include "types.h"
-#include "interpreter.h"
-
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "internal.h"
-#include "collector.h"
-#include "operations.h"
 #include "error_object.h"
 #include "nodes.h"
+#include "operations.h"
+#include <stdio.h>
+#include <string.h>
+#include <kxmlcore/MathExtras.h>
 
 namespace KJS {
-
-// MSVC can't export a class which is not fully implemented, so do this here
-#ifdef _MSC_VER
-JSValue::JSValue(const JSValue&)
-{
-  fprintf(stderr,"JSValue::JSValue(const JSValue&) was called");
-}
-
-JSValue& JSValue::operator=(const JSValue&)
-{
-  fprintf(stderr,"JSValue& JSValue::operator=(const JSValue&) was called");
-  return *this;
-}
-#endif
 
 static const double D16 = 65536.0;
 static const double D32 = 4294967296.0;
@@ -62,7 +41,7 @@ void *JSCell::operator new(size_t size)
     return Collector::allocate(size);
 }
 
-bool JSCell::getUInt32(uint32_t&) const
+bool JSCell::getUInt32(unsigned&) const
 {
     return false;
 }
@@ -76,15 +55,19 @@ double JSValue::toInteger(ExecState *exec) const
     return roundValue(exec, const_cast<JSValue*>(this));
 }
 
-int32_t JSValue::toInt32(ExecState *exec) const
+inline int32_t JSValue::toInt32Inline(ExecState* exec, bool& ok) const
 {
+    ok = true;
+
     uint32_t i;
     if (getUInt32(i))
         return i;
 
     double d = roundValue(exec, const_cast<JSValue*>(this));
-    if (isNaN(d) || isInf(d))
+    if (isNaN(d) || isInf(d)) {
+        ok = false;
         return 0;
+    }
     double d32 = fmod(d, D32);
 
     if (d32 >= D32 / 2)
@@ -93,6 +76,17 @@ int32_t JSValue::toInt32(ExecState *exec) const
         d32 += D32;
 
     return static_cast<int32_t>(d32);
+}
+
+int32_t JSValue::toInt32(ExecState* exec) const
+{
+    bool ok;
+    return toInt32(exec, ok);
+}
+
+int32_t JSValue::toInt32(ExecState* exec, bool& ok) const
+{
+    return toInt32Inline(exec, ok);
 }
 
 uint32_t JSValue::toUInt32(ExecState *exec) const

@@ -20,24 +20,16 @@
  */
 
 #include "config.h"
-#include "value.h"
-#include "object.h"
-#include "types.h"
-#include "interpreter.h"
-#include "operations.h"
 #include "number_object.h"
-#include "error_object.h"
-#include "dtoa.h"
-
-#include <kxmlcore/Vector.h>
-
 #include "number_object.lut.h"
 
-#include <assert.h>
-#include <math.h>
+#include "dtoa.h"
+#include "error_object.h"
+#include "operations.h"
+#include <kxmlcore/MathExtras.h>
+#include <kxmlcore/Vector.h>
 
 using namespace KJS;
-
 
 // ------------------------------ NumberInstance ----------------------------
 
@@ -114,6 +106,38 @@ static UString char_sequence(char c, int count)
     buf[count] = '\0';
 
     return UString(buf);
+}
+
+static double intPow10(int e)
+{
+  // This function uses the "exponentiation by squaring" algorithm and
+  // long double to quickly and precisely calculate integer powers of 10.0.
+
+  // This is a handy workaround for <rdar://problem/4494756>
+
+  if (e == 0)
+    return 1.0;
+
+  bool negative = e < 0;
+  unsigned exp = negative ? -e : e;
+
+  long double result = 10.0;
+  bool foundOne = false;
+  for (int bit = 31; bit >= 0; bit--) {
+    if (!foundOne) {
+      if ((exp >> bit) & 1)
+        foundOne = true;
+    } else {
+      result = result * result;
+      if ((exp >> bit) & 1)
+        result = result * 10.0;
+    }
+  }
+
+  if (negative)
+    return 1.0 / result;
+  else
+    return result;
 }
 
 // ECMA 15.7.4.2 - 15.7.4.7
@@ -238,7 +262,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
       if (!fractionDigits->isUndefined()) {
           double logx = floor(log10(x));
           x /= pow(10.0, logx);
-          double fx = floor(x * pow(10.0, f)) / pow(10.0,f);
+          double fx = floor(x * pow(10.0, f)) / pow(10.0, f);
           double cx = ceil(x * pow(10.0, f)) / pow(10.0, f);
           
           if (fabs(fx-x) < fabs(cx-x))
@@ -334,16 +358,18 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
       
       if (x != 0) {
           e = static_cast<int>(log10(x));
-          double n = floor(x / pow(10.0, e - p + 1));
-          if (n < pow(10.0, p - 1)) {
+          double tens = intPow10(e - p + 1);
+          double n = floor(x / tens);
+          if (n < intPow10(p - 1)) {
               e = e - 1;
-              n = floor(x / pow(10.0, e - p + 1));
+              tens = intPow10(e - p + 1);
+              n = floor(x / tens);
           }
           
-          if (fabs((n + 1) * pow(10.0, e - p + 1) - x) < fabs(n * pow(10.0, e - p + 1) - x))
-              n++;
-          assert(pow(10.0, p - 1) <= n);
-          assert(n < pow(10.0, p));
+          if (fabs((n + 1.0) * tens - x) <= fabs(n * tens - x))
+            ++n;
+          assert(intPow10(p - 1) <= n);
+          assert(n < intPow10(p));
           
           m = integer_part_noexp(n);
           if (e < -6 || e >= p) {
@@ -391,9 +417,7 @@ const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info,
   MIN_VALUE             NumberObjectImp::MinValue       DontEnum|DontDelete|ReadOnly
 @end
 */
-NumberObjectImp::NumberObjectImp(ExecState *exec,
-                                 FunctionPrototype *funcProto,
-                                 NumberPrototype *numberProto)
+NumberObjectImp::NumberObjectImp(ExecState*, FunctionPrototype* funcProto, NumberPrototype* numberProto)
   : InternalFunctionImp(funcProto)
 {
   // Number.Prototype
@@ -403,7 +427,7 @@ NumberObjectImp::NumberObjectImp(ExecState *exec,
   putDirect(lengthPropertyName, jsNumber(1), ReadOnly|DontDelete|DontEnum);
 }
 
-bool NumberObjectImp::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+bool NumberObjectImp::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
   return getStaticValueSlot<NumberObjectImp, InternalFunctionImp>(exec, &numberTable, this, propertyName, slot);
 }

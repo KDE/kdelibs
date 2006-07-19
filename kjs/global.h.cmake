@@ -23,6 +23,8 @@
 #ifndef KJS_GLOBAL_H
 #define KJS_GLOBAL_H
 
+#include <kxmlcore/Platform.h>
+
 #cmakedefine HAVE_PTHREAD_ATTR_GET_NP 1
 #cmakedefine HAVE_PTHREAD_GETATTR_NP 1
 #cmakedefine HAVE_PCREPOSIX 1

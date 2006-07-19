@@ -94,10 +94,11 @@ public:
     {
         m_interpreter = new KJS::Interpreter( );
         m_interpreter->initGlobalObject();
+	m_interpreter->ref();
     }
     ~EnginePrivate()
     {
-        delete m_interpreter;
+        m_interpreter->deref();
     }
     KJS::Interpreter *m_interpreter;
     KJS::Completion m_currentResult;

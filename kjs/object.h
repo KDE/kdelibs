@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -25,41 +25,29 @@
 #ifndef KJS_OBJECT_H
 #define KJS_OBJECT_H
 
-// Objects
-
-// maximum global call stack size. Protects against accidental or
-// malicious infinite recursions. Define to -1 if you want no limit.
-#ifdef __APPLE__
-// Given OS X stack sizes we run out of stack at about 350 levels.
-// If we improve our stack usage, we can bump this number.
-#define KJS_MAX_STACK 100
-#else
-#define KJS_MAX_STACK 1000
-#endif
-
 #include "JSType.h"
 #include "interpreter.h"
-#include "kxmlcore/AlwaysInline.h"
 #include "property_map.h"
 #include "property_slot.h"
 #include "scope_chain.h"
+#include <kxmlcore/AlwaysInline.h>
 
 namespace KJS {
 
   struct HashTable;
   struct HashEntry;
   struct ListImp;
-  
   class InternalFunctionImp;
+  class PropertyNameArray;
 
   // ECMA 262-3 8.6.1
   // Property attributes
-  enum Attribute { None       = 0,
-                   ReadOnly   = 1 << 1, // property can be only read, not written
-                   DontEnum   = 1 << 2, // property doesn't appear in (for .. in ..)
-                   DontDelete = 1 << 3, // property can't be deleted
-                   Internal   = 1 << 4, // an internal property, set to bypass checks
-                   Function   = 1 << 5, // property is a function - only used by static hashtables
+  enum Attribute { None         = 0,
+                   ReadOnly     = 1 << 1, // property can be only read, not written
+                   DontEnum     = 1 << 2, // property doesn't appear in (for .. in ..)
+                   DontDelete   = 1 << 3, // property can't be deleted
+                   Internal     = 1 << 4, // an internal property, set to bypass checks
+                   Function     = 1 << 5, // property is a function - only used by static hashtables
                    GetterSetter = 1 << 6 }; // property is a getter or setter
 
   /**
@@ -84,33 +72,33 @@ namespace KJS {
      */
     void *dummy;
   };
-
+  
   // This is an internal value object which stores getter and setter functions
   // for a property.
   class GetterSetterImp : public JSCell {
   public:
     JSType type() const { return GetterSetterType; }
-
+      
     GetterSetterImp() : getter(0), setter(0) { }
-
+      
     virtual JSValue *toPrimitive(ExecState *exec, JSType preferred = UnspecifiedType) const;
     virtual bool toBoolean(ExecState *exec) const;
     virtual double toNumber(ExecState *exec) const;
     virtual UString toString(ExecState *exec) const;
     virtual JSObject *toObject(ExecState *exec) const;
-
+      
     virtual void mark();
-
+      
     JSObject *getGetter() { return getter; }
     void setGetter(JSObject *g) { getter = g; }
     JSObject *getSetter() { return setter; }
     void setSetter(JSObject *s) { setter = s; }
-
+      
   private:
     JSObject *getter;
-    JSObject *setter;
+    JSObject *setter;  
   };
-
+  
   class KJS_EXPORT JSObject : public JSCell {
   public:
     /**
@@ -118,13 +106,13 @@ namespace KJS {
      *
      * @param proto The prototype
      */
-    JSObject(JSObject *proto);
+    JSObject(JSValue* proto, bool destructorIsThreadSafe = true);
 
     /**
      * Creates a new JSObject with a prototype of jsNull()
      * (that is, the ECMAScript "null" value, not a null object pointer).
      */
-    JSObject();
+    explicit JSObject(bool destructorIsThreadSafe = true);
 
     virtual void mark();
     virtual JSType type() const;
@@ -287,7 +275,6 @@ namespace KJS {
      */
     bool propertyIsEnumerable(ExecState *exec, const Identifier &propertyName) const;
 
-
     /**
      * Checks to see whether the object (or any object in it's prototype chain)
      * has a property with the specified name.
@@ -371,8 +358,8 @@ namespace KJS {
     /**
      * Implementation of the [[Construct]] internal property
      */
-    virtual JSObject *construct(ExecState *exec, const List &args);
-    virtual JSObject *construct(ExecState *exec, const List &args, const UString &sourceURL, int lineNumber);
+    virtual JSObject* construct(ExecState* exec, const List& args);
+    virtual JSObject* construct(ExecState* exec, const List& args, const Identifier& functionName, const UString& sourceURL, int lineNumber);
 
     /**
      * Whether or not the object implements the call() method. If this returns
@@ -454,23 +441,7 @@ namespace KJS {
     const ScopeChain &scope() const { return _scope; }
     void setScope(const ScopeChain &s) { _scope = s; }
 
-    /**
-     * Returns a List of References to all the properties of the object. Used
-     * in "for x in y" statements. The list is created new, so it can be freely
-     * modified without affecting the object's properties. It should be deleted
-     * by the caller.
-     *
-     * Subclasses can override this method in ObjectImpl to provide the
-     * appearance of
-     * having extra properties other than those set specifically with put().
-     *
-     * @param exec The current execution state
-     * @param recursive Whether or not properties in the object's prototype
-     * chain should be
-     * included in the list.
-     * @return A List of References to properties of the object.
-     **/
-    virtual ReferenceList propList(ExecState *exec, bool recursive = true);
+    virtual void getPropertyNames(ExecState*, PropertyNameArray&);
 
     /**
      * Returns the internal value of the object. This is used for objects such
@@ -491,14 +462,14 @@ namespace KJS {
      */
     void setInternalValue(JSValue *v);
 
-    JSValue *toPrimitive(ExecState *exec, JSType preferredType = UnspecifiedType) const;
-    bool toBoolean(ExecState *exec) const;
-    double toNumber(ExecState *exec) const;
-    UString toString(ExecState *exec) const;
-    JSObject *toObject(ExecState *exec) const;
-
-    bool getPropertyAttributes(const Identifier& propertyName, int& attributes) const;
-
+    virtual JSValue *toPrimitive(ExecState *exec, JSType preferredType = UnspecifiedType) const;
+    virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
+    virtual UString toString(ExecState *exec) const;
+    virtual JSObject *toObject(ExecState *exec) const;
+    
+    bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
+    
     // Returns whether the object should be treated as undefined when doing equality comparisons
     virtual bool masqueradeAsUndefined() const { return false; }
     
@@ -531,7 +502,6 @@ namespace KJS {
     void restoreProperties(const SavedProperties &p) { _prop.restore(p); }
 
     virtual bool isActivation() { return false; }
-
   protected:
     PropertyMap _prop;
   private:
@@ -542,7 +512,7 @@ namespace KJS {
   };
 
   /**
-   * types of Native Errors available. For custom errors, GeneralError
+   * Types of Native Errors available. For custom errors, GeneralError
    * should be used.
    */
   enum ErrorType { GeneralError   = 0,
@@ -562,13 +532,13 @@ namespace KJS {
      * Factory method for error objects.
      *
      * @param exec The current execution state
-     * @param errtype type of error.
+     * @param errtype Type of error.
      * @param message Optional error message.
      * @param lineNumber Optional line number.
      * @param sourceId Optional source id.
      * @param sourceURL Optional source URL.
      */
-    static JSObject *create(ExecState *, ErrorType, const UString &message, int lineNumber, int sourceId, const UString *sourceURL);
+    static JSObject *create(ExecState *, ErrorType, const UString &message, int lineNumber, int sourceId, const UString &sourceURL);
     static JSObject *create(ExecState *, ErrorType, const char *message);
 
     /**
@@ -577,19 +547,23 @@ namespace KJS {
     static const char * const * const errorNames;
   };
 
-KJS_EXPORT JSObject *throwError(ExecState *, ErrorType, const UString &message, int lineNumber, int sourceId, const UString *sourceURL);
+KJS_EXPORT JSObject *throwError(ExecState *, ErrorType, const UString &message, int lineNumber, int sourceId, const UString &sourceURL);
 KJS_EXPORT JSObject *throwError(ExecState *, ErrorType, const UString &message);
 KJS_EXPORT JSObject *throwError(ExecState *, ErrorType, const char *message);
 KJS_EXPORT JSObject *throwError(ExecState *, ErrorType);
-  
-inline JSObject::JSObject(JSObject *proto)
-    : _proto(proto), _internalValue(0)
+
+inline JSObject::JSObject(JSValue* proto, bool destructorIsThreadSafe)
+    : JSCell(destructorIsThreadSafe)
+    , _proto(proto)
+    , _internalValue(0)
 {
     assert(proto);
 }
 
-inline JSObject::JSObject()
-    : _proto(jsNull()), _internalValue(0)
+inline JSObject::JSObject(bool destructorIsThreadSafe)
+    : JSCell(destructorIsThreadSafe)
+    , _proto(jsNull())
+    , _internalValue(0)
 {
 }
 

@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef _STRING_OBJECT_H_
-#define _STRING_OBJECT_H_
+#ifndef STRING_OBJECT_H_
+#define STRING_OBJECT_H_
 
-#include "internal.h"
 #include "function_object.h"
 
 namespace KJS {
@@ -32,10 +31,10 @@ namespace KJS {
     StringInstance(JSObject *proto);
     StringInstance(JSObject *proto, const UString &string);
 
-    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
-    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-    virtual ReferenceList propList(ExecState *exec, bool recursive);
+    virtual bool getOwnPropertySlot(ExecState*, const Identifier&, PropertySlot&);
+    virtual void put(ExecState* exec, const Identifier& propertyName, JSValue* value, int attr = None);
+    virtual bool deleteProperty(ExecState* exec, const Identifier& propertyName);
+    virtual void getPropertyNames(ExecState*, PropertyNameArray&);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;

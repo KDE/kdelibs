@@ -22,13 +22,6 @@
 
 #include <config.h>
 
-#if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
-
-#include <valgrind/memcheck.h>
-#define VALGRIND_SUPPORT
-
-#endif
-
 
 #include "kjs_proxy.h"
 
@@ -41,11 +34,8 @@
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
-#include <kmessagebox.h>
 #include <klocale.h>
 #include <unistd.h>
-#include <signal.h>
-#include <sys/time.h>
 #include <assert.h>
 #include <kjs/function.h>
 #include <kjs/JSLock.h>
@@ -168,10 +158,9 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
 
   UString code( str );
 
-  KJSCPUGuard guard;
-  guard.start();
+  m_script->startCPUGuard();
   Completion comp = m_script->evaluate(filename, baseLine, code, thisNode);
-  guard.stop();
+  m_script->stopCPUGuard();
 
   bool success = ( comp.complType() == Normal ) || ( comp.complType() == ReturnValue );
 
@@ -395,45 +384,3 @@ KJSProxy *kjs_html_init(khtml::ChildFrame *childframe)
   return new KJSProxyImpl(childframe);
 }
 
-void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)
-{
-#ifdef VALGRIND_SUPPORT
-    if (RUNNING_ON_VALGRIND) {
-        ms   *= 50;
-        i_ms *= 50;
-    }
-#endif
-
-#ifdef Q_WS_WIN
-  //TODO
-#else
-  oldAlarmHandler = signal(SIGVTALRM, alarmHandler);
-  itimerval tv = {
-      { i_ms / 1000, (i_ms % 1000) * 1000 },
-      { ms / 1000, (ms % 1000) * 1000 }
-  };
-  setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
-#endif
-}
-
-void KJSCPUGuard::stop()
-{
-#ifdef Q_WS_WIN
-  //TODO
-#else
-  setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
-  signal(SIGVTALRM, oldAlarmHandler);
-#endif
-}
-
-bool KJSCPUGuard::confirmTerminate() {
-  kDebug(6070) << "alarmhandler" << endl;
-  return KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), i18n("&Abort"), KStdGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes;
-}
-
-void KJSCPUGuard::alarmHandler(int) {
-    //abort();
-    // hmm what happened to this stuff?
-    //ExecState::requestTerminate();
-    //ExecState::confirmTerminate = KJSCPUGuard::confirmTerminate;
-}

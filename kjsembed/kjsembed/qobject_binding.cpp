@@ -74,7 +74,7 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
             slot = qstrdup( createSlot(args[3]->toString(exec).ascii()).data() );
             KJSEmbed::QObjectBinding *receiverImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, args[2] );
             if( !receiverImp )
-                receiver = new SlotProxy(args[2]->toObject(exec), exec->interpreter(), sender, args[3]->toString(exec).ascii() );
+                receiver = new SlotProxy(args[2]->toObject(exec), exec->dynamicInterpreter(), sender, args[3]->toString(exec).ascii() );
             else
                 receiver = receiverImp->object<QObject>();
         }
@@ -155,7 +155,7 @@ QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
     QObjectBinding::publishQObject(exec, this, object);
 
     // Make "connect" a global static method.
-    exec->interpreter()->globalObject()->put(exec, "connect", new StaticBinding(exec,  &QObjectFactory::methods()[0]) );
+    exec->dynamicInterpreter()->globalObject()->put(exec, "connect", new StaticBinding(exec,  &QObjectFactory::methods()[0]) );
 }
 
 QObjectBinding::~QObjectBinding()
@@ -239,7 +239,7 @@ void QObjectBinding::put(KJS::ExecState *exec, const KJS::Identifier &propertyNa
         if (JSEventMapper::mapper()->isEventHandler(propertyName) )
         {
             if ( !m_evproxy )
-                m_evproxy = new KJSEmbed::EventProxy( this, exec->interpreter() );
+                m_evproxy = new KJSEmbed::EventProxy( this, exec->dynamicInterpreter() );
             if( value )
                 m_evproxy->addFilter( JSEventMapper::mapper()->findEventType( propertyName ) );
             else

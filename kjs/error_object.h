@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef _ERROR_OBJECT_H_
-#define _ERROR_OBJECT_H_
+#ifndef ERROR_OBJECT_H_
+#define ERROR_OBJECT_H_
 
-#include "internal.h"
 #include "function_object.h"
 
 namespace KJS {
@@ -44,7 +43,7 @@ namespace KJS {
 
   class ErrorProtoFunc : public InternalFunctionImp {
   public:
-    ErrorProtoFunc(ExecState *exec, FunctionPrototype *funcProto, const Identifier& name);
+    ErrorProtoFunc(ExecState*, FunctionPrototype*, const Identifier&);
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
   };
 

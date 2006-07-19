@@ -20,9 +20,7 @@
  */
 
 #include "JSImmediate.h"
-#include "kxmlcore/Assertions.h"
 #include "object.h"
-#include "value.h"
 
 namespace KJS {
 

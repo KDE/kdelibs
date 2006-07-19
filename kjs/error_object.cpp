@@ -24,7 +24,6 @@
 #include "value.h"
 #include "object.h"
 #include "types.h"
-#include "nodes.h"
 #include "interpreter.h"
 #include "operations.h"
 #include "error_object.h"
@@ -85,8 +84,7 @@ JSValue *ErrorProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
 
 // ------------------------------ ErrorObjectImp -------------------------------
 
-ErrorObjectImp::ErrorObjectImp(ExecState *exec, FunctionPrototype *funcProto,
-                               ErrorPrototype *errorProto)
+ErrorObjectImp::ErrorObjectImp(ExecState*, FunctionPrototype* funcProto, ErrorPrototype* errorProto)
   : InternalFunctionImp(funcProto)
 {
   // ECMA 15.11.3.1 Error.prototype
@@ -122,8 +120,7 @@ JSValue *ErrorObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/,
 
 // ------------------------------ NativeErrorPrototype ----------------------
 
-NativeErrorPrototype::NativeErrorPrototype(ExecState *exec, ErrorPrototype *errorProto,
-                                                 ErrorType et, UString name, UString message)
+NativeErrorPrototype::NativeErrorPrototype(ExecState*, ErrorPrototype* errorProto, ErrorType et, UString name, UString message)
   : JSObject(errorProto)
 {
   errType = et;
@@ -135,9 +132,9 @@ NativeErrorPrototype::NativeErrorPrototype(ExecState *exec, ErrorPrototype *erro
 
 const ClassInfo NativeErrorImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
-NativeErrorImp::NativeErrorImp(ExecState *exec, FunctionPrototype *funcProto,
-                               JSObject *prot)
-  : InternalFunctionImp(funcProto), proto(prot)
+NativeErrorImp::NativeErrorImp(ExecState*, FunctionPrototype* funcProto, JSObject* prot)
+  : InternalFunctionImp(funcProto)
+  , proto(prot)
 {
   putDirect(lengthPropertyName, jsNumber(1), DontDelete|ReadOnly|DontEnum); // ECMA 15.11.7.5
   putDirect(prototypePropertyName, proto, DontDelete|ReadOnly|DontEnum);

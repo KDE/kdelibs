@@ -653,7 +653,7 @@ int main(int argc, char *argv[])
     }
 
     KApplication a;
-    a.disableAutoDcopRegistration();
+//    a.disableAutoDcopRegistration();
     a.setStyle( new TestStyle );
     KSimpleConfig sc1( "cryptodefaults" );
     sc1.setGroup( "Warnings" );
@@ -678,6 +678,8 @@ int main(int argc, char *argv[])
     cfg.writeEntry( "WindowOpenPolicy", (int)KHTMLSettings::KJSWindowOpenAllow);
 
     cfg.sync();
+    
+    KJS::ScriptInterpreter::turnOffCPUGuard();
 
     QPalette pal = a.palette();
     for (int c = 0; palInfo[c].color; ++c)

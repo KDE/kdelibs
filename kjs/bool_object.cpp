@@ -21,16 +21,10 @@
  */
 
 #include "config.h"
-#include "value.h"
-#include "object.h"
-#include "types.h"
-#include "nodes.h"
-#include "interpreter.h"
-#include "operations.h"
 #include "bool_object.h"
-#include "error_object.h"
 
-#include <assert.h>
+#include "operations.h"
+#include "error_object.h"
 
 using namespace KJS;
 
@@ -50,7 +44,7 @@ BooleanInstance::BooleanInstance(JSObject *proto)
 BooleanPrototype::BooleanPrototype(ExecState* exec, ObjectPrototype* objectProto, FunctionPrototype* funcProto)
   : BooleanInstance(objectProto)
 {
-  // The constructor will be added later by InterpreterImp::InterpreterImp()
+  // The constructor will be added later by Interpreter::Interpreter()
 
   putDirectFunction(new BooleanProtoFunc(exec, funcProto, BooleanProtoFunc::ToString, 0, toStringPropertyName), DontEnum);
   putDirectFunction(new BooleanProtoFunc(exec, funcProto, BooleanProtoFunc::ValueOf, 0, valueOfPropertyName),  DontEnum);
@@ -88,8 +82,7 @@ JSValue *BooleanProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, co
 // ------------------------------ BooleanObjectImp -----------------------------
 
 
-BooleanObjectImp::BooleanObjectImp(ExecState *exec, FunctionPrototype *funcProto,
-                                   BooleanPrototype *booleanProto)
+BooleanObjectImp::BooleanObjectImp(ExecState*, FunctionPrototype* funcProto, BooleanPrototype* booleanProto)
   : InternalFunctionImp(funcProto)
 {
   putDirect(prototypePropertyName, booleanProto, DontEnum|DontDelete|ReadOnly);

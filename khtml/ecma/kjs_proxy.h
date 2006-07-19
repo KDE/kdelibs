@@ -76,20 +76,5 @@ public:
   static KJSProxy *proxy( KHTMLPart *part );
 };
 
-class KJSCPUGuard {
-public:
-  KJSCPUGuard() {}
-  void start(unsigned int msec=5000, unsigned int i_msec=10000);
-  void stop();
-private:
-  void (*oldAlarmHandler)(int);
-  static void alarmHandler(int);
-  static bool confirmTerminate();
-#ifdef Q_WS_WIN
-  //TODO
-#else
-  itimerval oldtv;
-#endif
-};
 
 #endif

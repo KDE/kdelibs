@@ -3,8 +3,8 @@
 #include <QTreeView>
 
 #include <kjs/interpreter.h>
-#include <kjs/reference.h>
-#include <kjs/reference_list.h>
+#include <kjs/PropertyNameArray.h>
+#include <kjs/context.h>
 #include <kjs/scope_chain.h>
 #include <kjs/object.h>
 #include <kdebug.h>
@@ -43,9 +43,14 @@ void LocalVariablesDock::display(KJS::Interpreter *interpreter)
 
     kDebug() << "Doing a full ScopeChain dump:" << endl;
 
-    KJS::ExecState *exec = interpreter->globalExec();
-    KJS::Context context = exec->context();
-    KJS::ScopeChain chain = context.scopeChain();
+    KJS::ExecState *exec  = interpreter->globalExec();
+    KJS::Context* context = exec->context();
+    if (!context) {
+        kDebug() << "nothing running!" << endl;
+        return;
+    }
+    
+    KJS::ScopeChain chain = context->scopeChain();
 
     for( KJS::ScopeChainIterator obj = chain.begin();
          obj != chain.end();
@@ -58,10 +63,11 @@ void LocalVariablesDock::display(KJS::Interpreter *interpreter)
         QString name = object->toString(exec).qstring();
         kDebug() << "scope list object: " << name << endl;
 
-        KJS::ReferenceList props = object->propList(exec);
-        for( KJS::ReferenceListIterator ref = props.begin(); ref != props.end(); ref++)
+        KJS::PropertyNameArray props;
+        object->getPropertyNames(exec, props);
+        for( KJS::PropertyNameArrayIterator ref = props.begin(); ref != props.end(); ref++)
         {
-            KJS::Identifier id = ref->getPropertyName(exec);
+            KJS::Identifier id = *ref;
             QString refName = id.qstring();
             // KJS::JSValue* instance = object->get(exec, id);
 

@@ -354,7 +354,7 @@ ValueImp *getDOMStyleSheet(ExecState *exec, DOM::StyleSheetImpl* ss)
     return Null();
 
   DOMObject *ret;
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   if ((ret = interp->getDOMObject(ss)))
     return ret;
   else {
@@ -459,7 +459,7 @@ ValueImp *getDOMStyleSheetList(ExecState *exec, DOM::StyleSheetListImpl* ssl, DO
   DOMObject *ret;
   if (!ssl)
     return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   if ((ret = interp->getDOMObject(ssl)))
     return ret;
   else {
@@ -1043,7 +1043,7 @@ ValueImp *getDOMCSSValue(ExecState *exec, DOM::CSSValueImpl* v)
   DOMObject *ret;
   if (!v)
     return Null();
-  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+  ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   if ((ret = interp->getDOMObject(v)))
     return ret;
   else {

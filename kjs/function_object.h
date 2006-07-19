@@ -2,6 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,10 +20,9 @@
  *
  */
 
-#ifndef _FUNCTION_OBJECT_H_
-#define _FUNCTION_OBJECT_H_
+#ifndef FUNCTION_OBJECT_H_
+#define FUNCTION_OBJECT_H_
 
-#include "internal.h"
 #include "object_object.h"
 #include "function.h"
 
@@ -66,13 +66,13 @@ namespace KJS {
    */
   class FunctionObjectImp : public InternalFunctionImp {
   public:
-    FunctionObjectImp(ExecState *exec, FunctionPrototype *funcProto);
+    FunctionObjectImp(ExecState*, FunctionPrototype*);
     virtual ~FunctionObjectImp();
 
     virtual bool implementsConstruct() const;
-    virtual JSObject *construct(ExecState *exec, const List &args, const UString &sourceURL, int lineNumber);
-    virtual JSObject *construct(ExecState *exec, const List &args);
-    virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
+    virtual JSObject* construct(ExecState*, const List& args);
+    virtual JSObject* construct(ExecState*, const List& args, const Identifier& functionName, const UString& sourceURL, int lineNumber);
+    virtual JSValue* callAsFunction(ExecState*, JSObject* thisObj, const List& args);
   };
 
 } // namespace

@@ -384,7 +384,7 @@ Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
 
 Window *Window::retrieveActive(ExecState *exec)
 {
-  ValueImp *imp = exec->interpreter()->globalObject();
+  ValueImp *imp = exec->dynamicInterpreter()->globalObject();
   assert( imp );
 #ifndef QWS
   assert( dynamic_cast<KJS::Window*>(imp) );
@@ -549,7 +549,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   {
     // Disabled in NS-compat mode. Supported by default - can't hurt, unless someone uses
     // if (navigate) to test for IE (unlikely).
-    if (entry->value == Navigate && exec->interpreter()->compatMode() == Interpreter::NetscapeCompat ) {
+    if (entry->value == Navigate && exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat ) {
       slot.setUndefined(this);
       return true;
     }
@@ -1387,7 +1387,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
   {
     // window.open disabled unless from a key/mouse event
-    if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
+    if (static_cast<ScriptInterpreter *>(exec->dynamicInterpreter())->isWindowOpenAllowed())
       policy = KHTMLSettings::KJSWindowOpenAllow;
   }
 

@@ -22,19 +22,16 @@
 
 #include "config.h"
 #include "debugger.h"
-#include "value.h"
-#include "object.h"
-#include "types.h"
-#include "interpreter.h"
-#include "internal.h"
 #include "ustring.h"
+
+#include "internal.h"
 
 using namespace KJS;
 
 // ------------------------------ Debugger -------------------------------------
 
 namespace KJS {
-  class AttachedInterpreter
+  struct AttachedInterpreter
   {
   public:
     AttachedInterpreter(Interpreter *i, AttachedInterpreter *ai) : interp(i), next(ai) { ++Debugger::debuggersPresent; }
@@ -58,22 +55,19 @@ Debugger::~Debugger()
   delete rep;
 }
 
-void Debugger::attach(Interpreter *interp)
+void Debugger::attach(Interpreter* interp)
 {
-  Debugger *other = interp->imp()->debugger();
+  Debugger *other = interp->debugger();
   if (other == this)
     return;
   if (other)
     other->detach(interp);
-  interp->imp()->setDebugger(this);
+  interp->setDebugger(this);
   rep->interps = new AttachedInterpreter(interp, rep->interps);
 }
 
-void Debugger::detach(Interpreter *interp)
+void Debugger::detach(Interpreter* interp)
 {
-  if (interp && interp->imp()->debugger() == this)
-    interp->imp()->setDebugger(0);
-
   // iterate the addresses where AttachedInterpreter pointers are stored
   // so we can unlink items from the list
   AttachedInterpreter **p = &rep->interps;
@@ -81,44 +75,44 @@ void Debugger::detach(Interpreter *interp)
   while ((q = *p)) {
     if (!interp || q->interp == interp) {
       *p = q->next;
+      q->interp->setDebugger(0);
       delete q;
-    } else {
+    } else
       p = &q->next;
-    }
   }
 }
 
-bool Debugger::sourceParsed(ExecState * /*exec*/, int /*sourceId*/, const UString &/*sourceURL*/, 
-                           const UString &/*source*/, int /*errorLine*/)
+bool Debugger::sourceParsed(ExecState */*exec*/, int /*sourceId*/, const UString &/*sourceURL*/, 
+                           const UString &/*source*/, int /*startingLineNumber*/, int /*errorLine*/, const UString & /*errorMsg*/)
 {
   return true;
 }
 
-bool Debugger::sourceUnused(ExecState * /*exec*/, int /*sourceId*/)
+bool Debugger::sourceUnused(ExecState */*exec*/, int /*sourceId*/)
 {
   return true;
 }
 
-bool Debugger::exception(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
-                         JSObject * /*exceptionObj*/)
+bool Debugger::exception(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
+                         JSObject */*exceptionObj*/)
 {
   return true;
 }
 
-bool Debugger::atStatement(ExecState * /*exec*/, int /*sourceId*/, int /*firstLine*/,
+bool Debugger::atStatement(ExecState */*exec*/, int /*sourceId*/, int /*firstLine*/,
                            int /*lastLine*/)
 {
   return true;
 }
 
-bool Debugger::callEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
-                         JSObject * /*function*/, const List &/*args*/)
+bool Debugger::callEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
+                         JSObject */*function*/, const List &/*args*/)
 {
   return true;
 }
 
-bool Debugger::returnEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
-                           JSObject * /*function*/)
+bool Debugger::returnEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
+                           JSObject */*function*/)
 {
   return true;
 }

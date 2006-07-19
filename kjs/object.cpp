@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,28 +23,28 @@
  */
 
 #include "config.h"
-#include "value.h"
 #include "object.h"
-#include "types.h"
-#include "interpreter.h"
-#include "lookup.h"
-#include "reference_list.h"
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-
-#include "internal.h"
-#include "collector.h"
-#include "operations.h"
 #include "error_object.h"
+#include "lookup.h"
 #include "nodes.h"
+#include "operations.h"
+#include "PropertyNameArray.h"
+#include <math.h>
 
-#ifndef NDEBUG
-//#define JAVASCRIPT_CALL_TRACING 1
+// maximum global call stack size. Protects against accidental or
+// malicious infinite recursions. Define to -1 if you want no limit.
+#if PLATFORM(DARWIN)
+// Given OS X stack sizes we run out of stack at about 350 levels.
+// If we improve our stack usage, we can bump this number.
+#define KJS_MAX_STACK 100
+#else
+#define KJS_MAX_STACK 1000
 #endif
 
-#ifdef JAVASCRIPT_CALL_TRACING
+#define JAVASCRIPT_CALL_TRACING 0
+
+#if JAVASCRIPT_CALL_TRACING
 static bool _traceJavaScript = false;
 
 extern "C" {
@@ -71,7 +71,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
 #if KJS_MAX_STACK > 0
   static int depth = 0; // sum of all concurrent interpreters
 
-#ifdef JAVASCRIPT_CALL_TRACING
+#if JAVASCRIPT_CALL_TRACING
     static bool tracing = false;
     if (traceJavaScript() && !tracing) {
         tracing = true;
@@ -99,7 +99,7 @@ JSValue *JSObject::call(ExecState *exec, JSObject *thisObj, const List &args)
   --depth;
 #endif
 
-#ifdef JAVASCRIPT_CALL_TRACING
+#if JAVASCRIPT_CALL_TRACING
     if (traceJavaScript() && !tracing) {
         tracing = true;
         for (int i = 0; i < depth; i++)
@@ -236,7 +236,7 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
   if (hasGettersOrSetters) {
     obj = this;
     while (true) {
-      int attributes;
+      unsigned attributes;
       if (JSValue *gs = obj->_prop.get(propertyName, attributes)) {
         if (attributes & GetterSetter) {
           JSObject *setterFunc = static_cast<GetterSetterImp *>(gs)->getSetter();
@@ -277,7 +277,7 @@ void JSObject::put(ExecState *exec, unsigned propertyName,
 // ECMA 8.6.2.3
 bool JSObject::canPut(ExecState *, const Identifier &propertyName) const
 {
-  int attributes;
+  unsigned attributes;
     
   // Don't look in the prototype here. We can always put an override
   // in the object, even if the prototype has a ReadOnly property.
@@ -304,7 +304,7 @@ bool JSObject::hasProperty(ExecState *exec, unsigned propertyName) const
 // ECMA 8.6.2.5
 bool JSObject::deleteProperty(ExecState * /*exec*/, const Identifier &propertyName)
 {
-  int attributes;
+  unsigned attributes;
   JSValue *v = _prop.get(propertyName, attributes);
   if (v) {
     if ((attributes & DontDelete))
@@ -380,7 +380,7 @@ const HashEntry* JSObject::findPropertyHashEntry(const Identifier& propertyName)
   return 0;
 }
 
-void JSObject::defineGetter(ExecState *exec, const Identifier& propertyName, JSObject *getterFunc)
+void JSObject::defineGetter(ExecState*, const Identifier& propertyName, JSObject* getterFunc)
 {
     JSValue *o = getDirect(propertyName);
     GetterSetterImp *gs;
@@ -396,7 +396,7 @@ void JSObject::defineGetter(ExecState *exec, const Identifier& propertyName, JSO
     gs->setGetter(getterFunc);
 }
 
-void JSObject::defineSetter(ExecState *exec, const Identifier& propertyName, JSObject *setterFunc)
+void JSObject::defineSetter(ExecState*, const Identifier& propertyName, JSObject* setterFunc)
 {
     JSValue *o = getDirect(propertyName);
     GetterSetterImp *gs;
@@ -417,13 +417,13 @@ bool JSObject::implementsConstruct() const
   return false;
 }
 
-JSObject *JSObject::construct(ExecState * /*exec*/, const List &/*args*/)
+JSObject* JSObject::construct(ExecState*, const List& /*args*/)
 {
   assert(false);
   return NULL;
 }
 
-JSObject *JSObject::construct(ExecState *exec, const List &args, const UString &/*sourceURL*/, int /*lineNumber*/)
+JSObject* JSObject::construct(ExecState* exec, const List& args, const Identifier& /*functionName*/, const UString& /*sourceURL*/, int /*lineNumber*/)
 {
   return construct(exec, args);
 }
@@ -444,15 +444,28 @@ bool JSObject::implementsHasInstance() const
   return false;
 }
 
-bool JSObject::hasInstance(ExecState * /*exec*/, JSValue * /*value*/)
+bool JSObject::hasInstance(ExecState* exec, JSValue* value)
 {
-  assert(false);
-  return false;
+    JSValue* proto = get(exec, prototypePropertyName);
+    if (!proto->isObject()) {
+        throwError(exec, TypeError, "intanceof called on an object with an invalid prototype property.");
+        return false;
+    }
+    
+    if (!value->isObject())
+        return false;
+    
+    JSObject* o = static_cast<JSObject*>(value);
+    while ((o = o->prototype()->getObject())) {
+        if (o == proto)
+            return true;
+    }
+    return false;
 }
 
-bool JSObject::propertyIsEnumerable(ExecState *exec, const Identifier &propertyName) const
+bool JSObject::propertyIsEnumerable(ExecState*, const Identifier& propertyName) const
 {
-  int attributes;
+  unsigned attributes;
  
   if (!getPropertyAttributes(propertyName, attributes))
     return false;
@@ -460,7 +473,7 @@ bool JSObject::propertyIsEnumerable(ExecState *exec, const Identifier &propertyN
     return !(attributes & DontEnum);
 }
 
-bool JSObject::getPropertyAttributes(const Identifier& propertyName, int& attributes) const
+bool JSObject::getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const
 {
   if (_prop.get(propertyName, attributes))
     return true;
@@ -475,13 +488,9 @@ bool JSObject::getPropertyAttributes(const Identifier& propertyName, int& attrib
   return false;
 }
 
-ReferenceList JSObject::propList(ExecState *exec, bool recursive)
+void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  ReferenceList list;
-  if (_proto->isObject() && recursive)
-    list = static_cast<JSObject*>(_proto)->propList(exec,recursive);
-
-  _prop.addEnumerablesToReferenceList(list, this);
+   _prop.getEnumerablePropertyNames(propertyNames);
 
   // Add properties from the static hashtable of properties
   const ClassInfo *info = classInfo();
@@ -490,14 +499,14 @@ ReferenceList JSObject::propList(ExecState *exec, bool recursive)
       int size = info->propHashTable->size;
       const HashEntry *e = info->propHashTable->entries;
       for (int i = 0; i < size; ++i, ++e) {
-        if ( e->s && !(e->attr & DontEnum) )
-          list.append(Reference(this, e->s)); /// ######### check for duplicates with the propertymap
+        if (e->s && !(e->attr & DontEnum))
+          propertyNames.add(e->s);
       }
     }
     info = info->parentClass;
   }
-
-  return list;
+  if (_proto->isObject())
+     static_cast<JSObject*>(_proto)->getPropertyNames(exec, propertyNames);
 }
 
 bool JSObject::toBoolean(ExecState * /*exec*/) const
@@ -566,7 +575,7 @@ const char * const errorNamesArr[] = {
 const char * const * const Error::errorNames = errorNamesArr;
 
 JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &message,
-                         int lineno, int sourceId, const UString *sourceURL)
+                         int lineno, int sourceId, const UString &sourceURL)
 {
   JSObject *cons;
   switch (errtype) {
@@ -605,8 +614,8 @@ JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &messa
   if (sourceId != -1)
     err->put(exec, "sourceId", jsNumber(sourceId));
 
-  if(sourceURL)
-   err->put(exec,"sourceURL", jsString(*sourceURL));
+  if(!sourceURL.isNull())
+    err->put(exec, "sourceURL", jsString(sourceURL));
  
   return err;
 
@@ -649,7 +658,7 @@ JSObject *throwError(ExecState *exec, ErrorType type, const char *message)
     return error;
 }
 
-JSObject *throwError(ExecState *exec, ErrorType type, const UString &message, int line, int sourceId, const UString *sourceURL)
+JSObject *throwError(ExecState *exec, ErrorType type, const UString &message, int line, int sourceId, const UString &sourceURL)
 {
     JSObject *error = Error::create(exec, type, message, line, sourceId, sourceURL);
     exec->setException(error);

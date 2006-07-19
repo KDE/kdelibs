@@ -21,20 +21,21 @@
 
 #include "config.h"
 #include "date_object.h"
+#include "date_object.lut.h"
 
-#if HAVE_ERRNO_H
+#if HAVE(ERRNO_H)
 #include <errno.h>
 #endif
 
-#if HAVE_SYS_PARAM_H
+#if HAVE(SYS_PARAM_H)
 #include <sys/param.h>
 #endif
 
-#if HAVE_SYS_TIME_H
+#if HAVE(SYS_TIME_H)
 #include <sys/time.h>
 #endif
 
-#if HAVE_SYS_TIMEB_H
+#if HAVE(SYS_TIMEB_H)
 #include <sys/timeb.h>
 #endif
 
@@ -50,30 +51,21 @@
 
 #include "error_object.h"
 #include "operations.h"
-#include "nodes.h"
 
-#ifdef __APPLE__
+#if PLATFORM(MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
-# ifndef HAVE_COPYSIGN
-#  define copysign(x, y) _copysign(x, y)
-# endif
-# ifndef HAVE_ISFINITE
-#  define isfinite(x) _finite(x)
-# endif
-# ifndef HAVE_STRNCASECMP
-#  define strncasecmp(x, y, z) strnicmp(x, y, z)
-# endif
-# ifndef HAVE_SNPRINTF
-#  define snprintf _snprintf
-# endif
+#if PLATFORM(WIN_OS)
+#define copysign(x, y) _copysign(x, y)
+#define isfinite(x) _finite(x)
+#define strncasecmp(x, y, z) strnicmp(x, y, z)
+#define snprintf _snprintf
 #endif
 
 inline int gmtoffset(const tm& t)
 {
-#if defined(_WIN32) || defined(_WIN64)
+#if PLATFORM(WIN_OS)
     // Time is supposed to be in the current timezone.
     // FIXME: Use undocumented _dstbias?
     return -(_timezone / 60 - (t.tm_isdst > 0 ? 60 : 0 )) * 60;
@@ -88,37 +80,11 @@ namespace KJS {
  * @internal
  *
  * Class to implement all methods that are properties of the
- * Date.prototype object
- */
-class DateProtoFunc : public InternalFunctionImp {
-public:
-    DateProtoFunc(ExecState *, int i, int len, const Identifier& name);
-
-    virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
-
-    Completion execute(const List &);
-    enum { ToString, ToDateString, ToTimeString, ToLocaleString,
-           ToLocaleDateString, ToLocaleTimeString, ValueOf, GetTime,
-           GetFullYear, GetMonth, GetDate, GetDay, GetHours, GetMinutes,
-           GetSeconds, GetMilliSeconds, GetTimezoneOffset, SetTime,
-           SetMilliSeconds, SetSeconds, SetMinutes, SetHours, SetDate,
-           SetMonth, SetFullYear, ToUTCString,
-           // non-normative properties (Appendix B)
-           GetYear, SetYear, ToGMTString };
-private:
-    int id;
-    bool utc;
-};
-
-/**
- * @internal
- *
- * Class to implement all methods that are properties of the
  * Date object
  */
 class DateObjectFuncImp : public InternalFunctionImp {
 public:
-    DateObjectFuncImp(ExecState *, FunctionPrototype *, int i, int len, const Identifier&);
+    DateObjectFuncImp(ExecState *, FunctionPrototype *, int i, int len, const Identifier& );
 
     virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
@@ -128,29 +94,24 @@ private:
     int id;
 };
 
-}
-
-#include "date_object.lut.h"
-
-namespace KJS {
-
 // some constants
 const double hoursPerDay = 24;
 const double minutesPerHour = 60;
 const double secondsPerMinute = 60;
 const double msPerSecond = 1000;
-const double msPerMinute = msPerSecond * secondsPerMinute;
-const double msPerHour = msPerMinute * minutesPerHour;
-const double msPerDay = msPerHour * hoursPerDay;
+const double msPerMinute = 60 * 1000;
+const double msPerHour = 60 * 60 * 1000;
+const double msPerDay = 24 * 60 * 60 * 1000;
+
 static const char * const weekdayName[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 static const char * const monthName[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    
+
 static double makeTime(tm *, double ms, bool utc);
 static double parseDate(const UString &);
 static double timeClip(double);
 static void millisecondsToTM(double milli, bool utc, tm *t);
 
-#ifdef __APPLE__
+#if PLATFORM(MAC)
 
 static CFDateFormatterStyle styleFromArgString(const UString& string, CFDateFormatterStyle defaultStyle)
 {
@@ -215,7 +176,7 @@ static UString formatLocaleDate(ExecState *exec, double time, bool includeDate, 
     return UString(buffer, length);
 }
 
-#endif // __APPLE__
+#endif // PLATFORM(MAC)
 
 static UString formatDate(const tm &t)
 {
@@ -235,12 +196,12 @@ static UString formatDateUTCVariant(const tm &t)
     return buffer;
 }
 
-
 static UString formatTime(const tm &t, bool utc)
 {
     char buffer[100];
     if (utc) {
-#if !defined(_WIN32) && !defined(_WIN64)
+        // FIXME: why not on windows?
+#if !PLATFORM(WIN_OS)
         ASSERT(t.tm_gmtoff == 0);
 #endif
         snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
@@ -475,7 +436,8 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
       m += gmtoffset(*t) * msPerSecond;
     t->tm_wday = weekDay(m);
   }
-}
+}    
+
 
 // ------------------------------ DatePrototype -----------------------------
 
@@ -562,11 +524,11 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
 
   JSValue *result = 0;
   UString s;
-#ifndef __APPLE__
+#if !PLATFORM(DARWIN)
   const int bufsize=100;
   char timebuffer[bufsize];
   CString oldlocale = setlocale(LC_TIME, 0);
-  if (!oldlocale.c_str())
+  if (!oldlocale.size())
     oldlocale = setlocale(LC_ALL, 0);
   // FIXME: Where's the code to set the locale back to oldlocale?
 #endif
@@ -598,7 +560,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
         return jsNaN();
     }
   }
-
+  
   double secs = floor(milli / msPerSecond);
   double ms = milli - secs * msPerSecond;
 
@@ -618,7 +580,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case ToUTCString:
     return jsString(formatDateUTCVariant(t) + " " + formatTime(t, utc));
     break;
-#ifdef __APPLE__
+#if PLATFORM(MAC)
   case ToLocaleString:
     return jsString(formatLocaleDate(exec, secs, true, true, args));
     break;
@@ -743,19 +705,19 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
   double value;
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
-#if !defined(_WIN32) && !defined(_WIN64)
+#if PLATFORM(WIN_OS)
+#if COMPILER(BORLAND)
+    struct timeb timebuffer;
+    ftime(&timebuffer);
+#else
+    struct _timeb timebuffer;
+    _ftime(&timebuffer);
+#endif
+    double utc = timebuffer.time * msPerSecond + timebuffer.millitm;
+#else
     struct timeval tv;
     gettimeofday(&tv, 0);
     double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / 1000);
-#else
-#  if __BORLANDC__
-    struct timeb timebuffer;
-    ftime(&timebuffer);
-#  else
-    struct _timeb timebuffer;
-    _ftime(&timebuffer);
-#  endif
-    double utc = timebuffer.time * msPerSecond + timebuffer.millitm;
 #endif
     value = utc;
   } else if (numArgs == 1) {
@@ -808,14 +770,14 @@ JSValue *DateObjectImp::callAsFunction(ExecState * /*exec*/, JSObject * /*thisOb
 
 // ------------------------------ DateObjectFuncImp ----------------------------
 
-DateObjectFuncImp::DateObjectFuncImp(ExecState *exec, FunctionPrototype *funcProto, int i, int len, const Identifier& name)
+DateObjectFuncImp::DateObjectFuncImp(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
     : InternalFunctionImp(funcProto, name), id(i)
 {
     putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.9.4.2 - 3
-JSValue *DateObjectFuncImp::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+JSValue *DateObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const List& args)
 {
   if (id == Parse) {
     return jsNumber(parseDate(args[0]->toString(exec)));
@@ -863,7 +825,7 @@ static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 // We follow the recommendation of RFC 2822 to consider all
 // obsolete time zones not listed here equivalent to "-0000".
 static const struct KnownZone {
-#if !defined(_WIN32) && !defined(_WIN64)
+#if !PLATFORM(WIN_OS)
     const
 #endif
         char tzName[4];
@@ -886,20 +848,20 @@ static double makeTime(tm *t, double ms, bool utc)
     int utcOffset;
     if (utc) {
         time_t zero = 0;
-#if !defined(_WIN32) && !defined(_WIN64)
+#if PLATFORM(WIN_OS)
+        // FIXME: not thread safe
+        (void)localtime(&zero);
+#if COMPILER(BORLAND) || COMPILER(CYGWIN)
+        utcOffset = - _timezone;
+#else
+        utcOffset = - timezone;
+#endif
+        t->tm_isdst = 0;
+#else
         tm t3;
         localtime_r(&zero, &t3);
         utcOffset = t3.tm_gmtoff;
         t->tm_isdst = t3.tm_isdst;
-#else
-        // FIXME: not thread safe
-        (void)localtime(&zero);
-#  if __BORLANDC__ || __CYGWIN__
-        utcOffset = - _timezone;
-#  else
-        utcOffset = - timezone;
-#  endif
-        t->tm_isdst = 0;
 #endif
     } else {
         utcOffset = 0;
@@ -1007,7 +969,7 @@ static double parseDate(const UString &date)
     }
 
     // Missing delimiter between month and day (like "January29")?
-    if (month == -1 && wordStart != dateString)
+    if (month == -1 && dateString && wordStart != dateString)
         month = findMonth(wordStart);
 
     skipSpacesAndComments(dateString);
@@ -1032,7 +994,7 @@ static double parseDate(const UString &date)
     long year = 0;
     if (day > 31) {
         // ### where is the boundary and what happens below?
-        if (!(*dateString == '/'))
+        if (*dateString != '/')
             return NaN;
         // looks like a YYYY/MM/DD date
         if (!*++dateString)

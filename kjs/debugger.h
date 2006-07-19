@@ -23,8 +23,6 @@
 #ifndef _KJSDEBUGGER_H_
 #define _KJSDEBUGGER_H_
 
-#include "global.h"
-
 namespace KJS {
 
   class DebuggerImp;
@@ -47,7 +45,7 @@ namespace KJS {
    * anticipated that at some stage the interface will be frozen and made
    * available for general use.
    */
-  class KJS_EXPORT Debugger {
+  class Debugger {
   public:
 
     /**
@@ -105,13 +103,16 @@ namespace KJS {
      * sourceId supplied in other functions such as atStatement()
      * @param sourceURL Where the source code that was parsed came from
      * @param source The source code that was parsed
+     * @param startingLineNumber The line number at which parsing started
      * @param errorLine The line number at which parsing encountered an
      * error, or -1 if the source code was valid and parsed successfully
+     * @param errorMsg The error description, or null if the source code
+       was valid and parsed successfully
      * @return true if execution should be continue, false if it should
      * be aborted
      */
     virtual bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-			      const UString &source, int errorLine);
+                              const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
 
     /**
      * Called when all functions/programs associated with a particular
@@ -183,7 +184,7 @@ namespace KJS {
      * be aborted
      */
     virtual bool callEvent(ExecState *exec, int sourceId, int lineno,
-			   JSObject *function, const List &args);
+                           JSObject *function, const List &args);
 
     /**
      * Called on each function exit. The function being returned from is that

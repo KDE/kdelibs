@@ -22,19 +22,13 @@
 
 #include "config.h"
 #include "string_object.h"
-
-#include "value.h"
-#include "object.h"
-#include "types.h"
-#include "nodes.h"
-#include "interpreter.h"
-#include "operations.h"
-#include "reference_list.h"
-#include "regexp.h"
-#include "regexp_object.h"
-#include "error_object.h"
-#include <stdio.h>
 #include "string_object.lut.h"
+
+#include "error_object.h"
+#include "operations.h"
+#include "PropertyNameArray.h"
+#include "regexp_object.h"
+#include <kxmlcore/unicode/Unicode.h>
 
 using namespace KJS;
 
@@ -54,12 +48,12 @@ StringInstance::StringInstance(JSObject *proto, const UString &string)
   setInternalValue(jsString(string));
 }
 
-JSValue *StringInstance::lengthGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot &slot)
+JSValue *StringInstance::lengthGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot &slot)
 {
-    return jsNumber(static_cast<StringInstance *>(slot.slotBase())->internalValue()->toString(exec).size());
+    return jsNumber(static_cast<StringInstance*>(slot.slotBase())->internalValue()->toString(exec).size());
 }
 
-JSValue *StringInstance::indexGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot &slot)
+JSValue *StringInstance::indexGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot &slot)
 {
     const UChar c = static_cast<StringInstance *>(slot.slotBase())->internalValue()->toString(exec)[slot.index()];
     return jsString(UString(&c, 1));
@@ -100,15 +94,12 @@ bool StringInstance::deleteProperty(ExecState *exec, const Identifier &propertyN
   return JSObject::deleteProperty(exec, propertyName);
 }
 
-ReferenceList StringInstance::propList(ExecState *exec, bool recursive)
+void StringInstance::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
 {
-  ReferenceList properties = JSObject::propList(exec,recursive);
-
-  //### FIXME: should avoid duplicates with prototype
-  UString str = internalValue()->toString(exec);
-  for (int i = 0; i < str.size(); i++)
-    properties.append(Reference(this, i));
-  return properties;
+  int size = internalValue()->getString().size();
+  for (int i = 0; i < size; i++)
+    propertyNames.add(Identifier(UString(i)));
+  return JSObject::getPropertyNames(exec, propertyNames);
 }
 
 // ------------------------------ StringPrototype ---------------------------
@@ -153,8 +144,7 @@ const ClassInfo StringPrototype::info = {"String", &StringInstance::info, &strin
 @end
 */
 // ECMA 15.5.4
-StringPrototype::StringPrototype(ExecState *exec,
-                                       ObjectPrototype *objProto)
+StringPrototype::StringPrototype(ExecState*, ObjectPrototype* objProto)
   : StringInstance(objProto)
 {
   // The constructor will be added later, after StringObjectImp has been built
@@ -237,23 +227,50 @@ static inline UString substituteBackreferences(const UString &replacement, const
 {
   UString substitutedReplacement = replacement;
 
-  bool converted;
+  int i = -1;
+  while ((i = substitutedReplacement.find(UString("$"), i + 1)) != -1) {
+    if (i+1 == substitutedReplacement.size())
+        break;
 
-  for (int i = 0; (i = substitutedReplacement.find(UString("$"), i)) != -1; i++) {
-    if (i+1 < substitutedReplacement.size() && substitutedReplacement[i+1] == '$') {  // "$$" -> "$"
-      substitutedReplacement = substitutedReplacement.substr(0,i) + "$" + substitutedReplacement.substr(i+2);
-      continue;
-    }
-    // Assume number part is one char exactly
-    unsigned backrefIndex = substitutedReplacement.substr(i+1,1).toUInt32(&converted, false /* tolerate empty string */);
-    if (converted && backrefIndex <= (unsigned)reg->subPatterns()) {
-      int backrefStart = ovector[2*backrefIndex];
-      int backrefLength = ovector[2*backrefIndex+1] - backrefStart;
-      substitutedReplacement = substitutedReplacement.substr(0,i)
-        + source.substr(backrefStart, backrefLength)
-        + substitutedReplacement.substr(i+2);
-      i += backrefLength - 1; // -1 offsets i++
-    }
+    unsigned short ref = substitutedReplacement[i+1].unicode();
+    int backrefStart = 0;
+    int backrefLength = 0;
+    int advance = 0;
+
+    if (ref == '$') {  // "$$" -> "$"
+        substitutedReplacement = substitutedReplacement.substr(0, i + 1) + substitutedReplacement.substr(i + 2);
+        continue;
+    } else if (ref == '&') {
+        backrefStart = ovector[0];
+        backrefLength = ovector[1] - backrefStart;
+    } else if (ref == '`') {
+        backrefStart = 0;
+        backrefLength = ovector[0];
+    } else if (ref == '\'') {
+        backrefStart = ovector[1];
+        backrefLength = source.size() - backrefStart;
+    } else if (ref >= '0' && ref <= '9') {
+        // 1- and 2-digit back references are allowed
+        unsigned backrefIndex = ref - '0';
+        if (backrefIndex > (unsigned)reg->subPatterns())
+            continue;
+        if (substitutedReplacement.size() > i + 2) {
+            ref = substitutedReplacement[i+2].unicode();
+            if (ref >= '0' && ref <= '9') {
+                backrefIndex = 10 * backrefIndex + ref - '0';
+                if (backrefIndex > (unsigned)reg->subPatterns())
+                    backrefIndex = backrefIndex / 10;   // Fall back to the 1-digit reference
+                else
+                    advance = 1;
+            }
+        }
+        backrefStart = ovector[2 * backrefIndex];
+        backrefLength = ovector[2 * backrefIndex + 1] - backrefStart;
+    } else
+        continue;
+
+    substitutedReplacement = substitutedReplacement.substr(0, i) + source.substr(backrefStart, backrefLength) + substitutedReplacement.substr(i + 2 + advance);
+    i += backrefLength - 1; // - 1 offsets 'i + 1'
   }
 
   return substitutedReplacement;
@@ -625,19 +642,37 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     }
     break;
   case ToLowerCase:
-  case ToLocaleLowerCase: // FIXME: To get this 100% right we need to detect Turkish and change I to lowercase i without a dot.
+  case ToLocaleLowerCase: { // FIXME: See http://www.unicode.org/Public/UNIDATA/SpecialCasing.txt for locale-sensitive mappings that aren't implemented.
     u = s;
-    for (i = 0; i < len; i++)
-      u[i] = u[i].toLower();
-    result = jsString(u);
+    u.copyForWriting();
+    uint16_t* dataPtr = reinterpret_cast<uint16_t*>(u.rep()->data());
+    uint16_t* destIfNeeded;
+
+    int len = KXMLCore::Unicode::toLower(dataPtr, u.size(), destIfNeeded);
+    if (len >= 0)
+        result = jsString(UString(reinterpret_cast<UChar *>(destIfNeeded ? destIfNeeded : dataPtr), len));
+    else
+        result = jsString(s);
+
+    free(destIfNeeded);
     break;
+  }
   case ToUpperCase:
-  case ToLocaleUpperCase: // FIXME: To get this 100% right we need to detect Turkish and change i to uppercase I with a dot.
+  case ToLocaleUpperCase: { // FIXME: See http://www.unicode.org/Public/UNIDATA/SpecialCasing.txt for locale-sensitive mappings that aren't implemented.
     u = s;
-    for (i = 0; i < len; i++)
-      u[i] = u[i].toUpper();
-    result = jsString(u);
+    u.copyForWriting();
+    uint16_t* dataPtr = reinterpret_cast<uint16_t*>(u.rep()->data());
+    uint16_t* destIfNeeded;
+
+    int len = KXMLCore::Unicode::toUpper(dataPtr, u.size(), destIfNeeded);
+    if (len >= 0)
+        result = jsString(UString(reinterpret_cast<UChar *>(destIfNeeded ? destIfNeeded : dataPtr), len));
+    else
+        result = jsString(s);
+
+    free(destIfNeeded);
     break;
+  }
 #ifndef KJS_PURE_ECMA
   case Big:
     result = jsString("<big>" + s + "</big>");

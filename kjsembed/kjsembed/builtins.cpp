@@ -55,7 +55,7 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     if( args.size() == 1)
     {
         KJS::UString filename = args[0]->toString(exec);
-        Engine::runFile( exec->interpreter(), filename );
+        Engine::runFile( exec->dynamicInterpreter(), filename );
     }
     return KJS::Null();
 }

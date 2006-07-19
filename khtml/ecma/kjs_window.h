@@ -121,7 +121,7 @@ namespace KJS {
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const {
-        KParts::ReadOnlyPart *activePart = static_cast<KJS::ScriptInterpreter *>(  exec->interpreter() )->part();
+        KParts::ReadOnlyPart *activePart = static_cast<KJS::ScriptInterpreter *>(  exec->dynamicInterpreter() )->part();
       if ( activePart == part() ) return true;
       return checkIsSafeScript( activePart );
     }

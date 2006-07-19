@@ -119,7 +119,7 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
         return new KJS::JSObject();
 
     const QMetaObject *meta = value->metaObject();
-    KJS::JSObject *parent = exec->interpreter()->globalObject();
+    KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
     KJS::JSObject *returnValue;
 
     QString clazz;

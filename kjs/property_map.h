@@ -28,8 +28,8 @@
 
 namespace KJS {
 
+    class PropertyNameArray;
     class JSObject;
-    class ReferenceList;
     class JSValue;
     
     class SavedProperty;
@@ -76,19 +76,19 @@ namespace KJS {
         void put(const Identifier &name, JSValue *value, int attributes, bool roCheck = false);
         void remove(const Identifier &name);
         JSValue *get(const Identifier &name) const;
-        JSValue *get(const Identifier &name, int &attributes) const;
+        JSValue *get(const Identifier &name, unsigned &attributes) const;
         JSValue **getLocation(const Identifier &name);
 
         void mark() const;
-        void addEnumerablesToReferenceList(ReferenceList &, JSObject *) const;
-        void addSparseArrayPropertiesToReferenceList(ReferenceList &, JSObject *) const;
+        void getEnumerablePropertyNames(PropertyNameArray&) const;
+        void getSparseArrayPropertyNames(PropertyNameArray&) const;
 
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);
 
         bool isEmpty() const;
 
-        bool hasGetterSetterProperties() const { return _singleEntry.globalGetterSetterFlag != 0; }
+        bool hasGetterSetterProperties() const { return _singleEntry.globalGetterSetterFlag; }
         void setHasGetterSetterProperties(bool f) { _singleEntry.globalGetterSetterFlag = f; }
 
         bool containsGettersOrSetters() const;

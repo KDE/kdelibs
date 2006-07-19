@@ -40,11 +40,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef APPLE_CHANGES
-#include <unicode/uchar.h>
-#else
-#include <QChar>
-#endif
+#include <kxmlcore/unicode/Unicode.h>
 
 namespace KJS {
 
@@ -59,9 +55,10 @@ const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 
     OwnPtr<Parameter> next;
   };
 
-FunctionImp::FunctionImp(ExecState *exec, const Identifier &n)
+FunctionImp::FunctionImp(ExecState *exec, const Identifier &n, FunctionBodyNode* b)
   : InternalFunctionImp(static_cast<FunctionPrototype*>
                         (exec->lexicalInterpreter()->builtinFunctionPrototype()), n)
+  , body(b)
 {
 }
 
@@ -69,22 +66,23 @@ FunctionImp::~FunctionImp()
 {
 }
 
-JSValue *FunctionImp::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+JSValue *FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
   JSObject *globalObj = exec->dynamicInterpreter()->globalObject();
 
   // enter a new execution context
-  ContextImp ctx(globalObj, exec->dynamicInterpreter()->imp(), thisObj, codeType(),
-                 exec->context().imp(), this, &args);
+  Context ctx(globalObj, exec->dynamicInterpreter(), thisObj, body.get(),
+                 codeType(), exec->context(), this, &args);
   ExecState newExec(exec->dynamicInterpreter(), &ctx);
-  newExec.setException(exec->exception()); // could be null
+  if (exec->hadException())
+    newExec.setException(exec->exception());
 
   // assign user supplied arguments to parameters
   processParameters(&newExec, args);
   // add variable declarations (initialized to undefined)
   processVarDecls(&newExec);
 
-  Debugger *dbg = exec->dynamicInterpreter()->imp()->debugger();
+  Debugger *dbg = exec->dynamicInterpreter()->debugger();
   int sid = -1;
   int lineno = -1;
   if (dbg) {
@@ -102,7 +100,7 @@ JSValue *FunctionImp::callAsFunction(ExecState *exec, JSObject *thisObj, const L
 
   Completion comp = execute(&newExec);
 
-  // if an exception occurred, propogate it back to the previous execution object
+  // if an exception occured, propogate it back to the previous execution object
   if (newExec.hadException())
     comp = Completion(Throw, newExec.exception());
 
@@ -114,6 +112,11 @@ JSValue *FunctionImp::callAsFunction(ExecState *exec, JSObject *thisObj, const L
   else
     fprintf(stderr, "returning: undefined\n");
 #endif
+
+  // The debugger may have been deallocated by now if the WebFrame
+  // we were running in has been destroyed, so refetch it.
+  // See http://bugzilla.opendarwin.org/show_bug.cgi?id=9477
+  dbg = exec->dynamicInterpreter()->debugger();
 
   if (dbg) {
     if (inherits(&DeclaredFunctionImp::info))
@@ -166,12 +169,12 @@ UString FunctionImp::parameterString() const
 // ECMA 10.1.3q
 void FunctionImp::processParameters(ExecState *exec, const List &args)
 {
-  JSObject *variable = exec->context().imp()->variableObject();
+  JSObject* variable = exec->context()->variableObject();
 
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
 	  "processing parameters for %s call\n",
-	  functionName().isEmpty() ? "(internal)" : functionName().ascii());
+	  name().isEmpty() ? "(internal)" : name().ascii());
 #endif
 
   if (param) {
@@ -203,10 +206,10 @@ void FunctionImp::processVarDecls(ExecState * /*exec*/)
 {
 }
 
-JSValue *FunctionImp::argumentsGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   FunctionImp *thisObj = static_cast<FunctionImp *>(slot.slotBase());
-  ContextImp *context = exec->_context;
+  Context *context = exec->m_context;
   while (context) {
     if (context->function() == thisObj) {
       return static_cast<ActivationImp *>(context->activationObject())->get(exec, propertyName);
@@ -216,7 +219,7 @@ JSValue *FunctionImp::argumentsGetter(ExecState *exec, JSObject *originalObject,
   return jsNull();
 }
 
-JSValue *FunctionImp::lengthGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *FunctionImp::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   FunctionImp *thisObj = static_cast<FunctionImp *>(slot.slotBase());
   const Parameter *p = thisObj->param.get();
@@ -235,13 +238,13 @@ bool FunctionImp::getOwnPropertySlot(ExecState *exec, const Identifier& property
         slot.setCustom(this, argumentsGetter);
         return true;
     }
-
+    
     // Compute length of parameters.
     if (propertyName == lengthPropertyName) {
         slot.setCustom(this, lengthGetter);
         return true;
     }
-
+    
     return InternalFunctionImp::getOwnPropertySlot(exec, propertyName, slot);
 }
 
@@ -270,24 +273,24 @@ Identifier FunctionImp::getParameterName(int index)
 {
   int i = 0;
   Parameter *p = param.get();
-
+  
   if(!p)
     return Identifier::null();
-
+  
   // skip to the parameter we want
   while (i++ < index && (p = p->next.get()))
     ;
-
+  
   if (!p)
     return Identifier::null();
-
+  
   Identifier name = p->name;
 
   // Are there any subsequent parameters with the same name?
   while ((p = p->next.get()))
     if (p->name == name)
       return Identifier::null();
-
+  
   return name;
 }
 
@@ -298,7 +301,7 @@ const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 
 
 DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const Identifier &n,
 					 FunctionBodyNode *b, const ScopeChain &sc)
-  : FunctionImp(exec,n), body(b)
+  : FunctionImp(exec, n, b)
 {
   setScope(sc);
 }
@@ -344,10 +347,10 @@ void DeclaredFunctionImp::processVarDecls(ExecState *exec)
 
 // ------------------------------ IndexToNameMap ---------------------------------
 
-// We map indexes in the arguments array to their corresponding argument names.
-// Example: function f(x, y, z): arguments[0] = x, so we map 0 to Identifier("x").
+// We map indexes in the arguments array to their corresponding argument names. 
+// Example: function f(x, y, z): arguments[0] = x, so we map 0 to Identifier("x"). 
 
-// Once we have an argument name, we can get and set the argument's value in the
+// Once we have an argument name, we can get and set the argument's value in the 
 // activation object.
 
 // We use Identifier::null to indicate that a given argument's value
@@ -357,9 +360,9 @@ IndexToNameMap::IndexToNameMap(FunctionImp *func, const List &args)
 {
   _map = new Identifier[args.size()];
   this->size = args.size();
-
+  
   int i = 0;
-  ListIterator iterator = args.begin();
+  ListIterator iterator = args.begin(); 
   for (; iterator != args.end(); i++, iterator++)
     _map[i] = func->getParameterName(i); // null if there is no corresponding parameter
 }
@@ -372,16 +375,16 @@ bool IndexToNameMap::isMapped(const Identifier &index) const
 {
   bool indexIsNumber;
   int indexAsNumber = index.toUInt32(&indexIsNumber);
-
+  
   if (!indexIsNumber)
     return false;
-
+  
   if (indexAsNumber >= size)
     return false;
 
   if (_map[indexAsNumber].isNull())
     return false;
-
+  
   return true;
 }
 
@@ -391,7 +394,7 @@ void IndexToNameMap::unMap(const Identifier &index)
   int indexAsNumber = index.toUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
-
+  
   _map[indexAsNumber] = Identifier::null();
 }
 
@@ -406,7 +409,7 @@ Identifier& IndexToNameMap::operator[](const Identifier &index)
   int indexAsNumber = index.toUInt32(&indexIsNumber);
 
   assert(indexIsNumber && indexAsNumber < size);
-
+  
   return (*this)[indexAsNumber];
 }
 
@@ -416,15 +419,15 @@ const ClassInfo Arguments::info = {"Arguments", 0, 0, 0};
 
 // ECMA 10.1.8
 Arguments::Arguments(ExecState *exec, FunctionImp *func, const List &args, ActivationImp *act)
-: JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
+: JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()), 
 _activationObject(act),
 indexToNameMap(func, args)
 {
   putDirect(calleePropertyName, func, DontEnum);
   putDirect(lengthPropertyName, args.size(), DontEnum);
-
+  
   int i = 0;
-  ListIterator iterator = args.begin();
+  ListIterator iterator = args.begin(); 
   for (; iterator != args.end(); i++, iterator++) {
     if (!indexToNameMap.isMapped(Identifier::from(i))) {
       JSObject::put(exec, Identifier::from(i), *iterator, DontEnum);
@@ -432,14 +435,14 @@ indexToNameMap(func, args)
   }
 }
 
-void Arguments::mark()
+void Arguments::mark() 
 {
   JSObject::mark();
   if (_activationObject && !_activationObject->marked())
     _activationObject->mark();
 }
 
-JSValue *Arguments::mappedIndexGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *Arguments::mappedIndexGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   Arguments *thisObj = static_cast<Arguments *>(slot.slotBase());
   return thisObj->_activationObject->get(exec, thisObj->indexToNameMap[propertyName]);
@@ -464,7 +467,7 @@ void Arguments::put(ExecState *exec, const Identifier &propertyName, JSValue *va
   }
 }
 
-bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
+bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName) 
 {
   if (indexToNameMap.isMapped(propertyName)) {
     indexToNameMap.unMap(propertyName);
@@ -486,14 +489,14 @@ ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
   // FIXME: Do we need to support enumerating the arguments property?
 }
 
-JSValue *ActivationImp::argumentsGetter(ExecState *exec, JSObject *originalObject, const Identifier& propertyName, const PropertySlot& slot)
+JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   ActivationImp *thisObj = static_cast<ActivationImp *>(slot.slotBase());
 
   // default: return builtin arguments array
   if (!thisObj->_argumentsObject)
     thisObj->createArgumentsObject(exec);
-
+  
   return thisObj->_argumentsObject;
 }
 
@@ -528,7 +531,7 @@ bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyNa
     return JSObject::deleteProperty(exec, propertyName);
 }
 
-void ActivationImp::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
+void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* value, int attr)
 {
   // There's no way that an activation object can have a prototype or getter/setter properties
   assert(!_prop.hasGetterSetterProperties());
@@ -539,7 +542,7 @@ void ActivationImp::put(ExecState *exec, const Identifier &propertyName, JSValue
 
 void ActivationImp::mark()
 {
-    if (_function && !_function->marked())
+    if (_function && !_function->marked()) 
         _function->mark();
     _arguments.mark();
     if (_argumentsObject && !_argumentsObject->marked())
@@ -572,7 +575,7 @@ static JSValue *encode(ExecState *exec, const List &args, const char *do_not_esc
   UString r = "", s, str = args[0]->toString(exec);
   CString cstr = str.UTF8String();
   const char *p = cstr.c_str();
-  for (int k = 0; k < cstr.size(); k++, p++) {
+  for (size_t k = 0; k < cstr.size(); k++, p++) {
     char c = *p;
     if (c && strchr(do_not_escape, c)) {
       r.append(c);
@@ -664,11 +667,7 @@ static bool isStrWhiteSpace(unsigned short c)
         case 0x2029:
             return true;
         default:
-#ifdef APPLE_CHANGES
-            return u_charType(c) == U_SPACE_SEPARATOR;
-#else
-	    return QChar(c).isSpace();
-#endif
+            return KXMLCore::Unicode::isSeparatorSpace(c);
     }
 }
 
@@ -788,40 +787,41 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
         return x;
       else {
         UString s = x->toString(exec);
-
+        
         int sid;
         int errLine;
         UString errMsg;
         RefPtr<ProgramNode> progNode(Parser::parse(UString(), 0, s.data(),s.size(),&sid,&errLine,&errMsg));
 
-        Debugger *dbg = exec->dynamicInterpreter()->imp()->debugger();
+        Debugger *dbg = exec->dynamicInterpreter()->debugger();
         if (dbg) {
-          bool cont = dbg->sourceParsed(exec, sid, UString(), s, errLine);
+          bool cont = dbg->sourceParsed(exec, sid, UString(), s, 0, errLine, errMsg);
           if (!cont)
             return jsUndefined();
         }
 
         // no program node means a syntax occurred
-        if (!progNode) {
+        if (!progNode)
           return throwError(exec, SyntaxError, errMsg, errLine, sid, NULL);
-        }
 
         // enter a new execution context
-        JSObject *thisVal = static_cast<JSObject *>(exec->context().thisValue());
-        ContextImp ctx(exec->dynamicInterpreter()->globalObject(),
-                       exec->dynamicInterpreter()->imp(),
+        JSObject *thisVal = static_cast<JSObject *>(exec->context()->thisValue());
+        Context ctx(exec->dynamicInterpreter()->globalObject(),
+                       exec->dynamicInterpreter(),
                        thisVal,
+                       progNode.get(),
                        EvalCode,
-                       exec->context().imp());
-
+                       exec->context());
+        
         ExecState newExec(exec->dynamicInterpreter(), &ctx);
-        newExec.setException(exec->exception()); // could be null
-
+        if (exec->hadException())
+            newExec.setException(exec->exception());
+        
         // execute the code
         progNode->processVarDecls(&newExec);
         Completion c = progNode->execute(&newExec);
 
-        // if an exception occurred, propogate it back to the previous execution object
+        // if an exception occured, propogate it back to the previous execution object
         if (newExec.hadException())
           exec->setException(newExec.exception());
 

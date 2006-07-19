@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _BOOL_OBJECT_H_
-#define _BOOL_OBJECT_H_
+#ifndef BOOL_OBJECT_H_
+#define BOOL_OBJECT_H_
 
 #include "internal.h"
 #include "function_object.h"

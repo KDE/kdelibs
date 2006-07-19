@@ -103,7 +103,7 @@ namespace KJS {
     /**
      * Mark objects in the DOMObject cache.
      */
-    virtual void mark();
+    virtual void mark(bool isMain);
     KParts::ReadOnlyPart* part() const;
 
     virtual int rtti() { return 1; }
@@ -118,13 +118,25 @@ namespace KJS {
      * "Smart" window.open policy
      */
     bool isWindowOpenAllowed() const;
-
+    
+    /**
+     * CPU guard API. This should be used instead of Interpreter
+     * methods as it manages the timeouts, including VG support
+     */
+    virtual bool shouldInterruptScript() const;
+    void startCPUGuard();
+    void stopCPUGuard();
+    
+    static void turnOffCPUGuard() {
+        s_disableCPUGuard = true;
+    }
   private:
     khtml::ChildFrame* m_frame;
     HashMap<void*, DOMObject*> m_domObjects;
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;
+    static bool s_disableCPUGuard;
   };
 
   /**
@@ -252,7 +264,7 @@ namespace KJS {
     DOMObject *ret;
     if (!domObj)
       return Null();
-    ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->interpreter());
+    ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
     if ((ret = interp->getDOMObject(domObj)))
       return ret;
     else {

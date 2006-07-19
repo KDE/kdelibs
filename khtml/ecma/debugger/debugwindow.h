@@ -144,7 +144,7 @@ public:
 public:
     // KJS Debugger Methods
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-                      const UString &source, int errorLine);
+                      const UString &source, int startingLineNumber, int errorLine);
     bool sourceUnused(ExecState *exec, int sourceId);
     bool exception(ExecState *exec, int sourceId, int lineno, JSObject *exceptionObj);
     bool atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine);

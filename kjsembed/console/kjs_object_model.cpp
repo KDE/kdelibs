@@ -20,8 +20,9 @@
 #include <QPixmap>
 #include <QDebug>
 
+#include <kjs/object.h>
 #include <kjs/interpreter.h>
-#include <kjs/reference_list.h>
+#include <kjs/PropertyNameArray.h>
 
 #include "kjs_object_model.h"
 
@@ -58,15 +59,15 @@ Qt::ItemFlags KJSObjectModel::flags(const QModelIndex &index) const
 int KJSObjectModel::rowCount(const QModelIndex &parent ) const
 {
     KJS::ExecState *exec = m_js->globalExec();
-    KJS::ReferenceList props;
+    KJS::PropertyNameArray props;
     if (!parent.isValid())
-        props = m_root->propList(exec);
+        m_root->getPropertyNames(exec, props);
     else
     {
         Node *item = static_cast<Node*>(parent.internalPointer());
-        props = item->instance->propList(exec);
+        item->instance->getPropertyNames(exec, props);
     }
-    return props.length();
+    return props.size();
 }
 
 int KJSObjectModel::columnCount(const QModelIndex &parent ) const
@@ -102,13 +103,14 @@ QModelIndex KJSObjectModel::index(int row, int column, const QModelIndex &parent
     else
         parentInstance = static_cast<Node*>(parent.internalPointer())->instance;
     int idx = 0;
-    KJS::ReferenceList props = parentInstance->propList(exec);
-    for( KJS::ReferenceListIterator ref = props.begin(); ref != props.end(); ref++)
+    KJS::PropertyNameArray props;
+    parentInstance->getPropertyNames(exec, props);
+    for( KJS::PropertyNameArrayIterator ref = props.begin(); ref != props.end(); ref++)
     {
         if( idx == row)
         {
                 childItem = new Node;
-                childItem->name = ref->getPropertyName(exec).ascii();
+                childItem->name = ref->ascii(); //### M.O.: this is wrong, can be unicode.
                 childItem->instance = parentInstance->get( exec,
                         childItem->name.constData() )->toObject(exec);
                 childItem->parent = static_cast<Node*>(parent.internalPointer());
