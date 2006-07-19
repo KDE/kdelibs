@@ -454,6 +454,8 @@ void KateCSmartIndent::processLine (KateDocCursor &line)
         textLine->stringAtPos (firstChar, "private") ||
         textLine->stringAtPos (firstChar, "protected") ||
         textLine->stringAtPos (firstChar, "signals") ||
+        textLine->stringAtPos (firstChar, "Q_SIGNALS") ||
+        textLine->stringAtPos (firstChar, "Q_SLOTS") ||
         textLine->stringAtPos (firstChar, "slots"))
     {
       indent = findOpeningBrace(line) + indentWidth;
@@ -729,8 +731,12 @@ uint KateCSmartIndent::calcIndent(KateDocCursor &begin, bool needContinue)
           ch = textLine->getChar(specialIndent + 9);
         else if (textLine->stringAtPos(specialIndent, "signals"))
           ch = textLine->getChar(specialIndent + 7);
+        else if (textLine->stringAtPos(specialIndent, "Q_SIGNALS"))
+          ch = textLine->getChar(specialIndent + 9);
         else if (textLine->stringAtPos(specialIndent, "slots"))
           ch = textLine->getChar(specialIndent + 5);
+        else if (textLine->stringAtPos(specialIndent, "Q_SLOTS"))
+          ch = textLine->getChar(specialIndent + 7);
 
         if (ch.isNull() || (!ch.isSpace() && ch != '(' && ch != ':'))
           continue;
