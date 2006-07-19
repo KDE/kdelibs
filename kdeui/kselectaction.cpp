@@ -109,7 +109,7 @@ KSelectAction::KSelectAction( const KIcon & icon, const QString & text, KActionC
 }
 
 KSelectAction::KSelectAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KAction(icon, text, parent, name)
+  : KAction(KIcon(icon), text, parent, name)
   , d(new KSelectActionPrivate())
 {
   init();
@@ -117,36 +117,43 @@ KSelectAction::KSelectAction( const QString & icon, const QString & text, KActio
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               KActionCollection* parent, const QString& name )
-  : KAction( text, cut, 0,0,parent, name )
+  : KAction( text, parent, name )
   , d(new KSelectActionPrivate())
-{
+{ 
+  setShortcut(cut);
   init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const KShortcut& cut,
                               const QObject* receiver, const char* slot,
                               KActionCollection* parent, const QString& name )
-  : KAction( text, cut, receiver, slot, parent, name )
+  : KAction( text, parent, name )
   , d(new KSelectActionPrivate())
 {
+  connect(this, SIGNAL(triggered(bool)), receiver, slot);
+  setShortcut(cut);
   init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const KShortcut& cut,
                               KActionCollection* parent, const QString& name )
-  : KAction( text, pix, cut, 0,0,parent, name )
+  : KAction( text, parent, name )
   , d(new KSelectActionPrivate())
 {
+  setShortcut(cut);
+  QAction::setIcon(pix);
   init();
 }
 
 KSelectAction::KSelectAction( const QString& text, const QString& pix,
                               const KShortcut& cut,
                               KActionCollection* parent, const QString& name )
-  : KAction( text, pix, cut, 0,0,parent, name )
+  : KAction( text, parent, name )
   , d(new KSelectActionPrivate())
 {
+  setShortcut(cut);
+  setIcon(KIcon(pix));
   init();
 }
 
@@ -155,9 +162,12 @@ KSelectAction::KSelectAction( const QString& text, const QIcon& pix,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
                               const QString& name )
-  : KAction( text, pix, cut, receiver, slot, parent, name )
+  : KAction( text, parent, name )
   , d(new KSelectActionPrivate())
 {
+  setShortcut(cut);
+  QAction::setIcon(pix);
+  connect(this, SIGNAL(triggered(bool)), receiver, slot);
   init();
 }
 
@@ -166,9 +176,12 @@ KSelectAction::KSelectAction( const QString& text, const QString& pix,
                               const QObject* receiver,
                               const char* slot, KActionCollection* parent,
                               const QString& name )
-  : KAction( text, pix, cut, receiver, slot, parent, name )
+  : KAction( text, parent, name )
   , d(new KSelectActionPrivate())
 {
+  setShortcut(cut);
+  setIcon(KIcon(pix));
+  connect(this, SIGNAL(triggered(bool)), receiver, slot);
   init();
 }
 
