@@ -1,7 +1,7 @@
-// -*- mode: c++; c-basic-offset: 4 -*-
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2005 Apple Computer, Inc.
+ *  Copyright (C) 2006 George Staikos <staikos@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,37 +20,18 @@
  *
  */
 
-#ifndef KXMLCORE_FAST_MALLOC_H
-#define KXMLCORE_FAST_MALLOC_H
+#ifndef KJS_UNICODE_H
+#define KJS_UNICODE_H
 
-#include <stdlib.h>
-#include <new>
-#include <kxmlcore/Platform.h>
+#include "../Platform.h"
 
-namespace KXMLCore {
+#if USE(QT4_UNICODE)
+#include "qt4/UnicodeQt4.h"
+#elif USE(ICU_UNICODE)
+#include "icu/UnicodeIcu.h"
+#else
+#error "Unknown Unicode implementation"
+#endif
 
-    inline void *fastMalloc(size_t n) {
-        return malloc(n);
-    }
-
-    inline void *fastCalloc(size_t n_elements, size_t element_size) {
-        return calloc(n_elements, element_size);
-    }
-
-    inline void fastFree(void* p) {
-        free(p);
-    }
-
-    inline void *fastRealloc(void* p, size_t n) {
-        return realloc(p, n);
-    }
-    
-} // namespace KXMLCore
-
-using KXMLCore::fastMalloc;
-using KXMLCore::fastCalloc;
-using KXMLCore::fastRealloc;
-using KXMLCore::fastFree;
-
-
-#endif /* KXMLCORE_FAST_MALLOC_H */
+#endif
+// vim: ts=2 sw=2 et

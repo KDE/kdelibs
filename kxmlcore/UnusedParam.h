@@ -1,7 +1,6 @@
-// -*- mode: c++; c-basic-offset: 4 -*-
+/* -*- mode: c++; c-basic-offset: 4 -*- */
 /*
- *  This file is part of the KDE libraries
- *  Copyright (C) 2005 Apple Computer, Inc.
+ *  Copyright (C) 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,37 +19,12 @@
  *
  */
 
-#ifndef KXMLCORE_FAST_MALLOC_H
-#define KXMLCORE_FAST_MALLOC_H
+#ifndef KXMLCORE_UNUSED_PARAM
+#define KXMLCORE_UNUSED_PARAM
 
-#include <stdlib.h>
-#include <new>
-#include <kxmlcore/Platform.h>
+/* don't use this for C++, it should only be used in plain C files or
+   ObjC methods, where leaving off the parameter name is not allowed. */
 
-namespace KXMLCore {
+#define UNUSED_PARAM(x) (void)x
 
-    inline void *fastMalloc(size_t n) {
-        return malloc(n);
-    }
-
-    inline void *fastCalloc(size_t n_elements, size_t element_size) {
-        return calloc(n_elements, element_size);
-    }
-
-    inline void fastFree(void* p) {
-        free(p);
-    }
-
-    inline void *fastRealloc(void* p, size_t n) {
-        return realloc(p, n);
-    }
-    
-} // namespace KXMLCore
-
-using KXMLCore::fastMalloc;
-using KXMLCore::fastCalloc;
-using KXMLCore::fastRealloc;
-using KXMLCore::fastFree;
-
-
-#endif /* KXMLCORE_FAST_MALLOC_H */
+#endif

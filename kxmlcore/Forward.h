@@ -1,7 +1,5 @@
-// -*- mode: c++; c-basic-offset: 4 -*-
 /*
- *  This file is part of the KDE libraries
- *  Copyright (C) 2005 Apple Computer, Inc.
+ *  Copyright (C) 2006 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,37 +18,23 @@
  *
  */
 
-#ifndef KXMLCORE_FAST_MALLOC_H
-#define KXMLCORE_FAST_MALLOC_H
+#ifndef KXMLCORE_FORWARD_H
+#define KXMLCORE_FORWARD_H
 
-#include <stdlib.h>
-#include <new>
-#include <kxmlcore/Platform.h>
+#include <stddef.h>
 
 namespace KXMLCore {
+    template<typename T> class ListRefPtr;
+    template<typename T> class OwnArrayPtr;
+    template<typename T> class OwnPtr;
+    template<typename T> class PassRefPtr;
+    template<typename T> class RefPtr;
+}
 
-    inline void *fastMalloc(size_t n) {
-        return malloc(n);
-    }
+using KXMLCore::ListRefPtr;
+using KXMLCore::OwnArrayPtr;
+using KXMLCore::OwnPtr;
+using KXMLCore::PassRefPtr;
+using KXMLCore::RefPtr;
 
-    inline void *fastCalloc(size_t n_elements, size_t element_size) {
-        return calloc(n_elements, element_size);
-    }
-
-    inline void fastFree(void* p) {
-        free(p);
-    }
-
-    inline void *fastRealloc(void* p, size_t n) {
-        return realloc(p, n);
-    }
-    
-} // namespace KXMLCore
-
-using KXMLCore::fastMalloc;
-using KXMLCore::fastCalloc;
-using KXMLCore::fastRealloc;
-using KXMLCore::fastFree;
-
-
-#endif /* KXMLCORE_FAST_MALLOC_H */
+#endif

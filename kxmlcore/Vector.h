@@ -24,9 +24,15 @@
 #define KXMLCORE_VECTOR_H
 
 #include "Assertions.h"
+#include "FastMalloc.h"
+#include "VectorTraits.h"
+#include <limits>
 #include <stdlib.h>
 #include <utility>
-#include "VectorTraits.h"
+
+// Temporary workaround for Win32.
+// We should use NOMINMAX instead.
+#undef max
 
 namespace KXMLCore {
 
@@ -241,6 +247,8 @@ namespace KXMLCore {
         {
             ASSERT(newCapacity >= m_capacity);
             m_capacity = newCapacity;
+            if (newCapacity > std::numeric_limits<size_t>::max() / sizeof(T))
+                abort();
             m_buffer = reinterpret_cast<T*>(fastMalloc(newCapacity * sizeof(T)));
         }
 
@@ -324,9 +332,6 @@ namespace KXMLCore {
         template<size_t otherCapacity> 
         Vector(const Vector<T, otherCapacity>&);
 
-	/** 
-	    Standard copy (assignment) operator
-	*/
         Vector& operator=(const Vector&);
         template<size_t otherCapacity> 
         Vector& operator=(const Vector<T, otherCapacity>&);
@@ -346,12 +351,18 @@ namespace KXMLCore {
             return m_impl.buffer()[i]; 
         }
 
+        T& operator[](long i) { return at(i); }
+        const T& operator[](long i) const { return at(i); }
         T& operator[](unsigned long i) { return at(i); }
         const T& operator[](unsigned long i) const { return at(i); }
         T& operator[](int i) { return at(i); }
         const T& operator[](int i) const { return at(i); }
         T& operator[](unsigned i) { return at(i); }
         const T& operator[](unsigned i) const { return at(i); }
+        T& operator[](short i) { return at(i); }
+        const T& operator[](short i) const { return at(i); }
+        T& operator[](unsigned short i) { return at(i); }
+        const T& operator[](unsigned short i) const { return at(i); }
 
         T* data() { return m_impl.buffer(); }
         const T* data() const { return m_impl.buffer(); }
@@ -374,6 +385,7 @@ namespace KXMLCore {
         void clear() { resize(0); }
 
         template<typename U> void append(const U&);
+        template<typename U> void append(const Vector<U>&);
         template<typename U> void insert(size_t position, const U&);
         void remove(size_t position);
 
@@ -395,6 +407,8 @@ namespace KXMLCore {
 
     private:
         void expandCapacity(size_t newMinCapacity);
+        const T* expandCapacity(size_t newMinCapacity, const T*);
+        template<typename U> U* expandCapacity(size_t newMinCapacity, U*); 
 
         size_t m_size;
         Impl m_impl;
@@ -480,6 +494,25 @@ namespace KXMLCore {
     }
     
     template<typename T, size_t inlineCapacity>
+    const T* Vector<T, inlineCapacity>::expandCapacity(size_t newMinCapacity, const T* ptr)
+    {
+        if (ptr < begin() || ptr >= end()) {
+            expandCapacity(newMinCapacity);
+            return ptr;
+        }
+        size_t index = ptr - begin();
+        expandCapacity(newMinCapacity);
+        return begin() + index;
+    }
+
+    template<typename T, size_t inlineCapacity> template<typename U>
+    inline U* Vector<T, inlineCapacity>::expandCapacity(size_t newMinCapacity, U* ptr)
+    {
+        expandCapacity(newMinCapacity);
+        return ptr;
+    }
+
+    template<typename T, size_t inlineCapacity>
     void Vector<T, inlineCapacity>::resize(size_t size)
     {
         if (size <= m_size)
@@ -512,21 +545,32 @@ namespace KXMLCore {
     template<typename T, size_t inlineCapacity> template<typename U>
     inline void Vector<T, inlineCapacity>::append(const U& val)
     {
+        const U* ptr = &val;
         if (size() == capacity())
-            expandCapacity(size() + 1);
-        new (end()) T(val);
+            ptr = expandCapacity(size() + 1, ptr);
+        new (end()) T(*ptr);
         ++m_size;
     }
 
     template<typename T, size_t inlineCapacity> template<typename U>
+    inline void Vector<T, inlineCapacity>::append(const Vector<U>& val)
+    {
+        if (size() + val.size() >= capacity())
+            expandCapacity(size() + val.size());
+        for (unsigned i = 0; i < val.size(); i++)
+            append(val[i]);
+    }
+    
+    template<typename T, size_t inlineCapacity> template<typename U>
     inline void Vector<T, inlineCapacity>::insert(size_t position, const U& val)
     {
         ASSERT(position <= size());
+        const U* ptr = &val;
         if (size() == capacity())
-            expandCapacity(size() + 1);
+            ptr = expandCapacity(size() + 1, ptr);
         T* spot = begin() + position;
         TypeOperations::moveOverlapping(spot, end(), spot + 1);
-        new (spot) T(val);
+        new (spot) T(*ptr);
         ++m_size;
     }
 
@@ -541,11 +585,11 @@ namespace KXMLCore {
     }
 
     template<typename T, size_t inlineCapacity>
-    void deleteAllValues(Vector<T, inlineCapacity>& collection)
+    void deleteAllValues(const Vector<T, inlineCapacity>& collection)
     {
-        typedef Vector<T, inlineCapacity> Vec;
-        typename Vec::iterator end = collection.end();
-        for (typename Vec::iterator it = collection.begin(); it != collection.end(); ++it)
+        typedef typename Vector<T, inlineCapacity>::const_iterator iterator;
+        iterator end = collection.end();
+        for (iterator it = collection.begin(); it != end; ++it)
             delete *it;
     }
 
