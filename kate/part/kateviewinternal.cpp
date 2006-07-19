@@ -1284,8 +1284,11 @@ void KateViewInternal::end( bool sel )
   KateTextCursor c = cursor;
   int lc = l->lastChar();
 
+  // Apparently, currentRange().endCol differs by 1 depending on m_view->dynWordWrap()...
+  int endOfLine = currentRange().endCol - (m_view->dynWordWrap() ? 1 : 0);
+
   if (lc < 0 || c.col() == (lc + 1)) {
-    c.setCol(currentRange().endCol - 1);
+    c.setCol(endOfLine);
   } else {
     c.setCol(lc + 1);
   }
