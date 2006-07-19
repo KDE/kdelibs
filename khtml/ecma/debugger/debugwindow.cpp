@@ -238,7 +238,7 @@ DebugWindow::~DebugWindow()
 
 // -------------------------------------------------------------
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-                               const UString &source, int startingLineNumber, int errorLine)
+                               const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg)
 {
     Q_UNUSED(exec);
 
