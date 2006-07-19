@@ -296,7 +296,7 @@ void KMJobViewer::initActions()
 	connect(uact, SIGNAL(toggled(bool)), m_userfield, SLOT(setEnabled(bool)));
 	m_userfield->setEnabled(false);
 	m_userfield->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-	KAction *ufact = new KAction(i18n("User Name"), 0, 0, 0, actionCollection(), "view_username");
+	KAction *ufact = new KAction(i18n("User Name"), actionCollection(), "view_username");
 	ufact->setDefaultWidget(m_userfield);
 
 	if (!m_pop)
