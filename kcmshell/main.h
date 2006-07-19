@@ -89,7 +89,7 @@ public:
      * Constructor. Parameter @p dialogFace is passed to KCMultiDialog
      * unchanged.
      */
-    KCMShellMultiDialog(KPageDialog::FaceType dialogFace, const QString &caption, QWidget *parent=0);
+    KCMShellMultiDialog(KPageDialog::FaceType dialogFace, QWidget *parent = 0);
 
 public slots:
 

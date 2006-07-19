@@ -126,12 +126,10 @@ bool KCMShell::isRunning()
     return true;
 }
 
-KCMShellMultiDialog::KCMShellMultiDialog(KPageDialog::FaceType dialogFace, const QString &caption,
-        QWidget *parent)
+KCMShellMultiDialog::KCMShellMultiDialog(KPageDialog::FaceType dialogFace, QWidget *parent)
     : KCMultiDialog(parent)
 {
     setFaceType(dialogFace);
-    setCaption(caption);
     setModal(true);
 
     QDBus::sessionBus().registerObject("/KCModule/dialog", this, QDBusConnection::ExportSlots);
@@ -251,21 +249,26 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
 
     /* Check if this particular module combination is already running */
     app.setServiceName(serviceName);
-    if( app.isRunning() )
-    {
+    if( app.isRunning() ) {
         app.waitForExit();
         return 0;
     }
 
     KPageDialog::FaceType ftype = KPageDialog::Plain;
 
-    if ( modules.count() < 1 )
+    if (modules.count() < 1) {
         return 0;
-    else if( modules.count() > 1 )
+    } else if (modules.count() > 1) {
         ftype = KPageDialog::List;
+    }
 
-    KCMShellMultiDialog *dlg = new KCMShellMultiDialog(ftype,
-            i18n("Configure - %1", kapp->caption()));
+    KCMShellMultiDialog *dlg = new KCMShellMultiDialog(ftype);
+    KCmdLineArgs *kdeargs = KCmdLineArgs::parsedArgs("kde");
+    if (kdeargs && kdeargs->isSet("caption")) {
+        dlg->setCaption(QString());
+    } else if (modules.count() == 1) {
+        dlg->setCaption(modules.first()->name());
+    }
 
     for (KService::List::ConstIterator it = modules.begin(); it != modules.end(); ++it)
         dlg->addModule(*it);
