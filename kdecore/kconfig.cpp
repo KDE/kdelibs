@@ -89,14 +89,14 @@ KConfig::~KConfig()
   delete backEnd;
 }
 
-void KConfig::addFileToMergeStack( const QString &_fileName)
-{ backEnd->addFileToMergeStack(_fileName); }
+QStringList KConfig::extraConfigFiles() const
+{ return backEnd->extraConfigFiles(); }
 
-void KConfig::removeFileFromMergeStack( const QString &_fileName) const
-{ backEnd->removeFileFromMergeStack(_fileName); }
+void KConfig::setExtraConfigFiles(const QStringList &files)
+{ backEnd->setExtraConfigFiles(files); }
 
-void KConfig::clearMergeStack() const
-{ backEnd->clearMergeStack(); }
+void KConfig::removeAllExtraConfigFiles()
+{ backEnd->removeAllExtraConfigFiles(); }
 
 void KConfig::rollback(bool bDeep)
 {

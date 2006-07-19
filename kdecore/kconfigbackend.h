@@ -146,24 +146,23 @@ public:
   bool checkConfigFilesWritable(bool warnUser);
 
   /**
-   * Add a local file to the merge stack. The stack is last in first out with
-   * the top of the stack being the most specific config file.
-   * @param _fileName The full path of the local config file to add to the stack.
+   * Gets the extraConfigFiles in the merge stack.
    */
-  void addFileToMergeStack( const QString &_fileName);
+  QStringList extraConfigFiles() const;
 
   /**
-   * Remove a local file from the merge stack. The stack is last in first out with
+   * Sets the merge stack to the list of files. The stack is last in first out with
    * the top of the stack being the most specific config file.
-   * @param _fileName The full path of the local config file to remove from the stack.
+   * @param files A list of extra config files containing the full path of the
+   * local config file to remove from the stack.
    */
-  void removeFileFromMergeStack( const QString &_fileName);
+  void setExtraConfigFiles( const QStringList &files );
 
   /**
    * Remove all files from merge stack. This does not include the local file that
    * was specified in the constructor.
    */
-  void clearMergeStack();
+  void removeAllExtraConfigFiles();
 
   /**
    * Returns a lock file object for the configuration file

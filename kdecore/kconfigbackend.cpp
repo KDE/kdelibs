@@ -249,13 +249,19 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
    d->globalLockFile = 0;
 }
 
-void KConfigBackEnd::addFileToMergeStack( const QString &_fileName)
-{ mMergeStack.push(_fileName); }
+QStringList KConfigBackEnd::extraConfigFiles() const
+{
+	return mMergeStack.toList();
+}
 
-void KConfigBackEnd::removeFileFromMergeStack( const QString &_fileName)
-{ mMergeStack.remove(mMergeStack.indexOf(_fileName)); }
+void KConfigBackEnd::setExtraConfigFiles( const QStringList &files )
+{
+   removeAllExtraConfigFiles();
+   foreach( QString file, files )
+      mMergeStack.push(file);
+}
 
-void KConfigBackEnd::clearMergeStack() { mMergeStack.clear(); }
+void KConfigBackEnd::removeAllExtraConfigFiles() { mMergeStack.clear(); }
 
 KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
 {
