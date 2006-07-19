@@ -45,7 +45,6 @@
 #include <kcmoduleproxy.h>
 #include <kcmultidialog.h>
 #include <kdebug.h>
-#include <kpagedialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kservicetypetrader.h>
@@ -127,14 +126,13 @@ bool KCMShell::isRunning()
     return true;
 }
 
-KCMShellMultiDialog::KCMShellMultiDialog( int dialogFace, const QString& caption,
-        QWidget *parent, const char *name, bool modal)
-    : KCMultiDialog( parent )
+KCMShellMultiDialog::KCMShellMultiDialog(KPageDialog::FaceType dialogFace, const QString &caption,
+        QWidget *parent)
+    : KCMultiDialog(parent)
 {
-    setFaceType( (KPageDialog::FaceType)dialogFace );
-    setCaption( caption );
-    setObjectName( name );
-    setModal( modal );
+    setFaceType(dialogFace);
+    setCaption(caption);
+    setModal(true);
 
     QDBus::sessionBus().registerObject("/KCModule/dialog", this, QDBusConnection::ExportSlots);
 }
@@ -266,8 +264,8 @@ extern "C" KDE_EXPORT int kdemain(int _argc, char *_argv[])
     else if( modules.count() > 1 )
         ftype = KPageDialog::List;
 
-    KCMShellMultiDialog *dlg = new KCMShellMultiDialog( ftype,
-            i18n("Configure - %1", kapp->caption()), 0, "", true );
+    KCMShellMultiDialog *dlg = new KCMShellMultiDialog(ftype,
+            i18n("Configure - %1", kapp->caption()));
 
     for (KService::List::ConstIterator it = modules.begin(); it != modules.end(); ++it)
         dlg->addModule(*it);

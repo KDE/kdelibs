@@ -25,6 +25,7 @@
 
 #include <kapplication.h>
 #include <kcmultidialog.h>
+#include <kpagedialog.h>
 
 /**
  * The KApplication instance for kcmshell.
@@ -88,8 +89,7 @@ public:
      * Constructor. Parameter @p dialogFace is passed to KCMultiDialog
      * unchanged.
      */
-    KCMShellMultiDialog( int dialogFace, const QString& caption,
-            QWidget *parent=0, const char *name=0, bool modal=false);
+    KCMShellMultiDialog(KPageDialog::FaceType dialogFace, const QString &caption, QWidget *parent=0);
 
 public slots:
 
