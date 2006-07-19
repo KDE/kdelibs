@@ -191,7 +191,7 @@ by QX11Info::display()</li>
 <h4>KCharsets</h4>
 <ul>
 <li>KCharsets::codecForName cannot use glibc's i18n data anymore.
-(Note: this feature was new in KDE 3.5 but never publically announced.)</li>
+(Note: this feature was new in KDE 3.5 but never publicly announced.)</li>
 <li><b>TODO</b>: see which member functions can be removed</li>
 <li><b>TODO</b>: simplification of the encoding list tables
    (simply name and description, no need of two tables and an lists of aliases.</li>
@@ -338,7 +338,7 @@ Desktop Entry Spec</a>
 <h4>KKeySequence</h4>
 <ul>
 <li>Removed, use QKeySequence instead.</li>
-<li>Note that QKeySequence expects multiple shortcuts to be separated by ", " (ie a comma then a space) in converting from text.</li>
+<li>Note that QKeySequence expects multiple shortcuts to be separated by ", " (i.e. a comma then a space) in converting from text.</li>
 </ul>
 
 <h4>KLibFactory</h4>
@@ -487,7 +487,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 
 <h4>KVMAllocator</h4>
 <ul>
-<li>The two old copy methodes are removed, copyBlock equivalents are renamed to copy</li>
+<li>The two old copy methods are removed, copyBlock equivalents are renamed to copy</li>
 </ul>
 
 <h4>KWin</h4>
@@ -605,7 +605,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <li>ActivationReason has been removed (not supported by Qt). For a surrogate, you can connect to QMenu::triggered(QAction*), QToolBar::actionTriggered(QAction*), etc.</li>
 <li>setters are no longer slots; where they were used as such, an intermediary will be required</li>
 <li>New feature from Qt: statusTip() / setStatusTip().  Usually this will be the same as the tooltip.  It appears in the status bar whenever the action is hovered in a QMenu.  A porting convenience is being investigated for automatic toolTip() -&gt; statusTip(), but the best solution is to set both.</li>
-<li>New feature: globalShortcut() and globalShortcutAllowed().  Automatically communicates with KGlobalAccel to register a global shortcut (ie. one that does not need the application to have focus to be activated).</li>
+<li>New feature: globalShortcut() and globalShortcutAllowed().  Automatically communicates with KGlobalAccel to register a global shortcut (i.e. one that does not need the application to have focus to be activated).</li>
 <li>setShortcut() now defaults to setting the default shortcut as well (as it was by far the most common use case).  To just set the custom shortcut, use setShortcut(myShortcut, KAction::CustomShortcut)</li>
 <li>Porting example:
 <pre>
@@ -630,7 +630,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <ul>
 <li>constructor (QWidget* watch, ..) and setWidget() replaced by {set|add|remove}AssociatedWidget() - allows actions to respond to matching key presses on a widget level (basically a convenience method to have all actions in the collection added to the associated widget(s) and their shortcut scopes set to Qt::WidgetShortcut).</li>
 <li>*AutoConnectShortcuts removed - irrelevant</li>
-<li>*accel() removed - irrelevant (KAccel no longer handles keypresses)</li>
+<li>*accel() removed - irrelevant (KAccel no longer handles key presses)</li>
 <li>New functions setConfigGroup(), setConfigGlobal(), configGroup(), configIsGlobal() - the action collection now stores the group whether the config is global. referenced in readSettings() / writeSettings()</li>
 <li>readShortcutSettings() and writeShortcutSettings() renamed without the "Shortcut".  Set the configGroup() with setConfigGroup() either prior to each call, or (preferably) at the creation time of the action collection.</li>
 <li>{set}HighlightingEnabled(), {connect|disconnect}Highlight() removed - highlighting is always enabled now</li>
@@ -680,7 +680,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 </ul>
 
 <h4>KButtonBox</h4>
-<p>Replaced by KDialogButtonBox.   Add the role parametter to the addButton function. Or check if it can't be achieved using KDialog</p>
+<p>Replaced by KDialogButtonBox.   Add the role parameter to the addButton function. Or check if it can't be achieved using KDialog</p>
 
 
 <h4>KCharSelectTable</h4>
@@ -694,14 +694,14 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <h4>KColorDrag</h4>
 <ul>
 <li>has been moved as K3ColorDrag to kde3support</li>
-<li>use QMimeData  direcly instead or KColorMimeData, which closest resembles KColorDrag</li>
+<li>use QMimeData  directly instead or KColorMimeData, which closest resembles KColorDrag</li>
 </ul>
 
 <h4>KConfigDialog</h4>
 <ul>
 <li>The dialog name is now a QString instead of a const char*</li>
 <li>signal void settingsChanged(const char *dialogName); -&gt; void settingsChanged(const QString&amp; dialogName);</li>
-<li>signal void settingsChanged(); has dissapeared use the signal with the parameter instead. If you don't need the parameter don't connect it, e.g <pre>connect(myDialog, SIGNAL(settingsChanged(const QString&amp;)), this, SLOT(mySlot()));</pre></li>
+<li>signal void settingsChanged(); has disappeared - use the signal with the parameter instead. If you don't need the parameter don't connect it, e.g <pre>connect(myDialog, SIGNAL(settingsChanged(const QString&amp;)), this, SLOT(mySlot()));</pre></li>
 </ul>
 
 <h4>KContextMenuManager</h4>
@@ -921,10 +921,10 @@ if needed (see the KURLDrag section)</li>
 <h4>KMainWindow</h4>
 <ul>
 <li>getMemberList() was replaced by memberList() and memberList was renamed to mMemberList and made it private</li>
-<li>sizeForCentralWidgetSize(QSize size) returned the size the mainwindow should have so that the central widget will be of size.  You normally don't need this, the recommended way to achieve a certain central widget size is as follows.<br>
+<li>sizeForCentralWidgetSize(QSize size) returned the size the main window should have so that the central widget will be of size.  You normally don't need this, the recommended way to achieve a certain central widget size is as follows.<br>
  * Override sizeHint() in the central widget so that it returns the desired size.<br>
  * Call updateGeometry() in the central widget whenever the desired size changes. This ensures that the new sizeHint() is properly propagated to any parent layout.<br>
- * Now call adjustSize() in the mainwindow to resize the mainwindow such that the central widget will become the desired size.</li>
+ * Now call adjustSize() in the main window to resize the main window such that the central widget will become the desired size.</li>
 <li>Ported to QMainWindow</li>
 <li>accel() removed - KAccel no longer needed</li>
 </ul>
@@ -1276,8 +1276,8 @@ in the drop/paste side.</li>
 <h4>KFileItemList</h4>
 <ul>
   <li>KFileItemList has been ported from QPtrList to QList. This means you
-      have to iterate using either integers or java-style or stl iterators.
-      Here's the stl version:
+      have to iterate using either integers or java-style or STL iterators.
+      Here's the STL version:
    <pre>
     KFileItemList::const_iterator kit = list.begin();
     const KFileItemList::const_iterator kend = list.end();
@@ -1365,7 +1365,7 @@ and KIconLoader::loadMimeTypeIcon with that icon name.</li>
 <li>KMimeType::diagnoseFileName has been replaced with KMimeType::extractKnownExtension which returns the extension only, not the pattern</li>
 <li>KMimeType::mimeType(someName) now behaves like KServiceType::serviceType(someName), i.e. it returns 0 if that name doesn't exist,
 instead of returning the application/octet-stream mimetype. Test for null!</li>
-<li>iconForURL has been deprecated, will possily removed for KDE 4.0 final, use iconNameForURL instead</li>
+<li>iconForURL has been deprecated, will possibly be removed for KDE 4.0 final, use iconNameForURL instead</li>
 </ul>
 
 <h4>KProtocolInfo</h4>
@@ -1570,7 +1570,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h3>libkmid</h3>
 <ul>
-<li>Moved to kdemultimedia, where atm it is only used by kmid.</li>
+<li>Moved to kdemultimedia, where (at the moment) it is only used by kmid.</li>
 </ul>
 
 <h3><a name="kscreensaver">KScreensaver</a></h3>
@@ -1588,12 +1588,12 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <p>Instead of the "messages" target of the Makefile.am files,
 KDE4 uses now Bash scripts with Messages.sh file names.
 The Perl script branches/work/kde4-l10n/scripts/conversion/Makefile2Messages.pl
-can be used as an half-automatical conversion. (Please verify the result!)</p>
+can be used as an half-automatic conversion. (Please verify the result!)</p>
 
 <h4>rc.cpp file</h4>
 <p>The rc.cpp is now <em>always</em> generated. It is mandatory to have it as
 parameter of the $XGETTEXT if you are using the class KAboutData and if
-you are not explicitely setting KAboutData::setTranslator.</p>
+you are not explicitly setting KAboutData::setTranslator.</p>
 
 <h4>Gettext 0.15-pre</h4>
 <p>Scripty uses
@@ -1703,3 +1703,4 @@ ki18n("Welcome").toString(myLocale);
 
 </body>
 </html>
+
