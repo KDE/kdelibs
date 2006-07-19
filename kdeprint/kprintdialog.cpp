@@ -322,8 +322,8 @@ KPrintDialog::KPrintDialog(QWidget *parent)
         d->m_cmd->setWhatsThis(whatsThisExternalPrintCommand);
 	d->m_cmdlabel->setBuddy(d->m_cmd);
 	d->m_dummy = new KVBox(this);
-	d->m_plugin = new PluginComboBox(this);
-	d->m_extbtn = new KPushButton(this);
+	d->m_plugin = new PluginComboBox(main);
+	d->m_extbtn = new KPushButton(main);
 	d->m_extbtn->setToolTip(i18n("Show/hide advanced options"));
 	d->m_extbtn->setWhatsThis(whatsThisOptions);
 	d->m_persistent = new QCheckBox(i18n("&Keep this dialog open after printing"), main);

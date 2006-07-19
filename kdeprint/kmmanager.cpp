@@ -317,7 +317,7 @@ void KMManager::addPrinter(KMPrinter *p)
 			else
 			{
 				p->setDiscarded(false);
-// TODO: needs porting				m_printers.inSort(p);
+				m_printers.inSort(p);
 			}
 		}
 	}

@@ -229,10 +229,7 @@ class KMPrinterList : public QList<KMPrinter*>
 {
 public:
 	KMPrinterList() : QList<KMPrinter*>() {}
-  /* TODO: needs porting
-	virtual int compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2)
-	{ return KMPrinter::compare((KMPrinter*)i1, (KMPrinter*)i2); }
-  */
+	void inSort( KMPrinter* printer );
 };
 
 #endif

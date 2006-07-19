@@ -21,14 +21,17 @@
 
 #include <qheaderview.h>
 #include <qstandarditemmodel.h>
-#include <qtreeview.h>
+#include <qtreewidget.h>
+
+#include <kdebug.h>
 
 TreeComboBox::TreeComboBox(QWidget *parent)
 	: QComboBox(parent)
 {
-	QTreeView   *view = new QTreeView(this);
+	QTreeView   *view = new QTreeWidget();
 	view->header()->hide();
 	view->setRootIsDecorated(false);
+	setModel( view->model() );
 	setView(view);
 }
 

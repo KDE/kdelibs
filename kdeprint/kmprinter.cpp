@@ -220,3 +220,18 @@ QString KMPrinter::deviceProtocol() const
 	else
 		return QString();
 }
+
+
+
+void KMPrinterList::inSort( KMPrinter* printer )
+{
+	for ( int i = 0; i < size(); ++i )
+	{
+		if ( KMPrinter::compare( printer, at(i) ) < 0 )
+		{
+			insert( i, printer );
+			return;
+		}
+	}
+	append( printer );
+}
