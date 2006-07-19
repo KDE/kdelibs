@@ -137,7 +137,7 @@ class KSystemTimeZoneDataPrivate;
  *
  * To implement time zone classes to access a new time zone data source, you need
  * as a minimum to derive a new class from KTimeZoneSource, and implement one or
- * more parse() methods. If can know in advance what KTimeZone instances to create
+ * more parse() methods. If you can know in advance what KTimeZone instances to create
  * without having to parse the source data, you should reimplement the virtual method
  * KTimeZoneSource::parse(const KTimeZone*). Otherwise, you need to define your
  * own parse() methods with appropriate signatures, to both read and parse the new
@@ -253,7 +253,7 @@ class KSystemTimeZoneDataPrivate;
  * KTimeZone instances in the collection are owned by the KTimeZones instance,
  * and are deleted when the KTimeZones instance is destructed.
  *
- * Different time zone sources can define the same time zone differently. (For
+ * Different time zone sources could define the same time zone differently. (For
  * example, a calendar file originating from another system might hold its own
  * time zone definitions, which may not necessarily be identical to your own
  * system's definitions.) In order to keep conflicting definitions separate,
