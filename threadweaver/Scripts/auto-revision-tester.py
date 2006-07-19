@@ -3,6 +3,7 @@
 import os
 import sys
 import buildinator_common
+from buildinator_build_status import BuildStatus
 
 # main
 print """Build and test all subversion revisions of a module. (C) Mirko Boehm, 2006
@@ -19,8 +20,6 @@ Subversion revision that contains the Logs of the executed processes.
 """
 
 MinimumRevision = -1
-#    if (Revision < 452230):
-#        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
 
 # get Subversion Url from command line arg 1:
 Module = ''
@@ -35,14 +34,16 @@ except:
     print 'Usage: ' + sys.argv[0] + ' <SvnUrl> <ProFileName> <minimum SVN revision to test>'
     sys.exit( -1 )
 
-print '--> Minimum revision is ' + str(MinimumRevision)
+print '--> Minimum revision: ' + str(MinimumRevision)
+print '--> Module:           ' + Module
+print '--> Project:          ' + ProFileName
 
-Lines = buildinator_common.GetSvnLog( Module )
-Revisions = buildinator_common.GetRevisionList( Lines )
+Revisions = buildinator_common.GetRevisionList( Module )
+Results = []
 
 # weed out revision below MinimumRevision:
 def newer_than_MinimumRevision(n):
-    return n >= MinimumRevision
+    return n.revision >= MinimumRevision
 
 Revisions = filter ( newer_than_MinimumRevision, Revisions)
 
@@ -50,9 +51,13 @@ print '--> Autobuilding ' + str(len(Revisions)) + ' revisions'
 
 # start building:
 for Revision in Revisions:
-    print '--> Autobuilding #' + str (Revision)
-    WorkFolder = str(Revision)
+    print '--> Autobuilding #' + str (Revision.revision)
+    WorkFolder = str(Revision.revision)
     os.system( 'mkdir -p ' + WorkFolder )
     WorkDir = os.getcwd() + '/' + WorkFolder
-    buildinator_common.ExecuteBuildAndTest ( WorkDir, Revision, Module, ProFileName)
+    Revision.projectFile = ProFileName
+    Revision.numberOfTestRuns = 100
+    Results = Results + buildinator_common.ExecuteBuildAndTest ( Revision, WorkDir )
 
+for Result in Results:
+    Result.dumpBuildStatus()

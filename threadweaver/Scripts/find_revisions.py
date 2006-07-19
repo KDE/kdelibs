@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import buildinator_common
+from buildinator_build_status import BuildStatus
 
 # get Subversion Url from command line arg 1:
 Url = '.'
@@ -9,6 +10,7 @@ try:
 except:
     pass
 
-Lines = buildinator_common.GetSvnLog( Url )
-Revisions = buildinator_common.GetRevisionList( Lines )
-print Revisions
+Revisions = buildinator_common.GetRevisionList( Url )
+for Revision in Revisions:
+    print 'Revision ' + str(Revision.revision) + ' by ' + Revision.committer
+

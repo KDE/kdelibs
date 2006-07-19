@@ -3,6 +3,7 @@
 import os
 import sys
 import buildinator_common
+from buildinator_build_status import BuildStatus
 
 # "main":
 
@@ -16,11 +17,13 @@ Run this script in an empty directory.
 Module = ''
 ProFileName = ''
 Revision = 0
+Status = BuildStatus()
 
 try:
-    Revision = int (sys.argv[1])
-    Module = sys.argv[2]
-    ProFileName = sys.argv[3]
+    Status.revision = int (sys.argv[1])
+    Status.svnUrl = sys.argv[2]
+    Status.projectFile = sys.argv[3]
+    Status.numberOfTestRuns = 100
 except:
     print "Usage: " + sys.argv[0] + " <SVN revision to test> <SvnURL> <ProFileName>"
     print "Example: " + sys.argv[0] \
@@ -28,7 +31,8 @@ except:
           + 'ThreadWeaver.pro'
     sys.exit (-1)
 else:
-#    if (Revision < 452230):
-#        raise ("Only revisions starting at 452230 are supported (Qt4 based versions)")
-    buildinator_common.ExecuteBuildAndTest ( os.getcwd(), Revision, Module, ProFileName)
+    Results = buildinator_common.ExecuteBuildAndTest ( Status, os.getcwd() )
+    for Result in Results:
+        Result.dumpBuildStatus()
+
     
