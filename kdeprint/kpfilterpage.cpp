@@ -169,7 +169,6 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	m_info->setMinimumSize( QSize( 240, 100 ) );
 
 	QGridLayout	*l1 = new QGridLayout(this);
-  l1->setMargin(0);
   l1->setSpacing(KDialog::spacingHint());
 	l1->setColumnStretch(0, 1);
 	QVBoxLayout	*l2 = new QVBoxLayout();

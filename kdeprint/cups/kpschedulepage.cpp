@@ -173,7 +173,6 @@ KPSchedulePage::KPSchedulePage(QWidget *parent)
 	sep0->setFixedHeight(10);
 
 	QGridLayout	*l0 = new QGridLayout(this);
-    l0->setMargin(0);
     l0->setSpacing(7);
 	l0->addWidget(lab, 0, 0);
 	QHBoxLayout	*l1 = new QHBoxLayout();

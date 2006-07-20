@@ -78,7 +78,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 	QStringList lst;
 	lst << i18n("Name")<<i18n("Value");
 	m_tags = new QTableWidget(10, 2, this);
-	m_tags->horizontalHeader()->resizeSections ( QHeaderView::Stretch );
+	m_tags->horizontalHeader()->setResizeMode( QHeaderView::Stretch );
 	m_tags->setVerticalHeaderLabels(lst);
 
 #warning "kde4: port m_tags->setReadOnly(ro);!!!!!\n";
@@ -86,7 +86,6 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 	m_tags->setWhatsThis(whatsThisAdditionalTagsTable);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
-	l0->setMargin(0);
 	l0->setSpacing(5);
 	l0->addWidget(m_tags);
 

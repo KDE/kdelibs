@@ -214,7 +214,6 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 
 	// layout creation
 	QGridLayout	*l1 = new QGridLayout(this);
-	l1->setMargin(0);
 	l1->setSpacing(5);
 	l1->setRowStretch(1,1);
 	l1->setColumnStretch(0,1);
@@ -222,7 +221,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	l1->addWidget(m_pagebox,0,0);
 	l1->addWidget(m_copybox,0,1);
 	QVBoxLayout	*l3 = new QVBoxLayout();
-	l3->setMargin(5);
+	l3->setMargin(0);
 	l3->setSpacing(0);
 	m_pagebox->layout()->addItem(l3);
 	l3->addWidget(m_all);

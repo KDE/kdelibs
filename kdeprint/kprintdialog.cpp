@@ -347,7 +347,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	// layout creation
 	setMainWidget(main);
 	QVBoxLayout	*l1 = new QVBoxLayout(main);
-	l1->setMargin(5);
+	l1->setMargin(0);
 	l1->setSpacing(10);
 	l1->addWidget(m_pbox,0);
 	l1->addWidget(d->m_dummy,1);
@@ -365,7 +365,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	l2->addWidget(m_cancel,0);
 	QGridLayout	*l3 = new QGridLayout();
 	m_pbox->layout()->addItem(l3);
-	l3->setMargin(7);
+	l3->setMargin(0);
 	l3->setSpacing(0);
 	l3->setColumnStretch(1,1);
 	l3->setRowStretch(0,1);
@@ -700,7 +700,7 @@ void KPrintDialog::done(int result)
 			if (!checkOutputFile()) return;
 			d->m_printer->setOutputToFile(true);
 			/* be sure to decode the output filename */
-			d->m_printer->setOutputFileName( KUrl::fromPercentEncoding( d->m_file->url().url().toLatin1() ) );
+			d->m_printer->setOutputFileName( KUrl::fromPercentEncoding( d->m_file->url().path().toLatin1() ) );
 		}
 		else
 			d->m_printer->setOutputToFile(false);

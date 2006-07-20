@@ -156,7 +156,6 @@ void KPQtPage::init()
 
 	// layout creation
 	QGridLayout	*lay0 = new QGridLayout(this);
-  lay0->setMargin(0);
   lay0->setSpacing(10);
 	lay0->setRowStretch(1,1);
 	lay0->setRowStretch(2,1);

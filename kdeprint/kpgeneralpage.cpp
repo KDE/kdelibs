@@ -324,7 +324,6 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 
 	// layout creation
 	QVBoxLayout	*lay0 = new QVBoxLayout(this);
-  lay0->setMargin(0);
   lay0->setSpacing(KDialog::spacingHint());
   this->setWhatsThis(whatsThisPrintPropertiesGeneralPage);
 	QGridLayout	*lay1 = new QGridLayout();
