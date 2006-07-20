@@ -48,8 +48,12 @@ class KCMError : public KCModule
 			: KCModule( KGlobal::instance(), parent )
 		{
 			QVBoxLayout* topLayout = new QVBoxLayout( this );
-			topLayout->addWidget( new QLabel( msg, this ) );
-			topLayout->addWidget( new QLabel( details, this ) );
+      QLabel *lab = new QLabel( msg, this );
+      lab->setWordWrap(true);
+			topLayout->addWidget( lab );
+      lab = new QLabel(details, this );
+      lab->setWordWrap(true);
+			topLayout->addWidget( lab );
 		}
 };
 /***************************************************************/
