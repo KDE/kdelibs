@@ -35,7 +35,9 @@
 
 #include <kxmlcore/Noncopyable.h>
 
+#ifndef I18N_NOOP
 #define I18N_NOOP(s) s
+#endif
 
 namespace KJS {
 
