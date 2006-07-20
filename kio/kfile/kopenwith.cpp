@@ -317,7 +317,6 @@ class KOpenWithDlgPrivate
 {
 public:
     KOpenWithDlgPrivate() : saveNewApps(false) { };
-    QPushButton* ok;
     bool saveNewApps;
     KService::Ptr curService;
 };
@@ -584,7 +583,7 @@ void KOpenWithDlg::slotTextChanged()
     kDebug(250)<<"KOpenWithDlg::slotTextChanged"<<endl;
     // Forget about the service
     d->curService = 0L;
-    d->ok->setEnabled( !edit->url().isEmpty());
+    enableButton( Ok, !edit->url().isEmpty());
 }
 
 // ----------------------------------------------------------------------
