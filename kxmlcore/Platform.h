@@ -28,7 +28,9 @@
 #define KXMLCORE_PLATFORM_H
 
 //Force KDE build here in our tree...
+#ifndef BUILDING_KDE__
 #define BUILDING_KDE__
+#endif
 
 // PLATFORM handles OS, operating environment, graphics API, and CPU
 #define PLATFORM(KX_FEATURE) (defined( KXMLCORE_PLATFORM_##KX_FEATURE ) && KXMLCORE_PLATFORM_##KX_FEATURE)
