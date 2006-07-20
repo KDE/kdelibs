@@ -880,12 +880,8 @@ void KPrintDialog::configChanged()
 
 void KPrintDialog::expandDialog(bool on)
 {
-	QSize	sz(size());
-	bool	needResize(isVisible());
-
 	if (on)
 	{
-		sz.setHeight(sz.height()+d->m_dummy->minimumSize().height()+d->m_plugin->minimumSize().height()+2*layout()->spacing());
 		if (isVisible() || !d->m_dummy->isVisible() || !d->m_plugin->isVisible())
 		{
 			d->m_dummy->show();
@@ -898,7 +894,6 @@ void KPrintDialog::expandDialog(bool on)
 	}
 	else
 	{
-		sz.setHeight(sz.height()-d->m_dummy->height()-d->m_plugin->height()-2*layout()->spacing());
 		if (!isVisible() || d->m_dummy->isVisible() || d->m_plugin->isVisible())
 		{
 			d->m_dummy->hide();
@@ -909,12 +904,10 @@ void KPrintDialog::expandDialog(bool on)
 		d->m_extbtn->setText(i18n("&Options >>"));
 		d->m_reduced = true;
 	}
-
-	if (needResize)
-	{
-		layout()->activate();
-		resize(sz);
-	}
+	
+	layout()->invalidate();
+	layout()->activate();
+	resize( width(), layout()->minimumSize().height() );
 }
 
 void KPrintDialog::slotExtensionClicked()
