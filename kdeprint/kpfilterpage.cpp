@@ -185,7 +185,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 	l2->addSpacing(5);
 	l2->addWidget(m_configure);
 	l2->addStretch(1);
-	l1->addWidget(m_info, 1, 1, 0, 1);
+	l1->addWidget(m_info, 1, 0, 1, 2);
 	slotItemSelected();
 
 	resize(100,50);
