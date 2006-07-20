@@ -90,7 +90,7 @@ KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
   const QString type = desktopFile.readEntry( "Type" );
   if ( type != QLatin1String( "MimeType" ) )
   {
-    kWarning(7012) << "The mime type config file %1 has Type=" << type << " instead of Type=MimeType" << endl;
+     kWarning(7012) << "The mime type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=MimeType" << endl;
     return 0;
   }
 
@@ -98,7 +98,7 @@ KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
 
   if ( mime.isEmpty() )
   {
-    kWarning(7012) << "The mime type config file %1 does not contain a MimeType=... entry" << endl;
+     kWarning(7012) << "The mime type config file " << desktopFile.fileName() << " does not contain a MimeType=... entry" << endl;
     return 0;
   }
 

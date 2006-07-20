@@ -79,7 +79,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
   const QString type = desktopFile.readEntry( "Type" );
   if ( type != QLatin1String( "ServiceType" ) )
   {
-    kWarning(7012) << "The service type config file %1 has Type=" << type << " instead of Type=ServiceType" << endl;
+     kWarning(7012) << "The service type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=ServiceType" << endl;
     return 0;
   }
 
@@ -87,7 +87,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   if ( serviceType.isEmpty() )
   {
-    kWarning(7012) << "The service type config file %1 does not contain a ServiceType=... entry" << endl;
+     kWarning(7012) << "The service type config file " << desktopFile.fileName() << " does not contain a ServiceType=... entry" << endl;
     return 0;
   }
 
