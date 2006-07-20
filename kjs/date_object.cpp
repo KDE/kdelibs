@@ -580,7 +580,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case ToUTCString:
     return jsString(formatDateUTCVariant(t) + " " + formatTime(t, utc));
     break;
-#if PLATFORM(MAC)
+#if PLATFORM(DARWIN)
   case ToLocaleString:
     return jsString(formatLocaleDate(exec, secs, true, true, args));
     break;
