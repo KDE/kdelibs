@@ -56,7 +56,9 @@ FILE_PATTERNS          = *.h \
 RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = *.moc.* \
+EXCLUDE_PATTERNS       = */.svn/* \
+                         */cmake/* \
+                         *.moc.* \
                          moc* \
                          *.all_cpp.* \
                          *unload.* \
