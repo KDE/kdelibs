@@ -36,8 +36,8 @@
 #include <ctype.h>
 
 HelpWindow::HelpWindow( const QString& home_, const QString& _path,
-			QWidget* parent, const char *name )
-    : KMainWindow( parent, name, Qt::WDestructiveClose ),
+			QWidget* parent )
+    : KMainWindow( parent, Qt::WDestructiveClose ),
       pathCombo( 0 ), selectedURL()
 {
     readHistory();
@@ -120,13 +120,22 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     QToolBar* toolbar = addToolBar("Toolbar");
     QToolButton* button;
 
-    button = new QToolButton( icon_back, tr("Backward"), "", browser, SLOT(backward()), toolbar );
+    button = new QToolButton( toolbar );
+    button->setIcon( icon_back );
+    button->setText( tr("Backward") );
+    connect( button, SIGNAL( clicked() ), browser, SLOT(backward()) );
     connect( browser, SIGNAL( backwardAvailable(bool) ), button, SLOT( setEnabled(bool) ) );
     button->setEnabled( false );
-    button = new QToolButton( icon_forward, tr("Forward"), "", browser, SLOT(forward()), toolbar );
+    button = new QToolButton( toolbar );
+    button->setIcon( icon_forward );
+    button->setText( tr("Forward") );
+    connect( button, SIGNAL( clicked() ), browser, SLOT(forward()) );
     connect( browser, SIGNAL( forwardAvailable(bool) ), button, SLOT( setEnabled(bool) ) );
     button->setEnabled( false );
-    button = new QToolButton( icon_home, tr("Home"), "", browser, SLOT(home()), toolbar );
+    button = new QToolButton( toolbar );
+    button->setIcon( icon_home );
+    button->setText( tr("Home") );
+    connect( button, SIGNAL( clicked() ), browser, SLOT(home()) );
 
     toolbar->addSeparator();
 
@@ -168,7 +177,7 @@ void HelpWindow::textChanged()
 	bool exists = false;
 	int i;
 	for ( i = 0; i < pathCombo->count(); ++i ) {
-	    if ( pathCombo->text( i ) == selectedURL ) {
+	    if ( pathCombo->itemText( i ) == selectedURL ) {
 		exists = true;
 		break;
 	    }
@@ -277,7 +286,7 @@ void HelpWindow::print()
 	int page = 1;
 	do {
 	    richText.draw( &p, body.left(), body.top(), view, palette() );
-	    view.moveBy( 0, body.height() );
+	    view.translate( 0, body.height() );
 	    p.translate( 0 , -body.height() );
 	    p.setFont( font );
 	    p.drawText( view.right() - p.fontMetrics().width( QString::number(page) ),
@@ -314,7 +323,7 @@ void HelpWindow::readHistory()
 	s >> history;
 	f.close();
 	while ( history.count() > 20 )
-	    history.remove( history.begin() );
+	    history.removeFirst();
     }
 }
 

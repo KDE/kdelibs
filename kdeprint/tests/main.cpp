@@ -25,7 +25,8 @@ int main( int argc, char ** argv )
         home = QString(getenv("QTDIR")) + "/doc/html/index.html";
 
 
-    HelpWindow *help = new HelpWindow(home, ".", 0, "help viewer");
+    HelpWindow *help = new HelpWindow(home, ".", 0);
+    help->setObjectName(QLatin1String("help viewer"));
 
     if ( QApplication::desktop()->width() > 400
 	 && QApplication::desktop()->height() > 500 )

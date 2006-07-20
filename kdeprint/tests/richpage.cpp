@@ -23,7 +23,7 @@ RichPage::RichPage(QWidget *parent)
 	QFontDatabase	db;
 	QStringList	fonts = db.families();
 	fontname_->addItems(fonts);
-	fontname_->setCurrentIndex(fonts.findIndex(QLatin1String("times")));
+	fontname_->setCurrentIndex(fonts.indexOf(QLatin1String("times")));
 	if (fontname_->currentIndex() < 0) fontname_->setCurrentIndex(0);
 
 	QLabel	*l1 = new QLabel("Margin:",this);
@@ -67,7 +67,7 @@ void RichPage::setOptions(const QMap<QString,QString>& opts)
 	value = opts["app-rich-fontname"];
 	if (!value.isEmpty())
 		for (int i=0;i<fontname_->count();i++)
-			if (fontname_->text(i) == value)
+			if (fontname_->itemText(i) == value)
 			{
 				fontname_->setCurrentIndex(i);
 				break;
