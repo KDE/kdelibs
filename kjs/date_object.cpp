@@ -524,7 +524,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
 
   JSValue *result = 0;
   UString s;
-#if !PLATFORM(DARWIN)
+#if !PLATFORM(MAC)
   const int bufsize=100;
   char timebuffer[bufsize];
   CString oldlocale = setlocale(LC_TIME, 0);
@@ -580,7 +580,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case ToUTCString:
     return jsString(formatDateUTCVariant(t) + " " + formatTime(t, utc));
     break;
-#if PLATFORM(DARWIN)
+#if PLATFORM(MAC)
   case ToLocaleString:
     return jsString(formatLocaleDate(exec, secs, true, true, args));
     break;
