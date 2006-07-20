@@ -140,7 +140,7 @@ void KWindowListMenu::init()
 
     foreach ( KWin::WindowInfo* info, list ) {
       ++i;
-      QString itemText = KStringHandler::cPixelSqueeze(info->visibleNameWithState(), fontMetrics(), maxwidth);
+      QString itemText = fontMetrics().elidedText(info->visibleNameWithState(), Qt::ElideMiddle, maxwidth);
 
       NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
           | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask

@@ -666,7 +666,7 @@ void UIServer::applySettings()
      QMenu* pop = m_systemTray->contextMenu();
      pop->addAction(i18n("Settings..."), this, SLOT(slotConfigure()));
      pop->addAction(i18n("Remove"), this, SLOT(slotRemoveSystemTrayIcon()));
-     m_systemTray->setIcon(KSystemTray::loadIcon("filesave"));
+     m_systemTray->setWindowIcon(KSystemTray::loadIcon("filesave"));
      m_systemTray->show();
   }
   else if (m_showSystemTray == false && m_systemTray != 0)

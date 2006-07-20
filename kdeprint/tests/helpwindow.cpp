@@ -235,7 +235,8 @@ void HelpWindow::aboutQt()
 void HelpWindow::openFile()
 {
 #ifndef QT_NO_FILEDIALOG
-    QString fn = QFileDialog::getOpenFileName( QString(), QString(), this );
+    QString fn = QFileDialog::getOpenFileName( this );
+
     if ( !fn.isEmpty() )
 	browser->setSource( fn );
 #endif

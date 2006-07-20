@@ -57,17 +57,12 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
   int labelWidth = size().width();
   int textWidth = fm.width(fullText);
   if (textWidth > labelWidth) {
-    QString squeezedText = KStringHandler::cPixelSqueeze(fullText, fm, labelWidth);
-	QLabel::setText(squeezedText);
-
+    QString squeezedText = fm.elidedText(fullText, Qt::ElideMiddle, labelWidth);
+    QLabel::setText(squeezedText);
     setToolTip( fullText );
-
   } else {
     QLabel::setText(fullText);
-
     setToolTip( QString() );
-//dead in qt4?    QToolTip::hide();
-
   }
 }
 

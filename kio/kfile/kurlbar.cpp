@@ -210,7 +210,7 @@ void KUrlBarItem::paint( QPainter *p )
 
             yPos += margin;
             int stringWidth = box->width() - pm->width() - 2 - (margin * 2);
-            QString visibleText = KStringHandler::rPixelSqueeze( text(), fm, stringWidth );
+            QString visibleText = fm.elidedText( text(), Qt::ElideRight, stringWidth );
             int xPos = pm->width() + margin + 2;
 
             if ( isCurrent() || isSelected() ) {
@@ -241,7 +241,7 @@ void KUrlBarItem::paint( QPainter *p )
             y += pm->height() + fm.height() - fm.descent();
 
             int stringWidth = box->width() - (margin * 2);
-            QString visibleText = KStringHandler::rPixelSqueeze( text(), fm, stringWidth );
+            QString visibleText = fm.elidedText( text(), Qt::ElideRight, stringWidth );
             int x = (w - fm.width( visibleText )) / 2;
             x = qMax( x, margin );
 

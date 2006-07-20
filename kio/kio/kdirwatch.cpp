@@ -248,9 +248,9 @@ void KDirWatchPrivate::slotActivated()
             kDebug(7001) << "-->got deleteself signal for " << e->path << endl;
             e->m_status = NonExistent;
             if (e->isDir)
-              addEntry(0, QDir::cleanDirPath(e->path+"/.."), e, true);
+              addEntry(0, QDir::cleanPath(e->path+"/.."), e, true);
             else
-              addEntry(0, QFileInfo(e->path).dirPath(true), e, true);
+              addEntry(0, QFileInfo(e->path).absolutePath(), e, true);
           }
           if ( event->mask & IN_IGNORED ) {
             e->wd = 0;
@@ -666,9 +666,9 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
     }
     else {
       if (e->isDir)
-        removeEntry(0, QDir::cleanDirPath(e->path+"/.."), e);
+        removeEntry(0, QDir::cleanPath(e->path+"/.."), e);
       else
-        removeEntry(0, QFileInfo(e->path).dirPath(true), e);
+        removeEntry(0, QFileInfo(e->path).absolutePath(), e);
     }
   }
 #endif
@@ -1037,7 +1037,7 @@ void KDirWatchPrivate::slotRescan()
 #ifdef HAVE_SYS_INOTIFY_H
   // Remove watch of parent of new created directories
   Q_FOREACH(Entry* e, cList)
-    removeEntry(0, QDir::cleanDirPath( e->path+"/.."), e);
+    removeEntry(0, QDir::cleanPath( e->path+"/.."), e);
 #endif
 
   QTimer::singleShot(0, this, SLOT(slotRemoveDelayed()));

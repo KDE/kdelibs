@@ -221,7 +221,7 @@ void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
 
 void KWordWrap::drawTruncateText(QPainter *p, int x, int y, int maxW,
                                  const QString &t) {
-    QString tmpText = KStringHandler::rPixelSqueeze( t, p->fontMetrics(), maxW );
+    QString tmpText = p->fontMetrics().elidedText(t, Qt::ElideRight, maxW);
     p->drawText( x, y, tmpText );
 }
 

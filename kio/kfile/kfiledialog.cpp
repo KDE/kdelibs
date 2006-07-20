@@ -1530,7 +1530,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
     bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
-        dlg.setSelection( dir ); // may also be a filename
+        dlg.setSelection( dir.toString() ); // may also be a filename
 
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
@@ -1560,7 +1560,7 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
 #endif
 
     if ( !specialDir )
-        dlg.setSelection( dir ); // may also be a filename
+        dlg.setSelection( dir.toString() ); // may also be a filename
 
     dlg.setOperationMode( KFileDialog::Saving);
     dlg.setMode( KFile::File );
@@ -1581,7 +1581,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
     KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
-    dlg.setSelection( dir ); // may also be a filename
+    dlg.setSelection( dir.toString() ); // may also be a filename
 
     dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );

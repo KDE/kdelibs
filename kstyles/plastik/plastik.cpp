@@ -1706,8 +1706,10 @@ void PlastikStyle::polish(QWidget* widget)
         widget->installEventFilter(this);
         progAnimWidgets[widget] = 0;
         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
-        if (!animationTimer->isActive())
-            animationTimer->start( 50, false );
+        if (!animationTimer->isActive()) {
+            animationTimer->setSingleShot( false );
+            animationTimer->start( 50 );
+        }
     }
 
     if (qobject_cast<QPushButton*>(widget)
