@@ -160,8 +160,10 @@ bool KSharedPixmap::x11Event(XEvent *event)
     void *drawable_id = (void *) pixmap_id;
     Drawable pixmap = *(Drawable*) drawable_id;
 
-    XGetGeometry(qt_xdisplay(), pixmap, &root, &dummy, &dummy, &width,
-	    &height, &udummy, &udummy);
+    Status status = XGetGeometry(qt_xdisplay(), pixmap, &root, &dummy, &dummy, &width, &height, &udummy, &udummy);
+
+    if (status == BadDrawable)
+        return false;
 
     if (d->rect.isEmpty())
     {
