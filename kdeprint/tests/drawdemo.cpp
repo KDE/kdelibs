@@ -7,6 +7,7 @@
 **
 *****************************************************************************/
 
+#include <qlayout.h>
 #include <qwidget.h>
 #include <qpainter.h>
 #include <kprinter.h>
@@ -133,7 +134,7 @@ DrawView::DrawView()
 
     // Create a button group to contain all buttons
 	bgroup = new KButtonGroup( this );
-	bgroup->setLayout( new VHBoxLayout );
+	bgroup->setLayout( new QVBoxLayout );
     bgroup->resize( 200, 200 );
     connect( bgroup, SIGNAL(clicked(int)), SLOT(updateIt(int)) );
 
