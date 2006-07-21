@@ -2283,7 +2283,7 @@ void RenderTableCell::close()
 bool RenderTableCell::requiresLayer() const {
     // table-cell display is never positioned (css 2.1-9.7), so the only time a layer is needed
     // is when overflow != visible (or when there is opacity when we support it)
-    return /* style()->opacity() < 1.0f || */ hasOverflowClip();
+    return /* style()->opacity() < 1.0f || */ hasOverflowClip() || isRelPositioned();
 }
 
 void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)

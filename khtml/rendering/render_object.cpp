@@ -587,7 +587,7 @@ void RenderObject::markContainingBlocksForLayout()
 
 RenderBlock *RenderObject::containingBlock() const
 {
-    if(isTableCell() && !(m_style->position() == ABSOLUTE || m_style->position() == FIXED))
+    if(isTableCell())
         return static_cast<RenderBlock*>( parent()->parent()->parent() );
     if (isCanvas())
         return const_cast<RenderBlock*>( static_cast<const RenderBlock*>(this) );

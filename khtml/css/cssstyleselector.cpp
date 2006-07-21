@@ -662,12 +662,19 @@ void CSSStyleSelector::adjustRenderStyle(RenderStyle* style, DOM::ElementImpl *e
                 style->setDisplay(BLOCK);
         }
 
-        // After performing the display mutation, check table rows.  We do not honor position:relative on
-        // table rows. This has been established in CSS2.1 (and caused a crash in containingBlock() on
-        // some sites).
-        // Likewise, disallow relative positioning on table sections.
-        if ( style->position() == RELATIVE && (style->display() > INLINE_TABLE && style->display() < TABLE_COLUMN_GROUP) )
-            style->setPosition(STATIC);
+        // After performing the display mutation, check our position.  We do not honor position:relative on
+        // table rows and some other table displays. This is undefined behaviour in CSS2.1 (cf. 9.3.1)
+        if (style->position() == RELATIVE) {
+            switch (style->display()) {
+              case TABLE_ROW_GROUP:
+              case TABLE_HEADER_GROUP:
+              case TABLE_FOOTER_GROUP:
+              case TABLE_ROW:
+                style->setPosition(STATIC);
+              default:
+                break;
+            }
+        }
     }
 
     // Frames and framesets never honor position:relative or position:absolute.  This is necessary to
