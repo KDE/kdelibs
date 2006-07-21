@@ -20,6 +20,9 @@ public:
 
     void addDocument(KJS::DebugDocument *document);
 
+signals:
+    void displayScript(KJS::DebugDocument *document);
+
 private slots:
     void scriptSelected(QTreeWidgetItem *item, int column);
 

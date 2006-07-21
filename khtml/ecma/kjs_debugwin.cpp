@@ -147,6 +147,7 @@ void SourceDisplay::setSource(SourceFile *sourceFile)
   if (line.length()) {
     m_lines.append(line);
     int lineWidth = metrics.width(line);
+            m_documents[key]->setFullSource(
     if (lineWidth > width)
       width = lineWidth;
   }
@@ -261,9 +262,9 @@ QString SourceFile::getCode()
       KHTMLPageCache::self()->saveData(part->cacheId(),&stream);
       QString str;
       if (data.size() == 0)
-	str = "";
+        str = "";
       else
-	str = decoder->decode(data.data(),data.size()) + decoder->flush();
+        str = decoder->decode(data.data(),data.size()) + decoder->flush();
       delete decoder;
       return str;
     }

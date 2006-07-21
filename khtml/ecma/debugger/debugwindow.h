@@ -32,10 +32,13 @@
 #include <kjs/value.h>
 #include <kjs_binding.h>
 
+#include <ktexteditor/document.h>
+#include <ktexteditor/view.h>
+#include <ktexteditor/editor.h>
+
 #include "khtml_pagecache.h"
 #include "khtml_part.h"
 #include "misc/decoder.h"
-
 #include "dom/dom_misc.h"
 
 class KActionCollection;
@@ -164,6 +167,9 @@ protected:
     bool eventFilter(QObject *obj, QEvent *evt);
 */
 
+private slots:
+    void displayScript(KJS::DebugDocument *document);
+
 private:
     void createActions();
     void createMenus();
@@ -179,6 +185,12 @@ private:
     KAction *m_stepIntoAct;
     KAction *m_stepOutAct;
     KAction *m_stepOverAct;
+
+    // Text editing stuff
+    KTextEditor::Editor *m_editor;
+    KTextEditor::View *m_view;
+    QList<KTextEditor::Document*> m_documentList;
+
 
     NumberedTextView *m_sourceEdit;
     WatchesDock *m_watches;

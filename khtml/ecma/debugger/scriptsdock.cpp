@@ -44,6 +44,7 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
             item = m_widget->topLevelItem(idx);
             item->setText(1, "multiple");
 
+/*
             item->takeChildren();
             QList<SourceFragment> fragments = document->code();
             foreach (SourceFragment fragment, fragments)
@@ -53,12 +54,14 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
                 child->setText(1, fragment.source);
                 item->addChild(child);
             }
+        */
         }
         else
         {
             item = new QTreeWidgetItem;
             item->setText(0, document->url());
 
+/*
             QList<SourceFragment> fragments = document->code();
             foreach (SourceFragment fragment, fragments)
             {
@@ -67,7 +70,7 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
                 child->setText(1, fragment.source);
                 item->addChild(child);
             }
-
+*/
             m_widget->addTopLevelItem(item);
             kDebug() << "added document for url: " << document->url() << endl;
         }
@@ -82,8 +85,7 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
 void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int column)
 {
     KJS::DebugDocument *doc = m_documents[item];
-    kDebug() << "   url: " << doc->url() << endl
-             << "source: " << doc->source() << endl;
+    emit displayScript(doc);
 }
 
 

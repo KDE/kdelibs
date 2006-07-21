@@ -38,6 +38,13 @@
 #include <kconfigbase.h>
 #include <kapplication.h>
 #include <kstringhandler.h>
+#include <kxmlguifactory.h>
+
+#include <ktexteditor/sessionconfiginterface.h>
+#include <ktexteditor/modificationinterface.h>
+#include <ktexteditor/editorchooser.h>
+#include <ktexteditor/cursor.h>
+
 
 #include "kjs_dom.h"
 #include "kjs_binding.h"
@@ -108,7 +115,29 @@ DebugWindow::DebugWindow(QWidget *parent)
     setCaption(i18n("JavaScript Debugger"));
     kDebug() << "creating DebugWindow" << endl;
 
+//  Testing KTextEditor stuff
     m_sourceEdit = new NumberedTextView;
+
+    m_editor = KTextEditor::EditorChooser::editor();
+
+    if ( !m_editor )
+    {
+        KMessageBox::error(this, i18n("A KDE text-editor component could not be found;\n"
+                                      "please check your KDE installation."));
+        kapp->exit(1);
+    }
+
+    KTextEditor::Document *document = m_editor->createDocument(0);
+
+    // enable the modified on disk warning dialogs if any
+    if (qobject_cast<KTextEditor::ModificationInterface *>(document))
+        qobject_cast<KTextEditor::ModificationInterface *>(document)->setModifiedOnDiskWarning(true);
+
+    m_documentList.append(document);
+    m_view = qobject_cast<KTextEditor::View*>(document->createView(this));
+    guiFactory()->addClient(m_view);
+//  End Testing
+
     m_watches = new WatchesDock;
     m_localVariables = new LocalVariablesDock;
     m_scripts = new ScriptsDock;
@@ -126,7 +155,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout(mainFrame);
     layout->setSpacing(0);
     QSplitter *splitter = new QSplitter(Qt::Vertical);
-    splitter->addWidget(m_sourceEdit);
+//    splitter->addWidget(m_sourceEdit);
+    splitter->addWidget(m_view);
     splitter->addWidget(m_console);
     layout->addWidget(splitter);
 
@@ -137,6 +167,9 @@ DebugWindow::DebugWindow(QWidget *parent)
     createMenus();
     createToolBars();
     createStatusBar();
+
+    connect(m_scripts, SIGNAL(displayScript(KJS::DebugDocument*)),
+            this, SLOT(displayScript(KJS::DebugDocument*)));
 }
 
 void DebugWindow::createActions()
@@ -209,7 +242,6 @@ void DebugWindow::createStatusBar()
 void DebugWindow::stopExecution()
 {
 //    KMessageBox::information(this, "Stop!");
-    m_localVariables->display(m_tempInterpreter);
 }
 
 void DebugWindow::continueExecution()
@@ -242,6 +274,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 {
     Q_UNUSED(exec);
 
+    kDebug() << "Testing..." << endl;
     kDebug() << "***************************** sourceParsed **************************************************" << endl
              << "      sourceId: " << sourceId << endl
              << "     sourceURL: " << sourceURL.qstring() << endl
@@ -264,9 +297,8 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 
             document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
             m_documents[key] = document;
+   //         m_documents[key]->setFullSource(
 
-            m_tempInterpreter = exec->dynamicInterpreter();
-            // m_localVariables->display(exec->interpreter());
 //        }
     }
     else
@@ -341,5 +373,19 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     kDebug() << "returnEvent" << endl;
 
     return true;
+}
+
+void DebugWindow::displayScript(KJS::DebugDocument *document)
+{
+    QList<SourceFragment> fragments = document->code();
+    foreach (SourceFragment fragment, fragments)
+    {
+        int line = fragment.baseLine;
+        int col = 0;
+
+        KTextEditor::Cursor cur = m_view->cursorPosition();
+        cur.setPosition(line, col);
+        m_view->insertText(fragment.source);
+    }
 }
 
