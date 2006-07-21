@@ -31,7 +31,6 @@
 #include <kprinter.h>
 #include <q3simplerichtext.h>
 #include <qpainter.h>
-#include <q3paintdevicemetrics.h>
 
 #include <ctype.h>
 
@@ -264,17 +263,16 @@ void HelpWindow::print()
 #endif
     if ( printer.setup(this) ) {
 	QPainter p( &printer );
-	Q3PaintDeviceMetrics metrics(p.device());
-	int dpix = metrics.logicalDpiX();
-	int dpiy = metrics.logicalDpiY();
+	int dpix = p.device()->logicalDpiX();
+	int dpiy = p.device()->logicalDpiY();
 #ifdef KDE_PRINT
 	const int margin = printer.option("app-rich-margin").toInt(); // pt
 #else
 	const int margin = 72; // pt
 #endif
 	QRect body(margin*dpix/72, margin*dpiy/72,
-		   metrics.width()-margin*dpix/72*2,
-		   metrics.height()-margin*dpiy/72*2 );
+		   p.device()->width()-margin*dpix/72*2,
+		   p.device()->height()-margin*dpiy/72*2 );
 #ifdef KDE_PRINT
 	QFont font(printer.option("app-rich-fontname"), printer.option("app-rich-fontsize").toInt());
 #else
