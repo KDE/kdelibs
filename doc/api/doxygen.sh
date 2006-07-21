@@ -391,16 +391,18 @@ doxyndex()
 		fi
 	done
 
-	# For each class, post-process it to check for bc-ness
-	for i in "$htmldir"/class*.html
-	do
-		test "$htmldir/classes.html" = "$i" && continue
-		if test -f "$i" ; then
-			grep -l 'bc.html#_bc' "$i" > /dev/null || \
-			{ sed -e 's+<!-- BC -->+<div class="bic">This class is not guaranteed to be binary compatible across releases.</div>+' "$i" > "$i.new" ; test -s "$i.new" && mv "$i.new" "$i" ; }
-			echo "* Added BC warning to $i"
-		fi
-	done
+## Allen: Comment this out for now.
+##        Basically, I think it's annoying. We need something less obtrusive.
+## 	# For each class, post-process it to check for bc-ness
+## 	for i in "$htmldir"/class*.html
+## 	do
+## 		test "$htmldir/classes.html" = "$i" && continue
+## 		if test -f "$i" ; then
+## 			grep -l 'bc.html#_bc' "$i" > /dev/null || \
+## 			{ sed -e 's+<!-- BC -->+<div class="bic">This class is not guaranteed to be binary compatible across releases.</div>+' "$i" > "$i.new" ; test -s "$i.new" && mv "$i.new" "$i" ; }
+## 			echo "* Added BC warning to $i"
+## 		fi
+## 	done
 }
 
 
