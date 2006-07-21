@@ -1,2 +1,2 @@
 install( FILES dcoptexttospeech.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-install_files( /include FILES kspeech.h )
+install( FILES kspeech.h DESTINATION ${INCLUDE_INSTALL_DIR}  )
