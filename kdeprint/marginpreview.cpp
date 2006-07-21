@@ -62,8 +62,9 @@ MarginPreview::MarginPreview(QWidget *parent)
 	box_ = rect();
 	zoom_ = 1.0;
 	state_ = Fixed;
-	oldpos_ = -1;
+	m_newpos = oldpos_ = -1;
 	symetric_ = false;
+	m_resizing = false;
 
 	setMouseTracking(true);
 }
@@ -151,6 +152,20 @@ void MarginPreview::paintEvent(QPaintEvent *)
 
 		// fill useful area
 		p.fillRect(margbox_,QColor(220,220,220));
+		
+		if (m_newpos != oldpos_)
+		{
+			QPainter	p(this);
+			p.setCompositionMode(QPainter::CompositionMode_Xor);
+			p.setPen(Qt::gray);
+			for (int i=0; i<2; i++, oldpos_ = m_newpos)
+			{
+				if (oldpos_ >= 0)
+					drawTempLine(&p);
+			}
+			if ( m_newpos == -1 )
+				state_ = 0;
+		}
 	}
 }
 
@@ -204,33 +219,23 @@ void MarginPreview::mouseMoveEvent(QMouseEvent *e)
 	}
 	else if (state_ > None)
 	{
-		int newpos = -1;
+		m_newpos = -1;
 		switch (state_)
 		{
 			case TMoving:
-				newpos = qMin(qMax(e->pos().y(), box_.top()), (symetric_ ? (box_.top()+box_.bottom())/2 : margbox_.bottom()+1));
+				m_newpos = qMin(qMax(e->pos().y(), box_.top()), (symetric_ ? (box_.top()+box_.bottom())/2 : margbox_.bottom()+1));
 				break;
 			case BMoving:
-				newpos = qMin(qMax(e->pos().y(), (symetric_? (box_.top()+box_.bottom()+1)/2 : margbox_.top()-1)), box_.bottom());
+				m_newpos = qMin(qMax(e->pos().y(), (symetric_? (box_.top()+box_.bottom()+1)/2 : margbox_.top()-1)), box_.bottom());
 				break;
 			case LMoving:
-				newpos = qMin(qMax(e->pos().x(), box_.left()), (symetric_ ? (box_.left()+box_.right())/2 : margbox_.right()+1));
+				m_newpos = qMin(qMax(e->pos().x(), box_.left()), (symetric_ ? (box_.left()+box_.right())/2 : margbox_.right()+1));
 				break;
 			case RMoving:
-				newpos = qMin(qMax(e->pos().x(), (symetric_ ? (box_.left()+box_.right()+1)/2 : margbox_.left()-1)), box_.right());
+				m_newpos = qMin(qMax(e->pos().x(), (symetric_ ? (box_.left()+box_.right()+1)/2 : margbox_.left()-1)), box_.right());
 				break;
 		}
-		if (newpos != oldpos_)
-		{
-			QPainter	p(this);
-			p.setCompositionMode(QPainter::CompositionMode_Xor);
-			p.setPen(Qt::gray);
-			for (int i=0; i<2; i++, oldpos_ = newpos)
-			{
-				if (oldpos_ >= 0)
-					drawTempLine(&p);
-			}
-		}
+		update();
 	}
 }
 
@@ -264,19 +269,18 @@ void MarginPreview::mousePressEvent(QMouseEvent *e)
 	if (mpos)
 	{
 		state_ = mpos;
+		m_resizing = true;
 	}
 }
 
 void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 {
+	m_resizing = false;
+	
 	if (state_ > None)
 	{
-		QPainter	p(this);
-		p.setCompositionMode(QPainter::CompositionMode_Xor);
-		p.setPen(Qt::gray);
 		if (oldpos_ >= 0)
 		{
-			drawTempLine(&p);
 			if (e)
 			{
 				float	val = 0;
@@ -304,12 +308,11 @@ void MarginPreview::mouseReleaseEvent(QMouseEvent *e)
 						val = UNSCALE(box_.right()-oldpos_, zoom_);
 						break;
 				}
+				m_newpos = -1;
 				update();
 				emit marginChanged(st, val);
 			}
 		}
-		state_ = 0;
-		oldpos_ = -1;
 	}
 }
 

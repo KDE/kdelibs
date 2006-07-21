@@ -59,7 +59,9 @@ private:
 	bool	nopreview_;
 	int	state_;
 	int	oldpos_;
+	int m_newpos;
 	bool	symetric_;
+	bool	m_resizing;
 };
 
 #endif
