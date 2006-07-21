@@ -613,7 +613,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
       comboBox->setEditable(isEditable());
 
       foreach (QAction* action, selectableActionGroup()->actions())
-        comboBox->addItem(action->icon(), action->text(), action);
+        comboBox->addItem(action->icon(), action->text(), (int) action);
 
       connect(comboBox, SIGNAL(destroyed(QObject*)), SLOT(comboBoxDeleted(QObject*)));
       connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(comboBoxCurrentIndexChanged(int)));
