@@ -25,11 +25,11 @@
 #include "util.h"
 
 #include <qcombobox.h>
-#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
 
+#include <kbuttongroup.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -117,10 +117,14 @@ void KPQtPage::init()
 	QLabel	*m_pagesizelabel = new QLabel(i18n("Page s&ize:"), this);
 	m_pagesizelabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_pagesizelabel->setBuddy(m_pagesize);
-	m_orientbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
-          m_orientbox->setWhatsThis(whatsThisOrientationOtPageLabel);
-	m_colorbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Color Mode"), this);
-          m_colorbox->setWhatsThis(whatsThisColorModeOtPageLabel);
+	m_orientbox = new KButtonGroup(this);
+	m_orientbox->setLayout( new QHBoxLayout() );
+	m_orientbox->setTitle( i18n("Orientation") );
+	m_orientbox->setWhatsThis(whatsThisOrientationOtPageLabel);
+	m_colorbox = new KButtonGroup(this);
+	m_colorbox->setLayout( new QHBoxLayout() );
+	m_colorbox->setTitle( i18n("Color Mode") );
+	m_colorbox->setWhatsThis(whatsThisColorModeOtPageLabel);
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
           m_portrait->setWhatsThis(whatsThisOrientationOtPageLabel);
 
@@ -137,9 +141,11 @@ void KPQtPage::init()
 	QRadioButton	*m_grayscale = new QRadioButton(i18n("&Grayscale"), m_colorbox);
 	m_colorpix = new QLabel(m_colorbox);
 	m_colorpix->setAlignment(Qt::AlignCenter);
-          m_colorpix->setWhatsThis(whatsThisColorModeOtPageLabel);
+	m_colorpix->setWhatsThis(whatsThisColorModeOtPageLabel);
 
-	m_nupbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
+	m_nupbox = new KButtonGroup(this);
+	m_nupbox->setLayout( new QHBoxLayout() );
+	m_nupbox->setTitle( i18n("Pages per Sheet") );
         //  QWhatsThis::add(m_nupbox, whatsThisPagesPerSheetOtPageLabel);
 	QRadioButton	*m_nup1 = new QRadioButton("&1", m_nupbox);
           m_nup1->setWhatsThis(whatsThisPagesPerSheetOtPageLabel);
@@ -255,10 +261,10 @@ void KPQtPage::slotNupChanged(int ID)
 void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 {
 	int 	ID = (opts["kde-orientation"] == "Landscape" ? ORIENT_LANDSCAPE_ID : ORIENT_PORTRAIT_ID);
-	m_orientbox->setButton(ID);
+	m_orientbox->setSelected(ID);
 	slotOrientationChanged(ID);
 	ID = (opts["kde-colormode"] == "GrayScale" ? COLORMODE_GRAYSCALE_ID : COLORMODE_COLOR_ID);
-	m_colorbox->setButton(ID);
+	m_colorbox->setSelected(ID);
 	slotColorModeChanged(ID);
 	if (driver())
 	{
@@ -293,7 +299,7 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 			ID = NUP_1;
 		}
 	}
-	m_nupbox->setButton(ID);
+	m_nupbox->setSelected(ID);
 	slotNupChanged(ID);
 
 	if ( m_orientbox->isEnabled() )
@@ -304,8 +310,8 @@ void KPQtPage::setOptions(const QMap<QString,QString>& opts)
 
 void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 {
-	opts["kde-orientation"] = (m_orientbox->id(m_orientbox->selected()) == ORIENT_LANDSCAPE_ID ? "Landscape" : "Portrait");
-	opts["kde-colormode"] = (m_colorbox->id(m_colorbox->selected()) == COLORMODE_GRAYSCALE_ID ? "GrayScale" : "Color");
+	opts["kde-orientation"] = (m_orientbox->selected() == ORIENT_LANDSCAPE_ID ? "Landscape" : "Portrait");
+	opts["kde-colormode"] = (m_colorbox->selected() == COLORMODE_GRAYSCALE_ID ? "GrayScale" : "Color");
 	if (driver())
 	{
 		DrListOption	*opt = static_cast<DrListOption*>(driver()->findOption("PageSize"));
@@ -320,7 +326,7 @@ void KPQtPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 	}
 	else
 		opts["kde-pagesize"] = QString::number(page_sizes[m_pagesize->currentIndex()].ID);
-	int	ID = m_nupbox->id(m_nupbox->selected());
+	int	ID = m_nupbox->selected();
 	QString	s = opts["_kde-filters"];
 	if (ID == NUP_1)
 	{

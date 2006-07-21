@@ -24,7 +24,7 @@
 
 #include <kdelibs_export.h>
 
-class Q3ButtonGroup;
+class KButtonGroup;
 class QComboBox;
 class QLabel;
 class DrMain;
@@ -49,7 +49,7 @@ protected:
 	void init();
 
 protected:
-	Q3ButtonGroup	*m_orientbox, *m_colorbox, *m_nupbox;
+	KButtonGroup	*m_orientbox, *m_colorbox, *m_nupbox;
 	QComboBox	*m_pagesize;
 	QLabel		*m_orientpix, *m_colorpix, *m_nuppix;
 };
