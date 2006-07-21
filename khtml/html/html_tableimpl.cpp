@@ -312,6 +312,7 @@ NodeImpl *HTMLTableElementImpl::appendChild(NodeImpl *child, int &exceptioncode)
 
 void HTMLTableElementImpl::handleChildAdd( NodeImpl *child )
 {
+    if (!child) return;
     switch(child->id()) {
     case ID_CAPTION:
         tCaption.childAdded(this, child);
@@ -330,6 +331,7 @@ void HTMLTableElementImpl::handleChildAdd( NodeImpl *child )
 
 void HTMLTableElementImpl::handleChildAppend( NodeImpl *child )
 {
+    if (!child) return;
     switch(child->id()) {
     case ID_CAPTION:
         tCaption.childAppended(child);
@@ -348,6 +350,7 @@ void HTMLTableElementImpl::handleChildAppend( NodeImpl *child )
 
 void HTMLTableElementImpl::handleChildRemove( NodeImpl *child )
 {
+    if (!child) return;
     switch(child->id()) {
     case ID_CAPTION:
         tCaption.childRemoved(this, child);
