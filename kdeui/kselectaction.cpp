@@ -648,7 +648,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     QActionEvent * const e = static_cast <QActionEvent *> (event);
     
     const int index = e->before () ?
-      comboBox->findData ((int) e->before ()) :
+      comboBox->findData ( e->before ()) :
       comboBox->count ();
     const int newItem = ::TrueCurrentItem (this);
     kDebug () << "KSelectAction::eventFilter(ActionAdded)"
@@ -664,7 +664,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     comboBox->insertItem (index,
       e->action()->icon(),
       ::DropAmpersands (e->action()->text()),
-      (int) e->action ());
+      e->action ());
 
     comboBox->setCurrentIndex (newItem);
 
@@ -674,7 +674,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
   {
     QActionEvent * const e = static_cast <QActionEvent *> (event);
     
-    const int index = comboBox->findData ((int) e->action ());
+    const int index = comboBox->findData ( e->action ());
     const int newItem = ::TrueCurrentItem (this);
     kDebug () << "KSelectAction::eventFilter(ActionChanged)"
               << "    comboBox: ptr=" << comboBox
@@ -696,7 +696,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
   {
     QActionEvent * const e = static_cast <QActionEvent *> (event);
 
-    const int index = comboBox->findData ((int) e->action ());
+    const int index = comboBox->findData ( e->action ());
     const int newItem = ::TrueCurrentItem (this);
     kDebug () << "KSelectAction::eventFilter(ActionRemoved)"
               << "    comboBox: ptr=" << comboBox
