@@ -551,12 +551,11 @@ void DownloadDialog::install(Entry *e)
 
 void DownloadDialog::slotInstalled(KJob *job)
 {
-  bool ret = (job->error() == 0);
-  KIO::FileCopyJob *cjob;
+  bool ret = job && (job->error() == 0);
 
   if(ret)
   {
-    cjob = static_cast<KIO::FileCopyJob*>(job);
+    KIO::FileCopyJob *cjob = ::qobject_cast<KIO::FileCopyJob*>(job);
     if(cjob)
     {
       ret = m_s->install(cjob->destURL().path());
