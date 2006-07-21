@@ -66,11 +66,11 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 	prt.setPageSize((QPrinter::PageSize)(ps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
 	float	w = prt.width();
 	float	h = prt.height();
-	unsigned int	it, il, ib, ir;
-	it = prt.paperRect().top() - prt.pageRect().top();
-	il = prt.paperRect().left() - prt.pageRect().left();
-	ib = -(prt.paperRect().bottom() - prt.pageRect().bottom());
-	ir = -(prt.paperRect().right() - prt.pageRect().right());
+	int	it, il, ib, ir;
+	it = prt.pageRect().top() - prt.paperRect().top();
+	il = prt.pageRect().left() - prt.paperRect().left();
+	ib = prt.paperRect().bottom() - prt.pageRect().bottom();
+	ir = prt.paperRect().right() - prt.pageRect().right();
 	float	mt = it;
 	float	ml = il;
 	float	mb = ib;

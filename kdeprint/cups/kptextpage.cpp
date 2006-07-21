@@ -22,11 +22,11 @@
 #include "driver.h"
 #include "kprinter.h"
 
-#include <q3buttongroup.h>
 #include <q3groupbox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qradiobutton.h>
+#include <kbuttongroup.h>
 #include <knuminput.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -209,18 +209,18 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
 	KSeparator	*sep = new KSeparator(Qt::Horizontal, formatbox);
 	connect(m_columns, SIGNAL(valueChanged(int)), SLOT(slotColumnsChanged(int)));
 
+	m_prettyprint = new KButtonGroup(prettybox);
+	m_prettyprint->setLayout( new QVBoxLayout );
+	
 	m_prettypix = new QLabel(prettybox);
 	  m_prettypix->setWhatsThis(whatsThisPrettyprintPreviewIconTextPage);
 	m_prettypix->setAlignment(Qt::AlignCenter);
-	QRadioButton	*off = new QRadioButton(i18n("&Disabled"), prettybox);
-	  off->setWhatsThis(whatsThisPrettyprintButtonOffTextPage);
-	QRadioButton	*on = new QRadioButton(i18n("&Enabled"), prettybox);
-	  on->setWhatsThis(whatsThisPrettyprintButtonOnTextPage);
-	m_prettyprint = new Q3ButtonGroup(prettybox);
+	QRadioButton	*off = new QRadioButton(i18n("&Disabled"), m_prettyprint);
+	off->setWhatsThis(whatsThisPrettyprintButtonOffTextPage);
+	QRadioButton	*on = new QRadioButton(i18n("&Enabled"), m_prettyprint);
+	on->setWhatsThis(whatsThisPrettyprintButtonOnTextPage);
 	m_prettyprint->hide();
-	m_prettyprint->insert(off, 0);
-	m_prettyprint->insert(on, 1);
-	m_prettyprint->setButton(0);
+	m_prettyprint->setSelected(0);
 	connect(m_prettyprint, SIGNAL(clicked(int)), SLOT(slotPrettyChanged(int)));
 	slotPrettyChanged(0);
 
@@ -270,7 +270,7 @@ void KPTextPage::setOptions(const QMap<QString,QString>& opts)
 	int	ID(0);
 	if (opts.contains("prettyprint") && (opts["prettyprint"].isEmpty() || opts["prettyprint"] == "true"))
 		ID = 1;
-	m_prettyprint->setButton(ID);
+	m_prettyprint->setSelected(ID);
 	slotPrettyChanged(ID);
 
 	// get default margins
@@ -328,7 +328,7 @@ void KPTextPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		opts.remove("page-right");
 	}
 
-	if (m_prettyprint->id(m_prettyprint->selected()) == 1)
+	if (m_prettyprint->selected() == 1)
 		opts["prettyprint"] = "true";
 	else if (incldef)
 		opts["prettyprint"] = "false";

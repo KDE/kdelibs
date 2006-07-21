@@ -24,7 +24,7 @@
 
 class DrMain;
 class KIntNumInput;
-class Q3ButtonGroup;
+class KButtonGroup;
 class QLabel;
 class MarginWidget;
 
@@ -47,7 +47,7 @@ protected:
 
 private:
 	KIntNumInput	*m_cpi, *m_lpi, *m_columns;
-	Q3ButtonGroup	*m_prettyprint;
+	KButtonGroup	*m_prettyprint;
 	MarginWidget	*m_margin;
 	QLabel			*m_prettypix;
 	QString		m_currentps;

@@ -21,7 +21,7 @@ protected:
     void   resizeEvent( QResizeEvent * );
 private:
     KPrinter	 *printer;
-    Q3ButtonGroup *bgroup;
+	KButtonGroup *bgroup;
     QPushButton	 *print;
     int		  drawindex;
     int		  maxindex;

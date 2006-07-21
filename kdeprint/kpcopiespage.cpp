@@ -26,7 +26,6 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <q3buttongroup.h>
 #include <qradiobutton.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
@@ -34,6 +33,7 @@
 
 #include <kapplication.h>
 #include <kauthorized.h>
+#include <kbuttongroup.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
@@ -163,7 +163,9 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 	setId(KPrinter::CopiesPage);
 
 	// widget creation
-	Q3ButtonGroup	*m_pagebox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Page Selection"), this);
+	KButtonGroup *m_pagebox = new KButtonGroup(this);
+	m_pagebox->setLayout( new QVBoxLayout );
+	m_pagebox->setTitle( i18n("Page Selection") );
 	m_pagebox->setWhatsThis(whatsThisPageSelectionLabel);
 	m_all = new QRadioButton(i18n("&All"), m_pagebox);
 	m_all->setWhatsThis(whatsThisAllPagesLabel);
@@ -178,7 +180,9 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent)
 //	QWhatsThis::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	//QLabel	*m_rangeexpl = new QLabel(m_pagebox);
 	//m_rangeexpl->setText(i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
-	Q3GroupBox	*m_copybox = new Q3GroupBox(0, Qt::Vertical, i18n("Output Settings"), this);
+	KButtonGroup	*m_copybox = new KButtonGroup(this);
+	m_copybox->setLayout( new QVBoxLayout );
+	m_copybox->setTitle( i18n("Output Settings") );
 	m_copybox->setWhatsThis(whatsThisCopiesLabel);
 	m_collate = new QCheckBox(i18n("Co&llate"), m_copybox);
 	m_collate->setWhatsThis(whatsThisCollateLabel);

@@ -12,8 +12,8 @@
 #include <kprinter.h>
 #include <qpushbutton.h>
 #include <qradiobutton.h>
-#include <q3buttongroup.h>
 #include <kapplication.h>
+#include <kbuttongroup.h>
 #include <qapplication.h>
 #include <math.h>
 #include <kcmdlineargs.h>
@@ -132,7 +132,8 @@ DrawView::DrawView()
     setPalette(palette);
 
     // Create a button group to contain all buttons
-    bgroup = new Q3ButtonGroup( this );
+	bgroup = new KButtonGroup( this );
+	bgroup->setLayout( new VHBoxLayout );
     bgroup->resize( 200, 200 );
     connect( bgroup, SIGNAL(clicked(int)), SLOT(updateIt(int)) );
 

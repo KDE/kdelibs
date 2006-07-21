@@ -22,12 +22,14 @@
 #include "kmprinter.h"
 #include "kprinter.h"
 
+#include <q3groupbox.h>
+#include <q3buttongroup.h>
 #include <qcombobox.h>
 #include <qlabel.h>
-#include <q3buttongroup.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
 
+#include <kbuttongroup.h>
 #include <kcursor.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -283,17 +285,21 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	m_papertypelabel->setBuddy(m_papertype);
 	m_inputslotlabel->setBuddy(m_inputslot);
 
-	m_orientbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Orientation"), this);
-          m_orientbox->setWhatsThis(whatsThisGeneralOrientationLabel);
+	m_orientbox = new KButtonGroup(this);
+	m_orientbox->setLayout( new QVBoxLayout );
+	m_orientbox->setTitle( i18n("Orientation") );
+    m_orientbox->setWhatsThis(whatsThisGeneralOrientationLabel);
 
 	m_duplexbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Duplex Printing"), this);
-          m_duplexbox->setWhatsThis(whatsThisGeneralDuplexLabel);
+	m_duplexbox->setWhatsThis(whatsThisGeneralDuplexLabel);
 
-	m_nupbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Pages per Sheet"), this);
-          m_nupbox->setWhatsThis(whatsThisGeneralPagesPerSheetLabel);
+	m_nupbox = new KButtonGroup(this);
+	m_nupbox->setLayout( new QVBoxLayout );
+	m_nupbox->setTitle( i18n("Pages per Sheet") );
+	m_nupbox->setWhatsThis(whatsThisGeneralPagesPerSheetLabel);
 
 	m_bannerbox = new Q3GroupBox(0, Qt::Vertical, i18n("Banners"), this);
-          m_bannerbox->setWhatsThis(whatsThisGeneralBannersLabel);
+	m_bannerbox->setWhatsThis(whatsThisGeneralBannersLabel);
 
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
@@ -595,7 +601,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		int	ID = value.toInt(&ok)-3;
 		if (ok)
 		{
-			m_orientbox->setButton(ID);
+			m_orientbox->setSelected(ID);
 			slotOrientationChanged(ID);
 		}
 	}
@@ -608,7 +614,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		int	ID = qMin(value.toInt(&ok)-1,2);
 		if (ok)
 		{
-			m_nupbox->setButton(ID);
+			m_nupbox->setSelected(ID);
 			slotNupChanged(ID);
 		}
 	}
@@ -671,12 +677,12 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 		}
 	}
 
-	value = QString::number(m_orientbox->id(m_orientbox->selected())+3);
+	value = QString::number(m_orientbox->selected()+3);
 	if (value != "3" || incldef) opts["orientation-requested"] = value;
 
 	if (m_nupbox->isEnabled())
 	{
-		switch (m_nupbox->id(m_nupbox->selected()))
+		switch (m_nupbox->selected())
 		{
 			case 0: value = "1"; break;
 			case 1: value = "2"; break;
