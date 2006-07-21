@@ -411,9 +411,9 @@ protected Q_SLOTS:
 protected:
     virtual QWidget *createWidget(QWidget *parent);
 
-private Q_SLOTS:
-    void actionToggled();
+    virtual bool eventFilter (QObject *watched, QEvent *event);
 
+private Q_SLOTS:
     void comboBoxDeleted(QObject* object);
     void comboBoxCurrentIndexChanged(int index);
 

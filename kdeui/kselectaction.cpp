@@ -27,6 +27,8 @@
 
 #include "kselectaction.h"
 
+#include <QActionEvent>
+#include <QEvent>
 #include <QToolButton>
 #include <QToolBar>
 
@@ -329,18 +331,9 @@ void KSelectAction::addAction(QAction* action)
     button->menu()->addAction(action);
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
-  {
-    comboBox->blockSignals (true);
-    comboBox->addItem(action->icon(), action->text(), (int) action);
-    comboBox->blockSignals (false);
-  }
+    comboBox->addAction(action);
 
   menu()->addAction(action);
-
-  connect (action, SIGNAL (toggled (bool)), this, SLOT (actionToggled ()));
-
-  // Make sure the comboboxes are in sync.
-  actionToggled ();
 }
 
 QAction* KSelectAction::addAction(const QString& text)
@@ -375,40 +368,17 @@ QAction* KSelectAction::removeAction(QAction* action)
   int index = selectableActionGroup()->actions().indexOf(action);
   kDebug () << "\tindex=" << index << endl;
 
-  disconnect (action, SIGNAL (toggled (bool)), this, SLOT (actionToggled ()));
-
   action->setActionGroup(0L);
 
   foreach (QToolButton* button, d->m_buttons)
     button->menu()->removeAction(action);
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
-  {
-    comboBox->blockSignals (true);
-    comboBox->removeItem(index);
-    comboBox->blockSignals (false);
-  }
+    comboBox->removeAction(action);
 
   menu()->removeAction(action);
 
-  // Make sure the comboboxes are in sync.
-  actionToggled ();
-
   return action;
-}
-
-void KSelectAction::actionToggled()
-{
-  kDebug () << "KSelectAction::actionToggled() currentItem=" << currentItem () << endl;
-
-  if (d->m_comboBoxes.isEmpty())
-    return;
-
-  foreach (KComboBox* comboBox, d->m_comboBoxes) {
-    comboBox->blockSignals (true);
-    comboBox->setCurrentIndex(currentItem ());
-    comboBox->blockSignals (false);
-  }
 }
 
 void KSelectAction::actionTriggered(QAction* action)
@@ -603,6 +573,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
 
     case ComboBoxMode: {
       KComboBox* comboBox = new KComboBox(toolBar);
+      comboBox->installEventFilter (this);
 
       if ( d->m_maxComboViewCount != -1 )
         comboBox->setMaxVisibleItems( d->m_maxComboViewCount );
@@ -613,7 +584,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
       comboBox->setEditable(isEditable());
 
       foreach (QAction* action, selectableActionGroup()->actions())
-        comboBox->addItem(action->icon(), action->text(), (int) action);
+        comboBox->addAction(action);
 
       connect(comboBox, SIGNAL(destroyed(QObject*)), SLOT(comboBoxDeleted(QObject*)));
       connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(comboBoxCurrentIndexChanged(int)));
@@ -625,6 +596,126 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
 
   return 0L;
 }
+
+// QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
+// QAction::text() to return "&Hi" :(  Comboboxes don't have accels and
+// display ampersands literally.
+static QString DropAmpersands (const QString &text)
+{
+  QString ret = text;
+  ret.remove ('&');
+  return ret;
+}
+
+// KSelectAction::eventFilter() is called before action->setChecked()
+// invokes the signal to update QActionGroup so KSelectAction::currentItem()
+// returns an old value.
+static int TrueCurrentItem (KSelectAction *sa)
+{
+  QAction *curAction = sa->currentAction ();
+  kDebug () << "\tTrueCurrentItem(" << sa << ") curAction=" << curAction << endl;
+
+  foreach (QAction *action, sa->actions ())
+  {
+    if (action->isChecked ())
+    {
+       kDebug () << "\t\taction " << action << " (text=" << action->text () << ") isChecked" << endl;
+       if (action != curAction)
+       {
+         kDebug () << "\t\t\tmust be newly selected one" << endl;
+         return sa->actions ().indexOf (action);
+       }
+    }
+  }
+
+  kDebug () << "\t\tcurrent action still selected? " << curAction->isChecked () << endl;
+  return curAction->isChecked () ? sa->actions ().indexOf (curAction) : -1;
+}
+
+
+bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
+{
+  KComboBox *comboBox = qobject_cast <KComboBox *> (watched);
+  if (!comboBox)
+    return false/*propagate*/;
+
+  bool eatEvent = false;
+
+  comboBox->blockSignals (true);
+
+  if (event->type () == QEvent::ActionAdded)
+  {
+    QActionEvent * const e = static_cast <QActionEvent *> (event);
+    
+    const int index = e->before () ?
+      comboBox->findData ((int) e->before ()) :
+      comboBox->count ();
+    const int newItem = ::TrueCurrentItem (this);
+    kDebug () << "KSelectAction::eventFilter(ActionAdded)"
+              << "    comboBox: ptr=" << comboBox
+              << " currentItem=" << comboBox->currentIndex ()
+              << " index=" << index
+              << "    action new: e->before=" << e->before ()
+              << " ptr=" << e->action ()
+              << " icon=" << e->action ()->icon ()
+              << " text=" << e->action ()->text ()
+              << " currentItem=" << newItem
+              << endl;
+    comboBox->insertItem (index,
+      e->action()->icon(),
+      ::DropAmpersands (e->action()->text()),
+      (int) e->action ());
+
+    comboBox->setCurrentItem (newItem);
+
+    eatEvent = true;
+  }
+  else if (event->type () == QEvent::ActionChanged)
+  {
+    QActionEvent * const e = static_cast <QActionEvent *> (event);
+    
+    const int index = comboBox->findData ((int) e->action ());
+    const int newItem = ::TrueCurrentItem (this);
+    kDebug () << "KSelectAction::eventFilter(ActionChanged)"
+              << "    comboBox: ptr=" << comboBox
+              << " currentItem=" << comboBox->currentIndex ()
+              << " index=" << index
+              << "    action new: ptr=" << e->action ()
+              << " icon=" << e->action ()->icon ()
+              << " text=" << e->action ()->text ()
+              << " currentItem=" << newItem
+              << endl;
+    comboBox->setItemIcon (index, e->action ()->icon ());
+    comboBox->setItemText (index, ::DropAmpersands (e->action ()->text ()));
+
+    comboBox->setCurrentItem (newItem);
+
+    eatEvent = true;
+  }
+  else if (event->type () == QEvent::ActionRemoved)
+  {
+    QActionEvent * const e = static_cast <QActionEvent *> (event);
+
+    const int index = comboBox->findData ((int) e->action ());
+    const int newItem = ::TrueCurrentItem (this);
+    kDebug () << "KSelectAction::eventFilter(ActionRemoved)"
+              << "    comboBox: ptr=" << comboBox
+              << " currentItem=" << comboBox->currentIndex ()
+              << " index=" << index
+              << "    new: currentItem=" << newItem
+              << endl;
+    comboBox->removeItem (index);
+
+    comboBox->setCurrentItem (newItem);
+
+    eatEvent = true;
+  }
+  
+  comboBox->blockSignals (false);
+
+  return eatEvent;
+}
+
 // END
 
 /* vim: et sw=2 ts=2
