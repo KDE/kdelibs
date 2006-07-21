@@ -202,7 +202,7 @@ MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
 	l3->addWidget(m_left, 3, 0);
 	l3->addWidget(m_right, 4, 0);
 	l3->addWidget(m_units, 6, 0);
-	l3->addWidget(m_preview, 0, 6, 1, 1);
+	l3->addWidget(m_preview, 0, 1, 7, 1 );
 
 	if ( allowMetricUnit )
 	{
