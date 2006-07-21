@@ -184,6 +184,7 @@ public:
     /**
      * Set the options which are checked.
      *
+     * @see setOptions KFind::Options
      * @param options The setting of the Options.
      */
     void setOptions( long options );
@@ -192,7 +193,7 @@ public:
      * Returns the state of the options. Disabled options may be returned in
      * an indeterminate state.
      *
-     * @see setOptions
+     * @see setOptions KFind::Options
      */
     long options() const;
 
