@@ -1127,8 +1127,8 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             QChar* sel_uc = sel->value.unicode();
             QChar* val_uc = value->unicode();
 
-            QString sel_str(sel_uc, sel_len);
-            QString val_str(val_uc, val_len);
+            QString sel_str = QString::fromRawData(sel_uc, sel_len);
+            QString val_str = QString::fromRawData(val_uc, val_len);
 
             int pos = 0;
             for ( ;; ) {
@@ -1146,29 +1146,29 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         case CSSSelector::Contain:
         {
             //kDebug( 6080 ) << "checking for contains match" << endl;
-            QString val_str(value->unicode(), value->length());
-            QString sel_str(sel->value.unicode(), sel->value.length());
+            QString val_str = QString::fromRawData(value->unicode(), value->length());
+            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             return val_str.contains(sel_str);
         }
         case CSSSelector::Begin:
         {
             //kDebug( 6080 ) << "checking for beginswith match" << endl;
-            QString val_str(value->unicode(), value->length());
-            QString sel_str(sel->value.unicode(), sel->value.length());
+            QString val_str = QString::fromRawData(value->unicode(), value->length());
+            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             return val_str.startsWith(sel_str);
         }
         case CSSSelector::End:
         {
             //kDebug( 6080 ) << "checking for endswith match" << endl;
-            QString val_str(value->unicode(), value->length());
-            QString sel_str(sel->value.unicode(), sel->value.length());
+            QString val_str = QString::fromRawData(value->unicode(), value->length());
+            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             return val_str.endsWith(sel_str);
         }
         case CSSSelector::Hyphen:
         {
             //kDebug( 6080 ) << "checking for hyphen match" << endl;
-            QString val_str(value->unicode(), value->length());
-            QString sel_str(sel->value.unicode(), sel->value.length());
+            QString val_str = QString::fromRawData(value->unicode(), value->length());
+            QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             const QString& str = val_str;
             const QString& selStr = sel_str;
             if(str.length() < selStr.length()) return false;
