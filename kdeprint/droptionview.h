@@ -126,6 +126,9 @@ public Q_SLOTS:
 	void slotItemSelected(QTreeWidgetItem*);
 
 private:
+	OptionBaseView *optionBaseView( int id );
+	
+	int m_optionBaseID[5];
 	QStackedWidget	*m_stack;
 	DriverItem	*m_item;
 	bool		m_block;

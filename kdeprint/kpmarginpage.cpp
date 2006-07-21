@@ -49,7 +49,6 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent)
 	//	m_margin->setResolution(m_printer->resolution());
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
-  l0->setMargin(0);
   l0->setSpacing(10);
 	l0->addWidget(box);
 	l0->addStretch(1);

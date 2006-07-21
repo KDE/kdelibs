@@ -295,25 +295,25 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 {
 	m_stack = new QStackedWidget(this);
 
-	OptionBaseView	*w = new OptionListView(m_stack);
+	OptionBaseView	*w = new OptionBaseView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->insertWidget(DrBase::List,w);
+	m_optionBaseID[ m_stack->addWidget(w) ] = 0;	// empty widget
+	
+	w = new OptionListView(m_stack);
+	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
+	m_optionBaseID[ m_stack->addWidget(w) ] = DrBase::List;
 
 	w = new OptionStringView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->insertWidget(DrBase::String,w);
+	m_optionBaseID[ m_stack->addWidget(w) ] = DrBase::String;
 
 	w = new OptionNumericView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->insertWidget(DrBase::Integer,w);
+	m_optionBaseID[ m_stack->addWidget(w) ] = DrBase::Integer;
 
 	w = new OptionBooleanView(m_stack);
 	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->insertWidget(DrBase::Boolean,w);
-
-	w = new OptionBaseView(m_stack);
-	connect(w,SIGNAL(valueChanged(const QString&)),SLOT(slotValueChanged(const QString&)));
-	m_stack->insertWidget(0,w);	// empty widget
+	m_optionBaseID[ m_stack->addWidget(w) ] = DrBase::Boolean;
 
 	m_stack->setCurrentWidget(w);
 	setTitle(i18n("No Option Selected"));
@@ -322,7 +322,7 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	layout()->setSpacing( KDialog::spacingHint() );
 	layout()->setMargin( KDialog::marginHint() );
 	QVBoxLayout	*main_ = new QVBoxLayout();
-	main_->setMargin(KDialog::marginHint());
+	main_->setMargin(0);
 	main_->setSpacing(0);
 	main_->addWidget(m_stack);
 	layout()->addItem(main_);
@@ -339,10 +339,12 @@ void DrOptionView::slotItemSelected(QTreeWidgetItem *i)
 		m_item = 0;
 	int	ID(0);
 	if (m_item)
+	{
 		if (m_item->drItem()->type() == DrBase::Float) ID = DrBase::Integer;
 		else ID = m_item->drItem()->type();
-
-	OptionBaseView	*w = (OptionBaseView*)m_stack->widget(ID);
+	}
+	
+	OptionBaseView	*w = optionBaseView(ID);
 	if (w)
 	{
 		m_block = true;
@@ -359,6 +361,16 @@ void DrOptionView::slotItemSelected(QTreeWidgetItem *i)
 		w->setEnabled(enabled);
 		m_block = false;
 	}
+}
+
+OptionBaseView *DrOptionView::optionBaseView( int id )
+{
+	for ( int i = 0; i < 5; ++i )
+	{
+		if ( m_optionBaseID[i] == id )
+			return (OptionBaseView*)m_stack->widget(i);
+	}
+	return 0;
 }
 
 void DrOptionView::slotValueChanged(const QString& val)
