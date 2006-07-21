@@ -666,7 +666,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
       ::DropAmpersands (e->action()->text()),
       (int) e->action ());
 
-    comboBox->setCurrentItem (newItem);
+    comboBox->setCurrentIndex (newItem);
 
     eatEvent = true;
   }
@@ -688,7 +688,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     comboBox->setItemIcon (index, e->action ()->icon ());
     comboBox->setItemText (index, ::DropAmpersands (e->action ()->text ()));
 
-    comboBox->setCurrentItem (newItem);
+    comboBox->setCurrentIndex (newItem);
 
     eatEvent = true;
   }
@@ -706,7 +706,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
               << endl;
     comboBox->removeItem (index);
 
-    comboBox->setCurrentItem (newItem);
+    comboBox->setCurrentIndex (newItem);
 
     eatEvent = true;
   }
