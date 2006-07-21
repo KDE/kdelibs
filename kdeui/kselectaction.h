@@ -412,7 +412,10 @@ protected:
     virtual QWidget *createWidget(QWidget *parent);
 
 private Q_SLOTS:
+    void actionToggled();
+
     void comboBoxDeleted(QObject* object);
+    void comboBoxCurrentIndexChanged(int index);
 
 private:
     void init();

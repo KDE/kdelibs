@@ -227,16 +227,19 @@ QString KSelectAction::currentText( ) const
 
 void KSelectAction::setCurrentAction(QAction* action)
 {
+  kDebug () << "KSelectAction::setCurrentAction(" << action << ")" << endl;
   action->setChecked(true);
 }
 
 bool KSelectAction::setCurrentItem( int index )
 {
+  kDebug () << "KSelectAction::setCurrentIndex(" << index << ")" << endl;
   if (QAction* a = action(index)) {
     setCurrentAction(a);
     return true;
   }
 
+  kDebug () << "\tdoing the deselect" << endl;
   if (selectableActionGroup()->checkedAction())
     selectableActionGroup()->checkedAction()->setChecked(false);
 
@@ -277,11 +280,13 @@ QAction * KSelectAction::action( const QString & text, Qt::CaseSensitivity cs ) 
 
 bool KSelectAction::setCurrentAction( const QString & text, Qt::CaseSensitivity cs)
 {
+  kDebug () << "KSelectAction::setCurrentAction(" << text << ",cs=" << cs << ")" << endl;
   if (QAction* a = action(text, cs)) {
     a->setChecked(true);
     return true;
   }
 
+  kDebug () << "\tfailed" << endl;
   return false;
 }
 
@@ -314,6 +319,8 @@ void KSelectAction::setMaxComboViewCount( int n )
 
 void KSelectAction::addAction(QAction* action)
 {
+  kDebug () << "KSelectAction::addAction(" << action << ")" << endl;
+
   action->setActionGroup(selectableActionGroup());
   action->setCheckable( true );
 
@@ -322,9 +329,18 @@ void KSelectAction::addAction(QAction* action)
     button->menu()->addAction(action);
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
-    comboBox->addItem(action->icon(), action->text(), action);
+  {
+    comboBox->blockSignals (true);
+    comboBox->addItem(action->icon(), action->text(), (int) action);
+    comboBox->blockSignals (false);
+  }
 
   menu()->addAction(action);
+
+  connect (action, SIGNAL (toggled (bool)), this, SLOT (actionToggled ()));
+
+  // Make sure the comboboxes are in sync.
+  actionToggled ();
 }
 
 QAction* KSelectAction::addAction(const QString& text)
@@ -355,7 +371,11 @@ QAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
 
 QAction* KSelectAction::removeAction(QAction* action)
 {
+  kDebug () << "KSelectAction::removeAction(" << action << ")" << endl;
   int index = selectableActionGroup()->actions().indexOf(action);
+  kDebug () << "\tindex=" << index << endl;
+
+  disconnect (action, SIGNAL (toggled (bool)), this, SLOT (actionToggled ()));
 
   action->setActionGroup(0L);
 
@@ -363,11 +383,32 @@ QAction* KSelectAction::removeAction(QAction* action)
     button->menu()->removeAction(action);
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
+  {
+    comboBox->blockSignals (true);
     comboBox->removeItem(index);
+    comboBox->blockSignals (false);
+  }
 
   menu()->removeAction(action);
 
+  // Make sure the comboboxes are in sync.
+  actionToggled ();
+
   return action;
+}
+
+void KSelectAction::actionToggled()
+{
+  kDebug () << "KSelectAction::actionToggled() currentItem=" << currentItem () << endl;
+
+  if (d->m_comboBoxes.isEmpty())
+    return;
+
+  foreach (KComboBox* comboBox, d->m_comboBoxes) {
+    comboBox->blockSignals (true);
+    comboBox->setCurrentIndex(currentItem ());
+    comboBox->blockSignals (false);
+  }
 }
 
 void KSelectAction::actionTriggered(QAction* action)
@@ -376,6 +417,8 @@ void KSelectAction::actionTriggered(QAction* action)
   // after we've done an emit()
   QString text = action->text();
   int index = selectableActionGroup()->actions().indexOf(action);
+  kDebug () << "KSelectAction::actionTriggered(" << action << ") text=" << text
+            << " index=" << index  << " emitting triggered()" << endl;
 
   emit triggered(action);
   emit triggered(index);
@@ -405,6 +448,8 @@ void KSelectAction::changeItem( int index, const QString& text )
 
 void KSelectAction::setItems( const QStringList &lst )
 {
+  kDebug () << "KSelectAction::setItems(" << lst << ")" << endl;
+
   clear();
 
   foreach (const QString& string, lst) {
@@ -438,6 +483,8 @@ int KSelectAction::comboWidth() const
 
 void KSelectAction::clear()
 {
+  kDebug () << "KSelectAction::clear()" << endl;
+
   // we need to delete the actions later since we may get a call to clear()
   // from a method called due to a triggered(...) signal
   foreach (QAction* action, d->m_actionGroup->actions())
@@ -503,6 +550,21 @@ void KSelectAction::comboBoxDeleted(QObject* object)
     }
 }
 
+void KSelectAction::comboBoxCurrentIndexChanged(int index)
+{
+  kDebug () << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")" << endl;
+
+  QAction *a = action(index);
+  kDebug () << "\ta=" << a << endl;
+  if (a) {
+    setCurrentAction(a);
+    emit actionTriggered(a);
+  } else {
+    if (selectableActionGroup()->checkedAction())
+      selectableActionGroup()->checkedAction()->setChecked(false);
+  }
+}
+
 void KSelectAction::setMenuAccelsEnabled( bool b )
 {
   d->m_menuAccelsEnabled = b;
@@ -554,6 +616,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
         comboBox->addItem(action->icon(), action->text(), action);
 
       connect(comboBox, SIGNAL(destroyed(QObject*)), SLOT(comboBoxDeleted(QObject*)));
+      connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(comboBoxCurrentIndexChanged(int)));
       d->m_comboBoxes.append(comboBox);
 
       return comboBox;
