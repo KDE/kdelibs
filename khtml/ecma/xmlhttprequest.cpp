@@ -713,7 +713,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
     }
   case XMLHttpRequest::Send:
     {
-      if (args.size() != 1) {
+      if (args.size() > 1) {
         return Undefined();
       }
 
@@ -722,21 +722,23 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
       }
 
       QString body;
-      Object obj = Object::dynamicCast(args[0]);
-      if (obj.isValid() && obj.inherits(&DOMDocument::info)) {
-        DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
-        DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
-        
-        try {
-          body = doc->toString().string();
-          // FIXME: also need to set content type, including encoding!
-
-        } catch(DOM::DOMException& e) {
-          Object err = Error::create(exec, GeneralError, "Exception serializing document");
-          exec->setException(err);
+      if (args.size() >= 1) {
+        Object obj = Object::dynamicCast(args[0]);
+        if (obj.isValid() && obj.inherits(&DOMDocument::info)) {
+          DOM::Node docNode = static_cast<KJS::DOMDocument *>(obj.imp())->toNode();
+          DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode.handle());
+          
+          try {
+            body = doc->toString().string();
+            // FIXME: also need to set content type, including encoding!
+  
+          } catch(DOM::DOMException& e) {
+            Object err = Error::create(exec, GeneralError, "Exception serializing document");
+            exec->setException(err);
+          }
+        } else {
+          body = args[0].toString(exec).qstring();
         }
-      } else {
-        body = args[0].toString(exec).qstring();
       }
 
       request->send(body);
