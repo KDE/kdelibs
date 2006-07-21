@@ -441,7 +441,16 @@ void KSelectAction::clear()
   // we need to delete the actions later since we may get a call to clear()
   // from a method called due to a triggered(...) signal
   foreach (QAction* action, d->m_actionGroup->actions())
+  {
+    // deleteLater() only removes us from the actions() list (among
+    // other things) on the next entry into the event loop.  Until then,
+    // e.g. action() and setCurrentItem() will be working on items
+    // that are supposed to have been deleted.  So detach the action to
+    // prevent this from happening.
+    removeAction (action);
+
     action->deleteLater();
+  }
 }
 
 void KSelectAction::removeAllActions( )
