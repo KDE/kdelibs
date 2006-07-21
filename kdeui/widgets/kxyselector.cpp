@@ -78,7 +78,6 @@ void KXYSelector::setYValue( int _yPos )
 void KXYSelector::setValues( int _xPos, int _yPos )
 {
   int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-  if (w < 5) w = 5;
 
   xPos = _xPos;
   yPos = _yPos;
@@ -122,10 +121,6 @@ void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
   opt.initFrom(this);
 
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  if ( w < 5 ) {
-    w = 5 - w;
-  }
-  opt.rect.adjust( w, w, -w, -w );
 
   opt.state = QStyle::State_Sunken;
 
