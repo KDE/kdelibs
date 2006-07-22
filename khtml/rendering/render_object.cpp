@@ -474,6 +474,9 @@ int RenderObject::offsetTop() const
 
 RenderObject* RenderObject::offsetParent() const
 {
+    if (isBody()) 
+        return 0;
+
     // can't really use containing blocks here (#113280)
     bool skipTables = isPositioned() || isRelPositioned();
     bool strict = !style()->htmlHacks();
