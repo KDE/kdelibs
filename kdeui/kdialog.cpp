@@ -128,8 +128,10 @@ void KDialog::Private::setupLayout()
   if ( mActionSeparator )
     mTopLayout->addWidget( mActionSeparator );
 
-  if ( mButtonBox )
+  if ( mButtonBox ) {
+    mButtonBox->setOrientation( mButtonOrientation );
     mTopLayout->addWidget( mButtonBox );
+  }
 }
 
 void KDialog::Private::setButtonFocus( QPushButton *button, bool isDefault, bool isFocus )
