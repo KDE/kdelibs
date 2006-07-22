@@ -193,7 +193,10 @@ Q_LONG KTar::readRawHeader(char *buffer) {
 
       // only compare those of the 6 checksum digits that mean something,
       // because the other digits are filled with all sorts of different chars by different tars ...
-      if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() ) ) {
+      // Some tars right-justify the checksum so it could start in one of three places - we have to check each.
+      if( strncmp( buffer + 148 + 6 - s.length(), s.data(), s.length() )
+        && strncmp( buffer + 148 + 7 - s.length(), s.data(), s.length() )
+        && strncmp( buffer + 148 + 8 - s.length(), s.data(), s.length() ) ) {
         kdWarning(7041) << "KTar: invalid TAR file. Header is: " << QCString( buffer+257, 5 ) << endl;
         return -1;
       }
