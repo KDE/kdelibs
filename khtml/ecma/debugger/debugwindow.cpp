@@ -141,12 +141,12 @@ DebugWindow::DebugWindow(QWidget *parent)
     if (qobject_cast<KTextEditor::ConfigInterface*>(m_view))
     {
         KTextEditor::ConfigInterface *iface =qobject_cast<KTextEditor::ConfigInterface*>(m_view);
-        if (iface->configKeys().contains("LineNumbers"))
-            iface->setConfigValue("LineNumbers", true);
-        if (iface->configKeys().contains("IconBar"))
-            iface->setConfigValue("IconBar", true);
-        if (iface->configKeys().contains("DynamicWordWrap"))
-            iface->setConfigValue("DynamicWordWrap", true);
+        if (iface->configKeys().contains("line-numbers"))
+            iface->setConfigValue("line-numbers", true);
+        if (iface->configKeys().contains("icon-bar"))
+            iface->setConfigValue("icon-bar", true);
+        if (iface->configKeys().contains("dynamic-word-wrap"))
+            iface->setConfigValue("dynamic-word-wrap", true);
     }
 //  End Testing
 
