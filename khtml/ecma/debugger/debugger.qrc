@@ -8,5 +8,7 @@
         <file>images/class.png</file>
         <file>images/property.png</file>
         <file>images/method.png</file>
+        <file>images/addtab.png</file>
+        <file>images/removetab.png</file>
     </qresource>
 </RCC>

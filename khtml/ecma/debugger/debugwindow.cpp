@@ -41,6 +41,7 @@
 #include <kstdaction.h>
 #include <kxmlguifactory.h>
 
+#include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/modificationinterface.h>
@@ -63,7 +64,8 @@
 
 #include <QVBoxLayout>
 #include <QSplitter>
-#include <QDebug>
+#include <QTabWidget>
+#include <QToolButton>
 
 #include "numberedtextview.h"
 #include "breakpointsdock.h"
@@ -116,11 +118,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     setCaption(i18n("JavaScript Debugger"));
     kDebug() << "creating DebugWindow" << endl;
 
-//  Testing KTextEditor stuff
-    m_sourceEdit = new NumberedTextView;
-
     m_editor = KTextEditor::EditorChooser::editor();
-
     if ( !m_editor )
     {
         KMessageBox::error(this, i18n("A KDE text-editor component could not be found;\n"
@@ -128,34 +126,13 @@ DebugWindow::DebugWindow(QWidget *parent)
         kapp->exit(1);
     }
 
-    KTextEditor::Document *document = m_editor->createDocument(0);
-
-    // enable the modified on disk warning dialogs if any
-    if (qobject_cast<KTextEditor::ModificationInterface *>(document))
-        qobject_cast<KTextEditor::ModificationInterface *>(document)->setModifiedOnDiskWarning(true);
-
-    m_documentList.append(document);
-    m_view = qobject_cast<KTextEditor::View*>(document->createView(this));
-
-    // enable the modified on disk warning dialogs if any
-    if (qobject_cast<KTextEditor::ConfigInterface*>(m_view))
-    {
-        KTextEditor::ConfigInterface *iface =qobject_cast<KTextEditor::ConfigInterface*>(m_view);
-        if (iface->configKeys().contains("line-numbers"))
-            iface->setConfigValue("line-numbers", true);
-        if (iface->configKeys().contains("icon-bar"))
-            iface->setConfigValue("icon-bar", true);
-        if (iface->configKeys().contains("dynamic-word-wrap"))
-            iface->setConfigValue("dynamic-word-wrap", true);
-    }
-//  End Testing
-
     m_watches = new WatchesDock;
     m_localVariables = new LocalVariablesDock;
     m_scripts = new ScriptsDock;
     m_callStack = new CallStackDock;
     m_breakpoints = new BreakpointsDock;
     m_console = new ConsoleDock;
+    m_tabWidget = new QTabWidget;
 
     addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
     addDockWidget(Qt::LeftDockWidgetArea, m_localVariables);
@@ -167,8 +144,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout(mainFrame);
     layout->setSpacing(0);
     QSplitter *splitter = new QSplitter(Qt::Vertical);
-//    splitter->addWidget(m_sourceEdit);
-    splitter->addWidget(m_view);
+    splitter->addWidget(m_tabWidget);
     splitter->addWidget(m_console);
     layout->addWidget(splitter);
 
@@ -179,6 +155,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     createMenus();
     createToolBars();
     createStatusBar();
+    createTabButtons();
 
     connect(m_scripts, SIGNAL(displayScript(KJS::DebugDocument*)),
             this, SLOT(displayScript(KJS::DebugDocument*)));
@@ -243,6 +220,27 @@ void DebugWindow::createToolBars()
     toolBar()->addAction(m_stepIntoAct);
     toolBar()->addAction(m_stepOutAct);
     toolBar()->addAction(m_stepOverAct);
+}
+
+void DebugWindow::createTabButtons()
+{
+/*
+    QToolButton *newTabButton = new QToolButton(this);
+    m_tabWidget->setCornerWidget(newTabButton, Qt::TopLeftCorner);
+    newTabButton->setCursor(Qt::ArrowCursor);
+    newTabButton->setAutoRaise(true);
+    newTabButton->setIcon(QIcon(ImageLocation + QLatin1String("addtab.png")));
+    QObject::connect(newTabButton, SIGNAL(clicked()), this, SLOT(newTab()));
+    newTabButton->setToolTip(tr("Add page"));
+*/
+    QToolButton *closeTabButton = new QToolButton(m_tabWidget);
+    m_tabWidget->setCornerWidget(closeTabButton, Qt::TopRightCorner);
+    closeTabButton->setCursor(Qt::ArrowCursor);
+    closeTabButton->setAutoRaise(true);
+    closeTabButton->setIcon(QIcon(":/images/removetab.png"));
+    QObject::connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
+    closeTabButton->setToolTip(tr("Close source"));
+    closeTabButton->setEnabled(true);
 }
 
 // -------------------------------------------------------------
@@ -389,21 +387,65 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 
 void DebugWindow::displayScript(KJS::DebugDocument *document)
 {
+    if (m_openDocuments.contains(document))
+        return;
+
+    KTextEditor::Document *doc = m_editor->createDocument(0);
+    m_documentList.append(doc);
+
+    KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(doc);
+    if (highlightingInterface)
+    {
+        int modeNumber;
+        int count = highlightingInterface->hlModeCount();
+        for (int i=0; i<count; i++)
+        {
+            QString modeName = highlightingInterface->hlModeName(i);
+            QString sectionName = highlightingInterface->hlModeSectionName(i);
+            if (modeName == "JavaScript")
+            {
+                modeNumber = i;
+                break;
+            }
+        }
+        if (modeNumber != 0)
+        {
+            kDebug() << "Found JavaScript Highlighting Mode" << endl;
+            highlightingInterface->setHlMode(modeNumber);
+        }
+    }
+
     QList<SourceFragment> fragments = document->code();
     foreach (SourceFragment fragment, fragments)
     {
         int line = fragment.baseLine;
-        int col = 0;
+        int col = 1;
 
-        KTextEditor::Cursor cur = m_view->cursorPosition();
+        KTextEditor::Cursor cur;
         cur.setPosition(line, col);
-        m_view->insertText(fragment.source);
+        doc->insertText(cur, fragment.source);
     }
 
-/*
-    KTextEditor::Cursor cur = m_view->cursorPosition();
-    cur.setPosition(0, 0);
-    m_view->insertText(document->source());
-*/
+
+    KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
+    KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
+    if (configInterface)
+    {
+        if (configInterface->configKeys().contains("line-numbers"))
+            configInterface->setConfigValue("line-numbers", true);
+        if (configInterface->configKeys().contains("icon-bar"))
+            configInterface->setConfigValue("icon-bar", true);
+        if (configInterface->configKeys().contains("dynamic-word-wrap"))
+            configInterface->setConfigValue("dynamic-word-wrap", true);
+    }
+
+    m_tabWidget->addTab(view, document->name());
+}
+
+void DebugWindow::closeTab()
+{
+    int idx = m_tabWidget->currentIndex();
+    m_tabWidget->removeTab(idx);
+    m_openDocuments.removeAt(idx);
 }
 

@@ -51,6 +51,7 @@ class ScriptsDock;
 class CallStackDock;
 class BreakpointsDock;
 class ConsoleDock;
+class QTabWidget;
 
 namespace KJS
 {
@@ -67,9 +68,16 @@ class DebugDocument : public DOM::DomShared
 public:
     DebugDocument(const QString &url, Interpreter *interpreter)
         : m_url(url), m_interpreter(interpreter)
-        {}
+        {
+            QStringList splitUrl = url.split('/');
+            if (!splitUrl.isEmpty())
+                m_name = splitUrl.last();
+            else
+                m_name = "undefined";
+        }
     ~DebugDocument() {}
 
+    QString name() const { return m_name; }
     QString url() const { return m_url; }
     Interpreter *interpreter() const { return m_interpreter; }
 
@@ -116,6 +124,7 @@ public:
 
 private:
     QString m_url;
+    QString m_name;
     Interpreter *m_interpreter;
     QList<SourceFragment> m_codeFragments;
 
@@ -169,12 +178,14 @@ protected:
 
 private slots:
     void displayScript(KJS::DebugDocument *document);
+    void closeTab();
 
 private:
     void createActions();
     void createMenus();
     void createToolBars();
     void createStatusBar();
+    void createTabButtons();
 
     // Standard actions
     KAction *m_exitAct;
@@ -186,23 +197,17 @@ private:
     KAction *m_stepOutAct;
     KAction *m_stepOverAct;
 
-    KAction *m_cut;
-    KAction *m_copy;
-    KAction *m_paste;
-
     // Text editing stuff
     KTextEditor::Editor *m_editor;
-    KTextEditor::View *m_view;
     QList<KTextEditor::Document*> m_documentList;
 
-
-    NumberedTextView *m_sourceEdit;
     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
     ScriptsDock *m_scripts;
     CallStackDock *m_callStack;
     BreakpointsDock *m_breakpoints;
     ConsoleDock *m_console;
+    QTabWidget *m_tabWidget;
 
     // Internal temp variables to overcome some issues with KJS::Debugger...
     int m_nextBaseLine;
@@ -218,6 +223,7 @@ private:
 
 
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
+    QList<DebugDocument*> m_openDocuments;
 
     static DebugWindow *m_debugger;
 };
