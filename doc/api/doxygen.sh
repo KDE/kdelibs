@@ -347,7 +347,7 @@ doxyndex()
 	# Get the list of global Menu entries.
 	GMENU=`cat subdirs | tr -d '\n'`
 
-	PMENU=`grep '<!-- pmenu' "$htmldir/index.html" | sed -e 's+.*pmenu *++' -e 's+ *-->++' | awk '{ c=split($0,a,"/"); for (j=1; j<=c; j++) { printf " / <a href=\""; if (j==c) { printf("."); } for (k=j; k<c; k++) { printf "../"; } if (j<c) { printf("../html/index.html"); } printf "\">%s</a>\n" , a[j]; } }' | tr -d '\n'`
+	PMENU=`grep '<!-- pmenu' "$htmldir/index.html" | sed -e 's+.*pmenu *++' -e 's+ *-->++' | awk '{ c=split($0,a,"/"); for (j=1; j<=c; j++) { printf " / <a href=\""; if (j==c) { printf("./index.html"); } for (k=j; k<c; k++) { printf "../index.html"; } if (j<c) { printf("../html/index.html"); } printf "\">%s</a>\n" , a[j]; } }' | tr -d '\n'`
 
 	# Map the PHP file into HTML options so that
 	# it can be substituted in for the quick-class-picker.
