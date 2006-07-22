@@ -1799,7 +1799,7 @@ bool CSSParser::parseFont( bool important )
             break;
         value = valueList->next();
     }
-    if (!value)
+    if ( !value )
         goto invalid;
 
     // set undefined values to default
@@ -1820,12 +1820,12 @@ bool CSSParser::parseFont( bool important )
         font->size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
     }
     value = valueList->next();
-    if (!font->size || (strict && !value))
+    if ( !font->size || !value )
         goto invalid;
 
     // kdDebug( 6080 ) << "  got size" << endl;
 
-    if ( value && value->unit == Value::Operator && value->iValue == '/' ) {
+    if ( value->unit == Value::Operator && value->iValue == '/' ) {
         // line-height
         value = valueList->next();
         if ( !value )
@@ -1848,9 +1848,7 @@ bool CSSParser::parseFont( bool important )
     // font family must come now
     font->family = parseFontFamily();
 
-    if (!strict && !font->family)
-        font->family = new CSSValueListImpl;
-    else if ( valueList->current() || !font->family )
+    if ( valueList->current() || !font->family )
         goto invalid;
     //kdDebug( 6080 ) << "  got family, parsing ok!" << endl;
 
