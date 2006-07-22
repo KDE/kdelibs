@@ -2237,20 +2237,24 @@ Value FrameArray::get(ExecState *exec, const Identifier &p) const
   // hence, it can find non-frame things (and even let them hide frame ones!)
   // We don't quite do that, but do this as a fallback.
   DOM::DocumentImpl* doc  = static_cast<DOM::DocumentImpl*>(part->document().handle());
-  DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
-  DOM::NodeImpl*     node = docuAll.namedItem(p.string());
-  if (node) {
-    if (node->id() == ID_FRAME || node->id() == ID_IFRAME) {
-      //Return the Window object.
-      KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(node)->contentPart();
-      if (part)
-        return Value(Window::retrieveWindow(part));
-      else
-        return Undefined();
-    } else {
-      //Just a regular node..
-      return getDOMNode(exec, node);
+  if (doc) {
+    DOM::HTMLCollectionImpl docuAll(doc, DOM::HTMLCollectionImpl::DOC_ALL);
+    DOM::NodeImpl*     node = docuAll.namedItem(p.string());
+    if (node) {
+      if (node->id() == ID_FRAME || node->id() == ID_IFRAME) {
+        //Return the Window object.
+        KHTMLPart* part = static_cast<DOM::HTMLFrameElementImpl*>(node)->contentPart();
+        if (part)
+          return Value(Window::retrieveWindow(part));
+        else
+          return Undefined();
+      } else {
+        //Just a regular node..
+        return getDOMNode(exec, node);
+      }
     }
+  } else {
+    kdWarning(6070) << "Missing own document in FrameArray::get()" << endl;
   }
 
   return ObjectImp::get(exec, p);
