@@ -415,6 +415,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         }
     }
 
+/*
     QList<SourceFragment> fragments = document->code();
     foreach (SourceFragment fragment, fragments)
     {
@@ -425,7 +426,8 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         cur.setPosition(line, col);
         doc->insertText(cur, fragment.source);
     }
-
+*/
+    doc->setText(document->source());
 
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
     KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);

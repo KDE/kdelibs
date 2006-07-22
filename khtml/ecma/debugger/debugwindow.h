@@ -68,22 +68,13 @@ class DebugDocument : public DOM::DomShared
 public:
     DebugDocument(const QString &url, Interpreter *interpreter)
         : m_url(url), m_interpreter(interpreter)
-        {
-            QStringList splitUrl = url.split('/');
-            if (!splitUrl.isEmpty())
-                m_name = splitUrl.last();
-            else
-                m_name = "undefined";
-        }
-    ~DebugDocument() {}
-
-    QString name() const { return m_name; }
-    QString url() const { return m_url; }
-    Interpreter *interpreter() const { return m_interpreter; }
-
-    QList<SourceFragment> code() { return m_codeFragments; }
-    QString source() const
     {
+        QStringList splitUrl = url.split('/');
+        if (!splitUrl.isEmpty())
+            m_name = splitUrl.last();
+        else
+            m_name = "undefined";
+
         if (m_interpreter)
         {
             ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(m_interpreter);
@@ -105,12 +96,20 @@ public:
                     str = decoder->decode(data.data(), data.size()) + decoder->flush();
 
                 delete decoder;
-                return str;
+                m_source = str;
             }
         }
-
-        return QString();
+        else
+            m_source = QString();
     }
+    ~DebugDocument() {}
+
+    QString name() const { return m_name; }
+    QString url() const { return m_url; }
+    Interpreter *interpreter() const { return m_interpreter; }
+
+    QList<SourceFragment> code() { return m_codeFragments; }
+    QString source() const { return m_source; }
 
     void addCodeFragment(int sourceId, int baseLine, const QString &source)
     {
@@ -125,6 +124,7 @@ public:
 private:
     QString m_url;
     QString m_name;
+    QString m_source;
     Interpreter *m_interpreter;
     QList<SourceFragment> m_codeFragments;
 
