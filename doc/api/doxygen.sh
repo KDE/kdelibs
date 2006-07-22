@@ -156,6 +156,11 @@ if test -n "$PREFIX" && test ! -d "$PREFIX" ; then
 	PREFIX=""
 fi
 
+TOPNAME=`grep '^/.*DOXYGEN_NAME' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++' | sed s+\"++g`
+if test -z "$TOPNAME" ; then
+    TOPNAME="API Reference"
+fi
+
 ### We need some values from top-level files, which
 ### are not preserved between invocations of this
 ### script, so factor it out for easy use.
@@ -384,7 +389,7 @@ doxyndex()
 				-e "s+<!-- pmenu.*-->+$PMENU+" \
 				-e "s+<!-- cmenu.begin -->+$CMENUBEGIN+" \
 				-e "s+<!-- cmenu.end -->+$CMENUEND+" \
-				< "$i"  | sed -e "s+@topdir@+$htmltop+g" > "$i.new" && mv "$i.new" "$i"
+				< "$i"  | sed -e "s+@topdir@+$htmltop+g" | sed -e "s+@topname@+$TOPNAME+g" > "$i.new" && mv "$i.new" "$i"
 			sed -e "s+<!-- cmenu -->+$CMENU+" < "$i" > "$i.new"
 			test -s "$i.new" && mv "$i.new" "$i"
 			echo "* Added menus to $i"
