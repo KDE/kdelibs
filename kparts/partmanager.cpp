@@ -327,38 +327,38 @@ Part * PartManager::findPartFromWidget( QWidget * widget )
 
 void PartManager::addPart( Part *part, bool setActive )
 {
-  if ( d->m_parts.contains( part ) ) // don't add parts more than once :)
-  {
-#ifdef DEBUG_PARTMANAGER
-    kWarning(1000) << k_funcinfo << part << " already added" << kBacktrace(5) << endl;
-#endif
-    return;
-  }
+    // don't add parts more than once :)
+    if ( d->m_parts.contains( part ) ) {
+    #ifdef DEBUG_PARTMANAGER
+        kWarning(1000) << k_funcinfo << part << " already added" << kBacktrace(5) << endl;
+    #endif
+        return;
+    }
 
-  d->m_parts.append( part );
+    d->m_parts.append( part );
 
-  part->setManager( this );
+    part->setManager( this );
 
-  if ( setActive )
-  {
-    setActivePart( part );
-    if ( part->widget() )
-      part->widget()->setFocus();
-  }
+    if ( setActive ) {
+        setActivePart( part );
 
-  // Prevent focus problems
-  if ( part->widget() && part->widget()->focusPolicy() == Qt::NoFocus )
-  {
-    kWarning(1000) << "Part '" << part->objectName() << "' has a widget " << part->widget()->objectName() << " with a focus policy of NoFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
-  }
-  if ( part->widget() && part->widget()->focusPolicy() == Qt::TabFocus )
-  {
-    kWarning(1000) << "Part '" << part->objectName() << "' has a widget " << part->widget()->objectName() << " with a focus policy of TabFocus. It should have at least a ClickFocus policy, for part activation to work well." << endl;
-  }
-
-  if ( setActive && part->widget() )
-    part->widget()->show();
-  emit partAdded( part );
+        if ( QWidget *w = part->widget() ) {
+            // Prevent focus problems
+            if ( w->focusPolicy() == Qt::NoFocus ) {
+                kWarning(1000) << "Part '" << part->objectName() << "' has a widget "
+                << w->objectName() << " with a focus policy of NoFocus. It should have at least a"
+                << "ClickFocus policy, for part activation to work well." << endl;
+            }
+            if ( part->widget() && part->widget()->focusPolicy() == Qt::TabFocus ) {
+                kWarning(1000) << "Part '" << part->objectName() << "' has a widget "
+                << w->objectName() << " with a focus policy of TabFocus. It should have at least a"
+                << "ClickFocus policy, for part activation to work well." << endl;
+            }
+            w->setFocus();
+            w->show();
+        }
+    }
+    emit partAdded( part );
 }
 
 void PartManager::removePart( Part *part )
@@ -591,3 +591,5 @@ void PartManager::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
 #include "partmanager.moc"
+
+// kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on
