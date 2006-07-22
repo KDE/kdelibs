@@ -114,7 +114,7 @@ KDateValidator::fixup( QString& ) const
 }
 
 KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
-  : QGridView(parent, name, f)
+  : QGridView(parent, name, (f | WNoAutoErase))
 {
   d = new KDateTablePrivate;
   setFontSize(10);
@@ -130,11 +130,12 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setVScrollBarMode(AlwaysOff);
   viewport()->setEraseColor(KGlobalSettings::baseColor());
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
+
   initAccels();
 }
 
 KDateTable::KDateTable(QWidget *parent, const char* name, WFlags f)
-  : QGridView(parent, name, f)
+  : QGridView(parent, name, (f | WNoAutoErase))
 {
   d = new KDateTablePrivate;
   setFontSize(10);
@@ -190,6 +191,20 @@ QDate KDateTable::dateFromPos( int pos )
   if ( offset < 1 ) offset += 7;
   pCellDate = calendar->addDays( pCellDate, pos - offset );
   return pCellDate;
+}
+
+void
+KDateTable::paintEmptyArea(QPainter *paint, int, int, int, int)
+{
+  // Erase the unused areas on the right and bottom.
+  QRect unusedRight = frameRect();
+  unusedRight.setLeft(gridSize().width());
+
+  QRect unusedBottom = frameRect();
+  unusedBottom.setTop(gridSize().height());
+
+  paint->eraseRect(unusedRight);
+  paint->eraseRect(unusedBottom);
 }
 
 void

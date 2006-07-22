@@ -350,6 +350,12 @@ protected:
      * Paint a cell.
      */
     virtual void paintCell(QPainter*, int, int);
+
+    /**
+     * Paint the empty area (background).
+     */
+    virtual void paintEmptyArea(QPainter*, int, int, int, int);
+
     /**
      * Handle the resize events.
      */
