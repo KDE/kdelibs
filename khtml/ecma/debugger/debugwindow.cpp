@@ -38,13 +38,14 @@
 #include <kconfigbase.h>
 #include <kapplication.h>
 #include <kstringhandler.h>
+#include <kstdaction.h>
 #include <kxmlguifactory.h>
 
+#include <ktexteditor/configinterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/modificationinterface.h>
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/cursor.h>
-
 
 #include "kjs_dom.h"
 #include "kjs_binding.h"
@@ -135,7 +136,18 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     m_documentList.append(document);
     m_view = qobject_cast<KTextEditor::View*>(document->createView(this));
-    guiFactory()->addClient(m_view);
+
+    // enable the modified on disk warning dialogs if any
+    if (qobject_cast<KTextEditor::ConfigInterface*>(m_view))
+    {
+        KTextEditor::ConfigInterface *iface =qobject_cast<KTextEditor::ConfigInterface*>(m_view);
+        if (iface->configKeys().contains("LineNumbers"))
+            iface->setConfigValue("LineNumbers", true);
+        if (iface->configKeys().contains("IconBar"))
+            iface->setConfigValue("IconBar", true);
+        if (iface->configKeys().contains("DynamicWordWrap"))
+            iface->setConfigValue("DynamicWordWrap", true);
+    }
 //  End Testing
 
     m_watches = new WatchesDock;
@@ -387,5 +399,11 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         cur.setPosition(line, col);
         m_view->insertText(fragment.source);
     }
+
+/*
+    KTextEditor::Cursor cur = m_view->cursorPosition();
+    cur.setPosition(0, 0);
+    m_view->insertText(document->source());
+*/
 }
 

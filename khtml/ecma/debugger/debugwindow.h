@@ -186,6 +186,10 @@ private:
     KAction *m_stepOutAct;
     KAction *m_stepOverAct;
 
+    KAction *m_cut;
+    KAction *m_copy;
+    KAction *m_paste;
+
     // Text editing stuff
     KTextEditor::Editor *m_editor;
     KTextEditor::View *m_view;
