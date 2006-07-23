@@ -1682,7 +1682,7 @@ void KFileDialog::writeConfig( KConfigGroup *configGroup)
         return;
 
     configGroup->writePathEntry( RecentURLs, d->pathCombo->urls() );
-    saveDialogSize( configGroup, KConfigBase::Global );
+    saveDialogSize( configGroup, KConfigBase::Persistent | KConfigBase::Global );
     configGroup->writeEntry( PathComboCompletionMode, static_cast<int>(d->pathCombo->completionMode()) );
     configGroup->writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
     configGroup->writeEntry( ShowSpeedbar, d->urlBar && !d->urlBar->isHidden() );

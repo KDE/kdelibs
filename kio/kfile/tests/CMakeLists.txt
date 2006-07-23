@@ -15,7 +15,7 @@ kfdtest.cpp
 
 kde4_automoc(${kfstest_SRCS})
 
-kde4_add_executable(kfstest ${kfstest_SRCS})
+kde4_add_executable(kfstest RUN_UNINSTALLED ${kfstest_SRCS})
 
 target_link_libraries(kfstest  ${KDE4_KIO_LIBS} )
 
@@ -28,7 +28,7 @@ kurlrequestertest.cpp
 
 kde4_automoc(${kurlrequestertest_SRCS})
 
-kde4_add_executable(kurlrequestertest ${kurlrequestertest_SRCS})
+kde4_add_executable(kurlrequestertest RUN_UNINSTALLED ${kurlrequestertest_SRCS})
 
 target_link_libraries(kurlrequestertest  ${KDE4_KIO_LIBS} )
 
@@ -41,7 +41,7 @@ kfiletreeviewtest.cpp
 
 kde4_automoc(${kfiletreeviewtest_SRCS})
 
-kde4_add_executable(kfiletreeviewtest ${kfiletreeviewtest_SRCS})
+kde4_add_executable(kfiletreeviewtest RUN_UNINSTALLED ${kfiletreeviewtest_SRCS})
 
 target_link_libraries(kfiletreeviewtest  ${KDE4_KIO_LIBS} )
 
@@ -54,7 +54,7 @@ kopenwithtest.cpp
 
 kde4_automoc(${kopenwithtest_SRCS})
 
-kde4_add_executable(kopenwithtest ${kopenwithtest_SRCS})
+kde4_add_executable(kopenwithtest RUN_UNINSTALLED ${kopenwithtest_SRCS})
 
 target_link_libraries(kopenwithtest  ${KDE4_KIO_LIBS} )
 
@@ -67,7 +67,7 @@ kdirselectdialogtest.cpp
 
 kde4_automoc(${kdirselectdialogtest_SRCS})
 
-kde4_add_executable(kdirselectdialogtest ${kdirselectdialogtest_SRCS})
+kde4_add_executable(kdirselectdialogtest RUN_UNINSTALLED ${kdirselectdialogtest_SRCS})
 
 target_link_libraries(kdirselectdialogtest  ${KDE4_KIO_LIBS} )
 
@@ -80,7 +80,7 @@ kicondialogtest.cpp
 
 kde4_automoc(${kicondialogtest_SRCS})
 
-kde4_add_executable(kicondialogtest ${kicondialogtest_SRCS})
+kde4_add_executable(kicondialogtest RUN_UNINSTALLED ${kicondialogtest_SRCS})
 
 target_link_libraries(kicondialogtest  ${KDE4_KIO_LIBS} )
 
@@ -93,7 +93,7 @@ knotifytest.cpp
 
 kde4_automoc(${knotifytest_SRCS})
 
-kde4_add_executable(knotifytest ${knotifytest_SRCS})
+kde4_add_executable(knotifytest RUN_UNINSTALLED ${knotifytest_SRCS})
 
 target_link_libraries(knotifytest  ${KDE4_KIO_LIBS} )
 
@@ -106,7 +106,7 @@ kcustommenueditortest.cpp
 
 kde4_automoc(${kcustommenueditortest_SRCS})
 
-kde4_add_executable(kcustommenueditortest ${kcustommenueditortest_SRCS})
+kde4_add_executable(kcustommenueditortest RUN_UNINSTALLED ${kcustommenueditortest_SRCS})
 
 target_link_libraries(kcustommenueditortest  ${KDE4_KIO_LIBS} )
 

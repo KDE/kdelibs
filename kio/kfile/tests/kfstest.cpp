@@ -43,9 +43,17 @@
 
 #include "kfdtest.h"
 
+static const KCmdLineOptions options[] =
+{
+    { "+[cmd]", "", 0 },
+    { "+[url]", "", 0 },
+    KCmdLineLastOption
+};
+
 int main(int argc, char **argv)
 {
     KCmdLineArgs::init(argc, argv, "kfstest","kfstest","test app","0");
+    KCmdLineArgs::addCmdLineOptions(options);
     KApplication a;
     a.setQuitOnLastWindowClosed(false);
 
@@ -55,17 +63,17 @@ int main(int argc, char **argv)
     QString argv1;
     KUrl startDir;
     if (argc > 1)
-	argv1 = QLatin1String(argv[1]);
+        argv1 = QLatin1String(argv[1]);
     if ( argc > 2 )
         startDir = KUrl( argv[2] );
 
     if (argv1 == QLatin1String("diroperator")) {
-	KDirOperator *op = new KDirOperator(startDir, 0);
-	KConfigGroup grp(KGlobal::config(), "TestGroup" );
-	op->setViewConfig(&grp);
-	op->setView(KFile::Simple);
-	op->show();
-	a.exec();
+        KDirOperator *op = new KDirOperator(startDir, 0);
+        KConfigGroup grp(KGlobal::config(), "TestGroup" );
+        op->setViewConfig(&grp);
+        op->setView(KFile::Simple);
+        op->show();
+        a.exec();
     }
 
     else if (argv1 == QLatin1String("justone")) {
@@ -94,24 +102,24 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("dirs"))
-	name1 = KFileDialog::getExistingDirectory();
+        name1 = KFileDialog::getExistingDirectory();
 
     else if (argv1 == QLatin1String("heap")) {
-	KFileDialog *dlg = new KFileDialog( startDir, QString(), 0L);
-	dlg->setMode( KFile::File);
-    dlg->setOperationMode( KFileDialog::Saving );
-    QStringList filter;
-    filter << "all/allfiles" << "text/plain";
-    dlg->setMimeFilter( filter, "all/allfiles" );
-    KUrlBar *urlBar = dlg->speedBar();
-    if ( urlBar )
-    {
-        urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"),
-                                   QLatin1String("KDE FTP Server") );
-    }
+        KFileDialog *dlg = new KFileDialog( startDir, QString(), 0L);
+        dlg->setMode( KFile::File);
+        dlg->setOperationMode( KFileDialog::Saving );
+        QStringList filter;
+        filter << "all/allfiles" << "text/plain";
+        dlg->setMimeFilter( filter, "all/allfiles" );
+        KUrlBar *urlBar = dlg->speedBar();
+        if ( urlBar )
+        {
+            urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"),
+                                       QLatin1String("KDE FTP Server") );
+        }
 
-	if ( dlg->exec() == KDialog::Accepted )
-	    name1 = dlg->selectedUrl().url();
+        if ( dlg->exec() == KDialog::Accepted )
+            name1 = dlg->selectedUrl().url();
     }
 
     else if ( argv1 == QLatin1String("eventloop") )
@@ -128,9 +136,9 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("icon")) {
-    	KIconDialog dlg;
-	QString icon = dlg.getIcon();
-	kDebug() << icon << endl;
+        KIconDialog dlg;
+        QString icon = dlg.getIcon();
+        kDebug() << icon << endl;
     }
 
 //     else if ( argv1 == QLatin1String("dirselect") ) {
@@ -142,29 +150,29 @@ int main(int argc, char **argv)
 //     }
 
     else {
-	KFileDialog dlg(startDir,
-			QString::fromLatin1("*|All Files\n"
-					    "*.lo *.o *.la|All libtool Files"),0);
+        KFileDialog dlg(startDir,
+                        QString::fromLatin1("*|All Files\n"
+                                            "*.lo *.o *.la|All libtool Files"),0);
 //    dlg.setFilter( "*.kdevelop" );
-	dlg.setMode( (KFile::Mode) (KFile::Files |
+        dlg.setMode( (KFile::Mode) (KFile::Files |
                                     KFile::Directory |
                                     KFile::ExistingOnly |
                                     KFile::LocalOnly) );
-//         QStringList filter;
-//         filter << "text/plain" << "text/html" << "image/png";
+//        QStringList filter;
+//        filter << "text/plain" << "text/html" << "image/png";
 //        dlg.setMimeFilter( filter );
-//    KMimeType::List types;
-//    types.append( KMimeType::mimeType( "text/plain" ) );
-//    types.append( KMimeType::mimeType( "text/html" ) );
-//    dlg.setFilterMimeType( "Filetypes:", types, types.first() );
-	if ( dlg.exec() == QDialog::Accepted ) {
-	    KUrl::List list = dlg.selectedUrls();
-	    KUrl::List::ConstIterator it = list.begin();
+//        KMimeType::List types;
+//        types.append( KMimeType::mimeType( "text/plain" ) );
+//        types.append( KMimeType::mimeType( "text/html" ) );
+//        dlg.setFilterMimeType( "Filetypes:", types, types.first() );
+        if ( dlg.exec() == QDialog::Accepted ) {
+            KUrl::List list = dlg.selectedUrls();
+            KUrl::List::ConstIterator it = list.begin();
             qDebug("*** selectedUrls(): ");
-	    while ( it != list.end() ) {
-		name1 = (*it).url();
-		qDebug("  -> %s", name1.toLatin1().constData());
-		++it;
+            while ( it != list.end() ) {
+                name1 = (*it).url();
+                qDebug("  -> %s", name1.toLatin1().constData());
+                ++it;
             }
             qDebug("*** selectedFile: %s", dlg.selectedFile().toLatin1().constData());
             qDebug("*** selectedUrl: %s", dlg.selectedUrl().url().toLatin1().constData());
@@ -175,11 +183,11 @@ int main(int argc, char **argv)
                 qDebug("  -> %s", (*it2).toLatin1().constData());
                 ++it2;
             }
-	}
+        }
     }
 
     if (!(name1.isNull()))
-	KMessageBox::information(0, QLatin1String("You selected the file " ) + name1,
-				 QLatin1String("Your Choice"));
+        KMessageBox::information(0, QLatin1String("You selected the file " ) + name1,
+                                 QLatin1String("Your Choice"));
     return 0;
 }
