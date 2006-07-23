@@ -644,6 +644,14 @@ static int TrueCurrentItem (KSelectAction *sa)
   return curAction->isChecked () ? sa->actions ().indexOf (curAction) : -1;
 }
 
+// A plain "QVariant (action)" results in a bool being stored.  So all
+// QAction pointers become stored as "true".  This hacks around it.
+static QVariant QVariantFromQAction (QAction *action)
+{
+    // "(void *)" or "long" would be smaller than "qlonglong"
+    // but neither is supported by QVariant :(
+    return qVariantFromValue ((qlonglong) action);
+}
 
 bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
 {
@@ -660,7 +668,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     QActionEvent * const e = static_cast <QActionEvent *> (event);
     
     const int index = e->before () ?
-      comboBox->findData ( e->before ()) :
+      comboBox->findData (QVariantFromQAction (e->before ())) :
       comboBox->count ();
     const int newItem = ::TrueCurrentItem (this);
     kDebug () << "KSelectAction::eventFilter(ActionAdded)"
@@ -676,7 +684,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     comboBox->insertItem (index,
       e->action()->icon(),
       ::DropAmpersands (e->action()->text()),
-      e->action ());
+      QVariantFromQAction (e->action ()));
 
     // Inserting an item into a combobox can change the current item so
     // make sure the item corresponding to the checked action is selected.
@@ -688,7 +696,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
   {
     QActionEvent * const e = static_cast <QActionEvent *> (event);
     
-    const int index = comboBox->findData ( e->action ());
+    const int index = comboBox->findData (QVariantFromQAction (e->action ()));
     const int newItem = ::TrueCurrentItem (this);
     kDebug () << "KSelectAction::eventFilter(ActionChanged)"
               << "    comboBox: ptr=" << comboBox
@@ -712,7 +720,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
   {
     QActionEvent * const e = static_cast <QActionEvent *> (event);
 
-    const int index = comboBox->findData ( e->action ());
+    const int index = comboBox->findData (QVariantFromQAction (e->action ()));
     const int newItem = ::TrueCurrentItem (this);
     kDebug () << "KSelectAction::eventFilter(ActionRemoved)"
               << "    comboBox: ptr=" << comboBox
