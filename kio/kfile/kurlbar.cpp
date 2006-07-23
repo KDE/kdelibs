@@ -894,13 +894,13 @@ bool KUrlBarListBox::event( QEvent* e )
         if ( item ) {
             QString text = static_cast<KUrlBarItem*>( item )->toolTip();
             if ( !text.isEmpty() )
-                QToolTip::showText( itemRect( item ).topLeft(), text, this );
+                QToolTip::showText( he->globalPos(), text, this );
         }
 
         return true;
     }
 
-    return QFrame::event(e);
+    return KListBox::event(e);
 }
 
 
