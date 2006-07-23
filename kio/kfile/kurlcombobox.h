@@ -203,11 +203,10 @@ protected:
     QIcon getIcon( const KUrl& url ) const;
 
     /**
-     * Updates @p item with @p pixmap and sets the url instead of the text
+     * Updates @p item with @p icon and sets the url instead of the text
      * of the KUrlComboItem.
-     * Also works around a Qt bug.
      */
-    void updateItem( const KUrlComboItem *item, int index, const QIcon& pix);
+    void updateItem( const KUrlComboItem *item, int index, const QIcon& icon );
 
     QIcon opendirIcon;
     int firstItemIndex;

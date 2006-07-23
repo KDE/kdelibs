@@ -355,28 +355,23 @@ QIcon KUrlComboBox::getIcon( const KUrl& url ) const
 }
 
 
-// updates "item" with pixmap "pixmap" and sets the URL instead of text
-// works around a Qt bug.
+// updates "item" with icon "icon" and sets the URL instead of text
 void KUrlComboBox::updateItem( const KUrlComboItem *item,
                                int index, const QIcon& icon)
 {
-    // QComboBox::changeItem() doesn't honor the pixmap when
-    // using an editable combobox, so we just remove and insert
-    if ( isEditable() ) {
-      KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-      if (myMode == Directories)
-        mode = KUrl::AddTrailingSlash;
-      else
-        mode = KUrl::RemoveTrailingSlash;
+    setItemIcon(index,icon);
 
-	removeItem( index );
-	insertItem( index,
-                    icon,
-		    item->url.isLocalFile() ? item->url.path( mode ) :
-                        item->url.prettyUrl( mode ));
+    if ( isEditable() ) {
+        KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
+        if (myMode == Directories)
+            mode = KUrl::AddTrailingSlash;
+        else
+            mode = KUrl::RemoveTrailingSlash;
+
+        setItemText( index, item->url.isLocalFile() ? item->url.path( mode ) :
+                                                      item->url.prettyUrl( mode ));
     }
     else {
-        setItemIcon(index,icon);
         setItemText(index,item->text);
     }
 }
