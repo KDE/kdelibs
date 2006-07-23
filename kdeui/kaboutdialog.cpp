@@ -339,6 +339,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
     hbox->addLayout(vbox);
     vbox->addSpacing(1);
     mImageFrame = new QFrame(this);
+    mImageFrame->setAutoFillBackground(true);
     setImageFrame(true);
     vbox->addWidget(mImageFrame);
     vbox->addSpacing(1);
@@ -361,6 +362,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
   else if (layoutType & KAboutDialog::ImageOnly)
   {
     mImageFrame = new QFrame(this);
+    mImageFrame->setAutoFillBackground(true);
     setImageFrame(true);
     hbox->addWidget(mImageFrame, 10);
 
@@ -389,6 +391,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
     hbox->addLayout(vbox);
     vbox->addSpacing(1);
     mImageFrame = new QFrame(this);
+    mImageFrame->setAutoFillBackground(true);
     setImageFrame(true);
     vbox->addWidget(mImageFrame);
     vbox->addSpacing(1);
