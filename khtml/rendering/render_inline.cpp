@@ -65,7 +65,7 @@ void RenderInline::setStyle(RenderStyle* _style)
 }
 
 // Attach handles initial setStyle that requires parent nodes
-void RenderInline::attach() 
+void RenderInline::attach()
 {
     RenderFlow::attach();
 
@@ -97,15 +97,6 @@ void RenderInline::addChildToFlow(RenderObject* newChild, RenderObject* beforeCh
         RenderBlock *newBox = createAnonymousBlock();
         RenderFlow* oldContinuation = continuation();
         setContinuation(newBox);
-
-        // Someone may have put a <p> inside a <q>, causing a split.  When this happens, the :after content
-        // has to move into the inline continuation.  Call updatePseudoChild to ensure that our :after
-        // content gets properly destroyed.
-        bool isLastChild = (beforeChild == lastChild());
-        updatePseudoChild(RenderStyle::AFTER);
-        if (isLastChild && beforeChild != lastChild())
-            beforeChild = 0; // We destroyed the last child, so now we need to update our insertion
-                             // point to be 0.  It's just a straight append now.
 
         splitFlow(beforeChild, newBox, newChild, oldContinuation);
         return;
@@ -251,6 +242,8 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     post->close();
     post->setPos(0, -500000);
     post->setNeedsLayout(true);
+
+    updatePseudoChildren();
 
     block->setNeedsLayoutAndMinMaxRecalc();
 }

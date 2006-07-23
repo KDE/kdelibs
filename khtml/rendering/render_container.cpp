@@ -152,12 +152,12 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 	// just add it...
 	insertChildNode(newChild, beforeChild);
     }
- 
+
     if (newChild->isText() && newChild->style()->textTransform() == CAPITALIZE) {
         DOM::DOMStringImpl* textToTransform =  static_cast<RenderText*>(newChild)->originalString();
         if (textToTransform)
             static_cast<RenderText*>(newChild)->setText(textToTransform, true);
-    }    
+    }
     newChild->attach();
 }
 
@@ -252,6 +252,9 @@ void RenderContainer::updatePseudoChildren()
 
 void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type)
 {
+    // The head manages generated content for its continuations
+    if (isInlineContinuation()) return;
+
     RenderStyle* pseudo = style()->getPseudoStyle(type);
 
     RenderObject* child = pseudoContainer(type);
@@ -262,22 +265,14 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type)
     // Whether or not we now want generated content.
     bool newContentWanted = pseudo && pseudo->display() != NONE;
 
-    // For <q><p/></q>, if this object is the inline continuation of the <q>,
-    // we only want to generate ::after content and not ::before content.
-    if (type == RenderStyle::BEFORE && isInlineContinuation())
-        newContentWanted = false;
-
-    // Similarly, if we're the beginning of a <q>, and there's an inline continuation for
-    // our object, then we don't generate the :after content.
-    if (type == RenderStyle::AFTER && isRenderInline() && continuation())
-        newContentWanted = false;
-
     // No generated content
     if (!oldContentPresent && !newContentWanted)
         return;
 
+    bool movedContent = (type == RenderStyle::AFTER && isRenderInline() && continuation());
+
     // Whether or not we want the same old content.
-    bool sameOldContent = oldContentPresent && newContentWanted
+    bool sameOldContent = oldContentPresent && newContentWanted && !movedContent
                        && (child->style()->contentDataEquivalent(pseudo));
 
     // No change in content, update style
@@ -294,15 +289,13 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type)
         // The child needs to be removed.
         oldContentPresent = false;
         child->detach();
-        child = (type == RenderStyle::BEFORE) ? firstChild() : lastChild();
+        child = 0;
     }
 
     // If we have no pseudo-style or if the pseudo's display type is NONE, then we
     // have no generated content and can now return.
     if (!newContentWanted)
         return;
-
-    RenderObject* insertBefore = (type == RenderStyle::BEFORE) ? firstChild() : 0;
 
     // Generated content consists of a single container that houses multiple children (specified
     // by the content property).  This pseudo container gets the pseudo style set on it.
@@ -313,9 +306,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type)
 
     // Only add the container if it had content
     if (pseudoContainer->firstChild()) {
-        // Add the pseudo after we've installed all our content, so that addChild will be able
-        // to find the text inside the inline for e.g., first-letter styling.
-        addChild(pseudoContainer, insertBefore);
+        addPseudoContainer(pseudoContainer);
         pseudoContainer->close();
     }
 }
@@ -386,7 +377,7 @@ RenderContainer* RenderContainer::pseudoContainer(RenderStyle::PseudoId type) co
             break;
         case RenderStyle::REPLACED:
             child = lastChild();
-            if (child && child->style()->styleType() == RenderStyle::AFTER) 
+            if (child && child->style()->styleType() == RenderStyle::AFTER)
                 child = child->previousSibling();
             break;
         default:
@@ -397,12 +388,42 @@ RenderContainer* RenderContainer::pseudoContainer(RenderStyle::PseudoId type) co
         assert(child->isRenderBlock() || child->isRenderInline());
         return static_cast<RenderContainer*>(child);
     }
-    else 
+    else
     {   // check continuations
-        RenderContainer *c = static_cast<RenderContainer*>(container());
-        if (c->isAnonymousBlock()) return c->pseudoContainer(type);
+        if (continuation())
+            return continuation()->pseudoContainer(type);
     }
     return 0;
+}
+
+void RenderContainer::addPseudoContainer(RenderObject* child)
+{
+    RenderStyle::PseudoId type = child->style()->styleType();
+    switch (type) {
+        case RenderStyle::AFTER: {
+            RenderObject *l = 0;
+            if (isRenderInline()) {
+                RenderObject *c = continuation();
+                while (c) {
+                    l = c;
+                    c = c->continuation();
+                }
+            }
+            if (l)
+                l->addChild(child, 0);
+            else
+                addChild(child, 0);
+            break;
+        }
+        case RenderStyle::BEFORE:
+            addChild(child, firstChild());
+            break;
+        case RenderStyle::REPLACED:
+            addChild(child, pseudoContainer(RenderStyle::AFTER));
+            break;
+        default:
+            break;
+    }
 }
 
 void RenderContainer::updateReplacedContent()

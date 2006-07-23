@@ -41,7 +41,7 @@ public:
     RenderObject *firstChild() const { return m_first; }
     RenderObject *lastChild() const { return m_last; }
 
-    virtual bool childAllowed() const { 
+    virtual bool childAllowed() const {
         // Prevent normal children when we are replaced by generated content
         if (style()) return style()->useNormalContent();
         return true;
@@ -69,6 +69,7 @@ protected:
     void updatePseudoChild(RenderStyle::PseudoId type);
 
     RenderContainer* pseudoContainer( RenderStyle::PseudoId type ) const;
+    void addPseudoContainer(RenderObject* child);
 private:
 
     void setFirstChild(RenderObject *first) { m_first = first; }
