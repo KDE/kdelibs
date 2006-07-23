@@ -1,6 +1,8 @@
 
 project(khtml)
 
+add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)

@@ -425,13 +425,13 @@ int BrowserExtension::yOffset()
 
 void BrowserExtension::saveState( QDataStream &stream )
 {
-  stream << m_part->url() << (Q_INT32)xOffset() << (Q_INT32)yOffset();
+  stream << m_part->url() << (qint32)xOffset() << (qint32)yOffset();
 }
 
 void BrowserExtension::restoreState( QDataStream &stream )
 {
   KUrl u;
-  Q_INT32 xOfs, yOfs;
+  qint32 xOfs, yOfs;
   stream >> u >> xOfs >> yOfs;
 
   URLArgs args( urlArgs() );

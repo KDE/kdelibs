@@ -37,6 +37,8 @@ endif(${generatedFileInSourceDir})
 
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
+remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 link_directories(${KDE4_LIB_DIR})
 
 # for including config.h and for includes like <kparts/foo.h>

@@ -63,9 +63,10 @@ private:
 };
 
 StatusWindow::StatusWindow(int pid)
-    : QWidget(0, Qt::WType_TopLevel|Qt::WStyle_DialogBorder|Qt::WStyle_StaysOnTop|Qt::WDestructiveClose), m_pid(pid)
+    : QWidget(0, Qt::Window|Qt::MSWindowsFixedSizeDialogHint|Qt::WindowStaysOnTopHint), m_pid(pid)
 {
-    setObjectName( "StatusWindow" );
+	setAttribute(Qt::WA_DeleteOnClose);
+	setObjectName("StatusWindow");
 	m_label = new QLabel(this);
 	m_label->setAlignment(Qt::AlignCenter);
 	m_button = new KPushButton(KStdGuiItem::close(), this);

@@ -6,6 +6,13 @@
  *
  */
 
+// remove when QImage::jumpTable is ported
+#define QT3_SUPPORT
+#define QT3_SUPPORT_WARNINGS
+#ifdef __GNUC__
+#warning TODO: remove QT3_SUPPORT
+#endif
+
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>

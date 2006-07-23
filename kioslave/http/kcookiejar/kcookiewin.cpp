@@ -98,7 +98,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     QVBoxLayout* vlayout = new QVBoxLayout( this );
     vlayout->setMargin( KDialog::marginHint() );
     vlayout->setSpacing( KDialog::spacingHint() );
-    vlayout->setSizeConstraint( QLayout::Fixed );
+    vlayout->setSizeConstraint( QLayout::SetFixedSize );
 
     // Cookie image and message to user
     KHBox* hBox = new KHBox( this );

@@ -23,10 +23,6 @@ set(kdecore_OPTIONAL_SRCS)
 # same for optional libs
 set(kdecore_OPTIONAL_LIBS)
 
-# no more qt3support needed (but we still need qt3support.lib!)
-remove_definitions(-DQT3_SUPPORT_WARNINGS)
-remove_definitions(-DQT3_SUPPORT)
-
 if(WIN32)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${KDEWIN32_LIBRARIES})
 endif(WIN32)

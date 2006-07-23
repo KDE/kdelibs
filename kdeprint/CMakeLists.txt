@@ -3,6 +3,8 @@ project(kdeprint)
 
 add_definitions(-D_KDEPRINT_COMPILE )
 
+add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 # Needed for the subdirs
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 

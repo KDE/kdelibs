@@ -11,8 +11,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
-remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
-
 add_subdirectory( findreplace )
 add_subdirectory( widgets )
 add_subdirectory( itemviews )

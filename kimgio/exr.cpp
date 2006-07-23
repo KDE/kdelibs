@@ -183,7 +183,7 @@ bool EXRHandler::read( QImage *outImage )
         file.setFrameBuffer (&pixels[0][0] - dw.min.x - dw.min.y * width, 1, width);
         file.readPixels (dw.min.y, dw.max.y);
 
-		QImage image(width, height, 32, 0, QImage::BigEndian);
+		QImage image(width, height, QImage::Format_RGB32);
 		if( image.isNull())
 			return false;
 

@@ -1,6 +1,8 @@
 
 project(kcert)
 
+add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_BINARY_DIR}/kio/kssl )
 include_directories( ${KDE4_KIO_INCLUDES} )
 

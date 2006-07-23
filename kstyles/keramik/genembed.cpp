@@ -241,7 +241,7 @@ int main(int argc, char** argv)
 
 		cout<<"static const unsigned char "<<qPrintable(s)<<"[]={\n";
 
-		Q_UINT32* read  = reinterpret_cast< Q_UINT32* >(input.bits() );
+		quint32* read  = reinterpret_cast< quint32* >(input.bits() );
 		int size = input.width()*input.height();
 
 		for (int pos=0; pos<size; pos++)
@@ -261,7 +261,7 @@ int main(int argc, char** argv)
 
 		images.push_back(image);
 
-		read  = reinterpret_cast< Q_UINT32* >(input.bits() );
+		read  = reinterpret_cast< quint32* >(input.bits() );
 		for (int pos=0; pos<size; pos++)
 		{
 			QRgb basePix = (QRgb)*read;

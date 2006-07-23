@@ -1,6 +1,8 @@
 
 project(sonnet)
 
+add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/kutils )
 include_directories( ${CMAKE_SOURCE_DIR}/sonnet/spelling )

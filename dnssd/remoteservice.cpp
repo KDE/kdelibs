@@ -137,7 +137,7 @@ void RemoteService::virtual_hook(int, void*)
 QDataStream & operator<< (QDataStream & s, const RemoteService & a)
 {
 	s << (static_cast<ServiceBase>(a));
-	Q_INT8 resolved = a.d->m_resolved ? 1:0;
+	qint8 resolved = a.d->m_resolved ? 1:0;
 	s << resolved;
 	return s;
 }
@@ -146,7 +146,7 @@ QDataStream & operator>> (QDataStream & s, RemoteService & a)
 {
 	// stop any possible resolve going on
 	a.d->stop();
-	Q_INT8 resolved;
+	qint8 resolved;
 	operator>>(s,(static_cast<ServiceBase&>(a)));
 	s >> resolved;
 	a.d->m_resolved = (resolved == 1);	

@@ -5,6 +5,8 @@ macro_optional_find_package(FAM)
 
 add_definitions(-D_LARGEFILE64_SOURCE )
 
+add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
+
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
    include_directories(${OPENSSL_INCLUDE_DIR})
