@@ -609,7 +609,16 @@ static QString DropAmpersands (const QString &text)
 
 // KSelectAction::eventFilter() is called before action->setChecked()
 // invokes the signal to update QActionGroup so KSelectAction::currentItem()
-// returns an old value.
+// returns an old value.  There are 3 possibilities, where n actions will
+// report QAction::isChecked() where n is:
+//
+// 0: the checked action was unchecked
+// 1: the checked action did not change
+// 2: another action was checked but QActionGroup has not been invoked yet
+//    to uncheck the one that was checked before
+//
+// TODO: we might want to cache this since QEvent::ActionChanged is fired
+//       often.
 static int TrueCurrentItem (KSelectAction *sa)
 {
   QAction *curAction = sa->currentAction ();
@@ -620,6 +629,8 @@ static int TrueCurrentItem (KSelectAction *sa)
     if (action->isChecked ())
     {
        kDebug () << "\t\taction " << action << " (text=" << action->text () << ") isChecked" << endl;
+
+       // 2 actions checked case?
        if (action != curAction)
        {
          kDebug () << "\t\t\tmust be newly selected one" << endl;
@@ -629,6 +640,7 @@ static int TrueCurrentItem (KSelectAction *sa)
   }
 
   kDebug () << "\t\tcurrent action still selected? " << curAction->isChecked () << endl;
+  // 1 or 0 actions checked case (in that order)?
   return curAction->isChecked () ? sa->actions ().indexOf (curAction) : -1;
 }
 
@@ -666,6 +678,8 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
       ::DropAmpersands (e->action()->text()),
       e->action ());
 
+    // Inserting an item into a combobox can change the current item so
+    // make sure the item corresponding to the checked action is selected.
     comboBox->setCurrentIndex (newItem);
 
     eatEvent = true;
@@ -688,6 +702,8 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     comboBox->setItemIcon (index, e->action ()->icon ());
     comboBox->setItemText (index, ::DropAmpersands (e->action ()->text ()));
 
+    // The checked action may have become unchecked so
+    // make sure the item corresponding to the checked action is selected.
     comboBox->setCurrentIndex (newItem);
 
     eatEvent = true;
@@ -706,6 +722,8 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
               << endl;
     comboBox->removeItem (index);
 
+    // Removing an item from a combobox can change the current item so
+    // make sure the item corresponding to the checked action is selected.
     comboBox->setCurrentIndex (newItem);
 
     eatEvent = true;
