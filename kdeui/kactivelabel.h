@@ -34,13 +34,21 @@ class KDEUI_EXPORT KActiveLabel : public KTextBrowser
 public:
     /**
      * Constructor.
+     * @deprecated Use QLabel. (QLabel::setOpenExternalLinks(true) and
+     * QLabel::setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard) for labels with hyperlinks;
+     * QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text
+     * should be selectable by user; for both features use QLabel::setTextInteractionFlags(Qt::TextBrowserInteraction).)
      */
-    explicit KActiveLabel(QWidget * parent = 0);
+    explicit KDE_CONSTRUCTOR_DEPRECATED KActiveLabel(QWidget * parent = 0);
 
     /**
      * Constructor.
+     * @deprecated Use QLabel. (QLabel::setOpenExternalLinks(true) and
+     * QLabel::setTextInteractionFlags(Qt::LinksAccessibleByMouse|Qt::LinksAccessibleByKeyboard) for labels with hyperlinks;
+     * QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text
+     * should be selectable by user; for both features use QLabel::setTextInteractionFlags(Qt::TextBrowserInteraction).)
      */
-    explicit KActiveLabel(const QString & text, QWidget * parent = 0);
+    explicit KDE_CONSTRUCTOR_DEPRECATED KActiveLabel(const QString & text, QWidget * parent = 0);
 
     virtual ~KActiveLabel();
 
