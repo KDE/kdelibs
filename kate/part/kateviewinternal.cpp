@@ -1258,7 +1258,10 @@ void KateViewInternal::end( bool sel )
     m_view->m_codeCompletion->handleKey(&e);
     return;
   }
-
+  
+  // FIXME: Both "smart end" and "smart home" use the current range's last/first character
+  //        when jumping to the "absolute" extreme. For 4.0 and 3.5.5 (kling)
+  bool alreadyAtEndOfLine = false;
 
   if (m_view->dynWordWrap() && currentRange().wrap) {
     // Allow us to go to the real end if we're already at the end of the view line
@@ -1268,6 +1271,7 @@ void KateViewInternal::end( bool sel )
       updateCursor( c );
       return;
     }
+    alreadyAtEndOfLine = true;
   }
 
   if( !(m_doc->configFlags() & KateDocument::cfSmartHome) ) {
@@ -1288,6 +1292,10 @@ void KateViewInternal::end( bool sel )
   int endOfLine = currentRange().endCol - (m_view->dynWordWrap() ? 1 : 0);
 
   if (lc < 0 || c.col() == (lc + 1)) {
+    if (alreadyAtEndOfLine) {
+      moveEdge(right, sel);
+      return;
+    }
     c.setCol(endOfLine);
   } else {
     c.setCol(lc + 1);
