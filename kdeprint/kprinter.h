@@ -211,7 +211,7 @@ public:
 	/**
 	 * Destructor. This also saves the current KPrinter state for future printing.
 	 */
-	~KPrinter();
+	virtual ~KPrinter();
 
 	// QPrinter interface (+ some extensions)
 	/**
@@ -748,8 +748,9 @@ public:
 	QString docDirectory() const;
 
 protected:
+	virtual int devType() const;
 	virtual QPaintEngine * paintEngine () const;
-	//virtual int metric(int) const;
+	virtual int metric(PaintDeviceMetric metric) const;
 	void translateQtOptions();
 	void loadSettings();
 	void saveSettings();
@@ -761,8 +762,9 @@ protected:
 	void setRealPageSize(DrPageSize* p);
 	void setOption( const QString& key, const QString& value, bool broadcast );
 
-protected:
+private:
 	KPrinterPrivate* const d;
+	friend class KPrinterEngine;
 };
 
 //**************************************************************************************

@@ -61,7 +61,7 @@ KPMarginPage::~KPMarginPage()
 void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 {
 	// first retrieve the Qt values for page size and margins
-	QPrinter	prt(QPrinter::PrinterResolution);
+	QPrinter	prt(QPrinter::ScreenResolution);
 	prt.setFullPage(true);
 	prt.setPageSize((QPrinter::PageSize)(ps.isEmpty() ? KGlobal::locale()->pageSize() : ps.toInt()));
 	float	w = prt.width();

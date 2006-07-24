@@ -41,7 +41,11 @@ public:
 	~KDEPrintd();
 
 public Q_SLOTS:
-	Q_SCRIPTABLE int print(const QString& cmd, const QStringList& files, bool remove);
+	// FIXME this method should return an int, but qdbus doesn't seem to export
+	// the method to the dbus interface if it is marked as returning int, so
+	// for now I've made it return a string.
+	Q_SCRIPTABLE QString print(const QString& cmd, const QStringList& files, bool remove);
+	
 	Q_SCRIPTABLE QString openPassDlg(const QString& user);
 	Q_SCRIPTABLE QString requestPassword( const QString& user, const QString& host, int port, int seqNbr, const QDBusMessage& msg );
 	Q_SCRIPTABLE void initPassword( const QString& user, const QString& passwd, const QString& host, int port );

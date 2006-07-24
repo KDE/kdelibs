@@ -115,7 +115,7 @@ KDEPrintd::~KDEPrintd()
 	m_windows.clear();
 }
 
-int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
+QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
 	KPrintProcess *proc = new KPrintProcess;
 	QString	command(cmd);
@@ -146,12 +146,12 @@ int KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 		if ( proc->print() )
 		{
 			m_processpool.append( proc );
-			return ( int )proc->pid();
+			return QString::number( ( int )proc->pid() );
 		}
 	}
 
 	delete proc;
-	return -1;
+	return "-1";
 }
 
 void KDEPrintd::slotPrintTerminated( KPrintProcess *proc )

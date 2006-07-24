@@ -30,7 +30,9 @@
 
 #include <qfile.h>
 #include <qdir.h>
+#include <qpaintengine.h>
 #include <qpointer.h>
+#include <qprintengine.h>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kstandarddirs.h>
@@ -51,43 +53,30 @@ static void reportError(KPrinter*);
 // KPrinterWrapper class
 //**************************************************************************************
 
-/*class KPrinterWrapper : public QPrinter
+class KPrinterWrapper : public QPrinter
 {
-friend class KPrinter;
 public:
-	KPrinterWrapper(KPrinter*, PrinterMode m = ScreenResolution);
-	~KPrinterWrapper();
-protected:
-	virtual bool cmd(int, QPainter*, QPDevCmdParam*);
-	virtual int metric(int) const;
-	int qprinterMetric(int) const;
-private:
-	KPrinter	*m_printer;
+	KPrinterWrapper(PrinterMode mode = ScreenResolution)
+	: QPrinter(mode) {};
+	
+	int metric(PaintDeviceMetric m) const { return QPrinter::metric(m); }
+	void setMargins( uint top, uint left, uint bottom, uint right );
 };
 
-KPrinterWrapper::KPrinterWrapper(KPrinter *prt, QPrinter::PrinterMode m)
-: QPrinter(m), m_printer(prt)
+
+void KPrinterWrapper::setMargins( uint top, uint left, uint bottom, uint right )
 {
+	// TODO Actually, this doesn't work!
+	// Looking at qt's printing code, it seems that the qprintengine backends
+	// just ignore this value.
+	// QPainter::pageRect() is actually taken from e.g. CUPs or whether a full
+	// page is being used.
+	
+	QRect pageRect = paperRect().adjusted( left, top, -right, -bottom );
+	printEngine()->setProperty( QPrintEngine::PPK_PageRect, pageRect );
 }
 
-KPrinterWrapper::~KPrinterWrapper()
-{
-}
 
-bool KPrinterWrapper::cmd(int c, QPainter *painter, QPDevCmdParam *p)
-{
-	return QPrinter::cmd(c,painter,p);
-}
-
-int KPrinterWrapper::metric(int m) const
-{
-	return m_printer->metric(m);
-}
-
-int KPrinterWrapper::qprinterMetric(int m) const
-{
-	return QPrinter::metric(m);
-}*/
 
 //**************************************************************************************
 // KPrinterPrivate class
@@ -102,7 +91,8 @@ public:
 	WId		m_parentId;
 	QString		m_docfilename;
 	QString m_docdirectory;
-	QPrinter		*m_printer;
+	class KPrinterEngine	* m_engine;
+	KPrinterWrapper	* m_printer;
 	QMap<QString,QString>	m_options;
 	QString			m_tmpbuffer;
 	QString			m_printername;
@@ -115,12 +105,114 @@ public:
 	int m_defaultres;
 };
 
+
+//**************************************************************************************
+// KPrinterEngine class
+//**************************************************************************************
+
+/**
+ * This class is for intercepting QPainter::begin and QPainter::end. Since
+ * QPrinter uses different paint engines internally, all of which are private
+ * anyway, it is only possible to inherit from QPaintEngine and then pass all
+ * calls to the current engine in use - returned by
+ * KPrinterEngine::paintEngine().
+ */
+class KPrinterEngine : public QPaintEngine
+{
+public:
+	KPrinterEngine(KPrinter * kPrinter, QPaintEngine::PaintEngineFeatures features);
+	~KPrinterEngine();
+	
+	QPaintEngine * paintEngine() const { return m_kPrinter->d->m_printer->paintEngine(); }
+	
+    bool begin(QPaintDevice *pdev);
+    bool end();
+
+	void updateState(const QPaintEngineState &state) { paintEngine()->updateState(state); }
+
+	void drawRects(const QRect *rects, int rectCount) { paintEngine()->drawRects(rects, rectCount); }
+	void drawRects(const QRectF *rects, int rectCount) { paintEngine()->drawRects(rects, rectCount); }
+
+	void drawLines(const QLine *lines, int lineCount) { paintEngine()->drawLines(lines, lineCount); }
+	void drawLines(const QLineF *lines, int lineCount) { paintEngine()->drawLines(lines, lineCount); }
+
+	void drawEllipse(const QRectF &r) { paintEngine()->drawEllipse(r); }
+	void drawEllipse(const QRect &r) { paintEngine()->drawEllipse(r); }
+
+	void drawPath(const QPainterPath &path) { paintEngine()->drawPath(path); }
+
+	void drawPoints(const QPointF *points, int pointCount) { paintEngine()->drawPoints(points, pointCount); }
+	void drawPoints(const QPoint *points, int pointCount) { paintEngine()->drawPoints(points, pointCount); }
+
+	void drawPolygon(const QPointF *points, int pointCount, PolygonDrawMode mode) { paintEngine()->drawPolygon(points, pointCount, mode); }
+	void drawPolygon(const QPoint *points, int pointCount, PolygonDrawMode mode) { paintEngine()->drawPolygon(points, pointCount, mode); }
+
+	void drawPixmap(const QRectF &r, const QPixmap &pm, const QRectF &sr) { paintEngine()->drawPixmap(r, pm, sr); }
+	void drawTextItem(const QPointF &p, const QTextItem &textItem) { paintEngine()->drawTextItem(p, textItem); }
+	void drawTiledPixmap(const QRectF &r, const QPixmap &pixmap, const QPointF &s) { paintEngine()->drawTiledPixmap(r, pixmap, s); }
+    void drawImage(const QRectF &r, const QImage &pm, const QRectF &sr,
+				   Qt::ImageConversionFlags flags = Qt::AutoColor) { paintEngine()->drawImage(r, pm, sr, flags); }
+
+#ifdef Q_WS_WIN
+    HDC getDC() const { return paintEngine()->getDC(); }
+    void releaseDC(HDC hdc) const { paintEngine()->releaseDC(hdc); }
+#endif
+
+    QPoint coordinateOffset() const { return paintEngine()->coordinateOffset(); }
+
+    Type type() const { return paintEngine()->type(); }
+
+	
+private:
+	KPrinter * m_kPrinter;
+};
+
+KPrinterEngine::KPrinterEngine(KPrinter * kPrinter, QPaintEngine::PaintEngineFeatures features)
+	: QPaintEngine(features)
+{
+	m_kPrinter = kPrinter;
+	
+	setPaintDevice(m_kPrinter);
+}
+
+KPrinterEngine::~KPrinterEngine()
+{
+}
+
+bool KPrinterEngine::begin(QPaintDevice *pdev)
+{
+	m_kPrinter->d->m_impl->statusMessage(i18n("Initialization..."), m_kPrinter);
+	m_kPrinter->d->m_pagenumber = 1;
+	m_kPrinter->preparePrinting();
+	m_kPrinter->d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(m_kPrinter->d->m_pagenumber), m_kPrinter);
+	
+	bool value = paintEngine()->begin(pdev);
+	active = paintEngine()->isActive();
+	
+	return value;
+}
+
+
+bool KPrinterEngine::end()
+{
+	bool value = paintEngine()->end();
+	active = paintEngine()->isActive();
+	
+	// this call should take care of everything (preview, output-to-file, filtering, ...)
+	value = value && m_kPrinter->printFiles(QStringList(m_kPrinter->d->m_printer->outputFileName()),true);
+	// reset "ready" state
+	m_kPrinter->finishPrinting();
+	
+	return value;
+}
+
+
 //**************************************************************************************
 // KPrinter class
 //**************************************************************************************
 
 KPrinter::KPrinter(bool restore, QPrinter::PrinterMode m)
-: QPaintDevice(/*QInternal::Printer|QInternal::ExternalDevice*/),d(new KPrinterPrivate)
+: QPaintDevice(),d(new KPrinterPrivate)
 {
 	init(restore, m);
 }
@@ -129,6 +221,7 @@ KPrinter::~KPrinter()
 {
 	// delete Wrapper object
 	delete d->m_printer;
+	delete d->m_engine;
 
 	// save current options
 	if (d->m_restore)
@@ -149,7 +242,19 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 	d->m_pagesize = 0;
 
 	// initialize QPrinter wrapper
-	d->m_printer = new QPrinter(m);
+	d->m_printer = new KPrinterWrapper(m);
+	
+	// get paint engine features
+	QPaintEngine::PaintEngineFeatures features = 0;
+	for ( uint i=0; i<32; ++i )
+	{
+		QPaintEngine::PaintEngineFeature feature = (QPaintEngine::PaintEngineFeature)(1<<i);
+		
+		if ( d->m_printer->paintEngine()->hasFeature( feature ) )
+			features |= feature;
+	}
+	
+	d->m_engine = new KPrinterEngine(this, features);
 
 	// other initialization
 	d->m_tmpbuffer = d->m_impl->tempFile();
@@ -270,33 +375,13 @@ KPrinter::ApplicationType KPrinter::applicationType()
 	return (ApplicationType)KMFactory::self()->settings()->application;
 }
 
-#ifdef __GNUC__
-#warning Kprinter and its use of QPainter needs to be ported
-#endif
-QPaintEngine * KPrinter::paintEngine () const { 
-	return 0;
+QPaintEngine * KPrinter::paintEngine () const {
+	return d->m_engine;
 }
 
-/*bool KPrinter::cmd(int c, QPainter *painter, QPDevCmdParam *p)
-{
-	bool value(true);
-	if (c == QPaintDevice::PdcBegin)
-	{
-		d->m_impl->statusMessage(i18n("Initialization..."), this);
-		d->m_pagenumber = 1;
-		preparePrinting();
-		d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(d->m_pagenumber), this);
-	}
-	value = d->m_printer->cmd(c,painter,p);
-	if (c == QPaintDevice::PdcEnd)
-	{
-		// this call should take care of everything (preview, output-to-file, filtering, ...)
-		value = value && printFiles(QStringList(d->m_printer->outputFileName()),true);
-		// reset "ready" state
-		finishPrinting();
-	}
-	return value;
-}*/
+int KPrinter::devType() const {
+	return d->m_printer->devType();
+}
 
 void KPrinter::translateQtOptions()
 {
@@ -319,22 +404,16 @@ void KPrinter::translateQtOptions()
 		 * when specified by the user ( who usually specifies margins
 		 * in metric units ).
 		 */
-#ifdef __GNUC__
-		#warning KDE4 porting: find out how to specify margins in QT4
-#endif
-		/*int res = resolution();
+		int res = resolution();
 		d->m_printer->setMargins(
 				( int )( ( option("kde-margin-top").toFloat() * res + 71 ) / 72 ),
 				( int )( ( option("kde-margin-left").toFloat() * res + 71 ) / 72 ),
 				( int )( ( option("kde-margin-bottom").toFloat() * res + 71 ) / 72 ),
-				( int )( ( option("kde-margin-right").toFloat() * res + 71 ) / 72 ) );*/
+				( int )( ( option("kde-margin-right").toFloat() * res + 71 ) / 72 ) );
 	}
 	else if ( d->m_pagesize != NULL )
 	{
-#ifdef __GNUC__
-		#warning KDE4 porting: find out how to specify margins in QT4
-#endif
-		/*int res = resolution();
+		int res = resolution();
 		DrPageSize *ps = d->m_pagesize;
 		int top = ( int )( ps->topMargin() * res + 71 ) / 72;
 		int left = ( int )( ps->leftMargin() * res + 71 ) / 72;
@@ -354,7 +433,7 @@ void KPrinter::translateQtOptions()
 			bottom = qMax( bottom, (int)ib );
 			right = qMax( right, (int)ir );
 		}
-		d->m_printer->setMargins( top, left, bottom, right );*/
+		d->m_printer->setMargins( top, left, bottom, right );
 	}
 	/*else
 	{
@@ -560,29 +639,29 @@ int KPrinter::numCopies() const
 
 QSize KPrinter::margins() const
 {
-	return QSize( d->m_printer->paperRect().left() - d->m_printer->pageRect().left(),
-                d->m_printer->paperRect().top() - d->m_printer->pageRect().top() );
+	return QSize( d->m_printer->pageRect().left() - d->m_printer->paperRect().left(),
+				  d->m_printer->pageRect().top() - d->m_printer->paperRect().top() );
 }
 
 void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 {
-  if ( top )
-    *top = d->m_printer->paperRect().top() - d->m_printer->pageRect().top();
+	if ( top )
+		*top = d->m_printer->pageRect().top() - d->m_printer->paperRect().top();
 
-  if ( left )
-    *left = d->m_printer->paperRect().left() - d->m_printer->pageRect().left();
+	if ( left )
+		*left = d->m_printer->pageRect().left() - d->m_printer->paperRect().left();
 
-  if ( bottom )
-    *bottom = d->m_printer->paperRect().bottom() - d->m_printer->pageRect().bottom();
+	if ( bottom )
+		*bottom = d->m_printer->paperRect().bottom() - d->m_printer->pageRect().bottom();
 
-  if ( right )
-    *right = d->m_printer->paperRect().right() - d->m_printer->pageRect().right();
+	if ( right )
+		*right = d->m_printer->paperRect().right() - d->m_printer->pageRect().right();
 }
 
-/*int KPrinter::metric(int m) const
+int KPrinter::metric(PaintDeviceMetric m) const
 {
 	if (d->m_pagesize == NULL || !option( "kde-printsize" ).isEmpty())
-		return d->m_printer->qprinterMetric(m);
+		return d->m_printer->metric(m);
 
 	int	val(0);
 	bool	land = (orientation() == KPrinter::Landscape);
@@ -590,34 +669,34 @@ void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 	margins( &top, &left, &bottom, &right );
 	switch ( m )
 	{
-		case Q3PaintDeviceMetrics::PdmWidth:
+		case QPaintDevice::PdmWidth:
 			val = (land ? ( int )d->m_pagesize->pageHeight() : ( int )d->m_pagesize->pageWidth());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( left + right );
 			break;
-		case Q3PaintDeviceMetrics::PdmHeight:
+		case QPaintDevice::PdmHeight:
 			val = (land ? ( int )d->m_pagesize->pageWidth() : ( int )d->m_pagesize->pageHeight());
 			if ( res != 72 )
 				val = (val * res + 36) / 72;
 			if ( !fullPage() )
 				val -= ( top + bottom );
 			break;
-		case Q3PaintDeviceMetrics::PdmWidthMM:
-			val = metric( Q3PaintDeviceMetrics::PdmWidth );
+		case QPaintDevice::PdmWidthMM:
+			val = metric( QPaintDevice::PdmWidth );
 			val = (val * 254 + 5*res) / (10*res); // +360 to get the right rounding
 			break;
-		case Q3PaintDeviceMetrics::PdmHeightMM:
-			val = metric( Q3PaintDeviceMetrics::PdmHeight );
+		case QPaintDevice::PdmHeightMM:
+			val = metric( QPaintDevice::PdmHeight );
 			val = (val * 254 + 5*res) / (10*res);
 			break;
 		default:
-			val = d->m_printer->qprinterMetric(m);
+			val = d->m_printer->metric(m);
 			break;
 	}
 	return val;
-}*/
+}
 
 void KPrinter::setOrientation(Orientation o)
 {
@@ -962,16 +1041,13 @@ void KPrinter::setMargins(QSize m)
 	setMargins( m.height(), m.width(), m.height(), m.width() );
 }
 
-void KPrinter::setMargins( uint /*top*/, uint /*left*/, uint /*bottom*/, uint /*right*/ )
+void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
 {
-#ifdef __GNUC__
-	#warning KDE4 porting: find out how to specify margins in QT4
-#endif
-	/*d->m_printer->setMargins( top, left, bottom, right );
+	d->m_printer->setMargins( top, left, bottom, right );
 	setOption( "kde-margin-top", QString::number( top ), true );
 	setOption( "kde-margin-left", QString::number( left ), true );
 	setOption( "kde-margin-bottom", QString::number( bottom ), true );
-	setOption( "kde-margin-right", QString::number( right ), true );*/
+	setOption( "kde-margin-right", QString::number( right ), true );
 }
 
 // FIXME: remove for 4.0

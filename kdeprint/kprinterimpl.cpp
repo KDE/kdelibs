@@ -194,9 +194,9 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 {
 	kDebug(500) << "kdeprint: print command: " << cmd << endl;
 
-        QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
-        QDBusReply<int> reply = kdeprintd.call( "print", cmd, files, removeflag );
-	return reply;               // default is 0
+	QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
+	QDBusReply<QString> reply = kdeprintd.call( "print", cmd, files, removeflag );
+	return QString(reply).toInt();               // default is 0
 }
 
 void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
