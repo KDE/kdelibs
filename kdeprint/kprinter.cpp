@@ -202,7 +202,7 @@ bool KPrinterEngine::begin(QPaintDevice *pdev)
 	m_kPrinter->d->m_impl->statusMessage(i18n("Initialization..."), m_kPrinter);
 	m_kPrinter->d->m_pagenumber = 1;
 	m_kPrinter->preparePrinting();
-	m_kPrinter->d->m_impl->statusMessage(i18n("Generating print data: page %1").arg(m_kPrinter->d->m_pagenumber), m_kPrinter);
+	m_kPrinter->d->m_impl->statusMessage(i18n("Generating print data: page %1", m_kPrinter->d->m_pagenumber), m_kPrinter);
 	
 	bool value = paintEngine()->begin(pdev);
 	active = paintEngine()->isActive();

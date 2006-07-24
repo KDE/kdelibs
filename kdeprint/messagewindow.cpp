@@ -29,7 +29,7 @@
 #include <kdebug.h>
 #include <kvbox.h>
 
-Q3PtrDict<MessageWindow> MessageWindow::m_windows;
+QHash<QWidget*, MessageWindow*> MessageWindow::m_windows;
 
 MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
 	: QWidget( parent, Qt::Dialog )
@@ -51,7 +51,7 @@ MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
   l0->setSpacing( 0 );
 	l0->addWidget( box );
 
-	m_windows.insert( parent, this );
+	m_windows[parent] = this;
 
 	if ( delay == 0 )
 		slotTimer();
@@ -91,9 +91,11 @@ void MessageWindow::add( QWidget *parent, const QString& txt, int delay )
 		kWarning( 500 ) << "Cannot add a message window to a null parent" << endl;
 	else
 	{
-		MessageWindow *w = m_windows.find( parent );
-		if ( w )
+		if ( m_windows.contains( parent ) )
+		{
+			MessageWindow *w = m_windows[parent];
 			w->setText( txt );
+		}
 		else {
                     MessageWindow *mw = new MessageWindow( txt, delay, parent );
                     mw->setObjectName( "MessageWindow" );
@@ -103,17 +105,19 @@ void MessageWindow::add( QWidget *parent, const QString& txt, int delay )
 
 void MessageWindow::remove( QWidget *parent )
 {
-	if ( parent )
-		delete m_windows.find( parent );
+	if ( parent && m_windows.contains( parent ) )
+		delete m_windows[parent];
 }
 
 void MessageWindow::change( QWidget *parent, const QString& txt )
 {
 	if ( parent )
 	{
-		MessageWindow *w = m_windows.find( parent );
-		if ( w )
+		if ( m_windows.contains( parent ) )
+		{
+			MessageWindow *w = m_windows[ parent ];
 			w->setText( txt );
+		}
 		else
 			kWarning( 500 ) << "MessageWindow::change, no message window found" << endl;
 	}
@@ -121,9 +125,9 @@ void MessageWindow::change( QWidget *parent, const QString& txt )
 
 void MessageWindow::removeAll()
 {
-	Q3PtrDictIterator<MessageWindow> it( m_windows );
-	while ( it.current() )
-		delete it.current();
+	QList<MessageWindow*> all = m_windows.values();
+	foreach ( MessageWindow * w, all )
+		delete w;
 }
 
 #include "messagewindow.moc"

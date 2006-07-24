@@ -22,7 +22,8 @@
 #include "kmprinter.h"
 #include "kprinter.h"
 
-#include <q3groupbox.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <q3buttongroup.h>
 #include <qcombobox.h>
 #include <qlabel.h>
@@ -298,7 +299,8 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	m_nupbox->setTitle( i18n("Pages per Sheet") );
 	m_nupbox->setWhatsThis(whatsThisGeneralPagesPerSheetLabel);
 
-	m_bannerbox = new Q3GroupBox(0, Qt::Vertical, i18n("Banners"), this);
+	m_bannerbox = new QGroupBox(i18n("Banners"), this);
+	m_bannerbox->setLayout( new QVBoxLayout );
 	m_bannerbox->setWhatsThis(whatsThisGeneralBannersLabel);
 
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);

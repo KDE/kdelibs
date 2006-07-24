@@ -32,6 +32,8 @@
 
 #include <stdio.h>
 
+
+
 PosterPreview::PosterPreview( QWidget *parent )
 	: QFrame( parent )
 {
@@ -90,6 +92,9 @@ void PosterPreview::setDirty()
 
 void PosterPreview::updatePoster()
 {
+	// FIXME The poster preview doesn't work since the media page size is not getting set
+	// (m_mediasize is empty - it shouldn't be!)
+
 	m_buffer = "";
 	m_process->clearArguments();
 	*m_process << "poster" << "-F" << "-m" + m_mediasize << "-p" + m_postersize
@@ -102,12 +107,12 @@ void PosterPreview::updatePoster()
 	}
 }
 
-void PosterPreview::drawContents( QPainter *painter )
-{
-	QPixmap pix( width(), height() );
-	QPainter *p = new QPainter( &pix );
 
-	p->fillRect( 0, 0, width(), height(), palette().color( QPalette::Background ) );
+void PosterPreview::paintEvent( QPaintEvent * )
+{
+	QPainter painter( this );
+
+	painter.fillRect( 0, 0, width(), height(), palette().color( QPalette::Background ) );
 
 	if ( isEnabled() )
 	{
@@ -116,23 +121,23 @@ void PosterPreview::drawContents( QPainter *painter )
 			QString txt = i18n( "Poster preview not available. Either the <b>poster</b> "
 				          "executable is not properly installed, or you don't have "
 						  "the required version; available at http://printing.kde.org/downloads/." );
-			Q3SimpleRichText richtext( ( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) ), p->font() );
+			Q3SimpleRichText richtext( ( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) ), painter.font() );
 			richtext.adjustSize();
 			int x = ( width()-richtext.widthUsed() )/2, y = ( height()-richtext.height() )/2;
 			x = qMax( x, 0 );
 			y = qMax( y, 0 );
-			richtext.draw( p, x, y, QRect( x, y, richtext.widthUsed(), richtext.height() ), QColorGroup(palette()) );
+			richtext.draw( &painter, x, y, QRect( x, y, richtext.widthUsed(), richtext.height() ), QColorGroup(palette()) );
 			m_boundingrect = QRect();
 		}
 		else
 		{
 			int totalx = m_cols*m_pw, totaly = m_rows*m_ph;
 			float scale = qMin( float( width()-1 )/totalx, float( height()-1 )/totaly );
-			p->translate( 0, height()-1 );
-			p->scale( scale, -scale );
+			painter.translate( 0, height()-1 );
+			painter.scale( scale, -scale );
 			int x = ( int )( width()/scale-totalx )/2, y = ( int )( height()/scale-totaly )/2;
-			p->translate( x, y );
-			m_boundingrect = p->matrix().mapRect( QRect( 0, 0, totalx, totaly ) );
+			painter.translate( x, y );
+			m_boundingrect = painter.matrix().mapRect( QRect( 0, 0, totalx, totaly ) );
 
 			x = y = 0;
 			int px = m_posterbb.x(), py = m_posterbb.y(), pw = m_posterbb.width(), ph = m_posterbb.height();
@@ -141,14 +146,14 @@ void PosterPreview::drawContents( QPainter *painter )
 				for ( int j=0; j<m_cols; j++, x+=m_pw )
 				{
 					bool selected = ( m_selectedpages.contains( i*m_cols+j+1 ) );
-					p->fillRect( x+1, y+1, m_pw-2, m_ph-2, ( selected ? KGlobalSettings::highlightColor() : Qt::white ) );
-					p->drawRect( x, y, m_pw, m_ph );
+					painter.fillRect( x+1, y+1, m_pw-2, m_ph-2, ( selected ? KGlobalSettings::highlightColor() : Qt::white ) );
+					painter.drawRect( x, y, m_pw, m_ph );
 					if ( pw > 0 && ph > 0 )
-						p->fillRect( x+m_mw+px, y+m_mh+py, qMin( pw, m_pw-2*m_mw-px ), qMin( ph, m_ph-2*m_mh-py ),
+						painter.fillRect( x+m_mw+px, y+m_mh+py, qMin( pw, m_pw-2*m_mw-px ), qMin( ph, m_ph-2*m_mh-py ),
 								( selected ? KGlobalSettings::highlightColor().dark( 160 ) : Qt::lightGray ) );
-					p->setPen( Qt::DotLine );
-					p->drawRect( x+m_mw, y+m_mh, m_pw-2*m_mw, m_ph-2*m_mh );
-					p->setPen( Qt::SolidLine );
+					painter.setPen( Qt::DotLine );
+					painter.drawRect( x+m_mw, y+m_mh, m_pw-2*m_mw, m_ph-2*m_mh );
+					painter.setPen( Qt::SolidLine );
 
 					pw -= m_pw-2*m_mw-px;
 					px = 0;
@@ -161,9 +166,6 @@ void PosterPreview::drawContents( QPainter *painter )
 			}
 		}
 	}
-
-	delete p;
-	painter->drawPixmap( 0, 0, pix );
 }
 
 void PosterPreview::mouseMoveEvent( QMouseEvent *e )

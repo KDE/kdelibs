@@ -47,7 +47,7 @@ Q_SIGNALS:
 
 protected:
 	void parseBuffer();
-	void drawContents( QPainter* );
+	void paintEvent( QPaintEvent * );
 	void init();
 	void setDirty();
 	void mouseMoveEvent( QMouseEvent* );

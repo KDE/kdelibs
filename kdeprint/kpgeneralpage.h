@@ -26,7 +26,7 @@
 class QComboBox;
 class KButtonGroup;
 class Q3ButtonGroup;
-class Q3GroupBox;
+class QGroupBox;
 class QLabel;
 
 class KDEPRINT_EXPORT KPGeneralPage : public KPrintDialogPage
@@ -52,7 +52,7 @@ protected:
 	QComboBox	*m_startbanner, *m_endbanner;
 	KButtonGroup	*m_orientbox, *m_nupbox;
 	Q3ButtonGroup *m_duplexbox;
-	Q3GroupBox	*m_bannerbox;
+	QGroupBox	*m_bannerbox;
 	QLabel		*m_orientpix, *m_duplexpix, *m_nuppix;
 };
 

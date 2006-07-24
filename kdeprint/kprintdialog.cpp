@@ -37,7 +37,8 @@
 #include "treecombobox.h"
 #include "messagewindow.h"
 
-#include <Q3GroupBox>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
@@ -259,7 +260,8 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 	QWidget *main = new QWidget();
 
 	// widget creation
-	Q3GroupBox	*m_pbox = new Q3GroupBox(0,Qt::Vertical,i18n("Printer"), main);
+	QGroupBox	*m_pbox = new QGroupBox(i18n("Printer"), main);
+	m_pbox->setLayout( new QVBoxLayout );
 	d->m_type = new QLabel(m_pbox);
 	d->m_type->setWhatsThis(whatsThisPrinterType);
 	d->m_state = new QLabel(m_pbox);

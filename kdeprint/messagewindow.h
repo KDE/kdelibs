@@ -20,8 +20,8 @@
 #ifndef MESSAGEWINDOW_H
 #define MESSAGEWINDOW_H
 
+#include <QHash>
 #include <qwidget.h>
-#include <q3ptrdict.h>
 
 #include <kdelibs_export.h>
 
@@ -49,7 +49,7 @@ protected:
 
 private:
 	QLabel *m_text;
-	static Q3PtrDict<MessageWindow> m_windows;
+	static QHash<QWidget*, MessageWindow*> m_windows;
 };
 
 #endif
