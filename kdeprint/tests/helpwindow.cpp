@@ -59,12 +59,12 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     resize( 640,700 );
 
     QMenu* file = new QMenu( this );
-    file->insertItem( "&New Window", this, SLOT( newWindow() ), Qt::ALT | Qt::Key_N );
-    file->insertItem( "&Open File", this, SLOT( openFile() ), Qt::ALT | Qt::Key_O );
-    file->insertItem( "&Print", this, SLOT( print() ), Qt::ALT | Qt::Key_P );
-    file->insertSeparator();
-    file->insertItem( "&Close", this, SLOT( close() ), Qt::ALT | Qt::Key_Q );
-    file->insertItem( "E&xit", qApp, SLOT( closeAllWindows() ), Qt::ALT | Qt::Key_X );
+    file->addAction( "&New Window", this, SLOT( newWindow() ), Qt::ALT | Qt::Key_N );
+	file->addAction( "&Open File", this, SLOT( openFile() ), Qt::ALT | Qt::Key_O );
+	QAction * before = file->addAction( "&Print", this, SLOT( print() ), Qt::ALT | Qt::Key_P );
+    file->insertSeparator( before );
+	file->addAction( "&Close", this, SLOT( close() ), Qt::ALT | Qt::Key_Q );
+	file->addAction( "E&xit", qApp, SLOT( closeAllWindows() ), Qt::ALT | Qt::Key_X );
 
     // The same three icons are used twice each.
     QIcon icon_back( QPixmap("back.xpm") );
@@ -72,44 +72,45 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
     QIcon icon_home( QPixmap("home.xpm") );
 
     QMenu* go = new QMenu( this );
-    backwardId = go->insertItem( icon_back,
+    backwardAction = go->addAction( icon_back,
 				 "&Backward", browser, SLOT( backward() ),
 				 Qt::ALT | Qt::Key_Left );
-    forwardId = go->insertItem( icon_forward,
+    forwardAction = go->addAction( icon_forward,
 				"&Forward", browser, SLOT( forward() ),
 				Qt::ALT | Qt::Key_Right );
-    go->insertItem( icon_home, "&Home", browser, SLOT( home() ) );
+    go->addAction( icon_home, "&Home", browser, SLOT( home() ) );
 
     QMenu* help = new QMenu( this );
-    help->insertItem( "&About ...", this, SLOT( about() ) );
-    help->insertItem( "About &Qt ...", this, SLOT( aboutQt() ) );
+    help->addAction( "&About ...", this, SLOT( about() ) );
+    help->addAction( "About &Qt ...", this, SLOT( aboutQt() ) );
 
     hist = new QMenu( this );
     QStringList::Iterator it = history.begin();
     for ( ; it != history.end(); ++it )
-	mHistory[ hist->insertItem( *it ) ] = *it;
-    connect( hist, SIGNAL( activated( int ) ),
-	     this, SLOT( histChosen( int ) ) );
+	mHistory[ hist->addAction( *it ) ] = *it;
+	connect( hist, SIGNAL( triggered( QAction* ) ),
+			 this, SLOT( histChosen( QAction* ) ) );
 
     bookm = new QMenu( this );
-    bookm->insertItem( tr( "Add Bookmark" ), this, SLOT( addBookmark() ) );
-    bookm->insertSeparator();
+    before = bookm->addAction( tr( "Add Bookmark" ), this, SLOT( addBookmark() ) );
+    bookm->insertSeparator( before );
 
     QStringList::Iterator it2 = bookmarks.begin();
     for ( ; it2 != bookmarks.end(); ++it2 )
-	mBookmarks[ bookm->insertItem( *it2 ) ] = *it2;
-    connect( bookm, SIGNAL( activated( int ) ),
-	     this, SLOT( bookmChosen( int ) ) );
+	mBookmarks[ bookm->addAction( *it2 ) ] = *it2;
+	connect( bookm, SIGNAL( triggered( QAction* ) ),
+			 this, SLOT( bookmChosen( QAction* ) ) );
 
-    menuBar()->insertItem( tr("&File"), file );
-    menuBar()->insertItem( tr("&Go"), go );
-    menuBar()->insertItem( tr( "History" ), hist );
-    menuBar()->insertItem( tr( "Bookmarks" ), bookm );
-    menuBar()->insertSeparator();
-    menuBar()->insertItem( tr("&Help"), help );
+	menuBar()->addMenu( file )->setText( tr("&File") );
+	menuBar()->addMenu( go )->setText( tr("&Go") );
+	menuBar()->addMenu( hist )->setText( tr( "History" ) );
+	before = menuBar()->addMenu( bookm );
+	before->setText( tr( "Bookmarks" ) );
+    menuBar()->insertSeparator( before );
+	menuBar()->addMenu( help )->setText( tr("&Help") );
 
-    menuBar()->setItemEnabled( forwardId, false);
-    menuBar()->setItemEnabled( backwardId, false);
+	forwardAction->setEnabled( false );
+	backwardAction->setEnabled( false );
     connect( browser, SIGNAL( backwardAvailable( bool ) ),
 	     this, SLOT( setBackwardAvailable( bool ) ) );
     connect( browser, SIGNAL( forwardAvailable( bool ) ),
@@ -155,12 +156,12 @@ HelpWindow::HelpWindow( const QString& home_, const QString& _path,
 
 void HelpWindow::setBackwardAvailable( bool b)
 {
-    menuBar()->setItemEnabled( backwardId, b);
+	backwardAction->setEnabled(b);
 }
 
 void HelpWindow::setForwardAvailable( bool b)
 {
-    menuBar()->setItemEnabled( forwardId, b);
+	forwardAction->setEnabled(b);
 }
 
 
@@ -184,7 +185,7 @@ void HelpWindow::textChanged()
 	if ( !exists ) {
 	    pathCombo->insertItem( 0, selectedURL );
 	    pathCombo->setCurrentIndex( 0 );
-	    mHistory[ hist->insertItem( selectedURL ) ] = selectedURL;
+	    mHistory[ hist->addAction( selectedURL ) ] = selectedURL;
 	} else
 	    pathCombo->setCurrentIndex( i );
 	selectedURL.clear();
@@ -193,10 +194,7 @@ void HelpWindow::textChanged()
 
 HelpWindow::~HelpWindow()
 {
-    history.clear();
-    QMap<int, QString>::Iterator it = mHistory.begin();
-    for ( ; it != mHistory.end(); ++it )
-	history.append( *it );
+	history = mHistory.values();
 
     QFile f( QDir::currentPath() + "/.history" );
     f.open( QIODevice::WriteOnly );
@@ -204,10 +202,7 @@ HelpWindow::~HelpWindow()
     s << history;
     f.close();
 
-    bookmarks.clear();
-    QMap<int, QString>::Iterator it2 = mBookmarks.begin();
-    for ( ; it2 != mBookmarks.end(); ++it2 )
-	bookmarks.append( *it2 );
+	bookmarks = mBookmarks.values();
 
     QFile f2( QDir::currentPath() + "/.bookmarks" );
     f2.open( QIODevice::WriteOnly );
@@ -301,16 +296,9 @@ void HelpWindow::print()
 void HelpWindow::pathSelected( const QString &_path )
 {
     browser->setSource( _path );
-    QMap<int, QString>::Iterator it = mHistory.begin();
-    bool exists = false;
-    for ( ; it != mHistory.end(); ++it ) {
-	if ( *it == _path ) {
-	    exists = true;
-	    break;
-	}
-    }
-    if ( !exists )
-	mHistory[ hist->insertItem( _path ) ] = _path;
+	
+	if ( !mHistory.values().contains( _path ) )
+		mHistory[ hist->addAction( _path ) ] = _path;
 }
 
 void HelpWindow::readHistory()
@@ -337,21 +325,21 @@ void HelpWindow::readBookmarks()
     }
 }
 
-void HelpWindow::histChosen( int i )
+void HelpWindow::histChosen( QAction *action )
 {
-    if ( mHistory.contains( i ) )
-	browser->setSource( mHistory[ i ] );
+	if ( mHistory.contains( action ) )
+		browser->setSource( mHistory[ action ] );
 }
 
-void HelpWindow::bookmChosen( int i )
+void HelpWindow::bookmChosen( QAction *action )
 {
-    if ( mBookmarks.contains( i ) )
-	browser->setSource( mBookmarks[ i ] );
+	if ( mBookmarks.contains( action ) )
+		browser->setSource( mBookmarks[ action ] );
 }
 
 void HelpWindow::addBookmark()
 {
-    mBookmarks[ bookm->insertItem( windowTitle() ) ] = windowTitle();
+	mBookmarks[ bookm->addAction( windowTitle() ) ] = windowTitle();
 }
 
 #include "helpwindow.moc"

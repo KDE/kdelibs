@@ -61,6 +61,7 @@ public:
 	
 	int metric(PaintDeviceMetric m) const { return QPrinter::metric(m); }
 	void setMargins( uint top, uint left, uint bottom, uint right );
+	void getMargins(uint *top, uint *left, uint *bottom, uint *right) const;
 };
 
 
@@ -74,6 +75,23 @@ void KPrinterWrapper::setMargins( uint top, uint left, uint bottom, uint right )
 	
 	QRect pageRect = paperRect().adjusted( left, top, -right, -bottom );
 	printEngine()->setProperty( QPrintEngine::PPK_PageRect, pageRect );
+}
+
+
+// TODO This function is just copied from QT3_SUPPORT - is there a good reason
+// why it isn't in Qt4?
+void KPrinterWrapper::getMargins(uint *top, uint *left, uint *bottom, uint *right) const
+{
+	QRect page = pageRect();
+	QRect paper = paperRect();
+	if (top)
+		*top = page.top() - paper.top();
+	if (left)
+		*left = page.left() - paper.left();
+	if (bottom)
+		*bottom = paper.bottom() - page.bottom();
+	if (right)
+		*right = paper.right() - page.right();
 }
 
 
@@ -427,7 +445,7 @@ void KPrinter::translateQtOptions()
 			// Keep this in sync with KPMarginPage::initPageSize
 			
 			unsigned int it, il, ib, ir;
-			d->m_printer->margins( &it, &il, &ib, &ir );
+			d->m_printer->getMargins( &it, &il, &ib, &ir );
 			top = qMax( top, (int)it );
 			left = qMax( left, (int)il );
 			bottom = qMax( bottom, (int)ib );

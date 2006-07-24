@@ -334,8 +334,8 @@ void KMMainView::initActions()
 
 	// add actions to the menu bar
 	KMenu *menu = new KMenu( this );
-	m_actions->action( "printer_add" )->plug( menu );
-	m_actions->action( "printer_add_special" )->plug( menu );
+	menu->addAction( m_actions->action( "printer_add" ) );
+	menu->addAction( m_actions->action( "printer_add_special" ) );
 	//m_menubar->insertItem( i18n( "Add" ), menu );
 	KActionMenu* actionMenu = new KActionMenu(i18n( "Add" ), m_actions, "wizard");
 	actionMenu->setMenu(menu);
@@ -374,8 +374,8 @@ void KMMainView::initActions()
 	menu->addAction( m_actions->action("view_printerinfos") );
 	menu->addAction( m_actions->action("view_change") );
 	menu->addAction( m_actions->action("orientation_change") );
-	m_actions->action( "view_toolbar" )->plug ( menu );
-	m_actions->action( "view_menubar" )->plug ( menu );
+	menu->addAction( m_actions->action( "view_toolbar" ) );
+	menu->addAction( m_actions->action( "view_menubar" ) );
 	menu->addSeparator();
 	menu->addAction( m_actions->action("view_pfilter") );
 	//m_menubar->insertItem( i18n( "View" ), menu );
@@ -384,8 +384,8 @@ void KMMainView::initActions()
 	m_menubar->addAction(actionMenu);
 	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
 	menu = new KMenu( this );
-	m_actions->action( "invoke_help" )->plug( menu );
-	m_actions->action( "invoke_web" )->plug( menu );
+	menu->addAction( m_actions->action( "invoke_help" ) );
+	menu->addAction( m_actions->action( "invoke_web" ) );
 	actionMenu = new KActionMenu(i18n( "Documentation" ), m_actions, "help");
 	actionMenu->setMenu(menu);
 	m_menubar->addAction(actionMenu);
@@ -505,14 +505,16 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 		if (!printer->isSpecial())
 		{
 			if (printer->isLocal())
-				m_actions->action((printer->state() == KMPrinter::Stopped ? "printer_start" : "printer_stop"))->plug(m_pop);
-			m_actions->action((printer->acceptJobs() ? "printer_disable" : "printer_enable"))->plug(m_pop);
+				m_pop->addAction( m_actions->action((printer->state() == KMPrinter::Stopped ? "printer_start" : "printer_stop")) );
+			m_pop->addAction( m_actions->action((printer->acceptJobs() ? "printer_disable" : "printer_enable")) );
 			m_pop->addSeparator();
 		}
-		if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
+		if (!printer->isSoftDefault())
+			m_pop->addAction( m_actions->action("printer_soft_default") );
 		if (printer->isLocal() && !printer->isImplicit())
 		{
-			if (!printer->isHardDefault()) m_actions->action("printer_hard_default")->plug(m_pop);
+			if (!printer->isHardDefault())
+				m_pop->addAction( m_actions->action("printer_hard_default") );
 			m_pop->addAction( m_actions->action("printer_remove") );
 			m_pop->addSeparator();
 			if (!printer->isClass(true))

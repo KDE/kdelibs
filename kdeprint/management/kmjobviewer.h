@@ -51,7 +51,7 @@ class KDEPRINT_MANAGEMENT_EXPORT KMJobViewer : public KMainWindow, public KMPrin
 {
 	Q_OBJECT
 public:
-	KMJobViewer(QWidget *parent = 0, const char *name = 0);
+	KMJobViewer(QWidget *parent = 0);
 	~KMJobViewer();
 
 	void setPrinter(const QString& prname);

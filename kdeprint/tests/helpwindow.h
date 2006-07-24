@@ -16,6 +16,7 @@
 #include <qmap.h>
 #include <qdir.h>
 
+class QAction;
 class QComboBox;
 class QMenu;
 
@@ -38,8 +39,8 @@ private Q_SLOTS:
     void print();
 
     void pathSelected( const QString & );
-    void histChosen( int );
-    void bookmChosen( int );
+	void histChosen( QAction* );
+	void bookmChosen( QAction* );
     void addBookmark();
     
 private:
@@ -48,10 +49,11 @@ private:
     
     Q3TextBrowser* browser;
     QComboBox *pathCombo;
-    int backwardId, forwardId;
+	QAction *backwardAction;
+	QAction *forwardAction;
     QString selectedURL;
     QStringList history, bookmarks;
-    QMap<int, QString> mHistory, mBookmarks;
+    QMap<QAction*, QString> mHistory, mBookmarks;
     QMenu *hist, *bookm;
 
 };

@@ -83,8 +83,8 @@ void KJobListView::dragEnterEvent( QDragEnterEvent *event )
 		event->acceptProposedAction();
 }
 
-KMJobViewer::KMJobViewer(QWidget *parent, const char *name)
-: KMainWindow(parent,name)
+KMJobViewer::KMJobViewer(QWidget *parent)
+: KMainWindow(parent)
 {
 	m_view = 0;
 	m_pop = 0;
@@ -611,7 +611,7 @@ void KMJobViewer::slotClose()
 
 void KMJobViewer::loadPluginActions()
 {
-	int	mpopindex(7), toolbarindex(!m_standalone?7:8), menuindex(7);
+// 	int	mpopindex(7), toolbarindex(!m_standalone?7:8), menuindex(7);
     QAction* item = 0L;
 
 	if (m_standalone)
@@ -623,7 +623,7 @@ void KMJobViewer::loadPluginActions()
 		{
 			if (container == menuBar())
 			{
-				menuindex = mpopindex = container->actions().indexOf(act);
+// 				menuindex = mpopindex = container->actions().indexOf(act);
 				break;
 			}
 		}
@@ -636,11 +636,16 @@ void KMJobViewer::loadPluginActions()
 		connect(action, SIGNAL(triggered(QAction*)), SLOT(pluginActionActivated(QAction*)));
 
 		// should add it to the toolbar and menubar
-		action->plug(toolBar(), toolbarindex++);
+// 		action->plug(toolBar(), toolbarindex++);
+		toolBar()->addAction( action );
+		
 		if (m_pop)
-			action->plug(m_pop, mpopindex++);
+// 			action->plug(m_pop, mpopindex++);
+			m_pop->addAction( action );
+		
 		if (item && item->menu())
-			action->plug(item->menu(), menuindex++);
+// 			action->plug(item->menu(), menuindex++);
+			item->menu()->addAction( action );
 	}
 }
 
