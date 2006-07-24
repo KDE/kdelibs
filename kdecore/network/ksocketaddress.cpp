@@ -206,6 +206,12 @@ QString KIpAddress::toString() const
   return QString::null;
 }
 
+Q_UINT32 KIpAddress::hostIPv4Addr(bool convertMapped) const
+{
+    Q_UINT32 addr = IPv4Addr(convertMapped);
+    return ntohl(addr);
+}
+
 /*
  * An IPv6 socket address
  * This is taken from RFC 2553.

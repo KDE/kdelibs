@@ -225,19 +225,29 @@ public:
    * 32-bit integer. The result is only valid if @ref isIPv4Addr returns
    * true. Alternatively, if the contained IPv6 address is a v4-mapped one
    * and the @p convertMapped parameter is true, the result will also be
-   * valid.
+   * valid. The address returned is in network byte order.
    *
    * Note: you should not treat IP addresses as integers. Instead,
    * use types defined for that purpose, such as KIpAddress or the
    * system's in_addr type.
    *
-   * @bug Check if byte ordering is done right
    */
   inline Q_UINT32 IPv4Addr(bool convertMapped = true) const
   {
     return (convertMapped && isV4Mapped()) ? m_data[3] : m_data[0];
   }
 
+  /**
+   * This is a convenience function. Returns the IPv4 address in a
+   * 32-bit integer. The result is only valid if @ref isIPv4Addr returns
+   * true. Alternatively, if the contained IPv6 address is a v4-mapped one
+   * and the @p convertMapped parameter is true, the result will also be
+   * valid. The address returned is in host byte order.
+   *
+   */
+  Q_UINT32 hostIPv4Addr(bool convertMapped = true) const;
+
+public:
   /*-- tests --*/
 
   /**
@@ -265,7 +275,7 @@ public:
    * This function does not test for v4-mapped addresses.
    */
   inline bool isClassA() const
-  { return version() != 4 ? false : (IPv4Addr() & 0x80000000) == 0; }
+  { return version() != 4 ? false : (hostIPv4Addr() & 0x80000000) == 0; }
 
   /**
    * Returns true if this is an IPv4 class B address, i.e., one from
@@ -274,7 +284,7 @@ public:
    * This function does not test for v4-mapped addresses.
    */
   inline bool isClassB() const
-  { return version() != 4 ? false : (IPv4Addr() & 0xc0000000) == 0x80000000; }
+  { return version() != 4 ? false : (hostIPv4Addr() & 0xc0000000) == 0x80000000; }
 
   /**
    * Returns true if this is an IPv4 class C address, i.e., one from
@@ -283,7 +293,7 @@ public:
    * This function does not test for v4-mapped addresses.
    */
   inline bool isClassC() const
-  { return version() != 4 ? false : (IPv4Addr() & 0xe0000000) == 0xc0000000; }
+  { return version() != 4 ? false : (hostIPv4Addr() & 0xe0000000) == 0xc0000000; }
 
   /**
    * Returns true if this is an IPv4 class D (a.k.a. multicast) address.
@@ -292,7 +302,7 @@ public:
    * tests for IPv6 multicast addresses.
    */
   inline bool isClassD() const
-  { return version() != 4 ? false : (IPv4Addr() & 0xf0000000) == 0xe0000000; }
+  { return version() != 4 ? false : (hostIPv4Addr() & 0xf0000000) == 0xe0000000; }
 
   /**
    * Returns true if this is a multicast address, be it IPv4 or IPv6.
