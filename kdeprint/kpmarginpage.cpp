@@ -25,7 +25,7 @@
 #include "driver.h"
 #include "marginwidget.h"
 
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qlayout.h>
 #include <qprinter.h>
 
@@ -41,9 +41,11 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent)
 	setTitle(i18n("Margins"));
 	m_usedriver = true;
 
-	Q3GroupBox	*box = new Q3GroupBox(1, Qt::Vertical, i18n("Margins"), this);
+	QGroupBox	*box = new QGroupBox(i18n("Margins"), this);
+	QVBoxLayout *layout = new QVBoxLayout(box);
 	m_margin = new MarginWidget(box, (m_printer != 0));
-        m_margin->setObjectName( "MarginWidget" );
+	m_margin->setObjectName( "MarginWidget" );
+	layout->addWidget( m_margin );
 	//m_margin->setSymetricMargins(true);
 	//if (m_printer)
 	//	m_margin->setResolution(m_printer->resolution());

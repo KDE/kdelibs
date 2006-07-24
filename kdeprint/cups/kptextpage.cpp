@@ -22,7 +22,7 @@
 #include "driver.h"
 #include "kprinter.h"
 
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qradiobutton.h>
@@ -187,12 +187,15 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
 	setTitle(i18n("Text"));
 	m_block = false;
 
-	Q3GroupBox	*formatbox = new Q3GroupBox(0, Qt::Vertical, i18n("Text Format"), this);
-	  formatbox->setWhatsThis(whatsThisFormatTextPage);
-	Q3GroupBox	*prettybox = new Q3GroupBox(0, Qt::Vertical, i18n("Syntax Highlighting"), this);
-	  prettybox->setWhatsThis(whatsThisPrettyprintFrameTextPage);
-	Q3GroupBox	*marginbox = new Q3GroupBox(0, Qt::Vertical, i18n("Margins"), this);
-	  marginbox->setWhatsThis(whatsThisMarginsTextPage);
+	QGroupBox	*formatbox = new QGroupBox(i18n("Text Format"), this);
+	formatbox->setLayout( new QVBoxLayout );
+	formatbox->setWhatsThis(whatsThisFormatTextPage);
+	QGroupBox	*prettybox = new QGroupBox(i18n("Syntax Highlighting"), this);
+	prettybox->setLayout( new QVBoxLayout );
+	prettybox->setWhatsThis(whatsThisPrettyprintFrameTextPage);
+	QGroupBox	*marginbox = new QGroupBox(i18n("Margins"), this);
+	marginbox->setLayout( new QVBoxLayout );
+	marginbox->setWhatsThis(whatsThisMarginsTextPage);
 
 	m_cpi = new KIntNumInput(10,formatbox);
 	  m_cpi->setWhatsThis(whatsThisCPITextPage);

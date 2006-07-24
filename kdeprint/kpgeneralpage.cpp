@@ -24,7 +24,7 @@
 
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <q3buttongroup.h>
+#include <kbuttongroup.h>
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -291,7 +291,9 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	m_orientbox->setTitle( i18n("Orientation") );
     m_orientbox->setWhatsThis(whatsThisGeneralOrientationLabel);
 
-	m_duplexbox = new Q3ButtonGroup(0, Qt::Vertical, i18n("Duplex Printing"), this);
+	m_duplexbox = new KButtonGroup(this);
+	m_duplexbox->setTitle( i18n("Duplex Printing") );
+	m_duplexbox->setLayout( new QVBoxLayout );
 	m_duplexbox->setWhatsThis(whatsThisGeneralDuplexLabel);
 
 	m_nupbox = new KButtonGroup(this);
@@ -311,9 +313,9 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
 	m_portrait->setChecked(true);
 	m_orientpix = new QLabel(m_orientbox);
 	m_orientpix->setAlignment(Qt::AlignCenter);
-	QRadioButton	*m_dupnone = new QRadioButton(i18nc("duplex orientation", "&None"), m_duplexbox);
-	QRadioButton	*m_duplong = new QRadioButton(i18nc("duplex orientation", "Lon&g side"), m_duplexbox);
-	QRadioButton	*m_dupshort = new QRadioButton(i18nc("duplex orientation", "S&hort side"), m_duplexbox);
+	m_dupnone = new QRadioButton(i18nc("duplex orientation", "&None"), m_duplexbox);
+	m_duplong = new QRadioButton(i18nc("duplex orientation", "Lon&g side"), m_duplexbox);
+	m_dupshort = new QRadioButton(i18nc("duplex orientation", "S&hort side"), m_duplexbox);
 	m_dupnone->setChecked(true);
 	m_duplexpix = new QLabel(m_duplexbox);
 	m_duplexpix->setAlignment(Qt::AlignCenter);
@@ -423,12 +425,11 @@ void KPGeneralPage::initialize()
 			if ( opt->choices().count() == 2 )
 			{
 				// probably a On/Off option instead of the standard PS one
-				QAbstractButton *btn = m_duplexbox->find( DUPLEX_SHORT_ID );
-				m_duplexbox->remove( btn );
-				btn->hide();
+				m_dupshort->deleteLater();
+				m_dupshort = 0;
 				//delete btn;
-				m_duplexbox->find( DUPLEX_NONE_ID )->setText( i18n( "Disabled" ) );
-				m_duplexbox->find( DUPLEX_LONG_ID )->setText( i18n( "Enabled" ) );
+				m_dupnone->setText( i18n( "Disabled" ) );
+				m_duplong->setText( i18n( "Enabled" ) );
 				m_duplexpix->hide();
 			}
 			if (opt->currentChoice())
@@ -436,7 +437,7 @@ void KPGeneralPage::initialize()
 				int	ID(DUPLEX_NONE_ID);
 				if (opt->currentChoice()->name() == "DuplexNoTumble" || opt->currentChoice()->name() == "On") ID = DUPLEX_LONG_ID;
 				else if (opt->currentChoice()->name() == "DuplexTumble") ID = DUPLEX_SHORT_ID;
-				m_duplexbox->setButton(ID);
+				m_duplexbox->setSelected(ID);
 				slotDuplexChanged(ID);
 			}
 		}
@@ -550,7 +551,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 			int	ID(0);
 			if (value == "DuplexNoTumble" || value == "On") ID = 1;
 			else if (value == "DuplexTumble") ID = 2;
-			m_duplexbox->setButton(ID);
+			m_duplexbox->setSelected(ID);
 			slotDuplexChanged(ID);
 		}
 	}
@@ -582,7 +583,7 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		int	ID(0);
 		if (value == "two-sided-long-edge") ID = 1;
 		else if (value == "two-sided-short-edge") ID = 2;
-		m_duplexbox->setButton(ID);
+		m_duplexbox->setSelected(ID);
 		slotDuplexChanged(ID);
 	}
 
@@ -652,8 +653,9 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 		if (m_duplexbox->isEnabled() && (opt=(DrListOption*)driver()->findOption("Duplex")) != NULL)
 		{
-			bool twoChoices = ( m_duplexbox->count() == 2 );
-			switch (m_duplexbox->id(m_duplexbox->selected()))
+// 			bool twoChoices = ( m_duplexbox->count() == 2 );
+			bool twoChoices = ( m_dupshort != 0 );
+			switch (m_duplexbox->selected())
 			{
 				case DUPLEX_NONE_ID: value = ( twoChoices ? "Off" : "None" ); break;
 				case DUPLEX_LONG_ID: value = ( twoChoices ? "On" : "DuplexNoTumble" ); break;
@@ -669,7 +671,7 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 
 		if (m_duplexbox->isEnabled())
 		{
-			switch (m_duplexbox->id(m_duplexbox->selected()))
+			switch (m_duplexbox->selected())
 			{
 				case 0: value = "one-sided"; break;
 				case 1: value = "two-sided-long-edge"; break;

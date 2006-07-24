@@ -29,8 +29,10 @@
 #include <kcursor.h>
 
 KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
-: Q3GroupBox(0, Qt::Vertical, i18n("Proxy Settings"), parent, name)
+	: QGroupBox(i18n("Proxy Settings"), parent, name)
 {
+	setLayout( new QVBoxLayout );
+	
 	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), this);
 	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), this);
 	m_useproxy = new QCheckBox(i18n("&Use proxy server"), this);

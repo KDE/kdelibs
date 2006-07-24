@@ -21,14 +21,15 @@
 #define DROPTIONVIEW_H
 
 #include <qwidget.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qstringlist.h>
 
 class QLineEdit;
 class QSlider;
 class QLabel;
 class KListBox;
-class Q3VButtonGroup;
+class KButtonGroup;
+class QRadioButton;
 class QStackedWidget;
 class QTreeWidgetItem;
 class DrBase;
@@ -107,15 +108,17 @@ protected Q_SLOTS:
 	void slotSelected(int);
 
 private:
-	Q3VButtonGroup	*m_group;
+	KButtonGroup	*m_group;
+	QRadioButton *m_btn1;
+	QRadioButton *m_btn2;
 	QStringList	m_choices;
 };
 
-class DrOptionView : public Q3GroupBox
+class DrOptionView : public QGroupBox
 {
 	Q_OBJECT
 public:
-	DrOptionView(QWidget *parent = 0, const char *name = 0);
+	DrOptionView(QWidget *parent = 0);
 	void setAllowFixed(bool on) 	{ m_allowfixed = on; }
 
 Q_SIGNALS:

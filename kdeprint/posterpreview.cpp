@@ -19,14 +19,17 @@
 
 #include "posterpreview.h"
 
+#include <kdebug.h>
 #include <kprocess.h>
 #include <kprinter.h>
 #include <klocale.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
 
+#include <QAbstractTextDocumentLayout>
 #include <QPainter>
-#include <Q3SimpleRichText>
+#include <QTextDocument>
+#include <QTextEdit>
 #include <QTimer>
 #include <QMouseEvent>
 
@@ -121,12 +124,15 @@ void PosterPreview::paintEvent( QPaintEvent * )
 			QString txt = i18n( "Poster preview not available. Either the <b>poster</b> "
 				          "executable is not properly installed, or you don't have "
 						  "the required version; available at http://printing.kde.org/downloads/." );
-			Q3SimpleRichText richtext( ( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) ), painter.font() );
-			richtext.adjustSize();
-			int x = ( width()-richtext.widthUsed() )/2, y = ( height()-richtext.height() )/2;
-			x = qMax( x, 0 );
-			y = qMax( y, 0 );
-			richtext.draw( &painter, x, y, QRect( x, y, richtext.widthUsed(), richtext.height() ), QColorGroup(palette()) );
+			
+			QTextDocument doc;
+			doc.setHtml( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) );
+			
+			doc.setPageSize( size() );
+			QAbstractTextDocumentLayout::PaintContext ctx = QAbstractTextDocumentLayout::PaintContext();
+			ctx.clip = rect();
+			doc.documentLayout()->draw( & painter, ctx );
+			
 			m_boundingrect = QRect();
 		}
 		else

@@ -25,7 +25,7 @@
 #include <qcombobox.h>
 #include <q3buttongroup.h>
 #include <qradiobutton.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qpushbutton.h>
 #include <qapplication.h>
 #include <qimage.h>
@@ -235,12 +235,15 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 
 	setTitle(i18n("Image"));
 
-	Q3GroupBox	*colorbox = new Q3GroupBox(0, Qt::Vertical, i18n("Color Settings"), this);
-	  this->setWhatsThis(whatsThisImagePage);
-	Q3GroupBox	*sizebox = new Q3GroupBox(0, Qt::Vertical, i18n("Image Size"), this);
-	  sizebox->setWhatsThis(whatsThisSizeImagePage);
-	Q3GroupBox	*positionbox = new Q3GroupBox(0, Qt::Vertical, i18n("Image Position"), this);
-	  positionbox->setWhatsThis(whatsThisPositionImagePage);
+	QGroupBox	*colorbox = new QGroupBox(i18n("Color Settings"), this);
+	colorbox->setLayout( new QVBoxLayout );
+	this->setWhatsThis(whatsThisImagePage);
+	QGroupBox	*sizebox = new QGroupBox(i18n("Image Size"), this);
+	sizebox->setLayout( new QVBoxLayout );
+	sizebox->setWhatsThis(whatsThisSizeImagePage);
+	QGroupBox	*positionbox = new QGroupBox(i18n("Image Position"), this);
+	positionbox->setLayout( new QVBoxLayout );
+	positionbox->setWhatsThis(whatsThisPositionImagePage);
 
 	m_brightness = new KIntNumInput(100,colorbox);
 	m_brightness->setLabel(i18n("&Brightness:"));

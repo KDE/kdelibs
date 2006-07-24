@@ -20,7 +20,7 @@
 #include "kphpgl2page.h"
 
 #include <qcheckbox.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qlayout.h>
 #include <klocale.h>
 #include <knuminput.h>
@@ -109,7 +109,8 @@ KPHpgl2Page::KPHpgl2Page(QWidget *parent)
 
 	setTitle("HP-GL/2");
 
-	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("HP-GL/2 Options"), this);
+	QGroupBox	*box = new QGroupBox(i18n("HP-GL/2 Options"), this);
+	box->setLayout( new QVBoxLayout );
 
 	m_blackplot = new QCheckBox(i18n("&Use only black pen"), box);
 	  m_blackplot->setWhatsThis(whatsThisBlackplotHpgl2Page);

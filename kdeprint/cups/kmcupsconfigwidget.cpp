@@ -21,7 +21,7 @@
 #include "cupsinfos.h"
 
 #include <qlabel.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
@@ -63,8 +63,10 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent)
     : QWidget(parent)
 {
 	// widget creation
-	Q3GroupBox	*m_hostbox = new Q3GroupBox(0, Qt::Vertical, i18n("Server Information"), this);
-	Q3GroupBox	*m_loginbox = new Q3GroupBox(0, Qt::Vertical, i18n("Account Information"), this);
+	QGroupBox	*m_hostbox = new QGroupBox(i18n("Server Information"), this);
+	m_hostbox->setLayout( new QVBoxLayout );
+	QGroupBox	*m_loginbox = new QGroupBox(i18n("Account Information"), this);
+	m_loginbox->setLayout( new QVBoxLayout );
 	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), m_hostbox);
 	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), m_hostbox);
 	m_host = new QLineEdit(m_hostbox);

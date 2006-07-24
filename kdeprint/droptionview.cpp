@@ -26,7 +26,7 @@
 #include <qslider.h>
 #include <qlabel.h>
 #include <klistbox.h>
-#include <Q3VButtonGroup>
+#include <kbuttongroup.h>
 #include <qradiobutton.h>
 #include <QStackedWidget>
 #include <qlayout.h>
@@ -246,13 +246,17 @@ void OptionListView::slotSelectionChanged()
 OptionBooleanView::OptionBooleanView(QWidget *parent)
     : OptionBaseView(parent)
 {
-	m_group = new Q3VButtonGroup(this);
+	m_group = new KButtonGroup(this);
+	QVBoxLayout * layout = new QVBoxLayout( m_group );
 	//m_group->setFrameStyle(QFrame::NoFrame);
 
-	QRadioButton	*btn = new QRadioButton(m_group);
-	btn->setCursor(KCursor::handCursor());
-	btn = new QRadioButton(m_group);
-	btn->setCursor(KCursor::handCursor());
+	m_btn1 = new QRadioButton(m_group);
+	m_btn1->setCursor(KCursor::handCursor());
+	m_btn2 = new QRadioButton(m_group);
+	m_btn2->setCursor(KCursor::handCursor());
+	
+	layout->addWidget( m_btn1 );
+	layout->addWidget( m_btn2 );
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
 	main_->setMargin(0);
@@ -268,9 +272,9 @@ void OptionBooleanView::setOption(DrBase *opt)
 	{
                 const QList<DrBase*>& choices = static_cast<DrBooleanOption*>(opt)->choices();
 		m_choices.clear();
-		m_group->find(0)->setText(choices.first()->get("text"));
+		m_btn1->setText(choices.first()->get("text"));
 		m_choices.append(choices.first()->name());
-		m_group->find(1)->setText(choices.last()->get("text"));
+		m_btn2->setText(choices.last()->get("text"));
 		m_choices.append(choices.last()->name());
 		setValue(opt->valueText());
 	}
@@ -279,7 +283,7 @@ void OptionBooleanView::setOption(DrBase *opt)
 void OptionBooleanView::setValue(const QString& val)
 {
 	int	ID = m_choices.indexOf(val);
-	m_group->setButton(ID);
+	m_group->setSelected(ID);
 }
 
 void OptionBooleanView::slotSelected(int ID)
@@ -290,8 +294,8 @@ void OptionBooleanView::slotSelected(int ID)
 
 //******************************************************************************************************
 
-DrOptionView::DrOptionView(QWidget *parent, const char *name)
-: Q3GroupBox(parent,name)
+DrOptionView::DrOptionView(QWidget *parent)
+	: QGroupBox(parent)
 {
 	m_stack = new QStackedWidget(this);
 
@@ -318,7 +322,7 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	m_stack->setCurrentWidget(w);
 	setTitle(i18n("No Option Selected"));
 
-	setColumnLayout(0, Qt::Vertical );
+	setLayout( new QVBoxLayout );
 	layout()->setSpacing( KDialog::spacingHint() );
 	layout()->setMargin( KDialog::marginHint() );
 	QVBoxLayout	*main_ = new QVBoxLayout();

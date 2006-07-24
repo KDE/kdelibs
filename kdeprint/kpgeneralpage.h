@@ -23,11 +23,11 @@
 
 #include "kprintdialogpage.h"
 
-class QComboBox;
 class KButtonGroup;
-class Q3ButtonGroup;
+class QComboBox;
 class QGroupBox;
 class QLabel;
+class QRadioButton;
 
 class KDEPRINT_EXPORT KPGeneralPage : public KPrintDialogPage
 {
@@ -50,10 +50,10 @@ protected Q_SLOTS:
 protected:
 	QComboBox	*m_pagesize, *m_papertype, *m_inputslot;
 	QComboBox	*m_startbanner, *m_endbanner;
-	KButtonGroup	*m_orientbox, *m_nupbox;
-	Q3ButtonGroup *m_duplexbox;
+	KButtonGroup	*m_orientbox, *m_nupbox, *m_duplexbox;
 	QGroupBox	*m_bannerbox;
 	QLabel		*m_orientpix, *m_duplexpix, *m_nuppix;
+	QRadioButton	*m_dupnone, *m_duplong, *m_dupshort;
 };
 
 #endif
