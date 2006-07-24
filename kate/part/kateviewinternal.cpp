@@ -2682,8 +2682,6 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
 
-          cursor.setCol(0);
-          updateCursor( cursor, true );
           e->accept ();
           return;
         }
@@ -2754,9 +2752,6 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         QApplication::clipboard()->setSelectionMode( true );
         m_view->copy();
         QApplication::clipboard()->setSelectionMode( false );
-
-        cursor.setPos(m_view->selectEnd);
-        updateCursor( cursor, true );
 
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
