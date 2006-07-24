@@ -19,7 +19,8 @@
 
 #include "kmconfigfonts.h"
 
-#include <q3groupbox.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <kpushbutton.h>
 #include <qlayout.h>
 #include <q3header.h>
@@ -43,8 +44,10 @@ KMConfigFonts::KMConfigFonts(QWidget *parent)
 	setPageHeader(i18n("Font Settings"));
 	setPagePixmap("fonts");
 
-	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("Fonts Embedding"), this);
-	Q3GroupBox	*box2 = new Q3GroupBox(0, Qt::Vertical, i18n("Fonts Path"), this);
+	QGroupBox	*box = new QGroupBox(i18n("Fonts Embedding"), this);
+	box->setLayout( new QVBoxLayout );
+	QGroupBox	*box2 = new QGroupBox(i18n("Fonts Path"), this);
+	box2->setLayout( new QVBoxLayout );
 
 	m_embedfonts = new QCheckBox(i18n("&Embed fonts in PostScript data when printing"), box);
 	m_fontpath = new K3ListView(box2);

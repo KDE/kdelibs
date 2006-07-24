@@ -20,7 +20,8 @@
 #include "kmconfiggeneral.h"
 
 #include <qlayout.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <qcheckbox.h>
 #include <qlabel.h>
 
@@ -45,7 +46,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	setPageHeader(i18n("General Settings"));
 	setPagePixmap("fileprint");
 
-	Q3GroupBox	*m_timerbox = new Q3GroupBox(0, Qt::Vertical, i18n("Refresh Interval"), this);
+	QGroupBox	*m_timerbox = new QGroupBox(i18n("Refresh Interval"), this);
+	m_timerbox->setLayout( new QVBoxLayout );
 	m_timer = new KIntNumInput(m_timerbox/*,"Timer"*/);
 	m_timer->setRange(0,30);
     m_timer->setSuffix( i18n( " sec" ) );
@@ -54,7 +56,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 			              "<b>KDE Print</b> components like the print manager "
 				      "and the job viewer."));
 
-	Q3GroupBox	*m_testpagebox = new Q3GroupBox(0, Qt::Vertical, i18n("Test Page"), this);
+	QGroupBox	*m_testpagebox = new QGroupBox(i18n("Test Page"), this);
+	m_testpagebox->setLayout( new QVBoxLayout );
 	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox);
 	m_defaulttestpage->setObjectName(QLatin1String("TestPageCheck"));
 	m_testpage = new KUrlRequester(m_testpagebox);
@@ -67,7 +70,8 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_preview->setDisabled(true);
 	m_defaulttestpage->setCursor(KCursor::handCursor());
 
-	Q3GroupBox	*m_statusbox = new Q3GroupBox(0, Qt::Vertical, i18n("Miscellaneous"), this);
+	QGroupBox	*m_statusbox = new QGroupBox(i18n("Miscellaneous"), this);
+	m_statusbox->setLayout( new QVBoxLayout );
 	m_statusmsg = new QCheckBox(i18n("Sho&w printing status message box"), m_statusbox);
 	m_uselast = new QCheckBox(i18n("De&faults to the last printer used in the application"), m_statusbox);
 

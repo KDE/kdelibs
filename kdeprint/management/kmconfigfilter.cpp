@@ -21,7 +21,8 @@
 #include "kmmanager.h"
 #include "kmfactory.h"
 
-#include <q3groupbox.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
 #include <qlayout.h>
@@ -41,7 +42,8 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 	setPageHeader(i18n("Printer Filtering Settings"));
 	setPagePixmap("filter");
 
-	Q3GroupBox	*box = new Q3GroupBox(0, Qt::Vertical, i18n("Printer Filter"), this);
+	QGroupBox	*box = new QGroupBox(i18n("Printer Filter"), this);
+	box->setLayout( new QVBoxLayout );
 
 	m_list1 = new KListBox(box);
 	m_list1->setSelectionMode(KListBox::Extended);

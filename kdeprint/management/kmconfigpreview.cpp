@@ -21,7 +21,7 @@
 
 #include <qcheckbox.h>
 #include <qlayout.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
 #include <qlabel.h>
 
 #include <klocale.h>
@@ -36,7 +36,8 @@ KMConfigPreview::KMConfigPreview(QWidget *parent)
 	setPageHeader(i18n("Preview Settings"));
 	setPagePixmap("filefind");
 
-	Q3GroupBox *box = new Q3GroupBox(0, Qt::Vertical, i18n("Preview Program"), this);
+	QGroupBox *box = new QGroupBox(i18n("Preview Program"), this);
+	box->setLayout( new QVBoxLayout );
 
 	m_useext = new QCheckBox(i18n("&Use external preview program"), box);
 	m_program = new KUrlRequester(box);

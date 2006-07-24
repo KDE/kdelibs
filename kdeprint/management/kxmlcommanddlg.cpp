@@ -27,7 +27,8 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <q3widgetstack.h>
 #include <qtoolbutton.h>
 #include <kpushbutton.h>
@@ -124,7 +125,8 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_commandlab->setBuddy(m_command);
 	m_persistent = new QCheckBox( i18n( "&Persistent option" ), m_dummy );
 
-	Q3GroupBox	*gb = new Q3GroupBox(0, Qt::Horizontal, i18n("Va&lues"), m_dummy);
+	QGroupBox	*gb = new QGroupBox(i18n("Va&lues"), m_dummy);
+	gb->setLayout( new QHBoxLayout );
 	m_stack = new QStackedWidget(gb);
 	QWidget	*w1 = new QWidget(m_stack), *w2 = new QWidget(m_stack), *w3 = new QWidget(m_stack);
 	m_stack->insertWidget(1,w1);
@@ -158,8 +160,10 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 
 	KSeparator	*sep1 = new KSeparator(m_dummy);
 
-	Q3GroupBox	*gb_input = new Q3GroupBox(0, Qt::Horizontal, i18n("&Input From"), this);
-	Q3GroupBox	*gb_output = new Q3GroupBox(0, Qt::Horizontal, i18n("O&utput To"), this);
+	QGroupBox	*gb_input = new QGroupBox(i18n("&Input From"), this);
+	gb_input->setLayout( new QHBoxLayout );
+	QGroupBox	*gb_output = new QGroupBox(i18n("O&utput To"), this);
+	gb_output->setLayout( new QHBoxLayout );
 	QLabel	*m_inputfilelab = new QLabel(i18n("File:"), gb_input);
 	QLabel	*m_inputpipelab = new QLabel(i18n("Pipe:"), gb_input);
 	QLabel	*m_outputfilelab = new QLabel(i18n("File:"), gb_output);
@@ -874,8 +878,10 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	QWidget	*topmain = new QWidget(this );
         topmain->setObjectName( "TopMain");
 
-	Q3GroupBox	*m_gb1 = new Q3GroupBox(0, Qt::Horizontal, i18n("Supported &Input Formats"), dummy);
-	Q3GroupBox	*m_gb2 = new Q3GroupBox(0, Qt::Horizontal, i18n("Requirements"), topmain);
+	QGroupBox	*m_gb1 = new QGroupBox(i18n("Supported &Input Formats"), dummy);
+	m_gb1->setLayout( new QHBoxLayout );
+	QGroupBox	*m_gb2 = new QGroupBox(i18n("Requirements"), topmain);
+	m_gb2->setLayout( new QHBoxLayout );
 
 	m_description = new QLineEdit(topmain);
 	m_idname = new QLabel(topmain);

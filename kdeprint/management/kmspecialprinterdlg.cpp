@@ -32,7 +32,8 @@
 #include <qcombobox.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
+#include <QVBoxLayout>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kicondialog.h>
@@ -66,10 +67,12 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	KSeparator* sep = new KSeparator( dummy);
 
 	sep->setFixedHeight(10);
-	Q3GroupBox	*m_gb = new Q3GroupBox(1, Qt::Horizontal, i18n("Command &Settings"), dummy);
+	QGroupBox	*m_gb = new QGroupBox(i18n("Command &Settings"), dummy);
+	m_gb->setLayout( new QHBoxLayout );
 	m_command = new KXmlCommandSelector(true, m_gb, this);
         m_command->setObjectName( "CommandSelector" );
-	Q3GroupBox *m_outfile_gb = new Q3GroupBox( 0, Qt::Horizontal, i18n( "Outp&ut File" ), dummy );
+	QGroupBox *m_outfile_gb = new QGroupBox( i18n( "Outp&ut File" ), dummy );
+	m_outfile_gb->setLayout( new QHBoxLayout );
 
 	m_usefile = new QCheckBox( i18n("&Enable output file"), m_outfile_gb);
 
