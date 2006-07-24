@@ -1,7 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2000-2001 Harri Porten (porten@kde.org)
- *  Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2006 Matt Broadstone (mbroadst@gmail.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -63,8 +62,9 @@ struct SourceFragment
     QString source;
 };
 
-class DebugDocument : public DOM::DomShared
+class DebugDocument : public QObject
 {
+    Q_OBJECT
 public:
     DebugDocument(const QString &url, Interpreter *interpreter)
         : m_url(url), m_interpreter(interpreter)
@@ -80,27 +80,11 @@ public:
             ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(m_interpreter);
             KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
             if (part &&
-                m_url == part->url().url() &&
-                KHTMLPageCache::self()->isValid(part->cacheId()))
+                m_url == part->url().url())
             {
-                khtml::Decoder *decoder = part->createDecoder();
-
-                QByteArray data;
-                QDataStream stream(&data,QIODevice::WriteOnly);
-                KHTMLPageCache::self()->saveData(part->cacheId(), &stream);
-
-                QString str;
-                if (data.size() == 0)
-                    str = "";
-                else
-                    str = decoder->decode(data.data(), data.size()) + decoder->flush();
-
-                delete decoder;
-                m_source = str;
+                connect(part, SIGNAL(completed()), this, SLOT(readSource()));
             }
         }
-        else
-            m_source = QString();
     }
     ~DebugDocument() {}
 
@@ -119,6 +103,22 @@ public:
         code.source = source;
 
         m_codeFragments.append(code);
+    }
+
+private slots:
+    void readSource()
+    {
+        if (m_interpreter)
+        {
+            ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(m_interpreter);
+            KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
+            if (part &&
+                m_url == part->url().url() &&
+                !part->inProgress())
+            {
+                m_source = part->documentSource();
+            }
+        }
     }
 
 private:
