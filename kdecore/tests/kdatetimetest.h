@@ -28,8 +28,8 @@ private Q_SLOTS:
     void specConstructors();
     void specSet();
     void constructors();
-    void toUTC();
-    void toOffsetFromUTC();
+    void toUtc();
+    void toOffsetFromUtc();
     void toLocalZone();
     void toClockTime();
     void toZone();
@@ -43,6 +43,7 @@ private Q_SLOTS:
     void strings_rfc2822();
     void strings_qttextdate();
     void strings_format();
+    void misc();
 };
 
 #endif
