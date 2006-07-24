@@ -1,4 +1,4 @@
-#include <ksystemtray.h>
+#include <ksystemtrayicon.h>
 #include <kapplication.h>
 #include <QLabel>
 #include <kcmdlineargs.h>
@@ -10,8 +10,7 @@ int main(int argc, char **argv)
 	KCmdLineArgs::init(argc, argv, &aboutData);
         KApplication app;
 	QLabel *l = new QLabel("System Tray Main Window", 0L);
-	KSystemTray *tray = new KSystemTray( l );
-	tray->setText("Test");
+	KSystemTrayIcon *tray = new KSystemTrayIcon( "test", l );
 	l->show();
 	tray->show();
 

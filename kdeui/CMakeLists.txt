@@ -50,7 +50,6 @@ set(kdeui_LIB_SRCS
  kmainwindow.cpp
  kseparator.cpp
  krestrictedline.cpp
- ksystemtray.cpp
  keditcl1.cpp
  keditcl2.cpp
  kshortcutdialog.cpp
@@ -150,6 +149,7 @@ set(kdeui_LIB_SRCS
  widgets/kpushbutton.cpp
  widgets/kselector.cpp
  widgets/ksqueezedtextlabel.cpp
+ widgets/ksystemtrayicon.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
  widgets/ktextedit.cpp
@@ -206,7 +206,6 @@ install( FILES
  knotificationrestrictions.h
  kseparator.h
  krestrictedline.h
- ksystemtray.h
  keditcl.h
  kkeydialog.h
  kurllabel.h

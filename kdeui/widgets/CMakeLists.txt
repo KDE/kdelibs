@@ -29,4 +29,5 @@ install( FILES
  kselector.h
  kcolorvalueselector.h
  kxyselector.h
+ ksystemtrayicon.h
  DESTINATION ${INCLUDE_INSTALL_DIR})

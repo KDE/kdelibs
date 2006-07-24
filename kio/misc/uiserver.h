@@ -200,7 +200,7 @@ class QHideEvent;
 class QShowEvent;
 class ProgressConfigDialog;
 class QMenu;
-class KSystemTray;
+class KSystemTrayIcon;
 
 /**
  * It's purpose is to show progress of IO operations.
@@ -412,7 +412,7 @@ private:
   bool m_bUpdateNewJob;
   ProgressConfigDialog *m_configDialog;
   QMenu* m_contextMenu;
-  KSystemTray *m_systemTray;
+  KSystemTrayIcon *m_systemTray;
 
   QAction *m_toolCancel, *m_toolConfigure;
 

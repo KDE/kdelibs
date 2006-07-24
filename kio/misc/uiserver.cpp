@@ -46,7 +46,7 @@
 #include <kdesu/client.h>
 #include <kwin.h>
 #include <kdialog.h>
-#include <ksystemtray.h>
+#include <ksystemtrayicon.h>
 #include <kmenu.h>
 #include <kaction.h>
 #include <kdialog.h>
@@ -662,11 +662,11 @@ void UIServer::applySettings()
 {
   if (m_showSystemTray && m_systemTray == 0)
   {
-     m_systemTray = new KSystemTray(this);
+     m_systemTray = new KSystemTrayIcon(this);
      QMenu* pop = m_systemTray->contextMenu();
      pop->addAction(i18n("Settings..."), this, SLOT(slotConfigure()));
      pop->addAction(i18n("Remove"), this, SLOT(slotRemoveSystemTrayIcon()));
-     m_systemTray->setWindowIcon(KSystemTray::loadIcon("filesave"));
+     m_systemTray->setIcon(KSystemTrayIcon::loadIcon("filesave"));
      m_systemTray->show();
   }
   else if (m_showSystemTray == false && m_systemTray != 0)
