@@ -828,7 +828,7 @@ replace with
 <h4>KDockWindow</h4>
 <ul>
 <li>This class is obsolete, it is provided for compatibility only.
-Use KSystemTray instead.</li>
+Use KSystemTrayIcon instead.</li>
 </ul>
 
 <h4>KDualColorButton</h4>
@@ -1043,6 +1043,12 @@ if needed (see the KURLDrag section)</li>
 <h4>KSyntaxHighlighter</h4>
 <ul>
 <li>Use K3SyntaxHighlighter because it used Q3TextEdit or use KSyntaxHighlighter when your application will use QTextEdit</li>
+</ul>
+
+<h4>KSystemTray</h4>
+<ul>
+<li>Renamed to KSystemTrayIcon for consistency with its actual purpose and naming in Qt (QSystemTrayIcon)</li>
+<li>Is now a subclass of QSystemTrayIcon and not QLabel. Therefore it is not a widget anymore. Otherwise, it behaves the same as in KDE3 when it comes to managing a parent window's visibility and providing an action collection to display in the context menu.</li>
 </ul>
 
 <h4>KTabBar</h4>
