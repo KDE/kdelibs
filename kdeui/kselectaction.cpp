@@ -639,9 +639,9 @@ static int TrueCurrentItem (KSelectAction *sa)
     }
   }
 
-  kDebug () << "\t\tcurrent action still selected? " << curAction->isChecked () << endl;
+  kDebug () << "\t\tcurrent action still selected? " << (curAction && curAction->isChecked ()) << endl;
   // 1 or 0 actions checked case (in that order)?
-  return curAction->isChecked () ? sa->actions ().indexOf (curAction) : -1;
+  return (curAction && curAction->isChecked ()) ? sa->actions ().indexOf (curAction) : -1;
 }
 
 // A plain "QVariant (action)" results in a bool being stored.  So all
