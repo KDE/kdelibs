@@ -30,51 +30,35 @@ ScriptsDock::~ScriptsDock()
 */
 }
 
+void ScriptsDock::documentDestroyed(KJS::DebugDocument *document)
+{
+    QTreeWidgetItem *item = m_documents[document];
+    if (item)
+    {
+        int idx = m_widget->indexOfTopLevelItem(item);
+        if (idx != -1)
+            m_widget->takeTopLevelItem(idx);
+    }
+}
+
 void ScriptsDock::addDocument(KJS::DebugDocument *document)
 {
     if (document && m_widget)
     {
-        QList<QTreeWidgetItem *> items = m_widget->findItems(document->url(), Qt::MatchExactly);
-        kDebug() << "Found " << items.count() << " items." << endl;
-        QTreeWidgetItem *item;
-        if (items.count() > 0)
+        QTreeWidgetItem *item = m_documents[document];
+        if (item)
         {
-            QTreeWidgetItem *script = items.takeFirst();
-            int idx = m_widget->indexOfTopLevelItem(script);
+            int idx = m_widget->indexOfTopLevelItem(item);
             item = m_widget->topLevelItem(idx);
             item->setText(1, "multiple");
-
-/*
-            item->takeChildren();
-            QList<SourceFragment> fragments = document->code();
-            foreach (SourceFragment fragment, fragments)
-            {
-                QTreeWidgetItem *child = new QTreeWidgetItem;
-                child->setText(0, QString::number(fragment.baseLine));
-                child->setText(1, fragment.source);
-                item->addChild(child);
-            }
-        */
         }
         else
         {
             item = new QTreeWidgetItem;
             item->setText(0, document->url());
-
-/*
-            QList<SourceFragment> fragments = document->code();
-            foreach (SourceFragment fragment, fragments)
-            {
-                QTreeWidgetItem *child = new QTreeWidgetItem;
-                child->setText(0, QString::number(fragment.baseLine));
-                child->setText(1, fragment.source);
-                item->addChild(child);
-            }
-*/
             m_widget->addTopLevelItem(item);
-            kDebug() << "added document for url: " << document->url() << endl;
+            m_documents[document] = item;
         }
-        m_documents[item] = document;
     }
     else
     {
@@ -84,8 +68,9 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
 
 void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int column)
 {
-    KJS::DebugDocument *doc = m_documents[item];
-    emit displayScript(doc);
+    KJS::DebugDocument *doc = m_documents.key(item);
+    if (doc)
+        emit displayScript(doc);
 }
 
 

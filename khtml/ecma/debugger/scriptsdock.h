@@ -20,6 +20,9 @@ public:
 
     void addDocument(KJS::DebugDocument *document);
 
+public slots:
+    void documentDestroyed(KJS::DebugDocument *document);
+
 signals:
     void displayScript(KJS::DebugDocument *document);
 
@@ -28,7 +31,7 @@ private slots:
 
 private:
     QTreeWidget *m_widget;
-    QHash<QTreeWidgetItem*, KJS::DebugDocument*> m_documents;
+    QHash<KJS::DebugDocument*, QTreeWidgetItem*> m_documents;
 };
 
 #endif

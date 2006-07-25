@@ -34,6 +34,7 @@
 #include <ktexteditor/document.h>
 #include <ktexteditor/view.h>
 #include <ktexteditor/editor.h>
+#include <ktexteditor/markinterface.h>
 
 #include "khtml_pagecache.h"
 #include "khtml_part.h"
@@ -42,7 +43,6 @@
 
 class KActionCollection;
 class KAction;
-
 class NumberedTextView;
 class WatchesDock;
 class LocalVariablesDock;
@@ -51,9 +51,19 @@ class CallStackDock;
 class BreakpointsDock;
 class ConsoleDock;
 class QTabWidget;
+class QFrame;
 
 namespace KJS
 {
+
+
+struct BreakPoint
+{
+    int lineNumber;
+    int column;
+
+    DebugDocument *document;
+};
 
 struct SourceFragment
 {
@@ -71,7 +81,10 @@ public:
     {
         QStringList splitUrl = url.split('/');
         if (!splitUrl.isEmpty())
-            m_name = splitUrl.last();
+        {
+            while (m_name.isEmpty())
+                m_name = splitUrl.takeLast();
+        }
         else
             m_name = "undefined";
 
@@ -92,7 +105,24 @@ public:
     QString url() const { return m_url; }
     Interpreter *interpreter() const { return m_interpreter; }
 
-    QList<SourceFragment> code() { return m_codeFragments; }
+    QList<SourceFragment> fragments() { return m_codeFragments.values(); }
+    bool deleteFragment(int sourceId)
+    {
+        if (m_codeFragments.contains(sourceId))
+        {
+            m_codeFragments.remove(sourceId);
+            return true;
+        }
+        return false;
+    }
+    SourceFragment fragment(int sourceId)
+    {
+        if (m_codeFragments.contains(sourceId))
+            return m_codeFragments[sourceId];
+        else
+            return SourceFragment();
+    }
+
     QString source() const { return m_source; }
 
     void addCodeFragment(int sourceId, int baseLine, const QString &source)
@@ -102,7 +132,7 @@ public:
         code.baseLine = baseLine;
         code.source = source;
 
-        m_codeFragments.append(code);
+        m_codeFragments[sourceId] = code;
     }
 
 private slots:
@@ -126,7 +156,7 @@ private:
     QString m_name;
     QString m_source;
     Interpreter *m_interpreter;
-    QList<SourceFragment> m_codeFragments;
+    QHash<int, SourceFragment> m_codeFragments;
 
 };
 
@@ -143,6 +173,17 @@ private:
 class DebugWindow : public KMainWindow, public KJS::Debugger, public KInstance
 {
     Q_OBJECT
+public:
+    enum Mode
+    {
+        Disabled = 0, // No break on any statements
+        Next     = 1, // Will break on next statement in current context
+        Step     = 2, // Will break on next statement in current or deeper context
+        Continue = 3, // Will continue until next breakpoint
+        Stop     = 4  // The script will stop execution completely,
+                      // as soon as possible
+    };
+
 public:
     DebugWindow(QWidget *parent = 0);
     virtual ~DebugWindow();
@@ -179,14 +220,17 @@ protected:
 private slots:
     void displayScript(KJS::DebugDocument *document);
     void closeTab();
+    void breakpointSet(KTextEditor::Document *document, KTextEditor::Mark mark,
+                       KTextEditor::MarkInterface::MarkChangeAction action);
 
 private:
     void createActions();
     void createMenus();
     void createToolBars();
     void createStatusBar();
-    void createTabButtons();
+    void createTabWidget();
 
+private:
     // Standard actions
     KAction *m_exitAct;
 
@@ -207,22 +251,18 @@ private:
     CallStackDock *m_callStack;
     BreakpointsDock *m_breakpoints;
     ConsoleDock *m_console;
+
     QTabWidget *m_tabWidget;
+    QFrame *m_docFrame;
 
     // Internal temp variables to overcome some issues with KJS::Debugger...
     int m_nextBaseLine;
     QString m_nextUrl;
 
-
-
-
-    KJS::Interpreter *m_tempInterpreter;
-
-
-
-
+    Mode m_mode;
 
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
+    QHash<int, DebugDocument*>     m_sourceIdLookup; // map sourceId's to debug documents
     QList<DebugDocument*> m_openDocuments;
 
     static DebugWindow *m_debugger;

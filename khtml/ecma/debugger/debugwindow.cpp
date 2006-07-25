@@ -132,7 +132,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     m_callStack = new CallStackDock;
     m_breakpoints = new BreakpointsDock;
     m_console = new ConsoleDock;
-    m_tabWidget = new QTabWidget;
+    m_docFrame = new QFrame;
 
     addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
     addDockWidget(Qt::LeftDockWidgetArea, m_localVariables);
@@ -144,7 +144,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout(mainFrame);
     layout->setSpacing(0);
     QSplitter *splitter = new QSplitter(Qt::Vertical);
-    splitter->addWidget(m_tabWidget);
+    splitter->addWidget(m_docFrame);
     splitter->addWidget(m_console);
     layout->addWidget(splitter);
 
@@ -155,7 +155,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     createMenus();
     createToolBars();
     createStatusBar();
-    createTabButtons();
+    createTabWidget();
+    m_tabWidget->hide();
 
     connect(m_scripts, SIGNAL(displayScript(KJS::DebugDocument*)),
             this, SLOT(displayScript(KJS::DebugDocument*)));
@@ -222,8 +223,10 @@ void DebugWindow::createToolBars()
     toolBar()->addAction(m_stepOverAct);
 }
 
-void DebugWindow::createTabButtons()
+void DebugWindow::createTabWidget()
 {
+    QVBoxLayout *layout = new QVBoxLayout(m_docFrame);
+    m_tabWidget = new QTabWidget;
 /*
     QToolButton *newTabButton = new QToolButton(this);
     m_tabWidget->setCornerWidget(newTabButton, Qt::TopLeftCorner);
@@ -241,6 +244,7 @@ void DebugWindow::createTabButtons()
     QObject::connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
     closeTabButton->setToolTip(tr("Close source"));
     closeTabButton->setEnabled(true);
+    layout->addWidget(m_tabWidget);
 }
 
 // -------------------------------------------------------------
@@ -251,7 +255,10 @@ void DebugWindow::createStatusBar()
 
 void DebugWindow::stopExecution()
 {
-//    KMessageBox::information(this, "Stop!");
+    m_mode = Stop;
+
+//    while (!m_execStates.isEmpty())
+//        leaveSession();
 }
 
 void DebugWindow::continueExecution()
@@ -307,7 +314,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 
             document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
             m_documents[key] = document;
-   //         m_documents[key]->setFullSource(
+            m_sourceIdLookup[sourceId] = document;
 
 //        }
     }
@@ -322,8 +329,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     m_nextBaseLine = 1;
     m_nextUrl = "";
 
-//    return (m_mode != Stop);
-    return true;
+    return (m_mode != Stop);
 }
 
 bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
@@ -331,9 +337,16 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
     Q_UNUSED(exec);
     Q_UNUSED(sourceId);
 
-    kDebug() << "sourceUnused" << endl;
+    // Remove the debug document associated with this sourceId
+    DebugDocument *document = m_sourceIdLookup[sourceId];
+    if (document)
+    {
+        m_scripts->documentDestroyed(document);
+        if (!document->deleteFragment(sourceId))   // this means we've removed all the source fragments
+            document->deleteLater();
+    }
 
-    return true;
+    return (m_mode != Stop);
 }
 
 bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject *exceptionObj)
@@ -345,7 +358,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject 
 
     kDebug() << "exception" << endl;
 
-    return true;
+    return (m_mode != Stop);
 }
 
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
@@ -357,7 +370,7 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 
     kDebug() << "atStatement" << endl;
 
-    return true;
+    return (m_mode != Stop);
 }
 
 bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
@@ -370,7 +383,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
 
     kDebug() << "callEvent" << endl;
 
-    return true;
+    return (m_mode != Stop);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
@@ -382,13 +395,22 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 
     kDebug() << "returnEvent" << endl;
 
-    return true;
+    return (m_mode != Stop);
 }
+
+// End KJS::Debugger overloads
 
 void DebugWindow::displayScript(KJS::DebugDocument *document)
 {
+    if (m_tabWidget->isHidden())
+        m_tabWidget->show();
+
     if (m_openDocuments.contains(document))
+    {
+        int idx = m_openDocuments.indexOf(document);
+        m_tabWidget->setCurrentIndex(idx);
         return;
+    }
 
     KTextEditor::Document *doc = m_editor->createDocument(0);
     m_documentList.append(doc);
@@ -396,7 +418,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
     KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(doc);
     if (highlightingInterface)
     {
-        int modeNumber;
+        int modeNumber = 0;
         int count = highlightingInterface->hlModeCount();
         for (int i=0; i<count; i++)
         {
@@ -441,7 +463,23 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
             configInterface->setConfigValue("dynamic-word-wrap", true);
     }
 
+    KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(doc);
+    if (markInterface)
+    {
+        connect(doc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
+                this, SLOT(breakpointSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
+    }
+
+    m_openDocuments.append(document);
     m_tabWidget->addTab(view, document->name());
+}
+
+void DebugWindow::breakpointSet(KTextEditor::Document *document, KTextEditor::Mark mark,
+                                KTextEditor::MarkInterface::MarkChangeAction action)
+{
+    kDebug() << "breakpoint set for: " << endl
+             << "document: " << document->documentName() << endl
+             << "line: " << mark.line << " type: " << mark.type << endl;
 }
 
 void DebugWindow::closeTab()
@@ -449,5 +487,7 @@ void DebugWindow::closeTab()
     int idx = m_tabWidget->currentIndex();
     m_tabWidget->removeTab(idx);
     m_openDocuments.removeAt(idx);
+    if (m_openDocuments.isEmpty())
+        m_tabWidget->hide();
 }
 
