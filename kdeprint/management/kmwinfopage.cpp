@@ -42,6 +42,7 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 		"The KDE printing team</i></a>.</p>"));
 	label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
 	label->setOpenExternalLinks(true);
+    label->setWordWrap(true);
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this);
 	main_->setMargin(0);
