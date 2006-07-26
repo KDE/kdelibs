@@ -500,7 +500,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <h4>locate</h4>
 <ul>
 <li>locate moved into the namespace KStandardDirs</li>
-</h4>
+</ul>
 
 <h4>NETRootInfo</h4>
 <ul>
@@ -656,6 +656,13 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 
 <h4>KActiveLabel</h4>
 <ul>
+<li>Use QLabel instead. This class will probably move to kde3support.
+<ul>
+<li>QLabel::setOpenExternalLinks(true) and QLabel::setTextInteractionFlags(Qt::LinksAccessibleByMouse|QtLinksAccessibleByKeyboard) for labels with hyperlinks.</li>
+<li>QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|QtTextSelectableByKeyboard) for labels whose text should be selectable by user.</li>
+<li>QLabel::setOpenExternalLinks(true) and QLabel::setTextInteractionFlags(Qt::TextBrowserInteraction) for both features.</li>
+</ul>
+</li>
 <li>Inherits from KTextBrowser instead of Q3TextBrowser</li>
 <li>You don't need anymore to disconnect the linkClicked signal to handle manually link,  use KTextBrowser::setNotifyClick(true)</li>
 <li>linkClicked -&gt; KTextBrowser::urlClick</li>
