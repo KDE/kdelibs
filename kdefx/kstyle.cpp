@@ -44,6 +44,8 @@
  */
 
 #include "kstyle.h"
+#include "kstyle.moc"
+
 #include <qalgorithms.h>
 #include <qicon.h>
 #include <qpainter.h>
@@ -52,6 +54,8 @@
 #include <QScrollBar>
 #include <QVariant>
 //#include <QStyleOptionButton>
+
+#include <QLabel>
 
 
 //### FIXME: Who to credit these to?
@@ -69,7 +73,7 @@ static const qint32 r_arrow[]={-2,-4, -2,3, -1,-4, -1,3, 0,-3, 0,2, 1,-2, 1,1, 2
     ProgressBar::Precision handling
 */
 
-KStyle::KStyle()
+KStyle::KStyle() : clickedLabel(0)
 {
     //Set up some default metrics...
     setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
@@ -203,10 +207,18 @@ KStyle::~KStyle()
 
 void KStyle::polish(QWidget *w)
 {
+    if (qobject_cast<QLabel*>(w) ) {
+        w->installEventFilter(this);
+    }
+
     QCommonStyle::polish(w);
 }
 void KStyle::unpolish(QWidget *w)
 {
+    if (qobject_cast<QLabel*>(w) ) {
+        w->removeEventFilter(this);
+    }
+
     QCommonStyle::unpolish(w);
 }
 void KStyle::polish(QApplication *a)
@@ -3529,6 +3541,50 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
     }
 
     return QCommonStyle::sizeFromContents(type, option, contentsSize, widget);
+}
+
+bool KStyle::eventFilter(QObject *obj, QEvent *ev)
+{
+    if (QCommonStyle::eventFilter(obj, ev) )
+        return true;
+
+    if (QLabel *lbl = qobject_cast<QLabel*>(obj) ) {
+        QWidget *buddy = lbl->buddy();
+        if (buddy) {
+            switch (ev->type() ) {
+                case QEvent::MouseButtonPress:
+                    clickedLabel = obj;
+                    lbl->update();
+                    break;
+                case QEvent::MouseButtonRelease:
+                {
+                    clickedLabel = 0;
+                    lbl->update();
+
+                // set focus to the buddy...
+                    buddy->setFocus(Qt::ShortcutFocusReason);
+                    break;
+                }
+                case QEvent::Paint:
+                    if (obj == clickedLabel && buddy->isEnabled()) {
+                    // paint focus rect
+                        QPainter p(lbl);
+                        QStyleOptionFocusRect foOpts;
+                        QRect foRect(0,0,lbl->width(),lbl->height());
+                        foOpts.palette = lbl->palette();
+                        foOpts.rect    = foRect;
+                        drawKStylePrimitive(WT_Generic, Generic::FocusIndicator, &foOpts,
+                                            foRect, lbl->palette(), 0, &p, lbl);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    return false;
 }
 
 

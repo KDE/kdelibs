@@ -82,6 +82,8 @@ class QStyleOptionTab;
 
 class KDEFX_EXPORT KStyle: public QCommonStyle
 {
+    Q_OBJECT
+
 public:
     KStyle();
     ~KStyle();
@@ -1519,6 +1521,9 @@ private:
     QRect internalSubControlRect (ComplexControl control, const QStyleOptionComplex* opt,
                                                     SubControl subControl, const QWidget* w) const;
 
+    // fitt's law label support: QLabel focusing its buddy widget
+    const QObject *clickedLabel;
+
 public:
 /** @name QStyle Methods
  * These are methods reimplemented from QStyle. Usually it's not necessary to
@@ -1562,6 +1567,7 @@ public:
                                    const QWidget *widget = 0) const;
     QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
                                    const QStyleOption *opt) const;
+    bool eventFilter(QObject *, QEvent *);
 //@}
 };
 
