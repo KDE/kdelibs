@@ -108,9 +108,6 @@ void KPopupTitle::paintEvent(QPaintEvent *)
                        AlignCenter | SingleLine, titleStr);
         }
     }
-
-    p.setPen(palette().active().highlight());
-    p.drawLine(0, 0, r.right(), 0);
 }
 
 QSize KPopupTitle::sizeHint() const
