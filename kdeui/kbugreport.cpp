@@ -71,9 +71,9 @@ public:
     KUrl url;
     QList<QRadioButton*> severityButtons;
     int currentSeverity() {
-    	for (int i=0;i<severityButtons.count();i++)
-		if (severityButtons[i]->isChecked()) return i;
-	return -1;
+        for (int i=0;i<severityButtons.count();i++)
+            if (severityButtons[i]->isChecked()) return i;
+        return -1;
     }
 };
 
@@ -267,10 +267,13 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     // Point to the web form
 
     lay->addSpacing(10);
-    QString text = i18n("To submit a bug report, click on the button below.\n"
-                        "This will open a web browser window on http://bugs.kde.org where you will find a form to fill in.\n"
-                        "The information displayed above will be transferred to that server.");
+    QString text = i18n("<qt>To submit a bug report, click on the button below. This will open a web browser "
+                        "window on <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> where you will find "
+                        "a form to fill in. The information displayed above will be transferred to that server.</qt>");
     QLabel * label = new QLabel( text, parent);
+    label->setOpenExternalLinks( true );
+    label->setTextInteractionFlags( Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard );
+    label->setWordWrap( true );
     lay->addWidget( label );
     lay->addSpacing(10);
 
@@ -280,10 +283,11 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     lay->addWidget( d->submitBugButton );
     lay->addSpacing(10);
 
-	connect( d->submitBugButton, SIGNAL(clicked()),
-			 this, SLOT(accept()));
+    connect( d->submitBugButton, SIGNAL(clicked()),
+             this, SLOT(accept()));
   }
   setMainWidget(parent);
+  setMinimumSize( sizeHint() );
 }
 
 KBugReport::~KBugReport()
@@ -385,7 +389,7 @@ void KBugReport::accept()
         return;
     }
 
-	switch ( d->currentSeverity())
+    switch ( d->currentSeverity())
     {
         case 0: // critical
             if ( KMessageBox::questionYesNo( this, i18n(
@@ -409,8 +413,8 @@ void KBugReport::accept()
                 "If it does not, please select a lower severity. Thank you!</p>" ),QString(),KStdGuiItem::cont(),KStdGuiItem::cancel() ) == KMessageBox::No )
                 return;
             break;
-	default:
-	    break;
+        default:
+            break;
     }
     if( !sendBugReport() )
     {
@@ -423,7 +427,7 @@ void KBugReport::accept()
 
     KMessageBox::information(this,
                              i18n("Bug report sent, thank you for your input."));
-	KDialog::accept();
+    KDialog::accept();
 }
 
 void KBugReport::closeEvent( QCloseEvent * e)
@@ -434,10 +438,10 @@ void KBugReport::closeEvent( QCloseEvent * e)
              i18n( "Close and discard\nedited message?" ),
              i18n( "Close Message" ), KStdGuiItem::discard(), KStdGuiItem::cont() );
     if( rc == KMessageBox::No )
-	{
-		e->ignore();
-      return;
-	}
+    {
+        e->ignore();
+        return;
+    }
   }
   KDialog::closeEvent( e);
 }
@@ -463,7 +467,7 @@ QString KBugReport::text() const
 */
   bodyText=m_lineedit->toPlainText();
   if (bodyText.length()>0)
-  	if (bodyText[bodyText.length()-1]!='\n') bodyText+="\n";
+        if (bodyText[bodyText.length()-1]!='\n') bodyText+="\n";
   if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
