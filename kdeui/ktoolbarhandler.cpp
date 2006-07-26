@@ -92,6 +92,7 @@ namespace
         if ( m_toolBarActions.count() == 1 ) {
           KToggleToolBarAction* action = static_cast<KToggleToolBarAction *>( m_toolBarActions.first() );
           action->setText( i18n( "Show Toolbar" ) );
+          action->setCheckedState( i18n( "Hide Toolbar" ) );
           return m_toolBarActions;
         }
 
