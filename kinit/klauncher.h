@@ -153,8 +153,8 @@ public: // remote methods, called by KLauncherAdaptor
     void exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id);
     inline void exec_blind(const QString &name, const QStringList &arg_list)
     { exec_blind(name, arg_list, QStringList(), QLatin1String("0")); }
-    inline void kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QDBusMessage &msg)
-    { kdeinit_exec(app, args, env, QString(), false, msg); }
+    inline void kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg)
+    { kdeinit_exec(app, args, env, startup_id, false, msg); }
     inline void kdeinit_exec_wait(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg)
     { kdeinit_exec(app, args, env, startup_id, true, msg); }
 

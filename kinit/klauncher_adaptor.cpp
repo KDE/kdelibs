@@ -52,10 +52,10 @@ void KLauncherAdaptor::exec_blind(const QString &name, const QStringList &arg_li
     static_cast<KLauncher *>(parent())->exec_blind(name, arg_list, envs, startup_id);
 }
 
-int KLauncherAdaptor::kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QDBusMessage &msg, QString &, QString &, int &)
+int KLauncherAdaptor::kdeinit_exec(const QString &app, const QStringList &args, const QStringList &env, const QString& startup_id, const QDBusMessage &msg, QString &, QString &, int &)
 {
     // handle method call org.kde.KLauncher.kdeinit_exec
-    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, env, msg);
+    static_cast<KLauncher *>(parent())->kdeinit_exec(app, args, env, startup_id, msg);
     return 0;                   // delayed reply
 }
 
