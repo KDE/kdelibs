@@ -41,7 +41,9 @@ KJSEMBED_EXPORT void RedirectIOToConsole();
 #if !defined(Q_OS_WIN)
 #include <ctype.h>
 #include <stdlib.h>
+#ifdef HAVE_ITOA
 char *itoa(int num, char *str, int radix = 10);
+#endif
 #endif
 
 #include <QTextStream>

@@ -182,7 +182,8 @@ namespace KXMLCore {
     inline HashSet<T, U, V>& HashSet<T, U, V>::operator=(const HashSet& other)
     {
         HashSet tmp(other);
-        m_impl.swap(tmp.m_impl); 
+        m_impl.swap(tmp.m_impl);
+        return *this;
     }
 
     template<typename T, typename U, typename V>

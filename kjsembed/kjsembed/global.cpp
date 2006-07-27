@@ -85,15 +85,15 @@ void RedirectIOToConsole() {
 
    lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-   win32_stdin.open(IO_ReadOnly,hConHandle);
+   win32_stdin.open(hConHandle,QIODevice::ReadOnly);
 
    lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-   win32_stdout.open(IO_WriteOnly,hConHandle );
+   win32_stdout.open(hConHandle,QIODevice::WriteOnly);
 
    lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-   win32_stderr.open(IO_WriteOnly,hConHandle);
+   win32_stderr.open(hConHandle, QIODevice::WriteOnly);
 
    std::ios::sync_with_stdio();
 
