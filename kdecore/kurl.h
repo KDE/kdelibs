@@ -1009,4 +1009,9 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 );
  */
 KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options );
 
+/*
+ * MSVC needs it.
+ */
+KDE_DUMMY_QHASH_FUNCTION(KUrl)
+
 #endif

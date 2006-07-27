@@ -884,7 +884,7 @@ KDateTime KDateTime::currentDateTime()
 
 KDateTime KDateTime::currentUtcDateTime()
 {
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN_use_temporary_the_unix_code
     SYSTEMTIME st;
     memset(&st, 0, sizeof(SYSTEMTIME));
     GetSystemTime(&st);
