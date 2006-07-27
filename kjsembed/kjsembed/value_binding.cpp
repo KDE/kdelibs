@@ -109,10 +109,11 @@ JavaScriptArrayType checkArray( KJS::ExecState *exec, KJS::JSValue *val )
     if ( obj->className().qstring() == "Array" )
     {
         KJS::JSValue *len = obj->get(exec, KJS::Identifier("length"));
-        char buff[21];
+        QByteArray buff;
+        buff.setNum(int(len->toNumber(exec))-1);
         if( !obj->hasProperty(exec, KJS::Identifier("length")) )
             return Map;
-        else if( !obj->hasProperty(exec, KJS::Identifier( itoa(int(len->toNumber(exec) - 1), buff, 10 ) ) ) )
+        else if( !obj->hasProperty(exec, KJS::Identifier( buff.data() ) ) )
             return Map;
         else
             return List;
@@ -146,8 +147,9 @@ QList<QVariant> KJSEmbed::convertArrayToList( KJS::ExecState *exec, KJS::JSValue
         int length = obj->get( exec, KJS::Identifier( "length" ) )->toInteger( exec );
         for ( int index = 0; index < length; ++index )
         {
-            char buff[21];
-            KJS::JSValue *val = obj->get(exec, KJS::Identifier( itoa( index, buff, 10 ) ) );
+            QByteArray buff;
+            buff.setNum(index);
+            KJS::JSValue *val = obj->get(exec, KJS::Identifier( buff.data() ) );
             if( val )
                 returnList += convertToVariant(exec, val );
             else
@@ -166,8 +168,9 @@ QStringList KJSEmbed::convertArrayToStringList( KJS::ExecState *exec, KJS::JSVal
         int length = obj->get( exec, KJS::Identifier( "length" ) )->toInteger( exec );
         for ( int index = 0; index < length; ++index )
         {
-            char buff[21];
-            KJS::JSValue *val = obj->get(exec, KJS::Identifier( itoa( index, buff, 10 ) ) );
+            QByteArray buff;
+            buff.setNum(index);
+            KJS::JSValue *val = obj->get(exec, KJS::Identifier( buff.data() ) );
             if( val )
                 returnList += convertToVariant(exec, val ).value<QString>();
             else
