@@ -168,31 +168,37 @@ public:
      *
      * @return true if successful, false for failure
      */
-    static bool copy( const KUrl& src, const KUrl& target, QWidget* window = 0L );
-    // KDE4: rename to file_copy
+    static bool file_copy( const KUrl& src, const KUrl& target, QWidget* window = 0 );
+    /// @deprecated, use file_copy instead
+    static KDE_DEPRECATED bool copy( const KUrl& src, const KUrl& target, QWidget* window = 0 ) {
+        return file_copy( src, target, window );
+    }
+
+    // KDE4: I want to just get rid of the "Full-fledged equivalents" methods now that we have synchronousRun().
 
     /**
      * Full-fledged equivalent of KIO::file_copy
      */
-    static bool file_copy( const KUrl& src, const KUrl& dest, int permissions=-1,
+    static bool file_copy( const KUrl& src, const KUrl& dest, int permissions /*=-1*/,
                             bool overwrite=false, bool resume=false, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::file_move.
      * Moves or renames *one file*.
      */
-    static bool file_move( const KUrl& src, const KUrl& target, int permissions=-1,
-                           bool overwrite=false, bool resume=false, QWidget* window = 0L );
+    static bool file_move( const KUrl& src, const KUrl& target, int permissions = -1,
+                           bool overwrite=false, bool resume=false, QWidget* window = 0 );
 
 
     /**
      * Alternative method for copying over the network.
-     * Overwrite is false, so this will fail if @p target exists.
      *
      * This one takes two URLs and is a direct equivalent
      * of KIO::copy!.
      * This means that it can copy files and directories alike
      * (it should have been named copy()).
+     *
+     * This method will bring up a dialog if the destination already exists.
      *
      * @param src URL Referencing the file to upload.
      * @param target URL containing the final location of the
