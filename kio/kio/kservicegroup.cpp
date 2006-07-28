@@ -48,6 +48,7 @@ KServiceGroup::KServiceGroup( const QString & name )
 {
   d = new KServiceGroup::Private;
   m_bDeleted = false;
+  m_bDeep = false;
 }
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
@@ -55,6 +56,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 {
   d = new KServiceGroup::Private;
   m_bDeleted = false;
+  m_bDeep = false;
 
   QString cfg = configFile;
   if (cfg.isEmpty())
