@@ -289,7 +289,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_ca_filenameLabel = new QLabel("", _x509Frame);
 	grid->addWidget(_ca_filenameLabel, 6, 1);
 	grid->addWidget(new QLabel(i18n("File format:"), _x509Frame), 6, 3);
-	grid->addWidget(new QLabel("PEM or DER Encoded X.509", _x509Frame), 6, 4);
+	grid->addWidget(new QLabel(i18n("PEM or DER Encoded X.509"), _x509Frame), 6, 4);
 
 
 //

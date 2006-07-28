@@ -46,7 +46,7 @@ PluginComboBox::PluginComboBox(QWidget *parent)
         m_label->setWhatsThis(whatsThisCurrentPrintsystem);
 	m_label->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
 	m_label->setBuddy(m_combo);
-	m_plugininfo = new QLabel("Plugin information", this);
+	m_plugininfo = new QLabel(i18n("Plugin information"), this);
 	QGridLayout	*l0 = new QGridLayout(this);
   l0->setMargin(0);
   l0->setSpacing(5);
