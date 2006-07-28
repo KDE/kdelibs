@@ -67,7 +67,7 @@ static void KDE_NO_EXPORT sigill_handler( int sig )
 
 static int getCpuFeatures()
 {
-    int features = 0;
+    volatile int features = 0;
 
 #if defined( HAVE_GNU_INLINE_ASM )
 #if defined( __i386__ )
