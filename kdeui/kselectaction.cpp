@@ -561,6 +561,8 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
   }
 }
 
+// TODO: DropAmpersands() certainly makes sure this doesn't work.  But I don't
+// think it did anyway esp. in the presence KCheckAccelerator - Clarence.
 void KSelectAction::setMenuAccelsEnabled( bool b )
 {
   d->m_menuAccelsEnabled = b;
