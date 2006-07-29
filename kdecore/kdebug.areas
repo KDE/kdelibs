@@ -8,7 +8,7 @@
 125        kdeui (KGlobalAccel)
 126        kdecore (KUrl)
 127        kio (KProtocolInfo)
-129        kdecore (KAction)
+129        kdeui (KAction)
 130        kio (KPasswdServer)
 150        kdecore (KLibLoader)
 160        kdecore (KNotifyClient)
