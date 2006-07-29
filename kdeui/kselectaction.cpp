@@ -416,6 +416,20 @@ void KSelectAction::changeItem( int index, const QString& text )
   actions()[index]->setText( d->makeMenuText( text ) );
 }
 
+KAction *NewAction (KSelectAction *self, const QString &text)
+{
+  KAction* action = new KAction(text, self->parentCollection(), 0);
+
+  if (!self->menuAccelsEnabled ()) {
+    action->setText(text);
+    action->setShortcut(QKeySequence());
+  }
+
+  action->setShortcutConfigurable(false);
+
+  return action;
+}
+
 void KSelectAction::setItems( const QStringList &lst )
 {
   kDebug () << "KSelectAction::setItems(" << lst << ")" << endl;
@@ -424,17 +438,8 @@ void KSelectAction::setItems( const QStringList &lst )
 
   foreach (const QString& string, lst) {
     if ( !string.isEmpty() ) {
-      KAction* action = new KAction(string, parentCollection(), 0);
-
-      if (!d->m_menuAccelsEnabled) {
-        action->setText(string);
-        action->setShortcut(QKeySequence());
-      }
-
-      action->setShortcutConfigurable(false);
-
+      KAction* action = ::NewAction (this, string);
       addAction(action);
-
     } else {
       QAction* action = new QAction(this);
       action->setSeparator(true);
@@ -524,11 +529,32 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
 {
   kDebug () << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")" << endl;
 
+  KComboBox *triggeringCombo = qobject_cast <KComboBox *> (sender ());
+
   QAction *a = action(index);
   kDebug () << "\ta=" << a << endl;
   if (a) {
+    kDebug () << "\t\tsetting as current action" << endl;
     setCurrentAction(a);
     emit actionTriggered(a);
+  } else if (isEditable () &&
+    triggeringCombo && triggeringCombo->count () > 0 &&
+    index == triggeringCombo->count () - 1) {
+
+    // User must have added a new item by typing and pressing enter.
+    const QString newItemText = triggeringCombo->currentText ();
+    kDebug () << "\t\tuser typed new item '" << newItemText << "'" << endl;
+
+    // Only 1 combobox contains this and it's not a proper action.
+    triggeringCombo->blockSignals (true);
+    triggeringCombo->removeItem (index);
+    triggeringCombo->blockSignals (false);
+
+    KAction* newAction = ::NewAction (this, newItemText);
+    addAction (newAction);
+
+    setCurrentAction (newAction);
+    emit actionTriggered (newAction);
   } else {
     if (selectableActionGroup()->checkedAction())
       selectableActionGroup()->checkedAction()->setChecked(false);
@@ -674,7 +700,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     kDebug () << "KSelectAction::eventFilter(ActionAdded)"
               << "    comboBox: ptr=" << comboBox
               << " currentItem=" << comboBox->currentIndex ()
-              << " index=" << index
+              << "    add index=" << index
               << "    action new: e->before=" << e->before ()
               << " ptr=" << e->action ()
               << " icon=" << e->action ()->icon ()
@@ -701,7 +727,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     kDebug () << "KSelectAction::eventFilter(ActionChanged)"
               << "    comboBox: ptr=" << comboBox
               << " currentItem=" << comboBox->currentIndex ()
-              << " index=" << index
+              << "    changed action's index=" << index
               << "    action new: ptr=" << e->action ()
               << " icon=" << e->action ()->icon ()
               << " text=" << e->action ()->text ()
@@ -725,7 +751,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     kDebug () << "KSelectAction::eventFilter(ActionRemoved)"
               << "    comboBox: ptr=" << comboBox
               << " currentItem=" << comboBox->currentIndex ()
-              << " index=" << index
+              << "    delete action index=" << index
               << "    new: currentItem=" << newItem
               << endl;
     comboBox->removeItem (index);
