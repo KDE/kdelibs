@@ -229,19 +229,19 @@ QString KSelectAction::currentText( ) const
 
 void KSelectAction::setCurrentAction(QAction* action)
 {
-  kDebug () << "KSelectAction::setCurrentAction(" << action << ")" << endl;
+  kDebug (129) << "KSelectAction::setCurrentAction(" << action << ")" << endl;
   action->setChecked(true);
 }
 
 bool KSelectAction::setCurrentItem( int index )
 {
-  kDebug () << "KSelectAction::setCurrentIndex(" << index << ")" << endl;
+  kDebug (129) << "KSelectAction::setCurrentIndex(" << index << ")" << endl;
   if (QAction* a = action(index)) {
     setCurrentAction(a);
     return true;
   }
 
-  kDebug () << "\tdoing the deselect" << endl;
+  kDebug (129) << "\tdoing the deselect" << endl;
   if (selectableActionGroup()->checkedAction())
     selectableActionGroup()->checkedAction()->setChecked(false);
 
@@ -282,13 +282,13 @@ QAction * KSelectAction::action( const QString & text, Qt::CaseSensitivity cs ) 
 
 bool KSelectAction::setCurrentAction( const QString & text, Qt::CaseSensitivity cs)
 {
-  kDebug () << "KSelectAction::setCurrentAction(" << text << ",cs=" << cs << ")" << endl;
+  kDebug (129) << "KSelectAction::setCurrentAction(" << text << ",cs=" << cs << ")" << endl;
   if (QAction* a = action(text, cs)) {
     a->setChecked(true);
     return true;
   }
 
-  kDebug () << "\tfailed" << endl;
+  kDebug (129) << "\tfailed" << endl;
   return false;
 }
 
@@ -321,7 +321,7 @@ void KSelectAction::setMaxComboViewCount( int n )
 
 void KSelectAction::addAction(QAction* action)
 {
-  kDebug () << "KSelectAction::addAction(" << action << ")" << endl;
+  kDebug (129) << "KSelectAction::addAction(" << action << ")" << endl;
 
   action->setActionGroup(selectableActionGroup());
   action->setCheckable( true );
@@ -364,9 +364,9 @@ QAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
 
 QAction* KSelectAction::removeAction(QAction* action)
 {
-  kDebug () << "KSelectAction::removeAction(" << action << ")" << endl;
+  kDebug (129) << "KSelectAction::removeAction(" << action << ")" << endl;
   int index = selectableActionGroup()->actions().indexOf(action);
-  kDebug () << "\tindex=" << index << endl;
+  kDebug (129) << "\tindex=" << index << endl;
 
   action->setActionGroup(0L);
 
@@ -387,7 +387,7 @@ void KSelectAction::actionTriggered(QAction* action)
   // after we've done an emit()
   QString text = action->text();
   int index = selectableActionGroup()->actions().indexOf(action);
-  kDebug () << "KSelectAction::actionTriggered(" << action << ") text=" << text
+  kDebug (129) << "KSelectAction::actionTriggered(" << action << ") text=" << text
             << " index=" << index  << " emitting triggered()" << endl;
 
   emit triggered(action);
@@ -432,7 +432,7 @@ KAction *NewAction (KSelectAction *self, const QString &text)
 
 void KSelectAction::setItems( const QStringList &lst )
 {
-  kDebug () << "KSelectAction::setItems(" << lst << ")" << endl;
+  kDebug (129) << "KSelectAction::setItems(" << lst << ")" << endl;
 
   clear();
 
@@ -458,7 +458,7 @@ int KSelectAction::comboWidth() const
 
 void KSelectAction::clear()
 {
-  kDebug () << "KSelectAction::clear()" << endl;
+  kDebug (129) << "KSelectAction::clear()" << endl;
 
   // we need to delete the actions later since we may get a call to clear()
   // from a method called due to a triggered(...) signal
@@ -527,14 +527,14 @@ void KSelectAction::comboBoxDeleted(QObject* object)
 
 void KSelectAction::comboBoxCurrentIndexChanged(int index)
 {
-  kDebug () << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")" << endl;
+  kDebug (129) << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")" << endl;
 
   KComboBox *triggeringCombo = qobject_cast <KComboBox *> (sender ());
 
   QAction *a = action(index);
-  kDebug () << "\ta=" << a << endl;
+  kDebug (129) << "\ta=" << a << endl;
   if (a) {
-    kDebug () << "\t\tsetting as current action" << endl;
+    kDebug (129) << "\t\tsetting as current action" << endl;
     setCurrentAction(a);
     emit actionTriggered(a);
   } else if (isEditable () &&
@@ -543,7 +543,7 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
 
     // User must have added a new item by typing and pressing enter.
     const QString newItemText = triggeringCombo->currentText ();
-    kDebug () << "\t\tuser typed new item '" << newItemText << "'" << endl;
+    kDebug (129) << "\t\tuser typed new item '" << newItemText << "'" << endl;
 
     // Only 1 combobox contains this and it's not a proper action.
     triggeringCombo->blockSignals (true);
@@ -650,24 +650,24 @@ static QString DropAmpersands (const QString &text)
 static int TrueCurrentItem (KSelectAction *sa)
 {
   QAction *curAction = sa->currentAction ();
-  kDebug () << "\tTrueCurrentItem(" << sa << ") curAction=" << curAction << endl;
+  kDebug (129) << "\tTrueCurrentItem(" << sa << ") curAction=" << curAction << endl;
 
   foreach (QAction *action, sa->actions ())
   {
     if (action->isChecked ())
     {
-       kDebug () << "\t\taction " << action << " (text=" << action->text () << ") isChecked" << endl;
+       kDebug (129) << "\t\taction " << action << " (text=" << action->text () << ") isChecked" << endl;
 
        // 2 actions checked case?
        if (action != curAction)
        {
-         kDebug () << "\t\t\tmust be newly selected one" << endl;
+         kDebug (129) << "\t\t\tmust be newly selected one" << endl;
          return sa->actions ().indexOf (action);
        }
     }
   }
 
-  kDebug () << "\t\tcurrent action still selected? " << (curAction && curAction->isChecked ()) << endl;
+  kDebug (129) << "\t\tcurrent action still selected? " << (curAction && curAction->isChecked ()) << endl;
   // 1 or 0 actions checked case (in that order)?
   return (curAction && curAction->isChecked ()) ? sa->actions ().indexOf (curAction) : -1;
 }
@@ -699,7 +699,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
       comboBox->findData (QVariantFromQAction (e->before ())) :
       comboBox->count ();
     const int newItem = ::TrueCurrentItem (this);
-    kDebug () << "KSelectAction::eventFilter(ActionAdded)"
+    kDebug (129) << "KSelectAction::eventFilter(ActionAdded)"
               << "    comboBox: ptr=" << comboBox
               << " currentItem=" << comboBox->currentIndex ()
               << "    add index=" << index
@@ -726,7 +726,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     
     const int index = comboBox->findData (QVariantFromQAction (e->action ()));
     const int newItem = ::TrueCurrentItem (this);
-    kDebug () << "KSelectAction::eventFilter(ActionChanged)"
+    kDebug (129) << "KSelectAction::eventFilter(ActionChanged)"
               << "    comboBox: ptr=" << comboBox
               << " currentItem=" << comboBox->currentIndex ()
               << "    changed action's index=" << index
@@ -750,7 +750,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
 
     const int index = comboBox->findData (QVariantFromQAction (e->action ()));
     const int newItem = ::TrueCurrentItem (this);
-    kDebug () << "KSelectAction::eventFilter(ActionRemoved)"
+    kDebug (129) << "KSelectAction::eventFilter(ActionRemoved)"
               << "    comboBox: ptr=" << comboBox
               << " currentItem=" << comboBox->currentIndex ()
               << "    delete action index=" << index
