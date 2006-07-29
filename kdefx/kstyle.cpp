@@ -56,6 +56,7 @@
 //#include <QStyleOptionButton>
 
 #include <QLabel>
+#include <QMouseEvent>
 
 
 //### FIXME: Who to credit these to?
@@ -3553,16 +3554,30 @@ bool KStyle::eventFilter(QObject *obj, QEvent *ev)
         if (buddy) {
             switch (ev->type() ) {
                 case QEvent::MouseButtonPress:
-                    clickedLabel = obj;
-                    lbl->update();
+                {
+                    QMouseEvent *mev = dynamic_cast<QMouseEvent*>(ev);
+                    if (!mev) break;
+
+                    if (lbl->rect().contains(mev->pos() ) ) {
+                        clickedLabel = obj;
+                        lbl->repaint();
+                    }
                     break;
+                }
                 case QEvent::MouseButtonRelease:
                 {
-                    clickedLabel = 0;
-                    lbl->update();
+                    QMouseEvent *mev = dynamic_cast<QMouseEvent*>(ev);
+                    if (!mev) break;
+
+                    if (clickedLabel) {
+                        clickedLabel = 0;
+                        lbl->update();
+                    }
 
                 // set focus to the buddy...
-                    buddy->setFocus(Qt::ShortcutFocusReason);
+                    if (lbl->rect().contains(mev->pos() ) ) {
+                        buddy->setFocus(Qt::ShortcutFocusReason);
+                    }
                     break;
                 }
                 case QEvent::Paint:
