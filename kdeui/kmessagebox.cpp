@@ -188,7 +188,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
 
        pref_width = d.width() / 3;
        pref_height = label2->heightForWidth(pref_width);
-   
+
        rt.setWidth(pref_width);
        int used_width = rt.widthUsed();
        pref_height = rt.height();
@@ -256,7 +256,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
          QLabel *label3 = new QLabel(qrichtextify(details), detailsGroup);
          label3->setOpenExternalLinks(options & KMessageBox::AllowLink);
          label3->setTextInteractionFlags(Qt::TextInteractionFlags(label3->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
-         label3->setMinimumSize(label3->sizeHint());
+         //label3->setMinimumSize(label3->sizeHint());
+         label3->setWordWrap(true);
          detailsGroup->layout()->addWidget(label3);
        } else {
          QTextEdit* te = new QTextEdit(details, detailsGroup);
@@ -1011,7 +1012,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
         QPixmap ret = QMessageBox::standardIcon(QMessageBox::Information);
         dialog->setWindowIcon(ret);
     }
-  
+
     int size = IconSize(K3Icon::Desktop);
     QPixmap icon = qApp->windowIcon().pixmap(size,size);
     createKMessageBox(dialog, icon, text, QStringList(), QString(), 0, options);
