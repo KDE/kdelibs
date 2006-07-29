@@ -40,3 +40,4 @@
 <!ENTITY kinfocenter "<application>Centro de Informação do KDE</application>" >
 <!ENTITY ksystemlog "<application>KSystemLog</application>" >
 <!ENTITY kleopatra "<application>Kleopatra</application>" >
+<!ENTITY qt "<trademark>Qt</trademark>" >
