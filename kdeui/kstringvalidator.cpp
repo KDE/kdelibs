@@ -117,6 +117,10 @@ QStringList KStringListValidator::stringList() const
 
 #define ALLOWED_CHARS "!#-'*+.0-9^-~+-"
 
+class KMimeTypeValidator::Private
+{
+};
+
 KMimeTypeValidator::KMimeTypeValidator( QObject* parent )
  : QValidator( parent ),
    d( 0 )
