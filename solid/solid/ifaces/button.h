@@ -76,7 +76,7 @@ namespace Ifaces
         virtual bool stateValue() const = 0;
 
     protected:
-    //signals:
+    //Q_SIGNALS:
         /**
          * This signal is emitted when the button is pressed.
          *

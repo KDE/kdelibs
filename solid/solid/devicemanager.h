@@ -145,7 +145,7 @@ namespace Solid
          */
         const Ifaces::DeviceManager *backend() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when a new device appear in the underlying system.
          *
@@ -173,7 +173,7 @@ namespace Solid
         DeviceManager( Ifaces::DeviceManager *backend );
         ~DeviceManager();
 
-    private slots:
+    private Q_SLOTS:
         void slotDeviceAdded( const QString &udi );
         void slotDeviceRemoved( const QString &udi );
         void slotNewCapability( const QString &udi, int capability );

@@ -97,7 +97,7 @@ namespace Ifaces
          */
         virtual Device *createDevice( const QString &udi ) = 0;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when a new device appear in the system.
          *

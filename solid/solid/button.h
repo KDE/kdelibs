@@ -93,7 +93,7 @@ namespace Solid
          */
         bool stateValue() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the button is pressed.
          *
@@ -103,7 +103,7 @@ namespace Solid
          */
         void pressed( int type );
 
-    private slots:
+    private Q_SLOTS:
         void slotPressed( int type );
 
     private:

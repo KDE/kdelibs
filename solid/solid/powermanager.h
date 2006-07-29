@@ -203,7 +203,7 @@ namespace Solid
          */
         const Ifaces::PowerManager *backend() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the power management scheme has changed.
          *
@@ -240,7 +240,7 @@ namespace Solid
         PowerManager( Ifaces::PowerManager *backend );
         ~PowerManager();
 
-    private slots:
+    private Q_SLOTS:
         void slotSchemeChanged( QString newScheme );
         void slotAcAdapterStateChanged( int newState );
         void slotBatteryStateChanged( int newState );

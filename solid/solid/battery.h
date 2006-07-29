@@ -145,7 +145,7 @@ namespace Solid
          */
         ChargeState chargeState() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the charge percent value of this
          * battery has changed.
@@ -164,7 +164,7 @@ namespace Solid
          */
         void chargeStateChanged( int newState );
 
-    private slots:
+    private Q_SLOTS:
         void slotChargePercentChanged( int value );
         void slotChargeStateChanged( int newState );
 

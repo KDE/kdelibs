@@ -146,7 +146,7 @@ namespace Ifaces
         virtual KJob *eject() = 0;
 
     protected:
-    //signals:
+    //Q_SIGNALS:
         /**
          * This signal is emitted when the mount state of this device
          * has changed.

@@ -97,7 +97,7 @@ namespace Solid
          */
         QList<int> writeSpeeds() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the eject button is pressed
          * on the drive.
@@ -106,7 +106,7 @@ namespace Solid
          */
         void ejectPressed();
 
-    private slots:
+    private Q_SLOTS:
         void slotEjectPressed();
 
     private:

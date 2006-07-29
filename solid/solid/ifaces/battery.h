@@ -134,7 +134,7 @@ namespace Ifaces
         virtual ChargeState chargeState() const = 0;
 
     protected:
-    //signals:
+    //Q_SIGNALS:
         /**
          * This signal is emitted when the charge percent value of this
          * battery has changed.

@@ -274,7 +274,7 @@ namespace Solid
          */
         virtual QString lockReason() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when a property is changed in the device.
          *
@@ -294,7 +294,7 @@ namespace Solid
          */
         void conditionRaised( const QString &condition, const QString &reason );
 
-    private slots:
+    private Q_SLOTS:
         void slotPropertyChanged( const QMap<QString,int> &changes );
         void slotConditionRaised( const QString &condition, const QString &reason );
         void slotDestroyed( QObject *object );

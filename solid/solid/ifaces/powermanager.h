@@ -166,7 +166,7 @@ namespace Ifaces
          */
         virtual bool setCpuEnabled( int cpuNum, bool enabled ) = 0;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the power management scheme has changed.
          *

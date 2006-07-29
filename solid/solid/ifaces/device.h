@@ -185,7 +185,7 @@ namespace Ifaces
          */
         virtual QString lockReason() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when a property is changed in the device.
          *

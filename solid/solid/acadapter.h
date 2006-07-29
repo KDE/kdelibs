@@ -70,7 +70,7 @@ namespace Solid
          */
         bool isPlugged() const;
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the A/C adapter is plugged or unplugged.
          *
@@ -78,7 +78,7 @@ namespace Solid
          */
         void plugStateChanged( bool newState );
 
-    private slots:
+    private Q_SLOTS:
         void slotPlugStateChanged( bool newState );
 
     private:

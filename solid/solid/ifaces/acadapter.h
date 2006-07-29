@@ -50,7 +50,7 @@ namespace Ifaces
         virtual bool isPlugged() const = 0;
 
     protected:
-    //signals:
+    //Q_SIGNALS:
         /**
          * This signal is emitted when the A/C adapter is plugged or unplugged.
          *

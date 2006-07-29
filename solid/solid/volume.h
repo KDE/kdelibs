@@ -162,7 +162,7 @@ namespace Solid
          */
         KJob *eject();
 
-    signals:
+    Q_SIGNALS:
         /**
          * This signal is emitted when the mount state of this device
          * has changed.
@@ -171,7 +171,7 @@ namespace Solid
          */
         void mountStateChanged( bool newState );
 
-    private slots:
+    private Q_SLOTS:
         void slotMountStateChanged( bool newState );
 
     private:

@@ -80,7 +80,7 @@ namespace Ifaces
         virtual QList<int> writeSpeeds() const = 0;
 
     protected:
-    //signals:
+    //Q_SIGNALS:
         /**
          * This signal is emitted when the eject button is pressed
          * on the drive.
