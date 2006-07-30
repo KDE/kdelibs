@@ -150,6 +150,32 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
   return true;
 }
 
+/*
+  Eliminates any custom header that could potentically alter the request
+*/
+static QString sanitizeCustomHTTPHeader(const QString& _header)
+{
+  QString sanitizedHeaders;
+  QStringList headers = QStringList::split("\r\n", _header);
+
+  for(QStringList::Iterator it = headers.begin(); it != headers.end(); ++it)
+  {
+    QString header = (*it).lower();
+    // Do not allow Request line to be specified and ignore
+    // the other HTTP headers.
+    if (header.find(':') == -1 || header.startsWith("host") ||
+        header.startsWith("authorization") ||
+        header.startsWith("proxy-authorization") ||
+        header.startsWith("via"))
+      continue;
+
+    sanitizedHeaders += (*it);
+    sanitizedHeaders += "\r\n";
+  }
+
+  return sanitizedHeaders.stripWhiteSpace();
+}
+
 
 #define NO_SIZE		((KIO::filesize_t) -1)
 
@@ -2403,7 +2429,7 @@ bool HTTPProtocol::httpOpen()
     QString customHeader = metaData( "customHTTPHeader" );
     if (!customHeader.isEmpty())
     {
-      header += customHeader;
+      header += sanitizeCustomHTTPHeader(customHeader);
       header += "\r\n";
     }
 
