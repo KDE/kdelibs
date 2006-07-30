@@ -624,6 +624,9 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
         else
             removeCSSProperty(CSS_PROP_HEIGHT);
         break;
+    case ATTR_ALIGN:
+        addHTMLAlignment( attr->value() );
+        break;
     case ATTR_SRC:
         needWidgetUpdate = true; // ### do this for scrolling, margins etc?
         HTMLFrameElementImpl::parseAttribute( attr );
