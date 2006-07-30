@@ -393,7 +393,6 @@ KApplication::KApplication( bool GUIenabled ) :
     setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
-    parseCommandLine( );
     init();
 }
 
@@ -407,7 +406,6 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
     installSigpipeHandler();
-    parseCommandLine( );
     init();
 }
 
@@ -421,7 +419,6 @@ KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap
     setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( aboutData()->organizationDomain() );
     installSigpipeHandler();
-    parseCommandLine( );
     init();
 }
 #endif
@@ -435,7 +432,6 @@ KApplication::KApplication( bool GUIenabled, KInstance* _instance ) :
     setApplicationName(QLatin1String(instanceName()));
     setOrganizationDomain( aboutData()->organizationDomain() );
     installSigpipeHandler();
-    parseCommandLine( );
     init();
 }
 
@@ -449,7 +445,6 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
     setApplicationName(QLatin1String(rAppName));
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
-    parseCommandLine( );
     init();
 }
 #endif
@@ -517,6 +512,18 @@ void KApplication::init()
      fprintf(stderr, "The KDE libraries are not designed to run with suid privileges.\n");
      ::exit(127);
   }
+    
+  if ( type() == GuiClient )
+  {
+    QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
+    QStringList::Iterator it = plugins.begin();
+    while (it != plugins.end()) {
+      addLibraryPath( *it );
+      ++it;
+    }
+  }
+
+  parseCommandLine();   
 
   KProcessController::ref();
 
@@ -618,14 +625,6 @@ void KApplication::init()
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
 
-    {
-        QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
-        QStringList::Iterator it = plugins.begin();
-        while (it != plugins.end()) {
-            addLibraryPath( *it );
-            ++it;
-        }
-    }
     kdisplaySetStyle();
     kdisplaySetFont();
     propagateSettings(SETTINGS_QT);
