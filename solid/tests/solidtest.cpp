@@ -28,52 +28,20 @@
 #include <solid/device.h>
 #include <solid/processor.h>
 #include <solid/predicate.h>
-#include "fakeprocessor.h"
-#include "fakemanager.h"
-#include "fakedevice.h"
+
+#include <fakemanager.h>
+#include <fakedevice.h>
+
+#ifndef FAKE_COMPUTER_XML
+    #error "FAKE_COMPUTER_XML not set. An XML file describing a computer is required for this test"
+#endif
 
 QTEST_KDEMAIN( SolidTest, NoGUI )
 
 void SolidTest::initTestCase()
 {
-    fakeManager = new FakeManager();
+    fakeManager = new FakeManager(0, QStringList(), FAKE_COMPUTER_XML);
     Solid::DeviceManager::selfForceBackend( fakeManager );
-
-    FakeDevice *dev;
-
-    // Initialise a fake system
-    dev = fakeManager->newDevice( "/fake/computer" );
-    dev->setProperty( "system.formfactor", "laptop" );
-    dev->setProperty( "powermanagement.isEnabled", true );
-    dev->setProperty( "info.product", "Black Ice" );
-    dev->setProperty( "info.vendor", "Gibson Inc." );
-
-    dev = fakeManager->newDevice( "/fake/storage_SONA_CD22U" );
-    dev->setParent( "/fake/computer" );
-    dev->setProperty( "info.product", "CD22U" );
-    dev->setProperty( "info.vendor", "Sona Inc." );
-    dev->setProperty( "info.parent", "/fake/computer" );
-    dev->addCapability( Solid::Ifaces::Capability::Storage );
-    dev->addCapability( Solid::Ifaces::Capability::Cdrom );
-
-    dev = fakeManager->newDevice( "/fake/volume_label_SOLIDMAN_THE_MOVIE" );
-    dev->setParent( "/fake/storage_SONA_CD22U" );
-    dev->setProperty( "info.product", "SOLIDMAN_THE_MOVIE" );
-    dev->setProperty( "info.parent", "/fake/storage_SONA_CD22U" );
-    dev->setProperty( "volume.label", "SOLIDMAN_THE_MOVIE" );
-    dev->setProperty( "volume.disc.type", "dvd_rom" );
-    dev->setProperty( "volume.disc.is_videodvd", true );
-    dev->addCapability( Solid::Ifaces::Capability::Volume );
-    dev->addCapability( Solid::Ifaces::Capability::OpticalDisc );
-
-    dev = fakeManager->newDevice( "/fake/acpi_LID0" );
-    dev->setParent( "/fake/computer" );
-    dev->setProperty( "info.product", "SOLIDMAN_THE_MOVIE" );
-    dev->setProperty( "info.parent", "/fake/computer" );
-    dev->setProperty( "button.type", "lid" );
-    dev->setProperty( "button.has_state", true );
-    dev->setProperty( "button.state", false );
-    //dev->addCapability( "button" );
 }
 
 void SolidTest::testAllDevices()
@@ -86,9 +54,7 @@ void SolidTest::testAllDevices()
     // in the backend.
     QSet<QString> expected_udis, received_udis;
 
-    expected_udis << "/fake/computer" << "/fake/storage_SONA_CD22U"
-                  << "/fake/volume_label_SOLIDMAN_THE_MOVIE"
-                  << "/fake/acpi_LID0";
+    expected_udis = QSet<QString>::fromList( fakeManager->allDevices() );
 
     foreach ( Solid::Device dev , devices )
     {
@@ -102,11 +68,11 @@ void SolidTest::testDeviceExists()
 {
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
-    QCOMPARE( manager.deviceExists( "/fake/acpi_LID0" ), true );
-    QCOMPARE( manager.deviceExists( "/fake/volume_label_SOLIDMAN_THE_MOVIE" ), true );
+    QCOMPARE( manager.deviceExists( "/org/kde/solid/fake/acpi_LID0" ), true );
+    QCOMPARE( manager.deviceExists( "/org/kde/solid/fake/volume_label_SOLIDMAN_BEGINS" ), true );
 
     // Note the extra space
-    QCOMPARE( manager.deviceExists( "/fake/computer " ), false );
+    QCOMPARE( manager.deviceExists( "/org/kde/solid/fake/computer " ), false );
     QCOMPARE( manager.deviceExists( "#'({(à]" ), false );
     QCOMPARE( manager.deviceExists( QString() ), false );
 }
@@ -116,7 +82,7 @@ void SolidTest::testDeviceBasicFeatures()
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     // Retrieve a valid Device object
-    Solid::Device valid_dev = manager.findDevice( "/fake/storage_SONA_CD22U" );
+    Solid::Device valid_dev = manager.findDevice( "/org/kde/solid/fake/storage_model_solid_writer" );
 
     QCOMPARE( valid_dev.isValid(), true );
 
@@ -131,49 +97,48 @@ void SolidTest::testDeviceBasicFeatures()
 
 
 
-    QCOMPARE( valid_dev.udi(), QString( "/fake/storage_SONA_CD22U" ) );
+    QCOMPARE( valid_dev.udi(), QString( "/org/kde/solid/fake/storage_model_solid_writer" ) );
     QCOMPARE( invalid_dev.udi(), QString() );
 
 
     // Query properties
-    QCOMPARE( valid_dev.propertyExists("info.product"), true );
+    QCOMPARE( valid_dev.propertyExists("name"), true );
     QCOMPARE( valid_dev.propertyExists("foo.bar"), false );
-    QCOMPARE( invalid_dev.propertyExists("info.product"), false );
+    QCOMPARE( invalid_dev.propertyExists("name"), false );
     QCOMPARE( invalid_dev.propertyExists("foo.bar"), false );
 
-    QCOMPARE( valid_dev.property("info.product"), QVariant( "CD22U" ) );
+    QCOMPARE( valid_dev.property("name"), QVariant( "Solid IDE DVD Writer" ) );
     QVERIFY( !valid_dev.property("foo.bar").isValid() );
-    QVERIFY( !invalid_dev.property("info.product").isValid() );
+    QVERIFY( !invalid_dev.property("name").isValid() );
     QVERIFY( !invalid_dev.property("foo.bar").isValid() );
 
-    QMap<QString, QVariant> expected_properties;
-    expected_properties["info.product"] = "CD22U";
-    expected_properties["info.vendor"] = "Sona Inc.";
-    expected_properties["info.parent"] = "/fake/computer";
+    FakeDevice *fake_device = fakeManager->findDevice( "/org/kde/solid/fake/storage_model_solid_writer" );
+    QMap<QString, QVariant> expected_properties = fake_device->allProperties();
+
     QCOMPARE( valid_dev.allProperties(), expected_properties );
     QVERIFY( invalid_dev.allProperties().isEmpty() );
 
 
     // Query capabilities
-    QCOMPARE( valid_dev.queryCapability( Solid::Ifaces::Capability::Storage ), true );
-    QCOMPARE( valid_dev.queryCapability( Solid::Ifaces::Capability::Cdrom ), true );
-    QCOMPARE( valid_dev.queryCapability( Solid::Ifaces::Capability::Volume ), false );
+    QCOMPARE( valid_dev.queryCapability( Solid::Capability::Storage ), true );
+    QCOMPARE( valid_dev.queryCapability( Solid::Capability::Cdrom ), true );
+    QCOMPARE( valid_dev.queryCapability( Solid::Capability::Volume ), false );
 
-    QCOMPARE( invalid_dev.queryCapability( Solid::Ifaces::Capability::Unknown ), false );
-    QCOMPARE( invalid_dev.queryCapability( Solid::Ifaces::Capability::Storage ), false );
+    QCOMPARE( invalid_dev.queryCapability( Solid::Capability::Unknown ), false );
+    QCOMPARE( invalid_dev.queryCapability( Solid::Capability::Storage ), false );
 
 
     // Query parent
-    QCOMPARE( valid_dev.parentUdi(), QString( "/fake/computer" ) );
-    QCOMPARE( valid_dev.parent().udi(), manager.findDevice( "/fake/computer" ).udi() );
+    QCOMPARE( valid_dev.parentUdi(), QString( "/org/kde/solid/fake/pci_002_ide_1_0" ) );
+    QCOMPARE( valid_dev.parent().udi(), manager.findDevice( "/org/kde/solid/fake/pci_002_ide_1_0" ).udi() );
 
     QVERIFY( !invalid_dev.parent().isValid() );
     QVERIFY( invalid_dev.parentUdi().isEmpty() );
 
 
     // Query vendor/product
-    QCOMPARE( valid_dev.vendor(), QString( "Sona Inc." ) );
-    QCOMPARE( valid_dev.product(), QString( "CD22U" ) );
+    QCOMPARE( valid_dev.vendor(), QString( "Acme Corporation" ) );
+    QCOMPARE( valid_dev.product(), QString( "Solid IDE DVD Writer" ) );
 
     QCOMPARE( invalid_dev.vendor(), QString() );
     QCOMPARE( invalid_dev.product(), QString() );
@@ -183,11 +148,10 @@ void SolidTest::testDeviceLocking()
 {
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
-    Solid::Device device = manager.findDevice( "/fake/computer" );
-
+    Solid::Device device = manager.findDevice( "/org/kde/solid/fake/computer" );
 
     // Test locking on a device that refuses it
-    fakeManager->findDevice( "/fake/computer" )->setBroken( true );
+    fakeManager->findDevice( "/org/kde/solid/fake/computer" )->setBroken( true );
     QCOMPARE( device.lock( "need a reason?" ), false );
     QVERIFY( !device.isLocked() );
     QCOMPARE( device.lockReason(), QString() );
@@ -199,7 +163,7 @@ void SolidTest::testDeviceLocking()
 
 
     // Test locking on a "normal" device
-    fakeManager->findDevice( "/fake/computer" )->setBroken( false );
+    fakeManager->findDevice( "/org/kde/solid/fake/computer" )->setBroken( false );
     QCOMPARE( device.lock( "sure I have a good reason" ), true );
     QVERIFY( device.isLocked() );
     QCOMPARE( device.lockReason(), QString( "sure I have a good reason" ) );
@@ -225,45 +189,43 @@ void SolidTest::testDeviceLocking()
 
 void SolidTest::testManagerSignals()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    fakeManager->unplug( "/org/kde/solid/fake/acpi_CPU0" );
 
-    FakeDevice *dev;
+    Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
 
     // Heh, we missed a processor in this system ;-)
     // We're going to add this device, and check that the signal has been
     // properly emitted by the manager
     QSignalSpy added( &manager, SIGNAL( deviceAdded( QString ) ) );
-    dev = fakeManager->newDevice( "/fake/acpi_CPU0" );
+    fakeManager->plug( "/org/kde/solid/fake/acpi_CPU0" );
     QCOMPARE( added.count(), 1 );
-    QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/fake/acpi_CPU0" ) );
+    QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
 
     // Moreover we check that the device is really available
-    Solid::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
+    Solid::Device cpu = manager.findDevice( "/org/kde/solid/fake/acpi_CPU0" );
     QVERIFY( cpu.isValid() );
-
 
 
     // Now we add a capability to the newly created device, and spy the signal
     QSignalSpy new_capability( &manager, SIGNAL( newCapability( QString, int ) ) );
-    dev->addCapability( Solid::Ifaces::Capability::Processor );
+    fakeManager->raiseCapabilityAdded( "/org/kde/solid/fake/acpi_CPU0", Solid::Capability::Processor );
     QCOMPARE( new_capability.count(), 1 );
-    QCOMPARE( new_capability.at( 0 ).at( 0 ).toString(), QString( "/fake/acpi_CPU0" ) );
-    QCOMPARE( new_capability.at( 0 ).at( 1 ), QVariant( Solid::Ifaces::Capability::Processor ) );
-
-    // We also check that the Device object noticed it
-    QVERIFY( cpu.queryCapability( Solid::Ifaces::Capability::Processor ) );
-
+    QCOMPARE( new_capability.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
+    QCOMPARE( new_capability.at( 0 ).at( 1 ), QVariant( Solid::Capability::Processor ) );
 
 
     // Finally we remove the device and spy the corresponding signal again
     QSignalSpy removed( &manager, SIGNAL( deviceRemoved( QString ) ) );
-    fakeManager->deleteDevice( "/fake/acpi_CPU0" );
+    fakeManager->unplug( "/org/kde/solid/fake/acpi_CPU0" );
     QCOMPARE( added.count(), 1 );
-    QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/fake/acpi_CPU0" ) );
+    QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
 
     // The Device object should become automatically invalid
     QVERIFY( !cpu.isValid() );
+
+    // Restore original state
+    fakeManager->plug( "/org/kde/solid/fake/acpi_CPU0" );
 }
 
 void SolidTest::testDeviceSignals()
@@ -272,15 +234,15 @@ void SolidTest::testDeviceSignals()
 
 
     // A button is a nice device for testing state changes, isn't it?
-    FakeDevice *fake = fakeManager->findDevice( "/fake/acpi_LID0" );
-    Solid::Device device = manager.findDevice( "/fake/acpi_LID0" );
+    FakeDevice *fake = fakeManager->findDevice( "/org/kde/solid/fake/acpi_LID0" );
+    Solid::Device device = manager.findDevice( "/org/kde/solid/fake/acpi_LID0" );
 
     // We'll spy our button
     connect( &device, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
              this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
     QSignalSpy condition_raised( &device, SIGNAL( conditionRaised( QString, QString ) ) );
 
-    fake->setProperty( "button.state", true ); // The button is now pressed (modified property)
+    fake->setProperty( "stateValue", true ); // The button is now pressed (modified property)
     fake->raiseCondition( "Lid Closed", "Why not?" ); // Since it's a LID we notify this change
     fake->setProperty( "hactar", 42 ); // We add a property
     fake->removeProperty( "hactar" ); // We remove a property
@@ -293,8 +255,8 @@ void SolidTest::testDeviceSignals()
     // First one is a "PropertyModified" for "button.state"
     changes = m_changesList.at( 0 );
     QCOMPARE( changes.count(), 1 );
-    QVERIFY( changes.contains( "button.state" ) );
-    QCOMPARE( changes["button.state"], (int)Solid::Device::PropertyModified );
+    QVERIFY( changes.contains( "stateValue" ) );
+    QCOMPARE( changes["stateValue"], (int)Solid::Device::PropertyModified );
 
     // Second one is a "PropertyAdded" for "hactar"
     changes = m_changesList.at( 1 );
@@ -320,13 +282,8 @@ void SolidTest::testDeviceSignals()
 
 void SolidTest::testDeviceCapabilities()
 {
-    FakeDevice *fake = fakeManager->newDevice( "/fake/acpi_CPU0" );
-    fake->setParent( "/fake/computer" );
-    fake->addCapability( Solid::Capability::Processor );
-    QVERIFY( fake->asCapability( Solid::Capability::Processor ) != 0 );
-
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
-    Solid::Device cpu = manager.findDevice( "/fake/acpi_CPU0" );
+    Solid::Device cpu = manager.findDevice( "/org/kde/solid/fake/acpi_CPU0" );
 
     Solid::Capability *iface = cpu.asCapability( Solid::Capability::Processor );
     Solid::Processor *processor = cpu.as<Solid::Processor>();
@@ -338,7 +295,8 @@ void SolidTest::testDeviceCapabilities()
 
 void SolidTest::testPredicate()
 {
-    FakeDevice *fake = fakeManager->findDevice( "/fake/acpi_CPU0" );
+
+    FakeDevice *fake = fakeManager->findDevice( "/org/kde/solid/fake/acpi_CPU0" );
 
     Solid::Predicate p1 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3200 )
                         & Solid::Predicate( Solid::Capability::Processor, "canThrottle", true );
@@ -364,20 +322,21 @@ void SolidTest::testPredicate()
 
 
 
-    QString parentUdi = "/fake/storage_SONA_CD22U";
+    QString parentUdi = "/org/kde/solid/fake/storage_model_solid_reader";
     Solid::Capability::Type capability = Solid::Capability::Unknown;
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 1 );
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
-              QString( "/fake/volume_label_SOLIDMAN_THE_MOVIE" ) );
+              QString( "/org/kde/solid/fake/volume_label_SOLIDMAN_BEGINS" ) );
 
     capability = Solid::Capability::Processor;
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 0 );
 
-    parentUdi = "/fake/computer";
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 1 );
+    parentUdi = "/org/kde/solid/fake/computer";
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 2 );
     QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
-              QString( "/fake/acpi_CPU0" ) );
-
+              QString( "/org/kde/solid/fake/acpi_CPU0" ) );
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 1 ),
+              QString( "/org/kde/solid/fake/acpi_CPU1" ) );
 
 
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
@@ -386,17 +345,18 @@ void SolidTest::testPredicate()
     capability = Solid::Capability::Unknown;
     Solid::DeviceList list;
 
-
     list = manager.findDevicesFromQuery( parentUdi, capability, p1 );
-    QCOMPARE( list.size(), 1 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+    QCOMPARE( list.size(), 2 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
+    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU1" ) );
 
     list = manager.findDevicesFromQuery( parentUdi, capability, p2 );
     QCOMPARE( list.size(), 0 );
 
     list = manager.findDevicesFromQuery( parentUdi, capability, p3 );
-    QCOMPARE( list.size(), 1 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+    QCOMPARE( list.size(), 2 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
+    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU1" ) );
 
     list = manager.findDevicesFromQuery( parentUdi, capability, p4 );
     QCOMPARE( list.size(), 0 );
@@ -404,18 +364,18 @@ void SolidTest::testPredicate()
     list = manager.findDevicesFromQuery( parentUdi, capability,
                                          "[Processor.canThrottle==true AND Processor.number==1]" );
     QCOMPARE( list.size(), 1 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU1" ) );
 
     capability = Solid::Capability::Processor;
     list = manager.findDevicesFromQuery( parentUdi, capability );
-    QCOMPARE( list.size(), 1 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/fake/acpi_CPU0" ) );
+    QCOMPARE( list.size(), 2 );
+    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
+    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fake/acpi_CPU1" ) );
 
     capability = Solid::Capability::Unknown;
     list = manager.findDevicesFromQuery( parentUdi, capability,
                                          "blup" );
     QCOMPARE( list.size(), 0 );
-
 }
 
 void SolidTest::slotPropertyChanged( const QMap<QString,int> &changes )
