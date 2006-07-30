@@ -156,14 +156,14 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 static QString sanitizeCustomHTTPHeader(const QString& _header)
 {
   QString sanitizedHeaders;
-  QStringList headers = QStringList::split("\r\n", _header);
+  QStringList headers = _header.split(QRegExp("[\r\n]"));
 
   for(QStringList::Iterator it = headers.begin(); it != headers.end(); ++it)
   {
-    QString header = (*it).lower();
+    QString header = (*it).toLower();
     // Do not allow Request line to be specified and ignore
     // the other HTTP headers.
-    if (header.find(':') == -1 || header.startsWith("host") ||
+    if (!header.contains(':') || header.startsWith("host") ||
         header.startsWith("proxy-authorization") ||
         header.startsWith("via"))
       continue;
@@ -172,7 +172,7 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
     sanitizedHeaders += "\r\n";
   }
 
-  return sanitizedHeaders.stripWhiteSpace();
+  return sanitizedHeaders.trimmed();
 }
 
 
