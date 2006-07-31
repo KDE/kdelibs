@@ -178,11 +178,12 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                     lib->unload();
                     continue;
                 }
-                QObject *obj = factory->create( this, QFile::encodeName( (*it)->name() ) );
+                QObject *obj = factory->create( this );
                 if(!obj) {
                     lib->unload();
                     continue;
                 }
+                obj->setObjectName( (*it)->name() );
                 RenameDlgPlugin *plugin = static_cast<RenameDlgPlugin *>(obj);
                 if(!plugin ){
                     delete obj;

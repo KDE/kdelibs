@@ -65,7 +65,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     if ( mimeType == "inode/directory" )
         return 0L;
 
-    KPreviewWidgetBase *provider = m_previewProviders.find( mimeType ).value();
+    KPreviewWidgetBase *provider = m_previewProviders.value( mimeType );
     if ( provider )
         return provider;
 
@@ -90,7 +90,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     }
 
     // with the new mimetypes from the audio-preview, try again
-    provider = m_previewProviders.find( mimeType ).value();
+    provider = m_previewProviders.value( mimeType );
     if ( provider )
         return provider;
 
@@ -98,7 +98,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
     int index = mimeType.indexOf( '/' );
     if ( index > 0 )
     {
-        provider = m_previewProviders.find( mimeType.left( index + 1 ) + '*' ).value();
+        provider = m_previewProviders.value( mimeType.left( index + 1 ) + '*' );
         if ( provider )
             return provider;
     }
@@ -110,7 +110,7 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
         QString parentMimeType = mimeInfo->parentMimeType();
         while ( !parentMimeType.isEmpty() )
         {
-            provider = m_previewProviders.find( parentMimeType ).value();
+            provider = m_previewProviders.value( parentMimeType );
             if ( provider )
                 return provider;
 
@@ -126,11 +126,11 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
         {
             if ( textProperty.toBool() )
             {
-                provider = m_previewProviders.find( "text/plain" ).value();
+                provider = m_previewProviders.value( "text/plain" );
                 if ( provider )
                     return provider;
 
-                provider = m_previewProviders.find( "text/*" ).value();
+                provider = m_previewProviders.value( "text/*" );
                 if ( provider )
                     return provider;
             }
@@ -194,8 +194,10 @@ KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
         s_tryAudioPreview = false;
         return 0L;
     }
-
-    return dynamic_cast<KPreviewWidgetBase*>( factory->create( parent, "kfileaudiopreview" ));
+    KPreviewWidgetBase* w = dynamic_cast<KPreviewWidgetBase*>( factory->create( parent ) );
+    if ( w )
+        w->setObjectName( "kfileaudiopreview" );
+    return w;
 }
 
 void KFileMetaPreview::virtual_hook( int, void* ) {}

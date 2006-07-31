@@ -911,7 +911,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // Enhanced rename: Don't highlight the file extension.
     QString extension = KMimeType::extractKnownExtension( filename );
     if ( !extension.isEmpty() )
-      d->m_lined->setSelection( 0, filename.length() - extension.length() - 1 );
+      d->m_lined->setSelection( 0, filename.length() - extension.length() );
     else
     {
       int lastDot = filename.lastIndexOf('.');

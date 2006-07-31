@@ -484,11 +484,11 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 
     if (save)
     {
-        thumb.setText("Thumb::URI", 0, d->origName);
-        thumb.setText("Thumb::MTime", 0, QString::number(d->tOrig));
-        thumb.setText("Thumb::Size", 0, number(d->currentItem.item->size()));
-        thumb.setText("Thumb::Mimetype", 0, d->currentItem.item->mimetype());
-        thumb.setText("Software", 0, "KDE Thumbnail Generator");
+        thumb.setText("Thumb::URI", d->origName);
+        thumb.setText("Thumb::MTime", QString::number(d->tOrig));
+        thumb.setText("Thumb::Size", number(d->currentItem.item->size()));
+        thumb.setText("Thumb::Mimetype", d->currentItem.item->mimetype());
+        thumb.setText("Software", "KDE Thumbnail Generator");
         KTempFile temp(d->thumbPath + "kde-tmp-", ".png");
         if (temp.status() == 0) //Only try to write out the thumbnail if we
         {                       //actually created the temp file.

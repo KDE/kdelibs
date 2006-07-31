@@ -2169,8 +2169,9 @@ void KFileDialog::toggleSpeedbar( bool show )
             d->urlBar->hide();
 
         KAction* homeAction = ops->actionCollection()->action( "home" );
+        KAction* reloadAction = ops->actionCollection()->action( "reload" );
         if ( !toolbar->actions().contains(homeAction) )
-            toolbar->addAction( homeAction ); // TODO: add at index 3
+            toolbar->insertAction( reloadAction, homeAction );
     }
 
     static_cast<KToggleAction *>(actionCollection()->action("toggleSpeedbar"))->setChecked( show );

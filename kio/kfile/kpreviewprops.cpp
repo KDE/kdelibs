@@ -79,7 +79,7 @@ bool KPreviewPropsPlugin::supports( KFileItemList _items )
 
 void KPreviewPropsPlugin::currentPageChanged( KPageWidgetItem *current, KPageWidgetItem * )
 {
-    if ( current != preview->parent() )
+    if ( current->widget() != preview->parent() )
         return;
 
     disconnect( properties, SIGNAL( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ), this, SLOT( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ) );
