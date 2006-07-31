@@ -1269,7 +1269,7 @@ public:
     /**
        Returns an icon.  If width and height are passed, the icon returned will be
        the closest it can find (the next biggest).  If width and height are omitted,
-       then the first icon in the list is returned.
+       then the largest icon in the list is returned.
 
        @param width the preferred width for the icon, -1 to ignore
 
