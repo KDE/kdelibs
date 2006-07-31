@@ -11,6 +11,7 @@
 128        kdecore (KRegExp)
 129        kdecore (KAction)
 130        kio (KPasswdServer)
+131        kdecore (KAccelManager)
 150        kdecore (KLibLoader)
 160        kdecore (KNotifyClient)
 170        kdecore (KNetwork socket)
