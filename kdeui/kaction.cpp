@@ -316,6 +316,8 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type 
 {
   Q_ASSERT(type);
 
+  d->globalShortcutAllowed = true;
+
   if (type & DefaultShortcut)
     d->defaultGlobalShortcut = shortcut;
 

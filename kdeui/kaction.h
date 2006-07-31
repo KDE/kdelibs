@@ -503,7 +503,7 @@ public:
 
     /**
      * Indicate whether the programmer and/or user may define a global shortcut for this action.
-     * Defaults to false.
+     * Defaults to false. Note that calling setGlobalShortcut() turns this on automatically.
      *
      * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
      */
