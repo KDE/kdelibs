@@ -416,7 +416,7 @@ void KSelectAction::changeItem( int index, const QString& text )
   actions()[index]->setText( d->makeMenuText( text ) );
 }
 
-KAction *NewAction (KSelectAction *self, const QString &text)
+static KAction *NewAction (KSelectAction *self, const QString &text)
 {
   KAction* action = new KAction(text, self->parentCollection(), 0);
 
