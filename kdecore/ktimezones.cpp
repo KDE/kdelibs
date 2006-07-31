@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -88,6 +88,7 @@ static int gmtoff(time_t t)
     return lt - ut;
 #endif
 }
+
 
 /******************************************************************************/
 
@@ -368,6 +369,41 @@ QList<int> KTimeZone::utcOffsets() const
     return d->data->utcOffsets();
 }
 
+QList<KTimeZonePhase> KTimeZone::phases() const
+{
+    if (!data(true))
+        return QList<KTimeZonePhase>();
+    return d->data->phases();
+}
+
+KTimeZonePhase KTimeZone::phase(const QDateTime &dt, KTimeZonePhase *secondPhase) const
+{
+    if (!data(true))
+        return KTimeZonePhase();
+    return d->data->phase(dt, secondPhase);
+}
+
+KTimeZonePhase KTimeZone::nextPhase(const QDateTime &dt) const
+{
+    if (!data(true))
+        return KTimeZonePhase();
+    return d->data->nextPhase(dt);
+}
+
+KTimeZonePhase KTimeZone::previousPhase(const QDateTime &dt) const
+{
+    if (!data(true))
+        return KTimeZonePhase();
+    return d->data->previousPhase(dt);
+}
+
+QList<KTimeZoneLeapSeconds> KTimeZone::leapSecondChanges() const
+{
+    if (!data(true))
+        return QList<KTimeZoneLeapSeconds>();
+    return d->data->leapSecondChanges();
+}
+
 const KTimeZoneData *KTimeZone::data(bool create) const
 {
     if (create && !d->data)
@@ -420,25 +456,43 @@ QDateTime KTimeZone::convert(const KTimeZone *newZone, const QDateTime &zoneDate
     return newZone->toZoneTime(toUtc(zoneDateTime));
 }
 
-int KTimeZone::offsetAtZoneTime(const QDateTime &, int *secondOffset) const
+int KTimeZone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const
 {
     if (secondOffset)
-        *secondOffset = 0;
-    return 0;
+    {
+        KTimeZonePhase ph2;
+        KTimeZonePhase ph = phase(zoneDateTime, &ph2);
+        if (!ph.isValid())
+        {
+            *secondOffset = 0;
+            return 0;
+        }
+	int offset = ph.utcOffset();
+        *secondOffset = ph2.isValid() ? ph2.utcOffset() : offset;
+	return offset;
+    }
+    else
+    {
+        KTimeZonePhase ph = phase(zoneDateTime);
+        if (!ph.isValid())
+            return 0;
+        return ph.utcOffset();
+    }
 }
 
 int KTimeZone::offsetAtUtc(const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return 0;
-    return 0;
+    KTimeZonePhase ph = phase(utcDateTime);
+    if (!ph.isValid())
+        return 0;
+    return ph.utcOffset();
 }
 
 int KTimeZone::offset(time_t t) const
 {
-    if (t == (time_t)-1)    // check for invalid time
-        return 0;
-    return 0;
+    return offsetAtUtc(fromTime_t(t));
 }
 
 int KTimeZone::currentOffset(Qt::TimeSpec basis) const
@@ -466,24 +520,23 @@ bool KTimeZone::isDstAtUtc(const QDateTime &utcDateTime) const
 {
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return false;
-    return false;
+    KTimeZonePhase ph = phase(utcDateTime);
+    if (!ph.isValid())
+        return false;
+    return ph.isDst();
 }
 
 bool KTimeZone::isDst(time_t t) const
 {
-    if (t == (time_t)-1)    // check for invalid time
-        return false;
-    return false;
+    return isDstAtUtc(fromTime_t(t));
 }
 
 QDateTime KTimeZone::fromTime_t(time_t t)
 {
-    if (t < 0)
-      return QDateTime();
-    QDateTime utc;
-    utc.setTimeSpec(Qt::UTC);
-    utc.setTime_t(static_cast<uint>(t));
-    return utc;
+    static QDate epochDate(1970,1,1);
+    static QTime epochTime(0,0,0);
+    int secs = (t >= 0) ? t % 86400 : -(-t % 86400);
+    return QDateTime(epochDate.addDays(t / 86400), epochTime.addSecs(secs), Qt::UTC);
 }
 
 time_t KTimeZone::toTime_t(const QDateTime &utcDateTime)
@@ -510,15 +563,276 @@ KTimeZoneData *KTimeZoneSource::parse(const KTimeZone *) const
 
 /******************************************************************************/
 
+class KTimeZonePhasePrivate
+{
+    public:
+	bool setStarts(const QList<QDateTime> &st);
+        QList<QDateTime> starts;         // UTC start times of this type
+        QByteArray       abbreviations;  // time zone abbreviations (zero-delimited)
+        QString          comment;        // optional comment
+        int              utcOffset;      // seconds to add to UTC
+        bool             dst;            // true if daylight savings time
+};
+
+bool KTimeZonePhasePrivate::setStarts(const QList<QDateTime> &st)
+{
+    for (int i = 0, end = st.count();  i < end;  ++i)
+    {
+        if (st[i].timeSpec() != Qt::UTC)
+        {
+            kError() << "KTimeZonePhase::KTimeZonePhase(): non-UTC start time specified" << endl;
+            return false;    // invalid if any start times are not UTC
+        }
+    }
+    starts = st;
+    qSort(starts);
+    return true;
+}
+
+
+KTimeZonePhase::KTimeZonePhase()
+  : d(new KTimeZonePhasePrivate)
+{
+}
+
+KTimeZonePhase::KTimeZonePhase(const QList<QDateTime> &starts, int utcOffset,
+                               const QByteArray &abbrevs, bool dst, const QString &cmt)
+  : d(new KTimeZonePhasePrivate)
+{
+    if (!d->setStarts(starts))
+        return;
+    d->abbreviations = abbrevs;
+    d->comment       = cmt;
+    d->utcOffset     = utcOffset;
+    d->dst           = dst;
+}
+
+KTimeZonePhase::KTimeZonePhase(const QList<QDateTime> &starts, int utcOffset,
+                               const QList<QByteArray> &abbrevs, bool dst, const QString &cmt)
+  : d(new KTimeZonePhasePrivate)
+{
+    if (!d->setStarts(starts))
+        return;
+    for (int i = 0, end = abbrevs.count();  i < end;  ++i)
+    {
+        d->abbreviations += abbrevs[i];
+        d->abbreviations += '\0';
+    }
+    d->comment   = cmt;
+    d->utcOffset = utcOffset;
+    d->dst       = dst;
+}
+
+KTimeZonePhase::KTimeZonePhase(const KTimeZonePhase &c)
+  : d(new KTimeZonePhasePrivate)
+{
+    d->starts        = c.d->starts;
+    d->abbreviations = c.d->abbreviations;
+    d->comment       = c.d->comment;
+    d->utcOffset     = c.d->utcOffset;
+    d->dst           = c.d->dst;
+}
+
+KTimeZonePhase::~KTimeZonePhase()
+{
+    delete d;
+}
+
+KTimeZonePhase &KTimeZonePhase::operator=(const KTimeZonePhase &c)
+{
+    d->starts        = c.d->starts;
+    d->abbreviations = c.d->abbreviations;
+    d->comment       = c.d->comment;
+    d->utcOffset     = c.d->utcOffset;
+    d->dst           = c.d->dst;
+    return *this;
+}
+
+bool KTimeZonePhase::isValid() const
+{
+    return !d->starts.isEmpty();
+}
+
+QList<QDateTime> KTimeZonePhase::starts() const
+{
+    return d->starts;
+}
+
+QDateTime KTimeZonePhase::start(int index) const
+{
+    if (index < 0  ||  index >= d->starts.count())
+        return QDateTime();
+    return d->starts[index];
+}
+
+int KTimeZonePhase::utcOffset() const
+{
+    return d->utcOffset;
+}
+
+QList<QByteArray> KTimeZonePhase::abbreviations() const
+{
+    return d->abbreviations.split('0');
+}
+
+bool KTimeZonePhase::isDst() const
+{
+    return d->dst;
+}
+
+QString KTimeZonePhase::comment() const
+{
+    return d->comment;
+}
+
+QDateTime KTimeZonePhase::nextStartTime(const QDateTime &dt) const
+{
+    QDateTime utc = dt;
+    if (dt.timeSpec() == Qt::LocalTime)
+    {
+        // Find the equivalent UTC time in this time zone phase
+        utc.setTimeSpec(Qt::UTC);
+        utc = utc.addSecs(-d->utcOffset);
+    }
+
+    for (int i = 0, end = d->starts.count();  i < end;  ++i)
+    {
+        if (utc < d->starts[i])
+            return d->starts[i];
+    }
+    return QDateTime();
+}
+
+QDateTime KTimeZonePhase::previousStartTime(const QDateTime &dt) const
+{
+    QDateTime utc = dt;
+    if (dt.timeSpec() == Qt::LocalTime)
+    {
+        // Find the equivalent UTC time in this time zone phase
+        utc.setTimeSpec(Qt::UTC);
+        utc = utc.addSecs(-d->utcOffset);
+    }
+
+    for (int i = d->starts.count();  --i >= 0;  )
+    {
+        if (utc >= d->starts[i])
+            return d->starts[i];
+    }
+    return QDateTime();
+}
+
+
+/******************************************************************************/
+
+class KTimeZoneLeapSecondsPrivate
+{
+    public:
+        QDateTime  dt;         // UTC time when this change occurred
+        QString    comment;    // optional comment
+        int        seconds;    // number of leap seconds
+};
+
+
+KTimeZoneLeapSeconds::KTimeZoneLeapSeconds()
+  : d(new KTimeZoneLeapSecondsPrivate)
+{
+}
+
+KTimeZoneLeapSeconds::KTimeZoneLeapSeconds(const QDateTime &utc, int leap, const QString &cmt)
+  : d(new KTimeZoneLeapSecondsPrivate)
+{
+    if (utc.timeSpec() == Qt::UTC)   // invalid if start time is not UTC
+    {
+        d->dt      = utc;
+        d->comment = cmt;
+        d->seconds = leap;
+    }
+}
+
+KTimeZoneLeapSeconds::KTimeZoneLeapSeconds(const KTimeZoneLeapSeconds &c)
+  : d(new KTimeZoneLeapSecondsPrivate)
+{
+    d->dt      = c.d->dt;
+    d->comment = c.d->comment;
+    d->seconds = c.d->seconds;
+}
+
+KTimeZoneLeapSeconds::~KTimeZoneLeapSeconds()
+{
+    delete d;
+}
+
+KTimeZoneLeapSeconds &KTimeZoneLeapSeconds::operator=(const KTimeZoneLeapSeconds &c)
+{
+    d->dt      = c.d->dt;
+    d->comment = c.d->comment;
+    d->seconds = c.d->seconds;
+    return *this;
+}
+
+bool KTimeZoneLeapSeconds::operator<(const KTimeZoneLeapSeconds& c) const
+{
+    return d->dt < c.d->dt;
+}
+
+QDateTime KTimeZoneLeapSeconds::dateTime() const
+{
+    return d->dt;
+}
+
+bool KTimeZoneLeapSeconds::isValid() const
+{
+    return d->dt.isValid();
+}
+
+int KTimeZoneLeapSeconds::leapSeconds() const
+{
+    return d->seconds;
+}
+
+QString KTimeZoneLeapSeconds::comment() const
+{
+    return d->comment;
+}
+
+
+/******************************************************************************/
+
+class KTimeZoneDataPrivate
+{
+    public:
+        QList<KTimeZonePhase> phases;
+        QList<KTimeZoneLeapSeconds> leapChanges;
+};
+
+
+
 KTimeZoneData::KTimeZoneData()
+  : d(new KTimeZoneDataPrivate)
 { }
 
+KTimeZoneData::KTimeZoneData(const KTimeZoneData &c)
+  : d(new KTimeZoneDataPrivate)
+{
+    d->phases      = c.d->phases;
+    d->leapChanges = c.d->leapChanges;
+}
+
 KTimeZoneData::~KTimeZoneData()
-{ }
+{
+    delete d;
+}
+
+KTimeZoneData &KTimeZoneData::operator=(const KTimeZoneData &c)
+{
+    d->phases      = c.d->phases;
+    d->leapChanges = c.d->leapChanges;
+    return *this;
+}
 
 KTimeZoneData *KTimeZoneData::clone()
 {
-    return new KTimeZoneData;
+    return new KTimeZoneData(*this);
 }
 
 QList<QByteArray> KTimeZoneData::abbreviations() const
@@ -528,9 +842,17 @@ QList<QByteArray> KTimeZoneData::abbreviations() const
     return abbrs;
 }
 
-QByteArray KTimeZoneData::abbreviation(const QDateTime &) const
+QByteArray KTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
 {
-    return "UTC";
+    if (d->phases.isEmpty())
+        return "UTC";
+    KTimeZonePhase ph = phase(utcDateTime);
+    if (!ph.isValid())
+        return QByteArray();
+    QList<QByteArray> abbrevs = ph.abbreviations();
+    if (abbrevs.isEmpty())
+        return QByteArray();
+    return abbrevs[0];
 }
 
 QList<int> KTimeZoneData::utcOffsets() const
@@ -538,6 +860,198 @@ QList<int> KTimeZoneData::utcOffsets() const
     QList<int> offsets;
     offsets.append(0);
     return offsets;
+}
+
+QList<KTimeZonePhase> KTimeZoneData::phases() const
+{
+    return d->phases;
+}
+
+void KTimeZoneData::setPhases(const QList<KTimeZonePhase> &phases)
+{
+    d->phases = phases;
+}
+
+KTimeZonePhase KTimeZoneData::phase(const QDateTime &dt, KTimeZonePhase *secondPhase) const
+{
+    KTimeZonePhase *phase = 0;
+    KTimeZonePhase *phasePrev = 0;
+    QDateTime latest, previous;
+
+    /* Find the phase with the latest start date at or before dt,
+     * and the previous latest start date in any other phase.
+     * This is to cater for the possibility that there could be
+     * extra start dates for one phase during a period when the
+     * other phase does not occur at all (see below).
+     */
+    for (int i = 0, end = d->phases.count();  i < end;  ++i)
+    {
+        QDateTime t = d->phases[i].previousStartTime(dt);
+        if (!t.isNull())
+        {
+            if (latest.isNull() || t > latest)
+            {
+                previous = latest;
+                phasePrev = phase;
+                latest = t;
+                phase = &d->phases[i];
+            }
+            else if (previous.isNull() || t > previous)
+            {
+                previous = t;
+                phasePrev = &d->phases[i];
+            }
+        }
+    }
+
+    if (!phase)
+    {
+        if (secondPhase)
+            *secondPhase = KTimeZonePhase();
+        return KTimeZonePhase();
+    }
+
+    /*
+     * Find the actual start of the phase with the latest start date.
+     * If other phase(s) didn't occur in the year beforehand, the phase
+     * could in effect have started at a previous recurrence.
+     *
+     * For example, if the phase start dates were the following:
+     *    1 October 1969   Standard
+     *    1 April 1970     Daylight
+     *    1 October 1970   Standard
+     *    1 October 1971   Standard
+     *    1 April 1972     Daylight
+     * Here, there was no daylight savings time in 1971. So the start of
+     * the phase in operation on 1 January 1972 would actually be
+     * 1 October 1970, not 1 October 1971.
+     */
+    if (!previous.isNull())
+        latest = phase->nextStartTime(previous);   // find the first date after the other phase
+    else
+        latest = phase->start(0);   // no other phase, so use the phase's earliest date
+
+    /* Check if it's a local time which occurs both before and after the 'latest'
+     * phase start time (for which it has to span a daylight savings to standard
+     * time change).
+     */
+    bool duplicate = true;
+    if (dt.timeSpec() == Qt::LocalTime  &&  phasePrev)
+    {
+        int phaseDiff = phasePrev->utcOffset() - phase->utcOffset();
+        if (phaseDiff > 0)
+        {
+            // Find how long after the start of the latest phase 'dt' is
+            QDateTime utc = dt;
+            utc.setTimeSpec(Qt::UTC);
+            int afterStart = latest.secsTo(utc) - phase->utcOffset();
+            if (afterStart < phaseDiff)
+            {
+                // 'dt' occurs twice
+                if (secondPhase)
+                {
+                    QList<QDateTime> times;
+                    times += latest;
+                    *secondPhase = KTimeZonePhase(times, phase->utcOffset(), phase->abbreviations(), phase->isDst(), phase->comment());
+                    duplicate = false;
+                }
+                // Get the phase containing the first occurrence of 'dt'
+                phase = phasePrev;
+                latest = previous;
+
+                // Find which phase preceded the phase in which the first
+                // occurrence of 'dt' falls.
+                previous = QDateTime();
+                for (int i = 0, end = d->phases.count();  i < end;  ++i)
+                {
+                    if (phase != &d->phases[i])
+                    {
+                        QDateTime t = d->phases[i].previousStartTime(latest);
+                        if (!t.isNull()  &&  (previous.isNull() || t > previous))
+                            previous = t;
+                    }
+                }
+                if (!previous.isNull())
+                    latest = phase->nextStartTime(previous);   // find the first date after the other phase
+                else
+                    latest = phase->start(0);   // no other phase, so use the phase's earliest date
+            }
+        }
+    }
+
+    QList<QDateTime> times;
+    times += latest;
+    KTimeZonePhase result(times, phase->utcOffset(), phase->abbreviations(), phase->isDst(), phase->comment());
+    if (secondPhase  &&  duplicate)
+        *secondPhase = result;
+    return result;
+}
+
+KTimeZonePhase KTimeZoneData::nextPhase(const QDateTime &dt) const
+{
+    KTimeZonePhase *phase = 0;
+    QDateTime start;
+    for (int i = 0, end = d->phases.count();  i < end;  ++i)
+    {
+        QDateTime st = d->phases[i].nextStartTime(dt);
+        if (st.isValid()  &&  (!phase  ||  st < start))
+        {
+            start = st;
+            phase = &d->phases[i];
+        }
+    }
+
+    if (!phase)
+        return KTimeZonePhase();
+    QList<QDateTime> times;
+    times += start;
+    return KTimeZonePhase(times, phase->utcOffset(), phase->abbreviations(), phase->isDst(), phase->comment());
+}
+
+KTimeZonePhase KTimeZoneData::previousPhase(const QDateTime &dt) const
+{
+    KTimeZonePhase *phase = 0;
+    QDateTime start;
+    for (int i = 0, end = d->phases.count();  i < end;  ++i)
+    {
+        QDateTime st = d->phases[i].previousStartTime(dt);
+        if (st.isValid()  &&  (!phase  ||  st > start))
+        {
+            start = st;
+            phase = &d->phases[i];
+        }
+    }
+
+    if (!phase)
+        return KTimeZonePhase();
+    QList<QDateTime> times;
+    times += start;
+    return KTimeZonePhase(times, phase->utcOffset(), phase->abbreviations(), phase->isDst(), phase->comment());
+}
+
+QList<KTimeZoneLeapSeconds> KTimeZoneData::leapSecondChanges() const
+{
+    return d->leapChanges;
+}
+
+void KTimeZoneData::setLeapSecondChanges(const QList<KTimeZoneLeapSeconds> &adjusts)
+{
+    d->leapChanges = adjusts;
+}
+
+KTimeZoneLeapSeconds KTimeZoneData::leapSecondChange(const QDateTime &utc) const
+{
+    if (utc.timeSpec() != Qt::UTC)
+        kError() << "KTimeZoneData::leapSecondChange(): non-UTC time specified" << endl;
+    else
+    {
+        for (int i = d->leapChanges.count();  --i >= 0;  )
+        {
+            if (d->leapChanges[i].dateTime() < utc)
+                return d->leapChanges[i];
+        }
+    }
+    return KTimeZoneLeapSeconds();
 }
 
 
@@ -1184,6 +1698,9 @@ KTimeZoneData* KSystemTimeZoneSource::parse(const KTimeZone *zone) const
     data->d->TZ = tz;
     data->d->abbreviations.append(tzname[0]);
     data->d->abbreviations.append(tzname[1]);
+
+    // There is no easy means to access the sequence of daylight savings time
+    // changes, or leap seconds adjustments, so leave that data empty.
 
     KSystemTimeZoneSourcePrivate::restoreTZ();   // restore the original local time zone if necessary
     return data;

@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -28,11 +28,11 @@
 #define _KTIMEZONES_H
 
 #include <ctime>
-#include <QDateTime>
-#include <QMap>
-#include <QList>
-#include <QString>
-#include <QByteArray>
+#include <QtCore/QDateTime>
+#include <QtCore/QMap>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QByteArray>
 #include "kdelibs_export.h"
 
 class KTimeZone;
@@ -46,6 +46,8 @@ class KSystemTimeZonePrivate;
 class KSystemTimeZonesPrivate;
 class KSystemTimeZoneSourcePrivate;
 class KSystemTimeZoneDataPrivate;
+class KTimeZonePhasePrivate;
+class KTimeZoneLeapSecondsPrivate;
 
 /** @defgroup timezones Time zone classes
  *
@@ -79,6 +81,10 @@ class KSystemTimeZoneDataPrivate;
  * definition, it calls KTimeZoneSource::parse() and receives the data back in a
  * KTimeZoneData object which it keeps for reference.
  *
+ * KTimeZoneData holds the sequence of daylight savings time changes in
+ * KTimeZonePhase objects, and leap seconds adjustments in KTimeZoneLeapSeconds
+ * objects. You can access this data directly via KTimeZone methods if required.
+ *
  * The mapping of the different classes to external data is as follows:
  *
  * - Each different source data format or access method is represented by a
@@ -90,7 +96,8 @@ class KSystemTimeZoneDataPrivate;
  *   times and offsets from UTC. Others provide information on leap second
  *   adjustments, while still others might contain information on which countries
  *   use the time zone. To allow for this variation, KTimeZoneData is made
- *   available for inheritance.
+ *   available for inheritance. When the necessary information is not available,
+ *   the KTimeZonePhase and KTimeZoneLeapSeconds data will be empty.
  *
  * - Each KTimeZoneData class will have a corresponding KTimeZone class which
  *   can interpret its data.
@@ -125,9 +132,9 @@ class KSystemTimeZoneDataPrivate;
  * files, which are used to form the time zone database on UNIX systems. Usually,
  * for current information, it is easier to use the KSystemTimeZones class to
  * access system tzfile data. However, for dealing with past data the
- * KTzfileTimeZone class provides better guarantees of accurary. It also
- * provides more detailed information, and allows you to read non-system tzfile
- * files.
+ * KTzfileTimeZone class provides better guarantees of accurary, although it
+ * cannot handle dates earlier than 1970. It also provides more detailed
+ * information, and allows you to read non-system tzfile files.
  *
  * KTzfileTimeZone uses the KTzfileTimeZoneSource and KTzfileTimeZoneData classes
  * to obtain time zone data from tzfile files.
@@ -171,9 +178,11 @@ class KSystemTimeZoneDataPrivate;
  *     QString zoneName = zone->name();
  *     ExistingTimeZoneData* data = new ExistingTimeZoneData();
  *
- *     // Read the data for 'zoneName' from the new data source
+ *     // Read the data for 'zoneName' from the new data source.
  *
- *     // Parse what we have read, and write it into 'data'
+ *     // Parse what we have read, and write it into 'data'.
+ *     // Compile the sequence of daylight savings changes and leap
+ *     // seconds adjustments (if available) and write into 'data'.
  *
  *     return data;
  * }
@@ -354,6 +363,173 @@ private:
 };
 
 
+/*
+ * Time zone phase.
+ *
+ * A phase can be daylight savings time or standard time. Each instance
+ * contains a list of start date/time values for the phase, in time
+ * order. Typically, this will be one date/time per year during the period
+ * when the phase is in operation. It is permissible to have gaps in the
+ * start date/time sequence corresponding to years when the phase was not
+ * used.
+ *
+ * @short Time zone phase
+ * @see KTimeZone, KTimeZoneData
+ * @ingroup timezones
+ * @author David Jarvie <software@astrojar.org.uk>.
+ */
+class KDECORE_EXPORT KTimeZonePhase
+{
+public:
+    KTimeZonePhase();
+
+    /**
+     * Constructor.
+     *
+     * @param utcStarts list of UTC start times for the phase
+     * @param utcOffset number of seconds to add to UTC to get local time in this phase
+     * @param abbreviations time zone abbreviation for this phase. If translations exist,
+     *                      concatenate all abbreviations as null-terminated strings.
+     * @param dst true if daylight savings time, false if standard time
+     * @param comment optional comment
+     */
+    KTimeZonePhase(const QList<QDateTime> &utcStarts, int utcOffset, const QByteArray &abbreviations,
+                   bool dst, const QString &comment = QString());
+    KTimeZonePhase(const QList<QDateTime> &utcStarts, int utcOffset, const QList<QByteArray> &abbreviations,
+                   bool dst, const QString &comment = QString());
+    KTimeZonePhase(const KTimeZonePhase &c);
+    ~KTimeZonePhase();
+    KTimeZonePhase &operator=(const KTimeZonePhase &c);
+
+    /**
+     * Return whether this instance holds valid data.
+     *
+     * @return true if valid, false if invalid
+     */
+    bool isValid() const;
+
+    /**
+     * Return the UTC times when this daylight savings phase started.
+     *
+     * @return ordered list of times, earliest first
+     */
+    QList<QDateTime> starts() const;
+
+    /**
+     * Return one UTC date/time when this daylight savings phase started.
+     *
+     * @param index desired index into start times array
+     * @return date/time
+     */
+    QDateTime start(int index) const;
+
+    /**
+     * Return the UTC offset in seconds during this phase.
+     *
+     * @return offset in seconds to add to UTC
+     */
+    int utcOffset() const;
+
+    /**
+     * Return the time zone abbreviations which apply to this phase.
+     *
+     * More than one abbreviation may be returned, to allow for possible translations.
+     *
+     * @return time zone abbreviations
+     */
+    QList<QByteArray> abbreviations() const;
+
+    /**
+     * Return whether daylight savings time applies during this phase.
+     *
+     * @return true if daylight savings are in operation, false otherwise
+     */
+    bool isDst() const;
+
+    /**
+     * Return the comment (if any) applying to this phase.
+     *
+     * @return comment
+     */
+    QString comment() const;
+
+    /**
+     * Find the first start time strictly after a given UTC or local time.
+     *
+     * @param dt date/time. If it is local time, this is interpreted as being
+     *           in the time zone to which the instance belongs.
+     * @return UTC date/time, or invalid if none
+     */
+    QDateTime nextStartTime(const QDateTime &dt) const;
+
+    /**
+     * Find the last start time, at or before a given UTC or local time.
+     *
+     * @param dt date/time. If it is a local time, this is interpreted as being
+     *           in the time zone to which the instance belongs.
+     * @return UTC date/time, or invalid if none
+     */
+    QDateTime previousStartTime(const QDateTime &dt) const;
+
+private:
+    KTimeZonePhasePrivate *d;
+};
+
+
+/*
+ * Leap seconds adjustment for a time zone.
+ *
+ * This class defines a leap seconds adjustment for a time zone by its UTC time of
+ * occurrence and the number of leap seconds to be added.
+ *
+ * @short Leap seconds adjustment for a time zone
+ * @see KTimeZone, KTimeZoneData
+ * @ingroup timezones
+ * @author David Jarvie <software@astrojar.org.uk>.
+ */
+class KDECORE_EXPORT KTimeZoneLeapSeconds
+{
+public:
+    KTimeZoneLeapSeconds();
+    KTimeZoneLeapSeconds(const QDateTime &utcTime, int leapSeconds, const QString &comment = QString());
+    KTimeZoneLeapSeconds(const KTimeZoneLeapSeconds &c);
+    ~KTimeZoneLeapSeconds();
+    KTimeZoneLeapSeconds &operator=(const KTimeZoneLeapSeconds &c);
+    bool operator<(const KTimeZoneLeapSeconds &c) const;    // needed by qSort()
+
+    /**
+     * Return whether this instance holds valid data.
+     *
+     * @return true if valid, false if invalid
+     */
+    bool isValid() const;
+
+    /**
+     * Return the UTC date/time when this change occurred.
+     *
+     * @return date/time
+     */
+    QDateTime dateTime() const;
+
+    /**
+     * Return the number of leap seconds to be added after this change occurs.
+     *
+     * @return number of leap seconds
+     */
+    int leapSeconds() const;
+
+    /**
+     * Return the comment (if any) applying to this change.
+     *
+     * @return comment
+     */
+    QString comment() const;
+
+private:
+    KTimeZoneLeapSecondsPrivate *d;
+};
+
+
 /**
  * Base class representing a time zone.
  *
@@ -523,8 +699,6 @@ public:
      * The offset is the number of seconds which you must add to UTC to get
      * local time in this time zone.
      *
-     * The base class implementation always returns 0.
-     *
      * @param zoneDateTime the date/time at which the offset is to be calculated. This
      *                     is interpreted as a local time in this time zone. An error
      *                     occurs if @p zoneDateTime.timeSpec() is not Qt::LocalTime.
@@ -542,11 +716,10 @@ public:
      * The offset is the number of seconds which you must add to UTC to get
      * local time in this time zone.
      *
-     * The base class implementation always returns 0. Derived classes should always
-     * reimplement both this method and offset(). If the derived class needs to work
-     * in terms of time_t (as when accessing the system time functions, for example),
-     * it should implement its offset calculations in offset() and reimplement this
-     * method simply as
+     * If a derived class needs to work in terms of time_t (as when accessing the
+     * system time functions, for example), it should override both this method and
+     * offset() so as to implement its offset calculations in offset(), and
+     * reimplement this method simply as
      * \code
      *     offset(toTime_t(utcDateTime));
      * \endcode
@@ -566,15 +739,6 @@ public:
      * Note that time_t has a more limited range than QDateTime, so consider using
      * offsetAtUtc() instead.
      *
-     * The base class implementation always returns 0. Derived classes should always
-     * reimplement both this method and offsetAtUtc(). If the derived class can work
-     * in terms of QDateTime rather than time_t, it should implement its offset
-     * calculations in offsetAtUtc() and reimplement this
-     * method simply as
-     * \code
-     *     offsetAtUtc(fromTime_t(t));
-     * \endcode
-     *
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
      *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
      * @return offset in seconds, or 0 if error
@@ -584,11 +748,10 @@ public:
     /**
      * Returns whether daylight savings time is in operation at the given UTC date/time.
      *
-     * The base class implementation always returns false. Derived classes should always
-     * reimplement both this method and isDst(). If the derived class needs to work
-     * in terms of time_t (as when accessing the system time functions, for example),
-     * it should implement its offset calculations in isDst() and reimplement this
-     * method simply as
+     * If a derived class needs to work in terms of time_t (as when accessing the
+     * system time functions, for example), it should override both this method and
+     * isDst() so as to implement its offset calculations in isDst(), and reimplement
+     * this method simply as
      * \code
      *     isDst(toTime_t(utcDateTime));
      * \endcode
@@ -605,20 +768,71 @@ public:
      * Note that time_t has a more limited range than QDateTime, so consider using
      * isDstAtUtc() instead.
      *
-     * The base class implementation always returns false. Derived classes should always
-     * reimplement both this method and isDstAtUtc(). If the derived class can work
-     * in terms of QDateTime rather than time_t, it should implement its offset
-     * calculations in isDstAtUtc() and reimplement this
-     * method simply as
-     * \code
-     *     isDstAtUtc(fromTime_t(t));
-     * \endcode
-     *
      * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
      *          (as returned by time(2))
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
     virtual bool isDst(time_t t) const;
+
+    /**
+     * Return all daylight savings time phases for the time zone.
+     *
+     * Note that some time zone data sources (such as system time zones accessed
+     * via the system libraries) may not allow a list of daylight savings time
+     * changes to be compiled easily. In such cases, this method will return an
+     * empty list.
+     *
+     * @return list of phases
+     */
+    QList<KTimeZonePhase> phases() const;
+
+    /**
+     * Find the daylight savings time phase which is current at a given UTC or
+     * local time.
+     * Because of daylight savings time shifts, a local time may occur twice. Optionally,
+     * the phases current at both occurrences of @p dt are calculated.
+     *
+     * @param dt date/time
+     * @param secondPhase if non-null, and the @p dt occurs twice, receives the
+     *                     phase for the second occurrence. Otherwise, it is set
+     *                     the same as the return value.
+     * @return daylight savings time phase with a single start date/time, or
+     *         invalid if @p dt is outside the defined range of the phase data
+     */
+    KTimeZonePhase phase(const QDateTime &dt, KTimeZonePhase *secondPhase = 0) const;
+
+    /**
+     * Find the first daylight savings time phase strictly after a given UTC or
+     * local time.
+     *
+     * @param dt date/time. If it is local time, this is interpreted as being
+     *           in the time zone to which the KTimeZoneChanges instance belongs.
+     * @return daylight savings time phase with a single start date/time, or
+     *         invalid if none
+     */
+    KTimeZonePhase nextPhase(const QDateTime &dt) const;
+
+    /**
+     * Find the last daylight savings time phase, at or before a given UTC or
+     * local time.
+     *
+     * @param dt date/time. If it is local time, this is interpreted as being
+     *           in the time zone to which the KTimeZoneChanges instance belongs.
+     * @return daylight savings time phase with a single start date/time, or
+     *         invalid if none
+     */
+    KTimeZonePhase previousPhase(const QDateTime &dt) const;
+
+    /**
+     * Return all leap second adjustments, in time order.
+     *
+     * Note that some time zone data sources (such as system time zones accessed
+     * via the system libraries) may not provide information on leap second
+     * adjustments. In such cases, this method will return an empty list.
+     *
+     * @return list of adjustments
+     */
+    QList<KTimeZoneLeapSeconds> leapSecondChanges() const;
 
     /**
      * Returns the source reader/parser for the time zone's source database.
@@ -637,8 +851,10 @@ public:
     /**
      * Converts a UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
      * (as returned by time(2)), to a UTC QDateTime value.
+     * QDateTime::setTime_t() is limited to handling @p t >= 0, since its parameter
+     * is unsigned. This method takes a parameter of time_t which is signed.
      *
-     * @return converted time, or QDateTime() if @p t < 0
+     * @return converted time
      */
     static QDateTime fromTime_t(time_t t);
 
@@ -741,6 +957,10 @@ public:
 /**
  * Base class for the parsed data returned by a KTimeZoneSource class.
  *
+ * It contains all the data available from the KTimeZoneSource class,
+ * including, when available, a complete list of daylight savings time
+ * changes and leap seconds adjustments.
+ *
  * This base class can be instantiated, but contains no data.
  *
  * @short Base class for parsed time zone data
@@ -752,7 +972,9 @@ class KDECORE_EXPORT KTimeZoneData
 {
 public:
     KTimeZoneData();
+    KTimeZoneData(const KTimeZoneData &c);
     virtual ~KTimeZoneData();
+    KTimeZoneData &operator=(const KTimeZoneData &c);
 
     /**
      * Creates a new copy of this object.
@@ -765,7 +987,8 @@ public:
     virtual KTimeZoneData *clone();
 
     /**
-     * Returns the complete list of time zone abbreviations.
+     * Returns the complete list of time zone abbreviations. This may include
+     * translations.
      *
      * @return the list of abbreviations.
      *         In this base class, it consists of the single string "UTC".
@@ -791,6 +1014,90 @@ public:
      *         In this base class, it consists of the single value 0.
      */
     virtual QList<int> utcOffsets() const;
+
+    /**
+     * Return all daylight savings time phases.
+     *
+     * Note that some time zone data sources (such as system time zones accessed
+     * via the system libraries) may not allow a list of daylight savings time
+     * changes to be compiled easily. In such cases, this method will return an
+     * empty list.
+     *
+     * @return list of phases
+     */
+    QList<KTimeZonePhase> phases() const;
+
+    /**
+     * Find the daylight savings time phase which is current at a given UTC or
+     * local time.
+     * Because of daylight savings time shifts, a local time may occur twice. Optionally,
+     * the phases current at both occurrences of @p dt are calculated.
+     *
+     * @param dt date/time
+     * @param secondPhase if non-null, and the @p dt occurs twice, receives the
+     *                     phase for the second occurrence. Otherwise, it is set
+     *                     the same as the return value.
+     * @return daylight savings time phase with a single start date/time, or
+     *         invalid if @p dt is outside the defined range of the phase data
+     */
+    KTimeZonePhase phase(const QDateTime &dt, KTimeZonePhase *secondPhase = 0) const;
+
+    /**
+     * Find the first daylight savings time phase strictly after a given UTC or
+     * local time.
+     *
+     * @param dt date/time. If it is local time, this is interpreted as being
+     *           in the time zone to which the KTimeZoneChanges instance belongs.
+     * @return daylight savings time phase with a single start date/time, or
+     *         invalid if none
+     */
+    KTimeZonePhase nextPhase(const QDateTime &dt) const;
+
+    /**
+     * Find the last daylight savings time phase, at or before a given UTC or
+     * local time.
+     *
+     * @param dt date/time. If it is local time, this is interpreted as being
+     *           in the time zone to which the KTimeZoneChanges instance belongs.
+     * @return daylight savings time phase with a single start date/time, or
+     *         invalid if none
+     */
+    KTimeZonePhase previousPhase(const QDateTime &dt) const;
+
+    /**
+     * Return all leap second adjustments, in time order.
+     *
+     * Note that some time zone data sources (such as system time zones accessed
+     * via the system libraries) may not provide information on leap second
+     * adjustments. In such cases, this method will return an empty list.
+     *
+     * @return list of adjustments
+     */
+    QList<KTimeZoneLeapSeconds> leapSecondChanges() const;
+
+    /**
+     * Find the leap second adjustment which is applicable at a given UTC time.
+     *
+     * @param utc UTC date/time
+     * @return leap second adjustment, or invalid if @p utc is earlier than the
+     *         first leap second adjustment or @p utc is a local time
+     */
+    KTimeZoneLeapSeconds leapSecondChange(const QDateTime &utc) const;
+
+protected:
+    /**
+     * Initialise the daylight savings time phase list.
+     *
+     * @param phases list of phases
+     */
+    void setPhases(const QList<KTimeZonePhase> &phases);
+
+    /**
+     * Initialise the leap seconds adjustment list.
+     *
+     * @param adjusts list of adjustments
+     */
+    void setLeapSecondChanges(const QList<KTimeZoneLeapSeconds> &adjusts);
 
 private:
     KTimeZoneDataPrivate *d;

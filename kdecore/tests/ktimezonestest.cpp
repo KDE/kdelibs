@@ -279,8 +279,8 @@ void KTimeZonesTest::tzfileOffsetAtZoneTime()
     int offset2;
     QCOMPARE(london->offsetAtZoneTime(aGmt, &offset2), 0);
     QCOMPARE(offset2, 0);
-    QCOMPARE(london->offsetAtZoneTime(aInvalid, &offset2), 3600);
-    QCOMPARE(offset2, 3600);
+    QCOMPARE(london->offsetAtZoneTime(aInvalid, &offset2), 0);
+    QCOMPARE(offset2, 0);
     QCOMPARE(london->offsetAtZoneTime(aBst, &offset2), 3600);
     QCOMPARE(offset2, 3600);
     QCOMPARE(london->offsetAtZoneTime(bBst, &offset2), 3600);

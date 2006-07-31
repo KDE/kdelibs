@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,10 +25,10 @@
 #ifndef _KTZFILETIMEZONE_H
 #define _KTZFILETIMEZONE_H
 
-#include <QDateTime>
-#include <QList>
-#include <QString>
-#include <QByteArray>
+#include <QtCore/QDateTime>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QByteArray>
 #include "kdelibs_export.h"
 #include <ktimezones.h>
 
@@ -51,14 +51,6 @@ class KTzfileTimeZoneSourcePrivate;
 class KDECORE_EXPORT KTzfileTimeZone : public KTimeZone
 {
 public:
-    /** Time adjustment details */
-    struct Adjustment
-    {
-        int        utcOffset;   /**< Number of seconds to be added to UTC. */
-        bool       isDst;       /**< Whether tm_isdst should be set by localtime(3). */
-        QByteArray abbrev;      /**< Time zone abbreviation. */
-    };
-
     /**
      * Creates a time zone.
      *
@@ -74,74 +66,6 @@ public:
         const QString &comment = QString());
 
     ~KTzfileTimeZone();
-
-    /**
-     * Returns the offset of this time zone to UTC at the given local date/time.
-     * Because of daylight savings time shifts, the date/time may occur twice. Optionally,
-     * the offsets at both occurrences of @p dateTime are calculated.
-     *
-     * @param zoneDateTime the date/time at which the offset is to be calculated. This
-     *                     is interpreted as a local time in this time zone. An error
-     *                     occurs if @p zoneDateTime.timeSpec() is not Qt::LocalTime.
-     * @param secondOffset if non-null, and the @p zoneDateTime occurs twice, receives the
-     *                     UTC offset for the second occurrence. Otherwise, it is set
-     *                     the same as the return value.
-     * @return offset in seconds. If @p zoneDateTime occurs twice, it is the offset at the
-     *         first occurrence which is returned.
-     */
-    virtual int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset) const;
-
-    /**
-     * Returns the offset of this time zone to UTC at the given UTC date/time.
-     *
-     * Note that tzfile times are represented by a 4-byte signed value. An error occurs
-     * if the date falls outside the range supported by time_t.
-     *
-     * @param utcDateTime the UTC date/time at which the offset is to be calculated.
-     *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
-     * @return offset in seconds, or 0 if error
-     */
-    virtual int offsetAtUtc(const QDateTime &utcDateTime) const;
-
-    /**
-     * Returns the offset of this time zone to UTC at a specified UTC time.
-     *
-     * @param t the UTC time at which the offset is to be calculated, measured in seconds
-     *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
-     * @return offset in seconds, or 0 if error
-     */
-    virtual int offset(time_t t) const;
-
-    /**
-     * Returns whether daylight savings time is in operation at the given UTC date/time.
-     *
-     * Note that tzfile times are represented by a 4-byte signed value. An error occurs
-     * if the date falls outside the range supported by time_t.
-     *
-     * @param utcDateTime the UTC date/time. An error occurs if
-     *                    @p utcDateTime.timeSpec() is not Qt::UTC.
-     * @return @c true if daylight savings time is in operation, @c false otherwise
-     */
-    virtual bool isDstAtUtc(const QDateTime &utcDateTime) const;
-
-    /**
-     * Returns whether daylight savings time is in operation at a specified UTC time.
-     *
-     * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
-     *          (as returned by time(2))
-     * @return @c true if daylight savings time is in operation, @c false otherwise
-     */
-    virtual bool isDst(time_t t) const;
-
-    /**
-     * Returns time adjustment details for a given date and time.
-     *
-     * @param utcDateTime UTC date/time for which details are to be returned.
-     *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
-     * @param adjustment receives the time adjustment details
-     * @return @c true if successful, @c false if error
-     */
-    bool transitionTime(const QDateTime &utcDateTime, Adjustment &adjustment);
 
 private:
     KTzfileTimeZonePrivate *d;
@@ -221,85 +145,12 @@ public:
      */
     virtual KTimeZoneData *clone();
 
-    /** Details of a change in the rules for computing local time. */
-    struct TransitionTime
-    {
-        qint32 time;             /**< Time (as returned by time(2)) at which the rules for computing local time change. */
-        quint8  localTimeIndex;  /**< Index into the LocalTimeType array. */
-    };
-    /** The characteristics of a local time type. */
-    struct LocalTimeType
-    {
-        qint32 gmtoff;     /**< Number of seconds to be added to UTC. */
-        bool    isdst;      /**< Whether tm_isdst should be set by localtime(3). */
-        quint8 abbrIndex;  /**< Index into the list of time zone abbreviations. */
-    };
-    /** Details of a leap second adjustment. */
-    struct LeapSecondAdjust
-    {
-        qint32 time;          /**< Time (as returned by time(2)) at which the leap second occurs. */
-        quint32 leapSeconds;  /**< Total number of leap seconds to be applied after this time. */
-    };
-
-    /** The number of transition times in the array m_transitionTimes */
-    quint32 nTransitionTimes() const   { return m_nTransitionTimes; }
-    /** The number of local time types in the array m_localTimeTypes */
-    quint32 nLocalTimeTypes() const   { return m_nLocalTimeTypes; }
-    /** The number of leap seconds adjustments in the array m_leapSecondAdjusts */
-    quint32 nLeapSecondAdjustments() const   { return m_nLeapSecondAdjusts; }
-    /** The number of standard/wall indicators in the array m_isStandard */
-    quint32 nIsStandard() const   { return m_nIsStandard; }
-    /** The number of UTC/local indicators in the array m_isUtc */
-    quint32 nIsUtc() const   { return m_nIsUtc; }
-
-    const TransitionTime *transitionTime(int index) const;
-    const LocalTimeType *localTimeType(int index) const;
-    const LeapSecondAdjust *leapSecondAdjustment(int index) const;
-    bool isStandard(int index) const;
-    bool isUtc(int index) const;
-
-    /**
-     * Returns the m_transitionTimes details for a given UTC time.
-     *
-     * @param t UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
-     *          (as returned by time(2))
-     * @return pointer to details, or 0 if the time is before the start of data
-     */
-    const TransitionTime *getTransitionTime(time_t t) const;
-
-    /**
-     * Returns the m_localTimeTypes details for a given UTC time.
-     *
-     * @param t UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
-     *          (as returned by time(2))
-     * @return pointer to details, or 0 if the time is before the start of data
-     */
-    const LocalTimeType *getLocalTime(time_t t) const;
-
-    /**
-     * Returns the number of leap seconds to be applied after a given UTC time.
-     *
-     * @param t UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
-     *          (as returned by time(2))
-     * @return adjustment, or 0 if the time is before the start of data
-     */
-    quint32 getLeapSeconds(time_t t) const;
-
     /**
      * Returns the complete list of time zone abbreviations.
      *
      * @return the list of abbreviations
      */
     virtual QList<QByteArray> abbreviations() const;
-    virtual QByteArray abbreviation(const QDateTime &utcDateTime) const;
-
-    /**
-     * Returns the time zone abbreviation at a given index.
-     *
-     * @param index abbreviation's index, as contained in LocalTimeType's abbrIndex element
-     * @return time zone abbreviation, or empty string if invalid index
-     */
-    QByteArray abbreviation(int index) const;
 
     /**
      * Returns the complete list of UTC offsets for the time zone.
@@ -307,19 +158,6 @@ public:
      * @return the sorted list of UTC offsets
      */
     virtual QList<int> utcOffsets() const;
-
-protected:
-    quint32 m_nTransitionTimes;
-    quint32 m_nLocalTimeTypes;
-    quint32 m_nLeapSecondAdjusts;
-    quint32 m_nIsStandard;
-    quint32 m_nIsUtc;
-    TransitionTime *m_transitionTimes;
-    LocalTimeType  *m_localTimeTypes;
-    QList<QByteArray> m_abbreviations;
-    LeapSecondAdjust *m_leapSecondAdjusts;
-    bool *m_isStandard;
-    bool *m_isUtc;
 
 private:
     KTzfileTimeZoneDataPrivate *d;
