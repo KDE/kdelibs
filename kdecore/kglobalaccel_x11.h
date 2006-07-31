@@ -96,12 +96,14 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	virtual bool isEnabledInternal() const;
 	static void blockShortcuts( bool block );
 	void disableBlocking( bool disable );
+        void suspend( bool s );
 
  protected slots:
 	void slotActivated( int iAction );
  private:
 	bool m_blocked;
 	bool m_blockingDisabled;
+        bool m_suspended;
 };
 
 #endif // _KGLOBALACCEL_X11_H

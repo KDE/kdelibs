@@ -65,6 +65,9 @@ bool KGlobalAccel::isEnabled()
 void KGlobalAccel::setEnabled( bool bEnabled )
 	{ d->setEnabled( bEnabled ); }
 
+void KGlobalAccel::suspend( bool s )
+	{ d->suspend( s ); }
+
 void KGlobalAccel::blockShortcuts( bool block )
         { KGlobalAccelPrivate::blockShortcuts( block ); }
 

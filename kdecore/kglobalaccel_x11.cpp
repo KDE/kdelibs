@@ -82,6 +82,7 @@ KGlobalAccelPrivate::KGlobalAccelPrivate()
 : KAccelBase( KAccelBase::NATIVE_KEYS )
 , m_blocked( false )
 , m_blockingDisabled( false )
+, m_suspended( false )
 {
         if( all_accels == NULL )
             all_accels = new QValueList< KGlobalAccelPrivate* >;
@@ -131,6 +132,13 @@ void KGlobalAccelPrivate::disableBlocking( bool block )
 bool KGlobalAccelPrivate::isEnabledInternal() const
 {
         return KAccelBase::isEnabled() && !m_blocked;
+}
+
+// see #117169 - the bug is hard to reproduce, probably somewhere in X, testcase would be probably
+// difficult to make, and so on - just don't release the grabs and only ignore the events instead
+void KGlobalAccelPrivate::suspend( bool s )
+{
+	m_suspended = s;
 }
 
 bool KGlobalAccelPrivate::emitSignal( Signal )
@@ -267,7 +275,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
                 XFlush( qt_xdisplay()); // avoid X(?) bug
         }
 
-	if( !isEnabledInternal())
+	if( !isEnabledInternal() || m_suspended )
 		return false;
 
 	CodeMod codemod;
@@ -317,6 +325,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 #endif
 		return false;
 	}
+        
 	KAccelAction* pAction = m_rgCodeModToAction[codemod];
 
 	if( !pAction ) {

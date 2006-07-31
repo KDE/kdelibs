@@ -215,6 +215,12 @@ class KDECORE_EXPORT KGlobalAccel : public QObject
          * @internal
          */
         void disableBlocking( bool disable );
+        
+        /**
+         * @internal
+         */
+        // like setEnabled(), but doesn't ungrab (see in KGlobalAccelPrivate)
+        void suspend( bool s );
 
 private:
 
