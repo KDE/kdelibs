@@ -129,7 +129,7 @@ bool KSSL::TLSInit() {
 		return false;
 
 	if (m_bAutoReconfig)
-	m_cfg->load();
+		m_cfg->load();
 
 	if (!m_cfg->tlsv1())
 		return false;
@@ -160,6 +160,9 @@ return false;
 bool KSSL::initialize() {
 #ifdef KSSL_HAVE_SSL
 	kdDebug(7029) << "KSSL initialize" << endl;
+	if (m_cfg->tlsv1())
+		return TLSInit();
+
 	if (m_bInit)
 		return false;
 
@@ -499,6 +502,7 @@ read_again:
 		if (err != SSL_ERROR_NONE &&
 		    err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL) {
 			rc = -1;      // OpenSSL returns 0 on error too
+			d->kossl->ERR_print_errors_fp(stderr);
 		}
 
 //		else if (err == SSL_ERROR_ZERO_RETURN)
