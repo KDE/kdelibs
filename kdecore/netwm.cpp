@@ -3438,14 +3438,19 @@ NETIcon NETWinInfo::iconInternal(NETRArray<NETIcon>& icons, int icon_count, int 
 	return result;
     }
 
+    // find the largest icon
     result = icons[0];
+    for (int i = 1; i < icons.size(); i++) {
+	if( icons[i].size.width >= result.size.width &&
+	     icons[i].size.height >= result.size.height )
+	    result = icons[i];
+    }
+
+    // return the largest icon if w and h are -1
+    if (width == -1 && height == -1) return result;
 
     // find the icon that's closest in size to w x h...
-    // return the first icon if w and h are -1
-    if (width == height && height == -1) return result;
-
-    int i;
-    for (i = 0; i < icons.size(); i++) {
+    for (int i = 0; i < icons.size(); i++) {
 	if ((icons[i].size.width >= width &&
 	     icons[i].size.width < result.size.width) &&
 	    (icons[i].size.height >= height &&
