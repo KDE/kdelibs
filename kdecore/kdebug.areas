@@ -10,6 +10,7 @@
 127        kio (KProtocolInfo)
 129        kdeui (KAction)
 130        kio (KPasswdServer)
+131        kdecore (KAcceleratorManager)
 150        kdecore (KLibLoader)
 160        kdecore (KNotifyClient)
 170        kdecore (KNetwork socket)

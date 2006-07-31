@@ -169,7 +169,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
     if (!widget)
     {
-        kDebug(125) << "null pointer given to manage" << endl;
+        kDebug(131) << "null pointer given to manage" << endl;
         return;
     }
 
@@ -236,7 +236,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if ( qobject_cast<Q3GroupBox*>( it->m_widget ) )
              continue;
 
-        kDebug(125) << "write " << cnt << " " << it->m_widget->metaObject()->className() << " " <<contents[cnt].accelerated() << endl;
+        kDebug(131) << "write " << cnt << " " << it->m_widget->metaObject()->className() << " " <<contents[cnt].accelerated() << endl;
 
         int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
@@ -253,7 +253,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     foreach(Item *it, *item->m_children)
     {
         if (it->m_widget)
-            kDebug(125) << "children " << it->m_widget->metaObject()->className() << endl;
+            kDebug(131) << "children " << it->m_widget->metaObject()->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
     }
@@ -448,7 +448,7 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 
 void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
 {
-    kDebug(125) << "KAcceleratorManager::manage\n";
+    kDebug(131) << "KAcceleratorManager::manage\n";
     KAcceleratorManagerPrivate::changed_string.clear();
     KAcceleratorManagerPrivate::added_string.clear();
     KAcceleratorManagerPrivate::removed_string.clear();
@@ -488,7 +488,7 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
 
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
-    kDebug(125) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
+    kDebug(131) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
@@ -568,7 +568,7 @@ void KAccelString::calculateWeights(int initialWeight)
     // try to preserve the wanted accelarators
     if ((int)pos == accel()) {
         weight += KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT;
-        // kDebug(125) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText) << endl;
+        // kDebug(131) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText) << endl;
         if (KAcceleratorManagerPrivate::standardName(m_origText))  {
             weight += KAccelManagerAlgorithm::STANDARD_ACCEL;
         }
@@ -678,19 +678,19 @@ void KAccelString::dump()
 
 void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString &used)
 {
-    kDebug(125) << "findAccelerators\n";
+    kDebug(131) << "findAccelerators\n";
   KAccelStringList accel_strings = result;
 
   // initally remove all accelerators
   for (KAccelStringList::Iterator it = result.begin(); it != result.end(); ++it) {
-      kDebug(125) << "reset " << ( *it ).pure() << endl;
+      kDebug(131) << "reset " << ( *it ).pure() << endl;
     (*it).setAccel(-1);
   }
 
   // pick the highest bids
   for (int cnt=0; cnt<accel_strings.count(); ++cnt)
   {
-      kDebug(125) << "cnt " << accel_strings[cnt].pure() << endl;
+      kDebug(131) << "cnt " << accel_strings[cnt].pure() << endl;
     int max = 0, index = -1, accel = -1;
 
     // find maximum weight
@@ -855,7 +855,7 @@ void QWidgetStackAccelManager::currentChanged(int child)
 {
     if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kDebug(125) << k_funcinfo << "invalid index provided" << endl;
+        kDebug(131) << k_funcinfo << "invalid index provided" << endl;
         return;
     }
 
