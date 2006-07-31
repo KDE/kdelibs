@@ -803,6 +803,8 @@ class KTimeZoneDataPrivate
     public:
         QList<KTimeZonePhase> phases;
         QList<KTimeZoneLeapSeconds> leapChanges;
+	QList<int>        utcOffsets;
+	QList<QByteArray> abbreviations;
 };
 
 
@@ -814,8 +816,10 @@ KTimeZoneData::KTimeZoneData()
 KTimeZoneData::KTimeZoneData(const KTimeZoneData &c)
   : d(new KTimeZoneDataPrivate)
 {
-    d->phases      = c.d->phases;
-    d->leapChanges = c.d->leapChanges;
+    d->phases        = c.d->phases;
+    d->leapChanges   = c.d->leapChanges;
+    d->utcOffsets    = c.d->utcOffsets;
+    d->abbreviations = c.d->abbreviations;
 }
 
 KTimeZoneData::~KTimeZoneData()
@@ -825,8 +829,10 @@ KTimeZoneData::~KTimeZoneData()
 
 KTimeZoneData &KTimeZoneData::operator=(const KTimeZoneData &c)
 {
-    d->phases      = c.d->phases;
-    d->leapChanges = c.d->leapChanges;
+    d->phases        = c.d->phases;
+    d->leapChanges   = c.d->leapChanges;
+    d->utcOffsets    = c.d->utcOffsets;
+    d->abbreviations = c.d->abbreviations;
     return *this;
 }
 
@@ -837,9 +843,19 @@ KTimeZoneData *KTimeZoneData::clone()
 
 QList<QByteArray> KTimeZoneData::abbreviations() const
 {
-    QList<QByteArray> abbrs;
-    abbrs.append("UTC");
-    return abbrs;
+    if (d->abbreviations.isEmpty())
+    {
+        for (int i = 0, end = d->phases.count();  i < end;  ++i)
+	{
+            QList<QByteArray> abbrevs = d->phases[i].abbreviations();
+            for (int j = 0, jend = abbrevs.count();  j < jend;  ++j)
+                if (d->abbreviations.indexOf(abbrevs[j]) < 0)
+                    d->abbreviations.append(abbrevs[j]);
+        }
+        if (d->abbreviations.isEmpty())
+            d->abbreviations += "UTC";
+    }
+    return d->abbreviations;
 }
 
 QByteArray KTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
@@ -857,9 +873,20 @@ QByteArray KTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
 
 QList<int> KTimeZoneData::utcOffsets() const
 {
-    QList<int> offsets;
-    offsets.append(0);
-    return offsets;
+    if (d->utcOffsets.isEmpty())
+    {
+        for (int i = 0, end = d->phases.count();  i < end;  ++i)
+	{
+            int offset = d->phases[i].utcOffset();
+            if (d->utcOffsets.indexOf(offset) < 0)
+                d->utcOffsets.append(offset);
+        }
+        if (d->utcOffsets.isEmpty())
+            d->utcOffsets += 0;
+        else
+            qSort(d->utcOffsets);
+    }
+    return d->utcOffsets;
 }
 
 QList<KTimeZonePhase> KTimeZoneData::phases() const

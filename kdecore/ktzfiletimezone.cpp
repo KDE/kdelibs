@@ -58,49 +58,33 @@ KTzfileTimeZone::~KTzfileTimeZone()
 class KTzfileTimeZoneDataPrivate
 {
 public:
-    QList<QByteArray> abbreviations;
-    QList<int>        utcOffsets;
 };
 
 
 KTzfileTimeZoneData::KTzfileTimeZoneData()
-  : d(new KTzfileTimeZoneDataPrivate)
+//  : d(new KTzfileTimeZoneDataPrivate)
 { }
 
 KTzfileTimeZoneData::KTzfileTimeZoneData(const KTzfileTimeZoneData &rhs)
-  : KTimeZoneData(rhs),
-    d(new KTzfileTimeZoneDataPrivate)
+  : KTimeZoneData(rhs)
+//    d(new KTzfileTimeZoneDataPrivate)
 {
-    operator=(rhs);
-    d->utcOffsets = rhs.d->utcOffsets;
 }
 
 KTzfileTimeZoneData::~KTzfileTimeZoneData()
 {
-    delete d;
+//    delete d;
 }
 
 KTzfileTimeZoneData &KTzfileTimeZoneData::operator=(const KTzfileTimeZoneData &rhs)
 {
     KTimeZoneData::operator=(rhs);
-    d->abbreviations = rhs.d->abbreviations;
-    d->utcOffsets    = rhs.d->utcOffsets;
     return *this;
 }
 
 KTimeZoneData *KTzfileTimeZoneData::clone()
 {
     return new KTzfileTimeZoneData(*this);
-}
-
-QList<QByteArray> KTzfileTimeZoneData::abbreviations() const
-{
-    return d->abbreviations;
-}
-
-QList<int> KTzfileTimeZoneData::utcOffsets() const
-{
-    return d->utcOffsets;
 }
 
 
@@ -209,14 +193,10 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         str >> is;
         ltt->isdst = (is != 0);
         str >> ltt->abbrIndex;
-        // Add the UTC offset to the complete list of UTC offsets
-        if (data->d->utcOffsets.indexOf(ltt->gmtoff) < 0)
-            data->d->utcOffsets.append(ltt->gmtoff);
         // kDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex << endl;
         ltt->isstd = false;   // default if no data
         ltt->isutc = false;   // default if no data
     }
-    qSort(data->d->utcOffsets);
 
     // Read the timezone abbreviations. They are stored as null terminated strings in
     // a character array.
@@ -240,9 +220,10 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         return 0;
     }
     quint8 n = 0;
+    QList<QByteArray> abbreviations;
     for (i = 0;  i < abbrCharCount;  ++n, i += strlen(abbrs + i) + 1)
     {
-	data->d->abbreviations += QByteArray(abbrs + i);
+	abbreviations += QByteArray(abbrs + i);
         // Convert the LocalTimeTypes pointer to a sequential index
         ltt = localTimeTypes;
         for (unsigned j = 0;  j < nLocalTimeTypes;  ++ltt, ++j)
@@ -341,13 +322,13 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
     ltt = localTimeTypes;
     for (i = 0;  i < nLocalTimeTypes;  ++ltt, ++i)
     {
-        if (ltt->abbrIndex >= data->d->abbreviations.count())
+        if (ltt->abbrIndex >= abbreviations.count())
         {
             kError() << "KTzfileTimeZoneSource::parse(): abbreviation index out of range" << endl;
             abbrev = "???";
         }
         else
-            abbrev = data->d->abbreviations[ltt->abbrIndex];
+            abbrev = abbreviations[ltt->abbrIndex];
         phases += KTimeZonePhase(timeLists[i], ltt->gmtoff, abbrev, ltt->isdst);
     }
     delete[] localTimeTypes;
@@ -355,32 +336,3 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
 
     return data;
 }
-
-#if 0
-00518   *leap_correct = 0L;
-00519   *leap_hit = 0;
-00520 
-00521   /* Find the last leap second correction transition time before TIMER.  */
-00522   i = num_leaps;
-00523   do
-00524     if (i-- == 0)
-00525       return;
-00526   while (timer < leaps[i].transition);
-00527 
-00528   /* Apply its correction.  */
-00529   *leap_correct = leaps[i].change;
-00530 
-00531   if (timer == leaps[i].transition && /* Exactly at the transition time.  */
-00532       ((i == 0 && leaps[i].change > 0) ||
-00533        leaps[i].change > leaps[i - 1].change))
-00534     {
-00535       *leap_hit = 1;
-00536       while (i > 0
-00537              && leaps[i].transition == leaps[i - 1].transition + 1
-00538              && leaps[i].change == leaps[i - 1].change + 1)
-00539         {
-00540           ++*leap_hit;
-00541           --i;
-00542         }
-00543     }
-#endif

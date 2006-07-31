@@ -145,20 +145,6 @@ public:
      */
     virtual KTimeZoneData *clone();
 
-    /**
-     * Returns the complete list of time zone abbreviations.
-     *
-     * @return the list of abbreviations
-     */
-    virtual QList<QByteArray> abbreviations() const;
-
-    /**
-     * Returns the complete list of UTC offsets for the time zone.
-     *
-     * @return the sorted list of UTC offsets
-     */
-    virtual QList<int> utcOffsets() const;
-
 private:
     KTzfileTimeZoneDataPrivate *d;
 };
