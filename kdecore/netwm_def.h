@@ -270,10 +270,7 @@ public:
        @li Dialog indicates that this is a dialog window. If _NET_WM_WINDOW_TYPE is
        not set, then windows with WM_TRANSIENT_FOR set must be taken as this type.
 
-       @li Override indicates that this window wants to have no Window Manager
-       decorations. This is for windows that would normally use either override_redirect
-       or Motif hints to give no decorations.  This is a KDE extension to the
-       _NET_WM_WINDOW_TYPE mechanism.
+       @li Override - deprecated, has unclear meaning and is KDE-only.
        
        @li TopMenu indicates a toplevel menu (AKA macmenu). This is a KDE extension to the
        _NET_WM_WINDOW_TYPE mechanism.
@@ -287,7 +284,7 @@ public:
 	Toolbar  = 3,
        	Menu     = 4,
 	Dialog   = 5,
-	Override = 6, // NON STANDARD
+	Override = 6, ///< @deprecated
         TopMenu  = 7, // NON STANDARD
 	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
 	Utility  = 8,	///< @since 3.2
