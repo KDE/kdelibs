@@ -161,19 +161,17 @@ public:
     static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
     class WindowInfo;
-//    class WindowInfoPrivate;
     /**
      * Returns information about window @p win. It is recommended to check
      * whether the returned info is valid by calling the valid() method.
      * @param win the id of the window
      * @param properties all properties that should be retrieved (see NET::Property
-     *    enum for details) - passing 0 means all properties. Unlisted properties
-     *    cause related information to be invalid in the returned data, but
-     *    make this function faster when not all data is needed.
+     *    enum for details). Unlisted properties cause related information to be invalid
+     *    in the returned data, but make this function faster when not all data is needed.
      * @param properties2 additional properties (see NET::Property2 enum)
      * @return the window information
      */
-    static WindowInfo windowInfo( WId win, unsigned long properties = 0, unsigned long properties2 = 0 );
+    static WindowInfo windowInfo( WId win, unsigned long properties, unsigned long properties2 = 0 );
 
     /**
      * Returns the WM_TRANSIENT_FOR property for the given window, i.e. the mainwindow

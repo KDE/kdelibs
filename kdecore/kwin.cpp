@@ -690,19 +690,6 @@ KWin::WindowInfo::WindowInfo( WId _win, unsigned long properties, unsigned long 
 #ifdef Q_WS_X11
     KXErrorHandler handler;
     d->ref = 1;
-    if( properties == 0 )
-	properties = NET::WMState |
-		     NET::WMStrut |
-		     NET::WMWindowType |
-		     NET::WMName |
-		     NET::WMVisibleName |
-                     NET::WMIconName |
-                     NET::WMVisibleIconName |
-		     NET::WMDesktop |
-		     NET::WMPid |
-		     NET::WMKDEFrameStrut |
-		     NET::XAWMState |
-                     NET::WMGeometry;
     if( properties & NET::WMVisibleIconName )
 	properties |= NET::WMIconName | NET::WMVisibleName; // force, in case it will be used as a fallback
     if( properties & NET::WMVisibleName )
