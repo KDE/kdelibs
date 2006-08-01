@@ -9,6 +9,8 @@
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
               (C) 2003 Andras Mantia <amantia@kde.org>
               (C) 2005-2006 Hamish Rodda <rodda@kde.org>
+              (C) 2006 Albert Astals Cid <aacid@kde.org>
+              (C) 2006 Clarence Dang <dang@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
