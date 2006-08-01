@@ -203,6 +203,11 @@ KStyle::KStyle() : clickedLabel(0)
 
 KStyle::~KStyle()
 {
+    // this is just for stupid msvc compiler to force the creation of
+    // DoubleButtonOption::defaultOption() inside kstyle lib
+    // hope the optimizer won't throw it away
+    const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(NULL);
+    Q_UNUSED(bOpt)
 }
 
 
