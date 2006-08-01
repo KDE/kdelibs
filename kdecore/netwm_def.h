@@ -290,10 +290,7 @@ public:
 	**/
 	Dialog   = 5,
 	/**
-	   indicates that this window wants to have no Window Manager
-	   decorations. This is for windows that would normally use either override_redirect
-	   or Motif hints to give no decorations.  This is a KDE extension to the
-	   _NET_WM_WINDOW_TYPE mechanism.
+           @deprecated has unclear meaning and is KDE-only
 	**/
 	Override = 6, // NON STANDARD
 	/**
