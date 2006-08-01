@@ -179,7 +179,8 @@ public:
      *    enum for details) - passing 0 means all properties. Unlisted properties
      *    cause related information to be invalid in the returned data, but
      *    make this function faster when not all data is needed.
-     * @param properties2 additional properties (see NET::Property2 enum)
+     * @param properties2 additional properties (see NET::Property2 enum). Note that
+     *    specifying 0 means no properties, not all.
      * @return the window information
      * @since 3.2
      */
