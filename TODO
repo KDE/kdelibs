@@ -309,3 +309,5 @@ that we would like to make for the next binary incompatible release.
   remrange, and remword could be removed.  Those four don't seem to be used anywhere inside of KDE.  Other
   functions like capitalize and reverse seem to be sparsely used.  And the squeeze methods can be redone
   per Simon's note above. (Caleb)
+
+- Prevent re-entering event loop in kded to avoid reentrancy problems like with kwallet in KDE3 (Lubos).
