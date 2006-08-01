@@ -771,7 +771,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       if (!part->widget())
         return Number(0);
-      KWin::WindowInfo inf = KWin::windowInfo(part->widget()->topLevelWidget()->winId());
+      KWin::WindowInfo inf = KWin::windowInfo(part->widget()->topLevelWidget()->winId(), NET::WMGeometry);
       return Number(token == OuterHeight ?
                     inf.geometry().height() : inf.geometry().width());
 #else

@@ -104,7 +104,7 @@ void KSystemTrayIcon::init( QWidget* parent )
         connect( action, SIGNAL( triggered( bool ) ), this, SLOT( minimizeRestoreAction() ) );
 
 #ifdef Q_WS_X11
-        KWin::WindowInfo info = KWin::windowInfo( parent->winId() );
+        KWin::WindowInfo info = KWin::windowInfo( parent->winId(), NET::WMDesktop );
         d->onAllDesktops = info.onAllDesktops();
 #else
         d->onAllDesktops = false;

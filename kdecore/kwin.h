@@ -103,11 +103,6 @@ public:
      *    caused this request
     */
     static void forceActiveWindow( WId win, long time = 0 );
-    /**
-     * @deprecated Consider using activateWindow(), use forceActiveWindow()
-     * only if necessary.
-     */
-    static void setActiveWindow( WId win ) KDE_DEPRECATED;
 
     /**
      * When application finishes some operation and wants to notify
@@ -346,7 +341,8 @@ public:
         int bottom_width, int bottom_start, int bottom_end );
 
     /**
-     * @deprecated use setExtendedStrut()
+     * Convenience function for setExtendedStrut() that automatically makes struts
+     * as wide/high as the screen width/height.
      * Sets the strut of window @p win to @p left, @p right, @p top, @p bottom.
      *
      * @param win the id of the window
@@ -356,6 +352,7 @@ public:
      * @param bottom the bottom strut
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
+
     /**
      * Convenience function to access the current desktop.  See NETRootInfo.
      * @return the number of the current desktop
@@ -486,12 +483,6 @@ public:
      * Requires NET::WM2ExtendedStrut passed to KWin::windowInfo().
      */
     NETExtendedStrut extendedStrut() const;
-    /**
-     * @deprecated use extendedStrut()
-     * Returns the window strut.
-     * Requires NET::WMStrut passed to KWin::windowInfo().
-     */
-    NETStrut strut() const;
     /**
      * Returns the window type of this window (see NET::WindowType). The argument
      * should be all window types your application supports (see NET::WindowTypeMask).

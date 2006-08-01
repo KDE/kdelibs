@@ -247,15 +247,6 @@ void KWin::forceActiveWindow( WId win, long time )
     KUniqueApplication::setHandleAutoStarted();
 }
 
-void KWin::setActiveWindow( WId win )
-{
-#ifdef Q_WS_X11
-    NETRootInfo info( QX11Info::display(), 0 );
-    info.setActiveWindow( win, NET::FromUnknown, 0, 0 );
-#endif
-    KUniqueApplication::setHandleAutoStarted();
-}
-
 void KWin::demandAttention( WId win, bool set )
 {
 #ifdef Q_WS_X11
@@ -564,19 +555,22 @@ void KWin::setExtendedStrut( WId win, int left_width, int left_start, int left_e
     strut.bottom_start = bottom_start;
     strut.bottom_end = bottom_end;
     info.setExtendedStrut( strut );
+    NETStrut oldstrut;
+    oldstrut.left = left_width;
+    oldstrut.right = right_width;
+    oldstrut.top = top_width;
+    oldstrut.bottom = bottom_width;
+    info.setStrut( oldstrut );
 #endif
 }
 
 void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 {
 #ifdef Q_WS_X11
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
-    NETStrut strut;
-    strut.left = left;
-    strut.right = right;
-    strut.top = top;
-    strut.bottom = bottom;
-    info.setStrut( strut );
+    int w = XDisplayWidth( QX11Info::display(), DefaultScreen( QX11Info::display()));
+    int h = XDisplayHeight( QX11Info::display(), DefaultScreen( QX11Info::display()));
+    setExtendedStrut( win, left, 0, left != 0 ? w : 0, right, 0, right != 0 ? w : 0,
+        top, 0, top != 0 ? h : 0, bottom, 0, bottom != 0 ? h : 0 );
 #endif
 }
 
@@ -827,18 +821,6 @@ NETExtendedStrut KWin::WindowInfo::extendedStrut() const
     return ext;
 #else
     NETExtendedStrut n;
-    return n;
-#endif
-}
-
-NETStrut KWin::WindowInfo::strut() const
-{
-#ifdef Q_WS_X11
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMStrut ) == 0, 176 )
-        << "Pass NET::WMStrut to KWin::windowInfo()" << endl;
-    return d->info->strut();
-#else
-    NETStrut n;
     return n;
 #endif
 }

@@ -88,7 +88,7 @@ void KJavaAppletWidget::setWindow( WId w )
 {
 #ifdef Q_WS_X11
     //make sure that this window has the right name, if so, embed it...
-    KWin::WindowInfo w_info = KWin::windowInfo( w );
+    KWin::WindowInfo w_info = KWin::windowInfo( w, NET::WMVisibleName | NET::WMName );
     if ( m_swallowTitle == w_info.name() ||
          m_swallowTitle == w_info.visibleName() )
     {
