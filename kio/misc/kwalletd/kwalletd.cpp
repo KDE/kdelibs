@@ -260,31 +260,14 @@ int KWalletD::open(const QString& wallet, uint wId) {
 	KWalletTransaction *xact = new KWalletTransaction;
 	_transactions.append(xact);
 
-	if (_transactions.count() > 1) {
-		xact->appid = appid;
-		xact->client = callingDcopClient();
-		xact->transaction = xact->client->beginTransaction();
-		xact->wallet = wallet;
-		xact->wId = wId;
-		xact->tType = KWalletTransaction::Open;
-		return 0; // process later
-	}
-
-	int rc = doTransactionOpen(appid, wallet, wId);
-
-	_transactions.remove(xact);
-
-	if (rc < 0) {
-		// multiple requests from the same client should not produce multiple password dialogs on a failure
-		for (KWalletTransaction *x = _transactions.first(); x; x = _transactions.next()) {
-			if (appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == wallet && x->wId == wId)
-				x->tType = KWalletTransaction::OpenFail;
-		}
-	}
-
-	processTransactions();
-
-	return rc;
+	xact->appid = appid;
+	xact->client = callingDcopClient();
+	xact->transaction = xact->client->beginTransaction();
+	xact->wallet = wallet;
+	xact->wId = wId;
+	xact->tType = KWalletTransaction::Open;
+	QTimer::singleShot(0, this, SLOT(processTransactions()));
+	return 0; // process later
 }
 
 
