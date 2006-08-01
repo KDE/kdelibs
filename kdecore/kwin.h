@@ -565,7 +565,7 @@ public:
     QRect geometry() const;
     /**
      * Returns the frame geometry of the window, i.e. including the window decoration.
-     * Requires NET::WMKDEFrameStrut passed to KWin::windowInfo().
+     * Requires NET::WMFrameExtents passed to KWin::windowInfo().
      */
     QRect frameGeometry() const;
     /**
