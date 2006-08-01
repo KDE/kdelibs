@@ -36,6 +36,10 @@
 [125]
 InfoOutput=4
 
+# KCheckAccel debug info off
+[131]
+InfoOutput=4
+
 # KAction debug info off
 [129]
 InfoOutput=4
