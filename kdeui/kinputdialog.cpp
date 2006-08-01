@@ -60,6 +60,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setDefaultButton( Ok );
   showButtonSeparator( true );
   setModal(true);
 
@@ -101,6 +102,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setDefaultButton( Ok );
   showButtonSeparator( false );
   setModal(true);
   QWidget *frame = new QWidget( this );
@@ -188,6 +190,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setCaption( caption );
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setDefaultButton( Ok );
   showButtonSeparator( true );
   setModal(true);
 
