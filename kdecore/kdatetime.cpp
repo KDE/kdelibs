@@ -31,6 +31,10 @@
 #include <kdatetime.h>
 #include "kstaticdeleter.h"
 
+#ifdef Q_OS_WIN
+#include <windows.h>    // SYSTEMTIME
+#endif
+
 
 static const char* shortDay[] = {
     "Mon", "Tue", "Wed",
