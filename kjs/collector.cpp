@@ -309,6 +309,12 @@ void Collector::markCurrentThreadConservatively()
         MOV pTib, EAX
     }
     void *stackBase = (void *)pTib->StackBase;
+#elif PLATFORM(WIN_OS) && PLATFORM(X86) && COMPILER(GCC)
+    NT_TIB *pTib;
+		__asm__("movl  %%fs:0x18,%0"
+						: "=r" (pTib)
+		);
+		void *stackBase = (void *)pTib->StackBase;
 #elif PLATFORM(UNIX)
     static void *stackBase = 0;
     static pthread_t stackThread;
