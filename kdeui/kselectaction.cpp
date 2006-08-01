@@ -685,9 +685,29 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
 {
   KComboBox *comboBox = qobject_cast <KComboBox *> (watched);
   if (!comboBox)
-    return false/*propagate*/;
+    return false/*propagate event*/;
 
-  bool eatEvent = false;
+
+  // If focus is lost, replace any edited text with the currently selected
+  // item.
+  if (event->type () == QEvent::FocusOut) {
+    QFocusEvent * const e = static_cast <QFocusEvent *> (event);
+    kDebug (129) << "KSelectAction::eventFilter(FocusOut)"
+      << "    comboBox: ptr=" << comboBox
+      << " reason=" << e->reason ()
+      << endl;
+
+    if (e->reason () != Qt::ActiveWindowFocusReason/*switch window*/ &&
+        e->reason () != Qt::PopupFocusReason/*menu*/ &&
+        e->reason () != Qt::OtherFocusReason/*inconsistently reproduceable actions...*/) {
+
+      kDebug (129) << "\tkilling text" << endl;
+      comboBox->setEditText (comboBox->itemText (comboBox->currentIndex ()));
+    }
+
+    return false/*propagate event*/;
+  }
+
 
   comboBox->blockSignals (true);
 
@@ -717,8 +737,6 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     // Inserting an item into a combobox can change the current item so
     // make sure the item corresponding to the checked action is selected.
     comboBox->setCurrentIndex (newItem);
-
-    eatEvent = true;
   }
   else if (event->type () == QEvent::ActionChanged)
   {
@@ -741,8 +759,6 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     // The checked action may have become unchecked so
     // make sure the item corresponding to the checked action is selected.
     comboBox->setCurrentIndex (newItem);
-
-    eatEvent = true;
   }
   else if (event->type () == QEvent::ActionRemoved)
   {
@@ -761,13 +777,11 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
     // Removing an item from a combobox can change the current item so
     // make sure the item corresponding to the checked action is selected.
     comboBox->setCurrentIndex (newItem);
-
-    eatEvent = true;
   }
   
   comboBox->blockSignals (false);
 
-  return eatEvent;
+  return false/*propagate event*/;
 }
 
 // END
