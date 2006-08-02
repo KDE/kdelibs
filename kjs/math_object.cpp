@@ -27,7 +27,7 @@
 #include <math.h>
 #include <time.h>
 
-#if PLATFORM(WIN_OS)
+#if COMPILER(MSVC)
 
 #include <float.h>
 static int signbit(double d)
