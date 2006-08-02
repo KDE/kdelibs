@@ -1012,6 +1012,7 @@ KDECORE_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KU
 /*
  * MSVC needs it.
  */
-KDE_DUMMY_QHASH_FUNCTION(KUrl)
+Q_CORE_EXPORT uint qHash(const QString &key);
+inline uint qHash(const KUrl kurl){ return qHash(kurl.url()); }
 
 #endif
