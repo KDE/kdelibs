@@ -1869,7 +1869,7 @@ K3DockWidget* K3DockManager::findDockWidgetAt( const QPoint& pos )
 
   if (currentDragWidget->eDocking == (int)K3DockWidget::DockNone ) return 0L;
 
-  QWidget* p = QApplication::widgetAt( pos );
+  QWidget* p = QApplication::topLevelAt( pos );
   if ( !p ) {
     dropCancel = false;
     return 0L;
@@ -3000,7 +3000,7 @@ void K3DockManager::drawDragRectangle()
     if (oldAndNewDragRect[i].isEmpty())
       continue;
 
-    K3DockWidget* pDockWdgAtRect = (K3DockWidget*) QApplication::widgetAt( oldAndNewDragRect[i].topLeft(), true );
+    K3DockWidget* pDockWdgAtRect = (K3DockWidget*) QApplication::widgetAt( oldAndNewDragRect[i].topLeft() );
     if (!pDockWdgAtRect)
       continue;
 
