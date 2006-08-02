@@ -208,9 +208,9 @@ void DebugWindow::createMenus()
 
     menuBar()->insertItem("&Debug", debugMenu);
 */
-    KMenu *fileMenu = new KMenu(this);
+    KMenu *fileMenu = new KMenu("F&ile", this);
     fileMenu->addAction(m_exitAct);
-    menuBar()->insertItem("F&ile", fileMenu);
+    menuBar()->addMenu(fileMenu);
 }
 
 void DebugWindow::createToolBars()
@@ -291,7 +291,6 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 {
     Q_UNUSED(exec);
 
-    kDebug() << "Testing..." << endl;
     kDebug() << "***************************** sourceParsed **************************************************" << endl
              << "      sourceId: " << sourceId << endl
              << "     sourceURL: " << sourceURL.qstring() << endl
@@ -323,11 +322,15 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
         // interpreter should already be there, if it isn't then we should look above to the problem
     }
 
-    document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
-    m_scripts->addDocument(document);
 
-    m_nextBaseLine = 1;
-    m_nextUrl = "";
+    if (document)
+    {
+        document->addCodeFragment(sourceId, m_nextBaseLine, source.qstring());
+        m_scripts->addDocument(document);
+
+        m_nextBaseLine = 0;
+        m_nextUrl = "";
+    }
 
     return (m_mode != Stop);
 }
@@ -361,6 +364,11 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject 
     return (m_mode != Stop);
 }
 
+
+// This is where we are going to check for a breakpoint. First check for breakpoint
+// then if one is found, stop execution and display local variables in the localVariables
+// dock.
+
 bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int lastLine)
 {
     Q_UNUSED(exec);
@@ -368,7 +376,33 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
     Q_UNUSED(firstLine);
     Q_UNUSED(lastLine);
 
-    kDebug() << "atStatement" << endl;
+    kDebug() << "***************************** atStatement ***************************************************" << endl
+             << "      sourceId: " << sourceId << endl
+             << "     firstLine: " << firstLine << endl
+             << "      lastLine: " << lastLine << endl;
+
+    DebugDocument *document = m_sourceIdLookup[sourceId];
+    if (document)
+    {
+        kDebug() << "found document for sourceId" << endl;
+        QVector<int> bpoints = document->breakpoints();
+        foreach (int bpoint, bpoints)
+        {
+            kDebug() << " > " << bpoint << endl;
+        }
+
+        int numLines = lastLine - firstLine;
+        for (int i = 0; i < numLines; i++)
+        {
+            if (document->hasBreakpoint(firstLine))
+            {
+                // Lets try a dump of the scope chain now..
+                m_localVariables->display(exec->dynamicInterpreter());
+            }
+      }
+    }
+
+    kDebug() << "*********************************************************************************************" << endl;
 
     return (m_mode != Stop);
 }
@@ -414,6 +448,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
 
     KTextEditor::Document *doc = m_editor->createDocument(0);
     m_documentList.append(doc);
+    m_documentLut[doc] = document;
 
     KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(doc);
     if (highlightingInterface)
@@ -466,20 +501,40 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
     KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(doc);
     if (markInterface)
     {
+//        markInterface->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
         connect(doc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
-                this, SLOT(breakpointSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
+                this, SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
     }
 
     m_openDocuments.append(document);
     m_tabWidget->addTab(view, document->name());
 }
 
-void DebugWindow::breakpointSet(KTextEditor::Document *document, KTextEditor::Mark mark,
-                                KTextEditor::MarkInterface::MarkChangeAction action)
+void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
+                          KTextEditor::MarkInterface::MarkChangeAction action)
 {
+    DebugDocument *debugDocument = m_documentLut[document];
+    if (!debugDocument)
+        return;
+
+    switch(action)
+    {
+        case KTextEditor::MarkInterface::MarkAdded:
+            debugDocument->setBreakpoint(mark.line);
+            break;
+        case KTextEditor::MarkInterface::MarkRemoved:
+            debugDocument->removeBreakpoint(mark.line);
+            break;
+    }
+
     kDebug() << "breakpoint set for: " << endl
              << "document: " << document->documentName() << endl
              << "line: " << mark.line << " type: " << mark.type << endl;
+
+    kDebug() << "breakpoints at lines:" << endl;
+    QVector<int> bpoints = debugDocument->breakpoints();
+    foreach (int bpoint, bpoints)
+        kDebug() << " > " << bpoint << endl;
 }
 
 void DebugWindow::closeTab()

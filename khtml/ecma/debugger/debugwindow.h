@@ -135,6 +135,25 @@ public:
         m_codeFragments[sourceId] = code;
     }
 
+public:
+    void setBreakpoint(int lineNumber)
+    {
+        m_breakpoints.append(lineNumber);
+    }
+
+    void removeBreakpoint(int lineNumber)
+    {
+        int idx = m_breakpoints.indexOf(lineNumber);
+        if (idx != -1)
+            m_breakpoints.remove(idx);
+    }
+
+    bool hasBreakpoint(int lineNumber)
+    {
+        return m_breakpoints.contains(lineNumber);
+    }
+
+    QVector<int> breakpoints() { return m_breakpoints; }
 private slots:
     void readSource()
     {
@@ -157,6 +176,7 @@ private:
     QString m_source;
     Interpreter *m_interpreter;
     QHash<int, SourceFragment> m_codeFragments;
+    QVector<int> m_breakpoints;
 
 };
 
@@ -220,8 +240,8 @@ protected:
 private slots:
     void displayScript(KJS::DebugDocument *document);
     void closeTab();
-    void breakpointSet(KTextEditor::Document *document, KTextEditor::Mark mark,
-                       KTextEditor::MarkInterface::MarkChangeAction action);
+    void markSet(KTextEditor::Document *document, KTextEditor::Mark mark,
+                 KTextEditor::MarkInterface::MarkChangeAction action);
 
 private:
     void createActions();
@@ -263,6 +283,7 @@ private:
 
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
     QHash<int, DebugDocument*>     m_sourceIdLookup; // map sourceId's to debug documents
+    QHash<KTextEditor::Document*, DebugDocument*> m_documentLut; // map KTextEditor::Document's to DebugDocuments
     QList<DebugDocument*> m_openDocuments;
 
     static DebugWindow *m_debugger;

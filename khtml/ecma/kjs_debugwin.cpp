@@ -1140,8 +1140,7 @@ bool KJSDebugWin::deleteBreakpoint(int sourceId, int lineno)
 
       memmove(m_breakpoints+i,m_breakpoints+i+1,(m_breakpointCount-i-1)*sizeof(Breakpoint));
       m_breakpointCount--;
-      m_breakpoints = static_cast<Breakpoint*>(realloc(m_breakpoints,
-						       m_breakpointCount*sizeof(Breakpoint)));
+      m_breakpoints = static_cast<Breakpoint*>(realloc(m_breakpoints, _breakpointCount*sizeof(Breakpoint)));
       return true;
     }
   }
