@@ -672,7 +672,14 @@ int KTimeZonePhase::utcOffset() const
 
 QList<QByteArray> KTimeZonePhase::abbreviations() const
 {
-    return d->abbreviations.split('0');
+    QList<QByteArray> abbs = d->abbreviations.split('0');
+    // Remove trailing nulls to make the list elements standard QByteArray strings
+    for (int i = 0, end = abbs.count();  i < end;  ++i)
+    {
+        if (abbs[i].endsWith('\0'))
+            abbs[i].chop(1);
+    }
+    return abbs;
 }
 
 bool KTimeZonePhase::isDst() const
