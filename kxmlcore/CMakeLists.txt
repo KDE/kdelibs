@@ -15,5 +15,5 @@ install(TARGETS kxmlcore  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 # FIXME: Actually, most of these should NOT be installed. The only
 # ones that need be are those needed from instaled KJS headers
-install( FILES HashMap.h         HashTraits.h           SharedPtr.h          HashSet.h         HashFunctions.h         HashTable.h   Noncopyable.h OwnArrayPtr.h OwnPtr.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kxmlcore )
+install( FILES AlwaysInline.h Assertions.h FastMalloc.h HashCountedSet.h HashMap.h HashSet.h HashFunctions.h HashTable.h HashTraits.h Noncopyable.h OwnArrayPtr.h OwnPtr.h PassRefPtr.h Platform.h RefPtr.h SharedPtr.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kxmlcore )
 

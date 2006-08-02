@@ -136,6 +136,31 @@ if(KDE4_BUILD_TESTS)
 endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
-install( FILES value.h types.h object.h interpreter.h operations.h             ustring.h lookup.h ${CMAKE_CURRENT_BINARY_DIR}/global.h identifier.h property_map.h           property_slot.h completion.h            scope_chain.h list.h function.h JSLock.h JSImmediate.h JSType.h PropertyNameArray.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
+install( FILES
+    ExecState.h
+    JSImmediate.h
+    JSLock.h
+    JSType.h
+    PropertyNameArray.h
+    collector.h
+    completion.h
+    function.h
+    identifier.h
+    interpreter.h
+    list.h
+    lookup.h
+    object.h
+    operations.h
+    property_map.h
+    property_slot.h
+    protect.h
+    scope_chain.h
+    types.h
+    ustring.h
+    value.h
+
+    ${CMAKE_CURRENT_BINARY_DIR}/global.h
+
+    DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs )
 
 

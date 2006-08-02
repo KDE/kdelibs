@@ -24,7 +24,7 @@
 
 class QObject;
 
-#include <kjsembed/kjsembed/global.h>
+#include <kjsembed/global.h>
 #include <kjs/object.h>
 #include <kdemacros.h>
 

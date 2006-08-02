@@ -27,8 +27,8 @@
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
 
-#include "kjsembed.h"
-#include "../kjsembed/global.h"
+#include <kjsembed/global.h>
+#include <kjsembed/kjsembed.h>
 
 #include <QTime>
 
