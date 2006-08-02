@@ -547,7 +547,7 @@ void KHTMLView::clear()
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
     d->reset();
-    QAbstractEventDispatcher::instance()->unregisterTimers(this);
+    QAbstractEventDispatcher::instance()->unregisterTimers(this); 
     emit cleared();
 
     Q3ScrollView::setHScrollBarMode(d->hmode);

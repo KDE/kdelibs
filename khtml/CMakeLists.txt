@@ -364,6 +364,17 @@ if(KDE4_BUILD_TESTS AND NOT MSVC)
     target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############
+    set(khtmltest_SRCS
+        testkhtmlnew.cpp
+        domtreeview.cpp
+    )
+
+    qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
+    kde4_automoc( ${khtmltest_SRCS} )
+    kde4_add_executable( khtmltest ${khtmltest_SRCS} )
+    target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
+
+    ########### next target ###############
 
     set(testkhtml_static_SRCS
         testkhtml.cpp
