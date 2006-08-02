@@ -50,6 +50,9 @@
 #include "runtime.h"
 #endif
 
+#if defined _WIN32 || defined _WIN64 
+#undef HAVE_SYS_TIME_H // no setitimer in kdewin32
+#endif
 #if HAVE(SYS_TIME_H)
 #include <sys/time.h>
 #endif
