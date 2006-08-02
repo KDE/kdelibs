@@ -2285,7 +2285,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
 
   if (id == HTMLElement::ElementScrollIntoView) {
     // ### implement
-    kdWarning() << "non-standard HTMLElement::scrollIntoView() not implemented"
+    kWarning() << "non-standard HTMLElement::scrollIntoView() not implemented"
 		<< endl;
     return Undefined();
   }
