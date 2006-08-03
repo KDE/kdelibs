@@ -14,7 +14,7 @@ class QMovie;
 namespace KParts
 {
     class URLArgs;
-};
+}
 
 /**
  * @internal
