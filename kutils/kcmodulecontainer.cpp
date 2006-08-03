@@ -62,9 +62,9 @@ class KCModuleContainer::KCModuleContainerPrivate
 
 
 
-#ifdef __GNUC__
-#warning the old code created an instance (through the constructor) - should this stay?
-#endif
+// The KCModuleContainer is only a wrapper around real KCModules. Therefore it doesn't need a
+// special KInstance and can just use the global instance. The contained KCModules create their own
+// KInstance objects when needed.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
 	: KCModule( KGlobal::instance(), parent ),d(new KCModuleContainerPrivate( QString(mods).remove( " " ).split( "," ) ))

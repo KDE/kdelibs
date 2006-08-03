@@ -150,7 +150,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
  * This macro creates an factory declaration which when run creates an KCModule with specified
  * modules. For example:
  * \code
- * KCMODULECONTAINER( "kcm_fonts, kcm_keyboard,kcm_fonts", misc_modules)
+ * KCMODULECONTAINER("kcm_fonts,kcm_keyboard,kcm_foo", misc_modules)
  * \endcode
  * would create a KCModule with three tabs, each containing one of the specified KCMs. Each
  * use of the macro must be accompanied by a desktop file where the factory name equals
@@ -161,23 +161,17 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
  * @param modules the modules to put in the container
  * @param factoryName what factory name the module should have
  */
-#define KCMODULECONTAINER( modules, factoryName ) \
-extern "C" \
+#define KCMODULECONTAINER(modules, factoryName) \
+class KCModuleContainer##factoryName : public KCModuleContainer \
 { \
-	KCModule *create_## factoryName(QWidget *parent, const char *name) \
-	{ \
-		return new KCModuleContainer( parent, name, QString( modules ) ); \
-	} \
-	\
-	bool test_## factoryName() \
-	{ \
-		QStringList modList = QString(modules).remove( " " ).split(",", QString::SkipEmptyParts); \
-		for ( QStringList::Iterator it = modList.begin(); it != modList.end(); ++it ) \
-			if ( KCModuleLoader::testModule( *it ) ) \
-				return true; \
-		return false; \
-	} \
-}
+    public: \
+        KCModuleContainer##factoryName(QWidget *parent, const QStringList &) \
+            : KCModuleContainer(parent, QLatin1String(modules)) \
+        { \
+        } \
+}; \
+typedef KGenericFactory<KCModuleContainer#factoryName> KCModuleContainer##factoryName##Factory; \
+K_EXPORT_COMPONENT_FACTORY(factoryName, KCModuleContainer##factoryName##Factory)
 
 #endif // KCMODULECONTAINER_H
 
