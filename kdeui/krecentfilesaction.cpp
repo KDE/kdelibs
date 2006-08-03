@@ -213,6 +213,7 @@ KRecentFilesAction::KRecentFilesAction( KActionCollection* parent, const QString
 void KRecentFilesAction::init()
 {
   setMenu(new KMenu());
+  setToolBarMode(MenuMode);
 
   connect(this, SIGNAL(triggered(QAction*)), SLOT(urlSelected(QAction*)));
 }

@@ -196,7 +196,7 @@ public:
 
     /**
      * Returns the style for the list of actions, when this action is plugged
-     * into a KToolBar.
+     * into a KToolBar. The default value is QToolButton::InstantPopup
      *
      * \sa QToolButton::setPopupMode()
      */

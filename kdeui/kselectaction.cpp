@@ -51,7 +51,7 @@ public:
     m_maxComboViewCount = -1;
 
     m_toolBarMode = KSelectAction::ComboBoxMode;
-    m_toolButtonPopupMode = QToolButton::DelayedPopup;
+    m_toolButtonPopupMode = QToolButton::InstantPopup; //InstantPopup by default because there is no default action
 
     m_actionGroup = new QActionGroup(0L);
   }
