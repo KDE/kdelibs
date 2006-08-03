@@ -2180,8 +2180,11 @@ void WindowQObject::setNextTimer()
   QListIterator<ScheduledAction*> it(scheduledActions);
   DateTimeMS nextTime = it.next()->nextTime;
   while (it.hasNext())
-    if (nextTime > it.next()->nextTime)
-      nextTime = it.next()->nextTime;
+  {
+    const DateTimeMS& currTime = it.next()->nextTime;
+    if (nextTime > currTime)
+      nextTime = currTime;
+  }
 
 
   DateTimeMS nextTimeActual = nextTime.addMSecs(pausedTime);
