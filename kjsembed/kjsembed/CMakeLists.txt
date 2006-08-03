@@ -41,7 +41,12 @@ kde4_automoc(${kjsembed_LIB_SRCS})
 
 kde4_add_library(kjsembed SHARED ${kjsembed_LIB_SRCS})
 
-target_link_libraries(kjsembed ${KDE4_KDECORE_LIBS} ${QT_QTDESIGNER_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} kjs )
+target_link_libraries(kjsembed ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} kjs )
+
+if(UNIX)
+   # this is maybe a work-around for a Qt/Windows bug
+   target_link_libraries(kjsembed ${QT_QTDESIGNER_LIBRARY})
+endif(UNIX)
 
 set_target_properties(kjsembed PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kjsembed  DESTINATION ${LIB_INSTALL_DIR} )
