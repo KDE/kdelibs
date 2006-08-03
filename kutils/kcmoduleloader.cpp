@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
   Copyright (c) 2000 Matthias Elter <elter@kde.org>
-  Copyright (c) 2003,2004 Matthias Kretz <kretz@kde.org>
+  Copyright (c) 2003,2004,2006 Matthias Kretz <kretz@kde.org>
   Copyright (c) 2004 Frans Englich <frans.englich@telia.com>
 
   This file is part of the KDE project
@@ -26,13 +26,11 @@
 #include <qlayout.h>
 
 #include <kapplication.h>
-#include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <klibloader.h>
 
-#include <fixx11h.h>
 #include "kcmoduleloader.h"
 
 
@@ -79,7 +77,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, QByteArray libprefix,
         return module;
     }
     // else do a fallback
-    kDebug(1208) << "Unable to load module using ComponentFactory. Falling back to old loader." << endl;
+    kWarning(1208) << "Unable to load module using ComponentFactory. (symbol: init_" << mod.handle() << ") Falling back to old loader for compatibility." << endl;
 
     // get the create_ function
     QByteArray factorymethod( "create_" );

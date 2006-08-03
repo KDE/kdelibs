@@ -2,7 +2,7 @@
   Copyright (c) 1999 Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
   Copyright (c) 2000 Matthias Elter <elter@kde.org>
   Copyright (c) 2003 Daniel Molkentin <molkentin@kde.org>
-  Copyright (c) 2003 Matthias Kretz <kretz@kde.org>
+  Copyright (c) 2003,2006 Matthias Kretz <kretz@kde.org>
 
   This file is part of the KDE project
 
