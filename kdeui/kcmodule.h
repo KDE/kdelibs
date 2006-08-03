@@ -258,6 +258,8 @@ protected:
    */
   void setQuickHelp( const QString& help );
 
+  virtual void showEvent(QShowEvent *ev);
+
 Q_SIGNALS:
 
   /**

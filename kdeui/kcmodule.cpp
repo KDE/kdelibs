@@ -44,6 +44,7 @@ public:
         _about( 0 ),
         _useRootOnlyMessage( false ),
         _hasOwnInstance( false ),
+        _firstshow(false),
         _unmanagedWidgetChangeState( false )
         { }
 
@@ -53,6 +54,7 @@ public:
     QString _rootOnlyMessage;
     bool _useRootOnlyMessage;
     bool _hasOwnInstance;
+    bool _firstshow;
     QList<KConfigDialogManager*> managers;
     QString _quickHelp;
 
@@ -72,7 +74,6 @@ KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
     } else
         d->_instance = new KInstance("kcmunnamed");
     d->_hasOwnInstance = true;
-    QTimer::singleShot( 0, this, SLOT( load() ) );
 }
 
 KCModule::KCModule( KInstance *instance, QWidget *parent, const QStringList& )
@@ -83,7 +84,15 @@ KCModule::KCModule( KInstance *instance, QWidget *parent, const QStringList& )
     KGlobal::locale()->insertCatalog(instance->instanceName());
 
     d->_instance = instance;
-    QTimer::singleShot( 0, this, SLOT( load() ) );
+}
+
+void KCModule::showEvent(QShowEvent *ev)
+{
+    if (d->_firstshow) {
+        d->_firstshow = false;
+        load();
+    }
+    QWidget::showEvent(ev);
 }
 
 KCModule::Buttons KCModule::buttons() const
