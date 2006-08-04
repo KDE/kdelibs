@@ -467,9 +467,9 @@ int KTimeZone::offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset
             *secondOffset = 0;
             return 0;
         }
-	int offset = ph.utcOffset();
+        int offset = ph.utcOffset();
         *secondOffset = ph2.isValid() ? ph2.utcOffset() : offset;
-	return offset;
+        return offset;
     }
     else
     {
@@ -566,7 +566,7 @@ KTimeZoneData *KTimeZoneSource::parse(const KTimeZone *) const
 class KTimeZonePhasePrivate
 {
     public:
-	bool setStarts(const QList<QDateTime> &st);
+        bool setStarts(const QList<QDateTime> &st);
         QList<QDateTime> starts;         // UTC start times of this type
         QByteArray       abbreviations;  // time zone abbreviations (zero-delimited)
         QString          comment;        // optional comment
@@ -810,8 +810,8 @@ class KTimeZoneDataPrivate
     public:
         QList<KTimeZonePhase> phases;
         QList<KTimeZoneLeapSeconds> leapChanges;
-	QList<int>        utcOffsets;
-	QList<QByteArray> abbreviations;
+        QList<int>        utcOffsets;
+        QList<QByteArray> abbreviations;
 };
 
 
@@ -853,7 +853,7 @@ QList<QByteArray> KTimeZoneData::abbreviations() const
     if (d->abbreviations.isEmpty())
     {
         for (int i = 0, end = d->phases.count();  i < end;  ++i)
-	{
+        {
             QList<QByteArray> abbrevs = d->phases[i].abbreviations();
             for (int j = 0, jend = abbrevs.count();  j < jend;  ++j)
                 if (d->abbreviations.indexOf(abbrevs[j]) < 0)
@@ -883,7 +883,7 @@ QList<int> KTimeZoneData::utcOffsets() const
     if (d->utcOffsets.isEmpty())
     {
         for (int i = 0, end = d->phases.count();  i < end;  ++i)
-	{
+        {
             int offset = d->phases[i].utcOffset();
             if (d->utcOffsets.indexOf(offset) < 0)
                 d->utcOffsets.append(offset);
@@ -1155,10 +1155,18 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
 
 bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
 {
+#if defined(SOLARIS) || defined(USE_SOLARIS)
+    const char *ZONE_TAB_FILE = "/tab/zone_sun.tab";
+    const char *ZONE_INFO_DIR = "/usr/share/lib/zoneinfo";
+#else
+    const char *ZONE_TAB_FILE = "/zone.tab";
+    const char *ZONE_INFO_DIR = "/usr/share/zoneinfo";
+#endif
+
     // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
     QDir dir;
-    QString zoneinfoDir = "/usr/share/zoneinfo";
-    f.setFileName(zoneinfoDir + "/zone.tab");
+    QString zoneinfoDir = ZONE_INFO_DIR;
+    f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
     // make a note if the dir exists; whether it contains zone.tab or not
     if ( dir.exists( zoneinfoDir ) )
         m_zoneinfoDir = zoneinfoDir;
@@ -1167,7 +1175,7 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
     kDebug() << "Can't open " << f.fileName() << endl;
 
     zoneinfoDir = "/usr/lib/zoneinfo";
-    f.setFileName(zoneinfoDir + "/zone.tab");
+    f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
     if ( dir.exists( zoneinfoDir ) )
         m_zoneinfoDir = zoneinfoDir;
     if (f.open(QIODevice::ReadOnly))
@@ -1179,7 +1187,7 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
     {
         if ( dir.exists( zoneinfoDir ) )
             m_zoneinfoDir = zoneinfoDir;
-        f.setFileName(zoneinfoDir + "/zone.tab");
+        f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
         if (f.open(QIODevice::ReadOnly))
             return true;
         kDebug() << "Can't open " << f.fileName() << endl;
@@ -1191,22 +1199,62 @@ bool KSystemTimeZonesPrivate::findZoneTab( QFile& f )
         m_zoneinfoDir = zoneinfoDir;
         // Solaris support. Synthesise something that looks like a zone.tab.
         //
-        // /bin/grep -h ^Zone /usr/share/lib/zoneinfo/src/* | /bin/awk '{print "??\t+9999+99999\t" $2}'
+        // grep -h ^Zone /usr/share/lib/zoneinfo/src/* | awk '{print "??\t+9999+99999\t" $2}'
         //
         // where the country code is set to "??" and the latitude/longitude
         // values are dummies.
-        KTempFile temp;
-        KShellProcess reader;
-        reader << "/bin/grep" << "-h" << "^Zone" << zoneinfoDir << "/src/*" << temp.name() << "|" <<
-            "/bin/awk" << "'{print \"??\\t+9999+99999\\t\" $2}'";
-        // Note the use of blocking here...it is a trivial amount of data!
-        temp.close();
-        reader.start(KProcess::Block);
-        f.setFileName(temp.name());
-        if (temp.status() && f.open(QIODevice::ReadOnly))
-            return true;
+        //
+        QDir d(m_zoneinfoDir + "/src");
+        d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
+        QStringList fileList = d.entryList();
 
-        kDebug() << "Can't open " << f.fileName() << endl;
+        KTempFile temp;
+        QFile f;
+        f.setFileName(temp.name());
+        if (!f.open(QIODevice::WriteOnly|QIODevice::Truncate))
+        {
+            kError() << "Could not open/create temp file for writing" << endl;
+            return false;
+        }
+
+        QFile zoneFile;
+        QList<QByteArray> tokens;
+        QByteArray line;
+        line.reserve(1024);
+        QTextStream tmpStream(&f);
+        qint64 r;
+        for (int i = 0, end = fileList.count();  i < end;  ++i)
+        {
+            zoneFile.setFileName(d.filePath(fileList[i].toLatin1()));
+            if (!zoneFile.open(QIODevice::ReadOnly))
+            {
+                kDebug() << "Could not open file '" << zoneFile.fileName().toLatin1() \
+                         << "' for reading." << endl;
+                continue;
+            }
+            while (!zoneFile.atEnd())
+            {
+                if ((r = zoneFile.readLine(line.data(), 1023)) > 0)
+                {
+                    if (line.startsWith("Zone"))
+                    {
+                        line.replace('\t', ' ');    // change tabs to spaces
+                        tokens = line.split(' ');
+                        for (int j = 0, jend = tokens.count();  j < jend;  ++j)
+                            if (tokens[j].endsWith(' '))
+                                tokens[j].chop(1);
+                        tmpStream << "??\t+9999+99999\t" << tokens[1] << "\n";
+                    }
+                }
+            }
+            zoneFile.close();
+        }
+        f.close();
+        if (!f.open(QIODevice::ReadOnly))
+        {
+            kError() << "Could not reopen temp file for reading." << endl;
+            return false;
+        }
     }
     return false;
 }
@@ -1220,7 +1268,7 @@ void KSystemTimeZonesPrivate::readZoneTab()
     QFile f;
     if ( !findZoneTab( f ) )
         return;
-    // Parse the zone.tab.
+    // Parse the zone.tab or the fake temp file.
     QTextStream str(&f);
     QRegExp lineSeparator("[ \t]");
     QRegExp ordinateSeparator("[+-]");
@@ -1253,6 +1301,10 @@ void KSystemTimeZonesPrivate::readZoneTab()
         // Add entry to list.
         if (tokens[0] == "??")
             tokens[0] = "";
+        // Solaris sets the empty Comments field to '-', making it not empty.
+        // Clean it up.
+        if (n > 3  &&  tokens[3] == "-")
+            tokens[3] = "";
         KTimeZone *tzone = new KSystemTimeZone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
         add(tzone);
     }
