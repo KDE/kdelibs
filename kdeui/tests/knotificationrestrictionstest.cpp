@@ -1,4 +1,4 @@
-#include "../knotificationrestrictions.h"
+#include <knotificationrestrictions.h>
 
 #include <qapplication.h>
 #include <qlabel.h>
