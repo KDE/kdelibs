@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <kxmlcore/Vector.h>
+using KXMLCore::Vector;
 
 namespace KJS {
 
@@ -141,6 +143,39 @@ RegExp::~RegExp()
 #endif
 }
 
+
+/*
+ Compute mapping from position in utf-8 to that one in the original string.
+ This echoes the structure of UString::UTF8String()
+*/ 
+static Vector<int> computeUtf8Offsets(const UString& s)
+{
+    Vector<int> originalPos;
+    const int length = s.size();
+    originalPos.reserveCapacity(length);
+    const UChar *d   = s.data();
+    
+    for (int i = 0; i != length; ++i) {
+        unsigned short c = d[i].unicode();
+        int len;
+        if (c < 0x80)
+            len = 1;
+        else if (c < 0x800)
+            len = 2; 
+        else if (c >= 0xD800 && c <= 0xDBFF && i < length && d[i+1].uc >= 0xDC00 && d[i+1].uc <= 0xDFFF)
+            len = 4; //Surrogate pair --- 4 bytes
+        else
+            len = 3;
+
+        while (len > 0)  {
+            originalPos.append(i);
+            --len;
+        }
+    }
+    originalPos.append(length); //Since code does "character after"
+    return originalPos;
+}
+
 UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 {
   if (i < 0)
@@ -176,7 +211,19 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 #ifdef APPLE_CHANGES
   const int numMatches = pcre_exec(_regex, NULL, reinterpret_cast<const uint16_t *>(s.data()), s.size(), i, 0, offsetVector, offsetVectorSize);
 #else
-  const int numMatches = pcre_exec(_regex, NULL, s.ascii(), s.size(), i, 0, offsetVector, offsetVectorSize);
+  CString str = s.UTF8String();
+  Vector<int> originalPos = computeUtf8Offsets(s);
+  
+  //Look up where the i we want starts up... it's guaranteed to be at least the input i..
+  int relI = i;
+  while (originalPos[relI] != i)
+    ++relI;
+
+  const int numMatches = pcre_exec(_regex, NULL, str.c_str(), str.size(), relI, 0, offsetVector, offsetVectorSize);
+
+  //Now go through and patch up the offsetVector
+  for (int c = 0; c < 2 * numMatches; ++c)
+    offsetVector[c] = originalPos[offsetVector[c]];
 #endif
 
   if (numMatches < 0) {
