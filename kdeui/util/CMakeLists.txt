@@ -8,6 +8,7 @@ install( FILES
  kiconengine.h
  kicon.h
  kkeyserver.h
+ kkeyserver_x11.h
  kmanagerselection.h
  knotification.h
  knotificationrestrictions.h
