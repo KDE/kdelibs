@@ -53,7 +53,7 @@
 #include "kconfig.h"
 #include "kcmdlineargs.h"
 #include "kclipboard.h"
-#include "kglobalaccel.h"
+#include "../kdeui/util/kglobalaccel.h"
 #include "kglobalsettings.h"
 #include "kdebug.h"
 #include "kglobal.h"

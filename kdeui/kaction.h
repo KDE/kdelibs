@@ -30,17 +30,17 @@
 
 #include <kdelibs_export.h>
 #include <kguiitem.h>
-#include <kicon.h>
 #include <kshortcut.h>
 
 class KActionCollection;
 class KInstance;
+class KIcon;
 
 /**
  * @short Class to encapsulate user-driven action or event
  *
  * The KAction class (and derived and super classes) extends QAction,
- * which provides a way to easily encapsulate a "real" user-selected 
+ * which provides a way to easily encapsulate a "real" user-selected
  * action or event in your program.
  *
  * For instance, a user may want to @p paste the contents of

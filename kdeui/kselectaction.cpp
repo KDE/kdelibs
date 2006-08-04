@@ -33,7 +33,7 @@
 #include <QEvent>
 #include <QToolButton>
 #include <QToolBar>
-
+#include <kicon.h>
 #include <kdebug.h>
 
 #include "kcombobox.h"

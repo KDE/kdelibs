@@ -30,6 +30,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kicon.h>
 
 #include "kmenu.h"
 #include "ktoolbarpopupaction.h"

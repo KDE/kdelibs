@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kstdaccel.h>
 #include <kmainwindow.h>
+#include <kicon.h>
 
 #include "krecentfilesaction.h"
 #include "ktogglefullscreenaction.h"
@@ -42,6 +43,14 @@
 
 namespace KStdAction
 {
+    AutomaticAction::AutomaticAction( const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot,
+                     KActionCollection *parent, const char *name )
+      : KAction( text, parent, name )
+    {
+      setIcon( KIcon( icon ) );
+      setShortcut( cut );
+      connect( this, SIGNAL( activated() ), this, slot );
+    }
 
 QStringList stdNames()
 {

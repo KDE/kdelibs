@@ -22,7 +22,6 @@
 #include <QtGui/QApplication>
 
 #include <kaction.h>
-#include <kicon.h>
 #include <klocale.h>
 #include <kstdaccel.h>
 
@@ -144,14 +143,7 @@ class AutomaticAction : public KAction
 
   public:
     AutomaticAction( const KIcon &icon, const QString &text, const QKeySequence &cut, const char *slot,
-                     KActionCollection *parent, const char *name )
-      : KAction( text, parent, name )
-    {
-      setIcon( KIcon( icon ) );
-      setShortcut( cut );
-      connect( this, SIGNAL( activated() ), this, slot );
-    }
-
+                     KActionCollection *parent, const char *name );
   public Q_SLOTS:
     inline void cut() { invokeEditSlot( "cut" ); };
     inline void copy() { invokeEditSlot( "copy" ); };

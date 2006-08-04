@@ -54,7 +54,7 @@ set(KDE4_DCOP_INCLUDES ${CMAKE_SOURCE_DIR}/dcop ${QT_INCLUDES} ${_KDE4_PLATFORM_
 # kdecore depends on DCOP  (libldtl isn't included since it's internal to kdecore)
 set(KDE4_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore
-set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kdeui/findreplace ${CMAKE_SOURCE_DIR}/kdeui/widgets ${CMAKE_SOURCE_DIR}/kdeui/itemviews ${KDE4_KDECORE_INCLUDES})
+set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx ${CMAKE_SOURCE_DIR}/kdeui ${CMAKE_SOURCE_DIR}/kdeui/findreplace ${CMAKE_SOURCE_DIR}/kdeui/util ${CMAKE_SOURCE_DIR}/kdeui/widgets ${CMAKE_SOURCE_DIR}/kdeui/itemviews ${KDE4_KDECORE_INCLUDES})
 # kio depends on kdeui
 set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio ${CMAKE_SOURCE_DIR}/kio/kio ${CMAKE_SOURCE_DIR}/kio/kfile ${CMAKE_SOURCE_DIR}/kio/bookmarks ${KDE4_KDEUI_INCLUDES})
 # kparts depends on kio

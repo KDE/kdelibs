@@ -8,11 +8,13 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+ ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
 add_subdirectory( findreplace )
 add_subdirectory( widgets )
+add_subdirectory( util )
 add_subdirectory( itemviews )
 add_subdirectory( liveui/tests )
 add_subdirectory( about )
@@ -40,7 +42,6 @@ set(kdeui_LIB_SRCS
  kurllabel.cpp
  kmenubar.cpp
  kinputdialog.cpp
- knotificationrestrictions.cpp
  kprogressdialog.cpp
  kcolordialog.cpp
  kdatetable.cpp
@@ -53,9 +54,6 @@ set(kdeui_LIB_SRCS
  kshortcutdialog.cpp
  kkeydialog.cpp
  kruler.cpp
- kcursor.cpp
- kcolormimedata.cpp
- knumvalidator.cpp
  kdialog.cpp
  kpagedialog.cpp
  kpagemodel.cpp
@@ -67,7 +65,6 @@ set(kdeui_LIB_SRCS
  kmessagebox.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
- kwordwrap.cpp
  kbugreport.cpp
  kpassworddialog.cpp
  kxmlguiclient.cpp
@@ -80,16 +77,13 @@ set(kdeui_LIB_SRCS
  kaboutkde.cpp
  kaboutapplication.cpp
  kcmodule.cpp
- kcommand.cpp
  kwindowlistmenu.cpp
  ktip.cpp
  karrowbutton.cpp
  kmainwindowiface.cpp
  kguiitem.cpp
  kstdguiitem.cpp
- kstringvalidator.cpp
  kactivelabel.cpp
- kpassivepopup.cpp
  ktoolbarhandler.cpp
  ksplashscreen.cpp
  kconfigdialog.cpp
@@ -100,18 +94,8 @@ set(kdeui_LIB_SRCS
  kpixmapregionselectordialog.cpp
  ktoolbarlabelaction.cpp
  kconfigdialogmanager.cpp
- knotification.cpp
- knotificationmanager.cpp
- kiconengine.cpp
- kicon.cpp
  ktoolbarspaceraction.cpp
- kmanagerselection.cpp
- kglobalaccel.cpp
- kkeyserver.cpp
- kcompletionbase.cpp
- kcompletion.cpp
  kmessageboxmessagehandler.cpp
- kpassivepopupmessagehandler.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -123,6 +107,25 @@ set(kdeui_LIB_SRCS
  itemviews/k3listviewsearchline.cpp
  itemviews/klistbox.cpp
  itemviews/ktreewidgetsearchline.cpp
+ util/kcolormimedata.cpp
+ util/kcommand.cpp
+ util/kcompletion.cpp
+ util/kcompletionbase.cpp
+ util/kcursor.cpp
+ util/kglobalaccel.cpp
+ util/kicon.cpp
+ util/kiconengine.cpp
+ util/kkeyserver.cpp
+ util/kmanagerselection.cpp
+ util/knotification.cpp
+ util/knotificationmanager.cpp
+ util/knotificationrestrictions.cpp
+ util/knumvalidator.cpp
+ util/kpassivepopup.cpp
+ util/kpassivepopupmessagehandler.cpp
+ util/kstringvalidator.cpp
+ util/ksystemtrayicon.cpp
+ util/kwordwrap.cpp
  widgets/kbuttonbox.cpp
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
@@ -147,7 +150,6 @@ set(kdeui_LIB_SRCS
  widgets/kpushbutton.cpp
  widgets/kselector.cpp
  widgets/ksqueezedtextlabel.cpp
- widgets/ksystemtrayicon.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
  widgets/ktextedit.cpp
@@ -157,13 +159,13 @@ set(kdeui_LIB_SRCS
 )
 
 if (Q_WS_X11)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_x11.cpp kkeyserver_x11.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_x11.cpp util/kkeyserver_x11.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_mac.cpp kkeyserver_mac.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp )
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kglobalaccel_win.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_win.cpp )
 endif (Q_WS_WIN)
 
 
@@ -201,17 +203,13 @@ install( FILES
  kmainwindow.h
  ktoolbar.h
  kmenubar.h
- knotificationrestrictions.h
  kseparator.h
  krestrictedline.h
  kkeydialog.h
  kurllabel.h
  kruler.h
- kcursor.h
  kinputdialog.h
  kactivelabel.h
- kcolormimedata.h
- knumvalidator.h
  kdialog.h
  kpagedialog.h
  kpagemodel.h
@@ -242,20 +240,15 @@ install( FILES
  kxmlguiclient.h
  kxmlguibuilder.h
  kxmlguifactory.h
- kwordwrap.h
  kedittoolbar.h
  kanimwidget.h
  kaboutkde.h
  kaboutapplication.h
- kcommand.h
  kwindowlistmenu.h
- kaccelgen.h
  ktip.h
  karrowbutton.h
  kguiitem.h
  kstdguiitem.h
- kstringvalidator.h
- kpassivepopup.h
  ksplashscreen.h
  kconfigdialog.h
  kactionselector.h
@@ -265,17 +258,8 @@ install( FILES
  ktoolbarlabelaction.h
  kshortcutdialog.h
  kconfigdialogmanager.h
- knotification.h
- kiconengine.h
- kicon.h
  ktoolbarspaceraction.h
- kmanagerselection.h
- kglobalaccel.h
- kkeyserver_x11.h
- kkeyserver.h
- kcompletion.h
  kmessageboxmessagehandler.h
- kpassivepopupmessagehandler.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
