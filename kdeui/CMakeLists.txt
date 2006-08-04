@@ -50,8 +50,6 @@ set(kdeui_LIB_SRCS
  kmainwindow.cpp
  kseparator.cpp
  krestrictedline.cpp
- keditcl1.cpp
- keditcl2.cpp
  kshortcutdialog.cpp
  kkeydialog.cpp
  kruler.cpp
@@ -206,7 +204,6 @@ install( FILES
  knotificationrestrictions.h
  kseparator.h
  krestrictedline.h
- keditcl.h
  kkeydialog.h
  kurllabel.h
  kruler.h

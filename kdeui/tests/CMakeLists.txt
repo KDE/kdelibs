@@ -414,20 +414,6 @@ kde4_add_executable(itemcontainertest RUN_UNINSTALLED ${itemcontainertest_SRCS})
 
 target_link_libraries(itemcontainertest ${KDE4_KDEUI_LIBS})
 
-
-########### next target ###############
-
-set(kedittest_SRCS
-kedittest.cpp
-)
-
-kde4_automoc(${kedittest_SRCS})
-
-kde4_add_executable(kedittest RUN_UNINSTALLED ${kedittest_SRCS})
-
-target_link_libraries(kedittest ${KDE4_KDEUI_LIBS} )
-
-
 ########### next target ###############
 
 set(kxmlguitest_SRCS
