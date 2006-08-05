@@ -148,9 +148,8 @@ RegExp::~RegExp()
  Compute mapping from position in utf-8 to that one in the original string.
  This echoes the structure of UString::UTF8String()
 */ 
-static Vector<int> computeUtf8Offsets(const UString& s)
+static void computeUtf8Offsets(const UString& s, Vector<int, 128>& originalPos)
 {
-    Vector<int> originalPos;
     const int length = s.size();
     originalPos.reserveCapacity(length);
     const UChar *d   = s.data();
@@ -173,7 +172,6 @@ static Vector<int> computeUtf8Offsets(const UString& s)
         }
     }
     originalPos.append(length); //Since code does "character after"
-    return originalPos;
 }
 
 UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
@@ -212,7 +210,8 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   const int numMatches = pcre_exec(_regex, NULL, reinterpret_cast<const uint16_t *>(s.data()), s.size(), i, 0, offsetVector, offsetVectorSize);
 #else
   CString str = s.UTF8String();
-  Vector<int> originalPos = computeUtf8Offsets(s);
+  Vector<int, 128> originalPos;
+  computeUtf8Offsets(s, originalPos);
   
   //Look up where the i we want starts up... it's guaranteed to be at least the input i..
   int relI = i;
