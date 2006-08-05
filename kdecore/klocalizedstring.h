@@ -821,7 +821,7 @@ inline QString i18ncp (const char *ctxt, const char *sing, const char *plur, int
 // <<< End of context plural calls
 
 /**
- * Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
+ * Qt's uic generates i18n( "msg", "comment" ) calls which conflict
  * with our i18n method. We use uic -tr tr2i18n to redirect
  * to the right i18n() function
 **/
