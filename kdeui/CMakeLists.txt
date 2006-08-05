@@ -96,6 +96,7 @@ set(kdeui_LIB_SRCS
  kconfigdialogmanager.cpp
  ktoolbarspaceraction.cpp
  kmessageboxmessagehandler.cpp
+ kwizard.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -260,6 +261,7 @@ install( FILES
  kconfigdialogmanager.h
  ktoolbarspaceraction.h
  kmessageboxmessagehandler.h
+ kwizard.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
