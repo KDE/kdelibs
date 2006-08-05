@@ -14,7 +14,6 @@ find $dirs -maxdepth 1 -name "*.cc" -print >> files
 find $dirs -maxdepth 1 -name "*.h" -print >> files
 echo ./kdecore/kde-config.cpp.in >> files
 $EXTRACTRC `find $dirs -maxdepth 1 \( -name \*.rc -o -name \*.ui -o -name \*.ui3 -o -name \*.ui4 -o -name \*.kcfg \) ` >> rc.cpp || exit 11
-: > kde.pot
 ### TODO: would it not be easier to use -j for xgettext from a copy of qt-messages.pot ?
 $XGETTEXT -ktranslate:1,1t -ktranslate:1c,2,2t -x qt-messages.pot --files-from=files && cat messages.po qt-messages.pot > $podir/kdelibs.pot
 rm -f dirs
