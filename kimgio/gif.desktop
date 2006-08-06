@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=GIF
+Name[x-test]=xxGIFxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=gif

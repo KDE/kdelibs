@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=EXR
+Name[x-test]=xxEXRxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=exr,EXR

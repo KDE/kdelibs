@@ -6,6 +6,7 @@ Icon=kspread_ksp
 Patterns=*.ksp;
 X-KDE-AutoEmbed=false
 Comment=KSpread 1.x Document
+Comment[x-test]=xxKSpread 1.x Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.ksp

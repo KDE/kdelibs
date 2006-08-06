@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=XBM
+Name[x-test]=xxXBMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=xbm

@@ -6,6 +6,7 @@ Icon=kpresenter_kpr
 Patterns=*.kpr;*.kpt;
 X-KDE-AutoEmbed=false
 Comment=KPresenter 1.x Document
+Comment[x-test]=xxKPresenter 1.x Documentxx
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.kpr

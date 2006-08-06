@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=TIFF
+Name[x-test]=xxTIFFxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=tiff,TIFF,tif,TIF

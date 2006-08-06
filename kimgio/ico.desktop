@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=ICO
+Name[x-test]=xxICOxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=ico

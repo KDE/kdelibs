@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PGM
+Name[x-test]=xxPGMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=pgm

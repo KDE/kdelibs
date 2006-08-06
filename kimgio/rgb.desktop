@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=RGB
+Name[x-test]=xxRGBxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat= rgb,RGB,rgba,RGBA,bw,BW,sgi,SGI

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=XV
+Name[x-test]=xxXVxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=xv

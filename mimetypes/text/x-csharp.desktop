@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=C# Source File
+Comment[x-test]=xxC# Source Filexx
 Icon=source
 Type=MimeType
 MimeType=text/x-csharp

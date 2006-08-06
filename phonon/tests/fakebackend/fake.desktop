@@ -9,4 +9,6 @@ X-KDE-PhononBackendInfo-Version=0.1
 X-KDE-PhononBackendInfo-Website=http://multimedia.kde.org/
 InitialPreference=1
 Name=Fake
+Name[x-test]=xxFakexx
 Comment=Testing Backend
+Comment[x-test]=xxTesting Backendxx

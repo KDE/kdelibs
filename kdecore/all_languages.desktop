@@ -452,6 +452,7 @@ Name[x-test]=xxRomanianxx
 [rom]
 Name=Romany
 Name[fr]=Rromani
+Name[x-test]=xxRomanyxx
 [ru]
 Name=Russian
 Name[fr]=Russe
@@ -508,6 +509,7 @@ Name[x-test]=xxSerbianxx
 [sr@Latn]
 Name=Serbian Latin
 Name[fr]=Serbe Latin
+Name[x-test]=xxSerbian Latinxx
 [ss]
 Name=Swati
 Name[x-test]=xxSwatixx
@@ -626,6 +628,7 @@ Name[x-test]=xxChinese Simplifiedxx
 [zh_HK]
 Name=Chinese (Hong Kong)
 Name[fr]=Chinois (Hong Kong)
+Name[x-test]=xxChinese (Hong Kong)xx
 [zh_TW]
 Name=Chinese Traditional
 Name[fr]=Chinois traditionnel

@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModuleInit
 Name=KDE Configuration Initialization
+Name[x-test]=xxKDE Configuration Initializationxx
 
 # the symbol (with or without the kcminit_ prefix) used by kcminit
 [PropertyDef::X-KDE-Init-Symbol]

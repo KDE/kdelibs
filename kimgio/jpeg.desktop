@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=JPEG
+Name[x-test]=xxJPEGxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=jpeg,jpg

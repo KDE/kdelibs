@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=PhononBackend
 Name=KDE Multimedia Backend
+Name[x-test]=xxKDE Multimedia Backendxx
 
 ##
 # The interface version is used by phonon to be able to only load binary

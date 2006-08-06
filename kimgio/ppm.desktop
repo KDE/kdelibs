@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PPM
+Name[x-test]=xxPPMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=ppm

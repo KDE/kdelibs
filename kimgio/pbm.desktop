@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PBM
+Name[x-test]=xxPBMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=pbm
