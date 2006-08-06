@@ -51,9 +51,10 @@ QString UString::qstring() const
 
 UString::UString( const QString &s )
 {
-    UChar* data = new UChar[ s.length() ];
-    std::memcpy( data, s.unicode(), s.length() * sizeof( UChar ) );
-    m_rep = Rep::create( data, s.length() );
+    const unsigned int len = s.length();
+    UChar *data = static_cast<UChar*>( fastMalloc( sizeof(UChar) * len ) );
+    memcpy( data, s.unicode(), len * sizeof( UChar ) );
+    m_rep = Rep::create( data, len );
 }
 
 namespace

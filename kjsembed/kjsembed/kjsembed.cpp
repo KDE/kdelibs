@@ -69,7 +69,7 @@ namespace KJS {
     UString::UString( const QString &d )
     {
         uint len = d.length();
-        UChar *dat = new UChar[len];
+        UChar *dat = static_cast<UChar*>(fastMalloc(sizeof(UChar)*len));
         memcpy( dat, d.unicode(), len * sizeof(UChar) );
         m_rep = UString::Rep::create(dat, len);
     }
