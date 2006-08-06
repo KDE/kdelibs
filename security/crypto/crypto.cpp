@@ -645,7 +645,7 @@ QString whatstr;
   untilDate->setEnabled(false);
   connect(cachePerm, SIGNAL(clicked()), SLOT(slotPermanent()));
   connect(cacheUntil, SIGNAL(clicked()), SLOT(slotUntil()));
-  connect(untilDate, SIGNAL(leftClickedURL()), SLOT(slotDatePick()));
+  connect(untilDate, SIGNAL(leftClickedUrl()), SLOT(slotDatePick()));
   whatstr = i18n("Select here to make the cache entry permanent.");
   cachePerm->setWhatsThis( whatstr);
   whatstr = i18n("Select here to make the cache entry temporary.");
