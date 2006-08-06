@@ -32,7 +32,7 @@ using KXMLCore::Vector;
 
 namespace KJS {
 
-RegExp::RegExp(const UString &p, int flags)
+RegExp::RegExp(const UString &p, char flags)
   : _flags(flags), _valid(true), _numSubPatterns(0)
 {
   // JS regexps can contain Unicode escape sequences (\uxxxx) which

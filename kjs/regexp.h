@@ -42,10 +42,10 @@ namespace KJS {
   public:
     enum { None = 0, Global = 1, IgnoreCase = 2, Multiline = 4 };
 
-    RegExp(const UString &pattern, int flags = None);
+    RegExp(const UString &pattern, char flags = None);
     ~RegExp();
 
-    int flags() const { return _flags; }
+    char flags() const { return _flags; }
     bool isValid() const { return _valid; }
 
     UString match(const UString &s, int i, int *pos = 0, int **ovector = 0);
