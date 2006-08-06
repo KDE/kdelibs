@@ -553,7 +553,8 @@ bool KateCSmartIndent::handleDoxygen (KateDocCursor &begin)
     bool insideDoxygen = false;
     if (textLine->attribute(first) == doxyCommentAttrib || textLine->attribute(textLine->lastChar()) == doxyCommentAttrib)
     {
-      if (!textLine->stringAtPos(textLine->lastChar()-1, "*/"))
+      const int last = textLine->lastChar();
+      if (last <= 0 || !textLine->stringAtPos(last-1, "*/"))
         insideDoxygen = true;
       while (textLine->attribute(first) != doxyCommentAttrib && first <= textLine->lastChar())
         first++;
