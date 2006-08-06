@@ -779,6 +779,19 @@ target_link_libraries(kbuttongrouptest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 add_test(kbuttongrouptest ${EXECUTABLE_OUTPUT_PATH}/kbuttongrouptest)
 
 
+########### kwizardtest ###############
+
+set(kwizardtest_SRCS kwizardtest.cpp )
+
+kde4_automoc(${kwizardtest_SRCS})
+
+kde4_add_executable(kwizardtest RUN_UNINSTALLED ${kwizardtest_SRCS})
+
+target_link_libraries(kwizardtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kwizardtest ${EXECUTABLE_OUTPUT_PATH}/kwizardtest)
+
+
 
 endif(KDE4_BUILD_TESTS)
 
