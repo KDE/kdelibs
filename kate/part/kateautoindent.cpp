@@ -1494,7 +1494,7 @@ bool KateCSAndSIndent::handleDoxygen (KateDocCursor &begin)
   bool doxygenAutoInsert = doc->config()->configFlags() & KateDocumentConfig::cfDoxygenAutoTyping;
 
   // starts with *: indent one space more to line up *s
-  if ( textLine->stringAtPos(first, "*") )
+  if ( first > 0 && textLine->stringAtPos(first, "*") )
     indent = indent + " ";
   // does not start with *: insert one if user wants that
   else if ( doxygenAutoInsert )
