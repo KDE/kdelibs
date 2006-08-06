@@ -57,7 +57,7 @@ namespace KJS {
 #else
     regex_t _regex;
 #endif
-    int _flags;
+    char _flags;
     bool _valid;
     unsigned _numSubPatterns;
 
