@@ -1984,6 +1984,15 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
     setInline(false);   // our object is not Inline
 }
 
+RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
+{
+    RenderTableSection *s = section();
+    if (s)
+        s->setNeedCellRecalc();
+
+    return RenderContainer::removeChildNode( child );
+}
+
 void RenderTableRow::detach()
 {
     RenderTableSection *s = section();
@@ -2234,6 +2243,9 @@ void RenderTableCell::calcMinMaxWidth()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
+
+    if (section()->needCellRecalc)
+        section()->recalcCells();
 
     RenderBlock::calcMinMaxWidth();
     if (element() && style()->whiteSpace() == NORMAL) {

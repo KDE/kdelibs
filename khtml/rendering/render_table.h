@@ -306,6 +306,8 @@ public:
 
     virtual void layout();
 
+    virtual RenderObject* removeChildNode(RenderObject* child);
+
     // The only time rows get a layer is when they have transparency.
     virtual bool requiresLayer() const { return /* style()->opacity() < 1.0f; */ false ; }
     virtual void paint(PaintInfo& i, int tx, int ty);
