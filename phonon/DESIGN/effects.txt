@@ -1,8 +1,0 @@
-If you want to write a new effect that should be usable from you Phonon
-application, I encourage you to use LADSPA. This plugin API was designed
-especially to make the effect usable for as many audio
-libraries/frameworks/applications as possible. The result is that your plugin
-can then be used by more than only one backend.
-
-It is not coincidence, that the effects API of Phonon is modeled after LADSPA,
-since those are the cross-framework plugins...
