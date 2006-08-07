@@ -817,52 +817,32 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 	*img = d->mpEffect.apply(*img, group, state);
     }
 
+    if (favIconOverlay)
+    {
+        QImage favIcon(name, "PNG");
+        int x = img->width() - favIcon.width() - 1,
+            y = img->height() - favIcon.height() - 1;
+        favIcon = favIcon.convertToFormat(QImage::Format_ARGB32);
+        *img = img->convertToFormat(QImage::Format_ARGB32);
+        for( int line = 0;
+             line < favIcon.height();
+             ++line )
+        {
+            QRgb* fpos = reinterpret_cast< QRgb* >( favIcon.scanLine( line ));
+            QRgb* ipos = reinterpret_cast< QRgb* >( img->scanLine( line + y )) + x;
+            for( int i = 0;
+                 i < favIcon.width();
+                 ++i, ++fpos, ++ipos )
+                *ipos = qRgba( ( qRed( *ipos ) * ( 255 - qAlpha( *fpos )) + qRed( *fpos ) * qAlpha( *fpos )) / 255,
+                               ( qGreen( *ipos ) * ( 255 - qAlpha( *fpos )) + qGreen( *fpos ) * qAlpha( *fpos )) / 255,
+                               ( qBlue( *ipos ) * ( 255 - qAlpha( *fpos )) + qBlue( *fpos ) * qAlpha( *fpos )) / 255,
+                               ( qAlpha( *ipos ) * ( 255 - qAlpha( *fpos )) + qAlpha( *fpos ) * qAlpha( *fpos )) / 255 );
+        }
+    }
+
     pix = QPixmap::fromImage(*img);
 
     delete img;
-
-    if (favIconOverlay)
-    {
-        QPixmap favIcon(name, "PNG");
-        int x = pix.width() - favIcon.width() - 1,
-            y = pix.height() - favIcon.height() - 1;
-        if (!pix.mask().isNull())
-        {
-            QBitmap mask = pix.mask();
-            QBitmap fmask;
-            if (!favIcon.mask().isNull())
-		fmask = favIcon.mask();
-	    else {
-		// expensive, but works
-		fmask = favIcon.createHeuristicMask();
-	    }
-#ifdef __GNUC__
-    #warning "Check this by going to a site with a favicon. I almost always get masks backwards! - Maks"
-#endif
-            //### I probably screwed it up, and it looked buggy already!
-
-            //Merge in favicon mask and the icon mask.
-            if (!fmask.isNull())
-            {
-                //Use the favicon mask as a clip region, then fill
-                QPainter p(&mask);
-                QRegion clipMask(fmask);
-                clipMask.translate(x, y);
-                p.setClipRegion(clipMask);
-                p.fillRect(x, y, favIcon.width(), favIcon.height(), Qt::color1);
-            }
-            else
-            {
-                //Just fill in the rectangle...
-                QPainter p(&mask);
-                p.fillRect(x, y, favIcon.width(), favIcon.height(), Qt::color1);
-            }
-
-            pix.setMask(mask);
-        }
-        QPainter painter( &pix );
-        painter.drawPixmap( x, y, favIcon );
-    }
 
     QPixmapCache::insert(key, pix);
     return pix;
