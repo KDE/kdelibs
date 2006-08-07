@@ -72,9 +72,6 @@ class KDEUI_EXPORT KAboutContainer : public QFrame
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
-  protected:
-    virtual void childEvent( QChildEvent *e );
-
   private:
     class Private;
     Private* const d;

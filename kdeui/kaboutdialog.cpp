@@ -738,28 +738,6 @@ KAboutContainer::~KAboutContainer()
   delete d;
 }
 
-void KAboutContainer::childEvent(QChildEvent *e)
-{
-  if (!e->added() || !e->child()->isWidgetType())
-  {
-    return;
-  }
-
-  QWidget* const w = static_cast<QWidget *>(e->child());
-  d->vbox->addWidget(w, 0, d->alignment);
-  const QSize s(sizeHint());
-  setMinimumSize(s);
-
-  const QList<QObject*> l = children(); // silence please
-  foreach (QObject *o, l) {
-	if (o->isWidgetType())
-	{
-        static_cast<QWidget *>(o)->setMinimumWidth(s.width());
-	}
-  }
-}
-
-
 QSize KAboutContainer::sizeHint(void) const
 {
   //
@@ -822,7 +800,19 @@ QSize KAboutContainer::minimumSizeHint(void) const
 void KAboutContainer::addWidget(QWidget *widget)
 {
   widget->setParent(this);
-  widget->move(QPoint(0,0));
+
+  d->vbox->addWidget(widget, 0, d->alignment);
+  const QSize s(sizeHint());
+  setMinimumSize(s);
+
+  const QList<QObject*> l = children(); // silence please
+  foreach (QObject *o, l) {
+	if (o->isWidgetType())
+	{
+        static_cast<QWidget *>(o)->setMinimumWidth(s.width());
+	}
+  }
+
 }
 
 void KAboutContainer::addPerson(const QString &_name, const QString &_email,
@@ -833,6 +823,7 @@ void KAboutContainer::addPerson(const QString &_name, const QString &_email,
   KAboutContributor* const cont = new KAboutContributor(this,
     _name, _email, _url, _task, showHeader, showFrame, showBold);
   cont->setObjectName("pers");
+  addWidget(cont);
 }
 
 
@@ -852,6 +843,7 @@ void KAboutContainer::addTitle(const QString &title, Qt::Alignment alignment,
     label->setFrameStyle(QFrame::Panel | QFrame::Raised);
 
   label->setAlignment(alignment);
+  addWidget(label);
 }
 
 
@@ -872,6 +864,7 @@ void KAboutContainer::addImage(const QString &fileName, Qt::Alignment alignment)
     label->setPixmap(pix);
   }
   label->setAlignment(alignment);
+  addWidget(label);
 }
 
 KAboutWidget::KAboutWidget(QWidget *_parent)
