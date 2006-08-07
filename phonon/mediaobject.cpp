@@ -37,8 +37,24 @@ MediaObject::MediaObject( Phonon::MediaObjectPrivate& dd, QObject* parent )
 }
 
 PHONON_INTERFACE_GETTER( KUrl, url, d->url )
-PHONON_INTERFACE_GETTER( qint64, totalTime, -1 )
 PHONON_GETTER( qint32, aboutToFinishTime, d->aboutToFinishTime )
+
+qint64 MediaObject::totalTime() const
+{
+	K_D( const MediaObject );
+	if( !d->backendObject )
+		return -1;
+	MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
+	if( iface )
+		return iface->totalTime();
+	else
+	{
+		ByteStreamInterface *iface2 = qobject_cast<ByteStreamInterface*>( d->backendObject );
+		if( iface2 )
+			return iface2->totalTime();
+	}
+	return -1;
+}
 
 qint64 MediaObject::remainingTime() const
 {

@@ -26,6 +26,7 @@ class ByteStreamInterface
 {
 	public:
 		virtual ~ByteStreamInterface() {}
+		virtual qint64 totalTime() const = 0;
 		virtual void writeData( const QByteArray& ) = 0;
 		virtual void endOfData() = 0;
 };
