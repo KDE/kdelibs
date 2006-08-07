@@ -19,13 +19,14 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 if(JASPER_FOUND)
 
+    include_directories( ${JASPER_INCLUDE_DIR} )
     set(kimg_jp2_LIB_SRCS jp2.cpp)
     kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
     target_link_libraries(kimg_jp2  ${KDE4_KDECORE_LIBS} ${JASPER_LIBRARIES} )
     
     #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_jp2 )
-install(TARGETS kimg_jp2  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
-install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
+    install(TARGETS kimg_jp2  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+    install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif(JASPER_FOUND)
 

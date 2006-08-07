@@ -61,7 +61,7 @@ class Palette
       return qRgb( rgb[ i ].r, rgb[ i ].g, rgb[ i ].b );
     }
 
-    struct RGB rgb[ 16 ];
+    class RGB rgb[ 16 ];
 };
 
 class PCXHEADER
