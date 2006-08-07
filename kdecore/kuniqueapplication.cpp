@@ -247,6 +247,10 @@ KUniqueApplication::start()
         kError() << "KUniqueApplication: Registering failed!" << endl;
      }
 
+     QByteArray saved_args;
+     QDataStream ds(&saved_args, QIODevice::WriteOnly);
+     KCmdLineArgs::saveAppArgs(ds);
+
      QByteArray new_asn_id;
 #if defined Q_WS_X11
      KStartupInfoId id;
@@ -260,7 +264,7 @@ KUniqueApplication::start()
 
      QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", con);
      QDBusReply<int> reply;
-     if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id)).isValid())
+     if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
      {
        QDBusError err = iface.lastError();
         kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl

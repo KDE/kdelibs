@@ -21,6 +21,7 @@
 #define KUNIQUEAPPLICATION_P_H
 
 #include <QtDBus/QtDBus>
+#include <kcmdlineargs.h>
 
 class KUniqueApplicationAdaptor: public QDBusAbstractAdaptor
 {
@@ -35,10 +36,17 @@ public:
   { return static_cast<KUniqueApplication *>(QDBusAbstractAdaptor::parent()); }
 
 public slots:
-  int newInstance(const QByteArray &asn_id = QByteArray())
+  int newInstance(const QByteArray &asn_id = QByteArray(), const QByteArray &args = QByteArray())
   {
     if (!asn_id.isEmpty())
       parent()->setStartupId(asn_id);
+
+    if (!args.isEmpty()) {
+      QByteArray saved_args = args;
+      QDataStream ds(&saved_args, QIODevice::ReadOnly);
+      KCmdLineArgs::loadAppArgs(ds);
+    }
+
     return parent()->newInstance();
   }
 };
