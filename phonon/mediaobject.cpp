@@ -104,6 +104,14 @@ void MediaObject::stop()
 	}
 }
 
+void MediaObject::play()
+{
+	K_D( MediaObject );
+	if( qobject_cast<ByteStreamInterface*>( d->backendObject ) && !d->kiojob )
+		d->setupKioJob();
+	AbstractMediaProducer::play();
+}
+
 PHONON_SETTER( setAboutToFinishTime, aboutToFinishTime, qint32 )
 
 void MediaObjectPrivate::setupKioJob()

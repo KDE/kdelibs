@@ -89,6 +89,10 @@ namespace Phonon
 			 * \reimp
 			 */
 			void stop();
+			/**
+			 * \reimp
+			 */
+			void play();
 
 			/**
 			 * Set the URL the MediaObject should use as media data source.
