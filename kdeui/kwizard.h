@@ -26,22 +26,22 @@ class KWizardPrivate;
 
 /**
  * This class provides a framework for wizard dialogs.
- * 
- * A wizard is a dialog that consists of a sequence of pages. 
- * A wizard's purpose is to walk the user through a process step by step. 
+ *
+ * A wizard is a dialog that consists of a sequence of pages.
+ * A wizard's purpose is to walk the user through a process step by step.
  * Wizards are useful for complex or infrequently occurring tasks that people may find difficult to learn or do.
- * 
- * KWizard provides page titles and displays Next, Back, Finish, Cancel, and Help push buttons, 
- * as appropriate to the current position in the page sequence. 
+ *
+ * KWizard provides page titles and displays Next, Back, Finish, Cancel,and Help push buttons,
+ * as appropriate to the current position in the page sequence.
  * The Finish Button has the code KDialog::User1 , The Next button is KDialog::User2 and the Back
  * button is KDialog::User3
  * The help button may be hidden using KDialog::showButton( Help , false )
- * 
- * Create and populate dialog pages that inherit from QWidget and add them to the wizard using addPage(). 
- * 
- * the function next() and back() are virtual you can inherit them if you want to override the defaults action 
+ *
+ * Create and populate dialog pages that inherit from QWidget and add them to the wizard using addPage().
+ *
+ * the function next() and back() are virtual you can inherit them if you want to override the defaults action
  * of the next and back buttons.
- * 
+ *
  * @author Olivier Goffart <ogoffart at kde.org>
  */
 class KWizard : public KPageDialog
@@ -52,33 +52,33 @@ class KWizard : public KPageDialog
          * Construct a new wizard with @p parent as parent.
          * @param parent is the parent of the widget.
          */
-        KWizard(QWidget *parent=0L, Qt::WFlags flags=0);
+        KWizard(QWidget *parent=0, Qt::WFlags flags=0);
         virtual ~KWizard();
-        
+
         /**
          * Specify if the content of the page is valid, and if the next button may be enabled on this page.
          * By default all pages are valid
-         * 
+         *
          * this will disable or enable the next button on the specified page
-         * 
+         *
          * @param page the page on which the next button will be enabled/disable
          * @param enable if true the next button will be enabled, if false it will be disabled
          */
-        void setValid( KPageWidgetItem* page, bool enable );
-        
+        void setValid(KPageWidgetItem* page, bool enable);
+
         /**
          * return if a page is valid
          * @see setValid
          */
-        bool isValid( KPageWidgetItem *page );
-        
+        bool isValid(KPageWidgetItem *page);
+
         /**
          * Specify weither a page is appropriate.
-         * 
+         *
          * A page is not appropriate if it should not be showed because the contents of others page make it unapropriate.
-         * 
+         *
          * A page which is not apropriate will not be shown.
-         * 
+         *
          * The last page should always be appropriate
          */
         void setAppropriate(KPageWidgetItem *page, bool appropriate);
@@ -88,36 +88,38 @@ class KWizard : public KPageDialog
          */
         bool isAppropriate(KPageWidgetItem *page);
 
- 
-    public slots:
+
+    public Q_SLOTS:
         /**
          * Called when the user clicks the Back button.
-         * 
+         *
          * this function will show the preceding relevant page in the sequence.
          * Do nothing if this is the current page is the first page
          */
         virtual void back();
+
         /**
          * Called when the user clicks the Next/Finish button.
-         * 
+         *
          * this function will show the next relevant page in the sequence.
          * If the current page is the last page, it will call accept()
          */
         virtual void next();
-        
-    private slots:
+
+    protected Q_SLOTS:
         void slotCurrentPageChanged();
+
     protected:
         /**
          * Constructor that call the  KPageDialog (KPageWidget *widget, QWidget *parent, Qt::WFlags flags) constructor
          */
-        KWizard (KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
+        KWizard(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
 
-        virtual void showEvent ( QShowEvent * event );
+        virtual void showEvent(QShowEvent * event);
+
     private:
         KWizardPrivate * const d;
         void init();
-        
 };
 
 

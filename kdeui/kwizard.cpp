@@ -27,36 +27,36 @@
 class KWizardPrivate
 {
     public:
-        QHash<KPageWidgetItem*,bool> valid;
-        QHash<KPageWidgetItem*,bool> appropriate;    
+        QHash<KPageWidgetItem*, bool> valid;
+        QHash<KPageWidgetItem*, bool> appropriate;
         KPageWidgetModel *pageModel;
-        
+
         QModelIndex getNext(QModelIndex nextIndex)
         {
             QModelIndex currentIndex;
             do {
                 currentIndex=nextIndex;
-                nextIndex=currentIndex.child(0,0);
-                if(!nextIndex.isValid())
-                    nextIndex=currentIndex.sibling(currentIndex.row()+1,0);
-            } while(nextIndex.isValid() && !appropriate.value(pageModel->item(nextIndex) , true) );
+                nextIndex=currentIndex.child(0, 0);
+                if (!nextIndex.isValid())
+                    nextIndex=currentIndex.sibling(currentIndex.row() + 1, 0);
+            } while (nextIndex.isValid() && !appropriate.value(pageModel->item(nextIndex), true));
             return nextIndex;
         }
-        
+
         QModelIndex getPrevious(QModelIndex nextIndex)
         {
             QModelIndex currentIndex;
             do {
                 currentIndex=nextIndex;
-                nextIndex=currentIndex.sibling(currentIndex.row()-1,0);
-                if(!nextIndex.isValid())
+                nextIndex=currentIndex.sibling(currentIndex.row() - 1, 0);
+                if (!nextIndex.isValid())
                     nextIndex=currentIndex.parent();
-            } while(nextIndex.isValid() && !appropriate.value(pageModel->item(nextIndex) , true) );
+            } while (nextIndex.isValid() && !appropriate.value(pageModel->item(nextIndex), true));
             return nextIndex;
         }
 };
 
-KWizard::KWizard(QWidget * parent, Qt::WFlags flags ) : KPageDialog(parent,flags) , d(new KWizardPrivate)
+KWizard::KWizard(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags), d(new KWizardPrivate)
 {
     init();
     //workaround to get the page model
@@ -65,7 +65,7 @@ KWizard::KWizard(QWidget * parent, Qt::WFlags flags ) : KPageDialog(parent,flags
     d->pageModel=static_cast<KPageWidgetModel*>(pagewidget->model());
 }
 
-KWizard::KWizard(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget,parent,flags) , d(new KWizardPrivate)
+KWizard::KWizard(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget, parent, flags), d(new KWizardPrivate)
 {
     init();
     d->pageModel=static_cast<KPageWidgetModel*>(widget->model());
@@ -78,33 +78,33 @@ KWizard::~KWizard()
 
 void KWizard::init()
 {
-    setButtons( Cancel | User1 | User2 | User3 | Help );
-    setButtonText(User3 , i18n("Back"));
-    setButtonText(User2 , i18n("Next"));
-    setButtonText(User1 , i18n("Finish"));
-    setDefaultButton( User2 );
+    setButtons(Cancel | User1 | User2 | User3 | Help);
+    setButtonText(User3, i18n("Back"));
+    setButtonText(User2, i18n("Next"));
+    setButtonText(User1, i18n("Finish"));
+    setDefaultButton(User2);
     showButtonSeparator(true);
     setFaceType(Plain);
-    
-    connect( this, SIGNAL(user3Clicked()), this, SLOT(back()) );
-    connect( this, SIGNAL(user2Clicked()), this, SLOT(next()) );
-    connect( this, SIGNAL(user1Clicked()), this, SLOT(accept()) );
-    
-    connect( this , SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)) , this, SLOT(slotCurrentPageChanged()) );
+
+    connect(this, SIGNAL(user3Clicked()), this, SLOT(back()));
+    connect(this, SIGNAL(user2Clicked()), this, SLOT(next()));
+    connect(this, SIGNAL(user1Clicked()), this, SLOT(accept()));
+
+    connect(this, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)), this, SLOT(slotCurrentPageChanged()));
 }
 
 
 void KWizard::back()
 {
     QModelIndex nextIndex=d->getPrevious(d->pageModel->index(currentPage()));
-    if(nextIndex.isValid())
+    if (nextIndex.isValid())
         setCurrentPage(d->pageModel->item(nextIndex));
 }
 
 void KWizard::next()
 {
     QModelIndex nextIndex=d->getNext(d->pageModel->index(currentPage()));
-    if(nextIndex.isValid())
+    if (nextIndex.isValid())
         setCurrentPage(d->pageModel->item(nextIndex));
 }
 
@@ -112,13 +112,13 @@ void KWizard::next()
 void KWizard::setValid(KPageWidgetItem * page, bool enable)
 {
     d->valid[page]=enable;
-    if(page == currentPage())
+    if (page == currentPage())
         slotCurrentPageChanged();
 }
 
 bool KWizard::isValid(KPageWidgetItem * page)
 {
-    return d->valid.value(page,true);
+    return d->valid.value(page, true);
 }
 
 void KWizard::slotCurrentPageChanged()
@@ -126,12 +126,12 @@ void KWizard::slotCurrentPageChanged()
     QModelIndex currentIndex=d->pageModel->index(currentPage());
     //change the caption of the next/finish button
     QModelIndex nextIndex=d->getNext(currentIndex);
-    enableButton(User1,!nextIndex.isValid() && isValid(currentPage()));
-    enableButton(User2,nextIndex.isValid() && isValid(currentPage()));    
-    setDefaultButton(nextIndex.isValid() ? User2 : User1 );
+    enableButton(User1, !nextIndex.isValid() && isValid(currentPage()));
+    enableButton(User2, nextIndex.isValid() && isValid(currentPage()));
+    setDefaultButton(nextIndex.isValid() ? User2 : User1);
     //enable or disable the back button;
     nextIndex=d->getPrevious(currentIndex);
-    enableButton(User3,nextIndex.isValid());
+    enableButton(User3, nextIndex.isValid());
 }
 
 void KWizard::showEvent(QShowEvent * event)
@@ -145,9 +145,9 @@ void KWizard::setAppropriate(KPageWidgetItem * page, bool appropriate)
     d->appropriate[page]=appropriate;
 }
 
-bool KWizard::isAppropriate( KPageWidgetItem * page)
+bool KWizard::isAppropriate(KPageWidgetItem * page)
 {
-    return d->appropriate.value(page,true);
+    return d->appropriate.value(page, true);
 }
 
 #include "kwizard.moc"
