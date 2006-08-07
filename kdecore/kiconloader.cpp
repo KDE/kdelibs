@@ -850,33 +850,34 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
 	*img = d->mpEffect.apply(*img, group, state);
     }
 
+    if (favIconOverlay)
+    {
+        QImage favIcon(name, "PNG");
+        int x = img->width() - favIcon.width() - 1,
+            y = img->height() - favIcon.height() - 1;
+        if( favIcon.depth() != 32 )
+            favIcon = favIcon.convertDepth( 32 );
+        if( img->depth() != 32 )
+            *img = img->convertDepth( 32 );
+        for( int line = 0;
+             line < favIcon.height();
+             ++line )
+        {
+            QRgb* fpos = reinterpret_cast< QRgb* >( favIcon.scanLine( line ));
+            QRgb* ipos = reinterpret_cast< QRgb* >( img->scanLine( line + y )) + x;
+            for( int i = 0;
+                 i < favIcon.width();
+                 ++i, ++fpos, ++ipos )
+                *ipos = qRgba( ( qRed( *ipos ) * ( 255 - qAlpha( *fpos )) + qRed( *fpos ) * qAlpha( *fpos )) / 255,
+                               ( qGreen( *ipos ) * ( 255 - qAlpha( *fpos )) + qGreen( *fpos ) * qAlpha( *fpos )) / 255,
+                               ( qBlue( *ipos ) * ( 255 - qAlpha( *fpos )) + qBlue( *fpos ) * qAlpha( *fpos )) / 255,
+                               ( qAlpha( *ipos ) * ( 255 - qAlpha( *fpos )) + qAlpha( *fpos ) * qAlpha( *fpos )) / 255 );
+        }
+    }
+
     pix.convertFromImage(*img);
 
     delete img;
-
-    if (favIconOverlay)
-    {
-        QPixmap favIcon(name, "PNG");
-        int x = pix.width() - favIcon.width() - 1,
-            y = pix.height() - favIcon.height() - 1;
-        if (pix.mask())
-        {
-            QBitmap mask = *pix.mask();
-            QBitmap fmask;
-            if (favIcon.mask())
-		fmask = *favIcon.mask();
-	    else {
-		// expensive, but works
-		fmask = favIcon.createHeuristicMask();
-	    }
-
-            bitBlt(&mask, x, y, &fmask,
-                   0, 0, favIcon.width(), favIcon.height(),
-                   favIcon.mask() ? Qt::OrROP : Qt::SetROP);
-            pix.setMask(mask);
-        }
-        bitBlt(&pix, x, y, &favIcon);
-    }
 
     QPixmapCache::insert(key, pix);
     return pix;
