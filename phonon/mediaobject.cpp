@@ -149,7 +149,7 @@ void MediaObjectPrivate::setupKioStreaming()
 
 void MediaObjectPrivate::_k_bytestreamNeedData()
 {
-	if( kiojob->isSuspended() )
+	if( kiojob && kiojob->isSuspended() )
 		kiojob->resume();
 }
 
