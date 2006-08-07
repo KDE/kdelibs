@@ -239,8 +239,6 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if ( dynamic_cast<QLabel*>( it->m_widget ) && it->m_widget->inherits("KURLLabel") )
              continue;
 
-        kdDebug(131) << "write " << cnt << " " << it->m_widget->className() << " " <<contents[cnt].accelerated() << endl;
-
         int tprop = it->m_widget->metaObject()->findProperty("text", true);
         if (tprop != -1)  {
             if (checkChange(contents[cnt]))
@@ -256,7 +254,6 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     for (Item *it = item->m_children->first(); it != 0;
          it = item->m_children->next())
     {
-        kdDebug(131) << "children " << it->m_widget->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
     }
@@ -496,7 +493,6 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
 
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
-    kdDebug(131) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
@@ -690,14 +686,12 @@ void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString 
 
   // initally remove all accelerators
   for (KAccelStringList::Iterator it = result.begin(); it != result.end(); ++it) {
-      kdDebug(131) << "reset " << ( *it ).pure() << endl;
     (*it).setAccel(-1);
   }
 
   // pick the highest bids
   for (uint cnt=0; cnt<accel_strings.count(); ++cnt)
   {
-      kdDebug(131) << "cnt " << accel_strings[cnt].pure() << endl;
     int max = 0, index = -1, accel = -1;
 
     // find maximum weight
