@@ -155,7 +155,7 @@ void MediaObjectPrivate::_k_bytestreamNeedData()
 
 void MediaObjectPrivate::_k_bytestreamEnoughData()
 {
-	if( !kiojob->isSuspended() )
+	if( kiojob && !kiojob->isSuspended() )
 		kiojob->suspend();
 }
 
