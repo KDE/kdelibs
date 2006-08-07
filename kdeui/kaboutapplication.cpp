@@ -90,7 +90,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   {
     QString authorPageTitle = authorCount == 1 ?
       i18n("A&uthor") : i18n("A&uthors");
-    KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle );
+    KAboutContainer *authorPage = addScrolledContainerPage( authorPageTitle, Qt::AlignLeft, Qt::AlignLeft );
 
     if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty ())
     {
