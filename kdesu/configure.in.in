@@ -6,6 +6,14 @@ else
     AC_DEFINE_UNQUOTED(__PATH_SU, "$path_su", [path to su])
 fi
 
+dnl Check for sudo
+AC_PATH_PROG(path_sudo, "sudo", "no")
+if test "$path_sudo" = "no"; then
+    AC_MSG_WARN(sudo was not found)
+else
+    AC_DEFINE_UNQUOTED(__PATH_SUDO, "$path_sudo", [path to sudo])
+fi
+
 dnl Check for POSIX.1b scheduling
 AC_MSG_CHECKING([POSIX.1b scheduling])
 AC_TRY_LINK([

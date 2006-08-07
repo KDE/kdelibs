@@ -48,6 +48,7 @@
 #include <qcstring.h>
 #include <qfile.h>
 
+#include <kconfig.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 
@@ -73,7 +74,15 @@ int PtyProcess::waitMS(int fd,int ms)
 */
 bool PtyProcess::checkPid(pid_t pid)
 {
+	KConfig* config = KGlobal::config();
+	config->setGroup("super-user-command");
+	QString superUserCommand = config->readEntry("super-user-command", "sudo");
+	//sudo does not accept signals from user so we except it
+	if (superUserCommand == "sudo") {
+		return true;
+	} else {
 	return kill(pid,0) == 0;
+	}
 }
 
 /*
