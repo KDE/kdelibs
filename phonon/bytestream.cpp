@@ -28,7 +28,7 @@ namespace Phonon
 {
 PHONON_HEIR_IMPL( AbstractMediaProducer )
 
-PHONON_GETTER( qint64, totalTime, -1 )
+PHONON_INTERFACE_GETTER( qint64, totalTime, -1 )
 PHONON_GETTER( qint32, aboutToFinishTime, d->aboutToFinishTime )
 PHONON_GETTER( qint64, streamSize, d->streamSize )
 PHONON_GETTER( bool, streamSeekable, d->streamSeekable )
