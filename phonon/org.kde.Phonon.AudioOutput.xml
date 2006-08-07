@@ -1,0 +1,12 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.Phonon.AudioOutput" >
+    <method name="name" >
+      <arg direction="out" type="s" name="name" />
+    </method>
+    <method name="category" >
+      <arg direction="out" type="s" name="category" />
+    </method>
+    <property access="readwrite" type="d" name="volume" />
+  </interface>
+</node>
