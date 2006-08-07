@@ -25,6 +25,14 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 
+
+static KCmdLineOptions options[] =
+{
+    { "!+[argument]", "arguments passed to new instance", 0},
+        KCmdLineLastOption
+};
+
+
 class TestApp : public KUniqueApplication
 {
 public:
@@ -36,7 +44,13 @@ public:
 int
 TestApp::newInstance( )
 {
-   qWarning("NewInstance");
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    qWarning("NewInstance");
+    for ( int i = 0; i < args->count(); i++ )
+    {
+        qWarning("argument %d : %s"  , i , args->arg(i) );
+    } 
+ 
    return 0;
 }
 
@@ -45,6 +59,7 @@ main(int argc, char *argv[])
 {
    KAboutData about("kuniqueapptest", "kuniqueapptest", "version");
    KCmdLineArgs::init(argc, argv, &about);
+   KCmdLineArgs::addCmdLineOptions( options ); 
    KUniqueApplication::addCmdLineOptions();
 
    if (!TestApp::start())
