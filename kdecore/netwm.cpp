@@ -3154,7 +3154,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 2;
 	break;
 
-    case Tool:
+    case Toolbar:
 	data[0] = net_wm_window_type_toolbar;
 	data[1] = None;
 	len = 1;
@@ -3924,7 +3924,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 		    else if ((Atom) types[count] == net_wm_window_type_dock)
 			p->types[ pos++ ] = Dock;
 		    else if ((Atom) types[count] == net_wm_window_type_toolbar)
-			p->types[ pos++ ] = Tool;
+			p->types[ pos++ ] = Toolbar;
 		    else if ((Atom) types[count] == net_wm_window_type_menu)
 			p->types[ pos++ ] = Menu;
 		    else if ((Atom) types[count] == net_wm_window_type_dialog)

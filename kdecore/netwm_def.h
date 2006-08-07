@@ -299,9 +299,8 @@ public:
 	**/
 	TopMenu  = 7, // NON STANDARD
 	/**
-	   @deprecated Use Toolbar instead
+	   indicates a utility window
 	**/
-	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
 	Utility  = 8,
 	/**
 	   indicates that this window is a splash screen window.
