@@ -226,7 +226,8 @@ check_prototype_exists(seteuid unistd.h             HAVE_SETEUID_PROTO)
 # check for existing datatypes
 
 set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
-check_type_size("struct ucred" HAVE_STRUCT_UCRED)                # kdesu
+check_type_size("struct ucred" HAVE_STRUCT_UCRED)              # kdesu
+check_type_size(time_t SIZEOF_TIME_T)                          # kdecore
 
 set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 

@@ -187,6 +187,18 @@ void KTimeZonesTest::abbreviation()
     QCOMPARE(losAngeles->abbreviation(summer), QByteArray("PDT"));
 }
 
+void KTimeZonesTest::timet()
+{
+    QDateTime t1(QDate(1970,1,2), QTime(1,30,5), Qt::UTC);
+    QDateTime t2(QDate(1969,12,30), QTime(22,29,55), Qt::UTC);
+    time_t t1t = KTimeZone::toTime_t(t1);
+    time_t t2t = KTimeZone::toTime_t(t2);
+    QCOMPARE((int)t1t, 86400 + 3600 + 30*60 + 5);
+    QCOMPARE((int)t2t, -(86400 + 3600 + 30*60 + 5));
+    QCOMPARE(KTimeZone::fromTime_t(t1t), t1);
+    QCOMPARE(KTimeZone::fromTime_t(t2t), t2);
+}
+
 void KTimeZonesTest::toUtc()
 {
     // Convert to UTC.
@@ -279,8 +291,8 @@ void KTimeZonesTest::tzfileOffsetAtZoneTime()
     int offset2;
     QCOMPARE(london->offsetAtZoneTime(aGmt, &offset2), 0);
     QCOMPARE(offset2, 0);
-    QCOMPARE(london->offsetAtZoneTime(aInvalid, &offset2), 0);
-    QCOMPARE(offset2, 0);
+    QCOMPARE(london->offsetAtZoneTime(aInvalid, &offset2), KTimeZone::InvalidOffset);
+    QCOMPARE(offset2, KTimeZone::InvalidOffset);
     QCOMPARE(london->offsetAtZoneTime(aBst, &offset2), 3600);
     QCOMPARE(offset2, 3600);
     QCOMPARE(london->offsetAtZoneTime(bBst, &offset2), 3600);

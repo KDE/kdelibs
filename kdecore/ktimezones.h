@@ -425,6 +425,8 @@ public:
 
     /**
      * Return the UTC offset in seconds during this phase.
+     * The UTC offset is the number of seconds which you must add to UTC
+     * to get local time.
      *
      * @return offset in seconds to add to UTC
      */
@@ -480,7 +482,7 @@ private:
  * Leap seconds adjustment for a time zone.
  *
  * This class defines a leap seconds adjustment for a time zone by its UTC time of
- * occurrence and the number of leap seconds to be added.
+ * occurrence and the cumulative number of leap seconds to be added at that time.
  *
  * @short Leap seconds adjustment for a time zone
  * @see KTimeZone, KTimeZoneData
@@ -512,7 +514,8 @@ public:
     QDateTime dateTime() const;
 
     /**
-     * Return the number of leap seconds to be added after this change occurs.
+     * Return the cumulative number of leap seconds to be added after this
+     * change occurs.
      *
      * @return number of leap seconds
      */
@@ -706,7 +709,9 @@ public:
      *                     UTC offset for the second occurrence. Otherwise, it is set
      *                     the same as the return value.
      * @return offset in seconds. If @p zoneDateTime occurs twice, it is the offset at the
-     *         first occurrence which is returned.
+     *         first occurrence which is returned. If @p zoneDateTime does not exist because
+     *         of daylight savings time shifts, InvalidOffset is returned. If any other error
+     *         occurs, 0 is returned.
      */
     virtual int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
 
@@ -789,17 +794,24 @@ public:
     /**
      * Find the daylight savings time phase which is current at a given UTC or
      * local time.
-     * Because of daylight savings time shifts, a local time may occur twice. Optionally,
-     * the phases current at both occurrences of @p dt are calculated.
+     *
+     * Because of daylight savings time shifts, a local time may occur twice or
+     * may not occur at all. In the former case, the phases current at
+     * both occurrences of @p dt may optionally be calculated and returned in
+     * @p secondPhase. The latter case may optionally be detected by use of
+     * @p validTime.
      *
      * @param dt date/time
      * @param secondPhase if non-null, and the @p dt occurs twice, receives the
      *                     phase for the second occurrence. Otherwise, it is set
      *                     the same as the return value.
+     * @param validTime if non-null, is set to false if @p dt does not occur, or
+     *                  to true otherwise
      * @return daylight savings time phase with a single start date/time, or
-     *         invalid if @p dt is outside the defined range of the phase data
+     *         invalid either if @p dt is either outside the defined range of the
+     *         phase data or if @p dt does not occur
      */
-    KTimeZonePhase phase(const QDateTime &dt, KTimeZonePhase *secondPhase = 0) const;
+    KTimeZonePhase phase(const QDateTime &dt, KTimeZonePhase *secondPhase = 0, bool *validTime = 0) const;
 
     /**
      * Find the first daylight savings time phase strictly after a given UTC or
@@ -861,11 +873,22 @@ public:
     /**
      * Converts a UTC QDateTime to a UTC time, measured in seconds since 00:00:00 UTC
      * 1st January 1970 (as returned by time(2)).
+     * QDateTime::toTime_t() returns an unsigned value. This method returns a time_t
+     * value, which is signed.
      *
      * @return converted time, or -1 if the date is out of range for time_t or
      *         @p utcDateTime.timeSpec() is not Qt::UTC 
      */
     static time_t toTime_t(const QDateTime &utcDateTime);
+
+    /** Indicates an invalid UTC offset. This is returned by offsetAtZoneTime() when
+     *  the local time does not occur due to a shift to daylight savings time.
+     */
+    static const int InvalidOffset;
+
+    /** Indicates an invalid time_t value.
+     */
+    static const time_t InvalidTime_t;
 
     /**
      * A representation for unknown locations; this is a float
@@ -1016,6 +1039,13 @@ public:
     virtual QList<int> utcOffsets() const;
 
     /**
+     * Returns the UTC offset to use before the start of data for the time zone.
+     *
+     * @return UTC offset
+     */
+    int previousUtcOffset() const;
+
+    /**
      * Return all daylight savings time phases.
      *
      * Note that some time zone data sources (such as system time zones accessed
@@ -1030,17 +1060,24 @@ public:
     /**
      * Find the daylight savings time phase which is current at a given UTC or
      * local time.
-     * Because of daylight savings time shifts, a local time may occur twice. Optionally,
-     * the phases current at both occurrences of @p dt are calculated.
+     *
+     * Because of daylight savings time shifts, a local time may occur twice or
+     * may not occur at all. In the former case, the phases current at
+     * both occurrences of @p dt may optionally be calculated and returned in
+     * @p secondPhase. The latter case may optionally be detected by use of
+     * @p validTime.
      *
      * @param dt date/time
      * @param secondPhase if non-null, and the @p dt occurs twice, receives the
      *                     phase for the second occurrence. Otherwise, it is set
      *                     the same as the return value.
+     * @param validTime if non-null, is set to false if @p dt does not occur, or
+     *                  to true otherwise
      * @return daylight savings time phase with a single start date/time, or
-     *         invalid if @p dt is outside the defined range of the phase data
+     *         invalid either if @p dt is either before the start of the phase
+     *         data or if @p dt does not occur
      */
-    KTimeZonePhase phase(const QDateTime &dt, KTimeZonePhase *secondPhase = 0) const;
+    KTimeZonePhase phase(const QDateTime &dt, KTimeZonePhase *secondPhase = 0, bool *validTime = 0) const;
 
     /**
      * Find the first daylight savings time phase strictly after a given UTC or
@@ -1089,8 +1126,10 @@ protected:
      * Initialise the daylight savings time phase list.
      *
      * @param phases list of phases
+     * @param previousUtcOffset UTC offset to use before the start of the first
+     *                          phase
      */
-    void setPhases(const QList<KTimeZonePhase> &phases);
+    void setPhases(const QList<KTimeZonePhase> &phases, int previousUtcOffset);
 
     /**
      * Initialise the leap seconds adjustment list.

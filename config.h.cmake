@@ -202,6 +202,8 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 
 #cmakedefine GETMNTINFO_USES_STATVFS 1
 
+#cmakedefine SIZEOF_TIME_T ${SIZEOF_TIME_T}
+
 /* Defined to 1 if you have a tm_gmtoff member in struct tm */
 #cmakedefine HAVE_TM_GMTOFF 1
 

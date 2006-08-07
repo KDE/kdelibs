@@ -223,7 +223,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
     QList<QByteArray> abbreviations;
     for (i = 0;  i < abbrCharCount;  ++n, i += strlen(abbrs + i) + 1)
     {
-	abbreviations += QByteArray(abbrs + i);
+        abbreviations += QByteArray(abbrs + i);
         // Convert the LocalTimeTypes pointer to a sequential index
         ltt = localTimeTypes;
         for (unsigned j = 0;  j < nLocalTimeTypes;  ++ltt, ++j)
@@ -273,20 +273,21 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
     // Find the starting offset from UTC to use before the first transition time.
     // This is first non-daylight savings local time type, or if there is none,
     // the first local time type.
-    int stdoffset = (nLocalTimeTypes > 0) ? localTimeTypes[0].gmtoff : 0;
+    int firstoffset = (nLocalTimeTypes > 0) ? localTimeTypes[0].gmtoff : 0;
     ltt = localTimeTypes;
     for (i = 0;  i < nLocalTimeTypes;  ++ltt, ++i)
     {
         if (!ltt->isdst)
         {
-            stdoffset = ltt->gmtoff;
+            firstoffset = ltt->gmtoff;
             break;
         }
     }
 
     // Finally compile the time transition data into a list of KTimeZonePhase instances
     QVector< QList<QDateTime> >  timeLists(nLocalTimeTypes);
-    int offset = stdoffset;
+    int stdoffset = firstoffset;
+    int offset    = stdoffset;
     TransitionTime *tt = transitionTimes;
     for (i = 0;  i < nTransitionTimes;  ++tt, ++i)
     {
@@ -332,7 +333,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         phases += KTimeZonePhase(timeLists[i], ltt->gmtoff, abbrev, ltt->isdst);
     }
     delete[] localTimeTypes;
-    data->setPhases(phases);
+    data->setPhases(phases, firstoffset);
 
     return data;
 }

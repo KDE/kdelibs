@@ -34,6 +34,7 @@ private Q_SLOTS:
     void offsetAtUtc();
     void offsetAtZoneTime();
     void abbreviation();
+    void timet();
     void toUtc();
     void toZoneTime();
     void convert();
