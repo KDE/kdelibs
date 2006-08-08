@@ -1055,7 +1055,12 @@ int TCPSlaveBase::verifyCertificate()
       KConfig *config = new KConfig("kioslaverc");
       config->setGroup("Notification Messages");
 
-      if (!config->readEntry("WarnOnEnterSSLMode", true)) {
+      bool dialogBoxStatus = false;
+      if( config->hasKey("WarnOnEnterSSLMode"))
+        dialogBoxStatus = true;
+      bool keyStatus = config->readBoolEntry("WarnOnEnterSSLMode", true);
+      dialogBoxStatus = dialogBoxStatus && keyStatus;
+      if (!keyStatus) {
           config->deleteEntry("WarnOnEnterSSLMode");
           config->sync();
           d->kssl->settings()->setWarnOnEnter(false);
@@ -1075,6 +1080,10 @@ int TCPSlaveBase::verifyCertificate()
           uis.call("showSSLInfoDialog",
                    theurl, qVariantFromValue(adjusted), metaData("window-id").toLongLong());
       }
+      //Laurent: When we display messagebox "Security Information" and we say "don't ask next time"
+      //we can't have a result == KMessageBox::No => we create a loop.
+      if(dialogBoxStatus)
+          break;
       } while (result != KMessageBox::No);
    }
 
