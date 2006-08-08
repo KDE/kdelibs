@@ -2,9 +2,10 @@
 #define SCRIPTSDOCK_H
 
 #include <QDockWidget>
-#include <QTreeWidgetItem>
 
-class QTreeWidget;
+
+class QTreeView;
+class QStandardItemModel;
 
 namespace KJS
 {
@@ -24,14 +25,20 @@ public slots:
     void documentDestroyed(KJS::DebugDocument *document);
 
 signals:
-    void displayScript(KJS::DebugDocument *document);
+     void displayScript(KJS::DebugDocument *document);
 
 private slots:
-    void scriptSelected(QTreeWidgetItem *item, int column);
+    void scriptSelected(const QModelIndex &idx);
 
 private:
-    QTreeWidget *m_widget;
-    QHash<KJS::DebugDocument*, QTreeWidgetItem*> m_documents;
+    void updateModel();
+//     QTreeWidget *m_widget;
+//     QHash<KJS::DebugDocument*, QTreeWidgetItem*> m_documents;
+
+    QHash<QString, KJS::DebugDocument*> m_urlDocLut;
+    QList<KJS::DebugDocument*> m_documents;
+    QTreeView *m_view;
+    QStandardItemModel *m_model;
 };
 
 #endif

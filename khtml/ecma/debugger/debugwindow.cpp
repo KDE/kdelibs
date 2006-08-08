@@ -17,7 +17,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "kjs_proxy.h"
+#include <QSharedData>
+#include <QDebug>
 
 #include <ktoolbar.h>
 #include <kstatusbar.h>
@@ -48,6 +49,7 @@
 #include <ktexteditor/editorchooser.h>
 #include <ktexteditor/cursor.h>
 
+#include "kjs_proxy.h"
 #include "kjs_dom.h"
 #include "kjs_binding.h"
 #include "khtml_part.h"
@@ -241,7 +243,7 @@ void DebugWindow::createTabWidget()
     closeTabButton->setCursor(Qt::ArrowCursor);
     closeTabButton->setAutoRaise(true);
     closeTabButton->setIcon(QIcon(":/images/removetab.png"));
-    QObject::connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
+    connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
     closeTabButton->setToolTip(tr("Close source"));
     closeTabButton->setEnabled(true);
     layout->addWidget(m_tabWidget);
@@ -283,6 +285,10 @@ void DebugWindow::stepOver()
 
 DebugWindow::~DebugWindow()
 {
+    while (!m_documentList.isEmpty())
+        delete m_documentList.takeFirst();
+
+    m_documentList.clear();
 }
 
 // -------------------------------------------------------------
@@ -310,11 +316,9 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
     {
 //        if (!m_nextUrl.isEmpty()) // Not in our cache, but has a URL
 //        {
-
             document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
             m_documents[key] = document;
             m_sourceIdLookup[sourceId] = document;
-
 //        }
     }
     else
@@ -346,7 +350,7 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
     {
         m_scripts->documentDestroyed(document);
         if (!document->deleteFragment(sourceId))   // this means we've removed all the source fragments
-            document->deleteLater();
+            delete document;
     }
 
     return (m_mode != Stop);
@@ -376,33 +380,44 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
     Q_UNUSED(firstLine);
     Q_UNUSED(lastLine);
 
-    kDebug() << "***************************** atStatement ***************************************************" << endl
-             << "      sourceId: " << sourceId << endl
-             << "     firstLine: " << firstLine << endl
-             << "      lastLine: " << lastLine << endl;
+//     kDebug() << "***************************** atStatement ***************************************************" << endl
+//              << "      sourceId: " << sourceId << endl
+//              << "     firstLine: " << firstLine << endl
+//              << "      lastLine: " << lastLine << endl;
 
     DebugDocument *document = m_sourceIdLookup[sourceId];
     if (document)
     {
-        kDebug() << "found document for sourceId" << endl;
-        QVector<int> bpoints = document->breakpoints();
-        foreach (int bpoint, bpoints)
-        {
-            kDebug() << " > " << bpoint << endl;
-        }
+//         kDebug() << "found document for sourceId" << endl;
+//         QVector<int> bpoints = document->breakpoints();
+//         foreach (int bpoint, bpoints)
+//         {
+//             kDebug() << " > " << bpoint << endl;
+//         }
 
+/*
         int numLines = lastLine - firstLine;
         for (int i = 0; i < numLines; i++)
         {
-            if (document->hasBreakpoint(firstLine))
+            int lineNumber = firstLine + i;
+            kDebug() << "breakpoint at line " << lineNumber << "?" << endl;
+            if (document->hasBreakpoint(lineNumber))
             {
+                kDebug() << "Hey! we actually found a breakpoint!" << endl;
                 // Lets try a dump of the scope chain now..
                 m_localVariables->display(exec->dynamicInterpreter());
             }
       }
+*/
+        if (document->hasBreakpoint(firstLine))
+        {
+            kDebug() << "Hey! we actually found a breakpoint!" << endl;
+            // Lets try a dump of the scope chain now..
+            m_localVariables->display(exec);
+        }
     }
 
-    kDebug() << "*********************************************************************************************" << endl;
+//     kDebug() << "*********************************************************************************************" << endl;
 
     return (m_mode != Stop);
 }
@@ -415,7 +430,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
     Q_UNUSED(function);
     Q_UNUSED(args);
 
-    kDebug() << "callEvent" << endl;
+//     kDebug() << "callEvent" << endl;
 
     return (m_mode != Stop);
 }
@@ -427,7 +442,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     Q_UNUSED(lineno);
     Q_UNUSED(function);
 
-    kDebug() << "returnEvent" << endl;
+//     kDebug() << "returnEvent" << endl;
 
     return (m_mode != Stop);
 }
@@ -446,9 +461,16 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         return;
     }
 
-    KTextEditor::Document *doc = m_editor->createDocument(0);
-    m_documentList.append(doc);
-    m_documentLut[doc] = document;
+    KTextEditor::Document *doc = 0;
+    doc = m_debugLut[document];     // Check to see if we've already worked on this document
+    if (!doc)
+    {
+        doc = m_editor->createDocument(0);
+        m_documentList.append(doc);
+
+        m_debugLut[document] = doc;
+        m_documentLut[doc] = document;
+    }
 
     KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(doc);
     if (highlightingInterface)
@@ -467,15 +489,16 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         }
         if (modeNumber != 0)
         {
-            kDebug() << "Found JavaScript Highlighting Mode" << endl;
+//             kDebug() << "Found JavaScript Highlighting Mode" << endl;
             highlightingInterface->setHlMode(modeNumber);
         }
     }
 
-/*
-    QList<SourceFragment> fragments = document->code();
+    QList<SourceFragment> fragments = document->fragments();
     foreach (SourceFragment fragment, fragments)
     {
+        kDebug() << "fragment: " << fragment.source << endl;
+
         int line = fragment.baseLine;
         int col = 1;
 
@@ -483,8 +506,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         cur.setPosition(line, col);
         doc->insertText(cur, fragment.source);
     }
-*/
-    doc->setText(document->source());
+//    doc->setText(document->source());
 
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
     KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
@@ -517,19 +539,22 @@ void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mar
     if (!debugDocument)
         return;
 
+    int lineNumber = mark.line + 1;         // we do this because bookmarks are technically set
+                                            // the line before what looks like the line you chose..
+
     switch(action)
     {
         case KTextEditor::MarkInterface::MarkAdded:
-            debugDocument->setBreakpoint(mark.line);
+            debugDocument->setBreakpoint(lineNumber);
             break;
         case KTextEditor::MarkInterface::MarkRemoved:
-            debugDocument->removeBreakpoint(mark.line);
+            debugDocument->removeBreakpoint(lineNumber);
             break;
     }
 
     kDebug() << "breakpoint set for: " << endl
              << "document: " << document->documentName() << endl
-             << "line: " << mark.line << " type: " << mark.type << endl;
+             << "line: " << lineNumber << " type: " << mark.type << endl;
 
     kDebug() << "breakpoints at lines:" << endl;
     QVector<int> bpoints = debugDocument->breakpoints();
@@ -544,5 +569,188 @@ void DebugWindow::closeTab()
     m_openDocuments.removeAt(idx);
     if (m_openDocuments.isEmpty())
         m_tabWidget->hide();
+}
+
+
+void DebugWindow::enterDebugSession(KJS::ExecState *exec)
+{
+    // This "enters" a new debugging session, i.e. enables usage of the debugging window
+    // It re-enters the qt event loop here, allowing execution of other parts of the
+    // program to continue while the script is stopped. We have to be a bit careful here,
+    // i.e. make sure the user can't quit the app, and disable other event handlers which
+    // could interfere with the debugging session.
+    if (!isVisible())
+        show();
+
+    m_mode = Stop;
+
+    setWindowModality(Qt::ApplicationModal);    // instead of disableOtherWindows()
+
+//    if (m_execStates.isEmpty())
+//    {
+        m_continueAct->setEnabled(true);
+        m_stopAct->setEnabled(true);
+        m_stepIntoAct->setEnabled(true);
+        m_stepOutAct->setEnabled(true);
+        m_stepOverAct->setEnabled(true);
+
+
+//    }
+
+//    m_execStates.push(exec);
+//    updateContextList();
+    m_localVariables->display(exec);
+
+    while (m_mode != Continue)
+    {
+        kapp->processEvents();
+    }
+}
+
+
+
+////////////////////// DEBUG DOCUMENT
+
+
+class DebugDocument::Private : public QSharedData
+{
+public:
+    QString url;
+    QString name;
+    QString source;
+    Interpreter *interpreter;
+    QHash<int, SourceFragment> codeFragments;
+    QVector<int> breakpoints;
+
+};
+
+DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
+{
+    d = new DebugDocument::Private;
+    d->url = url;
+    d->interpreter = interpreter;
+
+    QStringList splitUrl = url.split('/');
+    if (!splitUrl.isEmpty())
+    {
+        qDebug() << splitUrl;
+        while (d->name.isEmpty() && !splitUrl.isEmpty())
+            d->name = splitUrl.takeLast();
+
+        if (d->name.isEmpty())
+            d->name = "undefined";
+    }
+    else
+        d->name = "undefined";
+
+    if (d->interpreter)
+    {
+        ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(d->interpreter);
+        KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
+        if (part &&
+            d->url == part->url().url())
+        {
+//            connect(part, SIGNAL(completed()), this, SLOT(readSource()));
+        }
+    }
+}
+
+DebugDocument::DebugDocument(const DebugDocument &other)
+{
+    d = other.d;
+}
+
+DebugDocument::~DebugDocument()
+{
+}
+
+QString DebugDocument::name() const
+{
+    return d->name;
+}
+
+QString DebugDocument::url() const
+{
+    return d->url;
+}
+
+Interpreter * DebugDocument::interpreter() const
+{
+    return d->interpreter;
+}
+
+QList<SourceFragment> DebugDocument::fragments()
+{
+    return d->codeFragments.values();
+}
+
+bool DebugDocument::deleteFragment(int sourceId)
+{
+    if (d->codeFragments.contains(sourceId))
+    {
+        d->codeFragments.remove(sourceId);
+        return true;
+    }
+    return false;
+}
+
+SourceFragment DebugDocument::fragment(int sourceId)
+{
+    if (d->codeFragments.contains(sourceId))
+        return d->codeFragments[sourceId];
+    else
+        return SourceFragment();
+}
+
+QString DebugDocument::source() const
+{
+    return d->source;
+}
+
+void DebugDocument::addCodeFragment(int sourceId, int baseLine, const QString &source)
+{
+    SourceFragment code;
+    code.sourceId = sourceId;
+    code.baseLine = baseLine;
+    code.source = source;
+
+    d->codeFragments[sourceId] = code;
+}
+
+void DebugDocument::setBreakpoint(int lineNumber)
+{
+    d->breakpoints.append(lineNumber);
+}
+
+void DebugDocument::removeBreakpoint(int lineNumber)
+{
+    int idx = d->breakpoints.indexOf(lineNumber);
+    if (idx != -1)
+        d->breakpoints.remove(idx);
+}
+
+bool DebugDocument::hasBreakpoint(int lineNumber)
+{
+    return d->breakpoints.contains(lineNumber);
+}
+
+QVector<int> DebugDocument::breakpoints()
+{
+    return d->breakpoints;
+}
+
+void DebugDocument::readSource()
+{
+    if (d->interpreter)
+    {
+        ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(d->interpreter);
+        KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
+        if (part &&
+            d->url == part->url().url() &&
+            !part->inProgress())
+        {
+            d->source = part->documentSource();
+        }
+    }
 }
 

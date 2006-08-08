@@ -22,6 +22,9 @@
 
 #define KJS_DEBUGGER
 
+#include <QSharedDataPointer>
+#include <QMetaType>
+
 #include <kinstance.h>
 #include <kmainwindow.h>
 
@@ -72,114 +75,36 @@ struct SourceFragment
     QString source;
 };
 
-class DebugDocument : public QObject
+class DebugDocument
 {
-    Q_OBJECT
 public:
-    DebugDocument(const QString &url, Interpreter *interpreter)
-        : m_url(url), m_interpreter(interpreter)
-    {
-        QStringList splitUrl = url.split('/');
-        if (!splitUrl.isEmpty())
-        {
-            while (m_name.isEmpty())
-                m_name = splitUrl.takeLast();
-        }
-        else
-            m_name = "undefined";
+    DebugDocument(const QString &url, Interpreter *interpreter);
+    DebugDocument(const DebugDocument &other);
+    ~DebugDocument();
 
-        if (m_interpreter)
-        {
-            ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(m_interpreter);
-            KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
-            if (part &&
-                m_url == part->url().url())
-            {
-                connect(part, SIGNAL(completed()), this, SLOT(readSource()));
-            }
-        }
-    }
-    ~DebugDocument() {}
+    QString name() const;
+    QString url() const;
+    Interpreter *interpreter() const;
 
-    QString name() const { return m_name; }
-    QString url() const { return m_url; }
-    Interpreter *interpreter() const { return m_interpreter; }
+    QList<SourceFragment> fragments();
+    SourceFragment fragment(int sourceId);
+    void addCodeFragment(int sourceId, int baseLine, const QString &source);
+    bool deleteFragment(int sourceId);
 
-    QList<SourceFragment> fragments() { return m_codeFragments.values(); }
-    bool deleteFragment(int sourceId)
-    {
-        if (m_codeFragments.contains(sourceId))
-        {
-            m_codeFragments.remove(sourceId);
-            return true;
-        }
-        return false;
-    }
-    SourceFragment fragment(int sourceId)
-    {
-        if (m_codeFragments.contains(sourceId))
-            return m_codeFragments[sourceId];
-        else
-            return SourceFragment();
-    }
+    QString source() const;
 
-    QString source() const { return m_source; }
-
-    void addCodeFragment(int sourceId, int baseLine, const QString &source)
-    {
-        SourceFragment code;
-        code.sourceId = sourceId;
-        code.baseLine = baseLine;
-        code.source = source;
-
-        m_codeFragments[sourceId] = code;
-    }
-
-public:
-    void setBreakpoint(int lineNumber)
-    {
-        m_breakpoints.append(lineNumber);
-    }
-
-    void removeBreakpoint(int lineNumber)
-    {
-        int idx = m_breakpoints.indexOf(lineNumber);
-        if (idx != -1)
-            m_breakpoints.remove(idx);
-    }
-
-    bool hasBreakpoint(int lineNumber)
-    {
-        return m_breakpoints.contains(lineNumber);
-    }
-
-    QVector<int> breakpoints() { return m_breakpoints; }
-private slots:
-    void readSource()
-    {
-        if (m_interpreter)
-        {
-            ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(m_interpreter);
-            KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
-            if (part &&
-                m_url == part->url().url() &&
-                !part->inProgress())
-            {
-                m_source = part->documentSource();
-            }
-        }
-    }
+    QVector<int> breakpoints();
+    void setBreakpoint(int lineNumber);
+    void removeBreakpoint(int lineNumber);
+    bool hasBreakpoint(int lineNumber);
 
 private:
-    QString m_url;
-    QString m_name;
-    QString m_source;
-    Interpreter *m_interpreter;
-    QHash<int, SourceFragment> m_codeFragments;
-    QVector<int> m_breakpoints;
+    void readSource();
+
+    class Private;
+    QSharedDataPointer<Private> d;
 
 };
-
 
 /**
 * DebuggerWindow
@@ -250,6 +175,9 @@ private:
     void createStatusBar();
     void createTabWidget();
 
+    void enterDebugSession(KJS::ExecState *exec);
+
+
 private:
     // Standard actions
     KAction *m_exitAct;
@@ -263,7 +191,6 @@ private:
 
     // Text editing stuff
     KTextEditor::Editor *m_editor;
-    QList<KTextEditor::Document*> m_documentList;
 
     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
@@ -281,14 +208,18 @@ private:
 
     Mode m_mode;
 
+    QList<KTextEditor::Document*>  m_documentList;
     QHash<QString, DebugDocument*> m_documents;      // map url's to internal debug documents
     QHash<int, DebugDocument*>     m_sourceIdLookup; // map sourceId's to debug documents
     QHash<KTextEditor::Document*, DebugDocument*> m_documentLut; // map KTextEditor::Document's to DebugDocuments
+    QHash<DebugDocument*, KTextEditor::Document*> m_debugLut; // map DebugDocument's to KTextEditor::Document's
     QList<DebugDocument*> m_openDocuments;
 
     static DebugWindow *m_debugger;
 };
 
 } // namespace
+
+Q_DECLARE_METATYPE(KJS::DebugDocument*)
 
 #endif // DEBUGWINDOW_H

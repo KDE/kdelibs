@@ -1,6 +1,7 @@
 #include <QVBoxLayout>
-#include <QListWidget>
-#include <QTreeWidget>
+#include <QTreeView>
+#include <QStandardItemModel>
+#include <QHeaderView>
 
 #include <kdebug.h>
 
@@ -13,65 +14,81 @@ using namespace KJS;
 ScriptsDock::ScriptsDock(QWidget *parent)
     : QDockWidget("Loaded Scripts", parent)
 {
-    m_widget = new QTreeWidget(this);
-    m_widget->setColumnCount(2);
-    connect(m_widget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
-            this, SLOT(scriptSelected(QTreeWidgetItem*, int)));
+    m_view = new QTreeView;
+    m_view->header()->hide();
+    m_model = new QStandardItemModel;
+    m_view->setModel(m_model);
 
-    setWidget(m_widget);
+    connect(m_view, SIGNAL(clicked(const QModelIndex &)),
+            this, SLOT(scriptSelected(const QModelIndex &)));
+
+    setWidget(m_view);
+
+
 }
 
 ScriptsDock::~ScriptsDock()
 {
-/*
-    if (m_widget)
-        delete m_widget;
-    m_widget = 0;
-*/
 }
 
 void ScriptsDock::documentDestroyed(KJS::DebugDocument *document)
 {
-    QTreeWidgetItem *item = m_documents[document];
-    if (item)
-    {
-        int idx = m_widget->indexOfTopLevelItem(item);
-        if (idx != -1)
-            m_widget->takeTopLevelItem(idx);
-    }
+    m_documents.removeAll(document);
+    updateModel();
 }
 
 void ScriptsDock::addDocument(KJS::DebugDocument *document)
 {
-    if (document && m_widget)
-    {
-        QTreeWidgetItem *item = m_documents[document];
-        if (item)
-        {
-            int idx = m_widget->indexOfTopLevelItem(item);
-            item = m_widget->topLevelItem(idx);
-            item->setText(1, "multiple");
-        }
-        else
-        {
-            item = new QTreeWidgetItem;
-            item->setText(0, document->url());
-            m_widget->addTopLevelItem(item);
-            m_documents[document] = item;
-        }
-    }
-    else
-    {
-        kDebug() << "ERRORORORORORORR" << endl;
-    }
+    m_documents.append(document);
+    updateModel();
 }
 
-void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int column)
+void ScriptsDock::scriptSelected(const QModelIndex &idx)
 {
-    KJS::DebugDocument *doc = m_documents.key(item);
+    if (!idx.isValid())
+        return;
+
+    QVariant var = idx.data(Qt::UserRole);
+    KJS::DebugDocument *doc = var.value<DebugDocument*>();
     if (doc)
         emit displayScript(doc);
 }
 
+void ScriptsDock::updateModel()
+{
+    m_model->clear();
 
+    QHash<QString, QStandardItem*> parents;
+
+    QStandardItem *top = m_model->topLevelParent();
+    foreach (KJS::DebugDocument *document, m_documents)
+    {
+        QString domain = QUrl(document->url()).host();
+        if (domain.isEmpty())
+            domain = "unknown";
+
+        QString name = document->name();
+
+        kDebug() << "domain: " << domain << ", name: " << name << endl;
+        QStandardItem *parent = parents[domain];
+        if (!parent)
+        {
+            kDebug() << "Couldn't find the domain, adding it" << endl; 
+            parent = new QStandardItem(domain);
+            parent->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+            parents[domain] = parent;
+            top->appendRow(parent);
+        }
+
+        QStandardItem *item = new QStandardItem(name);
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+        QVariant var;
+        var.setValue(document);
+        item->setData(Qt::UserRole, var);
+        parent->appendRow(item);
+    }
+
+    m_view->expandAll();
+}
 

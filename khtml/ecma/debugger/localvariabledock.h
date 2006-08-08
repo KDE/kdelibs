@@ -33,7 +33,7 @@ public:
     LocalVariablesDock(QWidget *parent = 0);
     ~LocalVariablesDock();
 
-    void display(KJS::Interpreter *interpreter);
+    void display(KJS::ExecState *exec);
 
 private:
     QTreeView   *m_widget;

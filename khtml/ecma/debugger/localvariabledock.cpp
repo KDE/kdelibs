@@ -9,6 +9,8 @@
 #include <kjs/object.h>
 #include <kdebug.h>
 
+#include <typeinfo>
+
 //#include "jsobjectmodel.h"
 #include "objectmodel.h"
 #include "localvariabledock.h"
@@ -26,7 +28,7 @@ LocalVariablesDock::~LocalVariablesDock()
 {
 }
 
-void LocalVariablesDock::display(KJS::Interpreter *interpreter)
+void LocalVariablesDock::display(KJS::ExecState *exec)
 {
     // kDebug("::display(..) called for interpreter: %p", interpreter);
 
@@ -43,13 +45,13 @@ void LocalVariablesDock::display(KJS::Interpreter *interpreter)
 
     kDebug() << "Doing a full ScopeChain dump:" << endl;
 
-    KJS::ExecState *exec  = interpreter->globalExec();
+//    KJS::ExecState *exec  = interpreter->globalExec();
     KJS::Context* context = exec->context();
     if (!context) {
         kDebug() << "nothing running!" << endl;
         return;
     }
-    
+
     KJS::ScopeChain chain = context->scopeChain();
 
     for( KJS::ScopeChainIterator obj = chain.begin();
@@ -59,6 +61,8 @@ void LocalVariablesDock::display(KJS::Interpreter *interpreter)
         KJS::JSObject *object = (*obj);
         if (!object)
             break;
+
+        kDebug() << typeid(*object).name() << endl;
 
         QString name = object->toString(exec).qstring();
         kDebug() << "scope list object: " << name << endl;
