@@ -848,7 +848,8 @@ void KHTMLView::layout()
     else
        _width = visibleWidth();
 
-    killTimer(d->layoutTimerId);
+    if (d->layoutTimerId)
+        killTimer(d->layoutTimerId);
     d->layoutTimerId = 0;
     d->layoutSchedulingEnabled=true;
 }
@@ -3363,7 +3364,8 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
             hideCaret();
 	    break;
 	case KHTMLPart::CaretVisible: {
-	    killTimer(d->m_caretViewContext->freqTimerId);
+	    if (d->m_caretViewContext->freqTimerId)
+	        killTimer(d->m_caretViewContext->freqTimerId);
 	    d->m_caretViewContext->freqTimerId = -1;
             NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
 	    if (!d->m_caretViewContext->visible && (m_part->isCaretMode()
@@ -3472,7 +3474,8 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>(document->renderer());
 
 	if ( root && root->needsLayout() ) {
-	    killTimer(d->repaintTimerId);
+	    if (d->repaintTimerId)
+	        killTimer(d->repaintTimerId);
 	    d->repaintTimerId = 0;
 	    scheduleRelayout();
 	    return;
@@ -3482,7 +3485,8 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     setStaticBackground(d->useSlowRepaints);
 
 //        kDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
-    killTimer(d->repaintTimerId);
+    if (d->repaintTimerId)
+        killTimer(d->repaintTimerId);
     d->repaintTimerId = 0;
 
     QRect updateRegion;
