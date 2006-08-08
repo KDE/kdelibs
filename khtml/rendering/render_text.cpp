@@ -1145,25 +1145,41 @@ void RenderText::setText(DOMStringImpl *text, bool force)
         switch(style()->textTransform()) {
         case CAPITALIZE:
         {
-            // find previous text renderer if one exists
-            RenderObject* o;
+            RenderObject *o;
             bool runOnString = false;
-            for (o = previousRenderer(); o && o->isInlineFlow(); o = o->previousRenderer())
-                ;
-            if (o && o->isText()) {
-                DOMStringImpl* prevStr = static_cast<RenderText*>(o)->string();
-                QChar c = (*prevStr)[prevStr->length() - 1];
-                if (!c.isSpace())
-                    runOnString = true;
+
+            // find previous non-empty text renderer if one exists
+            for (o = previousRenderer(); o; o = o->previousRenderer()) {
+                if (!o->isInlineFlow()) {
+                    if (!o->isText())
+                        break;
+
+                    DOMStringImpl *prevStr = static_cast<RenderText*>(o)->string();
+                    // !prevStr can happen with css like "content:open-quote;"
+                    if (!prevStr)
+                        break;
+
+                    if (prevStr->length() == 0)
+                        continue;
+                    QChar c = (*prevStr)[prevStr->length() - 1];
+                    if (!c.isSpace())
+                        runOnString = true;
+
+                    break;
+                }
             }
+
             str = str->capitalize(runOnString);
         }
         break;
-	case UPPERCASE:   str = str->upper();       break;
-	case LOWERCASE:  str = str->lower();       break;
-	case NONE:
-	default:;
-	}
+
+		
+		
+        case UPPERCASE: str = str->upper();       break;
+        case LOWERCASE: str = str->lower();       break;
+        case NONE:
+        default:;
+    }
         str->ref();
         oldstr->deref();
     }
