@@ -3,9 +3,9 @@
 
 #include <QDockWidget>
 
-
 class QTreeView;
 class QStandardItemModel;
+class QModelIndex;
 
 namespace KJS
 {

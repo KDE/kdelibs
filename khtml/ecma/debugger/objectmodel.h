@@ -14,7 +14,8 @@ namespace KJS
 class ObjectNode
 {
 public:
-    ObjectNode(const QString &name, KJS::JSObject *instance, ObjectNode *parent = 0);
+    ObjectNode(ObjectNode *parent = 0);
+    ObjectNode(const QList<QVariant> &data, ObjectNode *parent = 0);
     ~ObjectNode();
 
     void appendChild(ObjectNode *child);
@@ -22,25 +23,22 @@ public:
     ObjectNode *child(int row);
     int childCount() const;
     int columnCount() const;
-
-    QString name() const;
-    KJS::JSObject *instance() const;
-
+    void setData(const QList<QVariant> &data);
+    QVariant data(int column) const;
     int row() const;
     ObjectNode *parent();
 
 private:
-    ObjectNode *parentItem;
-    QList<ObjectNode*> childItems;
-
-    QString        itemName;
-    KJS::JSObject *itemInstance;
+    QList<ObjectNode*> m_children;
+    QList<QVariant> m_data;
+    ObjectNode *m_parent;
 };
 
 class ObjectModel : public QAbstractItemModel
 {
+    Q_OBJECT
 public:
-    ObjectModel(KJS::Interpreter *interpreter, QObject *parent = 0);
+    ObjectModel(QObject *parent = 0);
     ~ObjectModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -53,14 +51,13 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-
-    void update(KJS::Interpreter *interpreter);
+    void update(KJS::ExecState *exec);
 
 private:
-    void setupModelData(KJS::Interpreter *interpreter, ObjectNode *parent);
-
-    ObjectNode *rootItem;
+    void setupModelData(KJS::ExecState*, KJS::JSObject*, ObjectNode*);
+    ObjectNode *m_root;
 };
+
 
 
 
