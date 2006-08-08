@@ -3798,7 +3798,8 @@ void KHTMLView::caretOn()
 void KHTMLView::caretOff()
 {
     if (d->m_caretViewContext) {
-        killTimer(d->m_caretViewContext->freqTimerId);
+        if (d->m_caretViewContext->freqTimerId)
+	    killTimer(d->m_caretViewContext->freqTimerId);
 	d->m_caretViewContext->freqTimerId = -1;
         d->m_caretViewContext->displayed = false;
         if (d->m_caretViewContext->visible) {
