@@ -51,7 +51,7 @@
 #endif
 
 //change to sudo or su according to your preferences
-#define DEFAULT_SUPER_USER_COMMAND "sudo"
+#define DEFAULT_SUPER_USER_COMMAND "su"
 
 SuProcess::SuProcess(const QCString &user, const QCString &command)
 {
@@ -90,6 +90,12 @@ int SuProcess::exec(const char *password, int check)
 {
     if (check)
         setTerminal(true);
+
+    // since user may change after constructor (due to setUser())
+    // we need to override sudo with su for non-root here
+    if (m_User != "root") {
+        superUserCommand = "su";
+    }
 
     QCStringList args;
     if (superUserCommand == "sudo") {
