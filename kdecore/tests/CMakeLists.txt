@@ -450,6 +450,18 @@ add_test(kdecore-kconfigtest ${EXECUTABLE_OUTPUT_PATH}/kconfigtest)
 
 ########### next target ###############
 
+set(kconfigskeletontest_SRCS kconfigskeletontest.cpp )
+
+kde4_automoc(${kconfigskeletontest_SRCS})
+
+kde4_add_executable(kconfigskeletontest NOGUI RUN_UNINSTALLED ${kconfigskeletontest_SRCS})
+
+target_link_libraries(kconfigskeletontest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+add_test(kdecore-kconfigskeletontest ${EXECUTABLE_OUTPUT_PATH}/kconfigskeletontest)
+
+########### next target ###############
+
 set(ktempfiletest_SRCS ktempfiletest.cpp )
 
 kde4_automoc(${ktempfiletest_SRCS})
