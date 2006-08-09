@@ -71,7 +71,7 @@ private slots:
 private:
     QStringList mFiles;
     QTimer *mpTimer;
-    KIconLoader *mpLoader;
+    KIconLoader *mpLoader; // unused
 
 protected:
     virtual void virtual_hook( int id, void* data );

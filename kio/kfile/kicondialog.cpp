@@ -90,7 +90,6 @@ KIconCanvas::KIconCanvas(QWidget *parent, const char *name)
     : KIconView(parent, name)
 {
     d = new KIconCanvasPrivate;
-    mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
     connect(this, SIGNAL(currentChanged(QIconViewItem *)),
