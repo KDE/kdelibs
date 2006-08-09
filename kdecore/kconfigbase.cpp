@@ -377,6 +377,16 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
                 tmp = aDefault;
             return tmp;
       case QVariant::Color: {
+          const QString color = readEntry( pKey, QString() );
+          if ( color.isEmpty()) {
+              return QColor();
+          }
+          else if ( color.at(0) == '#' ) {
+              QColor col;
+              col.setNamedColor(color);
+              return col;
+          }
+          else {
           const QStringList list = readEntry( pKey, QStringList() );
           const int count = list.count();
 
@@ -422,6 +432,7 @@ QVariant KConfigBase::readEntry( const char *pKey, const QVariant &aDefault ) co
               return aDefault;
           }
           return color;
+          }
       }
       case QVariant::Point: {
           const QList<int> list = readEntry( pKey, QList<int>() );
