@@ -1058,7 +1058,7 @@ int TCPSlaveBase::verifyCertificate()
       bool dialogBoxStatus = false;
       if( config->hasKey("WarnOnEnterSSLMode"))
         dialogBoxStatus = true;
-      bool keyStatus = config->readBoolEntry("WarnOnEnterSSLMode", true);
+      bool keyStatus = config->readEntry("WarnOnEnterSSLMode", true);
       dialogBoxStatus = dialogBoxStatus && keyStatus;
       if (!keyStatus) {
           config->deleteEntry("WarnOnEnterSSLMode");

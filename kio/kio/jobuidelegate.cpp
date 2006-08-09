@@ -27,8 +27,9 @@
 #include "kio/observer.h"
 #include "kio/scheduler.h"
 
-struct KIO::JobUiDelegate::Private
+class KIO::JobUiDelegate::Private
 {
+public:
     bool showProgressInfo;
     QPointer<QWidget> errorParentWidget;
 };

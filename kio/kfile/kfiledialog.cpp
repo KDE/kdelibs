@@ -1346,7 +1346,7 @@ QString KFileDialog::getExistingDirectory(const KUrl& startDir,
 {
 #ifdef Q_WS_WIN
     return QFileDialog::getExistingDirectory(parent, caption,
-                                             startDir, QFileDialog::ShowDirsOnly);
+                                             startDir.toString(), QFileDialog::ShowDirsOnly);
 #else
     KUrl url = KDirSelectDialog::selectDirectory(startDir, true, parent,
                                                  caption);
