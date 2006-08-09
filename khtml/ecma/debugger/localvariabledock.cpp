@@ -20,9 +20,7 @@
 LocalVariablesDock::LocalVariablesDock(QWidget *parent)
     : QDockWidget("Local Variables", parent)
 {
-//    m_widget = new QTreeWidget;
     m_view = new QTreeView;
-//    m_model = new QStandardItemModel;
     m_model = new ObjectModel;
     m_view->setModel(m_model);
 
@@ -36,6 +34,7 @@ LocalVariablesDock::~LocalVariablesDock()
 void LocalVariablesDock::display(KJS::ExecState *exec)
 {
     m_model->update(exec);
+    m_view->reset();
 
 /*
     KJS::Context* context = exec->context();

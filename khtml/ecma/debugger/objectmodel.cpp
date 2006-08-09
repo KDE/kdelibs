@@ -55,6 +55,11 @@ QVariant ObjectNode::data(int column) const
     return m_data.value(column);
 }
 
+QList<QVariant> ObjectNode::data() const
+{
+    return m_data;
+}
+
 ObjectNode *ObjectNode::parent()
 {
     return m_parent;
@@ -102,7 +107,6 @@ QVariant ObjectModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     ObjectNode *item = static_cast<ObjectNode*>(index.internalPointer());
-
     return item->data(index.column());
 }
 
@@ -199,7 +203,6 @@ void ObjectModel::update(KJS::ExecState *exec)
     }
 }
 
-
 void ObjectModel::setupModelData(KJS::ExecState *exec, KJS::JSObject *scope, ObjectNode *parent)
 {
 //    QList<ObjectNode*> parents;
@@ -211,7 +214,7 @@ void ObjectModel::setupModelData(KJS::ExecState *exec, KJS::JSObject *scope, Obj
         ref != props.end();
         ref++)
     {
-        ObjectNode *node = new ObjectNode;
+        ObjectNode *node = new ObjectNode(parent);
         QList<QVariant> data;
 
         KJS::Identifier id = *ref;
@@ -266,6 +269,7 @@ void ObjectModel::setupModelData(KJS::ExecState *exec, KJS::JSObject *scope, Obj
             }
 */
         }
+
         node->setData(data);
         parent->appendChild(node);
     }

@@ -25,6 +25,7 @@ public:
     int columnCount() const;
     void setData(const QList<QVariant> &data);
     QVariant data(int column) const;
+    QList<QVariant> data() const;
     int row() const;
     ObjectNode *parent();
 
