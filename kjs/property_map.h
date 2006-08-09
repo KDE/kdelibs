@@ -88,7 +88,7 @@ namespace KJS {
 
         bool isEmpty() const;
 
-        bool hasGetterSetterProperties() const { return _singleEntry.globalGetterSetterFlag; }
+        bool hasGetterSetterProperties() const { return (_singleEntry.globalGetterSetterFlag != 0); }
         void setHasGetterSetterProperties(bool f) { _singleEntry.globalGetterSetterFlag = f; }
 
         bool containsGettersOrSetters() const;

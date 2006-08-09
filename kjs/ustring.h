@@ -129,7 +129,7 @@ namespace KJS {
     /**
      * @return Lower byte.
      */
-    unsigned char low() const { return ref().uc; }
+    unsigned char low() const { return static_cast<unsigned char>(ref().uc); }
     /**
      * @return Higher byte.
      */

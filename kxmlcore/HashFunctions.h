@@ -59,7 +59,7 @@ namespace KXMLCore {
         key ^= (key >> 15);
         key += ~(key << 27);
         key ^= (key >> 31);
-        return key;
+        return static_cast<unsigned>(key);
     }
 
     template<typename T> struct IntHash {
