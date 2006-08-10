@@ -22,11 +22,12 @@ PHONON_DECLARE_TESTS(
 	audiocapturedevicetest
 	videocapturedevicetest
 	)
-
-add_test(methodtest ${EXECUTABLE_OUTPUT_PATH}/methodtest)
-add_test(backendcapabilitiestest ${EXECUTABLE_OUTPUT_PATH}/backendcapabilitiestest)
-add_test(audiopathtest ${EXECUTABLE_OUTPUT_PATH}/audiopathtest)
-add_test(audiooutputtest ${EXECUTABLE_OUTPUT_PATH}/audiooutputtest)
-add_test(audiooutputdevicetest ${EXECUTABLE_OUTPUT_PATH}/audiooutputdevicetest)
-add_test(audiocapturedevicetest ${EXECUTABLE_OUTPUT_PATH}/audiocapturedevicetest)
-add_test(videocapturedevicetest ${EXECUTABLE_OUTPUT_PATH}/videocapturedevicetest)
+if(KDE4_BUILD_TESTS)
+  add_test(methodtest ${EXECUTABLE_OUTPUT_PATH}/methodtest)
+  add_test(backendcapabilitiestest ${EXECUTABLE_OUTPUT_PATH}/backendcapabilitiestest)
+  add_test(audiopathtest ${EXECUTABLE_OUTPUT_PATH}/audiopathtest)
+  add_test(audiooutputtest ${EXECUTABLE_OUTPUT_PATH}/audiooutputtest)
+  add_test(audiooutputdevicetest ${EXECUTABLE_OUTPUT_PATH}/audiooutputdevicetest)
+  add_test(audiocapturedevicetest ${EXECUTABLE_OUTPUT_PATH}/audiocapturedevicetest)
+  add_test(videocapturedevicetest ${EXECUTABLE_OUTPUT_PATH}/videocapturedevicetest)
+endif(KDE4_BUILD_TESTS)
