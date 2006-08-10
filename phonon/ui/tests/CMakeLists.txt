@@ -23,11 +23,11 @@ endif(KDE4_BUILD_TESTS)
 set(uimethodtest_SRCS methodtest.cpp )
 kde4_automoc(${uimethodtest_SRCS})
 if(KDE4_BUILD_TESTS)
-kde4_add_executable(uimethodtest ${uimethodtest_SRCS})
-target_link_libraries(uimethodtest  ${KDE4_KDECORE_LIBS} phononui ${QT_QTTEST_LIBRARY} )
+  kde4_add_executable(uimethodtest ${uimethodtest_SRCS})
+  target_link_libraries(uimethodtest  ${KDE4_KDECORE_LIBS} phononui ${QT_QTTEST_LIBRARY} )
+  add_test(uimethodtest ${EXECUTABLE_OUTPUT_PATH}/uimethodtest)
 endif(KDE4_BUILD_TESTS)
 
-add_test(uimethodtest ${EXECUTABLE_OUTPUT_PATH}/uimethodtest)
 
 #LDADD = ../libphononui.la -lQtTest_debug
 #AM_LDFLAGS = $(KDE_RPATH) $(all_libraries)
