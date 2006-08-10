@@ -19,6 +19,7 @@
 <!ENTITY ie     "也就是說，">
 <!ENTITY infocenter	"<application>KDE 資訊中心</application>">
 <!ENTITY kcontrolcenter	"<application>KDE 控制中心</application>">
+<!ENTITY khelpcenter "<application>KDE 輔助中心</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>KDE 的 K 圖示</title></objectinfo>
