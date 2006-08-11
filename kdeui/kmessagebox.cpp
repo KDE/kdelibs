@@ -224,7 +224,9 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
        }
    }
 
-    label2->setFixedSize(QSize(pref_width, pref_height));
+    //Reverting portion of commit 559160 to restore the extra 10 pixels margin (same as KDE3)
+    //See commit log for more information, this is not a definitive fix
+    label2->setFixedSize(QSize(pref_width + 10, pref_height + 10));
 
     lay->addWidget( label2 );
     lay->addStretch();
