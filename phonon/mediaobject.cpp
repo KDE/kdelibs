@@ -192,8 +192,8 @@ void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 	// A special situation occurs when the KIO job finishes before play() was
 	// called. Then in play() a new KIO job would be created - jobDone tells
 	// play() that there already was a KIO job and that it has "finished early".
-	Phonon::State s = state();
-	if( s == LoadingState || s == StoppedState )
+	
+	if( state == LoadingState || state == StoppedState )
 		jobDone = true;
 
 	if( job->error() )
