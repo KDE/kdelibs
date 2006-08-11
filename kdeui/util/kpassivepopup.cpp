@@ -194,6 +194,7 @@ KVBox * KPassivePopup::standardView( const QString& caption,
 	fnt.setBold( true );
 	d->ttl->setFont( fnt );
 	d->ttl->setAlignment( Qt::AlignHCenter );
+
         if ( hb )
             hb->setStretchFactor( d->ttl, 10 ); // enforce centering
     }
@@ -201,6 +202,8 @@ KVBox * KPassivePopup::standardView( const QString& caption,
     if ( !text.isEmpty() ) {
         d->msg = new QLabel( text, vb );
         d->msg->setAlignment( Qt::AlignLeft );
+        d->msg->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+        d->msg->setOpenExternalLinks(true);
     }
 
     return vb;

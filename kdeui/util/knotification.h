@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2005 Olivier Goffart <ogoffart at kde.org>
+   Copyright (C) 2005-2006 Olivier Goffart <ogoffart at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -204,8 +204,6 @@ public:
 		 */
 		Persistant=0x02,
 
-		
-		
 		/**
 		 * The notification will be automatically closed if the widget() becomes
 		 * activated.
@@ -215,12 +213,12 @@ public:
 		 * @todo doesn't works yet
 		 */
 		CloseWhenWidgetActivated=0x04,
-
+        
 		/**
 		 * @internal
 		 * The event is a standard kde event, and not an event of the application
  		 */
-		DefaultEvent=0x08
+		DefaultEvent=0xF000
 		
 	};
 	
@@ -340,13 +338,24 @@ public:
 	 * @param context_value is the value of the context
 	 */
 	void addContext( const QString & context_key, const QString & context_value );
+    
+    /**
+     * @return the notifications flags.
+     */
+    NotificationFlags flags() const;
+    
+    /**
+     * Set the notification flags.
+     * should be called before sendEvent().
+     */
+    void setFlags(const NotificationFlags &flags);
 	
 	/**
 	 * The instance is used to determine the location of the config file.  By default, kapp is used
 	 * @param instance the new instance
 	 */
 	void setInstance( const KInstance *instance);
-			  
+    
    Q_SIGNALS:
 	/**
 	 * Emit only when the default activation has occurred
@@ -357,11 +366,28 @@ public:
 	 * @param action will be 0 is the default aciton was activated, or any actiton id
 	 */
 	void activated(unsigned int action);
+    
+    /**
+     * Convenance signal that is emitted when the first action is activated.
+     */
+    void action1Activated();
+    
+    /**
+     * \overload
+     */
+    void action2Activated();
+
+    /**
+     * \overload
+     */
+    void action3Activated();
+
+            
 
 	/**
 	 * Emit when the notification is closed. Both if it's activated or just ignored
 	 */
-	 void closed();
+	void closed();
 
 	/**
 	 * The notification has been ignored

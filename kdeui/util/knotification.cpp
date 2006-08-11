@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2005 Olivier Goffart <ogoffart at kde.org>
+   Copyright (C) 2005-2006 Olivier Goffart <ogoffart at kde.org>
 
    code from KNotify/KNotifyClient
    Copyright (c) 1997 Christian Esken (esken@kde.org)
@@ -152,6 +152,17 @@ void KNotification::addContext( const QString & context_key, const QString & con
 	d->contexts << qMakePair( context_key , context_value );
 }
 
+KNotification::NotificationFlags KNotification::flags() const
+{
+    return d->flags;
+}
+
+void KNotification::setFlags(const NotificationFlags & flags)
+{
+    d->flags=flags;
+}
+
+
 void KNotification::setInstance( const KInstance * i)
 {
 	d->instance=i;
@@ -159,8 +170,21 @@ void KNotification::setInstance( const KInstance * i)
 
 void KNotification::activate(unsigned int action)
 {
-	if(action==0)
-		emit activated();
+    switch (action)
+    {
+        case 0:
+            emit activated();
+            break;
+        case 1:
+            emit action1Activated();
+            break;
+        case 2:
+            emit action2Activated();
+            break;
+        case 3:
+            emit action3Activated();
+            break;
+    }
 	emit activated(action);
 	deleteLater();
 }
@@ -266,8 +290,8 @@ void KNotification::sendEvent()
 {
 	if(d->id==0)
 	{
-		QString appname; 
-	
+		QString appname;
+		
 		if(d->flags & DefaultEvent)
 			appname = QLatin1String("kde");
 		else if(d->instance)
@@ -290,5 +314,6 @@ void KNotification::sendEvent()
 		QTimer::singleShot(100, this, SLOT(deref()));
 	}
 }
+
 
 #include "knotification.moc"
