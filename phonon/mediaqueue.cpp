@@ -64,9 +64,9 @@ void MediaQueue::setupIface()
 	MediaObject::setupIface();
 
 	connect( d->backendObject, SIGNAL( needNextUrl() ), SLOT( _k_needNextUrl() ) );
-	BACKEND_CALL1( "nextUrl", KUrl, d->nextUrl );
-	BACKEND_CALL1( "doCrossfade", bool, d->doCrossfade );
-	BACKEND_CALL1( "timeBetweenMedia", qint32, d->timeBetweenMedia );
+	BACKEND_CALL1( "setNextUrl", KUrl, d->nextUrl );
+	BACKEND_CALL1( "setDoCrossfade", bool, d->doCrossfade );
+	BACKEND_CALL1( "setTimeBetweenMedia", qint32, d->timeBetweenMedia );
 }
 } // namespace Phonon
 
