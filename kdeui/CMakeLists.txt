@@ -8,12 +8,14 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+ ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
 )
 
 add_subdirectory( findreplace )
 add_subdirectory( widgets )
+add_subdirectory( dialogs )
 add_subdirectory( util )
 add_subdirectory( itemviews )
 add_subdirectory( liveui/tests )
@@ -41,32 +43,22 @@ set(kdeui_LIB_SRCS
  kseparatoraction.cpp
  kurllabel.cpp
  kmenubar.cpp
- kinputdialog.cpp
- kprogressdialog.cpp
- kcolordialog.cpp
  kdatetable.cpp
- kfontdialog.cpp
  ktabctl.cpp
  kstatusbar.cpp
  kmainwindow.cpp
  kseparator.cpp
  krestrictedline.cpp
- kshortcutdialog.cpp
- kkeydialog.cpp
  kruler.cpp
- kdialog.cpp
- kpagedialog.cpp
  kpagemodel.cpp
  kpageview.cpp
  kpageview_p.cpp
  kpagewidget.cpp
  kpagewidgetmodel.cpp
- kaboutdialog.cpp
  kmessagebox.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
- kbugreport.cpp
- kpassworddialog.cpp
+ dialogs/kbugreport.cpp
  kxmlguiclient.cpp
  kxmlguifactory.cpp
  kxmlguifactory_p.cpp
@@ -74,8 +66,6 @@ set(kdeui_LIB_SRCS
  kmenumenuhandler_p.cpp
  kedittoolbar.cpp
  kanimwidget.cpp
- kaboutkde.cpp
- kaboutapplication.cpp
  kcmodule.cpp
  kwindowlistmenu.cpp
  ktip.cpp
@@ -86,17 +76,14 @@ set(kdeui_LIB_SRCS
  kactivelabel.cpp
  ktoolbarhandler.cpp
  ksplashscreen.cpp
- kconfigdialog.cpp
  kactionselector.cpp
  klanguagebutton.cpp
  kwhatsthismanager.cpp
  kpixmapregionselectorwidget.cpp
- kpixmapregionselectordialog.cpp
  ktoolbarlabelaction.cpp
- kconfigdialogmanager.cpp
  ktoolbarspaceraction.cpp
  kmessageboxmessagehandler.cpp
- kwizard.cpp
+ dialogs/kwizard.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -157,6 +144,21 @@ set(kdeui_LIB_SRCS
  widgets/ktimezonewidget.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
+ dialogs/kaboutdialog.cpp
+ dialogs/kdialog.cpp
+ dialogs/kcolordialog.cpp
+ dialogs/kfontdialog.cpp
+ dialogs/kinputdialog.cpp
+ dialogs/kkeydialog.cpp
+ dialogs/kpagedialog.cpp
+ dialogs/kaboutapplication.cpp
+ dialogs/kpassworddialog.cpp
+ dialogs/kprogressdialog.cpp
+ dialogs/kshortcutdialog.cpp
+ dialogs/kconfigdialogmanager.cpp
+ dialogs/kaboutkde.cpp
+ dialogs/kconfigdialog.cpp
+ dialogs/kpixmapregionselectordialog.cpp
 )
 
 if (Q_WS_X11)
@@ -175,9 +177,9 @@ SET_SOURCE_FILES_PROPERTIES(liveui/kliveui.cpp PROPERTIES SKIP_AUTOMOC TRUE)
 kde4_automoc(${kdeui_LIB_SRCS})
 
 set( kdeui_UI
-   kkeydialog.ui
-   kshortcutdialog_simple.ui
-   kshortcutdialog_advanced.ui
+   dialogs/kkeydialog.ui
+   dialogs/kshortcutdialog_simple.ui
+   dialogs/kshortcutdialog_advanced.ui
    )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
@@ -192,13 +194,10 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES aboutkde.png ktip-bulb.png ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
+install( FILES dialogs/aboutkde.png ktip-bulb.png ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
- kprogressdialog.h
- kcolordialog.h
  kdatetable.h
- kfontdialog.h
  ktabctl.h
  kstatusbar.h
  kmainwindow.h
@@ -206,18 +205,13 @@ install( FILES
  kmenubar.h
  kseparator.h
  krestrictedline.h
- kkeydialog.h
  kurllabel.h
  kruler.h
- kinputdialog.h
  kactivelabel.h
- kdialog.h
- kpagedialog.h
  kpagemodel.h
  kpageview.h
  kpagewidget.h
  kpagewidgetmodel.h
- kaboutdialog.h
  kmessagebox.h
  ktextbrowser.h
  kaction.h
@@ -236,32 +230,23 @@ install( FILES
  khelpmenu.h
  kcmodule.h
  kstdaction.h
- kbugreport.h
- kpassworddialog.h
  kxmlguiclient.h
  kxmlguibuilder.h
  kxmlguifactory.h
  kedittoolbar.h
  kanimwidget.h
- kaboutkde.h
- kaboutapplication.h
  kwindowlistmenu.h
  ktip.h
  karrowbutton.h
  kguiitem.h
  kstdguiitem.h
  ksplashscreen.h
- kconfigdialog.h
  kactionselector.h
  klanguagebutton.h
  kpixmapregionselectorwidget.h
- kpixmapregionselectordialog.h
  ktoolbarlabelaction.h
- kshortcutdialog.h
- kconfigdialogmanager.h
  ktoolbarspaceraction.h
  kmessageboxmessagehandler.h
- kwizard.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 QT4_GENERATE_MOC(liveui/kliveui.cpp ${CMAKE_CURRENT_BINARY_DIR}/kliveui.moc)
