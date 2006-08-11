@@ -1,5 +1,6 @@
 #!/bin/sh
 EXTRACT="`dirname $0`/extractmethodcalls.rb"
+IGNORE="^\(audioplayer\|globalconfig\|objectdescriptionmodel\|audiooutputadaptor\).cpp$"
 if test -n "$1" -a -f "$1"; then
 	echo "preprocessing $1"
 	cpp $1 2>/dev/null > tmp
@@ -8,10 +9,15 @@ if test -n "$1" -a -f "$1"; then
 	rm tmp
 else
 	for i in *.cpp; do
-		echo "preprocessing $i"
-		cpp $i 2>/dev/null > tmp
-		echo "extracting backend calls from $i"
-		$EXTRACT tmp > tests/methods/$i
-		rm tmp
+		if echo $i | grep -q "$IGNORE"; then
+			printf "%-30s ignored.\n" "$i:"
+		else
+			printf "%-30s preprocessing" "$i:"
+			cpp $i 2>/dev/null > tmp
+			echo -n ", extracting backend calls"
+			$EXTRACT tmp > tests/methods/$i
+			rm tmp
+			echo "."
+		fi
 	done
 fi
