@@ -29,8 +29,14 @@ MediaQueue::MediaQueue( QObject* parent )
 {
 }
 
-void MediaQueue::setNext( QObject* )
+KUrl MediaQueue::nextUrl() const
 {
+	return m_nextUrl;
+}
+
+void MediaQueue::setNextUrl( const KUrl &url )
+{
+	m_nextUrl = url;
 }
 
 qint32 MediaQueue::timeBetweenMedia() const

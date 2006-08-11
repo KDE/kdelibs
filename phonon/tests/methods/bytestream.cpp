@@ -1,4 +1,3 @@
-addMethod( "", "endOfData()" );
 addMethod( "", "setStreamSeekable(bool)" );
 addMethod( "", "setStreamSize(qint64)" );
 addMethod( "qint64", "streamSize()" );

@@ -138,14 +138,14 @@ void ByteStream::stop()
 	m_streamConsumeTimer->stop();
 }
 
-bool ByteStream::seekable() const
+bool ByteStream::isSeekable() const
 {
 	return m_streamSeekable;
 }
 
 void ByteStream::seek( qint64 time )
 {
-	if( ! seekable() )
+	if( ! isSeekable() )
 		return;
 
 	const qint64 dataStart = m_streamPosition;

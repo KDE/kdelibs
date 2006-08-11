@@ -21,6 +21,7 @@
 
 #include "abstractmediaproducer.h"
 #include <kurl.h>
+#include <phonon/mediaobjectinterface.h>
 
 class KUrl;
 
@@ -28,9 +29,10 @@ namespace Phonon
 {
 namespace Fake
 {
-	class MediaObject : public AbstractMediaProducer
+	class MediaObject : public AbstractMediaProducer, public MediaObjectInterface
 	{
 		Q_OBJECT
+		Q_INTERFACES( Phonon::MediaObjectInterface )
 		public:
 			MediaObject( QObject* parent );
 			~MediaObject();

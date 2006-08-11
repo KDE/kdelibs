@@ -35,22 +35,22 @@ namespace Fake
 			ByteStream( QObject* parent );
 			~ByteStream();
 
-			Q_INVOKABLE qint64 currentTime() const;
-			Q_INVOKABLE qint64 totalTime() const;
+			qint64 currentTime() const;
+			qint64 totalTime() const;
 			Q_INVOKABLE qint32 aboutToFinishTime() const;
 			Q_INVOKABLE qint64 streamSize() const;
 			Q_INVOKABLE bool streamSeekable() const;
-			Q_INVOKABLE bool seekable() const;
+			bool isSeekable() const;
 
 			Q_INVOKABLE void setStreamSeekable( bool );
-			            void writeData( const QByteArray& data );
+			void writeData( const QByteArray& data );
 			Q_INVOKABLE void setStreamSize( qint64 );
-			            void endOfData();
+			void endOfData();
 			Q_INVOKABLE void setAboutToFinishTime( qint32 );
 
-			Q_INVOKABLE void play();
-			Q_INVOKABLE void pause();
-			Q_INVOKABLE void seek( qint64 time );
+			void play();
+			void pause();
+			void seek( qint64 time );
 
 		public Q_SLOTS:
 			virtual void stop();

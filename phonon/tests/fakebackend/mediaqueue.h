@@ -21,6 +21,7 @@
 #define PHONON_FAKE_MEDIAQUEUE_H
 
 #include <QObject>
+#include <kurl.h>
 
 namespace Phonon
 {
@@ -33,7 +34,8 @@ class MediaQueue : public QObject
 	public:
 		MediaQueue( QObject* parent );
 
-		Q_INVOKABLE void setNext( QObject* );
+		Q_INVOKABLE KUrl nextUrl() const;
+		Q_INVOKABLE void setNextUrl( const KUrl & );
 
 		Q_INVOKABLE qint32 timeBetweenMedia() const;
 		Q_INVOKABLE void setTimeBetweenMedia( qint32 milliseconds );
@@ -47,6 +49,7 @@ class MediaQueue : public QObject
 	private:
 		qint32 m_timeBetweenMedia;
 		bool m_doCrossfade;
+		KUrl m_nextUrl;
 };
 
 }} // namespace Phonon::Fake
