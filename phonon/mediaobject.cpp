@@ -107,7 +107,7 @@ void MediaObject::stop()
 void MediaObject::play()
 {
 	K_D( MediaObject );
-	if( qobject_cast<ByteStreamInterface*>( d->backendObject ) && !d->kiojob )
+	if( !d->jobDone && !d->kiojob && qobject_cast<ByteStreamInterface*>( d->backendObject ) )
 		d->setupKioJob();
 	AbstractMediaProducer::play();
 }
@@ -119,6 +119,7 @@ void MediaObjectPrivate::setupKioJob()
 	K_Q( MediaObject );
 	Q_ASSERT( backendObject );
 
+	jobDone = false;
 	kiojob = KIO::get( url, false, false );
 	kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
 	QObject::connect( kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
@@ -177,6 +178,7 @@ void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 {
 	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
 	bs->endOfData();
+	jobDone = true;
 	kiojob = 0;
 
 	if( job->error() )
