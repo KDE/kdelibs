@@ -107,8 +107,17 @@ void MediaObject::stop()
 void MediaObject::play()
 {
 	K_D( MediaObject );
-	if( !d->jobDone && !d->kiojob && qobject_cast<ByteStreamInterface*>( d->backendObject ) )
-		d->setupKioJob();
+	Phonon::State s = state();
+	if( s == Phonon::LoadingState || s == Phonon::StoppedState )
+	{
+		if( !d->jobDone && !d->kiojob && qobject_cast<ByteStreamInterface*>( d->backendObject ) )
+			d->setupKioJob();
+		else
+			// when play() is called and the whole data was already streamed (KIO job is
+			// finished) we can play once, the next time play() is called a new
+			// KIO job is needed.
+			d->jobDone = false;
+	}
 	AbstractMediaProducer::play();
 }
 
