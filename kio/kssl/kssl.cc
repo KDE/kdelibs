@@ -139,6 +139,8 @@ bool KSSL::TLSInit() {
 	d->m_meth = d->kossl->TLSv1_client_method();
 	d->lastInitTLS = true;
 
+	m_pi.reset();
+
 	d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
 	if (d->m_ctx == 0L) {
 		return false;
@@ -282,9 +284,6 @@ int rc;
 		}
 	}
 
-	if (!d->lastInitTLS)
-		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
-
 	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
@@ -367,9 +366,6 @@ int rc;
 			d->session = 0;
 		}
 	}
-
-	if (!d->lastInitTLS)
-		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
 
 	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
 
