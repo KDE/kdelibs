@@ -138,6 +138,8 @@ bool KSSL::TLSInit() {
 	d->m_meth = d->kossl->TLSv1_client_method();
 	d->lastInitTLS = true;
 
+	m_pi.reset();
+
 	d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
 	if (d->m_ctx == 0L) {
 		return false;
@@ -160,9 +162,6 @@ return false;
 bool KSSL::initialize() {
 #ifdef KSSL_HAVE_SSL
 	kdDebug(7029) << "KSSL initialize" << endl;
-	if (m_cfg->tlsv1())
-		return TLSInit();
-
 	if (m_bInit)
 		return false;
 
@@ -175,9 +174,9 @@ bool KSSL::initialize() {
 
 	m_pi.reset();
 
-	if (m_cfg->sslv2() && !m_cfg->sslv3())
+	if (m_cfg->sslv2() && !m_cfg->sslv3() && !m_cfg->tlsv1())
 		d->m_meth = d->kossl->SSLv2_client_method();
-	else if (m_cfg->sslv3() && !m_cfg->sslv2())
+	else if ((m_cfg->tlsv1() || m_cfg->sslv3()) && !m_cfg->sslv2())
 		d->m_meth = d->kossl->SSLv3_client_method();
 	else d->m_meth = d->kossl->SSLv23_client_method();
 
@@ -307,7 +306,7 @@ int rc;
 	}
 */
 
-	if (!d->lastInitTLS)
+	if (!d->lastInitTLS && !m_cfg->tlsv1())
 		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
 
 	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
@@ -393,7 +392,7 @@ int rc;
 	}
 */
 
-	if (!d->lastInitTLS)
+	if (!d->lastInitTLS && !m_cfg->tlsv1())
 		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
 
 	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
