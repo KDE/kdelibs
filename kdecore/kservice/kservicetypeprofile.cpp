@@ -54,7 +54,7 @@ KServiceTypeProfile* KServiceTypeProfile::findProfile( const QString& mimeType, 
     // both mimeType and generic servicetype match.
     KServiceTypeProfileList::const_iterator it = s_lstProfiles->find( mimeType );
     while (it != s_lstProfiles->end() && it.key() == mimeType) {
-        if ( it.value()->m_strGenericServiceType == genservicetype )
+        if ( genservicetype.isNull() || it.value()->m_strGenericServiceType == genservicetype )
             return it.value();
         ++it;
     }
