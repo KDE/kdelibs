@@ -123,8 +123,8 @@ int KNotify::event( const QString & event, const QString & appname, const Contex
 		if(!m_plugins.contains(action))
 			continue;
 		KNotifyPlugin *p=m_plugins[action];
-		p->notify(m_counter,&config);
 		m_notifications[m_counter].ref++;
+		p->notify(m_counter,&config);
 	}
 	m_notifications[m_counter].ref--;
 	if(m_notifications[m_counter].ref==0)

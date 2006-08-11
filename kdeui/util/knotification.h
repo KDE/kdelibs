@@ -31,24 +31,31 @@ class KInstance;
 
 /**
  * KNotification is used to notify some event to the user.
+ * 
+ * \section introduction
  *
- * It covers severals kind of notifications
+ * There is mainly two kind of notifications 
  *
- * @li Interface feedback events:
+ * @li Feedback events:
  * For notifying the user that he/she just performed an operation, like maximizing a
  * window. This allows us to play sounds when a dialog appears.
  * This is an instant notification.  It ends automatically after a small timeout
  *
- * @li complex notifications:
+ * @li persistant notifications:
  * Notify when one received a new message, or when something important happened
  * the user has to know.  This notification has a start and a end.  It start when
- * the event actually occurs, and finish when the message is acknowledged.
+ * the event actually occurs, and finish when the message is acknowledged or read.
+ * 
+ * Example of a persistant notification in an instant messaging application:
+ * The application emit the notification whe the message actually received, and close it only
+ * when the user has read the message (when the message window has received the focus) using the close() slot
+ * Persistant notification must have the Persistant flag.
  * 
  * In order to do a notification, you need to create a description files, which contains 
  * default parametters of the notification, and use KNotification::event at the place of the
  * code where the notification occurs.
  * the returned KNotification pointer may be used to connect signals or slots
- *
+ * 
  * \section file The global config file
  * On installation, there should be a file called 
  *  <em>$KDEDIR/share/apps/appname/appname.notifyrc</em>
@@ -192,9 +199,10 @@ public:
 		
 		/**
 		 * The notification will NOT be automatically closed after a timeout.
-		 * If you don't set this flag, after a timeout, the notification will be closed.
+		 * You will have to track the notification, and close it with the 
+		 * close function manually when the event is done, otherwise there will be a memory leak
 		 */
-		NoTimeout=0x02,
+		Persistant=0x02,
 
 		
 		

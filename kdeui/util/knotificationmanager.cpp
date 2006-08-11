@@ -82,6 +82,7 @@ void KNotificationManager::notificationActivated( int id, int action )
 
 void KNotificationManager::notificationClosed( int id )
 {
+	kDebug( 299 ) << k_funcinfo << id  << endl;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -105,7 +106,6 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
                                            const KNotification::ContextList & contexts,
                                            const QString &appname)
 {
-    kDebug(299) << k_funcinfo << endl;
     WId winId=n->widget() ? n->widget()->topLevelWidget()->winId()  : 0;
 
     QByteArray pixmapData;
@@ -133,7 +133,6 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     else
     {
         d->notifications.insert(reply, n);
-        kDebug(299) << k_funcinfo << "got id " << reply.value() << endl;
         return reply;
     }
     return 0;
