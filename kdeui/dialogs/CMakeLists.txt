@@ -1,5 +1,5 @@
 install( FILES
- aboutapplication.h
+ kaboutapplication.h
  kaboutdialog.h
  kaboutkde.h
  kcolordialog.h
