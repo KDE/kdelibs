@@ -27,23 +27,22 @@
 
 using namespace ThreadWeaver;
 
-SMIV::SMIV ()
+SMIV::SMIV ( Weaver* w )
     : QWidget()
+    , m_weaver ( w )
     , m_noOfJobs ( 0 )
     , m_quit ( false )
 {
     ui.setupUi ( this );
-    weaver = new Weaver ( this, 8 );
-    connect ( weaver,  SIGNAL ( finished() ),  SLOT ( slotJobsDone() ) );
-    connect ( weaver,  SIGNAL ( jobDone ( Job* ) ), SLOT( slotJobDone( Job* ) ) );
-    connect ( weaver,  SIGNAL ( suspended () ),  SLOT ( weaverSuspended() ) );
+    connect ( m_weaver,  SIGNAL ( finished() ),  SLOT ( slotJobsDone() ) );
+    connect ( m_weaver,  SIGNAL ( jobDone ( Job* ) ), SLOT( slotJobDone( Job* ) ) );
+    connect ( m_weaver,  SIGNAL ( suspended () ),  SLOT ( weaverSuspended() ) );
     ui.listView->setModel ( &model );
     ui.listView->setItemDelegate( &del );
 }
 
 SMIV::~SMIV ()
 {
-    delete weaver;
 }
 
 void SMIV::on_pbSelectFiles_clicked()
@@ -63,15 +62,15 @@ void SMIV::on_pbSelectFiles_clicked()
         ui.progressBar->setRange (1, m_noOfJobs);
         ui.progressBar->reset();
 
-        weaver->suspend();
+        m_weaver->suspend();
         for (int index = 0; index < files.size(); ++index)
         {
-            SMIVItem *item = new SMIVItem ( weaver, files.at(index ), this );
+            SMIVItem *item = new SMIVItem ( m_weaver, files.at(index ), this );
             connect ( item,  SIGNAL( thumbReady(SMIVItem* ) ),
                       SLOT ( slotThumbReady( SMIVItem* ) ) );
         }
         m_startTime.start();
-        weaver->resume();
+        m_weaver->resume();
 
         ui.pbSelectFiles->setEnabled(false);
         ui.pbCancel->setEnabled(true);
@@ -85,8 +84,8 @@ void SMIV::on_pbSelectFiles_clicked()
 
 void SMIV::on_pbCancel_clicked()
 {
-    weaver->dequeue();
-    weaver->requestAbort();
+    m_weaver->dequeue();
+    m_weaver->requestAbort();
     ui.pbSelectFiles->setEnabled(true);
     ui.pbCancel->setEnabled(false);
     ui.pbSuspend->setEnabled(false);
@@ -97,12 +96,12 @@ void SMIV::on_pbCancel_clicked()
 
 void SMIV::on_pbSuspend_clicked()
 {
-    if ( weaver->state().stateId() == Suspended )
+    if ( m_weaver->state().stateId() == Suspended )
     {
         ui.pbSuspend->setText ( "Suspend" );
-        weaver->resume();
+        m_weaver->resume();
     } else {
-        weaver->suspend();
+        m_weaver->suspend();
         ui.pbSuspend->setEnabled ( false );
     }
 }
@@ -114,13 +113,13 @@ void SMIV::on_pbQuit_clicked()
     ui.pbCancel->setEnabled(false);
     ui.pbSuspend->setEnabled(false);
     ui.pbQuit->setEnabled(false);
-    if ( weaver->isIdle() || weaver->state().stateId() == Suspended )
+    if ( m_weaver->isIdle() || m_weaver->state().stateId() == Suspended )
     {
         QApplication::instance()->quit();
     } else {
         m_quit = true;
-        weaver->dequeue(); // on Weaver::finished() we exit
-        weaver->resume();
+        m_weaver->dequeue(); // on Weaver::finished() we exit
+        m_weaver->resume();
     }
 }
 
@@ -167,8 +166,8 @@ int main ( int argc,  char** argv )
 {
     QApplication app ( argc,  argv );
     ThreadWeaver::setDebugLevel ( true, 1 );
-
-    SMIV smiv;
+    ThreadWeaver::Weaver weaver ( 0, 8 );
+    SMIV smiv ( & weaver );
     smiv.show();
     return app.exec();
 }

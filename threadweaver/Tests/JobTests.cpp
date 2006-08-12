@@ -10,7 +10,7 @@
 #include <JobCollection.h>
 #include <ResourceRestrictionPolicy.h>
 
-#include "AppendCharacterJob.h" 
+#include "AppendCharacterJob.h"
 
 QMutex s_GlobalMutex;
 
@@ -83,7 +83,7 @@ private slots:
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(collection.isFinished());
   }
-  
+
     void ShortJobSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -106,6 +106,7 @@ private slots:
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(sequence.isFinished());
   }
+
     void QueueAndDequeueSequenceTest() {
         QString sequence;
         AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -247,7 +248,7 @@ private slots:
 
 //     This test is not the most efficient, as the mutex locking takes most of
 //     the execution time. Anyway, it will fail if the jobs are not executed
-//     in the right order, and the order is randomized. 
+//     in the right order, and the order is randomized.
     void MassiveJobSequenceTest() {
         const int NoOfChars = 1024;
         const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -361,7 +362,7 @@ private slots:
 
   void ResourceRestrictionPolicyBasicsTest () {
     // this test tests that with resource restrictions assigned, jobs
-    // still get executed as expected 
+    // still get executed as expected
     QString sequence;
     ThreadWeaver::ResourceRestrictionPolicy restriction (2);
     AppendCharacterJob a( 'a', &sequence );
@@ -373,19 +374,19 @@ private slots:
     AppendCharacterJob g( 'g', &sequence );
     ThreadWeaver::JobCollection collection;
     collection.addJob( &a );
-    a.assignQueuePolicy ( &restriction); 
+    a.assignQueuePolicy ( &restriction);
     collection.addJob( &b );
-    b.assignQueuePolicy ( &restriction); 
+    b.assignQueuePolicy ( &restriction);
     collection.addJob( &c );
-    c.assignQueuePolicy ( &restriction); 
+    c.assignQueuePolicy ( &restriction);
     collection.addJob( &d );
-    d.assignQueuePolicy ( &restriction); 
+    d.assignQueuePolicy ( &restriction);
     collection.addJob( &e );
-    e.assignQueuePolicy ( &restriction); 
+    e.assignQueuePolicy ( &restriction);
     collection.addJob( &f );
-    f.assignQueuePolicy ( &restriction); 
+    f.assignQueuePolicy ( &restriction);
     collection.addJob( &g );
-    g.assignQueuePolicy ( &restriction); 
+    g.assignQueuePolicy ( &restriction);
 
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
     ThreadWeaver::Weaver::instance()->finish();

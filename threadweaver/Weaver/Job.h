@@ -1,17 +1,17 @@
 /* -*- C++ -*-
 
-   This file declares the Job class.
+This file declares the Job class.
 
-   $ Author: Mirko Boehm $
-   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
-   $ Contact: mirko@kde.org
-         http://www.kde.org
-         http://www.hackerbuero.org $
-   $ License: LGPL with the following explicit clarification:
-         This code may be linked against any version of the Qt toolkit
-         from Troll Tech, Norway. $
+$ Author: Mirko Boehm $
+$ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+$ Contact: mirko@kde.org
+http://www.kde.org
+http://www.hackerbuero.org $
+$ License: LGPL with the following explicit clarification:
+This code may be linked against any version of the Qt toolkit
+from Troll Tech, Norway. $
 
-   $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
+$Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 */
 
 #ifndef THREADWEAVER_JOB_H
@@ -54,7 +54,7 @@ namespace ThreadWeaver {
 
         /** Construct a Job.
 
-            @param parent the parent QObject
+        @param parent the parent QObject
         */
         explicit Job ( QObject* parent = 0 );
 
@@ -67,21 +67,21 @@ namespace ThreadWeaver {
             implementation, overload run(). */
         virtual void execute(Thread*);
 
-      /** The queueing priority of the job.
-	  Jobs will be sorted by their queueing priority when
-	  enqueued. A higher queueing priority will place the job in
-	  front of all lower-priority jobs in the queue.
+        /** The queueing priority of the job.
+            Jobs will be sorted by their queueing priority when
+            enqueued. A higher queueing priority will place the job in
+            front of all lower-priority jobs in the queue.
 
-	  Note: A higher or lower priority does not influence queue
-	  policies. For example, a high-priority job that has an
-	  unresolved dependency will not be executed, which means an
-	  available lower-priority job will take precedence.
+            Note: A higher or lower priority does not influence queue
+            policies. For example, a high-priority job that has an
+            unresolved dependency will not be executed, which means an
+            available lower-priority job will take precedence.
 
-	  The default implementation returns zero. Only if this method
-	  is overloaded for some job classes, priorities will
-	  influence the execution order of jobs.
-      */
-      virtual int priority() const;
+            The default implementation returns zero. Only if this method
+            is overloaded for some job classes, priorities will
+            influence the execution order of jobs.
+        */
+        virtual int priority() const;
 
         /** Return whether the Job finished successfully or not.
             The default implementation simply returns true. Overload in
@@ -97,7 +97,7 @@ namespace ThreadWeaver {
             befor deleting the failed Job.
 
             A JobSequence may be helpful for that purpose.
-         */
+        */
         virtual bool success () const { return true; }
 
         /** Abort the execution of the job.
@@ -128,7 +128,7 @@ namespace ThreadWeaver {
             perspective.
 
             @param weaver the Weaver object the job will be queued in
-            */
+        */
         virtual void aboutToBeQueued ( WeaverInterface *weaver );
 
         /** This Job is about the be dequeued from the weaver's job queue.
@@ -186,12 +186,12 @@ namespace ThreadWeaver {
         void failed( Job* );
 
     protected:
-      class Private;
-      Private* d;
+        class Private;
+        Private* d;
 
-      /** Free the queue policies acquired before this job has been
-	  executed. */
-      void freeQueuePolicyResources();
+        /** Free the queue policies acquired before this job has been
+            executed. */
+        void freeQueuePolicyResources();
 
         /** The method that actually performs the job. It is called from
             execute(). This method is the one to overload it with the
@@ -203,10 +203,13 @@ namespace ThreadWeaver {
 	    Do not confuse with QObject::thread() const !
 	    //  @todo rename to executingThread()
 	    */
-      Thread *thread();
-      
+        Thread *thread();
+
 	/** Call with status = true to mark this job as done. */
-      void setFinished ( bool status );
+        void setFinished ( bool status );
+
+        /** The mutex used to protect this job. */
+        // QMutex& mutex();
 
     };
 }

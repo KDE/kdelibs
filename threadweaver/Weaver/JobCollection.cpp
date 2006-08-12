@@ -141,7 +141,8 @@ JobCollection::JobCollection ( QObject *parent )
 
 JobCollection::~JobCollection()
 {   // dequeue all remaining jobs:
-    dequeueElements();
+    if ( d->weaver != 0 ) // still queued
+        dequeueElements();
     // QObject cleanup takes care of the job runners
     delete d; d = 0;
 }
@@ -157,12 +158,12 @@ void JobCollection::stop( Job *job )
 {   // this only works if there is an event queue executed by the main
     // thread, and it is not blocked:
     Q_UNUSED( job );
-
     if ( d->weaver != 0 )
     {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", this);
         d->weaver->dequeue( this );
     }
+    // FIXME ENSURE ( d->weaver == 0 ); // verify that aboutToBeDequeued has been called
 }
 
 void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
@@ -180,9 +181,7 @@ void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
 }
 
 void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
-{
-
-    //  Q_ASSERT ( d->weaver != 0 );
+{   //  Q_ASSERT ( d->weaver != 0 );
     // I thought: "must have been queued first"
     // but the user can queue and dequeue in a suspended Weaver
 
@@ -194,7 +193,6 @@ void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
     }
 
     d->weaver = 0;
-
     ENSURE ( d->weaver == 0 );
 }
 
@@ -260,8 +258,14 @@ bool JobCollection::canBeExecuted()
 void JobCollection::internalJobDone ( Job* job )
 {
     REQUIRE (job != 0);
-    REQUIRE (d->weaver != 0); // ... queued
-    REQUIRE (d->jobCounter > 0); // ... still jobs left
+
+    if ( d->jobCounter == 0 )
+    {   // there is a small chance that (this) has been dequeued in the
+        // meantime, in this case, there is nothing left to clean up:
+        d->weaver = 0;
+        return;
+    }
+
     Q_UNUSED (job);
     --d->jobCounter;
 
@@ -282,6 +286,7 @@ void JobCollection::finalCleanup()
     freeQueuePolicyResources();
     setFinished(true);
     emit done(this);
+    d->weaver = 0;
 }
 
 void JobCollection::dequeueElements()

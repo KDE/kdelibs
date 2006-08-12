@@ -1,17 +1,17 @@
 /* -*- C++ -*-
 
-   This file implements the Job class.
+This file implements the Job class.
 
-   $ Author: Mirko Boehm $
-   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
-   $ Contact: mirko@kde.org
-         http://www.kde.org
-         http://www.hackerbuero.org $
-   $ License: LGPL with the following explicit clarification:
-         This code may be linked against any version of the Qt toolkit
-         from Troll Tech, Norway. $
+$ Author: Mirko Boehm $
+$ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+$ Contact: mirko@kde.org
+http://www.kde.org
+http://www.hackerbuero.org $
+$ License: LGPL with the following explicit clarification:
+This code may be linked against any version of the Qt toolkit
+from Troll Tech, Norway. $
 
-   $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
+$Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
 #include <QSet>
@@ -32,25 +32,25 @@ using namespace ThreadWeaver;
 
 class ThreadWeaver::QueuePolicyList : public QList<QueuePolicy*> {};
 
-class Job::Private 
+class Job::Private
 {
 public:
-  Private ()    
-    : thread (0)
-    , queuePolicies ( new QueuePolicyList )
-    , mutex (new QMutex (QMutex::NonRecursive) )
-    , finished (false)
-  {}
+    Private ()
+        : thread (0)
+        , queuePolicies ( new QueuePolicyList )
+        , mutex (new QMutex (QMutex::NonRecursive) )
+        , finished (false)
+    {}
 
-  /* The thread that executes this job. Zero when the job is not executed. */
-  Thread * thread;
+    /* The thread that executes this job. Zero when the job is not executed. */
+    Thread * thread;
 
-  /* The list of QueuePolicies assigned to this Job. */
-  QueuePolicyList* queuePolicies;
+    /* The list of QueuePolicies assigned to this Job. */
+    QueuePolicyList* queuePolicies;
 
-  QMutex *mutex;
-  /* d->finished is set to true when the Job has been executed. */
-  bool finished;
+    QMutex *mutex;
+    /* d->finished is set to true when the Job has been executed. */
+    bool finished;
 };
 
 Job::Job ( QObject *parent )
@@ -127,7 +127,7 @@ void Job::execute(Thread *th)
 
 int Job::priority () const
 {
-  return 0;
+    return 0;
 }
 
 void Job::freeQueuePolicyResources()
@@ -170,7 +170,7 @@ bool Job::canBeExecuted()
         debug( 4, "Job::canBeExecuted: queue policies returned %s.\n", success ? "true" : "false" );
 
         if ( ! success )
-        {   
+        {
 
             for ( int index = 0; index < acquired.size(); ++index )
             {
@@ -203,18 +203,23 @@ void Job::removeQueuePolicy( QueuePolicy* policy )
 
 bool Job::isFinished() const
 {
-  return d->finished; 
+    return d->finished;
 }
 
 Thread* Job::thread()
 {
-  return d->thread; 
+    return d->thread;
 }
 
-void Job::setFinished ( bool status ) 
+void Job::setFinished ( bool status )
 {
-  d->finished = status; 
+    d->finished = status;
 }
+
+// QMutex& Job::mutex()
+// {
+//     return * d->mutex;
+// }
 
 #include "Job.moc"
 #ifdef USE_CMAKE

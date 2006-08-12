@@ -3,6 +3,8 @@
 
 namespace ThreadWeaver {
 
+    class Job;
+
 /** QueuePolicy is an interface for customizations of the queueing behaviour
     of sets of jobs.
 
@@ -24,9 +26,6 @@ namespace ThreadWeaver {
     jobs are executed. Jobs never assume ownership of their assigned queue
     policies.
 */
-
-    class Job;
-
     class QueuePolicy
     {
     public:

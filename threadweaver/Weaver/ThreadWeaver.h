@@ -27,11 +27,7 @@ namespace ThreadWeaver {
     class State;
     class WeaverObserver;
 
-    /** The Weaver class acts as a facade to the WeaverImpl class.
-
-        It creates and destroys WeaverImpl objects. Also, it provides a
-        factory method for this purpose that can be overloaded to create
-        derived WeaverImpl objects.
+    /** The Weaver class provides the public implementation of the WeaverInterface.
 
         Weaver provides a static instance that can be used to perform jobs in
         threads without managing a weaver object. The static instance will
@@ -43,7 +39,16 @@ namespace ThreadWeaver {
         that are handled by it, and one for the ThreadWeaver users
         (application developers). To separate those two different API parts,
         Weaver only provides the interface supposed to be used by developers
-        of multithreaded applications. */
+        of multithreaded applications.
+
+        Weaver creates and destroys WeaverImpl objects. It hides the
+        implementation details of the WeaverImpl class. It is strongly
+        discouraged to use the WeaverImpl class in programs, as its API will
+        be changed without notice.
+        Also, Weaver provides a factory method for this purpose that can be overloaded to create
+        derived WeaverImpl objects.
+
+    */
     class Weaver : public WeaverInterface
     {
         Q_OBJECT
@@ -76,7 +81,7 @@ namespace ThreadWeaver {
         void requestAbort();
 
     protected:
-      
+
       class Private;
       Private* d;
         /** The factory method to create the actual Weaver implementation.

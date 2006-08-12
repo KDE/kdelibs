@@ -25,8 +25,21 @@ namespace ThreadWeaver {
     class State;
     class WeaverObserver;
 
-    /** WeaverInterface provides a common interface for weaver
-        implementations, to be used for example in adapters and
+    /** WeaverInterface provides a common interface for weaver implementations.
+
+        In most cases, it is sufficient for an application to hold exactly one
+        ThreadWeaver job queue. To execute jobs in a specific order, use job
+        dependencies. To limit the number of jobs of a certain type that can
+        be executed at the same time, use resource restrictions. To handle
+        special requirements of the application when it comes to the order of
+        execution of jobs, implement a special queue policy and apply it to
+        the jobs.
+
+        Users of the ThreadWeaver API are encouraged to program to this
+        interface, instead of the implementation. This way, implementation
+        changes will not affect user programs.
+
+        This interface can be used for example to implement adapters and
         decorators. The member documentation is provided in the Weaver and
         WeaverImpl classes.
     */
@@ -35,6 +48,9 @@ namespace ThreadWeaver {
         Q_OBJECT
 
     public:
+        /** A ThreadWeaver object manages a queue of Jobs.
+            It inherits QObject.
+        */
         explicit WeaverInterface ( QObject* parent = 0 );
         virtual ~WeaverInterface() {}
         /** Return the state of the weaver object. */
@@ -103,7 +119,7 @@ namespace ThreadWeaver {
         virtual bool isEmpty () const = 0;
 	/** Is the weaver idle?
 	    The weaver is idle if no jobs are queued and no jobs are processed
-            by the threads (m_active is zero). */
+            by the threads. */
         virtual bool isIdle () const = 0;
 	/** Returns the number of pending jobs.
             This will return the number of queued jobs. Jobs that are
@@ -143,6 +159,9 @@ namespace ThreadWeaver {
 	    programmer to decide if this signal or the done signal of the job
 	    is more handy. */
         void jobDone (Job*);
+
+        /** The Weaver's state has changed. */
+        void stateChanged ( State* );
     };
 
 }

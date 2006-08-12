@@ -110,7 +110,8 @@ public:
 };
 
 Thread::Thread (WeaverImpl *parent)
-    : QThread ()
+    : QThread () // no parent, because the QObject hierarchy of this thread
+                 // does not have a parent (see QObject::pushToThread)
     , d ( new Private ( parent ) )
 {
 }
@@ -127,7 +128,8 @@ const unsigned int Thread::id()
 
 void Thread::run()
 {
-    Q_ASSERT ( thread() != this ); // this is created and owned by the main thread
+// disabled while testing movetothread...
+//    Q_ASSERT ( thread() != this ); // this is created and owned by the main thread
     debug ( 3, "Thread::run [%u]: running.\n", id() );
 
     ThreadRunHelper helper;

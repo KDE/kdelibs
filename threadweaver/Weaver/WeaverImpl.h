@@ -1,17 +1,17 @@
 /* -*- C++ -*-
 
-   This file implements the public interfaces of the WeaverImpl class.
+This file implements the public interfaces of the WeaverImpl class.
 
-   $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, 2006 Mirko Boehm $
-   $ Contact: mirko@kde.org
-         http://www.kde.org
-         http://www.hackerbuero.org $
-   $ License: LGPL with the following explicit clarification:
-         This code may be linked against any version of the Qt toolkit
-         from Trolltech, Norway. $
+$ Author: Mirko Boehm $
+$ Copyright: (C) 2005, 2006 Mirko Boehm $
+$ Contact: mirko@kde.org
+http://www.kde.org
+http://www.hackerbuero.org $
+$ License: LGPL with the following explicit clarification:
+This code may be linked against any version of the Qt toolkit
+from Trolltech, Norway. $
 
-   $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
+$Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 */
 #ifndef WeaverImpl_H
 #define WeaverImpl_H
@@ -106,8 +106,12 @@ namespace ThreadWeaver {
         void threadSuspended ( Thread* );
         /** The thread is busy executing job j. */
         void threadBusy ( Thread*,  Job* j);
-        /** The Weaver's state has changed. */
-        void stateChanged ( State* );
+
+        // some more private signals: There are situations where other threads
+        // call functions of (this). In this case, there may be confusion
+        // about whether to handle th signals synchroneously or not. The
+        // following signals are asynchroneoulsy connected to their siblings.
+        void asyncThreadSuspended( Thread* );
 
     protected:
         /** Adjust active thread count.
@@ -119,12 +123,12 @@ namespace ThreadWeaver {
         virtual Thread* createThread();
         /** Adjust the inventory size.
 
-	    This method creates threads on demand. Threads in the inventory
-	    are not created upon construction of the WeaverImpl object, but
-	    when jobs are queued. This avoids costly delays on the application
-	    startup time. Threads are created when the inventory size is under
-	    inventoryMin and new jobs are queued.
-	    */
+        This method creates threads on demand. Threads in the inventory
+        are not created upon construction of the WeaverImpl object, but
+        when jobs are queued. This avoids costly delays on the application
+        startup time. Threads are created when the inventory size is under
+        inventoryMin and new jobs are queued.
+        */
         // @TODO: add code to raise inventory size over inventoryMin
         // @TODO: add code to quit unnecessary threads
         void adjustInventory ( int noOfNewJobs );
@@ -161,7 +165,7 @@ namespace ThreadWeaver {
         // @TODO: make state objects static
 	/** The state of the art.
          * @see StateId
-	*/
+         */
 	State*  m_state;
         /** The state objects. */
         State *m_states[NoOfStates];

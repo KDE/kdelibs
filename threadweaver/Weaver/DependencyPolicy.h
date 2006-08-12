@@ -21,6 +21,17 @@
 
 namespace ThreadWeaver {
 
+    /** DependencyPolicy implements the way dependencies between Jobs are handled.
+
+        To declare that Job B can only be executed when Job A is finished,
+        call addDependency.
+
+        Be aware of circular dependencies. All dependencies on a Job will be
+        removed if the Job object is destructed.
+
+        JobSequence uses dependencies to implement the ordered execution of
+        the sequence elements.
+    */
     class DependencyPolicy : public QueuePolicy
     {
     public:

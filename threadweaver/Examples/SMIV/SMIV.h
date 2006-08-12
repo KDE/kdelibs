@@ -34,13 +34,13 @@ class SMIV : public QWidget
 {
     Q_OBJECT
 public:
-    SMIV ();
+    SMIV ( Weaver* weaver );
     ~SMIV ();
 private:
     SMIVModel model;
     SMIVItemDelegate del;
     Ui::SMIVBase ui;
-    Weaver *weaver;
+    Weaver* m_weaver;
     int m_noOfJobs;
     bool m_quit;
     QTime m_startTime;
