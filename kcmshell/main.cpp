@@ -102,6 +102,10 @@ static KService::Ptr locateModule(const QCString& module)
         return 0;
     }
 
+    // avoid finding random non-kde applications
+    if ( module.left( 4 ) != "kde-" && service->library().isEmpty() )
+        return locateModule( "kde-" + module );
+
     if(!KCModuleLoader::testModule( module ))
     {
         kdDebug(780) << "According to \"" << module << "\"'s test function, it should Not be loaded." << endl;
