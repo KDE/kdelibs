@@ -38,16 +38,29 @@ GlobalConfig::~GlobalConfig()
 
 QList<int> GlobalConfig::audioOutputDeviceListFor( Phonon::Category category ) const
 {
-	const KConfigGroup configGroup( const_cast<KSharedConfig*>( m_config.data() ), "AudioOutputDevice" );
+	//The devices need to be stored independently for every backend
+	//FIXME: backendName() is a translated string
+	const KConfigGroup configGroup( const_cast<KSharedConfig*>( m_config.data() ),
+			QLatin1String( "AudioOutputDevice" ) + Factory::self()->backendName() );
 
+	//First we lookup the available devices directly from the backend
 	QSet<int> deviceIndexes;
 	QObject *backendObject = Factory::self()->backend();
 	pBACKEND_GET1( QSet<int>, deviceIndexes, "objectDescriptionIndexes", ObjectDescriptionType, Phonon::AudioOutputDeviceType );
-
 	QList<int> defaultList = deviceIndexes.toList();
 	qSort( defaultList );
+
+	//Now the list from the phononrc file
 	QList<int> deviceList = configGroup.readEntry<QList<int> >( QLatin1String( "Category" ) +
 			QString::number( static_cast<int>( category ) ), defaultList );
+
+	QMutableListIterator<int> i( deviceList );
+	while( i.hasNext() )
+		if( 0 == defaultList.removeAll( i.next() ) )
+			//if there are devices in phononrc that the backend doesn't report, remove them from the list
+			i.remove();
+	//if the backend reports more devices that are not in phononrc append them to the list
+	deviceList += defaultList;
 
 	return deviceList;
 }
