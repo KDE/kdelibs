@@ -53,6 +53,7 @@
 602        phonon (ui)
 603        phonon (ui iface)
 604        phonon (fake backend)
+610        phonon (xine backend)
 700        kutils (KSettings::Dialog)
 701        kutils (KSettings::Dispatcher)
 702        kutils (KPluginSelector)
