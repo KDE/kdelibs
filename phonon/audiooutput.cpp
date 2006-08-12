@@ -21,6 +21,7 @@
 #include "factory.h"
 #include "objectdescription.h"
 #include "audiooutputadaptor.h"
+#include "globalconfig.h"
 
 #include <kglobal.h>
 #include <kinstance.h>
@@ -36,7 +37,10 @@ AudioOutput::AudioOutput( Phonon::Category category, QObject* parent )
 {
 	K_D( AudioOutput );
 	d->category = category;
-	// TODO: select hardware device according to the category
+
+	// select hardware device according to the category
+	d->outputDeviceIndex = GlobalConfig().audioOutputDeviceFor( d->category );
+
 	d->createIface();
 	new AudioOutputAdaptor( this );
 	for( int i = 0; !QDBus::sessionBus().registerObject( "/AudioOutputs/" + QString::number( i ), this ); ++i );
@@ -122,6 +126,7 @@ void AudioOutput::setupIface()
 
 	// set up attributes
 	BACKEND_CALL1( "setVolume", float, d->volume );
+	BACKEND_CALL1( "setOutputDevice", int, d->outputDeviceIndex );
 }
 
 } //namespace Phonon

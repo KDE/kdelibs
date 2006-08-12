@@ -49,6 +49,7 @@ set(phononcore_LIB_SRCS
 	visualization.cpp
 	audioplayer.cpp
 	backendcapabilities.cpp
+	globalconfig.cpp
 	factory.cpp
 	)
 

@@ -96,29 +96,29 @@ namespace Phonon
 		 * If the sounds produced are notifications (bing, beep and such) you
 		 * should use this category.
 		 */
-		NotificationCategory,
+		NotificationCategory = 0,
 		/**
 		 * If your application is a music player (like a jukebox or media player
 		 * playing an audio file).
 		 */
-		MusicCategory,
+		MusicCategory = 1,
 		/**
 		 * If the sound is the audio channel of a video.
 		 */
-		VideoCategory,
+		VideoCategory = 2,
 		/**
 		 * If your applications produces sounds from communication with somebody
 		 * else (VoIP, voice chat).
 		 */
-		CommunicationCategory,
+		CommunicationCategory = 3,
 		/**
 		 * Sound produced by a computer game should go into this category.
 		 */
-		GameCategory,
+		GameCategory = 4,
 		/**
 		 * Sounds produced for accessibility (e.g. Text-To-Speech)
 		 */
-		AccessibilityCategory
+		AccessibilityCategory = 5
 	};
 
 	/**
