@@ -127,9 +127,6 @@ TestKHTML::~TestKHTML()
 void TestKHTML::setupActions()
 {
     QDomDocument document = m_part->domDocument();
-        QString blah = document.toString();
-    kDebug() << "document source: " << endl << blah << endl;
-
     QDomElement fileMenu = document.documentElement().firstChild().childNodes().item( 0 ).toElement();
 
     QDomElement quitElement = document.createElement("action");
@@ -183,7 +180,7 @@ void TestKHTML::setupActions()
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 
-    KStdAction::quit( this, SLOT(KApp->quit()), m_part->actionCollection() );
+    KStdAction::quit( this, SLOT(kpp->quit()), m_part->actionCollection() );
 
     guiFactory()->addClient(m_part);
 }

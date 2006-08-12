@@ -6,6 +6,7 @@
 class QTreeView;
 class QStandardItemModel;
 class ObjectModel;
+class ExecStateModel;
 
 class LocalVariablesDock : public QDockWidget
 {
@@ -18,8 +19,7 @@ public:
 
 private:
     QTreeView   *m_view;
-//     QStandardItemModel *m_model;
-    ObjectModel  *m_model;
+    ExecStateModel    *m_execModel;
 
 };
 

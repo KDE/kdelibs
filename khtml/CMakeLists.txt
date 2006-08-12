@@ -111,8 +111,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/watchesdock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/objectmodel.cpp
-#  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/jsobjectmodel.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/execstatemodel.cpp
 )
 
 qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )

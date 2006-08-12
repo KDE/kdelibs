@@ -414,6 +414,7 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 //             kDebug() << "Hey! we actually found a breakpoint!" << endl;
             // Lets try a dump of the scope chain now..
             m_localVariables->display(exec);
+            // enterDebugSession(exec);
         }
     }
 
