@@ -248,7 +248,7 @@ static struct EmbedImage {
 static const QPixmap& qembed_findImage( const QString& name )
 {
     static QHash<QString,QPixmap*> dict;
-    QPixmap* pixmap = dict.find( name ).value();
+    QPixmap* pixmap = dict.value( name );
     if ( !pixmap ) {
 	for ( int i = 0; embed_image_vec[i].data; i++ ) {
 	    if ( strcmp(embed_image_vec[i].name, name.toLatin1()) == 0 ) {
