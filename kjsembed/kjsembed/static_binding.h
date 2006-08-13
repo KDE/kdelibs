@@ -112,6 +112,7 @@ public:
     */
     static KJS::JSObject *construct( KJS::ExecState *exec, KJS::JSObject *parent,
             const KJS::UString &className, const KJS::List &args = KJS::List() );
+
     static const Method *methods( const KJS::UString &className );
     static const Constructor *constructor( const KJS::UString &className );
 

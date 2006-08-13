@@ -42,11 +42,11 @@ struct Pointer : public PointerBase
 public:
     Pointer( ValueType *value) : ptr(value)
     {
-        //qDebug("new pointer %s %0x", typeid(ValueType).name(), value);
+//         qDebug("new pointer %s %0x", typeid(ValueType).name(), value);
     }
     ~Pointer( )
     {
-        //qDebug("delete pointer");
+//         qDebug("delete pointer");
     }
     void cleanup()
     {
@@ -123,5 +123,15 @@ struct NullPtr : public PointerBase
     }
 
 };
+
+template<typename ValueType> 
+ValueType *pointer_cast( PointerBase *pointer )
+{
+//   qDebug("pointers %s %s", typeid(ValueType).name(), pointer->type().name() );
+  Pointer<ValueType> *upcast = dynamic_cast< Pointer<ValueType> *>(pointer);
+  if( upcast == 0 )
+    return 0L;
+  return upcast->ptr;
+}
 
 #endif

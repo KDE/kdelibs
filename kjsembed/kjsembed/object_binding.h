@@ -56,8 +56,6 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         return result; \
 }
 
-// used to be: result = KJSEmbed::throwError(exec, KJS::GeneralError, QString("Object castfailed."));
-
 #define START_STATIC_OBJECT_METHOD( METHODNAME ) \
 KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \
 {\
@@ -87,7 +85,7 @@ namespace KJSEmbed
 
         private:
             const char *m_name;
-            PointerBase *m_value;
+            mutable PointerBase *m_value;
             Ownership m_owner;
 
         public:
@@ -96,7 +94,6 @@ namespace KJSEmbed
                 : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
                   m_name(typeName)
             {
-                StaticBinding::publish( exec, this, ValueFactory::methods() );
                 StaticBinding::publish( exec, this, ObjectFactory::methods() );
 
                 m_owner = CPPOwned;
@@ -114,14 +111,14 @@ namespace KJSEmbed
             T *object() const
             {
                 if( m_value )
-                    return (T*)m_value->voidStar();
+                    return pointer_cast<T>(m_value);
                 else
                     return 0;
             }
 
             void *voidStar() const
             {
-                return object<void>();
+                return m_value->voidStar();
             }
 
             template <typename T>
@@ -142,8 +139,6 @@ namespace KJSEmbed
             Ownership ownership() const;
             void setOwnership( Ownership owner );
 
-            QGenericArgument arg( const char *type) const;
-
     };
 
     /**
@@ -160,7 +155,7 @@ namespace KJSEmbed
             T *returnValue = 0;
             KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ObjectBinding>(exec, arg );
             if( imp )
-                returnValue = (T*)imp->voidStar();
+                returnValue = imp->object<T>();
             if( returnValue )
                 return returnValue;
             else
@@ -206,8 +201,7 @@ namespace KJSEmbed
             }
             else
             {
-	            throwError(exec, KJS::GeneralError, i18n("%1 is not an Object type", className.ascii()));
-                //throwError(exec, i18n("%1 is not an Object type").arg(className.ascii()));
+	            throwError(exec, KJS::TypeError, i18n("%1 is not an Object type", className.ascii()));
                 return KJS::Null();
             }
         }

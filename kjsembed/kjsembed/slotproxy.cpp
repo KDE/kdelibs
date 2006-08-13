@@ -97,7 +97,9 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 
     if( exec->hadException() )
     {
-        return exec->exception();
+    //TODO ext the script here with the error
+      m_interpreter->deref();
+      return KJS::Null();
     }
     else
     {

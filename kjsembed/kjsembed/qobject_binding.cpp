@@ -147,10 +147,6 @@ QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
     m_cleanupHandler = new QObjectCleanupHandler();
     watchObject(object);
 
-    // Add QObjectBindings for each child object.
-    // Publish the object_bindings
-    StaticBinding::publish( exec, this, ValueFactory::methods() );
-    StaticBinding::publish( exec, this, ObjectFactory::methods() );
     StaticBinding::publish( exec, this, QObjectFactory::methods() );
     QObjectBinding::publishQObject(exec, this, object);
 

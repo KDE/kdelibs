@@ -2,17 +2,21 @@
 function scribble() {
 
   frame = new Widget("QFrame", this);
+  frame.startX = 0;
+  frame.startY = 0;
+  frame.endX = 0;
+  frame.endY = 0; 
 
   frame.onMouseButtonPressEvent = function ( ev ) {
+    println('Start');
     this.startX = ev.x;
     this.startY = ev.y;
-    println('Start');
   }
 
   frame.onMouseButtonReleaseEvent = function ( ev ) {
+    println('End');
     this.endX = ev.x;
     this.endY = ev.y;
-    println('End');
     this.update();
   }
 
@@ -20,12 +24,12 @@ function scribble() {
     println('Paint');
     var p = new QPainter();
     p.begin( this );
-    p.drawLine( startX, startY, endX, endY );
-    p.end();
-    println('Yo');
+    p.drawLine( this.startX, this.startY, this.endX, this.endY );
+    p.end();  
   }
 
   return frame;
+
 }
 
 frame = scribble();

@@ -120,6 +120,7 @@ int main( int argc, char **argv )
     time.restart();
 
     KJS::Interpreter *js = kernel.interpreter();
+    js->setShouldPrintExceptions(true);
     KJS::ExecState *exec = js->globalExec();
 
     // Publish bindings

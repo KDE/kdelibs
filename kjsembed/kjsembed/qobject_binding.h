@@ -54,11 +54,9 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 #define END_QOBJECT_METHOD \
         } \
         else \
-            result = KJS::throwError(exec, KJS::GeneralError, QString("QObject died."));\
+            result = KJS::throwError(exec, KJS::ReferenceError, QString("QObject died."));\
         return result; \
 }
-
-// result = KJSEmbed::throwError(exec, QString("QObject died."));
 
 class QObject;
 class QMetaMethod;
@@ -142,15 +140,13 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
                 }
                 else
                 {
-	                KJS::throwError(exec, KJS::GeneralError, i18n("%1 is not an Object type",  clazz ));
-                    // throwError(exec, i18n("%1 is not an Object type").arg(clazz));
+	                KJS::throwError(exec, KJS::TypeError, i18n("%1 is not an Object type",  clazz ));
                     return new KJS::JSObject();
                 }
             }
             else
             {
-                throwError(exec, KJS::GeneralError, i18n("Could not construct value"));
-                // throwError(exec, i18n("Could not construct value") );
+                throwError(exec, KJS::TypeError, i18n("Could not construct value"));
                 return new KJS::JSObject();
             }
             return returnValue;

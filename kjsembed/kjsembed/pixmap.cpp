@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QPixmap>
 #include <QBitmap>
+#include <QWidget>
 
 #include <value_binding.h>
 #include <object_binding.h>

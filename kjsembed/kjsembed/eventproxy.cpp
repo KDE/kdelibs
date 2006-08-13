@@ -17,6 +17,7 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include  <QCoreApplication>
 
 #include "eventproxy.h"
 #include "qobject_binding.h"
@@ -40,7 +41,7 @@ EventProxy::~EventProxy()
 
 bool EventProxy::isFiltered( QEvent::Type t ) const
 {
-    if ( m_eventMask.size() < t )
+    if ( m_eventMask.size() <= t )
         return false;
     return m_eventMask.testBit( t );
 }
@@ -81,16 +82,16 @@ bool EventProxy::eventFilter( QObject * /*watched*/, QEvent *e )
 {
     if ( isFiltered(e->type()) )
     {
-        callHandler( e );
+        return !callHandler( e );
     }
     return false;
 }
 
-void EventProxy::callHandler( QEvent *e )
+bool EventProxy::callHandler( QEvent *e )
 {
 // Be careful enabling this as if there are a lot of events then the event loop times
 // out and the app crashes with 'Alarm Clock'.
-//    kdDebug(80001) << "JSObjectEventProxy::callHandler() event type " << e->type() << endl;
+//    qDebug("JSObjectEventProxy::callHandler() event type %d" , e->type() );
 
     KJS::ExecState *exec = m_interpreter->globalExec();
     KJS::Identifier id = JSEventMapper::mapper()->findEventHandler( e->type() );
@@ -100,14 +101,13 @@ void EventProxy::callHandler( QEvent *e )
 
     if ( !fun->implementsCall() )
     {
-    QString msg = i18n( "Bad event handler: Object %1 Identifier %2 Method %3 Type: %4.",
-		     jsobj->className().ascii(),
-		     id.ascii(),
-		     fun->className().ascii(),
-		     e->type());
-        throwError(exec, KJS::GeneralError, msg);
-//        throwError(exec, msg, KJS::TypeError );
-        return;
+        QString msg = i18n( "Bad event handler: Object %1 Identifier %2 Method %3 Type: %4.",
+          jsobj->className().ascii(),
+          id.ascii(),
+          fun->className().ascii(),
+          e->type());
+        throwError(exec, KJS::TypeError, msg);
+        return false;
     }
 
     // Process args
@@ -117,10 +117,12 @@ void EventProxy::callHandler( QEvent *e )
     // Call handler
     KJS::JSValue *result = fun->call( exec, jsobj, args );
 
-//	if ( exec->hadException() ) {
-//		exec->clearException();
-//	}
-
-    return;
+    if ( exec->hadException() ) {
+    //TODO ext the script here with the error
+      exec->clearException();
+      return false;
+    }
+  
+    return true;
 }
 

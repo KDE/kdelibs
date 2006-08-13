@@ -46,7 +46,21 @@ QPaintDevice *extractPaintDevice( KJS::ExecState *exec, KJS::JSValue *arg)
     ObjectBinding *imp = extractBindingImp<ObjectBinding>(exec,arg);
     if( imp )
     {
+#warning There be dragons here...
+      /**
+       * Because of something odd with multiple inheritence and qobject cast
+       * we need to first cast it to a QObject, then cast it to a QWidget.
+       * All other paint devices in Qt that are objects are single inheritence
+       * so dynamic_cast will work properly.
+       */
+      QObject *qobject = imp->object<QObject>();  
+      if( qobject )
+        device = qobject_cast<QWidget*>(qobject);
+      else
         device = imp->object<QPaintDevice>();
+      
+      if( device )
+          qDebug("Height = %d Width = %d", device->height(), device->width() );
     }
     else
     {
@@ -61,12 +75,14 @@ QPaintDevice *extractPaintDevice( KJS::ExecState *exec, KJS::JSValue *arg)
 }
 
 START_OBJECT_METHOD( callPainterBegin, QPainter )
+  result = KJS::Boolean(false);
+  QPaintDevice *device = extractPaintDevice(exec, args[0]);
+  if( device )
+  {
+    result = KJS::Boolean(object->begin(device));
+  } else {
     result = KJS::Boolean(false);
-    QPaintDevice *device = extractPaintDevice(exec, args[0]);
-    if( device )
-    {
-        result = KJS::Boolean(object->begin(device));
-    }
+  }
 END_OBJECT_METHOD
 
 START_OBJECT_METHOD( callPainterEnd, QPainter )
@@ -480,8 +496,7 @@ START_CTOR( Painter, QPainter, 0 )
         }
         else
         {
-            KJS::throwError( exec, KJS::GeneralError, QString("Cannot paint to object %1").arg(args[0]->toString(exec).qstring()) );
-            // KJSEmbed::throwError( exec, QString("Cannot paint to object %1").arg(args[0].toString(exec).qstring()) );
+            KJS::throwError( exec, KJS::EvalError, QString("Cannot paint to object %1").arg(args[0]->toString(exec).qstring()) );
 	    return 0L;
         }
     }

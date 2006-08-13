@@ -20,11 +20,11 @@ kde4_add_ui_files(console_SRCS jsconsole.ui )
 
 qt4_add_resources(console_SRCS console.qrc )
 
-kde4_add_executable(console ${console_SRCS})
+kde4_add_executable(kjsconsole ${console_SRCS})
 
-target_link_libraries(console  ${KDE4_KDECORE_LIBS} kjsembed )
+target_link_libraries(kjsconsole  ${KDE4_KDECORE_LIBS} kjsembed )
 
-install(TARGETS console DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kjsconsole DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############

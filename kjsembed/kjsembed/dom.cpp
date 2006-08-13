@@ -363,8 +363,7 @@ START_SCALAR_METHOD( setContent, QDomDocument )
     result = KJS::Boolean( success );
     if( !success )
     {
-        KJS::throwError(exec, KJS::GeneralError, parserErrorTemplate.arg(message).arg(row).arg(col) );
-        // throwError(exec, parserErrorTemplate.arg(message).arg(row).arg(col) );
+        KJS::throwError(exec, KJS::SyntaxError, parserErrorTemplate.arg(message).arg(row).arg(col) );
     }
 END_SCALAR_METHOD
 

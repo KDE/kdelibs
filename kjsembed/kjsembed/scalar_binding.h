@@ -178,15 +178,13 @@ namespace KJSEmbed
                 imp->setValue( value );
             else
             {
-                KJS::throwError(exec, KJS::GeneralError, QString("Created failed to cast to %1 failed").arg(className.qstring()) );
-                //throwError(exec, QString("Created failed to cast to %1 failed").arg(className.qstring()) );
+                KJS::throwError(exec, KJS::TypeError, QString("Created failed to cast to %1 failed").arg(className.qstring()) );
                 return KJS::Null();
             }
         }
         else
         {
-            KJS::throwError(exec, KJS::GeneralError, QString("Could not construct a %1").arg(className.qstring() ));
-            // throwError(exec, QString("Could not construct a %1").arg(className.qstring() ));
+            KJS::throwError(exec, KJS::TypeError, QString("Could not construct a %1").arg(className.qstring() ));
             return KJS::Null();
         }
         return returnValue;

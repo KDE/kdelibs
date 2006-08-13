@@ -89,12 +89,6 @@ KJS::JSObject *TYPE::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\
 
 namespace KJSEmbed
 {
-
-    /**
-    * Throw an error to the KJS interpreter.  The error message will be returned inside the KJS::Exception.
-    */
-//    KJS::JSObject KJSEMBED_EXPORT throwError( KJS::ExecState *exec, const QString &error, KJS::ErrorType type = KJS::GeneralError );
-
     /**
     * This will extract a binding implementation from a KJS::JSValue
     * @code

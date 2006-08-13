@@ -119,7 +119,6 @@ START_CTOR( Settings, QSettings, 1 )
     else
     {
         KJS::throwError(exec, KJS::GeneralError, i18n("Could not create the settings object."));
-        // KJSEmbed::throwError(exec,i18n("Could not create the settings object."));
         return new KJS::JSObject();
     }
 END_CTOR

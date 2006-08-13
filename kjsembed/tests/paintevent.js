@@ -19,12 +19,34 @@
 */
 
 
-var frame = new Widget("QFrame", this);
-frame.show();
-frame.onResizeEvent = function ( ev )
+var label = new Widget("QLabel", this );
+label.width = 0;
+label.height = 0;
+label.onResizeEvent = function ( ev )
 {
-	println("Got resize event " + ev);
-	println("Size: " + ev.size.width() + "x" + ev.size.height() );
-	println("QSize: " + ev.size );
+  println("Size: " + ev.size.width() + "x" + ev.size.height() );
+  this.width = ev.size.width();
+  this.height = ev.size.height();
 }
+
+label.onPaintEvent = function ( ev )
+{
+  try {
+    var painter = new QPainter();
+    if (painter.begin( this ) )
+    {
+      painter.drawLine( 0,0,this.width,this.height );
+      painter.drawLine( this.width,0, 0, this.height );
+      painter.end();
+    }
+    else
+      println("Failed to paint " + this );
+
+  } catch ( error ) {
+    println( "Error painting: " + error );
+  }
+}
+
+label.size = new QSize(100,100);
+label.show();
 exec();

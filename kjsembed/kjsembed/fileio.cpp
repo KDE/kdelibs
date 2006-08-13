@@ -64,8 +64,7 @@ START_STATIC_OBJECT_METHOD( callOpenFile )
             return new KJSEmbed::FileIOBinding( exec, file );
     }
     delete file;
-//    KJSEmbed::throwError(exec,i18n("Could not open file '%1'").arg(KJSEmbed::extractQString( exec, args, 0)));
-KJS::throwError(exec, KJS::GeneralError, i18n("Could not open file '%1'",  KJSEmbed::extractQString( exec, args, 0)));
+    KJS::throwError(exec, KJS::TypeError, i18n("Could not open file '%1'",  KJSEmbed::extractQString( exec, args, 0)));
     return KJS::Null();
 END_STATIC_OBJECT_METHOD
 
@@ -101,7 +100,6 @@ START_STATIC_OBJECT_METHOD( callTempFile )
     }
     delete file;
     KJS::throwError(exec, KJS::GeneralError, i18n("Could not create temporary file."));
-//    KJSEmbed::throwError(exec,i18n("Could not create temporary file."));
 END_STATIC_OBJECT_METHOD
 
 START_STATIC_METHOD_LUT( FileIO )

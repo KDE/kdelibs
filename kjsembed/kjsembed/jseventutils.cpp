@@ -193,7 +193,7 @@ namespace JSEventUtils
         KJS::JSObject *pev = convertEvent( exec, (QEvent *)ev );
 
         pev->put( exec, "rect", convertToValue( exec, ev->rect() ) );
-        pev->put( exec, "region", convertToValue( exec, ev->region() ) );
+//         pev->put( exec, "region", convertToValue( exec, ev->region() ) );
         return pev;
     }
 

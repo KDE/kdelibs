@@ -39,13 +39,21 @@ StaticBinding::StaticBinding(KJS::ExecState *exec, const Method *method )
 
 KJS::JSValue *StaticBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
-    if( m_method->call == 0 )
-    {
-        //throwError(exec, "Bad method id");      // NOTE: fix
-        KJS::throwError(exec, KJS::GeneralError, "Bad method id");
-        return KJS::Null();
-    }
-    return (*m_method->call)(exec,self,args);
+  if( m_method->call == 0 )
+  {
+      //throwError(exec, "Bad method id");      // NOTE: fix
+      KJS::throwError(exec, KJS::GeneralError, "Bad method id");
+      return KJS::Null();
+  }
+
+  KJS::JSValue *retValue = (*m_method->call)(exec,self,args);
+  
+  if( exec->hadException() )
+  {
+    return KJS::Null();
+  }
+  return retValue;
+  
 }
 
 void StaticBinding::publish( KJS::ExecState *exec, KJS::JSObject *object, const Method *methods )

@@ -61,7 +61,7 @@ namespace KJSEmbed
             bool eventFilter ( QObject *watched, QEvent *e );
 
         protected:
-            void callHandler( QEvent *e );
+            bool callHandler( QEvent *e );
 
         private:
             QObjectBinding *m_watch;

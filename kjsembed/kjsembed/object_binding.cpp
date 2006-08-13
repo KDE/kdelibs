@@ -28,16 +28,6 @@ using namespace KJSEmbed;
 
 const KJS::ClassInfo ObjectBinding::info = { "ObjectBinding", 0, 0, 0 };
 
-QGenericArgument ObjectBinding::arg(const char *type) const
-{
-    void *p = voidStar();
-//    qDebug("Value ptr %0x", p );
-    qDebug() << p;
-
-    return QGenericArgument( type, &p );
-}
-
-
 ObjectBinding::~ObjectBinding()
 {
     if( m_owner == JSOwned )
