@@ -172,8 +172,7 @@ void KIconCanvas::slotLoadFiles()
 		img = img.scaled(width, 60, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	    }
 	}
-	QPixmap pm;
-	pm.fromImage(img);
+	QPixmap pm = QPixmap::fromImage(img);
 	QFileInfo fi(*it);
 	Q3IconViewItem *item = new Q3IconViewItem(this, fi.baseName(), pm);
 	item->setKey(*it);

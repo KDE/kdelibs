@@ -345,7 +345,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) && !img.isNull() )
 	        img = img.scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
 	    if ( !img.isNull() )
-	        result.fromImage( img );
+	        result = QPixmap::fromImage( img );
 	    return result;
         }
     }
@@ -388,7 +388,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	        }
 	        if ( scale && width > 0 && height > 0 && !pm.isNull() &&
 		     ( (int) w != width || (int) h != height) ){
-		    result.fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        } else {
 		    result = pm;
 	        }
@@ -419,7 +419,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	        QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon( className.toLower(), K3Icon::Small, iconWidth,
 								          K3Icon::DefaultState, 0, true );
 	        if( scale && !pm.isNull() )
-		    result.fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        else
 		    result = pm;
 
@@ -436,7 +436,7 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale, int flags )
 	    QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(  "xapp", K3Icon::Small, iconWidth,
 								       K3Icon::DefaultState, 0, true );
 	    if( scale && !pm.isNull() )
-		result.fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+		result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	    else
 		result = pm;
 	}

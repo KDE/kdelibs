@@ -108,7 +108,7 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( callfromImage, QPixmap )
     QImage arg0 = KJSEmbed::extractValue<QImage>(exec,args, 0);
     Qt::ImageConversionFlags arg1 = (Qt::ImageConversionFlags)KJSEmbed::extractInt(exec, args, 1);
-    QPixmap cppValue = value.fromImage(arg0, arg1);
+    QPixmap cppValue = QPixmap::fromImage(arg0, arg1);
     result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
 END_VARIANT_METHOD
 
