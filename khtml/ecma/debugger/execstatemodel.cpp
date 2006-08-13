@@ -166,6 +166,7 @@ QVariant ExecStateModel::valueToVariant(KJS::JSValue *value) const
         case KJS::NullType:
         case KJS::ObjectType:
         case KJS::GetterSetterType:
+        default:
             return QVariant();
     }
 }
