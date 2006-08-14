@@ -39,6 +39,7 @@
 #include "identifier.h"
 #include "lookup.h"
 #include "internal.h"
+#include "dtoa.h"
 
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
@@ -453,7 +454,7 @@ int Lexer::lex()
 
   long double dval = 0;
   if (state == Number) {
-    dval = strtod(buffer8, 0L);
+    dval = kjs_strtod(buffer8, 0L);
   } else if (state == Hex) { // scan hex numbers
     dval = 0;
     if (buffer8[0] == '0' && (buffer8[1] == 'x' || buffer8[1] == 'X')) {
