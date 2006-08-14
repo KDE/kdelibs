@@ -51,7 +51,7 @@ class KAssistantDialogPrivate;
  *
  * @author Olivier Goffart <ogoffart at kde.org>
  */
-class KAssistantDialog : public KPageDialog
+class KDEUI_EXPORT KAssistantDialog : public KPageDialog
 {
     Q_OBJECT
     public:
