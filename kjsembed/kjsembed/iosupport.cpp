@@ -84,4 +84,5 @@ const Method IoFactory::IoMethods[] =
     {"system", 1, KJS::DontDelete|KJS::ReadOnly, &callSystem },
     {0, 0, 0, 0 }
 };
-//
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

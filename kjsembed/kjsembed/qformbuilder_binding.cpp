@@ -70,3 +70,5 @@ START_CTOR( FormBuilder, Form, 2 )
     return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a filename."));
     // return KJSEmbed::throwError(exec, i18n("Must supply a filename."));
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

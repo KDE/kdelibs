@@ -122,3 +122,5 @@ START_CTOR( Settings, QSettings, 1 )
         return new KJS::JSObject();
     }
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

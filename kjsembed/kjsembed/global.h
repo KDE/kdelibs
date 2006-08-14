@@ -81,3 +81,4 @@ KJSEMBED_EXPORT QString i18n( const char *string );
 
 #endif // KJSEMBED_GLOBAL_H
 
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

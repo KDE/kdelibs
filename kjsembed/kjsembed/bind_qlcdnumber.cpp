@@ -133,3 +133,4 @@ START_CTOR( LCDNumber, QLCDNumber, 0 )
 END_CTOR
 
 
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

@@ -127,3 +127,5 @@ private:
 }
 
 #endif
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

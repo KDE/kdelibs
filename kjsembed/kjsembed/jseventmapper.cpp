@@ -293,3 +293,5 @@ JSEventMapper *JSEventMapper::mapper()
 // Local Variables:
 // c-basic-offset: 4
 // End:
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

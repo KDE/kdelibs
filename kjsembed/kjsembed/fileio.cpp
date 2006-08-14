@@ -130,3 +130,5 @@ END_METHOD_LUT
 START_CTOR( FileIO, File, 1 )
     return new KJSEmbed::FileIOBinding( exec, new QFile( KJSEmbed::extractQString(exec,args,0 ) ) );
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

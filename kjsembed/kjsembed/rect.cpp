@@ -437,3 +437,5 @@ START_CTOR( Rect, QRect, 0)
 
     return new KJSEmbed::RectBinding( exec, QRect() );
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

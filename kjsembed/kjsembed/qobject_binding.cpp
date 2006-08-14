@@ -114,12 +114,12 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
     {
         QMetaMethod member = metaObject->method(idx);
         target->put(exec, KJS::Identifier( extractMemberName( member ) ),
-            new SlotBinding(exec,member), KJS::DontDelete|KJS::ReadOnly);
+            new SlotBinding(exec,member), KJS::DontDelete|KJS::ReadOnly|KJS::Function);
     }
 
     // Add enums as read only uints.
-    // int enums = metaObject->enumeratorCount();
-    for( int idx = 0; idx < methods; ++idx )
+    int enums = metaObject->enumeratorCount();
+    for( int idx = 0; idx < enums; ++idx )
     {
         QMetaEnum enumerator = metaObject->enumerator(idx);
         int keys = enumerator.keyCount();
@@ -129,6 +129,14 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
                     KJS::Number(enumerator.value(key)), KJS::DontDelete|KJS::ReadOnly);
         }
     }
+
+//         // Add properties.
+//     int props = metaObject->propertyCount();
+//     for( int idx = 0; idx < props; ++idx )
+//     {
+//         QMetaProperty property = metaObject->property(idx);
+//         target->put(exec, KJS::Identifier( property.name() ), KJS::Null(), KJS::DontDelete|KJS::GetterSetter);
+//     }
 }
 
 QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
@@ -193,6 +201,7 @@ KJS::JSValue *QObjectBinding::get(KJS::ExecState *exec, const KJS::Identifier &p
 
         if ( meta->indexOfProperty( propertyName.ascii() ) != -1 )
         {
+            qDebug("Get %s", propertyName.ascii() );
             QVariant val = obj->property( propertyName.ascii() );
             return convertToValue( exec, val );
         }
@@ -455,3 +464,5 @@ END_METHOD_LUT
 
 NO_ENUMS( QObjectFactory )
 NO_STATICS( QObjectFactory )
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

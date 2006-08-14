@@ -45,14 +45,20 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ObjectBinding>(exec, self ); \
         if( imp ) \
         { \
-                TYPE *object = imp->object<TYPE>();
+            TYPE *object = imp->object<TYPE>(); \
+            if( object ) \
+            {
+
 /**
 * End a variant method started by START_OBJECT_METHOD
 */
 #define END_OBJECT_METHOD \
+            } \
+            else \
+                KJS::throwError(exec, KJS::ReferenceError, QString("The internal object died."));\
         } \
         else \
-            result = KJS::throwError(exec, KJS::GeneralError, QString("Object cast failed."));\
+            KJS::throwError(exec, KJS::GeneralError, QString("Object cast failed."));\
         return result; \
 }
 
@@ -124,10 +130,10 @@ namespace KJSEmbed
             template <typename T>
             void setObject( T *ptr )
             {
-                // if( m_owner == JSOwned )
-                // {
-                m_value->cleanup();
-                // }
+                if( m_owner == JSOwned )
+                {
+                    m_value->cleanup();
+                }
                 delete m_value;
                 m_value = new Pointer<T>(ptr);
             }
@@ -196,6 +202,7 @@ namespace KJSEmbed
             KJSEmbed::ObjectBinding *imp = extractBindingImp<KJSEmbed::ObjectBinding>(exec, returnValue );
             if( imp )
             {
+                imp->setOwnership( KJSEmbed::ObjectBinding::JSOwned );
                 imp->setObject( value );
                 imp->setOwnership( owner );
             }
@@ -256,3 +263,5 @@ namespace KJSEmbed
 
 }
 #endif
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

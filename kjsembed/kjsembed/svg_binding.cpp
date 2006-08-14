@@ -118,3 +118,5 @@ START_CTOR( SvgWidget, QSvgWidget, 0 )
     StaticBinding::publish( exec, rendererObject, SvgWidget::methods() );
     return rendererObject;
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

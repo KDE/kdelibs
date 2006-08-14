@@ -165,3 +165,4 @@ START_CTOR( Brush, QBrush, 0)
     return new KJSEmbed::BrushBinding( exec, QBrush() );
 
 END_CTOR
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

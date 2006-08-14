@@ -80,3 +80,5 @@ So this might be how the val checking would go:
 
 #endif
 
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;
+

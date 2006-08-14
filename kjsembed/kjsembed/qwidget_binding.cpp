@@ -242,3 +242,5 @@ START_CTOR( Action, Action, 0 )
     return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a valid parent."));
     // return KJSEmbed::throwError(exec, i18n("Must supply a valid parent."));
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

@@ -46,3 +46,5 @@ namespace KJSEmbed
     KJS_BINDING( Image )
 }
 #endif
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

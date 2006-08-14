@@ -511,3 +511,5 @@ START_CTOR( Painter, QPainter, 0 )
     StaticBinding::publish( exec, object, Painter::methods() );
     return object;
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

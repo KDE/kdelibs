@@ -312,3 +312,5 @@ namespace JSEventUtils
     }
 }// namespace JSEventUtils
 }// namespace KJSEmbed
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

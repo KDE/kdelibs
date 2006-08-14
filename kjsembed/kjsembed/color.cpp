@@ -188,3 +188,5 @@ START_CTOR( Color, QColor, 0)
 
     return new KJSEmbed::ColorBinding( exec, QColor() );
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

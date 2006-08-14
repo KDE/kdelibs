@@ -1,4 +1,7 @@
+project(kjsembed-editor-example)
 
+include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kjsembed ${CMAKE_SOURCE_DIR}/kjsembed/kjsembed )
 
 
 ########### next target ###############
@@ -19,24 +22,14 @@ mdichild.cpp
 numberedtextview.cpp
 )
 
-kde4_automoc(${editor_SRCS})
-
 set( editor_QRC
 mdi.qrc
 )
 
 qt4_add_resources(editor_SRCS ${editor_QRC} )
 
+kde4_automoc(${editor_SRCS})
+
 kde4_add_executable(editor ${editor_SRCS})
-
 target_link_libraries(editor  ${KDE4_KDECORE_LIBS} kjsembed )
-
-install(TARGETS editor DESTINATION ${BIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
-
-
-
 

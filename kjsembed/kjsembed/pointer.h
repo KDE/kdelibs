@@ -46,10 +46,11 @@ public:
     }
     ~Pointer( )
     {
-//         qDebug("delete pointer");
+        
     }
     void cleanup()
     {
+//         qDebug("delete pointer %s %0x", typeid(ValueType).name(), ptr );
         delete ptr;
         ptr=0L;
     }
@@ -127,11 +128,15 @@ struct NullPtr : public PointerBase
 template<typename ValueType> 
 ValueType *pointer_cast( PointerBase *pointer )
 {
-//   qDebug("pointers %s %s", typeid(ValueType).name(), pointer->type().name() );
+//    qDebug("pointers %s %s", typeid(ValueType).name(), pointer->type().name() );
   Pointer<ValueType> *upcast = dynamic_cast< Pointer<ValueType> *>(pointer);
   if( upcast == 0 )
     return 0L;
+//   qDebug("cast worked");
   return upcast->ptr;
 }
 
 #endif
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;
+

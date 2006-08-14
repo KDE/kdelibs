@@ -158,7 +158,7 @@ KJS::JSObject *Engine::addObject( QObject *obj, KJS::JSObject *parent, const KJS
     KJS::JSObject *returnObject = KJSEmbed::createQObject(exec , obj, KJSEmbed::ObjectBinding::CPPOwned );
     KJS::Identifier jsName( !name.isEmpty() ? name : obj->objectName() );
 
-    parent->put( exec, jsName, returnObject );
+    parent->putDirect(jsName, returnObject, KJS::DontDelete|KJS::ReadOnly );
     return returnObject;
 }
 
@@ -232,3 +232,5 @@ KJS::JSObject *Engine::construct( const KJS::UString &className, const KJS::List
     return StaticConstructor::construct( exec, global, className, args );
 }
 }
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

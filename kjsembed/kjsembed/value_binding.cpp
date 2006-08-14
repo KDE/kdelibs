@@ -375,3 +375,5 @@ QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
         return QVariant(value->toBoolean(exec));
     return QVariant();
 }
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

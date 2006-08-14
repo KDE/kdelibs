@@ -862,3 +862,4 @@ START_CTOR( DomText, QDomText, 0 )
     return new KJSEmbed::DomTextBinding(exec, QDomText( ) );
 END_CTOR
 
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

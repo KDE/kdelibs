@@ -256,5 +256,6 @@ KJS::JSValue *KJSEmbed::createQStringList( KJS::ExecState */*exec*/, const QStri
 //    return new KJS::JSValue();
     return 0;
 }
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;
 
 

@@ -26,3 +26,4 @@
 KJS_BINDING( Timer )
 
 #endif // BIND_QTIMER_H
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

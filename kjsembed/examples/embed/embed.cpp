@@ -44,19 +44,21 @@ int main( int argc, char **argv )
     KJSEmbed::StaticConstructor::add( exec, globalObject, TestObject::constructor() ); // Ctor
     KJSEmbed::StaticConstructor::add( exec, globalObject, TestPointer::constructor() ); // Ctor
 
-    KJS::JSValue *val = KJSEmbed::createObject(exec, "Line", &obj);
+    KJS::JSValue *val = KJSEmbed::createObject<Line>(exec, "Line", &obj, KJSEmbed::ObjectBinding::CPPOwned);
     globalObject->put( exec, "Test", val ); // Static object
 
     KJS::JSObject *appobj = kernel->addObject( &app, "Application" );
 
-    KJSEmbed::Engine::ExitStatus result = kernel->runFile( "test.js" );
+    KJSEmbed::Engine::ExitStatus result = kernel->runFile( ":/test.js" );
     if ( result != KJSEmbed::Engine::Success )
     {
         KJS::Completion jsres = kernel->completion();
         qDebug() << jsres.value()->toString(exec).qstring();
         return 0;
     }
-
+    
     return result;
 }
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;
 

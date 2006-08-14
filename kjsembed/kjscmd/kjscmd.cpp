@@ -111,8 +111,7 @@ int main( int argc, char **argv )
         app = new QCoreApplication(argc, argv);
     }
     qDebug(" New QApplication %dms", time.elapsed());
-
-
+    
     // Setup Interpreter
     time.restart();
     Engine kernel;

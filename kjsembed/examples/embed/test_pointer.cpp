@@ -31,11 +31,11 @@ using namespace KJSEmbed;
 namespace TestPointerNS
 {
 START_OBJECT_METHOD( callPrint, Line )
-    qDebug() << object->name << " Print:" << object->offset++ << args[0]->toString(exec).qstring();
+  qDebug() << object->name << " Print:" << object->offset++ << KJSEmbed::extractQString(exec, args, 0 );
 END_OBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callStaticPrint )
-    qDebug() << "Static print:" << args[0]->toString(exec).qstring();
+  qDebug() << "Static print:" << KJSEmbed::extractQString(exec, args, 0 );
 END_STATIC_OBJECT_METHOD
 
 START_OBJECT_METHOD( callName, Line )
@@ -72,4 +72,4 @@ START_CTOR( TestPointer, Line, 0 )
     return object;
 END_CTOR
 
-
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

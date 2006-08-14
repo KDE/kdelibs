@@ -72,3 +72,5 @@ namespace JSEventUtils
 } // KJSEmbed
 
 #endif // KJSEMBED_JSEVENTUTILS_H
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

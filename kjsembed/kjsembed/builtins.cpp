@@ -136,3 +136,4 @@ const Method BuiltinsFactory::BuiltinMethods[] =
     {"isObject", 1, KJS::DontDelete|KJS::ReadOnly, &callIsObject},
     {0, 0, 0, 0 }
 };
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

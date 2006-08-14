@@ -134,6 +134,7 @@ KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject
         if( ctor )
             return ctor->construct( exec, args );
     }
-//    return throwError( exec, QString("Cannot create %1 objects from javascript.").arg(className.qstring())); // NOTE: fix
-    return KJS::throwError( exec, KJS::GeneralError, QString("Cannot create %1 objects from javascript.").arg(className.qstring()) );
+    return KJS::throwError( exec, KJS::TypeError, QString("Cannot create %1 objects from javascript.").arg(className.qstring()) );
 }
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

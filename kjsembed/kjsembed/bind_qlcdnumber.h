@@ -26,3 +26,4 @@
 KJS_BINDING( LCDNumber )
 
 #endif // BIND_QLCDNUMBER_H
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

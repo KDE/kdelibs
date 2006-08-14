@@ -85,4 +85,4 @@ const Method FileDialog::FileDialogMethods[] =
     {"getSaveFileName", 0, KJS::DontDelete|KJS::ReadOnly, &callGetSaveFileName },
     {0, 0, 0, 0 }
 };
-//
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

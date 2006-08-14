@@ -103,3 +103,5 @@ START_CTOR( Point, QPoint, 0 )
     return new KJSEmbed::PointBinding( exec, QPoint() );
 END_CTOR
 
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;
+

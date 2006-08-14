@@ -46,15 +46,20 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, self ); \
         if( imp ) \
         { \
-                TYPE *object = imp->object<TYPE>();
+            TYPE *object = imp->object<TYPE>(); \
+            if( object ) \
+            {
 
 /**
 * End a variant method started by START_QOBJECT_METHOD
 */
 #define END_QOBJECT_METHOD \
+            } \
+            else \
+                KJS::throwError(exec, KJS::ReferenceError, QString("The internal object died."));\
         } \
         else \
-            result = KJS::throwError(exec, KJS::ReferenceError, QString("QObject died."));\
+           KJS::throwError(exec, KJS::ReferenceError, QString("QObject died."));\
         return result; \
 }
 
@@ -115,7 +120,7 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
 {
     if ( 0 == value )
         return new KJS::JSObject();
-
+    
     const QMetaObject *meta = value->metaObject();
     KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
     KJS::JSObject *returnValue;
@@ -152,7 +157,11 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
             return returnValue;
         }
         else
+        {
+            qDebug("%s not a bound type, move up the chain", meta->className() );
             meta = meta->superClass();
+        }
+
     }
     while( meta );
 
@@ -167,3 +176,5 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
 
 }
 #endif
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

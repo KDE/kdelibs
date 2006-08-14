@@ -344,3 +344,5 @@ START_CTOR( Image, QImage, 0)
     }
     return new KJSEmbed::ImageBinding( exec, QImage() );
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

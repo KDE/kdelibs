@@ -345,3 +345,5 @@ START_CTOR( Font, QFont, 0)
     }
     return new KJSEmbed::FontBinding( exec, QFont() );
 END_CTOR
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

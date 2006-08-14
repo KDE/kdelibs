@@ -51,3 +51,5 @@ KJS::UString ScalarBinding::toString(KJS::ExecState *exec) const
 {
     return m_value->type().name();
 }
+
+//kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

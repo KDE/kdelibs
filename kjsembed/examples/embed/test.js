@@ -27,11 +27,18 @@ println( "Test Pointer name '" + testPointer.name() +"'" );
 testPointer.print( "This is from a testPointer instance" );
 testPointer.print( "This is again from a testPointer instance" );
 
+// Print a static member of line
+println("Line.END " + Line.END );
+
 // Create a Variant based object
-var testObject = new TestObject(Line.END);
+var testObject = new TestObject();
 testObject.print("Test object line 10");
 testObject.print("Test object line 11");
 testObject.print("Test object line 12");
 
-// Access a  custom C++ object
-Test.print("C++ object");
+// Access a static QObject
+println("Application name " + Application.objectName );
+
+// Access a custom static C++ object
+Test.print("C++ object Line 1");
+Test.print("C++ object Line 2");
