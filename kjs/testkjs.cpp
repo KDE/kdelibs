@@ -57,7 +57,7 @@ public:
     long getElapsedMS(); // call stop() first
     
 private:
-#if PLATFORM(WIN_OS)
+#ifndef HAVE_GETTIMEOFDAY
     DWORD m_startTime;
     DWORD m_stopTime;
 #else
@@ -69,7 +69,7 @@ private:
 
 void StopWatch::start()
 {
-#if PLATFORM(WIN_OS)
+#ifndef HAVE_GETTIMEOFDAY
     m_startTime = timeGetTime();
 #else
     gettimeofday(&m_startTime, 0);
@@ -78,7 +78,7 @@ void StopWatch::start()
 
 void StopWatch::stop()
 {
-#if PLATFORM(WIN_OS)
+#ifndef HAVE_GETTIMEOFDAY
     m_stopTime = timeGetTime();
 #else
     gettimeofday(&m_stopTime, 0);
@@ -87,7 +87,7 @@ void StopWatch::stop()
 
 long StopWatch::getElapsedMS()
 {
-#if PLATFORM(WIN_OS)
+#ifndef HAVE_GETTIMEOFDAY
     return m_stopTime - m_startTime;
 #else
     timeval elapsedTime;

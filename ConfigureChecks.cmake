@@ -132,7 +132,7 @@ check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
 check_function_exists(unlockpt        HAVE_UNLOCKPT)                  # kdecore, kdesu
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
-
+check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
 
 check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)             # kdecore (kpty)
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
