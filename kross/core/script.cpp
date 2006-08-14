@@ -1,7 +1,7 @@
 /***************************************************************************
  * script.cpp
  * This file is part of the KDE project
- * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,18 +18,18 @@
  ***************************************************************************/
 
 #include "script.h"
-#include "object.h"
-#include "list.h"
 #include "interpreter.h"
-#include "exception.h"
-#include "../main/scriptcontainer.h"
+#include "action.h"
+#include "krossconfig.h"
 
-using namespace Kross::Api;
+using namespace Kross;
 
-Script::Script(Interpreter* const interpreter, ScriptContainer* const scriptcontainer)
-    : m_interpreter(interpreter)
-    , m_scriptcontainer(scriptcontainer)
-    , m_exception(0)
+Script::Script(Interpreter* const interpreter, Action* const action)
+    : QObject()
+    , ErrorInterface()
+    , m_interpreter(interpreter)
+    , m_action(action)
+    //, m_exception(0)
 {
 }
 
@@ -37,6 +37,7 @@ Script::~Script()
 {
 }
 
+#if 0
 bool Script::hadException()
 {
     return m_exception.data() != 0;
@@ -56,4 +57,4 @@ void Script::clearException()
 {
     m_exception = Exception::Ptr(0);
 }
-
+#endif

@@ -1,5 +1,5 @@
 /***************************************************************************
- * dict.h
+ * childreninterface.h
  * This file is part of the KDE project
  * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
  *
@@ -17,51 +17,49 @@
  * Boston, MA 02110-1301, USA.
  ***************************************************************************/
 
-#ifndef KROSS_API_DICT_H
-#define KROSS_API_DICT_H
+#ifndef KROSS_CHILDRENINTERFACE_H
+#define KROSS_CHILDRENINTERFACE_H
 
 #include <QString>
-#include <QMap>
+#include <QHash>
+#include <QObject>
 #include <koffice_export.h>
 
-#include "object.h"
-#include "value.h"
+#include "krossconfig.h"
+//#include "object.h"
 
-namespace Kross { namespace Api {
+namespace Kross {
 
     /**
-     * The Dict class implementates \a Value to handle
-     * key=value base dictonaries/maps.
+     * Interface for managing \a Object collections.
      */
-    class KROSS_EXPORT Dict : public Value< List, QMap<QString, Object::Ptr> >
+    class KROSS_EXPORT ChildrenInterface
     {
-            friend class Value< List, QMap<QString, Object::Ptr> >;
         public:
 
-            /**
-            * Constructor.
-            *
-            * @param value The map of \a Object instances accessible
-            *        via there string-identifier that is in this
-            *        \a Dict intialy.
-            */
-            explicit Dict(const QMap<QString, Object::Ptr> value);
+            inline void addObject(QObject* object, const QString& name = QString::null) {
+                //Object* obj = new Object(object, name);
+                //m_objects.insert(obj->objectName(), Object::Ptr(obj));
+                m_objects.insert(name.isNull() ? object->objectName() : name, object);
+            }
 
-            /**
-            * Destructor.
-            */
-            virtual ~Dict();
+            inline bool hasObject(const QString& name) const {
+                return m_objects.contains(name);
+            }
 
-            /**
-             * \return a string representation of the whole dictonary.
-             *
-             * \see Kross::Api::Object::toString()
-             */
-            virtual const QString toString();
+            inline QObject* object(const QString& name) const {
+                return m_objects.value(name);
+            }
 
+            inline QHash< QString, QObject* > objects() const {
+                return m_objects;
+            }
+
+        private:
+            QHash< QString, QObject* > m_objects;
     };
 
-}}
+}
 
 #endif
 

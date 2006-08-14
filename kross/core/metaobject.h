@@ -1,7 +1,7 @@
 /***************************************************************************
- * exception.cpp
+ * metaobject.h
  * This file is part of the KDE project
- * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,49 +17,39 @@
  * Boston, MA 02110-1301, USA.
  ***************************************************************************/
 
-#include "exception.h"
+#ifndef KROSS_METAOBJECT_H
+#define KROSS_METAOBJECT_H
 
 //#include <QString>
-//#include <ksharedptr.h>
+//#include <QStringList>
+//#include <QMap>
+//#include <QVariant>
+#include <QMetaType>
+//#include <QObject>
 
-using namespace Kross::Api;
+#include "krossconfig.h"
 
-Exception::Exception(const QString& error, long lineno)
-    : Object()
-    , m_error(error)
-    , m_lineno(lineno)
-{
-    krosswarning( QString("Kross::Api::Exception error='%1' lineno='%3'").arg(m_error).arg(m_lineno) );
+namespace Kross {
+
+    class Object;
+
+    struct MetaObject : public QMetaObject
+    {
+        public:
+            MetaObject(const Object* object);
+            ~MetaObject();
+
+            //void addSlot(QObject* sender, QByteArray slot);
+            //void removeSlot(QObject* sender, QByteArray slot);
+
+            void attachObject(QObject* object);
+            void rebuild();
+
+        private:
+            class Private;
+            Private* const dptr;
+    };
 }
 
-Exception::~Exception()
-{
-}
-
-const QString Exception::toString()
-{
-    return (m_lineno != -1)
-        ? QString("Exception at line %1: %2").arg(m_lineno).arg(m_error)
-        : QString("Exception: %1").arg(m_error);
-}
-
-const QString Exception::getError() const
-{
-    return m_error;
-}
-
-const QString Exception::getTrace() const
-{
-    return m_trace;
-}
-
-void Exception::setTrace(const QString& tracemessage)
-{
-    m_trace = tracemessage;
-}
-
-long Exception::getLineNo() const
-{
-    return m_lineno;
-}
+#endif
 

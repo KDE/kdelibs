@@ -1,36 +1,31 @@
-
-
 include_directories( ${KOFFICECORE_INCLUDES} )
-
 
 ########### next target ###############
 
-set(krossapi_LIB_SRCS 
-   object.cpp 
-   variant.cpp 
-   list.cpp 
-   dict.cpp 
-   exception.cpp 
-   callable.cpp 
-   qtobject.cpp 
-   script.cpp 
-   interpreter.cpp 
+set(krosscore_LIB_SRCS
    krossconfig.cpp
+   object.cpp 
+   metaobject.cpp 
+   interpreter.cpp 
+   script.cpp 
+   action.cpp
+   manager.cpp
+   guiclient.cpp    
    )
 
-kde4_automoc(${krossapi_LIB_SRCS})
+kde4_automoc(${krosscore_LIB_SRCS})
 
-kde4_add_library(krossapi SHARED ${krossapi_LIB_SRCS})
+kde4_add_library(krosscore SHARED ${krosscore_LIB_SRCS})
 
-target_link_libraries(krossapi  ${KDE4_KDECORE_LIBS} )
+#target_link_libraries(krosscore ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KNEWSTUFF_LIBS})
+target_link_libraries(krosscore ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
 
-set_target_properties(krossapi PROPERTIES VERSION ${GENERIC_KOFFICE_LIB_VERSION} SOVERSION ${GENERIC_KOFFICE_LIB_SOVERSION} )
-install(TARGETS krossapi  DESTINATION ${LIB_INSTALL_DIR})
-
+set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_KOFFICE_LIB_VERSION} SOVERSION ${GENERIC_KOFFICE_LIB_SOVERSION} )
+install(TARGETS krosscore  DESTINATION ${LIB_INSTALL_DIR})
 
 ########### install files ###############
 
-install( FILES  callable.h      class.h      dict.h      exception.h      function.h      interpreter.h      list.h      module.h      object.h      proxy.h      qtobject.h      script.h      value.h      variant.h krossconfig.h  DESTINATION ${INCLUDE_INSTALL_DIR}/kross/api)
+install( FILES krossconfig.h object.h metaobject.h interpreter.h script.h action.h manager.h guiclient.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core)
 
 
 

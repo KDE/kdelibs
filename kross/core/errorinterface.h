@@ -1,7 +1,7 @@
 /***************************************************************************
- * exception.h
+ * errorinterface.h
  * This file is part of the KDE project
- * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,32 +17,22 @@
  * Boston, MA 02110-1301, USA.
  ***************************************************************************/
 
-#ifndef KROSS_API_EXCEPTION_H
-#define KROSS_API_EXCEPTION_H
-
-#include "object.h"
+#ifndef KROSS_ERRORINTERFACE_H
+#define KROSS_ERRORINTERFACE_H
 
 #include <QString>
-#include <ksharedptr.h>
 #include <koffice_export.h>
-namespace Kross { namespace Api {
+
+#include "krossconfig.h"
+
+namespace Kross {
 
     /**
-     * Common exception class used for representing exceptions
-     * in Kross.
-     *
-     * Internal we use \a Exception instances to throw and handle
-     * exceptions. Those exceptions are inherited from \a Object
-     * and therefore they are first class citizens in Kross.
+     * Interface for error-handling.
      */
-    class KROSS_EXPORT Exception : public Object
+    class KROSS_EXPORT ErrorInterface
     {
         public:
-
-            /**
-             * Shared pointer to implement reference-counting.
-             */
-            typedef KSharedPtr<Exception> Ptr;
 
             /**
              * Constructor.
@@ -51,38 +41,56 @@ namespace Kross { namespace Api {
              * \param lineno The liner number in the scripting
              *        code where this exception got thrown.
              */
-            Exception(const QString& error, long lineno = -1);
+            ErrorInterface() {}
 
             /**
-             * Destructor.
+             * \return true if there was an error else false is returned.
              */
-            virtual ~Exception();
+            bool hadError() const { return ! m_error.isNull(); }
 
-            /// \see Kross::Api::Object::toString()
-            virtual const QString toString();
+            /**
+             * \return the trace message.
+             */
+            const QString errorMessage() const { return m_trace; }
 
             /**
              * \return the error message.
              */
-            const QString getError() const;
+            const QString errorTrace() const { return m_error; }
 
             /**
-             * \return a more detailed tracemessage or QString::null if
-             * there is no trace avaiable.
+             * \return the line number in the scripting code where the
+             * exception got thrown or -1 if there was no line number defined.
              */
-            const QString getTrace() const;
+            long errorLineNo() const { return m_lineno; }
 
             /**
-             * Set a more detailed tracemessage.
+             * Set the error message.
              */
-            void setTrace(const QString& tracemessage);
+            void setError(const QString& errormessage, const QString& tracemessage = QString::null, long lineno = -1) {
+                m_error = errormessage;
+                m_trace = tracemessage;
+                m_lineno = lineno;
+                krosswarning( QString("Error error=%1 lineno=%2 trace=\n%3").arg(m_error).arg(m_lineno).arg(m_trace) );
+            }
 
             /**
-             * \return the line number in the scripting code
-             * where the exception got thrown or -1 if there
-             * was no line number defined.
+             * Set the error message.
              */
-            long getLineNo() const;
+            void setError(ErrorInterface* error) {
+                m_error = error->errorMessage();
+                m_trace = error->errorTrace();
+                m_lineno = error->errorLineNo();
+            }
+
+            /**
+             * Clear the error.
+             */
+            void clearError() {
+                m_error = QString::null;
+                m_trace = QString::null;
+                m_lineno = -1;
+            }
 
         private:
             /// The error message.
@@ -93,7 +101,7 @@ namespace Kross { namespace Api {
             long m_lineno;
     };
 
-}}
+}
 
 #endif
 

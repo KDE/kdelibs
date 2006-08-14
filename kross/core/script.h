@@ -1,7 +1,7 @@
 /***************************************************************************
  * script.h
  * This file is part of the KDE project
- * copyright (C)2004-2005 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,32 +17,32 @@
  * Boston, MA 02110-1301, USA.
  ***************************************************************************/
 
-#ifndef KROSS_API_SCRIPT_H
-#define KROSS_API_SCRIPT_H
+#ifndef KROSS_SCRIPT_H
+#define KROSS_SCRIPT_H
 
 #include <QString>
 #include <QStringList>
+#include <QVariant>
+#include <QObject>
 #include <koffice_export.h>
-#include "class.h"
 
-namespace Kross { namespace Api {
+#include "errorinterface.h"
+
+namespace Kross {
 
     // Forward declarations.
-    class Object;
     class Interpreter;
-    class ScriptContainer;
-    class List;
-    class Exception;
+    class Action;
 
     /**
      * Base class for interpreter dependend functionality
      * each script provides.
      *
-     * Each \a ScriptContainer holds a pointer to a class
+     * Each \a Action holds a pointer to a class
      * that implements the \a Script functionality for the
      * defined \a Interpreter .
      */
-    class KROSS_EXPORT Script
+    class KROSS_EXPORT Script : public QObject, public ErrorInterface
     {
         public:
 
@@ -51,10 +51,10 @@ namespace Kross { namespace Api {
              *
              * \param interpreter The \a Interpreter instance
              *       that uses this \a Script instance.
-             * \param scriptcontainer The \a ScriptContainer instance
+             * \param Action The \a Action instance
              *       this script is associated with.
              */
-            Script(Interpreter* const interpreter, ScriptContainer* const scriptcontainer);
+            Script(Interpreter* const interpreter, Action* const action);
 
             /**
              * Destructor.
@@ -62,79 +62,34 @@ namespace Kross { namespace Api {
             virtual ~Script();
 
             /**
-             * \return true if the script throwed an exception
-             *        else false.
-             */
-            bool hadException();
-
-            /**
-             * \return the \a Exception the script throwed.
-             */
-            Exception* getException();
-
-            /**
-             * Set a new exception this script throwed.
-             *
-             * \param e The \a Exception .
-             */
-            void setException(Exception* e);
-
-            /**
-             * Clear previous exceptions. If called \a hadException()
-             * will return false again.
-             */
-            void clearException();
-
-            /**
              * Execute the script.
              *
-             * \throws Exception on error.
-             * \return The execution result. Could be NULL too.
+             * \param args The optional arguments passed to the script
+             * on excution.
              */
-            virtual Kross::Api::Object::Ptr execute() = 0;
+            virtual void execute(const QVariant& args = QVariant()) = 0;
 
             /**
-             * \return a list of callable functionnames this
-             * script spends.
+             * \return the list of functionnames.
              */
-            virtual const QStringList& getFunctionNames() = 0;
+            virtual QStringList functionNames() = 0;
 
             /**
-             * Call a function.
+             * Call a function in the script.
              *
-             * \throws Exception on error.
-             * \param name The name of the function to execute.
-             * \param args Optional arguments passed to the function.
-             * \return The result of the called function. Could be NULL.
+             * \param name The name of the function which should be called.
+             * \param args The optional list of arguments.
              */
-            virtual Kross::Api::Object::Ptr callFunction(const QString& name, Kross::Api::List::Ptr args) = 0;
-
-            /**
-             * \return a list of classnames.
-             */
-            virtual const QStringList& getClassNames() = 0;
-
-            /**
-             * Create and return a new class instance.
-             *
-             * \throws Exception on error.
-             * \param name The name of the class to create a instance of.
-             * \return The new classinstance.
-             */
-            virtual Kross::Api::Object::Ptr classInstance(const QString& name) = 0;
+            virtual QVariant callFunction(const QString& name, const QVariantList& args = QVariantList()) = 0;
 
         protected:
             /// The \a Interpreter used to create this Script instance.
             Interpreter* const m_interpreter;
-            /// The \a ScriptContainer associated with this Script.
-            ScriptContainer* const m_scriptcontainer;
-
-        private:
-            /// The \a Exception this script throwed.
-            Exception::Ptr m_exception;
+            /// The \a Action associated with this Script.
+            Action* const m_action;
     };
 
-}}
+}
 
 #endif
 

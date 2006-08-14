@@ -44,8 +44,9 @@
  *   Kexi application.
  *
  * \author Sebastian Sauer
- * \sa http://www.koffice.org/kexi
- * \sa http://www.dipe.org/kross
+ * \sa http://kross.dipe.org
+ * \sa http://www.koffice.org
+ * \sa http://www.kde.org
  */
 namespace Kross {
 
@@ -85,27 +86,16 @@ namespace Kross {
      */
     namespace Api {
 
-        //#define KROSS_API_OBJECT_CTOR_DEBUG
-        //#define KROSS_API_OBJECT_DTOR_DEBUG
-        //#define KROSS_API_OBJECT_ADDCHILD_DEBUG
-        //#define KROSS_API_OBJECT_REMCHILD_DEBUG
-        //#define KROSS_API_OBJECT_CALL_DEBUG
-
-        //#define KROSS_API_EVENT_CALL_DEBUG
-
-        //#define KROSS_API_CALLABLE_CALL_DEBUG
-        //#define KROSS_API_CALLABLE_CHECKARG_DEBUG
-
-        //#define KROSS_API_EVENTSLOT_CALL_DEBUG
-        //#define KROSS_API_EVENTSIGNAL_CALL_DEBUG
+        #define KROSS_OBJECT_METACALL_DEBUG
+        #define KROSS_INTERPRETER_DEBUG
 
         // The name of the interpreter's library. Those library got loaded
         // dynamicly during runtime. Comment out to disable compiling of
         // the interpreter-plugin or to hardcode the location of the lib
         // like I did at the following line.
 
-        //#define KROSS_PYTHON_LIBRARY "/home/snoopy/cvs/kde/trunk/koffice/lib/kross/python/krosspython.la"
-        #define KROSS_PYTHON_LIBRARY "krosspython"
+        #define KROSS_PYTHON_LIBRARY "/home/kde4/koffice/_build/lib/krosspython.la"
+        //#define KROSS_PYTHON_LIBRARY "krosspython"
         #define KROSS_RUBY_LIBRARY "krossruby"
 
     }

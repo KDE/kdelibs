@@ -17,19 +17,22 @@
  * Boston, MA 02110-1301, USA.
  ***************************************************************************/
 
-#ifndef KROSS_API_INTERPRETER_H
-#define KROSS_API_INTERPRETER_H
+#ifndef KROSS_INTERPRETER_H
+#define KROSS_INTERPRETER_H
 
 #include <QString>
+#include <QStringList>
+#include <QVariant>
 #include <QMap>
-#include <koffice_export.h>
-#include "object.h"
 
-namespace Kross { namespace Api {
+#include "errorinterface.h"
+#include <koffice_export.h>
+
+namespace Kross {
 
     // Forward declaration.
     class Manager;
-    class ScriptContainer;
+    class Action;
     class Script;
     class Interpreter;
 
@@ -159,7 +162,7 @@ namespace Kross { namespace Api {
      * The Interpreter will be managed by the \a Kross::Manager
      * class.
      */
-    class KROSS_EXPORT Interpreter
+    class KROSS_EXPORT Interpreter : public ErrorInterface
     {
         public:
 
@@ -180,18 +183,18 @@ namespace Kross { namespace Api {
              * Create and return a new interpreter dependend
              * \a Script instance.
              *
-             * \param scriptcontainer The \a ScriptContainer
+             * \param Action The \a Action
              *        to use for the \a Script instance.
              * \return The from \a Script inherited instance.
              */
-            virtual Script* createScript(ScriptContainer* scriptcontainer) = 0;
+            virtual Script* createScript(Action* Action) = 0;
 
         protected:
             /// The \a InterpreterInfo instance this interpreter belongs to.
             InterpreterInfo* m_interpreterinfo;
     };
 
-}}
+}
 
 #endif
 

@@ -19,17 +19,17 @@
 
 #include "interpreter.h"
 #include "script.h"
-#include "../main/manager.h"
-#include "../main/scriptcontainer.h"
+#include "action.h"
+#include "manager.h"
 
 #include <klibloader.h>
 
 extern "C"
 {
-    typedef int (*def_interpreter_func)(Kross::Api::InterpreterInfo*);
+    typedef int (*def_interpreter_func)(Kross::InterpreterInfo*);
 }
 
-using namespace Kross::Api;
+using namespace Kross;
 
 /*************************************************************************
  * InterpreterInfo
@@ -95,7 +95,7 @@ Interpreter* InterpreterInfo::getInterpreter()
 {
     if(m_interpreter) // buffered
         return m_interpreter;
-#ifdef KROSS_API_EVENT_CALL_DEBUG
+#ifdef KROSS_INTERPRETER_DEBUG
     krossdebug( QString("Loading the interpreter library for %1").arg(m_interpretername) );
 #endif
     // Load the krosspython library.
@@ -128,7 +128,7 @@ Interpreter* InterpreterInfo::getInterpreter()
         else {
             // Job done. The library is loaded and our Interpreter* points
             // to the external Kross::Python::Interpreter* instance.
-#ifdef KROSS_API_EVENT_CALL_DEBUG 
+#ifdef KROSS_INTERPRETER_DEBUG 
             krossdebug("Successfully loaded Interpreter instance from library.");
 #endif
         }
@@ -145,7 +145,8 @@ Interpreter* InterpreterInfo::getInterpreter()
  */
 
 Interpreter::Interpreter(InterpreterInfo* info)
-    : m_interpreterinfo(info)
+    : ErrorInterface()
+    , m_interpreterinfo(info)
 {
 }
 

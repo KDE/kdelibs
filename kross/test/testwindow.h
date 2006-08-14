@@ -20,10 +20,10 @@
 #ifndef KROSS_TEST_TESTWINDOW_H
 #define KROSS_TEST_TESTWINDOW_H
 
-#include "../main/manager.h"
-#include "../main/scriptcontainer.h"
-#include "../main/scriptguiclient.h"
-#include "../api/object.h"
+#include "../core/action.h"
+#include "../core/object.h"
+#include "../core/manager.h"
+#include "../core/guiclient.h"
 
 //#include <QObject>
 #include <QString>
@@ -45,8 +45,8 @@ class TestWindow : public KMainWindow
         QString m_interpretername;
         QString m_scriptcode;
 
-        Kross::Api::ScriptContainer::Ptr m_scriptcontainer;
-        Kross::Api::ScriptGUIClient* m_scriptextension;
+        Kross::Action::Ptr m_action;
+        Kross::GUIClient* m_scriptextension;
 
         QComboBox* m_interpretercombo;
         KTextEdit* m_codeedit;

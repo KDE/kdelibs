@@ -17,43 +17,29 @@
  * Boston, MA 02110-1301, USA.
  ***************************************************************************/
 
-#ifndef KROSS_API_OBJECT_H
-#define KROSS_API_OBJECT_H
+#ifndef KROSS_OBJECT_H
+#define KROSS_OBJECT_H
 
-#include <QString>
-#include <QStringList>
-#include <QMap>
-#include <QVariant>
-//#include <QObject>
+//#include <QString>
+//#include <QStringList>
+//#include <QHash>
+//#include <QVariant>
+#include <QObject>
+#include <QMetaType>
+#include <QMetaObject>
+#include <QMetaMethod>
+
 #include <ksharedptr.h>
 #include <koffice_export.h>
+
 #include "krossconfig.h"
 
-namespace Kross { namespace Api {
-
-    // Forward declaration.
-    class List;
-
-    //FIXME We forward declare class Exception here while it's
-    //     used at the static fromObject() template-method.
-    //     Could that provide probs on !=gcc? Maybe that method
-    //     should go into it's own sourcefile anyway...
-    class Exception;
+namespace Kross {
 
     /**
-     * The common Object class all other object-classes are
-     * inheritated from.
-     *
-     * The Object class is used as base class to provide
-     * common functionality. It's similar to what we know 
-     * in Python as PyObject or in Qt as QObject.
-     *
-     * Inherited from e.g. \a Value, \a Module and \a Class .
-     *
-     * This class implementates reference counting for shared
-     * objects. So, no need to take care of freeing objects.
+     * Base class that implements dynamic QObject's.
      */
-    class KROSS_EXPORT Object : public KShared
+    class KROSS_EXPORT Object : public QObject, public KShared
     {
         public:
 
@@ -64,8 +50,12 @@ namespace Kross { namespace Api {
 
             /**
              * Constructor.
+             *
+             * \param object the QObject which should be wrapped.
+             * \param name is the unique name the QObject should be published
+             * under. Normaly this equals to \a Object::objectName .
              */
-            explicit Object();
+            explicit Object(QObject* const object = 0, const QString& name = QString::null);
 
             /**
              * Destructor.
@@ -73,71 +63,39 @@ namespace Kross { namespace Api {
             virtual ~Object();
 
             /**
-             * \return a string representation of the object or
-             * it's content. This method is mainly used for
-             * debugging and testing purposes.
+             * \return the wrapped QObject instance or NULL if there was
+             * no object defined.
              */
-            virtual const QString toString();
+            QObject* object() const;
+
+            /// \internal static \a MetaObject instance.
+            static const QMetaObject staticMetaObject;
+            /// \internal dynamic \a MetaObject instance.
+            virtual const QMetaObject* metaObject() const;
+            /// \internal implementation to cast this instance.
+            virtual void* qt_metacast(const char* classname);
+            /// \internal implementation to call this instance.
+            virtual int qt_metacall(QMetaObject::Call call, int id, void** args);
+
+        private: //public slot
 
             /**
-             * Pass a call to the object and evaluated it recursive
-             * down the object-hierachy. Objects like \a Class are able
-             * to handle call's by just implementing this function.
-             * If the call is done the \a called() method will be
-             * executed recursive from bottom up the call hierachy.
-             *
-             * \throws TypeException if the object or the name
-             *         is not callable.
-             * \param name Each call has a name that says what
-             *        should be called. In the case of a \a Class
-             *        the name is the functionname.
-             * \param arguments The list of arguments passed to
-             *        the call.
-             * \return The call-result as \a Object::Ptr instance or
-             *         NULL if the call has no result.
+             * Relay an object. This method is a builtin public slot as
+             * defined in the \a staticMetaObject instance.
              */
-            virtual Object::Ptr call(const QString& name, KSharedPtr<List> arguments);
+            void relay(QObject* object, const QMetaObject* metaobject, int index, QVariantList args);
 
-            /**
-             * Return a list of supported callable objects.
-             *
-             * \return List of supported calls.
-             */
-            virtual QStringList getCalls() { return QStringList(); }
-            //FIXME replace function with getChildren() functionality ?
-
-            /**
-             * Try to convert the \a Object instance to the
-             * template class T.
-             *
-             * \throw TypeException if the cast failed.
-             * \param object The Object to cast.
-             * \return The to a instance from template type T
-             *         casted Object.
-             */
-            template<class T> static T* fromObject(Object* object)
-            {
-                T* t = (T*) object;
-                if(! t)
-                    throw KSharedPtr<Exception>( new Exception(QString("Invalid object.")) );
-                return t;
-            }
-
-            /**
-             * This method got used by the \a ProxyFunction classes
-             * to translate an unknown \p TYPE to a \a Object instance.
-             * Classes like \a Value or \a ListT or \a Class are
-             * overwriting this method to transparently translate these
-             * passed type while this method just assumes that the
-             * type is already a \a Object instance.
-             */
-            template<typename TYPE>
-            static Object::Ptr toObject(TYPE t) { return t; }
+        private:
+            /// \internal d-pointer class.
+            class Private;
+            /// \internal d-pointer instance.
+            Private* const d;
     };
 
-}}
+}
 
-//Q_DECLARE_METATYPE(Kross::Api::Object);
+Q_DECLARE_METATYPE( Kross::Object::Ptr );
+
 //qRegisterMetaType<Kross::Api::Object>("Kross::Api::Object");
 //qRegisterMetaTypeStreamOperator<Kross::Api::Object>("Kross::Api::Object");
 
