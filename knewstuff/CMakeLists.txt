@@ -73,7 +73,7 @@ endif(KDE4_BUILD_TESTS)
 install( FILES khotnewstuffrc  DESTINATION  ${CONFIG_INSTALL_DIR} )
 install( FILES downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h knewstuffsecure.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/knewstuff )
 
-kde4_install_icons( ${ICON_INSTALL_DIR} crystalsvg )
+kde4_install_icons( ${ICON_INSTALL_DIR}  )
 
 
 
