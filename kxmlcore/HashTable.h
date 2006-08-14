@@ -32,11 +32,8 @@ namespace KXMLCore {
 #define DUMP_HASHTABLE_STATS 0
 #define CHECK_HASHTABLE_CONSISTENCY 0
 
-#ifdef NDEBUG
+//Because of BC concerns,we do not turn on the checking automatically
 #define CHECK_HASHTABLE_ITERATORS 0
-#else
-#define CHECK_HASHTABLE_ITERATORS 1
-#endif
 
 #if DUMP_HASHTABLE_STATS
 
