@@ -217,6 +217,8 @@ void KColorCells::setColor( int colNum, const QColor &col )
 
 void KColorCells::paintCell( QPainter *painter, int row, int col )
 {
+    painter->setRenderHint( QPainter::Antialiasing , true );
+
 	QBrush brush;
 	int w = 1;
 
