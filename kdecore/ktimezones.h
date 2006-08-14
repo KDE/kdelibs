@@ -343,6 +343,12 @@ public:
     const KTimeZone *detach(const QString &name);
 
     /**
+     * Clears the collection.
+     * All time zone instances owned by the collection are deleted.
+     */
+    void clear();
+
+    /**
      * Returns a standard UTC time zone, with name "UTC".
      *
      * @note The KTimeZone returned by this method does not belong to any
@@ -861,6 +867,16 @@ public:
     bool parse() const;
 
     /**
+     * Returns the detailed parsed data for the time zone.
+     * This will return null unless either parse() has been called beforehand, or
+     * @p create is true.
+     *
+     * @param create true to parse the zone's data first if not already parsed
+     * @return pointer to data, or null if data has not been parsed
+     */
+    const KTimeZoneData *data(bool create = false) const;
+
+    /**
      * Converts a UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
      * (as returned by time(2)), to a UTC QDateTime value.
      * QDateTime::setTime_t() is limited to handling @p t >= 0, since its parameter
@@ -913,16 +929,6 @@ protected:
         KTimeZoneSource *source, const QString &name,
         const QString &countryCode = QString(), float latitude = UNKNOWN, float longitude = UNKNOWN,
         const QString &comment = QString());
-
-    /**
-     * Returns the detailed parsed data for the time zone.
-     * This will return null unless either parse() has been called beforehand, or
-     * @p create is true.
-     *
-     * @param create true to parse the zone's data first if not already parsed
-     * @return pointer to data, or null if data has not been parsed
-     */
-    const KTimeZoneData *data(bool create = false) const;
 
     /**
      * Sets the detailed parsed data for the time zone.

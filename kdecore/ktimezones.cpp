@@ -96,21 +96,24 @@ class KTimeZonesPrivate
 {
 public:
     KTimeZonesPrivate() : zones(new KTimeZones::ZoneMap())  {}
-    ~KTimeZonesPrivate()
-    {
-        // Autodelete behavior.
-        for (KTimeZones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it)
-        {
-            if (nonconstZones.contains(const_cast<KTimeZone*>(it.value())))   // only delete zones actually owned
-                delete it.value();
-        }
-        delete zones;
-    }
+    ~KTimeZonesPrivate()  { clear();  delete zones; }
+    void clear();
     static KTimeZone *utc();
 
     KTimeZones::ZoneMap *zones;
     QSet<KTimeZone*> nonconstZones;   // member zones owned by KTimeZones
 };
+
+void KTimeZonesPrivate::clear()
+{
+  // Delete all zones actually owned by this collection.
+  for (KTimeZones::ZoneMap::ConstIterator it = zones->begin(), end = zones->end();  it != end;  ++it) {
+    if (nonconstZones.contains(const_cast<KTimeZone*>(it.value())))
+      delete it.value();
+  }
+  zones->clear();
+  nonconstZones.clear();
+}
 
 KTimeZone *KTimeZonesPrivate::utc()
 {
@@ -186,6 +189,11 @@ const KTimeZone *KTimeZones::detach(const QString &name)
         }
     }
     return 0;
+}
+
+void KTimeZones::clear()
+{
+  d->clear();
 }
 
 const KTimeZone *KTimeZones::zone(const QString &name) const

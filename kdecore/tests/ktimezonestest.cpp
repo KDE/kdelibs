@@ -53,7 +53,10 @@ void KTimeZonesTest::ktimezones()
     QVERIFY(!timezones.detach("Zone1"));
     QVERIFY((bool)timezones.detach("Zone2"));
     zone1 = new KTimeZone("Zone10");
-    delete zone1;
+    QVERIFY(timezones.add(zone1));
+    QCOMPARE(timezones.zones().count(), 1);
+    timezones.clear();
+    QCOMPARE(timezones.zones().count(), 0);
 }
 
 ///////////////////
