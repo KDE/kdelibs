@@ -75,7 +75,7 @@ install( FILES kio_help.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
 
-install( FILES move_kio_help_cache.sh  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
+install( PROGRAMS move_kio_help_cache.sh  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
 
 macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
