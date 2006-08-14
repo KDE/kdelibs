@@ -257,7 +257,8 @@ set_target_properties(kio PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 
 install(TARGETS kio  DESTINATION ${LIB_INSTALL_DIR} )
 
-install( FILES useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
+install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
+
 
 install( FILES magic  DESTINATION  ${MIME_INSTALL_DIR} )
 install( FILES application.desktop kurifilterplugin.desktop kscan.desktop kdatatool.desktop kfileplugin.desktop kcmodule.desktop kcmoduleinit.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
