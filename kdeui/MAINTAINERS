@@ -91,7 +91,7 @@ ktoolbarbutton.cpp	Waldo Bastian <bastian@kde.org>
 ktoolbarradiogroup.cpp
 kurllabel.cpp
 kwindowlistmenu.cpp
-kwizard.cpp
+kassistantdialog.cpp
 kwordwrap.cpp		David Faure <faure@kde.org>
 kxmlguibuilder.cpp
 kxmlguiclient.cpp

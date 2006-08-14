@@ -1,5 +1,5 @@
 /*
- *   kwizardtest - a test program for the KWizard dialog
+ *   kassistantdialogtest - a test program for the KAssistantDialog class
  *   Copyright (C) 1998  Thomas Tanghus (tanghus@kde.org)
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -24,14 +24,14 @@
 #include <QHBoxLayout>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <kwizard.h>
+#include <kassistantdialog.h>
 
 int main(int argc, char **argv)
 {
   KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
   KApplication a;
-  KWizard *wiz = new KWizard();
-  QObject::connect(wiz, SIGNAL(finished(int)),  &a, SLOT(quit()));
+  KAssistantDialog *dlg = new KAssistantDialog();
+  QObject::connect(dlg, SIGNAL(finished(int)),  &a, SLOT(quit()));
   for(int i = 1; i < 11; i++)
   {
     QWidget *p = new QWidget;
@@ -42,10 +42,10 @@ int main(int argc, char **argv)
     label->setFixedSize(300, 200);
     layout->addWidget(label);
     QString title = QString("%1. page").arg(i);
-    wiz->addPage(p, title);
+    dlg->addPage(p, title);
   }
 
-  wiz->show();
+  dlg->show();
   return a.exec();
 }
 

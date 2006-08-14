@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kwizard.h"
+#include "kassistantdialog.h"
 
 #include <kstdguiitem.h>
 #include <klocale.h>
@@ -24,7 +24,7 @@
 
 #include <QHash>
 
-class KWizardPrivate
+class KAssistantDialogPrivate
 {
     public:
         QHash<KPageWidgetItem*, bool> valid;
@@ -56,7 +56,7 @@ class KWizardPrivate
         }
 };
 
-KWizard::KWizard(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags), d(new KWizardPrivate)
+KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags), d(new KAssistantDialogPrivate)
 {
     init();
     //workaround to get the page model
@@ -65,18 +65,18 @@ KWizard::KWizard(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags
     d->pageModel=static_cast<KPageWidgetModel*>(pagewidget->model());
 }
 
-KWizard::KWizard(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget, parent, flags), d(new KWizardPrivate)
+KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget, parent, flags), d(new KAssistantDialogPrivate)
 {
     init();
     d->pageModel=static_cast<KPageWidgetModel*>(widget->model());
 }
 
-KWizard::~KWizard()
+KAssistantDialog::~KAssistantDialog()
 {
     delete d;
 }
 
-void KWizard::init()
+void KAssistantDialog::init()
 {
     setButtons(Cancel | User1 | User2 | User3 | Help);
     setButtonText(User3, i18n("Back"));
@@ -94,34 +94,33 @@ void KWizard::init()
 }
 
 
-void KWizard::back()
+void KAssistantDialog::back()
 {
     QModelIndex nextIndex=d->getPrevious(d->pageModel->index(currentPage()));
     if (nextIndex.isValid())
         setCurrentPage(d->pageModel->item(nextIndex));
 }
 
-void KWizard::next()
+void KAssistantDialog::next()
 {
     QModelIndex nextIndex=d->getNext(d->pageModel->index(currentPage()));
     if (nextIndex.isValid())
         setCurrentPage(d->pageModel->item(nextIndex));
 }
 
-
-void KWizard::setValid(KPageWidgetItem * page, bool enable)
+void KAssistantDialog::setValid(KPageWidgetItem * page, bool enable)
 {
     d->valid[page]=enable;
     if (page == currentPage())
         slotCurrentPageChanged();
 }
 
-bool KWizard::isValid(KPageWidgetItem * page)
+bool KAssistantDialog::isValid(KPageWidgetItem * page)
 {
     return d->valid.value(page, true);
 }
 
-void KWizard::slotCurrentPageChanged()
+void KAssistantDialog::slotCurrentPageChanged()
 {
     QModelIndex currentIndex=d->pageModel->index(currentPage());
     //change the caption of the next/finish button
@@ -134,20 +133,20 @@ void KWizard::slotCurrentPageChanged()
     enableButton(User3, nextIndex.isValid());
 }
 
-void KWizard::showEvent(QShowEvent * event)
+void KAssistantDialog::showEvent(QShowEvent * event)
 {
     slotCurrentPageChanged(); //called because last time that function was called is when the first page was added, so the next button show "finish"
     KPageDialog::showEvent(event);
 }
 
-void KWizard::setAppropriate(KPageWidgetItem * page, bool appropriate)
+void KAssistantDialog::setAppropriate(KPageWidgetItem * page, bool appropriate)
 {
     d->appropriate[page]=appropriate;
 }
 
-bool KWizard::isAppropriate(KPageWidgetItem * page)
+bool KAssistantDialog::isAppropriate(KPageWidgetItem * page)
 {
     return d->appropriate.value(page, true);
 }
 
-#include "kwizard.moc"
+#include "kassistantdialog.moc"

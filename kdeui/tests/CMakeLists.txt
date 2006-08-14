@@ -779,17 +779,17 @@ target_link_libraries(kbuttongrouptest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 add_test(kbuttongrouptest ${EXECUTABLE_OUTPUT_PATH}/kbuttongrouptest)
 
 
-########### kwizardtest ###############
+########### kassistantdialogtest ###############
 
-set(kwizardtest_SRCS kwizardtest.cpp )
+set(kassistantdialogtest_SRCS kassistantdialogtest.cpp )
 
-kde4_automoc(${kwizardtest_SRCS})
+kde4_automoc(${kassistantdialogtest_SRCS})
 
-kde4_add_executable(kwizardtest RUN_UNINSTALLED ${kwizardtest_SRCS})
+kde4_add_executable(kassistantdialogtest RUN_UNINSTALLED ${kassistantdialogtest_SRCS})
 
-target_link_libraries(kwizardtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kassistantdialogtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
-add_test(kwizardtest ${EXECUTABLE_OUTPUT_PATH}/kwizardtest)
+add_test(kassistantdialogtest ${EXECUTABLE_OUTPUT_PATH}/kassistantdialogtest)
 
 
 

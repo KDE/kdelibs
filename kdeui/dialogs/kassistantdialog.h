@@ -17,43 +17,50 @@
 */
 
 
-#ifndef KWIZARD_H
-#define KWIZARD_H
+#ifndef KASSISTANTDIALOG_H
+#define KASSISTANTDIALOG_H
 
 #include <kpagedialog.h>
 
-class KWizardPrivate;
+class KAssistantDialogPrivate;
 
 /**
- * This class provides a framework for wizard dialogs.
+ * This class provides a framework for assistant dialogs.
  *
- * A wizard is a dialog that consists of a sequence of pages.
- * A wizard's purpose is to walk the user through a process step by step.
- * Wizards are useful for complex or infrequently occurring tasks that people may find difficult to learn or do.
+ * The use of this class is the same as KWizard in KDE3.
+ * You should use "assistant" term instead of "wizard" both in the source 
+ * and translatable strings.
  *
- * KWizard provides page titles and displays Next, Back, Finish, Cancel,and Help push buttons,
- * as appropriate to the current position in the page sequence.
- * The Finish Button has the code KDialog::User1 , The Next button is KDialog::User2 and the Back
- * button is KDialog::User3
+ * An assistant dialog consists of a sequence of pages.
+ * Its purpose is to walk the user (assist) through a process step by step.
+ * Assistant dialogs are useful for complex or infrequently occurring tasks 
+ * that people may find difficult to learn or do. 
+ * Sometimes a task requires too many input fields to fit them on a single dialog.
+ *
+ * KAssistantDialog provides page titles and displays Next, Back, Finish, Cancel, 
+ * and Help push buttons, as appropriate to the current position in the page sequence.
+ * The Finish Button has the code KDialog::User1, The Next button is KDialog::User2 
+ * and the Back button is KDialog::User3.
  * The help button may be hidden using KDialog::showButton( Help , false )
  *
- * Create and populate dialog pages that inherit from QWidget and add them to the wizard using addPage().
+ * Create and populate dialog pages that inherit from QWidget and add them 
+ * to the assistant dialog using addPage().
  *
- * the function next() and back() are virtual you can inherit them if you want to override the defaults action
- * of the next and back buttons.
+ * The functions next() and back() are virtual you can inherit them if you want 
+ * to override the defaults action of the next and back buttons.
  *
  * @author Olivier Goffart <ogoffart at kde.org>
  */
-class KWizard : public KPageDialog
+class KAssistantDialog : public KPageDialog
 {
     Q_OBJECT
     public:
         /**
-         * Construct a new wizard with @p parent as parent.
+         * Construct a new assistant dialog with @p parent as parent.
          * @param parent is the parent of the widget.
          */
-        KWizard(QWidget *parent=0, Qt::WFlags flags=0);
-        virtual ~KWizard();
+        KAssistantDialog(QWidget *parent=0, Qt::WFlags flags=0);
+        virtual ~KAssistantDialog();
 
         /**
          * Specify if the content of the page is valid, and if the next button may be enabled on this page.
@@ -113,12 +120,12 @@ class KWizard : public KPageDialog
         /**
          * Constructor that call the  KPageDialog (KPageWidget *widget, QWidget *parent, Qt::WFlags flags) constructor
          */
-        KWizard(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
+        KAssistantDialog(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
 
         virtual void showEvent(QShowEvent * event);
 
     private:
-        KWizardPrivate * const d;
+        KAssistantDialogPrivate * const d;
         void init();
 };
 

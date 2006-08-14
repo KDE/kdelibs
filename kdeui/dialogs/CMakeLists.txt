@@ -14,7 +14,7 @@ install( FILES
  kpixmapregionselectordialog.h
  kprogressdialog.h
  kshortcutdialog.h
- kwizard.h
+ kassistantdialog.h
  kbugreport.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 

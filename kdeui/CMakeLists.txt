@@ -58,7 +58,6 @@ set(kdeui_LIB_SRCS
  kmessagebox.cpp
  ktextbrowser.cpp
  khelpmenu.cpp
- dialogs/kbugreport.cpp
  kxmlguiclient.cpp
  kxmlguifactory.cpp
  kxmlguifactory_p.cpp
@@ -83,7 +82,6 @@ set(kdeui_LIB_SRCS
  ktoolbarlabelaction.cpp
  ktoolbarspaceraction.cpp
  kmessageboxmessagehandler.cpp
- dialogs/kwizard.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -145,6 +143,8 @@ set(kdeui_LIB_SRCS
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
  dialogs/kaboutdialog.cpp
+ dialogs/kassistantdialog.cpp
+ dialogs/kbugreport.cpp
  dialogs/kdialog.cpp
  dialogs/kcolordialog.cpp
  dialogs/kfontdialog.cpp
