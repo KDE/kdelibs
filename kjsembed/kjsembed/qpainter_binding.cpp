@@ -46,7 +46,9 @@ QPaintDevice *extractPaintDevice( KJS::ExecState *exec, KJS::JSValue *arg)
     ObjectBinding *imp = extractBindingImp<ObjectBinding>(exec,arg);
     if( imp )
     {
+#ifdef __GNUC__
 #warning There be dragons here...
+#endif
       /**
        * Because of something odd with multiple inheritence and qobject cast
        * we need to first cast it to a QObject, then cast it to a QWidget.
