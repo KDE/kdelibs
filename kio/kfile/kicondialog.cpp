@@ -85,7 +85,6 @@ public:
 KIconCanvas::KIconCanvas(QWidget *parent)
     : K3IconView(parent),d(new KIconCanvasPrivate)
 {
-    mpLoader = KGlobal::iconLoader();
     mpTimer = new QTimer(this);
     connect(mpTimer, SIGNAL(timeout()), SLOT(slotLoadFiles()));
     connect(this, SIGNAL(currentChanged(Q3IconViewItem *)),

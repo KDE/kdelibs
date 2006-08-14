@@ -70,7 +70,6 @@ private Q_SLOTS:
 private:
     QStringList mFiles;
     QTimer *mpTimer;
-    KIconLoader *mpLoader;
 
 
 private:
