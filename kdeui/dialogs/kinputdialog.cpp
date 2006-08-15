@@ -88,6 +88,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   connect( d->m_lineEdit, SIGNAL( textChanged( const QString & ) ),
       SLOT( slotEditTextChanged( const QString & ) ) );
   connect( this, SIGNAL( user1Clicked() ), d->m_lineEdit, SLOT( clear() ) );
+  connect( this, SIGNAL( user1Clicked() ), d->m_lineEdit, SLOT( setFocus() ) );
 
   setMainWidget(frame);
   slotEditTextChanged( value );
@@ -120,6 +121,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_label->setBuddy( d->m_textEdit );
 
   connect( this, SIGNAL( user1Clicked() ), d->m_textEdit, SLOT( clear() ) );
+  connect( this, SIGNAL( user1Clicked() ), d->m_textEdit, SLOT( setFocus() ) );
   setMainWidget(frame);
   setMinimumWidth( 400 );
 }
@@ -214,6 +216,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
       SLOT( slotUpdateButtons( const QString & ) ) );
     connect( this, SIGNAL( user1Clicked() ),
       d->m_comboBox, SLOT( clearEdit() ) );
+    connect( this, SIGNAL( user1Clicked() ),
+      d->m_comboBox, SLOT( setFocus() ) );
     slotUpdateButtons( d->m_comboBox->currentText() );
     d->m_comboBox->setFocus();
   } else {
