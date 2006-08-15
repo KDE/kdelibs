@@ -2,6 +2,7 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QEventLoop>
 
 #include <kjs/interpreter.h>
 #include <kjs/PropertyNameArray.h>
@@ -29,148 +30,11 @@ LocalVariablesDock::~LocalVariablesDock()
 {
 }
 
-
-void getValues3(KJS::ExecState *exec, KJS::JSObject *object)
+void LocalVariablesDock::clear()
 {
-    KJS::PropertyNameArray props;
-    object->getPropertyNames(exec, props);
-    for(KJS::PropertyNameArrayIterator ref = props.begin();
-        ref != props.end();
-        ref++)
-    {
-        KJS::Identifier id = *ref;
-        QString refName = id.qstring();
-        KJS::JSValue *jsvalue = object->get(exec, id);
-
-        // Should we check for these?
-        // bool isUndefined () const
-        // bool isNull () const
-        // bool isUndefinedOrNull () const
-
-        QString type;
-        QVariant value;
-        // First lets check if its a primitive type
-        if (jsvalue->isBoolean())
-        {
-            type = "bool";
-            value = jsvalue->toBoolean(exec);
-        }
-        else if (jsvalue->isNumber())
-        {
-            type = "number";
-            value = jsvalue->toNumber(exec);
-        }
-        else if (jsvalue->isString())
-        {
-            type = "string";
-            value = jsvalue->toString(exec).qstring();
-        }
-        else if (jsvalue->isObject())
-        {
-            type = "object";
-            value = "[object data]";
-        }
-        kDebug() << "getValues3: " << refName << "\t" << type << "\t" << value << endl;
-    }
+    if (m_execModel)
+        delete m_execModel;
 }
-
-
-void getValues2(KJS::ExecState *exec, KJS::JSObject *object)
-{
-    KJS::PropertyNameArray props;
-    object->getPropertyNames(exec, props);
-    for(KJS::PropertyNameArrayIterator ref = props.begin();
-        ref != props.end();
-        ref++)
-    {
-        KJS::Identifier id = *ref;
-        QString refName = id.qstring();
-        KJS::JSValue *jsvalue = object->get(exec, id);
-
-        // Should we check for these?
-        // bool isUndefined () const
-        // bool isNull () const
-        // bool isUndefinedOrNull () const
-
-        QString type;
-        QVariant value;
-        // First lets check if its a primitive type
-        if (jsvalue->isBoolean())
-        {
-            type = "bool";
-            value = jsvalue->toBoolean(exec);
-        }
-        else if (jsvalue->isNumber())
-        {
-            type = "number";
-            value = jsvalue->toNumber(exec);
-        }
-        else if (jsvalue->isString())
-        {
-            type = "string";
-            value = jsvalue->toString(exec).qstring();
-        }
-        else if (jsvalue->isObject())
-        {
-            type = "object";
-            value = "[object data]";
-
-            KJS::JSObject *newObject = jsvalue->toObject(exec);
-            getValues3(exec, newObject);
-        }
-        kDebug() << "getValues2: " << refName << "\t" << type << "\t" << value << endl;
-    }
-}
-
-
-
-void getValues(KJS::ExecState *exec, KJS::JSObject *object)
-{
-    KJS::PropertyNameArray props;
-    object->getPropertyNames(exec, props);
-    for(KJS::PropertyNameArrayIterator ref = props.begin();
-        ref != props.end();
-        ref++)
-    {
-        KJS::Identifier id = *ref;
-        QString refName = id.qstring();
-        KJS::JSValue *jsvalue = object->get(exec, id);
-
-        // Should we check for these?
-        // bool isUndefined () const
-        // bool isNull () const
-        // bool isUndefinedOrNull () const
-
-        QString type;
-        QVariant value;
-        // First lets check if its a primitive type
-        if (jsvalue->isBoolean())
-        {
-            type = "bool";
-            value = jsvalue->toBoolean(exec);
-        }
-        else if (jsvalue->isNumber())
-        {
-            type = "number";
-            value = jsvalue->toNumber(exec);
-        }
-        else if (jsvalue->isString())
-        {
-            type = "string";
-            value = jsvalue->toString(exec).qstring();
-        }
-        else if (jsvalue->isObject())
-        {
-            type = "object";
-            value = "[object data]";
-
-            KJS::JSObject *newObject = jsvalue->toObject(exec);
-            getValues2(exec, newObject);
-        }
-        kDebug() << "getValues: " << refName << "\t" << type << "\t" << value << endl;
-    }
-}
-
 
 void LocalVariablesDock::display(KJS::ExecState *exec)
 {

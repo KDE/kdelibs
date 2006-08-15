@@ -83,7 +83,6 @@
 using namespace KJS;
 
 DebugWindow* DebugWindow::m_debugger = 0;
-
 DebugWindow *DebugWindow::createInstance()
 {
     Q_ASSERT(!m_debugger);
@@ -265,7 +264,8 @@ void DebugWindow::stopExecution()
 
 void DebugWindow::continueExecution()
 {
-    KMessageBox::information(this, "Continue!");
+    enableOtherWindows();
+    m_mode = Continue;
 }
 
 void DebugWindow::stepInto()
@@ -413,8 +413,8 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
         {
 //             kDebug() << "Hey! we actually found a breakpoint!" << endl;
             // Lets try a dump of the scope chain now..
-            m_localVariables->display(exec);
-            // enterDebugSession(exec);
+            // m_localVariables->display(exec);
+            enterDebugSession(exec);
         }
     }
 
@@ -450,6 +450,31 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 
 // End KJS::Debugger overloads
 
+void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
+{
+    if (!m_highlightingMode)
+    {
+        KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(document);
+        if (highlightingInterface)
+        {
+            int count = highlightingInterface->hlModeCount();
+            for (int i=0; i<count; i++)
+            {
+                QString modeName = highlightingInterface->hlModeName(i);
+                QString sectionName = highlightingInterface->hlModeSectionName(i);
+                if (modeName == "JavaScript")
+                {
+                    m_highlightingMode = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (m_hightlightingMode)
+        highlightingInterface->setHlMode(m_hightlightingMode);
+}
+
 void DebugWindow::displayScript(KJS::DebugDocument *document)
 {
     if (m_tabWidget->isHidden())
@@ -473,28 +498,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
         m_documentLut[doc] = document;
     }
 
-    KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(doc);
-    if (highlightingInterface)
-    {
-        int modeNumber = 0;
-        int count = highlightingInterface->hlModeCount();
-        for (int i=0; i<count; i++)
-        {
-            QString modeName = highlightingInterface->hlModeName(i);
-            QString sectionName = highlightingInterface->hlModeSectionName(i);
-            if (modeName == "JavaScript")
-            {
-                modeNumber = i;
-                break;
-            }
-        }
-        if (modeNumber != 0)
-        {
-//             kDebug() << "Found JavaScript Highlighting Mode" << endl;
-            highlightingInterface->setHlMode(modeNumber);
-        }
-    }
-
+    enableKateHighlighting(doc);
     QList<SourceFragment> fragments = document->fragments();
     foreach (SourceFragment fragment, fragments)
     {
@@ -580,33 +584,112 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec)
     // program to continue while the script is stopped. We have to be a bit careful here,
     // i.e. make sure the user can't quit the app, and disable other event handlers which
     // could interfere with the debugging session.
+
     if (!isVisible())
         show();
 
     m_mode = Stop;
 
-    setWindowModality(Qt::ApplicationModal);    // instead of disableOtherWindows()
-
 //    if (m_execStates.isEmpty())
-//    {
+    {
         m_continueAct->setEnabled(true);
         m_stopAct->setEnabled(true);
         m_stepIntoAct->setEnabled(true);
         m_stepOutAct->setEnabled(true);
         m_stepOverAct->setEnabled(true);
-
-
-//    }
-
-//    m_execStates.push(exec);
-//    updateContextList();
-    m_localVariables->display(exec);
-
-    while (m_mode != Continue)
-    {
-        kapp->processEvents();
     }
+
+
+    m_localVariables->display(exec);
+    disableOtherWindows();
+/*
+    bool done = false;
+    while (!done)
+    {
+        if (m_mode == Continue)
+            done = true;
+        kapp->processEvents(QEventLoop::ExcludeSocketNotifiers | 
+                            QEventLoop::DeferredDeletion | QEventLoop::X11ExcludeTimers);
+
+    }
+
+
+    m_localVariables->clear(); */
 }
+
+
+
+
+//// Event handling - ripped from old kjsdebugger
+
+bool DebugWindow::eventFilter(QObject *object, QEvent *event)
+{
+    /*
+    if (object == this)
+        return QObject::eventFilter(object, event);
+    return true;
+    */
+
+/*
+    switch (event->type())
+    {
+        case QEvent::MouseButtonPress:
+        case QEvent::MouseButtonRelease:
+        case QEvent::MouseButtonDblClick:
+        case QEvent::MouseMove:
+        case QEvent::KeyPress:
+        case QEvent::KeyRelease:
+        case QEvent::Destroy:
+        case QEvent::Close:
+        case QEvent::Quit:
+            if (object == this)
+                return QWidget::eventFilter(object, event);
+            else
+                return true;
+            break;
+        default:
+            return QWidget::eventFilter(object, event);
+    }
+    */
+}
+
+void DebugWindow::disableOtherWindows()
+{
+    kapp->installEventFilter(this);
+/*
+  QWidgetList widgets = QApplication::allWidgets();
+  QListIterator<QWidget*> it(widgets);
+  while (it.hasNext()) {
+    QWidget* widget = it.next();
+    widget->installEventFilter(this);
+  }
+*/
+}
+
+void DebugWindow::enableOtherWindows()
+{
+    kapp->removeEventFilter(this);
+/*
+  QWidgetList widgets = QApplication::allWidgets();
+  QListIterator<QWidget*> it(widgets);
+  while (it.hasNext()) {
+    QWidget* widget = it.next();
+    widget->removeEventFilter(this);
+  }
+*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -55,6 +55,7 @@ class BreakpointsDock;
 class ConsoleDock;
 class QTabWidget;
 class QFrame;
+class QEventLoop;
 
 namespace KJS
 {
@@ -140,7 +141,6 @@ public:
     void setNextSourceInfo(QString url, int baseLine);
 
 public:
-    // KJS Debugger Methods
     bool sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
                       const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg);
     bool sourceUnused(ExecState *exec, int sourceId);
@@ -157,10 +157,9 @@ public slots:
     void stepOver();
 
 protected:
-/*
-    void closeEvent(QCloseEvent *e);
-    bool eventFilter(QObject *obj, QEvent *evt);
-*/
+    bool eventFilter(QObject *object, QEvent *event);
+    void disableOtherWindows();
+    void enableOtherWindows();
 
 private slots:
     void displayScript(KJS::DebugDocument *document);
@@ -176,7 +175,7 @@ private:
     void createTabWidget();
 
     void enterDebugSession(KJS::ExecState *exec);
-
+    void enableKateHighlighting(KTextEditor::Document *document);
 
 private:
     // Standard actions
@@ -191,6 +190,7 @@ private:
 
     // Text editing stuff
     KTextEditor::Editor *m_editor;
+    int m_highlightingMode;
 
     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
@@ -218,8 +218,13 @@ private:
     static DebugWindow *m_debugger;
 };
 
-} // namespace
 
+
+
+} // namespace
 Q_DECLARE_METATYPE(KJS::DebugDocument*)
+
+
+
 
 #endif // DEBUGWINDOW_H

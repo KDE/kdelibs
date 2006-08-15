@@ -16,6 +16,7 @@ public:
     ~LocalVariablesDock();
 
     void display(KJS::ExecState *exec);
+    void clear();
 
 private:
     QTreeView   *m_view;

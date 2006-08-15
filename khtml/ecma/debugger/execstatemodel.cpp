@@ -50,6 +50,9 @@ Node *Node::child(int i)
     if (!m_value->isObject())
         return 0;
 
+    if (!m_exec)
+        return 0;
+
     KJS::JSObject *object = m_value->toObject(m_exec);
     KJS::PropertyNameArray props;
     object->getPropertyNames(m_exec, props);
