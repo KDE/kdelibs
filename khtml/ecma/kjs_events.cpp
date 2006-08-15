@@ -193,13 +193,13 @@ void JSLazyEventListener::parseCode() const
         {
           // Add the event's home element to the scope
           // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
-          ScopeChain scope = listener->scope();
+          ScopeChain scope = declFunc->scope();
 
           ObjectImp *thisObj = getDOMNode(exec, originalNode)->getObject();
 
           if (thisObj) {
             static_cast<DOMNode*>(thisObj)->pushEventHandlerScope(exec, scope);
-            listener->setScope(scope);
+            declFunc->setScope(scope);
           }
         }
       }
