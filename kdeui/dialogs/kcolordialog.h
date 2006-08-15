@@ -152,6 +152,13 @@ public:
 
   void setAcceptDrags(bool _acceptDrags) { acceptDrags = _acceptDrags; }
 
+  void setSelected(int _selected)
+  {
+    Q_ASSERT( selected >= 0 && selected < numCells() );
+
+    selected = _selected;
+  }
+
   int getSelected() const
   {	return selected; }
 
