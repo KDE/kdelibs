@@ -947,6 +947,7 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
     KVBox *box = new KVBox( this );
     QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
     QLabel *label = new QLabel( text, box );
+    label->setWordWrap(true);
     box->setSpacing( spacingHint() );
 
     Q3Grid *grid = new Q3Grid( 2, box );
