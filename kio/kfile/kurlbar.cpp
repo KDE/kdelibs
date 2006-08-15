@@ -995,7 +995,7 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
             appName = QLatin1String( KGlobal::instance()->instanceName() );
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), box );
         m_appLocal->setChecked( appLocal );
-        m_appLocal->setWhatsThis(                         i18n("<qt>Select this setting if you want this "
+        m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<p>"
                               "If this setting is not selected, the entry will be available in all "
                               "applications.</qt>",
