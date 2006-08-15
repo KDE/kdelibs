@@ -30,25 +30,19 @@
 #if COMPILER(MSVC)
 
 #include <float.h>
-static int signbit(double d)
+#ifndef __FP_SIGNBIT
+# define __FP_SIGNBIT  0x0200
+#endif
+static __inline int signbit(double x)
 {
-    // FIXME: Not sure if this is exactly right.
-    switch (_fpclass(d)) {
-        case _FPCLASS_NINF:
-        case _FPCLASS_NN:
-        case _FPCLASS_ND:
-        case _FPCLASS_NZ:
-            // It's one of wacky negatives, report as negative.
-            return 1;
-        case _FPCLASS_PINF:
-        case _FPCLASS_PN:
-        case _FPCLASS_PD:
-        case _FPCLASS_PZ:
-            // It's one of wacky positives, report as positive.
-            return 0;
-        default:
-            return d < 0;
+    unsigned short sw;
+    __asm {
+        fld x
+        fxam
+        fstsw sw
+        fstp st
     }
+    return sw & __FP_SIGNBIT;
 }
 
 #endif
