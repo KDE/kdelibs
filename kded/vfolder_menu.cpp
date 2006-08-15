@@ -747,7 +747,7 @@ VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
 
    while( !result.isEmpty() && (result[0] != basePath))
       result.remove(result.begin());
-      
+
    if (result.count() <= 1)
    {
       m_docInfo.path = QString::null; // No parent found
@@ -847,11 +847,15 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
    if (domElem.tagName() == "And")
    {
       QDomNode n = domElem.firstChild();
-      if (!n.isNull())
+      // Look for the first child element
+      while (!n.isNull()) // loop in case of comments
       {
          QDomElement e = n.toElement();
-         processCondition(e, items);
          n = n.nextSibling();
+         if ( !e.isNull() ) {
+             processCondition(e, items);
+             break; // we only want the first one
+         }
       }
 
       QDict<KService> andItems;
@@ -881,19 +885,25 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
    else if (domElem.tagName() == "Or")
    {
       QDomNode n = domElem.firstChild();
-      if (!n.isNull())
+      // Look for the first child element
+      while (!n.isNull()) // loop in case of comments
       {
          QDomElement e = n.toElement();
-         processCondition(e, items);
          n = n.nextSibling();
+         if ( !e.isNull() ) {
+             processCondition(e, items);
+             break; // we only want the first one
+         }
       }
 
       QDict<KService> orItems;
       while( !n.isNull() ) {
          QDomElement e = n.toElement();
-         orItems.clear();
-         processCondition(e, &orItems);
-         includeItems(items, &orItems);
+         if ( !e.isNull() ) {
+             orItems.clear();
+             processCondition(e, &orItems);
+             includeItems(items, &orItems);
+         }
          n = n.nextSibling();
       }
    }
@@ -910,9 +920,11 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
       QDomNode n = domElem.firstChild();
       while( !n.isNull() ) {
          QDomElement e = n.toElement();
-         notItems.clear();
-         processCondition(e, &notItems);
-         excludeItems(items, &notItems);
+         if ( !e.isNull() ) {
+             notItems.clear();
+             processCondition(e, &notItems);
+             excludeItems(items, &notItems);
+         }
          n = n.nextSibling();
       }
    }
