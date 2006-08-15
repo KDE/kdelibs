@@ -452,9 +452,9 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 
 void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 {
+    KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(document);
     if (!m_highlightingMode)
     {
-        KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(document);
         if (highlightingInterface)
         {
             int count = highlightingInterface->hlModeCount();
@@ -471,8 +471,8 @@ void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
         }
     }
 
-    if (m_hightlightingMode)
-        highlightingInterface->setHlMode(m_hightlightingMode);
+    if (m_highlightingMode && highlightingInterface)
+        highlightingInterface->setHlMode(m_highlightingMode);
 }
 
 void DebugWindow::displayScript(KJS::DebugDocument *document)
