@@ -91,6 +91,7 @@ set(kjs_LIB_SRCS
    JSLock.cpp
    JSImmediate.cpp
    PropertyNameArray.cpp
+   JSWrapperObject.cpp
    )
 
 kde4_automoc(${kjs_LIB_SRCS})

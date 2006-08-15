@@ -41,7 +41,7 @@ using namespace KJS;
 
 // ------------------------------ RegExpPrototype ---------------------------
 
-// ECMA 15.9.4
+// ECMA 15.10.5
 
 const ClassInfo RegExpPrototype::info = {"RegExp", 0, 0, 0};
 
@@ -50,8 +50,6 @@ RegExpPrototype::RegExpPrototype(ExecState *exec,
                                        FunctionPrototype *funcProto)
   : JSObject(objProto)
 {
-  setInternalValue(jsString(""));
-
   // The constructor will be added later in RegExpObject's constructor (?)
 
   static const Identifier execPropertyName("exec");
@@ -189,7 +187,7 @@ RegExpObjectImp::RegExpObjectImp(ExecState *exec,
                                  FunctionPrototype *funcProto,
                                  RegExpPrototype *regProto)
 
-  : InternalFunctionImp(funcProto), multiline(false), lastInput(""), lastNumSubPatterns(0)
+  : InternalFunctionImp(funcProto), lastInput(""), lastNumSubPatterns(0), multiline(false)
 {
   // ECMA 15.10.5.1 RegExp.prototype
   putDirect(prototypePropertyName, regProto, DontEnum|DontDelete|ReadOnly);
