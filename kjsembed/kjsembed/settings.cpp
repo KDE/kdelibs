@@ -23,6 +23,12 @@
 
 using namespace KJSEmbed;
 
+SettingsBinding::SettingsBinding( KJS::ExecState *exec, QSettings *settings )
+    : QObjectBinding(exec, settings)
+{
+    StaticBinding::publish( exec, this, Settings::methods() );
+}
+
 START_QOBJECT_METHOD( callAllKeys, QSettings )
     QStringList keys = object->allKeys();
     result = KJSEmbed::convertToValue( exec, keys );
@@ -109,18 +115,10 @@ START_CTOR( Settings, QSettings, 1 )
         QObject *parent = KJSEmbed::extractObject<QObject>(exec,args,3);
         settings = new QSettings(scope, organization, application, parent);
     }
-
-    if( settings )
-    {
-        KJS::JSObject *binding = new QObjectBinding( exec, settings);
-        StaticBinding::publish( exec, binding, Settings::methods() );
-        return binding;
-    }
     else
-    {
-        KJS::throwError(exec, KJS::GeneralError, i18n("Could not create the settings object."));
-        return new KJS::JSObject();
-    }
+        settings = new QSettings();
+    
+    return new SettingsBinding(exec,settings);
 END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

@@ -17,24 +17,39 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "application.h"
 
-#ifndef QWIDGET_BINDING_H
-#define QWIDGET_BINDING_H
+#include <QDebug>
+#include <QApplication>
+#include <QStringList>
+using namespace KJSEmbed;
 
-#include "qobject_binding.h"
-
-namespace KJSEmbed
+CoreApplicationBinding::CoreApplicationBinding( KJS::ExecState *exec, QCoreApplication *app )
+    : QObjectBinding(exec, app )
 {
-    class KJSEMBED_EXPORT QWidgetBinding : public QObjectBinding
-    {
-        public:
-            QWidgetBinding( KJS::ExecState *exec, QWidget *widget );
-    };
-    
-    KJS_BINDING( Widget )
-    KJS_BINDING( Layout )
-    KJS_BINDING( Action )
+    StaticBinding::publish( exec, this, CoreApplication::methods() );
+    setOwnership(CPPOwned);
 }
-#endif
+
+namespace CoreApplicationNS
+{
+
+START_STATIC_OBJECT_METHOD( callExit )
+    int exitCode = KJSEmbed::extractInt( exec, args, 0 );
+    QCoreApplication::exit(exitCode);
+END_STATIC_OBJECT_METHOD
+
+}
+
+START_STATIC_METHOD_LUT( CoreApplication )
+    {"exit", 0, KJS::DontDelete|KJS::ReadOnly, &CoreApplicationNS::callExit}
+END_METHOD_LUT
+
+NO_ENUMS( CoreApplication )
+NO_METHODS( CoreApplication )
+
+START_CTOR( CoreApplication, QCoreApplication, 0)
+    return new KJSEmbed::CoreApplicationBinding( exec, QCoreApplication::instance () );
+END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

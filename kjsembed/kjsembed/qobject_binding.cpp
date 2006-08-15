@@ -131,12 +131,12 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
     }
 
 //         // Add properties.
-//     int props = metaObject->propertyCount();
-//     for( int idx = 0; idx < props; ++idx )
-//     {
-//         QMetaProperty property = metaObject->property(idx);
-//         target->put(exec, KJS::Identifier( property.name() ), KJS::Null(), KJS::DontDelete|KJS::GetterSetter);
-//     }
+    int props = metaObject->propertyCount();
+    for( int idx = 0; idx < props; ++idx )
+    {
+        QMetaProperty property = metaObject->property(idx);
+//          target->put(exec, KJS::Identifier( property.name() ), KJS::Number(0), KJS::DontDelete|KJS::GetterSetter);
+    }
 }
 
 QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
@@ -201,7 +201,6 @@ KJS::JSValue *QObjectBinding::get(KJS::ExecState *exec, const KJS::Identifier &p
 
         if ( meta->indexOfProperty( propertyName.ascii() ) != -1 )
         {
-            qDebug("Get %s", propertyName.ascii() );
             QVariant val = obj->property( propertyName.ascii() );
             return convertToValue( exec, val );
         }

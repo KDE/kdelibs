@@ -45,6 +45,7 @@
 #include "url.h"
 #include "bind_qlcdnumber.h"
 #include "bind_qtimer.h"
+#include "application.h"
 
 #include "builtins.h"
 
@@ -139,6 +140,7 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticConstructor::add( exec, parent, SvgWidget::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, LCDNumber::constructor() ); // Ctor
     StaticConstructor::add( exec, parent, Timer::constructor() ); // Ctor
+    StaticConstructor::add( exec, parent, CoreApplication::constructor() );
 }
 
 Engine::Engine()

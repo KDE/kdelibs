@@ -79,9 +79,6 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
 
         static void publishQObject( KJS::ExecState *exec, KJS::JSObject *target, QObject *object);
 
-        bool implementsCall() const { return false; }
-        bool implementsConstruct() const { return false; }
-
         KJS::JSValue *get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
         void put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value, int attr=KJS::None);
         bool canPut(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
@@ -165,12 +162,10 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
     }
     while( meta );
 
-    returnValue = new KJSEmbed::QObjectBinding(exec, value);
-    KJSEmbed::QObjectBinding *imp = extractBindingImp<KJSEmbed::QObjectBinding>(exec, returnValue );
-    if( imp )
-        imp->setOwnership( owner );
+    KJSEmbed::QObjectBinding *imp = new KJSEmbed::QObjectBinding(exec, value);
+    imp->setOwnership( owner );
 
-    return returnValue;
+    return imp;
 }
 
 

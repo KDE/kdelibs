@@ -29,6 +29,12 @@ class QSettings;
 
 namespace KJSEmbed
 {
+    class SettingsBinding : public QObjectBinding
+    {
+        public:
+            SettingsBinding( KJS::ExecState *exec, QSettings *settings );
+    };
+    
     KJS_BINDING( Settings )
 }
 

@@ -23,24 +23,11 @@
 
 using namespace KJSEmbed;
 
-/*
-KJS::JSObject KJSEmbed::throwError( KJS::ExecState *exec, const QString &error, KJS::ErrorType type )
+ProxyBinding::ProxyBinding( KJS::ExecState *exec )
+    : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype())
 {
-    KJS::JSObject *retValue;
-    if(exec->context().imp() != 0)
-    {
-//        int sourceId = exec->context().sourceId();
-        int sourceId = exec->context().thisValue()->sourceId();
-        int startLine = exec->context().curStmtFirstLine();
-        retValue = KJS::Error::create( exec, type, error.toAscii().data(), startLine, sourceId );
-    }
-    else
-        retValue = KJS::Error::create( exec, type, error.toAscii().data() );
-    exec->setException( retValue );
-    qDebug("KJSEmbed exception: '%s'",error.toAscii().data());
-    return retValue;
+
 }
-*/
 
 QString KJSEmbed::extractQString( KJS::ExecState *exec, const KJS::List &args, int idx, const QString defaultValue )
 {

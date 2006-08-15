@@ -26,6 +26,7 @@
 
 #include "qformbuilder_binding.h"
 #include "static_binding.h"
+#include "qwidget_binding.h"
 #include "global.h"
 
 using namespace KJSEmbed;
@@ -52,23 +53,18 @@ START_CTOR( FormBuilder, Form, 2 )
             if( returnWidget == 0 )
             {
                 delete formBuilder;
-	            return KJS::throwError(exec, KJS::GeneralError, i18n("There was an error reading the file '%1'",
-	                                    fileName));
-                //return KJSEmbed::throwError(exec, i18n("There was an error reading the file '%1'").arg(fileName));
+                return KJS::throwError(exec, KJS::GeneralError, i18n("There was an error reading the file '%1'",
+                                    fileName));
             }
-            KJS::JSObject *form = new KJSEmbed::QObjectBinding( exec, returnWidget );
+            KJS::JSObject *form = new QWidgetBinding( exec, returnWidget );
             delete formBuilder;
             return form;
         }
-                // Throw error could not read file
         delete formBuilder;
-	    return KJS::throwError(exec, KJS::GeneralError, i18n("Could not read file '%1'",
-	                            fileName));
-        // return KJSEmbed::throwError(exec, i18n("Could not read file '%1'").arg(fileName));
+        return KJS::throwError(exec, KJS::GeneralError, i18n("Could not read file '%1'",
+                                fileName));
     }
-            // Trow error incorrect args
     return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a filename."));
-    // return KJSEmbed::throwError(exec, i18n("Must supply a filename."));
 END_CTOR
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

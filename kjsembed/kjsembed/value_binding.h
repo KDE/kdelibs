@@ -70,7 +70,7 @@ namespace KJSEmbed
     /**
     * QVariant bindinging implementation.
     */
-    class KJSEMBED_EXPORT ValueBinding : public KJS::JSObject
+    class ValueBinding : public ProxyBinding
     {
         public:
             /**
@@ -78,9 +78,6 @@ namespace KJSEmbed
             */
             ValueBinding( KJS::ExecState *exec, const QVariant &value );
             virtual ~ValueBinding() {}
-
-            bool implementsCall() const { return true; }
-            bool implementsConstruct() const { return true; }
 
             void *pointer() { return m_value.data(); }
 
@@ -174,12 +171,8 @@ namespace KJSEmbed
     KJS::JSValue* createValue(KJS::ExecState *exec, const KJS::UString &className, const T &value)
     {
         KJS::JSObject *parent;
-        //if( exec->context().imp() != 0 )
-        //	parent = exec->context().thisValue();
-        //else
         parent = exec->dynamicInterpreter()->globalObject();
         KJS::JSObject *returnValue = StaticConstructor::construct( exec, parent, className );
-        //qDebug( "Created classname %s" , returnValue.className().ascii() );
         if( returnValue )
         {
             // If its a value type setValue

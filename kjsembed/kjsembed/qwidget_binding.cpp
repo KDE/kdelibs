@@ -78,7 +78,7 @@ START_QOBJECT_METHOD( childAt, QWidget )
     {
         child = object->childAt(pt);
     }
-    result = KJSEmbed::createQObject(exec, child);
+    result = new QWidgetBinding(exec, child);
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( focusWidget, QWidget )
     result = KJSEmbed::createQObject(exec, object->focusWidget() );
@@ -136,6 +136,12 @@ END_METHOD_LUT
 NO_ENUMS( Widget )
 NO_STATICS( Widget )
 
+QWidgetBinding::QWidgetBinding( KJS::ExecState *exec, QWidget *widget )
+    : QObjectBinding( exec, widget)
+{
+    StaticBinding::publish( exec, this, Widget::methods() );
+}
+
 START_CTOR( Widget, Widget, 0 )
     if( args.size() > 0 )
     {
@@ -150,17 +156,11 @@ START_CTOR( Widget, Widget, 0 )
         QWidget *widget = uiLoader()->createWidget(widgetName, parentWidget, "QWidget");
         if( widget )
         {
-            KJS::JSObject *widgetObject = KJSEmbed::createQObject(exec, widget);
-            StaticBinding::publish( exec, widgetObject, Widget::methods() );
-            return widgetObject;
+            return new QWidgetBinding(exec, widget);
         }
-	    return KJS::throwError(exec, KJS::GeneralError, i18n("'%1' is not a valid QWidget.",
-	                            widgetName));
-        // return KJSEmbed::throwError(exec, i18n("'%1' is not a valid QWidget.").arg(widgetName));
+        return KJS::throwError(exec, KJS::TypeError, i18n("'%1' is not a valid QWidget.", widgetName));
     }
-    // Trow error incorrect args
     return KJS::throwError(exec, KJS::GeneralError, i18n("Must supply a widget name."));
-    // return KJSEmbed::throwError(exec, i18n("Must supply a widget name."));
 END_CTOR
 
 namespace LayoutNS

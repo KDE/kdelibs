@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 #include "static_binding.h"
-#include "value_binding.h"
 #include <kjs/interpreter.h>
 #include <kjs/function_object.h>
 #include <qdebug.h>
@@ -132,8 +131,11 @@ KJS::JSObject *StaticConstructor::construct( KJS::ExecState *exec, KJS::JSObject
     {
         KJS::JSObject *ctor = parent->get(exec,className.ascii())->toObject(exec);
         if( ctor )
+        {
             return ctor->construct( exec, args );
+        }
     }
+    qDebug("cannot create %s", className.ascii() );
     return KJS::throwError( exec, KJS::TypeError, QString("Cannot create %1 objects from javascript.").arg(className.qstring()) );
 }
 

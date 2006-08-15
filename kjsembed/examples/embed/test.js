@@ -38,6 +38,7 @@ testObject.print("Test object line 12");
 
 // Access a static QObject
 println("Application name " + Application.objectName );
+Application.aboutQt();
 
 // Access a custom static C++ object
 Test.print("C++ object Line 1");

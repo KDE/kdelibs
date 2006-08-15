@@ -35,8 +35,7 @@ using namespace KJSEmbed;
 const KJS::ClassInfo ValueBinding::info = { "ValueBinding", 0, 0, 0 };
 
 ValueBinding::ValueBinding( KJS::ExecState *exec, const QVariant &value )
-    : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
-      m_value(value)
+    : ProxyBinding(exec), m_value(value)
 {
     StaticBinding::publish( exec, this, ValueFactory::methods() );
 }

@@ -23,10 +23,11 @@
 
 struct Line
 {
-    enum Limits { START = 1, END = 10};
-    Line() { offset = 0;}
-    QString name;
-    int offset;
+  enum Limits { START = 1, END = 10};
+  Line() { offset = 0;}
+  ~Line() { ; }
+  QString name;
+  int offset;
 };
 
 KJS_BINDING( TestPointer )

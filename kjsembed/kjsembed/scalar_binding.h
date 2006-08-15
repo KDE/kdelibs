@@ -72,12 +72,12 @@ namespace KJSEmbed
    /**
     * QVariant bindinging implementation.
     */
-    class ScalarBinding : public KJS::JSObject
+    class ScalarBinding : public ProxyBinding
     {
         public:
             template <typename T>
             ScalarBinding( KJS::ExecState *exec, const char *typeName, T val )
-                : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
+                : ProxyBinding( exec ),
                   m_name(typeName)
             {
                 m_value = new Scalar<T>(val);
@@ -85,8 +85,6 @@ namespace KJSEmbed
             }
             virtual ~ScalarBinding() {delete m_value;}
 
-            bool implementsCall() const { return false; }
-            bool implementsConstruct() const { return false; }
             KJS::UString toString(KJS::ExecState *exec) const;
             KJS::UString className() const { return m_name; }
 

@@ -89,6 +89,16 @@ KJS::JSObject *TYPE::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\
 
 namespace KJSEmbed
 {
+    class ProxyBinding : public KJS::JSObject
+    {
+        public:
+            ProxyBinding( KJS::ExecState *exec );
+            virtual ~ProxyBinding() {}
+
+            bool implementsCall() const { return true; }
+            bool implementsConstruct() const { return true; }
+    };
+    
     /**
     * This will extract a binding implementation from a KJS::JSValue
     * @code

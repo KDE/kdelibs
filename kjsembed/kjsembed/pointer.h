@@ -129,10 +129,9 @@ template<typename ValueType>
 ValueType *pointer_cast( PointerBase *pointer )
 {
 //    qDebug("pointers %s %s", typeid(ValueType).name(), pointer->type().name() );
-  Pointer<ValueType> *upcast = dynamic_cast< Pointer<ValueType> *>(pointer);
-  if( upcast == 0 )
-    return 0L;
-//   qDebug("cast worked");
+   if( typeid(ValueType) != pointer->type() )
+       return 0L;
+  Pointer<ValueType> *upcast = static_cast< Pointer<ValueType> *>(pointer);
   return upcast->ptr;
 }
 

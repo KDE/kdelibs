@@ -56,7 +56,6 @@ int main( int argc, char **argv )
         qDebug() << jsres.value()->toString(exec).qstring();
         return 0;
     }
-    
     return result;
 }
 

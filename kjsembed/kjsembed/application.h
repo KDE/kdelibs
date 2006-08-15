@@ -18,22 +18,34 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef QWIDGET_BINDING_H
-#define QWIDGET_BINDING_H
+
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 #include "qobject_binding.h"
+#include "static_binding.h"
+
+class QApplication;
+class QCoreApplication;
 
 namespace KJSEmbed
 {
-    class KJSEMBED_EXPORT QWidgetBinding : public QObjectBinding
+    /** @internal Implements the binding for QCoreApplication. */
+    class CoreApplicationBinding : public QObjectBinding
     {
-        public:
-            QWidgetBinding( KJS::ExecState *exec, QWidget *widget );
+      public:
+              CoreApplicationBinding( KJS::ExecState *exec, QCoreApplication *app );
     };
     
-    KJS_BINDING( Widget )
-    KJS_BINDING( Layout )
-    KJS_BINDING( Action )
+    /** @internal Implements the binding for QApplication. */
+    class ApplicationBinding : public CoreApplicationBinding
+    {
+        public:
+            ApplicationBinding( KJS::ExecState *exec, QApplication *app );
+    };
+    
+    KJS_BINDING( CoreApplication )
+//     KJS_BINDING( Application )
 }
 #endif
 

@@ -65,12 +65,10 @@ KJS::JSValue * callSystem( KJS::ExecState *exec, KJS::JSObject */*self*/, const 
     if (!systemProcess.waitForStarted())
     {
         return KJS::throwError(exec, KJS::GeneralError, "Application could not start.");
-        // return KJSEmbed::throwError(exec,"Application could not start.");
     }
     if (!systemProcess.waitForFinished())
     {
         return KJS::throwError(exec, KJS::GeneralError, "Application crashed.");
-        // return KJSEmbed::throwError(exec,"Application crashed.");
     }
     return KJS::String( systemProcess.readAll().data() );
 }

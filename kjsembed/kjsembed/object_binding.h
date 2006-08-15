@@ -83,7 +83,7 @@ namespace KJSEmbed
             static const Method *methods(){ return ObjectMethods;}
     };
 
-    class KJSEMBED_EXPORT ObjectBinding : public KJS::JSObject
+    class KJSEMBED_EXPORT ObjectBinding : public ProxyBinding
     {
         public:
             enum Ownership { CPPOwned, QObjOwned, JSOwned  };
@@ -97,7 +97,7 @@ namespace KJSEmbed
         public:
             template <typename T>
             ObjectBinding( KJS::ExecState *exec, const char *typeName, T *ptr )
-                : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()),
+                : ProxyBinding(exec),
                   m_name(typeName)
             {
                 StaticBinding::publish( exec, this, ObjectFactory::methods() );
@@ -107,9 +107,6 @@ namespace KJSEmbed
             }
 
             virtual ~ObjectBinding();
-
-            bool implementsCall() const { return false; }
-            bool implementsConstruct() const { return false; }
 
             const char *typeName() const;
 
@@ -132,6 +129,7 @@ namespace KJSEmbed
             {
                 if( m_owner == JSOwned )
                 {
+                    qDebug("object cleans up");
                     m_value->cleanup();
                 }
                 delete m_value;
