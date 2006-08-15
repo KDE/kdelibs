@@ -70,7 +70,7 @@ namespace KJSEmbed
     /**
     * QVariant bindinging implementation.
     */
-    class ValueBinding : public ProxyBinding
+    class KJSEMBED_EXPORT ValueBinding : public ProxyBinding
     {
         public:
             /**
@@ -125,7 +125,7 @@ namespace KJSEmbed
     * is not used with KJSEmbed::ObjectBinding objects because the cast will fail.
     */
     template< typename T>
-    T KJSEMBED_EXPORT extractValue( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
+    T extractValue( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
     {
         if( !arg )
             return defaultValue;
@@ -152,7 +152,7 @@ namespace KJSEmbed
     * is returned.
     */
     template< typename T>
-    T KJSEMBED_EXPORT extractValue( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
+    T extractValue( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
     {
         if( args.size() >= idx )
         {

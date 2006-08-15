@@ -221,7 +221,7 @@ namespace KJSEmbed
     }
 
     template< typename T >
-    T KJSEMBED_EXPORT extractParameter( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
+    T extractParameter( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
     {
 	if( !arg )
 	    return defaultValue;

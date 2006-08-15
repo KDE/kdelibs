@@ -89,7 +89,7 @@ KJS::JSObject *TYPE::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\
 
 namespace KJSEmbed
 {
-    class ProxyBinding : public KJS::JSObject
+    class KJSEMBED_EXPORT ProxyBinding : public KJS::JSObject
     {
         public:
             ProxyBinding( KJS::ExecState *exec );
