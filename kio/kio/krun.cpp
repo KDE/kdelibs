@@ -296,7 +296,7 @@ KRunMX2::subst( int option, const KURL &url, QStringList &ret )
 {
    switch( option ) {
    case 'u':
-      ret << (url.isLocalFile() ? url.path() : url.url());
+      ret << url.pathOrURL();
       break;
    case 'd':
       ret << url.directory();
