@@ -160,7 +160,7 @@ JSValue *NativeErrorImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/,
 
 void NativeErrorImp::mark()
 {
-  JSObject::mark();
+  InternalFunctionImp::mark();
   if (proto && !proto->marked())
     proto->mark();
 }
