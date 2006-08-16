@@ -490,7 +490,7 @@ QString KMimeType::iconNameForURL( const KUrl & _url, mode_t _mode )
         if ( _url.path().length() <= 1 && ( i == unknown || i.isEmpty() ) )
             i = mimeTypeIcon;
     }
-    return i;
+    return !i.isEmpty() ? i : unknown;
 }
 
 QString KMimeType::favIconForURL( const KUrl& url )
