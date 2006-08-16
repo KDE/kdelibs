@@ -46,7 +46,6 @@
 
 class KActionCollection;
 class KAction;
-class NumberedTextView;
 class WatchesDock;
 class LocalVariablesDock;
 class ScriptsDock;

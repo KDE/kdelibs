@@ -69,7 +69,6 @@
 #include <QTabWidget>
 #include <QToolButton>
 
-#include "numberedtextview.h"
 #include "breakpointsdock.h"
 #include "consoledock.h"
 #include "localvariabledock.h"
@@ -431,7 +430,20 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
     Q_UNUSED(function);
     Q_UNUSED(args);
 
-//     kDebug() << "callEvent" << endl;
+    kDebug() << "***************************** callEvent **************************************************" << endl;
+    kDebug() << "  sourceId: " << sourceId << endl
+             << "lineNumber: " << lineno << endl
+             << "  function: " << function->toString(exec).qstring() << endl;
+
+    for( KJS::ListIterator item = args.begin();
+         item != args.end();
+         ++item)
+    {
+        KJS::JSValue *value = (*item);
+        kDebug() << "arg: " << value->toString(exec).qstring();
+    }
+
+    kDebug() << "****************************************************************************************" << endl;
 
     return (m_mode != Stop);
 }
@@ -453,25 +465,25 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 {
     KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(document);
+    if (!highlightingInterface)
+        return;
+
     if (!m_highlightingMode)
     {
-        if (highlightingInterface)
+        int count = highlightingInterface->hlModeCount();
+        for (int i=0; i<count; i++)
         {
-            int count = highlightingInterface->hlModeCount();
-            for (int i=0; i<count; i++)
+            QString modeName = highlightingInterface->hlModeName(i);
+            QString sectionName = highlightingInterface->hlModeSectionName(i);
+            if (modeName == "JavaScript")
             {
-                QString modeName = highlightingInterface->hlModeName(i);
-                QString sectionName = highlightingInterface->hlModeSectionName(i);
-                if (modeName == "JavaScript")
-                {
-                    m_highlightingMode = i;
-                    break;
-                }
+                m_highlightingMode = i;
+                break;
             }
         }
     }
 
-    if (m_highlightingMode && highlightingInterface)
+    if (m_highlightingMode)
         highlightingInterface->setHlMode(m_highlightingMode);
 }
 

@@ -256,16 +256,16 @@ int main(int argc, char *argv[])
         ::exit( 1 );
     }
 
-    TestKHTML test;
+    TestKHTML *test = new TestKHTML;
     if (args->url(0).url().right(4).toLower() == ".xml")
     {
-        KParts::URLArgs ags(test.doc()->browserExtension()->urlArgs());
+        KParts::URLArgs ags(test->doc()->browserExtension()->urlArgs());
         ags.serviceType = "text/xml";
-        test.doc()->browserExtension()->setURLArgs(ags);
+        test->doc()->browserExtension()->setURLArgs(ags);
     }
 
-    test.openUrl(args->url(0));
-    test.show();
+    test->openUrl(args->url(0));
+    test->show();
 
 //     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
 //     dtv->show();
