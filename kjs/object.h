@@ -227,8 +227,8 @@ namespace KJS {
      *
      * @return The specified property, or Undefined
      */
-    virtual JSValue *get(ExecState *exec, const Identifier &propertyName) const;
-    virtual JSValue *get(ExecState *exec, unsigned propertyName) const;
+    JSValue *get(ExecState *exec, const Identifier &propertyName) const;
+    JSValue *get(ExecState *exec, unsigned propertyName) const;
 
     bool getPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     bool getPropertySlot(ExecState *, unsigned, PropertySlot&);
