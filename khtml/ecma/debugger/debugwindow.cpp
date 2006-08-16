@@ -440,7 +440,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
          ++item)
     {
         KJS::JSValue *value = (*item);
-        kDebug() << "arg: " << value->toString(exec).qstring();
+        kDebug() << "arg: " << value->toString(exec).qstring() << endl;
     }
 
     kDebug() << "****************************************************************************************" << endl;
