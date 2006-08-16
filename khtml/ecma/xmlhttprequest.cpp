@@ -718,7 +718,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
 
       QString body;
       DOM::NodeImpl* docNode = toNode(args[0]);
-      if (docNode->isDocumentNode()) {
+      if (docNode && docNode->isDocumentNode()) {
         DOM::DocumentImpl *doc = static_cast<DOM::DocumentImpl *>(docNode);
 
         try {
