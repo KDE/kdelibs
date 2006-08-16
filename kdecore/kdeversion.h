@@ -22,7 +22,7 @@
 
 #include "kdelibs_export.h"
 
-#define KDE_VERSION_STRING "3.80.1 (KDE 4.0 Krash Snapshot 1)"
+#define KDE_VERSION_STRING "3.80.1 (>= 20060816)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 80
 #define KDE_VERSION_RELEASE 1
