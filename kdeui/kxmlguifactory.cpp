@@ -299,7 +299,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     foreach (KXMLGUIClient *child, client->childClients())
         addClient( child );
 
-#ifndef NDEBUG
+/*
     QString unaddedActions;
     foreach (KActionCollection* ac, KActionCollection::allCollections())
       foreach (KAction* action, ac->actions())
@@ -308,7 +308,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     if (!unaddedActions.isEmpty())
       kWarning() << k_funcinfo << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions << endl;
-#endif
+*/
 
 //    kDebug() << "addClient took " << dt.elapsed() << endl;
 }
