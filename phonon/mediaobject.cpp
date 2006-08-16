@@ -36,7 +36,23 @@ MediaObject::MediaObject( Phonon::MediaObjectPrivate& dd, QObject* parent )
 {
 }
 
-PHONON_INTERFACE_GETTER( KUrl, url, d->url )
+//PHONON_INTERFACE_GETTER( KUrl, url, d->url )
+KUrl MediaObject::url() const 
+{ 
+	K_D( const MediaObject ); 
+	if( d->backendObject ) 
+	{
+		MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
+		ByteStreamInterface *iface2 = qobject_cast<ByteStreamInterface*>( d->backendObject );
+		
+		if( iface )
+			return iface->url();
+		else if( iface2 && d->kiojob)
+			return d->kiojob->url();
+	}
+	return KUrl(""); 
+}
+
 PHONON_GETTER( qint32, aboutToFinishTime, d->aboutToFinishTime )
 
 qint64 MediaObject::totalTime() const
@@ -94,30 +110,20 @@ void MediaObject::setUrl( const KUrl& url )
 
 void MediaObject::stop()
 {
+	Phonon::State prevState=state();
+	if (prevState==Phonon::StoppedState)
+		return;
 	AbstractMediaProducer::stop();
 	K_D( MediaObject );
-	if( d->kiojob )
-	{
-		d->kiojob->kill();
-		// if( do pre-buffering )
+	
+	// if( do pre-buffering )
+	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( d->backendObject );
+	if (bs)
 		d->setupKioJob();
-	}
 }
 
 void MediaObject::play()
 {
-	K_D( MediaObject );
-	Phonon::State s = state();
-	if( s == Phonon::LoadingState || s == Phonon::StoppedState )
-	{
-		if( !d->jobDone && !d->kiojob && qobject_cast<ByteStreamInterface*>( d->backendObject ) )
-			d->setupKioJob();
-		else
-			// when play() is called and the whole data was already streamed (KIO job is
-			// finished) we can play once, the next time play() is called a new
-			// KIO job is needed.
-			d->jobDone = false;
-	}
 	AbstractMediaProducer::play();
 }
 
@@ -127,8 +133,7 @@ void MediaObjectPrivate::setupKioJob()
 {
 	K_Q( MediaObject );
 	Q_ASSERT( backendObject );
-
-	jobDone = false;
+	
 	kiojob = KIO::get( url, false, false );
 	kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
 	QObject::connect( kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
@@ -138,15 +143,6 @@ void MediaObjectPrivate::setupKioJob()
 	QObject::connect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
 			q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
 
-	QObject::connect( backendObject, SIGNAL(finished()), q, SIGNAL(finished()) );
-	QObject::connect( backendObject, SIGNAL(aboutToFinish(qint32)), q, SIGNAL(aboutToFinish(qint32)) );
-	QObject::connect( backendObject, SIGNAL(length(qint64)), q, SIGNAL(length(qint64)) );
-
-	QObject::connect( backendObject, SIGNAL(needData()), q, SLOT(_k_bytestreamNeedData()) );
-	QObject::connect( backendObject, SIGNAL(enoughData()), q, SLOT(_k_bytestreamEnoughData()) );
-
-	pBACKEND_CALL1( "setStreamSeekable", bool, false ); //FIXME: KIO doesn't support seeking at this point
-	//connect( backendObject, SIGNAL(seekStream(qint64)), kiojob, SLOT(
 }
 
 void MediaObjectPrivate::setupKioStreaming()
@@ -162,6 +158,16 @@ void MediaObjectPrivate::setupKioStreaming()
 			kiojob->kill();
 		setupKioJob();
 		static_cast<AbstractMediaProducer*>( q )->setupIface();
+		QObject::connect( backendObject, SIGNAL(finished()), q, SIGNAL(finished()) );
+		QObject::connect( backendObject, SIGNAL(finished()), q, SLOT(setupKioJob()) );
+		QObject::connect( backendObject, SIGNAL(aboutToFinish(qint32)), q, SIGNAL(aboutToFinish(qint32)) );
+		QObject::connect( backendObject, SIGNAL(length(qint64)), q, SIGNAL(length(qint64)) );
+
+		QObject::connect( backendObject, SIGNAL(needData()), q, SLOT(_k_bytestreamNeedData()) );
+		QObject::connect( backendObject, SIGNAL(enoughData()), q, SLOT(_k_bytestreamEnoughData()) );
+
+		pBACKEND_CALL1( "setStreamSeekable", bool, false ); //FIXME: KIO doesn't support seeking at this point
+		//connect( backendObject, SIGNAL(seekStream(qint64)), kiojob, SLOT(
 	}
 }
 
@@ -185,21 +191,22 @@ void MediaObjectPrivate::_k_bytestreamData( KIO::Job*, const QByteArray& data )
 
 void MediaObjectPrivate::_k_bytestreamResult( KJob* job )
 {
-	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
-	bs->endOfData();
+	K_Q( MediaObject );
 	kiojob = 0;
-
-	// A special situation occurs when the KIO job finishes before play() was
-	// called. Then in play() a new KIO job would be created - jobDone tells
-	// play() that there already was a KIO job and that it has "finished early".
-	
-	if( state == LoadingState || state == StoppedState )
-		jobDone = true;
-
 	if( job->error() )
 	{
-		//TODO
+		kDebug(600)<<"Error :kiojob in "<<k_funcinfo<<endl;
+		QObject::disconnect( kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
+			q, SLOT(_k_bytestreamData(KIO::Job*,const QByteArray&)) );
+		QObject::disconnect( kiojob, SIGNAL(result(KJob*)),
+			q, SLOT(_k_bytestreamResult(KJob*)) );
+		QObject::disconnect( kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
+			q, SLOT(_k_bytestreamTotalSize(KJob*,qulonglong)) );
 	}
+
+	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( backendObject );
+	bs->endOfData();
+
 }
 
 void MediaObjectPrivate::_k_bytestreamTotalSize( KJob*, qulonglong size )

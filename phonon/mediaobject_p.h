@@ -42,7 +42,6 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		MediaObjectPrivate()
 			: aboutToFinishTime( 0 )
 			, kiojob( 0 )
-			, jobDone( false )
 		{
 		}
 
@@ -67,7 +66,6 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		KUrl url;
 		qint32 aboutToFinishTime;
 		KIO::TransferJob* kiojob;
-		bool jobDone;
 };
 }
 

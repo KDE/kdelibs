@@ -158,6 +158,7 @@ namespace Phonon
 			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamResult( KJob* ) )
 			Q_PRIVATE_SLOT( k_func(), void _k_bytestreamTotalSize( KJob*, qulonglong ) )
 			Q_PRIVATE_SLOT( k_func(), void _k_cleanupByteStream() )
+			Q_PRIVATE_SLOT( k_func(), void setupKioJob() )
 	};
 } //namespace Phonon
 
