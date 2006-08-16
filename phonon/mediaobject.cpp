@@ -36,7 +36,9 @@ MediaObject::MediaObject( Phonon::MediaObjectPrivate& dd, QObject* parent )
 {
 }
 
-//PHONON_INTERFACE_GETTER( KUrl, url, d->url )
+// ### commenting this out causes lots of undefined symbols
+PHONON_INTERFACE_GETTER( KUrl, url, d->url )
+#if 0
 KUrl MediaObject::url() const 
 { 
 	K_D( const MediaObject ); 
@@ -52,6 +54,7 @@ KUrl MediaObject::url() const
 	}
 	return KUrl(""); 
 }
+#endif
 
 PHONON_GETTER( qint32, aboutToFinishTime, d->aboutToFinishTime )
 
