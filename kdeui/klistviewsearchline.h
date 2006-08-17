@@ -33,6 +33,9 @@ class QToolButton;
  * No changes to the application other than instantiating this class with an
  * appropriate KListView should be needed.
  *
+ * If you want the clear button and the search label, you should take a look at
+ * the KListViewSearchLineWidget
+ *
  * @note { When iterating over items in the KListView, make sure that
  * the iterator only includes visible items (for example, by adding
  * QListViewItemIterator::Visible to the iterator flags). Otherwise,
