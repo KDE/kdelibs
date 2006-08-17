@@ -84,7 +84,7 @@ class KStartupInfo::Data
     : public KStartupInfoData
     {
     public:
-        Data() {}; // just because it's in a QMap
+        Data() : age(0) {}; // just because it's in a QMap
         Data( const QString& txt_P )
             : KStartupInfoData( txt_P ), age( 0 ) {};
         unsigned int age;
@@ -271,7 +271,7 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
 	    emit gotNewStartup( id_P, d->startups[ id_P ] );
 	    return;
 	    }
-        emit gotStartupChange( id_P, d->startups[ id_P ] );
+        emit gotStartupChange( id_P, d->silent_startups[ id_P ] );
         return;
         }
     if( d->uninited_startups.contains( id_P ))
