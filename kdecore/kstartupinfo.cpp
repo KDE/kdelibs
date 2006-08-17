@@ -84,7 +84,7 @@ class KStartupInfo::Data
     : public KStartupInfoData
     {
     public:
-        Data() {}; // just because it's in a QMap
+        Data() : KStartupInfoData(), age(0) {}; // just because it's in a QMap
         Data( const QString& txt_P )
             : KStartupInfoData( txt_P ), age( 0 ) {};
         unsigned int age;
@@ -262,7 +262,7 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P,
 	    emit gotNewStartup( id_P, d->startups[ id_P ] );
 	    return;
 	    }
-        emit gotStartupChange( id_P, d->startups[ id_P ] );
+        emit gotStartupChange( id_P, d->silent_startups[ id_P ] );
         return;
         }
     if( d->uninited_startups.contains( id_P ))
@@ -858,7 +858,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-            kdDebug( 172 ) << "entry timeout:" << key.id() << endl;
+            kdDebug( 172 ) << "startups entry timeout:" << key.id() << endl;
             remove_startup_info_internal( key );
             }
         else
@@ -877,7 +877,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-            kdDebug( 172 ) << "entry timeout:" << key.id() << endl;
+            kdDebug( 172 ) << "silent entry timeout:" << key.id() << endl;
             remove_startup_info_internal( key );
             }
         else
@@ -896,7 +896,7 @@ void KStartupInfo::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-            kdDebug( 172 ) << "entry timeout:" << key.id() << endl;
+            kdDebug( 172 ) << "uninited entry timeout:" << key.id() << endl;
             remove_startup_info_internal( key );
             }
         else
