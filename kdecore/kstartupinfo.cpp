@@ -1137,7 +1137,7 @@ unsigned long KStartupInfoId::timestamp() const
 struct KStartupInfoData::Private
     {
     Private() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-	silent( KStartupInfoData::Unknown ), timestamp( -1U ), screen( -1 ) { }
+	silent( KStartupInfoData::Unknown ), timestamp( ~0U ), screen( -1 ) { }
     QString bin;
     QString name;
     QString description;
@@ -1179,7 +1179,7 @@ QString KStartupInfoData::to_text() const
         ret += QString::fromLatin1( " PID=%1" ).arg( *it );
     if( d->silent != Unknown )
 	ret += QString::fromLatin1( " SILENT=%1" ).arg( d->silent == Yes ? 1 : 0 );
-    if( d->timestamp != -1U )
+    if( d->timestamp != ~0U )
         ret += QString::fromLatin1( " TIMESTAMP=%1" ).arg( d->timestamp );
     if( d->screen != -1 )
         ret += QString::fromLatin1( " SCREEN=%1" ).arg( d->screen );
@@ -1269,7 +1269,7 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         addPid( *it );
     if( data_P.silent() != Unknown )
 	d->silent = data_P.silent();
-    if( data_P.timestamp() != -1U && timestamp() == -1U ) // don't overwrite
+    if( data_P.timestamp() != ~0U && timestamp() == ~0U ) // don't overwrite
         d->timestamp = data_P.timestamp();
     if( data_P.screen() != -1 )
         d->screen = data_P.screen();

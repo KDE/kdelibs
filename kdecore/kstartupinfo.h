@@ -434,7 +434,7 @@ class KDECORE_EXPORT KStartupInfoId
         KStartupInfoId( const QString& txt );
         QString to_text() const;
         friend class KStartupInfo;
-        class Private;
+        struct Private;
         Private *const d;
     };
 
@@ -644,7 +644,7 @@ class KDECORE_EXPORT KStartupInfoData
         void remove_pid( pid_t pid );
         friend class KStartupInfo;
         friend class KStartupInfo::Data;
-        class Private;
+        struct Private;
         Private *const d;
     };
 
