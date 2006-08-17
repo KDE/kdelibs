@@ -2,7 +2,6 @@
 Name=MS Windows 9x
 Name[bn]=এম-এস উইন্ডোস ৯x
 Name[eo]=Vindozo 9x
-Name[fa]=مایکروسافت ویندوز 9x
 Name[gl]=MS Windows 8x
 Name[hi]=एमएस विंडोज़ 9x
 Name[ko]=MS 윈도우즈 9x
@@ -29,7 +28,7 @@ Comment[eo]=Senetosa Vindozo-9x-stilo
 Comment[es]=Estilo incorporado Windows 9x sin tema
 Comment[et]=Qt Windows9x-laadne teemata stiil
 Comment[eu]=Gairik gabeko Windows 9x estiloa
-Comment[fa]=سبک ویندوز ۹x بدون طرح توکار
+Comment[fa]=سبک ویندوز 9x بدون چهره توکار 
 Comment[fi]=Sisäänrakennettu teemoittamaton Windows 9x-tyyli
 Comment[fr]=Style Windows 9x d'origine sans thème
 Comment[fy]=Ynboude, temaleaze Windows 9x-styl
