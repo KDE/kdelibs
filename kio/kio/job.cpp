@@ -1952,7 +1952,7 @@ void ListJob::slotFinished()
         KMimeType::Ptr ptr = KMimeType::findByURL( m_url, 0, true, true );
         if ( ptr ) {
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
-            if ( !proto.isEmpty() ) {
+            if ( !proto.isEmpty() && KProtocolInfo::isKnownProtocol( proto) ) {
                 m_redirectionURL = m_url;
                 m_redirectionURL.setProtocol( proto );
                 setError( 0 );
