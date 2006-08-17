@@ -34,7 +34,7 @@
 
 static KStaticDeleter<Phonon::Factory> sd;
 
-#define PHONON_LOAD_BACKEND_GLOBAL 1
+//#define PHONON_LOAD_BACKEND_GLOBAL 1
 
 namespace Phonon
 {
