@@ -166,9 +166,20 @@ namespace KIO
     CMD_RESUMEANSWER = 'T', // 84
     CMD_CONFIG = 'U', // 85
     CMD_MULTI_GET = 'V', // 86
-    CMD_SETLINKDEST = 'W' // 87
+    CMD_SETLINKDEST = 'W', // 87
+    CMD_OPEN = 'X' // 88
     // Add new ones here once a release is done, to avoid breaking binary compatibility.
     // Note that protocol-specific commands shouldn't be added here, but should use special.
+  };
+
+  /**
+   * Commands that can be invoked on a slave-file.
+   */
+  enum FileCommand {
+    CMD_READ  = 90,
+    CMD_WRITE = 91,
+    CMD_SEEK  = 92,
+    CMD_CLOSE = 93
   };
 
   /**
@@ -247,8 +258,9 @@ namespace KIO
     ERR_UPGRADE_REQUIRED = KJob::UserDefinedError + 64, // A transport upgrade is required to access this
                                                         // object.  For instance, TLS is demanded by
                                                         // the server in order to continue.
-    ERR_POST_DENIED = KJob::UserDefinedError + 65 // Issued when trying to POST data to a certain Ports
+    ERR_POST_DENIED = KJob::UserDefinedError + 65, // Issued when trying to POST data to a certain Ports
                                                   // see job.cpp
+    ERR_COULD_NOT_SEEK = KJob::UserDefinedError + 66
   };
 
   /**

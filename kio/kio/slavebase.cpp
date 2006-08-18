@@ -396,6 +396,15 @@ void SlaveBase::dataReq( )
    m_pConnection->send( MSG_DATA_REQ );
 }
 
+void SlaveBase::opened()
+{
+   if (!mOutgoingMetaData.isEmpty())
+      sendMetaData();
+   slaveWriteError = false;
+   m_pConnection->send( MSG_OPENED );
+   if (slaveWriteError) exit();
+}
+
 void SlaveBase::error( int _errid, const QString &_text )
 {
     mIncomingMetaData.clear(); // Clear meta data
@@ -499,6 +508,18 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
         }
     }
 //    d->processed_size = _bytes;
+}
+
+void SlaveBase::written( KIO::filesize_t _bytes )
+{
+    KIO_DATA << KIO_FILESIZE_T(_bytes);
+    m_pConnection->send( MSG_WRITTEN, data );
+}
+
+void SlaveBase::position( KIO::filesize_t _pos )
+{
+    KIO_DATA << KIO_FILESIZE_T(_pos);
+    m_pConnection->send( INF_POSITION, data );
 }
 
 void SlaveBase::processedPercent( float /* percent */ )
@@ -732,6 +753,8 @@ void SlaveBase::listDir(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_LISTDIR)); }
 void SlaveBase::get(KUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
+void SlaveBase::open(KUrl const &, int access )
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_OPEN)); }
 void SlaveBase::mimetype(KUrl const &url)
 { get(url); }
 void SlaveBase::rename(KUrl const &, KUrl const &, bool)
@@ -978,6 +1001,11 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     {
         stream >> url;
         get( url );
+    } break;
+    case CMD_OPEN:
+    {
+        stream >> url >> i;
+        open( url, i );
     } break;
     case CMD_PUT:
     {

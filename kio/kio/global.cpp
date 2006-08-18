@@ -419,6 +419,8 @@ KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, in
       return i18n("Using sub-URLs with %1 is not supported.", protocol);
     case CMD_MULTI_GET:
       return i18n("Multiple get is not supported with protocol %1.", protocol);
+    case CMD_OPEN:
+      return i18n("Opening files is not supported with protocol %1.", protocol);
     default:
       return i18n("Protocol %1 does not support action %2.", protocol, cmd);
   }/*end switch*/

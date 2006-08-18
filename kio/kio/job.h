@@ -26,6 +26,7 @@
 
 namespace KIO {
 
+    class FileJob;
 
     /**
      * Creates a single directory.
@@ -186,6 +187,16 @@ namespace KIO {
      * @return the job handling the operation.
      */
     KIO_EXPORT TransferJob *get( const KUrl& url, bool reload=false, bool showProgressInfo = true );
+
+    /**
+     * Open ( random access I/O )
+     *
+     * The file-job emits open() when opened
+     * @param url the URL of the file
+     * @param access the access priveleges (1 - ReadOnly, 2 - WriteOnly, 3 - Read/Write)
+     * @return the file-handling job
+     */
+    KIO_EXPORT FileJob *open( const KUrl& url, int access );
 
     /**
      * Put (a.k.a. write)

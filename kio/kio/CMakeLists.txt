@@ -22,6 +22,7 @@ install(  FILES
   jobuidelegate.h
   paste.h
   slavebase.h
+  filejob.h
   progressbase.h
   defaultprogress.h
   statusbarprogress.h

@@ -54,7 +54,8 @@ class SlaveInterfacePrivate;
    INF_INFOMESSAGE,
    INF_META_DATA,
    INF_NETWORK_STATUS,
-   INF_MESSAGEBOX
+   INF_MESSAGEBOX,
+   INF_POSITION
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -79,7 +80,8 @@ class SlaveInterfacePrivate;
    MSG_CANRESUME,
    MSG_AUTH_KEY, // deprecated.
    MSG_DEL_AUTH_KEY, // deprecated.
-   MSG_CANSEEK
+   MSG_OPENED,
+   MSG_WRITTEN
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -129,6 +131,9 @@ Q_SIGNALS:
 
     void canResume( KIO::filesize_t );
 
+    void open();
+    void written( KIO::filesize_t );
+
     ///////////
     // Info sent by the slave
     //////////
@@ -136,6 +141,7 @@ Q_SIGNALS:
     void totalSize( KIO::filesize_t );
     void processedSize( KIO::filesize_t );
     void redirection( const KUrl& );
+    void position( KIO::filesize_t );
 
     void speed( unsigned long );
     void errorPage();

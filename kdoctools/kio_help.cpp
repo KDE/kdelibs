@@ -359,7 +359,7 @@ void HelpProtocol::get_file( const KUrl& url )
 	return;
     }
 
-    int fd = open( _path.data(), O_RDONLY);
+    int fd = ::open( _path.data(), O_RDONLY);
     if ( fd < 0 ) {
 	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
 	return;

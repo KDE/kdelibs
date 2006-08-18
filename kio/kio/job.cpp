@@ -61,6 +61,7 @@ extern "C" {
 #include "kmimemagic.h"
 #include "kprotocolinfo.h"
 #include "kprotocolmanager.h"
+#include "filejob.h"
 
 #include "kio/observer.h"
 
@@ -1088,6 +1089,14 @@ TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )
     TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
     if (reload)
        job->addMetaData("cache", "reload");
+    return job;
+}
+
+FileJob *KIO::open( const KUrl& url, int access )
+{
+    // Send decoded path and encoded query
+    KIO_ARGS << url << access;
+    FileJob * job = new FileJob( url, packedArgs );
     return job;
 }
 

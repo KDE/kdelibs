@@ -91,6 +91,12 @@ public:
     void dataReq( );
 
     /**
+     * open succedes
+     * @see open
+     */
+    void opened();
+
+    /**
      * Call to signal an error.
      * This also finishes the job, no need to call finished.
      *
@@ -179,6 +185,10 @@ public:
      * Don't emit it in listDir, listEntries speaks for itself.
      */
     void processedSize( KIO::filesize_t _bytes );
+
+    void position( KIO::filesize_t _pos );
+
+    void written( KIO::filesize_t _bytes );
 
     /**
      * Only use this if you can't know in advance the size of the
@@ -362,6 +372,14 @@ public:
      * The slave emits the data through data
      */
     virtual void get( const KUrl& url );
+
+    /**
+     * open.
+     * @param url the full url for this request. Host, port and user of the URL
+     *        can be assumed to be the same as in the last setHost() call.
+     * @param access 1 - rdonly, 2 - wronly or 3 - rdwr
+     */
+    virtual void open( const KUrl& url, int access );
 
     /**
      * put, i.e. write data into a file.

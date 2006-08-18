@@ -2,6 +2,7 @@
    Copyright (C) 2000-2002 Stephan Kulow <coolo@kde.org>
    Copyright (C) 2000-2002 David Faure <faure@kde.org>
    Copyright (C) 2000-2002 Waldo Bastian <bastian@kde.org>
+   Copyright (C) 2006 Allan Sandfeld Jensen <sandfeld@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -62,6 +63,7 @@
 #include <string.h>
 #endif
 
+#include <QByteArray>
 #include <qdatetime.h>
 #include <qregexp.h>
 
@@ -84,6 +86,7 @@
 #endif
 
 #include <kstandarddirs.h>
+#include <kio/connection.h>
 #include <kio/ioslave_defaults.h>
 #include <kde_file.h>
 #include <kglobal.h>
@@ -242,6 +245,7 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 
 void FileProtocol::get( const KUrl& url )
 {
+    kDebug( 7101 ) << "File::get" << endl;
     if (!url.isLocalFile()) {
         KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
@@ -355,6 +359,137 @@ write_all(int fd, const char *buf, size_t len)
       len -= written;
    }
    return 0;
+}
+
+
+void FileProtocol::open( const KUrl& url, int access )
+{
+    kDebug(7101) << "FileProtocol::open " << url.url() << endl;
+
+    QByteArray _path( QFile::encodeName(url.path()));
+    KDE_struct_stat buff;
+    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
+        if ( errno == EACCES )
+           error( KIO::ERR_ACCESS_DENIED, url.path() );
+        else
+           error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+        return;
+    }
+
+    if ( S_ISDIR( buff.st_mode ) ) {
+        error( KIO::ERR_IS_DIRECTORY, url.path() );
+        return;
+    }
+    if ( !S_ISREG( buff.st_mode ) ) {
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
+    }
+
+    int flags = 0;
+    if (access == 1) flags = O_RDONLY;
+    else
+    if (access == 2) flags = O_WRONLY;
+    else
+    if (access == 3) flags = O_RDWR;
+
+    int fd = KDE_open( _path.data(), flags);
+    if ( fd < 0 ) {
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        return;
+    }
+    // Determine the mimetype of the file to be retrieved, and emit it.
+    // This is mandatory in all slaves (for KRun/BrowserRun to work).
+    KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
+    emit mimeType( mt->name() );
+
+    totalSize( buff.st_size );
+    position( 0 );
+
+    emit opened();
+
+    QByteArray array;
+
+    // Command-loop:
+    int cmd = CMD_NONE;
+    while (true) {
+        kDebug( 7101 ) << "File::open -- loop" << endl;
+        QByteArray args;
+        int stat = appconn->read(&cmd, args);
+        if ( stat == -1 )
+        {   // error
+            kDebug( 7101 ) << "File::open -- connection error" << endl;
+            break;
+        }
+        QDataStream stream( args );
+        switch( cmd ) {
+        case CMD_READ: {
+            kDebug( 7101 ) << "File::open -- read" << endl;
+            int bytes;
+            stream >> bytes;
+            char buffer[ bytes ];
+        read_retry:
+            int res = ::read(fd, buffer, bytes);
+            if (res >= 0) {
+                array = array.fromRawData(buffer, bytes);
+                data( array );
+                array.clear();
+            } else {
+                if (errno == EINTR) goto read_retry;
+                error( KIO::ERR_COULD_NOT_READ, url.path());
+                break;
+            }
+            continue;
+        }
+        case CMD_WRITE: {
+            kDebug( 7101 ) << "File::open -- write" << endl;
+            QByteArray &buffer = args;
+
+            if (write_all( fd, buffer.data(), buffer.size()))
+            {
+                if ( errno == ENOSPC ) // disk full
+                {
+                    error( KIO::ERR_DISK_FULL, url.path());
+                    break;
+                }
+                else
+                {
+                    kWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
+                    error( KIO::ERR_COULD_NOT_WRITE, url.path());
+                    break;
+                }
+            } else {
+                written(buffer.size());
+            }
+            continue;
+        }
+        case CMD_SEEK: {
+            kDebug( 7101 ) << "File::open -- seek" << endl;
+            int offset;
+            stream >> offset;
+            int res = KDE_lseek(fd, offset, SEEK_SET);
+            if (res != -1) {
+                position( offset );
+            } else {
+                error(KIO::ERR_COULD_NOT_SEEK, url.path());
+                break;
+            }
+            continue;
+        }
+        case CMD_NONE:
+            kDebug( 7101 ) << "File::open -- none " << endl;
+            continue;
+        case CMD_CLOSE:
+            kDebug( 7101 ) << "File::open -- close " << endl;
+            break;
+        default:
+            kDebug( 7101 ) << "File::open -- invalid command: " << cmd << endl;
+            cmd = CMD_CLOSE;
+            break;
+        }
+        break;
+    }
+    ::close( fd );
+    finished();
 }
 
 static bool
