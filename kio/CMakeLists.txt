@@ -91,6 +91,7 @@ set(kiocore_STAT_SRCS
   kio/connection.cpp
   kio/job.cpp
   kio/jobuidelegate.cpp
+  kio/filejob.cpp
   kio/copyjob.cpp
   kio/deletejob.cpp
   kio/global.cpp
