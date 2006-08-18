@@ -426,7 +426,7 @@ void FileProtocol::open( const KUrl& url, int access )
             kDebug( 7101 ) << "File::open -- read" << endl;
             int bytes;
             stream >> bytes;
-            char buffer[ bytes ];
+            QVarLengthArray<char> buffer(bytes);
         read_retry:
             int res = ::read(fd, buffer, bytes);
             if (res >= 0) {
