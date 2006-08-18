@@ -45,6 +45,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kwindowlistmenu.h"
 #include "kwindowlistmenu.moc"
 
+static QCString kwinName() {
+    QCString appname;
+    int screen_number = DefaultScreen(qt_xdisplay());
+    if (screen_number == 0)
+        appname = "kwin";
+    else
+        appname.sprintf("kwin-screen-%d", screen_number);
+    return appname;
+}
+
 // helper class
 namespace
 {
@@ -232,12 +242,12 @@ void KWindowListMenu::selectActiveWindow()
 
 void KWindowListMenu::slotUnclutterWindows()
 {
-    kapp->dcopClient()->send("kwin", "KWinInterface", "unclutterDesktop()", "");
+    kapp->dcopClient()->send(kwinName(), "KWinInterface", "unclutterDesktop()", "");
 }
 
 void KWindowListMenu::slotCascadeWindows()
 {
-    kapp->dcopClient()->send("kwin", "KWinInterface", "cascadeDesktop()", "");
+    kapp->dcopClient()->send(kwinName(), "KWinInterface", "cascadeDesktop()", "");
 }
 
 void KWindowListMenu::virtual_hook( int id, void* data )
