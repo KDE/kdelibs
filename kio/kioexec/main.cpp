@@ -82,6 +82,9 @@ KIOExec::KIOExec()
     for ( int i = 1; i < args->count(); i++ )
     {
         KURL url = args->url(i);
+        // we need to map system:/ etc to make sure we get this right
+        url = KIO::NetAccess::mostLocalURL( url, 0 );
+
         //kdDebug() << "url=" << url.url() << " filename=" << url.fileName() << endl;
         // A local file, not an URL ?
         // => It is not encoded and not shell escaped, too.
