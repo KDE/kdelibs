@@ -892,8 +892,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // unconditionnally (David)
 
      // FIXME: rename the signal
-     QDBusMessage msg = QDBusMessage::signal("/kbuildsycoca", "org.kde.ksycoca",
+     QDBusMessage msg = QDBusMessage::signal("/kbuildsycoca", "org.kde.KSycoca",
                                              "notifyDatabaseChanged", QDBus::sessionBus());
+     msg << QStringList();
      msg.send();
 
      QDBusInterface("org.kde.ksplash", "/")
