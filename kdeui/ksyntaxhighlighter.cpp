@@ -507,7 +507,9 @@ void KDictSpellingHighlighter::slotRehighlight()
 	int para, index;
 	textEdit()->getCursorPosition( &para, &index );
 	//rehighlight the current para only (undo/redo safe)
+	bool modified = textEdit()->isModified();
 	textEdit()->insertAt( "", para, index );
+	textEdit()->setModified( modified );
     }
     if (d->checksDone == d->checksRequested)
 	d->completeRehighlightRequired = false;
