@@ -64,6 +64,7 @@
 #endif
 
 #include <QByteArray>
+#include <QVarLengthArray>
 #include <qdatetime.h>
 #include <qregexp.h>
 
@@ -428,9 +429,9 @@ void FileProtocol::open( const KUrl& url, int access )
             stream >> bytes;
             QVarLengthArray<char> buffer(bytes);
         read_retry:
-            int res = ::read(fd, buffer, bytes);
+            int res = ::read(fd, buffer.data(), bytes);
             if (res >= 0) {
-                array = array.fromRawData(buffer, bytes);
+                array = array.fromRawData(buffer.data(), bytes);
                 data( array );
                 array.clear();
             } else {
