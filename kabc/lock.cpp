@@ -57,7 +57,8 @@ bool Lock::readLockFile( const QString &filename, int &pid, QString &app )
   if ( !file.open( IO_ReadOnly ) ) return false;
 
   QTextStream t( &file );
-  t >> pid >> endl >> app;
+  pid = t.readLine().toInt();
+  app = t.readLine();
 
   return true;
 }
