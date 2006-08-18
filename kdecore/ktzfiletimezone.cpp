@@ -217,6 +217,8 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         // These abbreviations are corrupt!
         kError() << "timezone abbreviations not null terminated: " << abbrs[abbrCharCount - 1] << endl;
         delete data;
+        delete[] transitionTimes;
+        delete[] localTimeTypes;
         return 0;
     }
     quint8 n = 0;
