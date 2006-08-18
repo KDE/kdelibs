@@ -164,7 +164,7 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
 static QString sanitizeCustomHTTPHeader(const QString& _header)
 {
   QString sanitizedHeaders;
-  QStringList headers = QStringList::split("\r\n", _header);
+  QStringList headers = QStringList::split(QRegExp("[\r\n]"), _header);
 
   for(QStringList::Iterator it = headers.begin(); it != headers.end(); ++it)
   {
