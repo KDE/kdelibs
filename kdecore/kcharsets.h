@@ -32,10 +32,9 @@ class QTextCodec;
 /**
  * Charset font and encoder/decoder handling.
  *
- * This is needed, because Qt's font matching algorithm gives the font
- * family a higher priority than the charset.  For many applications
- * this is not acceptable, since it can totally obscure the output,
- * in languages which use non iso-8859-1 charsets.
+ * This is needed, because Qt's encoding name matching in
+ * QTextCodec::codecForName matches only closely-related encoded names
+ * but not alternate names, e.g. found in the reality of the Internet.
  *
  * @author Lars Knoll <knoll@kde.org>
  */
@@ -60,16 +59,20 @@ public:
      * Provided for compatibility.
      * @param name the name of the codec
      * @return the QTextCodec. If the desired codec could not be found,
-     *         it returns a default (Latin-1) codec
+     *         it returns a default (ISO 8859-1) codec
      */
     QTextCodec *codecForName(const QString &name) const;
 
     /**
      * Tries to find a QTextCodec to convert the given encoding from and to
-     * Unicode. If no codec could be found the latin1 codec will be returned an
-     * @p ok will be set to false.
+     * Unicode.
+     *
+     * If no codec could be found, the ISO 8859-1 codec will be returned an
+     * and @p ok will be set to false.
+     *
+     * @param ok true if a matching codec has been found, false if not
      * @return the QTextCodec. If the desired codec could not be found,
-     *         it returns a default (Latin-1) codec
+     *         it returns a default (ISO 8859-1) codec
      */
     QTextCodec *codecForName(const QString &n, bool &ok) const;
 
