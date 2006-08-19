@@ -1,5 +1,5 @@
 TEMPLATE	= subdirs 
-SUBDIRS		= Weaver Experimental Tests Examples
+SUBDIRS		= Weaver Action Experimental Tests Examples
 CONFIG		+= ordered
 
 test.target=test
