@@ -10,10 +10,8 @@ set(editor_SRCS
 bind_qaction.cpp
 bind_qdialog.cpp
 bind_qicon.cpp
-bind_qlcdnumber.cpp
-bind_qtextcursor.cpp
+#bind_qtextcursor.cpp
 bind_qtextedit.cpp
-bind_qtimer.cpp
 bind_qwidget.cpp
 bind_qworkspace.cpp
 main.cpp

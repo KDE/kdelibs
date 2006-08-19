@@ -22,6 +22,7 @@
 #include <kjsembed/object_binding.h>
 #include <kjsembed/value_binding.h>
 #include <kjs/object.h>
+#include <QAction>
 
 #include <bind_qwidget.h>
 
