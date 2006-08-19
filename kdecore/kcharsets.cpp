@@ -61,27 +61,28 @@ static const char * const language_names[] = {
 
 // This list gives the charsets that can be used to display a file given in a certain encoding.
 // The list should be in order of preference
+// The list is user-visible, so the encoding should be displayed like the user expects it.
 static const char* const charsets_for_encoding[] = {
-    "koi8-r",
-    "koi8-u",
-    "iso 8859-1",
-    "iso 8859-2",
-    "iso 8859-3",
-    "iso 8859-4",
-    "iso 8859-5",
-    "iso 8859-6",
-    "iso 8859-7",
-    "iso 8859-8",
-    "iso 8859-8-i",
-    "iso 8859-9",
-    "iso 8859-11",
-    "iso 8859-13",
-    "ISO-8859-14",
-    "iso 8859-15",
-    "ISO-8859-16",
-    "utf8",
-    "utf16",
-    "iso-10646-ucs-2",
+    "KOI8-R",
+    "KOI8-U",
+    "ISO 8859-1",
+    "ISO 8859-2",
+    "ISO 8859-3",
+    "ISO 8859-4",
+    "ISO 8859-5",
+    "ISO 8859-6",
+    "ISO 8859-7",
+    "ISO 8859-8",
+    "ISO 8859-8-I",
+    "ISO 8859-9",
+    "ISO 8859-11",
+    "ISO 8859-13",
+    "ISO 8859-14",
+    "ISO 8859-15",
+    "ISO 8859-16",
+    "UTF-8",
+    "UTF-16",
+    "ISO 10646-UCS-2",
     "cp 1250",
     "cp 1251",
     "cp 1252",
@@ -91,21 +92,21 @@ static const char* const charsets_for_encoding[] = {
     "cp 1256",
     "cp 1257",
     "windows-1258",
-    "ibm850",
+    "IBM850",
 #if 0
     "ibm852",
 #endif
-    "ibm866",
-    "tis620",
-    "eucjp",
+    "IBM866",
+    "TIS620",
+    "EUC-JP",
     "sjis",
     "jis7",
     "Big5",
     "Big5-HKSCS",
-    "gbk",
-    "gb18030",
-    "gb2312",
-    "euckr",
+    "GBK",
+    "GB18030",
+    "GB2312",
+    "EUC-KR",
     "TSCII",
 //    "pt 154",  // ### TODO "PT 154" seems to have been removed from Qt
     "winsami2",
@@ -132,61 +133,63 @@ static const char* const charsets_for_encoding[] = {
 // 17 Vietnamese
 // 18 South-Eastern Europe
 // ### FIXME KDE4: the name of the encodings should mostly be uppercase
+// The names of this list are user-visible
 static struct LanguageForEncoding
     {
     const char* index;
     int data;
     } const language_for_encoding[] = {
-    { "iso 8859-1", 13 },
-    { "iso 8859-15", 13 },
-    { "ISO-8859-14", 13 },
+    { "ISO 8859-1", 13 },
+    { "ISO 8859-15", 13 },
+    { "ISO 8859-14", 13 },
     { "cp 1252", 13 },
-    { "ibm850", 13 },
-    { "iso 8859-2", 3 },
-    { "iso 8859-3", 3 },
-    { "iso 8859-4", 2 },
-    { "iso 8859-13", 2 },
-    { "ISO-8859-16", 18 },
+    { "IBM850", 13 },
+    { "ISO 8859-2", 3 },
+    { "ISO 8859-3", 3 },
+    { "ISO 8859-4", 2 },
+    { "ISO 8859-13", 2 },
+    { "ISO 8859-16", 18 },
     { "cp 1250", 3 },
     { "cp 1254", 12 },
     { "cp 1257", 2 },
 #if 0
     { "ibm852", 3 },
 #endif
-    { "koi8-r", 6 },
-    { "iso 8859-5", 6 },
+    { "KOI8-R", 6 },
+    { "ISO 8859-5", 6 },
     { "cp 1251", 6 },
-    { "koi8-u", 6 },
+    { "KOI8-U", 6 },
 //    { "pt 154", 6 }, // ### TODO "PT 154" seems to have been removed from Qt
-    { "ibm866", 6 },
+    { "IBM866", 6 },
     { "Big5", 5 },
     { "Big5-HKSCS", 5 },
-    { "gb18030", 4 },
-    { "gbk", 4 },
-    { "gb2312", 4 },
-    { "euckr", 10 },
+    { "GB18030", 4 },
+    { "GBK", 4 },
+    { "GB2312", 4 },
+    { "EUC-KR", 10 },
     { "sjis", 9 },
     { "jis7", 9 },
-    { "eucjp", 9 },
-    { "iso 8859-7", 7 },
+    { "EUC-JP", 9 },
+    { "ISO 8859-7", 7 },
     { "cp 1253", 7 },
-    { "iso 8859-6", 1 },
+    { "ISO 8859-6", 1 },
     { "cp 1256", 1 },
-    { "iso 8859-8", 8 },
-    { "iso 8859-8-i", 8 },
+    { "ISO 8859-8", 8 },
+    { "ISO 8859-8-I", 8 },
     { "cp 1255", 8 },
-    { "iso 8859-9", 12 },
-    { "tis620", 11 },
-    { "iso 8859-11", 11 }, // ### TODO: deprecated name of TIS-620
-    { "utf8", 15 },
-    { "utf16", 15 },
+    { "ISO 8859-9", 12 },
+    { "TIS620", 11 },
+    { "ISO 8859-11", 11 }, // ### TODO: DEPRECATED NAME OF TIS-620
+    { "UTF-8", 15 },
+    { "UTF-16", 15 },
     { "utf7", 15 }, // ### FIXME: UTF-7 is not in Qt
     { "ucs2", 15 }, // ### TODO: same as ISO-10646-UCS-2 (so "triples" UTF-16)
-    { "iso-10646-ucs-2", 15 }, // ### TODO: doubles UTF-16
+    { "ISO 10646-UCS-2", 15 }, // ### TODO: doubles UTF-16
     { "winsami2", 16},
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
+// The names in this list must be lower-case
 static struct Builtin
     {
     const char* index;
