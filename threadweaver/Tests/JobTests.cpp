@@ -27,16 +27,6 @@ private slots:
 
     // call finish() before leave a test to make sure the queue is empty
 
-  void WeaverInitializationTest()
-  { // this one mostly tests the sanity of the startup behaviour
-    ThreadWeaver::Weaver weaver;
-    QCOMPARE (weaver.numberOfThreads(), 0);
-    QVERIFY (weaver.isEmpty());
-    QVERIFY(weaver.isIdle());
-    QVERIFY(weaver.queueLength() == 0);
-    weaver.finish();
-  }
-
   void WeaverLazyThreadCreationTest()
   {
     ThreadWeaver::Weaver weaver;

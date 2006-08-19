@@ -3,6 +3,7 @@
 #include <QChar>
 #include <QString>
 #include <QObject>
+#include <QThread>
 #include <QtTest/QtTest>
 
 #include "AppendCharacterJob.h" 
@@ -18,6 +19,7 @@
 #include <ResourceRestrictionPolicy.h>
 
 #include <ThreadWeaver.h>
+#include <Thread.h>
 
 #ifdef THREADWEAVER_PRIVATE_API
 #error "PARTS OF THREADWEAVER'S PRIVATE API ARE INCLUDED IN PUBLIC HEADERS!"
@@ -59,6 +61,28 @@ public:
 
 };
 
+class SecondThreadThatQueues : public QThread
+{
+  Q_OBJECT
+
+public:
+  SecondThreadThatQueues()
+    : QThread()
+  {
+  }
+
+protected:
+  void run ()
+  {
+    QString sequence;
+    AppendCharacterJob a( 'a', &sequence );
+    
+    ThreadWeaver::Weaver::instance()->enqueue ( &a );
+    ThreadWeaver::Weaver::instance()->finish();
+    QCOMPARE( sequence, QString("a" ) );
+  }
+};
+
 class QueueTests : public QObject
 {
   Q_OBJECT
@@ -90,6 +114,24 @@ private slots:
     weaver.finish();
 
     QCOMPARE ( sequence, QString ("cba" ) );
+  }
+
+  void WeaverInitializationTest()
+  { // this one mostly tests the sanity of the startup behaviour
+    ThreadWeaver::Weaver weaver;
+    QCOMPARE (weaver.numberOfThreads(), 0);
+    QVERIFY (weaver.isEmpty());
+    QVERIFY(weaver.isIdle());
+    QVERIFY(weaver.queueLength() == 0);
+    weaver.finish();
+  }
+
+  void DeleteSelfLaterTest()
+  {
+    SecondThreadThatQueues thread;
+    thread.start();
+    thread.wait();
+    QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
   }
 
 };

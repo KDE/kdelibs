@@ -115,14 +115,6 @@ public:
   /* The elements of the collection. */
   JobList* elements;
 
-  // FIXME (solved) unused
-  /* True if this collection has been queued in the Job queue of a Weaver. */
-  // bool queued;
-
-  // FIXME (solved) still necessary?
-  /* A guard job used to manage recursive dependencies. */
-  // Job* guard;
-
   /* The Weaver interface this collection is queued in. */
   WeaverInterface *weaver;
 
