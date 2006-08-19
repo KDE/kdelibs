@@ -168,7 +168,7 @@ by QX11Info::display()</li>
 <li>installKDEPropertyMap has been moved into k3sqlpropertymap.h and renamed to kInstallKDEPropertyMap. It can be used to keep old code that uses the Q3Data* classes working.For new code, use User in the meta object to determine which Q_PROPERTY to use for any widget.
 <pre>
   const QMetaObject *metaObject = widget-&gt;metaObject();
-  for (int i = 0; i < metaObject-&gt;propertyCount(); ++i) {
+  for (int i = 0; i &lt; metaObject-&gt;propertyCount(); ++i) {
     const QMetaProperty metaProperty = metaObject-&gt;property(i);
     if (metaProperty.isUser()) {
       QString propertyToUse = metaProperty.name();
