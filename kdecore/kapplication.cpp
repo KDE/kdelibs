@@ -566,8 +566,10 @@ void KApplication::init()
   extern void qDBusBindToApplication();
   qDBusBindToApplication();
   QDBusConnectionInterface *bus = 0;
-  if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().interface()))
+  if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().interface())) {
       kFatal(101) << "Session bus not found" << endl;
+      ::exit(125);
+  }
 
   extern bool s_kuniqueapplication_startCalled;
   if ( !s_kuniqueapplication_startCalled ) // don't register again if KUniqueApplication did so already
