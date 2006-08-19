@@ -13,7 +13,7 @@ namespace ThreadWeaver {
     every call to canRun() that returns true, it is guaranteed that the method
     free() or the method release() is called. Calling free() means the job has
     been executed, while calling release() means the job was not executed for
-    external reasons, and will be retried lateron.
+    external reasons, and will be retried later on.
 
     As an example, dependencies can be implemented using a QueuePolicy:
     canRun() returns true when the job has no unresolved dependencies. free()
@@ -37,7 +37,7 @@ namespace ThreadWeaver {
         virtual bool canRun( Job* ) = 0;
 
         /** free() is called after the job has been executed.
-            It is guaranteed that release is called only after canRun()
+            It is guaranteed that free is called only after canRun()
             returned true at an earlier time.
         */
         virtual void free( Job* ) = 0;
