@@ -44,7 +44,7 @@ KUrl MediaObject::url() const
 	{
 		MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
 		ByteStreamInterface *iface2 = qobject_cast<ByteStreamInterface*>( d->backendObject );
-		
+
 		if( iface )
 			return iface->url();
 		else if( iface2 && d->kiojob)
@@ -110,16 +110,18 @@ void MediaObject::setUrl( const KUrl& url )
 
 void MediaObject::stop()
 {
-	Phonon::State prevState=state();
-	if (prevState==Phonon::StoppedState)
+	Phonon::State prevState = state();
+	if( prevState == Phonon::StoppedState || prevState == Phonon::LoadingState )
 		return;
 	AbstractMediaProducer::stop();
 	K_D( MediaObject );
-	
+
 	// if( do pre-buffering )
+	// {
 	ByteStreamInterface* bs = qobject_cast<ByteStreamInterface*>( d->backendObject );
 	if (bs)
 		d->setupKioJob();
+	// }
 }
 
 void MediaObject::play()
@@ -133,7 +135,10 @@ void MediaObjectPrivate::setupKioJob()
 {
 	K_Q( MediaObject );
 	Q_ASSERT( backendObject );
-	
+
+	if( kiojob )
+		kiojob->kill();
+
 	kiojob = KIO::get( url, false, false );
 	kiojob->addMetaData( "UserAgent", QLatin1String( "KDE Phonon" ) );
 	QObject::connect( kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
@@ -153,11 +158,10 @@ void MediaObjectPrivate::setupKioStreaming()
 	if( backendObject )
 	{
 		QObject::connect( backendObject, SIGNAL( destroyed( QObject* ) ), q, SLOT( _k_cleanupByteStream() ) );
-		//setupIface for ByteStream
-		if( kiojob )
-			kiojob->kill();
 		setupKioJob();
 		static_cast<AbstractMediaProducer*>( q )->setupIface();
+
+		//setupIface for ByteStream
 		QObject::connect( backendObject, SIGNAL(finished()), q, SIGNAL(finished()) );
 		QObject::connect( backendObject, SIGNAL(finished()), q, SLOT(setupKioJob()) );
 		QObject::connect( backendObject, SIGNAL(aboutToFinish(qint32)), q, SIGNAL(aboutToFinish(qint32)) );
