@@ -4513,6 +4513,8 @@ void KateDocument::updateConfig ()
       add view stuff
 */
 QRegExp KateDocument::kvLine = QRegExp("kate:(.*)");
+QRegExp KateDocument::kvLineWildcard = QRegExp("kate-wildcard\\((.*)\\):(.*)");
+QRegExp KateDocument::kvLineMime = QRegExp("kate-mimetype\\((.*)\\):(.*)");
 QRegExp KateDocument::kvVar = QRegExp("([\\w\\-]+)\\s+([^;]+)");
 
 void KateDocument::readVariables(bool onlyViewAndRenderer)
@@ -4552,122 +4554,171 @@ void KateDocument::readVariables(bool onlyViewAndRenderer)
 
 void KateDocument::readVariableLine( QString t, bool onlyViewAndRenderer )
 {
+  // simple check first, no regex
+  // no kate inside, no vars, simple...
+  if (t.find("kate") < 0)
+    return;
+
+  // found vars, if any
+  QString s;
+
   if ( kvLine.search( t ) > -1 )
   {
-    QStringList vvl; // view variable names
-    vvl << "dynamic-word-wrap" << "dynamic-word-wrap-indicators"
-        << "line-numbers" << "icon-border" << "folding-markers"
-        << "bookmark-sorting" << "auto-center-lines"
-        << "icon-bar-color"
-        // renderer
-        << "background-color" << "selection-color"
-        << "current-line-color" << "bracket-highlight-color"
-        << "word-wrap-marker-color"
-        << "font" << "font-size" << "scheme";
-    int p( 0 );
-    QString s = kvLine.cap(1);
-    QString  var, val;
-    while ( (p = kvVar.search( s, p )) > -1 )
+    s = kvLine.cap(1);
+
+    kdDebug (13020) << "normal variable line kate: matched: " << s << endl;
+  }
+  else if (kvLineWildcard.search( t ) > -1) // regex given
+  {
+    QStringList wildcards (QStringList::split(';', kvLineWildcard.cap(1)));
+    QString nameOfFile = url().fileName();
+
+    bool found = false;
+    for (int i = 0; !found && i < wildcards.size(); ++i)
     {
-      p += kvVar.matchedLength();
-      var = kvVar.cap( 1 );
-      val = kvVar.cap( 2 ).stripWhiteSpace();
-      bool state; // store booleans here
-      int n; // store ints here
+      QRegExp wildcard (wildcards[i], true/*Qt::CaseSensitive*/, true/*QRegExp::Wildcard*/);
 
-      // only apply view & renderer config stuff
-      if (onlyViewAndRenderer)
+      found = wildcard.exactMatch (nameOfFile);
+    }
+
+    // nothing usable found...
+    if (!found)
+      return;
+
+    s = kvLineWildcard.cap(2);
+
+    kdDebug (13020) << "guarded variable line kate-wildcard: matched: " << s << endl;
+  }
+  else if (kvLineMime.search( t ) > -1) // mime-type given
+  {
+    QStringList types (QStringList::split(';', kvLineMime.cap(1)));
+
+    // no matching type found
+    if (!types.contains (mimeType ()))
+      return;
+
+    s = kvLineMime.cap(2);
+
+    kdDebug (13020) << "guarded variable line kate-mimetype: matched: " << s << endl;
+  }
+  else // nothing found
+  {
+    return;
+  }
+
+  QStringList vvl; // view variable names
+  vvl << "dynamic-word-wrap" << "dynamic-word-wrap-indicators"
+      << "line-numbers" << "icon-border" << "folding-markers"
+      << "bookmark-sorting" << "auto-center-lines"
+      << "icon-bar-color"
+      // renderer
+      << "background-color" << "selection-color"
+      << "current-line-color" << "bracket-highlight-color"
+      << "word-wrap-marker-color"
+      << "font" << "font-size" << "scheme";
+  int p( 0 );
+
+  QString  var, val;
+  while ( (p = kvVar.search( s, p )) > -1 )
+  {
+    p += kvVar.matchedLength();
+    var = kvVar.cap( 1 );
+    val = kvVar.cap( 2 ).stripWhiteSpace();
+    bool state; // store booleans here
+    int n; // store ints here
+
+    // only apply view & renderer config stuff
+    if (onlyViewAndRenderer)
+    {
+      if ( vvl.contains( var ) ) // FIXME define above
+        setViewVariable( var, val );
+    }
+    else
+    {
+      // BOOL  SETTINGS
+      if ( var == "word-wrap" && checkBoolValue( val, &state ) )
+        setWordWrap( state ); // ??? FIXME CHECK
+      else if ( var == "block-selection"  && checkBoolValue( val, &state ) )
+        setBlockSelectionMode( state );
+      // KateConfig::configFlags
+      // FIXME should this be optimized to only a few calls? how?
+      else if ( var == "backspace-indents" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfBackspaceIndents, state );
+      else if ( var == "replace-tabs" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfReplaceTabsDyn, state );
+      else if ( var == "remove-trailing-space" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfRemoveTrailingDyn, state );
+      else if ( var == "wrap-cursor" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfWrapCursor, state );
+      else if ( var == "auto-brackets" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfAutoBrackets, state );
+      else if ( var == "overwrite-mode" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfOvr, state );
+      else if ( var == "keep-indent-profile" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfKeepIndentProfile, state );
+      else if ( var == "keep-extra-spaces" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfKeepExtraSpaces, state );
+      else if ( var == "tab-indents" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfTabIndents, state );
+      else if ( var == "show-tabs" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfShowTabs, state );
+      else if ( var == "space-indent" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfSpaceIndent, state );
+      else if ( var == "smart-home" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfSmartHome, state );
+      else if ( var == "replace-trailing-space-save" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfRemoveSpaces, state );
+      else if ( var == "auto-insert-doxygen" && checkBoolValue( val, &state) )
+        m_config->setConfigFlags( KateDocumentConfig::cfDoxygenAutoTyping, state);
+      else if ( var == "mixed-indent" && checkBoolValue( val, &state ) )
+        m_config->setConfigFlags( KateDocumentConfig::cfMixedIndent, state );
+
+      // INTEGER SETTINGS
+      else if ( var == "tab-width" && checkIntValue( val, &n ) )
+        m_config->setTabWidth( n );
+      else if ( var == "indent-width"  && checkIntValue( val, &n ) )
+        m_config->setIndentationWidth( n );
+      else if ( var == "indent-mode" )
       {
-        if ( vvl.contains( var ) ) // FIXME define above
-          setViewVariable( var, val );
+        if ( checkIntValue( val, &n ) )
+          m_config->setIndentationMode( n );
+        else
+          m_config->setIndentationMode( KateAutoIndent::modeNumber( val) );
       }
-      else
+      else if ( var == "word-wrap-column" && n > 0  && checkIntValue( val, &n ) ) // uint, but hard word wrap at 0 will be no fun ;)
+        m_config->setWordWrapAt( n );
+      else if ( var == "undo-steps"  && n >= 0  && checkIntValue( val, &n ) )
+        setUndoSteps( n );
+
+      // STRING SETTINGS
+      else if ( var == "eol" || var == "end-of-line" )
       {
-        // BOOL  SETTINGS
-        if ( var == "word-wrap" && checkBoolValue( val, &state ) )
-          setWordWrap( state ); // ??? FIXME CHECK
-        else if ( var == "block-selection"  && checkBoolValue( val, &state ) )
-          setBlockSelectionMode( state );
-        // KateConfig::configFlags
-        // FIXME should this be optimized to only a few calls? how?
-        else if ( var == "backspace-indents" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfBackspaceIndents, state );
-        else if ( var == "replace-tabs" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfReplaceTabsDyn, state );
-        else if ( var == "remove-trailing-space" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfRemoveTrailingDyn, state );
-        else if ( var == "wrap-cursor" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfWrapCursor, state );
-        else if ( var == "auto-brackets" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfAutoBrackets, state );
-        else if ( var == "overwrite-mode" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfOvr, state );
-        else if ( var == "keep-indent-profile" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfKeepIndentProfile, state );
-        else if ( var == "keep-extra-spaces" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfKeepExtraSpaces, state );
-        else if ( var == "tab-indents" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfTabIndents, state );
-        else if ( var == "show-tabs" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfShowTabs, state );
-        else if ( var == "space-indent" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfSpaceIndent, state );
-        else if ( var == "smart-home" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfSmartHome, state );
-        else if ( var == "replace-trailing-space-save" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfRemoveSpaces, state );
-        else if ( var == "auto-insert-doxygen" && checkBoolValue( val, &state) )
-          m_config->setConfigFlags( KateDocumentConfig::cfDoxygenAutoTyping, state);
-        else if ( var == "mixed-indent" && checkBoolValue( val, &state ) )
-          m_config->setConfigFlags( KateDocumentConfig::cfMixedIndent, state );
-
-        // INTEGER SETTINGS
-        else if ( var == "tab-width" && checkIntValue( val, &n ) )
-          m_config->setTabWidth( n );
-        else if ( var == "indent-width"  && checkIntValue( val, &n ) )
-          m_config->setIndentationWidth( n );
-        else if ( var == "indent-mode" )
+        QStringList l;
+        l << "unix" << "dos" << "mac";
+        if ( (n = l.findIndex( val.lower() )) != -1 )
+          m_config->setEol( n );
+      }
+      else if ( var == "encoding" )
+        m_config->setEncoding( val );
+      else if ( var == "syntax" || var == "hl" )
+      {
+        for ( uint i=0; i < hlModeCount(); i++ )
         {
-          if ( checkIntValue( val, &n ) )
-            m_config->setIndentationMode( n );
-          else
-            m_config->setIndentationMode( KateAutoIndent::modeNumber( val) );
-        }
-        else if ( var == "word-wrap-column" && n > 0  && checkIntValue( val, &n ) ) // uint, but hard word wrap at 0 will be no fun ;)
-          m_config->setWordWrapAt( n );
-        else if ( var == "undo-steps"  && n >= 0  && checkIntValue( val, &n ) )
-          setUndoSteps( n );
-
-        // STRING SETTINGS
-        else if ( var == "eol" || var == "end-of-line" )
-        {
-          QStringList l;
-          l << "unix" << "dos" << "mac";
-          if ( (n = l.findIndex( val.lower() )) != -1 )
-            m_config->setEol( n );
-        }
-        else if ( var == "encoding" )
-          m_config->setEncoding( val );
-        else if ( var == "syntax" || var == "hl" )
-        {
-          for ( uint i=0; i < hlModeCount(); i++ )
+          if ( hlModeName( i ).lower() == val.lower() )
           {
-            if ( hlModeName( i ).lower() == val.lower() )
-            {
-              setHlMode( i );
-              break;
-            }
+            setHlMode( i );
+            break;
           }
         }
+      }
 
-        // VIEW SETTINGS
-        else if ( vvl.contains( var ) )
-          setViewVariable( var, val );
-        else
-        {
-          m_storedVariables.insert( var, val );
-          emit variableChanged( var, val );
-        }
+      // VIEW SETTINGS
+      else if ( vvl.contains( var ) )
+        setViewVariable( var, val );
+      else
+      {
+        m_storedVariables.insert( var, val );
+        emit variableChanged( var, val );
       }
     }
   }
