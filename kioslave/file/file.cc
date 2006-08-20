@@ -387,11 +387,14 @@ void FileProtocol::open( const KUrl& url, int access )
     }
 
     int flags = 0;
-    if (access == 1) flags = O_RDONLY;
+    int rw_access = access & 0x3;
+    if (rw_access == 1) flags = O_RDONLY;
     else
-    if (access == 2) flags = O_WRONLY;
+    if (rw_access == 2) flags = O_WRONLY;
     else
-    if (access == 3) flags = O_RDWR;
+    if (rw_access == 3) flags = O_RDWR;
+
+    if (rw_access != 1 && (access & 0x4)) flags |= O_CREAT;
 
     int fd = KDE_open( _path.data(), flags);
     if ( fd < 0 ) {
@@ -434,12 +437,14 @@ void FileProtocol::open( const KUrl& url, int access )
                 array = array.fromRawData(buffer.data(), bytes);
                 data( array );
                 array.clear();
+                continue;
             } else {
                 if (errno == EINTR) goto read_retry;
+                // empty array designates eof
+                data(QByteArray());
                 error( KIO::ERR_COULD_NOT_READ, url.path());
-                break;
             }
-            continue;
+            break;
         }
         case CMD_WRITE: {
             kDebug( 7101 ) << "File::open -- write" << endl;
@@ -758,7 +763,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
            return;
         }
 
-	if ( same_inode( buff_dest, buff_src) ) 
+	if ( same_inode( buff_dest, buff_src) )
 	{
 	    error( KIO::ERR_IDENTICAL_FILES, dest.path() );
 	    return;
@@ -971,7 +976,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
            return;
         }
 
-	if ( same_inode( buff_dest, buff_src) ) 
+	if ( same_inode( buff_dest, buff_src) )
 	{
 	    error( KIO::ERR_IDENTICAL_FILES, dest.path() );
 	    return;
