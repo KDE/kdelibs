@@ -59,7 +59,7 @@ Backend::Backend(const QString& name, bool isPath) : _name(name), _ref(0) {
 	if (isPath) {
 		_path = name;
 	} else {
-		_path = KGlobal::dirs()->saveLocation("kwallet") + "/" + _name + ".kwl";
+		_path = KGlobal::dirs()->saveLocation("kwallet") + '/' + _name + ".kwl";
 	}
 
 	_open = false;
@@ -239,7 +239,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 
 bool Backend::exists(const QString& wallet) {
-QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
+QString path = KGlobal::dirs()->saveLocation("kwallet") + '/' + wallet + ".kwl";
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk.
 return QFile::exists(path) && QFileInfo(path).size() >= 60;
