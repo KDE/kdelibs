@@ -78,9 +78,9 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
       checkStamps = false; // useful only during kded startup
    if (callBackObj)
    {
-      QVariantList args;
-      args << QString("kbuildsycoca") << args;
-      KToolInvocation::klauncher()->callWithArgumentList("kdeinit_exec_wait", args, callBackObj,
+      QVariantList argList;
+      argList << QString("kbuildsycoca") << args << QStringList() << QString();
+      KToolInvocation::klauncher()->callWithArgumentList("kdeinit_exec_wait", argList, callBackObj,
                                                          callBackSlot);
    }
    else

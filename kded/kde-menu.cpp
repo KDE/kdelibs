@@ -148,7 +148,7 @@ int main(int argc, char **argv)
       args.append("--incremental");
       args.append("--checkstamps");
       QString command = "kbuildsycoca";
-      QDBusMessage reply = KToolInvocation::klauncher()->call("kdeinit_exec_wait", command, args);
+      QDBusMessage reply = KToolInvocation::klauncher()->call("kdeinit_exec_wait", command, args, QStringList(), QString());
       if (reply.type() != QDBusMessage::ReplyMessage)
       {
          qWarning("Can't talk to klauncher!");
