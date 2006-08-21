@@ -480,7 +480,7 @@ void KFileIconView::slotSelectionChanged()
 
 void KFileIconView::slotSmallColumns()
 {
-    kDebug() << "slotSmallColumns " << kBacktrace() << endl;
+    //kDebug() << "slotSmallColumns " << kBacktrace() << endl;
 
     // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
