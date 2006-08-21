@@ -55,12 +55,16 @@ MediaPlayer::MediaPlayer( QWidget* parent )
 	m_controls->setMediaProducer( m_media );
 	m_controls->setAudioOutput( m_aoutput );
 
-	m_effect = new AudioEffect( BackendCapabilities::availableAudioEffects().first(), m_apath );
-	m_apath->insertEffect( m_effect );
-	QPushButton* button = new QPushButton( this );
-	layout->addWidget( button );
-	button->setText( "configure effect" );
-	connect( button, SIGNAL( clicked() ), SLOT( openEffectWidget() ) );
+	QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
+	if( !effectList.isEmpty() )
+	{
+		m_effect = new AudioEffect( BackendCapabilities::availableAudioEffects().first(), m_apath );
+		m_apath->insertEffect( m_effect );
+		QPushButton* button = new QPushButton( this );
+		layout->addWidget( button );
+		button->setText( "configure effect" );
+		connect( button, SIGNAL( clicked() ), SLOT( openEffectWidget() ) );
+	}
 }
 
 void MediaPlayer::openEffectWidget()
