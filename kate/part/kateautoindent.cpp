@@ -168,7 +168,7 @@ void KateViewIndentationAction::slotAboutToShow()
 
   popupMenu()->clear ();
   for (uint z=0; z<modes.size(); ++z)
-    popupMenu()->insertItem ( '&' + KateAutoIndent::modeDescription(z), this, SLOT(setMode(int)), 0,  z);
+    popupMenu()->insertItem ( '&' + KateAutoIndent::modeDescription(z).replace('&', "&&"), this, SLOT(setMode(int)), 0,  z);
 
   popupMenu()->setItemChecked (doc->config()->indentationMode(), true);
 }
