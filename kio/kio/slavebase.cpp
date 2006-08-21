@@ -114,6 +114,7 @@ public:
     bool needSendCanResume:1;
     bool onHold:1;
     bool wasKilled:1;
+    bool exit_loop:1;
     MetaData configData;
     SlaveBaseConfig *config;
     KUrl onHoldUrl;
@@ -226,6 +227,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     connectSlave(mAppSocket);
 
     d->remotefile = 0;
+    d->exit_loop = false;
 }
 
 SlaveBase::~SlaveBase()
@@ -240,7 +242,7 @@ void SlaveBase::dispatchLoop()
     fd_set rfds;
     int retval;
 
-    while (true)
+    while (!d->exit_loop)
     {
        if (d->timeout && (d->timeout < time(0)))
        {
@@ -276,7 +278,7 @@ void SlaveBase::dispatchLoop()
           else // some error occurred, perhaps no more application
           {
              // When the app exits, should the slave be put back in the pool ?
-             if (mConnectedToApp && !mPoolSocket.isEmpty())
+             if (!d->exit_loop && mConnectedToApp && !mPoolSocket.isEmpty())
              {
                 disconnectSlave();
                 mConnectedToApp = false;
@@ -318,6 +320,7 @@ void SlaveBase::connectSlave(const QString& path)
         kDebug(7019) << "SlaveBase: failed to connect to " << path << endl
 		      << "Reason: " << sock->errorString() << endl;
         exit();
+        return;
     }
 
     setConnection(appconn);
@@ -501,7 +504,7 @@ void SlaveBase::processedSize( KIO::filesize_t _bytes )
         KIO_DATA << KIO_FILESIZE_T(_bytes);
         slaveWriteError = false;
         m_pConnection->send( INF_PROCESSED_SIZE, data );
-            if (slaveWriteError) exit();
+        if (slaveWriteError) exit();
         if ( gettimeofday_res == 0 ) {
             d->last_tv.tv_sec = tv.tv_sec;
             d->last_tv.tv_usec = tv.tv_usec;
@@ -580,6 +583,7 @@ void SlaveBase::mimeType( const QString &_type)
        if ( m_pConnection->read( &cmd, data ) == -1 ) {
            kDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            exit();
+           return;
        }
        // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
        if ( cmd == CMD_HOST) // Ignore.
@@ -598,8 +602,10 @@ void SlaveBase::mimeType( const QString &_type)
 
 void SlaveBase::exit()
 {
-    this->~SlaveBase();
-    ::exit(255);
+    d->exit_loop = true;
+    // Using ::exit() here is too much (crashes in qdbus's qglobalstatic object),
+    // so let's cleanly exit dispatchLoop() instead.
+    // ::exit(255);
 }
 
 void SlaveBase::warning( const QString &_msg)
