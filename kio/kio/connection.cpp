@@ -156,7 +156,7 @@ void Connection::init(int _fd_in, int fd_out)
     fd_in = _fd_in;
     f_out = KDE_fdopen( fd_out, "wb" );
     if (receiver && ( fd_in != -1 )) {
-	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
 	if ( m_suspended ) {
             suspend();
 	}
@@ -174,7 +174,7 @@ void Connection::connect(QObject *_receiver, const char *_member)
     notifier = 0;
     if (receiver && (fd_in != -1 )) {
         if (socket == 0L)
-	    notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+	    notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
         if ( m_suspended )
             suspend();
 
