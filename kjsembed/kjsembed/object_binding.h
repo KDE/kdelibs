@@ -159,7 +159,12 @@ namespace KJSEmbed
             T *returnValue = 0;
             KJSEmbed::ObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ObjectBinding>(exec, arg );
             if( imp )
-                returnValue = imp->object<T>();
+            {
+                // GCC 3.3 has problems calling template functions in another class from a template class.
+                // returnValue = imp->object<T>();
+
+                returnValue = (T *)imp->voidStar();
+            }
             if( returnValue )
                 return returnValue;
             else
