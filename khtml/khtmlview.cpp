@@ -547,7 +547,7 @@ void KHTMLView::clear()
     if ( d->cursor_icon_widget )
         d->cursor_icon_widget->hide();
     d->reset();
-    QAbstractEventDispatcher::instance()->unregisterTimers(this); 
+    QAbstractEventDispatcher::instance()->unregisterTimers(this);
     emit cleared();
 
     Q3ScrollView::setHScrollBarMode(d->hmode);
@@ -3364,7 +3364,7 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
             hideCaret();
 	    break;
 	case KHTMLPart::CaretVisible: {
-	    if (d->m_caretViewContext->freqTimerId)
+	    if (d->m_caretViewContext->freqTimerId != -1)
 	        killTimer(d->m_caretViewContext->freqTimerId);
 	    d->m_caretViewContext->freqTimerId = -1;
             NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
