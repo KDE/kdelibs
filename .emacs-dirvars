@@ -9,4 +9,4 @@ c-basic-offset: 4
 evaluate: (c-set-offset 'innamespace '0)
 kde-emacs-after-parent-string: ""
 evaluate: (c-set-offset 'inline-open '0)
-
+kdab-qt-version: 4
