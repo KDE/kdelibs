@@ -51,11 +51,11 @@ KToolInvocation::~KToolInvocation()
 }
 
 Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
-                          ("org.kde.klauncher", "/KLauncher", QDBus::sessionBus()))
+                          ("org.kde.klauncher", "/KLauncher", QDBusConnection::sessionBus()))
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
-    if ( !QDBus::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ) )
+    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ) )
     {
         kDebug() << "klauncher not running... launching kdeinit" << endl;
         KToolInvocation::startKdeinit();

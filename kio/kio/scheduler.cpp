@@ -127,8 +127,8 @@ Scheduler::Scheduler()
 
     const QString dbusPath = "/KIO/Scheduler";
     const QString dbusInterface = "org.kde.KIO.Scheduler";
-    QDBusConnection dbus = QDBus::sessionBus();
-    dbus.registerObject("/KIO/Scheduler", this, QDBusConnection::ExportSlots);
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    dbus.registerObject("/KIO/Scheduler", this, QDBusConnection::ExportScriptableSlots);
     dbus.connect(QString(), dbusPath, dbusInterface, "reparseSlaveConfiguration",
                  this, SLOT(slotReparseSlaveConfiguration(QString)));
 #ifdef __GNUC__

@@ -46,9 +46,9 @@
 #include <kdebug.h>
 #include <ktextedit.h>
 
-//MOC_SKIP_BEGIN
+#ifndef Q_MOC_RUN
 template class QList<KAboutContributor *>;
-//MOC_SKIP_END
+#endif
 
 #define WORKTEXT_IDENTATION 16
 #define Grid 3

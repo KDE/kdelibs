@@ -167,7 +167,7 @@ AppPresenceCurrent ContactPresenceListCurrent::best()
 
 OrgKdeKIMInterface * findInterface( const QString & app )
 {
-        return new OrgKdeKIMInterface( app, "/KIMIface", QDBus::sessionBus() );
+        return new OrgKdeKIMInterface( app, "/KIMIface", QDBusConnection::sessionBus() );
 }
 
 KIMProxy * KIMProxy::instance() 
@@ -181,7 +181,7 @@ KIMProxy::KIMProxy() : QObject(), d( new Private )
 {
 	//QDBus::sessionBus().registerObject( "/KIMProxy", this);
 	m_initialized = false;
-	connect( QDBus::sessionBus().interface(),
+	connect( QDBusConnection::sessionBus().interface(),
 		 SIGNAL(serviceOwnerChanged(QString,QString,QString)),
 		 SLOT(nameOwnerChanged(QString,QString,QString)) );
 
@@ -202,7 +202,7 @@ KIMProxy::KIMProxy() : QObject(), d( new Private )
 	//DCOPCString method = "contactPresenceChanged( QString, QCString, int )";
 	//QCString receiverObjectId = "KIMProxyIface";
 
-	QDBus::sessionBus().connect( QString(), "/KIMIface", "org.kde.KIM", "contactPresenceChanged",
+	QDBusConnection::sessionBus().connect( QString(), "/KIMIface", "org.kde.KIM", "contactPresenceChanged",
 				     this, SLOT(contactPresenceChanged(QString,QString,int)) );
 }
 
@@ -222,7 +222,7 @@ bool KIMProxy::initialize()
 			// see what apps implementing our service type are out there
 			const KService::List offers = KServiceTypeTrader::self()->query( IM_SERVICE_TYPE );
 			KService::List::const_iterator offer;
-			QStringList registeredApps = QDBus::sessionBus().interface()->registeredServiceNames();
+			QStringList registeredApps = QDBusConnection::sessionBus().interface()->registeredServiceNames();
 			foreach (QString app, registeredApps)
 			{
 				//kDebug( 790 ) << " considering: " << *app << endl;

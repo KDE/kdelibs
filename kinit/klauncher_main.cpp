@@ -68,12 +68,12 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    while(true)
    {
       QString service(QLatin1String("org.kde.klauncher")); // same as ktoolinvocation.cpp
-      if (!QDBus::sessionBus().isConnected()) {
+      if (!QDBusConnection::sessionBus().isConnected()) {
          kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server." << endl;
          return 1;
       } 
       QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
-          QDBus::sessionBus().interface()->registerService(service);
+          QDBusConnection::sessionBus().interface()->registerService(service);
       if (!reply.isValid())
       {
          kWarning() << "DBUS communication problem!" << endl;
@@ -96,7 +96,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    }
    
    KLauncher *launcher = new KLauncher(LAUNCHER_FD);
-   QDBus::sessionBus().registerObject("/", launcher);
+   QDBusConnection::sessionBus().registerObject("/", launcher);
 
    KCrash::setEmergencySaveFunction(sig_handler);
    signal( SIGHUP, sig_handler);

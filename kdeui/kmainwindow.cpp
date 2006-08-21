@@ -296,14 +296,14 @@ void KMainWindow::setUniqueName()
     setObjectName( s );
 
     const QString pathname = '/' + objectName();
-    QDBus::sessionBus().registerObject(pathname, this, QDBusConnection::ExportSlots |
-                                       QDBusConnection::ExportProperties |
+    QDBusConnection::sessionBus().registerObject(pathname, this, QDBusConnection::ExportScriptableSlots |
+                                       QDBusConnection::ExportScriptableProperties |
                                        QDBusConnection::ExportNonScriptableSlots |
                                        QDBusConnection::ExportNonScriptableProperties |
                                        QDBusConnection::ExportAdaptors);
-    QDBus::sessionBus().registerObject(pathname + "/actions", actionCollection(),
-                                       QDBusConnection::ExportSlots |
-                                       QDBusConnection::ExportProperties |
+    QDBusConnection::sessionBus().registerObject(pathname + "/actions", actionCollection(),
+                                       QDBusConnection::ExportScriptableSlots |
+                                       QDBusConnection::ExportScriptableProperties |
                                        QDBusConnection::ExportNonScriptableSlots |
                                        QDBusConnection::ExportNonScriptableProperties |
                                        QDBusConnection::ExportChildObjects);

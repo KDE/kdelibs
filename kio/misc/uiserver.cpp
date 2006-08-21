@@ -651,7 +651,7 @@ UIServer::UIServer()
   hide();
 
   (void)new UIServerAdaptor(this);
-  QDBus::sessionBus().registerObject(QLatin1String("/UIServer"), this);
+  QDBusConnection::sessionBus().registerObject(QLatin1String("/UIServer"), this);
 }
 
 UIServer::~UIServer() {

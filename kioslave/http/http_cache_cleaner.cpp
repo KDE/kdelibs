@@ -203,15 +203,15 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    if (!deleteAll)
    {
-      if (!QDBus::sessionBus().isConnected())
+      if (!QDBusConnection::sessionBus().isConnected())
       {
-         QDBusError error(QDBus::sessionBus().lastError());
+         QDBusError error(QDBusConnection::sessionBus().lastError());
          fprintf(stderr, "%s: Could not connect to D-Bus! (%s: %s)\n", appName,
                  qPrintable(error.name()), qPrintable(error.message()));
          return 1;
       }
 
-      if (!QDBus::sessionBus().registerService(appFullName))
+      if (!QDBusConnection::sessionBus().registerService(appFullName))
       {
          fprintf(stderr, "%s: Already running!\n", appName);
          return 0;

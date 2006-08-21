@@ -98,7 +98,7 @@ Wallet::Wallet(int handle, const QString& name)
 	_wallet = findWallet();
 	_wallet->setParent(this);
 
-	connect(QDBus::sessionBus().interface(),
+	connect(QDBusConnection::sessionBus().interface(),
                 SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                 this,
                 SLOT(slotAppUnregistered(QString,QString,QString)));
@@ -185,7 +185,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 		// place an asynchronous call
 		QVariantList args;
 		args << name << qlonglong(w);
-		wallet->_wallet->callWithArgumentList("open", args, wallet, SLOT(walletOpenResult(int)));
+		wallet->_wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)));
 
 		return wallet;
 	}
@@ -624,7 +624,7 @@ void Wallet::slotFolderListUpdated(const QString& wallet) {
 void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& application) {
 	if (_handle >= 0
 			&& _name == wallet
-			&& application == QDBus::sessionBus().baseService()) {
+			&& application == QDBusConnection::sessionBus().baseService()) {
 		slotWalletClosed(_handle);
 	}
 }

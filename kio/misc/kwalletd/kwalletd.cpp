@@ -90,12 +90,12 @@ KWalletD::KWalletD()
 
 	(void)new KWalletDAdaptor(this);
 	// register another name
-	QDBus::sessionBus().registerService("org.kde.kwalletd");
+	QDBusConnection::sessionBus().registerService("org.kde.kwalletd");
 	kdesktop = new QDBusInterface("org.kde.kdesktop", "/KScreensaver", "org.kde.KScreensaverIface");
 
 	reconfigure();
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
-		connect(QDBus::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
+		connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
 				SLOT(slotServiceUnregistered(QString)));
 	_dw = new KDirWatch(this );
 		_dw->setObjectName( "KWallet Directory Watcher" );
@@ -181,7 +181,7 @@ void KWalletD::processTransactions() {
 		}
 
 		if (xact->tType != KWalletTransaction::ChangePassword) {
-			xact->msg.sendReply(res);
+                    QDBusConnection::sessionBus().send(xact->msg.createReply(res));
 		}
 		_transactions.removeRef(xact);
 	}

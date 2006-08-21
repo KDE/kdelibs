@@ -43,7 +43,7 @@ AudioOutput::AudioOutput( Phonon::Category category, QObject* parent )
 
 	d->createIface();
 	new AudioOutputAdaptor( this );
-	for( int i = 0; !QDBus::sessionBus().registerObject( "/AudioOutputs/" + QString::number( i ), this ); ++i );
+	for( int i = 0; !QDBusConnection::sessionBus().registerObject( "/AudioOutputs/" + QString::number( i ), this ); ++i );
 }
 
 void AudioOutputPrivate::createIface()

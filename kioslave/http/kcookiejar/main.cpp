@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
    
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-   org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded", "/modules/kcookiejar", QDBus::sessionBus());
+   org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
    if (args->isSet("remove-all"))
    {
       kcookiejar->deleteAllCookies();

@@ -80,7 +80,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    {
       QVariantList argList;
       argList << QString("kbuildsycoca") << args << QStringList() << QString();
-      KToolInvocation::klauncher()->callWithArgumentList("kdeinit_exec_wait", argList, callBackObj,
+      KToolInvocation::klauncher()->callWithCallback("kdeinit_exec_wait", argList, callBackObj,
                                                          callBackSlot);
    }
    else
@@ -111,7 +111,7 @@ Kded::Kded(bool checkUpdates)
   new KBuildsycocaAdaptor(this);
   new KdedAdaptor(this);
 
-  QDBusConnection session = QDBus::sessionBus();
+  QDBusConnection session = QDBusConnection::sessionBus();
   session.registerObject("/kbuildsycoca", this);
   session.registerObject("/kded", this);
 
@@ -483,7 +483,7 @@ void Kded::recreateDone()
    for(; m_recreateCount; m_recreateCount--)
    {
       QDBusMessage msg = m_recreateRequests.takeFirst();
-      msg.sendReply();
+      QDBusConnection::sessionBus().send(msg.createReply());
    }
    m_recreateBusy = false;
 
@@ -880,7 +880,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckHostname)
         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
-     QObject::connect(QDBus::sessionBus().interface(),
+     QObject::connect(QDBusConnection::sessionBus().interface(),
                       SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                       kded, SLOT(slotApplicationRemoved(QString,QString,QString)));
 
@@ -892,10 +892,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      // unconditionnally (David)
 
      // FIXME: rename the signal
-     QDBusMessage msg = QDBusMessage::signal("/kbuildsycoca", "org.kde.KSycoca",
-                                             "notifyDatabaseChanged", QDBus::sessionBus());
+     QDBusMessage msg = QDBusMessage::createSignal("/kbuildsycoca", "org.kde.KSycoca", "notifyDatabaseChanged" );
      msg << QStringList();
-     msg.send();
+     QDBusConnection::sessionBus().send(msg);
 
      QDBusInterface("org.kde.ksplash", "/")
          .call(QDBus::NoBlock, "upAndRunning", QString("kded"));

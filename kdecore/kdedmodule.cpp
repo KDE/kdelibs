@@ -63,7 +63,7 @@ void KDEDModule::setModuleName( const QString& name )
    QString realPath = d->moduleName = name;
    realPath.prepend("/modules/");
    // ExportSignals not used since it triggers a warning at this point
-   QDBus::sessionBus().registerObject(realPath, this, QDBusConnection::ExportSlots | QDBusConnection::ExportProperties | QDBusConnection::ExportAdaptors);
+   QDBusConnection::sessionBus().registerObject(realPath, this, QDBusConnection::ExportScriptableSlots | QDBusConnection::ExportScriptableProperties | QDBusConnection::ExportAdaptors);
 }
 
 QString KDEDModule::moduleName() const

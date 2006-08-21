@@ -90,9 +90,8 @@ void BackendSelection::save()
 	config.sync();
 	KServiceTypeProfile::clear();
 
-	QDBusMessage signal = QDBusMessage::signal( "/", "org.kde.Phonon.Factory",
-						    "phononBackendChanged", QDBus::sessionBus() );
-        signal.send();
+	QDBusMessage signal = QDBusMessage::createSignal( "/", "org.kde.Phonon.Factory", "phononBackendChanged" );
+        QDBusConnection::sessionBus().send(signal);
 }
 
 void BackendSelection::defaults()

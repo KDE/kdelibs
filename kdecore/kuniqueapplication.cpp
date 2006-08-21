@@ -104,7 +104,7 @@ KUniqueApplication::start()
 
   // Check the D-Bus connection health
   QDBusConnectionInterface* dbusService = 0;
-  if (!QDBus::sessionBus().isConnected() || !(dbusService = QDBus::sessionBus().interface()))
+  if (!QDBusConnection::sessionBus().isConnected() || !(dbusService = QDBusConnection::sessionBus().interface()))
   {
     kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
     ::exit(255);
@@ -215,7 +215,7 @@ KUniqueApplication::start()
 
      // Create a secondary connection to the D-BUS server
      // The primary one (QDBus::sessionBus()) belongs to the child
-     QDBusConnection con = QDBusConnection::addConnection(QDBusConnection::SessionBus, "kuniqueapplication");
+     QDBusConnection con = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "kuniqueapplication");
      dbusService = 0;
      if (!con.isConnected() || !(dbusService = con.interface()))
      {

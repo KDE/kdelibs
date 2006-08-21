@@ -110,7 +110,7 @@ KMFactory::KMFactory()
 
 	// create D-Bus signal connection
 	(void)new KMFactoryAdaptor(this);
-	QObject* iface = new org::kde::KDEPrint::KMFactory(QString(), QString(), QDBus::sessionBus(), this);
+	QObject* iface = new org::kde::KDEPrint::KMFactory(QString(), QString(), QDBusConnection::sessionBus(), this);
 	connect(iface, SIGNAL(pluginChanged(int)), SLOT(slot_pluginChanged(int)));
 	connect(iface, SIGNAL(configChanged()), SLOT(slot_configChanged()));
 }

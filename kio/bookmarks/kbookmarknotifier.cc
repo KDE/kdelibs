@@ -25,9 +25,9 @@
 static void emitSignal(const QString &signalName, const QVariantList &args)
 {
     QDBusMessage message =
-        QDBusMessage::signal("/", "org.kde.KIO.KBookmarkNotifier", signalName, QDBus::sessionBus());
+        QDBusMessage::createSignal("/", "org.kde.KIO.KBookmarkNotifier", signalName);
     message.setArguments(args);
-    message.send();
+    QDBusConnection::sessionBus().send(message);
 }
 
 void KBookmarkNotifier::addedBookmark(const QString &filename, const QString &url,

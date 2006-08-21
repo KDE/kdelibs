@@ -156,11 +156,11 @@ void KBookmarkManager::init( const QString& dbusPath )
     if ( dbusPath != "/KBookmarkManager/" )
     {
         new KBookmarkManagerAdaptor(this);
-        QDBus::sessionBus().registerObject( dbusPath, this );
+        QDBusConnection::sessionBus().registerObject( dbusPath, this );
 
-        QDBus::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
+        QDBusConnection::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
                                     "bookmarksChanged", this, SLOT(notifyChanged(QString,QDBusMessage)));
-        QDBus::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
+        QDBusConnection::sessionBus().connect(QString(), dbusPath, "org.kde.KIO.KBookmarkManager",
                                     "bookmarkConfigChanged", this, SLOT(notifyConfigChanged()));
     }
 
@@ -569,7 +569,7 @@ void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &
 
     // Reparse (the whole file, no other choice)
     // if someone else notified us
-    if (msg.service() != QDBus::sessionBus().baseService())
+    if (msg.service() != QDBusConnection::sessionBus().baseService())
        parse();
 
     //kDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;

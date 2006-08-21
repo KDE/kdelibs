@@ -135,7 +135,7 @@ void KCModuleProxy::Private::loadModule()
 		dbusService = QLatin1String("org.kde.internal.KSettingsWidget-") + name;
 	}
 
-	if( QDBus::sessionBus().registerService( dbusService ) || bogusOccupier )
+	if( QDBusConnection::sessionBus().registerService( dbusService ) || bogusOccupier )
 	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
 		kDebug(711) << "Module not already loaded, loading module " << modInfo.moduleName() << " from library " << modInfo.library() << " using symbol " << modInfo.handle() << endl;
@@ -149,7 +149,7 @@ void KCModuleProxy::Private::loadModule()
 
 		topLayout->addWidget( kcm );
 		//QDBus::sessionBus().registerObject( dbusPath, parent, QDBusConnection::ExportSlots );
-		QDBus::sessionBus().registerObject( dbusPath, new KSettingsWidgetAdaptor( parent ) );
+		QDBusConnection::sessionBus().registerObject( dbusPath, new KSettingsWidgetAdaptor( parent ) );
 
 		if ( !rootInfo && /* If it's not already done */
 				kcm->useRootOnlyMessage() && /* kcm wants root message */
@@ -189,7 +189,7 @@ void KCModuleProxy::Private::loadModule()
 
 		if( reply.isValid() )
 		{
-			QObject::connect( QDBus::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+			QObject::connect( QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
 					parent, SLOT(ownerChanged(QString,QString,QString)) );
 			kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
 					i18nc( "Argument is application name", "This configuration section is "

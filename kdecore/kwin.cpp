@@ -217,7 +217,7 @@ void KWin::setSystemTrayWindowFor( WId trayWin, WId forWin )
     NETRootInfo rootinfo( QX11Info::display(), NET::Supported );
     if( !rootinfo.isSupported( NET::WMKDESystemTrayWinFor )) {
         QDBusInterface iface(QLatin1String("org.kde.kded"), "/kded", QLatin1String("org.kde.kded"),
-                             QDBus::sessionBus());
+                             QDBusConnection::sessionBus());
         if( iface.call( "loadModule", QByteArray( "kdetrayproxy" )).type() != QDBusMessage::ReplyMessage)
             kWarning( 176 ) << "Loading of kdetrayproxy failed." << endl;
     }

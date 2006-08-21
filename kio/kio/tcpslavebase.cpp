@@ -626,7 +626,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
-    if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver")) {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver")) {
         KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                    QStringList() );
     }
@@ -635,10 +635,10 @@ KSSLCertificateHome::KSSLAuthAction aa;
 
     QDBusMessage retVal = uis.call("showSSLCertDialog", ourHost, certs, metaData("window-id").toLongLong());
     if (retVal.type() == QDBusMessage::ReplyMessage) {
-        if (retVal.at(0).toBool()) {
-           send = retVal.at(1).toBool();
-           save = retVal.at(2).toBool();
-           certname = retVal.at(3).toString();
+        if (retVal.arguments().at(0).toBool()) {
+           send = retVal.arguments().at(1).toBool();
+           save = retVal.arguments().at(2).toBool();
+           certname = retVal.arguments().at(3).toString();
         }
      }
   }
@@ -868,7 +868,7 @@ int TCPSlaveBase::verifyCertificate()
                 }
 
                 if (result == KMessageBox::Yes) {
-                  if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
+                  if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
                       KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                                  QStringList() );
 
@@ -988,7 +988,7 @@ int TCPSlaveBase::verifyCertificate()
                                  i18n("&Details"),
                                  i18n("Co&nnect"));
                 if (result == KMessageBox::Yes) {
-                  if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
+                  if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
                       KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                                  QStringList() );
 
@@ -1070,7 +1070,7 @@ int TCPSlaveBase::verifyCertificate()
 
       if ( result == KMessageBox::Yes )
       {
-          if (!QDBus::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
+          if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver"))
               KToolInvocation::startServiceByDesktopPath("kio_uiserver.desktop",
                                                          QStringList() );
 

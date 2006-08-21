@@ -53,8 +53,7 @@ KNotificationManager::KNotificationManager()
     : d(new Private)
 {
     d->knotify =
-        new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"),
-                           QLatin1String("org.kde.KNotify"), QDBus::sessionBus(), this);
+        new QDBusInterface(QLatin1String("org.kde.knotify"), QLatin1String("/Notify"), QLatin1String("org.kde.KNotify"), QDBusConnection::sessionBus(), this);
     QObject::connect(d->knotify, SIGNAL(notificationClosed(int)),
                      this, SLOT(notificationClosed(int)));
     QObject::connect(d->knotify, SIGNAL(notificationActivated(int,int)),

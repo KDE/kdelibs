@@ -72,7 +72,7 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
     KService::Ptr ptr = offers.first();
     QString dbusService = ptr->property("X-DBUS-ServiceName").toString();
 
-    if ( !QDBus::sessionBus().interface()->isServiceRegistered( dbusService ) )
+    if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( dbusService ) )
     {
         QString error;
         if ( startServiceFor( serviceType, constraint, &error, &dbusService, flags ) != 0 )

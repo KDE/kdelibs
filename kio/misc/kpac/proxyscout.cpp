@@ -137,9 +137,9 @@ namespace KPAC
               it != m_requestQueue.end(); ++it )
         {
             if ( success )
-                ( *it ).transaction.sendReply( handleRequest( ( *it ).url ) );
+                QDBusConnection::sessionBus().send( ( *it ).transaction.createReply( handleRequest( ( *it ).url ) ) );
             else
-                ( *it ).transaction.sendReply( QString( "DIRECT" ) );
+                QDBusConnection::sessionBus().send( ( *it ).transaction.createReply( QString( "DIRECT" ) ) );
         }
         m_requestQueue.clear();
         m_downloader->deleteLater();

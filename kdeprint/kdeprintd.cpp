@@ -276,10 +276,10 @@ void KDEPrintd::processRequest()
 		     0, req->seqNbr);
 	if ( reply.type() == QDBusMessage::ReplyMessage )
 	{
-		if ( reply.count() == 2 )
+		if ( reply.arguments().count() == 2 )
 		{
-			QDataStream output( reply.at(0).toByteArray() );
-			int seqNbr = reply.at(1).toInt();
+			QDataStream output( reply.arguments().at(0).toByteArray() );
+			int seqNbr = reply.arguments().at(1).toInt();
 			KIO::AuthInfo result;
 			output >> result;
 
@@ -292,7 +292,7 @@ void KDEPrintd::processRequest()
 	else
 		kWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
 
-	req->reply.sendReply(authString);
+        QDBusConnection::sessionBus().send(req->reply.createReply(authString));
 
 	m_requestsPending.removeAll( ( unsigned int )0 );
 	if ( m_requestsPending.count() > 0 )

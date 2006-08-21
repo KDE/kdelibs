@@ -124,7 +124,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     QDBusInterface *iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
                                                QLatin1String("/KHelpCenter"),
                                                QLatin1String("org.kde.KHelpCenter"),
-                                               QDBus::sessionBus());
+                                               QDBusConnection::sessionBus());
     if ( !iface->isValid() )
     {
         QString error;
@@ -144,7 +144,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
                                    QLatin1String("/KHelpCenter"),
                                    QLatin1String("org.kde.KHelpCenter"),
-                                   QDBus::sessionBus());
+                                   QDBusConnection::sessionBus());
     }
 
     iface->call("openUrl", url, startup_id );
@@ -444,10 +444,10 @@ startServiceInternal(const char *_function,
 {
     QString function = QLatin1String(_function);
     org::kde::KLauncher *launcher = KToolInvocation::klauncher();
-    QDBusMessage msg = QDBusMessage::methodCall(launcher->service(),
+    QDBusMessage msg = QDBusMessage::createMethodCall(launcher->service(),
                                                 launcher->path(),
                                                 launcher->interface(),
-                                                function, QDBus::sessionBus());
+                                                function);
     msg << _name << URLs;
     QStringList envs;
 #ifdef Q_WS_X11
@@ -469,12 +469,11 @@ startServiceInternal(const char *_function,
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )
         msg << noWait;
 
-    QDBusMessage reply = QDBus::sessionBus().call(msg);
+    QDBusMessage reply = QDBusConnection::sessionBus().call(msg);
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
 
-        printError(i18n("KLauncher could not be reached via D-Bus, error when calling %1:\n%2\n",function,
-                        reply.at(0).toString()), error);
+        printError(i18n("KLauncher could not be reached via D-Bus, error when calling %1:\n%2\n",function, reply.arguments().at(0).toString()), error);
         //qDebug() << reply;
         return EINVAL;
     }
@@ -482,14 +481,14 @@ startServiceInternal(const char *_function,
     if (noWait)
         return 0;
 
-    Q_ASSERT(reply.count() == 4);
+    Q_ASSERT(reply.arguments().count() == 4);
     if (serviceName)
-        *serviceName = reply.at(1).toString();
+        *serviceName = reply.arguments().at(1).toString();
     if (error)
-        *error = reply.at(2).toString();
+        *error = reply.arguments().at(2).toString();
     if (pid)
-        *pid = reply.at(3).toInt();
-    return reply.at(0).toInt();
+        *pid = reply.arguments().at(3).toInt();
+    return reply.arguments().at(0).toInt();
 }
 
 int

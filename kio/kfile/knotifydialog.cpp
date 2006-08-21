@@ -822,8 +822,8 @@ void KNotifyWidget::save()
 
     if ( kapp )
     {
-        QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KNotify", "reconfigure", QDBus::sessionBus());
-        signal.send();
+        QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.KNotify", "reconfigure");
+        QDBusConnection::sessionBus().send(signal);
     }
 
     emit changed( false );

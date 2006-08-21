@@ -138,7 +138,7 @@ Factory * Factory::self()
 Factory::Factory()
 	: d( new Private )
 {
-	QDBus::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",
+	QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",
 			"phononBackendChanged", this, SLOT(phononBackendChanged()));
 }
 

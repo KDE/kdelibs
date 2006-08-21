@@ -211,7 +211,7 @@ QString KNotifyClient::getDefaultFile(const QString &eventname, int present)
 bool KNotifyClient::startDaemon()
 {
   static bool firstTry = true;
-  if (!QDBus::sessionBus().interface()->isServiceRegistered(QLatin1String(daemonName))) {
+  if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String(daemonName))) {
     if( firstTry ) {
       firstTry = false;
       return KToolInvocation::startServiceByDesktopName(daemonName) == 0;
@@ -230,7 +230,7 @@ void KNotifyClient::beep(const QString& reason)
   }
 
   // The kaccess daemon handles visual and other audible beeps
-  if ( QDBus::sessionBus().interface()->isServiceRegistered( QLatin1String("org.kde.kaccess") ) )
+  if ( QDBusConnection::sessionBus().interface()->isServiceRegistered( QLatin1String("org.kde.kaccess") ) )
   {
       QApplication::beep();
       return;

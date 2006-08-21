@@ -780,14 +780,14 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    {
      // kapp registered already, but with the PID in the name.
      // We need to re-register without it, to detect already-running kbuildsycoca instances.
-     if (QDBus::sessionBus().registerService(appFullName))
+     if (QDBusConnection::sessionBus().registerService(appFullName))
      {
        break; // Go
      }
      fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
 
      QEventLoop eventLoop;
-     QObject::connect(QDBus::sessionBus().interface(), SIGNAL(serviceAcquired(QString)),
+     QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceAcquired(QString)),
                       &eventLoop, SLOT(quit()));
      eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
    }
@@ -917,9 +917,9 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    if (args->isSet("signal"))
    {
      // Notify ALL applications that have a ksycoca object, using a signal
-     QDBusMessage signal = QDBusMessage::signal("/", "org.kde.KSycoca", "notifyDatabaseChanged", QDBus::sessionBus());
+     QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.KSycoca", "notifyDatabaseChanged" );
      signal << *g_changeList;
-     signal.send();
+     QDBusConnection::sessionBus().send(signal);
    }
 
 #ifdef KBUILDSYCOCA_GUI

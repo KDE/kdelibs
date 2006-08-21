@@ -13,7 +13,7 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
                               "org.kde.kbuildsycoca");
   if (kbuildsycoca.isValid())
   {
-     kbuildsycoca.callWithArgumentList("recreate", QVariantList(), &dlg, SLOT(slotFinished()));
+     kbuildsycoca.callWithCallback("recreate", QVariantList(), &dlg, SLOT(slotFinished()));
      dlg.exec();
   }
 }

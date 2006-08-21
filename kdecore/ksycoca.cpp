@@ -87,7 +87,7 @@ KSycoca::KSycoca()
   : m_lstFactories(0), m_str(0), bNoDatabase(false),
     m_sycoca_size(0), m_sycoca_mmap(0), m_timeStamp(0), d(new Private)
 {
-   QDBus::sessionBus().connect(QString(), QString(), "org.kde.KSycoca", "notifyDatabaseChanged",
+   QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.KSycoca", "notifyDatabaseChanged",
                                this, SLOT(notifyDatabaseChanged(QStringList)));
    // We register with D-Bus _before_ we try to open the database.
    // This way we can be relatively sure that the KDE framework is
@@ -197,7 +197,7 @@ KSycoca::KSycoca( bool /* dummy */ )
   : m_lstFactories(0), m_str(0), bNoDatabase(false),
     m_sycoca_size(0), m_sycoca_mmap(0), d(new Private)
 {
-   QDBus::sessionBus().registerObject("/ksycoca_building", this, QDBusConnection::ExportSlots);
+   QDBusConnection::sessionBus().registerObject("/ksycoca_building", this, QDBusConnection::ExportScriptableSlots);
    m_lstFactories = new KSycocaFactoryList;
    _self = this;
 }

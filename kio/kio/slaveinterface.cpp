@@ -452,7 +452,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 #ifdef __GNUC__
 # warning FIXME This will never work
 #endif
-        caption = QDBus::sessionBus().baseService(); // hack, see observer.cpp
+        caption = QDBusConnection::sessionBus().baseService(); // hack, see observer.cpp
 
     emit needProgressId();
     kDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;

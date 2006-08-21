@@ -477,7 +477,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   KHTMLPartIface* iface = new KHTMLPartIface(this);
   (void)new KHTMLPartAdaptor(iface);
   for (int i = 1; ; ++i)
-    if (QDBus::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
+    if (QDBusConnection::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
       break;
     else if (i == 0xffff)
       kFatal() << "Something is very wrong in KHTMLPart!" << endl;

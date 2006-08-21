@@ -157,10 +157,10 @@ public Q_SLOTS: // METHODS
         QList<QVariant> argumentList;
         argumentList << qVariantFromValue(host) << qVariantFromValue(certList) << qVariantFromValue(mainwindow);
         QDBusMessage reply = callWithArgumentList(QDBus::Block, QLatin1String("showSSLCertDialog"), argumentList);
-        if (reply.type() == QDBusMessage::ReplyMessage && reply.count() == 4) {
-            send = qdbus_cast<bool>(reply.at(1));
-            save = qdbus_cast<bool>(reply.at(2));
-            choice = qdbus_cast<QString>(reply.at(3));
+        if (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().count() == 4) {
+            send = qdbus_cast<bool>(reply.arguments().at(1));
+            save = qdbus_cast<bool>(reply.arguments().at(2));
+            choice = qdbus_cast<QString>(reply.arguments().at(3));
         }
         return reply;
     }

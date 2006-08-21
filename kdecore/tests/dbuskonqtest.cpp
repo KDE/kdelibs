@@ -12,9 +12,9 @@ int main( int argc, char** argv )
    KApplication app(false);
 
     kDebug() << "sending reparseConfiguration to object Konqueror in konqueror" << endl;
-    QDBusMessage message = QDBusMessage::signal("/Konqueror", "org.kde.Konqueror", "reparseConfiguration", QDBus::sessionBus());
-    if(!QDBus::sessionBus().send(message))
-		kDebug() << "void expected, " << QDBus::sessionBus().lastError().name() << " returned" << endl;
+    QDBusMessage message = QDBusMessage::createSignal("/Konqueror", "org.kde.Konqueror", "reparseConfiguration");
+    if(!QDBusConnection::sessionBus().send(message))
+		kDebug() << "void expected, " << QDBusConnection::sessionBus().lastError().name() << " returned" << endl;
 
     /*
        QByteArray snd;

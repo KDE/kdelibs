@@ -74,7 +74,7 @@ int main( int argc, char *argv[] )
 
 	// force name with D-BUS
         QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply
-            = QDBus::sessionBus().interface()->registerService( app.objectName(),
+            = QDBusConnection::sessionBus().interface()->registerService( app.objectName(),
                                                                 QDBusConnectionInterface::ReplaceExistingService );
 
         if ( !reply.isValid() )

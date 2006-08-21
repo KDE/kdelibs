@@ -832,13 +832,13 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     if ( reply.type() != QDBusMessage::ReplyMessage )
     {
        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!" << endl;
-       kDebug(7019) << reply.at(0).toString() << endl;
+       kDebug(7019) << reply.arguments().at(0).toString() << endl;
        return false;
     }
 
-    QDataStream stream2( reply.at(1).toByteArray() );
+    QDataStream stream2( reply.arguments().at(1).toByteArray() );
     stream2 >> authResult;
-    s_seqNr = reply.at(1).toLongLong();
+    s_seqNr = reply.arguments().at(1).toLongLong();
 
     if (!authResult.isModified())
        return false;

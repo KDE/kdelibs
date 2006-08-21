@@ -391,7 +391,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     if (!bForkSlaves)
     {
        // check the UID of klauncher
-       QDBusReply<uint> reply = QDBus::sessionBus().interface()->serviceUid(KToolInvocation::klauncher()->service());
+       QDBusReply<uint> reply = QDBusConnection::sessionBus().interface()->serviceUid(KToolInvocation::klauncher()->service());
        if (reply.isValid() && getuid() != reply)
           bForkSlaves = true;
     }

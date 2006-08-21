@@ -44,8 +44,8 @@ KNotify::KNotify( QObject *parent )
 {
 	loadConfig();
 	(void)new KNotifyAdaptor(this);
-	QDBus::sessionBus().registerObject("/Notify", this, QDBusConnection::ExportAdaptors 
-	 /*|  QDBusConnection::ExportSlots |  QDBusConnection::ExportSignals*/ );
+	QDBusConnection::sessionBus().registerObject("/Notify", this, QDBusConnection::ExportAdaptors 
+	 /*|  QDBusConnection::ExportScriptableSlots |  QDBusConnection::ExportScriptableSignals*/ );
 }
 
 KNotify::~KNotify()

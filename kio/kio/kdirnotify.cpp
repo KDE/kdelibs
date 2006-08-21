@@ -27,10 +27,9 @@ OrgKdeKDirNotifyInterface::~OrgKdeKDirNotifyInterface()
 static void emitSignal(const QString &signalName, const QVariantList &args)
 {
     QDBusMessage message =
-        QDBusMessage::signal("/", QLatin1String(org::kde::KDirNotify::staticInterfaceName()),
-                             signalName, QDBus::sessionBus());
+        QDBusMessage::createSignal("/", QLatin1String(org::kde::KDirNotify::staticInterfaceName()), signalName);
     message.setArguments(args);
-    message.send();
+    QDBusConnection::sessionBus().send(message);
 }
 
 void OrgKdeKDirNotifyInterface::emitFileRenamed(const QString &src, const QString &dst)

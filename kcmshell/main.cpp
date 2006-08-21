@@ -108,8 +108,8 @@ static KService::Ptr locateModule(const QByteArray& module)
 
 bool KCMShell::isRunning()
 {
-    QString owner = QDBus::sessionBus().interface()->serviceOwner(m_serviceName);
-    if( owner == QDBus::sessionBus().baseService() )
+    QString owner = QDBusConnection::sessionBus().interface()->serviceOwner(m_serviceName);
+    if( owner == QDBusConnection::sessionBus().baseService() )
         return false; // We are the one and only.
 
     kDebug(780) << "kcmshell with modules '" <<
@@ -132,7 +132,7 @@ KCMShellMultiDialog::KCMShellMultiDialog(KPageDialog::FaceType dialogFace, QWidg
     setFaceType(dialogFace);
     setModal(true);
 
-    QDBus::sessionBus().registerObject("/KCModule/dialog", this, QDBusConnection::ExportSlots);
+    QDBusConnection::sessionBus().registerObject("/KCModule/dialog", this, QDBusConnection::ExportScriptableSlots);
 }
 
 void KCMShellMultiDialog::activate( const QByteArray& asn_id )
@@ -147,14 +147,14 @@ void KCMShellMultiDialog::activate( const QByteArray& asn_id )
 void KCMShell::setServiceName(const QString &dbusName )
 {
     m_serviceName = QLatin1String( "org.kde.kcmshell_" ) + dbusName;
-    QDBus::sessionBus().registerService(m_serviceName);
+    QDBusConnection::sessionBus().registerService(m_serviceName);
 }
 
 void KCMShell::waitForExit()
 {
     kDebug(780) << k_funcinfo << endl;
 
-    connect(QDBus::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
+    connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
             SLOT(appExit(QString,QString,QString)));
     exec();
 }

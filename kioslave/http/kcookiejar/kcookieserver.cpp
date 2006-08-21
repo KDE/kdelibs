@@ -271,7 +271,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
         {
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
-           request->reply.sendReply(res);
+           QDBusConnection::sessionBus().send(request->reply.createReply(res));
            CookieRequest *tmp = request;
            request = mRequestList->next();
            mRequestList->removeRef( tmp );

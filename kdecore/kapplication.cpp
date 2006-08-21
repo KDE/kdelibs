@@ -566,7 +566,7 @@ void KApplication::init()
   extern void qDBusBindToApplication();
   qDBusBindToApplication();
   QDBusConnectionInterface *bus = 0;
-  if (!QDBus::sessionBus().isConnected() || !(bus = QDBus::sessionBus().interface())) {
+  if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
       kFatal(101) << "Session bus not found" << endl;
       ::exit(125);
   }
@@ -591,9 +591,9 @@ void KApplication::init()
           ::exit(126);
       }
   }
-  QDBus::sessionBus().registerObject(QLatin1String("/MainApplication"), this,
-                                     QDBusConnection::ExportSlots |
-                                     QDBusConnection::ExportProperties |
+  QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), this,
+                                     QDBusConnection::ExportScriptableSlots |
+                                     QDBusConnection::ExportScriptableProperties |
                                      QDBusConnection::ExportAdaptors);
 
   smw = 0;
