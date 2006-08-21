@@ -789,7 +789,6 @@ kde4_add_executable(kassistantdialogtest RUN_UNINSTALLED ${kassistantdialogtest_
 
 target_link_libraries(kassistantdialogtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
 
-add_test(kassistantdialogtest ${EXECUTABLE_OUTPUT_PATH}/kassistantdialogtest)
 
 
 
