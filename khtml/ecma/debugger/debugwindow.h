@@ -59,6 +59,17 @@ class QEventLoop;
 namespace KJS
 {
 
+struct CallStackEntry
+{
+    QString name;
+    int lineNumber;
+
+    bool operator==(const CallStackEntry& other) const        // you're being lazy..
+    {
+        return ((other.name == name) && (other.lineNumber == lineNumber));
+    }
+};
+
 
 struct BreakPoint
 {
@@ -98,6 +109,10 @@ public:
     void removeBreakpoint(int lineNumber);
     bool hasBreakpoint(int lineNumber);
 
+    QVector<CallStackEntry> callStack();
+    void addCall(const QString&, int);
+    void removeCall(const QString&, int);
+
 private:
     void readSource();
 
@@ -128,6 +143,10 @@ public:
         Stop     = 4  // The script will stop execution completely,
                       // as soon as possible
     };
+
+signals:
+    void exitLoop();
+
 
 public:
     DebugWindow(QWidget *parent = 0);
@@ -173,8 +192,9 @@ private:
     void createStatusBar();
     void createTabWidget();
 
-    void enterDebugSession(KJS::ExecState *exec);
+    void enterDebugSession(KJS::ExecState *exec, DebugDocument *document);
     void enableKateHighlighting(KTextEditor::Document *document);
+    void enterLoop();
 
 private:
     // Standard actions

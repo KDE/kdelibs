@@ -263,7 +263,7 @@ void DebugWindow::stopExecution()
 
 void DebugWindow::continueExecution()
 {
-    enableOtherWindows();
+    emit exitLoop();
     m_mode = Continue;
 }
 
@@ -292,7 +292,7 @@ DebugWindow::~DebugWindow()
 
 // -------------------------------------------------------------
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-                               const UString &source, int startingLineNumber, int errorLine, const UString &errorMsg)
+                               const UString &source, int /* startingLineNumber */, int errorLine, const UString &/* errorMsg */)
 {
     Q_UNUSED(exec);
 
@@ -413,7 +413,7 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 //             kDebug() << "Hey! we actually found a breakpoint!" << endl;
             // Lets try a dump of the scope chain now..
             // m_localVariables->display(exec);
-            enterDebugSession(exec);
+            enterDebugSession(exec, document);
         }
     }
 
@@ -424,24 +424,35 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 
 bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
 {
-    Q_UNUSED(exec);
-    Q_UNUSED(sourceId);
-    Q_UNUSED(lineno);
-    Q_UNUSED(function);
-    Q_UNUSED(args);
-
     kDebug() << "***************************** callEvent **************************************************" << endl;
     kDebug() << "  sourceId: " << sourceId << endl
-             << "lineNumber: " << lineno << endl
-             << "  function: " << function->toString(exec).qstring() << endl;
+             << "lineNumber: " << lineno << endl;
 
-    for( KJS::ListIterator item = args.begin();
-         item != args.end();
-         ++item)
+    DebugDocument *document = m_sourceIdLookup[sourceId];
+    if (document)
     {
-        KJS::JSValue *value = (*item);
-        kDebug() << "arg: " << value->toString(exec).qstring() << endl;
+        if (function->inherits(&InternalFunctionImp::info))
+        {
+            KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
+            if (func)
+            {
+                QString functionName = func->functionName().qstring();
+                kDebug() << "  function: " << functionName << endl;
+                func = 0;
+
+                document->addCall(functionName, lineno);
+            }
+        }
+
+        for( KJS::ListIterator item = args.begin();
+            item != args.end();
+            ++item)
+        {
+            KJS::JSValue *value = (*item);
+            kDebug() << "arg: " << value->toString(exec).qstring() << endl;
+        }
     }
+
 
     kDebug() << "****************************************************************************************" << endl;
 
@@ -450,17 +461,44 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
-    Q_UNUSED(exec);
-    Q_UNUSED(sourceId);
-    Q_UNUSED(lineno);
-    Q_UNUSED(function);
+    kDebug() << "***************************** returnEvent **************************************************" << endl;
+    kDebug() << "  sourceId: " << sourceId << endl
+             << "lineNumber: " << lineno << endl;
 
-//     kDebug() << "returnEvent" << endl;
+    DebugDocument *document = m_sourceIdLookup[sourceId];
+    if (document)
+    {
+        if (function->inherits(&InternalFunctionImp::info))
+        {
+            KJS::InternalFunctionImp *func = static_cast<InternalFunctionImp*>(function);
+            if (func)
+            {
+                QString functionName = func->functionName().qstring();
+                kDebug() << "  function: " << functionName << endl;
+                func = 0;
+
+                document->removeCall(functionName, lineno);
+            }
+        }
+    }
+
+    kDebug() << "****************************************************************************************" << endl;
 
     return (m_mode != Stop);
 }
 
 // End KJS::Debugger overloads
+
+
+void DebugWindow::enterLoop()
+{
+    QEventLoop eventLoop;
+    connect(this, SIGNAL(exitLoop()), &eventLoop, SLOT(quit()));
+//    eventLoop.exec(QEventLoop::X11ExcludeTimers | QEventLoop::ExcludeSocketNotifiers);
+    eventLoop.exec();
+}
+
+
 
 void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 {
@@ -589,7 +627,7 @@ void DebugWindow::closeTab()
 }
 
 
-void DebugWindow::enterDebugSession(KJS::ExecState *exec)
+void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *document)
 {
     // This "enters" a new debugging session, i.e. enables usage of the debugging window
     // It re-enters the qt event loop here, allowing execution of other parts of the
@@ -601,7 +639,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec)
         show();
 
     m_mode = Stop;
-
 //    if (m_execStates.isEmpty())
     {
         m_continueAct->setEnabled(true);
@@ -611,9 +648,19 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec)
         m_stepOverAct->setEnabled(true);
     }
 
+    // Dump call stack:
+    kDebug() << "Call Stack: " << endl;
+    QVector<CallStackEntry> calls = document->callStack();
+    for (int i = 0; i < calls.count(); i++)
+    {
+        kDebug() << i << ": " << calls[i].name << " " << calls[i].lineNumber << endl;
+    }
+
 
     m_localVariables->display(exec);
-    disableOtherWindows();
+//    disableOtherWindows();
+    enterLoop();
+
 /*
     bool done = false;
     while (!done)
@@ -718,7 +765,7 @@ public:
     Interpreter *interpreter;
     QHash<int, SourceFragment> codeFragments;
     QVector<int> breakpoints;
-
+    QVector<CallStackEntry> callStack;
 };
 
 DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
@@ -851,3 +898,28 @@ void DebugDocument::readSource()
     }
 }
 
+QVector<CallStackEntry> DebugDocument::callStack()
+{
+    return d->callStack;
+}
+
+void DebugDocument::addCall(const QString &function, int lineNumber)
+{
+    CallStackEntry entry;
+    entry.name = function;
+    entry.lineNumber = lineNumber;
+
+    d->callStack.append(entry);
+}
+
+void DebugDocument::removeCall(const QString &function, int lineNumber)
+{
+    CallStackEntry entry;
+    entry.name = function;
+    entry.lineNumber = lineNumber;
+
+    int idx = d->callStack.indexOf(entry);
+    kDebug() << "DebugDocument::removeCall(..) idx = " << idx << endl;
+    if (idx != -1)
+        d->callStack.remove(idx);
+}
