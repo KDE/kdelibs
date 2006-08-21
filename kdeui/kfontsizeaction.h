@@ -64,8 +64,11 @@ public:
 Q_SIGNALS:
     void fontSizeChanged( int );
 
-private slots:
-    void slotTriggered();
+protected Q_SLOTS:
+    /**
+     * This function is called whenever an action from the selections is triggered.
+     */
+    virtual void actionTriggered(QAction* action);
 
 private:
     void init();

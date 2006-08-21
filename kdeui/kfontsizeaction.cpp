@@ -139,8 +139,6 @@ void KFontSizeAction::init()
         lst.append( QString::number( *it ) );
 
     setItems( lst );
-
-    connect(this, SIGNAL(triggered(bool)), SLOT(slotTriggered()));
 }
 
 void KFontSizeAction::setFontSize( int size )
@@ -192,12 +190,10 @@ int KFontSizeAction::fontSize() const
   return currentText().toInt();
 }
 
-void KFontSizeAction::slotTriggered()
+void KFontSizeAction::actionTriggered( QAction* action )
 {
-  QAction* justTriggered = qobject_cast<QAction*>(sender());
-
-  if (justTriggered)
-    emit fontSizeChanged(justTriggered->text().toInt());
+    emit fontSizeChanged( action->text().toInt() );
+    KSelectAction::actionTriggered( action );
 }
 
 /* vim: et sw=2 ts=2
