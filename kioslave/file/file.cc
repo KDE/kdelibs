@@ -434,7 +434,7 @@ void FileProtocol::open( const KUrl& url, int access )
         read_retry:
             int res = ::read(fd, buffer.data(), bytes);
             if (res >= 0) {
-                array = array.fromRawData(buffer.data(), bytes);
+                array = array.fromRawData(buffer.data(), res);
                 data( array );
                 array.clear();
                 continue;
