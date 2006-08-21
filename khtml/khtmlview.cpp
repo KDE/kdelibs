@@ -3774,7 +3774,8 @@ void KHTMLView::recalcAndStoreCaretPos(CaretBox *hintBox)
 void KHTMLView::caretOn()
 {
     if (d->m_caretViewContext) {
-        killTimer(d->m_caretViewContext->freqTimerId);
+        if (d->m_caretViewContext->freqTimerId != -1)
+            killTimer(d->m_caretViewContext->freqTimerId);
 
 	if (hasFocus() || d->m_caretViewContext->displayNonFocused
 			== KHTMLPart::CaretBlink) {
@@ -3798,7 +3799,7 @@ void KHTMLView::caretOn()
 void KHTMLView::caretOff()
 {
     if (d->m_caretViewContext) {
-        if (d->m_caretViewContext->freqTimerId)
+        if (d->m_caretViewContext->freqTimerId != -1)
 	    killTimer(d->m_caretViewContext->freqTimerId);
 	d->m_caretViewContext->freqTimerId = -1;
         d->m_caretViewContext->displayed = false;
