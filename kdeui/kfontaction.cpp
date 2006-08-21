@@ -186,7 +186,7 @@ QWidget* KFontAction::createWidget(QWidget* _parent)
 #warning FIXME: items need to be converted
 #endif
     QFontComboBox *cb = new QFontComboBox( parent );
-    connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SIGNAL(slotFontChanged( const QFont&  ) ) );
+    connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SLOT(slotFontChanged( const QFont&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
     return cb;
 }
