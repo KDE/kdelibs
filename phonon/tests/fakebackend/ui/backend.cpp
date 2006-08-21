@@ -38,7 +38,7 @@ UiBackend::~UiBackend()
 {
 }
 
-QWidget* UiBackend::createVideoWidget( QWidget* parent )
+QObject* UiBackend::createVideoWidget( QWidget* parent )
 {
 	return new Fake::VideoWidget( parent );
 }

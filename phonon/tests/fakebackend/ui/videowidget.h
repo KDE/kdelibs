@@ -40,6 +40,9 @@ namespace Fake
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
 			virtual void processFrame( Phonon::VideoFrame& frame );
 
+		public slots:
+			QWidget *widget() { return this; }
+
 		protected:
 			virtual void paintEvent( QPaintEvent* ev );
 

@@ -34,7 +34,7 @@ namespace Fake
 			UiBackend( QObject* parent, const QStringList& args );
 			virtual ~UiBackend();
 
-			Q_INVOKABLE QWidget*  createVideoWidget( QWidget* parent );
+			Q_INVOKABLE QObject* createVideoWidget( QWidget* parent );
 	};
 }} // namespace Phonon::Fake
 
