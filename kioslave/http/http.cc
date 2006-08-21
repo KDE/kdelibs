@@ -83,25 +83,44 @@
 #endif /* HAVE_LIBGSSAPI */
 
 #include <misc/kntlm/kntlm.h>
+#include <kapplication.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 
 using namespace KIO;
 using namespace KNetwork;
 
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
-  KLocale::setMainCatalog("kdelibs");
-  KInstance instance( "kio_http" );
-  ( void ) KGlobal::locale();
+    KLocale::setMainCatalog("kdelibs");
 
-  if (argc != 4)
-  {
-     fprintf(stderr, "Usage: kio_http protocol domain-socket1 domain-socket2\n");
-     exit(-1);
-  }
+#if 1
 
-  HTTPProtocol slave(argv[1], argv[2], argv[3]);
-  slave.dispatchLoop();
-  return 0;
+    KAboutData about("kio_http", "kio_http", "");
+    KCmdLineArgs::init(&about);
+    KApplication app; // needed for QSocketNotifier + qdbus's timer
+
+#else
+
+    QCoreApplication app( argc, argv ); // needed for QSocketNotifier
+    // Why do we need to call this in kapp (so that qdbus' timer doesn't warn)?
+    // How does it work for non-kde apps?
+    extern void qDBusBindToApplication();
+    qDBusBindToApplication();
+    KInstance instance( "kio_http" );
+    (void) KGlobal::locale();
+
+#endif
+
+    if (argc != 4)
+    {
+        fprintf(stderr, "Usage: kio_http protocol domain-socket1 domain-socket2\n");
+        exit(-1);
+    }
+
+    HTTPProtocol slave(argv[1], argv[2], argv[3]);
+    slave.dispatchLoop();
+    return 0;
 }
 
 /***********************************  Generic utility functions ********************/
