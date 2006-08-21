@@ -59,7 +59,7 @@ class PHONONUI_EXPORT UiFactory : public QObject
 		 *
 		 * \return a pointer to the Ifaces::VideoWidget the backend provides
 		 */
-		QWidget* createVideoWidget( QWidget* parent = 0 );
+		QObject* createVideoWidget( QWidget* parent = 0 );
 
 		/**
 		 * \return a pointer to the backend interface.

@@ -1,1 +1,1 @@
-addMethod( "QWidget*", "createVideoWidget(QWidget*)", true );
+addMethod( "QObject*", "createVideoWidget(QWidget*)", true );

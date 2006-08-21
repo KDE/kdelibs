@@ -28,9 +28,8 @@ class MethodTest : public QObject
 	private slots:
 		void checkUiBackendMethods_data();
 		void checkUiBackendMethods();
-		//VideoWidget doesn't have any methods
-		//void checkVideoWidgetMethods_data();
-		//void checkVideoWidgetMethods();
+		void checkVideoWidgetMethods_data();
+		void checkVideoWidgetMethods();
 
 	private:
 		void addColumns();

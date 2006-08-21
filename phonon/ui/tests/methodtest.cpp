@@ -26,11 +26,11 @@ using namespace Phonon;
 void MethodTest::checkUiBackendMethods_data() { addColumns();
 #include "methods/factory.cpp"
 }
-//void MethodTest::checkVideoWidgetMethods_data() { addColumns();
-//#include "methods/videowidget.cpp"
-//}
+void MethodTest::checkVideoWidgetMethods_data() { addColumns();
+#include "methods/videowidget.cpp"
+}
 void MethodTest::checkUiBackendMethods()   { checkMethods( UiFactory::self()->backend() ); }
-//void MethodTest::checkVideoWidgetMethods() { checkMethods( UiFactory::self()->createVideoWidget() ); }
+void MethodTest::checkVideoWidgetMethods() { checkMethods( UiFactory::self()->createVideoWidget() ); }
 
 void MethodTest::addColumns()
 {

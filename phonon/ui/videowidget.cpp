@@ -73,7 +73,9 @@ void VideoWidget::setFullScreen( bool newFullScreen )
 	// application?
 	if( ! d->fullScreenWidget )
 		d->fullScreenWidget = new FullScreenVideoWidget( this );
-	QWidget* w = iface() ? qobject_cast<QWidget*>( d->backendObject ) : 0;
+	QWidget *w = 0;
+	if( iface() )
+		BACKEND_GET( QWidget *, w, "widget" );
 	if( newFullScreen )
 	{
 		if( w )
@@ -118,7 +120,8 @@ void VideoWidget::setupIface()
 	Q_ASSERT( d->backendObject );
 	AbstractVideoOutput::setupIface();
 
-	QWidget* w = qobject_cast<QWidget*>( d->backendObject );
+	QWidget *w = 0;
+	BACKEND_GET( QWidget *, w, "widget" );
 	if( w )
 	{
 		w->addAction( d->fullScreenAction );
@@ -132,7 +135,8 @@ QSize VideoWidget::sizeHint()
 {
 	if( iface() )
 	{
-		QWidget* w = qobject_cast<QWidget*>( d->iface()->qobject() );
+		QWidget *w = 0;
+		BACKEND_GET( QWidget *, w, "widget" );
 		if( w )
 			return w->sizeHint();
 	}
@@ -143,7 +147,8 @@ QSize VideoWidget::minimumSizeHint()
 {
 	if( iface() )
 	{
-		QWidget* w = qobject_cast<QWidget*>( d->iface()->qobject() );
+		QWidget *w = 0;
+		BACKEND_GET( QWidget *, w, "widget" );
 		if( w )
 			return w->minimumSizeHint();
 	}

@@ -131,12 +131,12 @@ void UiFactory::deleteNow()
 	delete this;
 }
 
-QWidget* UiFactory::createVideoWidget( QWidget* parent )
+QObject* UiFactory::createVideoWidget( QWidget* parent )
 {
 	if( d->backend )
 	{
-		QWidget* ret;
-		if( QMetaObject::invokeMethod( d->backend, "createVideoWidget", Qt::DirectConnection, Q_RETURN_ARG( QWidget*, ret ), Q_ARG( QWidget*, parent ) ) )
+		QObject* ret;
+		if( QMetaObject::invokeMethod( d->backend, "createVideoWidget", Qt::DirectConnection, Q_RETURN_ARG( QObject*, ret ), Q_ARG( QWidget*, parent ) ) )
 		{
 			Phonon::Factory::self()->registerQObject( ret );
 			return ret;
