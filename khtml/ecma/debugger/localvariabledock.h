@@ -19,8 +19,8 @@ public:
     void clear();
 
 private:
-    QTreeView   *m_view;
-    ExecStateModel    *m_execModel;
+    QTreeView       *m_view;
+    ExecStateModel  *m_execModel;
 
 };
 

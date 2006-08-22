@@ -263,7 +263,7 @@ void DebugWindow::stopExecution()
 
 void DebugWindow::continueExecution()
 {
-    emit exitLoop();
+    exitLoop();
     m_mode = Continue;
 }
 
@@ -490,16 +490,6 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 // End KJS::Debugger overloads
 
 
-void DebugWindow::enterLoop()
-{
-    QEventLoop eventLoop;
-    connect(this, SIGNAL(exitLoop()), &eventLoop, SLOT(quit()));
-//    eventLoop.exec(QEventLoop::X11ExcludeTimers | QEventLoop::ExcludeSocketNotifiers);
-    eventLoop.exec();
-}
-
-
-
 void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 {
     KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(document);
@@ -683,13 +673,6 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
 
 bool DebugWindow::eventFilter(QObject *object, QEvent *event)
 {
-    /*
-    if (object == this)
-        return QObject::eventFilter(object, event);
-    return true;
-    */
-
-/*
     switch (event->type())
     {
         case QEvent::MouseButtonPress:
@@ -701,42 +684,49 @@ bool DebugWindow::eventFilter(QObject *object, QEvent *event)
         case QEvent::Destroy:
         case QEvent::Close:
         case QEvent::Quit:
-            if (object == this)
-                return QWidget::eventFilter(object, event);
-            else
-                return true;
+            {
+                while (object->parent())
+                    object = object->parent();
+                if (object == this)
+                    return QWidget::eventFilter(object, event);
+                else
+                    return true;
+            }
             break;
         default:
             return QWidget::eventFilter(object, event);
     }
-    */
-    return QWidget::eventFilter(object, event);
+
 }
 
-void DebugWindow::disableOtherWindows()
+void DebugWindow::enterLoop()
 {
-    kapp->installEventFilter(this);
-/*
-  QWidgetList widgets = QApplication::allWidgets();
-  QListIterator<QWidget*> it(widgets);
-  while (it.hasNext()) {
-    QWidget* widget = it.next();
-    widget->installEventFilter(this);
-  }
-*/
+    QEventLoop eventLoop;
+    connect(this, SIGNAL(quitLoop()), &eventLoop, SLOT(quit()));
+    enterModality();
+
+//    eventLoop.exec(QEventLoop::X11ExcludeTimers | QEventLoop::ExcludeSocketNotifiers);
+    eventLoop.exec();
 }
 
-void DebugWindow::enableOtherWindows()
+void DebugWindow::exitLoop()
 {
-    kapp->removeEventFilter(this);
-/*
-  QWidgetList widgets = QApplication::allWidgets();
-  QListIterator<QWidget*> it(widgets);
-  while (it.hasNext()) {
-    QWidget* widget = it.next();
-    widget->removeEventFilter(this);
-  }
-*/
+    leaveModality();
+    emit quitLoop();
+}
+
+void DebugWindow::enterModality()
+{
+    QWidgetList widgets = QApplication::allWidgets();
+    foreach (QWidget *widget, widgets)
+        widget->installEventFilter(this);
+}
+
+void DebugWindow::leaveModality()
+{
+    QWidgetList widgets = QApplication::allWidgets();
+    foreach (QWidget *widget, widgets)
+        widget->removeEventFilter(this);
 }
 
 

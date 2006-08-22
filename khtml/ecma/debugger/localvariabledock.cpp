@@ -17,7 +17,7 @@
 #include "localvariabledock.moc"
 
 LocalVariablesDock::LocalVariablesDock(QWidget *parent)
-    : QDockWidget("Local Variables", parent)
+    : QDockWidget("Local Variables", parent), m_execModel(0)
 {
     m_view = new QTreeView;
 //    m_model = new ObjectModel;
@@ -43,28 +43,5 @@ void LocalVariablesDock::display(KJS::ExecState *exec)
 
     m_execModel = new ExecStateModel(exec);
     m_view->setModel(m_execModel);
-//    m_view->reset();
-
-/*
-    KJS::Context* context = exec->context();
-    if (!context)
-    {
-        kDebug() << "nothing running!" << endl;
-        return;
-    }
-
-    KJS::ScopeChain chain = context->scopeChain();
-    for( KJS::ScopeChainIterator obj = chain.begin();
-         obj != chain.end();
-         ++obj)
-    {
-        KJS::JSObject *object = (*obj);
-        if (!object)
-            break;
-
-        if (object->isActivation())         // hack check to see if we're in local scope
-            getValues(exec, object);
-    }
-*/
 }
 

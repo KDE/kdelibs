@@ -145,8 +145,7 @@ public:
     };
 
 signals:
-    void exitLoop();
-
+    void quitLoop();
 
 public:
     DebugWindow(QWidget *parent = 0);
@@ -194,7 +193,12 @@ private:
 
     void enterDebugSession(KJS::ExecState *exec, DebugDocument *document);
     void enableKateHighlighting(KTextEditor::Document *document);
+
+    void enterModality();
+    void leaveModality();
+
     void enterLoop();
+    void exitLoop();
 
 private:
     // Standard actions
