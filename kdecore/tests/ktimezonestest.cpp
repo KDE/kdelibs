@@ -70,8 +70,8 @@ void KTimeZonesTest::utc()
     if (utc)
       QCOMPARE(utc->name(), QString("UTC"));
     QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::LocalTime)), 0);
-    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::UTC)), 0);
-    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,7,1), QTime(), Qt::UTC)), 0);
+    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::UTC)), 170995761);
+    QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,7,1), QTime(), Qt::UTC)), 170995761);
 }
 
 /////////////////////////
