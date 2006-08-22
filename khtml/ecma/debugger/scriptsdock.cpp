@@ -60,7 +60,7 @@ void ScriptsDock::updateModel()
 
     QHash<QString, QStandardItem*> parents;
 
-    QStandardItem *top = m_model->topLevelParent();
+    QStandardItem *top = m_model->invisibleRootItem();
     foreach (KJS::DebugDocument *document, m_documents)
     {
         QString domain = QUrl(document->url()).host();
@@ -85,7 +85,7 @@ void ScriptsDock::updateModel()
 
         QVariant var;
         var.setValue(document);
-        item->setData(Qt::UserRole, var);
+        item->setData(var, Qt::UserRole);
         parent->appendRow(item);
     }
 
