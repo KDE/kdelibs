@@ -937,7 +937,7 @@ HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)
     : HTMLTablePartElementImpl(doc)
 {
     _id = i;
-    _span = (_id == ID_COLGROUP ? 0 : 1);
+    _span = 1;
 }
 
 NodeImpl::Id HTMLTableColElementImpl::id() const
@@ -952,6 +952,7 @@ void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
     {
     case ATTR_SPAN:
         _span = attr->val() ? attr->val()->toInt() : 1;
+        if (_span < 1) _span = 1;
         break;
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())
