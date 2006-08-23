@@ -185,8 +185,18 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // Do not call this deleter from ~KApplication
       KGlobal::unregisterStaticDeleter(&pcd);
 
-      // create the dcop interface if it has not been created yet
-      if (!kDebugDBusIface)
+      // Create the dbus interface if it has not been created yet
+      // But only register to DBus if we are in a process with a dbus event loop,
+      // otherwise introspection will just hang.
+      // Examples of processes without a dbus event loop: kioslaves and the main kdeinit process.
+      //
+      // How to know that we have a real event loop? That's tricky.
+      // We could delay registration in kDebugDBusIface with a QTimer, but
+      // it would still get triggered by kioslaves that use enterLoop/exitLoop
+      // to run kio jobs synchronously.
+      //
+      // Let's just use kapp (kioslaves should use QCoreApplication but not KApplication).
+      if (!kDebugDBusIface && kapp)
       {
           kDebugDBusIface = dbussd.setObject(kDebugDBusIface, new KDebugDBusIface);
       }
