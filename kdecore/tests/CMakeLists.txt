@@ -102,7 +102,7 @@ kde4_add_executable(kuniqueapptest NOGUI RUN_UNINSTALLED ${kuniqueapptest_SRCS})
 
 target_link_libraries(kuniqueapptest  ${KDE4_KDECORE_LIBS} )
 
-# add_test(kdecore-kuniqueapptest ${EXECUTABLE_OUTPUT_PATH}/kuniqueapptest)
+add_test(kdecore-kuniqueapptest ${EXECUTABLE_OUTPUT_PATH}/kuniqueapptest)
 
 ########### next target ###############
 

@@ -19,25 +19,23 @@
 #include "kuniqueapplication.h"
 #include "kglobalsettings.h"
 
-#include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-
+#include <kdebug.h>
+#include <QTimer>
 
 static KCmdLineOptions options[] =
 {
     { "!+[argument]", "arguments passed to new instance", 0},
-        KCmdLineLastOption
+    KCmdLineLastOption
 };
-
 
 class TestApp : public KUniqueApplication
 {
 public:
-   TestApp() : KUniqueApplication("TestApp") { }
-   virtual int newInstance( );
+    TestApp() : KUniqueApplication("TestApp") { }
+    virtual int newInstance( );
 };
 
 
@@ -45,30 +43,37 @@ int
 TestApp::newInstance( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    qWarning("NewInstance");
+    kDebug() << "NewInstance" << endl;
     for ( int i = 0; i < args->count(); i++ )
     {
-        qWarning("argument %d : %s"  , i , args->arg(i) );
-    } 
- 
-   return 0;
+        kDebug() << "argument " << i << " : " << args->arg(i);
+    }
+
+    // Auto-terminate this process, so that we can run it as part of the automated unittests,
+    // without ending up with a process lying around
+    // You have 10s to call it again, when doing manual testing ;)
+    QTimer::singleShot( 10000, this, SLOT(quit()) );
+
+    return 0;
 }
 
 int
 main(int argc, char *argv[])
 {
-   KAboutData about("kuniqueapptest", "kuniqueapptest", "version");
-   KCmdLineArgs::init(argc, argv, &about);
-   KCmdLineArgs::addCmdLineOptions( options ); 
-   KUniqueApplication::addCmdLineOptions();
+    KAboutData about("kuniqueapptest", "kuniqueapptest", "version");
+    KCmdLineArgs::init(argc, argv, &about);
+    KCmdLineArgs::addCmdLineOptions( options );
+    KUniqueApplication::addCmdLineOptions();
 
-   if (!TestApp::start())
-   {
-      exit(0);
-   }
-   TestApp a;
+    if (!TestApp::start())
+    {
+        return 1;
+    }
+    TestApp a;
 
-   printf("Running.\n");
-   kapp->exec();
-   printf("Terminating.\n");
+    printf("Running.\n");
+    kapp->exec();
+    printf("Terminating.\n");
+
+    return 0;
 }
