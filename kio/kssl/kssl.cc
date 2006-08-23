@@ -174,7 +174,7 @@ bool KSSL::initialize() {
 
 	m_pi.reset();
 
-	d->m_meth = d->kossl->SSLv3_client_method();
+	d->m_meth = d->kossl->SSLv23_client_method();
 	d->m_ctx = d->kossl->SSL_CTX_new(d->m_meth);
 	if (d->m_ctx == 0L) {
 		return false;
@@ -284,7 +284,7 @@ int rc;
 		}
 	}
 
-	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
+	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL|SSL_OP_NO_SSLv2);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
 	if (rc == 0) {
@@ -367,7 +367,7 @@ int rc;
 		}
 	}
 
-	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
+	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL|SSL_OP_NO_SSLv2);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
 	if (rc == 0) {

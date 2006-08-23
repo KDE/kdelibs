@@ -131,7 +131,7 @@ QString KSSLSettings::getCipherList() {
 	if (!d->kossl)
 		d->kossl = KOSSL::self();
 
-	meth = d->kossl->SSLv3_client_method();
+	meth = d->kossl->TLSv1_client_method();
 
         SSL_CTX *ctx = d->kossl->SSL_CTX_new(meth);
         SSL* ssl = d->kossl->SSL_new(ctx);
