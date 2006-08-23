@@ -18,27 +18,31 @@
 
 #include <qstring.h>
 #include <qhash.h>
+#include <stdio.h>
 
-class A { int foo; };
-class B { int bar; };
-class C : public A, public B { int foobar; };
+class A { qint64 foo; };
+class B { qint64 bar; };
+class C : public A, public B { qint64 foobar; };
 
 QHash<QString,A*> dictA;
 QHash<QString,B*> dictB;
 
-int main(int , char *[])
+int main(int, char *[])
 {
-  C obj;
-  A *pA = &obj;
-  B *pB = &obj;
-  C *pC = &obj;
-qWarning("pA = %p, pB = %p, pC = %p", pA, pB, pC);
-  if (pA == pC) qWarning("pA == pC");
-  if (pB == pC) qWarning("pB == pC");
+    // This test shows that different pointer values due to base class adjustment
+    // are not a problem.
+    C obj;
+    A *pA = &obj;
+    B *pB = &obj;
+    C *pC = &obj;
+    Q_ASSERT(pA == pC); // comparison is done using A*, so it works
+    Q_ASSERT(pB == pC); // comparison is done using B*, so it works
+    Q_ASSERT((void*)pA == (void*)pC);
+    Q_ASSERT((void*)pB != (void*)pC); // yes, it's a different pointer value!
 
-  dictA.insert("hello", pC);
-  dictB.insert("hello", pC);
+    dictA.insert("hello", pC);
+    dictB.insert("hello", pC);
 
-  if (dictA["hello"] == pC) qWarning("dictA['hello'] == pC");
-  if (dictB["hello"] == pC) qWarning("dictB['hello'] == pC");
+    Q_ASSERT(dictA["hello"] == pC);
+    Q_ASSERT(dictB["hello"] == pC);
 }
