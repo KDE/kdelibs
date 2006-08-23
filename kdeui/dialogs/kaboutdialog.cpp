@@ -357,6 +357,7 @@ KAboutContainerBase::KAboutContainerBase(int layoutType, QWidget *_parent)
   {
     mPageTab = new QTabWidget(this);
     if (!mPageTab) { return; }
+    mPageTab->setUsesScrollButtons(false);
     hbox->addWidget(mPageTab, 10);
   }
   else if (layoutType & KAboutDialog::ImageOnly)
