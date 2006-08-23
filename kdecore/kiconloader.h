@@ -238,6 +238,11 @@ public:
 				    K3Icon::Context context=K3Icon::Any) const;
 
     /**
+     * @internal
+     */
+    bool hasContext( K3Icon::Context context ) const;
+
+    /**
      * Returns a list of all icons (*.png or *.xpm extension) in the
      * given directory.
      * @param iconsDir the directory to search in

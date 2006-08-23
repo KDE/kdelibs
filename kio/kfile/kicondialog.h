@@ -209,6 +209,7 @@ private Q_SLOTS:
 private:
     void init();
     void showIcons();
+    void setContext( K3Icon::Context context );
 
     int mGroupOrSize;
     K3Icon::Context mContext;
@@ -220,6 +221,8 @@ private:
     QProgressBar *mpProgress;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
+    int mNumContext;
+    K3Icon::Context mContextMap[ 12 ]; // must match KIcon::Context size, code has assert
 
 private:
     class KIconDialogPrivate;

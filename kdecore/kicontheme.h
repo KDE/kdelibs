@@ -51,7 +51,14 @@ public:
       Application, ///< An icon that represents an application.
       Device, ///< An icon that represents a device.
       FileSystem, ///< An icon that represents a file system.
-      MimeType ///< An icon that represents a mime type (or file type).
+      MimeType, ///< An icon that represents a mime type (or file type).
+      Animation, ///< An icon that is animated.
+      Category, ///< An icon that represents a category.
+      Emblem, ///< An icon that adds information to an existing icon.
+      Emote, ///< An icon that expresses an emotion.
+      International, ///< An icon that represents a country's flag.
+      Place, ///< An icon that represents a location (e.g. 'home', 'trash').
+      StatusIcon ///< An icon that represents an event.
     };
 
     /**
@@ -311,6 +318,11 @@ public:
      * @see K3Icon::isValid will return true, and false otherwise.
      */
     K3Icon iconPath(const QString& name, int size, K3Icon::MatchType match) const;
+
+    /**
+     * Returns true if the theme has any icons for the given context.
+     */
+    bool hasContext( K3Icon::Context context ) const;
 
     /**
      * List all icon themes installed on the system, global and local.

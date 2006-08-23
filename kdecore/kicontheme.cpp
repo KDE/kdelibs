@@ -333,6 +333,14 @@ QStringList KIconTheme::queryIconsByContext(int size, K3Icon::Context context) c
     return iconlistResult;
 }
 
+bool KIconTheme::hasContext(K3Icon::Context context) const
+{
+    foreach(KIconThemeDir *dir, mDirs)
+        if ((context == K3Icon::Any) || (context == dir->context()))
+            return true;
+    return false;
+}
+
 K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType match) const
 {
     K3Icon icon;
@@ -509,6 +517,20 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
         mContext = K3Icon::Application;
     else if (tmp == "Actions")
         mContext = K3Icon::Action;
+    else if (tmp == "Animations")
+        mContext = K3Icon::Animation;
+    else if (tmp == "Categories")
+        mContext = K3Icon::Category;
+    else if (tmp == "Emblems")
+        mContext = K3Icon::Emblem;
+    else if (tmp == "Emotes")
+        mContext = K3Icon::Emote;
+    else if (tmp == "International")
+        mContext = K3Icon::International;
+    else if (tmp == "Places")
+        mContext = K3Icon::Place;
+    else if (tmp == "Status")
+        mContext = K3Icon::StatusIcon;
     else {
         kDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
         return;

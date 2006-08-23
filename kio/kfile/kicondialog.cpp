@@ -14,6 +14,7 @@
 #include "kicondialog.h"
 #include <kbuttongroup.h>
 #include <k3iconviewsearchline.h>
+#include <assert.h>
 
 #include <kapplication.h>
 #include <klocale.h>
@@ -333,13 +334,49 @@ void KIconDialog::init()
     // When pressing Ok or Cancel, stop loading icons
     connect(this, SIGNAL(hidden()), mpCanvas, SLOT(stopLoading()));
 
-    // The order must match the context definitions in K3Icon.
-    mpCombo->addItem(i18n("Actions"));
-    mpCombo->addItem(i18n("Applications"));
-    mpCombo->addItem(i18n("Devices"));
-    mpCombo->addItem(i18n("Filesystems"));
-    mpCombo->addItem(i18n("Mimetypes"));
+    static const char* const context_text[] = {
+        I18N_NOOP( "Actions" ),
+        I18N_NOOP( "Animations" ),
+        I18N_NOOP( "Applications" ),
+        I18N_NOOP( "Categories" ),
+        I18N_NOOP( "Devices" ),
+        I18N_NOOP( "Emblems" ),
+        I18N_NOOP( "Emotes" ),
+        I18N_NOOP( "Filesystems" ),
+        I18N_NOOP( "International" ),
+        I18N_NOOP( "Mimetypes" ),
+        I18N_NOOP( "Places" ),
+        I18N_NOOP( "Status" ) };
+    static const K3Icon::Context context_id[] = {
+        K3Icon::Action,
+        K3Icon::Animation,
+        K3Icon::Application,
+        K3Icon::Category,
+        K3Icon::Device,
+        K3Icon::Emblem,
+        K3Icon::Emote,
+        K3Icon::FileSystem,
+        K3Icon::International,
+        K3Icon::MimeType,
+        K3Icon::Place,
+        K3Icon::StatusIcon };
+    mNumContext = 0;
+    int cnt = sizeof( context_text ) / sizeof( context_text[ 0 ] );
+    // check all 3 arrays have same sizes
+    assert( cnt == sizeof( context_id ) / sizeof( context_id[ 0 ] )
+            && cnt == sizeof( mContextMap ) / sizeof( mContextMap[ 0 ] ));
+    for( int i = 0;
+         i < cnt;
+         ++i )
+    {
+        if( mpLoader->hasContext( context_id[ i ] ))
+        {
+            mpCombo->addItem(i18n( context_text[ i ] ));
+            mContextMap[ mNumContext++ ] = context_id[ i ];
+        }
+    }
     mpCombo->setFixedSize(mpCombo->sizeHint());
+
     mpBrowseBut->setFixedWidth(mpCombo->width());
 
     // Make the dialog a little taller
@@ -424,7 +461,7 @@ void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
     mpCombo->setEnabled(!user);
     mpBrowseBut->setEnabled(user);
     mContext = context;
-    mpCombo->setCurrentIndex(mContext-1);
+    setContext( context );
 }
 
 void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
@@ -441,8 +478,20 @@ void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
     mpRb2->setEnabled( !lockUser || user );
     mpCombo->setEnabled(!user);
     mpBrowseBut->setEnabled( user && !lockCustomDir );
+    setContext( context );
+}
+
+void KIconDialog::setContext( K3Icon::Context context )
+{
     mContext = context;
-    mpCombo->setCurrentIndex(mContext-1);
+    for( int i = 0;
+         i < mNumContext;
+         ++i )
+        if( mContextMap[ i ] == context )
+        {
+            mpCombo->setCurrentIndex( i );
+            return;
+        }
 }
 
 void KIconDialog::setCustomLocation( const QString& location )
@@ -550,7 +599,7 @@ void KIconDialog::slotOtherIconClicked()
 
 void KIconDialog::slotContext(int id)
 {
-    mContext = static_cast<K3Icon::Context>(id+1);
+    mContext = static_cast<K3Icon::Context>( mContextMap[ id ] );
     showIcons();
 }
 
