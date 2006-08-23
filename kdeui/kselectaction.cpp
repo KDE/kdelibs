@@ -232,7 +232,13 @@ QString KSelectAction::currentText( ) const
 void KSelectAction::setCurrentAction(QAction* action)
 {
   //kDebug (129) << "KSelectAction::setCurrentAction(" << action << ")" << endl;
-  action->setChecked(true);
+  if (!action) {
+    if (currentAction())
+      currentAction()->setChecked(false);
+
+  } else {
+    action->setChecked(true);
+  }
 }
 
 bool KSelectAction::setCurrentItem( int index )
