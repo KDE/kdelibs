@@ -361,10 +361,12 @@ public:
      */
     struct PaintInfo {
        PaintInfo(QPainter* _p, const QRect& _r, PaintAction _phase)
-           : p(_p), r(_r), phase(_phase) {}
+           : p(_p), r(_r), phase(_phase), outlineObjects(0) {}
+       ~PaintInfo() { delete outlineObjects; }
        QPainter* p;
        QRect     r;
        PaintAction phase;
+       QValueList<RenderFlow *>* outlineObjects; // used to list which outlines should be painted by a block with inline children
     };
     virtual void paint( PaintInfo& i, int tx, int ty);
 
@@ -403,6 +405,12 @@ public:
      * objects)
      */
     virtual void calcWidth() {}
+
+    /*
+     * Calculates the actual width of the object (only for non inline
+     * objects)
+     */
+    virtual void calcHeight() {}
 
     /*
      * This function should cause the Element to calculate its
@@ -519,6 +527,7 @@ public:
                                                      DOM::NodeImpl*&, int & offset,
 						     SelPointState & );
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty, HitTestAction, bool inside = false);
+    void setInnerNode(NodeInfo& info);
 
     // set the style of the object.
     virtual void setStyle(RenderStyle *style);

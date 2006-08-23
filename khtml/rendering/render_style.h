@@ -332,6 +332,9 @@ public:
     bool operator!=(const StyleSurroundData& o) const {
         return !(*this == o);
     }
+    bool hasSamePBMData(const StyleSurroundData& o) const {
+        return (margin == o.margin) && (padding == o.padding) && (border == o.border);
+    }
 
     LengthBox offset;
     LengthBox margin;

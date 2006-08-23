@@ -92,6 +92,99 @@ void InlineTextBox::operator delete(void* ptr, size_t sz)
     *(size_t *)ptr = sz;
 }
 
+void InlineTextBox::selectionStartEnd(int& sPos, int& ePos)
+{
+    int startPos, endPos;
+    if (object()->selectionState() == RenderObject::SelectionInside) {
+        startPos = 0;
+        endPos = renderText()->string()->l;
+    } else {
+        renderText()->selectionStartEnd(startPos, endPos);
+        if (object()->selectionState() == RenderObject::SelectionStart)
+            endPos = renderText()->string()->l;
+        else if (object()->selectionState() == RenderObject::SelectionEnd)
+            startPos = 0;
+    }
+
+    sPos = kMax(startPos - m_start, 0);
+    ePos = kMin(endPos - m_start, (int)m_len);
+}
+
+RenderObject::SelectionState InlineTextBox::selectionState()
+{
+    RenderObject::SelectionState state = object()->selectionState();
+    if (state == RenderObject::SelectionStart || state == RenderObject::SelectionEnd ||
+        state == RenderObject::SelectionBoth) {
+        int startPos, endPos;
+        renderText()->selectionStartEnd(startPos, endPos);
+        
+        bool start = (state != RenderObject::SelectionEnd && startPos >= m_start && startPos < m_start + m_len);
+        bool end = (state != RenderObject::SelectionStart && endPos > m_start && endPos <= m_start + m_len);
+        if (start && end)
+            state = RenderObject::SelectionBoth;
+        else if (start)
+            state = RenderObject::SelectionStart;
+        else if (end)
+            state = RenderObject::SelectionEnd;
+        else if ((state == RenderObject::SelectionEnd || startPos < m_start) &&
+                 (state == RenderObject::SelectionStart || endPos > m_start + m_len))
+            state = RenderObject::SelectionInside;
+    }
+    return state;
+}
+
+void InlineTextBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
+{
+    if (object()->isBR() || object()->style()->visibility() != VISIBLE || i.phase == PaintActionOutline)
+        return;
+
+    if (i.phase == PaintActionSelection && object()->selectionState() == RenderObject::SelectionNone)
+        // When only painting the selection, don't bother to paint if there is none.
+        return;
+
+    int xPos = tx + m_x;
+    int w = width();
+    if ((xPos >= i.r.x() + i.r.width()) || (xPos + w <= i.r.x()))
+        return;
+
+    // Set our font.
+    RenderStyle* styleToUse = object()->style(m_firstLine);
+    int d = styleToUse->textDecorationsInEffect();
+    if (styleToUse->font() != i.p->font())
+        i.p->setFont(styleToUse->font());
+    const Font *font = &styleToUse->htmlFont();
+    bool haveSelection = selectionState() != RenderObject::SelectionNone;
+    
+    // Now calculate startPos and endPos, for painting selection.
+    // We paint selection while endPos > 0
+    int ePos = 0, sPos = 0;
+    if (haveSelection && !object()->canvas()->staticMode()) {
+        selectionStartEnd(sPos, ePos);
+    }
+    if (styleToUse->color() != i.p->pen().color())
+        i.p->setPen(styleToUse->color());
+
+    if (m_len > 0 && i.phase != PaintActionSelection) {
+        if (styleToUse->textShadow())
+            paintShadow(i.p, font, tx, ty, styleToUse->textShadow());
+        if (!haveSelection || sPos != 0 || ePos != m_len) {
+            font->drawText(i.p, m_x + tx, m_y + ty + m_baseline, renderText()->string()->s, renderText()->string()->l, m_start, m_len,
+                           m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR);
+        }
+    }
+
+    if (d != TDNONE && i.phase != PaintActionSelection && styleToUse->htmlHacks()) {
+        i.p->setPen(styleToUse->color());
+        paintDecoration(i.p, font, tx, ty, d);
+    }
+
+    if (haveSelection && i.phase == PaintActionSelection) {
+        //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
+        if ( sPos < ePos )
+	    paintSelection(font, renderText(), i.p, styleToUse, tx, ty, sPos, ePos, d);
+    }
+}
+
 /** returns the proper ::selection pseudo style for the given element
  * @return the style or 0 if no ::selection pseudo applies.
  */
@@ -861,128 +954,9 @@ bool RenderText::posOfChar(int chr, int &x, int &y)
     return false;
 }
 
-void RenderText::paint( PaintInfo& pI, int tx, int ty)
+void RenderText::paint( PaintInfo& /*pI*/, int /*tx*/, int /*ty*/)
 {
-    if (pI.phase == PaintActionSelection && selectionState() == SelectionNone)
-        // When only painting the selection, don't bother to paint if there is none.
-        return;
-    if (pI.phase != PaintActionForeground && pI.phase != PaintActionSelection
-        || style()->visibility() != VISIBLE)
-        return;
-
-    int s = m_lines.count() - 1;
-    if ( s < 0 ) return;
-
-    if ( ty + m_lines[0]->m_y > pI.r.bottom() ) return;
-    if ( ty + m_lines[s]->m_y + m_lines[s]->height() < pI.r.top() ) return;
-
-    int ow = style()->outlineWidth();
-    RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
-    InlineTextBox f(0, pI.r.top()-ty);
-    int si = m_lines.findFirstMatching(&f);
-    // something matching found, find the first one to paint
-    bool isStatic = canvas()->staticMode();
-    if (isStatic && pI.phase == PaintActionSelection) return;
-
-    if(si >= 0)
-    {
-        // Move up until out of area to be painted
-        while(si > 0 && m_lines[si-1]->checkVerticalPoint(pI.r.y(), ty, pI.r.height(), m_lineHeight))
-            si--;
-
-        // Now calculate startPos and endPos, for painting selection.
-        // We paint selection while endPos > 0
-        int endPos = 0, startPos = 0;
-        if (!isStatic && (selectionState() != SelectionNone)) {
-            if (selectionState() == SelectionInside) {
-                //kdDebug(6040) << this << " SelectionInside -> 0 to end" << endl;
-                startPos = 0;
-                endPos = str->l;
-            } else {
-                selectionStartEnd(startPos, endPos);
-                if(selectionState() == SelectionStart)
-                    endPos = str->l;
-                else if(selectionState() == SelectionEnd)
-                    startPos = 0;
-            }
-            //kdDebug(6040) << this << " Selection from " << startPos << " to " << endPos << endl;
-        }
-
-        InlineTextBox* s;
-	const Font *font = &style()->htmlFont();
-
-        bool haveSelection = !isStatic && selectionState() != SelectionNone && startPos != endPos;
-        if (!haveSelection && pI.phase == PaintActionSelection)
-            // When only painting the selection, don't bother to paint if there
-            return;
-
-        // run until we find one that is outside the range, then we
-        // know we can stop
-        do {
-            s = m_lines[si];
-
-            RenderStyle* _style = pseudoStyle && s->m_firstLine ? pseudoStyle : style();
-            int d = _style->textDecorationsInEffect();
-
-            if(_style->font() != pI.p->font())
-                pI.p->setFont(_style->font());
-
-	    //has to be outside the above if because of small caps.
-	    font = &_style->htmlFont();
-
-            if(_style->color() != pI.p->pen().color())
-                pI.p->setPen(_style->color());
-
-#ifdef APPLE_CHANGES
-            // Set a text shadow if we have one.
-            bool setShadow = false;
-            if (_style->textShadow()) {
-                p->setShadow(_style->textShadow()->x, _style->textShadow()->y,
-                             _style->textShadow()->blur, _style->textShadow()->color);
-                setShadow = true;
-            }
-#endif
-
-            const int offset = s->m_start;
-            const int sPos = kMax( startPos - offset, 0 );
-            const int ePos = kMin( endPos - offset, int( s->m_len ) );
-            if (s->m_len > 0 && pI.phase != PaintActionSelection) {
-                //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
-                if (_style->textShadow())
-                    s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
-// kdDebug(6040) << QConstString(str->s + s->m_start, s->m_len).string().left(40) << endl;
-                if (!haveSelection || sPos != 0 || ePos != s->m_len) {
-                    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
-                                   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
-                }
-	    }
-
-            if (d != TDNONE && pI.phase == PaintActionForeground
-                && style()->htmlHacks()) {
-                pI.p->setPen(_style->color());
-                s->paintDecoration(pI.p, font, tx, ty, d);
-            }
-
-            if (haveSelection && pI.phase == PaintActionSelection) {
-                //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
-		if ( sPos < ePos )
-		    s->paintSelection(font, this, pI.p, _style, tx, ty, sPos, ePos, d);
-
-            }
-#ifdef BIDI_DEBUG
-            {
-                int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
-                QColor c2 = QColor("#0000ff");
-                drawBorder(pI.p, tx + s->m_x, ty + s->m_y, tx + s->m_x + 1, ty + s->m_y + h,
-                              RenderObject::BSLeft, c2, c2, SOLID, 1, 1);
-                drawBorder(pI.p, tx + s->m_x + s->m_width, ty + s->m_y, tx + s->m_x + s->m_width + 1, ty + s->m_y + h,
-                              RenderObject::BSRight, c2, c2, SOLID, 1, 1);
-            }
-#endif
-
-        } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(pI.r.y()-ow, ty, pI.r.height(), m_lineHeight));
-
-    }
+    KHTMLAssert( false );
 }
 
 void RenderText::calcMinMaxWidth()

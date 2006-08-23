@@ -248,33 +248,9 @@ void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox
     block->setNeedsLayoutAndMinMaxRecalc();
 }
 
-void RenderInline::paint(PaintInfo& i,
-                      int _tx, int _ty)
+void RenderInline::paint(PaintInfo& i, int _tx, int _ty)
 {
-#ifdef DEBUG_LAYOUT
-    //    kdDebug( 6040 ) << renderName() << "(RenderInline) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")" << endl;
-#endif
-
-    if ( i.phase == PaintActionElementBackground )
-        return;
-
-    // let the children their backgrounds
-    PaintAction oldphase = i.phase;
-    if ( i.phase == PaintActionChildBackgrounds )
-        i.phase = PaintActionChildBackground;
-
-    paintLineBoxBackgroundBorder(i, _tx, _ty);
-
-    for( RenderObject *child = firstChild(); child; child = child->nextSibling())
-        if(!child->layer() && !child->isFloating())
-            child->paint(i, _tx, _ty);
-
-    paintLineBoxDecorations(i, _tx, _ty);
-
-    i.phase = oldphase;
-    if (style()->visibility() == VISIBLE && i.phase == PaintActionOutline) {
-        paintOutlines(i.p, _tx, _ty);
-    }
+    paintLines(i, _tx, _ty);
 }
 
 /**
@@ -436,25 +412,30 @@ static void appendPoint(QValueVector<QPoint> &pointArray, QPoint &pnt)
  */
 static void collectHorizontalBoxCoordinates(InlineBox *box,
                                             QValueVector<QPoint> &pointArray,
-                                            bool bottom, int limit = -500000)
+                                            bool bottom, int offset, int limit = -500000)
 {
 //   kdDebug(6000) << "collectHorizontalBoxCoordinates: " << endl;
-    int y = box->yPos() + bottom*box->height();
+    offset = bottom ? offset:-offset;
+    int y = box->yPos() + bottom*box->height() + offset;
     if (limit != -500000 && (bottom ? y < limit : y > limit))
         y = limit;
-    int x = box->xPos() + bottom*box->width();
+    int x = box->xPos() + bottom*box->width() + offset;
     QPoint newPnt(x, y);
     // Add intersection point if point-array not empty.
     if (!pointArray.isEmpty()) {
         QPoint lastPnt = pointArray.back();
         QPoint insPnt(newPnt.x(), lastPnt.y());
+        if (offset && ((bottom && lastPnt.y() > y) || (!bottom && lastPnt.y() < y))) {
+            insPnt.rx() = lastPnt.x();
+            insPnt.ry() = y;
+        }
 //         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
         appendPoint(pointArray, insPnt);
     }
     // Insert starting point of box
     appendPoint(pointArray, newPnt);
 
-    newPnt.rx() += bottom ? -box->width() : box->width();
+    newPnt.rx() += (bottom ? -box->width() : box->width()) - 2*offset;
 
     if (box->isInlineFlowBox()) {
         InlineFlowBox *flowBox = static_cast<InlineFlowBox *>(box);
@@ -467,7 +448,7 @@ static void collectHorizontalBoxCoordinates(InlineBox *box,
               l2 = y;
             else
               l2 = limit;
-            collectHorizontalBoxCoordinates(b, pointArray, bottom, l2);
+            collectHorizontalBoxCoordinates(b, pointArray, bottom, kAbs(offset), l2);
         }
 
         // Add intersection point if flow box contained any children
@@ -511,9 +492,10 @@ inline static bool lineBoxesDisjoint(InlineRunBox *line, bool toBegin)
  */
 static void collectVerticalBoxCoordinates(InlineRunBox *line,
                                           QValueVector<QPoint> &pointArray,
-                                          bool left, InlineRunBox **lastline = 0)
+                                          bool left, int offset, InlineRunBox **lastline = 0)
 {
     InlineRunBox *last = 0;
+    offset = left ? -offset:offset;
     for (InlineRunBox* curr = line; curr && !last; curr = left ? curr->prevLineBox() : curr->nextLineBox()) {
         InlineBox *root = curr;
 
@@ -522,14 +504,14 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
 
         if (root != line && !isLast)
             while (root->parent()) root = root->parent();
-        QPoint newPnt(curr->xPos() + !left*curr->width(),
-                      left ? root->topOverflow() : root->bottomOverflow());
+        QPoint newPnt(curr->xPos() + !left*curr->width() + offset,
+                      (left ? root->topOverflow() : root->bottomOverflow()) + offset);
         if (!pointArray.isEmpty()) {
             QPoint lastPnt = pointArray.back();
             if (newPnt.x()>lastPnt.x() && !left)
-                pointArray.back().setY( kMin(lastPnt.y(), root->topOverflow()) );
+                pointArray.back().setY( kMin(lastPnt.y(), root->topOverflow()-offset) );
             else if (newPnt.x()<lastPnt.x() && left)
-                pointArray.back().setY( kMax(lastPnt.y(), root->bottomOverflow()) );
+                pointArray.back().setY( kMax(lastPnt.y(), root->bottomOverflow()+offset) );
             QPoint insPnt(newPnt.x(), pointArray.back().y());
 //         kdDebug(6040) << "left: " << lastPnt << " == " << insPnt << ": " << (insPnt == lastPnt) << endl;
             appendPoint(pointArray, insPnt);
@@ -584,6 +566,7 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
 {
     if (style()->outlineWidth() == 0 || style()->outlineStyle() <= BHIDDEN)
         return;
+    int offset = style()->outlineOffset();
 
     // We may have to draw more than one outline path as they may be
     // disjoint.
@@ -591,13 +574,13 @@ void RenderInline::paintOutlines(QPainter *p, int _tx, int _ty)
         QValueVector<QPoint> path;
 
         // collect topmost outline
-        collectHorizontalBoxCoordinates(curr, path, false);
+        collectHorizontalBoxCoordinates(curr, path, false, offset);
         // collect right outline
-        collectVerticalBoxCoordinates(curr, path, false, &curr);
+        collectVerticalBoxCoordinates(curr, path, false, offset, &curr);
         // collect bottommost outline
-        collectHorizontalBoxCoordinates(curr, path, true);
+        collectHorizontalBoxCoordinates(curr, path, true, offset);
         // collect left outline
-        collectVerticalBoxCoordinates(curr, path, true);
+        collectVerticalBoxCoordinates(curr, path, true, offset);
 
         const QPoint *begin = linkEndToBegin(path);
 
@@ -678,13 +661,11 @@ static void paintOutlineSegment(RenderObject *o, QPainter *p, int tx, int ty,
     int ow = o->style()->outlineWidth();
     EBorderStyle os = o->style()->outlineStyle();
     QColor oc = o->style()->outlineColor();
-    // ### outline-offset is not this simple to merge anymore
-    int offset = 0; // o->style()->outlineOffset();
 
-    int x1 = tx + p1.x() - offset;
-    int y1 = ty + p1.y() - offset;
-    int x2 = tx + p2.x() + offset;
-    int y2 = ty + p2.y() + offset;
+    int x1 = tx + p1.x();
+    int y1 = ty + p1.y();
+    int x2 = tx + p2.x();
+    int y2 = ty + p2.y();
     if (x1 > x2) {
         kSwap(x1, x2);
         if (bsOrientation(curBS) == BSHorizontal) kSwap(prevBS, nextBS);
@@ -840,23 +821,17 @@ const char *RenderInline::renderName() const
 
 bool RenderInline::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
 {
+/*
     if ( hitTestAction != HitTestSelfOnly ) {
         for (RenderObject* child = lastChild(); child; child = child->previousSibling())
             if (!child->layer() && !child->isFloating() && child->nodeAtPoint(info, _x, _y, _tx, _ty, HitTestAll))
                 inside = true;
     }
-
-
+*/
     // Check our line boxes if we're still not inside.
-    if (hitTestAction != HitTestChildrenOnly && !inside && style()->visibility() != HIDDEN) {
+    if (/*hitTestAction != HitTestChildrenOnly &&*/ !inside && style()->visibility() != HIDDEN) {
         // See if we're inside one of our line boxes.
-        for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
-            if((_y >=_ty + curr->m_y) && (_y < _ty + curr->m_y + curr->m_height) &&
-               (_x >= _tx + curr->m_x) && (_x <_tx + curr->m_x + curr->m_width) ) {
-                inside = true;
-                break;
-            }
-        }
+        inside = hitTestLines(info, _x, _y, _tx, _ty, hitTestAction);
     }
 
     if (inside && element()) {

@@ -73,9 +73,13 @@ public:
 
     virtual bool isInlineTextBox() const { return true; }
 
+    void paint(RenderObject::PaintInfo& i, int tx, int ty);
     void paintDecoration(QPainter *pt, const Font *f, int _tx, int _ty, int decoration);
     void paintShadow(QPainter *pt, const Font* f, int _tx, int _ty, const ShadowData *shadow );
     void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos, int deco);
+    
+    void selectionStartEnd(int& sPos, int& ePos);
+    RenderObject::SelectionState selectionState();
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);

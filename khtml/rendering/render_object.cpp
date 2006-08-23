@@ -1057,8 +1057,7 @@ void RenderObject::paintOutline(QPainter *p, int _tx, int _ty, int w, int h, con
 
     const QColor& oc = style->outlineColor();
     EBorderStyle os = style->outlineStyle();
-    // ### outline-offset should be implemented in renderInline before reactivated here
-    int offset = 0; // style->outlineOffset();
+    int offset = style->outlineOffset();
 
 #ifdef APPLE_CHANGES
     if (style->outlineStyleIsAuto()) {
@@ -1732,36 +1731,31 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
                 inside = true;
     }
 
-    if (inside) {
-        if (!info.innerNode() && !isInline() && continuation()) {
-            // We are in the margins of block elements that are part of a continuation.  In
-            // this case we're actually still inside the enclosing inline element that was
-            // split.  Go ahead and set our inner node accordingly.
-            info.setInnerNode(continuation()->element());
-            if (!info.innerNonSharedNode())
-                info.setInnerNonSharedNode(continuation()->element());
-        }
-
-        if (info.innerNode() && info.innerNode()->renderer() &&
-            !info.innerNode()->renderer()->isInline() && element() && isInline()) {
-            // Within the same layer, inlines are ALWAYS fully above blocks.  Change inner node.
-            info.setInnerNode(element());
-
-            // Clear everything else.
-            info.setInnerNonSharedNode(0);
-            info.setURLElement(0);
-        }
-
-        if (!info.innerNode() && element())
-            info.setInnerNode(element());
-
-        if(!info.innerNonSharedNode() && element())
-            info.setInnerNonSharedNode(element());
-
-    }
+    if (inside)
+        setInnerNode(info);
 
     return inside;
 }
+
+
+void RenderObject::setInnerNode(NodeInfo& info)
+{
+    if (!info.innerNode() && !isInline() && continuation()) {
+        // We are in the margins of block elements that are part of a continuation.  In
+        // this case we're actually still inside the enclosing inline element that was
+        // split.  Go ahead and set our inner node accordingly.
+        info.setInnerNode(continuation()->element());
+        if (!info.innerNonSharedNode())
+            info.setInnerNonSharedNode(continuation()->element());
+    }
+
+    if (!info.innerNode() && element())
+        info.setInnerNode(element());
+            
+    if(!info.innerNonSharedNode() && element())
+        info.setInnerNonSharedNode(element());
+}
+
 
 short RenderObject::verticalPositionHint( bool firstLine ) const
 {

@@ -1597,7 +1597,7 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
 
         yPos += overflowTop();
 
-        int os = 2*maximalOutlineSize(pI.phase);
+        int os = maximalOutlineSize(pI.phase);
         if( (yPos > pI.r.bottom() + os) || (_ty + h <= pI.r.y() - os))
             return;
     }
@@ -1625,20 +1625,19 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
     if ( pI.phase == PaintActionChildBackgrounds )
         pI.phase = PaintActionChildBackground;
 
-    paintLineBoxBackgroundBorder(pI, _tx, _ty);
-
     // 2. paint contents
     int scrolledX = _tx;
     int scrolledY = _ty;
     if (style()->hidesOverflow() && m_layer)
         m_layer->subtractScrollOffset(scrolledX, scrolledY);
 
-    for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
-        if(!child->layer() && !child->isFloating())
-            child->paint(pI, scrolledX, scrolledY);
+    if (childrenInline())
+        paintLines(pI, scrolledX, scrolledY);
+    else {            
+        for(RenderObject *child = firstChild(); child; child = child->nextSibling())
+            if(!child->layer() && !child->isFloating())
+                child->paint(pI, scrolledX, scrolledY);
     }
-
-    paintLineBoxDecorations(pI, scrolledX, scrolledY);
 
     // 3. paint floats.
     if (!inlineFlow && (pI.phase == PaintActionFloat || pI.phase == PaintActionSelection))
@@ -2413,6 +2412,9 @@ void RenderBlock::markAllDescendantsWithFloatsForLayout(RenderObject* floatToRem
 
 int RenderBlock::getClearDelta(RenderObject *child)
 {
+    if (!hasFloats())
+        return 0;
+
     //kdDebug( 6040 ) << "getClearDelta on child " << child << " oldheight=" << m_height << endl;
     bool clearSet = child->style()->clear() != CNONE;
     int bottom = 0;

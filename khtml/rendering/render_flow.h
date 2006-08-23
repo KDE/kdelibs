@@ -66,8 +66,8 @@ public:
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
 
-    void paintLineBoxBackgroundBorder(PaintInfo& pI, int _tx, int _ty);
-    void paintLineBoxDecorations(PaintInfo& p, int _tx, int _ty);
+    void paintLines(PaintInfo& i, int _tx, int _ty);
+    bool hitTestLines(NodeInfo& i, int x, int y, int tx, int ty, HitTestAction hitTestAction);
 
     virtual void repaint(bool immediate = false);
 

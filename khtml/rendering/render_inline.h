@@ -77,11 +77,11 @@ public:
     virtual int offsetTop() const;
 
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
+    void paintOutlines(QPainter *p, int tx, int ty);    
 
 protected:
     static RenderInline* cloneInline(RenderFlow* src);
     void paintOutlinePath(QPainter *p, int tx, int ty, const QPoint *begin, const QPoint *end, BorderSide startingBS, int initialDirection, BorderSide endingBS);
-    void paintOutlines(QPainter *p, int tx, int ty);
 
 private:
     bool m_isContinuation : 1; // Whether or not we're a continuation of an inline.

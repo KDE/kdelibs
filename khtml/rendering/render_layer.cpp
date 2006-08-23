@@ -902,9 +902,11 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
             renderer()->paint(paintInfo, tx, ty);
             paintInfo.phase = PaintActionForeground;
             renderer()->paint(paintInfo, tx, ty);
-            paintInfo.phase = PaintActionOutline;
-            renderer()->paint(paintInfo, tx, ty);
             RenderCanvas *rc = static_cast<RenderCanvas*>(renderer()->document()->renderer());
+            if (rc->maximalOutlineSize()) {
+                paintInfo.phase = PaintActionOutline;
+                renderer()->paint(paintInfo, tx, ty);
+            }
             if (rc->selectionStart() && rc->selectionEnd()) {
                 paintInfo.phase = PaintActionSelection;
                 renderer()->paint(paintInfo, tx, ty);

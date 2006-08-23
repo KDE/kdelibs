@@ -1,7 +1,8 @@
 /**
 * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 2003 Apple Computer, Inc.
+ * Copyright (C) 2003-2006 Apple Computer, Inc.
+ *           (C) 2006 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -66,13 +67,59 @@ void* InlineBox::operator new(size_t sz, RenderArena* renderArena) throw()
     return renderArena->allocate(sz);
 }
 
-
 void InlineBox::operator delete(void* ptr, size_t sz)
 {
     assert(inInlineBoxDetach);
 
     // Stash size where detach can find it.
     *(size_t *)ptr = sz;
+}
+
+static bool needsOutlinePhaseRepaint(RenderObject* o, RenderObject::PaintInfo& i, int tx, int ty) {
+    if (o->style()->outlineWidth() <= 0)
+        return false;
+    QRect r(tx+o->xPos(),ty+o->yPos(),o->width(),o->height());
+    if (r.intersects(i.r))
+        return false;
+    r.addCoords(-o->style()->outlineSize(),
+                -o->style()->outlineSize(),
+                 o->style()->outlineSize(),
+                 o->style()->outlineSize());
+    if (!r.intersects(i.r))
+        return false;
+    return true;
+}         
+          
+void InlineBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
+{
+    if ( i.phase == PaintActionOutline && !needsOutlinePhaseRepaint(object(), i, tx, ty) )
+        return;
+
+    // Paint all phases of replaced elements atomically, as though the replaced element established its
+    // own stacking context.  (See Appendix E.2, section 6.4 on inline block/table elements in the CSS2.1
+    // specification.)
+    bool paintSelectionOnly = i.phase == PaintActionSelection;
+    RenderObject::PaintInfo info(i.p, i.r, paintSelectionOnly ? i.phase : PaintActionElementBackground);
+    object()->paint(info, tx, ty);
+    if (!paintSelectionOnly) {
+        info.phase = PaintActionChildBackgrounds;
+        object()->paint(info, tx, ty);
+        info.phase = PaintActionFloat;
+        object()->paint(info, tx, ty);
+        info.phase = PaintActionForeground;
+        object()->paint(info, tx, ty);
+        info.phase = PaintActionOutline;
+        object()->paint(info, tx, ty);
+    }
+}
+
+bool InlineBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty)
+{
+    // Hit test all phases of replaced elements atomically, as though the replaced element established its
+    // own stacking context.  (See Appendix E.2, section 6.4 on inline block/table elements in the CSS2.1
+    // specification.)
+    bool inside = false;
+    return object()->nodeAtPoint(i, x, y, tx, ty, HitTestAll, inside); // ### port hitTest
 }
 
 RootInlineBox* InlineBox::root()
@@ -529,17 +576,79 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
             setBaseline(height());
     }
 }
+
+bool InlineFlowBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty)
+{
+    // Check children first.
+    for (InlineBox* curr = lastChild(); curr; curr = curr->prevOnLine()) {
+        if (!curr->object()->layer() && curr->nodeAtPoint(i, x, y, tx, ty)) {
+            object()->setInnerNode(i);
+            return true;
+        }
+    }
+
+    // Now check ourselves.
+    QRect rect(tx + m_x, ty + m_y, m_width, m_height);
+    if (object()->style()->visibility() == VISIBLE && rect.contains(x, y)) {
+        object()->setInnerNode(i);
+        return true;
+    }
+    
+    return false;
+}
+
+
+void InlineFlowBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
+{
+    bool intersectsDamageRect = true;
+    int xPos = tx + m_x - object()->maximalOutlineSize(i.phase);
+    int w = width() + 2 * object()->maximalOutlineSize(i.phase);
+    if ((xPos >= i.r.x() + i.r.width()) || (xPos + w <= i.r.x()))
+        intersectsDamageRect = false;
+    
+    if (intersectsDamageRect) {
+        if (i.phase == PaintActionOutline) {
+            // Add ourselves to the paint info struct's list of inlines that need to paint their
+            // outlines.
+            if (object()->style()->visibility() == VISIBLE && object()->style()->outlineWidth() > 0 &&
+                !object()->isInlineContinuation() && !isRootInlineBox()) {
+                if (!i.outlineObjects)
+                    i.outlineObjects = new QValueList<RenderFlow*>;
+                i.outlineObjects->append(static_cast<RenderFlow*>(object()));
+            }
+        }
+        else {
+            // 1. Paint our background and border.
+            paintBackgroundAndBorder(i, tx, ty);
+
+            // 2. Paint our underline and overline.
+            paintDecorations(i, tx, ty, false);
+        }
+    }
+
+    // 3. Paint our children.
+    for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
+        if (!curr->object()->layer())
+            curr->paint(i, tx, ty);
+    }
+
+    // 4. Paint our strike-through
+    if (intersectsDamageRect && i.phase != PaintActionOutline)
+        paintDecorations(i, tx, ty, true);
+}
+
+
 void InlineFlowBox::paintBackgrounds(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
-                                     int my, int mh, int _tx, int _ty, int w, int h, int xoff)
+                                     int my, int mh, int _tx, int _ty, int w, int h)
 {
     if (!bgLayer)
         return;
-    paintBackgrounds(p, c, bgLayer->next(), my, mh, _tx, _ty, w, h, xoff);
-    paintBackground(p, c, bgLayer, my, mh, _tx, _ty, w, h, xoff);
+    paintBackgrounds(p, c, bgLayer->next(), my, mh, _tx, _ty, w, h);
+    paintBackground(p, c, bgLayer, my, mh, _tx, _ty, w, h);
 }
 
 void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const BackgroundLayer* bgLayer,
-                                    int my, int mh, int _tx, int _ty, int w, int h, int xOffsetOnLine)
+                                    int my, int mh, int _tx, int _ty, int w, int h)
 {
     CachedImage* bg = bgLayer->backgroundImage();
     bool hasBackgroundImage = bg && (bg->pixmap_size() == bg->valid_rect().size()) &&
@@ -570,8 +679,10 @@ void InlineFlowBox::paintBackground(QPainter* p, const QColor& c, const Backgrou
     }
 }
 
-void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _tx, int _ty, int xOffsetOnLine)
+void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _tx, int _ty)
 {
+    if (object()->style()->visibility() != VISIBLE || pI.phase != PaintActionForeground)
+        return;
 
     // Move x/y to our coordinates.
     _tx += m_x;
@@ -593,7 +704,7 @@ void InlineFlowBox::paintBackgroundAndBorder(RenderObject::PaintInfo& pI, int _t
     if ((!parent() && m_firstLine && styleToUse != object()->style()) ||
         (parent() && object()->shouldPaintBackgroundOrBorder())) {
         QColor c = styleToUse->backgroundColor();
-        paintBackgrounds(pI.p, c, styleToUse->backgroundLayers(), my, mh, _tx, _ty, w, h, xOffsetOnLine);
+        paintBackgrounds(pI.p, c, styleToUse->backgroundLayers(), my, mh, _tx, _ty, w, h);
 
         // :first-line cannot be used to put borders on a line. Always paint borders with our
         // non-first-line style.
@@ -620,20 +731,23 @@ static bool shouldDrawDecoration(RenderObject* obj)
     return shouldDraw;
 }
 
-void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _ty)
+void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _ty, bool paintedChildren)
 {
     // Now paint our text decorations. We only do this if we aren't in quirks mode (i.e., in
     // almost-strict mode or strict mode).
-
+    if (object()->style()->htmlHacks() || object()->style()->visibility() != VISIBLE)
+        return;
+                        
     _tx += m_x;
     _ty += m_y;
     RenderStyle* styleToUse = object()->style(m_firstLine);
     int deco = parent() ? styleToUse->textDecoration() : styleToUse->textDecorationsInEffect();
-    if (deco != TDNONE && shouldDrawDecoration(object())) {
+    if (deco != TDNONE && 
+        ((!paintedChildren && ((deco & UNDERLINE) || (deco & OVERLINE))) || (paintedChildren && (deco & LINE_THROUGH))) &&
+        shouldDrawDecoration(object())) {
         // We must have child boxes and have decorations defined.
         _tx += borderLeft() + paddingLeft();
         int w = m_width - (borderLeft() + paddingLeft() + borderRight() + paddingRight());
-//    kdDebug() << k_funcinfo << "w: " << w << " deco: " << deco << endl;
         if ( !w )
             return;
         const QFontMetrics &fm = object()->fontMetrics( m_firstLine );
@@ -643,16 +757,20 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
         underline = overline = linethrough = styleToUse->color();
         if (!parent())
             object()->getTextDecorationColors(deco, underline, overline, linethrough);
-        if (deco & UNDERLINE) {
+
+        if (styleToUse->font() != pI.p->font())
+            pI.p->setFont(styleToUse->font());
+
+        if (deco & UNDERLINE && !paintedChildren) {
             int underlineOffset = ( fm.height() + m_baseline ) / 2;
             if (underlineOffset <= m_baseline) underlineOffset = m_baseline+1;
 
             pI.p->fillRect(_tx, _ty + underlineOffset, w, thickness, underline );
         }
-        if (deco & OVERLINE) {
+        if (deco & OVERLINE && !paintedChildren) {
             pI.p->fillRect(_tx, _ty, w, thickness, overline );
         }
-        if (deco & LINE_THROUGH) {
+        if (deco & LINE_THROUGH && paintedChildren) {
             pI.p->fillRect(_tx, _ty + 2*m_baseline/3, w, thickness, linethrough );
         }
     }

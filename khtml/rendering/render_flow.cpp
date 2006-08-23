@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2003-2006 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -189,62 +189,79 @@ InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox, bool isRootLineB
     return flowBox;
 }
 
-void RenderFlow::paintLineBoxBackgroundBorder(PaintInfo& pI, int _tx, int _ty)
+void RenderFlow::paintLines(PaintInfo& i, int _tx, int _ty)
 {
+    // Only paint during the foreground/selection phases.
+    if (i.phase != PaintActionForeground && i.phase != PaintActionSelection && i.phase != PaintActionOutline)
+        return;
+
     if (!firstLineBox())
         return;
 
-    if (style()->visibility() == VISIBLE && pI.phase == PaintActionForeground) {
-        // We can check the first box and last box and avoid painting if we don't
-        // intersect.
-        int yPos = _ty + firstLineBox()->yPos();
-        int h = lastLineBox()->yPos() + lastLineBox()->height() - firstLineBox()->yPos();
-        if( (yPos > pI.r.bottom()) || (yPos + h <= pI.r.y()))
-            return;
-
-        // See if our boxes intersect with the dirty rect.  If so, then we paint
-        // them.  Note that boxes can easily overlap, so we can't make any assumptions
-        // based off positions of our first line box or our last line box.
-        int xOffsetWithinLineBoxes = 0;
-        for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
-            yPos = _ty + curr->yPos();
-            h = curr->height();
-            if ((yPos <= pI.r.bottom()) && (yPos + h > pI.r.y()))
-                curr->paintBackgroundAndBorder(pI, _tx, _ty, xOffsetWithinLineBoxes);
-            xOffsetWithinLineBoxes += curr->width();
-        }
-    }
-}
-
-void RenderFlow::paintLineBoxDecorations(PaintInfo& pI, int _tx, int _ty)
-{
-    if (!firstLineBox())
+    // We can check the first box and last box and avoid painting if we don't
+    // intersect.  This is a quick short-circuit that we can take to avoid walking any lines.
+    // FIXME: This check is flawed in two extremely obscure ways.
+    // (1) If some line in the middle has a huge overflow, it might actually extend below the last line.
+    // (2) The overflow from an inline block on a line is not reported to the line.
+    int maxOutlineSize = maximalOutlineSize(i.phase);
+    int yPos = firstLineBox()->root()->topOverflow() - maxOutlineSize;
+    int h = maxOutlineSize + lastLineBox()->root()->bottomOverflow() - yPos;
+    yPos += _ty;
+    if ((yPos >= i.r.y() + i.r.height()) || (yPos + h <= i.r.y()))
         return;
+    for (InlineFlowBox* curr = firstLineBox(); curr; curr = curr->nextFlowBox()) {
+        yPos = curr->root()->topOverflow() - maxOutlineSize;
+        h = curr->root()->bottomOverflow() + maxOutlineSize - yPos;
+        yPos += _ty;
+        if ((yPos < i.r.y() + i.r.height()) && (yPos + h > i.r.y()))
+            curr->paint(i, _tx, _ty);
+    }
 
-    if (style()->visibility() == VISIBLE && pI.phase == PaintActionForeground) {
-        // We only paint line box decorations in strict or almost strict mode.
-        // Otherwise we let the TextRuns paint their own decorations.
-        if (style()->htmlHacks())
-            return;
-
-        // We can check the first box and last box and avoid painting if we don't
-        // intersect.
-        int yPos = _ty + firstLineBox()->yPos();;
-        int h = lastLineBox()->yPos() + lastLineBox()->height() - firstLineBox()->yPos();
-        if( (yPos > pI.r.bottom()) || (yPos + h <= pI.r.y()))
-            return;
-
-        // See if our boxes intersect with the dirty rect.  If so, then we paint
-        // them.  Note that boxes can easily overlap, so we can't make any assumptions
-        // based off positions of our first line box or our last line box.
-        for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox()) {
-            yPos = _ty + curr->yPos();
-            h = curr->height();
-            if ((yPos <= pI.r.bottom()) && (yPos + h > pI.r.y()))
-                curr->paintDecorations(pI, _tx, _ty);
-        }
+    if (i.phase == PaintActionOutline && i.outlineObjects) {
+          QValueList<RenderFlow *>::iterator it;;
+          for( it = (*i.outlineObjects).begin(); it != (*i.outlineObjects).end(); ++it )
+              if ((*it)->isRenderInline())
+                  static_cast<RenderInline*>(*it)->paintOutlines(i.p, _tx, _ty);
+          i.outlineObjects->clear();
     }
 }
+
+
+bool RenderFlow::hitTestLines(NodeInfo& i, int x, int y, int tx, int ty, HitTestAction hitTestAction)
+{
+   (void) hitTestAction;
+   /*
+    if (hitTestAction != HitTestForeground) // ### port hitTest
+        return false;
+   */
+
+    if (!firstLineBox())
+        return false;
+
+    // We can check the first box and last box and avoid hit testing if we don't
+    // contain the point.  This is a quick short-circuit that we can take to avoid walking any lines.
+    // FIXME: This check is flawed in two extremely obscure ways.
+    // (1) If some line in the middle has a huge overflow, it might actually extend below the last line.
+    // (2) The overflow from an inline block on a line is not reported to the line.
+    if ((y >= ty + lastLineBox()->root()->bottomOverflow()) || (y < ty + firstLineBox()->root()->topOverflow()))
+        return false;
+
+    // See if our root lines contain the point.  If so, then we hit test
+    // them further.  Note that boxes can easily overlap, so we can't make any assumptions
+    // based off positions of our first line box or our last line box.
+    for (InlineFlowBox* curr = lastLineBox(); curr; curr = curr->prevFlowBox()) {
+        if (y >= ty + curr->root()->topOverflow() && y < ty + curr->root()->bottomOverflow()) {
+            bool inside = curr->nodeAtPoint(i, x, y, tx, ty);
+            if (inside) {
+                setInnerNode(i);
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
 
 void RenderFlow::repaint(bool immediate)
 {
@@ -260,7 +277,7 @@ void RenderFlow::repaint(bool immediate)
                 left = curr->xPos();
 
         // Now invalidate a rectangle.
-        int ow = style() ? style()->outlineWidth() : 0;
+        int ow = style() ? style()->outlineSize() : 0;
 
         // We need to add in the relative position offsets of any inlines (including us) up to our
         // containing block.
@@ -281,7 +298,7 @@ void RenderFlow::repaint(bool immediate)
     }
     else {
         if (firstLineBox() && firstLineBox()->topOverflow() < 0) {
-            int ow = style() ? style()->outlineWidth() : 0;
+            int ow = style() ? style()->outlineSize() : 0;
             repaintRectangle(-ow, -ow+firstLineBox()->topOverflow(),
                              effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
         }
