@@ -623,7 +623,12 @@ void KateCSmartIndent::processNewline (KateDocCursor &begin, bool needContinue)
 
 void KateCSmartIndent::processChar(QChar c)
 {
-  static const QString triggers("}{)/:;#n");
+  // You may be curious about 'n' among the triggers:
+  // It is used to discriminate C#'s #region/#endregion which are indented
+  // against normal preprocessing statements which aren't indented.
+  static const QString triggers("}{)/:#n");
+  static const QString firstTriggers("}{)/:#");
+  static const QString lastTriggers(":n");
   if (triggers.find(c) < 0)
     return;
 
@@ -631,31 +636,39 @@ void KateCSmartIndent::processChar(QChar c)
   KateDocCursor begin(view->cursorLine(), 0, doc);
 
   KateTextLine::Ptr textLine = doc->plainKateTextLine(begin.line());
+  const int first = textLine->firstChar();
+  const QChar firstChar = textLine->getChar(first);
   if (c == 'n')
   {
-    if (textLine->getChar(textLine->firstChar()) != '#')
+    if (firstChar != '#')
       return;
   }
 
-  if ( textLine->attribute( begin.col() ) == doxyCommentAttrib )
+  if ( c == '/' )
   {
     // dominik: if line is "* /", change it to "*/"
-    if ( c == '/' )
+    if ( textLine->attribute( begin.col() ) == doxyCommentAttrib )
     {
-      int first = textLine->firstChar();
       // if the first char exists and is a '*', and the next non-space-char
       // is already the just typed '/', concatenate it to "*/".
       if ( first != -1
-           && textLine->getChar( first ) == '*'
+           && firstChar == '*'
            && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumn()-1 )
         doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
     }
 
-    // anders: don't change the indent of doxygen lines here.
+    // ls: never have comments change the indentation.
     return;
   }
 
-  processLine(begin);
+  // ls: only reindent line if the user actually expects it
+  // I. e. take action on single braces on line or last colon, but inhibit
+  // any reindentation if any of those characters appear amidst some section
+  // of the line
+  const QChar lastChar = textLine->getChar(textLine->lastChar());
+  if ((c == firstChar && firstTriggers.find(firstChar) >= 0)
+      || (c == lastChar && lastTriggers.find(lastChar) >= 0))
+    processLine(begin);
 }
 
 
