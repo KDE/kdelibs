@@ -36,17 +36,17 @@ public:
     ~KDebugDBusIface();
 
 public slots:
-	/**
-	 * The kdebugrc has been changed and should be reparsed now.
-	 * This will simply call kClearDebugConfig
-	 **/
-	Q_SCRIPTABLE void notifyKDebugConfigChanged();
+    /**
+     * The kdebugrc has been changed and should be reparsed now.
+     * This will simply call kClearDebugConfig
+     **/
+    Q_SCRIPTABLE void notifyKDebugConfigChanged();
 
-	/**
-	 * Print out a kBacktrace. Useful when trying to understand why
-	 * a dialog is popping up, without having to launch gdb
-	 */
-	Q_SCRIPTABLE void printBacktrace();
+    /**
+     * Print out a kBacktrace. Useful when trying to understand why
+     * a dialog is popping up, without having to launch gdb
+     */
+    Q_SCRIPTABLE void printBacktrace();
 };
 
 #endif
