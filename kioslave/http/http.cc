@@ -94,23 +94,9 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
     KLocale::setMainCatalog("kdelibs");
 
-#if 1
-
-    KAboutData about("kio_http", "kio_http", "");
-    KCmdLineArgs::init(&about);
-    KApplication app; // needed for QSocketNotifier + qdbus's timer
-
-#else
-
     QCoreApplication app( argc, argv ); // needed for QSocketNotifier
-    // Why do we need to call this in kapp (so that qdbus' timer doesn't warn)?
-    // How does it work for non-kde apps?
-    extern void qDBusBindToApplication();
-    qDBusBindToApplication();
     KInstance instance( "kio_http" );
     (void) KGlobal::locale();
-
-#endif
 
     if (argc != 4)
     {
