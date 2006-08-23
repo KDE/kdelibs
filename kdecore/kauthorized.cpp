@@ -239,9 +239,7 @@ bool KAuthorized::authorizeKAction(const QString& action)
    if (!d->actionRestrictions || action.isEmpty())
       return true;
 
-   static const QString &action_prefix = KGlobal::staticQString( "action/" );
-
-   return authorize(action_prefix + action);
+   return authorize(QLatin1String("action/") + action);
 }
 
 bool KAuthorized::authorizeControlModule(const QString &menuId)
