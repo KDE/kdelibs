@@ -441,7 +441,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
         else if (curr->yPos() == PositionBottom)
             curr->setYPos(y + maxHeight - curr->height());
         else {
-            if (!curr->hasTextChildren() && !strictMode)
+            if (!strictMode && !curr->hasTextDescendant())
                 childAffectsTopBottomPos = false;
             curr->setYPos(curr->yPos() + y + maxAscent - curr->baseline());
         }
@@ -499,7 +499,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
             setBaseline(ascent);
         }
 #endif
-        if (hasTextChildren() || strictMode) {
+        if (hasTextDescendant() || strictMode) {
             if (yPos() < topPosition)
                 topPosition = yPos();
             if (yPos() + height() > bottomPosition)
@@ -520,7 +520,7 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
     }
 
     // See if we have text children. If not, then we need to shrink ourselves to fit on the line.
-    if (!hasTextChildren()) {
+    if (!hasTextDescendant()) {
         if (yPos() < topPos)
             setYPos(topPos);
         if (yPos() + height() > bottomPos)

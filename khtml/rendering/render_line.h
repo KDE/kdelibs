@@ -96,6 +96,7 @@ public:
     int baseline() const { return m_baseline; }
 
     virtual bool hasTextChildren() const { return true; }
+    virtual bool hasTextDescendant() const { return true; }
 
     virtual int topOverflow() const { return yPos(); }
     virtual int bottomOverflow() const { return yPos()+height(); }
@@ -155,6 +156,7 @@ public:
         m_lastChild = 0;
         m_includeLeftEdge = m_includeRightEdge = false;
         m_hasTextChildren = false;
+        m_hasTextDescendant = false;
         m_afterPageBreak = false;
     }
 
@@ -180,8 +182,11 @@ public:
         }
         child->setFirstLineStyleBit(m_firstLine);
         child->setParent(this);
-        if (child->isInlineTextBox())
-            m_hasTextChildren = true;
+        if (!m_hasTextChildren && child->isInlineTextBox()) {
+            m_hasTextDescendant = m_hasTextChildren = true;
+            for (InlineFlowBox* p = m_parent; p && !p->hasTextDescendant(); p = p->parent())
+                p->m_hasTextDescendant = true;
+        }
     }
     void removeFromLine(InlineBox* child);
     virtual void paintBackgroundAndBorder(RenderObject::PaintInfo&, int _tx, int _ty, int xOffsetOnLine);
@@ -207,6 +212,7 @@ public:
         m_includeRightEdge = includeRight;
     }
     virtual bool hasTextChildren() const { return m_hasTextChildren; }
+    bool hasTextDescendant() const { return m_hasTextDescendant; }
 
     // Helper functions used during line construction and placement.
     void determineSpacingForFlowBoxes(bool lastLine, RenderObject* endObject);
@@ -235,6 +241,7 @@ protected:
     bool m_includeLeftEdge : 1;
     bool m_includeRightEdge : 1;
     bool m_hasTextChildren : 1;
+    bool m_hasTextDescendant : 1;
     bool m_afterPageBreak : 1;
 };
 
