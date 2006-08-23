@@ -51,7 +51,14 @@ public:
       Application, ///< An icon that represents an application.
       Device, ///< An icon that represents a device.
       FileSystem, ///< An icon that represents a file system.
-      MimeType ///< An icon that represents a mime type (or file type).
+      MimeType, ///< An icon that represents a mime type (or file type).
+      Animation, ///< An icon that is animated.
+      Category, ///< An icon that represents a category.
+      Emblem, ///< An icon that adds information to an existing icon.
+      Emote, ///< An icon that expresses an emotion.
+      International, ///< An icon that represents a country's flag.
+      Place, ///< An icon that represents a location (e.g. 'home', 'trash').
+      StatusIcon ///< An icon that represents an event.
     };
 
     /**
@@ -313,6 +320,12 @@ public:
      * @see KIcon::isValid will return true, and false otherwise.
      */
     KIcon iconPath(const QString& name, int size, KIcon::MatchType match) const;
+    
+    /**
+     * Returns true if the theme has any icons for the given context.
+     * @since 3.5.5
+     */
+    bool hasContext( KIcon::Context context ) const;
 
     /**
      * List all icon themes installed on the system, global and local.

@@ -1131,6 +1131,16 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
     return res2;
 }
 
+// used by KIconDialog to find out which contexts to offer in a combobox
+bool KIconLoader::hasContext(KIcon::Context context) const
+{
+    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
+            themeNode = d->links.next() )
+       if( themeNode->theme->hasContext( context ))
+           return true;
+    return false;
+}
+
 KIconEffect * KIconLoader::iconEffect() const
 {
     return &d->mpEffect;

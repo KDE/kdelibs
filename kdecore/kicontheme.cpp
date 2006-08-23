@@ -340,6 +340,20 @@ QStringList KIconTheme::queryIconsByContext(int size, KIcon::Context context) co
     return iconlistResult;
 }
 
+bool KIconTheme::hasContext(KIcon::Context context) const
+{
+    QPtrListIterator<KIconThemeDir> dirs(mDirs);
+    KIconThemeDir *dir;
+
+    for ( ; dirs.current(); ++dirs)
+    {
+        dir = dirs.current();
+        if ((context == KIcon::Any) || (context == dir->context()))
+            return true;
+    }
+    return false;
+}
+
 KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match) const
 {
     KIcon icon;
@@ -517,6 +531,20 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigBase *config)
         mContext = KIcon::Application;
     else if (tmp == "Actions")
         mContext = KIcon::Action;
+    else if (tmp == "Animations")
+        mContext = KIcon::Animation;
+    else if (tmp == "Categories")
+        mContext = KIcon::Category;
+    else if (tmp == "Emblems")
+        mContext = KIcon::Emblem;
+    else if (tmp == "Emotes")
+        mContext = KIcon::Emote;
+    else if (tmp == "International")
+        mContext = KIcon::International;
+    else if (tmp == "Places")
+        mContext = KIcon::Place;
+    else if (tmp == "Status")
+        mContext = KIcon::StatusIcon;
     else {
         kdDebug(264) << "Invalid Context= line for icon theme: " << mDir << "\n";
         return;

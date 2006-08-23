@@ -222,6 +222,7 @@ private slots:
 private:
     void init();
     void showIcons();
+    void setContext( KIcon::Context context );
 
     int mGroupOrSize;
     KIcon::Context mContext;
@@ -234,6 +235,8 @@ private:
     KProgress *mpProgress;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
+    int mNumContext;
+    KIcon::Context mContextMap[ 12 ]; // must match KIcon::Context size, code has assert
 
 protected:
     virtual void virtual_hook( int id, void* data );

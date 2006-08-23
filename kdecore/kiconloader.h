@@ -262,6 +262,11 @@ public:
 				    KIcon::Context context=KIcon::Any) const;
 
     /**
+     * @internal
+     */
+    bool hasContext( KIcon::Context context ) const;
+
+    /**
      * Returns a list of all icons (*.png or *.xpm extension) in the
      * given directory.
      * @param iconsDir the directory to search in
