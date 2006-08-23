@@ -87,6 +87,18 @@ KUniqueApplication::addCmdLineOptions()
   KCmdLineArgs::addCmdLineOptions(kunique_options, 0, "kuniqueapp", "kde" );
 }
 
+static QDBusConnectionInterface *tryToInitDBusConnection()
+{
+    // Check the D-Bus connection health
+    QDBusConnectionInterface* dbusService = 0;
+    if (!QDBusConnection::sessionBus().isConnected() || !(dbusService = QDBusConnection::sessionBus().interface()))
+    {
+        kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
+        ::exit(255);
+    }
+    return dbusService;
+}
+
 bool
 KUniqueApplication::start()
 {
@@ -102,14 +114,6 @@ KUniqueApplication::start()
   delete args;
 #endif
 
-  // Check the D-Bus connection health
-  QDBusConnectionInterface* dbusService = 0;
-  if (!QDBusConnection::sessionBus().isConnected() || !(dbusService = QDBusConnection::sessionBus().interface()))
-  {
-    kError() << "KUniqueApplication: Cannot find the D-Bus session server" << endl;
-    ::exit(255);
-  }
-
   QString appName = QString::fromLatin1(KCmdLineArgs::about->appName());
   const QStringList parts = KCmdLineArgs::about->organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
   if (parts.isEmpty())
@@ -123,6 +127,8 @@ KUniqueApplication::start()
 
   if (s_nofork)
   {
+     QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
+
      if (s_multipleInstances)
      {
         QString pid = QString::number(getpid());
@@ -161,6 +167,8 @@ KUniqueApplication::start()
   case 0:
      {
         // Child
+
+        QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
         ::close(fd[0]);
         if (s_multipleInstances)
            appName.append("-").append(QString::number(getpid()));
@@ -209,20 +217,12 @@ KUniqueApplication::start()
      return true; // Finished.
   default:
      // Parent
+
      if (s_multipleInstances)
         appName.append("-").append(QString::number(fork_result));
      ::close(fd[1]);
 
-     // Create a secondary connection to the D-BUS server
-     // The primary one (QDBus::sessionBus()) belongs to the child
-     QDBusConnection con = QDBusConnection::connectToBus(QDBusConnection::SessionBus, "kuniqueapplication");
-     dbusService = 0;
-     if (!con.isConnected() || !(dbusService = con.interface()))
-     {
-       kError() << "KUniqueApplication: Cannot create secondary connection to the D-BUS server" << endl;
-       ::exit(255);
-     }
-     forever
+     Q_FOREVER
      {
        int n = ::read(fd[0], &result, 1);
        if (n == 1) break;
@@ -242,6 +242,7 @@ KUniqueApplication::start()
      if (result != 0)
         ::exit(result); // Error occurred in child.
 
+     QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
      if (!dbusService->isServiceRegistered(appName))
      {
         kError() << "KUniqueApplication: Registering failed!" << endl;
@@ -262,7 +263,7 @@ KUniqueApplication::start()
          new_asn_id = id.id();
 #endif
 
-     QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", con);
+     QDBusInterface iface(appName, "/MainApplication", "org.kde.KUniqueApplication", QDBusConnection::sessionBus());
      QDBusReply<int> reply;
      if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
      {
