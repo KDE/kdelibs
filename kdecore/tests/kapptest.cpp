@@ -16,7 +16,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#define private public
 #include "kapplication.h"
 #include <stdio.h>
 
@@ -34,7 +33,6 @@ main(int argc, char *argv[])
    KApplication a;
 
    KSycoca *s = KSycoca::self();
-  
-   qWarning("s->language() %s", s->language().toLatin1().constData());
-   //qWarning("Offset of aIconName: %ld", (long) &(static_cast<KApplication *>(0)->aIconName));
+
+   qDebug("s->language() %s", s->language().toLatin1().constData());
 }

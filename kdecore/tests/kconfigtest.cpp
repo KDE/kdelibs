@@ -148,7 +148,7 @@ void KConfigTest::cleanupTestCase()
 // ### TODO: call this, and test the state of things afterwards
 void KConfigTest::revertEntries()
 {
-//  qWarning("Reverting entries");
+//  qDebug("Reverting entries");
   KConfig sc( "kconfigtest" );
 
   sc.setGroup("Hello");
@@ -175,7 +175,7 @@ void KConfigTest::testSimple()
   bool bImmutable = sc3.entryIsImmutable("stringEntry1");
 
   QVERIFY( !bImmutable );
-  //qWarning("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
+  //qDebug("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
   sc2.setGroup("AAA");
   QVERIFY( sc2.hasKey( "stringEntry1" ) );
