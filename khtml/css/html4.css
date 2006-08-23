@@ -170,7 +170,6 @@ h6 {
 table {
 	display: table;
 	border-collapse: separate;
-	text-align: -khtml-auto;
 	border-spacing: 2px;
         -khtml-flow-mode: -khtml-around-floats;
         box-sizing: border-box;
