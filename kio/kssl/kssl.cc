@@ -174,9 +174,11 @@ bool KSSL::initialize() {
 
 	m_pi.reset();
 
-	if (m_cfg->sslv2() && !m_cfg->sslv3() && !m_cfg->tlsv1())
+	if (!m_cfg->tlsv1() && !m_cfg->sslv3() && m_cfg->sslv2())
 		d->m_meth = d->kossl->SSLv2_client_method();
-	else if ((m_cfg->tlsv1() || m_cfg->sslv3()) && !m_cfg->sslv2())
+        else if (m_cfg->tlsv1() && !m_cfg->sslv3() && !m_cfg->sslv2())
+		d->m_meth = d->kossl->TLSv1_client_method();
+	else if (!m_cfg->tlsv1() && m_cfg->sslv3() && !m_cfg->sslv2())
 		d->m_meth = d->kossl->SSLv3_client_method();
 	else d->m_meth = d->kossl->SSLv23_client_method();
 
@@ -306,10 +308,15 @@ int rc;
 	}
 */
 
+	int off = SSL_OP_ALL;
 	if (!d->lastInitTLS && !m_cfg->tlsv1())
-		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+		off |= SSL_OP_NO_TLSv1;
+	if (!m_cfg->sslv3())
+		off |= SSL_OP_NO_SSLv3;
+	if (!m_cfg->sslv2())
+		off |= SSL_OP_NO_SSLv2;
 
-	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
+	d->kossl->SSL_set_options(d->m_ssl, off);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
 	if (rc == 0) {
@@ -392,10 +399,15 @@ int rc;
 	}
 */
 
+	int off = SSL_OP_ALL;
 	if (!d->lastInitTLS && !m_cfg->tlsv1())
-		d->kossl->SSL_set_options(d->m_ssl, SSL_OP_NO_TLSv1);
+		off |= SSL_OP_NO_TLSv1;
+	if (!m_cfg->sslv3())
+		off |= SSL_OP_NO_SSLv3;
+	if (!m_cfg->sslv2())
+		off |= SSL_OP_NO_SSLv2;
 
-	d->kossl->SSL_set_options(d->m_ssl, SSL_OP_ALL);
+	d->kossl->SSL_set_options(d->m_ssl, off);
 
 	rc = d->kossl->SSL_set_fd(d->m_ssl, sock);
 	if (rc == 0) {
