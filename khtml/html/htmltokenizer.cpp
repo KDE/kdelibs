@@ -904,8 +904,16 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         unsigned int a;
                         cBuffer[cBufferPos] = '\0';
                         a = khtml::getAttrID(cBuffer, cBufferPos);
-                        if ( !a )
-                            attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
+                        if ( !a ) {
+                            // did we just get /> or e.g checked/>
+                            if (curchar == '>' && cBufferPos >=1 && cBuffer[cBufferPos-1] == '/') {
+                                currToken.flat = true;
+                                if (cBufferPos>1)
+                                    a = khtml::getAttrID(cBuffer, cBufferPos-1);
+                            }
+                            if (!a)
+                                attrName = QString::fromLatin1(QCString(cBuffer, cBufferPos+1).data());
+                        }
 
                         dest = buffer;
                         *dest++ = a;
@@ -915,9 +923,6 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         else
                             kdDebug( 6036 ) << "Known attribute: " << QCString(cBuffer, cBufferPos+1).data() << endl;
 #endif
-                        // did we just get />
-                        if (!a && cBufferPos == 1 && *cBuffer == '/' && curchar == '>')
-                            currToken.flat = true;
 
                         tag = SearchEqual;
                         break;
