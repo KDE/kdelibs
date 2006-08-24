@@ -105,7 +105,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     }
     // Find the theme description file. These are always global.
 
-    icnlibs = KGlobal::dirs()->resourceDirs("icon");
+    icnlibs = KGlobal::dirs()->resourceDirs("icon") + KGlobal::dirs()->resourceDirs("xdgdata-icon");
     for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
         cDir = *it + name + "/";
@@ -466,7 +466,7 @@ QStringList KIconTheme::list()
         return *_theme_list;
 
     _theme_list = new QStringList();
-    QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
+    QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon") + KGlobal::dirs()->resourceDirs("xdgdata-icon");
     QStringList::ConstIterator it;
     for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
