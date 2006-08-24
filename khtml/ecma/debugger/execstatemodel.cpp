@@ -80,7 +80,8 @@ int Node::row()
 // MODEL
 ExecStateModel::ExecStateModel(KJS::ExecState *exec, QObject *parent)
     : QAbstractItemModel(parent),
-      m_exec(exec)
+      m_exec(exec),
+      m_rootNode(0)
 {
     if (!m_exec)
     {

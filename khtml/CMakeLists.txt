@@ -103,6 +103,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/domparser.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_context2d.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/jshighlighter.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp

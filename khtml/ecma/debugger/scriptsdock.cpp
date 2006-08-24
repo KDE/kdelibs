@@ -6,6 +6,7 @@
 #include <kdebug.h>
 
 #include "debugwindow.h"
+#include "debugdocument.h"
 #include "scriptsdock.h"
 #include "scriptsdock.moc"
 
@@ -23,8 +24,6 @@ ScriptsDock::ScriptsDock(QWidget *parent)
             this, SLOT(scriptSelected(const QModelIndex &)));
 
     setWidget(m_view);
-
-
 }
 
 ScriptsDock::~ScriptsDock()
