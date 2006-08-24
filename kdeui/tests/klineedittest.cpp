@@ -33,6 +33,7 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_lineedit->completionObject()->setItems( list );
     m_lineedit->setFixedSize(500,30);
     m_lineedit->setSqueezedTextEnabled( true );
+    m_lineedit->setClearButtonShown( true );
     connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
     connect( m_lineedit, SIGNAL( returnPressed(const QString&) ),
              SLOT( slotReturnPressed(const QString&) ) );

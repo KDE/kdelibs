@@ -321,6 +321,17 @@ public:
      */
     QString clickMessage() const;
 
+    /**
+     * This makes the line edit display an icon on one side of the line edit
+     * which, when clicked, clears the contents of the line edit.
+     * This is useful for such things as location or search bars.
+     **/
+    void setClearButtonShown(bool show);
+
+    /**
+     * @return whether or not the clear button is shown
+     **/
+    bool clearButtonShown();
 
 Q_SIGNALS:
 
@@ -478,6 +489,13 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
+    * See QLineEdit::mouseReleaseEvent().
+    */
+    virtual void mouseReleaseEvent( QMouseEvent * );
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
     * See QWidget::mouseDoubleClickEvent().
     */
     virtual void mouseDoubleClickEvent( QMouseEvent * );
@@ -556,6 +574,11 @@ private:
      * created or resized.
      */
     void setSqueezedText ();
+
+    /**
+     * updates the geometry of the clear button on resize events
+     **/
+    void updateClearButton();
 
     bool m_bEnableMenu;
 

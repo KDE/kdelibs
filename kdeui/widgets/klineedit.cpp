@@ -25,12 +25,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qclipboard.h>
-#include <qtimer.h>
-#include <qevent.h>
-#include <qstyle.h>
+#include <QtCore/QTimer>
+#include <QtGui/QClipboard>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QLabel>
+#include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtGui/QStyleOption>
 
-#include <QPainter>
 #include <kconfig.h>
 #include <qtooltip.h>
 #include <kcursor.h>
@@ -72,6 +74,8 @@ public:
             initialized = true;
         }
 
+        clearButton = 0;
+        clickInClear = false;
     }
 
     ~KLineEditPrivate()
@@ -101,6 +105,9 @@ public:
     QString clickMessage;
     bool enableClickMsg:1;
     bool drawClickMsg:1;
+
+    QLabel* clearButton;
+    bool clickInClear:1;
 
     KCompletionBox *completionBox;
 };
@@ -153,6 +160,59 @@ void KLineEdit::init()
 QString KLineEdit::clickMessage() const
 {
     return d->clickMessage;
+}
+
+void KLineEdit::setClearButtonShown(bool show)
+{
+    if (show) {
+        if (d->clearButton) {
+            return;
+        }
+
+        d->clearButton = new QLabel( this );
+        d->clearButton->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+        d->clearButton->setCursor( Qt::ArrowCursor );
+
+        if ( qApp->isLeftToRight() ) {
+            d->clearButton->setPixmap( SmallIcon( "clear_left.png" ) );
+        } else {
+            d->clearButton->setPixmap( SmallIcon("locationbar_erase.png" ) );
+        }
+
+        updateClearButton();
+    } else {
+        delete d->clearButton;
+        d->clearButton = 0;
+        d->clickInClear = false;
+    }
+}
+
+bool KLineEdit::clearButtonShown()
+{
+    return d->clearButton != 0;
+}
+
+void KLineEdit::updateClearButton()
+{
+    if (!d->clearButton || isReadOnly()) {
+        return;
+    }
+
+    QSize geom = size();
+    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    int buttonWidth = d->clearButton->sizeHint().width();
+    QSize newButtonSize(buttonWidth, geom.height());
+
+    if (newButtonSize != d->clearButton->size()) {
+        d->clearButton->resize(newButtonSize);
+        setStyleSheet(QString("QLineEdit { padding-right: %1; }").arg(buttonWidth));
+    }
+
+    if (qApp->isLeftToRight()) {
+        d->clearButton->move(geom.width() - frameWidth - buttonWidth - 1, 0);
+    } else {
+        d->clearButton->move(frameWidth + 1, 0);
+    }
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -288,6 +348,11 @@ void KLineEdit::setReadOnly(bool readOnly)
             d->squeezedText = text();
             setSqueezedText();
         }
+
+        if (d->clearButton) {
+            d->clearButton->hide();
+            setStyleSheet(QString());
+        }
     }
     else
     {
@@ -297,6 +362,12 @@ void KLineEdit::setReadOnly(bool readOnly)
            d->squeezedText.clear();
         }
         setBackgroundRole(d->bgRole);
+
+        if (d->clearButton) {
+            int buttonWidth = d->clearButton->sizeHint().width();
+            setStyleSheet(QString("QLineEdit { padding-right: %1; }").arg(buttonWidth));
+            d->clearButton->show();
+        }
     }
 }
 
@@ -439,6 +510,7 @@ void KLineEdit::resizeEvent( QResizeEvent * ev )
     if (!d->squeezedText.isEmpty())
         setSqueezedText();
 
+    updateClearButton();
     QLineEdit::resizeEvent(ev);
 }
 
@@ -832,12 +904,37 @@ void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )
 
 void KLineEdit::mousePressEvent( QMouseEvent* e )
 {
-    if ( possibleTripleClick && e->button() == Qt::LeftButton )
-    {
-        selectAll();
+    if  (e->button() == Qt::LeftButton ) {
+        if ( d->clearButton ) {
+            d->clickInClear = d->clearButton->underMouse();
+
+            if ( d->clickInClear ) {
+                possibleTripleClick = false;
+            }
+        }
+
+        if ( possibleTripleClick ) {
+            selectAll();
+            e->accept();
+            return;
+        }
+    }
+
+    QLineEdit::mousePressEvent( e );
+}
+
+void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
+{
+    if ( d->clickInClear ) {
+        if ( d->clearButton->underMouse() ) {
+            clear();
+        }
+
+        d->clickInClear = false;
         e->accept();
         return;
     }
+    
     QLineEdit::mousePressEvent( e );
 }
 

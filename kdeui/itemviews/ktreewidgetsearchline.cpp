@@ -221,10 +221,12 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent, QTreeWidget *tree
   connect( this, SIGNAL( textChanged( const QString& ) ),
            this, SLOT( queueSearch( const QString& ) ) );
 
+  setClearButtonShown( true );
   setTreeWidget( treeWidget );
 
-	if ( !treeWidget )
-    setEnabled( false );
+  if ( !treeWidget ) {
+      setEnabled( false );
+  }
 }
 
 KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent,
@@ -234,6 +236,7 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent,
   connect( this, SIGNAL( textChanged( const QString& ) ),
            this, SLOT( queueSearch( const QString& ) ) );
 
+  setClearButtonShown( true );
   setTreeWidgets( treeWidgets );
 }
 
@@ -545,14 +548,12 @@ class KTreeWidgetSearchLineWidget::Private
   public:
     Private()
       : treeWidget( 0 ),
-        searchLine( 0 ),
-        clearButton( 0 )
+        searchLine( 0 )
     {
     }
 
     QTreeWidget *treeWidget;
     KTreeWidgetSearchLine *searchLine;
-    QToolButton *clearButton;
 };
 
 KTreeWidgetSearchLineWidget::KTreeWidgetSearchLineWidget( QWidget *parent, QTreeWidget *treeWidget )
@@ -575,14 +576,6 @@ KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::createSearchLine( QTreeWidge
 
 void KTreeWidgetSearchLineWidget::createWidgets()
 {
-  if ( !d->clearButton ) {
-    d->clearButton = new QToolButton( this );
-    QIcon icon = SmallIconSet( QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase" );
-    d->clearButton->setIcon( icon );
-  }
-
-  d->clearButton->show();
-
   QLabel *label = new QLabel( i18n("S&earch:"), this );
   label->setObjectName( QLatin1String("kde toolbar widget") );
 
@@ -591,11 +584,8 @@ void KTreeWidgetSearchLineWidget::createWidgets()
   label->setBuddy( d->searchLine );
   label->show();
 
-  connect( d->clearButton, SIGNAL( clicked() ), d->searchLine, SLOT( clear() ) );
-
   QHBoxLayout* layout = new QHBoxLayout( this );
   layout->setSpacing( 5 );
-  layout->addWidget( d->clearButton );
   layout->addWidget( label );
   layout->addWidget( d->searchLine );
 }

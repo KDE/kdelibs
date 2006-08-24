@@ -67,13 +67,14 @@ K3ListViewSearchLine::K3ListViewSearchLine(QWidget *parent, K3ListView *listView
     KLineEdit(parent)
 {
     d = new K3ListViewSearchLinePrivate;
+    setClearButtonShown( true );
 
     connect(this, SIGNAL(textChanged(const QString &)),
             this, SLOT(queueSearch(const QString &)));
 
     setListView( listView );
-	if( !listView)
-			setEnabled(false);
+    if( !listView)
+        setEnabled(false);
 }
 
 K3ListViewSearchLine::K3ListViewSearchLine(QWidget *parent,
@@ -81,6 +82,7 @@ K3ListViewSearchLine::K3ListViewSearchLine(QWidget *parent,
      KLineEdit(parent)
 {
     d = new K3ListViewSearchLinePrivate;
+    setClearButtonShown( true );
 
     connect(this, SIGNAL(textChanged(const QString &)),
             this, SLOT(queueSearch(const QString &)));
@@ -531,10 +533,9 @@ bool K3ListViewSearchLine::checkItemParentsVisible(Q3ListViewItem *item, Q3ListV
 class K3ListViewSearchLineWidget::K3ListViewSearchLineWidgetPrivate
 {
 public:
-    K3ListViewSearchLineWidgetPrivate() : listView(0), searchLine(0), clearButton(0) {}
+    K3ListViewSearchLineWidgetPrivate() : listView(0), searchLine(0) {}
     K3ListView *listView;
     K3ListViewSearchLine *searchLine;
-    QToolButton *clearButton;
 };
 
 K3ListViewSearchLineWidget::K3ListViewSearchLineWidget(K3ListView *listView,
@@ -563,14 +564,6 @@ K3ListViewSearchLine *K3ListViewSearchLineWidget::createSearchLine(K3ListView *l
 
 void K3ListViewSearchLineWidget::createWidgets()
 {
-    if(!d->clearButton) {
-        d->clearButton = new QToolButton(this);
-        QIcon icon = SmallIconSet(QApplication::isRightToLeft() ? "clear_left" : "locationbar_erase");
-        d->clearButton->setIcon(icon);
-    }
-
-    d->clearButton->show();
-
     QLabel *label = new QLabel(i18n("S&earch:"), this);
     label->setObjectName(QLatin1String("kde toolbar widget"));
 
@@ -579,8 +572,6 @@ void K3ListViewSearchLineWidget::createWidgets()
 
     label->setBuddy(d->searchLine);
     label->show();
-
-    connect(d->clearButton, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 }
 
 K3ListViewSearchLine *K3ListViewSearchLineWidget::searchLine() const

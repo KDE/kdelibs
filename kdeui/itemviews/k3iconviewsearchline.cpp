@@ -205,13 +205,15 @@ void K3IconViewSearchLine::init( Q3IconView *iconView )
 	   this, SLOT(   queueSearch( const QString & ) ) );
 
   if ( iconView != NULL )
-    {
+  {
       connect( iconView, SIGNAL( destroyed() ),
-	       this,     SLOT(   iconViewDeleted() ) );
+              this,     SLOT(   iconViewDeleted() ) );
       setEnabled( true );
-    }
-  else
-    setEnabled( false );
+  } else {
+      setEnabled( false );
+  }
+
+  setClearButtonShown(true);
 }
 
 void K3IconViewSearchLine::hideItem( Q3IconViewItem *item )
