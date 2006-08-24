@@ -106,8 +106,8 @@ public:
     bool enableClickMsg:1;
     bool drawClickMsg:1;
 
-    QLabel* clearButton;
     bool clickInClear:1;
+    QLabel* clearButton;
 
     KCompletionBox *completionBox;
 };
