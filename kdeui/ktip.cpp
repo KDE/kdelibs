@@ -152,6 +152,11 @@ KTipDatabase::KTipDatabase( const QStringList& tipsFiles )
     d->currentTip = KRandom::random() % d->tips.count();
 }
 
+KTipDatabase::~KTipDatabase()
+{
+    delete d;
+}
+
 void KTipDatabase::nextTip()
 {
   if ( d->tips.isEmpty() )

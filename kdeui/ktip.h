@@ -67,6 +67,8 @@ class KDEUI_EXPORT KTipDatabase
      */ 
     explicit KTipDatabase( const QStringList &tipFiles );
 
+    ~KTipDatabase();
+
     /**
      * Returns the current tip.
      */
