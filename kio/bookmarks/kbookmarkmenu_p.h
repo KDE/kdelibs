@@ -53,39 +53,13 @@ class KBookmarkMenu;
 class KBookmarkBar;
 class KMenu;
 
-class KImportedBookmarksActionMenu : public KActionMenu {
-  Q_OBJECT
-  Q_PROPERTY( QString type READ type WRITE setType )
-  Q_PROPERTY( QString location READ location WRITE setLocation )
-public:
-  const QString type() const { return m_type; }
-  void setType(const QString &type) { m_type = type; }
-  const QString location() const { return m_location; }
-  void setLocation(const QString &location) { m_location = location; }
-private:
-  QString m_type;
-  QString m_location;
-public:
-  KImportedBookmarksActionMenu(
-    const KIcon& icon, const QString &text,
-    KActionCollection* parent, const char* name)
-  : KActionMenu(icon, text, parent, name) {
-     ;
-  }
-};
 
 class KBookmarkActionMenu : public KActionMenu {
   Q_OBJECT
-  Q_PROPERTY( QString url READ url WRITE setUrl )
   Q_PROPERTY( QString address READ address WRITE setAddress )
-  Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly )
 public:
-  const QString url() const { return m_url; }
-  void setUrl(const QString &url) { m_url = url; }
   const QString address() const { return m_address; }
   void setAddress(const QString &address) { m_address = address; }
-  bool readOnly() const { return m_readOnly; }
-  void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
 private:
   QString m_url;
   QString m_address;
@@ -119,6 +93,15 @@ public:
       setIcon( KIcon( sIconName ) );
       setShortcut( cut );
   }
+
+  KBookmarkAction(KBookmark bm, KActionCollection* parent)
+  : KAction( bm.text().replace('&', "&&"), parent, 0)
+  {
+      setIcon(KIcon(bm.icon()));
+      setProperty( "url", bm.url().url() );
+      setProperty( "address", bm.address() );
+      setToolTip( bm.url().pathOrUrl() );
+  }	
 };
 
 class KBookmarkEditFields {

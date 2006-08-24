@@ -161,17 +161,11 @@ public Q_SLOTS: // public for bookmark bar
 protected Q_SLOTS:
   void slotAboutToShow();
   void contextMenu( const QPoint & );
-  void slotActionHoovered( QAction * );
 
   void slotBookmarkSelected(Qt::MouseButtons, Qt::KeyboardModifiers);
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
-
-  /**
-   * load Netscape's bookmarks
-   */
-  void slotNSLoad();
 
 protected:
   KExtendedBookmarkOwner* extOwner();
@@ -210,15 +204,27 @@ protected:
    */
   QString m_parentAddress;
 
-  QString m_highlightedAddress;
-
-  // TODO make non static!
-  static QString s_highlightedImportLocation;
-  static QString s_highlightedImportType;
 
   RMB *m_rmb;
 private:
   KBookmarkMenuPrivate* d;
+};
+
+class KImportedBookmarkMenu : public KBookmarkMenu
+{
+  Q_OBJECT
+public:
+  //TODO simplfy
+  KImportedBookmarkMenu( KBookmarkManager* mgr,
+                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 KActionCollection * collec, bool root, bool add,
+                 const QString & parentAddress, const QString & type, const QString & location );
+  ~KImportedBookmarkMenu();
+protected Q_SLOTS:
+  void slotNSLoad();
+private:
+   QString m_type;
+   QString m_location;
 };
 
 /**

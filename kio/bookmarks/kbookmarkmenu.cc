@@ -89,10 +89,6 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 {
   m_parentMenu->setKeyboardShortcutsEnabled( true );
 
-
-  connect( m_parentMenu, SIGNAL( hovered( QAction * ) ),
-           this, SLOT( slotActionHoovered( QAction * ) ) );
-
   m_bNSBookmark = m_parentAddress.isNull();
   if ( !m_bNSBookmark ) // not for the netscape bookmark
   {
@@ -152,29 +148,6 @@ void KBookmarkMenu::slotAboutToShow()
   }
 }
 
-QString KBookmarkMenu::s_highlightedImportType;
-QString KBookmarkMenu::s_highlightedImportLocation;
-
-void KBookmarkMenu::slotActionHoovered( QAction* action )
-{
-  if (qobject_cast<KBookmarkActionMenu*>(action) ||
-      qobject_cast<KBookmarkAction*>(action))
-  {
-    m_highlightedAddress = action->property("address").toString();
-  }
-  else if (qobject_cast<KImportedBookmarksActionMenu*>(action))
-  {
-    s_highlightedImportType = action->property("type").toString();
-    s_highlightedImportLocation = action->property("location").toString();
-  }
-  else
-  {
-    m_highlightedAddress.clear();
-    s_highlightedImportType.clear();
-    s_highlightedImportLocation.clear();
-  }
-}
-
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
@@ -212,7 +185,8 @@ KBookmark RMB::atAddress(const QString & address)
 
 void KBookmarkMenu::contextMenu( const QPoint & pos )
 {
-  showContextMenu(m_highlightedAddress, pos);
+  QAction * action = m_parentMenu->actionAt(pos);
+  showContextMenu(action->property("address").toString(), pos);
 }
 
 void RMB::fillContextMenu( const QString & address)
@@ -245,7 +219,7 @@ void RMB::fillContextMenu2( const QString & address)
 
 void RMB::slotEditAt()
 {
-  kDebug(7043) << "KBookmarkMenu::slotEditAt" << m_highlightedAddress << endl;
+  //kDebug(7043) << "KBookmarkMenu::slotEditAt" << m_highlightedAddress << endl;
 
   KBookmark bookmark = atAddress(m_highlightedAddress);
 
@@ -254,7 +228,7 @@ void RMB::slotEditAt()
 
 void RMB::slotProperties()
 {
-  kDebug(7043) << "KBookmarkMenu::slotProperties" << m_highlightedAddress << endl;
+  //kDebug(7043) << "KBookmarkMenu::slotProperties" << m_highlightedAddress << endl;
 
   KBookmark bookmark = atAddress(m_highlightedAddress);
 
@@ -278,7 +252,7 @@ void RMB::slotProperties()
 
 void RMB::slotInsert()
 {
-  kDebug(7043) << "KBookmarkMenu::slotInsert" << m_highlightedAddress << endl;
+  //kDebug(7043) << "KBookmarkMenu::slotInsert" << m_highlightedAddress << endl;
 
   QString url = m_pOwner->currentURL();
   if (url.isEmpty())
@@ -361,7 +335,7 @@ void KBookmarkMenu::showContextMenu( const QString & address, const QPoint & pos
 {
 
   delete m_rmb;
-  m_rmb = new RMB(m_parentAddress, m_highlightedAddress, m_pManager, m_pOwner, m_parentMenu);
+  m_rmb = new RMB(m_parentAddress, address, m_pManager, m_pOwner, m_parentMenu);
   m_rmb->fillContextMenu(address);
   emit aboutToShowContextMenu( m_rmb->atAddress(address), m_rmb->contextMenu());
   m_rmb->fillContextMenu2(address);
@@ -391,7 +365,7 @@ void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 
 void KBookmarkMenu::refill()
 {
-  //kDebug(7043) << "KBookmarkMenu::refill()" << endl;
+  kDebug(7043) << "KBookmarkMenu::refill()" << endl;
   qDeleteAll( m_lstSubMenus );
   m_lstSubMenus.clear();
 
@@ -511,40 +485,35 @@ void KBookmarkMenu::fillBookmarkMenu()
        }
 
        KActionMenu * actionMenu;
-       actionMenu = new KImportedBookmarksActionMenu(
+       actionMenu = new KActionMenu(
                               KIcon(info.type), info.name,
                               m_actionCollection, "kbookmarkmenu" );
-
-       actionMenu->setProperty( "type", info.type );
-       actionMenu->setProperty( "location", info.location );
 
        m_parentMenu->addAction(actionMenu);
        m_actions.append( actionMenu );
 
-       KBookmarkMenu *subMenu =
-          new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->menu(),
+       KImportedBookmarkMenu *subMenu =
+          new KImportedBookmarkMenu( m_pManager, m_pOwner, actionMenu->menu(),
                              m_actionCollection, false,
-                             m_bAddBookmark, QString() );
+                             m_bAddBookmark, QString(), info.type, info.location);
        connect( subMenu, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
                 this, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers ) ));
        m_lstSubMenus.append( subMenu );
-
-       connect(actionMenu->menu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
     }
   }
 
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
   Q_ASSERT(!parentBookmark.isNull());
-  bool separatorInserted = false;
+
+  if ( m_bIsRoot && parentBookmark.first().isNull() ) // at least one bookmark
+  {
+      m_parentMenu->addSeparator();
+  }
+
   for ( KBookmark bm = parentBookmark.first(); !bm.isNull();  bm = parentBookmark.next(bm) )
   {
     QString text = KStringHandler::csqueeze(bm.fullText(), 60);
     text.replace( '&', "&&" );
-    if ( !separatorInserted && m_bIsRoot) {
-      // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
-      m_parentMenu->addSeparator();
-      separatorInserted = true;
-    }
     if ( !bm.isGroup() )
     {
       if ( bm.isSeparator() )
@@ -554,14 +523,8 @@ void KBookmarkMenu::fillBookmarkMenu()
       else
       {
         //kDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
-        KAction * action = new KBookmarkAction( text, bm.icon(), 0, m_actionCollection, 0 );
+        KAction * action = new KBookmarkAction( bm, m_actionCollection);
         connect(action, SIGNAL( triggered(Qt::MouseButtons, Qt::KeyboardModifiers) ), SLOT( slotBookmarkSelected(Qt::MouseButtons, Qt::KeyboardModifiers) ));
-
-        action->setProperty( "url", bm.url().url() );
-        action->setProperty( "address", bm.address() );
-
-        action->setToolTip( bm.url().pathOrUrl() );
-
         m_parentMenu->addAction(action);
         m_actions.append( action );
       }
@@ -650,7 +613,7 @@ void KBookmarkMenu::slotNewFolder()
 
 void KBookmarkMenu::slotBookmarkSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km)
 {
-  kDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
+  //kDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
 
   if (qobject_cast<const KAction*>(sender()))
@@ -666,14 +629,29 @@ KExtendedBookmarkOwner* KBookmarkMenu::extOwner()
   return dynamic_cast<KExtendedBookmarkOwner*>(m_pOwner);
 }
 
-void KBookmarkMenu::slotNSLoad()
+void KImportedBookmarkMenu::slotNSLoad()
 {
+  kDebug(7043)<<"**** slotNSLoad  ****"<<m_type<<"  "<<m_location<<endl;
   // only fill menu once
   m_parentMenu->disconnect(SIGNAL(aboutToShow()));
 
   // not NSImporter, but kept old name for BC reasons
   KBookmarkMenuNSImporter importer( m_pManager, this, m_actionCollection );
-  importer.openBookmarks(s_highlightedImportLocation, s_highlightedImportType);
+  importer.openBookmarks(m_location, m_type);
+}
+
+KImportedBookmarkMenu::KImportedBookmarkMenu( KBookmarkManager* mgr,
+                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 KActionCollection * collec, bool root, bool add,
+                 const QString & parentAddress, const QString & type, const QString & location )
+    :KBookmarkMenu(mgr, owner, parentMenu, collec, root, add, parentAddress), m_type(type), m_location(location)
+{
+    connect(parentMenu, SIGNAL(aboutToShow()), this, SLOT(slotNSLoad()));
+}
+
+KImportedBookmarkMenu::~KImportedBookmarkMenu()
+{
+
 }
 
 /********************************************************************/

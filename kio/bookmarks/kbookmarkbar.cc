@@ -195,17 +195,10 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                 m_toolBar->addSeparator();
             else
             {
-                KAction *action = new KBookmarkAction( text, bm.icon(), 0, m_actionCollection, 0 );
+                KAction *action = new KBookmarkAction( bm, m_actionCollection );
                 connect(action, SIGNAL( triggered(bool) ),
                         this, SLOT( slotBookmarkSelected() ));
-
-                action->setProperty( "url", bm.url().url() );
-                action->setProperty( "address", bm.address() );
-
-                action->setToolTip( bm.url().pathOrUrl() );
-
                 m_toolBar->addAction(action);
-
                 d->m_actions.append( action );
             }
         }
