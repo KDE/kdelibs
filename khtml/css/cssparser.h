@@ -137,6 +137,9 @@ namespace DOM {
 	bool parseFont(bool important);
         bool parseCounter(int propId, bool increment, bool important);
 
+        bool parseColorParameters(Value*, int* colorValues, bool parseAlpha);
+        bool parseHSLParameters(Value*, double* colorValues, bool parseAlpha);
+
         // returns the found property
         // 0 if nothing found (or ok == false)
         // @param forward if true, it parses the next in the list

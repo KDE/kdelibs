@@ -40,6 +40,7 @@ namespace khtml
     
     bool hasSufficientContrast(const QColor &c1, const QColor &c2);
     QColor retrieveBackgroundColor(const RenderObject *obj);
+    QRgb qRgbaFromHsla(double h, double s, double l, double a);
 
     //enumerator for findSelectionNode
     enum FindSelectionResult { SelectionPointBefore,

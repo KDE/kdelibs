@@ -2,6 +2,7 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) David Carson  <dacarson@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,6 +45,34 @@ void khtml::setPrintPainter( QPainter *printer )
     printpainter = printer;
 }
 
+
+double calcHue(double temp1, double temp2, double hueVal)
+{
+    if (hueVal < 0)
+        hueVal++;
+    else if (hueVal > 1)
+        hueVal--;
+    if (hueVal * 6 < 1)
+        return temp1 + (temp2 - temp1) * hueVal * 6;
+    if (hueVal * 2 < 1)
+        return temp2;
+    if (hueVal * 3 < 2)
+        return temp1 + (temp2 - temp1) * (2.0 / 3.0 - hueVal) * 6;
+    return temp1;
+}
+
+// Explanation of this algorithm can be found in the CSS3 Color Module
+// specification at http://www.w3.org/TR/css3-color/#hsl-color with further
+// explanation available at http://en.wikipedia.org/wiki/HSL_color_space
+
+// all values are in the range of 0 to 1.0
+QRgb khtml::qRgbaFromHsla(double h, double s, double l, double a)
+{
+    double temp2 = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
+    double temp1 = 2.0 * l - temp2;
+
+    return qRgba(calcHue(temp1, temp2, h + 1.0 / 3.0) * 255, calcHue(temp1, temp2, h) * 255, calcHue(temp1, temp2, h - 1.0 / 3.0) * 255, a * 255);
+}
 
 /** finds out the background color of an element
  * @param obj render object
