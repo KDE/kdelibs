@@ -904,20 +904,20 @@ void KLineEdit::mouseDoubleClickEvent( QMouseEvent* e )
 
 void KLineEdit::mousePressEvent( QMouseEvent* e )
 {
-    if  (e->button() == Qt::LeftButton ) {
-        if ( d->clearButton ) {
-            d->clickInClear = d->clearButton->underMouse();
+    if  ( (e->button() == Qt::LeftButton ||
+           e->button() == Qt::MidButton ) &&
+          d->clearButton ) {
+        d->clickInClear = d->clearButton->underMouse();
 
-            if ( d->clickInClear ) {
-                possibleTripleClick = false;
-            }
+        if ( d->clickInClear ) {
+            possibleTripleClick = false;
         }
+    }
 
-        if ( possibleTripleClick ) {
-            selectAll();
-            e->accept();
-            return;
-        }
+    if ( e->button() == Qt::LeftButton && possibleTripleClick ) {
+        selectAll();
+        e->accept();
+        return;
     }
 
     QLineEdit::mousePressEvent( e );
@@ -927,14 +927,18 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 {
     if ( d->clickInClear ) {
         if ( d->clearButton->underMouse() ) {
-            clear();
+            if ( e->button() == Qt::MidButton ) {
+                setText( QApplication::clipboard()->text( QClipboard::Selection ) );
+            } else {
+                clear();
+            }
         }
 
         d->clickInClear = false;
         e->accept();
         return;
     }
-    
+
     QLineEdit::mousePressEvent( e );
 }
 
@@ -1430,7 +1434,13 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         QPainter p( this );
         QPen tmp = p.pen();
         p.setPen( palette().color( QPalette::Disabled, QPalette::Text ) );
+
+        //FIXME: this rect is not where the text actually starts
+        // qlineedit uses an internal qstyleoption set to figure this out
+        // and then adds a hardcoded 2 pixel interior to that.
+        // probably requires fixes to Qt itself to do this cleanly
         QRect cr = contentsRect();
+
         p.drawText( cr, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage );
         p.setPen( tmp );
     }
