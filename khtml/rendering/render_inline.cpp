@@ -474,11 +474,11 @@ static void collectHorizontalBoxCoordinates(InlineBox *box,
  *	succeeding
  * @return \c true if this and the next box are disjoint
  */
-inline static bool lineBoxesDisjoint(InlineRunBox *line, bool toBegin)
+inline static bool lineBoxesDisjoint(InlineRunBox *line, int offset, bool toBegin)
 {
   InlineRunBox *next = toBegin ? line->prevLineBox() : line->nextLineBox();
-  return !next || next->xPos() + next->width() < line->xPos()
-               || next->xPos() > line->xPos() + line->width();
+  return !next || next->xPos() + next->width() + 2*offset < line->xPos()
+               || next->xPos() > line->xPos() + line->width() + 2*offset;
 }
 
 /**
@@ -499,7 +499,7 @@ static void collectVerticalBoxCoordinates(InlineRunBox *line,
     for (InlineRunBox* curr = line; curr && !last; curr = left ? curr->prevLineBox() : curr->nextLineBox()) {
         InlineBox *root = curr;
 
-        bool isLast = lineBoxesDisjoint(curr, left);
+        bool isLast = lineBoxesDisjoint(curr, kAbs(offset), left);
         if (isLast) last = curr;
 
         if (root != line && !isLast)
