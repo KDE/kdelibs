@@ -134,7 +134,7 @@ void KNewStuffSecure::slotValidated(int result)
   if (!valid)
   {
       signatureStr.prepend( "<br>");
-      if (KMessageBox::warningContinueCancel(parentWidget(), i18n("<qt>There is a problem with the resource file you have downloaded. The errors are :<b>%1</b><br>%2<br><br>Installation of the resource is <b>not recommended</b>.<br><br>Do you want to proceed with the installation?</qt>", errorString, signatureStr), i18n("Problematic Resource File")) == KMessageBox::Continue)
+      if (KMessageBox::warningContinueCancel(parentWidget(), i18n("<qt>There is a problem with the resource file you have downloaded. The errors are: <b>%1</b><br>%2<br><br>Installation of the resource is <b>not recommended</b>.<br><br>Do you want to proceed with the installation?</qt>", errorString, signatureStr), i18n("Problematic Resource File")) == KMessageBox::Continue)
           valid = true;
   } else
     KMessageBox::information(parentWidget(), i18n("<qt>%1<br><br>Press OK to install it.</qt>", signatureStr), i18n("Valid Resource"), "Show Valid Signature Information");
