@@ -113,21 +113,21 @@ NodeImpl *NodeIteratorImpl::getNextNode(NodeImpl *n)
   if( n->hasChildNodes() )
     return n->firstChild();
 
-  if( n->nextSibling() )
-    return n->nextSibling();
-
   if( m_root == n)
      return 0;
+
+  if( n->nextSibling() )
+    return n->nextSibling();
 
   NodeImpl *parent = n->parentNode();
   while( parent )
     {
+      if( m_root == parent )
+           return 0;
+
       n = parent->nextSibling();
       if( n )
         return n;
-
-      if( m_root == parent )
-        return 0;
 
       parent = parent->parentNode();
     }
@@ -171,7 +171,7 @@ NodeImpl *NodeIteratorImpl::getPreviousNode(NodeImpl *n)
  */
   NodeImpl *_tempCurrent;
 
-  if( !n )
+  if( !n || m_root == n )
     return 0;
 
   _tempCurrent = n->previousSibling();
@@ -187,12 +187,7 @@ NodeImpl *NodeIteratorImpl::getPreviousNode(NodeImpl *n)
         return _tempCurrent;
     }
 
-
-  if(n == m_root)
-    return 0;
-
   return n->parentNode();
-
 
 }
 
