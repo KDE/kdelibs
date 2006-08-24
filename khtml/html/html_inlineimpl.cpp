@@ -175,11 +175,13 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_HREF:
+    {
         bool hadAnchor = m_hasAnchor;
         m_hasAnchor = attr->val() != 0;
         getDocument()->incDOMTreeVersion();
         if (hadAnchor != m_hasAnchor)
             setChanged();
+    }
         break;
     case ATTR_TARGET:
         m_hasTarget = attr->val() != 0;
