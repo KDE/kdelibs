@@ -138,12 +138,12 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     // create the applnk
     KSimpleConfig conf(ddesktop);
     conf.setDesktopGroup();
-    conf.writeEntry( QLatin1String("Type"), QString::fromLatin1("Link") );
-    conf.writePathEntry( QLatin1String("URL"), openStr );
+    conf.writeEntry( "Type", QString::fromLatin1("Link") );
+    conf.writePathEntry( "URL", openStr );
     // If you change the line below, change the test in the above loop
-    conf.writeEntry( QLatin1String("X-KDE-LastOpenedWith"), desktopEntryName );
-    conf.writeEntry( QLatin1String("Name"), url.fileName() );
-    conf.writeEntry( QLatin1String("Icon"), KMimeType::iconNameForURL( url ) );
+    conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
+    conf.writeEntry( "Name", url.fileName() );
+    conf.writeEntry( "Icon", KMimeType::iconNameForURL( url ) );
 }
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
