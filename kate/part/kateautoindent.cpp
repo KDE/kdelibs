@@ -31,6 +31,8 @@
 #include <kdebug.h>
 #include <kpopupmenu.h>
 
+#include <cctype>
+
 //BEGIN KateAutoIndent
 
 KateAutoIndent *KateAutoIndent::createIndenter (KateDocument *doc, uint mode)
@@ -1552,44 +1554,60 @@ void KateCSAndSIndent::processNewline (KateDocCursor &begin, bool /*needContinue
  * Does the line @p line start with a label?
  * @note May also return @c true if the line starts in a continuation.
  */
-bool KateCSAndSIndent::startsWithLabel( int line )
-{
-  KateTextLine::Ptr indentLine = doc->plainKateTextLine( line );
+bool KateCSAndSIndent::startsWithLabel( int line ) 
+{ 
+  // Get the current line.
+  KateTextLine::Ptr indentLine = doc->plainKateTextLine(line);
   const int indentFirst = indentLine->firstChar();
-
+  
+  // Not entirely sure what this check does.
   int attrib = indentLine->attribute(indentFirst);
   if (attrib != 0 && attrib != keywordAttrib && attrib != normalAttrib && attrib != extensionAttrib)
     return false;
-
+  
+  // Get the line text.
   const QString lineContents = indentLine->string();
-  static const QString symbols = QString::fromLatin1(";:[]{}");
-  const int last = indentLine->lastChar();
-  for ( int n = indentFirst + 1; n <= last; ++n )
+  const int indentLast = indentLine->lastChar();
+  bool whitespaceFound = false;
+  for ( int n = indentFirst; n <= indentLast; ++n )
   {
-    QChar c = lineContents[n];
-    // FIXME: symbols inside comments are not skipped
-    if ( !symbols.contains(c) )
-      continue;
-
-    // if we find a symbol other than a :, this is not a label.
-    if ( c != ':' )
-      return false;
-
-    // : but not ::, this is a label.
-    if ( lineContents[n+1] != ':' )
-      return true;
-
-    // xy::[^:] is a scope-resolution operator. can occur in case X::Y: for instance.
-    // skip both :s and keep going.
-    if ( lineContents[n+2] != ':' )
+    // Get the character as latin1. Can't use QChar::isLetterOrNumber()
+    // as that includes non 0-9 numbers.
+    char c = lineContents[n].latin1();
+    if ( c == ':' )
     {
-      ++n;
-      continue;
+      // See if the next character is ':' - if so, skip to the character after it.
+      if ( n < lineContents.length() - 1 )
+      {
+        if ( lineContents[n+1].latin1() == ':' )
+        {
+          n += 2;
+          continue;
+        }
+      }
+      // Right this is the relevent ':'.
+      if ( n == indentFirst)
+      {
+        // Just a line with a : on it.
+        return false;
+      }
+      // It is a label of some kind!
+      return true;
     }
-
-    // xy::: outside a continuation is a label followed by a scope-resolution operator.
-    // more than 3 :s is illegal, so we don't care that's not indented.
-    return true;
+    if (isspace(c))
+    {
+      if (!whitespaceFound)
+      {
+        if (lineContents.mid(indentFirst, n - indentFirst) == "class")
+          return false;
+        whitespaceFound = true;
+      }
+    }
+    // All other characters don't indent.
+    else if ( !isalnum(c) && c != '_' )
+    {
+      return false;
+    }
   }
   return false;
 }
