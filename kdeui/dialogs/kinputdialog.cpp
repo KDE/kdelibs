@@ -58,8 +58,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d( new KInputDialogPrivate() )
 {
   setCaption( caption );
-  setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setButtons( Ok | Cancel );
   setDefaultButton( Ok );
   showButtonSeparator( true );
   setModal(true);
@@ -72,6 +71,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   layout->addWidget( d->m_label );
 
   d->m_lineEdit = new KLineEdit( value, frame );
+  d->m_lineEdit->setClearButtonShown( true );
   layout->addWidget( d->m_lineEdit );
 
   d->m_lineEdit->setFocus();
@@ -87,8 +87,6 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
   connect( d->m_lineEdit, SIGNAL( textChanged( const QString & ) ),
       SLOT( slotEditTextChanged( const QString & ) ) );
-  connect( this, SIGNAL( user1Clicked() ), d->m_lineEdit, SLOT( clear() ) );
-  connect( this, SIGNAL( user1Clicked() ), d->m_lineEdit, SLOT( setFocus() ) );
 
   setMainWidget(frame);
   slotEditTextChanged( value );
@@ -190,13 +188,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d( new KInputDialogPrivate() )
 {
   setCaption( caption );
-  setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStdGuiItem::clear() );
+  setButtons( Ok | Cancel );
   setDefaultButton( Ok );
   showButtonSeparator( true );
   setModal(true);
-
-  showButton( User1, editable );
 
   QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame );
@@ -208,16 +203,15 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   if ( editable )
   {
     d->m_comboBox = new KComboBox( editable, frame );
+    d->m_lineEdit = new KLineEdit( frame );
+    d->m_lineEdit->setClearButtonShown( true );
+    d->m_comboBox->setLineEdit( d->m_lineEdit );
     d->m_comboBox->insertItems( 0, list );
     d->m_comboBox->setCurrentIndex( current );
     layout->addWidget( d->m_comboBox );
 
-    connect( d->m_comboBox, SIGNAL( textChanged( const QString & ) ),
+    connect( d->m_comboBox, SIGNAL( editTextChanged( const QString & ) ),
       SLOT( slotUpdateButtons( const QString & ) ) );
-    connect( this, SIGNAL( user1Clicked() ),
-      d->m_comboBox, SLOT( clearEdit() ) );
-    connect( this, SIGNAL( user1Clicked() ),
-      d->m_comboBox, SLOT( setFocus() ) );
     slotUpdateButtons( d->m_comboBox->currentText() );
     d->m_comboBox->setFocus();
   } else {
@@ -460,13 +454,11 @@ void KInputDialog::slotEditTextChanged( const QString &text )
   }
 
   enableButton( Ok, on );
-  enableButton( User1, !text.isEmpty() );
 }
 
 void KInputDialog::slotUpdateButtons( const QString &text )
 {
   enableButton( Ok, !text.isEmpty() );
-  enableButton( User1, !text.isEmpty() );
 }
 
 KLineEdit *KInputDialog::lineEdit() const
