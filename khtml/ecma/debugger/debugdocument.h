@@ -107,7 +107,7 @@ private:
 };
 */
 
-};
+}
 Q_DECLARE_METATYPE(KJS::DebugDocument*)
 
 #endif
