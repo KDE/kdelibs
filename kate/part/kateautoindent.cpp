@@ -148,7 +148,7 @@ IndenterConfigPage* KateAutoIndent::configPage(QWidget *parent, uint mode)
 }
 
 KateAutoIndent::KateAutoIndent (KateDocument *_doc)
-: doc(_doc)
+: QObject(), doc(_doc)
 {
 }
 KateAutoIndent::~KateAutoIndent ()
@@ -186,7 +186,10 @@ void KateViewIndentationAction::setMode (int mode)
 KateNormalIndent::KateNormalIndent (KateDocument *_doc)
  : KateAutoIndent (_doc)
 {
+  // if highlighting changes, update attributes
+  connect(_doc, SIGNAL(hlChanged()), this, SLOT(updateConfig()));
 }
+
 KateNormalIndent::~KateNormalIndent ()
 {
 }
@@ -2022,7 +2025,7 @@ class KateVarIndentPrivate {
 };
 
 KateVarIndent::KateVarIndent( KateDocument *doc )
-: QObject( 0, "variable indenter"), KateNormalIndent( doc )
+: KateNormalIndent( doc )
 {
   d = new KateVarIndentPrivate;
   d->reIndentAfter = QRegExp( doc->variable( "var-indent-indent-after" ) );
@@ -2070,8 +2073,6 @@ void KateVarIndent::processChar ( QChar c )
 
 void KateVarIndent::processLine ( KateDocCursor &line )
 {
-  updateConfig(); // ### is it really nessecary *each time* ??
-
   QString indent; // store the indent string here
 
   // find the first line with content that is not starting with comment text,
