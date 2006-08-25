@@ -655,8 +655,8 @@ void KateCSmartIndent::processChar(QChar c)
       // is already the just typed '/', concatenate it to "*/".
       if ( first != -1
            && firstChar == '*'
-           && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumn()-1 )
-        doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
+           && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumnReal()-1 )
+        doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumnReal()-1);
     }
 
     // ls: never have comments change the indentation.
@@ -1999,8 +1999,8 @@ void KateCSAndSIndent::processChar(QChar c)
       // is already the just typed '/', concatenate it to "*/".
       if ( first != -1
            && textLine->getChar( first ) == '*'
-           && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumn()-1 )
-        doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumn()-1);
+           && textLine->nextNonSpaceChar( first+1 ) == view->cursorColumnReal()-1 )
+        doc->removeText( view->cursorLine(), first+1, view->cursorLine(), view->cursorColumnReal()-1);
     }
 
     // anders: don't change the indent of doxygen lines here.

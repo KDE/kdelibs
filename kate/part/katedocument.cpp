@@ -2895,8 +2895,8 @@ bool KateDocument::typeChars ( KateView *view, const QString &chars )
       {
         QChar end_ch;
         bool complete = true;
-        QChar prevChar = textLine->getChar(view->cursorColumn()-1);
-        QChar nextChar = textLine->getChar(view->cursorColumn());
+        QChar prevChar = textLine->getChar(view->cursorColumnReal()-1);
+        QChar nextChar = textLine->getChar(view->cursorColumnReal());
         switch(ch) {
           case '(': end_ch = ')'; break;
           case '[': end_ch = ']'; break;
