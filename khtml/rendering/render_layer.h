@@ -153,6 +153,8 @@ public:
     Marquee* marquee() const { return m_marquee; }
     void suspendMarquees();
 
+    bool isOverflowOnly() const { return m_isOverflowOnly; }
+
 #ifdef APPLE_CHANGES
     bool isTransparent();
     RenderLayer* transparentAncestor();
@@ -216,6 +218,10 @@ public:
     void updateZOrderLists();
     QPtrVector<RenderLayer>* posZOrderList() const { return m_posZOrderList; }
     QPtrVector<RenderLayer>* negZOrderList() const { return m_negZOrderList; }
+
+    void dirtyOverflowList();
+    void updateOverflowList();
+    QValueList<RenderLayer*>* overflowList() const { return m_overflowList; }
 
     void setHasOverlaidWidgets(bool b=true) { m_hasOverlaidWidgets = b; }
     bool hasOverlaidWidgets() const { return m_hasOverlaidWidgets; }
@@ -281,6 +287,7 @@ private:
     KDE_EXPORT void paintLayer(RenderLayer* rootLayer, QPainter *p, const QRect& paintDirtyRect, bool selectionOnly=false);
     RenderLayer* nodeAtPointForLayer(RenderLayer* rootLayer, RenderObject::NodeInfo& info,
                                      int x, int y, const QRect& hitTestRect);
+    bool shouldBeOverflowOnly() const;
 
 protected:
     RenderObject* m_object;
@@ -315,13 +322,18 @@ protected:
     // z-indices.
     QPtrVector<RenderLayer>* m_posZOrderList;
     QPtrVector<RenderLayer>* m_negZOrderList;
-    bool m_zOrderListsDirty;
     
-    bool m_markedForRepaint;
+    // This list contains our overflow child layers.
+    QValueList<RenderLayer*>* m_overflowList;
+   
+    bool m_zOrderListsDirty: 1;
+    bool m_overflowListDirty: 1;
+    bool m_isOverflowOnly: 1;
+    bool m_markedForRepaint: 1;
+    bool m_hasOverlaidWidgets: 1; 
 
     QRect m_visibleRect;
 
-    bool m_hasOverlaidWidgets; 
     QRegion m_region; // used by overlaid (non z-order aware) widgets
 
     Marquee* m_marquee; // Used by layers with overflow:marquee
