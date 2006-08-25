@@ -331,7 +331,7 @@ public:
     /**
      * @return whether or not the clear button is shown
      **/
-    bool clearButtonShown();
+    bool clearButtonShown() const;
 
 Q_SIGNALS:
 
