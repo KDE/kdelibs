@@ -36,7 +36,7 @@ namespace Fake
 {
 AudioOutput::AudioOutput( QObject* parent )
 	: AbstractAudioOutput( parent )
-	, m_device( 1 )
+	, m_device( 10000 )
 	, m_dsp( "/dev/dsp" )
 {
 }
@@ -63,8 +63,8 @@ void AudioOutput::setVolume( float newVolume )
 
 void AudioOutput::setOutputDevice( int newDevice )
 {
-	Q_ASSERT( newDevice >= 1 );
-	Q_ASSERT( newDevice <= 2 );
+	Q_ASSERT( newDevice >= 10000 );
+	Q_ASSERT( newDevice <= 10001 );
 	m_device = newDevice;
 }
 
