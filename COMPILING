@@ -10,13 +10,15 @@ Make sure you get the following stuff from SVN:
 
   * qt-copy (currently a snapshot of qt-4.x)
   * kdelibs
+  * kdepimlibs
   * kdebase (strongly recommended but not strictly necessary)
   * any other package you are interested in
 
 It is important that you compile AND INSTALL the above packages in the above
 order.
 
-Further you will need GNU make, a working C++ compiler (e.g. gcc 3.3.x or later) and CMake 2.4.1 or later 
+Further you will need GNU make, a working C++ compiler (e.g. gcc 3.4.x or later)
+and CMake 2.4.3 or later.
 
 Preparations
 ==================
@@ -107,8 +109,8 @@ important files lying around in your source tree any more, they will be deleted!
 
 Problems?
 
-See http://www.kde.org/compilationfaq.html for common build problems and their
-solution.
+See http://developer.kde.org/build/compilationfaq.html for common build problems
+and their solution.
 
 If you encounter _LINK_ problems you are probably doing something wrong. Do a
 "svn-clean" and start from scratch, usually this solves the problem.
