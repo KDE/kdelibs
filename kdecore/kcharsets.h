@@ -149,7 +149,7 @@ private:
      * @return pointer to the QTextCodec or NULL
      * @todo Make this function public when it is clear what API is needed.
      */
-    QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const;
+    QTextCodec *codecForNameOrNull( const QByteArray& n ) const;
 };
 
 #endif
