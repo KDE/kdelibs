@@ -37,155 +37,63 @@
 #include <assert.h>
 #include <QHash>
 
-static const char * const language_names[] = {
-	I18N_NOOP( "Other" ),
-	I18N_NOOP( "Arabic" ),
-	I18N_NOOP( "Baltic" ),
-	I18N_NOOP( "Central European" ),
-	I18N_NOOP( "Chinese Simplified" ),
-	I18N_NOOP( "Chinese Traditional" ),
-	I18N_NOOP( "Cyrillic" ),
-	I18N_NOOP( "Greek" ),
-	I18N_NOOP( "Hebrew" ),
-	I18N_NOOP( "Japanese" ),
-	I18N_NOOP( "Korean" ),
-	I18N_NOOP( "Thai" ),
-	I18N_NOOP( "Turkish" ),
-	I18N_NOOP( "Western European" ),
-	I18N_NOOP( "Tamil" ),
-	I18N_NOOP( "Unicode" ),
-	I18N_NOOP( "Northern Saami" ),
-        I18N_NOOP( "Vietnamese" ),
-        I18N_NOOP( "South-Eastern Europe" )
-};
-
-// This list gives the charsets that can be used to display a file given in a certain encoding.
-// The list should be in order of preference
-// The list is user-visible, so the encoding should be displayed like the user expects it.
-static const char* const charsets_for_encoding[] = {
-    "KOI8-R",
-    "KOI8-U",
-    "ISO 8859-1",
-    "ISO 8859-2",
-    "ISO 8859-3",
-    "ISO 8859-4",
-    "ISO 8859-5",
-    "ISO 8859-6",
-    "ISO 8859-7",
-    "ISO 8859-8",
-    "ISO 8859-8-I",
-    "ISO 8859-9",
-    "ISO 8859-11",
-    "ISO 8859-13",
-    "ISO 8859-14",
-    "ISO 8859-15",
-    "ISO 8859-16",
-    "UTF-8",
-    "UTF-16",
-    "ISO 10646-UCS-2",
-    "cp 1250",
-    "cp 1251",
-    "cp 1252",
-    "cp 1253",
-    "cp 1254",
-    "cp 1255",
-    "cp 1256",
-    "cp 1257",
-    "windows-1258",
-    "IBM850",
-#if 0
-    "ibm852",
-#endif
-    "IBM866",
-    "TIS620",
-    "EUC-JP",
-    "sjis",
-    "jis7",
-    "Big5",
-    "Big5-HKSCS",
-    "GBK",
-    "GB18030",
-    "GB2312",
-    "EUC-KR",
-    "TSCII",
-//    "pt 154",  // ### TODO "PT 154" seems to have been removed from Qt
-    "winsami2",
-    "IBM874",
-    0 }; // extra 0 for end
-
-// 0 other
-// 1 Arabic
-// 2 Baltic
-// 3 Central European
-// 4 Chinese Simplified
-// 5 Chinese Traditional
-// 6 Cyrillic
-// 7 Greek
-// 8 Hebrew
-// 9 Japanese
-// 10 Korean
-// 11 Thai
-// 12 Turkish
-// 13 Western European
-// 14 Tamil
-// 15 Unicode
-// 16 Northern Sami
-// 17 Vietnamese
-// 18 South-Eastern Europe
 // ### FIXME KDE4: the name of the encodings should mostly be uppercase
 // The names of this list are user-visible
 static struct LanguageForEncoding
     {
     const char* index;
-    int data;
+    const char* data;
     } const language_for_encoding[] = {
-    { "ISO 8859-1", 13 },
-    { "ISO 8859-15", 13 },
-    { "ISO 8859-14", 13 },
-    { "cp 1252", 13 },
-    { "IBM850", 13 },
-    { "ISO 8859-2", 3 },
-    { "ISO 8859-3", 3 },
-    { "ISO 8859-4", 2 },
-    { "ISO 8859-13", 2 },
-    { "ISO 8859-16", 18 },
-    { "cp 1250", 3 },
-    { "cp 1254", 12 },
-    { "cp 1257", 2 },
+    { "ISO 8859-1", I18N_NOOP( "Western European" ) },
+    { "ISO 8859-15", I18N_NOOP( "Western European" ) },
+    { "ISO 8859-14", I18N_NOOP( "Western European" ) },
+    { "cp 1252", I18N_NOOP( "Western European" ) },
+    { "IBM850", I18N_NOOP( "Western European" ) },
+    { "ISO 8859-2", I18N_NOOP( "Central European" ) },
+    { "ISO 8859-3", I18N_NOOP( "Central European" ) },
+    { "ISO 8859-4", I18N_NOOP( "Baltic" ) },
+    { "ISO 8859-13", I18N_NOOP( "Baltic" ) },
+    { "ISO 8859-16", I18N_NOOP( "South-Eastern Europe" ) },
+    { "cp 1250", I18N_NOOP( "Central European" ) },
+    { "cp 1254", I18N_NOOP( "Turkish" ) },
+    { "cp 1257", I18N_NOOP( "Baltic" ) },
 #if 0
-    { "ibm852", 3 },
+    { "ibm852", I18N_NOOP( "Central European" ) },
 #endif
-    { "KOI8-R", 6 },
-    { "ISO 8859-5", 6 },
-    { "cp 1251", 6 },
-    { "KOI8-U", 6 },
-//    { "pt 154", 6 }, // ### TODO "PT 154" seems to have been removed from Qt
-    { "IBM866", 6 },
-    { "Big5", 5 },
-    { "Big5-HKSCS", 5 },
-    { "GB18030", 4 },
-    { "GBK", 4 },
-    { "GB2312", 4 },
-    { "EUC-KR", 10 },
-    { "sjis", 9 },
-    { "jis7", 9 },
-    { "EUC-JP", 9 },
-    { "ISO 8859-7", 7 },
-    { "cp 1253", 7 },
-    { "ISO 8859-6", 1 },
-    { "cp 1256", 1 },
-    { "ISO 8859-8", 8 },
-    { "ISO 8859-8-I", 8 },
-    { "cp 1255", 8 },
-    { "ISO 8859-9", 12 },
-    { "TIS620", 11 },
-    { "ISO 8859-11", 11 }, // ### TODO: DEPRECATED NAME OF TIS-620
-    { "UTF-8", 15 },
-    { "UTF-16", 15 },
-    { "utf7", 15 }, // ### FIXME: UTF-7 is not in Qt
-    { "ucs2", 15 }, // ### TODO: same as ISO-10646-UCS-2 (so "triples" UTF-16)
-    { "ISO 10646-UCS-2", 15 }, // ### TODO: doubles UTF-16
-    { "winsami2", 16},
+    { "KOI8-R", I18N_NOOP( "Cyrillic" ) },
+    { "ISO 8859-5", I18N_NOOP( "Cyrillic" ) },
+    { "cp 1251", I18N_NOOP( "Cyrillic" ) },
+    { "KOI8-U", I18N_NOOP( "Cyrillic" ) },
+//    { "pt 154", I18N_NOOP( "Cyrillic" ) }, // ### TODO "PT 154" seems to have been removed from Qt
+    { "IBM866", I18N_NOOP( "Cyrillic" ) },
+    { "Big5", I18N_NOOP( "Chinese Traditional" ) },
+    { "Big5-HKSCS", I18N_NOOP( "Chinese Traditional" ) },
+    { "GB18030", I18N_NOOP( "Chinese Simplified" ) },
+    { "GBK", I18N_NOOP( "Chinese Simplified" ) },
+    { "GB2312", I18N_NOOP( "Chinese Simplified" ) },
+    { "EUC-KR", I18N_NOOP( "Korean" ) },
+    { "sjis", I18N_NOOP( "Japanese" ) },
+    { "jis7", I18N_NOOP( "Japanese" ) },
+    { "EUC-JP", I18N_NOOP( "Japanese" ) },
+    { "ISO 8859-7", I18N_NOOP( "Greek" ) },
+    { "cp 1253", I18N_NOOP( "Greek" ) },
+    { "ISO 8859-6", I18N_NOOP( "Arabic" ) },
+    { "cp 1256", I18N_NOOP( "Arabic" ) },
+    { "ISO 8859-8", I18N_NOOP( "Hebrew" ) },
+    { "ISO 8859-8-I", I18N_NOOP( "Hebrew" ) },
+    { "cp 1255", I18N_NOOP( "Hebrew" ) },
+    { "ISO 8859-9", I18N_NOOP( "Turkish" ) },
+    { "TIS620", I18N_NOOP( "Thai" ) },
+    { "ISO 8859-11", I18N_NOOP( "Thai" ) }, // ### TODO: DEPRECATED NAME OF TIS-620
+    { "UTF-8", I18N_NOOP( "Unicode" ) },
+    { "UTF-16", I18N_NOOP( "Unicode" ) },
+    { "utf7", I18N_NOOP( "Unicode" ) }, // ### FIXME: UTF-7 is not in Qt
+    { "ucs2", I18N_NOOP( "Unicode" ) }, // ### TODO: same as ISO-10646-UCS-2 (so "triples" UTF-16)
+    { "ISO 10646-UCS-2", I18N_NOOP( "Unicode") }, // ### TODO: doubles UTF-16
+    { "winsami2", I18N_NOOP( "Northern Saami" ) },
+    { "windows-1258", I18N_NOOP( "Other" ) }, // ### TODO
+    { "IBM874", I18N_NOOP( "Other" ) }, // ### TODO
+    { "TSCII", I18N_NOOP( "Other" ) }, // ### TODO
     { 0, 0 } };
 
 // defines some different names for codecs that are built into Qt.
@@ -434,18 +342,22 @@ QString KCharsets::resolveEntities( const QString &input )
 QStringList KCharsets::availableEncodingNames() const
 {
     QStringList available;
-    for ( const char* const* pos = charsets_for_encoding; *pos; ++pos ) {
+    for ( const LanguageForEncoding* pos = language_for_encoding; *pos->index; ++pos ) {
         //kDebug(0) << *charsets << " available" << endl;
-        available.append( QString::fromLatin1( *pos ));
+        available.append( QString::fromLatin1( pos->index ) );
     }
+    available.sort();
     return available;
 }
 
 QString KCharsets::languageForEncoding( const QString &encoding ) const
 {
-    int lang = kcharsets_array_search< LanguageForEncoding, int >
-        ( language_for_encoding, encoding.toLatin1());
-    return i18n( language_names[lang] );
+     const char* lang = kcharsets_array_search< LanguageForEncoding, const char* >
+        ( language_for_encoding, encoding.toUtf8());
+    if ( lang )
+        return i18n( lang );
+    else
+        return i18n( "Other encoding" );
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
@@ -467,11 +379,10 @@ QString KCharsets::encodingForName( const QString &descriptiveName ) const
 
 QStringList KCharsets::descriptiveEncodingNames() const
 {
-    // As we are sorting, we can directly read the array language_for_encoding
     QStringList encodings;
     for ( const LanguageForEncoding* pos = language_for_encoding; pos->index; ++pos ) {
         const QString name = QString::fromLatin1( pos->index );
-        const QString description = i18n( language_names[ pos->data ] );
+        const QString description = i18n( pos->data );
         encodings.append( i18nc("Descriptive Encoding Name", "%1 ( %2 )",    description ,   name ) );
     }
     encodings.sort();
