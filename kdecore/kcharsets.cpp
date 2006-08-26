@@ -323,6 +323,9 @@ QChar KCharsets::fromEntity(const QString &str)
 {
     QChar res = QChar::Null;
 
+    if ( str.isEmpty() )
+        return QChar::Null;
+
     int pos = 0;
     if(str[pos] == '&') pos++;
 
@@ -332,18 +335,22 @@ QChar KCharsets::fromEntity(const QString &str)
         pos++;
         if (str[pos] == 'x' || str[pos] == 'X') {
             pos++;
-            // '&#x0000', hexadeciaml character reference
-            QString tmp(str.unicode()+pos, str.length()-pos);
+            // '&#x0000', hexadecimal character reference
+            const QString tmp( str.mid( pos ) );
             res = tmp.toInt(&ok, 16);
         } else {
             //  '&#0000', decimal character reference
-            QString tmp(str.unicode()+pos, str.length()-pos);
+            const QString tmp( str.mid( pos ) );
             res = tmp.toInt(&ok, 10);
         }
-        return res;
+        if ( ok )
+            return res;
+        else
+            return QChar::Null;
     }
 
-    const entity *e = kde_findEntity(str.toAscii(), str.length());
+    const QByteArray raw ( str.toLatin1() );
+    const entity *e = kde_findEntity( raw, raw.length() );
 
     if(!e)
     {

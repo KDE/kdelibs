@@ -77,12 +77,15 @@ public:
     QTextCodec *codecForName(const QString &n, bool &ok) const;
 
     /**
-     * Converts an entity to a character. The string must contain only the
+     * @brief Converts an entity to a character.
+     *
+     * The string must contain only the
      * entity without the trailing ';'.
      * @param str the entity
-     * @return QChar::null if the entity could not be decoded.
+     * @return QChar::Null if the entity could not be decoded.
      */
     static QChar fromEntity(const QString &str);
+
     /**
      * Overloaded member function. Tries to find an entity in the
      * QString str.
