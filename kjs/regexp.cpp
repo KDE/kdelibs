@@ -222,7 +222,8 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
 
   //Now go through and patch up the offsetVector
   for (int c = 0; c < 2 * numMatches; ++c)
-    offsetVector[c] = originalPos[offsetVector[c]];
+    if (offsetVector[c] != -1)
+        offsetVector[c] = originalPos[offsetVector[c]];
 #endif
 
   if (numMatches < 0) {
