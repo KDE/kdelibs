@@ -236,8 +236,6 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
         if ( qobject_cast<Q3GroupBox*>( it->m_widget ) )
              continue;
 
-        kDebug(131) << "write " << cnt << " " << it->m_widget->metaObject()->className() << " " <<contents[cnt].accelerated() << endl;
-
         int tprop = it->m_widget->metaObject()->indexOfProperty("text");
         if (tprop != -1)  {
             if (checkChange(contents[cnt]))
@@ -252,8 +250,6 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     // calculate the accelerators for the children
     foreach(Item *it, *item->m_children)
     {
-        if (it->m_widget)
-            kDebug(131) << "children " << it->m_widget->metaObject()->className() << endl;
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
     }
@@ -328,7 +324,6 @@ void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
       if ( !label->buddy() )
           return;
       else {
-	  kDebug() << "label-text " << label->textFormat() << endl;
           if ( label->textFormat() == Qt::RichText ||
                ( label->textFormat() == Qt::AutoText &&
                  Qt::mightBeRichText( label->text() ) ) )
@@ -448,7 +443,6 @@ void KAcceleratorManagerPrivate::manageMenuBar(QMenuBar *mbar, Item *item)
 
 void KAcceleratorManager::manage(QWidget *widget, bool programmers_mode)
 {
-    kDebug(131) << "KAcceleratorManager::manage\n";
     KAcceleratorManagerPrivate::changed_string.clear();
     KAcceleratorManagerPrivate::added_string.clear();
     KAcceleratorManagerPrivate::removed_string.clear();
@@ -488,7 +482,6 @@ KAccelString::KAccelString(const QString &input, int initialWeight)
 
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
-    kDebug(131) << input << " " << m_orig_accel << " " << m_accel << " " << m_pureText << endl;
     if (initialWeight == -1)
         initialWeight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
 
@@ -678,19 +671,16 @@ void KAccelString::dump()
 
 void KAccelManagerAlgorithm::findAccelerators(KAccelStringList &result, QString &used)
 {
-    kDebug(131) << "findAccelerators\n";
   KAccelStringList accel_strings = result;
 
   // initally remove all accelerators
   for (KAccelStringList::Iterator it = result.begin(); it != result.end(); ++it) {
-      kDebug(131) << "reset " << ( *it ).pure() << endl;
     (*it).setAccel(-1);
   }
 
   // pick the highest bids
   for (int cnt=0; cnt<accel_strings.count(); ++cnt)
   {
-      kDebug(131) << "cnt " << accel_strings[cnt].pure() << endl;
     int max = 0, index = -1, accel = -1;
 
     // find maximum weight
