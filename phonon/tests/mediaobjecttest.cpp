@@ -22,8 +22,9 @@
 #include <qtest_kde.h>
 #include <QTime>
 #include <QtDebug>
-#include <phonon/audiopath.h>
 #include <phonon/videopath.h>
+#include <phonon/audiopath.h>
+#include <phonon/audiooutput.h>
 
 using namespace Phonon;
 
@@ -298,7 +299,7 @@ void MediaObjectTest::testAboutToFinish()
 	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
 	startPlayback();
 	if( m_media->isSeekable() )
-		m_media->seek( m_media->totalTime() - 1000 );
+		m_media->seek( m_media->totalTime() - 2000 );
 	while( aboutToFinishSpy.count() == 0 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
 		QCoreApplication::processEvents();
 	// at this point the media should be about to finish playing
@@ -306,7 +307,7 @@ void MediaObjectTest::testAboutToFinish()
 	Phonon::State state = m_media->state();
 	QCOMPARE( aboutToFinishSpy.count(), 1 );
 	const qint32 aboutToFinishTime = castQVariantToInt32( aboutToFinishSpy.first().at( 0 ) );
-	QVERIFY( aboutToFinishTime <= 500 );
+	QVERIFY( aboutToFinishTime <= 650 ); // allow it to be up to 150ms too early
 	if( state == Phonon::PlayingState || state == Phonon::BufferingState )
 	{
 		QVERIFY( r <= aboutToFinishTime );
@@ -412,6 +413,9 @@ void MediaObjectTest::addPaths()
 	}
 	else
 		QWARN( "backend does not allow usage of more than one AudioPath" );
+	delete a1;
+	QCOMPARE( m_media->audioPaths().size(), 0 );
+	a1 = 0;
 
 	m_media->addVideoPath( v1 );
 	QCOMPARE( m_media->videoPaths().size(), 1 ); // one should always work
@@ -445,6 +449,18 @@ void MediaObjectTest::addPaths()
 	}
 	else
 		QWARN( "backend does not allow usage of more than one VideoPath" );
+	delete v1;
+	QCOMPARE( m_media->videoPaths().size(), 0 );
+	v1 = 0;
+}
+
+void MediaObjectTest::initOutput()
+{
+	// AudioPath and AudioOutput are needed else the backend might finish in no time
+	AudioPath* audioPath = new AudioPath( this );
+	AudioOutput* audioOutput = new AudioOutput( Phonon::MusicCategory, this );
+	audioPath->addOutput( audioOutput );
+	m_media->addAudioPath( audioPath );
 }
 
 void MediaObjectTest::cleanupTestCase()

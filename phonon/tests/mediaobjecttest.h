@@ -34,6 +34,9 @@ class MediaObjectTest : public QObject
 		void setMedia();
 		void checkForDefaults();
 
+		void addPaths();
+		void initOutput();
+
 		// state change tests
 		void stopToStop();
 		void stopToPause();
@@ -48,8 +51,6 @@ class MediaObjectTest : public QObject
 		void testSeek();
 		void testAboutToFinish();
 		void testTickSignal();
-
-		void addPaths();
 
 		void cleanupTestCase();
 
