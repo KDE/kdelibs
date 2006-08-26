@@ -157,7 +157,11 @@ void AbstractMediaProducer::stop()
 {
 	K_D( AbstractMediaProducer );
 	if( iface() )
+	{
 		INTERFACE_CALL( stop );
+		if( tickInterval() > 0 )
+			emit tick( 0 );
+	}
 }
 
 void AbstractMediaProducer::seek( qint64 time )
