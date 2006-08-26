@@ -545,6 +545,16 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     else if ( d->codecForNameDict.contains( n ) ) {
         return d->codecForNameDict.value( n );
     }
+    
+    // If the name is not in the hash table, call directly QTextCoded::codecForName.
+    // We assume that QTextCodec is smarter and more maintianed that this code.
+    codec = QTextCodec::codecForName( n );
+    if ( codec ) {
+        d->codecForNameDict.insert( n, codec );
+        return codec;
+    }
+ 
+    // We have had no luck with QTextCodec::codecForName, so we must now process the name, so that QTextCodec::codecForName could work with it.
 
     // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
     QByteArray name = n.toLower();
