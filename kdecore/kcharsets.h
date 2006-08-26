@@ -35,8 +35,6 @@ class QTextCodec;
  * This is needed, because Qt's encoding name matching in
  * QTextCodec::codecForName matches only closely-related encoded names
  * but not alternate names, e.g. found in the reality of the Internet.
- *
- * @author Lars Knoll <knoll@kde.org>
  */
 class KDECORE_EXPORT KCharsets
 {
