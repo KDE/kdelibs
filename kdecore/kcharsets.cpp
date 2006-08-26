@@ -201,8 +201,6 @@ static struct Builtin
     { "us-ascii", "iso 8859-1" },
     { "usascii", "iso 8859-1" },
     { "ascii", "iso 8859-1" },
-    { "x-utf-8", "utf-8" },
-    { "x-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt 
     { "unicode-1-1-utf-7", "utf-7" }, // ### FIXME: UTF-7 is not in Qt
     { "ucs2", "iso-10646-ucs-2" }, // ### TODO: UTF-16
     { "iso10646-1", "iso-10646-ucs-2" }, // ### TODO: UTF-16
@@ -213,9 +211,7 @@ static struct Builtin
     { "gb2312.1980-0", "gbk" },
     { "big5-0", "big5" },
     { "euc-kr", "euckr" },
-    { "x-euc-kr", "euckr" },
     { "euc-jp", "eucjp" },
-    { "x-euc-jp", "eucjp" },
     { "jisx0201.1976-0", "eucjp" },
     { "jisx0208.1983-0", "eucjp" },
     { "jisx0208.1990-0", "eucjp" },
@@ -225,47 +221,20 @@ static struct Builtin
     { "jisx0213.2000-2", "eucjp" },
     { "shift_jis", "sjis" },
     { "shift-jis", "sjis" },
-    { "x-sjis", "sjis" },
+    { "sjis", "sjis" }, // For x-sjis
     { "iso-2022-jp", "jis7" }, // ### TODO: ISO-2022-JP is now the default name in Qt4
     { "windows850", "ibm850" },
     { "windows866", "ibm866" },
     { "windows-850", "ibm850" },
     { "windows-866", "ibm866" },
-    { "x-windows-850", "ibm850" },
-    { "x-windows-866", "ibm866" },
-    // ### TODO: Qt4 names them windows-125x now
-    { "x-windows-1250", "cp 1250" },
-    { "x-windows-1251", "cp 1251" },
-    { "x-windows-1252", "cp 1252" },
-    { "x-windows-1253", "cp 1253" },
-    { "x-windows-1254", "cp 1254" },
-    { "x-windows-1255", "cp 1255" },
-    { "x-windows-1256", "cp 1256" },
-    { "x-windows-1257", "cp 1257" },
-    { "x-windows-1258", "windows-1258" },
     { "cp-10000", "apple roman" },
-    { "x-cp-850", "ibm850" },
-    { "x-cp-866", "ibm866" },
-    { "x-cp-1250", "cp 1250" },
-    { "x-cp-1251", "cp 1251" },
-    { "x-cp-1252", "cp 1252" },
-    { "x-cp-1253", "cp 1253" },
-    { "x-cp-1254", "cp 1254" },
-    { "x-cp-1255", "cp 1255" },
-    { "x-cp-1256", "cp 1256" },
-    { "x-cp-1257", "cp 1257" },
-    { "x-cp-1258", "windows-1258" },
-    { "x-cp-10000", "apple roman" },
     { "thai-tis620", "iso 8859-11" }, // ### TODO: TIS-620
     { "windows-874", "ibm874" },
     { "windows874", "ibm874" },
-    { "x-windows-874", "ibm874" },
-    { "x-cp-874", "ibm874" },
-    { "x-ibm874", "ibm874" },
+    { "cp-874", "ibm874" }, // ### TODO: really needed?
     { "ksc5601.1987-0", "euckr" },
     { "ks_c_5601-1987", "euckr" },
-    { "x-winsami2", "winsami2" },
-    { "x-mac-roman", "apple roman" },
+    { "mac-roman", "apple roman" }, // for x-mac-roman
     { "macintosh", "apple roman" },
     { "mac", "apple roman" },
     { "csiso2022jp", "iso-2022-jp" }, // See bug #77243 
@@ -547,7 +516,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     }
     
     // If the name is not in the hash table, call directly QTextCoded::codecForName.
-    // We assume that QTextCodec is smarter and more maintianed that this code.
+    // We assume that QTextCodec is smarter and more maintained that this code.
     codec = QTextCodec::codecForName( n );
     if ( codec ) {
         d->codecForNameDict.insert( n, codec );
@@ -558,18 +527,29 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
 
     // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
     QByteArray name = n.toLower();
-    if (name.endsWith("_charset"))
+    bool changed = false;
+    if (name.endsWith("_charset")) {
        name.chop( 8 );
+       changed = true;
+    }
+    if ( name.startsWith( "x-" ) ) {
+       name.remove( 0, 2 ); // remove x- at start
+       changed = trueM
+    }
 
     if (name.isEmpty()) {
+      // We have no name anymore, therefore the name has to be invalid.
       return 0;
     }
 
-    codec = QTextCodec::codecForName(name);
-
-    if (codec) {
-        d->codecForNameDict.insert( n, codec );
-        return codec;
+    // We only need to check changed names.
+    if ( changed ) {
+        codec = QTextCodec::codecForName(name);
+        if (codec) {
+            d->codecForNameDict.insert( n, codec );
+            return codec;
+        }
+        changed = false;
     }
 
     // these codecs are built into Qt, but the name given for the codec is different,
