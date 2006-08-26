@@ -614,6 +614,11 @@ class KTimeZonePhasePrivate
         QString          comment;        // optional comment
         int              utcOffset;      // seconds to add to UTC
         bool             dst;            // true if daylight savings time
+      
+        KTimeZonePhasePrivate() {
+		utcOffset = 0;
+		dst = false;
+	}
 };
 
 bool KTimeZonePhasePrivate::setStarts(const QList<QDateTime> &st)
@@ -855,6 +860,8 @@ class KTimeZoneDataPrivate
         QList<int>        utcOffsets;
         QList<QByteArray> abbreviations;
         int preUtcOffset;    // UTC offset to use before the first phase
+  
+        KTimeZoneDataPrivate() { preUtcOffset = 0; }
 };
 
 

@@ -317,6 +317,7 @@ void KTimeZonesTest::tzfileUtcOffsets()
     QCOMPARE(offsets[0], 0);    // GMT
     QCOMPARE(offsets[1], 3600); // BST
     QCOMPARE(offsets[2], 7200); // DST
+    delete london;
 }
 
 #if 0
