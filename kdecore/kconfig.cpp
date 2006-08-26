@@ -328,7 +328,8 @@ void KConfig::virtual_hook( int id, void* data )
 static KStaticDeleter< QList<KSharedConfig*> > sd;
 static QList<KSharedConfig*> *s_list = 0;
 
-KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, bool useKDEGlobals )
+KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immutable, 
+                                            bool useKDEGlobals, const char* resType )
 {
   if (s_list)
   {
@@ -337,15 +338,24 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immut
      {
         if ((*it)->backEnd->fileName() == fileName &&
                 (*it)->backEnd->bFileImmutable == immutable &&
-                (*it)->backEnd->useKDEGlobals == useKDEGlobals )
+                (*it)->backEnd->useKDEGlobals == useKDEGlobals &&
+                (*it)->backEnd->resType == resType)
            return Ptr(*it);
      }
   }
-  return Ptr(new KSharedConfig(fileName, immutable, useKDEGlobals));
+  return Ptr(new KSharedConfig(fileName, immutable, useKDEGlobals,resType));
 }
 
-KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals)
- : KConfig(fileName, readonly, usekdeglobals)
+KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName,
+                                             bool immutable, bool useKDEGlobals )
+{
+	return openConfig(fileName, immutable,  useKDEGlobals, "config" );
+}
+
+
+KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals,
+                              const char *resType)
+ : KConfig(fileName, readonly, usekdeglobals, resType)
 {
   if (!s_list)
   {

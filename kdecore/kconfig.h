@@ -290,18 +290,31 @@ public:
 
 public:
   /**
-   * Returns a ref-counted pointer to a shared read-write config object.
-   * @param fileName the name of the file to use for the configuration
-   * @param immutable if true, force the config object to be read-only.
+   * Constructs a KConfig object.
+   *
+   * @param fileName A file to parse in addition to the
+   *        system-wide file(s).  If it is not provided, only global
+   *        KDE configuration data will be read (depending on the value of
+   *        @p bUseKDEGlobals).
+   * @param bReadOnly Set the config object's read-only status. Note that the
+   *        object will automatically become read-only if either the user does not have
+   *        write permission to @p fileName or if no file was specified.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
+   * @param resType the place to look in (config, data, etc) See KStandardDirs.
    */
-  static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
-    bool bUseKDEGlobals = true);
+   static KSharedConfig::Ptr openConfig( const QString& fileName /*= QString()*/, 
+        bool bReadOnly /*= false*/, bool bUseKDEGlobals /*= true*/, const char *resType/*="config"*/);
+  /**
+   * remove on monday
+   */
+   static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
+        bool bUseKDEGlobals = true);
 
   ~KSharedConfig();
 
 private:
-  KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
+   KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals ,
+        const char *resType );
 };
 
 #endif
