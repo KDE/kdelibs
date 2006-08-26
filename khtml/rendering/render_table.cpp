@@ -283,9 +283,12 @@ void RenderTable::layout()
     m_height = 0;
     initMaxMarginValues();
 
-    //int oldWidth = m_width;
+    int oldWidth = m_width;
     calcWidth();
     m_overflowWidth = m_width;
+    
+    if (tCaption && (oldWidth != m_width || tCaption->style()->height().isPercent()))
+        tCaption->setChildNeedsLayout(true);
 
     // the optimization below doesn't work since the internal table
     // layout could have changed.  we need to add a flag to the table
