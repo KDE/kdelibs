@@ -282,9 +282,7 @@ public:
 	 * 
 	 * The text is shown in a QLabel, you should make sure to escape the html is needed.
 	 * You can use some of the qt basic html tags.
-	 * 
-	 * If the popup has already been displayed, you must call sendEvent() again to update the information
-	 * 
+	 *
 	 * @param text the text
 	 */
 	void setText(const QString &text);
@@ -296,9 +294,6 @@ public:
 	QPixmap pixmap() const;
 	/**
 	 * set the pixmap that will be shown in the popup.
-	 * 
-	 * If the popup has already been displayed, you must call sendEvent() again to update the information
-	 * 
 	 * @param pix the pixmap
 	 */
 	void setPixmap(const QPixmap &pix);
@@ -310,9 +305,6 @@ public:
 	
 	/**
 	 * Set the list of actions link shown in the popup.
-	 * 
-	 * It is not possible to modify them if the notification has already been shown.
-	 * 
 	 * @param actions the list of actions
 	 */
 	void setActions(const QStringList& actions);
@@ -382,8 +374,6 @@ public:
      */
     void action3Activated();
 
-            
-
 	/**
 	 * Emit when the notification is closed. Both if it's activated or just ignored
 	 */
@@ -431,16 +421,19 @@ public Q_SLOTS:
 	void deref();
 	
 	/**
-	 * Emit the event.
-	 * 
-	 * This will send a synchronous dbus call to the notify deamon. 
-	 * If you are in a critical code path, you can do 
-	 * \code
-	 * QTimer::singleShot(0,notify,SLOT(sendEvent()));
-	 * \endcode
+	 * Emit or re-emit the event.
 	 */
 	void sendEvent();
+	
+private Q_SLOTS:
+	void sendEventSync();
+	/**
+	 * update the texts, the icon, and the actions of one existing notification
+	 */
+	void update();
 
+	
+	
 private:
 	struct Private;
 	Private *const d;

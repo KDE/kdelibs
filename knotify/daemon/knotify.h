@@ -30,8 +30,12 @@
 
 #include <QtDBus/QtDBus>
 
+
+#include "knotifyconfig.h"
+
+
 typedef QHash<QString,QString> Dict;
-typedef QList< QPair<QString,QString> > ContextList;
+
 
 class KNotifyPlugin;
 
@@ -51,6 +55,9 @@ class KNotify : public QObject
 		
 		int event(const QString &event, const QString &fromApp, const ContextList& contexts ,
 				   const QString &text, const QPixmap& pixmap,  const QStringList& actions , WId winId = 0);
+		
+		void update(int id, const QString &text, const QPixmap& pixmap,  const QStringList& actions);
+		void reemit(int id, const ContextList& contexts);
 	Q_SIGNALS:
 		void notificationClosed( int id);
 		void notificationActivated(int id,int action);
@@ -62,14 +69,20 @@ class KNotify : public QObject
 		
 		struct Event
 		{
+			Event(const QString &appname, const ContextList &contexts , const QString &eventid)
+				: config(appname, contexts , eventid) {} 
+			//required by QHash
+			Event() : config(QString(), ContextList() , QString()) {Q_ASSERT(false);}
 			int id;
 			int ref;
+			KNotifyConfig config;
 		};
 		
 		int m_counter;
 		QHash<QString, KNotifyPlugin *> m_plugins;
 		QHash<int , Event > m_notifications;
 		void loadConfig();
+		void emitEvent(Event &e);
 };
 
 class KNotifyAdaptor : public QDBusAbstractAdaptor
@@ -100,6 +113,17 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 							"<arg name=\"actions\" type=\"as\" direction=\"in\"/>"
 							"<arg name=\"winId\" type=\"x\" direction=\"in\"/>"
 						"</method>"
+						"<method name=\"update\">"
+							"<arg name=\"id\" type=\"i\" direction=\"in\"/>"
+							"<arg name=\"text\" type=\"s\" direction=\"in\"/>"
+							"<arg name=\"pixmap\" type=\"ay\" direction=\"in\"/>"
+							"<arg name=\"actions\" type=\"as\" direction=\"in\"/>"
+						"</method>"
+						"<method name=\"reemit\">"
+							"<arg name=\"id\" type=\"i\" direction=\"in\"/>"
+							"<arg name=\"contexts\" type=\"a(ss)\" direction=\"in\"/>"
+						"</method>"
+
 					"</interface>" )
 
 	public:
@@ -112,7 +136,10 @@ class KNotifyAdaptor : public QDBusAbstractAdaptor
 		
 		int event(const QString &event, const QString &fromApp, const QVariantList& contexts ,
 								const QString &text, const QByteArray& pixmap,  const QStringList& actions , qlonglong winId );
-				   //const QDBusMessage & , int _return );
+		
+		void reemit(int id, const QVariantList& contexts);
+		void update(int id, const QString &text, const QByteArray& pixmap,  const QStringList& actions );
+
 	Q_SIGNALS:
 		void notificationClosed( int id);
 		void notificationActivated( int id,int action);

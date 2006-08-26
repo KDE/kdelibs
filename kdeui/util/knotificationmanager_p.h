@@ -58,6 +58,16 @@ public:
      * To be called in the KNotification destructor
      */
     void remove( int id);	
+	
+	/**
+	 * update one notification text and pixmap and actions
+	 */
+	void update(KNotification *n, int id);
+	
+	/**
+	 * re-emit the notification, eventually with new contexts
+	 */
+	void reemit(KNotification *n, int id);
 		
 private Q_SLOTS:
     void notificationClosed( int id );
@@ -70,5 +80,6 @@ private:
     KNotificationManager();
 
 };
+
 
 #endif

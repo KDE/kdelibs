@@ -56,7 +56,7 @@ void KNotifyTestWindow::slotSendMessageEvent( )
 	m_nbNewMessage++;
 	if(!m_readNotif)
 	{
-		KNotification *n=new KNotification( "message", this );
+		KNotification *n=new KNotification( "message", this, KNotification::Persistant );
 		n->setText(i18n( "new message : %1" ,  view.c_text->toPlainText() ));
 		n->setActions( QStringList( i18n("Read") ) );
 		connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
@@ -68,8 +68,9 @@ void KNotifyTestWindow::slotSendMessageEvent( )
 		m_readNotif->setText(i18n("%1 new messages", m_nbNewMessage));
 	}
 	
-	m_readNotif->addContext( qMakePair( QString("group") , view.c_group->currentText() ) );
-        
+	KNotification::ContextList cl;
+	cl << qMakePair( QString("group") , view.c_group->currentText() );
+	m_readNotif->setContexts( cl );
 	m_readNotif->sendEvent();
 }
 

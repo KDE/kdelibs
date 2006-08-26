@@ -111,6 +111,13 @@ void NotifyBySound::loadConfig()
 
 void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 {
+	if(d->mediaobjects.contains(eventId)  || d->processes.contains(eventId) )
+	{
+		//a sound is already playing for this notification,  we don't support playing two sounds.
+		finish( eventId );
+		return;
+	}
+	
 	QString soundFile = config->readEntry( "sound" , true );
 
 	if (soundFile.isEmpty())

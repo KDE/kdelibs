@@ -143,4 +143,32 @@ void KNotificationManager::remove( int id)
     d->notifications.remove(id);
 }
 
+void KNotificationManager::update(KNotification * n, int id)
+{
+	if(id <= 0)
+		return;
+	
+	QByteArray pixmapData;
+	QDataStream arg(&pixmapData, QIODevice::WriteOnly);
+	arg << n->pixmap();
+
+	d->knotify->call(/*QDBus::NoWaitForReply,*/"update", id, n->text(), pixmapData , n->actions() );
+}
+
+void KNotificationManager::reemit(KNotification * n, int id)
+{
+	QVariantList contextList;
+	typedef QPair<QString,QString> Context;
+	foreach (const Context& ctx, n->contexts())
+	{
+		kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second  << endl;
+		QVariantList vl;
+		vl << ctx.first << ctx.second;
+		contextList << vl;
+	}
+    
+	d->knotify->call(/*QDBus::NoWaitForReply,*/"reemit", id, contextList);
+}
+
+
 #include "knotificationmanager_p.moc"

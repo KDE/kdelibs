@@ -21,8 +21,13 @@
 #ifndef KNOTIFYCONFIG_H
 #define KNOTIFYCONFIG_H
 
-#include "knotify.h"
-#include "kconfig.h"
+#include <kconfig.h>
+
+#include <QPair>
+#include <QPixmap>
+#include <QObject> //for Wid
+
+typedef QList< QPair<QString,QString> > ContextList;
 
 /**
  * Represent the config for an event
@@ -42,7 +47,7 @@ class KNotifyConfig
 		QStringList actions;
 		QString appname;
 
-		KConfig eventsfile,configfile;
+		KSharedConfig::Ptr eventsfile,configfile;
 		ContextList contexts;
 		QString eventid;
 };

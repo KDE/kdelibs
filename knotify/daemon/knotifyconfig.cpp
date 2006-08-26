@@ -25,8 +25,8 @@
 
 KNotifyConfig::KNotifyConfig( const QString & _appname, const ContextList & _contexts, const QString & _eventid )
 	: appname (_appname),
-	eventsfile( _appname+'/'+_appname + ".notifyrc" , true, false, "data"),
-	configfile( _appname+QString::fromAscii( ".notifyrc" ), true, false),
+	eventsfile(KSharedConfig::openConfig (_appname+'/'+_appname + ".notifyrc" , true, false, "data" )),
+	configfile(KSharedConfig::openConfig (_appname+QString::fromAscii( ".notifyrc" ), true, false)),
 	contexts(_contexts) , eventid(_eventid)
 {
 //	kDebug(300) << k_funcinfo << appname << " , " << eventid << endl;
@@ -42,28 +42,28 @@ QString KNotifyConfig::readEntry( const QString & entry, bool path )
 	foreach(  context , contexts )
 	{
 		const QString group="Event/" + eventid + '/' + context.first + '/' + context.second;
-		if(configfile.hasGroup( group ) )
+		if(configfile->hasGroup( group ) )
 		{
-			configfile.setGroup(group);
-			QString p=path ?  configfile.readPathEntry(entry) : configfile.readEntry(entry,QString());
+			configfile->setGroup(group);
+			QString p=path ?  configfile->readPathEntry(entry) : configfile->readEntry(entry,QString());
 			if(!p.isNull())
 				return p;
 		}
 	}
 //	kDebug(300) << k_funcinfo << entry << " not found in contexts " << endl;
 	const QString group="Event/" + eventid ;
-	if(configfile.hasGroup( group ) )
+	if(configfile->hasGroup( group ) )
 	{
-		configfile.setGroup(group);
-		QString p=path ?  configfile.readPathEntry(entry) : configfile.readEntry(entry,QString());
+		configfile->setGroup(group);
+		QString p=path ?  configfile->readPathEntry(entry) : configfile->readEntry(entry,QString());
 		if(!p.isNull())
 			return p;
 	}
 //	kDebug(300) << k_funcinfo << entry << " not found in config " << endl;
-	if(eventsfile.hasGroup( group ) )
+	if(eventsfile->hasGroup( group ) )
 	{
-		eventsfile.setGroup(group);
-		QString p=path ?  eventsfile.readPathEntry(entry) : eventsfile.readEntry(entry, QString());
+		eventsfile->setGroup(group);
+		QString p=path ?  eventsfile->readPathEntry(entry) : eventsfile->readEntry(entry, QString());
 		if(!p.isNull())
 			return p;
 	}

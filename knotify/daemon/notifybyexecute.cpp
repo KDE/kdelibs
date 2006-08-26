@@ -18,6 +18,8 @@
 
  */
 
+#include <QString>
+#include <QHash>
 
 #include "notifybyexecute.h"
 #include "knotifyconfig.h"

@@ -42,13 +42,73 @@ NotifyByPopup::~NotifyByPopup()
 
 void NotifyByPopup::notify( int id, KNotifyConfig * config )
 {
-	kDebug(300) << k_funcinfo << endl;
+	kDebug(300) << k_funcinfo << id << endl;
+	if(m_popups.contains(id))
+	{
+		//the popup is already shown
+		finish(id);
+		return;
+	}
 
+	m_popups[id]=showPopup(id,config);
+}
+
+void NotifyByPopup::slotPopupDestroyed( )
+{
+	const QObject *s=sender();
+	if(!s)
+		return;
+	QHash<int,KPassivePopup*>::iterator it;
+	for(it=m_popups.begin() ; it!=m_popups.end(); ++it   )
+	{
+		QObject *o=it.value();
+		if(o && o == s)
+		{
+			finish(it.key());
+			m_popups.remove(it.key());
+			break;
+		}
+	}
+}
+
+void NotifyByPopup::slotLinkClicked( const QString &adr )
+{
+	unsigned int id=adr.section("/" , 0 , 0).toUInt();
+	unsigned int action=adr.section("/" , 1 , 1).toUInt();
+
+//	kDebug(300) << k_funcinfo << id << " " << action << endl;
+        
+	if(id==0 || action==0)
+		return;
+		
+	emit actionInvoked(id,action);
+}
+
+void NotifyByPopup::close( int id )
+{
+	delete m_popups[id];
+	m_popups.remove(id);
+}
+
+void NotifyByPopup::update(int id, KNotifyConfig * config)
+{
+	if(!m_popups.contains(id))
+		return;
+	KPassivePopup *p=m_popups[id];
+	m_popups.remove(id);
+	delete p;
+	
+	//FIXME:  the popup should not be closed, it should be updated as it.
+	m_popups.insert(id, showPopup(id, config) );
+}
+
+KPassivePopup * NotifyByPopup::showPopup(int id,KNotifyConfig * config)
+{
 	const QString &appname=config->appname;
 	
 	KPassivePopup *pop = new KPassivePopup( config->winId );
 	
-	KConfigGroup globalgroup( &config->eventsfile, "Global" );
+	KConfigGroup globalgroup( &(*config->eventsfile), "Global" );
 	QString iconName = globalgroup.readEntry( "IconName", appname );
 	KIconLoader iconLoader( appname );
 	QPixmap appIcon = iconLoader.loadIcon( iconName, K3Icon::Small );
@@ -101,49 +161,12 @@ void NotifyByPopup::notify( int id, KNotifyConfig * config )
 
 	pop->setAutoDelete( true );
 	
-	m_popups[id]=pop;
+	
 	connect(pop, SIGNAL(destroyed()) , this, SLOT(slotPopupDestroyed()) );
 	pop->setTimeout( 0 );
 	pop->setView( vb2 );
 	pop->show();
-
-}
-
-void NotifyByPopup::slotPopupDestroyed( )
-{
-	const QObject *s=sender();
-	if(!s)
-		return;
-	QHash<int,KPassivePopup*>::iterator it;
-	for(it=m_popups.begin() ; it!=m_popups.end(); ++it   )
-	{
-		QObject *o=it.value();
-		if(o && o == s)
-		{
-			finish(it.key());
-			m_popups.remove(it.key());
-			break;
-		}
-	}
-}
-
-void NotifyByPopup::slotLinkClicked( const QString &adr )
-{
-	unsigned int id=adr.section("/" , 0 , 0).toUInt();
-	unsigned int action=adr.section("/" , 1 , 1).toUInt();
-
-//	kDebug(300) << k_funcinfo << id << " " << action << endl;
-        
-	if(id==0 || action==0)
-		return;
-		
-	emit actionInvoked(id,action);
-}
-
-void NotifyByPopup::close( int id )
-{
-	delete m_popups[id];
-	m_popups.remove(id);
+	return pop;
 }
 
 #include "notifybypopup.moc"

@@ -65,6 +65,8 @@ struct KNotification::Private
 	ContextList contexts;
 	NotificationFlags flags;
 	const KInstance *instance;
+	
+	QTimer updateTimer;
 
 	Private() :  id(0), ref(1) , widget(0l) , instance(0L) {}
 };
@@ -75,10 +77,14 @@ KNotification::KNotification(const QString& eventId, QWidget *parent, const Noti
 	d->eventId=eventId;
 	d->flags=flags;
 	setWidget(parent);
+	connect(&d->updateTimer,SIGNAL(timeout()), this, SLOT(update()));
+	d->updateTimer.setSingleShot(true);
+	d->updateTimer.setInterval(100);
 }
 
 KNotification::~KNotification()
 {
+//	kDebug( 299 ) << k_funcinfo << d->id << endl;
 	if(d ->id != 0)
 		KNotificationManager::self()->remove( d->id );
 	delete d;
@@ -108,7 +114,8 @@ void KNotification::setWidget(QWidget *wid)
 void KNotification::setText(const QString &text)
 {
 	d->text=text;
-	//TODO: modify the existing popup
+	if(d->id > 0)
+		d->updateTimer.start();
 }
 	
 QPixmap KNotification::pixmap() const
@@ -119,7 +126,8 @@ QPixmap KNotification::pixmap() const
 void KNotification::setPixmap(const QPixmap &pix)
 {
 	d->pixmap=pix;
-	//TODO: modify the existing popup
+	if(d->id > 0)
+		d->updateTimer.start();
 }
 
 QStringList KNotification::actions() const
@@ -130,6 +138,8 @@ QStringList KNotification::actions() const
 void KNotification::setActions(const QStringList& as )
 {
 	d->actions=as;
+	if(d->id > 0)
+		d->updateTimer.start();
 }
 
 KNotification::ContextList KNotification::contexts() const
@@ -288,7 +298,12 @@ void KNotification::beep( const QString & reason, QWidget * widget )
 
 void KNotification::sendEvent()
 {
-	if(d->id==0)
+	QTimer::singleShot(0, this, SLOT(sendEventSync()));
+}
+
+void KNotification::sendEventSync()
+{
+	if(d->id<=0)
 	{
 		QString appname;
 		
@@ -313,6 +328,15 @@ void KNotification::sendEvent()
 		//after a small timeout, the notification will be deleted if all presentation are finished
 		QTimer::singleShot(100, this, SLOT(deref()));
 	}
+	else
+	{
+		KNotificationManager::self()->reemit(this , d->id );
+	}
+}
+
+void KNotification::update()
+{
+	KNotificationManager::self()->update(this, d->id);
 }
 
 

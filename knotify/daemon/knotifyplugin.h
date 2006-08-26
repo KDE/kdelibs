@@ -39,7 +39,9 @@ class KNotifyPlugin : public QObject
 		virtual ~KNotifyPlugin();
 		
 		virtual QString optionName() =0;
+		/* notify or re-notify.   finished(int) MUST be emited, even for re-notify  */
 		virtual void notify(int id , KNotifyConfig *config )=0;
+		virtual void update(int /*id*/, KNotifyConfig */*config*/) {}
 		virtual void close(int id) { emit finished(id);}
 	
 	protected:
