@@ -166,16 +166,24 @@ int KNotifyAdaptor::event(const QString &event, const QString &fromApp, const QV
 //						  const QDBusMessage & , int _return )
 								  
 {
+	/* I'm not sure this is the right way to read a a(ss) type,  but it seems to work */
 	ContextList contextlist;
+	QString context_key;
 	foreach( QVariant v , contexts)
 	{
+		/* this code doesn't work
 		QVariantList vl=v.toList();
 		if(vl.count() != 2)
 		{
 			kWarning(300) << k_funcinfo << "Bad structure passed as argument" << endl;
 			continue;
 		}
-		contextlist << qMakePair(vl[0].toString() , vl[1].toString());
+		contextlist << qMakePair(vl[0].toString() , vl[1].toString());*/
+		QString s=v.toString();
+		if(context_key.isEmpty())
+			context_key=s;
+		else
+			contextlist << qMakePair(context_key , s);
 	}
 	
 	QPixmap pixmap;
