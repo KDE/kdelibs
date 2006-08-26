@@ -169,6 +169,7 @@ ALIASES = \
 	"requirement=\xrefitem requirements \"Requirement(s)\" \"Requirements\"" \
 	"faq=\xrefitem FAQ \"F.A.Q.\" \"F.A.Q.\"" \
 	"authors=\xrefitem authors \"Author(s)\" \"Authors\"" \
+	"maintainers=\xrefitem maintainers \"Maintainer(s)\" \"Maintainers\"" \
         "acronym=\b "\
 	"licenses=\xrefitem licenses \"License(s)\" \"Licenses\"" \
 	"FIXME=\xrefitem fixme \"Fixme\" \"Fixme\"" \
