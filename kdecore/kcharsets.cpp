@@ -534,7 +534,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     }
     if ( name.startsWith( "x-" ) ) {
        name.remove( 0, 2 ); // remove x- at start
-       changed = trueM
+       changed = true;
     }
 
     if (name.isEmpty()) {
