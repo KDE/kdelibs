@@ -255,6 +255,7 @@ static struct Aliases
     { "windows-852", "ibm852" },
     { "x-windows-852", "ibm852" },
     { 0, 0 }};
+#endif
 
 // some last resort hints in case the charmap file couldn't be found. This gives at least a partial conversion
 // and helps making things readable.
@@ -272,7 +273,6 @@ static struct ConversionHints
     { "paratype-154", "windows-1251" },
     { "pt-154", "windows-1251" },
     { 0, 0 }};
-#endif
 
 // search an array of items index/data, index is const char*, data is T, find first matching index
 // and return data, or return 0
@@ -645,22 +645,22 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     }
 
     if(codec) {
-        d->codecForNameDict.replace(n, codec);
-        return codec;
-    }
-
-    // this also failed, the last resort is now to take some compatibility charmap
-
-    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)name.data() );
-
-    if(!cname.isEmpty())
-        codec = QTextCodec::codecForName(cname);
-
-    if(codec) {
-        d->codecForNameDict.replace(n, codec);
+        d->codecForNameDict.insert( n, codec );
         return codec;
     }
 #endif
+
+    // this also failed, the last resort is now to take some compatibility charmap
+    // ### TODO: while emergency conversions might be useful at read, it is not sure if they should be done if the application plans to write.
+    cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, (const char*)name.data() );
+
+    if (!cname.isEmpty()) {
+        codec = QTextCodec::codecForName(cname);
+        if (codec) {
+            d->codecForNameDict.insert( n, codec );
+            return codec;
+        }
+    }
 
     // we could not assign a codec, therefore return NULL
     return 0;
