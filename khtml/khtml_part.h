@@ -397,7 +397,7 @@ public:
   void setJavaEnabled( bool enable );
 
   /**
-   * Return true if Java applet support is enabled, false if disabled
+   * Return @p true if Java applet support is enabled, @p false if disabled
    */
   bool javaEnabled() const;
 
@@ -418,7 +418,7 @@ public:
   void setPluginsEnabled( bool enable );
 
   /**
-   * Returns true if plugins are enabled/disabled.
+   * Returns @p true if plugins are enabled, @p false if disabled.
    */
   bool pluginsEnabled() const;
 
@@ -451,13 +451,13 @@ public:
    * Java and Plugins support. This might change in the future if the security model
    * is becoming more sophisticated, so don't rely on this behaviour.
    *
-   * ( default false - everything is loaded unless forbidden by KApplication::authorizeURLAction).
+   * ( default @p false - everything is loaded unless forbidden by KApplication::authorizeURLAction).
    */
   void setOnlyLocalReferences( bool enable );
 
   /**
    * Returns whether only file:/ or data:/ references are allowed
-   * to be loaded ( default false ).  See setOnlyLocalReferences.
+   * to be loaded ( default @p false ).  See setOnlyLocalReferences.
    **/
   bool onlyLocalReferences() const;
 
@@ -486,12 +486,11 @@ public:
 
   /**
    * Enumeration for displaying the caret.
-   * @param Visible caret is displayed
-   * @param Invisible caret is not displayed
-   * @param Blink caret toggles between visible and invisible
    */
   enum CaretDisplayPolicy {
-	CaretVisible, CaretInvisible, CaretBlink
+      CaretVisible, /**< caret is displayed */
+      CaretInvisible, /**<  caret is not displayed */ 
+      CaretBlink /**< caret toggles between visible and invisible */
   };
 
   /**
@@ -722,15 +721,15 @@ public:
 
   /**
    * Finds the next occurrence of the string or expression.
-   * If isRegExp is true then str is converted to a QRegExp, and caseSensitive is ignored.
+   * If isRegExp is @p true then str is converted to a QRegExp, and caseSensitive is ignored.
    * @deprecated, use findText( str, options, parent, findDialog )
    */
   bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
 
   /**
    * Finds the next occurrence of a string set by @ref findText()
-   * @param reverse if true, revert seach direction (only if no find dialog is used)
-   * @return true if a new match was found.
+   * @param reverse if @p true, revert seach direction (only if no find dialog is used)
+   * @return @p true if a new match was found.
    */
   bool findTextNext( bool reverse = false );
 
@@ -903,7 +902,7 @@ public:
 
   /**
    * Returns whether a frame with the specified name is exists or not.
-   * In contrary to the findFrame method this one also returns true
+   * In contrary to the findFrame method this one also returns @p true
    * if the frame is defined but no displaying component has been
    * found/loaded, yet.
    */
@@ -1003,7 +1002,7 @@ public:
   /**
    * Checks whether the page contains unsubmitted form changes.
    *
-   * @return true if form changes exist
+   * @return @p true if form changes exist
    */
   bool isModified() const;
 
@@ -1190,7 +1189,7 @@ public Q_SLOTS:
    * Execute the specified snippet of JavaScript code.
    *
    * Returns @p true if JavaScript was enabled, no error occurred
-   * and the code returned true itself or @p false otherwise.
+   * and the code returned @p true itself or @p false otherwise.
    * @deprecated, use executeString( DOM::Node(), script)
    */
   QVariant executeScript( const QString &script );

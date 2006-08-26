@@ -327,27 +327,22 @@ public:
 
   /**
    * Set of flags passed via the popupMenu signal, to ask for some items in the popup menu.
-   *
-   * DefaultPopupItems: default value, no additional menu item
-   * ShowNavigationItems: show "back" and "forward" (usually done when clicking the background of the view, but not an item)
-   * ShowUp: show "up" (same thing, but not over e.g. HTTP). Requires ShowNavigationItems.
-   * ShowReload: show "reload" (usually done when clicking the background of the view, but not an item)
-   * ShowBookmark: show "add to bookmarks" (usually not done on the local filesystem)
-   * ShowCreateDirectory: show "create directory" (usually only done on the background of the view, or
-   *                      in hierarchical views like directory trees, where the new dir would be visible)
-   * ShowTextSelectionItems: set when selecting text, for a popup that only contains text-related items.
-   * NoDeletion: deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
-   *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP)
-   * IsLink: show "Bookmark This Link" and other link-related actions (linkactions merging group)
-   * ShowURLOperations: show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set.
    */
-  enum PopupFlag { DefaultPopupItems=0x0000, ShowNavigationItems=0x0001,
-         ShowUp=0x0002, ShowReload=0x0004, ShowBookmark=0x0008,
-         ShowCreateDirectory=0x0010, ShowTextSelectionItems=0x0020,
-         NoDeletion=0x0040,
-         IsLink=0x0080,
-         ShowURLOperations=0x0100
+  enum PopupFlag {
+      DefaultPopupItems=0x0000, /**< default value, no additional menu item */ 
+      ShowNavigationItems=0x0001, /**< show "back" and "forward" (usually done when clicking the background of the view, but not an item) */ 
+      ShowUp=0x0002, /**<  show "up" (same thing, but not over e.g. HTTP). Requires ShowNavigationItems. */
+      ShowReload=0x0004, /**< show "reload" (usually done when clicking the background of the view, but not an item) */
+      ShowBookmark=0x0008, /**< show "add to bookmarks" (usually not done on the local filesystem) */
+      ShowCreateDirectory=0x0010, /**<  show "create directory" (usually only done on the background of the view, or
+       *                      in hierarchical views like directory trees, where the new dir would be visible) */
+      ShowTextSelectionItems=0x0020, /**< set when selecting text, for a popup that only contains text-related items. */
+      NoDeletion=0x0040, /**< deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
+       *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP) */
+      IsLink=0x0080, /**< show "Bookmark This Link" and other link-related actions (linkactions merging group) */
+      ShowURLOperations=0x0100 /**< show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set. */
   };
+
   Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
 
   /**
@@ -477,7 +472,7 @@ public:
   static BrowserExtension *childObject( QObject *obj );
 
   /**
-   * Asks the hosting browser to perform a paste (using openURLRequestDelayed)
+   * Asks the hosting browser to perform a paste (using openURLRequestDelayed())
    */
   void pasteRequest();
 
@@ -504,12 +499,12 @@ public:  // yes, those signals are public; don't tell moc :)
    * Asks the host (browser) to open @p url.
    * To set a reload, the x and y offsets, the service type etc., fill in the
    * appropriate fields in the @p args structure.
-   * Hosts should not connect to this signal but to openURLRequestDelayed.
+   * Hosts should not connect to this signal but to openURLRequestDelayed().
    */
   void openURLRequest( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * This signal is emitted when openURLRequest is called, after a 0-seconds timer.
+   * This signal is emitted when openURLRequest() is called, after a 0-seconds timer.
    * This allows the caller to terminate what it's doing first, before (usually)
    * being destroyed. Parts should never use this signal, hosts should only connect
    * to this signal.
@@ -557,7 +552,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * and return a reference to the content part.
    * The request for a reference to the part is only fulfilled/processed
    * if the serviceType is set in the @p args . (otherwise the request cannot be
-   * processed synchroniously.
+   * processed synchronously.
    */
   void createNewWindow( const KUrl &url, const KParts::URLArgs &args,
                         const KParts::WindowArgs &windowArgs, KParts::ReadOnlyPart *&part );
