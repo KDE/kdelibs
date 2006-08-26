@@ -138,6 +138,18 @@ public:
 
 private:
     KCharsetsPrivate* const d;
+
+    /**
+     * @brief Get the QTextCodec for the name or return NULL
+     *
+     * This function is similar to KCharsets::codecForName except that it
+     * can return a NULL value when the name was not found.
+     *
+     * @param n name of the text codec
+     * @return pointer to the QTextCodec or NULL
+     * @todo Make this function public when it is clear what API is needed.
+     */
+    QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const;
 };
 
 #endif

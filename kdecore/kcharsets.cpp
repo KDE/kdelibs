@@ -333,6 +333,7 @@ public:
         delete db;
     }
     QFontDatabase *db;
+    // Hash for the encoding names (sensitive case)
     QHash<QByteArray,QTextCodec*> codecForNameDict;
     KCharsets* kc;
 };
@@ -501,46 +502,63 @@ QStringList KCharsets::descriptiveEncodingNames() const
     return encodings;
 }
 
-QTextCodec *KCharsets::codecForName(const QString &n) const
+QTextCodec* KCharsets::codecForName(const QString &n) const
 {
-    bool b;
-    return codecForName( n, b );
+    const QByteArray name( n.toLatin1() );
+    QTextCodec* codec = codecForNameOrNull( name );
+    if ( codec )
+        return codec;
+    else
+        return QTextCodec::codecForName( "iso8859-1" );
 }
 
-QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
+QTextCodec* KCharsets::codecForName(const QString &n, bool &ok) const
 {
-    ok = true;
+    const QByteArray name( n.toLatin1() );
+    QTextCodec* codec = codecForNameOrNull( name );
+    if ( codec )
+    {
+        ok = true;
+        return codec;
+    }
+    else
+    {
+        ok = false;
+        return QTextCodec::codecForName( "iso8859-1" );
+    }
+}
 
+QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
+{
     QTextCodec* codec = 0;
-	QString l = "->locale<-";
-    // dict lookup is case insensitive anyway
-	if ( !n.isEmpty() && d->codecForNameDict.contains( n.toLower().toLatin1() ) ) {
-		return d->codecForNameDict.value( n.toLower().toLatin1() );
-	} else if ( n.isEmpty() && d->codecForNameDict.contains( l.toLatin1() ) ) {
-		return d->codecForNameDict.value( l.toLatin1() );
-	}
 
     if (n.isEmpty()) {
+        // No name, assume locale (KDE's, not Qt's)
+        const QByteArray locale = "->locale<-";
+        if ( d->codecForNameDict.contains( locale ) )
+            return d->codecForNameDict.value( locale );
         codec = KGlobal::locale()->codecForEncoding();
         d->codecForNameDict.insert("->locale<-", codec);
         return codec;
     }
+    // For a non-empty name, lookup the "dictionnary", in a case-sensitive way.
+    else if ( d->codecForNameDict.contains( n ) ) {
+        return d->codecForNameDict.value( n );
+    }
 
     // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
-    QByteArray name = n.toLower().toLatin1();
-    QByteArray key = name;
+    QByteArray name = n.toLower();
     if (name.endsWith("_charset"))
-       name.truncate(name.length()-8);
+       name.chop( 8 );
 
     if (name.isEmpty()) {
-      ok = false;
-      return QTextCodec::codecForName("iso8859-1");
+      return 0;
     }
 
     codec = QTextCodec::codecForName(name);
 
-    if(codec) {
-        d->codecForNameDict.insert(key.toLower(), codec);
+    if (codec) {
+        d->codecForNameDict.insert( n, codec );
         return codec;
     }
 
@@ -551,9 +569,9 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);
 
-    if(codec)
+    if (codec)
     {
-        d->codecForNameDict.insert(key.toLower(), codec);
+        d->codecForNameDict.insert( n, codec );
         return codec;
     }
 
@@ -637,7 +655,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     }
 
     if(codec) {
-        d->codecForNameDict.replace(key, codec);
+        d->codecForNameDict.replace(n, codec);
         return codec;
     }
 
@@ -649,12 +667,11 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
         codec = QTextCodec::codecForName(cname);
 
     if(codec) {
-        d->codecForNameDict.replace(key, codec);
+        d->codecForNameDict.replace(n, codec);
         return codec;
     }
 #endif
 
-    // could not assign a codec, let's return Latin1
-    ok = false;
-    return QTextCodec::codecForName("iso8859-1");
+    // we could not assign a codec, therefore return NULL
+    return 0;
 }
