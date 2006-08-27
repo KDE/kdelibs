@@ -1601,7 +1601,9 @@ bool KateCSAndSIndent::startsWithLabel( int line )
     {
       if (!whitespaceFound)
       {
-        if (lineContents.mid(indentFirst, n - indentFirst) == "class")
+        if (lineContents.mid(indentFirst, n - indentFirst) == "case")
+          return true;
+        else if (lineContents.mid(indentFirst, n - indentFirst) == "class")
           return false;
         whitespaceFound = true;
       }
