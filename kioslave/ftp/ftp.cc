@@ -16,9 +16,15 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
+*/
 
+/*
     Recommended reading explaining FTP details and quirks:
       http://cr.yp.to/ftp.html  (by D.J. Bernstein)
+
+    RFC:
+      RFC  959 "File Transfer Protocol (FTP)"
+      RFC 2428 "FTP Extensions for IPv6 and NATS" (defines EPRT and EPSV)
 */
 
 
