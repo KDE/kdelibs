@@ -58,7 +58,7 @@ public:
     * the filename is derived from the name.
     * @param name The name of palette as returned by getPaletteList()
     **/
-   KPalette(const QString &name=QString());
+   explicit KPalette(const QString &name=QString());
 
    /**
     * KPalette copy constructor.

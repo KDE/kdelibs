@@ -35,7 +35,7 @@ class KDECORE_EXPORT KLockFile : public KShared
 public:
    typedef KSharedPtr<KLockFile> Ptr;
 
-   KLockFile(const QString &file);
+   explicit KLockFile(const QString &file);
 
    /**
     * Destroys the object, releasing the lock if held

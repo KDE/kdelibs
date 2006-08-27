@@ -67,7 +67,7 @@ public:
   /**
    * This is NOT a copy constructor.
    */
-  ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
+  explicit ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
     offers( _ctx->offers ) {}
   ParseContext( const KService::Ptr & _service, const KService::List& _offers,
 		QMap<QString,PreferencesMaxima>& _m )
@@ -205,7 +205,7 @@ protected:
 class ParseTreeBRACKETS : public ParseTreeBase
 {
 public:
-  ParseTreeBRACKETS( ParseTreeBase *_ptr ) { m_pLeft = _ptr; }
+  explicit ParseTreeBRACKETS( ParseTreeBase *_ptr ) { m_pLeft = _ptr; }
 
   bool eval( ParseContext *_context ) const { return m_pLeft->eval( _context ); }
 
@@ -219,7 +219,7 @@ protected:
 class ParseTreeNOT : public ParseTreeBase
 {
 public:
-  ParseTreeNOT( ParseTreeBase *_ptr ) { m_pLeft = _ptr; }
+  explicit ParseTreeNOT( ParseTreeBase *_ptr ) { m_pLeft = _ptr; }
 
   bool eval( ParseContext *_context ) const;
 
@@ -233,7 +233,7 @@ protected:
 class ParseTreeEXIST : public ParseTreeBase
 {
 public:
-  ParseTreeEXIST( const char *_id ) { m_id = _id; }
+  explicit ParseTreeEXIST( const char *_id ) { m_id = _id; }
 
   bool eval( ParseContext *_context ) const;
 
@@ -247,7 +247,7 @@ protected:
 class ParseTreeID : public ParseTreeBase
 {
 public:
-  ParseTreeID( const char *arg ) { m_str = arg; }
+  explicit ParseTreeID( const char *arg ) { m_str = arg; }
 
   bool eval( ParseContext *_context ) const;
 
@@ -261,7 +261,7 @@ protected:
 class ParseTreeSTRING : public ParseTreeBase
 {
 public:
-  ParseTreeSTRING( const char *arg ) { m_str = arg; }
+  explicit ParseTreeSTRING( const char *arg ) { m_str = arg; }
 
   bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_STRING; _context->str = m_str; return true; }
 
@@ -275,7 +275,7 @@ protected:
 class ParseTreeNUM : public ParseTreeBase
 {
 public:
-  ParseTreeNUM( int arg ) { m_int = arg; }
+  explicit ParseTreeNUM( int arg ) { m_int = arg; }
 
   bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_NUM; _context->i = m_int; return true; }
 
@@ -289,7 +289,7 @@ protected:
 class ParseTreeDOUBLE : public ParseTreeBase
 {
 public:
-  ParseTreeDOUBLE( double arg ) { m_double = arg; }
+  explicit ParseTreeDOUBLE( double arg ) { m_double = arg; }
 
   bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_DOUBLE; _context->f = m_double; return true; }
 
@@ -303,7 +303,7 @@ protected:
 class ParseTreeBOOL : public ParseTreeBase
 {
 public:
-  ParseTreeBOOL( bool arg ) { m_bool = arg; }
+  explicit ParseTreeBOOL( bool arg ) { m_bool = arg; }
 
   bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_BOOL; _context->b = m_bool; return true; }
 
@@ -317,7 +317,7 @@ protected:
 class ParseTreeMAX2 : public ParseTreeBase
 {
 public:
-  ParseTreeMAX2( const char *_id ) { m_strId = _id; }
+  explicit ParseTreeMAX2( const char *_id ) { m_strId = _id; }
 
   bool eval( ParseContext *_context ) const;
 
@@ -331,7 +331,7 @@ protected:
 class ParseTreeMIN2 : public ParseTreeBase
 {
 public:
-  ParseTreeMIN2( const char *_id ) { m_strId = _id; }
+  explicit ParseTreeMIN2( const char *_id ) { m_strId = _id; }
 
   bool eval( ParseContext *_context ) const;
 

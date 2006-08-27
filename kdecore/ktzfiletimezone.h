@@ -91,7 +91,7 @@ public:
      *
      * @param location the local directory containing the time zone definition files
      */
-    KTzfileTimeZoneSource(const QString &location);
+    explicit KTzfileTimeZoneSource(const QString &location);
     virtual ~KTzfileTimeZoneSource();
 
     /**

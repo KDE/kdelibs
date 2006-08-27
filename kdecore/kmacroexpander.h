@@ -42,7 +42,7 @@ public:
      * Constructor.
      * @param c escape char indicating start of macros, or QChar::null for none
      */
-    KMacroExpanderBase( QChar c = QLatin1Char('%') );
+    explicit KMacroExpanderBase( QChar c = QLatin1Char('%') );
 
     /**
      * Destructor.
@@ -195,7 +195,7 @@ public:
      * Constructor.
      * @param c escape char indicating start of macros, or QChar::null for none
      */
-    KWordMacroExpander( QChar c = QLatin1Char('%') ) : KMacroExpanderBase( c ) {}
+    explicit KWordMacroExpander( QChar c = QLatin1Char('%') ) : KMacroExpanderBase( c ) {}
 
 protected:
     virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );
@@ -227,7 +227,7 @@ public:
      * Constructor.
      * @param c escape char indicating start of macros, or QChar::null for none
      */
-    KCharMacroExpander( QChar c = QLatin1Char('%') ) : KMacroExpanderBase( c ) {}
+    explicit KCharMacroExpander( QChar c = QLatin1Char('%') ) : KMacroExpanderBase( c ) {}
 
 protected:
     virtual int expandPlainMacro( const QString &str, int pos, QStringList &ret );

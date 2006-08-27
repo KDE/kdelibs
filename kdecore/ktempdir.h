@@ -63,8 +63,8 @@ public:
     * users not in the file's group, with the same values.
     *
     **/
-   KTempDir(QString directoryPrefix=QString(),
-             int mode = 0700 );
+   explicit KTempDir(QString directoryPrefix=QString(),
+                     int mode = 0700 );
 
 
    /**

@@ -344,14 +344,14 @@ public:
    *             strlen on the first parameter, otherwise
    *             it trusts the given length (does not stop on NUL byte).
    */
-  KMD5(const char* in, int len = -1);
+  explicit KMD5(const char* in, int len = -1);
 
   /**
    * @overload
    *
    * Same as above except it accepts a QByteArray as its argument.
    */
-  KMD5(const QByteArray& a );
+  explicit KMD5(const QByteArray& a );
 
   /**
    * Updates the message to be digested. Be sure to add all data
@@ -504,14 +504,14 @@ public:
    *             strlen on the first parameter, otherwise
    *             it trusts the given length (does not stop on NUL byte).
    */
-  KMD4(const char* in, int len = -1);
+  explicit KMD4(const char* in, int len = -1);
 
   /**
    * @overload
    *
    * Same as above except it accepts a QByteArray as its argument.
    */
-  KMD4(const QByteArray& a );
+  explicit KMD4(const QByteArray& a );
 
   /**
    * Updates the message to be digested. Be sure to add all data

@@ -70,8 +70,8 @@ public:
      *
      * @param webAddress Home page of the person.
      */
-    KAboutPerson( const char *name=0, const char *task=0,
-                  const char *emailAddress=0, const char *webAddress=0 );
+    explicit KAboutPerson( const char *name=0, const char *task=0,
+                           const char *emailAddress=0, const char *webAddress=0 );
 
     /**
      * Copy constructor.  Performs a deep copy.
@@ -143,8 +143,8 @@ public:
      *
      * @param emailAddress The email address of the person.
      */
-    KAboutTranslator(const QString & name=QString(),
-                     const QString & emailAddress=QString());
+    explicit KAboutTranslator(const QString & name=QString(),
+                              const QString & emailAddress=QString());
 
     /**
      * Copy constructor.  Performs a deep copy.

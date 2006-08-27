@@ -66,9 +66,9 @@ public:
     *        the default value
     * @param mode the file permissions
     **/
-   KTempFile(const QString& filePrefix=QString(),
-             const QString& fileExtension=QString(),
-             int mode = 0600 );
+   explicit KTempFile(const QString& filePrefix=QString(),
+                      const QString& fileExtension=QString(),
+                      int mode = 0600 );
 
    /**
     * The destructor closes the file.
@@ -183,7 +183,7 @@ protected:
    /**
     * Constructor used by KSaveFile
     **/
-   KTempFile(bool);
+   explicit KTempFile(bool);
 
    /**
     * Create function used internally by KTempFile and KSaveFile.

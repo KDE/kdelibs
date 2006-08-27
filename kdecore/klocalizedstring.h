@@ -344,8 +344,8 @@ public:
     KLocalizedString subs (const QString& a, int fieldWidth = 0) const;
 
 private:
-    explicit KLocalizedString (const char *ctxt,
-                               const char *msg, const char *plural);
+    KLocalizedString (const char *ctxt,
+                      const char *msg, const char *plural);
 
     KLocalizedStringPrivate * const d;
 };

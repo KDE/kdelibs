@@ -908,14 +908,14 @@ public:
    * @param configname name of config file. If no name is given, the default
    * config file as returned by kapp()->config() is used.
    */
-  KConfigSkeleton(const QString & configname = QString());
+  explicit KConfigSkeleton(const QString & configname = QString());
 
   /**
    * Constructor.
    *
    * @param config configuration object to use.
    */
-  KConfigSkeleton(KSharedConfig::Ptr config);
+  explicit KConfigSkeleton(KSharedConfig::Ptr config);
 
   /**
    * Destructor

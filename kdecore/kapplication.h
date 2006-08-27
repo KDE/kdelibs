@@ -104,7 +104,7 @@ public:
    *
    * @param GUIenabled Set to false to disable all GUI stuff.
    */
-  KApplication( bool GUIenabled=true);
+  explicit KApplication( bool GUIenabled=true);
 
 #ifdef Q_WS_X11
   /**
@@ -122,7 +122,7 @@ public:
    * @param colormap The colormap that should be used by the application. If
    * this parameter is 0, the default colormap will be used instead.
    */
-  KApplication(Display *display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0);
+  explicit KApplication(Display *display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0);
 
   /**
    * Constructor. Parses command-line arguments. Use this constructor to use KApplication

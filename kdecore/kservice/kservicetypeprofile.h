@@ -74,8 +74,8 @@ private:
    *                           or "KParts/ReadOnlyPart"). Can be QString(),
    *                           then the "Application" generic type will be used
    */
-  KServiceTypeProfile( const QString& serviceType,
-                       const QString& genericServiceType = QString() );
+  explicit KServiceTypeProfile( const QString& serviceType,
+                                const QString& genericServiceType = QString() );
 
   /**
    * Add a service to this profile.

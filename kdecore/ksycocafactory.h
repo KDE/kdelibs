@@ -45,7 +45,7 @@ protected: // virtual class
     * Create a factory which can be used to lookup from/create a database
     * (depending on KSycoca::isBuilding())
     */
-   KSycocaFactory( KSycocaFactoryId factory_id );
+   explicit KSycocaFactory( KSycocaFactoryId factory_id );
 
 public:
    virtual ~KSycocaFactory();

@@ -101,7 +101,7 @@ namespace KNotifyClient
          * the specified KInstance for the event configuration.
 	 * @param instance the instance for the event configuration
          */
-        Instance(KInstance *instance);
+        explicit Instance(KInstance *instance);
         /**
          * Destructs the KNotifyClient::Instance and resets KNotifyClient
          * to the previously used KInstance.

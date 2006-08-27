@@ -181,7 +181,7 @@ public:
   /**
    * Constructor
    */
-  KProcess( QObject* parent=0L );
+  explicit KProcess( QObject* parent=0L );
 
   /**
    *Destructor:
@@ -863,7 +863,7 @@ public:
    *
    * If no shellname is specified, the user's default shell is used.
    */
-  KShellProcess(const char *shellname=0);
+  explicit KShellProcess(const char *shellname=0);
 
   /**
    * Destructor.

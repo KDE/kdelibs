@@ -27,6 +27,7 @@
 #include "kstandarddirs.h"
 
 #include <qfile.h>
+#include <QStringList>
 
 class KAutostart::Private
 {

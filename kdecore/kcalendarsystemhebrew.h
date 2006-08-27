@@ -41,7 +41,7 @@ class KCalendarSystemHebrewPrivate;
 class KDECORE_EXPORT KCalendarSystemHebrew : public KCalendarSystem
 {
 public:
-  KCalendarSystemHebrew(const KLocale * locale = 0);
+  explicit KCalendarSystemHebrew(const KLocale * locale = 0);
   virtual ~KCalendarSystemHebrew();
 
   virtual int year (const QDate & date) const;

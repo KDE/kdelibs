@@ -53,7 +53,7 @@ public:
    /**
     * Default constructor
     */
-   KSycocaEntry(const QString &path) : mOffset(0), m_bDeleted(false), mPath(path) { }
+   explicit KSycocaEntry(const QString &path) : mOffset(0), m_bDeleted(false), mPath(path) { }
 
    /**
     * Safe demarshalling functions.

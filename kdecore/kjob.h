@@ -72,7 +72,7 @@ public:
      *
      * @param parent the parent QObject
      */
-    KJob( QObject *parent = 0 );
+    explicit KJob( QObject *parent = 0 );
 
     /**
      * Destroys a KJob object.

@@ -97,7 +97,7 @@ private Q_SLOTS:
     void slotClipboardChanged();
 
 private:
-    KClipboardSynchronizer( QObject *parent = 0 );
+    explicit KClipboardSynchronizer( QObject *parent = 0 );
     void setupSignals();
 
     static void setClipboard( const QMimeData* data, QClipboard::Mode mode );

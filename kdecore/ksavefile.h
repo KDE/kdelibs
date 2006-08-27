@@ -47,7 +47,7 @@ public:
     * @param filename the path of the file
     * @param mode the mode of the file (see chmod(1))
     */
-   KSaveFile(const QString &filename, int mode = 0666 );
+   explicit KSaveFile(const QString &filename, int mode = 0666 );
 
    /**
     * The destructor closes the file.

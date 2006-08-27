@@ -66,7 +66,7 @@ public:
     /**
      * Constructs a KUrlRequester widget.
      */
-    KUrlRequester( QWidget *parent=0);
+    explicit KUrlRequester( QWidget *parent=0);
 
     /**
      * Constructs a KUrlRequester widget with the initial URL @p url.

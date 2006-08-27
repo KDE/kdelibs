@@ -32,14 +32,14 @@ template <class T>
 class KGenericFactoryBase
 {
 public:
-    KGenericFactoryBase( const char *instanceName )
+    explicit KGenericFactoryBase( const char *instanceName )
         : m_instanceName( instanceName )
     {
         m_aboutData=0L;
         s_self = this;
         m_catalogInitialized = false;
     }
-    KGenericFactoryBase( const KAboutData *data )
+    explicit KGenericFactoryBase( const KAboutData *data )
         : m_aboutData(data)
     {
         s_self = this;
@@ -172,11 +172,11 @@ template <class Product, class ParentType = QObject>
 class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
 {
 public:
-    KGenericFactory( const char *instanceName = 0 )
+    explicit KGenericFactory( const char *instanceName = 0 )
         : KGenericFactoryBase<Product>( instanceName )
     {}
 
-    KGenericFactory( const KAboutData *data )
+    explicit KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase<Product>( data )
     {}
 
@@ -264,11 +264,11 @@ class KGenericFactory< KTypeList<Product, ProductListTail>, QObject >
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
-    KGenericFactory( const char *instanceName  = 0 )
+    explicit KGenericFactory( const char *instanceName  = 0 )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
 
-    KGenericFactory( const KAboutData *data )
+    explicit KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
     {}
 
@@ -358,10 +358,10 @@ class KGenericFactory< KTypeList<Product, ProductListTail>,
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
-    KGenericFactory( const char *instanceName  = 0 )
+    explicit KGenericFactory( const char *instanceName  = 0 )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( instanceName )
     {}
-    KGenericFactory( const KAboutData *data )
+    explicit KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
     {}
 

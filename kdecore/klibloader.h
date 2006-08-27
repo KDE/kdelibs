@@ -168,7 +168,7 @@ public:
      * Create a new factory.
      * @param parent the parent of the QObject, 0 for no parent
      */
-    KLibFactory( QObject* parent = 0 );
+    explicit KLibFactory( QObject* parent = 0 );
     virtual ~KLibFactory();
 
     /**

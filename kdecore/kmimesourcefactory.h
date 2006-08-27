@@ -45,7 +45,7 @@ public:
    *
    * @param loader is the iconloader used to find images.
    */
-  K3MimeSourceFactory (KIconLoader* loader = KGlobal::iconLoader());
+  explicit K3MimeSourceFactory (KIconLoader* loader = KGlobal::iconLoader());
 
   /**
    * Destructor.

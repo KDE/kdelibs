@@ -74,7 +74,7 @@ public:
    * @param catalog The name of the main language file
    * @param config The configuration file to use.
    */
-  KLocale( const QString& catalog, KConfigBase *config = 0 );
+  explicit KLocale( const QString& catalog, KConfigBase *config = 0 );
 
   /**
    * Copy constructor.

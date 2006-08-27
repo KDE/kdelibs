@@ -140,7 +140,7 @@ class KDECORE_EXPORT KStartupInfo
 	 * @param parent the parent of this QObject (can be 0 for no parent)
 	 *
 	 */
-	KStartupInfo( int flags, QObject* parent = NULL );
+	explicit KStartupInfo( int flags, QObject* parent = 0 );
 	/**
 	 * Creates an instance that will receive the startup notifications.
 	 *
@@ -151,7 +151,7 @@ class KDECORE_EXPORT KStartupInfo
 	 *
 	 * @obsolete
 	 */
-        KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0 );
+        explicit KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0 );
         virtual ~KStartupInfo();
 	/**
 	 * Sends given notification data about started application
@@ -431,7 +431,7 @@ class KDECORE_EXPORT KStartupInfoId
         KStartupInfoId& operator=( const KStartupInfoId& data );
         bool operator<( const KStartupInfoId& id ) const;
     private:
-        KStartupInfoId( const QString& txt );
+        explicit KStartupInfoId( const QString& txt );
         QString to_text() const;
         friend class KStartupInfo;
         struct Private;
@@ -639,7 +639,7 @@ class KDECORE_EXPORT KStartupInfoData
         ~KStartupInfoData();
         KStartupInfoData& operator=( const KStartupInfoData& data );
     private:
-        KStartupInfoData( const QString& txt );
+        explicit KStartupInfoData( const QString& txt );
         QString to_text() const;
         void remove_pid( pid_t pid );
         friend class KStartupInfo;

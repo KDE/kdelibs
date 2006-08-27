@@ -192,7 +192,7 @@ public:
      * @param appName the name of the application. Can be null. This argument
      *        allows applications to have themed application icons.
      */
-    KIconTheme(const QString& name, const QString& appName=QString());
+    explicit KIconTheme(const QString& name, const QString& appName=QString());
     ~KIconTheme();
 
     /**

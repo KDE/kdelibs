@@ -172,7 +172,7 @@ private:
      * @param autoDeleteFilterBase when true this object will become the
      * owner of @p filter.
      */
-    KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
+    explicit KFilterDev( KFilterBase * filter, bool autoDeleteFilterBase = false );
 private:
     KFilterBase *filter;
     class KFilterDevPrivate;

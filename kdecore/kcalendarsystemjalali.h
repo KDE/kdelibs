@@ -33,7 +33,7 @@ class KCalendarSystemJalaliPrivate;
 class KDECORE_EXPORT KCalendarSystemJalali : public KCalendarSystem
 {
 public:
-  KCalendarSystemJalali(const KLocale * locale = 0);
+  explicit KCalendarSystemJalali(const KLocale * locale = 0);
   virtual ~KCalendarSystemJalali();
 
 

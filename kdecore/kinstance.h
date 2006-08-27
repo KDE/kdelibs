@@ -47,7 +47,7 @@ class KDECORE_EXPORT KInstance
      *  Constructor.
      *  @param instanceName the name of the instance
      */
-    KInstance( const QByteArray& instanceName) ;
+    explicit KInstance( const QByteArray& instanceName) ;
 
     /**
      *  Constructor.
@@ -59,14 +59,14 @@ class KDECORE_EXPORT KInstance
      *  KCmdLineArgs and KApplication (not destroyed until the app exits).
      *  @param aboutData data about this instance (see KAboutData)
      */
-    KInstance( const KAboutData * aboutData );
+    explicit KInstance( const KAboutData * aboutData );
 
     /**
      * Only for K(Unique)Application
      * Initialize from src and delete it.
      * @internal
      */
-    KInstance( KInstance* src );
+    explicit KInstance( KInstance* src );
 
     /**
      * Destructor.

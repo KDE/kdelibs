@@ -75,7 +75,7 @@ class KDECORE_EXPORT KPluginInfo
          * (e.g. "service", "apps"... KStandardDirs). Otherwise,
          * resource isn't used.
          */
-        KPluginInfo( const QString & filename, const char* resource = 0 );
+        explicit KPluginInfo( const QString & filename, const char* resource = 0 );
 
         /**
          * Read plugin info from a KService object.
@@ -103,7 +103,7 @@ class KDECORE_EXPORT KPluginInfo
            \endverbatim
          * In the first three entries the Icon entry is optional.
          */
-        KPluginInfo( const KService::Ptr service );
+        explicit KPluginInfo( const KService::Ptr service );
 
 //X         /**
 //X          * Create an empty hidden plugin.

@@ -56,7 +56,7 @@ protected:
     * @internal
     * Building database
     */
-   KSycoca( bool /* buildDatabase */ );
+   explicit KSycoca( bool /* buildDatabase */ );
 
 public:
 

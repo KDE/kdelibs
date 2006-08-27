@@ -49,7 +49,7 @@ public:
      * Creates a KZoneAllocator object.
      * @param _blockSize Size in bytes of the blocks requested from malloc.
      */
-    KZoneAllocator(unsigned long _blockSize = 8*1024);
+    explicit KZoneAllocator(unsigned long _blockSize = 8*1024);
 
     /**
      * Destructs the ZoneAllocator and free all memory allocated by it.

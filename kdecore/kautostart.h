@@ -21,9 +21,10 @@
 #define KDELIBS_KAUTOSTART_H
 
 #include <QObject>
-#include <QStringList>
 
 #include "kdelibs_export.h"
+
+class QStringList;
 
 /**
  * KAutostart provides a programmatic means to control the state of
@@ -66,8 +67,8 @@ class KDECORE_EXPORT KAutostart : public QObject
          *        provided then it uses the name registered with KAboutData.
          * @param parent QObject
          */
-        KAutostart(const QString& entryName = QString(),
-                   QObject* parent = 0);
+        explicit KAutostart(const QString& entryName = QString(),
+                            QObject* parent = 0);
         ~KAutostart();
 
         /**

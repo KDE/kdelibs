@@ -54,7 +54,7 @@ public:
   /**
    * Constructor
    */
-  KProcIO ( QTextCodec *codec = 0 );
+  explicit KProcIO ( QTextCodec *codec = 0 );
 
   /**
    * Destructor

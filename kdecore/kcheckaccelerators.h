@@ -21,8 +21,6 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
-#include <QKeySequence>
-#include <QMap>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -72,7 +70,7 @@ public:
      * Creates a KCheckAccelerators instance for the given object.
      * @param parent the parent to check
      */
-    KCheckAccelerators( QObject* parent );
+    explicit KCheckAccelerators( QObject* parent );
     /**
      * Re-implemented to filter the parent's events.
      */

@@ -184,7 +184,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( !fileURL.hasRef() );
 
   QString u1 = "file:/home/dfaure/my#myref";
-  KUrl url1 = u1;
+  KUrl url1(u1);
   // KDE3 difference: QUrl doesn't resolve file:/ into file:///
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#myref") );
   QVERIFY( url1.hasRef() );
@@ -493,7 +493,7 @@ void KUrlTest::testSetFileName() // and addPath
   if ( tmpurl.at(tmpurl.length() - 1) == '/')
       // It's a directory, so strip the trailing slash first
       tmpurl.truncate( tmpurl.length() - 1);
-  KUrl newUrl = tmpurl;
+  KUrl newUrl(tmpurl);
   newUrl.setFileName( "mynewdir" );
   QCOMPARE( newUrl.url(), QString("file:///home/dfaure/mynewdir") );
 
@@ -951,7 +951,7 @@ void KUrlTest::testSubURL()
 {
   kDebug() << k_funcinfo << endl;
   QString u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
-  KUrl url1 = u1;
+  KUrl url1(u1);
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/%23myref") ); // KDE3 would say # 3 times
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.isLocalFile() );  // Not strictly local!
@@ -1455,7 +1455,7 @@ void KUrlTest::testAssignment()
   // Assigning a KUrl to a QUrl and back
   QUrl qurl = uloc;
   QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
-  uloc = qurl;
+  uloc = KUrl(qurl);
   QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 }

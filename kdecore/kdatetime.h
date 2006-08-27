@@ -204,7 +204,7 @@ class KDECORE_EXPORT KDateTime
          *
          * @param tz  time zone
          */
-        Spec(const KTimeZone *tz);
+        explicit Spec(const KTimeZone *tz);
 
         /**
          * Constructs a time specification.
@@ -488,7 +488,7 @@ class KDECORE_EXPORT KDateTime
      * @param date date in the time zone indicated by @p spec
      * @param spec time specification
      */
-    KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
+    explicit KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
 
     /**
      * Constructs a date/time expressed as specified by @p spec.
@@ -547,7 +547,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param dt date and time
      */
-    KDateTime(const QDateTime &dt);
+    explicit KDateTime(const QDateTime &dt);
 
     KDateTime(const KDateTime &other);
     ~KDateTime();

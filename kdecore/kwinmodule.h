@@ -91,7 +91,7 @@ public:
      * manager.
      * @param parent the parent for the QObject
      **/
-    KWinModule( QObject* parent = 0 );
+    explicit KWinModule( QObject* parent = 0 );
 
     /**
      * Destructor. Internal cleanup, nothing fancy.

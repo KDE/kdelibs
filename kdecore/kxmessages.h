@@ -62,7 +62,7 @@ class KDECORE_EXPORT KXMessages
          * @deprecated
          * This method is equivalent to the other constructor with obsolete = true.
          */
-        KXMessages( const char* accept_broadcast = NULL, QWidget* parent = NULL );
+        explicit KXMessages( const char* accept_broadcast = NULL, QWidget* parent = NULL );
 
         virtual ~KXMessages();
 	/**

@@ -190,7 +190,7 @@ public:
    static void setConfig(KConfigBase *config);
 
 private:
-   KSocks(KConfigBase *config);
+   explicit KSocks(KConfigBase *config);
    ~KSocks();
 
    void stopSocks();

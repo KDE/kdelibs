@@ -51,7 +51,7 @@ public:
    *
    * @param locale It will use this locale for translations, 0 means global.
    */
-  KCalendarSystem(const KLocale * locale = 0);
+  explicit KCalendarSystem(const KLocale * locale = 0);
 
   /**
    * Descructor.

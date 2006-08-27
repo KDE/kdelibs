@@ -84,7 +84,7 @@ public:
      * @see KGlobal::iconLoader()
      * @see KInstance::iconLoader()
      */
-    KIconLoader(const QString& appname=QString(), KStandardDirs *dirs = 0);
+    explicit KIconLoader(const QString& appname=QString(), KStandardDirs *dirs = 0);
 
     /**
      * Cleanup

@@ -64,20 +64,20 @@ class KDECORE_EXPORT KXErrorHandler
          * Creates error handler that will set error flag after encountering
          * any X error.
          */
-        KXErrorHandler( Display* dpy = QX11Info::display());
+        explicit KXErrorHandler( Display* dpy = QX11Info::display());
         /**
          * This constructor takes pointer to a function that will get request number,
          * error code number and resource id of the failed request, as provided
          * by XErrorEvent. If the function returns true, the error flag will be set.
          */
-        KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display());
+        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display());
         /**
          * This constructor takes pointer to a function whose prototype matches
          * the one that's used with the XSetErrorHandler() Xlib function.
          * NOTE: For the error flag to be set, the function must return a non-zero
          * value.
          */
-        KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy = QX11Info::display());
+        explicit KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy = QX11Info::display());
         /**
          * This function returns true if the error flag is set (i.e. no custom handler
          * function was used and there was any error, or the custom handler indicated

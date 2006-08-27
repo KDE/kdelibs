@@ -41,7 +41,7 @@ class KCalendarSystemHijriPrivate;
 class KDECORE_EXPORT KCalendarSystemHijri : public KCalendarSystem
 {
 public:
-  KCalendarSystemHijri(const KLocale * locale = 0);
+  explicit KCalendarSystemHijri(const KLocale * locale = 0);
   virtual ~KCalendarSystemHijri();
 
   virtual int year (const QDate & date) const;

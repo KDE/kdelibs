@@ -51,7 +51,7 @@ public:
    * If lngSeed is 0, the sequence is initialized with a value from
    * KRandom::random().
    */
-  KRandomSequence( long lngSeed = 0 );
+  explicit KRandomSequence( long lngSeed = 0 );
 
   /**
    * Standard destructor

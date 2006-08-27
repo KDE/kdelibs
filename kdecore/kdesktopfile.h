@@ -45,8 +45,8 @@ public:
    *                  to search for if @p fileName is not absolute.  For
    *                  instance, you might want to specify "config".
    */
-  KDesktopFile( const QString &fileName, bool readOnly = false,
-		const char * resType = "apps");
+  explicit KDesktopFile( const QString &fileName, bool readOnly = false,
+                         const char * resType = "apps");
 
   /**
    * Destructs the KDesktopFile object.

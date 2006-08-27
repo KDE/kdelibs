@@ -41,7 +41,7 @@ class KCalendarSystemGregorianPrivate;
 class KDECORE_EXPORT KCalendarSystemGregorian: public KCalendarSystem
 {
 public:
-  KCalendarSystemGregorian (const KLocale * locale = 0);
+  explicit KCalendarSystemGregorian (const KLocale * locale = 0);
   virtual ~KCalendarSystemGregorian ();
 
   virtual int year (const QDate & date) const;

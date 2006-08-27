@@ -55,8 +55,8 @@ public:
    *                 depend on the value of the "MultipleInstances"
    *                 key in the "KDE" group of the application config file.
    */
-  KUniqueApplication( bool GUIenabled=true,
-		      bool configUnique=false);
+  explicit KUniqueApplication( bool GUIenabled=true,
+                               bool configUnique=false);
 
 #ifdef Q_WS_X11
   /**
@@ -75,10 +75,10 @@ public:
    *                 depend on the value of the "MultipleInstances"
    *                 key in the "KDE" group of the application config file.
    */
-  KUniqueApplication( Display *display,
-		      Qt::HANDLE visual=0,
-		      Qt::HANDLE colormap=0,
-		      bool configUnique=false);
+  explicit KUniqueApplication( Display *display,
+                               Qt::HANDLE visual=0,
+                               Qt::HANDLE colormap=0,
+                               bool configUnique=false);
 #endif
 
   /**
