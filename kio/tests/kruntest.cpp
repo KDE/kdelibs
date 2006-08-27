@@ -93,9 +93,9 @@ void Receiver::slotStart()
 void check(QString txt, QString a, QString b)
 {
   if (a.isEmpty())
-     a = QString::null;
+    a.clear();
   if (b.isEmpty())
-     b = QString::null;
+    b.clear();
   if (a == b)
     kDebug() << txt << " : '" << a << "' - ok" << endl;
   else {

@@ -134,7 +134,7 @@ QString KSSLCertDlg::getChoice() {
    if (selected && d->p_send_flag)
 	return selected->text(0);
    else
-	return QString::null;
+	return QString();
 }
 
 

@@ -39,9 +39,9 @@
 static bool check(const QString& txt, QString a, QString b)
 {
     if (a.isEmpty())
-        a = QString::null;
+        a.clear();
     if (b.isEmpty())
-        b = QString::null;
+        b.clear();
     if (a == b) {
         kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
     }
@@ -52,7 +52,7 @@ static bool check(const QString& txt, QString a, QString b)
     return true;
 }
 
-template<typename T> 
+template<typename T>
 static bool check(const QString& txt, T a, T b)
 {
     if (a == b) {
@@ -98,7 +98,7 @@ void KACLTest::runAll()
   testGetOwnerPermissions();
   testGetOwningGroupPermissions();
   testGetOthersPermissions();
-  
+
   testGetMaskPermissions();
   testGetAllUserPermissions();
 
@@ -234,7 +234,7 @@ void KACLTest::testSettingExtended()
   check( "setMaskPermissions: ", QString::number( CharlesII.maskPermissions( dummy ) ),"7" );
 
   const QString expected( "user::rw-\nuser:root:rwx\nuser:bin:r--\ngroup::rw-\nmask::rwx\nother::r--\n" );
-  
+
   ACLUserPermissionsList users;
   ACLUserPermissions user = qMakePair( QString( "root" ), ( unsigned short )7 );
   users.append( user );
@@ -250,7 +250,7 @@ void KACLTest::testSettingExtended()
   check( "setNamedUserPermissions: ", CharlesII.asString(), expected );
 
   // groups, all and named
-  
+
   const QString expected2( "user::rw-\nuser:bin:rwx\ngroup::rw-\ngroup:audio:-wx\ngroup:users:r--\nmask::rwx\nother::r--\n" );
   CharlesII.setACL( s_testACL ); // reset
   ACLGroupPermissionsList groups;

@@ -787,7 +787,7 @@ QString itemType( const QString &type )
 static QString itemDeclaration(const CfgEntry *e)
 {
   if (itemAccessors)
-     return QString::null;
+     return QString();
 
   QString fCap = e->name();
   fCap[0] = fCap[0].toUpper();

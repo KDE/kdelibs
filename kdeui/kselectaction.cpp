@@ -226,7 +226,7 @@ QString KSelectAction::currentText( ) const
   if (QAction* a = currentAction())
     return a->text();
 
-  return QString::null;
+  return QString();
 }
 
 void KSelectAction::setCurrentAction(QAction* action)

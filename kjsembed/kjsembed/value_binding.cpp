@@ -126,7 +126,7 @@ QMap<QString, QVariant> KJSEmbed::convertArrayToMap( KJS::ExecState *exec, KJS::
     QMap<QString, QVariant> returnMap;
     KJS::JSObject *obj = value->toObject(exec);
     KJS::PropertyNameArray lst;
-    obj->getPropertyNames(exec, lst); 
+    obj->getPropertyNames(exec, lst);
     KJS::PropertyNameArrayIterator idx = lst.begin();
     for( ; idx != lst.end(); idx++ )
     {
@@ -173,7 +173,7 @@ QStringList KJSEmbed::convertArrayToStringList( KJS::ExecState *exec, KJS::JSVal
             if( val )
                 returnList += convertToVariant(exec, val ).value<QString>();
             else
-                returnList += QString::null;
+                returnList += QString();
         }
     }
     return returnList;
