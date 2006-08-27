@@ -306,9 +306,9 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
   QList<QAction *> lstAction = popup->actions ();
 
   if ( !lstAction.isEmpty() ) {
-    enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
+    enum { UndoAct = 0, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs };
     if ( isReadOnly() )
-      lstAction[CopyAct]->setIcon( SmallIconSet("editcopy") );
+      lstAction[0]->setIcon( SmallIconSet("editcopy") );
     else {
       lstAction[UndoAct]->setIcon( SmallIconSet("undo") );
       lstAction[RedoAct]->setIcon( SmallIconSet("redo") );
