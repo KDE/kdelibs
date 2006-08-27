@@ -97,6 +97,9 @@ MediaControls::MediaControls( QWidget* parent )
 	d->layout->addSpacing( 4 );
 	d->layout->addWidget( d->volumeSlider );
 	d->layout->addStretch();
+
+	setMaximumHeight(20);
+
 }
 
 MediaControls::~MediaControls()
