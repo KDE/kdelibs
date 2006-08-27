@@ -110,7 +110,7 @@ QWidget *KFindDialog::findExtension()
     if (!m_findExtension)
     {
       m_findExtension = new QWidget(m_findGrp);
-      m_findLayout->addWidget(m_findExtension, 3, 3, 0, 1);
+      m_findLayout->addWidget(m_findExtension, 3, 0, 1, 2);
     }
 
     return m_findExtension;
