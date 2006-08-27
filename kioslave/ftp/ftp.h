@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __ftp_h__
-#define __ftp_h__
+#ifndef KDELIBS_FTP_H
+#define KDELIBS_FTP_H
 
 #include <config.h>
 
@@ -412,4 +412,5 @@ private: // data members
   KNetwork::KStreamSocket  *m_data;
 };
 
-#endif
+#endif // KDELIBS_FTP_H
+
