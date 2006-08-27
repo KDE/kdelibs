@@ -24,7 +24,8 @@
 
     RFC:
       RFC  959 "File Transfer Protocol (FTP)"
-      RFC 2428 "FTP Extensions for IPv6 and NATS" (defines EPRT and EPSV)
+      RFC 1635 "How to Use Anonymous FTP"
+      RFC 2428 "FTP Extensions for IPv6 and NATs" (defines EPRT and EPSV)
 */
 
 
