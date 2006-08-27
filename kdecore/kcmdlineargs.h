@@ -547,6 +547,28 @@ public:
    */
   static bool isTempFileSet();
 
+  /**
+   * Returns the number of arguments returned by qt_argv()
+   *
+   * @see qt_argv
+   */
+  static int *qt_argc();
+
+  /**
+   * Returns command line options for consumption by Qt after parsing them in a way that
+   * is consistent with KDE's general command line handling. In particular this ensures
+   * that Qt command line options can be specified as either -option or --option and that
+   * any options specified after '--' will be ignored.
+   *
+   * @see qt_argc
+   */
+  static char ***qt_argv();
+
+  /**
+   * Returns the KAboutData for consumption by KInstance
+   */
+  static const KAboutData *aboutData() { return about; }
+
 protected:
   /**
    * @internal
@@ -579,27 +601,6 @@ private:
    * where they belong.
    */
   static void parseAllArgs();
-
-  /**
-   * @internal for KApplication only:
-   *
-   * Returns the number of arguments returned by qt_argv()
-   *
-   * @see qt_argv
-   */
-  static int *qt_argc();
-
-  /**
-   * @internal for KApplication only:
-   *
-   * Returns command line options for consumption by Qt after parsing them in a way that
-   * is consistent with KDE's general command line handling. In particular this ensures
-   * that Qt command line options can be specified as either -option or --option and that
-   * any options specified after '--' will be ignored.
-   *
-   * @see qt_argc
-   */
-  static char ***qt_argv();
 
   /**
    * @internal
