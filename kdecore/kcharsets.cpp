@@ -343,7 +343,7 @@ QString KCharsets::resolveEntities( const QString &input )
 QStringList KCharsets::availableEncodingNames() const
 {
     QStringList available;
-    for ( const LanguageForEncoding* pos = language_for_encoding; *pos->index; ++pos ) {
+    for ( const LanguageForEncoding* pos = language_for_encoding; pos->index; ++pos ) {
         //kDebug(0) << *charsets << " available" << endl;
         available.append( QString::fromLatin1( pos->index ) );
     }
