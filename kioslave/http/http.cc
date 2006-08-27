@@ -1986,8 +1986,10 @@ bool HTTPProtocol::httpOpenConnection()
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpenConnection" << endl;
 
   setBlockConnection( true );
+#ifndef Q_WS_WIN
   // kio_http uses its own proxying:
   KSocks::self()->disableSocks();
+#endif
 
   if ( m_state.doProxy )
   {
@@ -4737,7 +4739,11 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    dir.truncate(p);
 
    // Create file
+#ifdef Q_WS_WIN
+   (void) ::mkdir( QFile::encodeName(dir) );
+#else
    (void) ::mkdir( QFile::encodeName(dir), 0700 );
+#endif
 
    QString filename = m_request.cef + ".new";  // Create a new cache entryexpireDate
 
