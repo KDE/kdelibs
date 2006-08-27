@@ -658,9 +658,8 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 <ul>
 <li>Use QLabel instead. This class will probably move to kde3support.
 <ul>
-<li>QLabel::setOpenExternalLinks(true) and QLabel::setTextInteractionFlags(Qt::LinksAccessibleByMouse|QtLinksAccessibleByKeyboard) for labels with hyperlinks.</li>
+<li>QLabel::setOpenExternalLinks(true) for labels with hyperlinks.</li>
 <li>QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|QtTextSelectableByKeyboard) for labels whose text should be selectable by user.</li>
-<li>QLabel::setOpenExternalLinks(true) and QLabel::setTextInteractionFlags(Qt::TextBrowserInteraction) for both features.</li>
 </ul>
 </li>
 <li>Inherits from KTextBrowser instead of Q3TextBrowser</li>
