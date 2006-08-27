@@ -52,10 +52,10 @@ public:
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    * @param resType the place to look in (config, data, etc) See KStandardDirs.
    */
-  KConfig( const QString& fileName = QString(),
-          bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
+  explicit KConfig(const QString& fileName = QString(),
+                   bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
 
-  KConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
+  explicit KConfig(KConfigBackEnd *backEnd, bool bReadOnly = false);
 
   /**
    * Destructs the KConfig object.
