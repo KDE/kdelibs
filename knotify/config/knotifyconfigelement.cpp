@@ -34,7 +34,8 @@ QString KNotifyConfigElement::readEntry( const QString & entry, bool path )
 {
 	if(m_cache.contains(entry))
 		return m_cache[entry];
-	QString p=path ?  m_config.readPathEntry(entry) : m_config.readEntry(entry, QString());
+	QString p=path ?  m_config.readPathEntry(entry.toUtf8().constData()) :
+m_config.readEntry(entry.toUtf8().constData(), QString());
 	if(!p.isNull())
 		return p;
 	
