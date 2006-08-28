@@ -144,7 +144,7 @@ private:
         if (imFrm.type == ImageFormat::Image_RGB_32)
         {
             //Need fillers, plus perhaps BGR swapping for non-alpha
-#ifdef WORDS_BIGENDIAN
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
             png_set_filler(pngReadStruct, 0xff, PNG_FILLER_BEFORE);
 #else
             png_set_filler(pngReadStruct, 0xff, PNG_FILLER_AFTER);
@@ -153,7 +153,7 @@ private:
         }
         else if (imFrm.type == ImageFormat::Image_RGBA_32)
         {
-#ifdef WORDS_BIGENDIAN
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
             png_set_swap_alpha(pngReadStruct); //ARGB, not RGBA
 #else
             png_set_bgr   (pngReadStruct);     //BGRA
