@@ -422,6 +422,13 @@ static KCmdLineOptions options[] =
     KCmdLineLastOption
 };
 
+static bool existsDir(QCString dir)
+{
+    struct stat st;
+
+    return (!stat(dir.data(), &st) && S_ISDIR(st.st_mode));
+}
+
 int main(int argc, char *argv[])
 {
     // forget about any settings
@@ -476,14 +483,26 @@ int main(int argc, char *argv[])
         }
         
         QCString xvfbPath8 = QFile::encodeName(xvfbPath);
+        QStringList fpaths;
+        fpaths.append(baseDir+"/resources");
+
+        const char* const fontdirs[] = { "75dpi", "misc", "Type1" };
+        const char* const fontpaths[] =  {"/usr/share/fonts/", "/usr/X11/lib/X11/fonts/",
+            "/usr/lib/X11/fonts" };
+
+        for (size_t fp=0; fp < sizeof(fontpaths)/sizeof(*fontpaths); ++fp)
+            for (size_t fd=0; fd < sizeof(fontdirs)/sizeof(*fontdirs); ++fd)
+                if (existsDir(QCString(fontpaths[fp])+QCString(fontdirs[fd])))
+                    if (strcmp(fontdirs[fd] , "Type1"))
+                        fpaths.append(QCString(fontpaths[fp])+QCString(fontdirs[fd])+":unscaled");
+                    else
+                        fpaths.append(QCString(fontpaths[fp])+QCString(fontdirs[fd]));
 
         xvfb = fork();
         if ( !xvfb ) {
-            char buffer[2000];
-            sprintf( buffer, "%s/resources,/usr/X11R6/lib/X11/fonts/75dpi:unscaled,/usr/X11R6/lib/X11/fonts/misc:unscaled,/usr/X11R6/lib/X11/fonts/Type1,/usr/share/fonts/X11/misc,/usr/share/fonts/X11/75dpi:unscaled,/usr/share/fonts/X11/Type1,"
-            "/usr/lib/X11/fonts/75dpi:unscaled,/usr/lib/X11/fonts/misc:unscaled,/usr/lib/X11/fonts/Type1",
-             (const char *)baseDir );
-            execl( xvfbPath8.data(), xvfbPath8.data(), "-once", "-dpi", "100", "-screen", "0", "1024x768x16", "-ac", "-fp", buffer, ":47", (char*)NULL );
+            QCString buffer = fpaths.join(",").latin1();
+            execl( xvfbPath8.data(), xvfbPath8.data(), "-once", "-dpi", "100", "-screen", "0",
+                    "1024x768x16", "-ac", "-fp", buffer.data(), ":47", (char*)NULL );
         }
 
         setenv( "DISPLAY", ":47", 1 );
