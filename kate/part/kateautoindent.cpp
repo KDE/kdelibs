@@ -556,11 +556,14 @@ bool KateCSmartIndent::handleDoxygen (KateDocCursor &begin)
   {
     KateTextLine::Ptr textLine = doc->plainKateTextLine(line);
     bool insideDoxygen = false;
+    bool justAfterDoxygen = false;
     if (textLine->attribute(first) == doxyCommentAttrib || textLine->attribute(textLine->lastChar()) == doxyCommentAttrib)
     {
       const int last = textLine->lastChar();
-      if (last <= 0 || !textLine->stringAtPos(last-1, "*/"))
+      if (last <= 0 || !(justAfterDoxygen = textLine->stringAtPos(last-1, "*/")))
         insideDoxygen = true;
+      if (justAfterDoxygen)
+        justAfterDoxygen &= textLine->string().find("/**") < 0;
       while (textLine->attribute(first) != doxyCommentAttrib && first <= textLine->lastChar())
         first++;
       if (textLine->stringAtPos(first, "//"))
@@ -587,6 +590,21 @@ bool KateCSmartIndent::handleDoxygen (KateDocCursor &begin)
       doc->insertText (begin.line(), 0, filler);
       begin.setCol(filler.length());
 
+      return true;
+    }
+    // Align position with beginning of doxygen comment. Otherwise the
+    // indentation is one too much.
+    else if (justAfterDoxygen)
+    {
+      textLine = doc->plainKateTextLine(begin.line());
+      first = textLine->firstChar();
+      int indent = findOpeningComment(begin);
+      QString filler = tabString (indent);
+      
+      doc->removeText (begin.line(), 0, begin.line(), first);
+      doc->insertText (begin.line(), 0, filler);
+      begin.setCol(filler.length());
+      
       return true;
     }
   }
