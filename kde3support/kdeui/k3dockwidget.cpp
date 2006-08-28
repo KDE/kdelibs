@@ -2870,7 +2870,7 @@ void K3DockManager::readConfig( KConfig* c, QString group )
 
   c->setGroup( group );
 
-  QRect mr = c->readRectEntry("Main:Geometry");
+  QRect mr = c->readEntry("Main:Geometry", QRect());
 
   if (!main->inherits("K3DockMainWindow"))
     main->move(mr.topLeft());
