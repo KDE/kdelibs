@@ -357,10 +357,10 @@ MainWidget::MainWidget( QWidget *parent )
 	addProducer();
 	addPath();
 	addOutput();
-	m_producers.first()->connectPath( m_paths.first() );
-	m_paths.first()->connectOutput( m_outputs.first() );
-	m_connectionFrame1->addConnection( m_producers.first(), m_paths.first() );
-	m_connectionFrame2->addConnection( m_paths.first(), m_outputs.first() );
+	if( m_producers.first()->connectPath( m_paths.first() ) )
+		m_connectionFrame1->addConnection( m_producers.first(), m_paths.first() );
+	if( m_paths.first()->connectOutput( m_outputs.first() ) )
+		m_connectionFrame2->addConnection( m_paths.first(), m_outputs.first() );
 }
 
 void MainWidget::addProducer()
@@ -429,8 +429,8 @@ void MainWidget::madeConnection1( const QPoint &a, const QPoint &b )
 	if( !path )
 		return;
 
-	producer->connectPath( path );
-	m_connectionFrame1->addConnection( producer, path );
+	if( producer->connectPath( path ) )
+		m_connectionFrame1->addConnection( producer, path );
 }
 
 void MainWidget::madeConnection2( const QPoint &a, const QPoint &b )
@@ -474,8 +474,8 @@ void MainWidget::madeConnection2( const QPoint &a, const QPoint &b )
 	if( !output )
 		return;
 
-	path->connectOutput( output );
-	m_connectionFrame2->addConnection( path, output );
+	if( path->connectOutput( output ) )
+		m_connectionFrame2->addConnection( path, output );
 }
 
 int main( int argc, char **argv )
