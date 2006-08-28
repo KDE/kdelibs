@@ -174,8 +174,10 @@ KCrash::defaultCrashHandler (int sig)
 
   if (!(s_flags & KeepFDs))
     closeAllFDs();
+#if defined(Q_WS_X11)
   else if (QX11Info::display())
     close(ConnectionNumber(QX11Info::display()));
+#endif
 
   // this code is leaking, but this should not hurt cause we will do a
   // exec() afterwards. exec() is supposed to clean up.
