@@ -39,6 +39,7 @@ private Q_SLOTS:
     void addSubtract();
     void addMSecs();
     void addSubtractDate();
+    void dstShifts();
     void strings_iso8601();
     void strings_rfc2822();
     void strings_qttextdate();

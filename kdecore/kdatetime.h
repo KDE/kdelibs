@@ -204,7 +204,7 @@ class KDECORE_EXPORT KDateTime
          *
          * @param tz  time zone
          */
-        explicit Spec(const KTimeZone *tz);
+        Spec(const KTimeZone *tz);
 
         /**
          * Constructs a time specification.
@@ -488,7 +488,7 @@ class KDECORE_EXPORT KDateTime
      * @param date date in the time zone indicated by @p spec
      * @param spec time specification
      */
-    explicit KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
+    KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
 
     /**
      * Constructs a date/time expressed as specified by @p spec.
@@ -547,7 +547,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param dt date and time
      */
-    explicit KDateTime(const QDateTime &dt);
+    KDateTime(const QDateTime &dt);
 
     KDateTime(const KDateTime &other);
     ~KDateTime();
@@ -684,6 +684,26 @@ class KDECORE_EXPORT KDateTime
      * @see isClockTime()
      */
     int utcOffset() const;
+
+    /**
+     * Returns whether the date/time is the second occurrence of this time. This
+     * is only applicable to a date/time expressed in terms of a time zone (type
+     * @c TimeZone or @c LocalZone), around the time of change from daylight
+     * savings to standard time.
+     *
+     * When a shift from daylight savings time to standard time occurs, the local
+     * times (typically the previous hour) immediately preceding the shift occur
+     * twice. For example, if a time shift of 1 hour happens at 03:00, the clock
+     * jumps backwards to 02:00, so the local times between 02:00:00 and 02:59:59
+     * occur once before the shift, and again after the shift.
+     *
+     * For instances which are not of type @c TimeZone, or when the date/time is
+     * not near to a time shift, @c false is returned.
+     *
+     * @return @c true if the time is the second occurrence, @c false otherwise
+     * @see setSecondOccurrence()
+     */
+    bool isSecondOccurrence() const;
 
     /**
      * Returns the time converted to UTC. The converted time has a UTC offset
@@ -853,6 +873,31 @@ class KDECORE_EXPORT KDateTime
      * @see timeSpec(), timeZone()
      */
     void setTimeSpec(const Spec &spec);
+
+    /**
+     * Sets whether the date/time is the second occurrence of this time. This
+     * is only applicable to a date/time expressed in terms of a time zone (type
+     * @c TimeZone or @c LocalZone), around the time of change from daylight
+     * savings to standard time.
+     *
+     * When a shift from daylight savings time to standard time occurs, the local
+     * times (typically the previous hour) immediately preceding the shift occur
+     * twice. For example, if a time shift of 1 hour happens at 03:00, the clock
+     * jumps backwards to 02:00, so the local times between 02:00:00 and 02:59:59
+     * occur once before the shift, and again after the shift.
+     *
+     * For instances which are not of type @c TimeZone, or when the date/time is
+     * not near to a time shift, calling this method has no effect.
+     *
+     * Note that most other setting methods clear the second occurrence indicator,
+     * so if you want to retain its setting, you must call setSecondOccurrence()
+     * again after changing the instance's value.
+     *
+     * @param second @c true to set as the second occurrence, @c false to set as
+     *               the first occurrence
+     * @see isSecondOccurrence()
+     */
+    void setSecondOccurrence(bool second);
 
     /**
      * Returns a date/time @p msecs milliseconds later than the stored date/time.

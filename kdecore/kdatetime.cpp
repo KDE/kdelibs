@@ -286,14 +286,16 @@ class KDateTimePrivate
   public:
     KDateTimePrivate()   // default = invalid spec value
         : utcCached(false),
-          mDateOnly(false)
+          mDateOnly(false),
+          m2ndOccurrence(false)
     {}
 
    KDateTimePrivate(const QDateTime &d, const KDateTime::Spec &s, bool donly = false)
         : mDt(d),
           spec(s),
           utcCached(false),
-          mDateOnly(donly)
+          mDateOnly(donly),
+          m2ndOccurrence(false)
     {}
 
     KDateTimePrivate(const KDateTimePrivate &rhs)
@@ -303,7 +305,8 @@ class KDateTimePrivate
           spec(rhs.spec),
           status(rhs.status),
           utcCached(rhs.utcCached),
-          mDateOnly(rhs.mDateOnly)
+          mDateOnly(rhs.mDateOnly),
+          m2ndOccurrence(rhs.m2ndOccurrence)
     {}
 
     ~KDateTimePrivate()  {}
@@ -311,12 +314,15 @@ class KDateTimePrivate
     const QDateTime& dt() const                                    { return mDt; }
     const QDate   date() const                                     { return mDt.date(); }
     bool      dateOnly() const                                     { return mDateOnly; }
-    void      setDt(const QDateTime &dt)                           { mDt = dt; utcCached = false; }
-    void      setDt(const QDateTime &dt, const QDateTime &utcDt)   { mDt = dt; utc = utcDt; utcCached = true; }
-    void      setDate(const QDate &d)                              { mDt.setDate(d); utcCached = false; }
-    void      setTime(const QTime &t)                              { mDt.setTime(t); mDateOnly = false; utcCached = false; }
-    void      setDtTimeSpec(Qt::TimeSpec s)                        { mDt.setTimeSpec(s); utcCached = false; }
+    bool      secondOccurrence() const                             { return m2ndOccurrence; }
+    void      setDt(const QDateTime &dt)                           { mDt = dt; utcCached = m2ndOccurrence = false; }
+    void      setDt(const QDateTime &dt, const QDateTime &utcDt)   { mDt = dt; utc = utcDt; utcCached = true; m2ndOccurrence = false; }
+    void      setDate(const QDate &d)                              { mDt.setDate(d); utcCached = m2ndOccurrence = false; }
+    void      setTime(const QTime &t)                              { mDt.setTime(t); utcCached = mDateOnly = m2ndOccurrence = false; }
+    void      setDtTimeSpec(Qt::TimeSpec s)                        { mDt.setTimeSpec(s); utcCached = m2ndOccurrence = false; }
     void      setDateOnly(bool d);
+    void      setSecondOccurrence(bool);
+    int       timeZoneOffset() const;
     QDateTime toUtc(const KTimeZone *local = 0) const;
 
     // default time spec used by fromString()
@@ -338,19 +344,21 @@ class KDateTimePrivate
     mutable bool        utcCached;     // true if 'utc' is valid
   private:
     bool                mDateOnly;
+    mutable bool        m2ndOccurrence;  // this is the second occurrence of a time zone time
 };
 
 QTime           KDateTimePrivate::sod(0,0,0);
 
 KDateTimePrivate &KDateTimePrivate::operator=(const KDateTimePrivate &other)
 {
-    mDt        = other.mDt;
-    utc        = other.utc;
-    tzCached   = other.tzCached;
-    spec       = other.spec;
-    status     = other.status;
-    utcCached  = other.utcCached;
-    mDateOnly  = other.mDateOnly;
+    mDt            = other.mDt;
+    utc            = other.utc;
+    tzCached       = other.tzCached;
+    spec           = other.spec;
+    status         = other.status;
+    utcCached      = other.utcCached;
+    mDateOnly      = other.mDateOnly;
+    m2ndOccurrence = other.m2ndOccurrence;
     return *this;
 }
 
@@ -364,7 +372,55 @@ void KDateTimePrivate::setDateOnly(bool dateOnly)
             mDt.setTime(sod);
             utcCached = false;
         }
+        m2ndOccurrence = false;
     }
+}
+
+void KDateTimePrivate::setSecondOccurrence(bool second)
+{
+    if (spec.type() == KDateTime::TimeZone  &&  second != m2ndOccurrence)
+    {
+        m2ndOccurrence = second;
+        utcCached = false;
+        if (second)
+        {
+            // Check whether a second occurrence is actually possible, and
+            // if not, reset m2ndOccurrence.
+            timeZoneOffset();   // check, and cache UTC value
+        }
+    }
+}
+
+/*
+ * Returns the UTC offset for the date/time, provided that it is a time zone type.
+ */
+int KDateTimePrivate::timeZoneOffset() const
+{
+    if (spec.type() != KDateTime::TimeZone)
+        return KTimeZone::InvalidOffset;
+    if (utcCached)
+    {
+        QDateTime dt = mDt;
+        dt.setTimeSpec(Qt::UTC);
+        return utc.secsTo(dt);
+    }
+    int secondOffset;
+    int offset = spec.timeZone()->offsetAtZoneTime(mDt, &secondOffset);
+    if (m2ndOccurrence)
+    {
+        m2ndOccurrence = (secondOffset != offset);   // cancel "second occurrence" flag if not applicable
+        offset = secondOffset;
+    }
+    if (offset == KTimeZone::InvalidOffset)
+        utc = QDateTime();
+    else
+    {
+        utc = mDt;
+        utc.setTimeSpec(Qt::UTC);
+        utc = utc.addSecs(-offset);
+    }
+    utcCached = true;
+    return offset;
 }
 
 /*
@@ -430,8 +486,7 @@ QDateTime KDateTimePrivate::toUtc(const KTimeZone *local) const
 #endif
             return utc;
         case KDateTime::TimeZone:
-            utc = spec.timeZone()->toUtc(mDt);
-            utcCached = true;
+            timeZoneOffset();   // calculate offset and cache UTC value
 #ifdef KDATETIME_TEST
             kDebug() << "toUtc(): calculated -> " << utc << endl,
 #endif
@@ -470,7 +525,13 @@ KDateTime::KDateTime(const QDateTime &dt, const Spec &spec)
     {
         case TimeZone:
             if (dt.timeSpec() == Qt::UTC)
+            {
                 d->setDt(spec.timeZone()->toZoneTime(dt), dt);
+                // Check whether the local time occurs twice around a daylight savings time
+                // shift, and if so, whether it's the first or second occurrence.
+                int offset = spec.timeZone()->offsetAtZoneTime(d->dt());
+                d->setSecondOccurrence(d->timeZoneOffset() != offset);
+            }
             break;
         case ClockTime:
             if (dt.timeSpec() == Qt::UTC)
@@ -517,17 +578,18 @@ KDateTime &KDateTime::operator=(const KDateTime &other)
     return *this;
 }
 
-bool      KDateTime::isNull() const          { return d->dt().isNull(); }
-bool      KDateTime::isValid() const         { return d->spec.isValid()  &&  d->dt().isValid(); }
-bool      KDateTime::outOfRange() const      { return d->status == stTooEarly; }
-bool      KDateTime::isDateOnly() const      { return d->dateOnly(); }
-bool      KDateTime::isLocalZone() const     { return d->spec.isLocalZone(); }
-bool      KDateTime::isClockTime() const     { return d->spec.isClockTime(); }
-bool      KDateTime::isUtc() const           { return d->spec.isUtc(); }
-bool      KDateTime::isOffsetFromUtc() const { return d->spec.isOffsetFromUtc(); }
-QDate     KDateTime::date() const            { return d->date(); }
-QTime     KDateTime::time() const            { return d->dt().time(); }
-QDateTime KDateTime::dateTime() const        { return d->dt(); }
+bool      KDateTime::isNull() const             { return d->dt().isNull(); }
+bool      KDateTime::isValid() const            { return d->spec.isValid()  &&  d->dt().isValid(); }
+bool      KDateTime::outOfRange() const         { return d->status == stTooEarly; }
+bool      KDateTime::isDateOnly() const         { return d->dateOnly(); }
+bool      KDateTime::isLocalZone() const        { return d->spec.isLocalZone(); }
+bool      KDateTime::isClockTime() const        { return d->spec.isClockTime(); }
+bool      KDateTime::isUtc() const              { return d->spec.isUtc(); }
+bool      KDateTime::isOffsetFromUtc() const    { return d->spec.isOffsetFromUtc(); }
+bool      KDateTime::isSecondOccurrence() const { return d->spec.type() == TimeZone && d->secondOccurrence(); }
+QDate     KDateTime::date() const               { return d->date(); }
+QTime     KDateTime::time() const               { return d->dt().time(); }
+QDateTime KDateTime::dateTime() const           { return d->dt(); }
 
 KDateTime::Spec     KDateTime::timeSpec() const  { return d->spec; }
 KDateTime::SpecType KDateTime::timeType() const  { return d->spec.type(); }
@@ -538,7 +600,7 @@ int KDateTime::utcOffset() const
     switch (d->spec.type())
     {
         case TimeZone:
-            return d->spec.timeZone()->offsetAtZoneTime(d->dt());
+            return d->timeZoneOffset();   // calculate offset and cache UTC value
         default:
             return d->spec.utcOffset();
     }
@@ -562,7 +624,7 @@ KDateTime KDateTime::toOffsetFromUtc() const
 {
     if (!isValid())
         return KDateTime();
-    const KTimeZone *tz = 0;
+    int offset = 0;
     switch (d->spec.type())
     {
         case OffsetFromUTC:
@@ -576,15 +638,14 @@ KDateTime KDateTime::toOffsetFromUtc() const
             return KDateTime(qdt, Spec(OffsetFromUTC, 0));
         }
         case TimeZone:
-            tz = d->spec.timeZone();
+            offset = d->timeZoneOffset();   // calculate offset and cache UTC value
             break;
         case ClockTime:
-            tz = KSystemTimeZones::local();
+            offset = KSystemTimeZones::local()->offsetAtZoneTime(d->dt());
             break;
         default:
             return KDateTime();
     }
-    int offset = tz->offsetAtZoneTime(d->dt());
     if (d->dateOnly())
         return KDateTime(d->date(), Spec(OffsetFromUTC, offset));
     return KDateTime(d->dt(), Spec(OffsetFromUTC, offset));
@@ -728,6 +789,11 @@ void KDateTime::setTimeSpec(const Spec &other)
         d->spec = other;
         d->setDtTimeSpec((other.type() == UTC) ? Qt::UTC : Qt::LocalTime);    // this clears cached UTC value
     }
+}
+
+void KDateTime::setSecondOccurrence(bool second)
+{
+    d->setSecondOccurrence(second);
 }
 
 KDateTime KDateTime::addMSecs(qint64 msecs) const
@@ -899,6 +965,7 @@ KDateTime KDateTime::currentUtcDateTime()
     time_t t;
     ::time(&t);
     KDateTime result;
+#warning Change setTime_t() etc to time_t
     result.setTime_t(static_cast<uint>(t));
     return result;
 #endif
@@ -907,10 +974,11 @@ KDateTime KDateTime::currentUtcDateTime()
 KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
 {
     QDateTime start1, start2;
-    bool conv = (d->spec != other.d->spec);
+    bool conv = (d->spec != other.d->spec || d->secondOccurrence() != other.d->secondOccurrence());
     if (conv)
     {
-        // Different time specs, so convert to UTC before comparing
+        // Different time specs or one is a time which occurs twice,
+        // so convert to UTC before comparing
         start1 = d->toUtc();
         start2 = other.d->toUtc();
     }
@@ -978,7 +1046,8 @@ bool KDateTime::operator==(const KDateTime &other) const
         // Both instances are in the same time zone, so compare directly
         if (dates)
             return d->date() == other.d->date();
-        return d->dt() == other.d->dt();
+        return d->secondOccurrence() == other.d->secondOccurrence()
+           &&  d->dt() == other.d->dt();
     }
 
     if (dates)
@@ -1017,7 +1086,16 @@ bool KDateTime::operator<(const KDateTime &other) const
         // Both instances are in the same time zone, so compare directly
         if (dates)
             return d->date() < other.d->date();
-        return d->dt() < other.d->dt();
+        if (d->secondOccurrence() == other.d->secondOccurrence())
+            return d->dt() < other.d->dt();
+        // One is the second occurrence of a date/time, during a change from
+        // daylight saving to standard time, so only do a direct comparison
+        // if the dates are more than 1 day apart.
+        int diff = d->dt().date().daysTo(other.d->dt().date());
+        if (diff > 1)
+            return true;
+        if (diff < -1)
+            return false;
     }
 
     QDateTime thisDt = d->toUtc();
@@ -1224,7 +1302,7 @@ QString KDateTime::toString(const QString &format) const
                     tz = (d->spec.type() == TimeZone) ? d->spec.timeZone() : KTimeZones::utc();
                     // fall through to OffsetFromUTC
                 case OffsetFromUTC:
-                    offset = (d->spec.type() == TimeZone) ? d->spec.timeZone()->offsetAtZoneTime(d->dt())
+                    offset = (d->spec.type() == TimeZone) ? d->timeZoneOffset()
                            : (d->spec.type() == OffsetFromUTC) ? d->spec.utcOffset() : 0;
                     offset /= 60;
                     switch (zone)
@@ -1274,7 +1352,7 @@ QString KDateTime::toString(TimeFormat format) const
     char tzsign = '+';
     int offset = 0;
     const char *tzcolon = "";
-    const KTimeZone *tz = (d->spec.type() == TimeZone) ? d->spec.timeZone() : 0;
+    const KTimeZone *tz = 0;
     switch (format)
     {
         case RFCDateDay:
@@ -1349,9 +1427,12 @@ QString KDateTime::toString(TimeFormat format) const
     }
 
     // Return the string with UTC offset ±hhmm appended
-    if (d->spec.type() == OffsetFromUTC  ||  tz)
+    if (d->spec.type() == OffsetFromUTC  ||  d->spec.type() == TimeZone  ||  tz)
     {
-        offset = tz ? tz->offsetAtZoneTime(d->dt()) : d->spec.utcOffset();
+        if (d->spec.type() == TimeZone)
+            offset = d->timeZoneOffset();   // calculate offset and cache UTC value
+        else
+            offset = tz ? tz->offsetAtZoneTime(d->dt()) : d->spec.utcOffset();
         if (offset < 0)
         {
             offset = -offset;
