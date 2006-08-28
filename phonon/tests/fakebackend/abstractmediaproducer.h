@@ -27,6 +27,7 @@
 #include "videopath.h"
 #include <QHash>
 #include <phonon/mediaproducerinterface.h>
+#include <QMultiMap>
 
 class QTimer;
 
@@ -76,6 +77,7 @@ namespace Fake
 		Q_SIGNALS:
 			void stateChanged( Phonon::State newstate, Phonon::State oldstate );
 			void tick( qint64 time );
+			void metaDataChanged( QMultiMap<QString, QString> );
 
 		protected:
 			void fillBuffer( QVector<float>* buffer );

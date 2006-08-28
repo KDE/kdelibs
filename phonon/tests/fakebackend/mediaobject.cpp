@@ -61,6 +61,10 @@ void MediaObject::setUrl( const KUrl& url )
 	stop();
 	m_url = url;
 	emit length( totalTime() );
+	QMultiMap<QString, QString> metaData;
+	metaData.insert( "TITLE", "Fake video" );
+	metaData.insert( "ARTIST", "Matthias Kretz" );
+	emit metaDataChanged( metaData );
 }
 
 void MediaObject::setAboutToFinishTime( qint32 newAboutToFinishTime )
