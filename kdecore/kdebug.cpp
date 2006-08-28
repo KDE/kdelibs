@@ -582,8 +582,10 @@ QString kdBacktrace()
 
 void kdClearDebugConfig()
 {
-    delete kDebug_data->config;
-    kDebug_data->config = 0;
+    if (kDebug_data) {
+        delete kDebug_data->config;
+        kDebug_data->config = 0;
+    }
 }
 
 
