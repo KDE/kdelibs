@@ -714,7 +714,7 @@ class KDECORE_EXPORT KDateTime
      * with the date unchanged.
      *
      * @return converted time
-     * @see toOffsetFromUtc(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
+     * @see toOffsetFromUtc(), toLocalZone(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
      */
     KDateTime toUtc() const;
 
@@ -731,7 +731,7 @@ class KDECORE_EXPORT KDateTime
      * start of the day.
      *
      * @return converted time
-     * @see toUtc(), toOffsetFromUtc(int), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
+     * @see toUtc(), toOffsetFromUtc(int), toLocalZone(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
      */
     KDateTime toOffsetFromUtc() const;
 
@@ -745,7 +745,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param utcOffset number of seconds to add to UTC to get the local time.
      * @return converted time
-     * @see toUtc(), toOffsetFromUtc(), toLocal(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
+     * @see toUtc(), toOffsetFromUtc(), toLocalZone(), toZone(), toTimeSpec(), toTime_t(), KTimeZone::convert()
      */
     KDateTime toOffsetFromUtc(int utcOffset) const;
 
@@ -780,7 +780,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param zone time zone to convert to
      * @return converted time
-     * @see toUtc(), toOffsetFromUtc(), toLocal(), toTimeSpec(), KTimeZone::convert()
+     * @see toUtc(), toOffsetFromUtc(), toLocalZone(), toTimeSpec(), KTimeZone::convert()
      */
     KDateTime toZone(const KTimeZone *zone) const;
 
@@ -793,7 +793,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param spec new time specification
      * @return converted time
-     * @see toLocal(), toUtc(), toOffsetFromUtc(), toZone(), compareTimeSpec(), KTimeZone::convert()
+     * @see toLocalZone(), toUtc(), toOffsetFromUtc(), toZone(), compareTimeSpec(), KTimeZone::convert()
      */
     KDateTime toTimeSpec(const Spec &spec) const;
 
