@@ -346,12 +346,6 @@ KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName, bool immut
   return Ptr(new KSharedConfig(fileName, immutable, useKDEGlobals,resType));
 }
 
-KSharedConfig::Ptr KSharedConfig::openConfig(const QString& fileName,
-                                             bool immutable, bool useKDEGlobals )
-{
-	return openConfig(fileName, immutable,  useKDEGlobals, "config" );
-}
-
 
 KSharedConfig::KSharedConfig( const QString& fileName, bool readonly, bool usekdeglobals,
                               const char *resType)

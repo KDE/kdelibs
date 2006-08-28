@@ -302,13 +302,8 @@ public:
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    * @param resType the place to look in (config, data, etc) See KStandardDirs.
    */
-   static KSharedConfig::Ptr openConfig( const QString& fileName /*= QString()*/, 
-        bool bReadOnly /*= false*/, bool bUseKDEGlobals /*= true*/, const char *resType/*="config"*/);
-  /**
-   * remove on monday
-   */
-   static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
-        bool bUseKDEGlobals = true);
+   static KSharedConfig::Ptr openConfig( const QString& fileName = QString(), 
+        bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
 
   ~KSharedConfig();
 
