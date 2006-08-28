@@ -68,20 +68,6 @@ class PHONONUI_EXPORT UiFactory : public QObject
 
 	Q_SIGNALS:
 		/**
-		 * This signal is emitted when the user changes the backend. At that
-		 * point all references to Ifaces objects need to be freed.
-		 */
-		void deleteYourObjects();
-
-		/**
-		 * After you got a deleteYourObjects() signal the backend is changed
-		 * internally. Then you will receive this signal, and only then should
-		 * you reconstruct all your objects again. This time they will
-		 * internally use the new backend.
-		 */
-		void recreateObjects();
-
-		/**
 		 * Emitted after the backend has successfully been changed.
 		 */
 		void backendChanged();

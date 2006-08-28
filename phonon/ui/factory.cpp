@@ -105,8 +105,6 @@ UiFactory* UiFactory::self()
 	{
 		m_self = new UiFactory();
 		Phonon::Factory* f = Phonon::Factory::self();
-		connect( f, SIGNAL( deleteYourObjects() ), m_self, SIGNAL( deleteYourObjects() ) );
-		connect( f, SIGNAL( recreateObjects() ), m_self, SIGNAL( recreateObjects() ) );
 		connect( f, SIGNAL( backendChanged() ), m_self, SIGNAL( backendChanged() ) );
 		connect( Phonon::Factory::self(), SIGNAL( destroyed( QObject* ) ), m_self, SLOT( deleteNow() ) );
 	}
@@ -121,7 +119,6 @@ UiFactory::UiFactory()
 UiFactory::~UiFactory()
 {
 	kDebug( 602 ) << k_funcinfo << endl;
-	emit deleteYourObjects(); //FIXME: this is probably emitted twice: once through Phonon::Factory::~Factory, and the second one from here
 	delete d->backend;
 	delete d;
 }

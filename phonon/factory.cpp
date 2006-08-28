@@ -145,7 +145,6 @@ Factory::Factory()
 Factory::~Factory()
 {
 	//kDebug( 600 ) << k_funcinfo << endl;
-	emit deleteYourObjects();
 	foreach( BasePrivate* bp, d->basePrivateList )
 		bp->deleteIface();
 	qDeleteAll(d->objects);
@@ -167,7 +166,6 @@ void Factory::phononBackendChanged()
 {
 	if( d->backend )
 	{
-		emit deleteYourObjects();
 		foreach( BasePrivate* bp, d->basePrivateList )
 			bp->deleteIface();
 		if( d->objects.size() > 0 )
@@ -178,7 +176,6 @@ void Factory::phononBackendChanged()
 				"backendswitching possible." << endl;
 			// in case there were objects deleted give 'em a chance to recreate
 			// them now
-			emit recreateObjects();
 			foreach( BasePrivate* bp, d->basePrivateList )
 				bp->createIface();
 			return;
@@ -187,7 +184,6 @@ void Factory::phononBackendChanged()
 		d->backend = 0;
 	}
 	d->createBackend();
-	emit recreateObjects();
 	foreach( BasePrivate* bp, d->basePrivateList )
 		bp->createIface();
 	emit backendChanged();
@@ -323,7 +319,7 @@ QString Factory::backendWebsite() const
 
 QObject* Factory::registerQObject( QObject* o )
 {
-	connect( o, SIGNAL( destroyed( QObject* ) ), SLOT( objectDestroyed( QObject* ) ) );
+	connect( o, SIGNAL( destroyed( QObject* ) ), SLOT( objectDestroyed( QObject* ) ), Qt::DirectConnection );
 	d->objects.append( o );
 	return o;
 }
