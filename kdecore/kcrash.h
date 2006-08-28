@@ -85,9 +85,19 @@ class KDECORE_EXPORT KCrash
   static HandlerType emergencySaveFunction();
 
   /**
-   * Set whether to start drkonqi without arbitrary disk access
+   * Options to determine how KCrash should behave while firing up DrKonqi.
    */
-  static void setSafer( bool on );
+  enum CrashFlags {
+    KeepFDs = 1,          ///< don't close all file descriptors immediately
+    SaferDialog = 2,      ///< start DrKonqi without arbitrary disk access
+    AlwaysDirectly = 4    ///< never try to to start DrKonqi via kdeinit
+  };
+
+  /**
+   * Set DrKonqi fire-up options.
+   * @param flags ORed together CrashFlags
+   */
+  static void setFlags( int flags );
 
   /**
    * Sets the application @p path which should be passed to

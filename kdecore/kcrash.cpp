@@ -60,7 +60,7 @@ static KCrash::HandlerType s_emergencySaveFunction = 0;
 static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
 static char *s_appPath = 0;
-static bool s_safer = false;
+static bool s_flags = 0;
 
 // This function sets the function which should be called when the
 // application crashes and the
@@ -85,9 +85,9 @@ KCrash::emergencySaveFunction()
 }
 
 void
-KCrash::setSafer( bool on )
+KCrash::setFlags(int flags)
 {
-	s_safer = on;
+	s_flags = flags;
 }
 
 void
@@ -143,6 +143,16 @@ KCrash::crashHandler()
 	return s_crashHandler;
 }
 
+static void
+closeAllFDs()
+{
+  // Close all remaining file descriptors except for stdin/stdout/stderr
+  struct rlimit rlp;
+  getrlimit(RLIMIT_NOFILE, &rlp);
+  for (int i = 3; i < (int)rlp.rlim_cur; i++)
+    close(i);
+}
+
 void
 KCrash::defaultCrashHandler (int sig)
 {
@@ -162,12 +172,10 @@ KCrash::defaultCrashHandler (int sig)
     crashRecursionCounter++; //
   }
 
-  // Close all remaining file descriptors except for stdin/stdout/stderr
-  struct rlimit rlp;
-  getrlimit(RLIMIT_NOFILE, &rlp);
-  for (int i = 3; i < (int)rlp.rlim_cur; i++)
-    close(i);
-
+  if (!(s_flags & KeepFDs))
+    closeAllFDs();
+  else if (QX11Info::display())
+    close(ConnectionNumber(QX11Info::display()));
 
   // this code is leaking, but this should not hurt cause we will do a
   // exec() afterwards. exec() is supposed to clean up.
@@ -254,15 +262,17 @@ KCrash::defaultCrashHandler (int sig)
             argv[i++] = sidtxt;
           }
 
-          if ( s_safer )
+          if ( s_flags && SaferDialog )
             argv[i++] = "--safer";
 
           // NULL terminated list
           argv[i] = NULL;
 
-          startDrKonqi( argv, i );
-
-          _exit(253);
+          if (!(s_flags & AlwaysDirectly)) {
+            startDrKonqi( argv, i );
+            fprintf( stderr, "KCrash cannot reach kdeinit, launching directly.\n" );
+          }
+          startDirectly( argv, i );
       }
       else {
         fprintf(stderr, "Unknown appname\n");
@@ -292,10 +302,7 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
 {
   int socket = openSocket();
   if( socket < -1 )
-  {
-    startDirectly( argv, argc );
     return;
-  }
   klauncher_header header;
   header.cmd = LAUNCHER_EXEC_NEW;
   const int BUFSIZE = 8192; // make sure this is big enough
@@ -312,7 +319,6 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
     if( pos + len >= BUFSIZE )
     {
       fprintf( stderr, "BUFSIZE in KCrash not big enough!\n" );
-      startDirectly( argv, argc );
       return;
     }
     memcpy( buffer + pos, argv[ i ], len );
@@ -330,7 +336,6 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
   if( read_socket( socket, (char *) &header, sizeof(header)) < 0
       || header.cmd != LAUNCHER_OK )
   {
-    startDirectly( argv, argc );
     return;
   }
   long pid;
@@ -350,19 +355,23 @@ void KCrash::startDrKonqi( const char* argv[], int argc )
 // If we can't reach kdeinit we can still at least try to fork()
 void KCrash::startDirectly( const char* argv[], int )
 {
-  fprintf( stderr, "KCrash cannot reach kdeinit, launching directly.\n" );
   pid_t pid = fork();
-  if (pid <= 0)
+  switch (pid)
   {
+  case -1:
+    fprintf( stderr, "KCrash failed to fork(), errno = %d\n", errno );
+    _exit(253);
+  case 0:
     if(!geteuid() && setgid(getgid()) < 0)
       _exit(253);
     if(!geteuid() && setuid(getuid()) < 0)
       _exit(253);
+    if (s_flags & KeepFDs)
+      closeAllFDs();
     execvp("drkonqi", const_cast< char** >( argv ));
-    _exit(errno);
-  }
-  else
-  {
+    fprintf( stderr, "KCrash failed to exec(), errno = %d\n", errno );
+    _exit(253);
+  default:
     alarm(0); // Seems we made it....
     // wait for child to exit
     waitpid(pid, NULL, 0);
