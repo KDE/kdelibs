@@ -254,12 +254,12 @@ void ProducerWidget::updateMetaData()
 
 void ProducerWidget::slotFinished()
 {
-	kDebug() << "finshed signal from MediaObject with URL " << m_media->url() << endl;
+	kDebug() << "finished signal from MediaObject with URL " << m_media->url() << endl;
 }
 
 void ProducerWidget::slotAboutToFinish( qint32 remaining )
 {
-	kDebug() << "aboutToFinsh(" << remaining << ") signal from MediaObject with URL " << m_media->url() << endl;
+	kDebug() << "aboutToFinish(" << remaining << ") signal from MediaObject with URL " << m_media->url() << endl;
 }
 
 ConnectionWidget::ConnectionWidget( QWidget *parent )
