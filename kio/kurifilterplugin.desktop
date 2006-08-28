@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=ServiceType
-X-KDE-ServiceType=KURIFilter/Plugin
+X-KDE-ServiceType=KUriFilter/Plugin
 Name=Enhanced Browsing Plugin
 Name[fr]=Module externe de navigation avancée
 Name[x-test]=xxEnhanced Browsing Pluginxx
