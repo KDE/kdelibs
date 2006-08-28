@@ -46,7 +46,6 @@ Phonon::VideoWidget::AspectRatio VideoWidget::aspectRatio() const
 
 void VideoWidget::setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio )
 {
-	kDebug( 604 ) << k_funcinfo << aspectRatio << endl;
 	m_aspectRatio = aspectRatio;
 	m_videoSize = size();
 	const int w = width();
@@ -81,7 +80,7 @@ void VideoWidget::setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio )
 				m_videoSize.setHeight( w * 100 / 211 );
 			break;
 		default:
-			Q_ASSERT( false ); // this can't happen
+			Q_ASSERT( false ); // this may not happen
 	}
 }
 
