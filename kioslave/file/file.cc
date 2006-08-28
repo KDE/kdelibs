@@ -65,6 +65,7 @@
 
 #include <QByteArray>
 #include <QVarLengthArray>
+#include <QCoreApplication>
 #include <qdatetime.h>
 #include <qregexp.h>
 
@@ -107,6 +108,8 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
+  
+  QCoreApplication app( argc, argv ); // needed for QSocketNotifier
   KInstance instance( "kio_file" );
   ( void ) KGlobal::locale();
 
