@@ -60,7 +60,7 @@ static KCrash::HandlerType s_emergencySaveFunction = 0;
 static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
 static char *s_appPath = 0;
-static int s_flags = 0;
+static KCrash::CrashFlags s_flags = 0;
 
 // This function sets the function which should be called when the
 // application crashes and the
@@ -85,7 +85,7 @@ KCrash::emergencySaveFunction()
 }
 
 void
-KCrash::setFlags(int flags)
+KCrash::setFlags(KCrash::CrashFlags flags)
 {
 	s_flags = flags;
 }

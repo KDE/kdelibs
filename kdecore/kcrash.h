@@ -87,17 +87,18 @@ class KDECORE_EXPORT KCrash
   /**
    * Options to determine how KCrash should behave while firing up DrKonqi.
    */
-  enum CrashFlags {
+  enum CrashFlag {
     KeepFDs = 1,          ///< don't close all file descriptors immediately
     SaferDialog = 2,      ///< start DrKonqi without arbitrary disk access
     AlwaysDirectly = 4    ///< never try to to start DrKonqi via kdeinit
   };
+  Q_DECLARE_FLAGS(CrashFlags, CrashFlag)
 
   /**
    * Set DrKonqi fire-up options.
    * @param flags ORed together CrashFlags
    */
-  static void setFlags( int flags );
+  static void setFlags( CrashFlags flags );
 
   /**
    * Sets the application @p path which should be passed to
@@ -118,6 +119,8 @@ class KDECORE_EXPORT KCrash
   static void startDrKonqi( const char* argv[], int argc );
   static void startDirectly( const char* argv[], int argc );
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KCrash::CrashFlags)
 
 #endif
 
