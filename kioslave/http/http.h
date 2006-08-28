@@ -240,7 +240,7 @@ public:
 
   void post( const KUrl& url );
   void multiGet(const QByteArray &data);
-  bool checkRequestURL( const KUrl& );
+  bool checkRequestUrl( const KUrl& );
   void cacheUpdate( const KUrl &url, bool nocache, time_t expireDate);
 
   void httpError(); // Generate error message based on response code

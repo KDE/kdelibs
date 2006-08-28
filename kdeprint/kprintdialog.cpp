@@ -765,7 +765,7 @@ bool KPrintDialog::checkOutputFile()
 						value = false;
 						break;
 					case KIO::R_RENAME:
-						url = dlg.newDestURL();
+						url = dlg.newDestUrl();
 						d->m_file->setUrl( url );
 						value = true;
 						anotherCheck = true;

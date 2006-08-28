@@ -311,7 +311,7 @@ public:
     /**
      * Parses _url and returns the FQDN (_fqdn) and path (_path).
      */
-    static bool parseURL(const QString &_url,
+    static bool parseUrl(const QString &_url,
                          QString &_fqdn,
                          QString &_path);
 

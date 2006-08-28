@@ -36,7 +36,7 @@
 QString KDEDesktopMimeType::icon( const KUrl& _url ) const
 {
   if ( _url.isEmpty() || !_url.isLocalFile() )
-    return KMimeType::icon( _url );
+    return KMimeType::iconName( _url );
 
   KSimpleConfig cfg( _url.path(), true );
   cfg.setDesktopGroup();
@@ -73,7 +73,7 @@ QString KDEDesktopMimeType::icon( const KUrl& _url ) const
   }
 
   if ( icon.isEmpty() )
-    return KMimeType::icon( _url );
+    return KMimeType::iconName( _url );
 
   return icon;
 }

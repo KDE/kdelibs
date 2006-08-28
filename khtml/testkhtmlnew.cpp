@@ -195,7 +195,7 @@ KHTMLPart *TestKHTML::doc() const
 
 void TestKHTML::openUrl( const KUrl &url, const KParts::URLArgs &args )
 {
-    m_part->browserExtension()->setURLArgs( args );
+    m_part->browserExtension()->setUrlArgs( args );
     m_part->openURL( url );
 }
 
@@ -225,7 +225,7 @@ void TestKHTML::openUrl()
 void TestKHTML::reload()
 {
     KParts::URLArgs args; args.reload = true;
-    m_part->browserExtension()->setURLArgs( args );
+    m_part->browserExtension()->setUrlArgs( args );
     m_part->openURL( m_part->url() );
 }
 
@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
     {
         KParts::URLArgs ags(test->doc()->browserExtension()->urlArgs());
         ags.serviceType = "text/xml";
-        test->doc()->browserExtension()->setURLArgs(ags);
+        test->doc()->browserExtension()->setUrlArgs(ags);
     }
 
     test->openUrl(args->url(0));

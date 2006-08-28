@@ -74,13 +74,13 @@ CupsdDirPage::CupsdDirPage(QWidget *parent)
 bool CupsdDirPage::loadConfig(CupsdConf *conf, QString&)
 {
 	conf_ = conf;
-	datadir_->setURL(conf_->datadir_);
-	documentdir_->setURL(conf_->documentdir_);
-	fontpath_->setURLs(conf_->fontpath_);
-	requestdir_->setURL(conf_->requestdir_);
-	serverbin_->setURL(conf_->serverbin_);
-	serverfiles_->setURL(conf_->serverfiles_);
-	tmpfiles_->setURL(conf_->tmpfiles_);
+	datadir_->setUrl(conf_->datadir_);
+	documentdir_->setUrl(conf_->documentdir_);
+	fontpath_->setUrls(conf_->fontpath_);
+	requestdir_->setUrl(conf_->requestdir_);
+	serverbin_->setUrl(conf_->serverbin_);
+	serverfiles_->setUrl(conf_->serverfiles_);
+	tmpfiles_->setUrl(conf_->tmpfiles_);
 
 	return true;
 }

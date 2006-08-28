@@ -1186,7 +1186,7 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
   {
     entry.insert( UDS_LINK_DEST, ftpEnt.link );
 
-    KMimeType::Ptr mime = KMimeType::findByURL( KUrl("ftp://host/" + filename ) );
+    KMimeType::Ptr mime = KMimeType::findByUrl( KUrl("ftp://host/" + filename ) );
     // Links on ftp sites are often links to dirs, and we have no way to check
     // that. Let's do like Netscape : assume dirs generally.
     // But we do this only when the mimetype can't be known from the filename.

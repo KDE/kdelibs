@@ -76,10 +76,10 @@ static KUrl rootUrl(const KUrl &url)
     KUrl root = url;
     root.setPath( "/" );
 
-    if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
+    if (!KAuthorized::authorizeUrlAction("list", KUrl(), root))
     {
         root = KUrl( QDir::homePath() );
-        if (!KAuthorized::authorizeURLAction("list", KUrl(), root))
+        if (!KAuthorized::authorizeUrlAction("list", KUrl(), root))
         {
             root = url;
         }
@@ -140,7 +140,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     connect( m_showHiddenFolders, SIGNAL( triggered( bool ) ), this, SLOT( slotShowHiddenFoldersToggled() ) );
     m_contextMenu->addAction( m_showHiddenFolders );
 
-    d->startURL = KFileDialog::getStartURL( startDir, d->recentDirClass );
+    d->startURL = KFileDialog::getStartUrl( startDir, d->recentDirClass );
     if ( localOnly && !d->startURL.isLocalFile() )
     {
         d->startURL = KUrl();
@@ -172,7 +172,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     connect( d->urlCombo, SIGNAL( returnPressed( const QString& )),
              SLOT( slotURLActivated( const QString& )));
 
-    setCurrentURL( d->startURL );
+    setCurrentUrl( d->startURL );
 
     connect(this,SIGNAL(user1Clicked()),this,SLOT(slotUser1()));
 }
@@ -183,7 +183,7 @@ KDirSelectDialog::~KDirSelectDialog()
     delete d;
 }
 
-void KDirSelectDialog::setCurrentURL( const KUrl& url )
+void KDirSelectDialog::setCurrentUrl( const KUrl& url )
 {
     if ( !url.isValid() )
         return;
@@ -333,7 +333,7 @@ void KDirSelectDialog::accept()
 
 KUrl KDirSelectDialog::url() const
 {
-    return m_treeView->currentURL();
+    return m_treeView->currentUrl();
 }
 
 void KDirSelectDialog::slotCurrentChanged()
@@ -356,7 +356,7 @@ void KDirSelectDialog::slotCurrentChanged()
         d->urlCombo->setEditText( QString() );
 }
 
-void KDirSelectDialog::slotURLActivated( const QString& text )
+void KDirSelectDialog::slotUrlActivated( const QString& text )
 {
     if ( text.isEmpty() )
         return;
@@ -367,11 +367,11 @@ void KDirSelectDialog::slotURLActivated( const QString& text )
     if ( localOnly() && !url.isLocalFile() )
         return; // ### messagebox
 
-    KUrl oldURL = m_treeView->currentURL();
-    if ( oldURL.isEmpty() )
-        oldURL = m_startDir;
+    KUrl oldUrl = m_treeView->currentUrl();
+    if ( oldUrl.isEmpty() )
+        oldUrl = m_startDir;
 
-    setCurrentURL( url );
+    setCurrentUrl( url );
 }
 
 KFileTreeBranch * KDirSelectDialog::createBranch( const KUrl& url )
@@ -389,7 +389,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
     if ( d->branch )
     {
         KUrl url( text );
-        KFileTreeViewItem *item = d->branch->findTVIByURL( url );
+        KFileTreeViewItem *item = d->branch->findTVIByUrl( url );
         if ( item )
         {
             view()->setCurrentItem( item );
@@ -452,7 +452,7 @@ void KDirSelectDialog::slotMkdir()
         KMessageBox::sorry(this, i18n("You do not have permission to create that folder." ));
     }
     else if ( selectDirectory ) {
-        setCurrentURL( folderurl );
+        setCurrentUrl( folderurl );
     }
 }
 
@@ -467,7 +467,7 @@ void KDirSelectDialog::slotShowHiddenFoldersToggled()
     KUrl root = rootUrl(d->startURL);
     d->branch = createBranch( root );
 
-    setCurrentURL( currentURL );
+    setCurrentUrl( currentURL );
 }
 
 // static
@@ -482,7 +482,7 @@ KUrl KDirSelectDialog::selectDirectory( const KUrl& startDir,
         myDialog.setCaption( caption );
 
     if ( myDialog.exec() == QDialog::Accepted )
-        return KIO::NetAccess::mostLocalURL(myDialog.url(),parent);
+        return KIO::NetAccess::mostLocalUrl(myDialog.url(),parent);
     else
         return KUrl();
 }

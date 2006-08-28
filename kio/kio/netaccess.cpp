@@ -166,7 +166,7 @@ bool NetAccess::stat( const KUrl & url, KIO::UDSEntry & entry, QWidget* window )
   return ret;
 }
 
-KUrl NetAccess::mostLocalURL(const KUrl & url, QWidget* window)
+KUrl NetAccess::mostLocalUrl(const KUrl & url, QWidget* window)
 {
   if ( url.isLocalFile() )
   {

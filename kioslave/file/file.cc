@@ -289,7 +289,7 @@ void FileProtocol::get( const KUrl& url )
 
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work).
-    KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
+    KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
 
     KIO::filesize_t processed_size = 0;
@@ -406,7 +406,7 @@ void FileProtocol::open( const KUrl& url, int access )
     }
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work).
-    KMimeType::Ptr mt = KMimeType::findByURL( url, buff.st_mode, true /* local URL */ );
+    KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
 
     totalSize( buff.st_size );

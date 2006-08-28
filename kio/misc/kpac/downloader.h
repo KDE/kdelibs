@@ -37,7 +37,7 @@ namespace KPAC
         Downloader( QObject* );
 
         void download( const KUrl& );
-        const KUrl& scriptURL() { return m_scriptURL; }
+        const KUrl& scriptUrl() { return m_scriptURL; }
         const QString& script() { return m_script; }
         const QString& error() { return m_error; }
 

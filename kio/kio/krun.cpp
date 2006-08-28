@@ -634,7 +634,7 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
       if ( !supported && KProtocolInfo::protocolClass(url.protocol()) == ":local" )
       {
         // Maybe we can resolve to a local URL?
-        KUrl localURL = KIO::NetAccess::mostLocalURL( url, 0 );
+        KUrl localURL = KIO::NetAccess::mostLocalUrl( url, 0 );
         if ( localURL != url ) {
           *it = localURL;
           kDebug(7010) << "Changed to " << localURL << endl;
@@ -771,7 +771,7 @@ void KRun::init()
     m_timer.start( 0 );
     return;
   }
-  if ( !KAuthorized::authorizeURLAction( "open", KUrl(), m_strURL))
+  if ( !KAuthorized::authorizeUrlAction( "open", KUrl(), m_strURL))
   {
     QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyUrl());
     d->m_showingError = true;
@@ -810,7 +810,7 @@ void KRun::init()
       m_mode = buff.st_mode;
     }
 
-    KMimeType::Ptr mime = KMimeType::findByURL( m_strURL, m_mode, m_bIsLocalFile );
+    KMimeType::Ptr mime = KMimeType::findByUrl( m_strURL, m_mode, m_bIsLocalFile );
     assert( mime );
     kDebug(7010) << "MIME TYPE is " << mime->name() << endl;
     foundMimeType( mime->name() );
@@ -904,7 +904,7 @@ void KRun::scanFile()
   // Not when there is a query in the URL, in any case.
   if ( m_strURL.query().isEmpty() )
   {
-    KMimeType::Ptr mime = KMimeType::findByURL( m_strURL );
+    KMimeType::Ptr mime = KMimeType::findByUrl( m_strURL );
     assert( mime );
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {

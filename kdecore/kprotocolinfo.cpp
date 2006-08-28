@@ -405,7 +405,7 @@ bool KProtocolInfo::canDeleteRecursive() const
 
 KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() const
 {
-  return d->fileNameUsedForCopying ? Name : FromURL;
+  return d->fileNameUsedForCopying ? Name : FromUrl;
 }
 
 bool KProtocolInfo::isFilterProtocol( const KUrl &url )

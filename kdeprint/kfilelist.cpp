@@ -190,7 +190,7 @@ void KFileList::addFiles(const KUrl::List& files)
 			{
 				KUrl	url;
 				url.setPath(downloaded);
-				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
+				KMimeType::Ptr	mime = KMimeType::findByUrl(url, 0, true, false);
         QStringList data;
         data << url.fileName() << mime->comment() << downloaded;
 				QTreeWidgetItem *item = new QTreeWidgetItem(data);
@@ -218,7 +218,7 @@ void KFileList::setFileList(const QStringList& files)
 	{
 		KUrl	url;
 		url.setPath(*it);
-		KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
+		KMimeType::Ptr	mime = KMimeType::findByUrl(url, 0, true, false);
     QStringList data;
     data << url.fileName() << mime->comment() << *it;
 		QTreeWidgetItem *item = new QTreeWidgetItem(data);

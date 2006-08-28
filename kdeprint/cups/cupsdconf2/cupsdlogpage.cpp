@@ -82,9 +82,9 @@ CupsdLogPage::CupsdLogPage(QWidget *parent)
 bool CupsdLogPage::loadConfig(CupsdConf *conf, QString&)
 {
 	conf_ = conf;
-	accesslog_->setURL(conf_->accesslog_);
-	errorlog_->setURL(conf_->errorlog_);
-	pagelog_->setURL(conf_->pagelog_);
+	accesslog_->setUrl(conf_->accesslog_);
+	errorlog_->setUrl(conf_->errorlog_);
+	pagelog_->setUrl(conf_->pagelog_);
 	maxlogsize_->setSizeString(conf_->maxlogsize_);
 	loglevel_->setCurrentIndex(conf_->loglevel_);
 

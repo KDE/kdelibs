@@ -46,15 +46,15 @@ struct URLArgsPrivate;
 
 /**
  * URLArgs is a set of arguments bundled into a structure,
- * to allow specifying how a URL should be opened by openURL().
- * In other words, this is like arguments to openURL(), but without
- * have to change the signature of openURL() (since openURL is a
+ * to allow specifying how a URL should be opened by openUrl().
+ * In other words, this is like arguments to openUrl(), but without
+ * have to change the signature of openUrl() (since openUrl is a
  * generic KParts method).
  * The parts (with a browser extension) who care about urlargs will
  * use those arguments, others will ignore them.
  *
  * This can also be used the other way round, when a part asks
- * for a URL to be opened (with openURLRequest or createNewWindow).
+ * for a URL to be opened (with openUrlRequest or createNewWindow).
  */
 struct KPARTS_EXPORT URLArgs
 {
@@ -251,7 +251,7 @@ class BrowserExtensionPrivate;
   * The Browser Extension is an extension (yes, no kidding) to
   * KParts::ReadOnlyPart, which allows a better integration of parts
   * with browsers (in particular Konqueror).
-  * Remember that ReadOnlyPart only has openURL(KUrl), with no other settings.
+  * Remember that ReadOnlyPart only has openUrl(KUrl), with no other settings.
   * For full-fledged browsing, we need much more than that, including
   * many arguments about how to open this URL (see URLArgs), allowing
   * parts to save and restore their data into the back/forward history,
@@ -340,7 +340,7 @@ public:
       NoDeletion=0x0040, /**< deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
        *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP) */
       IsLink=0x0080, /**< show "Bookmark This Link" and other link-related actions (linkactions merging group) */
-      ShowURLOperations=0x0100 /**< show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set. */
+      ShowUrlOperations=0x0100 /**< show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set. */
   };
 
   Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
@@ -350,7 +350,7 @@ public:
    * This is called by the "hosting" application, to pass parameters to the part.
    * @see URLArgs
    */
-  virtual void setURLArgs( const URLArgs &args );
+  virtual void setUrlArgs( const URLArgs &args );
 
   /**
    * Retrieve the set of parameters to use for opening the URL
@@ -501,7 +501,7 @@ public:  // yes, those signals are public; don't tell moc :)
    * appropriate fields in the @p args structure.
    * Hosts should not connect to this signal but to openURLRequestDelayed().
    */
-  void openURLRequest( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void openUrlRequest( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * This signal is emitted when openURLRequest() is called, after a 0-seconds timer.
@@ -509,34 +509,34 @@ public:  // yes, those signals are public; don't tell moc :)
    * being destroyed. Parts should never use this signal, hosts should only connect
    * to this signal.
    */
-  void openURLRequestDelayed( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void openUrlRequestDelayed( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * Tells the hosting browser that the part opened a new URL (which can be
    * queried via KParts::Part::url().
    *
    * This helps the browser to update/create an entry in the history.
-   * The part may @em not emit this signal together with openURLRequest().
-   * Emit openURLRequest() if you want the browser to handle a URL the user
+   * The part may @em not emit this signal together with openUrlRequest().
+   * Emit openUrlRequest() if you want the browser to handle a URL the user
    * asked to open (from within your part/document). This signal however is
    * useful if you want to handle URLs all yourself internally, while still
    * telling the hosting browser about new opened URLs, in order to provide
    * a proper history functionality to the user.
    * An example of usage is a html rendering component which wants to emit
    * this signal when a child frame document changed its URL.
-   * Conclusion: you probably want to use openURLRequest() instead.
+   * Conclusion: you probably want to use openUrlRequest() instead.
    */
-  void openURLNotify();
+  void openUrlNotify();
 
   /**
    * Updates the URL shown in the browser's location bar to @p url.
    */
-  void setLocationBarURL( const QString &url );
+  void setLocationBarUrl( const QString &url );
 
   /**
    * Sets the URL of an icon for the currently displayed page.
    */
-  void setIconURL( const KUrl &url );
+  void setIconUrl( const KUrl &url );
 
   /**
    * Asks the hosting browser to open a new window for the given @p url.
@@ -587,7 +587,8 @@ public:  // yes, those signals are public; don't tell moc :)
    */
   void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items );
 
-  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items, const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i );
+  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items,
+                  const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i );
 
   /**
    * Emit this to make the browser show a standard popup menu
@@ -678,8 +679,8 @@ public:  // yes, those signals are public; don't tell moc :)
 
 private Q_SLOTS:
   void slotCompleted();
-  void slotOpenURLRequest( const KUrl &url, const KParts::URLArgs &args );
-  void slotEmitOpenURLRequestDelayed();
+  void slotOpenUrlRequest( const KUrl &url, const KParts::URLArgs &args );
+  void slotEmitOpenUrlRequestDelayed();
   void slotEnableAction( const char *, bool );
   void slotSetActionText( const char*, const QString& );
 
@@ -736,7 +737,7 @@ public:
    * Opens the given url in a hosted child frame. The frame name is specified in the
    * frameName variable in the urlArgs argument structure (see KParts::URLArgs ) .
    */
-  virtual bool openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
+  virtual bool openUrlInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
 
   /**
    * Queries @p obj for a child object which inherits from this

@@ -69,7 +69,7 @@ public:
     /**
      * Returns the fully qualified filename.
      */
-    KUrl selectedURL() const;
+    KUrl selectedUrl() const;
 
     /**
      * Creates a modal dialog, executes it and returns the selected URL.
@@ -78,7 +78,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The caption to use for the dialog.
      */
-    static KUrl getURL(const QString& url = QString(),
+    static KUrl getUrl(const QString& url = QString(),
             QWidget *parent= 0, const QString& caption = QString());
 
     /**

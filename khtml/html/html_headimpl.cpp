@@ -180,7 +180,7 @@ void HTMLLinkElementImpl::process()
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"
     if ( part && rel.contains("icon") && !m_url.isEmpty() && !part->parentPart())
-        part->browserExtension()->setIconURL( KUrl(m_url.string()) );
+        part->browserExtension()->setIconUrl( KUrl(m_url.string()) );
 
     // Stylesheet
     else if (!m_isDisabled &&

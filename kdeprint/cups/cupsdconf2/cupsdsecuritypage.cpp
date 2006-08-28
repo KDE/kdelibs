@@ -82,8 +82,8 @@ bool CupsdSecurityPage::loadConfig(CupsdConf *conf, QString&)
 	conf_ = conf;
 	remoteroot_->setText(conf_->remoteroot_);
 	systemgroup_->setText(conf_->systemgroup_);
-	encryptcert_->setURL(conf_->encryptcert_);
-	encryptkey_->setURL(conf_->encryptkey_);
+	encryptcert_->setUrl(conf_->encryptcert_);
+	encryptkey_->setUrl(conf_->encryptkey_);
 	locs_.clear();
 	QListIterator<CupsLocation*>	it(conf_->locations_);
 	while (it.hasNext())

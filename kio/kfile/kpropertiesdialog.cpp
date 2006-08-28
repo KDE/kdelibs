@@ -559,7 +559,7 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   kDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl.url() << endl;
 
   m_singleUrl = newUrl;
-  m_items.first()->setURL( newUrl );
+  m_items.first()->setUrl( newUrl );
   assert(!m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
@@ -718,7 +718,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   mode_t mode = item->mode();
   bool hasDirs = item->isDir() && !item->isLink();
   bool hasRoot = isLocal && properties->kurl().path() == QString::fromLatin1("/");
-  QString iconStr = KMimeType::iconNameForURL(properties->kurl(), mode);
+  QString iconStr = KMimeType::iconNameForUrl(properties->kurl(), mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
@@ -821,7 +821,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         bDesktopFile = false; // not all desktop files
       if ( (*kit)->mode() != mode )
         mode = (mode_t)0;
-      if ( KMimeType::iconNameForURL(url, mode) != iconStr )
+      if ( KMimeType::iconNameForUrl(url, mode) != iconStr )
         iconStr = "kmultiple";
       if ( url.directory() != directory )
         directory.clear();
@@ -867,8 +867,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
-    QString iconStr = KMimeType::findByURL( properties->kurl(),
-                                            mode )->icon( properties->kurl() );
+    QString iconStr = KMimeType::findByUrl( properties->kurl(),
+                                            mode )->iconName( properties->kurl() );
     if ( bDesktopFile && isLocal )
     {
       KDesktopFile config( properties->kurl().path(), true );
@@ -1361,7 +1361,7 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     {
         job->uiDelegate()->showErrorMessage();
         // Didn't work. Revert the URL to the old one
-        properties->updateUrl( static_cast<KIO::CopyJob*>(job)->srcURLs().first() );
+        properties->updateUrl( static_cast<KIO::CopyJob*>(job)->srcUrls().first() );
         properties->abortApplying(); // Don't apply the changes to the wrong file !
         return;
     }
@@ -1415,9 +1415,9 @@ void KFilePropsPlugin::applyIconChanges()
       path = properties->kurl().path();
 
     // Get the default image
-    QString str = KMimeType::findByURL( properties->kurl(),
+    QString str = KMimeType::findByUrl( properties->kurl(),
                                         properties->item()->mode(),
-                                        true )->icon();
+                                        true )->iconName();
     // Is it another one than the default ?
     QString sIcon;
     if ( str != iconButton->icon() )
@@ -2939,7 +2939,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   readonly->setChecked( ro );
 
   if ( unmountedStr.isEmpty() )
-    unmountedStr = KMimeType::defaultMimeTypePtr()->icon(); // default icon
+    unmountedStr = KMimeType::defaultMimeTypePtr()->iconName(); // default icon
 
   unmounted->setIcon( unmountedStr );
 

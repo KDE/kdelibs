@@ -217,7 +217,7 @@ public:
    * @returns the proxy server address if one is available
    *          or QString() otherwise
    */
-  static QString proxyForURL( const KUrl& url );
+  static QString proxyForUrl( const KUrl& url );
 
   /**
    * Marks this proxy as bad (down). It will not be used for the

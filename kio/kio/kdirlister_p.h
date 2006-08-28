@@ -133,7 +133,7 @@ public:
 
   void updateDirectory( const KUrl& dir );
 
-  KFileItem *itemForURL( const KUrl& url ) const;
+  KFileItem *itemForUrl( const KUrl& url ) const;
   KFileItemList *itemsForDir( const KUrl& dir ) const;
 
 public slots:
@@ -170,7 +170,7 @@ protected:
   KDirListerCache( int maxCount = 10 );
 
   bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
-  bool validURL( const KDirLister *lister, const KUrl& _url ) const;
+  bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
   // stop all running jobs for lister
   void stop( KDirLister *lister );
@@ -185,7 +185,7 @@ protected:
 
   KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
-  KFileItem *findByURL( const KDirLister *lister, const KUrl &_url ) const;
+  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
 
 private Q_SLOTS:
   void slotFileDirty( const QString &_file );
@@ -276,7 +276,7 @@ private:
       url = newUrl;
 
       if ( rootItem )
-        rootItem->setURL( newUrl );
+        rootItem->setUrl( newUrl );
     }
 
     void incAutoUpdate()

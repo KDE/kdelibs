@@ -345,7 +345,7 @@ public:
    */
   virtual void save(QDataStream& );
 
-  typedef enum { Name, FromURL } FileNameUsedForCopying;
+  typedef enum { Name, FromUrl } FileNameUsedForCopying;
 
 protected:
   QString m_name;

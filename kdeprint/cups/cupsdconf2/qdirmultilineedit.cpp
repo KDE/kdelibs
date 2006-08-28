@@ -59,11 +59,11 @@ QDirMultiLineEdit::~QDirMultiLineEdit()
 {
 }
 
-void QDirMultiLineEdit::setURLs(const QStringList& urls)
+void QDirMultiLineEdit::setUrls(const QStringList& urls)
 {
 	m_view->clear();
 	for (QStringList::ConstIterator it=urls.begin(); it!=urls.end(); ++it)
-		addURL(*it);
+		addUrl(*it);
 }
 
 QStringList QDirMultiLineEdit::urls()
@@ -76,7 +76,7 @@ QStringList QDirMultiLineEdit::urls()
 	return l;
 }
 
-void QDirMultiLineEdit::addURL(const QString& url)
+void QDirMultiLineEdit::addUrl(const QString& url)
 {
 	new QListWidgetItem(url, m_view);
 }
@@ -85,7 +85,7 @@ void QDirMultiLineEdit::slotAddClicked()
 {
 	QString	dirname = KFileDialog::getExistingDirectory(QString(), this);
 	if (!dirname.isEmpty())
-		addURL(dirname);
+		addUrl(dirname);
 }
 
 void QDirMultiLineEdit::slotRemoveClicked()

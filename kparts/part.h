@@ -339,11 +339,11 @@ class BrowserExtension;
  * in the simplest way (downloading to a temporary file, then letting the part
  * load from the temporary file).
  * To use the built-in network transparency, you only need to implement
- * openFile(), not openURL().
+ * openFile(), not openUrl().
  *
  * To implement network transparency differently (e.g. for progressive loading,
  * like a web browser does for instance), or to prevent network transparency
- * (but why would you do that?), you can override openURL().
+ * (but why would you do that?), you can override openUrl().
  *
  * KParts Application can use the signals to show feedback while the URL is being loaded.
  *
@@ -389,14 +389,14 @@ public:
 
 public Q_SLOTS:
   /**
-   * Only reimplement openURL if you don't want the network transparency support
+   * Only reimplement openUrl if you don't want the network transparency support
    * to download from the url into a temporary file (when the url isn't local).
    * Otherwise, reimplement openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
    * emit setWindowCaption( url.prettyUrl() );
    */
-  virtual bool openURL( const KUrl &url );
+  virtual bool openUrl( const KUrl &url );
 
 public:
   /**
@@ -408,13 +408,13 @@ public:
 
   /**
    * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that openURL() calls it
+   * when switching to another url (note that openUrl() calls it
    * automatically in this case).
    * If the current URL is not fully loaded yet, aborts loading.
    * Deletes the temporary file used when the url is remote.
    * @return always true, but the return value exists for reimplementations
    */
-  virtual bool closeURL();
+  virtual bool closeUrl();
 
   /**
    * This convenience method returns the browserExtension for this part,
@@ -425,7 +425,7 @@ public:
 public:
   /**
    * Initiate sending data to this part.
-   * This is an alternative to openURL, which allows the user of the part
+   * This is an alternative to openUrl, which allows the user of the part
    * to load the data itself, and send it progressively to the part.
    *
    * @param mimeType the type of data that is going to be sent to this part.
@@ -509,7 +509,7 @@ protected Q_SLOTS:
 
 protected:
   /**
-   * If the part uses the standard implementation of openURL(),
+   * If the part uses the standard implementation of openUrl(),
    * it must reimplement this, to open @p m_file.
    * Otherwise simply define it to { return false; }
    */
@@ -576,9 +576,9 @@ public:
   /**
    * Destructor
    * Applications using a ReadWritePart should make sure, before
-   * destroying it, to call closeURL().
+   * destroying it, to call closeUrl().
    * In KMainWindow::queryClose(), for instance, they should allow
-   * closing only if the return value of closeURL() was true.
+   * closing only if the return value of closeUrl() was true.
    * This allows to cancel.
    */
   virtual ~ReadWritePart();
@@ -602,16 +602,16 @@ public:
   /**
    * If the document has been modified, ask the user to save changes.
    * This method is meant to be called from KMainWindow::queryClose().
-   * It will also be called from closeURL().
+   * It will also be called from closeUrl().
    *
-   * @return true if closeURL() can be called without the user losing
+   * @return true if closeUrl() can be called without the user losing
    * important data, false if the user chooses to cancel.
    */
   virtual bool queryClose();
 
   /**
    * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that openURL() calls it
+   * when switching to another url (note that openUrl() calls it
    * automatically in this case).
    *
    * If the current URL is not fully loaded yet, aborts loading.
@@ -620,7 +620,7 @@ public:
    *
    * @return false on cancel
    */
-  virtual bool closeURL();
+  virtual bool closeUrl();
 
   /**
    * Call this method instead of the above if you need control if
@@ -628,9 +628,9 @@ public:
    * from KMainWindow::queryClose(), you would not want to prompt
    * again when closing the url.
    *
-   * Equivalent to promptToSave ? closeURL() : ReadOnlyPart::closeURL()
+   * Equivalent to promptToSave ? closeUrl() : ReadOnlyPart::closeUrl()
    */
-  virtual bool closeURL( bool promptToSave );
+  virtual bool closeUrl( bool promptToSave );
 
   /**
    * Save the file to a new location.
@@ -663,7 +663,7 @@ public Q_SLOTS:
   /**
    * Save the file in the location from which it was opened.
    * You can connect this to the "save" action.
-   * Calls saveFile() and saveToURL(), no need to reimplement.
+   * Calls saveFile() and saveToUrl(), no need to reimplement.
    */
   virtual bool save();
 
@@ -695,7 +695,7 @@ protected:
    * in case you want to provide feedback.
    * @return true on success, false on failure.
    */
-  virtual bool saveToURL();
+  virtual bool saveToUrl();
 
 protected Q_SLOTS:
   /**

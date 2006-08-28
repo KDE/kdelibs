@@ -67,7 +67,7 @@ KPreviewPropsPlugin::~KPreviewPropsPlugin()
 bool KPreviewPropsPlugin::supports( KFileItemList _items )
 {
     bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
-    KMimeType::Ptr mt = KMimeType::findByURL( _items.first()->url() );
+    KMimeType::Ptr mt = KMimeType::findByUrl( _items.first()->url() );
 
     if ( _items.count() != 1 || !metaDataEnabled || mt->name() == "inode/directory" || mt->name().startsWith( "media/" ) )
         return false;

@@ -310,7 +310,7 @@ ReadOnlyPart::ReadOnlyPart( QObject *parent )
 
 ReadOnlyPart::~ReadOnlyPart()
 {
-  ReadOnlyPart::closeURL();
+  ReadOnlyPart::closeUrl();
   delete d;
 }
 
@@ -331,11 +331,11 @@ void ReadOnlyPart::showProgressInfo( bool show )
 }
 #endif
 
-bool ReadOnlyPart::openURL( const KUrl &url )
+bool ReadOnlyPart::openUrl( const KUrl &url )
 {
   if ( !url.isValid() )
     return false;
-  if ( !closeURL() )
+  if ( !closeUrl() )
     return false;
   m_url = url;
   if ( m_url.isLocalFile() )
@@ -383,7 +383,7 @@ void ReadOnlyPart::abortLoad()
   }
 }
 
-bool ReadOnlyPart::closeURL()
+bool ReadOnlyPart::closeUrl()
 {
   abortLoad(); //just in case
 
@@ -427,7 +427,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
 
 bool ReadOnlyPart::openStream( const QString& mimeType, const KUrl& url )
 {
-  if ( !closeURL() )
+  if ( !closeUrl() )
     return false;
   m_url = url;
   return doOpenStream( mimeType );
@@ -528,7 +528,7 @@ bool ReadWritePart::queryClose()
   }
 }
 
-bool ReadWritePart::closeURL()
+bool ReadWritePart::closeUrl()
 {
   abortLoad(); //just in case
   if ( isReadWrite() && isModified() )
@@ -537,12 +537,12 @@ bool ReadWritePart::closeURL()
        return false;
   }
   // Not modified => ok and delete temp file.
-  return ReadOnlyPart::closeURL();
+  return ReadOnlyPart::closeUrl();
 }
 
-bool ReadWritePart::closeURL( bool promptToSave )
+bool ReadWritePart::closeUrl( bool promptToSave )
 {
-  return promptToSave ? closeURL() : ReadOnlyPart::closeURL();
+  return promptToSave ? closeUrl() : ReadOnlyPart::closeUrl();
 }
 
 bool ReadWritePart::save()
@@ -551,7 +551,7 @@ bool ReadWritePart::save()
   if ( m_file.isEmpty() ) // document was created empty
       prepareSaving();
   if( saveFile() )
-    return saveToURL();
+    return saveToUrl();
   else
     emit canceled(QString());
   return false;
@@ -610,7 +610,7 @@ void ReadWritePart::prepareSaving()
   }
 }
 
-bool ReadWritePart::saveToURL()
+bool ReadWritePart::saveToUrl()
 {
   if ( m_url.isLocalFile() )
   {
@@ -628,7 +628,7 @@ bool ReadWritePart::saveToURL()
   {
     if (d->m_uploadJob)
     {
-       unlink(QFile::encodeName(d->m_uploadJob->srcURL().path()));
+       unlink(QFile::encodeName(d->m_uploadJob->srcUrl().path()));
        d->m_uploadJob->kill();
        d->m_uploadJob = 0;
     }
@@ -654,7 +654,7 @@ void ReadWritePart::slotUploadFinished( KJob * )
 {
   if (d->m_uploadJob->error())
   {
-    unlink(QFile::encodeName(d->m_uploadJob->srcURL().path()));
+    unlink(QFile::encodeName(d->m_uploadJob->srcUrl().path()));
     QString error = d->m_uploadJob->errorString();
     d->m_uploadJob = 0;
     if (d->m_duringSaveAs) {

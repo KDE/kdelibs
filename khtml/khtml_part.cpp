@@ -622,7 +622,7 @@ bool KHTMLPart::openURL( const KUrl &url )
       urls.pop_front();
       d->m_workingURL = KUrl::join( urls );
       //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyUrl() << endl;
-      emit d->m_extension->setLocationBarURL( d->m_workingURL.prettyUrl() );
+      emit d->m_extension->setLocationBarUrl( d->m_workingURL.prettyUrl() );
       htmlError( error, errorText, d->m_workingURL );
       return true;
     }
@@ -691,7 +691,7 @@ bool KHTMLPart::openURL( const KUrl &url )
   if (args.reload) {
     args.xOffset = d->m_view->contentsX();
     args.yOffset = d->m_view->contentsY();
-    d->m_extension->setURLArgs(args);
+    d->m_extension->setUrlArgs(args);
   }
 
   if (!d->m_restored)
@@ -707,7 +707,7 @@ bool KHTMLPart::openURL( const KUrl &url )
   if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
      m_url.path().isEmpty()) {
     m_url.setPath("/");
-    emit d->m_extension->setLocationBarURL( m_url.prettyUrl() );
+    emit d->m_extension->setLocationBarUrl( m_url.prettyUrl() );
   }
   // copy to m_workingURL after fixing m_url above
   d->m_workingURL = m_url;
@@ -830,7 +830,7 @@ bool KHTMLPart::closeURL()
   {
     // Aborted before starting to render
     kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << m_url.prettyUrl() << endl;
-    emit d->m_extension->setLocationBarURL( m_url.prettyUrl() );
+    emit d->m_extension->setLocationBarUrl( m_url.prettyUrl() );
   }
 
   d->m_workingURL = KUrl();
@@ -847,7 +847,7 @@ bool KHTMLPart::closeURL()
       if ( (*it)->m_run )
         (*it)->m_run->abort();
       if ( !( *it )->m_part.isNull() )
-        ( *it )->m_part->closeURL();
+        ( *it )->m_part->closeUrl();
     }
   }
   // tell all objects to stop as well
@@ -857,7 +857,7 @@ bool KHTMLPart::closeURL()
     for (; it != end; ++it)
     {
       if ( !( *it )->m_part.isNull() )
-        ( *it )->m_part->closeURL();
+        ( *it )->m_part->closeUrl();
     }
   }
   // Stop any started redirections as well!! (DA)
@@ -1814,7 +1814,7 @@ void KHTMLPart::slotFinished( KJob * job )
     if (job->error() == KIO::ERR_IS_DIRECTORY)
     {
       KParts::URLArgs args;
-      emit d->m_extension->openURLRequest( d->m_workingURL, args );
+      emit d->m_extension->openUrlRequest( d->m_workingURL, args );
     }
     else
     {
@@ -1890,7 +1890,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   KParts::URLArgs args( d->m_extension->urlArgs() );
   args.xOffset = xOffset;
   args.yOffset = yOffset;
-  d->m_extension->setURLArgs( args );
+  d->m_extension->setUrlArgs( args );
 
   d->m_pageReferrer.clear();
 
@@ -2408,7 +2408,7 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  if (!kapp || !KAuthorized::authorizeURLAction("redirect", cUrl, url))
+  if (!kapp || !KAuthorized::authorizeUrlAction("redirect", cUrl, url))
   {
     kWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!" << endl;
     emit completed();
@@ -2442,7 +2442,7 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KUrl& url)
 {
   // the slave told us that we got redirected
   //kDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
-  emit d->m_extension->setLocationBarURL( url.prettyUrl() );
+  emit d->m_extension->setLocationBarUrl( url.prettyUrl() );
   d->m_workingURL = url;
 }
 
@@ -3728,7 +3728,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 
   QString com;
 
-  KMimeType::Ptr typ = KMimeType::findByURL( u );
+  KMimeType::Ptr typ = KMimeType::findByUrl( u );
 
   if ( typ )
     com = typ->comment( u );
@@ -3976,10 +3976,10 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
                // don't ignore trailing '/' diff, IE does, even if FFox doesn't
     {
       m_url = cURL;
-      emit d->m_extension->openURLNotify();
+      emit d->m_extension->openUrlNotify();
       if ( !gotoAnchor( m_url.encodedHtmlRef()) )
         gotoAnchor( m_url.htmlRef() );
-      emit d->m_extension->setLocationBarURL( m_url.prettyUrl() );
+      emit d->m_extension->setLocationBarUrl( m_url.prettyUrl() );
       return false; // we jumped, but we didn't open a URL
     }
   }
@@ -3988,7 +3988,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
     closeURL();
 
   view()->viewport()->unsetCursor();
-  emit d->m_extension->openURLRequest( cURL, args );
+  emit d->m_extension->openUrlRequest( cURL, args );
   return true;
 }
 
@@ -4416,7 +4416,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   {
       child->m_bNotify = false;
       if ( !child->m_args.lockHistory() )
-          emit d->m_extension->openURLNotify();
+          emit d->m_extension->openUrlNotify();
   }
 
   if ( child->m_serviceType != mimetype || !child->m_part )
@@ -4583,7 +4583,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   child->m_bCompleted = child->m_type == khtml::ChildFrame::Object;
 
   if ( child->m_extension )
-    child->m_extension->setURLArgs( child->m_args );
+    child->m_extension->setUrlArgs( child->m_args );
 
   if(url.protocol() == "javascript" || url.url() == "about:blank") {
       if (!child->m_part->inherits("KHTMLPart"))
@@ -4607,7 +4607,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   else if ( !url.isEmpty() )
   {
       //kDebug( 6050 ) << "opening " << url.url() << " in frame " << child->m_part << endl;
-      bool b = child->m_part->openURL( url );
+      bool b = child->m_part->openUrl( url );
       if (child->m_bCompleted)
           checkCompleted();
       return b;
@@ -4902,7 +4902,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
   else
   {
-    emit d->m_extension->openURLRequest( u, args );
+    emit d->m_extension->openUrlRequest( u, args );
   }
 }
 
@@ -4960,7 +4960,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   {
     if (popupURL.isLocalFile())				// safe to do this
     {
-      mimetype = KMimeType::findByURL(popupURL,0,true,false)->name();
+      mimetype = KMimeType::findByUrl(popupURL,0,true,false)->name();
     }
     else						// look at "extension" of link
     {
@@ -5084,7 +5084,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
   if ( !frameName.isEmpty() ) {
     if ( frameName == QLatin1String( "_top" ) )
     {
-      emit d->m_extension->openURLRequest( url, args );
+      emit d->m_extension->openUrlRequest( url, args );
       return;
     }
     else if ( frameName == QLatin1String( "_blank" ) )
@@ -5097,7 +5097,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
       KParts::URLArgs newArgs( args );
       newArgs.frameName.clear();
 
-      emit d->m_extension->openURLRequest( url, newArgs );
+      emit d->m_extension->openUrlRequest( url, newArgs );
       return;
     }
     else if ( frameName != QLatin1String( "_self" ) )
@@ -5106,7 +5106,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
 
       if ( !_frame )
       {
-        emit d->m_extension->openURLRequest( url, args );
+        emit d->m_extension->openUrlRequest( url, args );
         return;
       }
 
@@ -5122,7 +5122,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
   {
       KParts::URLArgs newArgs( args );
       newArgs.frameName.clear();
-      emit d->m_extension->openURLRequest( url, newArgs );
+      emit d->m_extension->openUrlRequest( url, newArgs );
   }
 }
 
@@ -5520,7 +5520,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
           child->m_extension->restoreState( frameStream );
         }
         else
-          child->m_part->openURL( *fURLIt );
+          child->m_part->openUrl( *fURLIt );
       }
     }
 
@@ -5528,7 +5528,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.xOffset = xOffset;
     args.yOffset = yOffset;
     args.docState = docState;
-    d->m_extension->setURLArgs( args );
+    d->m_extension->setUrlArgs( args );
 
     d->m_view->resizeContents( wContents,  hContents);
     d->m_view->setContentsPos( xOffset, yOffset );
@@ -5578,7 +5578,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
           (*childFrame)->m_extension->restoreState( frameStream );
         }
         else
-          (*childFrame)->m_part->openURL( *fURLIt );
+          (*childFrame)->m_part->openUrl( *fURLIt );
       }
     }
 
@@ -5587,7 +5587,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.yOffset = yOffset;
     args.docState = docState;
 
-    d->m_extension->setURLArgs( args );
+    d->m_extension->setUrlArgs( args );
     if (!KHTMLPageCache::self()->isComplete(d->m_cacheId))
     {
        d->m_restored = true;
@@ -5897,7 +5897,7 @@ bool KHTMLPart::openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs 
 
   // Inform someone that we are about to show something else.
   if ( !urlArgs.lockHistory() )
-      emit d->m_extension->openURLNotify();
+      emit d->m_extension->openUrlNotify();
 
   requestObject( *it, url, urlArgs );
 
@@ -6389,7 +6389,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     {
       // Text or image link...
       u = completeURL( d->m_strSelectedURL );
-      pix = KIO::pixmapForURL(u, 0, K3Icon::Desktop, K3Icon::SizeMedium);
+      pix = KIO::pixmapForUrl(u, 0, K3Icon::Desktop, K3Icon::SizeMedium);
     }
 
     u.setPass(QString());
@@ -6790,7 +6790,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
   bool linkAllowed = true;
 
   if ( d->m_doc )
-    linkAllowed = kapp && KAuthorized::authorizeURLAction("redirect", url(), linkURL);
+    linkAllowed = kapp && KAuthorized::authorizeUrlAction("redirect", url(), linkURL);
 
   if ( !linkAllowed ) {
     khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();

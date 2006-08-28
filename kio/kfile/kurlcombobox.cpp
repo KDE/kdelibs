@@ -95,13 +95,13 @@ QStringList KUrlComboBox::urls() const
 }
 
 
-void KUrlComboBox::addDefaultURL( const KUrl& url, const QString& text )
+void KUrlComboBox::addDefaultUrl( const KUrl& url, const QString& text )
 {
-    addDefaultURL( url, getIcon( url ), text );
+    addDefaultUrl( url, getIcon( url ), text );
 }
 
 
-void KUrlComboBox::addDefaultURL( const KUrl& url, const QIcon& icon,
+void KUrlComboBox::addDefaultUrl( const KUrl& url, const QIcon& icon,
                                   const QString& text )
 {
     KUrlComboItem *item = new KUrlComboItem;
@@ -133,16 +133,16 @@ void KUrlComboBox::setDefaults()
     const KUrlComboItem *item;
     for ( int id = 0; id < defaultList.count(); id++ ) {
         item = defaultList.at( id );
-        insertURLItem( item );
+        insertUrlItem( item );
     }
 }
 
-void KUrlComboBox::setURLs( QStringList urls )
+void KUrlComboBox::setUrls( QStringList urls )
 {
-    setURLs( urls, RemoveBottom );
+    setUrls( urls, RemoveBottom );
 }
 
-void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
+void KUrlComboBox::setUrls( QStringList urls, OverLoadResolving remove )
 {
     setDefaults();
     qDeleteAll( itemList );
@@ -205,14 +205,14 @@ void KUrlComboBox::setURLs( QStringList urls, OverLoadResolving remove )
         else
             item->text = *it;
 
-        insertURLItem( item );
+        insertUrlItem( item );
         itemList.append( item );
         ++it;
     }
 }
 
 
-void KUrlComboBox::setURL( const KUrl& url )
+void KUrlComboBox::setUrl( const KUrl& url )
 {
     if ( url.isEmpty() )
         return;
@@ -247,7 +247,7 @@ void KUrlComboBox::setURL( const KUrl& url )
 
     QListIterator<const KUrlComboItem*> it( itemList );
     while ( it.hasNext() )
-        insertURLItem( it.next() );
+        insertUrlItem( it.next() );
 
     KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
     if (myMode == Directories)
@@ -284,13 +284,13 @@ void KUrlComboBox::slotActivated( int index )
     const KUrlComboItem *item = itemMapper[ index ];
 
     if ( item ) {
-        setURL( item->url );
+        setUrl( item->url );
         emit urlActivated( item->url );
     }
 }
 
 
-void KUrlComboBox::insertURLItem( const KUrlComboItem *item )
+void KUrlComboBox::insertUrlItem( const KUrlComboItem *item )
 {
 // kDebug(250) << "insertURLItem " << item->text << endl;
     int id = count();
@@ -314,7 +314,7 @@ void KUrlComboBox::setMaxItems( int max )
             it.next();
 
         while ( it.hasNext() )
-            insertURLItem( it.next() );
+            insertUrlItem( it.next() );
 
         if ( count() > 0 ) { // restore the previous currentItem
             if ( oldCurrent >= count() )
@@ -325,7 +325,7 @@ void KUrlComboBox::setMaxItems( int max )
 }
 
 
-void KUrlComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
+void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
 {
     QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
     while ( mit != itemMapper.end() ) {
@@ -340,7 +340,7 @@ void KUrlComboBox::removeURL( const KUrl& url, bool checkDefaultURLs )
     setDefaults();
     QListIterator<const KUrlComboItem*> it( itemList );
     while ( it.hasNext() ) {
-        insertURLItem( it.next() );
+        insertUrlItem( it.next() );
     }
     blockSignals( false );
 }
@@ -351,7 +351,7 @@ QIcon KUrlComboBox::getIcon( const KUrl& url ) const
     if ( myMode == Directories )
         return d->dirIcon;
     else
-        return SmallIconSet(KMimeType::iconNameForURL( url, 0));
+        return SmallIconSet(KMimeType::iconNameForUrl( url, 0));
 }
 
 

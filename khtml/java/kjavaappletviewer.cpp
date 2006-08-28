@@ -311,7 +311,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     // check codebase first
     const KUrl kbaseURL( baseurl );
     const KUrl newURL(kbaseURL, codebase);
-    if (KAuthorized::authorizeURLAction("redirect", KUrl(baseurl), newURL))
+    if (KAuthorized::authorizeUrlAction("redirect", KUrl(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
     KJavaAppletContext* const cxt = serverMaintainer->getContext (parent, baseurl);
@@ -472,7 +472,7 @@ KJavaAppletViewerBrowserExtension::KJavaAppletViewerBrowserExtension (KJavaApple
 }
 
 void KJavaAppletViewerBrowserExtension::urlChanged (const QString & url) {
-    emit setLocationBarURL (url);
+    emit setLocationBarUrl (url);
 }
 
 void KJavaAppletViewerBrowserExtension::setLoadingProgress (int percentage) {
@@ -524,7 +524,7 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
     const KUrl url (doc);
     KParts::URLArgs args;
     args.frameName = frame;
-    emit openURLRequest (url, args);
+    emit openUrlRequest (url, args);
 }
 
 //-----------------------------------------------------------------------------

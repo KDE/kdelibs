@@ -203,22 +203,22 @@ private:
 	                        bool no_hidden = false,
 	                        bool stat_files = true);
 
-	void listURLs( const QList<KUrl *> &urls,
-	               const QString &filter = QString(),
-	               bool only_exe = false,
-	               bool no_hidden = false );
+	void listUrls( const QList<KUrl *> &urls,
+                       const QString &filter = QString(),
+                       bool only_exe = false,
+                       bool no_hidden = false );
 
 	void addMatches( const QStringList & );
 	QString finished();
 
 	void init();
 
-	void setListedURL(int compl_type /* enum ComplType */,
+	void setListedUrl(int compl_type /* enum ComplType */,
 	                  const QString& dir = QString(),
 	                  const QString& filter = QString(),
 	                  bool no_hidden = false );
 
-	bool isListedURL( int compl_type /* enum ComplType */,
+	bool isListedUrl( int compl_type /* enum ComplType */,
 	                  const QString& dir = QString(),
 	                  const QString& filter = QString(),
 	                  bool no_hidden = false );

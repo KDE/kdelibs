@@ -91,7 +91,7 @@ void BrowserRun::scanFile()
   // Optimization for http/https, findByURL doesn't trust extensions over http.
   if ( m_strURL.query().isEmpty() && !m_strURL.protocol().startsWith("http") )
   {
-    KMimeType::Ptr mime = KMimeType::findByURL( m_strURL );
+    KMimeType::Ptr mime = KMimeType::findByUrl( m_strURL );
     assert( mime );
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {
@@ -470,7 +470,7 @@ void BrowserRun::slotCopyToTempFileResult(KJob *job)
 	    job->uiDelegate()->showErrorMessage();
     } else {
         // Same as KRun::foundMimeType but with a different URL
-        (void) (KRun::runUrl( static_cast<KIO::FileCopyJob *>(job)->destURL(), m_sMimeType, m_window ));
+        (void) (KRun::runUrl( static_cast<KIO::FileCopyJob *>(job)->destUrl(), m_sMimeType, m_window ));
     }
     m_bFault = true; // see above
     m_bFinished = true;

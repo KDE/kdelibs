@@ -37,13 +37,13 @@ public:
     QMenu * popupMenu();
 
     // KBookmarkOwner interface:
-    virtual void openBookmarkURL( const QString& url ) { emit openURL( url ); }
-    virtual QString currentURL() const;
+    virtual void openBookmarkUrl( const QString& url ) { emit openUrl( url ); }
+    virtual QString currentUrl() const;
 
     KMenu *menu() const { return m_menu; }
 
 Q_SIGNALS:
-    void openURL( const QString& url );
+    void openUrl( const QString& url );
 
 private:
     void importOldBookmarks( const QString& path, KBookmarkManager *manager );

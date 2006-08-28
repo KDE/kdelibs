@@ -429,7 +429,7 @@ void KMultiPart::startOfData()
     // Pass URLArgs (e.g. reload)
     KParts::BrowserExtension* childExtension = KParts::BrowserExtension::childObject( m_part );
     if ( childExtension )
-        childExtension->setURLArgs( m_extension->urlArgs() );
+        childExtension->setUrlArgs( m_extension->urlArgs() );
 
     m_nextMimeType.clear();
     if ( m_tempFile ) {
@@ -498,7 +498,7 @@ void KMultiPart::endOfData()
             KUrl url;
             url.setPath( m_tempFile->name() );
             m_partIsLoading = true;
-            (void) m_part->openURL( url );
+            (void) m_part->openUrl( url );
         }
         delete m_tempFile;
         m_tempFile = 0L;
@@ -524,7 +524,7 @@ bool KMultiPart::closeURL()
 {
     m_timer->stop();
     if ( m_part )
-        return m_part->closeURL();
+        return m_part->closeUrl();
     return true;
 }
 

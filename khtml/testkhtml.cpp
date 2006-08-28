@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     if (args->url(0).url().right(4).toLower() == ".xml") {
         KParts::URLArgs ags(doc->browserExtension()->urlArgs());
         ags.serviceType = "text/xml";
-        doc->browserExtension()->setURLArgs(ags);
+        doc->browserExtension()->setUrlArgs(ags);
     }
 
     doc->openURL( args->url(0) );

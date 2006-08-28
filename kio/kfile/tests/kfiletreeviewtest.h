@@ -32,7 +32,7 @@ public Q_SLOTS:
    void slotSetChildCount( KFileTreeViewItem *item, int c );
 
    void urlsDropped( QWidget*, QDropEvent*, KUrl::List& );
-   void copyURLs( KUrl::List& list, KUrl& to ); 
+   void copyUrls( KUrl::List& list, KUrl& to );
 private:
    KFileTreeView *treeView;
    bool          dirOnlyMode;

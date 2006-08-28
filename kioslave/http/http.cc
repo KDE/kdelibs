@@ -452,9 +452,9 @@ void HTTPProtocol::setHost( const QString& host, int port,
     " (" << m_request.encoded_hostname << ")" <<endl;
 }
 
-bool HTTPProtocol::checkRequestURL( const KUrl& u )
+bool HTTPProtocol::checkRequestUrl( const KUrl& u )
 {
-  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestURL:  " << u.url() << endl;
+  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestUrl:  " << u.url() << endl;
 
   m_request.url = u;
 
@@ -598,7 +598,7 @@ void HTTPProtocol::stat(const KUrl& url)
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::stat " << url.prettyUrl()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
       return;
 
   if ( m_protocol != "webdav" && m_protocol != "webdavs" )
@@ -630,7 +630,7 @@ void HTTPProtocol::listDir( const KUrl& url )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::listDir " << url.url()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   davStatList( url, false );
@@ -788,7 +788,7 @@ void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::davGeneric " << url.url()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   // check to make sure this host supports WebDAV
@@ -1169,7 +1169,7 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::mkdir " << url.url()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = DAV_MKCOL;
@@ -1191,7 +1191,7 @@ void HTTPProtocol::get( const KUrl& url )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::get " << url.url()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = HTTP_GET;
@@ -1216,7 +1216,7 @@ void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put " << url.prettyUrl()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   // Webdav hosts are capable of observing overwrite == false
@@ -1279,7 +1279,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite 
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::copy " << src.prettyUrl()
                 << " -> " << dest.prettyUrl() << endl;
 
-  if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
+  if ( !checkRequestUrl( dest ) || !checkRequestUrl( src ) )
     return;
 
   // destination has to be "http(s)://..."
@@ -1311,7 +1311,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, bool overwrite )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::rename " << src.prettyUrl()
                 << " -> " << dest.prettyUrl() << endl;
 
-  if ( !checkRequestURL( dest ) || !checkRequestURL( src ) )
+  if ( !checkRequestUrl( dest ) || !checkRequestUrl( src ) )
     return;
 
   // destination has to be "http://..."
@@ -1342,7 +1342,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::del " << url.prettyUrl()
                 << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = HTTP_DELETE;
@@ -1366,7 +1366,7 @@ void HTTPProtocol::post( const KUrl& url )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::post "
                 << url.prettyUrl() << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = HTTP_POST;
@@ -1384,7 +1384,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::davLock "
                 << url.prettyUrl() << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = DAV_LOCK;
@@ -1449,7 +1449,7 @@ void HTTPProtocol::davUnlock( const KUrl& url )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::davUnlock "
                 << url.prettyUrl() << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = DAV_UNLOCK;
@@ -1766,7 +1766,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
      KUrl url;
      stream >> url >> mIncomingMetaData;
 
-     if ( !checkRequestURL( url ) )
+     if ( !checkRequestUrl( url ) )
         continue;
 
      kDebug(7113) << "(" << m_pid << ") HTTPProtocol::multi_get " << url.url() << endl;
@@ -3942,7 +3942,7 @@ void HTTPProtocol::mimetype( const KUrl& url )
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::mimetype: "
                 << url.prettyUrl() << endl;
 
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
     return;
 
   m_request.method = HTTP_HEAD;
@@ -4504,7 +4504,7 @@ QString HTTPProtocol::findCookies( const QString &url)
 
 void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDate)
 {
-  if ( !checkRequestURL( url ) )
+  if ( !checkRequestUrl( url ) )
       return;
 
   m_request.path = url.path();

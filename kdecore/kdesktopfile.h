@@ -128,7 +128,7 @@ public:
    * Returns the value of the "URL=" entry.
    * @return the URL or QString() if not specified
    */
-  QString readURL() const;
+  QString readUrl() const;
 
   /**
    * Returns a list of the "Actions=" entries.

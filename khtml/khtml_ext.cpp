@@ -263,12 +263,12 @@ void KHTMLPartBrowserExtension::searchProvider()
     // action name is of form "previewProvider[<searchproviderprefix>:]"
     const QString searchProviderPrefix = QString( sender()->objectName() ).mid( 14 );
 
-    KURIFilterData data;
+    KUriFilterData data;
     QStringList list;
     data.setData( searchProviderPrefix + m_part->selectedText() );
     list << "kurisearchfilter" << "kuriikwsfilter";
 
-    if( !KURIFilter::self()->filterURI(data, list) )
+    if( !KUriFilter::self()->filterUri(data, list) )
     {
         KDesktopFile file("searchproviders/google.desktop", true, "services");
         QString encodedSearchTerm = QUrl::toPercentEncoding(m_part->selectedText());
@@ -278,7 +278,7 @@ void KHTMLPartBrowserExtension::searchProvider()
     KParts::URLArgs args;
     args.frameName = "_blank";
 
-    emit m_part->browserExtension()->openURLRequest( data.uri(), args );
+    emit m_part->browserExtension()->openUrlRequest( data.uri(), args );
 }
 
 void KHTMLPartBrowserExtension::openSelection()
@@ -286,7 +286,7 @@ void KHTMLPartBrowserExtension::openSelection()
     KParts::URLArgs args;
     args.frameName = "_blank";
 
-    emit m_part->browserExtension()->openURLRequest( m_part->selectedText(), args );
+    emit m_part->browserExtension()->openUrlRequest( m_part->selectedText(), args );
 }
 
 void KHTMLPartBrowserExtension::paste()
@@ -449,15 +449,15 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       // search provider icon
       QPixmap icon;
-      KURIFilterData data;
+      KUriFilterData data;
       QStringList list;
       data.setData( QString("some keyword") );
       list << "kurisearchfilter" << "kuriikwsfilter";
 
       QString name;
-      if ( KURIFilter::self()->filterURI(data, list) )
+      if ( KUriFilter::self()->filterUri(data, list) )
       {
-        QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
+        QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
         if ( iconPath.isEmpty() )
           icon = SmallIcon("find");
         else
@@ -492,9 +492,9 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
           const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + keywordDelimiter;
           data.setData( searchProviderPrefix + "some keyword" );
 
-          if ( KURIFilter::self()->filterURI(data, list) )
+          if ( KUriFilter::self()->filterUri(data, list) )
           {
-            QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForURL(data.uri()) + ".png");
+            QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
             if ( iconPath.isEmpty() )
               icon = SmallIcon("find");
             else
@@ -795,7 +795,7 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   // reload document
   d->m_khtml->closeURL();
-  d->m_khtml->browserExtension()->setURLArgs( args );
+  d->m_khtml->browserExtension()->setUrlArgs( args );
   d->m_khtml->openURL( d->m_khtml->url() );
 }
 
@@ -812,7 +812,7 @@ void KHTMLPopupGUIClient::slotFrameInTop()
   KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   args.frameName = "_top";
-  emit d->m_khtml->browserExtension()->openURLRequest( d->m_khtml->url(), args );
+  emit d->m_khtml->browserExtension()->openUrlRequest( d->m_khtml->url(), args );
 }
 
 void KHTMLPopupGUIClient::slotFrameInTab()

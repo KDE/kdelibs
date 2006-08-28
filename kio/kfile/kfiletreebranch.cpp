@@ -126,7 +126,7 @@ KFileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
     dirUrl.setFileName( QString() );
     // kDebug(250) << "Directory url is " << dirUrl.prettyUrl() << endl;
 
-    parent  = findTVIByURL( dirUrl );
+    parent  = findTVIByUrl( dirUrl );
     // kDebug(250) << "Returning as parent item <" << parent <<  ">" << endl;
     return( parent );
 }
@@ -140,7 +140,7 @@ void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
     const KFileItemList::const_iterator kend = list.end();
     for ( ; kit != kend; ++kit )
     {
-        KFileTreeViewItem *item = findTVIByURL((*kit)->url());
+        KFileTreeViewItem *item = findTVIByUrl((*kit)->url());
         if (item) {
             item->setPixmap(0, item->fileItem()->pixmap( K3Icon::SizeSmall ));
             item->setText( 0, item->fileItem()->text());
@@ -316,7 +316,7 @@ void KFileTreeBranch::slotCanceled( const KUrl& url )
     m_openChildrenURLs.removeAll( url);
 
     // stop animations etc.
-    KFileTreeViewItem *item = findTVIByURL(url);
+    KFileTreeViewItem *item = findTVIByUrl(url);
     if (!item) return; // Uh oh...
     emit populateFinished(item);
 }
@@ -329,10 +329,10 @@ void KFileTreeBranch::slotDirlisterClear()
         deleteChildrenOf( m_root );
 }
 
-void KFileTreeBranch::slotDirlisterClearURL( const KUrl& url )
+void KFileTreeBranch::slotDirlisterClearUrl( const KUrl& url )
 {
     kDebug(250)<< "*** Clear for URL !" << url.prettyUrl() << endl;
-    KFileItem *item = findByURL( url );
+    KFileItem *item = findByUrl( url );
     if( item )
     {
         KFileTreeViewItem *ftvi =
@@ -360,7 +360,7 @@ void KFileTreeBranch::slotRedirect( const KUrl& oldUrl, const KUrl&newUrl )
     }
 }
 
-KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
+KFileTreeViewItem* KFileTreeBranch::findTVIByUrl( const KUrl& url )
 {
     KFileTreeViewItem *resultItem = 0;
 
@@ -378,7 +378,7 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
     {
         kDebug(250) << "findByURL: searching by dirlister: " << url.url() << endl;
 
-        KFileItem *it = findByURL( url );
+        KFileItem *it = findByUrl( url );
 
         if( it )
         {
@@ -395,7 +395,7 @@ KFileTreeViewItem* KFileTreeBranch::findTVIByURL( const KUrl& url )
 void KFileTreeBranch::slCompleted( const KUrl& url )
 {
     kDebug(250) << "SlotCompleted hit for " << url.prettyUrl() << endl;
-    KFileTreeViewItem *currParent = findTVIByURL( url );
+    KFileTreeViewItem *currParent = findTVIByUrl( url );
     if( ! currParent ) return;
 
     kDebug(250) << "current parent " << currParent << " is already listed: "
@@ -472,7 +472,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
                     {
                         KUrl recurseUrl = kfi->url();
                         kDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyUrl() << endl;
-                        openURL( recurseUrl, true );
+                        openUrl( recurseUrl, true );
                     }
                 }
                 nextChild = static_cast<KFileTreeViewItem*>(static_cast<Q3ListViewItem*>(nextChild->nextSibling()));
@@ -505,7 +505,7 @@ bool KFileTreeBranch::populate( const KUrl& url,  KFileTreeViewItem *currItem )
     if( ! currItem->alreadyListed() )
     {
         /* start the lister */
-        ret = openURL( url, true );
+        ret = openUrl( url, true );
     }
     else
     {

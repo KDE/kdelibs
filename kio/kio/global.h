@@ -26,8 +26,8 @@
 #include <qmap.h>
 #include <QList>
 
-#include <kicontheme.h> // K3Icon (for pixmapForURL)
-#include <QtGui/QPixmap> // for pixmapForURL
+#include <kicontheme.h> // K3Icon (for pixmapForUrl)
+#include <QtGui/QPixmap> // for pixmapForUrl
 
 #include <sys/stat.h> // S_ISDIR
 
@@ -420,7 +420,7 @@ namespace KIO
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  KIO_EXPORT QPixmap pixmapForURL( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
+  KIO_EXPORT QPixmap pixmapForUrl( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
                                    int _force_size = 0, int _state = 0, QString * _path = 0 );
 
   /**

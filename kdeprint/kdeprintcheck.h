@@ -32,7 +32,7 @@ public:
 	static bool check(const QStringList& uris);
 
 private:
-	static bool checkURL(const KUrl&);
+	static bool checkUrl(const KUrl&);
 	static bool checkConfig(const KUrl&);
 	static bool checkExec(const KUrl&);
 	static bool checkService(const KUrl&);

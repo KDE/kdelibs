@@ -101,21 +101,21 @@ KDirListerTest::~KDirListerTest()
 void KDirListerTest::startHome()
 {
   KUrl home( getenv( "HOME" ) );
-  lister->openURL( home, false, false );
+  lister->openUrl( home, false, false );
 //  lister->stop();
 }
 
 void KDirListerTest::startRoot()
 {
   KUrl root( "file:/" );
-  lister->openURL( root, true, true );
+  lister->openUrl( root, true, true );
 // lister->stop( root );
 }
 
 void KDirListerTest::startTar()
 {
   KUrl root( "file:/home/jowenn/aclocal_1.tgz" );
-  lister->openURL( root, true, true );
+  lister->openUrl( root, true, true );
 // lister->stop( root );
 }
 
@@ -134,14 +134,14 @@ void KDirListerTest::test()
   lister->updateDirectory( KUrl("file:/usr/include") );
   lister->openURL( KUrl("file:/usr/"), true, true );
 */
-  lister->openURL( KUrl("file:/dev"), true, true );
+  lister->openUrl( KUrl("file:/dev"), true, true );
 }
 
 void KDirListerTest::completed()
 {
     if ( lister->url().path() == "/")
     {
-        KFileItem* item = lister->findByURL( KUrl( "/tmp" ) );
+        KFileItem* item = lister->findByUrl( KUrl( "/tmp" ) );
         if ( item )
             kDebug() << "Found /tmp: " << item << endl;
         else

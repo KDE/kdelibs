@@ -389,7 +389,7 @@ void KOpenWithDlg::setMimeType( const KUrl::List& _urls )
 {
   if ( _urls.count() == 1 )
   {
-    qMimeType = KMimeType::findByURL( _urls.first())->name();
+    qMimeType = KMimeType::findByUrl( _urls.first())->name();
     if (qMimeType == QString::fromLatin1("application/octet-stream"))
       qMimeType.clear();
   }

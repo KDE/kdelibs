@@ -186,7 +186,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getOpenURLAndEncoding(const QString& encoding=QString(),
+    static Result getOpenUrlAndEncoding(const QString& encoding=QString(),
 			   const QString& startDir = QString(),
 			   const QString& filter= QString(),
 			   QWidget *parent= 0,
@@ -221,7 +221,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getOpenURLsAndEncoding(const QString& encoding=QString(),
+    static Result getOpenUrlsAndEncoding(const QString& encoding=QString(),
 				  const QString& startDir= QString(),
 				  const QString& filter= QString(),
 				  QWidget *parent = 0,
@@ -292,7 +292,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
-    static Result getSaveURLAndEncoding(const QString& encoding=QString(),
+    static Result getSaveUrlAndEncoding(const QString& encoding=QString(),
 			   const QString& startDir= QString(),
 			   const QString& filter= QString(),
 			   QWidget *parent= 0,

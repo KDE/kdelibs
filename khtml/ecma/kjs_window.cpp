@@ -1273,7 +1273,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   } else if (!part && !m_frame->m_part.isNull()) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
-      b->emit openURLRequest(m_frame->m_frame->element()->getDocument()->completeURL(url));
+      b->emit openUrlRequest(m_frame->m_frame->element()->getDocument()->completeURL(url));
     kDebug() << "goURL for ROPart" << endl;
   }
 }
@@ -1537,7 +1537,7 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
       if (uargs.frameName.toLower() == "_blank")
         uargs.frameName.clear();
       if (!url.isEmpty())
-        emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
+        emit khtmlpart->browserExtension()->openUrlRequest(url,uargs);
       return Window::retrieve(khtmlpart); // global object
     } else
       return Undefined();
@@ -2549,7 +2549,7 @@ ValueImp *LocationFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, cons
     if (khtmlpart)
       khtmlpart->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
     else
-      part->openURL(part->url());
+      part->openUrl(part->url());
     break;
   }
   case Location::ToString:

@@ -97,13 +97,13 @@ namespace KIO {
 	 * Returns the list of source URLs.
 	 * @return the list of source URLs.
 	 */
-        KUrl::List srcURLs() const { return m_srcList; }
+        KUrl::List srcUrls() const { return m_srcList; }
 
 	/**
 	 * Returns the destination URL.
 	 * @return the destination URL
 	 */
-        KUrl destURL() const { return m_dest; }
+        KUrl destUrl() const { return m_dest; }
 
         /**
          * By default the permissions of the copied files will be those of the source files.

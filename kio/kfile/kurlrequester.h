@@ -235,7 +235,7 @@ protected Q_SLOTS:
     void slotOpenDialog();
 
 private Q_SLOTS:
-    void slotUpdateURL();
+    void slotUpdateUrl();
 
 protected:
     virtual void changeEvent (QEvent *e);

@@ -41,8 +41,8 @@ class QCursor;
  * the mouse leaving and entering the text area and all forms of
  * mouse clicking.
  *
- * By default KURLLabel accepts focus. When focused, standard 
- * focus rectangle is displayed as in HTML widget. 
+ * By default KUrlLabel accepts focus. When focused, standard
+ * focus rectangle is displayed as in HTML widget.
  * Pressing Enter key accepts the focused label.
  *
  * A typical usage would be something like so:

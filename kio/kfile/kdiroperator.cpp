@@ -431,7 +431,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
                                               "create that folder." ));
     }
     else if ( enterDirectory ) {
-        setURL( url, true );
+        setUrl( url, true );
     }
 
     return writeOk;
@@ -598,7 +598,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
         // the empty path is kind of a hack
         KFileItem i("", u.path());
         if (i.isDir())
-            setURL(text, true);
+            setUrl(text, true);
         else {
             if (takeFiles)
                 if (acceptOnlyExisting && !i.isFile())
@@ -607,7 +607,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
                     filenameEntered = true;
         }
     } else
-        setURL(text, true);
+        setUrl(text, true);
 
     if (filenameEntered) {
         filename_ = u.url();
@@ -621,7 +621,7 @@ void KDirOperator::checkPath(const QString &, bool /*takeFiles*/) // SLOT
     kDebug(kfile_area) << "TODO KDirOperator::checkPath()" << endl;
 }
 
-void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
+void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 {
     KUrl newurl;
 
@@ -666,7 +666,7 @@ void KDirOperator::setURL(const KUrl& _newurl, bool clearforward)
     backAction->setEnabled( !backStack.isEmpty() );
     upAction->setEnabled( !isRoot() );
 
-    openURL( newurl );
+    openUrl( newurl );
 }
 
 void KDirOperator::updateDir()
@@ -679,13 +679,13 @@ void KDirOperator::updateDir()
 void KDirOperator::rereadDir()
 {
     pathChanged();
-    openURL( currUrl, false, true );
+    openUrl( currUrl, false, true );
 }
 
 
-bool KDirOperator::openURL( const KUrl& url, bool keep, bool reload )
+bool KDirOperator::openUrl( const KUrl& url, bool keep, bool reload )
 {
-    bool result = dir->openURL( url, keep, reload );
+    bool result = dir->openUrl( url, keep, reload );
     if ( !result ) // in that case, neither completed() nor canceled() will be emitted by KDL
         slotCanceled();
 
@@ -740,7 +740,7 @@ void KDirOperator::back()
 
     KUrl *s = backStack.pop();
 
-    setURL(*s, false);
+    setUrl(*s, false);
     delete s;
 }
 
@@ -753,7 +753,7 @@ void KDirOperator::forward()
     backStack.push(new KUrl(currUrl));
 
     KUrl *s = forwardStack.pop();
-    setURL(*s, false);
+    setUrl(*s, false);
     delete s;
 }
 
@@ -766,14 +766,14 @@ void KDirOperator::cdUp()
 {
     KUrl tmp(currUrl);
     tmp.cd(QLatin1String(".."));
-    setURL(tmp, true);
+    setUrl(tmp, true);
 }
 
 void KDirOperator::home()
 {
     KUrl u;
     u.setPath( QDir::homePath() );
-    setURL(u, true);
+    setUrl(u, true);
 }
 
 void KDirOperator::clearFilter()
@@ -1062,7 +1062,7 @@ void KDirOperator::connectView(KFileView *view)
 
     if ( listDir ) {
         QApplication::setOverrideCursor( Qt::WaitCursor );
-        openURL( currUrl );
+        openUrl( currUrl );
     }
     else
         view->listingCompleted();
@@ -1156,7 +1156,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
-    setURL(item->url(), true);
+    setUrl(item->url(), true);
 }
 
 void KDirOperator::itemDeleted(KFileItem *item)

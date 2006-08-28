@@ -171,18 +171,18 @@ public:
     */
     virtual ~KComboBox();
 
-	/**
+    /**
      * Deprecated to reflect Qt api changes
-	 * @deprecated
-	 */
-	KDE_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
-		{ insertUrl( index < 0 ? count() : index, url ); }
-	KDE_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
-		{ insertUrl( index < 0 ? count() : index, QIcon(pixmap), url ); }
-	KDE_DEPRECATED void changeURL( const KUrl& url, int index )
-		{ changeUrl( index, url ); }
-  KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
-		{ changeUrl( index, QIcon(pixmap), url ); }
+     * @deprecated
+     */
+    KDE_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
+    { insertUrl( index < 0 ? count() : index, url ); }
+    KDE_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
+    { insertUrl( index < 0 ? count() : index, QIcon(pixmap), url ); }
+    KDE_DEPRECATED void changeURL( const KUrl& url, int index )
+    { changeUrl( index, url ); }
+    KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
+    { changeUrl( index, QIcon(pixmap), url ); }
 
 	/**
      * Sets @p url into the edit field of the combobox. It uses
@@ -190,7 +190,7 @@ public:
      * displaying.
      */
     void setEditUrl( const KUrl& url );
-   
+
 	/**
      * Appends @p url to the combobox.
      * KUrl::prettyUrl() is used so that the url is properly decoded
@@ -647,7 +647,7 @@ public:
      * method KPixmapProvider::pixmapFor(). This method is called whenever
      * an item is added to the KHistoryComboBox. Implement it to return your
      * own custom pixmaps, or use the KUrlPixmapProvider from libkio,
-     * which uses KMimeType::pixmapForURL to resolve icons.
+     * which uses KMimeType::pixmapForUrl to resolve icons.
      *
      * Set @p prov to 0L if you want to disable pixmaps. Default no pixmaps.
      *

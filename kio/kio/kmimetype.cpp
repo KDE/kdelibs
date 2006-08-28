@@ -162,7 +162,7 @@ KMimeType::List KMimeType::allMimeTypes()
   return KMimeTypeFactory::self()->allMimeTypes();
 }
 
-KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
+KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
                                      bool _is_local_file, bool _fast_mode )
 {
   checkEssentialMimeTypes();
@@ -287,11 +287,11 @@ KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
   return mimeType( result->mimeType() );
 }
 
-KMimeType::Ptr KMimeType::findByURL( const KUrl& _url, mode_t _mode,
+KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
                                      bool _is_local_file, bool _fast_mode,
                                      bool *accurate )
 {
-    KMimeType::Ptr mime = findByURL(_url, _mode, _is_local_file, _fast_mode);
+    KMimeType::Ptr mime = findByUrl(_url, _mode, _is_local_file, _fast_mode);
     if (accurate) *accurate = !(_fast_mode) || ((mime->patternsAccuracy() == 100) && mime != defaultMimeTypePtr());
     return mime;
 }
@@ -309,7 +309,7 @@ KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fas
 {
     KUrl u;
     u.setPath(path);
-    return findByURL( u, mode, true, fast_mode );
+    return findByUrl( u, mode, true, fast_mode );
 }
 
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
@@ -462,26 +462,26 @@ KMimeType::~KMimeType()
 QPixmap KMimeType::pixmap( K3Icon::Group _group, int _force_size, int _state,
                            QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadMimeTypeIcon( icon(), _group, _force_size, _state, _path );
+  return KGlobal::iconLoader()->loadMimeTypeIcon( iconName(), _group, _force_size, _state, _path );
 }
 
 QPixmap KMimeType::pixmap( const KUrl& _url, K3Icon::Group _group, int _force_size,
                            int _state, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadMimeTypeIcon( icon( _url ), _group, _force_size, _state, _path );
+  return KGlobal::iconLoader()->loadMimeTypeIcon( iconName( _url ), _group, _force_size, _state, _path );
 }
 
-QString KMimeType::iconForURL( const KUrl & _url, mode_t _mode )
+QString KMimeType::iconForUrl( const KUrl & _url, mode_t _mode )
 {
-  return iconNameForURL(_url,_mode);
+  return iconNameForUrl(_url,_mode);
 }
 
-QString KMimeType::iconNameForURL( const KUrl & _url, mode_t _mode )
+QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t _mode )
 {
-    const KMimeType::Ptr mt = findByURL( _url, _mode, _url.isLocalFile(),
+    const KMimeType::Ptr mt = findByUrl( _url, _mode, _url.isLocalFile(),
                                          false /*HACK*/);
     static const QString& unknown = KGlobal::staticQString("unknown");
-    const QString mimeTypeIcon = mt->icon( _url );
+    const QString mimeTypeIcon = mt->iconName( _url );
     QString i = mimeTypeIcon;
 
     // if we don't find an icon, maybe we can use the one for the protocol
@@ -489,7 +489,7 @@ QString KMimeType::iconNameForURL( const KUrl & _url, mode_t _mode )
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
         || _url.path().length() <= 1 )
     {
-        i = favIconForURL( _url ); // maybe there is a favicon?
+        i = favIconForUrl( _url ); // maybe there is a favicon?
 
         if ( i.isEmpty() )
             i = KProtocolInfo::icon( _url.protocol() );
@@ -501,7 +501,7 @@ QString KMimeType::iconNameForURL( const KUrl & _url, mode_t _mode )
     return !i.isEmpty() ? i : unknown;
 }
 
-QString KMimeType::favIconForURL( const KUrl& url )
+QString KMimeType::favIconForUrl( const KUrl& url )
 {
     // this method will be called quite often, so better not read the config
     // again and again.
@@ -518,7 +518,7 @@ QString KMimeType::favIconForURL( const KUrl& url )
         return QString();
 
     QDBusInterface kded( "org.kde.kded", "/modules/favicons", "org.kde.FavIcon" );
-    QDBusReply<QString> result = kded.call( "iconForURL", url.url() );
+    QDBusReply<QString> result = kded.call( "iconForUrl", url.url() );
     return result;              // default is QString()
 }
 
@@ -573,7 +573,7 @@ QString KFolderType::icon( const QString& _url, bool _is_local ) const
 QString KFolderType::icon( const KUrl& _url ) const
 {
   if ( _url.isEmpty() || !_url.isLocalFile() )
-    return KMimeType::icon( _url );
+    return KMimeType::iconName( _url );
 
   KUrl u( _url );
   u.addPath( ".directory" );
@@ -622,7 +622,7 @@ QString KFolderType::icon( const KUrl& _url ) const
   }
 
   if ( icon.isEmpty() )
-    return KMimeType::icon( _url );
+    return KMimeType::iconName( _url );
 
   if ( icon.startsWith( "./" ) ) {
     // path is relative with respect to the location

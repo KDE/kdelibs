@@ -45,13 +45,13 @@ ForwardingSlaveBase::~ForwardingSlaveBase()
 {
 }
 
-bool ForwardingSlaveBase::internalRewriteURL(const KUrl &url, KUrl &newURL)
+bool ForwardingSlaveBase::internalRewriteUrl(const KUrl &url, KUrl &newURL)
 {
     bool result = true;
 
     if ( url.protocol() == mProtocol )
     {
-        result = rewriteURL(url, newURL);
+        result = rewriteUrl(url, newURL);
     }
     else
     {
@@ -98,7 +98,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             new_url.addPath( name );
         }
 
-        mimetype = KMimeType::findByURL(new_url)->name();
+        mimetype = KMimeType::findByUrl(new_url)->name();
 
         entry.insert( KIO::UDS_MIME_TYPE, mimetype );
 
@@ -122,7 +122,7 @@ void ForwardingSlaveBase::get(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::get: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::get(new_url, false, false);
         connectTransferJob(job);
@@ -137,7 +137,7 @@ void ForwardingSlaveBase::put(const KUrl &url, int permissions,
     kDebug() << "ForwardingSlaveBase::put: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::put(new_url, permissions, overwrite,
                                          resume, false);
@@ -152,7 +152,7 @@ void ForwardingSlaveBase::stat(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::stat: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::stat(new_url, false);
         connectSimpleJob(job);
@@ -166,7 +166,7 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::mimetype: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::mimetype(new_url, false);
         connectTransferJob(job);
@@ -180,7 +180,7 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::listDir: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::ListJob *job = KIO::listDir(new_url, false);
         connectListJob(job);
@@ -194,7 +194,7 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
     kDebug() << "ForwardingSlaveBase::mkdir: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::mkdir(new_url, permissions);
         connectSimpleJob(job);
@@ -209,7 +209,7 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
     kDebug() << "ForwardingSlaveBase::rename: " << src << ", " << dest << endl;
 
     KUrl new_src, new_dest;
-    if ( internalRewriteURL(src, new_src) && internalRewriteURL(dest, new_dest) )
+    if ( internalRewriteUrl(src, new_src) && internalRewriteUrl(dest, new_dest) )
     {
         KIO::Job *job = KIO::rename(new_src, new_dest, overwrite);
         connectJob(job);
@@ -224,7 +224,7 @@ void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
     kDebug() << "ForwardingSlaveBase::symlink: " << target << ", " << dest << endl;
 
     KUrl new_dest;
-    if ( internalRewriteURL(dest, new_dest) )
+    if ( internalRewriteUrl(dest, new_dest) )
     {
         KIO::SimpleJob *job = KIO::symlink(target, new_dest, overwrite, false);
         connectSimpleJob(job);
@@ -238,7 +238,7 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
     kDebug() << "ForwardingSlaveBase::chmod: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::chmod(new_url, permissions);
         connectSimpleJob(job);
@@ -253,7 +253,7 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
     kDebug() << "ForwardingSlaveBase::copy: " << src << ", " << dest << endl;
 
     KUrl new_src, new_dest;
-    if ( internalRewriteURL(src, new_src) && internalRewriteURL(dest, new_dest) )
+    if ( internalRewriteUrl(src, new_src) && internalRewriteUrl(dest, new_dest) )
     {
         KIO::Job *job = KIO::file_copy(new_src, new_dest, permissions,
                                        overwrite, false);
@@ -268,7 +268,7 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
     kDebug() << "ForwardingSlaveBase::del: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteURL(url, new_url) )
+    if ( internalRewriteUrl(url, new_url) )
     {
         if (isfile)
         {

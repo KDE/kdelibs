@@ -129,7 +129,7 @@ public:
     /**
      * Call to signal that data from the sub-URL is needed
      */
-    void needSubURLData();
+    void needSubUrlData();
 
     /**
      * Used to report the status of the slave.
@@ -342,7 +342,7 @@ public:
     /**
      * Prepare slave for streaming operation
      */
-    virtual void setSubURL(const KUrl&url);
+    virtual void setSubUrl(const KUrl&url);
 
     /**
      * Opens the connection (forced)

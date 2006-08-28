@@ -64,7 +64,7 @@ public:
    /**
     * @return the URL of the current selected item.
     */
-    KUrl currentURL() const;
+    KUrl currentUrl() const;
 
    /**
     *  Adds a branch to the treeview item.

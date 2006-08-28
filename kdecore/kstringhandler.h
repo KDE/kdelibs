@@ -355,7 +355,7 @@ public:
      * @param text the string which may contain URLs
      * @return the resulting text
      */
-    static QString tagURLs( const QString& text );
+    static QString tagUrls( const QString& text );
 
     /**
       Obscure string by using a simple symmetric encryption. Applying the

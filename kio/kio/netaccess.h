@@ -280,7 +280,7 @@ public:
      * @return a local URL corresponding to the same ressource than the
      *         original URL, or the original URL if no local URL can be mapped
      */
-    static KUrl mostLocalURL(const KUrl& url, QWidget* window);
+    static KUrl mostLocalUrl(const KUrl& url, QWidget* window);
 
     /**
      * Deletes a file or a directory in a synchronous way.
@@ -379,8 +379,8 @@ public:
      *
      * This is a convenience function for KIO::mimetype.  You
      * should call this only when really necessary.
-     * KMimeType::findByURL can determine extension a lot faster, but
-     * less reliably for remote files. Only when findByURL() returns
+     * KMimeType::findByUrl can determine extension a lot faster, but
+     * less reliably for remote files. Only when findByUrl() returns
      * unknown (application/octet-stream) then this one should be
      * used.
      *

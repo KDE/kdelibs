@@ -373,7 +373,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     case MSG_NEED_SUBURL_DATA: {
-        emit needSubURLData();
+        emit needSubUrlData();
         break;
     }
     default:

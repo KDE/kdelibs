@@ -46,7 +46,7 @@ QDirLineEdit::~QDirLineEdit()
 {
 }
 
-void QDirLineEdit::setURL(const QString& txt)
+void QDirLineEdit::setUrl(const QString& txt)
 {
 	edit_->setText(txt);
 }

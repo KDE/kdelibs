@@ -33,11 +33,11 @@ public:
 	QDirMultiLineEdit(QWidget *parent = 0);
 	~QDirMultiLineEdit();
 
-	void setURLs(const QStringList&);
+	void setUrls(const QStringList&);
 	QStringList urls();
 
 protected:
-	void addURL(const QString&);
+	void addUrl(const QString&);
 
 private Q_SLOTS:
 	void slotAddClicked();

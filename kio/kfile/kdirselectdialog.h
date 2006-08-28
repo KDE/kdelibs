@@ -90,7 +90,7 @@ public:
     KUrl startDir() const { return m_startDir; }
 
 public Q_SLOTS:
-    void setCurrentURL( const KUrl& url );
+    void setCurrentUrl( const KUrl& url );
 
 protected Q_SLOTS:
     virtual void slotUser1();
@@ -104,7 +104,7 @@ protected:
 
 private Q_SLOTS:
     void slotCurrentChanged();
-    void slotURLActivated( const QString& );
+    void slotUrlActivated( const QString& );
     void slotNextDirToList( KFileTreeViewItem *dirItem );
     void slotComboTextChanged( const QString& text );
     void slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint & );

@@ -29,7 +29,7 @@
 #include "ksslconfig.h"
 #include "ksslcsessioncache.h"
 
-/* 
+/*
  * Operation:
  *
  * Sessions will be stored per running application, not KDE
@@ -69,7 +69,7 @@ static void setup() {
 
 #endif
 
-QString KSSLCSessionCache::getSessionForURL(const KUrl &kurl) {
+QString KSSLCSessionCache::getSessionForUrl(const KUrl &kurl) {
 #ifdef KSSL_HAVE_SSL
     if (!sessions) return QString();
     QString key = URLtoKey(kurl);
@@ -83,7 +83,7 @@ QString KSSLCSessionCache::getSessionForURL(const KUrl &kurl) {
     }
 
     // Negative caching disabled: cache pollution
-#if 0 
+#if 0
     kDebug(7029) <<"Negative caching " <<key <<endl;
     if (sessions->count() >= MAX_ENTRIES) sessions->removeLast();
     sessions->prepend(new KSSLCSession(key, QString()));
@@ -94,7 +94,7 @@ QString KSSLCSessionCache::getSessionForURL(const KUrl &kurl) {
 }
 
 
-void KSSLCSessionCache::putSessionForURL(const KUrl &kurl, const QString &session) {
+void KSSLCSessionCache::putSessionForUrl(const KUrl &kurl, const QString &session) {
 #ifdef KSSL_HAVE_SSL
     if (!sessions) setup();
     QString key = URLtoKey(kurl);

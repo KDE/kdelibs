@@ -66,13 +66,13 @@ bool KdeprintChecker::check(const QStringList& uris)
 	bool	state(true);
 	for (QStringList::ConstIterator it=uris.begin(); it!=uris.end() && state; ++it)
 	{
-		state = (state && checkURL(KUrl(*it)));
+		state = (state && checkUrl(KUrl(*it)));
 		// kDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state << endl;
 	}
 	return state;
 }
 
-bool KdeprintChecker::checkURL(const KUrl& url)
+bool KdeprintChecker::checkUrl(const KUrl& url)
 {
 	QString	prot(url.protocol());
 	if (prot == "config")

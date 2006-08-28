@@ -441,7 +441,7 @@ void SlaveBase::finished()
     d->totalSize=0;
 }
 
-void SlaveBase::needSubURLData()
+void SlaveBase::needSubUrlData()
 {
     m_pConnection->send( MSG_NEED_SUBURL_DATA );
 }
@@ -777,7 +777,7 @@ void SlaveBase::mkdir(KUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MKDIR)); }
 void SlaveBase::chmod(KUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CHMOD)); }
-void SlaveBase::setSubURL(KUrl const &)
+void SlaveBase::setSubUrl(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SUBURL)); }
 void SlaveBase::multiGet(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MULTI_GET)); }
@@ -1088,7 +1088,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         break;
     case CMD_SUBURL:
         stream >> url;
-        setSubURL(url);
+        setSubUrl(url);
         break;
     case CMD_NONE:
         fprintf(stderr, "Got unexpected CMD_NONE!\n");

@@ -125,7 +125,7 @@ bool KCookieServer::cookiesPending( const QString &url, KHttpCookieList *cookieL
   // Check whether 'url' has cookies on the pending list
   if (mPendingCookies->isEmpty())
      return false;
-  if (!KCookieJar::parseURL(url, fqdn, path))
+  if (!KCookieJar::parseUrl(url, fqdn, path))
      return false;
 
   mCookieJar->extractDomains( fqdn, domains );
@@ -536,7 +536,7 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
 {
    QString fqdn;
    QString dummy;
-   if (KCookieJar::parseURL(url, fqdn, dummy))
+   if (KCookieJar::parseUrl(url, fqdn, dummy))
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);
@@ -555,7 +555,7 @@ KCookieServer::getDomainAdvice(QString url)
    KCookieAdvice advice = KCookieDunno;
    QString fqdn;
    QString dummy;
-   if (KCookieJar::parseURL(url, fqdn, dummy))
+   if (KCookieJar::parseUrl(url, fqdn, dummy))
    {
       QStringList domains;
       mCookieJar->extractDomains(fqdn, domains);

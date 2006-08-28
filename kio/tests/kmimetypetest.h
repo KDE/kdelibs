@@ -10,7 +10,7 @@ private Q_SLOTS:
     void initTestCase();
     void testByName();
     void testIcons();
-    void testFindByURL();
+    void testFindByUrl();
     void testFindByPath();
     void testAllMimeTypes();
     void testMimeTypeParent();

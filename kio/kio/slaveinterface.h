@@ -126,7 +126,7 @@ Q_SIGNALS:
     void slaveStatus(pid_t, const QByteArray&, const QString &, bool);
     void listEntries( const KIO::UDSEntryList& );
     void statEntry( const KIO::UDSEntry& );
-    void needSubURLData();
+    void needSubUrlData();
     void needProgressId();
 
     void canResume( KIO::filesize_t );

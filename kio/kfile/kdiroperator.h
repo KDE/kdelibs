@@ -194,8 +194,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @param clearforward specifies whether the "forward" history should be cleared.
      * @param url the URL to set
      */
-	// ### KDE4: make virtual
-    void setURL(const KUrl& url, bool clearforward);
+    virtual void setUrl(const KUrl& url, bool clearforward);
 
     /**
      * Clears the current selection and attempts to set @p filename
@@ -213,8 +212,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see KCombiView
      * @see view
      */
-	// ### KDE4: make virtual
-    void setView(KFileView *view);
+    virtual void setView(KFileView *view);
 
     /**
      * @returns the currently used view.
@@ -707,7 +705,7 @@ protected Q_SLOTS:
     void resetCursor();
 
     /**
-     * Called after setURL() to load the directory, update the history,
+     * Called after setUrl() to load the directory, update the history,
      * etc.
      */
     void pathChanged();
@@ -843,7 +841,7 @@ private:
 
     void connectView(KFileView *);
 
-    bool openURL( const KUrl& url, bool keep = false, bool reload = false );
+    bool openUrl( const KUrl& url, bool keep = false, bool reload = false );
 
     KFileView *m_fileView;
     KFileItemList pendingMimeTypes;

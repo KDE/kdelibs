@@ -246,7 +246,7 @@ KCookieJar::KCookieJar()
     m_globalAdvice = KCookieDunno;
     m_configChanged = false;
     m_cookiesChanged = false;
-    
+
     KConfig cfg("khtml/domain_info", true, false, "data");
     QStringList countries = cfg.readEntry("twoLevelTLD", QStringList());
     for(QStringList::ConstIterator it = countries.begin();
@@ -279,7 +279,7 @@ static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePt
        if (domain2.isEmpty())
           domain2 = cookie->host();
 
-       if ( 
+       if (
             (cookiePtr->name() == cookie->name()) &&
             (
               nameMatchOnly ||
@@ -326,7 +326,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     KHttpCookiePtr cookie;
     KCookieAdvice advice = m_globalAdvice;
 
-    if (!parseURL(_url, fqdn, path))
+    if (!parseUrl(_url, fqdn, path))
         return cookieStr;
 
     bool secureRequest = _url.startsWith( L1("https://"), Qt::CaseInsensitive ) ||
@@ -396,7 +396,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
           {
              cookie->windowIds().append(windowId);
           }
-          
+
           if (it == domains.end()) // Only needed when processing pending cookies
              removeDuplicateFromList(&allCookies, cookie);
 
@@ -408,7 +408,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
     int cookieCount = 0;
 
-    int protVersion=0; 
+    int protVersion=0;
     for ( cookie=allCookies.first(); cookie != 0; cookie=allCookies.next() )
     {
        if (cookie->protocolVersion() > protVersion)
@@ -563,7 +563,7 @@ QString KCookieJar::stripDomain( KHttpCookiePtr cookiePtr)
     return domain;
 }
 
-bool KCookieJar::parseURL(const QString &_url,
+bool KCookieJar::parseUrl(const QString &_url,
                           QString &_fqdn,
                           QString &_path)
 {
@@ -640,13 +640,13 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
        if (partList.count() == 1)
          break; // We only have a TLD left.
-       
+
        if ((partList.count() == 2) && (m_twoLevelTLD.value(partList[1].toLower(), 0) == 1))
        {
           // This domain uses two-level TLDs in the form xxxx.yy
           break;
        }
-       
+
        if ((partList.count() == 2) && (partList[1].length() == 2))
        {
           // If this is a TLD, we should stop. (e.g. co.uk)
@@ -695,7 +695,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     QString path;
     bool crossDomain = false;
 
-    if (!parseURL(_url, fqdn, path))
+    if (!parseUrl(_url, fqdn, path))
     {
         // Error parsing _url
         return KHttpCookieList();
@@ -714,7 +714,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             cookieStr += 13;
             crossDomain = true;
         }
-        else if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0) 
+        else if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
         {
             cookieStr = parseNameValue(cookieStr+11, Name, Value, true);
 
@@ -860,7 +860,7 @@ KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
     QString fqdn;
     QString path;
 
-    if (!parseURL(_url, fqdn, path))
+    if (!parseUrl(_url, fqdn, path))
     {
         // Error parsing _url
         return KHttpCookieList();
@@ -958,7 +958,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 #ifdef MAX_COOKIE_LIMIT
         if (cookieList->count() >= MAX_COOKIES_PER_HOST)
            makeRoom(cookieList, cookiePtr); // Delete a cookie
-#endif           
+#endif
         cookieList->inSort( cookiePtr );
         m_cookiesChanged = true;
     }
@@ -1305,7 +1305,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                         path.toLatin1().constData(), (unsigned long) cookie->expireDate(),
                         cookie->protocolVersion(),
                         cookie->name().isEmpty() ? cookie->value().toLatin1().constData() : cookie->name().toLatin1().constData(),
-                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) + 
+                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) +
                         (cookie->hasExplicitPath() ? 4 : 0) + (cookie->name().isEmpty() ? 8 : 0),
                         cookie->value().toLatin1().constData());
                 cookie = cookieList->prev();
@@ -1442,10 +1442,10 @@ bool KCookieJar::loadCookies(const QString &_filename)
                 continue;
 
             KHttpCookie *cookie = new KHttpCookie(QString::fromLatin1(host),
-                                                  QString::fromLatin1(domain), 
-                                                  QString::fromLatin1(path), 
+                                                  QString::fromLatin1(domain),
+                                                  QString::fromLatin1(path),
                                                   QString::fromLatin1(name),
-                                                  QString::fromLatin1(value), 
+                                                  QString::fromLatin1(value),
                                                   expDate, protVer,
                                                   secure, httpOnly, explicitPath);
             addCookie(cookie);

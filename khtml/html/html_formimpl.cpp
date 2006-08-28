@@ -331,7 +331,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
                             fileUploads << path.pathOrUrl();
-                            const KMimeType::Ptr ptr = KMimeType::findByURL(path);
+                            const KMimeType::Ptr ptr = KMimeType::findByUrl(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
                                 hstr += ptr->name().toAscii().constData();

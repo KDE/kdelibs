@@ -62,7 +62,7 @@ QStringList KRecentDocument::recentDocuments()
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
        QString pathDesktop = d.absoluteFilePath( *it );
        KDesktopFile tmpDesktopFile( pathDesktop, false);
-       KUrl urlDesktopFile(tmpDesktopFile.readURL());
+       KUrl urlDesktopFile(tmpDesktopFile.readUrl());
        if( urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.path()).exists())
            d.remove(pathDesktop);
        else
@@ -143,7 +143,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     // If you change the line below, change the test in the above loop
     conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
     conf.writeEntry( "Name", url.fileName() );
-    conf.writeEntry( "Icon", KMimeType::iconNameForURL( url ) );
+    conf.writeEntry( "Icon", KMimeType::iconNameForUrl( url ) );
 }
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)

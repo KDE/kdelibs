@@ -313,7 +313,7 @@ void KFileMetaInfo::init( const KUrl& url, const QString& mimeType,
 
     QString mT;
     if (mimeType.isEmpty())
-        mT = KMimeType::findByURL(url)->name();
+        mT = KMimeType::findByUrl(url)->name();
     else
         mT = mimeType;
 

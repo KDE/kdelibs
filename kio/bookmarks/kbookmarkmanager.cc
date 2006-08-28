@@ -624,7 +624,7 @@ void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 
 ///////
 
-void KBookmarkOwner::openBookmarkURL( const QString& url )
+void KBookmarkOwner::openBookmarkUrl( const QString& url )
 {
   (void) new KRun(KUrl( url ),(QWidget*)0);
 }

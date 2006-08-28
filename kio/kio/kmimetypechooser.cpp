@@ -150,7 +150,7 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
         groupItem = mit.value();
 
     Q3CheckListItem *item = new Q3CheckListItem( groupItem, min, Q3CheckListItem::CheckBox );
-    item->setPixmap( 0, SmallIcon( mt->icon() ) );
+    item->setPixmap( 0, SmallIcon( mt->iconName() ) );
 
     int cl = 1;
 

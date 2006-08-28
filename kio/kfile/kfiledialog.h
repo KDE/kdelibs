@@ -699,7 +699,7 @@ public:
      * @return The URL that should be listed by default (e.g. by KFileDialog or
      *         KDirSelectDialog).
      */
-    static KUrl getStartURL( const KUrl& startDir, QString& recentDirClass );
+    static KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass );
 
     /**
      * @internal
@@ -713,7 +713,7 @@ Q_SIGNALS:
       * selection mode. The best way to get notified about selected file(s)
       * is to connect to the okClicked() signal inherited from KDialog
       * and call selectedFile(), selectedFiles(),
-      * selectedURL() or selectedURLs().
+      * selectedUrl() or selectedUrls().
       */
     void fileSelected(const QString&);
 
@@ -808,7 +808,7 @@ protected:
     /**
      * Returns the absolute version of the URL specified in locationEdit.
      */
-    KUrl getCompleteURL(const QString&);
+    KUrl getCompleteUrl(const QString&);
 
     /**
      * Returns the filename extension associated with the currentFilter().

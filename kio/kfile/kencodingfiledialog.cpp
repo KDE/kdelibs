@@ -125,8 +125,8 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenFileNamesAndEncoding(con
     return res;
 }
 
-KEncodingFileDialog::Result KEncodingFileDialog::getOpenURLAndEncoding(const QString& encoding, const QString& startDir,
-				const QString& filter, QWidget *parent, const QString& caption)
+KEncodingFileDialog::Result KEncodingFileDialog::getOpenUrlAndEncoding(const QString& encoding, const QString& startDir,
+                                                                       const QString& filter, QWidget *parent, const QString& caption)
 {
     KEncodingFileDialog dlg(startDir, encoding,filter,caption.isNull() ? i18n("Open") : caption,Opening,parent);
 
@@ -140,7 +140,7 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenURLAndEncoding(const QSt
     return res;
 }
 
-KEncodingFileDialog::Result KEncodingFileDialog::getOpenURLsAndEncoding(const QString& encoding, const QString& startDir,
+KEncodingFileDialog::Result KEncodingFileDialog::getOpenUrlsAndEncoding(const QString& encoding, const QString& startDir,
                                           const QString& filter,
                                           QWidget *parent,
                                           const QString& caption)
@@ -183,7 +183,7 @@ KEncodingFileDialog::Result KEncodingFileDialog::getSaveFileNameAndEncoding(cons
 }
 
 
-KEncodingFileDialog::Result  KEncodingFileDialog::getSaveURLAndEncoding(const QString& encoding,
+KEncodingFileDialog::Result  KEncodingFileDialog::getSaveUrlAndEncoding(const QString& encoding,
 			     const QString& dir, const  QString& filter,
                              QWidget *parent, const QString& caption)
 {

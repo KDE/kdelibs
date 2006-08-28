@@ -841,8 +841,8 @@ namespace KIO {
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
         virtual void slotMimetype( const QString &mimetype );
-        virtual void slotNeedSubURLData();
-        virtual void slotSubURLData(KIO::Job*, const QByteArray &);
+        virtual void slotNeedSubUrlData();
+        virtual void slotSubUrlData(KIO::Job*, const QByteArray &);
         virtual void slotMetaData( const KIO::MetaData &_metaData);
         void slotErrorPage();
         void slotCanResume( KIO::filesize_t offset );
@@ -1094,13 +1094,13 @@ namespace KIO {
 	 * Returns the source URL.
 	 * @return the source URL
 	 */
-        KUrl srcURL() const { return m_src; }
+        KUrl srcUrl() const { return m_src; }
 
 	/**
 	 * Returns the destination URL.
 	 * @return the destination URL
 	 */
-        KUrl destURL() const { return m_dest; }
+        KUrl destUrl() const { return m_dest; }
 
     public Q_SLOTS:
         void slotStart();
@@ -1207,7 +1207,7 @@ namespace KIO {
          * was no redirection.
          * @return the redirection url
          */
-        const KUrl& redirectionURL() const { return m_redirectionURL; }
+        const KUrl& redirectionUrl() const { return m_redirectionURL; }
 
         /**
          * Do not apply any KIOSK restrictions to this job.

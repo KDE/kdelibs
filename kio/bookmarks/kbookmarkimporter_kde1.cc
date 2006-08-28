@@ -70,7 +70,7 @@ void KBookmarkImporter::scanIntern( QDomElement & parentElem, const QString & _p
             KUrl file;
             file.setPath( QString( _path ) + '/' + QFile::decodeName(ep->d_name) );
 
-            KMimeType::Ptr res = KMimeType::findByURL( file, 0, true );
+            KMimeType::Ptr res = KMimeType::findByUrl( file, 0, true );
             //kDebug(7043) << " - " << file.url() << "  ->  " << res->name() << endl;
 
             if ( res->name() == "inode/directory" )

@@ -627,7 +627,7 @@ QString KUrlCompletion::makeCompletion(const QString &text)
 			return aMatch;
 	}
 
-	setListedURL( CTNone );
+	setListedUrl( CTNone );
 	stop();
 
 	return QString();
@@ -683,7 +683,7 @@ void KUrlCompletion::stop()
 /*
  * Keep track of the last listed directory
  */
-void KUrlCompletion::setListedURL( int complType,
+void KUrlCompletion::setListedUrl( int complType,
                                    const QString& directory,
                                    const QString& filter,
                                    bool no_hidden )
@@ -695,7 +695,7 @@ void KUrlCompletion::setListedURL( int complType,
 	d->last_prepend = d->prepend;
 }
 
-bool KUrlCompletion::isListedURL( int complType,
+bool KUrlCompletion::isListedUrl( int complType,
                                   const QString& directory,
                                   const QString& filter,
                                   bool no_hidden )
@@ -733,7 +733,7 @@ bool KUrlCompletion::userCompletion(const MyURL &url, QString *pMatch)
 	      || !url.file().startsWith( QLatin1Char('~') ) )
 		return false;
 
-	if ( !isListedURL( CTUser ) ) {
+	if ( !isListedUrl( CTUser ) ) {
 		stop();
 		clear();
 
@@ -767,7 +767,7 @@ bool KUrlCompletion::envCompletion(const MyURL &url, QString *pMatch)
 	if ( url.file().isEmpty() || url.file().at(0) != QLatin1Char('$') )
 		return false;
 
-	if ( !isListedURL( CTEnv ) ) {
+	if ( !isListedUrl( CTEnv ) ) {
 		stop();
 		clear();
 
@@ -794,7 +794,7 @@ bool KUrlCompletion::envCompletion(const MyURL &url, QString *pMatch)
 		addMatches( l );
 	}
 
-	setListedURL( CTEnv );
+	setListedUrl( CTEnv );
 
 	*pMatch = finished();
 	return true;
@@ -845,12 +845,12 @@ bool KUrlCompletion::exeCompletion(const MyURL &url, QString *pMatch)
 
 	// List files if needed
 	//
-	if ( !isListedURL( CTExe, directory, url.file(), no_hidden_files ) )
+	if ( !isListedUrl( CTExe, directory, url.file(), no_hidden_files ) )
 	{
 		stop();
 		clear();
 
-		setListedURL( CTExe, directory, url.file(), no_hidden_files );
+		setListedUrl( CTExe, directory, url.file(), no_hidden_files );
 
 		*pMatch = listDirectories( dirList, url.file(), true, false, no_hidden_files );
 	}
@@ -859,7 +859,7 @@ bool KUrlCompletion::exeCompletion(const MyURL &url, QString *pMatch)
 	}
 	else {
 		if ( d->dirListThread )
-			setListedURL( CTExe, directory, url.file(), no_hidden_files );
+			setListedUrl( CTExe, directory, url.file(), no_hidden_files );
 		*pMatch = QString();
 	}
 
@@ -918,12 +918,12 @@ bool KUrlCompletion::fileCompletion(const MyURL &url, QString *pMatch)
 
 	// List files if needed
 	//
-	if ( !isListedURL( CTFile, directory, QString(), no_hidden_files ) )
+	if ( !isListedUrl( CTFile, directory, QString(), no_hidden_files ) )
 	{
 		stop();
 		clear();
 
-		setListedURL( CTFile, directory, QString(), no_hidden_files );
+		setListedUrl( CTFile, directory, QString(), no_hidden_files );
 
 		// Append '/' to directories in Popup mode?
 		bool append_slash = ( d->popup_append_slash
@@ -989,17 +989,17 @@ bool KUrlCompletion::urlCompletion(const MyURL &url, QString *pMatch)
 
 	// List files if needed
 	//
-	if ( !isListedURL( CTUrl, url_dir.prettyUrl(), url.file() ) )
+	if ( !isListedUrl( CTUrl, url_dir.prettyUrl(), url.file() ) )
 	{
 		stop();
 		clear();
 
-		setListedURL( CTUrl, url_dir.prettyUrl(), QString() );
+		setListedUrl( CTUrl, url_dir.prettyUrl(), QString() );
 
 		QList<KUrl*> url_list;
 		url_list.append( new KUrl( url_dir ) );
 
-		listURLs( url_list, QString(), false );
+		listUrls( url_list, QString(), false );
 
 		*pMatch = QString();
 	}
@@ -1075,7 +1075,7 @@ QString KUrlCompletion::listDirectories(
 		{
 			KUrl url;
 			url.setPath(*it);
-			if ( KAuthorized::authorizeURLAction( QLatin1String("list"), KUrl(), url ) )
+			if ( KAuthorized::authorizeUrlAction( QLatin1String("list"), KUrl(), url ) )
 				dirs.append( *it );
 		}
 
@@ -1099,7 +1099,7 @@ QString KUrlCompletion::listDirectories(
 		url_list.append( new KUrl( *it ) );
 	}
 
-	listURLs( url_list, filter, only_exe, no_hidden );
+	listUrls( url_list, filter, only_exe, no_hidden );
 	// Will call addMatches() and finished()
 
 	return QString();
@@ -1113,7 +1113,7 @@ QString KUrlCompletion::listDirectories(
  * addMatches() is called with the listed files
  * finished() is called when the listing is done
  */
-void KUrlCompletion::listURLs(
+void KUrlCompletion::listUrls(
 		const QList<KUrl *> &urls,
 		const QString &filter,
 		bool only_exe,
@@ -1312,13 +1312,13 @@ void KUrlCompletion::customEvent(QEvent *e)
 
 		matchEvent->completionThread()->wait();
 
-		if ( !isListedURL( CTUser ) ) {
+		if ( !isListedUrl( CTUser ) ) {
 			stop();
 			clear();
 			addMatches( matchEvent->completionThread()->matches() );
 		}
 
-		setListedURL( CTUser );
+		setListedUrl( CTUser );
 
 		if ( d->userListThread == matchEvent->completionThread() )
 			d->userListThread = 0;

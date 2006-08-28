@@ -168,7 +168,7 @@ public:
    /**
     * find the according KFileTreeViewItem by an url
     */
-   virtual KFileTreeViewItem *findTVIByURL( const KUrl& );
+   virtual KFileTreeViewItem *findTVIByUrl( const KUrl& );
 
 Q_SIGNALS:
    /**
@@ -196,7 +196,7 @@ private Q_SLOTS:
    void slotListerStarted( const KUrl& );
    void slotDeleteItem( KFileItem* );
    void slotDirlisterClear();
-   void slotDirlisterClearURL( const KUrl& url );
+   void slotDirlisterClearUrl( const KUrl& url );
    void slotRedirect( const KUrl& oldUrl, const KUrl&newUrl );
 
 private:

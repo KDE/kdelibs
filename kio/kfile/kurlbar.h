@@ -87,7 +87,7 @@ public:
      * filename/directory of the url, if no description is set.
      * @see url
      */
-    void setURL( const KUrl& url );
+    void setUrl( const KUrl& url );
     /**
      * @p sets the icon for this item. See KIconLoader for a description
      * of the icon groups.
@@ -121,7 +121,7 @@ public:
 
     /**
      * returns the url of this item.
-     * @see setURL
+     * @see setUrl
      */
     const KUrl& url() const                     { return m_url; }
     /**
@@ -238,7 +238,7 @@ public:
      * Constructs a KUrlBar. Set @p useGlobalItems to true if you want to
      * allow global/local item separation.
      */
-    
+
     KDE_CONSTRUCTOR_DEPRECATED KUrlBar( bool useGlobalItems,
              QWidget *parent, const char *name, Qt::WFlags f = 0 );
     /**
@@ -358,7 +358,7 @@ public:
     /**
      * @returns the current KUrlBarItem, or 0L if none.
      * @see setCurrentItem
-     * @see currentURL
+     * @see currentUrl
      */
     KUrlBarItem * currentItem() const;
     /**
@@ -367,7 +367,7 @@ public:
      * @see currentItem
      * @see setCurrentItem
      */
-    KUrl currentURL() const;
+    KUrl currentUrl() const;
 
     /**
      * @returns true when the urlbar was modified by the user (e.g. by
@@ -391,7 +391,7 @@ public Q_SLOTS:
      * Makes the item with the url @p url the current item. Does nothing
      * if no item with that url is available.
      * @see currentItem
-     * @see currentURL
+     * @see currentUrl
      */
     virtual void setCurrentItem( const KUrl& url );
 
@@ -593,7 +593,7 @@ public:
      * @p parent the parent-widget for the dialog
      *
      * If you leave the icon empty, the default icon for the given url will be
-     * used (KMimeType::pixmapForURL()).
+     * used (KMimeType::pixmapForUrl()).
      */
     KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                        const QString& description, QString icon,

@@ -11,10 +11,10 @@ QString KStringHandlerTest::test = "The quick brown fox jumped over the lazy bri
 
 void KStringHandlerTest::word()
 {
-    QCOMPARE(KStringHandler::word(test, "2"), 
+    QCOMPARE(KStringHandler::word(test, "2"),
             QString("brown"));
-    QCOMPARE(KStringHandler::word(test, "2:4"), 
-            QString("brown fox jumped"));   
+    QCOMPARE(KStringHandler::word(test, "2:4"),
+            QString("brown fox jumped"));
 }
 
 void KStringHandlerTest::insword()
@@ -22,7 +22,7 @@ void KStringHandlerTest::insword()
     QCOMPARE(KStringHandler::insword(test, "very", 1),
             QString("The very quick brown fox jumped over the lazy bridge. "));
 }
-    
+
 void KStringHandlerTest::setword()
 {
     QCOMPARE(KStringHandler::setword(test, "very", 1),
@@ -36,7 +36,7 @@ void KStringHandlerTest::remrange()
     QCOMPARE(KStringHandler::remrange(test, "4:8"),
             QString("The quick brown fox "));
 }
-  
+
 void KStringHandlerTest::remword()
 {
     QCOMPARE(KStringHandler::remword(test, 4),
@@ -50,7 +50,7 @@ void KStringHandlerTest::capwords()
     QCOMPARE(KStringHandler::capwords(test),
             QString("The Quick Brown Fox Jumped Over The Lazy Bridge. "));
 }
-  
+
 void KStringHandlerTest::reverse()
 {
     QCOMPARE(KStringHandler::reverse(test),
@@ -68,11 +68,11 @@ void KStringHandlerTest::center()
 void KStringHandlerTest::tagURLs()
 {
     QString test = "Click on http://foo@bar:www.kde.org/yoyo/dyne.html#a1 for info.";
-    QCOMPARE(KStringHandler::tagURLs(test),
+    QCOMPARE(KStringHandler::tagUrls(test),
 	    QString("Click on <a href=\"http://foo@bar:www.kde.org/yoyo/dyne.html#a1\">http://foo@bar:www.kde.org/yoyo/dyne.html#a1</a> for info."));
 
     test = "http://www.foo.org/story$806";
-    QCOMPARE(KStringHandler::tagURLs(test),
+    QCOMPARE(KStringHandler::tagUrls(test),
 	    QString("<a href=\"http://www.foo.org/story$806\">http://www.foo.org/story$806</a>"));
 
 #if 0

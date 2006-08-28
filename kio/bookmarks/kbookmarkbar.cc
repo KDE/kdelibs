@@ -249,7 +249,7 @@ void KBookmarkBar::slotBookmarkSelected()
     if (const KAction* action = qobject_cast<const KAction*>(sender()))
     {
         const QString & url = action->property("url").toString();
-        m_pOwner->openBookmarkURL(url);
+        m_pOwner->openBookmarkUrl(url);
         emit openBookmark( url, QApplication::mouseButtons(), QApplication::keyboardModifiers() );
     }
 }

@@ -98,7 +98,7 @@ public:
    *
    * @return the name of the icon, can be QString().
    */
-  QString icon() const { return m_strIcon; } // KDE4: rename to iconName?
+  QString iconName() const { return m_strIcon; }
 
   /**
    * Return the filename of the icon associated with the mimetype.
@@ -108,8 +108,8 @@ public:
    *
    * @return The path to the icon associated with this MIME type.
    */
-  virtual QString icon( const KUrl& ) const { return m_strIcon; }
-  // TODO KDE4: rename to iconName, to be consistent with iconNameForURL and not sounding like we return a QIcon?
+  virtual QString iconName( const KUrl& ) const { return m_strIcon; }
+
 
   /**
    * Use this function only if you don't have a special URL
@@ -151,7 +151,7 @@ public:
 	    int _state = 0, QString * _path = 0L ) const;
 
   /**
-   * The same functionality as pixmapForURL(), but this method returns the name
+   * The same functionality as pixmapForUrl(), but this method returns the name
    * of the icon to load. You'll have to use KIconLoader to load the pixmap for it.
    * The advantage of this method is that you can store the result, and then use it
    * later on for any kind of size.
@@ -162,7 +162,7 @@ public:
    * @return the name of the icon. The name of a default icon if there is no icon
    *         for the mime type
    */
-  static QString iconNameForURL( const KUrl & _url, mode_t _mode = 0 );
+  static QString iconNameForUrl( const KUrl & _url, mode_t _mode = 0 );
 
 
   /**
@@ -170,7 +170,7 @@ public:
    * @param _url URL for the file
    * @param _mode the mode of the file
    */
-  static KDE_DEPRECATED QString iconForURL( const KUrl & _url, mode_t _mode = 0 );
+  static KDE_DEPRECATED QString iconForUrl( const KUrl & _url, mode_t _mode = 0 );
 
   /**
    * Return the "favicon" (see http://www.favicon.com) for the given @p url,
@@ -181,7 +181,7 @@ public:
    * @param url the URL of the favicon
    * @return the name of the favicon, or QString()
    */
-  static QString favIconForURL( const KUrl& url );
+  static QString favIconForUrl( const KUrl& url );
 
   /**
    * Returns the descriptive comment associated with the MIME type.
@@ -271,10 +271,10 @@ public:
    * @return A pointer to the matching mimetype. 0L is never returned.
    * @em Very @em Important: Don't store the result in a KMimeType* !
    */
-  static Ptr findByURL( const KUrl& _url, mode_t _mode = 0,
+  static Ptr findByUrl( const KUrl& _url, mode_t _mode = 0,
                         bool _is_local_file = false, bool _fast_mode = false );
 
-  static Ptr findByURL( const KUrl& _url, mode_t _mode,
+  static Ptr findByUrl( const KUrl& _url, mode_t _mode,
                         bool _is_local_file, bool _fast_mode,
 		  	bool *accurate);
   /**
@@ -292,7 +292,7 @@ public:
    * \code
    * KUrl u;
    * u.setPath(path);
-   * return findByURL( u, mode, true, fast_mode );
+   * return findByUrl( u, mode, true, fast_mode );
    * \endcode
    *
    * @param path the path to the file

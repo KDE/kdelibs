@@ -42,7 +42,7 @@ void KMimeTypeTest::initTestCase()
 
 static void checkIcon( const KUrl& url, const QString& expectedIcon )
 {
-    QString icon = KMimeType::iconNameForURL( url );
+    QString icon = KMimeType::iconNameForUrl( url );
     QCOMPARE( icon, expectedIcon );
 }
 
@@ -99,22 +99,22 @@ void KMimeTypeTest::testFindByPath()
     QCOMPARE( mf->name(), QString::fromLatin1( "image/png" ) );
 }
 
-void KMimeTypeTest::testFindByURL()
+void KMimeTypeTest::testFindByUrl()
 {
     KMimeType::Ptr mf;
 
-    mf = KMimeType::findByURL( KUrl("http://foo/bar.png") );
+    mf = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
 
     if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
         QSKIP( "man protocol not installed", SkipSingle );
 
-    mf = KMimeType::findByURL( KUrl("man:/ls") );
+    mf = KMimeType::findByUrl( KUrl("man:/ls") );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
 
-    mf = KMimeType::findByURL( KUrl("man:/ls/") );
+    mf = KMimeType::findByUrl( KUrl("man:/ls/") );
     QVERIFY( mf );
     QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
 }

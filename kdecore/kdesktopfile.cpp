@@ -175,7 +175,7 @@ QString KDesktopFile::readDevice() const
   return readEntry("Dev");
 }
 
-QString KDesktopFile::readURL() const
+QString KDesktopFile::readUrl() const
 {
     if (hasDeviceType()) {
         QString device = readDevice();

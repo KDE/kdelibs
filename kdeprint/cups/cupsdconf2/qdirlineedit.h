@@ -33,7 +33,7 @@ public:
 	QDirLineEdit(bool file, QWidget *parent = 0);
 	~QDirLineEdit();
 
-	void setURL(const QString& txt);
+	void setUrl(const QString& txt);
 	QString url();
 	void setFileEdit(bool on = true);
 

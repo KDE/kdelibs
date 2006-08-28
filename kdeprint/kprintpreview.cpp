@@ -242,7 +242,7 @@ void KPrintPreview::initView(KLibFactory *factory)
 
 void KPrintPreview::openFile(const QString& file)
 {
-	d->gvpart_->openURL(KUrl(file));
+	d->gvpart_->openUrl(KUrl(file));
 }
 
 bool KPrintPreview::isValid() const

@@ -102,7 +102,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   _url.adjustPath(KUrl::RemoveTrailingSlash);
   QString urlStr = _url.url();
 
-  if ( !validURL( lister, _url ) )
+  if ( !validUrl( lister, _url ) )
     return false;
 
 #ifdef DEBUG_CACHE
@@ -286,7 +286,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   return true;
 }
 
-bool KDirListerCache::validURL( const KDirLister *lister, const KUrl& url ) const
+bool KDirListerCache::validUrl( const KDirLister *lister, const KUrl& url ) const
 {
   if ( !url.isValid() )
   {
@@ -648,9 +648,9 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
     return true;
 }
 
-KFileItem *KDirListerCache::itemForURL( const KUrl& url ) const
+KFileItem *KDirListerCache::itemForUrl( const KUrl& url ) const
 {
-  return findByURL( 0, url );
+  return findByUrl( 0, url );
 }
 
 KFileItemList *KDirListerCache::itemsForDir( const KUrl& _dir ) const
@@ -677,7 +677,7 @@ KFileItem *KDirListerCache::findByName( const KDirLister *lister, const QString&
   return 0;
 }
 
-KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KUrl& _u ) const
+KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u ) const
 {
   KUrl _url = _u;
   _url.adjustPath(KUrl::RemoveTrailingSlash);
@@ -691,7 +691,7 @@ KFileItem *KDirListerCache::findByURL( const KDirLister *lister, const KUrl& _u 
 
   const KFileItemList *itemList = itemsForDir( parentDir );
   if ( itemList )
-    return itemList->findByURL( _url );
+    return itemList->findByUrl( _url );
   return 0;
 }
 
@@ -758,7 +758,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
     if ( url.isLocalFile() )
     {
       kDebug(7004) << "KDirListerCache::slotFilesChanged " << url << endl;
-      KFileItem *fileitem = findByURL( 0, url );
+      KFileItem *fileitem = findByUrl( 0, url );
       if ( fileitem )
       {
           // we need to refresh the item, because e.g. the permissions can have changed.
@@ -801,7 +801,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   KUrl oldurl( src );
   oldurl.adjustPath( KUrl::RemoveTrailingSlash );
-  KFileItem *fileitem = findByURL( 0, oldurl );
+  KFileItem *fileitem = findByUrl( 0, oldurl );
   if ( fileitem )
   {
     if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
@@ -809,7 +809,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     else
     {
         aboutToRefreshItem( fileitem );
-        fileitem->setURL( dst );
+        fileitem->setUrl( dst );
         fileitem->refreshMimeType();
         emitRefreshItem( fileitem );
     }
@@ -911,7 +911,7 @@ void KDirListerCache::slotFileDirtyDelayed()
 
   KUrl u;
   u.setPath( file );
-  KFileItem *item = findByURL( 0, u ); // search all items
+  KFileItem *item = findByUrl( 0, u ); // search all items
   if ( item )
   {
     // we need to refresh the item, because e.g. the permissions can have changed.
@@ -1363,7 +1363,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
         newItemUrl.setPath( newDirUrl.path() );
         newItemUrl.addPath( oldItemUrl.fileName() );
         kDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
-        (*kit)->setURL( newItemUrl );
+        (*kit)->setUrl( newItemUrl );
       }
       emitRedirections( oldDirUrl, newDirUrl );
     }
@@ -1651,8 +1651,8 @@ KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_
 
 const KUrl& KDirListerCache::joburl( KIO::ListJob *job )
 {
-  if ( job->redirectionURL().isValid() )
-     return job->redirectionURL();
+  if ( job->redirectionUrl().isValid() )
+     return job->redirectionUrl();
   else
      return job->url();
 }
@@ -1849,7 +1849,7 @@ KDirLister::~KDirLister()
   delete d;
 }
 
-bool KDirLister::openURL( const KUrl& _url, bool _keep, bool _reload )
+bool KDirLister::openUrl( const KUrl& _url, bool _keep, bool _reload )
 {
   kDebug(7003) << k_funcinfo << _url.prettyUrl()
                 << " keep=" << _keep << " reload=" << _reload << endl;
@@ -2042,9 +2042,9 @@ KFileItem *KDirLister::rootItem() const
   return d->rootFileItem;
 }
 
-KFileItem *KDirLister::findByURL( const KUrl& _url ) const
+KFileItem *KDirLister::findByUrl( const KUrl& _url ) const
 {
-  return s_pCache->findByURL( this, _url );
+  return s_pCache->findByUrl( this, _url );
 }
 
 KFileItem *KDirLister::findByName( const QString& _name ) const

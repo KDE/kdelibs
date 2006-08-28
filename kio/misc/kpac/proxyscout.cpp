@@ -53,7 +53,7 @@ namespace KPAC
         delete m_instance;
     }
 
-    QString ProxyScout::proxyForURL( const KUrl& url, const QDBusMessage &msg )
+    QString ProxyScout::proxyForUrl( const KUrl& url, const QDBusMessage &msg )
     {
         if ( m_suspendTime )
         {
@@ -62,7 +62,7 @@ namespace KPAC
         }
 
         // Never use a proxy for the script itself
-        if ( m_downloader && url.equals( m_downloader->scriptURL(), KUrl::CompareWithoutTrailingSlash ) ) return "DIRECT";
+        if ( m_downloader && url.equals( m_downloader->scriptUrl(), KUrl::CompareWithoutTrailingSlash ) ) return "DIRECT";
 
         if ( m_script ) return handleRequest( url );
 

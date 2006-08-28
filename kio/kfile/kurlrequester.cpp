@@ -211,7 +211,7 @@ void KUrlRequester::init()
     myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     myButton->setToolTip(i18n("Open file dialog"));
 
-    connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
+    connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateUrl() ));
 
     setSpacing( KDialog::spacingHint() );
 
@@ -348,7 +348,7 @@ KComboBox * KUrlRequester::comboBox() const
     return d->combo;
 }
 
-void KUrlRequester::slotUpdateURL()
+void KUrlRequester::slotUpdateUrl()
 {
     KUrl u( KUrl::fromPath( QDir::currentPath() + '/' ), url().url() );
     myButton->setURL( u );

@@ -403,7 +403,7 @@ BrowserExtension::~BrowserExtension()
   delete d;
 }
 
-void BrowserExtension::setURLArgs( const URLArgs &args )
+void BrowserExtension::setUrlArgs( const URLArgs &args )
 {
   m_args = args;
 }
@@ -438,9 +438,9 @@ void BrowserExtension::restoreState( QDataStream &stream )
   args.xOffset = xOfs;
   args.yOffset = yOfs;
 
-  setURLArgs( args );
+  setUrlArgs( args );
 
-  m_part->openURL( u );
+  m_part->openUrl( u );
 }
 
 bool BrowserExtension::isURLDropHandlingEnabled() const
@@ -456,7 +456,7 @@ void BrowserExtension::setURLDropHandlingEnabled( bool enable )
 void BrowserExtension::slotCompleted()
 {
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
-  setURLArgs( URLArgs() );
+  setUrlArgs( URLArgs() );
 }
 
 void BrowserExtension::pasteRequest()
@@ -467,29 +467,29 @@ void BrowserExtension::pasteRequest()
     url.remove(QRegExp("[\\ ]*\\n+[\\ ]*"));
 
     // Check if it's a URL
-    QStringList filters = KURIFilter::self()->pluginNames();
+    QStringList filters = KUriFilter::self()->pluginNames();
     filters.removeAll( "kuriikwsfilter" );
     filters.removeAll( "localdomainurifilter" );
-    KURIFilterData filterData;
+    KUriFilterData filterData;
     filterData.setData( url );
     filterData.setCheckForExecutables( false );
-    if ( KURIFilter::self()->filterURI( filterData, filters ) )
+    if ( KUriFilter::self()->filterUri( filterData, filters ) )
     {
         switch ( filterData.uriType() )
 	{
-	    case KURIFilterData::LOCAL_FILE:
-	    case KURIFilterData::LOCAL_DIR:
-	    case KURIFilterData::NET_PROTOCOL:
-	        slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
+	    case KUriFilterData::LOCAL_FILE:
+	    case KUriFilterData::LOCAL_DIR:
+	    case KUriFilterData::NET_PROTOCOL:
+	        slotOpenUrlRequest( filterData.uri(), KParts::URLArgs() );
 		break;
-	    case KURIFilterData::ERROR:
+	    case KUriFilterData::ERROR:
 		KMessageBox::sorry( m_part->widget(), filterData.errorMsg() );
 		break;
 	    default:
 		break;
 	}
     }
-    else if ( KURIFilter::self()->filterURI( filterData,
+    else if ( KUriFilter::self()->filterUri( filterData,
                     QStringList( QLatin1String( "kuriikwsfilter" ) ) ) &&
               url.length() < 250 )
     {
@@ -497,11 +497,11 @@ void BrowserExtension::pasteRequest()
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ,  Qt::escape(url) ),
 		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "find"),
 		    KStdGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
-          slotOpenURLRequest( filterData.uri(), KParts::URLArgs() );
+          slotOpenUrlRequest( filterData.uri(), KParts::URLArgs() );
     }
 }
 
-void BrowserExtension::slotOpenURLRequest( const KUrl &url, const KParts::URLArgs &args )
+void BrowserExtension::slotOpenUrlRequest( const KUrl &url, const KParts::URLArgs &args )
 {
     //kDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url() << endl;
     BrowserExtensionPrivate::DelayedRequest req;
@@ -511,12 +511,12 @@ void BrowserExtension::slotOpenURLRequest( const KUrl &url, const KParts::URLArg
     QTimer::singleShot( 0, this, SLOT( slotEmitOpenURLRequestDelayed() ) );
 }
 
-void BrowserExtension::slotEmitOpenURLRequestDelayed()
+void BrowserExtension::slotEmitOpenUrlRequestDelayed()
 {
     if (d->m_requests.isEmpty()) return;
     BrowserExtensionPrivate::DelayedRequest req = d->m_requests.front();
     d->m_requests.pop_front();
-    emit openURLRequestDelayed( req.m_delayedURL, req.m_delayedArgs );
+    emit openUrlRequestDelayed( req.m_delayedURL, req.m_delayedArgs );
     // tricky: do not do anything here! (no access to member variables, etc.)
 }
 
@@ -660,7 +660,7 @@ const QList<KParts::ReadOnlyPart*> BrowserHostExtension::frames() const
   return QList<KParts::ReadOnlyPart*>();
 }
 
-bool BrowserHostExtension::openURLInFrame( const KUrl &, const KParts::URLArgs & )
+bool BrowserHostExtension::openUrlInFrame( const KUrl &, const KParts::URLArgs & )
 {
   return false;
 }

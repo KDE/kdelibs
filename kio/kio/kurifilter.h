@@ -35,8 +35,8 @@
 #undef ERROR
 #endif
 
-class KURIFilterPrivate;
-class KURIFilterDataPrivate;
+class KUriFilterPrivate;
+class KUriFilterDataPrivate;
 
 class KCModule;
 
@@ -47,7 +47,7 @@ class KCModule;
 *
 * Use this object if you require a more detailed information
 * about the URI you want to filter. Any application can create
-* an instance of this class and send it to KURIFilter to
+* an instance of this class and send it to KUriFilter to
 * have the plugins fill out all possible information about the
 * URI.
 *
@@ -55,8 +55,8 @@ class KCModule;
 *
 * \code
 *   QString text = "kde.org";
-*   KURIFilterData d = text;
-*   bool filtered = KURIFilter::self()->filter( d );
+*   KUriFilterData d = text;
+*   bool filtered = KUriFilter::self()->filter( d );
 *   cout << "URL: " << text.toLatin1() << endl
 *        << "Filtered URL: " << d.uri().url().toLatin1() << endl
 *        << "URI Type: " << d.uriType() << endl
@@ -75,9 +75,9 @@ class KCModule;
 * @author Dawit Alemayehu <adawit at kde.org>
 */
 
-class KIO_EXPORT KURIFilterData
+class KIO_EXPORT KUriFilterData
 {
-friend class KURIFilterPlugin;
+friend class KUriFilterPlugin;
 
 public:
     /**
@@ -94,45 +94,45 @@ public:
      * @li ERROR        - An incorrect URI (ex: "~johndoe" when user johndoe
      *                    does not exist in that system )
      * @li UNKNOWN      - A URI that is not identified. Default value when
-     *                    a KURIFilterData is first created.
+     *                    a KUriFilterData is first created.
      */
-    enum URITypes { NET_PROTOCOL=0, LOCAL_FILE, LOCAL_DIR, EXECUTABLE, HELP, SHELL, BLOCKED, ERROR, UNKNOWN };
+    enum UriTypes { NET_PROTOCOL=0, LOCAL_FILE, LOCAL_DIR, EXECUTABLE, HELP, SHELL, BLOCKED, ERROR, UNKNOWN };
 
     /**
      * Default constructor.
      *
-     * Creates a URIFilterData object.
+     * Creates a UriFilterData object.
      */
-    KURIFilterData() { init(); }
+    KUriFilterData() { init(); }
 
     /**
-     * Creates a URIFilterData object from the given URL.
+     * Creates a UriFilterData object from the given URL.
      *
      * @param url is the URL to be filtered.
      */
-    KURIFilterData( const KUrl& url ) { init( url); }
+    KUriFilterData( const KUrl& url ) { init( url); }
 
     /**
-     * Creates a URIFilterData object from the given string.
+     * Creates a UriFilterData object from the given string.
      *
      * @param url is the string to be filtered.
      */
-    KURIFilterData( const QString& url ) { init( url ); }
+    KUriFilterData( const QString& url ) { init( url ); }
 
     /**
      * Copy constructor.
      *
-     * Creates a URIFilterData object from another
+     * Creates a UriFilterData object from another
      * URI filter data object.
      *
      * @param data the uri filter data to be copied.
      */
-    KURIFilterData( const KURIFilterData& data);
+    KUriFilterData( const KUriFilterData& data);
 
     /**
      * Destructor.
      */
-    ~KURIFilterData();
+    ~KUriFilterData();
 
 
     /**
@@ -152,7 +152,7 @@ public:
      *
      * This functions returns the error message set
      * by the plugin whenever the uri type is set to
-     * KURIFilterData::ERROR.  Otherwise, it returns
+     * KUriFilterData::ERROR.  Otherwise, it returns
      * a QString().
      *
      * @return the error message or a NULL when there is none.
@@ -162,11 +162,11 @@ public:
     /**
      * Returns the URI type.
      *
-     * This method always returns KURIFilterData::UNKNOWN
+     * This method always returns KUriFilterData::UNKNOWN
      * if the given URL was not filtered.
      * @return the type of the URI
      */
-    URITypes uriType() const { return m_iType; }
+    UriTypes uriType() const { return m_iType; }
 
     /**
      * Sets the URL to be filtered.
@@ -273,32 +273,32 @@ public:
      * Overloaded assigenment operator.
      *
      * This function allows you to easily assign a KUrl
-     * to a KURIFilterData object.
+     * to a KUriFilterData object.
      *
-     * @return an instance of a KURIFilterData object.
+     * @return an instance of a KUriFilterData object.
      */
-    KURIFilterData& operator=( const KUrl& url ) { init( url ); return *this; }
+    KUriFilterData& operator=( const KUrl& url ) { init( url ); return *this; }
 
     /**
      * Overloaded assigenment operator.
      *
      * This function allows you to easily assign a QString
-     * to a KURIFilterData object.
+     * to a KUriFilterData object.
      *
-     * @return an instance of a KURIFilterData object.
+     * @return an instance of a KUriFilterData object.
      */
-    KURIFilterData& operator=( const QString& url ) { init( url ); return *this; }
+    KUriFilterData& operator=( const QString& url ) { init( url ); return *this; }
 
 protected:
 
     /**
-     * Initializes the KURIFilterData on construction.
+     * Initializes the KUriFilterData on construction.
      * @param url the URL to initialize the object with
      */
     void init( const KUrl& url);
 
     /**
-     * Initializes the KURIFilterData on construction.
+     * Initializes the KUriFilterData on construction.
      * @param url the URL to initialize the object with
      */
     void init( const QString& url = QString() );
@@ -311,8 +311,8 @@ private:
     QString m_strIconName;
 
     KUrl m_pURI;
-    URITypes m_iType;
-    KURIFilterDataPrivate *d;
+    UriTypes m_iType;
+    KUriFilterDataPrivate *d;
 };
 
 
@@ -324,11 +324,11 @@ private:
  * class and provide a concrete implementation.
  *
  * All inheriting classes need to implement the pure virtual function
- * filterURI.
+ * filterUri.
  *
  * @short Abstract class for URI filter plugins.
  */
-class KIO_EXPORT KURIFilterPlugin : public QObject
+class KIO_EXPORT KUriFilterPlugin : public QObject
 {
     Q_OBJECT
 
@@ -342,11 +342,7 @@ public:
      * @param name the name of the plugin, or 0 for no name
      * @param pri the priority of the plugin.
      */
-#ifdef KDE3_SUPPORT
-    KURIFilterPlugin( QObject *parent = 0, const char *name = 0, double pri = 1.0 );
-#else
-    KURIFilterPlugin( const QString &name, QObject *parent = 0, double pri = 1.0 );
-#endif
+    KUriFilterPlugin( const QString &name, QObject *parent = 0, double pri = 1.0 );
 
     /**
      * Returns the filter's name.
@@ -371,7 +367,7 @@ public:
      * @param data the URI data to be filtered.
      * @return A boolean indicating whether the URI has been changed.
      */
-    virtual bool filterURI( KURIFilterData& data ) const = 0;
+    virtual bool filterUri( KUriFilterData& data ) const = 0;
 
     /**
      * Creates a configuration module for the filter.
@@ -395,19 +391,19 @@ protected:
     /**
      * Sets the the URL in @p data to @p uri.
      */
-    void setFilteredURI ( KURIFilterData& data, const KUrl& uri ) const;
+    void setFilteredUri ( KUriFilterData& data, const KUrl& uri ) const;
 
     /**
      * Sets the error message in @p data to @p errormsg.
      */
-    void setErrorMsg ( KURIFilterData& data, const QString& errmsg ) const {
+    void setErrorMsg ( KUriFilterData& data, const QString& errmsg ) const {
         data.m_strErrMsg = errmsg;
     }
 
     /**
      * Sets the URI type in @p data to @p type.
      */
-    void setURIType ( KURIFilterData& data, KURIFilterData::URITypes type) const {
+    void setUriType ( KUriFilterData& data, KUriFilterData::UriTypes type) const {
         data.m_iType = type;
         data.m_bChanged = true;
     }
@@ -416,7 +412,7 @@ protected:
      * Sets the arguments and options string in @p data
      * to @p args if any were found during filterting.
      */
-    void setArguments( KURIFilterData& data, const QString& args ) const;
+    void setArguments( KUriFilterData& data, const QString& args ) const;
 
     QString m_strName;
     double m_dblPriority;
@@ -424,24 +420,24 @@ protected:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KURIFilterPluginPrivate *d;
+    class KUriFilterPluginPrivate *d;
 };
 
 
 /**
  * A list of filter plugins.
  */
-class KIO_EXPORT KURIFilterPluginList : public Q3PtrList<KURIFilterPlugin>
+class KIO_EXPORT KUriFilterPluginList : public Q3PtrList<KUriFilterPlugin>
 {
 public:
     virtual int compareItems(Item a, Item b)
     {
-      double diff = ((KURIFilterPlugin *) a)->priority() - ((KURIFilterPlugin *) b)->priority();
+      double diff = ((KUriFilterPlugin *) a)->priority() - ((KUriFilterPlugin *) b)->priority();
       return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
     }
 
 private:
-    KURIFilterPrivate *d;
+    KUriFilterPrivate *d;
 
 };
 
@@ -453,16 +449,16 @@ private:
  * remain a generic parser capable of parsing any generic URL that adheres
  * to specifications.
  *
- * The KURIFilter class applies a number of filters to a URI and returns the
+ * The KUriFilter class applies a number of filters to a URI and returns the
  * filtered version whenever possible. The filters are implemented using
  * plugins to provide easy extensibility of the filtering mechanism. New
  * filters can be added in the future by simply inheriting from
- * KURIFilterPlugin and implementing the KURIFilterPlugin::filterURI
+ * KUriFilterPlugin and implementing the KUriFilterPlugin::filterUri
  * method.
  *
  * Use of this plugin-manager class is straight forward.  Since it is a
  * singleton object, all you have to do is obtain an instance by doing
- * @p KURIFilter::self() and use any of the public member functions to
+ * @p KUriFilter::self() and use any of the public member functions to
  * preform the filtering.
  *
  * \b Example
@@ -470,14 +466,14 @@ private:
  * To simply filter a given string:
  *
  * \code
- * bool filtered = KURIFilter::self()->filterURI( "kde.org" );
+ * bool filtered = KUriFilter::self()->filterUri( "kde.org" );
  * \endcode
  *
  * You can alternatively use a KUrl:
  *
  * \code
  * KUrl url = "kde.org";
- * bool filtered = KURIFilter::self()->filterURI( url );
+ * bool filtered = KUriFilter::self()->filterUri( url );
  * \endcode
  *
  * If you have a constant string or a constant URL, simply invoke the
@@ -485,7 +481,7 @@ private:
  * of a boolean flag:
  *
  * \code
- * QString u = KURIFilter::self()->filteredURI( "kde.org" );
+ * QString u = KUriFilter::self()->filteredUri( "kde.org" );
  * \endcode
  *
  * You can also restrict the filter(s) to be used by supplying
@@ -499,38 +495,38 @@ private:
  *
  * \code
  * QString text = "kde.org";
- * bool filtered = KURIFilter::self()->filterURI( text, "kshorturifilter" );
+ * bool filtered = KUriFilter::self()->filterUri( text, "kshorturifilter" );
  * \endcode
  *
  * \code
  * QStringList list;
  * list << "kshorturifilter" << "localdomainfilter";
- * bool filtered = KURIFilter::self()->filterURI( text, list );
+ * bool filtered = KUriFilter::self()->filterUri( text, list );
  * \endcode
  *
- * KURIFilter also allows richer data exchange through a simple
- * meta-object called @p KURIFilterData. Using this meta-object
+ * KUriFilter also allows richer data exchange through a simple
+ * meta-object called @p KUriFilterData. Using this meta-object
  * you can find out more information about the URL you want to
- * filter. See KURIFilterData for examples and details.
+ * filter. See KUriFilterData for examples and details.
  *
  * @short Filters a given URL into its proper format whenever possible.
  */
 
-class KIO_EXPORT KURIFilter
+class KIO_EXPORT KUriFilter
 {
 public:
     /**
      *  Destructor
      */
-    ~KURIFilter ();
+    ~KUriFilter ();
 
     /**
-     * Returns an instance of KURIFilter.
+     * Returns an instance of KUriFilter.
      */
-    static KURIFilter* self();
+    static KUriFilter* self();
 
     /**
-     * Filters the URI given by the object URIFilterData.
+     * Filters the URI given by the object UriFilterData.
      *
      * The given URL is filtered based on the specified list of filters.
      * If the list is empty all available filters would be used.
@@ -540,7 +536,7 @@ public:
      *
      * @return a boolean indicating whether the URI has been changed
      */
-    bool filterURI( KURIFilterData& data, const QStringList& filters = QStringList() );
+    bool filterUri( KUriFilterData& data, const QStringList& filters = QStringList() );
 
     /**
      * Filters the URI given by the URL.
@@ -553,7 +549,7 @@ public:
      *
      * @return a boolean indicating whether the URI has been changed
      */
-    bool filterURI( KUrl &uri, const QStringList& filters = QStringList() );
+    bool filterUri( KUrl &uri, const QStringList& filters = QStringList() );
 
     /**
      * Filters a string representing a URI.
@@ -566,7 +562,7 @@ public:
      *
      * @return a boolean indicating whether the URI has been changed
      */
-    bool filterURI( QString &uri, const QStringList& filters = QStringList() );
+    bool filterUri( QString &uri, const QStringList& filters = QStringList() );
 
     /**
      * Returns the filtered URI.
@@ -579,7 +575,7 @@ public:
      *
      * @return the filtered URI or null if it cannot be filtered
      */
-    KUrl filteredURI( const KUrl &uri, const QStringList& filters = QStringList() );
+    KUrl filteredUri( const KUrl &uri, const QStringList& filters = QStringList() );
 
     /**
      * Return a filtered string representation of a URI.
@@ -592,7 +588,7 @@ public:
      *
      * @return the filtered URI or null if it cannot be filtered
      */
-    QString filteredURI( const QString &uri, const QStringList& filters = QStringList() );
+    QString filteredUri( const QString &uri, const QStringList& filters = QStringList() );
 
     /**
      * Return an iterator to iterate over all loaded
@@ -600,7 +596,7 @@ public:
      *
      * @return a plugin iterator.
      */
-    Q3PtrListIterator<KURIFilterPlugin> pluginsIterator() const;
+    Q3PtrListIterator<KUriFilterPlugin> pluginsIterator() const;
 
     /**
      * Return a list of the names of all loaded plugins.
@@ -614,11 +610,11 @@ protected:
     /**
      * A protected constructor.
      *
-     * This constructor creates a KURIFilter and
+     * This constructor creates a KUriFilter and
      * initializes all plugins it can find by invoking
      * loadPlugins.
      */
-    KURIFilter();
+    KUriFilter();
 
     /**
      * Loads all allowed plugins.
@@ -629,9 +625,9 @@ protected:
     void loadPlugins();
 
 private:
-    static KURIFilter *m_self;
-    KURIFilterPluginList m_lstPlugins;
-    KURIFilterPrivate *d;
+    static KUriFilter *m_self;
+    KUriFilterPluginList m_lstPlugins;
+    KUriFilterPrivate *d;
 };
 
 #endif

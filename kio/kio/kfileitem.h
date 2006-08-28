@@ -117,11 +117,11 @@ public:
    * (used for example when an item got renamed).
    * @param url the item's URL
    */
-  void setURL( const KUrl &url );
+  void setUrl( const KUrl &url );
 
   /**
    * Sets the item's name (i.e. the filename).
-   * This is automatically done by setURL, to set the name from the URL's fileName().
+   * This is automatically done by setUrl, to set the name from the URL's fileName().
    * This method is provided for some special cases like relative paths as names (KFindPart)
    * @param name the item's name
    */
@@ -256,7 +256,7 @@ public:
    * Returns true if the file is a local file.
    * @return true if the file is local, false otherwise
    */
-  bool isLocalFile() const { return m_bIsLocalURL; }
+  bool isLocalFile() const { return m_bIsLocalUrl; }
 
   /**
    * Returns the text of the file item.
@@ -509,7 +509,7 @@ public:
    * Tries to give a local URL for this file item if possible.
    * The given boolean indicates if the returned url is local or not.
    */
-  KUrl mostLocalURL(bool &local) const; // KDE4 TODO: bool* local = 0
+  KUrl mostLocalUrl(bool &local) const; // KDE4 TODO: bool* local = 0
 
   /////////////
 
@@ -587,7 +587,7 @@ private:
   /**
    * True if local file
    */
-  bool m_bIsLocalURL:1;
+  bool m_bIsLocalUrl:1;
 
   bool m_bMimeTypeKnown:1;
 
@@ -635,7 +635,7 @@ public:
 
   /// Find a KFileItem by URL and return it.
   /// @return the item with the given URL, or 0 if none was found
-  KFileItem* findByURL( const KUrl& url ) const {
+  KFileItem* findByUrl( const KUrl& url ) const {
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {

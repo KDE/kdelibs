@@ -298,7 +298,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // this is a workaround for now
         // FIXME
         const KUrl dummyURL( "http://www.kde.org/" );
-        const QString httpProxy = KProtocolManager::proxyForURL(dummyURL);
+        const QString httpProxy = KProtocolManager::proxyForUrl(dummyURL);
         kDebug(6100) << "httpProxy is " << httpProxy << endl;
 
         const KUrl url( httpProxy );

@@ -253,7 +253,7 @@ Q3DragObject * KFileTreeView::dragObject()
 
    KUrl::List urls;
    const QList<Q3ListViewItem *> fileList = selectedItems();
-   for (int i = 0; i < fileList.size(); ++i) 
+   for (int i = 0; i < fileList.size(); ++i)
    {
       urls.append( static_cast<KFileTreeViewItem*>(fileList.at(i))->url() );
    }
@@ -589,7 +589,7 @@ KFileTreeViewItem * KFileTreeView::currentKFileTreeViewItem() const
    return static_cast<KFileTreeViewItem *>( selectedItem() );
 }
 
-KUrl KFileTreeView::currentURL() const
+KUrl KFileTreeView::currentUrl() const
 {
     KFileTreeViewItem *item = currentKFileTreeViewItem();
     if ( item )
@@ -641,7 +641,7 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 
          kDebug(250) << "assembled complete dir string " << url.prettyUrl() << endl;
 
-         KFileItem *fi = brnch->findByURL( url );
+         KFileItem *fi = brnch->findByUrl( url );
          if( fi )
          {
             ret = static_cast<KFileTreeViewItem*>( fi->extraData( brnch ));

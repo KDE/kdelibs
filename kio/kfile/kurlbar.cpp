@@ -116,7 +116,7 @@ KUrlBarItem::~KUrlBarItem()
     delete d;
 }
 
-void KUrlBarItem::setURL( const KUrl& url )
+void KUrlBarItem::setUrl( const KUrl& url )
 {
     m_url = url;
     if ( m_description.isEmpty() )
@@ -129,7 +129,7 @@ void KUrlBarItem::setIcon( const QString& icon, K3Icon::Group group )
     m_group = group;
 
     if ( icon.isEmpty() )
-        m_pixmap = KIO::pixmapForURL( m_url, 0, group, iconSize() );
+        m_pixmap = KIO::pixmapForUrl( m_url, 0, group, iconSize() );
     else
         m_pixmap = KGlobal::iconLoader()->loadIcon( icon, group, iconSize(),
                                                     K3Icon::DefaultState );
@@ -581,7 +581,7 @@ KUrlBarItem * KUrlBar::currentItem() const
     return 0L;
 }
 
-KUrl KUrlBar::currentURL() const
+KUrl KUrlBar::currentUrl() const
 {
     KUrlBarItem *item = currentItem();
     return item ? item->url() : KUrl();
@@ -800,7 +800,7 @@ bool KUrlBar::editItem( KUrlBarItem *item )
                                             icon, appLocal,
                                             m_iconSize, this ))
     {
-        item->setURL( url );
+        item->setUrl( url );
         item->setDescription( description );
         item->setIcon( icon );
         item->setApplicationLocal( appLocal );
@@ -981,7 +981,7 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
     m_iconButton->setObjectName( QLatin1String( "icon button" ) );
     m_iconButton->setIconSize( iconSize );
     if ( icon.isEmpty() )
-        icon = KMimeType::iconNameForURL( url );
+        icon = KMimeType::iconNameForUrl( url );
     m_iconButton->setIcon( icon );
     label->setBuddy( m_iconButton );
     label->setWhatsThis(whatsThisText );

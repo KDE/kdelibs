@@ -558,7 +558,7 @@ void DownloadDialog::slotInstalled(KJob *job)
     KIO::FileCopyJob *cjob = ::qobject_cast<KIO::FileCopyJob*>(job);
     if(cjob)
     {
-      ret = m_s->install(cjob->destURL().path());
+      ret = m_s->install(cjob->destUrl().path());
     }
     else ret = false;
   }

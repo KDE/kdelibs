@@ -354,7 +354,7 @@ void PreviewJob::slotResult( KJob *job )
                 return;
             }
 
-            createThumbnail( static_cast<KIO::FileCopyJob*>(job)->destURL().path() );
+            createThumbnail( static_cast<KIO::FileCopyJob*>(job)->destUrl().path() );
             return;
         }
         case PreviewJobPrivate::STATE_CREATETHUMB:

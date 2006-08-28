@@ -37,11 +37,11 @@ class ForwardingSlaveBasePrivate;
  * local filesystem like ioslaves.
  *
  * If the resulting ioslave should be a simple proxy, you only need
- * to implement the ForwardingSlaveBase::rewriteURL() method.
+ * to implement the ForwardingSlaveBase::rewriteUrl() method.
  *
  * For more advanced behavior, the classic ioslave methods should
  * be reimplemented, because their default behavior in this class
- * is to forward using the ForwardingSlaveBase::rewriteURL() method.
+ * is to forward using the ForwardingSlaveBase::rewriteUrl() method.
  *
  * A possible code snippet for an advanced stat() behavior would look
  * like this in the child class:
@@ -65,7 +65,7 @@ class ForwardingSlaveBasePrivate;
  *         else
  *         {
  *             // Setup the ioslave internal state if
- *             // required by ChildProtocol::rewriteURL()
+ *             // required by ChildProtocol::rewriteUrl()
  *             ForwardingSlaveBase::stat(url);
  *         }
  *     }
@@ -82,7 +82,7 @@ class ForwardingSlaveBasePrivate;
  * and the MediaDirNotify class of its companion kded module can be a
  * good source of inspiration.
  *
- * @see ForwardingSlaveBase::rewriteURL()
+ * @see ForwardingSlaveBase::rewriteUrl()
  * @author Kevin Ottens <ervin@ipsquad.net>
  */
 class KIO_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
@@ -132,7 +132,7 @@ protected:
      * @param newURL The new URL to forward the slave call to
      * @return true if the given url could be correctly rewritten
      */
-    virtual bool rewriteURL(const KUrl &url, KUrl &newURL)=0;
+    virtual bool rewriteUrl(const KUrl &url, KUrl &newURL)=0;
 
     /**
      * Allow to modify a UDSEntry before it's sent to the ioslave enpoint.
@@ -151,20 +151,20 @@ protected:
      * Return the URL being processed by the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KUrl processedURL() const { return m_processedURL; }
+    KUrl processedUrl() const { return m_processedURL; }
 
     /**
      * Return the URL asked to the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KUrl requestedURL() const { return m_requestedURL; }
+    KUrl requestedUrl() const { return m_requestedURL; }
 
 private:
     KUrl m_processedURL;
     KUrl m_requestedURL;
     ForwardingSlaveBasePrivate *d;
 
-    bool internalRewriteURL(const KUrl &url, KUrl &newURL);
+    bool internalRewriteUrl(const KUrl &url, KUrl &newURL);
 
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);

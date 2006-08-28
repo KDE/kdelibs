@@ -79,7 +79,7 @@ public:
    * @return the new destination
    * valid only if RENAME was chosen
    */
-  KUrl newDestURL();
+  KUrl newDestUrl();
 
   /**
    * Given a directory path and a filename (which usually exists already),

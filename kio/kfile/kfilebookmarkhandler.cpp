@@ -61,7 +61,7 @@ KFileBookmarkHandler::~KFileBookmarkHandler()
     delete m_bookmarkMenu;
 }
 
-QString KFileBookmarkHandler::currentURL() const
+QString KFileBookmarkHandler::currentUrl() const
 {
     return m_dialog->baseUrl().url();
 }

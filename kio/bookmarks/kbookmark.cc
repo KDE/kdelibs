@@ -202,7 +202,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
     elem.setAttribute( "href", url.url() ); // gives us utf8
     QString _icon = icon;
     if ( _icon.isEmpty() )
-        _icon = KMimeType::iconNameForURL( url );
+        _icon = KMimeType::iconNameForUrl( url );
     elem.setAttribute( "icon", _icon );
 
     QDomElement textElem = doc.createElement( "title" );
@@ -307,7 +307,7 @@ QString KBookmark::icon() const
             if ( isSeparator() )
                 icon = "eraser"; // whatever
             else
-                icon = KMimeType::iconNameForURL( url() );
+                icon = KMimeType::iconNameForUrl( url() );
     return icon;
 }
 

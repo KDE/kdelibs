@@ -254,7 +254,7 @@ void RMB::slotInsert()
 {
   //kDebug(7043) << "KBookmarkMenu::slotInsert" << m_highlightedAddress << endl;
 
-  QString url = m_pOwner->currentURL();
+  QString url = m_pOwner->currentUrl();
   if (url.isEmpty())
   {
     KMessageBox::error( 0L, i18n("Cannot add bookmark with empty URL."));
@@ -593,7 +593,7 @@ void KBookmarkMenu::slotAddBookmarksList()
 void KBookmarkMenu::slotAddBookmark()
 {
   KBookmarkGroup parentBookmark;
-  parentBookmark = m_pManager->addBookmarkDialog(m_pOwner->currentURL(), m_pOwner->currentTitle(), m_parentAddress);
+  parentBookmark = m_pManager->addBookmarkDialog(m_pOwner->currentUrl(), m_pOwner->currentTitle(), m_parentAddress);
   if (!parentBookmark.isNull())
     m_pManager->emitChanged( parentBookmark );
 }
@@ -619,7 +619,7 @@ void KBookmarkMenu::slotBookmarkSelected(Qt::MouseButtons mb, Qt::KeyboardModifi
   if (qobject_cast<const KAction*>(sender()))
   {
       const QString& url = sender()->property("url").toString();
-      m_pOwner->openBookmarkURL( url );
+      m_pOwner->openBookmarkUrl( url );
       emit openBookmark( url, mb, km );
   }
 }

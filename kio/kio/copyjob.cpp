@@ -406,7 +406,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             {
                 QString destFileName;
                 if ( hasCustomURL &&
-                     KProtocolManager::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) {
+                     KProtocolManager::fileNameUsedForCopying( url ) == KProtocolInfo::FromUrl ) {
                     //destFileName = url.fileName(); // Doesn't work for recursive listing
                     // Count the number of prefixes used by the recursive listjob
                     int numberOfSlashes = displayName.count( '/' ); // don't make this a find()!
@@ -516,7 +516,7 @@ void CopyJob::statCurrentSrc()
         }
         else if ( m_mode == Move && (
                 // Don't go renaming right away if we need a stat() to find out the destination filename
-                KProtocolManager::fileNameUsedForCopying( m_currentSrcURL ) == KProtocolInfo::FromURL ||
+                KProtocolManager::fileNameUsedForCopying( m_currentSrcURL ) == KProtocolInfo::FromUrl ||
                 destinationState != DEST_IS_DIR || m_asMethod )
             )
         {

@@ -225,7 +225,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             gridLayout->addWidget( lb1, 0, 0, 1, 2 ); // takes the complete first line
 
             lb1 = new QLabel( this );
-            lb1->setPixmap( KIO::pixmapForURL( d->dest ) );
+            lb1->setPixmap( KIO::pixmapForUrl( d->dest ) );
             gridLayout->addWidget( lb1, 1, 0, 3, 1 ); // takes the first column on rows 1-3
 
             int row = 1;
@@ -259,7 +259,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 gridLayout->addWidget( lb2, 5, 0, 1, 2 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
-                lb2->setPixmap( KIO::pixmapForURL( d->src ) );
+                lb2->setPixmap( KIO::pixmapForUrl( d->src ) );
                 gridLayout->addWidget( lb2, 6, 0, 3, 1 ); // takes the first column on rows 6-8
 
                 row = 6;
@@ -391,7 +391,7 @@ void RenameDlg::enableRenameButton(const QString &newDest)
   }
 }
 
-KUrl RenameDlg::newDestURL()
+KUrl RenameDlg::newDestUrl()
 {
   KUrl newDest( d->dest );
   QString fileName = d->m_pLineEdit->text();
@@ -410,7 +410,7 @@ void RenameDlg::renamePressed()
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
 
-  KUrl u = newDestURL();
+  KUrl u = newDestUrl();
   if ( !u.isValid() )
   {
     KMessageBox::error( this, i18n( "Malformed URL\n%1" ,  u.url() ) );
@@ -506,7 +506,7 @@ void RenameDlg::resumeAllPressed()
 
 static QString mime( const KUrl& src )
 {
-  KMimeType::Ptr type = KMimeType::findByURL( src );
+  KMimeType::Ptr type = KMimeType::findByUrl( src );
   //if( type->name() == KMimeType::defaultMimeType() ){ // ok no mimetype
     //    QString ty = KIO::NetAccess::mimetype(d->src );
     // return ty;
@@ -543,7 +543,7 @@ RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
   RenameDlg dlg( 0, _caption, _src, _dest, _mode,
                  sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
   int i = dlg.exec();
-  _new = dlg.newDestURL().path();
+  _new = dlg.newDestUrl().path();
 
   return (RenameDlg_Result)i;
 }

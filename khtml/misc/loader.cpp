@@ -960,7 +960,7 @@ bool DocLoader::needReload(CachedObject *existing, const QString& fullURL)
     KUrl fullURL (m_doc->completeURL( url.string() )); \
     if ( !fullURL.isValid() || \
          ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data") || \
-         doRedirectCheck && ( kapp && m_doc && !KAuthorized::authorizeURLAction("redirect", m_doc->URL(), fullURL))) \
+         doRedirectCheck && ( kapp && m_doc && !KAuthorized::authorizeUrlAction("redirect", m_doc->URL(), fullURL))) \
          return 0L;
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)

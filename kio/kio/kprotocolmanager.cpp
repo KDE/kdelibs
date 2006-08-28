@@ -234,7 +234,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   return cfg->readEntry( scheme + "Proxy", QString() );
 }
 
-QString KProtocolManager::proxyForURL( const KUrl &url )
+QString KProtocolManager::proxyForUrl( const KUrl &url )
 {
   QString proxy;
   ProxyType pt = proxyType();
@@ -351,7 +351,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 
   if (useProxy())
   {
-     proxy = proxyForURL(url);
+     proxy = proxyForUrl(url);
      if ((proxy != "DIRECT") && (!proxy.isEmpty()))
      {
         bool isRevMatch = false;
@@ -706,7 +706,7 @@ KProtocolInfo::FileNameUsedForCopying KProtocolManager::fileNameUsedForCopying( 
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
-    return KProtocolInfo::FromURL;
+    return KProtocolInfo::FromUrl;
 
   return prot->fileNameUsedForCopying();
 }

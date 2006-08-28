@@ -280,7 +280,7 @@ void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w) {
     d->hasView = true;
 }
 
-KUrl KFileDialog::getCompleteURL(const QString &_url)
+KUrl KFileDialog::getCompleteUrl(const QString &_url)
 {
     QString url = KShell::tildeExpand(_url);
     KUrl u;
@@ -371,7 +371,7 @@ void KFileDialog::slotOk()
             }
         }
 
-        KUrl url = KIO::NetAccess::mostLocalURL(d->url,topLevelWidget());
+        KUrl url = KIO::NetAccess::mostLocalUrl(d->url,topLevelWidget());
         if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
              !url.isLocalFile() ) {
 // ### after message freeze, add message for directories!
@@ -404,7 +404,7 @@ void KFileDialog::slotOk()
     }
 
     else {
-        selectedUrl = getCompleteURL(locationEdit->currentText());
+        selectedUrl = getCompleteUrl(locationEdit->currentText());
 
         // appendExtension() may change selectedUrl
         appendExtension (selectedUrl);
@@ -415,7 +415,7 @@ void KFileDialog::slotOk()
        return;
     }
 
-    KUrl url = KIO::NetAccess::mostLocalURL(selectedUrl,topLevelWidget());
+    KUrl url = KIO::NetAccess::mostLocalUrl(selectedUrl,topLevelWidget());
     if ( (mode() & KFile::LocalOnly) == KFile::LocalOnly &&
          !url.isLocalFile() ) {
         KMessageBox::sorry( d->mainWidget,
@@ -495,7 +495,7 @@ void KFileDialog::slotOk()
             return;
     }
 
-    if (!KAuthorized::authorizeURLAction("open", KUrl(), d->url))
+    if (!KAuthorized::authorizeUrlAction("open", KUrl(), d->url))
     {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
         KMessageBox::error( d->mainWidget, msg);
@@ -513,7 +513,7 @@ void KFileDialog::slotOk()
         for ( KUrl::List::ConstIterator it = list.begin();
               it != list.end(); ++it )
         {
-            if (!KAuthorized::authorizeURLAction("open", KUrl(), *it))
+            if (!KAuthorized::authorizeUrlAction("open", KUrl(), *it))
             {
                 QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyUrl());
                 KMessageBox::error( d->mainWidget, msg);
@@ -801,13 +801,13 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     KUrl u;
     u.setPath( QDir::rootPath() );
     QString text = i18n("Root Folder: %1",  u.path() );
-    d->pathCombo->addDefaultURL( u,
-                                 KIO::pixmapForURL( u, 0, K3Icon::Small ),
+    d->pathCombo->addDefaultUrl( u,
+                                 KIO::pixmapForUrl( u, 0, K3Icon::Small ),
                                  text );
 
     u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1",  u.path( KUrl::AddTrailingSlash ) );
-    d->pathCombo->addDefaultURL( u, KIO::pixmapForURL( u, 0, K3Icon::Small ),
+    d->pathCombo->addDefaultUrl( u, KIO::pixmapForUrl( u, 0, K3Icon::Small ),
                                  text );
 
     KUrl docPath;
@@ -816,18 +816,18 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
           QDir(docPath.path(KUrl::AddTrailingSlash)).exists() )
     {
       text = i18n("Documents: %1",  docPath.path( KUrl::AddTrailingSlash ) );
-        d->pathCombo->addDefaultURL( docPath,
-                                     KIO::pixmapForURL( docPath, 0, K3Icon::Small ),
+        d->pathCombo->addDefaultUrl( docPath,
+                                     KIO::pixmapForUrl( docPath, 0, K3Icon::Small ),
                                      text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1",  u.path( KUrl::AddTrailingSlash ) );
-    d->pathCombo->addDefaultURL( u,
-                                 KIO::pixmapForURL( u, 0, K3Icon::Small ),
+    d->pathCombo->addDefaultUrl( u,
+                                 KIO::pixmapForUrl( u, 0, K3Icon::Small ),
                                  text );
 
-    d->url = getStartURL( startDir, d->fileClass );
+    d->url = getStartUrl( startDir, d->fileClass );
     d->selection = d->url.url();
 
     // If local, check it exists. If not, go up until it exists.
@@ -1113,7 +1113,7 @@ void KFileDialog::slotFilterChanged()
 void KFileDialog::setUrl(const KUrl& url, bool clearforward)
 {
     d->selection.clear();
-    ops->setURL( url, clearforward);
+    ops->setUrl( url, clearforward);
 }
 
 // Protected
@@ -1123,7 +1123,7 @@ void KFileDialog::urlEntered(const KUrl& url)
     d->selection.clear();
 
     if ( d->pathCombo->count() != 0 ) { // little hack
-        d->pathCombo->setURL( url );
+        d->pathCombo->setUrl( url );
     }
 
     locationEdit->blockSignals( true );
@@ -1172,7 +1172,7 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-    KUrl u = getCompleteURL(url);
+    KUrl u = getCompleteUrl(url);
     if (!u.isValid()) { // if it still is
         kWarning() << url << " is not a correct argument for setSelection!" << endl;
         return;
@@ -1480,7 +1480,7 @@ QString KFileDialog::selectedFile() const
 {
     if ( result() == QDialog::Accepted )
     {
-      KUrl url = KIO::NetAccess::mostLocalURL(d->url,topLevelWidget());
+      KUrl url = KIO::NetAccess::mostLocalUrl(d->url,topLevelWidget());
        if (url.isLocalFile())
            return url.path();
        else {
@@ -1502,7 +1502,7 @@ QStringList KFileDialog::selectedFiles() const
             KUrl::List urls = parseSelectedUrls();
             QList<KUrl>::const_iterator it = urls.begin();
             while ( it != urls.end() ) {
-                url = KIO::NetAccess::mostLocalURL(*it,topLevelWidget());
+                url = KIO::NetAccess::mostLocalUrl(*it,topLevelWidget());
                 if ( url.isLocalFile() )
                     list.append( url.path() );
                 ++it;
@@ -1639,10 +1639,10 @@ void KFileDialog::readConfig( KConfigGroup *configGroup)
     ops->readConfig(configGroup);
 
     KUrlComboBox *combo = d->pathCombo;
-    combo->setURLs( configGroup->readPathListEntry( RecentURLs ), KUrlComboBox::RemoveTop );
+    combo->setUrls( configGroup->readPathListEntry( RecentURLs ), KUrlComboBox::RemoveTop );
     combo->setMaxItems( configGroup->readEntry( RecentURLsNumber,
                                        DefaultRecentURLsNumber ) );
-    combo->setURL( ops->url() );
+    combo->setUrl( ops->url() );
     autoDirectoryFollowing = configGroup->readEntry( AutoDirectoryFollowing,
                                             DefaultDirectoryFollowing );
 
@@ -1700,7 +1700,7 @@ void KFileDialog::readRecentFiles( KConfig *kc )
 
     locationEdit->setMaxItems( kc->readEntry( RecentFilesNumber,
                                               DefaultRecentURLsNumber ) );
-    locationEdit->setURLs( kc->readPathListEntry( RecentFiles ),
+    locationEdit->setUrls( kc->readPathListEntry( RecentFiles ),
                            KUrlComboBox::RemoveBottom );
     locationEdit->insertItem(0, QString()); // dummy item without pixmap
     locationEdit->setCurrentIndex( 0 );
@@ -1977,7 +1977,7 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
     if (urlStr.isEmpty ())
         return;
 
-    KUrl url = getCompleteURL (urlStr);
+    KUrl url = getCompleteUrl (urlStr);
     kDebug (kfile_area) << "updateLocationEditExtension (" << url << ")" << endl;
 
     const int fileNameOffset = urlStr.lastIndexOf ('/') + 1;
@@ -2225,7 +2225,7 @@ void KFileDialog::initStatic()
 }
 
 // static
-KUrl KFileDialog::getStartURL( const KUrl& startDir,
+KUrl KFileDialog::getStartUrl( const KUrl& startDir,
                                QString& recentDirClass )
 {
     initStatic();

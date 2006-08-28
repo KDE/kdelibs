@@ -420,7 +420,7 @@ void SimpleJob::start(Slave *slave)
        addMetaData("window-id", id.setNum((ulong)ui()->window()->winId()));
     }
 
-    QString sslSession = KSSLCSessionCache::getSessionForURL(m_url);
+    QString sslSession = KSSLCSessionCache::getSessionForUrl(m_url);
     if ( !sslSession.isNull() )
     {
         addMetaData("ssl_session_id", sslSession);
@@ -550,7 +550,7 @@ void SimpleJob::storeSSLSessionFromJob(const KUrl &m_redirectionURL) {
 
     if ( !sslSession.isNull() ) {
 	    const KUrl &queryURL = m_redirectionURL.isEmpty()?m_url:m_redirectionURL;
-	    KSSLCSessionCache::putSessionForURL(queryURL, sslSession);
+	    KSSLCSessionCache::putSessionForUrl(queryURL, sslSession);
     }
 }
 
@@ -573,7 +573,7 @@ void MkdirJob::start(Slave *slave)
 void MkdirJob::slotRedirection( const KUrl &url)
 {
      kDebug(7007) << "MkdirJob::slotRedirection(" << url << ")" << endl;
-     if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
        kWarning(7007) << "MkdirJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        setError( ERR_ACCESS_DENIED );
@@ -708,7 +708,7 @@ void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJob::slotRedirection( const KUrl &url)
 {
      kDebug(7007) << "StatJob::slotRedirection(" << url << ")" << endl;
-     if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
        kWarning(7007) << "StatJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        setError( ERR_ACCESS_DENIED );
@@ -803,7 +803,7 @@ void TransferJob::slotData( const QByteArray &_data)
 void TransferJob::slotRedirection( const KUrl &url)
 {
      kDebug(7007) << "TransferJob::slotRedirection(" << url << ")" << endl;
-     if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
        kWarning(7007) << "TransferJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        return;
@@ -1017,8 +1017,8 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL(errorPage() ),
              SLOT( slotErrorPage() ) );
 
-    connect( slave, SIGNAL( needSubURLData() ),
-             SLOT( slotNeedSubURLData() ) );
+    connect( slave, SIGNAL( needSubUrlData() ),
+             SLOT( slotNeedSubUrlData() ) );
 
     connect( slave, SIGNAL(canResume( KIO::filesize_t ) ),
              SLOT( slotCanResume( KIO::filesize_t ) ) );
@@ -1035,17 +1035,17 @@ void TransferJob::start(Slave *slave)
        slave->suspend();
 }
 
-void TransferJob::slotNeedSubURLData()
+void TransferJob::slotNeedSubUrlData()
 {
     // Job needs data from subURL.
     m_subJob = KIO::get( m_subUrl, false, false);
     internalSuspend(); // Put job on hold until we have some data.
     connect(m_subJob, SIGNAL( data(KIO::Job*,const QByteArray &)),
-            SLOT( slotSubURLData(KIO::Job*,const QByteArray &)));
+            SLOT( slotSubUrlData(KIO::Job*,const QByteArray &)));
     addSubjob(m_subJob);
 }
 
-void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
+void TransferJob::slotSubUrlData(KIO::Job*, const QByteArray &data)
 {
     // The Alternating Bitburg protocol in action again.
     staticData = data;
@@ -1217,7 +1217,7 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, bool s
       _url.setPath("/");
     }
 
-    if (!_error && !KAuthorized::authorizeURLAction("open", KUrl(), _url))
+    if (!_error && !KAuthorized::authorizeUrlAction("open", KUrl(), _url))
         _error = KIO::ERR_ACCESS_DENIED;
 
     // if request is not valid, return an invalid transfer job
@@ -1943,7 +1943,7 @@ void ListJob::slotResult( KJob * job )
 
 void ListJob::slotRedirection( const KUrl & url )
 {
-     if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
+     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
        kWarning(7007) << "ListJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        return;
@@ -1958,7 +1958,7 @@ void ListJob::slotFinished()
 {
     // Support for listing archives as directories
     if ( error() == KIO::ERR_IS_FILE && m_url.isLocalFile() ) {
-        KMimeType::Ptr ptr = KMimeType::findByURL( m_url, 0, true, true );
+        KMimeType::Ptr ptr = KMimeType::findByUrl( m_url, 0, true, true );
         if ( ptr ) {
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
             if ( !proto.isEmpty() && KProtocolInfo::isKnownProtocol( proto) ) {
@@ -2016,7 +2016,7 @@ void ListJob::setUnrestricted(bool unrestricted)
 
 void ListJob::start(Slave *slave)
 {
-    if (!KAuthorized::authorizeURLAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
+    if (!KAuthorized::authorizeUrlAction("list", m_url, m_url) && !(extraFlags() & EF_ListJobUnrestricted))
     {
         setError( ERR_ACCESS_DENIED );
         setErrorText( m_url.url() );
@@ -2144,7 +2144,7 @@ bool MultiGetJob::findCurrentEntry()
 void MultiGetJob::slotRedirection( const KUrl &url)
 {
   if (!findCurrentEntry()) return; // Error
-  if (!KAuthorized::authorizeURLAction("redirect", m_url, url))
+  if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
   {
      kWarning(7007) << "MultiGetJob: Redirection from " << m_currentEntry.url << " to " << url << " REJECTED!" << endl;
      return;

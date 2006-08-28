@@ -43,11 +43,11 @@ namespace KIO { class Job; class ListJob; }
  * Typical usage :
  * @li Create an instance.
  * @li Connect to at least update, clear, newItem, and deleteItem.
- * @li Call openURL - the signals will be called.
- * @li Reuse the instance when opening a new url (openURL).
+ * @li Call openUrl - the signals will be called.
+ * @li Reuse the instance when opening a new url (openUrl).
  * @li Destroy the instance when not needed anymore (usually destructor).
  *
- * Advanced usage : call openURL with _keep = true to list directories
+ * Advanced usage : call openUrl with _keep = true to list directories
  * without forgetting the ones previously read (e.g. for a tree view)
  *
  * @short Helper class for the kiojob used to list and update a directory.
@@ -103,7 +103,7 @@ public:
    * @return true    if successful,
    *         false   otherwise (e.g. invalid @p _url)
    */
-  virtual bool openURL( const KUrl& _url, bool _keep = false, bool _reload = false );
+  virtual bool openUrl( const KUrl& _url, bool _keep = false, bool _reload = false );
 
   /**
    * Stop listing all directories currently being listed.
@@ -195,8 +195,8 @@ public:
 
   /**
    * Returns the top level URL that is listed by this KDirLister.
-   * It might be different from the one given with openURL() if there was a
-   * redirection. If you called openURL() with @p _keep == true this is the
+   * It might be different from the one given with openUrl() if there was a
+   * redirection. If you called openUrl() with @p _keep == true this is the
    * first url opened (e.g. in a treeview this is the root).
    *
    * @return the url used by this instance to list the files.
@@ -205,7 +205,7 @@ public:
 
   /**
    * Returns all URLs that are listed by this KDirLister. This is only
-   * useful if you called openURL() with @p _keep == true, as it happens in a
+   * useful if you called openUrl() with @p _keep == true, as it happens in a
    * treeview, for example. (Note that the base url is included in the list
    * as well, of course.)
    *
@@ -249,7 +249,7 @@ public:
    * @param _url the item URL
    * @return the pointer to the KFileItem
    */
-  virtual KFileItem *findByURL( const KUrl& _url ) const;
+  virtual KFileItem *findByUrl( const KUrl& _url ) const;
 
   /**
    * Find an item by its name.
@@ -389,7 +389,7 @@ public:
    *
    * @param dir specifies the url for which the items should be returned. This
    *            is only useful if you use KDirLister with multiple URLs
-   *            i.e. using bool keep = true in openURL().
+   *            i.e. using bool keep = true in openUrl().
    * @param which specifies whether the returned list will contain all entries
    *              or only the ones that passed the nameFilter, mimeFilter, etc.
    *              Note that the latter causes iteration over all the items,
@@ -406,7 +406,7 @@ Q_SIGNALS:
    * is really a job running! I.e. KDirLister::jobs() may return an empty list. In this case
    * the items are taken from the cache.
    *
-   * The view knows that openURL should start it, so it might seem useless,
+   * The view knows that openUrl should start it, so it might seem useless,
    * but the view also needs to know when an automatic update happens.
    * @param _url the URL to list
    */
@@ -441,7 +441,7 @@ Q_SIGNALS:
   /**
    * Signal a redirection.
    * Only emitted if there's just one directory to list, i.e. most
-   * probably openURL() has been called with @p _keep == @p false.
+   * probably openUrl() has been called with @p _keep == @p false.
    * @param _url the new URL
    */
   void redirection( const KUrl& _url );

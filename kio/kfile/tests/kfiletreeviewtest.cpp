@@ -98,7 +98,7 @@ void testFrame::urlsDropped( QWidget* , QDropEvent* , KUrl::List& list )
    }
 }
 
-void testFrame::copyURLs( KUrl::List& list, KUrl& to )
+void testFrame::copyUrls( KUrl::List& list, KUrl& to )
 {
    KUrl::List::ConstIterator it = list.begin();
    kDebug() << "Copy to " << to.prettyUrl() << endl;

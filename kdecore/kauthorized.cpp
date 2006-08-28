@@ -195,7 +195,7 @@ public:
   {
     Q_ASSERT_X(qApp,"KAuthorizedPrivate()","There has to be an existing qapp pointer");
     Q_ASSERT_X(!qApp->applicationName().isEmpty(),"KAuthorizedPrivate()","There has to be an application name set (See QApplication::setApplicationName)");
-    
+
     KConfig* config = KGlobal::config();
 
     Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KGlobal::config() pointer");
@@ -343,11 +343,11 @@ static void initUrlActionRestrictions()
   }
 }
 
-void KAuthorized::allowURLAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
+void KAuthorized::allowUrlAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
 {
   MY_D
   QMutexLocker locker((&d->mutex));
-  if (authorizeURLAction(action, _baseURL, _destURL))
+  if (authorizeUrlAction(action, _baseURL, _destURL))
      return;
 
   d->urlActionRestrictions.append( URLActionRule
@@ -355,7 +355,7 @@ void KAuthorized::allowURLAction(const QString &action, const KUrl &_baseURL, co
         _destURL.protocol(), _destURL.host(), _destURL.path(KUrl::RemoveTrailingSlash), true));
 }
 
-bool KAuthorized::authorizeURLAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
+bool KAuthorized::authorizeUrlAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
 {
   MY_D
   QMutexLocker locker(&(d->mutex));

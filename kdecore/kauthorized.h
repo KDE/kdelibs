@@ -59,21 +59,21 @@ public:
    *  - link (may be linked to),
    *  - open (may open) and
    *  - redirect (may be redirected to)
-   * @param baseURL The url where the action originates from
-   * @param destURL The object of the action
+   * @param baseUrl The url where the action originates from
+   * @param destUrl The object of the action
    * @return true when the action is authorized, false otherwise.
    */
-  static bool authorizeURLAction(const QString& action, const KUrl& baseURL, const KUrl& destURL);
+  static bool authorizeUrlAction(const QString& action, const KUrl& baseUrl, const KUrl& destUrl);
 
   /**
    * Allow a certain URL action. This can be useful if your application
    * needs to ensure access to an application specific directory that may
    * otherwise be subject to KIOSK restrictions.
    * @param action The name of the action.
-   * @param baseURL The url where the action originates from
-   * @param _destURL The object of the action
+   * @param baseUrl The url where the action originates from
+   * @param _destUrl The object of the action
    */
-  static void allowURLAction(const QString& action, const KUrl& baseURL, const KUrl&  _destURL);
+  static void allowUrlAction(const QString& action, const KUrl& baseUrl, const KUrl&  _destUrl);
 
   /**
    * Returns whether access to a certain control module is authorized.
