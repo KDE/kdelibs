@@ -52,6 +52,11 @@ KTzfileTimeZone::~KTzfileTimeZone()
 //    delete d;
 }
 
+bool KTzfileTimeZone::hasTransitions() const
+{
+    return true;
+}
+
 
 /******************************************************************************/
 
@@ -85,6 +90,11 @@ KTzfileTimeZoneData &KTzfileTimeZoneData::operator=(const KTzfileTimeZoneData &r
 KTimeZoneData *KTzfileTimeZoneData::clone()
 {
     return new KTzfileTimeZoneData(*this);
+}
+
+bool KTzfileTimeZoneData::hasTransitions() const
+{
+    return true;
 }
 
 
@@ -241,13 +251,13 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
     quint32 s;
     QDateTime dt;
     dt.setTimeSpec(Qt::UTC);   // ensure that setTime_t() produces UTC value
-    QList<KTimeZoneLeapSeconds> leapChanges;
+    QList<KTimeZone::LeapSeconds> leapChanges;
     for (i = 0;  i < nLeapSecondAdjusts;  ++i)
     {
         str >> t >> s;
         // kDebug() << "leap entry: " << t << ", " << s << endl;
         // Don't use QDateTime::setTime_t() because it takes an unsigned argument
-        leapChanges += KTimeZoneLeapSeconds(fromTime_t(t), static_cast<int>(s));
+        leapChanges += KTimeZone::LeapSeconds(fromTime_t(t), static_cast<int>(s));
     }
     data->setLeapSecondChanges(leapChanges);
 
@@ -286,8 +296,25 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         }
     }
 
-    // Finally compile the time transition data into a list of KTimeZonePhase instances
-    QVector< QList<QDateTime> >  timeLists(nLocalTimeTypes);
+    // Compile the time type data into a list of KTimeZone::Phase instances
+    QByteArray abbrev;
+    QList<KTimeZone::Phase> phases;
+    ltt = localTimeTypes;
+    for (i = 0;  i < nLocalTimeTypes;  ++ltt, ++i)
+    {
+        if (ltt->abbrIndex >= abbreviations.count())
+        {
+            kError() << "KTzfileTimeZoneSource::parse(): abbreviation index out of range" << endl;
+            abbrev = "???";
+        }
+        else
+            abbrev = abbreviations[ltt->abbrIndex];
+	phases += KTimeZone::Phase(ltt->gmtoff, abbrev, ltt->isdst);
+    }
+    data->setPhases(phases, firstoffset);
+
+    // Compile the transition list
+    QList<KTimeZone::Transition> transitions;
     int stdoffset = firstoffset;
     int offset    = stdoffset;
     TransitionTime *tt = transitionTimes;
@@ -316,26 +343,12 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         }
 
 //kDebug() << "Transition time "<<i<<": "<<tt->time<<endl;
-        timeLists[tt->localTimeIndex] += fromTime_t(tt->time);
+        KTimeZone::Phase phase = phases[tt->localTimeIndex];
+        transitions += KTimeZone::Transition(fromTime_t(tt->time), phase);
     }
-    delete[] transitionTimes;
-
-    QByteArray abbrev;
-    QList<KTimeZonePhase> phases;
-    ltt = localTimeTypes;
-    for (i = 0;  i < nLocalTimeTypes;  ++ltt, ++i)
-    {
-        if (ltt->abbrIndex >= abbreviations.count())
-        {
-            kError() << "KTzfileTimeZoneSource::parse(): abbreviation index out of range" << endl;
-            abbrev = "???";
-        }
-        else
-            abbrev = abbreviations[ltt->abbrIndex];
-        phases += KTimeZonePhase(timeLists[i], ltt->gmtoff, abbrev, ltt->isdst);
-    }
+    data->setTransitions(transitions);
     delete[] localTimeTypes;
-    data->setPhases(phases, firstoffset);
+    delete[] transitionTimes;
 
     return data;
 }

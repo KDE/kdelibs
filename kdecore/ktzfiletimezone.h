@@ -67,6 +67,13 @@ public:
 
     ~KTzfileTimeZone();
 
+    /**
+     * Return whether daylight saving transitions are available for the time zone.
+     *
+     * @return @c true
+     */
+    virtual bool hasTransitions() const;
+
 private:
     KTzfileTimeZonePrivate *d;
 };
@@ -144,6 +151,13 @@ public:
      * @return copy of this instance. This is a KTzfileTimeZoneData pointer.
      */
     virtual KTimeZoneData *clone();
+
+    /**
+     * Return whether daylight saving transitions are available for the time zone.
+     *
+     * @return @c true
+     */
+    virtual bool hasTransitions() const;
 
 private:
     KTzfileTimeZoneDataPrivate *d;
