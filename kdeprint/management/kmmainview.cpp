@@ -268,10 +268,10 @@ void KMMainView::initActions()
 
 
 	KToggleAction	*tact = new KToggleAction(i18n("Show &Toolbar"),m_actions,"view_toolbar");
-	tact->setCheckedState(i18n("Hide &Toolbar"));
+	tact->setCheckedState(KGuiItem(i18n("Hide &Toolbar")));
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
 	tact = new KToggleAction( i18n( "Show Me&nu Toolbar" ), m_actions, "view_menubar" );
-	tact->setCheckedState(i18n("Hide Me&nu Toolbar"));
+	tact->setCheckedState(KGuiItem(i18n("Hide Me&nu Toolbar")));
 	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
 	tact = new KToggleAction(i18n("Show Pr&inter Details"), m_actions,"view_printerinfos");
   tact->setIcon( KIcon( "kdeprint_printer_infos" ) );
@@ -702,7 +702,7 @@ void KMMainView::slotTest()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", m_current->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", m_current->printerName()), QString(), KGuiItem(i18n("Print Test Page")), "printTestPage") == KMessageBox::Continue)
 		{
 			if (KMFactory::self()->manager()->testPrinter(m_current))
 				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.", m_current->printerName()));

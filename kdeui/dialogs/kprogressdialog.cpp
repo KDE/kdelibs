@@ -198,7 +198,7 @@ void KProgressDialog::setAutoReset(bool autoReset)
 void KProgressDialog::setButtonText(const QString& text)
 {
     d->mCancelText = text;
-    setButtonGuiItem(Cancel, text);
+    setButtonGuiItem(Cancel, KGuiItem(text));
 }
 
 QString KProgressDialog::buttonText() const
@@ -212,7 +212,7 @@ void KProgressDialog::slotAutoActions(int percentage)
     {
         if (!d->cancelButtonShown)
         {
-            setButtonGuiItem(Cancel, d->mCancelText);
+            setButtonGuiItem(Cancel, KGuiItem(d->mCancelText));
             d->cancelButtonShown = true;
         }
         return;

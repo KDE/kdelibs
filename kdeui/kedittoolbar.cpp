@@ -414,7 +414,7 @@ void KEditToolbar::acceptOK(bool b)
 
 void KEditToolbar::slotDefault()
 {
-    if ( KMessageBox::warningContinueCancel(this, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset Toolbars"),i18n("Reset"))!=KMessageBox::Continue )
+    if ( KMessageBox::warningContinueCancel(this, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset Toolbars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
         return;
 
     delete m_widget;

@@ -1055,7 +1055,7 @@ int KMessageBox::messageBoxWId( WId parent_id, DialogType type, const QString &t
                                               text, caption, buttonYes, buttonNo, dontShow, options );
         case WarningContinueCancel:
             return KMessageBox::warningContinueCancelWId( parent_id,
-                                              text, caption, buttonYes.text(), dontShow, options );
+                                              text, caption, KGuiItem(buttonYes.text()), dontShow, options );
         case WarningYesNoCancel:
             return KMessageBox::warningYesNoCancelWId( parent_id,
                                               text, caption, buttonYes, buttonNo, dontShow, options );

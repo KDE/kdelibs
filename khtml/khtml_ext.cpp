@@ -651,7 +651,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   QDomElement menu = domDocument().documentElement().namedItem( "Menu" ).toElement();
 
-  if ( actionCollection()->count() > 0 )
+  if ( actionCollection()->actions().count() > 0 )
     menu.insertBefore( domDocument().createElement( "separator" ), menu.firstChild() );
 }
 
@@ -845,7 +845,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
         QFileInfo info( destURL.path() );
         if( info.exists() ) {
           // TODO: use KIO::RenameDlg (shows more information)
-          query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ,  info.fileName() ), i18n( "Overwrite File?" ), i18n( "Overwrite" ) );
+          query = KMessageBox::warningContinueCancel( parent, i18n( "A file named \"%1\" already exists. " "Are you sure you want to overwrite it?" ,  info.fileName() ), i18n( "Overwrite File?" ), KGuiItem(i18n( "Overwrite" )) );
         }
        }
    } while ( query == KMessageBox::Cancel );

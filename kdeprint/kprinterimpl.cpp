@@ -355,7 +355,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 				     "(this may happen with non-CUPS spoolers when performing page selection "
 				     "on a non-PostScript file). Do you want KDE to convert the file to a supported "
 				     "format?</p>", mime),
-				QString(), i18n("Convert")) == KMessageBox::Continue)
+				QString(), KGuiItem(i18n("Convert"))) == KMessageBox::Continue)
 			{
 				QStringList	ff;
 				int	done(0);
@@ -475,8 +475,8 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 						    "</ul> "
 						    "Do you want KDE to attempt and convert this file to %2?</qt>", mime, primaryMimeType),
 					       QString(),
-					       i18n("Convert"),
-					       i18n("Keep"),
+					       KGuiItem(i18n("Convert")),
+					       KGuiItem(i18n("Keep")),
 					       QLatin1String("kdeprintAutoConvert"))) == KMessageBox::Yes)
 			{
 				// find the filter chain

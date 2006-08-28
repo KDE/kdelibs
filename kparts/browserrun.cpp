@@ -260,7 +260,7 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
         return false;
 
     return ( KMessageBox::warningContinueCancel( 0, i18n( "Do you really want to execute '%1'? " ,  url.prettyUrl() ),
-    i18n("Execute File?"), i18n("Execute") ) == KMessageBox::Continue );
+    i18n("Execute File?"), KGuiItem(i18n("Execute")) ) == KMessageBox::Continue );
 }
 
 static QString makeQuestion( const KUrl& url, const QString& mimeType, const QString& suggestedFileName )
@@ -299,7 +299,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, url.host(),
-        KStdGuiItem::saveAs(), openText,
+        KStdGuiItem::saveAs(), KGuiItem(openText),
         QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
 
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );

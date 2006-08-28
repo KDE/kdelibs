@@ -254,7 +254,7 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   if ( buttonMask & Apply )
     d->appendButton( Apply, KStdGuiItem::apply() );
   if ( buttonMask & Try )
-    d->appendButton( Try, i18n( "&Try" ) );
+    d->appendButton( Try, KGuiItem(i18n( "&Try" )) );
   if ( buttonMask & Cancel )
     d->appendButton( Cancel, KStdGuiItem::cancel() );
   if ( buttonMask & Close )
@@ -264,7 +264,7 @@ void KDialog::setButtons( ButtonCodes buttonMask )
   if ( buttonMask & No )
     d->appendButton( No, KStdGuiItem::no() );
   if ( buttonMask & Details ) {
-    d->appendButton( Details, QString() );
+    d->appendButton( Details, KGuiItem(QString()) );
     setDetails( false );
   }
 

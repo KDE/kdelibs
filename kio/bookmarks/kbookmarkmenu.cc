@@ -744,7 +744,7 @@ KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& ur
     setButtonGuiItem( KDialog::Ok,  KGuiItem( i18n( "&Add" ), "bookmark_add") );
   } else {
     setButtons( Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok, i18n( "&Update" ) );
+    setButtonGuiItem( KDialog::Ok, KGuiItem(i18n( "&Update" )) );
   }
 
   setDefaultButton( KDialog::Ok );

@@ -1382,7 +1382,7 @@ ValueImp *Window::openWindow(ExecState *exec, const List& args)
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
                                           "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.prettyUrl()),  100)),
-                                    caption, i18n("Allow"), i18n("Do Not Allow") ) == KMessageBox::Yes )
+                                    caption, KGuiItem(i18n("Allow")), KGuiItem(i18n("Do Not Allow")) ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
   {
@@ -2620,7 +2620,7 @@ ValueImp *ExternalFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, cons
 
     if (KMessageBox::warningYesNo(
           widget, question, caption,
-          i18n("Insert"), i18n("Disallow")) == KMessageBox::Yes)
+          KGuiItem(i18n("Insert")), KGuiItem(i18n("Disallow"))) == KMessageBox::Yes)
     {
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
       mgr->addBookmarkDialog(url,title);

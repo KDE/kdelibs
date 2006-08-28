@@ -6803,7 +6803,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
 	    response = KMessageBox::warningContinueCancel( 0,
 							   message.subs(Qt::escape(linkURL.prettyUrl())).toString(),
 							   i18n( "Security Warning" ),
-							   button);
+							   KGuiItem(button));
     }
     else
     {

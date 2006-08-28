@@ -755,7 +755,7 @@ bool KKeyChooser::promptForReassign( const QKeySequence& cut, const QString& sAc
 		cut.toString(), sAction.trimmed());
 	}
 
-	return KMessageBox::warningContinueCancel( parent, s, sTitle, i18n("Reassign") ) == KMessageBox::Continue;
+	return KMessageBox::warningContinueCancel( parent, s, sTitle, KGuiItem(i18n("Reassign")) ) == KMessageBox::Continue;
 }
 
 //---------------------------------------------------

@@ -59,7 +59,7 @@ bool KMWName::isValid(QString& msg)
 					     "from the string you entered, resulting in %1; "
 					     "what do you want to do?", conv),
 					QString(),
-					i18n("Strip"), i18n("Keep"));
+					KGuiItem(i18n("Strip")), KGuiItem(i18n("Keep")));
 		switch (result)
 		{
 			case KMessageBox::Yes:

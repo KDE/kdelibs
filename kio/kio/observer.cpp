@@ -281,19 +281,19 @@ int Observer::messageBox( int progressId, int type, const QString &text,
     switch (type) {
         case KIO::SlaveBase::QuestionYesNo:
             result = KMessageBox::questionYesNo( 0L, // parent ?
-                                               text, caption, buttonYes, buttonNo, dontAskAgainName );
+                                               text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName );
             break;
         case KIO::SlaveBase::WarningYesNo:
             result = KMessageBox::warningYesNo( 0L, // parent ?
-                                              text, caption, buttonYes, buttonNo, dontAskAgainName );
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName );
             break;
         case KIO::SlaveBase::WarningContinueCancel:
             result = KMessageBox::warningContinueCancel( 0L, // parent ?
-                                              text, caption, buttonYes, dontAskAgainName );
+                                              text, caption, KGuiItem(buttonYes), dontAskAgainName );
             break;
         case KIO::SlaveBase::WarningYesNoCancel:
             result = KMessageBox::warningYesNoCancel( 0L, // parent ?
-                                              text, caption, buttonYes, buttonNo, dontAskAgainName );
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName );
             break;
         case KIO::SlaveBase::Information:
             KMessageBox::information( 0L, // parent ?

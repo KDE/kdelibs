@@ -880,13 +880,13 @@ void KFileDialog::init( const KUrl& startDir, const QString& filter, QWidget* wi
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Quick Access Navigation Panel"), coll,"toggleSpeedbar");
     showSidebarAction->setShortcut( Qt::Key_F9 );
-    showSidebarAction->setCheckedState(i18n("Hide Quick Access Navigation Panel"));
+    showSidebarAction->setCheckedState(KGuiItem(i18n("Hide Quick Access Navigation Panel")));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 
     KToggleAction *showBookmarksAction =
             new KToggleAction(i18n("Show Bookmarks"), coll, "toggleBookmarks");
-    showBookmarksAction->setCheckedState(i18n("Hide Bookmarks"));
+    showBookmarksAction->setCheckedState(KGuiItem(i18n("Hide Bookmarks")));
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 

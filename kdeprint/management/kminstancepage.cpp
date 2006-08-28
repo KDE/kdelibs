@@ -268,7 +268,7 @@ void KMInstancePage::slotTest()
 		KMPrinter	*mpr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
 		if (!mpr)
 			KMessageBox::error(this,i18n("Internal error: printer not found."));
-		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", mpr->printerName()), QString(), i18n("Print Test Page"), "printTestPage") == KMessageBox::Continue)
+		else if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", mpr->printerName()), QString(), KGuiItem(i18n("Print Test Page")), "printTestPage") == KMessageBox::Continue)
 		{
 			if (!KMFactory::self()->virtualManager()->testInstance(mpr))
 				KMessageBox::error(this, i18n("Unable to send test page to %1.", mpr->printerName()));

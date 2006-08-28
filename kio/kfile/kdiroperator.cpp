@@ -1324,7 +1324,7 @@ void KDirOperator::setupActions()
 
     KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"), myActionCollection, "preview" );
     previewAction->setIcon( KIcon( "thumbnail" ) );
-    previewAction->setCheckedState(i18n("Hide Preview"));
+    previewAction->setCheckedState(KGuiItem(i18n("Hide Preview")));
     connect( previewAction, SIGNAL( toggled( bool )),
              SLOT( togglePreview( bool )));
 
