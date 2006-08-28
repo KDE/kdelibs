@@ -90,6 +90,7 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 		VideoWidgetPrivate( VideoWidget* parent )
 			: layout( parent )
 			, fullScreenWidget( 0 )
+			, aspectRatio( VideoWidget::AspectRatioAuto )
 		{
 			layout.setMargin( 0 );
 		}
@@ -97,6 +98,7 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 		QHBoxLayout layout;
 		QAction* fullScreenAction;
 		FullScreenVideoWidget* fullScreenWidget;
+		VideoWidget::AspectRatio aspectRatio;
 };
 } // namespace Phonon
 

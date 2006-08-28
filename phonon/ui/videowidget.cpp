@@ -65,6 +65,11 @@ void VideoWidgetPrivate::createIface()
 		q->setupIface();
 }
 
+#define PHONON_CLASSNAME VideoWidget
+
+PHONON_GETTER( Phonon::VideoWidget::AspectRatio, aspectRatio, d->aspectRatio )
+PHONON_SETTER( setAspectRatio, aspectRatio, Phonon::VideoWidget::AspectRatio )
+
 void VideoWidget::setFullScreen( bool newFullScreen )
 {
 	kDebug( 602 ) << k_funcinfo << newFullScreen << endl;
@@ -119,6 +124,8 @@ void VideoWidget::setupIface()
 	K_D( VideoWidget );
 	Q_ASSERT( d->backendObject );
 	AbstractVideoOutput::setupIface();
+	kDebug( 602 ) << "calling setAspectRatio on the backend " << d->aspectRatio << endl;
+	BACKEND_CALL1( "setAspectRatio", Phonon::VideoWidget::AspectRatio, d->aspectRatio );
 
 	QWidget *w = 0;
 	BACKEND_GET( QWidget *, w, "widget" );
