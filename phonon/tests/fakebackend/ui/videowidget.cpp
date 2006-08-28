@@ -39,6 +39,52 @@ VideoWidget::VideoWidget( QWidget* parent )
 	setMinimumSize( 100, 100 );
 }
 
+Phonon::VideoWidget::AspectRatio VideoWidget::aspectRatio() const
+{
+	return m_aspectRatio;
+}
+
+void VideoWidget::setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio )
+{
+	kDebug( 604 ) << k_funcinfo << aspectRatio << endl;
+	m_aspectRatio = aspectRatio;
+	m_videoSize = size();
+	const int w = width();
+	const int h = height();
+	switch( m_aspectRatio )
+	{
+		case Phonon::VideoWidget::AspectRatioWidget:
+			break;
+		case Phonon::VideoWidget::AspectRatioAuto:
+		case Phonon::VideoWidget::AspectRatio4_3:
+			if( h * 4 / 3 < w )
+				m_videoSize.setWidth( h * 4 / 3 );
+			else
+				m_videoSize.setHeight( w * 3 / 4 );
+			break;
+		case Phonon::VideoWidget::AspectRatioSquare:
+			if( h < w )
+				m_videoSize.setWidth( h );
+			else
+				m_videoSize.setHeight( w );
+			break;
+		case Phonon::VideoWidget::AspectRatioAnamorphic:
+			if( h * 16 / 9 < w )
+				m_videoSize.setWidth( h * 16 / 9 );
+			else
+				m_videoSize.setHeight( w * 9 / 16 );
+			break;
+		case Phonon::VideoWidget::AspectRatioDvb:
+			if( h * 211 / 100 < w )
+				m_videoSize.setWidth( h * 211 / 100 );
+			else
+				m_videoSize.setHeight( w * 100 / 211 );
+			break;
+		default:
+			Q_ASSERT( false ); // this can't happen
+	}
+}
+
 void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 {
 	switch( frame.fourcc )
@@ -46,7 +92,7 @@ void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 		case 0x00000000:
 			{
 				QImage image( reinterpret_cast<uchar*>( frame.data.data() ), frame.width, frame.height, QImage::Format_RGB32 );
-				image = image.scaled( size(), Qt::KeepAspectRatio, Qt::FastTransformation );
+				image = image.scaled( m_videoSize, Qt::IgnoreAspectRatio, Qt::FastTransformation );
 				m_pixmap = QPixmap::fromImage( image );
 				repaint();
 			}
@@ -60,6 +106,12 @@ void VideoWidget::paintEvent( QPaintEvent* ev )
 {
 	QPainter p( this );
 	p.drawPixmap( 0, 0, m_pixmap );
+}
+
+void VideoWidget::resizeEvent( QResizeEvent* ev )
+{
+	setAspectRatio( m_aspectRatio );
+	QWidget::resizeEvent( ev );
 }
 
 }} //namespace Phonon::Fake

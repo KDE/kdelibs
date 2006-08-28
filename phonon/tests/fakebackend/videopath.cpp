@@ -38,7 +38,7 @@ VideoPath::~VideoPath()
 bool VideoPath::addOutput( QObject* videoOutputIface )
 {
 	Q_ASSERT( videoOutputIface );
-	AbstractVideoOutput* vo = reinterpret_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
+	AbstractVideoOutput* vo = qobject_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
 	Q_ASSERT( vo );
 	Q_ASSERT( !m_outputs.contains( vo ) );
 	m_outputs.append( vo );
@@ -48,7 +48,7 @@ bool VideoPath::addOutput( QObject* videoOutputIface )
 bool VideoPath::removeOutput( QObject* videoOutputIface )
 {
 	Q_ASSERT( videoOutputIface );
-	AbstractVideoOutput* vo = reinterpret_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
+	AbstractVideoOutput* vo = qobject_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
 	// this should be changed to an "if( vo ) { ..." for production backends
 	Q_ASSERT( vo );
 	Q_ASSERT( m_outputs.removeAll( vo ) == 1 );

@@ -21,6 +21,7 @@
 
 #include <QWidget>
 #include <phonon/videoframe.h>
+#include <phonon/ui/videowidget.h>
 #include "../abstractvideooutput.h"
 #include <QPixmap>
 
@@ -33,8 +34,12 @@ namespace Fake
 	class VideoWidget : public QWidget, public Phonon::Fake::AbstractVideoOutput
 	{
 		Q_OBJECT
+		Q_INTERFACES( Phonon::Fake::AbstractVideoOutput )
 		public:
 			VideoWidget( QWidget* parent = 0 );
+
+			Q_INVOKABLE Phonon::VideoWidget::AspectRatio aspectRatio() const;
+			Q_INVOKABLE void setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio );
 
 			// Fake specific:
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
@@ -45,10 +50,13 @@ namespace Fake
 
 		protected:
 			virtual void paintEvent( QPaintEvent* ev );
+			virtual void resizeEvent( QResizeEvent* ev );
 
 		private:
 			bool m_fullscreen;
 			QPixmap m_pixmap;
+			QSize m_videoSize;
+			Phonon::VideoWidget::AspectRatio m_aspectRatio;
 	};
 }} //namespace Phonon::Fake
 

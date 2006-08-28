@@ -36,6 +36,7 @@ namespace Fake
 	class VideoDataOutput : public QObject, public AbstractVideoOutput
 	{
 		Q_OBJECT
+		Q_INTERFACES( Phonon::Fake::AbstractVideoOutput )
 		public:
 			VideoDataOutput( QObject* parent );
 			~VideoDataOutput();

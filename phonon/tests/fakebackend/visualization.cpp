@@ -52,7 +52,7 @@ void Visualization::setAudioPath( QObject* audioPath )
 void Visualization::setVideoOutput( QObject* videoOutputIface )
 {
 	Q_ASSERT( videoOutputIface );
-	AbstractVideoOutput* vo = reinterpret_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
+	AbstractVideoOutput* vo = qobject_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
 	Q_ASSERT( vo );
 	m_videoOutput = vo;
 }

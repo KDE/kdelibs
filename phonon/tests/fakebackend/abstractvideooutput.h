@@ -37,5 +37,7 @@ class AbstractVideoOutput
 
 }} //namespace Phonon::Fake
 
+Q_DECLARE_INTERFACE( Phonon::Fake::AbstractVideoOutput, "org.kde.Phonon.Fake.AbstractVideoOutput/0.1" )
+
 #endif // PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
 // vim: sw=4 ts=4 noet
