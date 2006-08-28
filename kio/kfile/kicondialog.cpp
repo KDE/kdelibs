@@ -263,18 +263,18 @@ void KIconDialog::init()
     setMainWidget(main);
 
     QVBoxLayout *top = new QVBoxLayout(main);
-    top->setSpacing( spacingHint() );
 
-    QGroupBox *bgroup = new QGroupBox(main );
-    bgroup->setTitle(  i18n("Icon Source"));
+    QGroupBox *bgroup = new QGroupBox(main);
+    bgroup->setTitle(i18n("Icon Source"));
+
     QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->setSpacing(KDialog::spacingHint());
-    vbox->setMargin(KDialog::marginHint());
     bgroup->setLayout( vbox );
     top->addWidget(bgroup);
+
     QGridLayout *grid = new QGridLayout();
+    grid->setSpacing(KDialog::spacingHint());
     bgroup->layout()->addItem(grid);
-    grid->addItem(new QSpacerItem(0, 15), 0, 0);
+
     mpRb1 = new QRadioButton(i18n("S&ystem icons:"), bgroup);
     connect( mpRb1, SIGNAL( clicked() ), SLOT( slotSystemIconClicked() ) );
     grid->addWidget(mpRb1, 1, 0);
@@ -296,22 +296,12 @@ void KIconDialog::init()
     searchLayout->setSpacing(KDialog::spacingHint());
     top->addLayout(searchLayout);
 
-    QToolButton *clearSearch = new QToolButton(main);
-    clearSearch->setText(i18n("Clear Search"));
-    clearSearch->setToolTip(i18n("Clear Search"));
-    clearSearch->setIcon(SmallIconSet(QApplication::isRightToLeft() ? "clear_left" :"locationbar_erase"));
-    searchLayout->addWidget(clearSearch);
-
     QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
     searchLayout->addWidget(searchLabel);
 
     d->searchLine = new K3IconViewSearchLine(main);
     searchLayout->addWidget(d->searchLine);
     searchLabel->setBuddy(d->searchLine);
-
-
-    // signals and slots connections
-    connect(clearSearch, SIGNAL(clicked()), d->searchLine, SLOT(clear()));
 
     QString wtstr = i18n("Search interactively for icon names (e.g. folder).");
     searchLabel->setWhatsThis(wtstr);
