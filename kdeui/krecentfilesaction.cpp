@@ -254,7 +254,7 @@ void KRecentFilesAction::addUrl( const KUrl& url, const QString& name )
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
     {
-      if ( action->text().endsWith( file + ']' ) )
+      if ( d->m_urls[action].pathOrUrl().endsWith(file) )
       {
         delete removeAction(action);
         break;
@@ -338,6 +338,10 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
         if (url.isLocalFile() && !QFile::exists(url.path()))
           continue;
 
+        // Don't restore where the url is already known (eg. broken config)
+        if (d->m_urls.values().contains(url))
+          continue;
+
         nameKey = QString( "Name%1" ).arg( i );
         nameValue = config->readPathEntry( nameKey, url.fileName() );
         title = nameValue + " [" + value + ']';
@@ -369,7 +373,7 @@ void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname 
     for ( int i = 1 ; i <= selectableActionGroup()->actions().count() ; i++ )
     {
         key = QString( "File%1" ).arg( i );
-        // FIXME KAction port - why is this -1?
+        // i - 1 because we started from 1
         value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].pathOrUrl();
         config->writePathEntry( key, value );
         key = QString( "Name%1" ).arg( i );
