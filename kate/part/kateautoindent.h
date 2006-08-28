@@ -334,6 +334,7 @@ protected:
   uchar keywordAttrib;
   uchar normalAttrib;
   uchar extensionAttrib;
+  uchar preprocessorAttrib;
 
   bool  useSpaces;    //!< Should we use spaces or tabs to indent
   bool  mixedIndent;  //!< Optimize indent by mixing spaces and tabs, ala emacs

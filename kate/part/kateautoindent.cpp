@@ -214,6 +214,7 @@ void KateNormalIndent::updateConfig ()
   keywordAttrib = 255;
   normalAttrib = 255;
   extensionAttrib = 255;
+  preprocessorAttrib = 255;
 
   KateHlItemDataList items;
   doc->highlight()->getKateHlItemDataListCopy (0, items);
@@ -260,6 +261,10 @@ void KateNormalIndent::updateConfig ()
     else if (name.find("Extensions") != -1 && extensionAttrib == 255)
     {
       extensionAttrib = i;
+    }
+    else if (name.find("Preprocessor") != -1 && preprocessorAttrib == 255)
+    {
+      preprocessorAttrib = i;
     }
   }
 }
@@ -323,7 +328,7 @@ bool KateNormalIndent::skipBlanks (KateDocCursor &cur, KateDocCursor &max, bool 
     uchar attrib = cur.currentAttrib();
     const QString hlFile = doc->highlight()->hlKeyForAttrib( attrib );
 
-    if (attrib != commentAttrib && attrib != regionAttrib && attrib != alertAttrib && !hlFile.endsWith("doxygen.xml"))
+    if (attrib != commentAttrib && attrib != regionAttrib && attrib != alertAttrib && attrib != preprocessorAttrib && !hlFile.endsWith("doxygen.xml"))
     {
       QChar c = cur.currentChar();
       if (!c.isNull() && !c.isSpace())
