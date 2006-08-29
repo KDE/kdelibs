@@ -389,8 +389,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
   connect( m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
-  connect( this, SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ),
-           this, SLOT( slotOpenURLRequest( const KUrl &, const KParts::URLArgs & ) ) );
+  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::URLArgs & ) ),
+           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::URLArgs & ) ) );
   connect( this, SIGNAL( enableAction( const char *, bool ) ),
            this, SLOT( slotEnableAction( const char *, bool ) ) );
   connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
@@ -508,7 +508,7 @@ void BrowserExtension::slotOpenUrlRequest( const KUrl &url, const KParts::URLArg
     req.m_delayedURL = url;
     req.m_delayedArgs = args;
     d->m_requests.append( req );
-    QTimer::singleShot( 0, this, SLOT( slotEmitOpenURLRequestDelayed() ) );
+    QTimer::singleShot( 0, this, SLOT( slotEmitOpenUrlRequestDelayed() ) );
 }
 
 void BrowserExtension::slotEmitOpenUrlRequestDelayed()

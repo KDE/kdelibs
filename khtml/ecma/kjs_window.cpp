@@ -2717,7 +2717,7 @@ ValueImp *HistoryFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const
   // in Konqueror...
   if (!steps) // add && history->part->parentPart() to get only frames, but doesn't matter
   {
-    history->part->openURL( history->part->url() ); /// ## need args.reload=true?
+    history->part->openUrl( history->part->url() ); /// ## need args.reload=true?
   } else
   {
     // Delay it.

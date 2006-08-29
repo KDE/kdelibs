@@ -590,7 +590,7 @@ bool KHTMLPart::restoreURL( const KUrl &url )
 }
 
 
-bool KHTMLPart::openURL( const KUrl &url )
+bool KHTMLPart::openUrl( const KUrl &url )
 {
   kDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
@@ -2457,7 +2457,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
         KUrl url = m_url;
         m_url = 0;
         d->m_restored = true;
-        openURL(url);
+        openUrl(url);
         d->m_restored = false;
     }
 
@@ -4519,10 +4519,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
 
     if ( child->m_extension )
     {
-      connect( child->m_extension, SIGNAL( openURLNotify() ),
-               d->m_extension, SIGNAL( openURLNotify() ) );
+      connect( child->m_extension, SIGNAL( openUrlNotify() ),
+               d->m_extension, SIGNAL( openUrlNotify() ) );
 
-      connect( child->m_extension, SIGNAL( openURLRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
+      connect( child->m_extension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
                this, SLOT( slotChildURLRequest( const KUrl &, const KParts::URLArgs & ) ) );
 
       connect( child->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ),
@@ -5591,7 +5591,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     if (!KHTMLPageCache::self()->isComplete(d->m_cacheId))
     {
        d->m_restored = true;
-       openURL( u );
+       openUrl( u );
        d->m_restored = false;
     }
     else

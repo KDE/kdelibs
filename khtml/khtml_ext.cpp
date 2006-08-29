@@ -796,7 +796,7 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   // reload document
   d->m_khtml->closeURL();
   d->m_khtml->browserExtension()->setUrlArgs( args );
-  d->m_khtml->openURL( d->m_khtml->url() );
+  d->m_khtml->openUrl( d->m_khtml->url() );
 }
 
 void KHTMLPopupGUIClient::slotFrameInWindow()

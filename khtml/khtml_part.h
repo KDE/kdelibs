@@ -263,7 +263,7 @@ public:
    *
    * Reimplemented from KParts::ReadOnlyPart::openURL .
    */
-  virtual bool openURL( const KUrl &url );
+  virtual bool openUrl( const KUrl &url );
 
   /**
    * Stops loading the document and kills all data requests (for images, etc.)

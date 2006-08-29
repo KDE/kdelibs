@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         doc->browserExtension()->setUrlArgs(ags);
     }
 
-    doc->openURL( args->url(0) );
+    doc->openUrl( args->url(0) );
 
 //     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
 //     dtv->show();

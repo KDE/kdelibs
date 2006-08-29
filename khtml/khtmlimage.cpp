@@ -95,8 +95,8 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     // forward opening requests to parent frame (if existing)
     KHTMLPart *p = qobject_cast<KHTMLPart*>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
-    connect(m_khtml->browserExtension(), SIGNAL(openURLRequestDelayed(const KUrl &, const KParts::URLArgs &)),
-    		be, SIGNAL(openURLRequestDelayed(const KUrl &, const KParts::URLArgs &)));
+    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::URLArgs &)),
+    		be, SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::URLArgs &)));
 
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &,
              const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &,
@@ -123,7 +123,7 @@ KHTMLImage::~KHTMLImage()
         delete static_cast<KHTMLPart *>( m_khtml );
 }
 
-bool KHTMLImage::openURL( const KUrl &url )
+bool KHTMLImage::openUrl( const KUrl &url )
 {
     static const QString &html = KGlobal::staticQString( "<html><body><img src=\"%1\"></body></html>" );
 

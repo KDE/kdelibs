@@ -16,13 +16,13 @@ private Q_SLOTS:
   void slotOpenURL( const KUrl &url, const KParts::URLArgs &args )
   {
     m_part->browserExtension()->setUrlArgs( args );
-    m_part->openURL( url );
+    m_part->openUrl( url );
   }
   void reload()
   {
       KParts::URLArgs args; args.reload = true;
       m_part->browserExtension()->setUrlArgs( args );
-      m_part->openURL( m_part->url() );
+      m_part->openUrl( m_part->url() );
   }
   
   void toggleNavigable(bool s)
