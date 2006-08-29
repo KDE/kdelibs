@@ -109,7 +109,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->speedBar = new KFileSpeedBar( page );
     d->speedBar->setObjectName( QLatin1String( "speedbar" ) );
     connect( d->speedBar, SIGNAL( activated( const KUrl& )),
-             SLOT( setCurrentURL( const KUrl& )) );
+             SLOT( setCurrentUrl( const KUrl& )) );
     hlay->addWidget( d->speedBar, 0 );
     hlay->addLayout( m_mainLayout, 1 );
 
@@ -168,9 +168,9 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
              SLOT( slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint & )));
 
     connect( d->urlCombo, SIGNAL( activated( const QString& )),
-             SLOT( slotURLActivated( const QString& )));
+             SLOT( slotUrlActivated( const QString& )));
     connect( d->urlCombo, SIGNAL( returnPressed( const QString& )),
-             SLOT( slotURLActivated( const QString& )));
+             SLOT( slotUrlActivated( const QString& )));
 
     setCurrentUrl( d->startURL );
 
