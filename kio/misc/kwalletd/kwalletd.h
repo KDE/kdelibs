@@ -30,6 +30,7 @@
 #include <qhash.h>
 #include "kwalletbackend.h"
 #include <Q3PtrList>
+#include <qpointer.h>
 #include <time.h>
 #include <stdlib.h>
 #include <QtDBus/QtDBus>
@@ -165,7 +166,7 @@ class KWalletD : public KDEDModule {
 		void processTransactions();
 
 	private:
-		int internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, const QDBusMessage& msg);
+		int internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal, const QDBusMessage& msg);
 		bool isAuthorizedApp(const QString& appid, const QString& wallet, WId w);
 		// This also validates the handle.	May return NULL.
 		KWallet::Backend* getWallet(const QString& appid, int handle);
@@ -183,7 +184,10 @@ class KWalletD : public KDEDModule {
 		bool implicitDeny(const QString& wallet, const QString& app);
 
 		void doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId, const QDBusMessage& msg);
-		int doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, const QDBusMessage& msg);
+		int doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal, const QDBusMessage& msg);
+
+		void setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal );
+		void checkActiveDialog();
 
 		Q3IntDict<KWallet::Backend> _wallets;
 		QHash<QString,QList<int> > _handles;
@@ -198,6 +202,7 @@ class KWalletD : public KDEDModule {
 		KTimeout *_timeouts;
 
 		Q3PtrList<KWalletTransaction> _transactions;
+		QPointer< QWidget > activeDialog;
 		QDBusInterface *kdesktop;
 };
 

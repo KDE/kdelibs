@@ -48,11 +48,6 @@
 
 #include <assert.h>
 
-#ifdef Q_WS_X11
-#include <QX11Info>
-#include <X11/Xlib.h>
-#endif
-
 #include "kwalletdadaptor.h"
 
 extern "C" {
@@ -76,6 +71,7 @@ class KWalletTransaction {
 		QString appid;
 		qlonglong wId;
 		QString wallet;
+		bool modal;
 };
 
 KWalletD::KWalletD()
@@ -147,7 +143,7 @@ void KWalletD::processTransactions() {
 
 		switch (xact->tType) {
 			case KWalletTransaction::Open:
-				res = doTransactionOpen(xact->appid, xact->wallet, xact->wId, xact->msg);
+				res = doTransactionOpen(xact->appid, xact->wallet, xact->wId, xact->modal, xact->msg);
 
 				// multiple requests from the same client
 				// should not produce multiple password
@@ -212,6 +208,7 @@ void KWalletD::openAsynchronous(const QString& wallet, const QByteArray& returnO
 	xact->client = callingDcopClient();
 	xact->wallet = wallet;
 	xact->wId = wId;
+	xact->modal = false;
 	xact->tType = KWalletTransaction::Open;
 	xact->returnObject = returnObject;
 	_transactions.append(xact);
@@ -228,7 +225,7 @@ int KWalletD::openPath(const QString& path, qlonglong wId, const QDBusMessage& m
 	}
 
 	// FIXME: setup transaction
-	int rc = internalOpen(msg.service(), path, true, wId, msg);
+	int rc = internalOpen(msg.service(), path, true, wId, false, msg);
 	return rc;
 }
 
@@ -251,19 +248,54 @@ int KWalletD::open(const QString& wallet, qlonglong wId, const QDBusMessage &msg
 	xact->appid = appid;
 	xact->wallet = wallet;
 	xact->wId = wId;
+	xact->modal = true; // mark dialogs as modal, the app has blocking wait
 	xact->tType = KWalletTransaction::Open;
 	QTimer::singleShot(0, this, SLOT(processTransactions()));
+	checkActiveDialog();
 	return 0; // process later
 }
 
+// Sets up a dialog that will be shown by kwallet.
+void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal ) {
+	if( wId != 0 ) 
+		KWin::setMainWindow( dialog, wId ); // correct, set dialog parent
+	else {
+		if( appid.isEmpty())
+			kWarning() << "Using kwallet without parent window!" << endl;
+		else
+			kWarning() << "Application '" << appid << "' using kwallet without parent window!" << endl;
+		// allow dialog activation even if it interrupts, better than trying hacks
+		// with keeping the dialog on top or on all desktops
+		kapp->updateUserTimestamp();
+	}
+	if( modal )
+		KWin::setState( dialog->winId(), NET::Modal );
+	else
+		KWin::clearState( dialog->winId(), NET::Modal );
+	activeDialog = dialog;
+}
 
-int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, const QDBusMessage& msg) {
+// If there's a dialog already open and another application tries some operation that'd lead to
+// opening a dialog, that application will be blocked by this dialog. A proper solution would
+// be to set the second application's window also as a parent for the active dialog, so that
+// KWin properly handles focus changes and so on, but there's currently no support for multiple
+// dialog parents. Hopefully to be done in KDE4, for now just use all kinds of bad hacks to make
+//  sure the user doesn't overlook the active dialog.
+void KWalletD::checkActiveDialog() {
+	if( !activeDialog || !activeDialog->isShown())
+		return;
+	kapp->updateUserTimestamp();
+	KWin::setState( activeDialog->winId(), NET::KeepAbove );
+	KWin::setOnAllDesktops( activeDialog->winId(), true );
+	KWin::forceActiveWindow( activeDialog->winId());
+}
+
+
+int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlonglong wId, bool modal, const QDBusMessage& msg) {
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 		// First use wizard
 		KWalletWizard *wiz = new KWalletWizard(0);
-#ifdef Q_WS_X11
-		XSetTransientForHint(QX11Info::display(), wiz->winId(), wId);
-#endif
+		setupDialog( wiz, wId, appid, modal );
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
 			KConfig cfg("kwalletrc");
@@ -302,12 +334,12 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 		cfg.sync();
 	}
 
-	int rc = internalOpen(appid, wallet, false, WId(wId), msg);
+	int rc = internalOpen(appid, wallet, false, WId(wId), modal, msg);
 	return rc;
 }
 
 
-int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, const QDBusMessage& msg) {
+int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal, const QDBusMessage& msg) {
 	int rc = -1;
 	bool brandNew = false;
 
@@ -387,11 +419,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 		const char *p = 0L;
 		while (!b->isOpen()) {
 			assert(kpd); // kpd can't be null if isOpen() is false
-#ifdef Q_WS_X11
-			XSetTransientForHint(QX11Info::display(), kpd->winId(), w);
-#endif
-			KWin::setState( kpd->winId(), NET::KeepAbove );
-			KWin::setOnAllDesktops(kpd->winId(), true);
+			setupDialog( kpd, w, appid, modal );
 			if (kpd->exec() == KDialog::Accepted) {
 				p = kpd->password();
 				int rc = b->open(QByteArray(p, strlen(p)));
@@ -470,12 +498,7 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 		} else {
 			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.", Qt::escape(QString(appid)), Qt::escape(wallet)));
 		}
-#ifdef Q_WS_X11
-		XSetTransientForHint(QX11Info::display(), dialog->winId(), w);
-#endif
-		KWin::setState(dialog->winId(), NET::KeepAbove);
-		KWin::setOnAllDesktops(dialog->winId(), true);
-
+		setupDialog( dialog, w, appid, false );
 		response = dialog->exec();
 		delete dialog;
 	}
@@ -534,11 +557,14 @@ void KWalletD::changePassword(const QString& wallet, qlonglong wId, const QDBusM
 	xact->appid = appid;
 	xact->wallet = wallet;
 	xact->wId = wId;
+	xact->modal = false;
 	xact->tType = KWalletTransaction::ChangePassword;
 
 	_transactions.append(xact);
 
 	QTimer::singleShot(0, this, SLOT(processTransactions()));
+	checkActiveDialog();
+	checkActiveDialog();
 }
 
 
@@ -555,7 +581,7 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	}
 
 	if (!it.current()) {
-		handle = doTransactionOpen(appid, wallet, wId, msg);
+		handle = doTransactionOpen(appid, wallet, wId, false, msg);
 		if (-1 == handle) {
 			KMessageBox::sorryWId(wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
@@ -575,9 +601,7 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.", Qt::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
 	kpd->setAllowEmptyPasswords(true);
-#ifdef Q_WS_X11
-	XSetTransientForHint(QX11Info::display(), kpd->winId(), wId);
-#endif
+	setupDialog( kpd, wId, appid, false );
 	if (kpd->exec() == KDialog::Accepted) {
 		const char *p = kpd->password();
 		if (p) {
