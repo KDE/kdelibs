@@ -26,6 +26,7 @@
 #include <qintdict.h>
 #include <qstring.h>
 #include <qwidget.h>
+#include <qguardedptr.h>
 #include "kwalletbackend.h"
 
 #include <time.h>
@@ -150,7 +151,7 @@ class KWalletD : public KDEDModule {
 		void processTransactions();
 
 	private:
-		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
+		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0, bool modal = false);
 		bool isAuthorizedApp(const QCString& appid, const QString& wallet, WId w);
 		// This also validates the handle.  May return NULL.
 		KWallet::Backend* getWallet(const QCString& appid, int handle);
@@ -169,7 +170,10 @@ class KWalletD : public KDEDModule {
 		QCString friendlyDCOPPeerName();
 
 		void doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId);
-		int doTransactionOpen(const QCString& appid, const QString& wallet, uint wId);
+		int doTransactionOpen(const QCString& appid, const QString& wallet, uint wId, bool modal);
+
+		void setupDialog( QWidget* dialog, WId wId, const QCString& appid, bool modal );
+		void checkActiveDialog();
 
 		QIntDict<KWallet::Backend> _wallets;
 		QMap<QCString,QValueList<int> > _handles;
@@ -184,6 +188,7 @@ class KWalletD : public KDEDModule {
 		KTimeout *_timeouts;
 
 		QPtrList<KWalletTransaction> _transactions;
+		QGuardedPtr< QWidget > activeDialog;
 };
 
 
