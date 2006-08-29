@@ -48,8 +48,6 @@ private:
 };
 
 
-
-
 struct CallStackEntry
 {
     QString name;
@@ -65,7 +63,6 @@ struct BreakPoint
 {
     int lineNumber;
     int column;
-
     DebugDocument *document;
 };
 
@@ -75,37 +72,6 @@ struct SourceFragment
     int baseLine;
     QString source;
 };
-
-
-/*
-class DebugDocumentModel : public QAbstractListModel
-{
-public:
-    enum Type
-    {
-        Breakpoint,
-        Callstack
-    };
-
-    DebugDocumentModel(Type type, QObject *parent = 0);
-    ~DebugDocumentModel();
-
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-
-    Type type() const;
-    void setType(Type);
-
-public slots:
-    void addDocument(DebugDocument*);
-    void removeDocument(DebugDocument*);
-
-private:
-    Type m_type;
-    QList<DebugDocument*> m_documents;
-};
-*/
 
 }
 Q_DECLARE_METATYPE(KJS::DebugDocument*)

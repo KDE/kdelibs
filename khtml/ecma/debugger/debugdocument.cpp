@@ -175,4 +175,3 @@ void DebugDocument::removeCall(const QString &function, int lineNumber)
         d->callStack.remove(idx);
 }
 
-

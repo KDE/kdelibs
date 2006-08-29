@@ -278,9 +278,3 @@ int ExecStateModel::rowCount(const QModelIndex &parent) const
     return props.size();
 }
 
-
-
-
-
-
-

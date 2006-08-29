@@ -639,32 +639,10 @@ void DebugWindow::enterDebugSession(KJS::ExecState *exec, DebugDocument *documen
         m_stepOverAct->setEnabled(true);
     }
 
-    // Dump call stack:
-    kDebug() << "Call Stack: " << endl;
-    QVector<CallStackEntry> calls = document->callStack();
-    for (int i = 0; i < calls.count(); i++)
-    {
-        kDebug() << i << ": " << calls[i].name << " " << calls[i].lineNumber << endl;
-    }
-
-
+    m_callStack->displayStack(document);
     m_localVariables->display(exec);
-//    disableOtherWindows();
+
     enterLoop();
-
-/*
-    bool done = false;
-    while (!done)
-    {
-        if (m_mode == Continue)
-            done = true;
-        kapp->processEvents(QEventLoop::ExcludeSocketNotifiers | 
-                            QEventLoop::DeferredDeletion | QEventLoop::X11ExcludeTimers);
-
-    }
-
-
-    m_localVariables->clear(); */
 }
 
 
