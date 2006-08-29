@@ -583,7 +583,7 @@ static const char* const minus_xpm[] = {
 ".+++++++++.",
 "..........."};
 
-static const char * bookmark_xpm[] = {
+static const char * const bookmark_xpm[] = {
 "14 13 82 1",
 "   c None",
 ".  c #F27D01",
@@ -683,9 +683,6 @@ static const char * bookmark_xpm[] = {
 
 const int iconPaneWidth = 16;
 const int halfIPW = 8;
-
-static QPixmap minus_px ((const char**)minus_xpm);
-static QPixmap plus_px ((const char**)plus_xpm);
 
 KateIconBorder::KateIconBorder ( KateViewInternal* internalView, QWidget *parent )
   : QWidget(parent, "", Qt::WStaticContents | Qt::WRepaintNoErase | Qt::WResizeNoErase )
@@ -848,6 +845,9 @@ void KateIconBorder::paintEvent(QPaintEvent* e)
 
 void KateIconBorder::paintBorder (int /*x*/, int y, int /*width*/, int height)
 {
+  static QPixmap minus_px ((const char**)minus_xpm);
+  static QPixmap plus_px ((const char**)plus_xpm);
+
   uint h = m_view->renderer()->config()->fontStruct()->fontHeight;
   uint startz = (y / h);
   uint endz = startz + 1 + (height / h);
