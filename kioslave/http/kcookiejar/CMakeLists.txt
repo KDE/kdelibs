@@ -18,7 +18,11 @@ qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml)
 
 kde4_add_executable( kcookiejar NOGUI ${kcookiejar_SRCS})
 
-set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
+if(MSVC)
+    set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "/FI${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
+else(MSVC)
+    set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
+endif(MSVC)
 
 target_link_libraries( kcookiejar  ${KDE4_KDECORE_LIBS} )
 
