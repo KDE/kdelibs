@@ -127,16 +127,16 @@ install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/
 endif(OPENEXR_FOUND)
 
 
-if(TIFF_FOUND AND NOT MSVC)
+if(TIFF_FOUND)
     include_directories( ${TIFF_INCLUDE_DIR} )
     set(kimg_tiff_LIB_SRCS tiffr.cpp)
     kde4_add_plugin(kimg_tiff ${kimg_tiff_LIB_SRCS})
     target_link_libraries(kimg_tiff ${KDE4_KDECORE_LIBS} ${TIFF_LIBRARY})
 
     #kde4_install_libtool_file(${PLUGIN_INSTALL_DIR}/plugins/imageformats/ kimg_tiff )
-install(TARGETS kimg_tiff  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
-install( FILES tiff.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
-endif(TIFF_FOUND AND NOT MSVC)
+    install(TARGETS kimg_tiff  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
+    install( FILES tiff.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
+endif(TIFF_FOUND)
 
 
 
