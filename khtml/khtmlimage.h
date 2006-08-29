@@ -69,7 +69,7 @@ public:
 
     virtual bool openUrl( const KUrl &url );
 
-    virtual bool closeURL();
+    virtual bool closeUrl();
 
     KHTMLPart *doc() const { return m_khtml; }
 

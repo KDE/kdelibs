@@ -3,7 +3,7 @@
 <node>
   <interface name="org.kde.KHTMLPart">
     <property name="url" type="s" access="read"/>
-    <method name="closeURL">
+    <method name="closeUrl">
       <arg type="b" direction="out"/>
     </method>
     <property name="jScriptEnabled" type="b" access="readwrite"/>

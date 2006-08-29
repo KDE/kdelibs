@@ -44,7 +44,7 @@ public Q_SLOTS:
      */
     KUrl url() const;
 
-    bool closeURL();
+    bool closeUrl();
 
     /**
      * Enable/disable Javascript support. Note that this will

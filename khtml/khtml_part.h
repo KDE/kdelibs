@@ -268,7 +268,7 @@ public:
   /**
    * Stops loading the document and kills all data requests (for images, etc.)
    */
-  virtual bool closeURL();
+  virtual bool closeUrl();
 
   /**
    * Called when a certain error situation (i.e. connection timed out) occurred.

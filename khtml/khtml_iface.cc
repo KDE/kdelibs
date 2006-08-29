@@ -50,9 +50,9 @@ bool KHTMLPartIface::jScriptEnabled() const
     return part->jScriptEnabled();
 }
 
-bool KHTMLPartIface::closeURL()
+bool KHTMLPartIface::closeUrl()
 {
-    return part->closeURL();
+    return part->closeUrl();
 }
 
 bool KHTMLPartIface::metaRefreshEnabled() const

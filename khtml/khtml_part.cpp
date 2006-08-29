@@ -521,7 +521,7 @@ KHTMLPart::~KHTMLPart()
   d->m_redirectionTimer.stop();
 
   if (!d->m_bComplete)
-    closeURL();
+    closeUrl();
 
   disconnect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
            this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
@@ -557,13 +557,13 @@ bool KHTMLPart::restoreURL( const KUrl &url )
   d->m_redirectionTimer.stop();
 
   /*
-   * That's not a good idea as it will call closeURL() on all
+   * That's not a good idea as it will call closeUrl() on all
    * child frames, preventing them from further loading. This
    * method gets called from restoreState() in case of a full frameset
-   * restoral, and restoreState() calls closeURL() before restoring
+   * restoral, and restoreState() calls closeUrl() before restoring
    * anyway.
   kDebug( 6050 ) << "closing old URL" << endl;
-  closeURL();
+  closeUrl();
   */
 
   d->m_bComplete = false;
@@ -600,7 +600,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // occurs before this part was loaded (e.g. KonqRun), and is passed to
   // khtmlpart so that it can display the error.
   if ( url.protocol() == "error" && url.hasSubUrl() ) {
-    closeURL();
+    closeUrl();
 
     if(  d->m_bJScriptEnabled )
       d->m_statusBarText[BarOverrideText] = d->m_statusBarText[BarDefaultText] = QString();
@@ -695,7 +695,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   }
 
   if (!d->m_restored)
-    closeURL();
+    closeUrl();
 
   d->m_restoreScrollPosition = d->m_restored;
   disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
@@ -792,7 +792,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   return true;
 }
 
-bool KHTMLPart::closeURL()
+bool KHTMLPart::closeUrl()
 {
   if ( d->m_job )
   {
@@ -2043,7 +2043,7 @@ void KHTMLPart::stopAnimations()
 
 void KHTMLPart::resetFromScript()
 {
-    closeURL();
+    closeUrl();
     d->m_bComplete = false;
     d->m_bLoadEventEmitted = false;
     disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
@@ -2453,7 +2453,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 
     if( !m_url.isEmpty() ) {
         // reload document
-        closeURL();
+        closeUrl();
         KUrl url = m_url;
         m_url = 0;
         d->m_restored = true;
@@ -3985,7 +3985,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   }
 
   if ( !d->m_bComplete && !hasTarget )
-    closeURL();
+    closeUrl();
 
   view()->viewport()->unsetCursor();
   emit d->m_extension->openUrlRequest( cURL, args );
@@ -5538,7 +5538,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   else
   {
     // Full restore.
-    closeURL();
+    closeUrl();
     // We must force a clear because we want to be sure to delete all
     // frames.
     d->m_bCleared = false;

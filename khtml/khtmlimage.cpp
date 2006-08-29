@@ -166,10 +166,10 @@ bool KHTMLImage::openUrl( const KUrl &url )
     return true;
 }
 
-bool KHTMLImage::closeURL()
+bool KHTMLImage::closeUrl()
 {
     disposeImage();
-    return m_khtml->closeURL();
+    return m_khtml->closeUrl();
 }
 
 // This can happen after openURL returns, or directly from m_image->ref()
