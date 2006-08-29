@@ -939,7 +939,7 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
         return;
     }
 
-    QLineEdit::mousePressEvent( e );
+    QLineEdit::mouseReleaseEvent( e );
 }
 
 void KLineEdit::tripleClickTimeout()
