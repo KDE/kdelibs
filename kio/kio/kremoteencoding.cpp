@@ -82,7 +82,9 @@ void KRemoteEncoding::setEncoding(const char *name)
     codec = QTextCodec::codecForName(name);
 
   if (codec == 0)
-    codec = QTextCodec::codecForMib(1);
+    codec = QTextCodec::codecForMib(4 /* latin-1 */);
+
+  Q_ASSERT(codec);
 
   kDebug() << k_funcinfo << "setting encoding " << codec->name()
 	    << " for name=" << name << endl;
