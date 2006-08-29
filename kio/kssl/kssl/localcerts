@@ -32,3 +32,5 @@ geotrust-global-1.pem
 geotrust-global-2.pem
 GeoTrust_Universal_CA.pem
 GeoTrust_Universal_CA2.pem
+quovadis.pem
+startcom.pem
