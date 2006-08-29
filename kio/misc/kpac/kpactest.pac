@@ -1,6 +1,6 @@
 // This is a script to test KPAC.
 // To use it: set this script as proxy config file and run
-// dcop kded proxyscout proxyForURL http://blah (URL doesn't matter)
+// dcop kded proxyscout proxyForUrl http://blah (URL doesn't matter)
 // The answer must be http://<your IP>/<test results>
 // If you see "failed" in the output, lookup the test name in the comments
 // below and let me now at <malte@kde.org> or try to fix it yourself

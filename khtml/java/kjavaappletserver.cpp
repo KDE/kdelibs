@@ -293,7 +293,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     //check for http proxies...
     if( KProtocolManager::useProxy() )
     {
-        // only proxyForURL honors automatic proxy scripts
+        // only proxyForUrl honors automatic proxy scripts
         // we do not know the applet url here so we just use a dummy url
         // this is a workaround for now
         // FIXME
