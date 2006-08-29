@@ -845,12 +845,14 @@ KCmdLineArgs::usage(const char *id)
       usage = i18n("[options] ")+usage;
    }
 
-   while(args != argsList->begin())
+   while(true)
    {
       if ((*args)->name)
       {
          usage = i18n("[%1-options]", (*args)->name)+' '+usage;
       }
+      if (args == argsList->begin())
+         break;
       --args;
    }
 
@@ -1025,7 +1027,7 @@ KCmdLineArgs::usage(const char *id)
          option++;
        }
        ++args;
-       if (args == argsList->end() || (*args)->name == 0 || (*args)->id == 0)
+       if (args == argsList->end() || (*args)->name || (*args)->id == 0)
         break;
      }
      if (!showAll) break;
