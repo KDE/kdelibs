@@ -278,7 +278,7 @@ KTimeZone::Phase::~Phase()
 {
 }
 
-KTimeZone::Phase::Phase &KTimeZone::Phase::operator=(const KTimeZone::Phase &rhs)
+KTimeZone::Phase &KTimeZone::Phase::operator=(const KTimeZone::Phase &rhs)
 {
     d = rhs.d;
     return *this;
@@ -363,7 +363,7 @@ KTimeZone::Transition &KTimeZone::Transition::operator=(const KTimeZone::Transit
     return *this;
 }
 
-bool KTimeZone::Transition::operator<(const KTimeZone::Transition::Transition &rhs) const
+bool KTimeZone::Transition::operator<(const KTimeZone::Transition &rhs) const
 {
     return d->time < rhs.d->time;
 }
