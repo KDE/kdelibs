@@ -170,6 +170,17 @@ target_link_libraries(kscantest ${KDE4_KIO_LIBS})
 
 ########### next target ###############
 
+set(safesitetest_SRCS safesitetest.cpp)
+
+kde4_automoc(${safesitetest_SRCS})
+
+kde4_add_executable(safesitetest RUN_UNINSTALLED ${safesitetest_SRCS})
+
+target_link_libraries(safesitetest ${KDE4_KIO_LIBS})
+
+
+########### next target ###############
+
 set(kdirlistertest_SRCS kdirlistertest.cpp)
 
 kde4_automoc(${kdirlistertest_SRCS})

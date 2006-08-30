@@ -119,6 +119,7 @@ set(kiocore_STAT_SRCS
   kio/kremoteencoding.cpp
   kio/kmimetypechooser.cpp
   kio/kbuildsycocaprogressdialog.cpp
+  kio/safesite.cpp
 )
 
 set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp)

@@ -39,6 +39,7 @@ install(  FILES
   davjob.h
   renamedlg.h
   skipdlg.h
+  safesite.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
 install( FILES
