@@ -9,6 +9,7 @@
 
 <bookinfo>
 <title>The &kspell; Handbook</title>
+
 <authorgroup>
 <author>&David.Sweet; &David.Sweet.mail;</author>
 
@@ -20,9 +21,7 @@
 <releaseinfo>1.00.00</releaseinfo>
 <abstract>
 <para>&kspell; is the spelling checker used by &kde; applications such
-as &kate;, &kmail;, and &kword;. It is a <acronym>GUI</acronym>
-frontend to <application>International ISpell</application> and
-<application>ASpell</application>.</para>
+as &kate;, &kmail;, and &kword;. It is a &GUI; frontend to <application>International ISpell</application> and <application>ASpell</application>.</para>
 
 </abstract>
 <keywordset>
@@ -61,10 +60,10 @@ misspelled word with the selected word.</para>
 
 <para>To keep your original spelling, click on <guilabel>Ignore</guilabel>.</para>
 
-<para>To stop the spell checking -- keeping the changes you've already made -- click
+<para>To stop the spellchecking -- keeping the changes you've already made -- click
 on <guibutton>Stop</guibutton>.</para>
 
-<para>To stop the spell checking and cancel the changes you've already made, click on
+<para>To stop the spellchecking and cancel the changes you've already made, click on
 <guibutton>Cancel</guibutton>.</para>
 
 <para>Clicking on <guibutton>Replace All</guibutton> will initially perform the same function as
@@ -88,7 +87,7 @@ will not be seen by other users).</para>
 <sect1 id="dictionaries">
 <title>Dictionaries</title>
 
-<para>You can choose the dictionary to use for spell checking from the list of
+<para>You can choose the dictionary to use for spellchecking from the list of
 installed dictionaries.</para>
 </sect1>
 
@@ -153,7 +152,13 @@ Home Page</ulink>. In particular, you will find information about programming th
 <para>You may email the author/maintainer with questions and/or comments at
 &David.Sweet.mail;.</para>
 
+<para>
+Documentation Copyright &copy; 2003 &David.Sweet; &David.Sweet.mail;
+</para>
+
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
+
+&underFDL;               <!-- FDL: do not remove -->
 
 </chapter>
 &documentation.index; 
