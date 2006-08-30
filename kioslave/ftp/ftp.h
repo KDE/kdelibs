@@ -405,6 +405,7 @@ private: // data members
    * control connection socket, only set if openControl() succeeded
    */
   KNetwork::KStreamSocket  *m_control;
+  QByteArray m_lastControlLine;
 
   /**
    * data connection socket
