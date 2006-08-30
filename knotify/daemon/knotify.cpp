@@ -218,7 +218,8 @@ int KNotifyAdaptor::event(const QString &event, const QString &fromApp, const QV
 	}
 	
 	QPixmap pixmap;
-	pixmap.loadFromData(image);
+	QDataStream in(image);
+	in >> pixmap;
 	return static_cast<KNotify *>(parent())->event(event, fromApp, contextlist, text, pixmap, actions, WId(winId));
 }
 
