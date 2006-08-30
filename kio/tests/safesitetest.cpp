@@ -6,8 +6,8 @@ int main(int argc, char **argv) {
 	KCmdLineArgs::init(argc, argv, "safesitetest", 0, 0, 0, 0);
 	KApplication app;
 
-	Report *r = SafeSite::Agent::obtainReport("http://www.example.com/");
-	r = SafeSite::Agent::obtainReport("http://www.example.org/");
+	SafeSite::Report *r = SafeSite::Agent::obtainReport(KUrl("http://www.example.com/"));
+	r = SafeSite::Agent::obtainReport(KUrl("http://www.example.org/"));
 	return app.exec();
 }
 
