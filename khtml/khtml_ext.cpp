@@ -470,7 +470,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
         name = "Google";
       }
 
-      KAction *action = new KAction( i18n( "Search '%1' at %2" ,  selectedText ,  name ), actionCollection(), "searchProvider" );
+      KAction *action = new KAction( i18n( "Search for '%1' with %2" ,  selectedText ,  name ), actionCollection(), "searchProvider" );
       static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
       connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
 
@@ -480,7 +480,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
       favoriteEngines = config.readEntry("FavoriteSearchEngines", favoriteEngines);
 
       if ( !favoriteEngines.isEmpty()) {
-        KActionMenu* providerList = new KActionMenu( i18n( "Search '%1' At" ,  selectedText ), actionCollection(), "searchProviderList" );
+        KActionMenu* providerList = new KActionMenu( i18n( "Search for '%1' with" ,  selectedText ), actionCollection(), "searchProviderList" );
 
         QStringList::ConstIterator it = favoriteEngines.begin();
         for ( ; it != favoriteEngines.end(); ++it ) {
