@@ -256,7 +256,7 @@ void KRecentFilesAction::addUrl( const KUrl& url, const QString& name )
     {
       if ( d->m_urls[action].pathOrUrl().endsWith(file) )
       {
-        delete removeAction(action);
+        removeAction(action)->deleteLater();
         break;
       }
     }
