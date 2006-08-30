@@ -36,10 +36,10 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 
 using namespace ThreadWeaver;
 
-WeaverImpl::WeaverImpl(QObject* parent, int inventoryMax)
+WeaverImpl::WeaverImpl( QObject* parent )
     : WeaverInterface(parent)
     , m_active(0)
-    , m_inventoryMax(inventoryMax)
+    , m_inventoryMax( 4 )
     , m_mutex ( new QMutex( QMutex::Recursive ) )
     , m_finishMutex( new QMutex )
     , m_jobAvailableMutex ( new QMutex )
@@ -125,6 +125,25 @@ const State& WeaverImpl::state() const
     return *m_state;
 }
 
+void WeaverImpl::setMaximumNumberOfThreads( int cap )
+{
+    Q_ASSERT_X ( cap > 0, "Weaver Impl", "Thread inventory size has to be larger than zero." );
+    QMutexLocker l (m_mutex);
+    m_inventoryMax = cap;
+}
+
+int WeaverImpl::maximumNumberOfThreads() const
+{
+    QMutexLocker l (m_mutex);
+    return m_inventoryMax;
+}
+
+int WeaverImpl::currentNumberOfThreads () const
+{
+    QMutexLocker l (m_mutex);
+    return m_inventory.count ();
+}
+
 void WeaverImpl::registerObserver ( WeaverObserver *ext )
 {
     connect ( this,  SIGNAL ( stateChanged ( State* ) ),
@@ -137,12 +156,6 @@ void WeaverImpl::registerObserver ( WeaverObserver *ext )
               ext,  SIGNAL ( threadSuspended ( Thread* ) ) );
     connect ( this,  SIGNAL ( threadExited ( Thread* ) ) ,
               ext,  SIGNAL ( threadExited ( Thread* ) ) );
-}
-
-int WeaverImpl::numberOfThreads () const
-{
-    QMutexLocker l (m_mutex);
-    return m_inventory.count ();
 }
 
 void WeaverImpl::enqueue(Job* job)
@@ -172,26 +185,28 @@ void WeaverImpl::enqueue(Job* job)
 
 void WeaverImpl::adjustInventory ( int noOfNewJobs )
 {
-    // no of threads that can be created:
-    const int reserve = m_inventoryMax - numberOfThreads();
+  QMutexLocker l (m_mutex);
+
+  // no of threads that can be created:
+  const int reserve = m_inventoryMax - m_inventory.count();
+
     if ( reserve > 0 )
     {
-        QMutexLocker l (m_mutex);
-        for ( int i = 0; i < qMin ( reserve,  noOfNewJobs ); ++i )
+      for ( int i = 0; i < qMin ( reserve,  noOfNewJobs ); ++i )
 	{
-            Thread *th = createThread();
-            m_inventory.append(th);
-            connect ( th,  SIGNAL ( jobStarted ( Thread*,  Job* ) ),
-                      SIGNAL ( threadBusy ( Thread*,  Job* ) ) );
-            connect ( th,  SIGNAL ( jobDone( Job* ) ),
-                      SIGNAL ( jobDone( Job* ) ) );
-            connect ( th,  SIGNAL ( started ( Thread* ) ),
-                      SIGNAL ( threadStarted ( Thread* ) ) );
-
-            th->moveToThread( th ); // be sane from the start
-            th->start ();
-            debug ( 2, "WeaverImpl::adjustInventory: thread created, "
-                    "%i threads in inventory.\n", numberOfThreads() );
+	  Thread *th = createThread();
+	  m_inventory.append(th);
+	  connect ( th,  SIGNAL ( jobStarted ( Thread*,  Job* ) ),
+		    SIGNAL ( threadBusy ( Thread*,  Job* ) ) );
+	  connect ( th,  SIGNAL ( jobDone( Job* ) ),
+		    SIGNAL ( jobDone( Job* ) ) );
+	  connect ( th,  SIGNAL ( started ( Thread* ) ),
+		    SIGNAL ( threadStarted ( Thread* ) ) );
+	  
+	  th->moveToThread( th ); // be sane from the start
+	  th->start ();
+	  debug ( 2, "WeaverImpl::adjustInventory: thread created, "
+		  "%i threads in inventory.\n", currentNumberOfThreads() );
 	}
     }
 }

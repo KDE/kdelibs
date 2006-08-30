@@ -63,7 +63,6 @@ namespace ThreadWeaver {
         bool m_quit;
         State m_state;
         Ui::JobsBase ui;
-        Weaver *weaver;
         WeaverObserverTest *m_log;
     protected slots:
         void slotJobDone (Job*);

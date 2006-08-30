@@ -166,7 +166,8 @@ int main ( int argc,  char** argv )
 {
     QApplication app ( argc,  argv );
     ThreadWeaver::setDebugLevel ( true, 1 );
-    ThreadWeaver::Weaver weaver ( 0, 8 );
+    ThreadWeaver::Weaver weaver;
+    weaver.setMaximumNumberOfThreads (8);
     SMIV smiv ( & weaver );
     smiv.show();
     return app.exec();

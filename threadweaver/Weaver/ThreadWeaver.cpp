@@ -255,11 +255,11 @@ public:
   WeaverInterface* weaverinterface;
 };
 
-Weaver::Weaver ( QObject* parent, int inventoryMax )
+Weaver::Weaver ( QObject* parent )
     : WeaverInterface( parent )
     , d (new Private)
 {
-  d->weaverinterface = makeWeaverImpl (inventoryMax);
+  d->weaverinterface = makeWeaverImpl();
   connect ( d->weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
   connect ( d->weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
   connect ( d->weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
@@ -268,12 +268,12 @@ Weaver::Weaver ( QObject* parent, int inventoryMax )
 Weaver::~Weaver()
 {
   delete d->weaverinterface;
-    delete d;
+  delete d;
 }
 
-WeaverInterface* Weaver::makeWeaverImpl( int inventoryMax )
+WeaverInterface* Weaver::makeWeaverImpl()
 {
-    return new WeaverImpl ( this, inventoryMax );
+    return new WeaverImpl ( this );
 }
 
 const State& Weaver::state() const
@@ -351,9 +351,19 @@ int Weaver::queueLength() const
     return d->weaverinterface->queueLength();
 }
 
-int Weaver::numberOfThreads() const
+void Weaver::setMaximumNumberOfThreads( int cap )
 {
-    return d->weaverinterface->numberOfThreads();
+    d->weaverinterface->setMaximumNumberOfThreads( cap );
+}
+
+int Weaver::currentNumberOfThreads() const 
+{
+    return d->weaverinterface->currentNumberOfThreads();
+}
+
+int Weaver::maximumNumberOfThreads() const
+{
+    return d->weaverinterface->maximumNumberOfThreads();
 }
 
 void Weaver::requestAbort()

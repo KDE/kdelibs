@@ -31,12 +31,12 @@ private slots:
   {
     ThreadWeaver::Weaver weaver;
     QString sequence;
-    QCOMPARE (weaver.numberOfThreads(), 0);
+    QCOMPARE (weaver.currentNumberOfThreads(), 0);
     AppendCharacterJob a( QChar('a'), &sequence, this);
     weaver.enqueue( & a);
     weaver.finish();
     QVERIFY(a.isFinished());
-    QCOMPARE (weaver.numberOfThreads(), 1);
+    QCOMPARE (weaver.currentNumberOfThreads(), 1);
   }
 
     void SimpleJobTest() {

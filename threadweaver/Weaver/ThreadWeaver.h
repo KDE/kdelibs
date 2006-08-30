@@ -49,15 +49,24 @@ namespace ThreadWeaver {
         derived WeaverImpl objects.
 
     */
+  // Note: All member documentation is in the WeaverInterface class. 
     class Weaver : public WeaverInterface
     {
         Q_OBJECT
     public:
 	/** Construct a Weaver object. */
-        Weaver (QObject* parent=0, int inventoryMax = 4 ); // maximum number of provided threads
+        Weaver ( QObject* parent=0 );
+
 	/** Destruct a Weaver object. */
         virtual ~Weaver ();
+
 	const State& state() const;
+
+        void setMaximumNumberOfThreads( int cap );
+        int maximumNumberOfThreads() const;
+        int currentNumberOfThreads () const;
+
+
         void registerObserver ( WeaverObserver* );
 
         /** Return the global Weaver instance.
@@ -77,7 +86,6 @@ namespace ThreadWeaver {
         bool isEmpty () const;
 	bool isIdle () const;
 	int queueLength () const;
-	int numberOfThreads () const;
         void requestAbort();
 
     protected:
@@ -87,7 +95,7 @@ namespace ThreadWeaver {
         /** The factory method to create the actual Weaver implementation.
             Overload this method to use a different or adapted implementation.
             */
-        virtual WeaverInterface* makeWeaverImpl ( int inventoryMax );
+      virtual WeaverInterface* makeWeaverImpl ();
     };
 }
 

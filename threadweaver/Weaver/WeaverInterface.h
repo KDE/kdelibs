@@ -55,8 +55,18 @@ namespace ThreadWeaver {
         virtual ~WeaverInterface() {}
         /** Return the state of the weaver object. */
         virtual const State& state() const = 0;
-        /** Register an observer.
 
+      /** Set the maximum number of threads this Weaver object may start. */
+      virtual void setMaximumNumberOfThreads( int cap ) = 0;
+
+      /** Get the maximum number of threads this Weaver may start. */
+      virtual int maximumNumberOfThreads() const = 0;
+
+      /** Returns the current number of threads in the inventory. */
+      virtual int currentNumberOfThreads () const = 0;
+      
+        /** Register an observer.
+	    
             Observers provides signals on different weaver events that are
             otherwise only available through objects of different classes
             (threads, jobs). Usually, access to the signals of those objects
@@ -127,14 +137,14 @@ namespace ThreadWeaver {
 	    the queue are waiting to be executed.
         */
         virtual int queueLength () const = 0;
-	/** Returns the current number of threads in the inventory. */
-        virtual int numberOfThreads () const = 0;
+
         /** Request aborts of the currently executed jobs.
             It is important to understand that aborts are requested, but
 	    cannot be guaranteed, as not all Job classes support it. It is up
 	    to the application to decide if and how job aborts are
 	    necessary. */
         virtual void requestAbort() = 0;
+
     signals:
 	/** This signal is emitted when the Weaver has finished ALL currently
 	    queued jobs.
@@ -143,11 +153,13 @@ namespace ThreadWeaver {
 	    jobs have been processed while you still add new ones). This is
 	    not a bug, but the intended behaviour. */
         void finished ();
+
         /** Thread queueing has been suspended.
             When suspend is called with state = true, all threads are
             allowed to finish their job. When the last thread
             finished, this signal is emitted. */
         void suspended ();
+
 	/** This signal is emitted when a job is done.
 	    The Job object emits a signal jobDone(), too, when the individual
 	    job has finished.

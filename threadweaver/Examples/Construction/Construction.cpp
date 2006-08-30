@@ -60,7 +60,8 @@ int main ( int argc,  char** argv )
     const int Multiplier = 250; // [0..9]* Multiplier sleep time for each job
     ThreadWeaver::setDebugLevel ( true, 4);
     QCoreApplication app ( argc,  argv );
-    ThreadWeaver::Weaver weaver ( 0, NoOfThreads );
+    ThreadWeaver::Weaver weaver;
+    weaver.setMaximumNumberOfThreads( NoOfThreads );
     DummyJob *dummies[ NoOfJobs];
 
     // ----- create a number of dummy jobs:

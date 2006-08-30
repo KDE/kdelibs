@@ -95,7 +95,8 @@ private slots:
   }
 
   void SimpleQueuePrioritiesTest() {
-    ThreadWeaver::Weaver weaver ( 0, 1 ); // just one thread
+    ThreadWeaver::Weaver weaver ( 0 ); 
+    weaver.setMaximumNumberOfThreads ( 1 ); // just one thread
     QString sequence;
     LowPriorityAppendCharacterJob jobA ( QChar( 'a' ), &sequence );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence );
@@ -119,7 +120,7 @@ private slots:
   void WeaverInitializationTest()
   { // this one mostly tests the sanity of the startup behaviour
     ThreadWeaver::Weaver weaver;
-    QCOMPARE (weaver.numberOfThreads(), 0);
+    QCOMPARE (weaver.currentNumberOfThreads(), 0);
     QVERIFY (weaver.isEmpty());
     QVERIFY(weaver.isIdle());
     QVERIFY(weaver.queueLength() == 0);

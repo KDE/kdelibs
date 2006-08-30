@@ -49,14 +49,13 @@ Jobs::Jobs ( QWidget *parent )
     : QWidget ( parent )
     , m_jobs ( 0 )
     , m_quit (false)
-    , weaver( new Weaver( this ) )
     , m_log ( 0 )
 {
     ui.setupUi( this );
 
-    connect ( weaver, SIGNAL ( finished() ), SLOT (slotStopped () ) );
-    connect ( weaver, SIGNAL ( jobDone(Job*) ), SLOT (slotJobDone (Job*) ) );
-    connect ( weaver, SIGNAL ( suspended() ), SLOT (slotStopped () ) );
+    connect ( Weaver::instance(), SIGNAL ( finished() ), SLOT (slotStopped () ) );
+    connect ( Weaver::instance(), SIGNAL ( jobDone(Job*) ), SLOT (slotJobDone (Job*) ) );
+    connect ( Weaver::instance(), SIGNAL ( suspended() ), SLOT (slotStopped () ) );
 
     connect ( ui.pbStart,  SIGNAL ( clicked() ),  SLOT ( slotStart() ) );
     connect ( ui.pbStop,  SIGNAL ( clicked() ),  SLOT ( slotStop() ) );
@@ -64,12 +63,11 @@ Jobs::Jobs ( QWidget *parent )
     connect ( ui.cbLog, SIGNAL (stateChanged ( int )),
 	      SLOT (slotLogStateChanged ( int )));
     setState (Initial);
-    ui.threadGrid->attach ( weaver );
+    ui.threadGrid->attach ( Weaver::instance() );
 }
 
 Jobs::~Jobs()
 {
-    delete weaver;
 }
 
 void Jobs::slotLogStateChanged (int s)
@@ -87,7 +85,7 @@ void Jobs::slotLogStateChanged (int s)
             if ( m_log == 0 )
             {
                 m_log = new WeaverObserverTest ( this );
-                weaver->registerObserver ( m_log );
+                Weaver::instance()->registerObserver ( m_log );
             }
 	case Qt::PartiallyChecked:
 	default:
@@ -144,20 +142,20 @@ void Jobs::slotStart()
         m_jobs->addJob (new DummyJob (this) );
     }
 
-    weaver->enqueue (m_jobs);
+    Weaver::instance()->enqueue (m_jobs);
     setState (Started);
 }
 
 void Jobs::slotStop ()
 {
-    weaver->suspend ();
+    Weaver::instance()->suspend ();
 }
 
 void Jobs::slotStopped ()
 {
     setState (Disable);
-    weaver->dequeue();
-    weaver->resume ();
+    Weaver::instance()->dequeue();
+    Weaver::instance()->resume ();
     if (m_quit == true)
     {
 	setState (ShuttingDown);
@@ -176,17 +174,16 @@ void Jobs::slotQuit ()
 
 void Jobs::slotJobDone (Job*)
 {
-    ui.lcdNumJobsRem->display ( weaver->queueLength());
+    ui.lcdNumJobsRem->display ( Weaver::instance()->queueLength());
 
-    ui.pbProgress->setValue ( NoOfJobs - weaver->queueLength() );
+    ui.pbProgress->setValue ( NoOfJobs - Weaver::instance()->queueLength() );
 }
-
-Weaver *weaver;
 
 int main ( int argc, char ** argv)
 {
     QApplication app ( argc, argv );
     ThreadWeaver::setDebugLevel( true, 1);
+    
     Jobs jobs;
 
     jobs.show();

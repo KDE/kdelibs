@@ -41,10 +41,16 @@ namespace ThreadWeaver {
         Q_OBJECT
     public:
 	/** Construct a WeaverImpl object. */
-        WeaverImpl (QObject* parent=0, int inventoryMax = 32); // maximum number of provided threads
+        explicit WeaverImpl (QObject* parent=0 );
 	/** Destruct a WeaverImpl object. */
         virtual ~WeaverImpl ();
 	const State& state() const;
+
+        void setMaximumNumberOfThreads( int cap );
+        int maximumNumberOfThreads() const;
+        int currentNumberOfThreads () const;
+
+
         /** Set the object state. */
         void setState( StateId );
         void registerObserver ( WeaverObserver* );
@@ -91,7 +97,6 @@ namespace ThreadWeaver {
             This will try to distribute as many jobs as possible
             to all idle threads. */
         void assignJobs();
-	int numberOfThreads () const;
         void requestAbort();
 
         /** Dump the current jobs to the console. Not part of the API. */
