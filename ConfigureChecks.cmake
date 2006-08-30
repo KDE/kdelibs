@@ -20,7 +20,7 @@ set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 #check for libz using the cmake supplied FindZLIB.cmake
 macro_bool_to_01(ZLIB_FOUND HAVE_LIBZ)                  # zlib is required
 
-macro_bool_to_01(BZIP2_FOUND HAVE_BZIP2_SUPPORT)        # kdecore  
+macro_bool_to_01(BZIP2_FOUND HAVE_BZIP2_SUPPORT)        # kdecore
 if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
    set(NEED_BZ2_PREFIX 1)
 endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
@@ -82,16 +82,17 @@ check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
 check_include_files(sys/mnttab.h  HAVE_SYS_MNTTAB_H)                   # kio, kdecore
 check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # kio, kdecore
 check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
-check_include_files(termios.h     HAVE_TERMIOS_H)                      # kdecore 
+check_include_files(termios.h     HAVE_TERMIOS_H)                      # kdecore
 check_include_files(termio.h      HAVE_TERMIO_H)                       # kdecore
 check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
-check_include_files(stdint.h      HAVE_STDINT_H)                       # various  
+check_include_files(stdint.h      HAVE_STDINT_H)                       # various
 check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)     # kio
-check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore, kio  
+check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore, kio
 
 check_include_files(errno.h       HAVE_ERRNO_H)                        # kjs, errno.h is used in many places, but only guarded in kjs/
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
 check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
+check_include_files(valgrind/memcheck.h   HAVE_VALGRIND_MEMCHECK_H)    # khtml
 
 check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 

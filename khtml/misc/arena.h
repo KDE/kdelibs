@@ -39,7 +39,7 @@
 #ifndef ARENA_H
 #define ARENA_H
 
-
+#include <config-khtml.h>
 #if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
 
 #include <valgrind/memcheck.h>

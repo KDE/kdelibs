@@ -1,8 +1,11 @@
-#ifndef CONFIG-KHTML_H
-#define CONFIG-KHTML_H
+#ifndef CONFIG_KHTML_H
+#define CONFIG_KHTML_H
 
 /* khtml svg support */
 #cmakedefine SVG_SUPPORT 1
 
-#endif /* CONFIG-KHTML_H */
+/* Valgrind memcheck presence */
+#cmakedefine HAVE_VALGRIND_MEMCHECK_H 1
+
+#endif /* CONFIG_KHTML_H */
 

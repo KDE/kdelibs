@@ -19,8 +19,8 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
-#include <config.h>
+
+#include <config-khtml.h>
 #if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
 
 #include <valgrind/memcheck.h>
@@ -58,7 +58,7 @@ typedef QList<ScriptInterpreter*> InterpreterList;
 static InterpreterList *interpreterList;
 
 ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* frame )
-  : Interpreter( global ), m_frame( frame ), 
+  : Interpreter( global ), m_frame( frame ),
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
