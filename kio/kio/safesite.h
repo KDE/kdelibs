@@ -25,6 +25,8 @@
 
 namespace SafeSite {
 
+	class Service;
+
 	class KIO_EXPORT ServiceInfo {
 		public:
 			ServiceInfo();
