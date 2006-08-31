@@ -627,7 +627,7 @@ public:
      * If the flag is set, then everything behind the last '/'is considered to be the filename.
      * So "hallo/torben" will be the path and the filename will be empty.
      */
-    ObeyTrailingSlash = 0x01,
+    ObeyTrailingSlash = 0x02,
     /**
      * tells whether the returned result should end with '/' or not.
      * If the flag is set, '/' is added to the end of the path
@@ -636,11 +636,11 @@ public:
      *
      * This option should only be used in directory(), it has no effect in fileName()
      */
-    AppendTrailingSlash = 0x02,
+    AppendTrailingSlash = 0x04,
     /**
      * Opposite of ObeyTailingSlash  (default)
      */
-    IgnoreTrailingSlash = 0x00
+    IgnoreTrailingSlash = 0x01
 
   };
   Q_DECLARE_FLAGS(DirectoryOptions,DirectoryOption)

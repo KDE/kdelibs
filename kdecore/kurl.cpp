@@ -1019,6 +1019,7 @@ void KUrl::addPath( const QString& _txt )
 
 QString KUrl::directory( const DirectoryOptions& options ) const
 {
+  Q_ASSERT( options != 0 ); //Disallow options == false
   QString result = path(); //m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
   if ( !(options & ObeyTrailingSlash) )
     result = trailingSlash( RemoveTrailingSlash, result );
