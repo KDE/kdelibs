@@ -20,7 +20,7 @@ INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes) $(KDEINIT_XFT_INCLUDES)
 SUBDIRS = . tests
 
 bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave \
-               kstartupconfig kdostartupconfig
+               kstartupconfig kdostartupconfig start_kdeinit
 
 lib_LTLIBRARIES = 
 kdeinit_LTLIBRARIES = klauncher.la
@@ -66,6 +66,11 @@ kdostartupconfig_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_L
                            $(KDE_RPATH)
 kdostartupconfig_LDADD  = $(LIB_KDECORE)
 
+start_kdeinit_SOURCES = start_kdeinit.c
+kdeinitpath = $(bindir)/kdeinit
+start_kdeinit_CFLAGS = $(KDE_USE_FPIE) -DEXECUTE=\"$(kdeinitpath)\"
+start_kdeinit_LDFLAGS = $(KDE_USE_PIE)
+
 METASOURCES = AUTO
 
 noinst_HEADERS = klauncher.h autostart.h klauncher_cmds.h setproctitle.h
@@ -77,6 +82,14 @@ shell.o: wrapper.c
 dummy.cpp:
 	echo > dummy.cpp
 
+if KDEINIT_SETUID
+# start_kdeinit needs to be installed setuid root on Linux
+install-exec-hook:
+	@(chown 0 $(DESTDIR)$(bindir)/start_kdeinit && chmod 4755 $(DESTDIR)$(bindir)/start_kdeinit) || echo "Please make start_kdeinit setuid root" >&2
+	@echo ""
+	@echo "start_kdeinit is by default installed on Linux with a set SETUID root bit!"
+	@echo "This is needed to prevent kdeinit from being killed by a bad heuristic in the OOM-killer when running out of memory."
+	@echo ""
+endif
 
 include $(top_srcdir)/admin/Doxyfile.am
-

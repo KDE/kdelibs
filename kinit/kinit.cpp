@@ -385,6 +385,38 @@ QCString execpath_avoid_loops( const QCString& exec, int envc, const char* envs,
      return execpath;
 }
 
+#ifdef KDEINIT_OOM_PROTECT
+static int oom_pipe = -1;
+
+static void oom_protect_sighandler( int ) {
+}
+
+static void reset_oom_protect() {
+   if( oom_pipe <= 0 )
+      return;
+   struct sigaction act, oldact;
+   act.sa_handler = oom_protect_sighandler;
+   act.sa_flags = 0;
+   sigemptyset( &act.sa_mask );
+   sigaction( SIGUSR1, &act, &oldact );
+   sigset_t sigs, oldsigs;
+   sigemptyset( &sigs );
+   sigaddset( &sigs, SIGUSR1 );
+   sigprocmask( SIG_BLOCK, &sigs, &oldsigs );
+   pid_t pid = getpid();
+   if( write( oom_pipe, &pid, sizeof( pid_t )) > 0 ) {
+      sigsuspend( &oldsigs ); // wait for the signal to come
+    }
+   sigprocmask( SIG_SETMASK, &oldsigs, NULL );
+   sigaction( SIGUSR1, &oldact, NULL );
+   close( oom_pipe );
+   oom_pipe = -1;
+}
+#else
+static void reset_oom_protect() {
+}
+#endif
+
 static pid_t launch(int argc, const char *_name, const char *args,
                     const char *cwd=0, int envc=0, const char *envs=0,
                     bool reset_env = false,
@@ -484,6 +516,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         }
         close( d.launcher[0] );
      }
+     reset_oom_protect();
 
      if (cwd && *cwd)
         chdir(cwd);
@@ -1374,6 +1407,7 @@ static void handle_requests(pid_t waitForPid)
             if (fork() == 0)
             {
                 close_fds();
+                reset_oom_protect();
                 handle_launcher_request(sock);
                 exit(255); /* Terminate process. */
             }
@@ -1394,6 +1428,7 @@ static void handle_requests(pid_t waitForPid)
             if (fork() == 0)
             {
                 close_fds();
+                reset_oom_protect();
                 handle_launcher_request(sock);
                 exit(255); /* Terminate process. */
             }
@@ -1672,6 +1707,10 @@ int main(int argc, char **argv, char **envp)
          keep_running = 0;
       if (strcmp(safe_argv[i], "--new-startup") == 0)
          new_startup = 1;
+#ifdef KDEINIT_OOM_PROTECT
+      if (strcmp(safe_argv[i], "--oom-pipe") == 0 && i+1<argc)
+         oom_pipe = atol(argv[i+1]);
+#endif
       if (strcmp(safe_argv[i], "--help") == 0)
       {
         printf("Usage: kdeinit [options]\n");
@@ -1830,7 +1869,11 @@ int main(int argc, char **argv, char **envp)
 #endif
          handle_requests(pid);
       }
-      else if (safe_argv[i][0] == '-')
+      else if (safe_argv[i][0] == '-'
+#ifdef KDEINIT_OOM_PROTECT
+          || isdigit(safe_argv[i][0])
+#endif
+          )
       {
          // Ignore
       }

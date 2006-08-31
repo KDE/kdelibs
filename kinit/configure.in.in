@@ -43,3 +43,16 @@ if test -n "$KDEINIT_FONTCONFIG"; then
     AC_DEFINE(KDEINIT_USE_FONTCONFIG,1,[Use FontConfig in kdeinit])
 fi
 AC_SUBST(KDEINIT_XFT_INCLUDES)
+
+AC_MSG_CHECKING(whether to make kdeinit setuid root in order to protect it from bad Linux OOM-killer)
+kdeinit_setuid=
+case $target_os in
+    linux*)
+        AC_MSG_RESULT(yes)
+        kdeinit_setuid=1
+        AC_DEFINE(KDEINIT_OOM_PROTECT,1,[Enable prevention against poor Linux OOM-killer])
+        ;;
+    *)  AC_MSG_RESULT(no)
+        ;;
+esac
+AM_CONDITIONAL(KDEINIT_SETUID, test -n "$kdeinit_setuid" )
