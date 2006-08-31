@@ -380,6 +380,7 @@ QString whatstr;
   mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
   grid2->addWidget(mEGDLabel, 0, 0);
   mEGDPath = new KUrlRequester(egdframe);
+  mEGDPath->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
   grid2->addWidget(mEGDPath, 0, 1);
   connect(mEGDPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
   vbox->addWidget(egdframe);
@@ -863,7 +864,7 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setUrl(config->readPathEntry("EGDPath"));
+  mEGDPath->setPath(config->readPathEntry("EGDPath"));
 
 
 #ifdef KSSL_HAVE_SSL
@@ -985,7 +986,7 @@ void KCryptoConfig::save()
   config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
   config->writeEntry("UseEFile", mUseEFile->isChecked());
-  config->writePathEntry("EGDPath", mEGDPath->url());
+  config->writePathEntry("EGDPath", mEGDPath->url().path());
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
@@ -998,7 +999,7 @@ void KCryptoConfig::save()
 
 #ifdef KSSL_HAVE_SSL
   config->setGroup("OpenSSL");
-  config->writePathEntry("Path", oPath->url());
+  config->writePathEntry("Path", oPath->url().path());
 #endif
 
   int ciphercount = 0;
@@ -1162,8 +1163,8 @@ void KCryptoConfig::defaults()
   mUseEFile->setChecked(false);
   mEGDLabel->setEnabled(false);
   mEGDPath->setEnabled(false);
-  mEGDPath->setUrl(QString());
-  oPath->setUrl(QString());
+  mEGDPath->clear();
+  oPath->clear();
 
   defCertBG->setButton(defCertBG->id(defDont));
 #endif
