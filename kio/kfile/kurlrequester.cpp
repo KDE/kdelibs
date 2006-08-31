@@ -236,6 +236,11 @@ void KUrlRequester::setUrl( const KUrl& url )
     d->setText( url.pathOrUrl() );
 }
 
+void KUrlRequester::setPath( const QString& path )
+{
+    d->setText( path );
+}
+
 void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {

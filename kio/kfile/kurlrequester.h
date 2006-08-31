@@ -174,6 +174,14 @@ public Q_SLOTS:
     void setUrl( const KUrl& url );
 
     /**
+     * Sets the url in the lineedit to @p KUrl::fromPath(path).
+     * This is only for local paths; do not pass a url here.
+     * This method is mostly for "local paths only" url requesters,
+     * for instance those set up with setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly)
+     */
+    void setPath( const QString& path );
+
+    /**
      * Clears the lineedit/combobox.
      */
     void clear();
