@@ -1346,7 +1346,7 @@ QString KFileDialog::getExistingDirectory(const KUrl& startDir,
 {
 #ifdef Q_WS_WIN
     return QFileDialog::getExistingDirectory(parent, caption,
-                                             startDir.toString(), QFileDialog::ShowDirsOnly);
+                                             startDir.path(), QFileDialog::ShowDirsOnly);
 #else
     KUrl url = KDirSelectDialog::selectDirectory(startDir, true, parent,
                                                  caption);
@@ -1529,8 +1529,11 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
 {
     bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
-    if ( !specialDir )
-        dlg.setSelection( dir.toString() ); // may also be a filename
+    if ( !specialDir ) {
+        if (!dir.isLocalFile())
+            kWarning() << "KFileDialog::getSaveFileName called with non-local start dir " << dir << endl;
+        dlg.setSelection( dir.path() ); // may also be a filename
+    }
 
     dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
@@ -1559,8 +1562,11 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
     // TODO
 #endif
 
-    if ( !specialDir )
-        dlg.setSelection( dir.toString() ); // may also be a filename
+    if ( !specialDir ) {
+        if (!dir.isLocalFile())
+            kWarning() << "KFileDialog::getSaveFileNameWId called with non-local start dir " << dir << endl;
+        dlg.setSelection( dir.path() ); // may also be a filename
+    }
 
     dlg.setOperationMode( KFileDialog::Saving);
     dlg.setMode( KFile::File );
@@ -1581,7 +1587,7 @@ KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
     bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
     KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
-    dlg.setSelection( dir.toString() ); // may also be a filename
+        dlg.setSelection( dir.url() ); // may also be a filename
 
     dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
