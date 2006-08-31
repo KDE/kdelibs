@@ -231,7 +231,6 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( QString encoding READ encoding WRITE setEncoding )
   Q_PROPERTY( QString lastModified READ lastModified )
   Q_PROPERTY( bool metaRefreshEnabled READ metaRefreshEnabled WRITE setMetaRefreshEnabled )
-  Q_PROPERTY( QString url READ url )
 
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
@@ -489,7 +488,7 @@ public:
    */
   enum CaretDisplayPolicy {
       CaretVisible, /**< caret is displayed */
-      CaretInvisible, /**<  caret is not displayed */ 
+      CaretInvisible, /**<  caret is not displayed */
       CaretBlink /**< caret toggles between visible and invisible */
   };
 

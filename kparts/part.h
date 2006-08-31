@@ -356,6 +356,7 @@ class KPARTS_EXPORT ReadOnlyPart : public Part
 {
   Q_OBJECT
   friend class ReadWritePart;
+  Q_PROPERTY( KUrl url READ url )
 public:
   /**
    * Constructor
@@ -400,9 +401,9 @@ public Q_SLOTS:
 
 public:
   /**
-   *  Returns the currently in part used URL.
+   *  Returns the URL currently opened in this part.
    *
-   *  @return The current used URL.
+   *  @return The current URL.
    */
   KUrl url() const { return m_url; }
 
