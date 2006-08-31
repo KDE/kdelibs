@@ -86,17 +86,10 @@ void KUrlTest::testSetQuery()
   QCOMPARE( url1.query(), QString("?toto=titi&kde=rocks") );
   url1.setQuery( "?kde=rocks&a=b" );
   QCOMPARE( url1.query(), QString("?kde=rocks&a=b") );
-#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
   url1.setQuery( "?" );
   QCOMPARE( url1.query(), QString() ); // KDE3 difference: I expected QString("?"), but QUrl::setEncodedQuery translates empty to no query. Is that a problem though?
   url1.setQuery( "" );
   QCOMPARE( url1.query(), QString() ); // idem
-#else // bug was: we get no query
-  url1.setQuery( "?" );
-  QCOMPARE( url1.query(), QString() );
-  url1.setQuery( "" );
-  QCOMPARE( url1.query(), QString() );
-#endif
   url1.setQuery( QString() );
   QCOMPARE( url1.query(), QString() );
 }
@@ -301,7 +294,6 @@ void KUrlTest::testEmptyQueryOrRef()
   QCOMPARE( url.toEncoded(), QByteArray( "http://www.kde.org?" ) );
   QCOMPARE( url.encodedQuery(), QByteArray() ); // note that QByteArray() == QByteArray("")
 
-#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
   url = QUrl::fromEncoded( "http://www.kde.org" );
   QVERIFY( url.encodedQuery().isEmpty() );
   QVERIFY( !url.hasQuery() );
@@ -340,9 +332,6 @@ void KUrlTest::testEmptyQueryOrRef()
   tobi1 = "http://host.net/path/#no-query";
   QCOMPARE(tobi1.query(), QString("")); // no query
   QVERIFY( !tobi1.hasQuery() );
-#else
-  QSKIP( "Qt-4.2 or qt-copy needed for hasQuery, to distinguish empty query and no query", SkipSingle );
-#endif
 }
 
 void KUrlTest::testParsingTolerance()
@@ -656,6 +645,11 @@ void KUrlTest::testRelativeURL()
 
 void KUrlTest::testAdjustPath()
 {
+    KUrl url0("file:///");
+    QCOMPARE( url0.url( KUrl::RemoveTrailingSlash ), QString("file:///") );
+    url0.adjustPath( KUrl::RemoveTrailingSlash );
+    QCOMPARE( url0.url(), QString("file:///") );
+
     KUrl url1("file:///home/kde/");
     url1.adjustPath( KUrl::LeaveTrailingSlash );
     QCOMPARE(  url1.path(), QString("/home/kde/" ) );
@@ -707,10 +701,6 @@ void KUrlTest::testAdjustPath()
 
 void KUrlTest::testIPV6()
 {
-#if QT_VERSION < 0x040200
-  QSKIP( "Qt-4.2 needed for ipv6 hosts using []", SkipSingle );
-#endif
-
   kDebug() << k_funcinfo << endl;
   // IPV6
   KUrl waba1( "http://[::FFFF:129.144.52.38]:81/index.html" );
@@ -779,7 +769,6 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   qurl = "http://www.foo.bar:80";
   QCOMPARE( qurl.toEncoded(), QByteArray("http://www.foo.bar:80") );
 
-#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
   qurl.setHost( QString() );
   qurl.setPath( QString() );
   QCOMPARE( qurl.toEncoded(), QByteArray("http://:80") );
@@ -858,7 +847,6 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/relative.html#with_reference") );
   }
 
-#if defined( QT_KDE_QT_COPY ) || QT_VERSION >= 0x040200
   {
      KUrl waba2( waba1, "#");
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#") );
@@ -936,14 +924,6 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QVERIFY( sadEagleBase.isValid() );
   KUrl sadEagleCombined( sadEagleBase, "/personal/diary/rpc.php?C=jsrs1&F=getDiaryDay&P0=[2006-3-8]&U=1141858921458" );
   QCOMPARE( sadEagleCombined.url(), sadEagleExpectedResult.url() );
-
-#else
-  QSKIP( "QUrl::setFragment(\"\") doesn't make hasFragment return true", SkipSingle ); // TT task 105559 (Thiago, Andreas)
-#endif
-
-#else
-  QSKIP( "QUrl::setPort(-1) doesn't remove the port; breaks base url tests", SkipSingle );
-#endif
 
 }
 
@@ -1262,9 +1242,7 @@ void KUrlTest::testBrokenStuff()
 
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
-#if QT_VERSION < 0x040201
   QSKIP( "QUrl doesn't provide the initial string if it's an invalid url; asked for 4.2...", SkipSingle );
-#endif
   QCOMPARE( broken.url(), QString("ptal://mlc:usb:PC_970") ); // FAILS - but we need it...
 
   QUrl brokenUrl( "ptal://mlc:usb:PC_970" );

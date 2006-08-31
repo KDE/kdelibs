@@ -761,6 +761,9 @@ QString KUrl::url( AdjustPathOption trailing ) const
       newUrl.setPath( path() + QLatin1Char('/') );
       return QString::fromLatin1( newUrl.toEncoded() ); // ### check
   }
+  else if ( trailing == RemoveTrailingSlash && path() == "/" ) {
+      return QLatin1String( toEncoded( None ) );
+  }
   return QString::fromLatin1( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
