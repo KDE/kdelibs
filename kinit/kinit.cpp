@@ -90,6 +90,10 @@
 # endif
 #endif
 
+#if KDE_IS_VERSION( 3, 90, 0 )
+#warning Check if Linux OOM-killer still sucks and if yes, forwardport revision 579164.
+#endif
+
 extern char **environ;
 
 extern int lt_dlopen_flag;
