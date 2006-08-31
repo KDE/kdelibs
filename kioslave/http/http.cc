@@ -58,7 +58,6 @@
 #include <ktoolinvocation.h>
 #include <kstreamsocket.h>
 #include <kstandarddirs.h>
-#include <kstringhandler.h>
 #include <kremoteencoding.h>
 
 #include "kio/ioslave_defaults.h"
