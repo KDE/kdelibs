@@ -76,7 +76,7 @@ bool PtyProcess::checkPid(pid_t pid)
 {
 	KConfig* config = KGlobal::config();
 	config->setGroup("super-user-command");
-	QString superUserCommand = config->readEntry("super-user-command", "sudo");
+	QString superUserCommand = config->readEntry("super-user-command", "su");
 	//sudo does not accept signals from user so we except it
 	if (superUserCommand == "sudo") {
 		return true;
