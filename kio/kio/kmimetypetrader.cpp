@@ -126,7 +126,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
 KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
                                                    const QString& genericServiceType ) const
 {
-    kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << "," << genericServiceType << " )" << endl;
+    kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << ", " << genericServiceType << " )" << endl;
 
     // First, get all offers known to ksycoca.
     const KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
@@ -150,7 +150,7 @@ KService::List KMimeTypeTrader::query( const QString& mimeType,
 
     KServiceTypeTrader::applyConstraints( lst, constraint );
 
-    kDebug(7014) << "query for mimeType " << mimeType << " , " << genericServiceType
+    kDebug(7014) << "query for mimeType " << mimeType << ", " << genericServiceType
                  << " : returning " << lst.count() << " offers" << endl;
     return lst;
 }
