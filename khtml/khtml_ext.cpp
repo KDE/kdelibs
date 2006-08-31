@@ -38,6 +38,7 @@
 #include <qclipboard.h>
 #include <qfileinfo.h>
 #include <qpopupmenu.h>
+#include <qurl.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
 #include <qdragobject.h>
@@ -273,7 +274,9 @@ void KHTMLPartBrowserExtension::searchProvider()
     if( !KURIFilter::self()->filterURI(data, list) )
     {
         KDesktopFile file("searchproviders/google.desktop", true, "services");
-        data.setData(file.readEntry("Query").replace("\\{@}", m_part->selectedText()));
+	QString encodedSearchTerm = m_part->selectedText();
+	QUrl::encode(encodedSearchTerm);
+	data.setData(file.readEntry("Query").replace("\\{@}", encodedSearchTerm));
     }
 
     KParts::URLArgs args;
@@ -441,6 +444,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       // search text
       QString selectedText = khtml->selectedText();
+      selectedText.replace("&", "&&");
       if ( selectedText.length()>18 ) {
         selectedText.truncate(15);
         selectedText+="...";
