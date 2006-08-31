@@ -34,7 +34,7 @@ class KTempFile;
 class KLineParser;
 
 /**
- * http://www.netscape.com/assist/net_sites/pushpull.html
+ * http://wp.netscape.com/assist/net_sites/pushpull.html
  */
 class KMultiPart : public KParts::ReadOnlyPart
 {
