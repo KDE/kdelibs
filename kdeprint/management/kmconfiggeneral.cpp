@@ -29,7 +29,6 @@
 #include <klocale.h>
 #include <kurlrequester.h>
 #include <krun.h>
-#include <kmimemagic.h>
 #include <kconfig.h>
 #include <knuminput.h>
 #include <kmessagebox.h>
@@ -37,6 +36,7 @@
 #include <klineedit.h>
 #include <kguiitem.h>
 #include <kdialog.h>
+#include <kmimetype.h>
 
 KMConfigGeneral::KMConfigGeneral(QWidget *parent)
     : KMConfigPage(parent)
@@ -61,6 +61,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page"), m_testpagebox);
 	m_defaulttestpage->setObjectName(QLatin1String("TestPageCheck"));
 	m_testpage = new KUrlRequester(m_testpagebox);
+	m_testpage->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
 	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),this,SLOT(setEnabledPreviewButton(bool)));
@@ -135,7 +136,8 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 	conf->setGroup("General");
 	conf->writeEntry("TimerDelay",m_timer->value());
 	conf->writePathEntry("TestPage",(m_defaulttestpage->isChecked() ? m_testpage->url().url() : QString()));
-	if (m_defaulttestpage->isChecked() && KMimeMagic::self()->findFileType(m_testpage->url().toString())->mimeType() != "application/postscript")
+	if (m_defaulttestpage->isChecked() &&
+		KMimeType::findByFileContent(m_testpage->url().path())->name() != "application/postscript")
 		KMessageBox::sorry(this, i18n("The selected test page is not a PostScript file. You may not "
 		                              "be able to test your printer anymore."));
 	conf->writeEntry("ShowStatusMsg", m_statusmsg->isChecked());
@@ -144,11 +146,11 @@ void KMConfigGeneral::saveConfig(KConfig *conf)
 
 void KMConfigGeneral::slotTestPagePreview()
 {
-	QString	tpage = m_testpage->url().toString();
+	KUrl tpage = m_testpage->url();
 	if (tpage.isEmpty())
 		KMessageBox::error(this, i18n("Empty file name."));
 	else
-		KRun::runUrl(KUrl( tpage ), KMimeMagic::self()->findFileType(tpage)->mimeType(), this);
+		(void)new KRun( tpage, this );
 }
 
 #include "kmconfiggeneral.moc"

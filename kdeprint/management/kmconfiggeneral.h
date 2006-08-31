@@ -37,7 +37,7 @@ public:
 
 protected Q_SLOTS:
 	void slotTestPagePreview();
-        void testPageChanged(const QString & );
+	void testPageChanged(const QString & );
 	void setEnabledPreviewButton(bool b);
 private:
 	KIntNumInput	*m_timer;
