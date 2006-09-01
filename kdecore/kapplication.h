@@ -99,12 +99,12 @@ class KDECORE_EXPORT KApplication : public QApplication, public KInstance
   Q_CLASSINFO("D-Bus Interface", "org.kde.KApplication")
 public:
   /**
-   * This constructor takes aboutData and command line
-   *  arguments from KCmdLineArgs.
+   * This constructor is the one you should use.
+   * It takes aboutData and command line arguments from KCmdLineArgs.
    *
    * @param GUIenabled Set to false to disable all GUI stuff.
    */
-  explicit KApplication( bool GUIenabled=true);
+  explicit KApplication(bool GUIenabled = true);
 
 #ifdef Q_WS_X11
   /**
