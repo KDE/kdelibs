@@ -20,7 +20,7 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 
-#include <QtGui/QDateTime>
+#include <QtCore/QDateTime>
 #include <QtGui/QFrame>
 
 #include <kdelibs_export.h>

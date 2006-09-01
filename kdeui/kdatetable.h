@@ -22,7 +22,7 @@
 
 #include <QtGui/QValidator>
 #include <QtGui/QLineEdit>
-#include <QtGui/QDateTime>
+#include <QtCore/QDateTime>
 #include <Qt3Support/Q3GridView>
 
 #include <kdelibs_export.h>
