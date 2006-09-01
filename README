@@ -17,11 +17,6 @@ execution of a KDE program, as well as internationalization files for these
 libraries, misc HTML documentation, theme modules, and regression tests. 
 Here is an alphabetical list:
 
-* dcop
-    The desktop communication program allows even shell scripts to
-    communicate with KDE applications. It's also the base for KParts.
-    -- This is soon to be replaced by the D-BUS bindings.
-
 * dnssd
     Interface to the DNS-SD (Zeroconf) support.
 
@@ -83,7 +78,7 @@ Here is an alphabetical list:
     image formats.
 
 * kinit
-    Process launcher, used for fast KDE startup
+    Process launcher (kdeinit), used for fast KDE startup and to launch kioslaves.
 
 * kio
     Classes that fetch and decode URLs are contained here. This library also
@@ -111,9 +106,6 @@ Here is an alphabetical list:
 
 * kresources
     KDE Resource management framework.  Used for Address Book for example.
-
-* kspell2
-    KDE Spellchecking framework.
 
 * kstyles
     The theme engine lies within. It handles nearly anything relating to
