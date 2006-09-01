@@ -29,7 +29,7 @@ QT4_AUTOMOC(${ThreadWeaver_LIB_SRCS})
 
 add_library(ThreadWeaver SHARED ${ThreadWeaver_LIB_SRCS})
 target_link_libraries(ThreadWeaver ${QT_QTCORE_LIBRARY})
-set_target_properties(ThreadWeaver PROPERTIES VERSION 4.2.0 SOVERSION 4)
+set_target_properties(ThreadWeaver PROPERTIES VERSION 0.6.0 SOVERSION 0)
 install(TARGETS ThreadWeaver DESTINATION lib)
 
 install(FILES

@@ -13,7 +13,7 @@ QT4_AUTOMOC(${ThreadWeaverAction_LIB_SRCS})
 
 add_library(ThreadWeaverAction SHARED ${ThreadWeaverAction_LIB_SRCS})
 target_link_libraries(ThreadWeaverAction ThreadWeaver)
-set_target_properties(ThreadWeaverAction PROPERTIES VERSION 4.2.0 SOVERSION 4)
+set_target_properties(ThreadWeaverAction PROPERTIES VERSION 0.6.0 SOVERSION 0)
 install(TARGETS ThreadWeaverAction DESTINATION lib)
 
 install(FILES

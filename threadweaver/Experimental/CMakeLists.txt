@@ -11,7 +11,7 @@ QT4_AUTOMOC(${ThreadWeaverExperimental_LIB_SRCS})
 
 add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
 target_link_libraries(ThreadWeaverExperimental ThreadWeaver)
-set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION 4.2.0 SOVERSION 4)
+set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION 0.6.0 SOVERSION 0)
 install(TARGETS ThreadWeaverExperimental DESTINATION lib)
 
 install(FILES
