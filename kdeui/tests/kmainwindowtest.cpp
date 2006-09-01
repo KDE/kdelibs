@@ -26,9 +26,8 @@ int main( int argc, char **argv )
 {
     KApplication app( argc, argv, "kmainwindowtest" );
 
-    MainWindow mw;
-
-    mw.show();
+    MainWindow* mw = new MainWindow; // deletes itself when closed
+    mw->show();
 
     return app.exec();
 }
