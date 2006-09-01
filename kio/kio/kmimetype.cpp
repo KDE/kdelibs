@@ -145,13 +145,6 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
   }
 
   // We got a mimetype
-#else
-  // findMimeTypeByName() may return NULL if there exist no such mimetype. If
-  // that's the case we need to return the default mimetype.
-  if ( !mime ) {
-    mime = defaultMimeTypePtr();
-    Q_ASSERT(mime);
-  }
 #endif
 
   return mime;

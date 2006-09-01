@@ -228,17 +228,13 @@ public:
   virtual QStringList propertyNames() const;
 
   /**
-   * Retrieve a pointer to the mime type @p _name or a pointer to the default
-   *         mime type "application/octet-stream".
-   *
-   * 0L is @em never returned.
+   * Retrieve a pointer to the mime type @p _name .
    *
    * @em Very @em important: Don't store the result in a KMimeType* !
    *
    * @param _name the name of the mime type
    * @return the pointer to the KMimeType with the given @p _name, or
-   *         a pointer to the application/octet-stream KMimeType if
-   *         not found
+   *         0L if not found
    * @see KServiceType::serviceType
    */
   static Ptr mimeType( const QString& _name );
