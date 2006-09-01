@@ -443,5 +443,5 @@
 <!ENTITY Alex.Zepeda.mail '<email>zipzippy@sonic.net</email>'>
 <!ENTITY Nikolas.Zimmermann '<personname><firstname>Nikolas</firstname><surname>Zimmermann</surname></personname>'>
 <!ENTITY Nikolas.Zimmermann.mail '<email>wildfox@kde.org</email>'>
-<!ENTITY Danny Allen '<personname><firstname>Danny</firstname><surname>Allen</surname></personname>'>
+<!ENTITY Danny.Allen '<personname><firstname>Danny</firstname><surname>Allen</surname></personname>'>
 <!ENTITY Danny.Allen.mail '<email>danny@dannyallen.co.uk</email>'>
