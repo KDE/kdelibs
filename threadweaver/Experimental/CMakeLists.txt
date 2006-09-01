@@ -9,10 +9,10 @@ set(ThreadWeaverExperimental_LIB_SRCS
 
 QT4_AUTOMOC(${ThreadWeaverExperimental_LIB_SRCS})
 
-kde4_add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
+add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
 target_link_libraries(ThreadWeaverExperimental ThreadWeaver)
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS ThreadWeaverExperimental DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS ThreadWeaverExperimental DESTINATION lib)
 
 install(FILES
     FileLoaderJob.h

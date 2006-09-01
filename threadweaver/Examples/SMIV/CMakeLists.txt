@@ -1,5 +1,5 @@
 
-include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/Weaver/ ${CMAKE_SOURCE_DIR}/Experimental/ ${KDE4_INCLUDES})
+include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/Weaver/ ${CMAKE_SOURCE_DIR}/Experimental/ ${KDE4_INCLUDES})
 
 set(SMIV_SRCS
     SMIV.cpp
@@ -15,12 +15,12 @@ set( SMIV_SRCS_UI
     SMIVBase.ui
 )
 
-kde4_add_ui_files(SMIV_SRCS ${SMIV_SRCS_UI} )
+qt4_wrap_ui(SMIV_SRCS ${SMIV_SRCS_UI} )
 
-kde4_automoc(${SMIV_SRCS})
+QT4_AUTOMOC(${SMIV_SRCS})
 
-kde4_add_executable(SMIV ${SMIV_SRCS})
+add_executable(SMIV ${SMIV_SRCS})
 
 target_link_libraries(SMIV ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} ThreadWeaver ThreadWeaverExperimental)
 
-install(TARGETS SMIV DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS SMIV DESTINATION bin )

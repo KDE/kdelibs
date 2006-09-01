@@ -27,10 +27,10 @@ set(ThreadWeaver_LIB_SRCS
 
 QT4_AUTOMOC(${ThreadWeaver_LIB_SRCS})
 
-kde4_add_library(ThreadWeaver SHARED ${ThreadWeaver_LIB_SRCS})
+add_library(ThreadWeaver SHARED ${ThreadWeaver_LIB_SRCS})
 target_link_libraries(ThreadWeaver ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaver PROPERTIES VERSION 4.2.0 SOVERSION 4)
-install(TARGETS ThreadWeaver DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS ThreadWeaver DESTINATION lib)
 
 install(FILES
     WeaverInterface.h

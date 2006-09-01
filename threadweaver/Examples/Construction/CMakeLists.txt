@@ -5,10 +5,10 @@ set(Construction_SRCS
     Construction.cpp
 )
 
-kde4_automoc(${Construction_SRCS})
+QT4_AUTOMOC(${Construction_SRCS})
 
-kde4_add_executable(Construction NOGUI ${Construction_SRCS})
+add_executable(Construction ${Construction_SRCS})
 
 target_link_libraries(Construction ThreadWeaver)
 
-install(TARGETS Construction DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS Construction DESTINATION bin )

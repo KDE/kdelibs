@@ -11,9 +11,9 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_S
 
 set(AppendCharacterJob_SRCS JobTests.cpp AppendCharacterJob.cpp)
 
-kde4_automoc(${AppendCharacterJob_SRCS})
+QT4_AUTOMOC(${AppendCharacterJob_SRCS})
 
-kde4_add_executable(AppendCharacterJob RUN_UNINSTALLED ${AppendCharacterJob_SRCS})
+add_executable(AppendCharacterJob RUN_UNINSTALLED ${AppendCharacterJob_SRCS})
 
 target_link_libraries(AppendCharacterJob ${QT_QTTEST_LIBRARY} ThreadWeaver)
 
@@ -21,9 +21,9 @@ target_link_libraries(AppendCharacterJob ${QT_QTTEST_LIBRARY} ThreadWeaver)
 
 set(QueueTests_SRCS QueueTests.cpp AppendCharacterJob.cpp)
 
-kde4_automoc(${QueueTests_SRCS})
+QT4_AUTOMOC(${QueueTests_SRCS})
 
-kde4_add_executable(QueueTests RUN_UNINSTALLED ${QueueTests_SRCS})
+add_executable(QueueTests RUN_UNINSTALLED ${QueueTests_SRCS})
 
 target_link_libraries(QueueTests ${QT_QTTEST_LIBRARY} ThreadWeaver)
 

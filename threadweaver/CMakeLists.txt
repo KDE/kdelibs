@@ -1,7 +1,7 @@
 project(threadweaver)
 
-find_package(KDE4 REQUIRED)
-include (KDE4Defaults)
+#find_package(Qt4 REQUIRED)
+include (FindQt4)
 
 add_subdirectory(Weaver)
 add_subdirectory(WeaverGui)

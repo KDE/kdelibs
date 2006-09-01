@@ -183,7 +183,7 @@ int main ( int argc, char ** argv)
 {
     QApplication app ( argc, argv );
     ThreadWeaver::setDebugLevel( true, 1);
-    
+
     Jobs jobs;
 
     jobs.show();
