@@ -120,6 +120,13 @@ signals:
     void open(KIO::Job *job);
 
     /**
+     * Bytes written to the file.
+     * @param job the job that emitted this signal
+     * @param written bytes written.
+     */
+    void written( KIO::Job *job, KIO::filesize_t written);
+
+    /**
      * File is closed and will accept no more commands
      * @param job the job that emitted this signal
      */
@@ -137,6 +144,7 @@ private slots:
     virtual void slotData( const QByteArray &data);
     virtual void slotMimetype( const QString &mimetype );
     virtual void slotOpen( );
+    virtual void slotWritten( KIO::filesize_t );
     virtual void slotFinished( );
     virtual void slotPosition( KIO::filesize_t );
     virtual void slotTotalSize( KIO::filesize_t );

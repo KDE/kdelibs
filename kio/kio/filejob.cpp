@@ -116,6 +116,11 @@ void FileJob::slotOpen( )
     emit open( this );
 }
 
+void FileJob::slotWritten( KIO::filesize_t t_written )
+{
+    emit written( this, t_written);
+}
+
 void FileJob::slotFinished()
 {
     kDebug(7007) << "FileJob::slotFinished(" << this << ", " << m_url << ")" << endl;
@@ -141,6 +146,9 @@ void FileJob::start(Slave *slave)
 
     connect( slave, SIGNAL(position(KIO::filesize_t) ),
              SLOT( slotPosition(KIO::filesize_t) ) );
+
+    connect( slave, SIGNAL(written(KIO::filesize_t) ),
+             SLOT( slotWritten(KIO::filesize_t) ) );
 
     connect( slave, SIGNAL(totalSize(KIO::filesize_t) ),
              SLOT( slotTotalSize(KIO::filesize_t) ) );
