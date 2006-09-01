@@ -45,13 +45,13 @@ public:
   virtual bool initialize(KIO::RenameDlg_Mode /*mod*/,
                           const KUrl &/*_src*/,
                           const KUrl &/*_dest*/,
-		  const QString &/*mimeSrc*/,
-		  const QString &/*mimeDest*/,
-		  KIO::filesize_t /*sizeSrc*/,
-		  KIO::filesize_t /*sizeDest*/,
-		  time_t /*ctimeSrc*/,
-		  time_t /*ctimeDest*/,
-		  time_t /*mtimeSrc*/,
+                          const QString &/*mimeSrc*/,
+                          const QString &/*mimeDest*/,
+                          KIO::filesize_t /*sizeSrc*/,
+                          KIO::filesize_t /*sizeDest*/,
+                          time_t /*ctimeSrc*/,
+                          time_t /*ctimeDest*/,
+                          time_t /*mtimeSrc*/,
                           time_t /*mtimeDest*/ ) = 0;
 
 };
