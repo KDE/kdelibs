@@ -193,14 +193,12 @@ testWindow::testWindow (QWidget *parent)
     setStandardToolBarMenuEnabled(true);
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
-    // Let's add $PWD (ideally $srcdir instead...) to it
-	KGlobal::dirs()->addResourceDir( "data", QDir::currentPath() );
-	createGUI( "./kwindowtest.rc" );
+    // This line is for test programs only!
+    KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
+    createGUI( "kwindowtest.rc" );
 
-	tb=toolBar();
-	tb1=toolBar("AnotherToolBar");
-//	qobject_cast<QToolButton*>(tb1->widgetForAction(fileFloppyAction2))->setAutoRepeat(true);
-
+    tb=toolBar();
+    tb1=toolBar("AnotherToolBar");
 
 }
 /***********************************/
