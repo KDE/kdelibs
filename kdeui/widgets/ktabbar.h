@@ -21,7 +21,7 @@
 #ifndef KTABBAR_H
 #define KTABBAR_H
 
-#include <QTabBar>
+#include <QtGui/QTabBar>
 
 #include <kdelibs_export.h>
 

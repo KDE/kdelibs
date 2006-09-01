@@ -25,7 +25,7 @@
 #include <qstringlist.h>
 
 #include <kservice.h>
-#include <QList>
+#include <QtCore/QList>
 
 class KConfigGroup;
 

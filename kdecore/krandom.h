@@ -25,7 +25,7 @@
 #include "kdeversion.h"
 #include "kdelibs_export.h"
 
-#include <QString>
+#include <QtCore/QString>
 
 /**
  * @short Helper class to create random data

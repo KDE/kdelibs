@@ -11,7 +11,7 @@
 #ifndef KPASSIVEPOPUP_H
 #define KPASSIVEPOPUP_H
 
-#include <QFrame>
+#include <QtGui/QFrame>
 
 #include <kdelibs_export.h>
 

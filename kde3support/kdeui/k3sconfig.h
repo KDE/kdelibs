@@ -18,8 +18,8 @@
 #ifndef KDELIBS_KSCONFIG_H
 #define KDELIBS_KSCONFIG_H
 
-#include <QWidget>
-#include <QStringList>
+#include <QtGui/QWidget>
+#include <QtCore/QStringList>
 
 #include <kdelibs_export.h>
 

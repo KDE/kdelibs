@@ -31,9 +31,9 @@
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <QBoxLayout>
-#include <QModelIndex>
-#include <QTreeWidget>
+#include <QtGui/QBoxLayout>
+#include <QtCore/QModelIndex>
+#include <QtGui/QTreeWidget>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"

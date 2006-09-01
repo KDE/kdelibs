@@ -23,7 +23,7 @@
 
 #include <kdelibs_export.h>
 
-#include <QDialogButtonBox>
+#include <QtGui/QDialogButtonBox>
 
 class QPushButton;
 class KPushButton;

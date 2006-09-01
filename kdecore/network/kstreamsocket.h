@@ -25,7 +25,7 @@
 #ifndef KSTREAMSOCKET_H
 #define KSTREAMSOCKET_H
 
-#include <QString>
+#include <QtCore/QString>
 
 #include "kclientsocketbase.h"
 

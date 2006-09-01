@@ -25,9 +25,9 @@
 #ifndef KBUFFEREDSOCKET_H
 #define KBUFFEREDSOCKET_H
 
-#include <QObject>
-#include <QByteArray>
-#include <QList>
+#include <QtCore/QObject>
+#include <QtCore/QByteArray>
+#include <QtCore/QList>
 #include "kstreamsocket.h"
 #include <kdelibs_export.h>
 

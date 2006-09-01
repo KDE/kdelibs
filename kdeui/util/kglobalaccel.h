@@ -21,7 +21,7 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include <kdelibs_export.h>
 

@@ -30,7 +30,7 @@
 #ifndef KABOUTDIALOG_H
 #define KABOUTDIALOG_H
 
-#include <QFrame>
+#include <QtGui/QFrame>
 #include <kdialog.h>
 
 #include <kdelibs_export.h>

@@ -24,8 +24,8 @@
 #include <sys/types.h>
 #include <kio/global.h>
 
-#include <QPair>
-#include <QList>
+#include <QtCore/QPair>
+#include <QtCore/QList>
 
 
 typedef QPair<QString, unsigned short> ACLUserPermissions;

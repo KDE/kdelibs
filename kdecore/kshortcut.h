@@ -28,8 +28,8 @@
 
 #include "kdelibs_export.h"
 
-#include <QKeySequence>
-#include <QSharedDataPointer>
+#include <QtGui/QKeySequence>
+#include <QtCore/QSharedDataPointer>
 
 /**
 * @short Represents a keyboard shortcut

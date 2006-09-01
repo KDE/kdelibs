@@ -31,7 +31,7 @@
 
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
-#include <QMainWindow>
+#include <QtGui/QMainWindow>
 #include <qmetaobject.h>
 
 class KMenu;

@@ -20,8 +20,8 @@
 #ifndef KLISTVIEW_H
 #define KLISTVIEW_H
 
-#include <Q3ListView>
-#include <Q3PtrList>
+#include <Qt3Support/Q3ListView>
+#include <Qt3Support/Q3PtrList>
 
 #include <kdelibs_export.h>
 

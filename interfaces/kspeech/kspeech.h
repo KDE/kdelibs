@@ -244,7 +244,7 @@
  * Typically, you will do this as part of a class.
  *
    @verbatim
-    #include <QObject>
+    #include <QtCore/QObject>
     #include "kspeechinterface.h"
 
     class MyClass : public QObject {
@@ -653,10 +653,10 @@
  */
 
 // Qt includes
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QByteArray>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QByteArray>
 
 class KSpeechPrivate;
 

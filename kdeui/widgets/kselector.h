@@ -23,8 +23,8 @@
 #ifndef KSELECTOR_H
 #define KSELECTOR_H
 
-#include <QAbstractSlider>
-#include <QWidget>
+#include <QtGui/QAbstractSlider>
+#include <QtGui/QWidget>
 
 #include <kdelibs_export.h>
 

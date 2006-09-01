@@ -18,7 +18,7 @@
 #ifndef KSYSTEMTRAY_H
 #define KSYSTEMTRAY_H
 
-#include <QSystemTrayIcon>
+#include <QtGui/QSystemTrayIcon>
 
 #include <kglobal.h>
 

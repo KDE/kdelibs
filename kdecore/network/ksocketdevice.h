@@ -25,7 +25,7 @@
 #ifndef KSOCKETDEVICE_H
 #define KSOCKETDEVICE_H
 
-#include <QSocketNotifier>
+#include <QtCore/QSocketNotifier>
 #include "ksocketbase.h"
 
 namespace KNetwork {

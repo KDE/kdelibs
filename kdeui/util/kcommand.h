@@ -21,9 +21,9 @@
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <QList>
-#include <QString>
-#include <QObject>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QObject>
 
 #include <kdelibs_export.h>
 

@@ -21,7 +21,7 @@
 #ifndef __kbookmarkdombuilder_h
 #define __kbookmarkdombuilder_h
 
-#include <QStack>
+#include <QtCore/QStack>
 #include <qobject.h>
 #include <kbookmark.h>
 

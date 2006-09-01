@@ -20,8 +20,8 @@
 #ifndef KEDITLISTBOX_H
 #define KEDITLISTBOX_H
 
-#include <QGroupBox>
-#include <QStringListModel>
+#include <QtGui/QGroupBox>
+#include <QtGui/QStringListModel>
 
 #include <kdelibs_export.h>
 

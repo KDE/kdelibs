@@ -20,7 +20,7 @@
 #ifndef KTIMEZONEWIDGET_H
 #define KTIMEZONEWIDGET_H
 
-#include <QTreeWidget>
+#include <QtGui/QTreeWidget>
 
 #include <kdelibs_export.h>
 

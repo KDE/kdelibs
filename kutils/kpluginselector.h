@@ -24,7 +24,7 @@
 #include <qstring.h>
 
 #include <kdelibs_export.h>
-#include <QList>
+#include <QtCore/QList>
 
 class KInstance;
 class KPluginInfo;

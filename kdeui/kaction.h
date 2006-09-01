@@ -26,7 +26,7 @@
 #ifndef KACTION_H
 #define KACTION_H
 
-#include <QWidgetAction>
+#include <QtGui/QWidgetAction>
 
 #include <kdelibs_export.h>
 #include <kguiitem.h>

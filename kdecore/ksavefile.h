@@ -23,7 +23,7 @@
 #include "kdelibs_export.h"
 
 #include <stdio.h>
-#include <QFile>
+#include <QtCore/QFile>
 class QString;
 class QTextStream;
 class QDataStream;

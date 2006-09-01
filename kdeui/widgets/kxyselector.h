@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 #include <QtGui/QWidget>
-#include <QPixmap>
+#include <QtGui/QPixmap>
 
 /**
  * KXYSelector is the base class for other widgets which

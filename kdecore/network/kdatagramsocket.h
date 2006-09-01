@@ -25,7 +25,7 @@
 #ifndef KDATAGRAMSOCKET_H
 #define KDATAGRAMSOCKET_H
 
-#include <QByteArray>
+#include <QtCore/QByteArray>
 
 #include "ksocketaddress.h"
 #include "kclientsocketbase.h"

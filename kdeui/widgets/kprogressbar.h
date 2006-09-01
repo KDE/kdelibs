@@ -28,7 +28,7 @@
 #ifndef KPROGRESSBAR_H
 #define KPROGRESSBAR_H
 
-#include <QProgressBar>
+#include <QtGui/QProgressBar>
 
 #include <kdelibs_export.h>
 

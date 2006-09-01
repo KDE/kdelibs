@@ -25,7 +25,7 @@
 #ifndef KIOBUFFER_H
 #define KIOBUFFER_H
 
-#include <QByteArray>
+#include <QtCore/QByteArray>
 
 #include <kdelibs_export.h>
 

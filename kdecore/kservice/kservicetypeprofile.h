@@ -22,7 +22,7 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <QList>
+#include <QtCore/QList>
 
 #include <kservicetypetrader.h>
 

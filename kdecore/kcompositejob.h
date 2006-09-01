@@ -23,7 +23,7 @@
 #include <kjob.h>
 #include <kdelibs_export.h>
 
-#include <QList>
+#include <QtCore/QList>
 
 /**
  * The base class for all jobs able to be composed of one

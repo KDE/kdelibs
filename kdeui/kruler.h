@@ -21,7 +21,7 @@
 #ifndef KRULER_H
 #define KRULER_H
 
-#include <QAbstractSlider>
+#include <QtGui/QAbstractSlider>
 
 #include <kdelibs_export.h>
 

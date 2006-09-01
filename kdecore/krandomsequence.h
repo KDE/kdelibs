@@ -19,7 +19,7 @@
 #define K_RANDOM_SEQUENCE_H
 
 #include "kdelibs_export.h"
-#include <QList>
+#include <QtCore/QList>
 
 /**
  * A class to create a pseudo-random sequence

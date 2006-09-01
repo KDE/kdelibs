@@ -20,7 +20,7 @@
 #define KDIRCOMBOBOX_H
 
 #include <qevent.h>
-#include <QList>
+#include <QtCore/QList>
 #include <qmap.h>
 #include <qicon.h>
 #include <qstringlist.h>

@@ -23,7 +23,7 @@
 #ifndef KCMODULE_H
 #define KCMODULE_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 #include <kdelibs_export.h>
 

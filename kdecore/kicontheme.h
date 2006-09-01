@@ -15,7 +15,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <QList>
+#include <QtCore/QList>
 #include "kdelibs_export.h"
 
 class KConfig;

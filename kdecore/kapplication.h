@@ -47,7 +47,7 @@ typedef void Display;
 #include <kinstance.h>
 
 #ifdef Q_WS_X11
-#include <QX11Info>
+#include <QtGui/QX11Info>
 #endif
 struct _IceConn;
 class QPixmap;

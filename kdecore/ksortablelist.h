@@ -21,7 +21,7 @@
 #define KSORTABLELIST_H
 
 #include <qpair.h>
-#include <QList>
+#include <QtCore/QList>
 #include <kdelibs_export.h>
 
 /**

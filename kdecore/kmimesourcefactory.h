@@ -24,7 +24,7 @@
 
 #include <qmime.h>
 #include <kglobal.h>
-#include <Q3MimeSourceFactory>
+#include <Qt3Support/Q3MimeSourceFactory>
 
 class K3MimeSourceFactoryPrivate;
 /**

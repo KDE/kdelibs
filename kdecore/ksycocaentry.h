@@ -20,7 +20,7 @@
 #define KSYCOCAENTRY_H
 
 #include <qdatastream.h>
-#include <QList>
+#include <QtCore/QList>
 
 #include <kdelibs_export.h>
 #include <ksycocatype.h>

@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 
 #include <qstringlist.h>
-#include <QList>
+#include <QtCore/QList>
 #include <qpixmap.h>
 
 #include <kicontheme.h>

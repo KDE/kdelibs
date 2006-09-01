@@ -20,7 +20,7 @@
 #define KURLBAR_H
 
 #include <qevent.h>
-#include <QFrame>
+#include <QtGui/QFrame>
 #include <qtooltip.h>
 
 #include <kdialog.h>

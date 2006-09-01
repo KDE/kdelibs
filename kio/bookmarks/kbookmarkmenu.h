@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 #include <qobject.h>
-#include <QStack>
+#include <QtCore/QStack>
 
 #include <klocale.h>
 #include <kaction.h>

@@ -18,7 +18,7 @@
 #ifndef KICONVIEW_H
 #define KICONVIEW_H
 
-#include <Q3IconView>
+#include <Qt3Support/Q3IconView>
 
 #include <kdelibs_export.h>
 

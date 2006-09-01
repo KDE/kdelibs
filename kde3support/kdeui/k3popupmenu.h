@@ -19,8 +19,8 @@
 #ifndef _KPOPUP_H
 #define _KPOPUP_H
 
-#include <Q3PopupMenu>
-#include <QMenuItem>
+#include <Qt3Support/Q3PopupMenu>
+#include <QtGui/QMenuItem>
 #include <kpixmapeffect.h>
 #include <kdelibs_export.h>
 

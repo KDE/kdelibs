@@ -19,7 +19,7 @@
 #ifndef KMESSAGEBOX_H
 #define KMESSAGEBOX_H
 
-#include <QMessageBox>
+#include <QtGui/QMessageBox>
 
 #include <kguiitem.h>
 #include <kstdguiitem.h>

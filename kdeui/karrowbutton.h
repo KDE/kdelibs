@@ -19,7 +19,7 @@
 #ifndef karrowbutton_h
 #define karrowbutton_h
 
-#include <QPushButton>
+#include <QtGui/QPushButton>
 
 #include <kdelibs_export.h>
 

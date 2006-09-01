@@ -20,7 +20,7 @@
 #ifndef KSTDACCEL_H
 #define KSTDACCEL_H
 
-#include <QString>
+#include <QtCore/QString>
 
 #include "kshortcut.h"
 

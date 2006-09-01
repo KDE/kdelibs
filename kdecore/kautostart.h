@@ -20,7 +20,7 @@
 #ifndef KDELIBS_KAUTOSTART_H
 #define KDELIBS_KAUTOSTART_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include "kdelibs_export.h"
 

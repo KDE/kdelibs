@@ -21,9 +21,9 @@
 #ifndef KSTATUSBAR_H
 #define KSTATUSBAR_H
 
-#include <QStatusBar>
-#include <QHash>
-#include <QLabel>
+#include <QtGui/QStatusBar>
+#include <QtCore/QHash>
+#include <QtGui/QLabel>
 
 #include <kdelibs_export.h>
 

@@ -22,7 +22,7 @@
 #ifndef KCOMBOBOX_H
 #define KCOMBOBOX_H
 
-#include <QComboBox>
+#include <QtGui/QComboBox>
 
 #include <kcompletion.h>
 

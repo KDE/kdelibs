@@ -19,7 +19,7 @@
 #ifndef KANIMWIDGET_H
 #define KANIMWIDGET_H
 
-#include <QToolButton>
+#include <QtGui/QToolButton>
 
 #include <kdelibs_export.h>
 

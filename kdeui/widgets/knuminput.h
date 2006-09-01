@@ -22,8 +22,8 @@
 #ifndef K_NUMINPUT_H
 #define K_NUMINPUT_H
 
-#include <QWidget>
-#include <QSpinBox>
+#include <QtGui/QWidget>
+#include <QtGui/QSpinBox>
 
 #include <kdelibs_export.h>
 

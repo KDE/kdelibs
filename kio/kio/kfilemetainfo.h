@@ -24,7 +24,7 @@
    m_unit is a define in <sys/sysmacros.h> */
 #define m_unit outouftheway_m_unit
 
-#include <QHash>
+#include <QtCore/QHash>
 #include <qvariant.h>
 #include <qobject.h>
 #include <qstring.h>

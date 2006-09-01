@@ -20,7 +20,7 @@
 #ifndef KDELIBS_KNOTIFICATIONRESTRICTIONS_H
 #define KDELIBS_KNOTIFICATIONRESTRICTIONS_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include "kdelibs_export.h"
 

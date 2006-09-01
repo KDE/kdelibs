@@ -21,7 +21,7 @@
 #define KVALUESELECTOR_H
 
 #include "kselector.h"
-#include <QPixmap>
+#include <QtGui/QPixmap>
 
 class KDEUI_EXPORT KColorValueSelector : public KSelector
 {

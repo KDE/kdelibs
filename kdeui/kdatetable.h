@@ -20,10 +20,10 @@
 #ifndef KDATETBL_H
 #define KDATETBL_H
 
-#include <QValidator>
-#include <QLineEdit>
-#include <QDateTime>
-#include <Q3GridView>
+#include <QtGui/QValidator>
+#include <QtGui/QLineEdit>
+#include <QtGui/QDateTime>
+#include <Qt3Support/Q3GridView>
 
 #include <kdelibs_export.h>
 

@@ -21,8 +21,8 @@
 #ifndef KCONFIGDIALOGMANAGER_H
 #define KCONFIGDIALOGMANAGER_H
 
-#include <QObject>
-#include <QHash>
+#include <QtCore/QObject>
+#include <QtCore/QHash>
 
 #include "kdelibs_export.h"
 

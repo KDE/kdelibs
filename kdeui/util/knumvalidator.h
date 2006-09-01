@@ -22,7 +22,7 @@
 #ifndef KNUMVALIDATOR_H
 #define KNUMVALIDATOR_H
 
-#include <QValidator>
+#include <QtGui/QValidator>
 
 #include <kdelibs_export.h>
 

@@ -20,8 +20,8 @@
 #ifndef KPIXMAPREGIONSELECTORWIDGET_H
 #define KPIXMAPREGIONSELECTORWIDGET_H
 
-#include <QPixmap>
-#include <QWidget>
+#include <QtGui/QPixmap>
+#include <QtGui/QWidget>
 
 #include <kdelibs_export.h>
 #include <kimageeffect.h>

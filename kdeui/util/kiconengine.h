@@ -19,7 +19,7 @@
 #ifndef KICONENGINE_H
 #define KICONENGINE_H
 
-#include <QIconEngine>
+#include <QtGui/QIconEngine>
 
 #include <kdelibs_export.h>
 

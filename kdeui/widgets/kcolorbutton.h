@@ -20,7 +20,7 @@
 #ifndef KCOLORBUTTON_H
 #define KCOLORBUTTON_H
 
-#include <QPushButton>
+#include <QtGui/QPushButton>
 
 #include <kdelibs_export.h>
 

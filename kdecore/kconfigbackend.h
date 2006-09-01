@@ -22,7 +22,7 @@
 #ifndef KCONFIGBACKEND_H
 #define KCONFIGBACKEND_H
 
-#include <QStack>
+#include <QtCore/QStack>
 
 #include <kdelibs_export.h>
 #include <kconfigbase.h>

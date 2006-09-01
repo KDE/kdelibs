@@ -25,7 +25,7 @@
 
 #include <kcmodule.h>
 #include <kcmoduleloader.h>
-#include <QList>
+#include <QtCore/QList>
 
 class QTabWidget;
 class QWidget;

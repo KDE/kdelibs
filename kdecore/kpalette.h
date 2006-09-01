@@ -23,7 +23,7 @@
 #define KDELIBS_KPALETTE_H
 
 #include <qcolor.h>
-#include <QList>
+#include <QtCore/QList>
 #include <qstring.h>
 #include <qstringlist.h>
 #include "kdelibs_export.h"

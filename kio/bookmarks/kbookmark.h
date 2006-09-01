@@ -21,7 +21,7 @@
 #define __kbookmark_h
 
 #include <qstring.h>
-#include <QList>
+#include <QtCore/QList>
 #include <qdom.h>
 #include <kurl.h>
 

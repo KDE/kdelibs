@@ -8,8 +8,8 @@
 #ifndef SSK_KIMGIO_H
 #define SSK_KIMGIO_H
 
-#include <QStringList>
-#include <QString>
+#include <QtCore/QStringList>
+#include <QtCore/QString>
 
 #include <kdelibs_export.h>
 

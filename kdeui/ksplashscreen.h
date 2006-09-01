@@ -20,7 +20,7 @@
 #ifndef KSPLASHSCREEN_H
 #define KSPLASHSCREEN_H
 
-#include <QSplashScreen>
+#include <QtGui/QSplashScreen>
 
 #include <kdelibs_export.h>
 

@@ -20,7 +20,7 @@
 #ifndef KKEYBUTTON_H
 #define KKEYBUTTON_H
 
-#include <QPushButton>
+#include <QtGui/QPushButton>
 
 #include <kshortcut.h>
 

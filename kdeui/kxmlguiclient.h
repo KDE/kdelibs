@@ -19,8 +19,8 @@
 #ifndef KXMLGUICLIENT_H
 #define KXMLGUICLIENT_H
 
-#include <QMap>
-#include <QStringList>
+#include <QtCore/QMap>
+#include <QtCore/QStringList>
 
 #include <kdelibs_export.h>
 

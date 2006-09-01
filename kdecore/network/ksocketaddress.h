@@ -25,7 +25,7 @@
 #ifndef KSOCKETADDRESS_H
 #define KSOCKETADDRESS_H
 
-#include <QByteArray>
+#include <QtCore/QByteArray>
 #include <kdelibs_export.h>
 
 struct sockaddr;

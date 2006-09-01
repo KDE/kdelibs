@@ -19,7 +19,7 @@
 #ifndef KICON_H
 #define KICON_H
 
-#include <QIcon>
+#include <QtGui/QIcon>
 
 #include <kdelibs_export.h>
 

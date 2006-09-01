@@ -27,9 +27,9 @@
 
 //////////////////
 // Needed includes
-#include <QList>
-#include <QObject>
-#include <QSharedDataPointer>
+#include <QtCore/QList>
+#include <QtCore/QObject>
+#include <QtCore/QSharedDataPointer>
 #include "ksocketaddress.h"
 
 

@@ -20,7 +20,7 @@
 #ifndef KMENU_H
 #define KMENU_H
 
-#include <QMenu>
+#include <QtGui/QMenu>
 
 #include <kdelibs_export.h>
 

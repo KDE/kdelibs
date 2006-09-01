@@ -25,8 +25,8 @@
 #ifndef KCLIENTSOCKETBASE_H
 #define KCLIENTSOCKETBASE_H
 
-#include <QObject>
-#include <QString>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include "ksocketbase.h"
 #include "kresolver.h"

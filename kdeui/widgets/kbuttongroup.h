@@ -22,7 +22,7 @@
 #ifndef KBUTTONGROUP_H
 #define KBUTTONGROUP_H
 
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 
 #include <kdelibs_export.h>
 

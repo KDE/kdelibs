@@ -21,7 +21,7 @@
 #ifndef KPASSWORDDIALOG_H
 #define KPASSWORDDIALOG_H
 
-#include <QLineEdit>
+#include <QtGui/QLineEdit>
 
 #include <kdialog.h>
 
