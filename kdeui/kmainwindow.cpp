@@ -896,6 +896,11 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
 {
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
+
+  // if the desktop is virtual then use virtual screen size
+  if (QApplication::desktop()->isVirtualDesktop())
+    desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
+
   int w, h;
 #if defined Q_WS_X11
   // save maximalization as desktop size + 1 in that direction
@@ -932,10 +937,16 @@ void KMainWindow::restoreWindowSize( KConfigBase * config )
         // restore the size
         int scnum = QApplication::desktop()->screenNumber(parentWidget());
         QRect desk = QApplication::desktop()->screenGeometry(scnum);
+
+        // if the desktop is virtual then use virtual screen size
+        if (QApplication::desktop()->isVirtualDesktop())
+          desk = QApplication::desktop()->screenGeometry(QApplication::desktop()->screen());
+
         if ( d->defaultWindowSize.isNull() ) // only once
           d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height()); // store default values
         QSize size( config->readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
                     config->readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
+
         if (size.isEmpty()) {
             // try the KDE 2.0 way
             size = QSize( config->readEntry( QLatin1String("Width"), 0 ),
