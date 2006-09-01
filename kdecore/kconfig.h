@@ -308,7 +308,7 @@ public:
   ~KSharedConfig();
 
 private:
-   KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals ,
+   KSharedConfig( const QString& fileName, bool bReadOnly, bool useKDEGlobals ,
         const char *resType );
 };
 
