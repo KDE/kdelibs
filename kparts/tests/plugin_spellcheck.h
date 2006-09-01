@@ -7,7 +7,7 @@ class PluginSpellCheck : public KParts::Plugin
 {
     Q_OBJECT
 public:
-    PluginSpellCheck( QObject* parent = 0, const char* name = 0, 
+    PluginSpellCheck( QObject* parent = 0,
                       const QStringList& = QStringList() );
     virtual ~PluginSpellCheck();
 

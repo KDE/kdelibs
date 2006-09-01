@@ -16,8 +16,8 @@
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
 
-NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
-                          QObject* parent, const char* name,
+NotepadPart::NotepadPart( QWidget* parentWidget,
+                          QObject* parent,
                           const QStringList& )
  : KParts::ReadWritePart( parent )
 {
@@ -27,8 +27,14 @@ NotepadPart::NotepadPart( QWidget* parentWidget, const char*,
   m_edit->setPlainText( "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
-  (void)new KAction( "Search and replace", 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
+  KAction* searchReplace = new KAction( "Search and replace", actionCollection(), "searchreplace" );
+  connect(searchReplace, SIGNAL(triggered()), this, SLOT(slotSearchReplace()));
+
+  // KXMLGUIClient looks in the "data" resource for the .rc files
+  // This line is for test programs only!
+  instance()->dirs()->addResourceDir( "data", KDESRCDIR );
   setXMLFile( "notepadpart.rc" );
+
   setReadWrite( true );
 }
 
@@ -59,11 +65,11 @@ bool NotepadPart::openFile()
   QString s;
   if ( f.open(QIODevice::ReadOnly) ) {
     QTextStream t( &f );
-    t.setEncoding( QTextStream::UnicodeUTF8 );
-    s = t.read();
+    t.setCodec( "UTF-8" );
+    s = t.readAll();
     f.close();
   }
-  m_edit->setText(s);
+  m_edit->setPlainText(s);
 
   emit setStatusBarText( m_url.prettyUrl() );
 
@@ -78,7 +84,7 @@ bool NotepadPart::saveFile()
   QString s;
   if ( f.open(QIODevice::WriteOnly) ) {
     QTextStream t( &f );
-    t << m_edit->text();
+    t << m_edit->toPlainText();
     f.close();
     return true;
   } else

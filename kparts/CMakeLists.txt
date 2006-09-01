@@ -1,6 +1,6 @@
-
 project(kparts)
 
+add_subdirectory( tests )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 

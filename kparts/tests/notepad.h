@@ -17,8 +17,8 @@ class NotepadPart : public KParts::ReadWritePart
 {
   Q_OBJECT
 public:
-  NotepadPart( QWidget*, const char* widgetName,
-               QObject* parent, const char* name,
+  NotepadPart( QWidget* parentWidget,
+               QObject* parent,
                const QStringList& args = QStringList() );
   virtual ~NotepadPart();
 

@@ -7,12 +7,13 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-PluginSpellCheck::PluginSpellCheck( QObject* parent, const char* name, 
+PluginSpellCheck::PluginSpellCheck( QObject* parent,
                                     const QStringList& )
     : Plugin( parent )
 {
-    (void) new KAction( "&Select current line (plugin)", 0, this, SLOT(slotSpellCheck()),
-                        actionCollection(), "spellcheck" );
+    KAction* act = new KAction( "&Select current line (plugin)",
+                                actionCollection(), "spellcheck" );
+    connect(act, SIGNAL(triggered()), this, SLOT(slotSpellCheck()));
 }
 
 PluginSpellCheck::~PluginSpellCheck()
@@ -33,7 +34,7 @@ void PluginSpellCheck::slotSpellCheck()
     }
 }
 
-K_EXPORT_COMPONENT_FACTORY( libspellcheckplugin, 
+K_EXPORT_COMPONENT_FACTORY( libspellcheckplugin,
                             KGenericFactory<PluginSpellCheck> );
 
 #include <plugin_spellcheck.moc>
