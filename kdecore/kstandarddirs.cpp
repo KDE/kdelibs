@@ -956,7 +956,7 @@ QString getBundle( const QString& path, bool ignore=false )
 QString KStandardDirs::findExe( const QString& appname,
 				const QString& pstr, bool ignore)
 {
-    kDebug(180) << "findExe(" << appname << ", pstr, " << ignore << ") called" << endl;
+    //kDebug(180) << "findExe(" << appname << ", pstr, " << ignore << ") called" << endl;
 
 #ifdef Q_WS_WIN
     QString real_appname = appname + ".exe";
@@ -968,31 +968,31 @@ QString KStandardDirs::findExe( const QString& appname,
     // absolute path ?
     if (!QDir::isRelativePath(real_appname))
     {
-        kDebug(180) << "findExe(): absolute path given" << endl;
+        //kDebug(180) << "findExe(): absolute path given" << endl;
 #ifdef Q_WS_MAC
         QString bundle = getBundle( real_appname, ignore );
         if ( !bundle.isEmpty() ) {
-            kDebug(180) << "findExe(): returning " << bundle << endl;
+            //kDebug(180) << "findExe(): returning " << bundle << endl;
             return bundle;
         }
 #endif
         info.setFile( real_appname );
         if( info.exists() && ( ignore || info.isExecutable() )
             && info.isFile() ) {
-            kDebug(180) << "findExe(): returning " << real_appname << endl;
+            //kDebug(180) << "findExe(): returning " << real_appname << endl;
             return real_appname;
         }
-        kDebug(180) << "findExe(): failed, returning empty string" << endl;
+        //kDebug(180) << "findExe(): failed, returning empty string" << endl;
         return QString();
     }
 
-    kDebug(180) << "findExe(): relative path given" << endl;
+    //kDebug(180) << "findExe(): relative path given" << endl;
     QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
 
 #ifdef Q_WS_MAC
     QString bundle = getBundle( p, ignore );
     if ( !bundle.isEmpty() ) {
-        kDebug(180) << "findExe(): returning " << bundle << endl;
+        //kDebug(180) << "findExe(): returning " << bundle << endl;
         return bundle;
     }
 #endif
@@ -1001,12 +1001,12 @@ QString KStandardDirs::findExe( const QString& appname,
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() )  ) {
-         kDebug(180) << "findExe(): returning " << p << endl;
-         return p;
+        //kDebug(180) << "findExe(): returning " << p << endl;
+        return p;
     }
 #endif
 
-    kDebug(180) << "findExe(): checking system paths" << endl;
+    //kDebug(180) << "findExe(): checking system paths" << endl;
     QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
@@ -1016,7 +1016,7 @@ QString KStandardDirs::findExe( const QString& appname,
 #ifdef Q_WS_MAC
         QString bundle = getBundle( p, ignore );
         if ( !bundle.isEmpty() ) {
-            kDebug(180) << "findExe(): returning " << bundle << endl;
+            //kDebug(180) << "findExe(): returning " << bundle << endl;
             return bundle;
         }
 #endif
@@ -1026,7 +1026,7 @@ QString KStandardDirs::findExe( const QString& appname,
 
 	if( info.exists() && ( ignore || info.isExecutable() )
            && ( info.isFile() || info.isSymLink() )  ) {
-            kDebug(180) << "findExe(): returning " << p << endl;
+            //kDebug(180) << "findExe(): returning " << p << endl;
 	    return p;
 	}
     }
@@ -1034,16 +1034,16 @@ QString KStandardDirs::findExe( const QString& appname,
 #ifdef Q_WS_MAC // see $PATH cooking above, now it's time  :)
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
-         && ( info.isFile() || info.isSymLink() )  ) {
-         kDebug(180) << "findExe(): returning " << p << endl;
-         return p;
+        && ( info.isFile() || info.isSymLink() )  ) {
+        //kDebug(180) << "findExe(): returning " << p << endl;
+        return p;
     }
 #endif
 
     // If we reach here, the executable wasn't found.
     // So return empty string.
 
-    kDebug(180) << "findExe(): failed, nothing matched" << endl;
+    //kDebug(180) << "findExe(): failed, nothing matched" << endl;
     return QString();
 }
 
