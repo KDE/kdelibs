@@ -25,83 +25,83 @@
 
 namespace SafeSite {
 
-	class Service;
+class Service;
 
-	class KIO_EXPORT ServiceInfo {
-		public:
-			ServiceInfo();
-			~ServiceInfo();
-			const QString& name() const;
-			const KUrl& url() const;
-			const QString& details() const;
+class KIO_EXPORT ServiceInfo {
+public:
+    ServiceInfo();
+    ~ServiceInfo();
+    const QString& name() const;
+    const KUrl& url() const;
+    const QString& details() const;
 
-			ServiceInfo& operator=(const ServiceInfo&);
+    ServiceInfo& operator=(const ServiceInfo&);
 
-		protected:
-			friend class Service;
-			QString _name;
-			KUrl _url;
-			QString _details;
-			class ServiceInfoPrivate;
-			ServiceInfoPrivate *d;
-	};
+protected:
+    friend class Service;
+    QString _name;
+    KUrl _url;
+    QString _details;
+    class ServiceInfoPrivate;
+    ServiceInfoPrivate * const d;
+};
 
-	class KIO_EXPORT Report : public QObject {
-		friend class Agent;
-		friend class Service;
-		Q_OBJECT
-		public:
-			Report();
-			~Report();
+class KIO_EXPORT Report : public QObject {
+    friend class Agent;
+    friend class Service;
+    Q_OBJECT
+public:
+    Report();
+    ~Report();
 
-			enum Result { Working = 0, Unknown = 1, Error = 2, KnownPhishing = 3, Indeterminate = 4, KnownGood = 5, Inconsistent = 6, Aborted = 7 };
+    enum Result { Working = 0, Unknown = 1, Error = 2, KnownPhishing = 3, Indeterminate = 4, KnownGood = 5, Inconsistent = 6, Aborted = 7 };
 
-			Result result(const QString& service = QString::null) const;
-			QString extendedResultText(const QString& service = QString::null) const;
-			QString report(const QString& service = QString::null) const;
-			QMap<QString, QString> metaData(const QString& service = QString::null) const;
-			QStringList services() const;
-			ServiceInfo serviceInfo(const QString& service);
+    Result result(const QString& service = QString::null) const;
+    QString extendedResultText(const QString& service = QString::null) const;
+    QString report(const QString& service = QString::null) const;
+    QMap<QString, QString> metaData(const QString& service = QString::null) const;
+    QStringList services() const;
+    ServiceInfo serviceInfo(const QString& service);
 
-			void abort();
+    void abort();
 
-			const KUrl& url() const;
+    const KUrl& url() const;
 
-		protected slots:
-			void serviceReported(Service *s);
+protected slots:
+    void serviceReported(Service *s);
 
-		private slots:
-			void next();
+private slots:
+    void next();
 
-		signals:
-			void done();
-			void serviceReported(const QString& service);
+signals:
+    void done();
+    void serviceReported(const QString& service);
 
-		protected:
-			bool run();
-			KUrl _url;
+protected:
+    bool run();
+    KUrl _url;
 
-		private:
-			Result _result;
-			QMap<QString, Result> _jobResults;
-			QMap<QString, QString> _extendedResults;
-			QMap<QString, QString> _reports;
-			typedef QMap<QString, QString> MetaData;
-			QMap<QString, MetaData> _metaData;
-			int _currentService;
-			class ReportPrivate;
-			ReportPrivate *d;
-	};
+private:
+    Result _result;
+    QMap<QString, Result> _jobResults;
+    QMap<QString, QString> _extendedResults;
+    QMap<QString, QString> _reports;
+    typedef QMap<QString, QString> MetaData;
+    QMap<QString, MetaData> _metaData;
+    int _currentService;
+    class ReportPrivate;
+    ReportPrivate * const d;
+};
 
-	class KIO_EXPORT Agent {
-		public:
-			static Report *obtainReport(const KUrl& url);
-			static QStringList services();
-			static ServiceInfo serviceInfo(const QString& service);
-		private:
-			Agent();
-			~Agent();
-	};
+class KIO_EXPORT Agent {
+public:
+    static Report *obtainReport(const KUrl& url);
+    static QStringList services();
+    static ServiceInfo serviceInfo(const QString& service);
+private:
+    Agent();
+    ~Agent();
+};
 
 }
 
