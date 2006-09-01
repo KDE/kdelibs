@@ -2428,8 +2428,8 @@ void HTMLSelectElementImpl::reset()
                 anySelected = true;
         }
     }
-    // If there is no default selection, jump to first option.
-    if ( !anySelected ) {
+    // If this is a single-row SELECT and there is no default selection, jump to first option.
+    if ( !anySelected && m_size <= 1 ) {
         for (i = 0; i < itemsSize; ++i) {
             if (items[i]->id() == ID_OPTION) {
                 static_cast<HTMLOptionElementImpl*>(items[i])->setSelected(true);
