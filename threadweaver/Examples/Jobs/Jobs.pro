@@ -1,8 +1,8 @@
 TEMPLATE = app
-SOURCES += Jobs.cpp WeaverObserverTest.cpp WeaverThreadGrid.cpp
-HEADERS += Jobs.h WeaverObserverTest.h WeaverThreadGrid.h
+SOURCES += Jobs.cpp WeaverObserverTest.cpp
+HEADERS += Jobs.h WeaverObserverTest.h
 FORMS += JobsBase.ui
-INCLUDEPATH += ../../Weaver/ ../../Experimental
-LIBS += -L../../Weaver -lThreadWeaver -L../../Experimental -lThreadWeaverExperimental
+INCLUDEPATH += ../../Weaver/ ../../WeaverGui
+LIBS += -L../../Weaver -lThreadWeaver -L../../WeaverGui -lThreadWeaverGui
 CONFIG += qt warn_on thread
 TARGET = Jobs

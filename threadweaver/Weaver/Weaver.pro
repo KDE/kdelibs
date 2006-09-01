@@ -31,7 +31,7 @@ HEADERS += WeaverInterface.h \
 
 CONFIG += dll warn_on thread
 QT -= gui
-VERSION = 0.4.0
+VERSION = 0.6.0
 TARGET = ThreadWeaver
 
 test.target=test
