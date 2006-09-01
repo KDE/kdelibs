@@ -280,14 +280,14 @@ public:
   /**
    * Returns a ref-counted pointer to a shared read-write config object.
    * @param fileName the name of the file to use for the configuration
-   * @param immutable if true, force the config object to be read-only.
+   * @param readOnly set the config object's read-only status
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    */
-  static KSharedConfig::Ptr openConfig(const QString& fileName, bool immutable = false,
+  static KSharedConfig::Ptr openConfig(const QString& fileName, bool readOnly = false,
     bool bUseKDEGlobals = true);
 
 private:
-  KSharedConfig( const QString& fileName, bool immutable, bool useKDEGlobals );
+  KSharedConfig( const QString& fileName, bool readOnly, bool useKDEGlobals );
   ~KSharedConfig();
 
   static QValueList<KSharedConfig*> *s_list;
