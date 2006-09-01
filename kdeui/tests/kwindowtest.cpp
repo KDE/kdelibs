@@ -324,7 +324,6 @@ testWindow::~testWindow ()
 
   delete tb;
   delete tb1;
-  delete menuBar;
 
   qDebug ("kwindowtest finished");
 }
