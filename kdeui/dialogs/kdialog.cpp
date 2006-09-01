@@ -319,12 +319,14 @@ void KDialog::setMainWidget( QWidget *widget )
 
 QWidget *KDialog::mainWidget()
 {
-  return d->mMainWidget;
+    if (!d->mMainWidget)
+        d->mMainWidget = new QWidget(this);
+    return d->mMainWidget;
 }
 
 QSize KDialog::sizeHint() const
 {
- return d->mMinSize.expandedTo( minimumSizeHint() ) + d->mIncSize;
+    return d->mMinSize.expandedTo( minimumSizeHint() ) + d->mIncSize;
 }
 
 QSize KDialog::minimumSizeHint() const
@@ -844,7 +846,7 @@ void KDialog::slotButtonClicked( int button )
       break;
     case User1:
         emit user1Clicked();
-      break;
+        break;
     case Yes:
       emit yesClicked();
       done( Yes );

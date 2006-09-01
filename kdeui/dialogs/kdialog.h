@@ -41,7 +41,7 @@ class QMenu;
  * It offers the standard action buttons you'd expect to find in a
  * dialog as well as the capability to define at most three configurable
  * buttons. You can define a main widget that contains your specific
- * dialog layout 
+ * dialog layout
  *
  * The class takes care of the geometry management. You only need to define
  * a minimum size for the widget you want to use as the main widget.
@@ -122,7 +122,7 @@ class QMenu;
  * @see KPageDialog
  * @author Thomas Tanghus <tanghus@earthling.net>
  * @author Espen Sand <espensa@online.no>
- * @author Mirko Boehm <mirko@kde.org> 
+ * @author Mirko Boehm <mirko@kde.org>
  * @author Olivier Goffart <ogoffart at kde.org>
  * @author Tobias Koenig <tokoe@kde.org>
  */
@@ -148,7 +148,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       User1   = 0x00001000, ///< Show User defined button 1.
       User2   = 0x00002000, ///< Show User defined button 2.
       User3   = 0x00004000, ///< Show User defined button 3.
-      NoDefault = 0x00008000 ///< Used when specifying a default button; indicates that no button should be marked by default. 
+      NoDefault = 0x00008000 ///< Used when specifying a default button; indicates that no button should be marked by default.
     };
     Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
 
@@ -167,7 +167,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     ~KDialog();
 
     /**
-     * Creates (or recreates) the button box and all the buttons in it. 
+     * Creates (or recreates) the button box and all the buttons in it.
      *
      * This will reset all default KGuiItem of all button.
      *
@@ -422,7 +422,12 @@ class KDEUI_EXPORT KDialog : public QDialog
     void setMainWidget( QWidget *widget );
 
     /**
-     * @return The current main widget. Can be 0 if no widget has been defined.
+     * @return The current main widget. Will create a QWidget as the mainWidget
+     * if none was set before. This way you can write
+     * \code
+     *   ui.setupUi(mainWidget());
+     * \endcode
+     * when using designer.
      */
     QWidget *mainWidget();
 
