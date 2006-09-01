@@ -90,3 +90,5 @@ void Example::switchPolicy(const QString &newPolicy) {
     else
         qWarning() << "SwitchPolicy value not understood:" << newPolicy;
 }
+
+#include "Example.moc"

@@ -71,3 +71,5 @@ void ComputeThumbNailJob::run()
     m_thumb = *im;
 #endif
 }
+
+#include "ComputeThumbNailJob.moc"

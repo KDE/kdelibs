@@ -30,3 +30,5 @@ QString QProcessJob::result()
     Q_ASSERT ( isFinished () );
     return m_result;
 }
+
+#include "QProcessJob.moc"

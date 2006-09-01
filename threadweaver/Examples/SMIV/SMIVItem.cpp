@@ -119,3 +119,5 @@ QImage SMIVItem::thumb() const
     P_ASSERT ( m_thumb->isFinished() );
     return m_thumb->thumb();
 }
+
+#include "SMIVItem.moc"

@@ -25,3 +25,5 @@ SMIVView::SMIVView ( QWidget *parent )
 SMIVView::~SMIVView ()
 {
 }
+
+#include "SMIVView.moc"

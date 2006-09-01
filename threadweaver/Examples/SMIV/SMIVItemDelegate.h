@@ -1,6 +1,6 @@
 /* -*- C++ -*-
 
-   This file declares the SMIVItemDelegate class. 
+   This file declares the SMIVItemDelegate class.
 
    $ Author: Mirko Boehm $
    $ Copyright: (C) 2005, Mirko Boehm $
@@ -15,7 +15,7 @@
 */
 
 #ifndef SMIVITEMDELEGATE_H
-#define SMIVITEMDELEGATE
+#define SMIVITEMDELEGATE_H
 
 #include <QItemDelegate>
 #include <QSize>

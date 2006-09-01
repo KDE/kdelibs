@@ -22,6 +22,7 @@
 #include "ThreadWeaver.h"
 #include "WeaverImpl.h"
 #include "Thread.h"
+#include "Thread_p.h"
 #include "Job.h"
 #include "DebuggingAids.h"
 
@@ -52,62 +53,45 @@ public:
 };
 
 
-class ThreadWeaver::ThreadRunHelper : public QObject
+ThreadWeaver::ThreadRunHelper::ThreadRunHelper()
+    : QObject ( 0 )
+    , m_job( 0 )
 {
-    Q_OBJECT
-public:
-    explicit ThreadRunHelper ()
-        : QObject ( 0 )
-        , m_job( 0 )
+}
+
+void ThreadWeaver::ThreadRunHelper::run ( WeaverImpl *parent, Thread* th )
+{
+    Q_ASSERT ( thread() == th );
+    emit ( started ( th) );
+
+    while (true)
     {
-    }
+        debug ( 3, "Thread::run [%u]: trying to execute the next job.\n", th->id() );
 
-signals: // see Thread:
+        // this is the *only* assignment to m_job  in the Thread class!
+        Job* job = parent->applyForWork ( th, m_job );
 
-    /** The thread has been started. */
-    void started ( Thread* );
-    /** The thread started to process a job. */
-    void jobStarted ( Thread*,  Job* );
-    /** The thread finished to execute a job. */
-    void jobDone ( Job* );
-
-private:
-    Job* m_job;
-
-public:
-    void run ( WeaverImpl *parent, Thread* th )
-    {
-        Q_ASSERT ( thread() == th );
-        emit ( started ( th) );
-
-        while (true)
+        if (job == 0)
         {
-            debug ( 3, "Thread::run [%u]: trying to execute the next job.\n", th->id() );
-
-            // this is the *only* assignment to m_job  in the Thread class!
-            Job* job = parent->applyForWork ( th, m_job );
-
-            if (job == 0)
-            {
-                break;
-            } else {
-                m_job = job;
-                emit ( jobStarted ( th,  m_job ) );
-                m_job->execute (th);
-                emit ( jobDone ( m_job ) );
-            }
+            break;
+        } else {
+            m_job = job;
+            emit ( jobStarted ( th,  m_job ) );
+            m_job->execute (th);
+            emit ( jobDone ( m_job ) );
+            m_job = 0;
         }
     }
+}
 
-    void requestAbort()
+void ThreadWeaver::ThreadRunHelper::requestAbort()
+{
+    Job* job = m_job;
+    if ( job )
     {
-        Job* job = m_job;
-        if ( job )
-        {
-            job->requestAbort();
-        }
+        job->requestAbort();
     }
-};
+}
 
 Thread::Thread (WeaverImpl *parent)
     : QThread () // no parent, because the QObject hierarchy of this thread
@@ -164,6 +148,4 @@ void Thread::requestAbort ()
 }
 
 #include "Thread.moc"
-#ifdef USE_CMAKE
-#include "Thread_moc.cpp"
-#endif
+#include "Thread_p.moc"

@@ -371,4 +371,4 @@ void Weaver::requestAbort()
     d->weaverinterface->requestAbort();
 }
 
-
+#include "ThreadWeaver.moc"

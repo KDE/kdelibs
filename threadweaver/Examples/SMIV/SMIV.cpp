@@ -172,3 +172,5 @@ int main ( int argc,  char** argv )
     smiv.show();
     return app.exec();
 }
+
+#include "SMIV.moc"

@@ -57,4 +57,4 @@ void JobSequence::internalJobDone( Job* job)
     }
 }
 
-
+#include "JobSequence.moc"

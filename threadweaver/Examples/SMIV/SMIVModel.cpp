@@ -82,3 +82,5 @@ const SMIVItem* SMIVModel::data( int index ) const
     Q_ASSERT( index >=0 && index <m_data.size() );
     return m_data[index];
 }
+
+#include "SMIVModel.moc"

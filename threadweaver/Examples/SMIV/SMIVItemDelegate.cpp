@@ -110,3 +110,5 @@ QSize SMIVItemDelegate::sizeHint(const QStyleOptionViewItem & ,
     static const int Height = ThumbHeight + 2*FrameWidth + 2*Margin + 2;
     return QSize ( Width,  Height );
 }
+
+#include "SMIVItemDelegate.moc"

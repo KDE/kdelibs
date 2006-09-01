@@ -31,6 +31,7 @@ namespace ThreadWeaver {
     */
     class QImageLoaderJob : public Job
     {
+        Q_OBJECT
     public:
         /** Create a job to load an image from the data loaded into file.
             If file has not been finished at this point, it is considered a

@@ -22,3 +22,5 @@ WeaverInterface:: WeaverInterface ( QObject* parent )
     : QObject ( parent )
 {
 }
+
+#include "WeaverInterface.moc"

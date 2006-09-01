@@ -104,3 +104,5 @@ namespace ThreadWeaver {
 
 
 }
+
+#include "WeaverThreadGrid.moc"

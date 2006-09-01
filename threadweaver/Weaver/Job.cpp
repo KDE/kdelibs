@@ -25,6 +25,7 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include <Thread.h>
 
 #include "Job.h"
+#include "Job_p.h"
 #include "QueuePolicy.h"
 #include "DependencyPolicy.h"
 
@@ -69,47 +70,35 @@ Job::~Job()
     delete d;
 }
 
-class ThreadWeaver::JobRunHelper : public QObject
+ThreadWeaver::JobRunHelper::JobRunHelper()
+    : QObject ( 0 )
 {
-    Q_OBJECT
-public:
-    JobRunHelper()
-        : QObject ( 0 )
+}
+
+void ThreadWeaver::JobRunHelper::runTheJob ( Thread* th, Job* job )
+{
+    P_ASSERT ( th == thread() );
+    job->d->mutex->lock();
+    job->d->thread = th;
+    job->d->mutex->unlock();
+
+    emit ( started ( job ) );
+
+    job->run();
+
+    job->d->mutex->lock();
+    job->d->thread = 0;
+    job->setFinished (true);
+    job->d->mutex->unlock();
+    job->freeQueuePolicyResources();
+
+    if ( ! job->success() )
     {
+        emit ( failed( job ) );
     }
 
-signals:
-    void started ( Job* );
-    void done ( Job* );
-    void failed( Job* );
-
-public:
-
-    void runTheJob ( Thread* th, Job* job )
-    {
-        P_ASSERT ( th == thread() );
-        job->d->mutex->lock();
-        job->d->thread = th;
-        job->d->mutex->unlock();
-
-        emit ( started ( job ) );
-
-        job->run();
-
-        job->d->mutex->lock();
-        job->d->thread = 0;
-        job->setFinished (true);
-        job->d->mutex->unlock();
-        job->freeQueuePolicyResources();
-
-        if ( ! job->success() )
-        {
-            emit ( failed( job ) );
-        }
-
-        emit ( done( job ) );
-    }
-};
+    emit ( done( job ) );
+}
 
 void Job::execute(Thread *th)
 {
@@ -222,6 +211,4 @@ void Job::setFinished ( bool status )
 // }
 
 #include "Job.moc"
-#ifdef USE_CMAKE
-#include "Job_moc.cpp"
-#endif
+#include "Job_p.moc"

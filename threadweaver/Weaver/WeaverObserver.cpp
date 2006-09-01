@@ -27,3 +27,4 @@ WeaverObserver::~WeaverObserver()
 {
 }
 
+#include "WeaverObserver.moc"

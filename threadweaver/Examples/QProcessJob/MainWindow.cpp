@@ -42,7 +42,4 @@ void MainWindow::update( Job *j )
     ui.pushButtonQuit->setEnabled( true );
 }
 
-
-
-
-
+#include "MainWindow.moc"

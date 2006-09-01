@@ -134,3 +134,4 @@ namespace ThreadWeaver {
 
 }
 
+#include "FileLoaderJob.moc"
