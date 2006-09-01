@@ -77,7 +77,7 @@ class RenameDlg::RenameDlgPrivate
 };
 
 RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
-                     const QString &_src, const QString &_dest,
+                     const KUrl &_src, const KUrl &_dest,
                      RenameDlg_Mode _mode,
                      KIO::filesize_t sizeSrc,
                      KIO::filesize_t sizeDest,
@@ -530,7 +530,7 @@ void RenameDlg::pluginHandling()
 
 
 RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
-                                      const QString & _src, const QString & _dest,
+                                      const KUrl & _src, const KUrl & _dest,
                                       RenameDlg_Mode _mode,
                                       QString& _new,
                                       KIO::filesize_t sizeSrc,

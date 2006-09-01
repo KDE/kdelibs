@@ -752,8 +752,9 @@ bool KPrintDialog::checkOutputFile()
 			{
 				//value = (KMessageBox::warningYesNo(this,i18n("File \"%1\" already exists. Overwrite?").arg(f.absoluteFilePath())) == KMessageBox::Yes);
 				time_t mtimeDest = f.lastModified().toTime_t();
-				KIO::RenameDlg dlg( this, i18n( "Print" ), QString(), d->m_file->url().toString(),
-                                                    KIO::M_OVERWRITE, ( time_t ) -1, f.size(), ( time_t ) -1, f.created().toTime_t() , mtimeDest+1, mtimeDest );
+				KIO::RenameDlg dlg( this, i18n( "Print" ), KUrl(), d->m_file->url(),
+									KIO::M_OVERWRITE, (time_t)-1, f.size(), (time_t)-1,
+									f.created().toTime_t(), mtimeDest+1, mtimeDest );
 				int result = dlg.exec();
 				switch ( result )
 				{
