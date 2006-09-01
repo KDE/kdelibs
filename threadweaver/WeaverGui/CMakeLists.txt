@@ -15,5 +15,5 @@ install(TARGETS ThreadWeaverGui DESTINATION lib)
 
 install(FILES
     WeaverThreadGrid.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
+    DESTINATION include/threadweaver/
 )

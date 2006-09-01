@@ -16,5 +16,5 @@ install(TARGETS ThreadWeaverExperimental DESTINATION lib)
 
 install(FILES
     FileLoaderJob.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
+    DESTINATION include/threadweaver/
 )

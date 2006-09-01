@@ -20,7 +20,7 @@ install(FILES
     Action.h
     ExecutePolicy.h
     JobsListPolicy.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
+    DESTINATION include/threadweaver/
 )
 
 

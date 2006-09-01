@@ -52,5 +52,5 @@ install(FILES
     JobSequence.h
     DependencyPolicy.h
     ResourceRestrictionPolicy.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
+    DESTINATION include/threadweaver/
 )
