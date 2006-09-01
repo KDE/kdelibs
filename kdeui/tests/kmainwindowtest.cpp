@@ -28,9 +28,8 @@ int main( int argc, char **argv )
     KCmdLineArgs::init( argc, argv, "kmainwindowtest", "KMainWindowTest", "kmainwindow test app", "1.0" );
     KApplication app;
 
-    MainWindow mw;
-
-    mw.show();
+    MainWindow* mw = new MainWindow; // deletes itself when closed
+    mw->show();
 
     return app.exec();
 }
