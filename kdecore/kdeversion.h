@@ -17,20 +17,76 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KDE_VERSION_H_
-#define _KDE_VERSION_H_
+#ifndef KDELIBS_KDEVERSION_H
+#define KDELIBS_KDEVERSION_H
+
+/**
+ * @file kdeversion.h
+ * @brief The file contains macros and functions related to the KDE version.
+ */
 
 #include "kdelibs_export.h"
 
-#define KDE_VERSION_STRING "3.80.1 (>= 20060816)"
+/**
+ * @brief Version of KDE as string, at compile time
+ *
+ * This macro contains the KDE version in string form. As it is a macro,
+ * it contains the version at compile time. See versionString() if you need
+ * the KDE version used at runtime.
+ *
+ * @note The version string might contain a section in parentheses,
+ * especially for development versions of KDE.
+ * If you use that macro directly for a file format (e.g. OASIS Open Document)
+ * or for a protocol (e.g. http) be careful that it is appropriate.
+ * (Fictional) example: "4.0.90 (>=20070101)"
+ */
+#define KDE_VERSION_STRING "3.80.1 (>= 20060903)"
+
+/// @brief Major version of KDE, at compile time
 #define KDE_VERSION_MAJOR 3
+/// @brief Minor version of KDE, at compile time
 #define KDE_VERSION_MINOR 80
+/// @brief Release version of KDE, at compile time
 #define KDE_VERSION_RELEASE 1
+
+/**
+ * @brief Make a number from the major, minor and release number of a KDE version
+ *
+ * This function can be used for preprocessing when KDE_IS_VERSION is not
+ * appropriate.
+ */
 #define KDE_MAKE_VERSION( a,b,c ) (((a) << 16) | ((b) << 8) | (c))
 
+/**
+ * @brief Version of KDE as number, at compile time
+ *
+ * This macro contains the KDE version in number form. As it is a macro,
+ * it contains the version at compile time. See versionString() if you need
+ * the KDE version used at runtime.
+ */
 #define KDE_VERSION \
   KDE_MAKE_VERSION(KDE_VERSION_MAJOR,KDE_VERSION_MINOR,KDE_VERSION_RELEASE)
 
+/**
+ * @brief Check if the KDE version matches a certain version or is higher
+ *
+ * This macro is typically used to compile conditionally a part of code:
+ * @code
+ * #if KDE_IS_VERSION(4,0,90)
+ * // Code for KDE 4.1
+ * #else
+ * // Code for KDE 4.0
+ * #endif
+ * @endcode
+ *
+ * @warning Especially during development phases of KDE, be careful
+ * when choosing the version number that you are checking against.
+ * Otherwise you might risk to break the next KDE release.
+ * Therefore be careful that development version have a
+ * version number lower than the released version, so do not check 
+ * e.g. for KDE 4.1 with KDE_IS_VERSION(4,1,0)
+ * but with the actual version number at a time a needed feature was introduced.
+ */
 #define KDE_IS_VERSION(a,b,c) ( KDE_VERSION >= KDE_MAKE_VERSION(a,b,c) )
 
 /**
@@ -39,36 +95,41 @@
 namespace KDE
 {
     /**
-     * Returns the encoded number of KDE's version, see the KDE_VERSION macro.
-     * In contrary to that macro this function returns the number of the actully
+     * @brief Returns the encoded number of KDE's version, see the KDE_VERSION macro.
+     *
+     * In contrary to the macro KDE_VERSION
+     * this function returns the number of the actually
      * installed KDE version, not the number of the KDE version that was
      * installed when the program was compiled.
      * @return the version number, encoded in a single uint
      */
     KDECORE_EXPORT unsigned int version();
     /**
-     * Returns the major number of KDE's version, e.g.
-     * 3 for KDE 3.1.2. 
+     * @brief Returns the major number of KDE's version, e.g.
+     * 4 for KDE 4.1.2. 
      * @return the major version number
      */
     KDECORE_EXPORT unsigned int versionMajor();
     /**
-     * Returns the minor number of KDE's version, e.g.
-     * 1 for KDE 3.1.2. 
+     * @brief Returns the minor number of KDE's version, e.g.
+     * 1 for KDE 4.1.2. 
      * @return the minor version number
      */
     KDECORE_EXPORT unsigned int versionMinor();
     /**
-     * Returns the release of KDE's version, e.g.
-     * 2 for KDE 3.1.2. 
+     * @brief Returns the release of KDE's version, e.g.
+     * 2 for KDE 4.1.2. 
      * @return the release number
      */
     KDECORE_EXPORT unsigned int versionRelease();
     /**
-     * Returns the KDE version as string, e.g. "3.1.2".
+     * @brief Returns the KDE version as string, e.g. "4.1.2".
+     *
+     * On contrary to the macro KDE_VERSION_STRING this function returns
+     * the version number of KDE at runtime.
      * @return the KDE version. You can keep the string forever
      */
     KDECORE_EXPORT const char *versionString();
 }
 
-#endif // _KDE_VERSION_H_
+#endif // KDELIBS_KDEVERSION_H
