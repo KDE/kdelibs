@@ -1178,12 +1178,9 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-    // FIXME: This should be done for all protocols that can be opened but
-    //        not "navigated"...
-    if (u.protocol() == "http" || u.protocol() == "https") {
-        locationEdit->lineEdit()->setEdited(true);
+    // Honor protocols that do not support directory listing
+    if (!KProtocolManager::supportsListing(u))
         return;
-    }
 
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
@@ -1201,12 +1198,10 @@ void KFileDialog::setSelection(const QString& url)
         QString filename = u.url();
         int sep = filename.lastIndexOf('/');
         if (sep >= 0) { // there is a / in it
-            if ( KProtocolManager::supportsListing( u )) {
-                KUrl dir(u);
-                dir.setQuery( QString() );
-                dir.setFileName( QString() );
-                setUrl(dir, true );
-            }
+            KUrl dir(u);
+            dir.setQuery( QString() );
+            dir.setFileName( QString() );
+            setUrl(dir, true );
 
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KUrl::fileName()
