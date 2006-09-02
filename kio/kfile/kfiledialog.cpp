@@ -1178,7 +1178,12 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-//     #warning FIXME: http URLs, e.g. from KUrlCombo
+    // FIXME: This should be done for all protocols that can be opened but
+    //        not "navigated"...
+    if (u.protocol() == "http" || u.protocol() == "https") {
+        locationEdit->lineEdit()->setEdited(true);
+        return;
+    }
 
     /* we strip the first / from the path to avoid file://usr which means
      *  / on host usr
