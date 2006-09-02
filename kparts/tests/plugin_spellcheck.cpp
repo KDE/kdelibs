@@ -35,6 +35,6 @@ void PluginSpellCheck::slotSpellCheck()
 }
 
 K_EXPORT_COMPONENT_FACTORY( libspellcheckplugin,
-                            KGenericFactory<PluginSpellCheck> );
+                            KGenericFactory<PluginSpellCheck> )
 
 #include <plugin_spellcheck.moc>
