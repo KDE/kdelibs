@@ -736,7 +736,7 @@ bool RenderBox::absolutePosition(int &_xPos, int &_yPos, bool f) const
         }
 
         if(!isInline() || isReplaced()) {
-            _xPos += xPos(), 
+            _xPos += xPos(),
             _yPos += yPos();
         }
 
@@ -1105,6 +1105,7 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
     if (cb->isTableCell() && style()->htmlHacks()) {
         result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
     }
+
     // Otherwise we only use our percentage height if our containing block had a specified
     // height.
     else if (cb->style()->height().isFixed())
@@ -1131,6 +1132,12 @@ int RenderBox::calcPercentageHeight(const Length& height, bool treatAsReplaced) 
         result = visHeight - (margins + p->marginTop() + p->marginBottom() +
                               p->borderTop() + p->borderBottom() +
                               p->paddingTop() + p->paddingBottom());
+    }
+    else if (cb->isRoot() && style()->htmlHacks() && cb->style()->height().isVariable()) {
+        int visHeight = canvas()->viewportHeight();
+        result = visHeight - (marginTop() + marginBottom() +
+                              borderTop() + borderBottom() +
+                              paddingTop() + paddingBottom());
     }
     else if (cb->isAnonymousBlock() || treatAsReplaced && style()->htmlHacks()) {
         // IE quirk.
