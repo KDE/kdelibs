@@ -27,6 +27,7 @@
 
 class QImage;
 template <class T> class QList;
+class KLocalizedString;
 
 /**
  * This structure is used to store information about a person or developer.
@@ -324,8 +325,9 @@ class KDECORE_EXPORT KAboutData
 		    const char *webAddress=0 );
 
     /**
-     * Sets the name of the translator of the gui. Since this depends
-     * on the language, just use a dummy text marked for translation.
+     * @brief Sets the name of the translator(s) of the GUI. 
+     *
+     * Since this depends on the language, just use a dummy text marked for translation.
      *
      * For example:
      * \code
@@ -341,8 +343,33 @@ class KDECORE_EXPORT KAboutData
      * @param name the name of the translator
      * @param emailAddress the email address of the translator
      * @see KAboutTranslator
+     * @deprecated
+     * @todo: remove this member function before the release of KDE4,
+     * has its parameters are incompatible with the behaviour of KDE3. 
      */
-    void setTranslator(const char *name, const char* emailAddress);
+    KDE_DEPRECATED void setTranslator(const char *name, const char* emailAddress);
+
+    /**
+     * @brief Sets the name of the translator(s) of the GUI. 
+     *
+     * Since this depends on the language, just use a dummy text marked for translation.
+     *
+     * For example:
+     * \code
+     * setTranslator(ki18nc("NAME OF TRANSLATORS","Your names")
+     * ,ki18nc("EMAIL OF TRANSLATORS","Your emails"));
+     * \endcode
+     *
+     * The translator can then translate this dummy text with his name
+     * or with a list of names separated with ",".
+     * If there is no translation or the application is used with the
+     * default language, this function call is ignored.
+     *
+     * @param name the name(s) of the translator(s)
+     * @param emailAddress the email address(es) of the translator(s)
+     * @see KAboutTranslator
+     */
+    void setTranslator(const KLocalizedString& name, const KLocalizedString& emailAddress);
 
     /**
      * Defines a license text.

@@ -1,6 +1,7 @@
 /*
  * This file is part of the KDE Libraries
  * Copyright (C) 2000 Espen Sand (espen@kde.org)
+ * Copyright (C) 2006 Nicolas GOUTTE <goutte@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,11 +20,9 @@
  *
  */
 
-#include <config.h>
-
 #include "kaboutdata.h"
 #include "kstandarddirs.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -141,8 +140,8 @@ class KAboutData::Private
 {
 public:
     Private()
-        : translatorName(I18N_NOOP2("NAME OF TRANSLATORS", "Your names"))
-        , translatorEmail(I18N_NOOP2("EMAIL OF TRANSLATORS", "Your emails"))
+        : mTranslatorName( i18nc("NAME OF TRANSLATORS", "Your names") )
+        , mTranslatorEmail( i18nc("EMAIL OF TRANSLATORS", "Your emails") )
         , productName(0)
         , programLogo(0)
         , customAuthorTextEnabled(false)
@@ -167,8 +166,8 @@ public:
     QList<KAboutPerson> _authorList;
     QList<KAboutPerson> _creditList;
     const char *_licenseText;
-    const char *translatorName;
-    const char *translatorEmail;
+    QString mTranslatorName;
+    QString mTranslatorEmail;
     const char *productName;
     QImage* programLogo;
     QString customAuthorPlainText, customAuthorRichText;
@@ -254,11 +253,19 @@ KAboutData::addCredit( const char *name, const char *task,
   d->_creditList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
+// deprecated
 void
-KAboutData::setTranslator( const char *name, const char *emailAddress)
+KAboutData::setTranslator( const char *name, const char *emailAddress )
 {
-  d->translatorName=name;
-  d->translatorEmail=emailAddress;
+  d->mTranslatorName = i18nc( "NAME OF TRANSLATORS", name );
+  d->mTranslatorEmail = i18nc( "EMAILS OF TRANSLATORS", emailAddress );
+}
+
+void
+KAboutData::setTranslator( const KLocalizedString& name, const KLocalizedString& emailAddress )
+{
+  d->mTranslatorName = name.toString();
+  d->mTranslatorEmail = emailAddress.toString();
 }
 
 void
@@ -473,45 +480,30 @@ KAboutData::translators() const
 {
     QList<KAboutTranslator> personList;
 
-    if(d->translatorName == 0)
+    if ( d->mTranslatorName.isEmpty() )
         return personList;
 
-    QStringList nameList;
+    const QStringList nameList ( d->mTranslatorName.split( ',' ) );
+
     QStringList emailList;
-
-    QString names = i18nc("NAME OF TRANSLATORS", d->translatorName);
-    if(names != QString::fromUtf8(d->translatorName))
+    if( !d->mTranslatorEmail.isEmpty() )
     {
-        nameList = names.split( ',');
+       emailList = d->mTranslatorName.split( ',', QString::KeepEmptyParts );
     }
 
+    QStringList::const_iterator nit;
+    QStringList::const_iterator eit = emailList.constBegin();
 
-    if(d->translatorEmail)
-    {
-        QString emails = i18nc("EMAIL OF TRANSLATORS", d->translatorEmail);
-
-        if(emails != QString::fromUtf8(d->translatorEmail))
-        {
-            emailList = emails.split( ',', QString::KeepEmptyParts);
-        }
-    }
-
-
-    QStringList::Iterator nit;
-    QStringList::Iterator eit=emailList.begin();
-
-    for(nit = nameList.begin(); nit != nameList.end(); ++nit)
+    for( nit = nameList.constBegin(); nit != nameList.constEnd(); ++nit )
     {
         QString email;
-        if(eit != emailList.end())
+        if ( eit != emailList.constEnd() )
         {
-            email=*eit;
+            email = *eit;
             ++eit;
         }
 
-        QString name=*nit;
-
-        personList.append(KAboutTranslator(name.trimmed(), email.trimmed()));
+        personList.append( KAboutTranslator( (*nit).trimmed(), email.trimmed() ) );
     }
 
     return personList;
