@@ -888,8 +888,11 @@ void KKeyChooser::removeStandardShortcut( const QString& name, KKeyChooser* choo
         KStdAccel::ShortcutList std_list;
         KShortcut newCut = origCut;
         removeFromShortcut(newCut, cut);
-        std_list.setShortcut( std_list.index( name ), newCut);
-        std_list.save();
+        int index = std_list.index( name );
+        if ( index >= 0 ) {
+            std_list.setShortcut( index, newCut );
+            std_list.save();
+        }
     }
 }
 
