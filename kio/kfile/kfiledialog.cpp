@@ -1225,9 +1225,7 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-    // FIXME: This should be done for all protocols that can be opened but
-    //        not "navigated"...
-    if (u.protocol() == "http" || u.protocol() == "https") {
+    if (!KProtocolInfo::supportsListing(u)) {
         locationEdit->lineEdit()->setEdited( true );
         return;
     }
