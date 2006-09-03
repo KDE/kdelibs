@@ -108,6 +108,7 @@ void FileJob::slotPosition( KIO::filesize_t pos )
 void FileJob::slotTotalSize( KIO::filesize_t t_size )
 {
     m_size = t_size;
+//     emit totalSize( this, m_size);
 }
 
 void FileJob::slotOpen( )
@@ -128,6 +129,7 @@ void FileJob::slotFinished()
     // Return slave to the scheduler
     slaveDone();
 //     Scheduler::doJob(this);
+    emitResult();
 }
 
 void FileJob::start(Slave *slave)
