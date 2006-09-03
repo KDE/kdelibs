@@ -177,7 +177,7 @@ static struct ConversionHints
     { "cp1250", "iso-8859-2" },
     { "koi8-r", "iso-8859-5" },
     { "koi8-u", "koi8-r" },
-    // KDE had always "CP 1251" as best fallback to PT 154. Now that Qt does not offer this encoding anymore, it is our fallback.
+    // KDE had always "CP 1251" as best fallback to PT 154. As Qt does not offer this encoding anymore, the codepage 1251 is used as fallback.
     { "pt 154", "windows-1251" },
     { "paratype-154", "windows-1251" },
     { "pt-154", "windows-1251" },
@@ -204,7 +204,7 @@ public:
     {
         db = 0;
         kc = _kc;
-		codecForNameDict.reserve( 43 );
+        codecForNameDict.reserve( 43 );
     }
     ~KCharsetsPrivate()
     {
@@ -435,7 +435,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     }
     
     // If the name is not in the hash table, call directly QTextCoded::codecForName.
-    // We assume that QTextCodec is smarter and more maintained that this code.
+    // We assume that QTextCodec is smarter and more maintained than this code.
     codec = QTextCodec::codecForName( n );
     if ( codec ) {
         d->codecForNameDict.insert( n, codec );
@@ -444,7 +444,6 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
  
     // We have had no luck with QTextCodec::codecForName, so we must now process the name, so that QTextCodec::codecForName could work with it.
 
-    // ### TODO: we should check if the name starts with x- and remove it. That would save many mapping entries
     QByteArray name = n.toLower();
     bool changed = false;
     if (name.endsWith("_charset")) {
@@ -457,7 +456,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     }
 
     if (name.isEmpty()) {
-      // We have no name anymore, therefore the name has to be invalid.
+      // We have no name anymore, therefore the name is invalid.
       return 0;
     }
 
