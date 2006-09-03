@@ -417,6 +417,14 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     case GetSeconds:
     case GetMilliSeconds:
     case GetTimezoneOffset:
+    case SetTime:
+    case SetMilliSeconds:
+    case SetSeconds:
+    case SetMinutes:
+    case SetHours:
+    case SetDate:
+    case SetMonth:
+    case SetFullYear:
       return Number(NaN);
     }
   }
