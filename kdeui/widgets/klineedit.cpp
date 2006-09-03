@@ -187,7 +187,7 @@ void KLineEdit::setClearButtonShown(bool show)
     }
 }
 
-bool KLineEdit::clearButtonShown() const
+bool KLineEdit::isClearButtonShown() const
 {
     return d->clearButton != 0;
 }
