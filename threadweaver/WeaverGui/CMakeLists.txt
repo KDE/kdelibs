@@ -11,9 +11,9 @@ QT4_AUTOMOC(${ThreadWeaverGui_LIB_SRCS})
 add_library(ThreadWeaverGui SHARED ${ThreadWeaverGui_LIB_SRCS})
 target_link_libraries(ThreadWeaverGui ThreadWeaver ${QT_QTGUI_LIBRARY})
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION 0.6.0 SOVERSION 0)
-install(TARGETS ThreadWeaverGui DESTINATION lib)
+install(TARGETS ThreadWeaverGui DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES
     WeaverThreadGrid.h
-    DESTINATION include/threadweaver/
+    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
 )

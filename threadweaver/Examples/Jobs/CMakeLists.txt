@@ -18,4 +18,4 @@ add_executable(Jobs ${Jobs_SRCS})
 
 target_link_libraries(Jobs ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} ThreadWeaver ThreadWeaverGui)
 
-install(TARGETS Jobs DESTINATION bin )
+install(TARGETS Jobs DESTINATION ${BIN_INSTALL_DIR} )

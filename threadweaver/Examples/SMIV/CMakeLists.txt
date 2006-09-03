@@ -23,4 +23,4 @@ add_executable(SMIV ${SMIV_SRCS})
 
 target_link_libraries(SMIV ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} ThreadWeaver ThreadWeaverExperimental)
 
-install(TARGETS SMIV DESTINATION bin )
+install(TARGETS SMIV DESTINATION ${BIN_INSTALL_DIR} )

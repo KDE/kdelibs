@@ -11,4 +11,4 @@ add_executable(Construction ${Construction_SRCS})
 
 target_link_libraries(Construction ThreadWeaver)
 
-install(TARGETS Construction DESTINATION bin )
+install(TARGETS Construction DESTINATION ${BIN_INSTALL_DIR} )

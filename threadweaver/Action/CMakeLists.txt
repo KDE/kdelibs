@@ -14,13 +14,13 @@ QT4_AUTOMOC(${ThreadWeaverAction_LIB_SRCS})
 add_library(ThreadWeaverAction SHARED ${ThreadWeaverAction_LIB_SRCS})
 target_link_libraries(ThreadWeaverAction ThreadWeaver)
 set_target_properties(ThreadWeaverAction PROPERTIES VERSION 0.6.0 SOVERSION 0)
-install(TARGETS ThreadWeaverAction DESTINATION lib)
+install(TARGETS ThreadWeaverAction DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES
     Action.h
     ExecutePolicy.h
     JobsListPolicy.h
-    DESTINATION include/threadweaver/
+    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
 )
 
 

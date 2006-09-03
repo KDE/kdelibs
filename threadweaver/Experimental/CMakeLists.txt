@@ -12,9 +12,9 @@ QT4_AUTOMOC(${ThreadWeaverExperimental_LIB_SRCS})
 add_library(ThreadWeaverExperimental SHARED ${ThreadWeaverExperimental_LIB_SRCS})
 target_link_libraries(ThreadWeaverExperimental ThreadWeaver)
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION 0.6.0 SOVERSION 0)
-install(TARGETS ThreadWeaverExperimental DESTINATION lib)
+install(TARGETS ThreadWeaverExperimental DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES
     FileLoaderJob.h
-    DESTINATION include/threadweaver/
+    DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/
 )
