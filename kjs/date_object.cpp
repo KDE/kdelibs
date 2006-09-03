@@ -559,6 +559,14 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
       case GetSeconds:
       case GetMilliSeconds:
       case GetTimezoneOffset:
+      case SetTime:
+      case SetMilliSeconds:
+      case SetSeconds:
+      case SetMinutes:
+      case SetHours:
+      case SetDate:
+      case SetMonth:
+      case SetFullYear:
         return jsNaN();
     }
   }
