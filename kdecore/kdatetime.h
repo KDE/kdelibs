@@ -66,6 +66,7 @@ class KDateTimeSpecPrivate;
  *   computer it happens to be on. In this case, the equivalent UTC time will
  *   vary depending on system. As a result, calculations involving local clock
  *   times do not necessarily produce reliable results.
+ *
  * These characteristics are more fully described in the description of the
  * SpecType enumeration. Also see
  * <a href="http://www.w3.org/TR/timezone/">W3C: Working with Time Zones</a>
@@ -102,7 +103,10 @@ class KDateTimeSpecPrivate;
  *
  * The comparison operators (operator==(), operator<(), etc.) all take the time
  * zone properly into account; if the two KDateTime objects have different time
- * zones, they are first converted to UTC before the comparison is performed.
+ * zones, they are first converted to UTC before the comparison is
+ * performed. An alternative to the comparison operators is compare() which will
+ * in addition tell you if a KDateTime object overlaps with another when one or
+ * both are date-only values.
  *
  * KDateTime values may be converted to and from a string representation using
  * the toString() and fromString() methods. These handle a variety of text
@@ -204,7 +208,7 @@ class KDECORE_EXPORT KDateTime
          *
          * @param tz  time zone
          */
-        Spec(const KTimeZone *tz);
+        Spec(const KTimeZone *tz);   // allow implicit conversion
 
         /**
          * Constructs a time specification.
@@ -213,7 +217,7 @@ class KDECORE_EXPORT KDateTime
          * @param utcOffset number of seconds to add to UTC to get the local
          *                  time. Ignored if @p type is not @c OffsetFromUTC.
          */
-        Spec(SpecType type, int utcOffset = 0);
+        Spec(SpecType type, int utcOffset = 0);   // allow implicit conversion
 
         /**
          * Copy constructor.
@@ -488,7 +492,7 @@ class KDECORE_EXPORT KDateTime
      * @param date date in the time zone indicated by @p spec
      * @param spec time specification
      */
-    KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
+    explicit KDateTime(const QDate &date, const Spec &spec = Spec(LocalZone));
 
     /**
      * Constructs a date/time expressed as specified by @p spec.
@@ -547,7 +551,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param dt date and time
      */
-    KDateTime(const QDateTime &dt);
+    explicit KDateTime(const QDateTime &dt);
 
     KDateTime(const KDateTime &other);
     ~KDateTime();
@@ -798,6 +802,19 @@ class KDECORE_EXPORT KDateTime
     KDateTime toTimeSpec(const Spec &spec) const;
 
     /**
+     * Returns the time converted to the time specification of another instance.
+     * If this instance is a local clock time, it is first set to the local time
+     * zone, and then converted to the @p spec time specification.
+     * If this instance is a date-only value, a date-only value is returned,
+     * with the date unchanged.
+     *
+     * @param dt instance providing the new time specification
+     * @return converted time
+     * @see toLocalZone(), toUtc(), toOffsetFromUtc(), toZone(), compareTimeSpec(), KTimeZone::convert()
+     */
+    KDateTime toTimeSpec(const KDateTime &dt) const;
+
+    /**
      * Converts the time to a UTC time, measured in seconds since 00:00:00 UTC
      * 1st January 1970 (as returned by time(2)).
      *
@@ -813,7 +830,7 @@ class KDECORE_EXPORT KDateTime
      * @param seconds number of seconds since 00:00:00 UTC 1st January 1970
      * @see toTime_t()
      */
-    void setTime_t(uint seconds);
+    void setTime_t(qint64 seconds);
 
     /**
      * Sets the instance either to being a date and time value, or a date-only
@@ -1065,14 +1082,16 @@ class KDECORE_EXPORT KDateTime
      * expressed in the local system time zone.
      *
      * @return current date/time
+     * @see currentUtcDateTime()
      */
-    static KDateTime currentDateTime();
+    static KDateTime currentLocalDateTime();
 
     /**
      * Returns the current date and time, as reported by the system clock,
      * expressed in UTC.
      *
      * @return current date/time
+     * @see currentLocalDateTime()
      */
     static KDateTime currentUtcDateTime();
 

@@ -1706,7 +1706,7 @@ void KDateTimeTest::set()
     QDateTime qtt = utcd.dateTime();
     uint secs = qtt.toTime_t();
     KDateTime tt;
-    tt.setTime_t(secs);
+    tt.setTime_t(static_cast<qint64>(secs));
     QVERIFY(tt.isUtc());
     QCOMPARE(tt.dateTime(), utcd.dateTime());
     QCOMPARE(tt.toTime_t(), secs);
@@ -3302,7 +3302,7 @@ void KDateTimeTest::misc()
     ::setenv("TZ", ":America/Los_Angeles", 1);
     ::tzset();
 
-    KDateTime local = KDateTime::currentDateTime();
+    KDateTime local = KDateTime::currentLocalDateTime();
     KDateTime utc = KDateTime::currentUtcDateTime();
     QDateTime qcurrent = QDateTime::currentDateTime();
     // Because 3 calls to fetch the current time were made, they will differ slightly
