@@ -115,6 +115,7 @@
 #undef Status
 #include <Carbon/Carbon.h>
 #include <qimage.h>
+#include <QSystemTrayIcon>
 #endif
 
 #include <qevent.h>
@@ -648,28 +649,16 @@ void KApplication::init()
     d->checkAccelerators = new KCheckAccelerators( this );
   }
 
-#ifdef Q_WS_MACX
+#ifdef Q_WS_MAC
   if (type() == GuiClient) {
+      QSystemTrayIcon *trayIcon;
       QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
               K3Icon::NoGroup, K3Icon::SizeEnormous, K3Icon::DefaultState, 0L, false );
-      if (!pixmap.isNull()) {
-          QImage i = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
-          for(int y = 0; y < i.height(); y++) {
-              uchar *l = i.scanLine(y);
-              for(int x = 0; x < i.width(); x+=4)
-                  *(l+x) = 255;
-          }
-          CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
-          CGDataProviderRef dp = CGDataProviderCreateWithData(NULL,
-                  i.bits(), i.numBytes(), NULL);
-          CGImageRef ir = CGImageCreate(i.width(), i.height(), 8, 32, i.bytesPerLine(),
-                  cs, kCGImageAlphaNoneSkipFirst, dp,
-                  0, 0, kCGRenderingIntentDefault);
-          //cleanup
-          SetApplicationDockTileImage(ir);
-          CGImageRelease(ir);
-          CGColorSpaceRelease(cs);
-          CGDataProviderRelease(dp);
+      if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
+      {   
+          trayIcon = new QSystemTrayIcon(this);
+          trayIcon->setIcon(QIcon(pixmap));
+          trayIcon->show();
       }
   }
 #endif
