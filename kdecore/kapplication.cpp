@@ -114,7 +114,7 @@
 // ick
 #undef Status
 #include <Carbon/Carbon.h>
-#include <qimage.h>
+#include <QImage>
 #include <QSystemTrayIcon>
 #endif
 
@@ -658,7 +658,9 @@ void KApplication::init()
       {   
           trayIcon = new QSystemTrayIcon(this);
           trayIcon->setIcon(QIcon(pixmap));
-          trayIcon->show();
+          /* it's counter-intuitive, but once you do setIcon it's already set the
+             dock icon... ->show actually shows an icon in the menu bar too  :P */
+          // trayIcon->show();
       }
   }
 #endif
