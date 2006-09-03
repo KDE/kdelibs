@@ -140,7 +140,8 @@ const int KateIndentConfigTab::flags[] = {
     KateDocument::cfTabIndents,
     KateDocument::cfBackspaceIndents,
     KateDocumentConfig::cfDoxygenAutoTyping,
-    KateDocumentConfig::cfMixedIndent
+    KateDocumentConfig::cfMixedIndent,
+    KateDocumentConfig::cfIndentPastedText
 };
 
 KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
@@ -160,6 +161,7 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   m_configPage = new QPushButton(SmallIconSet("configure"), i18n("Configure..."), indentLayout);
 
   opt[5] = new QCheckBox(i18n("Insert leading Doxygen \"*\" when typing"), gbAuto);
+  opt[7] = new QCheckBox(i18n("Adjust indentation of code pasted from the clipboard"), gbAuto);
 
   QVGroupBox *gbSpaces = new QVGroupBox(i18n("Indentation with Spaces"), this);
   QVBox *spaceLayout = new QVBox(gbSpaces);
@@ -191,6 +193,7 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   opt[4]->setChecked(configFlags & flags[4]);
   opt[5]->setChecked(configFlags & flags[5]);
   opt[6]->setChecked(configFlags & flags[6]);
+  opt[7]->setChecked(configFlags & flags[7]);
 
   layout->addWidget(gbAuto);
   layout->addWidget(gbSpaces);
@@ -218,6 +221,9 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
         "style comment."));
   QWhatsThis::add( opt[6], i18n(
       "Use a mix of tab and space characters for indentation.") );
+  QWhatsThis::add( opt[7], i18n(
+      "If this option is selected, pasted code from the clipboard is indented. "
+      "Triggering the <b>undo</b>-action removes the indentation.") );
   QWhatsThis::add(indentationWidth, i18n("The number of spaces to indent with."));
 
   QWhatsThis::add(m_configPage, i18n(
@@ -242,6 +248,7 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
   connect( opt[4], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[5], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
   connect( opt[6], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
+  connect( opt[7], SIGNAL( toggled(bool) ), this, SLOT( slotChanged() ) );
 
   connect(indentationWidth, SIGNAL(valueChanged(int)), this, SLOT(slotChanged()));
 

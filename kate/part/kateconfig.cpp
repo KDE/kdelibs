@@ -168,7 +168,8 @@ void KateDocumentConfig::readConfig (KConfig *config)
     | KateDocumentConfig::cfKeepIndentProfile
     | KateDocumentConfig::cfWrapCursor
     | KateDocumentConfig::cfShowTabs
-    | KateDocumentConfig::cfSmartHome));
+    | KateDocumentConfig::cfSmartHome
+    | KateDocumentConfig::cfIndentPastedText));
 
   setEncoding (config->readEntry("Encoding", ""));
 

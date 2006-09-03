@@ -3176,7 +3176,8 @@ void KateDocument::paste ( KateView* view )
   if (view->blockSelectionMode())
     view->setCursorPositionInternal (line+lines, column);
 
-  if (m_indenter->canProcessLine())
+  if (m_indenter->canProcessLine()
+      && config()->configFlags() & KateDocumentConfig::cfIndentPastedText)
   {
     editStart();
 

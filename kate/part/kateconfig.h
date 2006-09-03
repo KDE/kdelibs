@@ -178,7 +178,8 @@ class KateDocumentConfig : public KateConfig
       cfReplaceTabsDyn=   0x2000000,
       cfRemoveTrailingDyn=0x4000000,
       cfDoxygenAutoTyping=0x8000000 ,    // Remove for KDE 4.0 (put in indenters)
-      cfMixedIndent = 0x10000000
+      cfMixedIndent = 0x10000000,
+      cfIndentPastedText = 0x20000000
     };
 
     uint configFlags () const;
