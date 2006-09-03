@@ -26,6 +26,7 @@
 #include "kdelibs_export.h"
 
 class QWidget;
+class KDateTime;
 class QDateTime;
 class QDate;
 class QTime;
@@ -266,6 +267,13 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream& operator << (const QWidget* widget);
+
+    /**
+     * Prints the given value.
+     * @param dateTime the datetime to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const KDateTime& dateTime );
 
     /**
      * Prints the given value.

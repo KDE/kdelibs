@@ -36,6 +36,7 @@
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstandarddirs.h"
+#include "kdatetime.h"
 
 #include <qmessagebox.h>
 #include <klocale.h>
@@ -44,7 +45,6 @@
 #include <qpixmap.h>
 
 #include <qstring.h>
-#include <qdatetime.h>
 #include <qpoint.h>
 #include <qrect.h>
 #include <qregion.h>
@@ -502,6 +502,15 @@ kdbgstream& kdbgstream::operator << (const QWidget* widget)
  *      a) use d->output and do the flush if needed
  *      b) or use the QString operator which calls the char* operator
  */
+kdbgstream& kdbgstream::operator<<( const KDateTime& time) {
+    if ( d->print ) {
+        if ( time.isDateOnly() )
+            d->output += time.toString(KDateTime::QtTextDate);
+        else
+            d->output += time.toString(KDateTime::ISODate);
+    }
+    return *this;
+}
 kdbgstream& kdbgstream::operator<<( const QDateTime& time) {
     if ( d->print )
         d->output += time.toString();

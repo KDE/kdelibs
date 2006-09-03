@@ -32,6 +32,7 @@ class QDate;
 class QTime;
 class QDateTime;
 
+class KDateTime;
 class KGlobal;
 class KConfigBase;
 class KCatalog;
@@ -435,7 +436,7 @@ public:
    * Returns a string formatted to the current locale's conventions
    * regarding dates.
    *
-   * @param pDate The date to be formated.
+   * @param pDate The date to be formatted.
    * @param shortFormat True for non text dates.
    *
    * @return The date as a string
@@ -454,7 +455,7 @@ public:
    * Returns a string formatted to the current locale's conventions
    * regarding times.
    *
-   * @param pTime The time to be formated.
+   * @param pTime The time to be formatted.
    * @param includeSecs if true, seconds are included in the output,
    *        otherwise only hours and minutes are formatted.
    * @param isDuration if true, the given time is a duration, not a clock time.
@@ -504,18 +505,34 @@ public:
   void setCalendar(const QString & calendarType);
 
   /**
-   * Returns a string formated to the current locale's conventions
+   * Returns a string formatted to the current locale's conventions
    * regarding both date and time.
    *
-   * @param pDateTime The date and time to be formated.
-   * @param shortFormat using the short date format.
-   * @param includeSecs using the short date format.
+   * @param pDateTime the date and time to be formatted
+   * @param shortFormat using the short date format
+   * @param includeSecs include the seconds value
    *
    * @return The date and time as a string
    */
   QString formatDateTime(const QDateTime &pDateTime,
 			 bool shortFormat = true,
 			 bool includeSecs = false) const;
+
+  /**
+   * Returns a string formatted to the current locale's conventions
+   * regarding both date and time.
+   *
+   * @param pDateTime the date and time to be formatted
+   * @param shortFormat using the short date format
+   * @param includeSecs include the seconds value
+   * @param includeTimeZone include a time zone string
+   *
+   * @return The date and time as a string
+   */
+  QString formatDateTime(const KDateTime &pDateTime,
+			 bool shortFormat = true,
+			 bool includeSecs = false,
+                         bool includeTimeZone = false) const;
 
   /**
    * Converts a localized monetary string to a double.

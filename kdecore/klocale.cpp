@@ -30,7 +30,6 @@
 #include <qtextcodec.h>
 #include <qfile.h>
 #include <qprinter.h>
-#include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
 
@@ -41,6 +40,7 @@
 #include "kinstance.h"
 #include "kconfig.h"
 #include "kdebug.h"
+#include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kcalendarsystemfactory.h"
 #include "klocalizedstring.h"
@@ -1727,6 +1727,38 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime,
   return i18nc( "concatenation of dates and time", "%1 %2",
                 formatDate( pDateTime.date(), shortFormat ),
                 formatTime( pDateTime.time(), includeSeconds ) );
+}
+
+QString KLocale::formatDateTime(const KDateTime &pDateTime,
+				bool shortFormat,
+				bool includeSeconds,
+                                bool includeTimeZone) const
+{
+  QString dt;
+  if (pDateTime.isDateOnly())
+    dt = formatDate( pDateTime.date(), shortFormat );
+  else
+    dt = formatDateTime( pDateTime, shortFormat, includeSeconds );
+  if (includeTimeZone)
+  {
+    QString tz;
+    switch (pDateTime.timeType())
+    {
+      case KDateTime::OffsetFromUTC:
+        tz = pDateTime.toString("%z");
+        break;
+      case KDateTime::UTC:
+      case KDateTime::TimeZone:
+        tz = pDateTime.toString(shortFormat ? "%Z" : "%:Z");
+        break;
+      case KDateTime::ClockTime:
+      default:
+        break;
+    }
+    return i18nc( "concatenation of date/time and time zone", "%1 %2", dt, tz );
+  }
+  else
+    return dt;
 }
 
 void KLocale::initInstance()
