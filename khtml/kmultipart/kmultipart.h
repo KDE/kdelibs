@@ -47,7 +47,7 @@ public:
     virtual bool openFile() { return false; }
     virtual bool openUrl( const KUrl &url );
 
-    virtual bool closeURL();
+    virtual bool closeUrl();
 
     static KAboutData* createAboutData();
 

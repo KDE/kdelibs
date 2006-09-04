@@ -1432,7 +1432,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     PartMonitor pm(m_part);
     m_part->openUrl(url);
     pm.waitForCompletion();
-    m_part->closeURL();
+    m_part->closeUrl();
 
     if ( filename.startsWith( "domts/" ) ) {
         QString functionname;

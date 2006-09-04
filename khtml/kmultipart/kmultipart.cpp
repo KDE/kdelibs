@@ -520,7 +520,7 @@ void KMultiPart::slotPartCompleted()
     }
 }
 
-bool KMultiPart::closeURL()
+bool KMultiPart::closeUrl()
 {
     m_timer->stop();
     if ( m_part )

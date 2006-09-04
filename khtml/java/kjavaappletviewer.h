@@ -98,7 +98,7 @@ public:
     bool appletAlive () const;
 public Q_SLOTS:
     virtual bool openUrl (const KUrl & url);
-    virtual bool closeURL ();
+    virtual bool closeUrl ();
     void appletLoaded ();
     void infoMessage (const QString &);
 protected:

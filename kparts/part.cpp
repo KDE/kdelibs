@@ -459,9 +459,9 @@ ReadWritePart::ReadWritePart( QObject *parent )
 ReadWritePart::~ReadWritePart()
 {
   // parent destructor will delete temp file
-  // we can't call our own closeURL() here, because
+  // we can't call our own closeUrl() here, because
   // "cancel" wouldn't cancel anything. We have to assume
-  // the app called closeURL() before destroying us.
+  // the app called closeUrl() before destroying us.
 }
 
 void ReadWritePart::setReadWrite( bool readwrite )

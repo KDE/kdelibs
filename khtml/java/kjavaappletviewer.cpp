@@ -422,8 +422,8 @@ bool KJavaAppletViewer::openUrl (const KUrl & url) {
     return url.isValid ();
 }
 
-bool KJavaAppletViewer::closeURL () {
-    kDebug(6100) << "closeURL" << endl;
+bool KJavaAppletViewer::closeUrl () {
+    kDebug(6100) << "closeUrl" << endl;
     m_closed = true;
     KJavaApplet* const applet = m_view->appletWidget ()->applet ();
     if (applet->isCreated ())
