@@ -15,6 +15,8 @@ set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
 #find_package(Qt4 REQUIRED)
 include (FindQt4)
 
+ENABLE_TESTING()
+
 add_subdirectory(Weaver)
 add_subdirectory(WeaverGui)
 add_subdirectory(Action)
