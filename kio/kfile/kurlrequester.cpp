@@ -153,7 +153,7 @@ public:
 
     KLineEdit *edit;
     KComboBox *combo;
-    int fileDialogMode;
+    KFile::Modes fileDialogMode;
     QString fileDialogFilter;
 };
 
@@ -295,7 +295,7 @@ void KUrlRequester::slotOpenDialog()
     emit urlSelected( d->url() );
 }
 
-void KUrlRequester::setMode(unsigned int mode)
+void KUrlRequester::setMode( KFile::Modes mode)
 {
     Q_ASSERT( (mode & KFile::Files) == 0 );
     d->fileDialogMode = mode;
@@ -306,7 +306,7 @@ void KUrlRequester::setMode(unsigned int mode)
        myFileDialog->setMode( d->fileDialogMode );
 }
 
-unsigned int KUrlRequester::mode() const
+KFile::Modes KUrlRequester::mode() const
 {
     return d->fileDialogMode;
 }

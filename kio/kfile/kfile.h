@@ -28,8 +28,9 @@
  * construct a KFile object itself.
  */
 
-class KIO_EXPORT KFile
+class KIO_EXPORT KFile : public QObject
 {
+    Q_OBJECT // for Q_FLAGS(KFile::Modes)
 public:
     /**
      * Modes of operation for the dialog.
@@ -47,6 +48,7 @@ public:
 	LocalOnly    = 16,
         ModeMax      = 65536
     };
+    Q_DECLARE_FLAGS(Modes, Mode)
 
     enum FileView {
 	Default         = 0,
@@ -121,6 +123,10 @@ public:
         return (view & PreviewInfo) == PreviewInfo;
     }
 
+private:
+    KFile(); // forbidden
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KFile::Modes)
 
 #endif // KFILE_H

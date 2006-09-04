@@ -270,12 +270,11 @@ class KIO_EXPORT KDirOperator : public QWidget
      * You cannot mix File and Files of course, as the former means
      * single-selection mode, the latter multi-selection.
      */
-	// ### KDE4: make virtual
-    void setMode( KFile::Mode m );
+    virtual void setMode( KFile::Modes m );
     /**
      * @returns the listing/selection mode.
      */
-    KFile::Mode mode() const;
+    KFile::Modes mode() const;
 
     /**
      * Sets a preview-widget to be shown next to the file-view.
@@ -850,7 +849,7 @@ private:
     int m_viewKind;
     int defaultView;
 
-    KFile::Mode myMode;
+    KFile::Modes myMode;
     QProgressBar *progress;
 
     const QWidget *myPreview;    // temporary pointer for the preview widget

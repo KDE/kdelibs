@@ -60,7 +60,8 @@ class KIO_EXPORT KUrlRequester : public KHBox
     Q_OBJECT
     Q_PROPERTY( KUrl url READ url WRITE setUrl USER true )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
-    Q_PROPERTY( uint mode READ mode WRITE setMode )
+    Q_FLAGS( KFile::Modes )
+    Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
 
 public:
     /**
@@ -98,13 +99,13 @@ public:
      * so KFile::Files doesn't make much sense.
      * @see KFileDialog::setMode()
      */
-    void setMode( uint m );
+    void setMode( KFile::Modes m );
 
     /**
     * Returns the current mode
     * @see KFileDialog::mode()
     */
-    uint mode() const;
+    KFile::Modes mode() const;
 
 
     /**

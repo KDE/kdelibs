@@ -185,6 +185,7 @@ set(kfile_STAT_SRCS
   kfile/kfilemetapreview.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kacleditwidget.cpp
+  kfile/kfile.cpp
 )
 
 # kio/kssl/Makefile.am: kssl

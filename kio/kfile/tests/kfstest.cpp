@@ -154,10 +154,10 @@ int main(int argc, char **argv)
                         QString::fromLatin1("*|All Files\n"
                                             "*.lo *.o *.la|All libtool Files"),0);
 //    dlg.setFilter( "*.kdevelop" );
-        dlg.setMode( (KFile::Mode) (KFile::Files |
-                                    KFile::Directory |
-                                    KFile::ExistingOnly |
-                                    KFile::LocalOnly) );
+        dlg.setMode( KFile::Files |
+                     KFile::Directory |
+                     KFile::ExistingOnly |
+                     KFile::LocalOnly );
 //        QStringList filter;
 //        filter << "text/plain" << "text/html" << "image/png";
 //        dlg.setMimeFilter( filter );

@@ -1613,7 +1613,7 @@ void KFileDialog::show()
     KDialog::show();
 }
 
-void KFileDialog::setMode( KFile::Mode m )
+void KFileDialog::setMode( KFile::Modes m )
 {
     ops->setMode(m);
     if ( ops->dirOnlyMode() ) {
@@ -1626,12 +1626,7 @@ void KFileDialog::setMode( KFile::Mode m )
     updateAutoSelectExtension ();
 }
 
-void KFileDialog::setMode( unsigned int m )
-{
-    setMode(static_cast<KFile::Mode>( m ));
-}
-
-KFile::Mode KFileDialog::mode() const
+KFile::Modes KFileDialog::mode() const
 {
     return ops->mode();
 }

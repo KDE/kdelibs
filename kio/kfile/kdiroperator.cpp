@@ -1068,12 +1068,12 @@ void KDirOperator::connectView(KFileView *view)
         view->listingCompleted();
 }
 
-KFile::Mode KDirOperator::mode() const
+KFile::Modes KDirOperator::mode() const
 {
     return myMode;
 }
 
-void KDirOperator::setMode(KFile::Mode m)
+void KDirOperator::setMode(KFile::Modes m)
 {
     if (myMode == m)
         return;

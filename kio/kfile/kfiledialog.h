@@ -591,11 +591,6 @@ public:
     virtual void show();
 
     /**
-     * Convenient overload of the other setMode(unsigned int) method.
-     */
-    void setMode( KFile::Mode m );
-
-    /**
      * Sets the mode of the dialog.
      *
      * The mode is defined as (in kfile.h):
@@ -610,19 +605,19 @@ public:
      * \endcode
      * You can OR the values, e.g.
      * \code
-     * KFile::Mode mode = static_cast<KFile::Mode>( KFile::Files |
-     *                                              KFile::ExistingOnly |
-     *                                              KFile::LocalOnly );
+     * KFile::Modes mode = KFile::Files |
+     *                     KFile::ExistingOnly |
+     *                     KFile::LocalOnly );
      * setMode( mode );
      * \endcode
      */
-    void setMode( unsigned int m );
+    void setMode( KFile::Modes m );
 
     /**
      * Returns the mode of the filedialog.
      * @see setMode()
      */
-    KFile::Mode mode() const;
+    KFile::Modes mode() const;
 
     /**
      * Sets the text to be displayed in front of the selection.
