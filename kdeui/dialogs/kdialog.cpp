@@ -320,7 +320,7 @@ void KDialog::setMainWidget( QWidget *widget )
 QWidget *KDialog::mainWidget()
 {
     if (!d->mMainWidget)
-        d->mMainWidget = new QWidget(this);
+        setMainWidget( new QWidget(this) );
     return d->mMainWidget;
 }
 
