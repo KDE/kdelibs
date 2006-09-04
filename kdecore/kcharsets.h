@@ -127,8 +127,17 @@ public:
      * Returns the language the encoding is used for.
      * @param encoding the encoding for the language
      * @return the language of the encoding
+     * @deprecated Please use descriptionForEncoding instead.
+     * This function will be removed before KDE4 is released. 
      */
-    QString languageForEncoding( const QString &encoding ) const;
+    KDE_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
+
+    /**
+     * @brief Returns a long description for an encoding name.
+     * @param encoding the encoding for the language
+     * @return the long description for the encoding
+     */ 
+    QString descriptionForEncoding( const QString& encoding ) const;
 
     /**
      * Returns the encoding for a string obtained with descriptiveEncodingNames().

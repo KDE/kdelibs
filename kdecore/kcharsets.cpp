@@ -361,6 +361,16 @@ QString KCharsets::languageForEncoding( const QString &encoding ) const
         return i18n( "Other encoding" );
 }
 
+QString KCharsets::descriptionForEncoding( const QString& encoding ) const
+{
+     const char* lang = kcharsets_array_search< LanguageForEncoding, const char* >
+        ( language_for_encoding, encoding.toUtf8());
+    if ( lang )
+        return i18nc( "Descriptive Encoding Name", "%1 ( %2 )", lang, encoding );
+    else
+        return i18n( "Other encoding (%1)", encoding );
+}
+
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
 {
     const int left = descriptiveName.lastIndexOf( '(' );
