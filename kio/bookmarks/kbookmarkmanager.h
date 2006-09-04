@@ -93,6 +93,7 @@ public:
      * @param update if true then KBookmarkManager will listen to DCOP update requests.
      */
     void setUpdate( bool update );
+    //TODO update??
 
     /**
      * Save the bookmarks to an XML file on disk.
@@ -102,6 +103,7 @@ public:
      * @return true if saving was successful
      */
     bool save( bool toolbarCache = true ) const;
+    //TODO protected
 
     /**
      * Save the bookmarks to the given XML file on disk.
@@ -147,7 +149,7 @@ public:
 
     /**
      * This returns the root of the toolbar menu.
-     * In the XML, this is the group with the attribute TOOLBAR=1
+     * In the XML, this is the group with the attribute toolbar=yes
      *
      * @return the toolbar group
      */
@@ -160,6 +162,7 @@ public:
      * @see KBookmark::address
      */
     KBookmark findByAddress( const QString & address, bool tolerate = false );
+    //TODO tolerate needed?
 
     /**
      * Saves the bookmark file and notifies everyone.
@@ -175,12 +178,14 @@ public:
      * @deprecated
      */
     bool showNSBookmarks() const;
+    //TODO KonqBookmarkManager?
 
     /**
      * Shows an extra menu for NS bookmarks. Set this to false, if you don't
      * want this.
      */
     void setShowNSBookmarks( bool show );
+    //TODO KonqBookmarkManager?
 
     /**
      * Set options with which slotEditBookmarks called keditbookmarks
@@ -234,10 +239,12 @@ public:
 
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
                                       const QString & _parentBookmarkAddress = QString() );
+    //TODO virtual, bool advanced
 
 public Q_SLOTS:
     void slotEditBookmarks();
     void slotEditBookmarksAtAddress( const QString& address );
+    //virtual?, default parameter?
 
     /**
      * Reparse the whole bookmarks file and notify about the change
@@ -272,7 +279,7 @@ protected:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;
     void importDesktopFiles();
-    static void convertToXBEL( QDomElement & group );
+    static void convertToXBEL( QDomElement & group ); //TODO used to convert pre KDE 2.1 bookmarks, remove?
     static void convertAttribute( QDomElement elem, const QString & oldName, const QString & newName );
 
 private:
@@ -308,7 +315,7 @@ private:
  * Rather, just use something like:
  *
  * <CODE>
- * bookmarks = new KBookmarkMenu(new KBookmarkOwner(), ...)
+ * bookmarks = new KBookmarkMenu( mgr, 0, menu, actioncollec  )
  * </CODE>
  *
  * If you wish to use your own editor or allow the user to add
@@ -318,11 +325,6 @@ class KIO_EXPORT KBookmarkOwner
 {
 public:
     virtual ~KBookmarkOwner() {}
-  /**
-   * This function is called if the user selects a bookmark.  It will
-   * open up the bookmark in a default fashion unless you override it.
-   */
-  virtual void openBookmarkUrl(const QString& _url);
 
   /**
    * This function is called whenever the user wants to add the
@@ -344,22 +346,30 @@ public:
    */
   virtual QString currentUrl() const { return QString(); }
 
-protected:
-  virtual void virtual_hook( int id, void* data );
-};
 
-class KIO_EXPORT KExtendedBookmarkOwner : public QObject, virtual public KBookmarkOwner
-{
-    Q_OBJECT
-public:
-    typedef QList<QPair<QString,QString> > QStringPairList;
-public Q_SLOTS:
-    void fillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list ) { emit signalFillBookmarksList( list ); };
-Q_SIGNALS:
-    void signalFillBookmarksList( KExtendedBookmarkOwner::QStringPairList & list );
+  /**
+   * This function returns wheter the owner supports tabs. 
+   */
+  virtual bool supportsTabs() const { return false; }
+
+  /**
+   * Returns a list of title, URL pairs of the open tabs. 
+   */
+  virtual QList<QPair<QString, QString> > currentBookmarkList() const { return QList<QPair<QString, QString> >(); }
+
+  /**
+   * Returns true if the bookmark menu/toolbar should show an "Add Bookmark" Entry
+   */
+  virtual bool addBookmarkEntry() const { return true; }
+
+  /**
+   * Returns true if the bookmark menu/toolbar should show an "Edit Bookmarks" Entry
+   */
+  virtual bool editBookmarkEntry() const { return true; }
+
 private:
-    class KExtendedBookmarkOwnerPrivate;
-    KExtendedBookmarkOwnerPrivate *d;
+  class KBookmarkOwnerPrivate;
+  KBookmarkOwnerPrivate *d;
 };
 
 #endif

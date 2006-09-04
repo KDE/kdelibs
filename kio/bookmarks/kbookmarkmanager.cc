@@ -24,7 +24,6 @@
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
 #include <kdebug.h>
-#include <krun.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <qregexp.h>
@@ -623,15 +622,6 @@ void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 }
 
 ///////
-
-void KBookmarkOwner::openBookmarkUrl( const QString& url )
-{
-  (void) new KRun(KUrl( url ),(QWidget*)0);
-}
-
-void KBookmarkOwner::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
     if (!s_bk_map) {

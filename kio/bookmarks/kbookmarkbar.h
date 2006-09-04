@@ -70,7 +70,7 @@ public:
 
 Q_SIGNALS:
     void aboutToShowContextMenu( const KBookmark &, QMenu * );
-    void openBookmark( const QString& url, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
+    void openBookmark( KBookmark bk, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 public Q_SLOTS:
     void clear();

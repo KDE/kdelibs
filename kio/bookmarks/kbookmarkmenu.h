@@ -77,8 +77,8 @@ namespace KIO { class Job; }
  */
 class KIO_EXPORT KBookmarkMenu : public QObject
 {
+  friend class KBookmarkBar;
   Q_OBJECT
-  friend class KBookmarkMenuNSImporter;
 public:
   /**
    * Fills a bookmark menu
@@ -87,31 +87,14 @@ public:
    *
    * @param mgr The bookmark manager to use (i.e. for reading and writing)
    * @param owner implementation of the KBookmarkOwner callback interface.
+   * Note: If you pass a null KBookmarkOwner to the constructor, the
+   * openBookmark signal is not emitted, instead KRun is used to open the bookmark.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions.
-   *  Only used for other menus than the toplevel one.
-   * @param root true for the toplevel menu
-   * @param add true to show the "Add Bookmark" and "New Folder" entries
-   * @param parentAddress the address of the group containing the items
-   *  that we want to show.
-   * @see KBookmark::address.
-   * Be careful :
-   * A _null_ parentAddress denotes a NS-bookmark menu.
-   * An _empty_ parentAddress denotes the toplevel bookmark menu
    */
-  KBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu,
-                 KActionCollection * collec, bool root, bool add = true,
-                 const QString & parentAddress = "" );
+  KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, KMenu * parentMenu, KActionCollection *collec);
 
   ~KBookmarkMenu();
-
-  /**
-   * Even if you think you need to use this, you are probably wrong.
-   * It fills a bookmark menu starting a given KBookmark.
-   * This is public for KBookmarkBar.
-   */
-  void fillBookmarkMenu();
 
   /**
    * Call ensureUpToDate() if you need KBookmarkMenu to adjust to its
@@ -123,7 +106,7 @@ public:
    * Structure used for storing information about
    * the dynamic menu setting
    */
-  // TODO - transform into class
+  // TODO - transform into class, move to KonqBookmarkMenu
   struct DynMenuInfo {
      bool show;
      QString location;
@@ -136,6 +119,7 @@ public:
    * @return dynmenu info block for the given dynmenu name
    */
   static DynMenuInfo showDynamicBookmarks( const QString &id );
+  //TODO move to KonqBookmarkMenu
 
   /**
    * Shows an extra menu for the given bookmarks file and type.
@@ -145,20 +129,25 @@ public:
    * @param info a DynMenuInfo struct containing the to be added/modified data
    */
   static void setDynamicBookmarks( const QString &id, const DynMenuInfo &info );
+  //TODO move to KonqBookmarkMenu
 
   /**
    * @return list of dynamic menu ids
    */
   static QStringList dynamicBookmarksList();
+  //TODO move to KonqBookmarkMenu
 
 Q_SIGNALS:
   void aboutToShowContextMenu( const KBookmark &, QMenu * );
-  void openBookmark( const QString& url, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
-
-public Q_SLOTS: // public for bookmark bar
-  void slotBookmarksChanged( const QString & );
+  /**
+   * Emitted if a bookmark was selected
+   * Note: If you passed a null KBookmarkOwner to the constructor, this signal
+   * is not emitted, instead KRun is used to open the bookmark.
+  **/
+  void openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers );
 
 protected Q_SLOTS:
+  void slotBookmarksChanged( const QString & );
   void slotAboutToShow();
   void contextMenu( const QPoint & );
 
@@ -168,7 +157,13 @@ protected Q_SLOTS:
   void slotNewFolder();
 
 protected:
-  KExtendedBookmarkOwner* extOwner();
+  /**
+   * Creates a bookmark submenu
+   */
+  KBookmarkMenu( KBookmarkManager* mgr,
+                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 KActionCollection * collec, const QString & parentAddress);
+  void fillBookmarkMenu();
   void refill();
   void addAddBookmark();
   void addAddBookmarksList();
@@ -178,10 +173,7 @@ protected:
   void showContextMenu( const QString &, const QPoint & pos);
 
   bool m_bIsRoot:1;
-  bool m_bAddBookmark:1;
   bool m_bDirty:1;
-  bool m_bNSBookmark:1;
-  bool m_bAddShortcuts:1;
 
   KBookmarkManager * m_pManager;
   KBookmarkOwner *m_pOwner;
@@ -212,13 +204,16 @@ private:
 
 class KImportedBookmarkMenu : public KBookmarkMenu
 {
+  friend class KBookmarkMenuNSImporter;
   Q_OBJECT
 public:
   //TODO simplfy
   KImportedBookmarkMenu( KBookmarkManager* mgr,
                  KBookmarkOwner * owner, KMenu * parentMenu,
-                 KActionCollection * collec, bool root, bool add,
-                 const QString & parentAddress, const QString & type, const QString & location );
+                 KActionCollection * collec, const QString & type, const QString & location );
+  KImportedBookmarkMenu( KBookmarkManager* mgr,
+                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 KActionCollection * collec);
   ~KImportedBookmarkMenu();
 protected Q_SLOTS:
   void slotNSLoad();
@@ -234,7 +229,7 @@ class KIO_EXPORT KBookmarkMenuNSImporter : public QObject
 {
   Q_OBJECT
 public:
-  KBookmarkMenuNSImporter( KBookmarkManager* mgr, KBookmarkMenu * menu, KActionCollection * act ) :
+  KBookmarkMenuNSImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu, KActionCollection * act ) :
      m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
 
   void openNSBookmarks();
@@ -248,8 +243,8 @@ protected Q_SLOTS:
   void endFolder();
 
 protected:
-  QStack<KBookmarkMenu*> mstack;
-  KBookmarkMenu * m_menu;
+  QStack<KImportedBookmarkMenu*> mstack;
+  KImportedBookmarkMenu * m_menu;
   KActionCollection * m_actionCollection;
   KBookmarkManager* m_pManager;
 };

@@ -25,7 +25,9 @@
 class QTextStream;
 class KMenu;
 
-
+/**
+ * Note: Ported to new KBookmarkMenu, but untested
+ */
 class KIO_EXPORT KFileBookmarkHandler : public QObject, public KBookmarkOwner
 {
     Q_OBJECT
@@ -37,10 +39,12 @@ public:
     QMenu * popupMenu();
 
     // KBookmarkOwner interface:
-    virtual void openBookmarkUrl( const QString& url ) { emit openUrl( url ); }
     virtual QString currentUrl() const;
 
     KMenu *menu() const { return m_menu; }
+
+public Q_SLOTS:
+    void openBookmark(KBookmark bm, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
 
 Q_SIGNALS:
     void openUrl( const QString& url );
@@ -52,8 +56,6 @@ private:
     KMenu *m_menu;
     KBookmarkMenu *m_bookmarkMenu;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KFileBookmarkHandlerPrivate;
     KFileBookmarkHandlerPrivate *d;

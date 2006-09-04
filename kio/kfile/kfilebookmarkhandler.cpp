@@ -53,12 +53,19 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
     manager->setShowNSBookmarks( false );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu,
-                                        dialog->actionCollection(), true );
+                                        dialog->actionCollection() );
+    connect( m_bookmarkMenu, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers ) ),
+             this, SLOT( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers)) );
 }
 
 KFileBookmarkHandler::~KFileBookmarkHandler()
 {
     delete m_bookmarkMenu;
+}
+
+void KFileBookmarkHandler::openBookmark( KBookmark bm, Qt::MouseButtons, Qt::KeyboardModifiers)
+{
+  emit openUrl( bm.url() );
 }
 
 QString KFileBookmarkHandler::currentUrl() const
@@ -76,8 +83,5 @@ void KFileBookmarkHandler::importOldBookmarks( const QString& path,
     delete builder;
     manager->save();
 }
-
-void KFileBookmarkHandler::virtual_hook( int id, void* data )
-{ KBookmarkOwner::virtual_hook( id, data ); }
 
 #include "kfilebookmarkhandler.moc"

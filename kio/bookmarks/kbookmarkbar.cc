@@ -212,17 +212,12 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             action->setProperty( "readOnly", d->m_readOnly );
             action->setDelayed( false );
 
-            // this flag doesn't have any UI yet
-            KGlobal::config()->setGroup( "Settings" );
-            bool addEntriesBookmarkBar = KGlobal::config()->readEntry("AddEntriesBookmarkBar", true);
-
             KBookmarkMenu *menu = new KBookmarkMenu(CURRENT_MANAGER(), m_pOwner, action->menu(),
-                                                    m_actionCollection, false, addEntriesBookmarkBar,
-                                                    bm.address());
+                                                    m_actionCollection, bm.address());
             connect(menu, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ),
                     this, SIGNAL( aboutToShowContextMenu(const KBookmark &, QMenu * ) ));
-            connect(menu, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers) ),
-                    this, SIGNAL( openBookmark( const QString &, Qt::MouseButtons, Qt::KeyboardModifiers) ));
+            connect(menu, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers) ),
+                    this, SIGNAL( openBookmark( KBookmark, Qt::MouseButtons, Qt::KeyboardModifiers) ));
             menu->fillBookmarkMenu();
             m_toolBar->addAction(action);
             m_lstSubMenus.append( menu );
@@ -248,9 +243,9 @@ void KBookmarkBar::slotBookmarkSelected()
 
     if (const KAction* action = qobject_cast<const KAction*>(sender()))
     {
-        const QString & url = action->property("url").toString();
-        m_pOwner->openBookmarkUrl(url);
-        emit openBookmark( url, QApplication::mouseButtons(), QApplication::keyboardModifiers() );
+        const QString & address = action->property("address").toString();
+        KBookmark bm = m_pManager->findByAddress(address); 
+        emit openBookmark( bm, QApplication::mouseButtons(), QApplication::keyboardModifiers() );
     }
 }
 
