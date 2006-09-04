@@ -561,8 +561,8 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 	for( QList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
 		 it != allChoosers->end();
 		 ++it ) {
-		has_global_chooser |= ((*it)->d->type & GlobalAction);
-		has_standard_chooser |= ((*it)->d->type & WidgetAction);
+		has_global_chooser |= (((*it)->d->type & GlobalAction) == GlobalAction);
+		has_standard_chooser |= (((*it)->d->type & WidgetAction) == WidgetAction);
 	}
 
 	// If editing global shortcuts, check them for conflicts with the stdaccels.
