@@ -195,27 +195,21 @@ public:
 
   /**
    * Usual constructor, to construct from a string.
-   * @param url A encoded URL.
-   *             If you have an absolute path you should use
-   *             KUrl::fromPath().
+   * @param url A encoded URL or a path.
    */
   KUrl( const QString& url );
   /**
    * Constructor taking a char * @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL.
-   *             If you have an absolute path you should use
-   *             KUrl::fromPath().
+   * @param url A encoded URL, or a path.
    */
   explicit KUrl( const char * url );
   /**
    * Constructor taking a QByteArray @p url, which is an _encoded_ representation
    * of the URL, exactly like the usual constructor. This is useful when
    * then URL, in its encoded form, is strictly ascii.
-   * @param url A encoded URL.
-   *             If you have an absolute path you should use
-   *             KUrl::fromPath().
+   * @param url A encoded URL, or a path.
    */
   explicit KUrl( const QByteArray& url );
 
@@ -977,6 +971,8 @@ public:
 
 private:
   void _setQuery( const QString& query );
+  QString toString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
+  operator QString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
 private:
   KUrlPrivate* d;
 };
