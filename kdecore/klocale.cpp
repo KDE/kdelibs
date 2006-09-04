@@ -1745,11 +1745,11 @@ QString KLocale::formatDateTime(const KDateTime &pDateTime,
     switch (pDateTime.timeType())
     {
       case KDateTime::OffsetFromUTC:
-        tz = pDateTime.toString("%z");
+        tz = i18n(pDateTime.toString("%z").toUtf8());
         break;
       case KDateTime::UTC:
       case KDateTime::TimeZone:
-        tz = pDateTime.toString(shortFormat ? "%Z" : "%:Z");
+        tz = i18n(pDateTime.toString(shortFormat ? "%Z" : "%:Z").toUtf8());
         break;
       case KDateTime::ClockTime:
       default:
