@@ -345,7 +345,7 @@ QStringList KCharsets::availableEncodingNames() const
     QStringList available;
     for ( const LanguageForEncoding* pos = language_for_encoding; pos->index; ++pos ) {
         //kDebug(0) << *charsets << " available" << endl;
-        available.append( QString::fromLatin1( pos->index ) );
+        available.append( QString::fromUtf8( pos->index ) );
     }
     available.sort();
     return available;
@@ -382,7 +382,7 @@ QStringList KCharsets::descriptiveEncodingNames() const
 {
     QStringList encodings;
     for ( const LanguageForEncoding* pos = language_for_encoding; pos->index; ++pos ) {
-        const QString name = QString::fromLatin1( pos->index );
+        const QString name = QString::fromUtf8( pos->index );
         const QString description = i18n( pos->data );
         encodings.append( i18nc("Descriptive Encoding Name", "%1 ( %2 )",    description ,   name ) );
     }
