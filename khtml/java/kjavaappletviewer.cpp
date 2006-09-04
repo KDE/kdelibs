@@ -388,7 +388,7 @@ KJavaAppletViewer::~KJavaAppletViewer () {
     }
 }
 
-bool KJavaAppletViewer::openURL (const KUrl & url) {
+bool KJavaAppletViewer::openUrl (const KUrl & url) {
     if (!m_view) return false;
     m_closed = false;
     KJavaAppletWidget* const w = m_view->appletWidget ();

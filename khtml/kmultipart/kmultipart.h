@@ -45,7 +45,7 @@ public:
     virtual ~KMultiPart();
 
     virtual bool openFile() { return false; }
-    virtual bool openURL( const KUrl &url );
+    virtual bool openUrl( const KUrl &url );
 
     virtual bool closeURL();
 

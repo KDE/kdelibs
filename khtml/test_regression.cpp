@@ -490,7 +490,7 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
             url.setProtocol("file");
             url.setPath(fullFilename);
             PartMonitor pm(m_part);
-            m_part->openURL(url);
+            m_part->openUrl(url);
             pm.waitForCompletion();
 	    kapp->processEvents(QEventLoop::AllEvents, 60000);
             break;
@@ -746,7 +746,7 @@ int main(int argc, char *argv[])
                                                         args->isSet("genoutput"),
                                                         !args->isSet( "html" ),
                                                         !args->isSet( "js" ));
-    QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KUrl &, const KParts::URLArgs &)),
+    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(const KUrl &, const KParts::URLArgs &)),
 		     regressionTest, SLOT(slotOpenURL(const KUrl&, const KParts::URLArgs &)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
@@ -1430,7 +1430,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     url.setProtocol("file");
     url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absoluteFilePath());
     PartMonitor pm(m_part);
-    m_part->openURL(url);
+    m_part->openUrl(url);
     pm.waitForCompletion();
     m_part->closeURL();
 
@@ -1781,7 +1781,7 @@ void RegressionTest::slotOpenURL(const KUrl &url, const KParts::URLArgs &args)
     m_part->browserExtension()->setURLArgs( args );
 
     PartMonitor pm(m_part);
-    m_part->openURL(url);
+    m_part->openUrl(url);
     pm.waitForCompletion();
 }
 

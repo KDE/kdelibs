@@ -123,16 +123,16 @@ void KDirListerTest::test()
 {
   KUrl home( getenv( "HOME" ) );
   KUrl root( "file:/" );
-/*  lister->openURL( home, true, false );
-  lister->openURL( root, true, true );
-  lister->openURL( KUrl("file:/etc"), true, true );
-  lister->openURL( root, true, true );
-  lister->openURL( KUrl("file:/dev"), true, true );
-  lister->openURL( KUrl("file:/tmp"), true, true );
-  lister->openURL( KUrl("file:/usr/include"), true, true );
+/*  lister->openUrl( home, true, false );
+  lister->openUrl( root, true, true );
+  lister->openUrl( KUrl("file:/etc"), true, true );
+  lister->openUrl( root, true, true );
+  lister->openUrl( KUrl("file:/dev"), true, true );
+  lister->openUrl( KUrl("file:/tmp"), true, true );
+  lister->openUrl( KUrl("file:/usr/include"), true, true );
   lister->updateDirectory( KUrl("file:/usr/include") );
   lister->updateDirectory( KUrl("file:/usr/include") );
-  lister->openURL( KUrl("file:/usr/"), true, true );
+  lister->openUrl( KUrl("file:/usr/"), true, true );
 */
   lister->openUrl( KUrl("file:/dev"), true, true );
 }

@@ -85,7 +85,7 @@ it is embedded (with or without GUI items). Hmmm..
 	OTOH that shell makes these views "interact", makes them switch. So if
 	someone wants to embed a browse-all-stuff widget, then embedding Konqueror
 	would probably be cool, as the mainview handles all the stuff like determining
-	the correct mimetype, loading the view, receiving and sending openURL requests, etc.
+	the correct mimetype, loading the view, receiving and sending openUrl requests, etc.
 	Something like a shoot-and-forget for embedding ;-) (embed-and-forget ;)
 	Loading and saving in that case would mean save/load the view profile.
 
@@ -126,9 +126,9 @@ Proposed changes :
 (David) Ah right (I think support for redirection is missing from konqueror on
 the whole, at other places).
 
-- openURLRequest and createNewWindow remain.
+- openUrlRequest and createNewWindow remain.
 
-(Simon) <sidenote> We will want to add a serviceType argument to openURLRequest.
+(Simon) <sidenote> We will want to add a serviceType argument to openUrlRequest.
 	At least we need it to get rid of these changeViewMode() hacks in
 	konq_htmlview/konq_iconview :P
 (David) ok
@@ -154,11 +154,11 @@ it doesn't make it more complex (kedit can simply not care about the loading
 progress, the popupMenu signal, ...)
 In fact the loading progress should even be emitted by KReadOnlyPart
 itself (it handles the kiojob), for the simple cases. Of course
-konqueror views will reimplement openURL and send the signals themselves.
+konqueror views will reimplement openUrl and send the signals themselves.
 The main problem I see is that BrowserView is asynchronous
 and KReadOnlyPart is .. a bit of both (asynchronous for remote URLs,
 synchronous in openFile()). But for konqy, openFile() means nothing
-and never gets called (because openURL is reimplemented).
+and never gets called (because openUrl is reimplemented).
 For the history stuff, we can provide the default implementation
 in KReadOnlyPart (just like we did in BrowserView).
 About the "offset stuff" - well it even makes sense in kedit

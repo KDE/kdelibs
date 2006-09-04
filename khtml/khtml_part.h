@@ -123,7 +123,7 @@ namespace KWallet
  * \code
  * KUrl url = "http://www.kde.org";
  * KHTMLPart *w = new KHTMLPart();
- * w->openURL(url);
+ * w->openUrl(url);
  * w->view()->resize(500, 400);
  * w->show();
  * \endcode
@@ -260,7 +260,7 @@ public:
   /**
    * Opens the specified URL @p url.
    *
-   * Reimplemented from KParts::ReadOnlyPart::openURL .
+   * Reimplemented from KParts::ReadOnlyPart::openUrl .
    */
   virtual bool openUrl( const KUrl &url );
 
@@ -332,7 +332,7 @@ public:
    * One thing people using this method to add things to the interpreter must
    * consider, is that when you start writing new content to the part, the
    * interpreter is cleared. This includes both use of the
-   * begin( const KUrl &, int, int ) method, and the openURL( const KUrl & )
+   * begin( const KUrl &, int, int ) method, and the openUrl( const KUrl & )
    * method. If you want your objects to have a longer lifespan, then you must
    * retain a KJS::Object yourself to ensure that the reference count of your
    * custom objects never reaches 0. You will also need to re-add your

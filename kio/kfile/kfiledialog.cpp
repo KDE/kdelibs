@@ -2193,7 +2193,7 @@ void KFileDialog::toggleBookmarks(bool show)
         }
 
         d->bookmarkHandler = new KFileBookmarkHandler( this );
-        connect( d->bookmarkHandler, SIGNAL( openURL( const QString& )),
+        connect( d->bookmarkHandler, SIGNAL( openUrl( const QString& )),
                     SLOT( enterUrl( const QString& )));
 
         d->bookmarkButton = new KActionMenu(i18n("Bookmarks"), actionCollection(), "bookmark");

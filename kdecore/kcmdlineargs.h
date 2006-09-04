@@ -125,7 +125,7 @@ class KAboutData;
  *        // don't forget to convert to Unicode!
  *        openFile( QFile::decodeName( args->arg(i)));
  *        // Or more convenient:
- *        // openURL( args->url(i));
+ *        // openUrl( args->url(i));
  *
  *     }
  *

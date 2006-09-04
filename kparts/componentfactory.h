@@ -144,7 +144,7 @@ namespace KParts
          * QString mimetype = KMimeType::findByURL( url )->name();
          * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, parentObject );
          * if ( part ) {
-         *     part->openURL( url );
+         *     part->openUrl( url );
          *     part->widget()->show();  // also insert the widget into a layout, or simply use a KVBox as parentWidget
          * }
          * \endcode

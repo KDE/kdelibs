@@ -172,7 +172,7 @@ bool KHTMLImage::closeUrl()
     return m_khtml->closeUrl();
 }
 
-// This can happen after openURL returns, or directly from m_image->ref()
+// This can happen after openUrl returns, or directly from m_image->ref()
 void KHTMLImage::notifyFinished( khtml::CachedObject *o )
 {
     if ( !m_image || o != m_image )

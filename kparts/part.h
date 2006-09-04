@@ -348,7 +348,7 @@ class BrowserExtension;
  * KParts Application can use the signals to show feedback while the URL is being loaded.
  *
  * ReadOnlyPart handles the window caption by setting it to the current URL
- * (set in openURL(), and each time the part is activated).
+ * (set in openUrl(), and each time the part is activated).
  * If you want another caption, set it in openFile() and
  * (if the part might ever be used with a part manager) in guiActivateEvent()
  */

@@ -108,7 +108,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
 
     m_extension = new KParts::BrowserExtension( this );
 
-    // We probably need to use m_extension to get the urlArgs in openURL...
+    // We probably need to use m_extension to get the urlArgs in openUrl...
 
     m_part = 0L;
     m_isHTMLPart = false;
@@ -153,7 +153,7 @@ void KMultiPart::startHeader()
 }
 
 
-bool KMultiPart::openURL( const KUrl &url )
+bool KMultiPart::openUrl( const KUrl &url )
 {
     m_url = url;
     m_lineParser->reset();
@@ -341,8 +341,8 @@ void KMultiPart::setPart( const QString& mimeType )
         connect( childExtension, SIGNAL( openURLNotify() ),
                  m_extension, SIGNAL( openURLNotify() ) );
 
-        connect( childExtension, SIGNAL( openURLRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
-                 m_extension, SIGNAL( openURLRequest( const KUrl &, const KParts::URLArgs & ) ) );
+        connect( childExtension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
+                 m_extension, SIGNAL( openUrlRequest( const KUrl &, const KParts::URLArgs & ) ) );
 
         connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ),
                  m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ) );
