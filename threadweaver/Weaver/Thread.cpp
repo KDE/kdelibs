@@ -79,7 +79,6 @@ void ThreadWeaver::ThreadRunHelper::run ( WeaverImpl *parent, Thread* th )
             emit ( jobStarted ( th,  m_job ) );
             m_job->execute (th);
             emit ( jobDone ( m_job ) );
-            m_job = 0;
         }
     }
 }
