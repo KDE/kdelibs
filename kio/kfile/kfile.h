@@ -28,9 +28,10 @@
  * construct a KFile object itself.
  */
 
-class KIO_EXPORT KFile : public QObject
+class KIO_EXPORT KFile
 {
-    Q_OBJECT // for Q_FLAGS(KFile::Modes)
+    Q_GADGET
+    Q_FLAGS(KFile::Modes)
 public:
     /**
      * Modes of operation for the dialog.
