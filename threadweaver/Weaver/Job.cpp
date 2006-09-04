@@ -43,6 +43,12 @@ public:
         , finished (false)
     {}
 
+    ~Private()
+    {
+        delete queuePolicies;
+        delete mutex;
+    }
+
     /* The thread that executes this job. Zero when the job is not executed. */
     Thread * thread;
 
