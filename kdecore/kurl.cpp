@@ -47,6 +47,8 @@
 #include <qmimedata.h>
 #include <qtextcodec.h>
 
+Q_DECLARE_METATYPE(KUrl);
+
 static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool decodeDots )
 {
   if (_path.isEmpty()) return QString();
