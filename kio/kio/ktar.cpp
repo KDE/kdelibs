@@ -801,7 +801,7 @@ bool KTar::prepareWriting_impl(const QString &name, const QString &user,
 
     QCString permstr;
     permstr.sprintf("%o",perm);
-    permstr.rightJustify(6, ' ');
+    permstr = permstr.rightJustify(6, ' ');
     fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
     // Write header
@@ -860,7 +860,7 @@ bool KTar::writeDir_impl(const QString &name, const QString &user,
 
     QCString permstr;
     permstr.sprintf("%o",perm);
-    permstr.rightJustify(6, ' ');
+    permstr = permstr.rightJustify(6, ' ');
     fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
     // Write header
@@ -924,7 +924,7 @@ bool KTar::writeSymLink_impl(const QString &name, const QString &target,
 
     QCString permstr;
     permstr.sprintf("%o",perm);
-    permstr.rightJustify(6, ' ');
+    permstr = permstr.rightJustify(6, ' ');
     fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
     // Write header
