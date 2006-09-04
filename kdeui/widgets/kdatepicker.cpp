@@ -358,10 +358,8 @@ KDatePicker::selectMonthClicked()
 
   int day = calendar->day(date);
   // ----- construct a valid date in this month:
-  //date.setYMD(date.year(), month, 1);
-  //date.setYMD(date.year(), month, qMin(day, date.daysInMonth()));
-  calendar->setYMD(date, calendar->year(date), item->data().toInt(),
-                   qMin(day, calendar->daysInMonth(date)));
+  calendar->setYMD(date, calendar->year(date), item->data().toInt(), 1);
+  date = date.addDays(qMin(day, calendar->daysInMonth(date)) - 1);
   // ----- set this month
   setDate(date);
 }
