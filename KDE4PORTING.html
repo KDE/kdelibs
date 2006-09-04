@@ -194,7 +194,11 @@ by QX11Info::display()</li>
 (Note: this feature was new in KDE 3.5 but never publicly announced.)</li>
 <li>The user-visible encoding names are now mostly upper-case
 (instead of being always lower-case).</li>
-<li><b>TODO</b>: see which member functions can be removed</li>
+<li>KCharsets::languageForEncoding should be replaced 
+by KCharsets::descriptionForEncoding. The function KCharsets::languageForEncoding is planned to be removed before the release of KDE4.</li>
+<li>The status of the encoding UTF-7 is not guaranteed to be kept, as Qt
+does not support this encoding.</li>
+<li><b>TODO</b>: see which member functions can be removed. The functions handling entites are planned to be moved out of the class KCharsets.</li>
 </ul>
 
 <h4>KCodecs</h4>
