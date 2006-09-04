@@ -69,7 +69,9 @@ void ThreadWeaver::ThreadRunHelper::run ( WeaverImpl *parent, Thread* th )
         debug ( 3, "Thread::run [%u]: trying to execute the next job.\n", th->id() );
 
         // this is the *only* assignment to m_job  in the Thread class!
-        Job* job = parent->applyForWork ( th, m_job );
+        Job* tmp = m_job; m_job = 0;
+
+        Job* job = parent->applyForWork ( th, tmp );
 
         if (job == 0)
         {
