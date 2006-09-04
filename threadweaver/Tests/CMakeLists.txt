@@ -7,14 +7,14 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_S
 
 ########### next target ###############
 
-set(AppendCharacterJob_SRCS JobTests.cpp AppendCharacterJob.cpp)
+set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
 
-QT4_AUTOMOC(${AppendCharacterJob_SRCS})
+QT4_AUTOMOC(${JobTests_SRCS})
 
-add_executable(AppendCharacterJob ${AppendCharacterJob_SRCS})
-ADD_TEST(AppendCharacterJob AppendCharacterJob)
+add_executable(JobTests ${JobTests_SRCS})
+ADD_TEST(JobTests JobTests)
 
-target_link_libraries(AppendCharacterJob ${QT_QTTEST_LIBRARY} ThreadWeaver)
+target_link_libraries(JobTests ${QT_QTTEST_LIBRARY} ThreadWeaver)
 
 ########### next target ###############
 
