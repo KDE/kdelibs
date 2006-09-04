@@ -161,10 +161,10 @@ void WeaverImpl::registerObserver ( WeaverObserver *ext )
 void WeaverImpl::enqueue(Job* job)
 {
     adjustInventory ( 1 );
-    debug ( 3, "WeaverImpl::enqueue: queueing job %p of type %s.\n",
-            job, job->metaObject()->className() );
     if (job)
     {
+        debug ( 3, "WeaverImpl::enqueue: queueing job %p of type %s.\n",
+                job, job->metaObject()->className() );
         QMutexLocker l (m_mutex);
         job->aboutToBeQueued ( this );
         // find positiEon for insertion:;
