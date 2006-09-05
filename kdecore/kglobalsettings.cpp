@@ -339,10 +339,16 @@ QFont KGlobalSettings::fixedFont()
     if (_fixedFont)
         return *_fixedFont;
 
+#ifdef Q_WS_MAC
+    _fixedFont = new QFont("Monaco", 10);
+    _fixedFont->setPointSize(10);
+    _fixedFont->setStyleHint(QFont::TypeWriter);
+#else
     // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _fixedFont = new QFont("Monospace", 10);
     _fixedFont->setPointSize(10);
     _fixedFont->setStyleHint(QFont::TypeWriter);
+#endif
 
     KConfigGroup g( KGlobal::config(), "General" );
     *_fixedFont = g.readEntry("fixed", *_fixedFont);
