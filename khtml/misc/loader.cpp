@@ -527,6 +527,13 @@ void CachedImage::deref( CachedObjectClient *c )
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 {
     static QRgb bgTransparent = qRgba( 0, 0, 0, 0xFF );
+
+    QSize s(pixmap_size());
+    int w = xWidth;
+    int h = xHeight;
+    if (w == -1) xWidth = w = s.width();
+    if (h == -1) xHeight = h = s.height();
+
     if ( ( (bgColor != bgTransparent) && (bgColor != newc.rgb()) ) ||
          ( bgSize != QSize(xWidth, xHeight)) )
     {
@@ -544,22 +551,17 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHe
     if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
 
     bool isvalid = newc.isValid();
-    QSize s(pixmap_size());
-    int w = xWidth;
-    int h = xHeight;
-    if (w == -1) xWidth = w = s.width();
-    if (h == -1) xHeight = h = s.height();
 
     const QPixmap* src; //source for pretiling, if any
 
     //See whether we should scale
     if (xWidth != s.width() || xHeight != s.height()) {
         src = &scaled_pixmap(xWidth, xHeight);
-        bgSize = QSize(xWidth, xHeight);
     } else {
         src = &r;
-        bgSize = QSize(-1,-1);
     }
+
+    bgSize = QSize(xWidth, xHeight);
 
     //See whether we can - and should - pre-blend
     if (isvalid && (r.hasAlphaChannel() || r.mask() )) {
