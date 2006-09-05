@@ -1190,7 +1190,7 @@ class KDECORE_EXPORT KDateTime
     /**
      * Returns the KDateTime represented by @p string, using the @p format given.
      *
-     * This method is the inverse of toString(TimeFormat), except that it can
+     * This method is the inverse of @ref toString(TimeFormat), except that it can
      * only return a time specification of UTC, OffsetFromUTC or ClockTime. An
      * actual named time zone cannot be returned since an offset from UTC only
      * partially specifies a time zone.
@@ -1420,6 +1420,7 @@ class KDECORE_EXPORT KDateTime
      * contain no information about time zones or daylight savings changes.
      *
      * @return @c true if the two instances represent the same time, @c false otherwise
+     * @see operator==(), operator!=(), operator<(), operator<=(), operator>=(), operator>()
      */
     Comparison compare(const KDateTime &other) const;
 
@@ -1442,6 +1443,7 @@ class KDECORE_EXPORT KDateTime
      * two dates, ignoring time zones.
      *
      * @return @c true if the two instances represent the same time, @c false otherwise
+     * @see compare()
      */
     bool operator==(const KDateTime &other) const;
 
@@ -1473,6 +1475,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @return @c true if this instance represents an earlier time than @p other,
      *         @c false otherwise
+     * @see compare()
      */
     bool operator<(const KDateTime &other) const;
 
@@ -1480,18 +1483,18 @@ class KDECORE_EXPORT KDateTime
     bool operator>(const KDateTime &other) const { return other < *this; }
     bool operator>=(const KDateTime &other) const { return !(*this < other); }
 
-    /** Write @p dateTime to the datastream @p out, binary format. */
+    /** Write @p dateTime to the datastream @p out, in binary format. */
     friend QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
-    /** Read a KDateTime object into @p dateTime from @p in, binary format. */
+    /** Read a KDateTime object into @p dateTime from @p in, in binary format. */
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
   private:
     KDateTimePrivate* const d;
 };
 
-/** @copydoc  KDateTime::Spec::operator<< */
+/** Write @p spec to the datastream @p out, in binary format. */
 QDataStream &operator<<(QDataStream &out, const KDateTime::Spec &spec);
-/** @copydoc  KDateTime::Spec::operator>> */
+/** Read a KDateTime::Spec object into @p spec from @p in, in binary format. */
 QDataStream &operator>>(QDataStream &in, KDateTime::Spec &spec);
 
 /** @copydoc  KDateTime::operator<< */
