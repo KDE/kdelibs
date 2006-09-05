@@ -235,11 +235,13 @@ QDataStream & operator<<(QDataStream &s, const KDateTime::Spec &spec)
             break;
         case KDateTime::TimeZone:
 #ifdef __GNUC__
-#warning TODO: output time zone data
+#warning TODO: write full time zone data?
 #endif
-//            if (spec.timeZone())
-//                s << *spec.timeZone();
+            if (spec.timeZone())
+                s << spec.timeZone()->name();
             break;
+        case KDateTime::UTC:
+        case KDateTime::ClockTime:
         default:
             break;
     }
@@ -262,11 +264,12 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
         }
         case KDateTime::TimeZone:
         {
-            KTimeZone *tz = new KTimeZone;
+            QString zone;
+            s >> zone;
+            const KTimeZone *tz = KSystemTimeZones::zone(zone);
 #ifdef __GNUC__
-#warning TODO: read time zone data
+#warning TODO: read full time zone data
 #endif
-//            s >> *tz;
             spec.setType(tz);
             break;
         }
@@ -287,7 +290,8 @@ class KDateTimePrivate
 {
   public:
     KDateTimePrivate()   // default = invalid spec value
-        : utcCached(false),
+        : status(stValid),
+          utcCached(false),
           mDateOnly(false),
           m2ndOccurrence(false)
     {}
@@ -295,6 +299,7 @@ class KDateTimePrivate
    KDateTimePrivate(const QDateTime &d, const KDateTime::Spec &s, bool donly = false)
         : mDt(d),
           specType(s.type()),
+          status(stValid),
           utcCached(false),
           mDateOnly(donly),
           m2ndOccurrence(false)
@@ -358,12 +363,12 @@ class KDateTimePrivate
     QDateTime           mDt;
   public:
     mutable QDateTime   utc;             // cached UTC equivalent of 'mDt'
-                                         // N.B. the KTimeZone instance is not owned by KDateTime or KDateTimePrivate!
     union {
       const KTimeZone  *tz;              // if specType == TimeZone, the instance's time zone.
                                          // N.B. the KTimeZone instance is not owned by this class.
       int               utcOffset;       // if specType == OffsetFromUTC, the offset from UTC
       mutable const KTimeZone *tzCached; // if specType == ClockTime, the local time zone used to calculate the cached UTC time.
+                                         // N.B. the KTimeZone instance is not owned by this class.
     } u;
     KDateTime::SpecType specType : 3;    // time spec type
     Status              status : 2;      // reason for invalid status
@@ -810,7 +815,7 @@ KDateTime KDateTime::toZone(const KTimeZone *zone) const
 
 KDateTime KDateTime::toTimeSpec(const KDateTime &dt) const
 {
-	return toTimeSpec(dt.timeSpec());
+    return toTimeSpec(dt.timeSpec());
 }
 
 KDateTime KDateTime::toTimeSpec(const Spec &spec) const

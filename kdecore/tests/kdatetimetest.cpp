@@ -3282,7 +3282,7 @@ void KDateTimeTest::strings_format()
     s = dt.toString(QLatin1String("%Y"));
     QCOMPARE(s, QString::fromLatin1("123456"));
 
-    dt = KDateTime::fromString(QLatin1String("-471309051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
+    dt = KDateTime::fromString(QLatin1String("-471412311430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QVERIFY(!dt.isValid());    // too early
     QVERIFY(dt.outOfRange());
 
