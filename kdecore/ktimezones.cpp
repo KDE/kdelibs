@@ -478,7 +478,7 @@ const time_t KTimeZone::InvalidTime_t = 0x800000000000000LL;
 #else
 const time_t KTimeZone::InvalidTime_t = 0x80000000;
 #endif
-const int    KTimeZone::InvalidOffset = 0x8000000;
+const int    KTimeZone::InvalidOffset = 0x80000000;
 const float  KTimeZone::UNKNOWN = 1000.0;
 
 
