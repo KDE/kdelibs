@@ -1258,16 +1258,16 @@ QPalette KApplication::createApplicationPalette( KConfigBase *config, int contra
     QColor kde34Link( 0, 0, 238 );
     QColor kde34VisitedLink( 82, 24, 139 );
 
-    QColor background = qvariant_cast<QColor>(config->readEntry( "background", kde34Background ));
-    QColor foreground = qvariant_cast<QColor>(config->readEntry( "foreground", QColor(Qt::black) ));
-    QColor button = qvariant_cast<QColor>(config->readEntry( "buttonBackground", kde34Button ));
-    QColor buttonText = qvariant_cast<QColor>(config->readEntry( "buttonForeground", QColor(Qt::black) ));
-    QColor highlight = qvariant_cast<QColor>(config->readEntry( "selectBackground", kde34Blue ));
-    QColor highlightedText = qvariant_cast<QColor>(config->readEntry( "selectForeground", QColor(Qt::white) ));
-    QColor base = qvariant_cast<QColor>(config->readEntry( "windowBackground", QColor(Qt::white) ));
-    QColor baseText = qvariant_cast<QColor>(config->readEntry( "windowForeground", QColor(Qt::black) ));
-    QColor link = qvariant_cast<QColor>(config->readEntry( "linkColor", kde34Link ));
-    QColor visitedLink = qvariant_cast<QColor>(config->readEntry( "visitedLinkColor", kde34VisitedLink ));
+    QColor background = config->readEntry( "background", kde34Background );
+    QColor foreground = config->readEntry( "foreground", QColor(Qt::black) );
+    QColor button = config->readEntry( "buttonBackground", kde34Button );
+    QColor buttonText = config->readEntry( "buttonForeground", QColor(Qt::black) );
+    QColor highlight = config->readEntry( "selectBackground", kde34Blue );
+    QColor highlightedText = config->readEntry( "selectForeground", QColor(Qt::white) );
+    QColor base = config->readEntry( "windowBackground", QColor(Qt::white) );
+    QColor baseText = config->readEntry( "windowForeground", QColor(Qt::black) );
+    QColor link = config->readEntry( "linkColor", kde34Link );
+    QColor visitedLink = config->readEntry( "visitedLinkColor", kde34VisitedLink );
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
