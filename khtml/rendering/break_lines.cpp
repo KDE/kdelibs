@@ -2,6 +2,7 @@
 #include <klibloader.h>
 #include <qtextcodec.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <config.h>
 
 
