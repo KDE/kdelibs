@@ -769,7 +769,7 @@ void KToolBar::setBarPos (BarPosition bpos)
 KToolBar::BarPosition KToolBar::barPos() const
 {
     if ( !this->mainWindow() )
-        return KToolBar::Top;
+        return place() == QDockWindow::InDock ? KToolBar::Top : KToolBar::Floating;
     Dock dock;
     int dm1, dm2;
     bool dm3;
