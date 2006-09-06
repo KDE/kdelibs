@@ -79,7 +79,7 @@ namespace ThreadWeaver {
 
         /**
          * Enable disable this action and all its registered components. Incoming
-         * events will not cause the action to be commited when the action is disabled.
+         * events will not cause the action to be committed when the action is disabled.
          * @param enabled the new state of the action.
          */
         void setEnabled(bool enabled) { m_enabled = enabled; }
@@ -105,7 +105,7 @@ namespace ThreadWeaver {
 
         /**
          * The signal emitted directly after the triggered() signal, but this signal
-         * is guarenteed to be in the Gui thread and can be used to update the user
+         * is guaranteed to be in the Gui thread and can be used to update the user
          * interface after an action has been completed.
          * @param params a variant that equals the variant given in the execute() signal
          */
