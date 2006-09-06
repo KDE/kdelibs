@@ -21,16 +21,17 @@
 #include "knotifyclient.h"
 #include "ktoolinvocation.h"
 
-#include <qdatastream.h>
 #include <qstack.h>
 #include <QtDBus/QtDBus>
 
 #include <krandom.h>
 #include <kstandarddirs.h>
-#include <kapplication.h>
 #include <kconfig.h>
+#include <kglobal.h>
+#include <kinstance.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
+#include <QApplication>
 
 static const char daemonName[] = "org.kde.knotify";
 
@@ -67,8 +68,6 @@ static int sendNotifyEvent(const QString &message, const QString &text,
                             int present, int level, const QString &sound,
                             const QString &file, WId winId )
 {
-  if (!kapp) return 0;
-
   QString appname = KNotifyClient::Instance::current()->instanceName();
 
   if( canAvoidStartupEvent( message, appname, present ))
@@ -224,7 +223,7 @@ bool KNotifyClient::startDaemon()
 
 void KNotifyClient::beep(const QString& reason)
 {
-  if ( !kapp || KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
+  if ( KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
     QApplication::beep();
     return;
   }
@@ -259,7 +258,7 @@ public:
 		else if (!m_instances.isEmpty())
 		{
 			kWarning(160) << "Tried to remove an Instance that is not the current," << endl;
-			kWarning(160) << "Resetting to the main KApplication." << endl;
+			kWarning(160) << "Resetting to the global instance." << endl;
 			m_instances.clear();
 		}
 		else
@@ -270,7 +269,7 @@ public:
 	{
 		if (m_instances.isEmpty())
 		{
-			m_defaultInstance = new Instance(kapp);
+                    m_defaultInstance = new Instance(KGlobal::instance());
 		}
 		return m_instances.top();
 	}
@@ -322,7 +321,7 @@ bool KNotifyClient::Instance::useSystemBell() const
 // static methods
 
 // We always return a valid KNotifyClient::Instance here. If no special one
-// is available, we have a default-instance with kapp as KInstance.
+// is available, we have a default-instance with KGlobal::instance() as KInstance.
 // We make sure to always have that default-instance in the stack, because
 // the stack might have gotten cleared in the destructor.
 // We can't use QStack::setAutoDelete( true ), because no instance besides

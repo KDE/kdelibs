@@ -30,7 +30,6 @@
 #include "kdebug.h"
 #include "kurl.h"
 #include "kconfigbackend.h"
-#include "kapplication.h"
 #include "kauthorized.h"
 #include "kstandarddirs.h"
 #include "kmountpoint.h"
@@ -117,7 +116,7 @@ bool KDesktopFile::isDesktopFile(const QString& path)
 
 bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 {
-  if (!kapp || KAuthorized::authorize("run_desktop_files"))
+  if (KAuthorized::authorize("run_desktop_files"))
      return true;
 
   if (path.isEmpty())
@@ -272,7 +271,7 @@ bool KDesktopFile::tryExec() const
     }
   }
   QStringList list = readEntry("X-KDE-AuthorizeAction", QStringList());
-  if (kapp && !list.isEmpty())
+  if (!list.isEmpty())
   {
      for(QStringList::ConstIterator it = list.begin();
          it != list.end();
