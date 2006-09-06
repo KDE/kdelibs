@@ -17,10 +17,11 @@
 */
 
 #include "kclipboard.h"
-#include "kapplication.h"
 #include "kconfig.h"
 #include "kglobal.h"
+#include "kstaticdeleter.h"
 
+#include <qapplication.h>
 #include <qmime.h>
 
 /*
@@ -40,6 +41,7 @@
  */
 
 KClipboardSynchronizer * KClipboardSynchronizer::s_self = 0L;
+KStaticDeleter<KClipboardSynchronizer> kclipsync_sd;
 bool KClipboardSynchronizer::s_sync = false;
 bool KClipboardSynchronizer::s_reverse_sync = false;
 bool KClipboardSynchronizer::s_blocked = false;
@@ -47,7 +49,7 @@ bool KClipboardSynchronizer::s_blocked = false;
 KClipboardSynchronizer * KClipboardSynchronizer::self()
 {
     if ( !s_self ) {
-        s_self = new KClipboardSynchronizer( kapp );
+        kclipsync_sd.setObject( s_self, new KClipboardSynchronizer );
         s_self->setObjectName( "KDE Clipboard" );
     }
 

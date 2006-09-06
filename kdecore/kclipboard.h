@@ -23,6 +23,7 @@
 #include <qclipboard.h>
 #include <kdelibs_export.h>
 
+template <class T> class KStaticDeleter;
 class QMimeData;
 
 /**
@@ -90,6 +91,7 @@ public:
 
 
 protected:
+    friend class KStaticDeleter<KClipboardSynchronizer>;
     ~KClipboardSynchronizer();
 
 private Q_SLOTS:
