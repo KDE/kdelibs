@@ -30,7 +30,6 @@
 #include <kdebug.h>
 #include "klibloader.h"
 #include <kconfig.h>
-#include <kapplication.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>

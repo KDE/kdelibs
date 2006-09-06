@@ -259,7 +259,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   // If the application doesn't have a QApplication object it can't use
   // a messagebox.
-  if (!kapp && (nOutput == 1))
+  if (!qApp && (nOutput == 1))
     nOutput = 2;
   else if ( nOutput == 4 && nLevel != KDEBUG_FATAL )
       return;

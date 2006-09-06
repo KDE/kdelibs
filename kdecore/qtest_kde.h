@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <kinstance.h>
+#include <qapplication.h>
 
 // By default, unit tests get no gui.
 // Pass GUI if you use any GUI classes
@@ -15,8 +16,8 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
 /**
  * \short KDE Replacement for QTEST_MAIN from QTestLib
  *
- * This macro should be used for classes that need a KInstance or KApplication
- * object. So instead of writing QTEST_MAIN( TestClass ) you write
+ * This macro should be used for classes that need a KInstance.
+ * So instead of writing QTEST_MAIN( TestClass ) you write
  * QTEST_KDEMAIN( TestClass, GUI ).
  *
  * \param TestObject The class you use for testing.
