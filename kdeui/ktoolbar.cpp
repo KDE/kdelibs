@@ -750,12 +750,9 @@ void KToolBar::contextMenuEvent( QContextMenuEvent* event )
 
 Qt::ToolButtonStyle KToolBar::toolButtonStyleSetting()
 {
-  QString grpToolbar( QLatin1String( "Toolbar style" ) );
+  KConfigGroup saver( KGlobal::config(), "Toolbar style" );
 
-  KConfigGroup saver( KGlobal::config(), grpToolbar );
-
-  return KToolBar::Private::toolButtonStyleFromString( KGlobal::config()->readEntry( QLatin1String( "ToolButtonStyle" ),
-                                                       QString::fromLatin1( "TextUnderIcon" ) ) );
+  return KToolBar::Private::toolButtonStyleFromString( saver.readEntry( "ToolButtonStyle", "TextUnderIcon") );
 }
 
 void KToolBar::loadState( const QDomElement &element )
@@ -928,17 +925,11 @@ void KToolBar::applySettings( KConfig *config, const QString &_configGroup, bool
   if ( config->hasGroup( configGroup ) || force ) {
     KConfigGroup cg(config, configGroup);
 
-    static const QString &attrPosition = KGlobal::staticQString( "Position" );
-    static const QString &attrIndex = KGlobal::staticQString( "Index" );
-    static const QString &attrOffset = KGlobal::staticQString( "Offset" );
-    static const QString &attrNewLine = KGlobal::staticQString( "NewLine" );
-    static const QString &attrHidden = KGlobal::staticQString( "Hidden" );
-
-    QString position = cg.readEntry( attrPosition, d->PositionDefault );
-    int index = cg.readEntry( attrIndex, int(-1) );
-    int offset = cg.readEntry( attrOffset, int(d->OffsetDefault) );
-    bool newLine = cg.readEntry( attrNewLine, d->NewLineDefault );
-    bool hidden = cg.readEntry( attrHidden, d->HiddenDefault );
+    QString position = cg.readEntry( "Position", d->PositionDefault );
+    int index = cg.readEntry( "Index", int(-1) );
+    int offset = cg.readEntry( "Offset", int(d->OffsetDefault) );
+    bool newLine = cg.readEntry( "NewLine", d->NewLineDefault );
+    bool hidden = cg.readEntry( "Hidden", d->HiddenDefault );
 
     Qt::ToolBarArea pos = Qt::TopToolBarArea;
     if ( position == "Top" )
@@ -973,9 +964,6 @@ void KToolBar::applyAppearanceSettings( KConfig *config, const QString &_configG
 
   KConfig *gconfig = KGlobal::config();
 
-  static const QString &attrToolButtonStyle = KGlobal::staticQString( "ToolButtonStyle" );
-  static const QString &attrIconSize = KGlobal::staticQString( "IconSize" );
-
   // we actually do this in two steps.
   // First, we read in the global styles [Toolbar style] (from the KControl module).
   // Then, if the toolbar is NOT 'mainToolBar', we will also try to read in [barname Toolbar style]
@@ -986,21 +974,20 @@ void KToolBar::applyAppearanceSettings( KConfig *config, const QString &_configG
   Qt::ToolButtonStyle ToolButtonStyle = d->ToolButtonStyleDefault;
 
   // this is the first iteration
-  QString grpToolbar( QLatin1String( "Toolbar style" ) );
 
   { // start block for KConfigGroup
-    KConfigGroup cg(gconfig, grpToolbar);
+      KConfigGroup cg(gconfig, "Toolbar style");
 
     // we read in the ToolButtonStyle property *only* if we intend on actually
     // honoring it
     if ( d->honorStyle )
-      d->ToolButtonStyleDefault = d->toolButtonStyleFromString( cg.readEntry( attrToolButtonStyle,
+        d->ToolButtonStyleDefault = d->toolButtonStyleFromString( cg.readEntry( "ToolButtonStyle",
                                         d->toolButtonStyleToString( d->ToolButtonStyleDefault ) ) );
     else
       d->ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
     // Use the default icon size for toolbar icons.
-    d->IconSizeDefault = cg.readEntry( attrIconSize, int(d->IconSizeDefault) );
+    d->IconSizeDefault = cg.readEntry( "IconSize", int(d->IconSizeDefault) );
 
     iconSize = d->IconSizeDefault;
     ToolButtonStyle = d->ToolButtonStyleDefault;
@@ -1009,14 +996,14 @@ void KToolBar::applyAppearanceSettings( KConfig *config, const QString &_configG
       config->setGroup( configGroup );
 
       // read in the ToolButtonStyle property
-      if ( config->hasKey( attrToolButtonStyle ) ) {
-        ToolButtonStyle = d->toolButtonStyleFromString( config->readEntry( attrToolButtonStyle, QString() ) );
+      if ( config->hasKey( "ToolButtonStyle" ) ) {
+          ToolButtonStyle = d->toolButtonStyleFromString( config->readEntry( "ToolButtonStyle", QString() ) );
         applyToolButtonStyle = true;
       }
 
       // now get the size
-      if ( config->hasKey( attrIconSize ) ) {
-          iconSize = config->readEntry( attrIconSize, 0 );
+      if ( config->hasKey( "IconSize" ) ) {
+          iconSize = config->readEntry( "IconSize", 0 );
           applyIconSize = true;
       }
     }

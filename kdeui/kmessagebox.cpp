@@ -334,15 +334,13 @@ KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
                                 ButtonCode &result)
 {
     if ( dontShowAgainName.isEmpty() ) return true;
-    QString grpNotifMsgs = QLatin1String("Notification Messages");
-    KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroup cg( config, grpNotifMsgs );
+    KConfigGroup cg( againConfig ? againConfig : KGlobal::config(), "Notification Messages" );
     QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
-    if (dontAsk == "yes") {
+    if (dontAsk == "yes" || dontAsk == "true") {
         result = Yes;
         return false;
     }
-    if (dontAsk == "no") {
+    if (dontAsk == "no" || dontAsk == "false") {
         result = No;
         return false;
     }
@@ -353,9 +351,7 @@ bool
 KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
 {
     if ( dontShowAgainName.isEmpty() ) return true;
-    QString grpNotifMsgs = QLatin1String("Notification Messages");
-    KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroup cg( config, grpNotifMsgs );
+    KConfigGroup cg( againConfig ? againConfig : KGlobal::config(), "Notification Messages" );
     return cg.readEntry(dontShowAgainName, true);
 }
 
@@ -364,22 +360,24 @@ KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                     ButtonCode result)
 {
     if ( dontShowAgainName.isEmpty() ) return;
-    QString grpNotifMsgs = QLatin1String("Notification Messages");
-    KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroup cg( config, grpNotifMsgs );
-    cg.writeEntry( dontShowAgainName, result==Yes ? "yes" : "no", ((dontShowAgainName[0] == ':')?KConfigBase::Global:KConfigBase::Normal));
-    config->sync();
+    KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
+    if (dontShowAgainName[0] == ':')
+        flags |= KConfigBase::Global;
+    KConfigGroup cg( againConfig? againConfig : KGlobal::config(), "Notification Messages" );
+    cg.writeEntry( dontShowAgainName, result==Yes, flags );
+    cg.sync();
 }
 
 void
 KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
 {
     if ( dontShowAgainName.isEmpty() ) return;
-    QString grpNotifMsgs = QLatin1String("Notification Messages");
-    KConfig *config = againConfig ? againConfig : KGlobal::config();
-    KConfigGroup cg( config, grpNotifMsgs );
-    cg.writeEntry( dontShowAgainName, false, ((dontShowAgainName[0] == ':')?KConfigBase::Global:KConfigBase::Normal));
-    config->sync();
+    KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
+    if (dontShowAgainName[0] == ':')
+        flags |= KConfigBase::Global;
+    KConfigGroup cg( againConfig? againConfig: KGlobal::config(), "Notification Messages" );
+    cg.writeEntry( dontShowAgainName, false, flags );
+    cg.sync();
 }
 
 KConfig* KMessageBox::againConfig = NULL;
@@ -961,16 +959,15 @@ void
 KMessageBox::enableAllMessages()
 {
    KConfig *config = againConfig ? againConfig : KGlobal::config();
-   QString grpNotifMsgs = QLatin1String("Notification Messages");
-   if (!config->hasGroup(grpNotifMsgs))
+   if (!config->hasGroup("Notification Messages"))
       return;
 
    QString oldgroup = config->group();
-   config->setGroup( grpNotifMsgs );
+   config->setGroup( "Notification Messages" );
 
    typedef QMap<QString, QString> configMap;
 
-   configMap map = config->entryMap(grpNotifMsgs);
+   configMap map = config->entryMap("Notification Messages");
 
    configMap::Iterator it;
    for (it = map.begin(); it != map.end(); ++it)
@@ -983,11 +980,10 @@ void
 KMessageBox::enableMessage(const QString &dontShowAgainName)
 {
    KConfig *config = againConfig ? againConfig : KGlobal::config();
-   QString grpNotifMsgs = QLatin1String("Notification Messages");
-   if (!config->hasGroup(grpNotifMsgs))
+   if (!config->hasGroup("Notification Messages"))
       return;
 
-   KConfigGroup cg( config, grpNotifMsgs );
+   KConfigGroup cg( config, "Notification Messages" );
 
    cg.deleteEntry(dontShowAgainName);
    config->sync();

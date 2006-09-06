@@ -518,18 +518,21 @@ void KActionCollection::writeSettings( KConfigBase* config, bool writeAll, KActi
       bool bSameAsDefault = (action->shortcut() == action->defaultShortcut());
       // If we're using a global config or this setting
       //  differs from the default, then we want to write.
+      KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
+      if (configIsGlobal())
+          flags |= KConfigBase::Global;
       if( writeAll || !bSameAsDefault ) {
         QString s = action->shortcut().toStringInternal();
         if( s.isEmpty() )
           s = "none";
         kDebug(125) << "\twriting " << action->objectName() << " = " << s << endl;
-        cg.writeEntry( action->objectName(), s, (configIsGlobal() ? KConfigBase::Global : KConfigBase::Normal) );
+        cg.writeEntry( action->objectName(), s, flags );
       }
       // Otherwise, this key is the same as default
       //  but exists in config file.  Remove it.
       else if( bConfigHasAction ) {
         kDebug(125) << "\tremoving " << action->objectName() << " because == default" << endl;
-        cg.deleteEntry( action->objectName(), (configIsGlobal() ? KConfigBase::Global : KConfigBase::Normal) );
+        cg.deleteEntry( action->objectName(), flags );
       }
     }
   }
