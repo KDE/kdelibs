@@ -37,18 +37,18 @@
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qfileinfo.h>
+#include <qprocess.h>
 #include <qtextcodec.h>
 #include <qtextstream.h>
 
 #include "kconfigbackend.h"
 
-#include "kapplication.h"
 #include "kconfigbase.h"
 #include "kconfigdata.h"
 #include "kde_file.h"
 #include "kglobal.h"
+#include "kinstance.h"
 #include "klocale.h"
-#include "qprocess.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
 #include "kurl.h"
@@ -1135,10 +1135,10 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
     // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
     errorMsg += i18n("Please contact your system administrator.");
     QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
-    KApplication *app = kapp;
-    if (!cmdToExec.isEmpty() && app)
+    KInstance *instance = KGlobal::instance();
+    if (!cmdToExec.isEmpty() && instance)
     {
-      QProcess::execute(cmdToExec,QStringList() << "--title" << app->instanceName() << "--msgbox" << errorMsg.toLocal8Bit());
+      QProcess::execute(cmdToExec,QStringList() << "--title" << instance->instanceName() << "--msgbox" << errorMsg.toLocal8Bit());
     }
   }
   return allWritable;
