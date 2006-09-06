@@ -85,7 +85,7 @@ void KPageView::Private::rebuildGui()
     connect( view->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
              parent, SLOT( pageSelected( const QModelIndex&, const QModelIndex& ) ) );
 
-    view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
+    if (model) view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
   }
 
   headerLabel->setVisible( parent->showPageHeader() );
