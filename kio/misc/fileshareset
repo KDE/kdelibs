@@ -118,7 +118,7 @@ sub verify_mntpoint {
     local ($_) = @_;
     my $ok = 1;
     $ok &&= m|^/|;
-    $ok &&= !m|/../|;
+    $ok &&= !m|/\.\./|;
     $ok &&= !m|[\0\n\r]|;
     $ok &&= -d $_;
     $ok &&= own($_);
