@@ -1242,6 +1242,23 @@ public Q_SLOTS:
                         const QString& contentType = QString(),
                         const QString& boundary = QString() );
 
+protected Q_SLOTS:
+
+  /**
+   * Called when the job downloading the page is finished.
+   * Can be reimplemented, for instance to get metadata out of the job,
+   * but make sure to call KHTMLPart::slotFinished() too.
+   */
+  virtual void slotFinished( KJob* );
+
+protected:
+  /**
+   * Hook for adding code before a job is started.
+   * This can be used to add metadata, like job->addMetaData("PropagateHttpHeader", "true")
+   * to get the HTTP headers.
+   */
+  virtual void startingJob( KIO::Job * ) {}
+
 private Q_SLOTS:
 
   /**
@@ -1261,10 +1278,6 @@ private Q_SLOTS:
    * @internal
    */
   void slotRestoreData( const QByteArray &data );
-  /**
-   * @internal
-   */
-  void slotFinished( KJob* );
   /**
    * @internal
    */

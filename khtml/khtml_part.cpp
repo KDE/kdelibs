@@ -787,6 +787,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
     connect( job, SIGNAL( result( KJob * ) ),
              this, SLOT( slotUserSheetStatDone( KJob * ) ) );
   }
+  startingJob( d->m_job );
   emit started( 0L );
 
   return true;
