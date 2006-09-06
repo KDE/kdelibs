@@ -80,8 +80,6 @@ class EDUPLOT_EXPORT KPlotWidget : public QFrame {
 	Q_PROPERTY(QColor foregroundColor READ foregroundColor WRITE setForegroundColor)
 	Q_PROPERTY(QColor gridColor READ gridColor WRITE setGridColor)
 	Q_PROPERTY(bool grid READ isGridShown WRITE setShowGrid)
-	Q_PROPERTY(bool tickMarks READ areTickMarksShown WRITE setShowTickMarks)
-	Q_PROPERTY(bool tickLabels READ areTickLabelsShown WRITE setShowTickLabels)
 	Q_PROPERTY(bool objectToolTip READ areObjectToolTipsShown WRITE setShowObjectToolTips)
 public:
 	/**
@@ -102,23 +100,13 @@ public:
 	/**
 	 *@enum Axis The kinds of axes we have
 	 */
-	enum Axis
-	{
-		LeftAxis = 0,
-		BottomAxis
-	};
+	enum Axis { LeftAxis = 0, BottomAxis, RightAxis, TopAxis };
 
 	/**
 	 *@return suggested size for widget
 	 *@note Currently just returns QSize(150,150)
 	 */
 	virtual QSize minimumSizeHint() const;
-
-	/**
-	 * Determine the placement of major and minor tickmarks, based on the
-	 * current Limit settings
-	 */
-	virtual void updateTickmarks();
 
 	/**
 	 * Reset the data limits.
@@ -128,6 +116,19 @@ public:
 	 * @param y2 the maximum Y value in data units
 	 */
 	virtual void setLimits( double x1, double x2, double y1, double y2 );
+
+	/**
+	 * Reset the secondary data limits, which control the top and right axes.
+	 * Note that all data points are plotted using the coordinates defined by 
+	 * the primary data limits, so this function is only useful for plotting 
+	 * alternate axes along the top and right edges.
+	 * @param x1 the minimum X value in secondary data units
+	 * @param x2 the maximum X value in secondary data units
+	 * @param y1 the minimum Y value in secondary data units
+	 * @param y2 the maximum Y value in secondary data units
+	 * @sa setLimits()
+	 */
+	virtual void setSecondaryLimits( double x1, double x2, double y1, double y2 );
 
 	/**
 	 * @return the minimum X value in data units
@@ -158,6 +159,8 @@ public:
 	 * @return the height in data units
 	 */
 	virtual double dataHeight() const { return DataRect.height(); }
+
+	const QRectF& secondaryDataRect() const { return SecondDataRect; }
 
 	/**
 	 * Add an item to the list of KPlotObjects to be plotted.
@@ -222,23 +225,6 @@ public:
 	void setGridColor( const QColor &gc ) { cGrid = gc; }
 
 	/**
-	 * Toggle whether plot axes are drawn.
-	 * @param show if true, axes will be drawn.
-	 * The axes are just a box outline around the plot.
-	 */
-	void setShowAxes( bool show );
-
-	/**
-	 * @return whether the tick marks are shown
-	 */
-	bool areTickMarksShown() const { return ShowTickMarks; }
-
-	/**
-	 * @return whether the tick labels are shown
-	 */
-	bool areTickLabelsShown() const { return ShowTickLabels; }
-
-	/**
 	 * @return whether the grid lines are shown
 	 */
 	bool isGridShown() const { return ShowGrid; }
@@ -248,30 +234,32 @@ public:
 	 */
 	bool areObjectToolTipsShown() const { return ShowObjectToolTips; }
 
+	inline void setAntialias( bool b ) { UseAntialias = b; }
+
 	/**
 	 * @return the number of pixels to the left of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int leftPadding() const;
+	virtual int leftPadding();
 	/**
 	 * @return the number of pixels to the right of the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int rightPadding() const;
+	virtual int rightPadding();
 	/**
 	 * @return the number of pixels above the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int topPadding() const;
+	virtual int topPadding();
 	/**
 	 * @return the number of pixels below the plot area.
 	 * Padding values are set to -1 by default; if unchanged, this function will try to guess
 	 * a good value, based on whether ticklabels and/or axis labels are to be drawn.
 	 */
-	virtual int bottomPadding() const;
+	virtual int bottomPadding();
 
 	/**
 	 * Set the number of pixels to the left of the plot area.
@@ -319,18 +307,6 @@ public:
 
 public slots:
 	/**
-	 * Toggle whether tick marks are drawn along the axes.
-	 * @param show if true, tick marks will be drawn.
-	 */
-	void setShowTickMarks( bool show );
-
-	/**
-	 * Toggle whether tick labels are drawn at major tickmarks.
-	 * @param show if true, tick labels will be drawn.
-	 */
-	void setShowTickLabels( bool show );
-
-	/**
 	 * Toggle whether grid lines are drawn at major tickmarks.
 	 * @param show if true, grid lines will be drawn.
 	 */
@@ -372,24 +348,11 @@ protected:
 	 * to draw the widget with axes and all objects.
 	 * @param p pointer to the painter on which we are drawing
 	 */
-	virtual void drawBox( QPainter *p );
+	virtual void drawAxes( QPainter *p );
 
-	virtual void recalcPixRect();
+	void setPixRect();
 
 	QList<KPlotObject*> pointsUnderPoint( const QPoint& p ) const;
-
-	/**
-	 * Recalc the ticks for the specified @p length.
-	 * @p dTick , @p nmajor and @p nminor will contain respectively the
-	 * distance between every major tick, the number of number of major
-	 * ticks, and the number of minor ticks.
-	 */
-	void calcTickMarks( double length, double& dTick, int& nmajor, int& nminor );
-
-	//The distance between major tickmarks in data units
-	double dXtick, dYtick;
-	//The number of major and minor tickmarks to be plotted in X and Y
-	int nmajX, nminX, nmajY, nminY;
 
 	/**
 	 * Limits of the plot area in pixel units
@@ -398,7 +361,7 @@ protected:
 	/**
 	 * Limits of the plot area in data units
 	 */
-	QRectF DataRect;
+	QRectF DataRect, SecondDataRect;
 	/**
 	 * List of KPlotObjects
 	 */
@@ -412,11 +375,9 @@ protected:
 	//Colors
 	QColor cBackground, cForeground, cGrid;
 	//draw options
-	bool ShowTickMarks, ShowTickLabels, ShowGrid, ShowObjectToolTips;
+	bool ShowGrid, ShowObjectToolTips, UseAntialias;
 	//padding
 	int LeftPadding, RightPadding, TopPadding, BottomPadding;
-
-	QPixmap *buffer;
 };
 
 #endif

@@ -19,6 +19,7 @@
 #define KPLOTAXIS_H
 
 #include <QString>
+#include <QList>
 
 #include <libkdeedu_plot_export.h>
 
@@ -50,63 +51,101 @@ public:
 	/**
 	 * @return whether the axis is visible or not
 	 */
-	bool isVisible() const { return m_visible; }
+	inline bool isVisible() const { return m_visible; }
 
 	/**
 	 * Sets the "visible" property of the axis.
 	 */
-	void setVisible(bool visible) { m_visible = visible; }
+	inline void setVisible(bool visible) { m_visible = visible; }
 
 	/**
-	 * Shows the axis (axis will be shown at next update of plot widget).
+	 * @return whether tick labels will be drawn for this axis
 	 */
-	void show() { m_visible = true; }
+	inline bool showTickLabels() const { return m_showTickLabels; }
 
 	/**
-	 * Hides the axis (axis will be hidden at next update of plot widget).
+	 * Determine whether tick labels will be drawn for this axis.
 	 */
-	void hide() { m_visible = false; }
+	inline void setShowTickLabels( bool b ) { m_showTickLabels = b; }
 
 	/**
 	 * Sets the axis label.
 	 * Set the label to an empty string to omit the axis label.
 	 * @param label a string describing the data plotted on the axis.
 	 */
-	void setLabel( const QString& label ) { m_label = label; }
+	inline void setLabel( const QString& label ) { m_label = label; }
 
 	/**
 	 * @return the axis label
 	 */
-	QString label() const { return m_label; }
+	inline QString label() const { return m_label; }
 
 	/**
-	 * Set the number format for the tick labels, see QString::arg() for
-	 * description of arguments.
-         */
-	void setLabelFormat(int fieldWidth, char fmt = 'g', int prec=-1) {
+	 * @return the ticklabel string for the given value, rendered according
+	 * to the current format specification.
+	 * @param the value to be rendered as a tick label.
+	 * @sa setTickLabelFormat()
+	 */
+	QString tickLabel( double value ) const;
+
+	/**
+	 * Set the display format for converting the double value of the 
+	 * tick's position to the QString for the tick label.
+	 *
+	 * Normally, the format character is one of 'e', 'E', 'f', 'g', or 'G'
+	 * (see the documentation for QString::arg(double) for details).
+	 *
+	 * In addition, it is possible to set the format character to 't';
+	 * in this case the tickmark value is interpreted as a time in hours,
+	 * and the ticklabel string will be in "hh:mm" clock format.
+	 * Note that when the format character is 't', the fieldWidth and prec
+	 * values are ignored.
+	 *
+	 * @param fmt the format specification character 
+	 * @param fieldWidth the number of characters in the output string.
+	 * If set to 0, the string will be as wide as it needs to be to fully 
+	 * render the value.
+	 * @param prec the number of characters following the decimal point.
+	 */
+	inline void setTickLabelFormat( char fmt = 'g', int fieldWidth = 0, int prec=-1) {
 		m_labelFieldWidth = fieldWidth; m_labelFmt = fmt; m_labelPrec = prec; }
 
 	/**
 	 * @return the field width of the tick labels
 	 */
-	int labelFieldWidth() const { return m_labelFieldWidth; }
+	inline int tickLabelWidth() const { return m_labelFieldWidth; }
 
 	/**
 	 * @return the number format of the tick labels
 	 */
-	char labelFmt() const { return m_labelFmt; }
+	inline char tickLabelFmt() const { return m_labelFmt; }
 
 	/**
 	 * @return the number precision of the tick labels
 	 */
-	int labelPrec() const { return m_labelPrec; }
+	inline int tickLabelPrec() const { return m_labelPrec; }
+
+	/**
+	 * Determine the positions of major and minor tickmarks for this axis.
+	 * @param x0 the minimum data coordinate of the axis.
+	 * @param length the range covered by the axis, in data units.
+	 * @sa majorTickMarks()
+	 * @sa minorTickMarks()
+	 */
+	void setTickMarks( double x0, double length );
+
+	inline QList<double>& majorTickMarks() { return m_MajorTickMarks; }
+	inline QList<double>& minorTickMarks() { return m_MinorTickMarks; }
 
 private:
 	bool		m_visible;			///< Property "visible" defines if Axis is drawn or not.
+	bool		m_showTickLabels;
 	QString		m_label;			///< The label of the axis.
 	int 		m_labelFieldWidth;	///< Field width for number labels, see QString::arg().
 	char 		m_labelFmt;			///< Number format for number labels, see QString::arg().
 	int 		m_labelPrec;		///< Number precision for number labels, see QString::arg().
+	QList<double> m_MajorTickMarks, m_MinorTickMarks;
+
 };
 
 #endif // KPLOTAXIS_H
