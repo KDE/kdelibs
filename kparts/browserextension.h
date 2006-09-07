@@ -686,6 +686,12 @@ signals:
    */
   void setPageSecurity( int );
 
+  /**
+   * Inform the host about items that have been removed.
+   * @since 3.5.5
+   */
+  void itemsRemoved( const KFileItemList &items );
+
 private slots:
   void slotCompleted();
   void slotOpenURLRequest( const KURL &url, const KParts::URLArgs &args );
