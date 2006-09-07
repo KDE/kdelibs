@@ -388,7 +388,7 @@ void Solid::Device::slotDestroyed( QObject *object )
     }
 }
 
-void Solid::Device::Private::registerData( Solid::Ifaces::Device *newData )
+void Solid::Device::Private::registerData( Ifaces::Device *newData )
 {
     data = newData;
 

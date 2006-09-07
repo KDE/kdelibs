@@ -64,7 +64,7 @@ Solid::PowerManager &Solid::PowerManager::self()
     return *s_self;
 }
 
-Solid::PowerManager &Solid::PowerManager::selfForceBackend( Solid::Ifaces::PowerManager *backend )
+Solid::PowerManager &Solid::PowerManager::selfForceBackend( Ifaces::PowerManager *backend )
 {
     if( !s_self )
     {
@@ -134,7 +134,7 @@ Solid::PowerManager::PowerManager()
     }
 }
 
-Solid::PowerManager::PowerManager( Solid::Ifaces::PowerManager *backend )
+Solid::PowerManager::PowerManager( Ifaces::PowerManager *backend )
     : QObject(), d( new Private( this ) )
 {
     if ( backend != 0 )

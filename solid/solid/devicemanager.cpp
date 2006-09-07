@@ -68,7 +68,7 @@ Solid::DeviceManager &Solid::DeviceManager::self()
     return *s_self;
 }
 
-Solid::DeviceManager &Solid::DeviceManager::selfForceBackend( Solid::Ifaces::DeviceManager *backend )
+Solid::DeviceManager &Solid::DeviceManager::selfForceBackend( Ifaces::DeviceManager *backend )
 {
     if( !s_self )
     {
@@ -138,7 +138,7 @@ Solid::DeviceManager::DeviceManager()
     }
 }
 
-Solid::DeviceManager::DeviceManager( Solid::Ifaces::DeviceManager *backend )
+Solid::DeviceManager::DeviceManager( Ifaces::DeviceManager *backend )
     : QObject(), d( new Private( this ) )
 {
     if ( backend != 0 )
