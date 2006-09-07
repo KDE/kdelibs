@@ -45,7 +45,15 @@ namespace ThreadWeaver {
         explicit ResourceRestrictionPolicy ( int cap = 0);
         ~ResourceRestrictionPolicy();
 
-        void setCap (int newcap);
+        /**
+         * Cap the number of simulataniously executing jobs.
+         * Capping the amount of jobs will make sure that at max the number of jobs
+         * executing at any time is limited to the capped amount.
+         * Note that immediately after setting the amount of running jobs may be higher
+         * than the set amount. This setting only limits the starting of new jobs.
+         * @param newCap the new cap to limit the amount of parallel jobs.
+         */
+        void setCap (int newCap);
         int cap() const;
         bool canRun( Job* );
         void free (Job*);
