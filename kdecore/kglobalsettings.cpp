@@ -323,9 +323,14 @@ QFont KGlobalSettings::generalFont()
     if (_generalFont)
         return *_generalFont;
 
+#ifdef Q_WS_MAC
+    _generalFont = new QFont("Lucida Grande", 13);
+    _generalFont->setPointSize(13);
+#else
     // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _generalFont = new QFont("Sans Serif", 10);
     _generalFont->setPointSize(10);
+#endif
     _generalFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
@@ -342,13 +347,12 @@ QFont KGlobalSettings::fixedFont()
 #ifdef Q_WS_MAC
     _fixedFont = new QFont("Monaco", 10);
     _fixedFont->setPointSize(10);
-    _fixedFont->setStyleHint(QFont::TypeWriter);
 #else
     // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _fixedFont = new QFont("Monospace", 10);
     _fixedFont->setPointSize(10);
-    _fixedFont->setStyleHint(QFont::TypeWriter);
 #endif
+    _fixedFont->setStyleHint(QFont::TypeWriter);
 
     KConfigGroup g( KGlobal::config(), "General" );
     *_fixedFont = g.readEntry("fixed", *_fixedFont);
@@ -361,9 +365,14 @@ QFont KGlobalSettings::toolBarFont()
     if(_toolBarFont)
         return *_toolBarFont;
 
+#ifdef Q_WS_MAC
+    _toolBarFont = new QFont("Lucida Grande", 11);
+    _toolBarFont->setPointSize(11);
+#else
     // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _toolBarFont = new QFont("Sans Serif", 10);
     _toolBarFont->setPointSize(10);
+#endif
     _toolBarFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
@@ -377,9 +386,14 @@ QFont KGlobalSettings::menuFont()
     if(_menuFont)
         return *_menuFont;
 
+#ifdef Q_WS_MAC
+    _menuFont = new QFont("Lucida Grande", 13);
+    _menuFont->setPointSize(13);
+#else
     // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _menuFont = new QFont("Sans Serif", 10);
     _menuFont->setPointSize(10);
+#endif
     _menuFont->setStyleHint(QFont::SansSerif);
 
     KConfigGroup g( KGlobal::config(), "General" );
