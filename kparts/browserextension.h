@@ -686,6 +686,7 @@ signals:
    */
   void setPageSecurity( int );
 
+#define KPARTS_BROWSEREXTENSION_HAS_ITEMS_REMOVED
   /**
    * Inform the host about items that have been removed.
    * @since 3.5.5
