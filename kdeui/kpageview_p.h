@@ -105,6 +105,7 @@ class KPageTabbedView : public QAbstractItemView
   private Q_SLOTS:
     void currentPageChanged( int );
     void layoutChanged();
+    virtual void dataChanged( const QModelIndex&, const QModelIndex& );
 
   private:
     QTabBar *mTabBar;

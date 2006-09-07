@@ -302,6 +302,21 @@ void KPageTabbedView::layoutChanged()
   setFixedHeight( mTabBar->minimumSizeHint().height() );
 }
 
+void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& )
+{
+  if ( !index.isValid() )
+    return;
+
+  if ( index.row() < 0 || index.row() >= mTabBar->count() )
+    return;
+
+  const QString title = model()->data( index ).toString();
+  const QIcon icon = model()->data( index, Qt::DecorationRole ).value<QIcon>();
+
+  mTabBar->setTabText( index.row(), title );
+  mTabBar->setTabIcon( index.row(), icon );
+}
+
 /**
  * KPageListViewDelegate
  */
