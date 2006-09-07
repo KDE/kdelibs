@@ -56,7 +56,7 @@ class KPageView::Private
     void rebuildGui();
     void updateSelection();
     void cleanupPages();
-    QList<QWidget*> collectPages( const QModelIndex& );
+    QList<QWidget*> collectPages( const QModelIndex &parent = QModelIndex() );
     FaceType detectAutoFace() const;
 };
 
@@ -85,7 +85,8 @@ void KPageView::Private::rebuildGui()
     connect( view->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
              parent, SLOT( pageSelected( const QModelIndex&, const QModelIndex& ) ) );
 
-    if (model) view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
+    if ( model )
+      view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
   }
 
   headerLabel->setVisible( parent->showPageHeader() );
@@ -125,7 +126,7 @@ void KPageView::Private::cleanupPages()
    * Remove all orphan pages from the stacked widget.
    */
 
-  QList<QWidget*> widgets = collectPages( QModelIndex() );
+  QList<QWidget*> widgets = collectPages();
 
   for ( int i = 0; i < stack->count(); ++i ) {
     QWidget *page = stack->widget( i );
@@ -326,6 +327,18 @@ void KPageView::modelChanged()
    */
   if ( d->faceType == Auto )
     QTimer::singleShot( 0, this, SLOT( rebuildGui() ) );
+
+  /**
+   * Set the stack to the minimum size of the largest widget.
+   */
+  QSize size = d->stack->size();
+  QList<QWidget*> widgets = d->collectPages();
+  for ( int i = 0; i < widgets.count(); ++i ) {
+    const QWidget *widget = widgets[ i ];
+    if ( widget )
+      size = size.expandedTo( widget->sizeHint() );
+  }
+  d->stack->setMinimumSize( size );
 
   d->updateSelection();
 }
