@@ -23,8 +23,8 @@
 #include "settings.h"
 #include "remoteservice.h"
 #include "query.h"
-#include <kapplication.h>
 #include <QHash>
+#include <QtDBus/QtDBus>
 
 namespace DNSSD
 {
@@ -44,8 +44,12 @@ DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrow
 	d->m_recursive = Configuration::recursive();
 	d->m_domains = Configuration::domainList();
 	if (Configuration::browseLocal()) d->m_domains+="local.";
-	connect(KApplication::kApplication(),SIGNAL(kipcMessage(int,int)),this,
-	        SLOT(domainListChanged(int,int)));
+
+        // Those same names have to be used in the kcontrol module too.
+        const QString dbusPath = "/libdnssd";
+        const QString dbusInterface = "org.kde.DNSSD.DomainBrowser";
+        QDBusConnection dbus = QDBusConnection::sessionBus();
+        dbus.connect( QString(), dbusPath, dbusInterface, "domainListChanged", this, SLOT(domainListChanged()) );
 }
 
 DomainBrowser::DomainBrowser(const QStringList& domains, bool recursive, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
@@ -108,9 +112,8 @@ void DomainBrowser::gotRemoveDomain(DNSSD::RemoteService::Ptr srv)
 	d->resolvers.remove(domain);
 }
 
-void DomainBrowser::domainListChanged(int message,int)
+void DomainBrowser::domainListChanged()
 {
-	if (message!=KIPCDomainsChanged) return;
 	bool was_running = d->m_running;
 	d->m_running = false;
 	// remove all domains and resolvers
@@ -139,9 +142,6 @@ bool DomainBrowser::isRunning() const
 {
 	return d->m_running;
 }
-
-void DomainBrowser::virtual_hook(int, void*)
-{}
 
 }
 #include "domainbrowser.moc"

@@ -24,10 +24,6 @@
 #include <qobject.h>
 #include <dnssd/remoteservice.h>
 
-// KIPC message ID used by kcm module to signal change in browsing domains list
-
-#define KIPCDomainsChanged 2014
-
 class QStringList;
 namespace DNSSD
 {
@@ -47,31 +43,31 @@ public:
 	@param parent Parent object.
 	 */
 	DomainBrowser(QObject *parent=0);
-	
+
 	/**
 	Constructor that creates browser for domain list. This does not use global
 	configuration at all.
-	@param domains List of domains 
+	@param domains List of domains
 	@param recursive true - specified domains will be recursively browsed to
 	discover more domains. This means that every domain (specified in constructor,
-	or found by query) will be queried for list of more browsing domains. 
+	or found by query) will be queried for list of more browsing domains.
 	@param parent Parent object.
 	This process is recursive.
 	 */
 	DomainBrowser(const QStringList& domains, bool recursive=false, QObject *parent=0);
 
 	~DomainBrowser();
-	
+
 	/**
 	Current list of domains to browse.
 	 */
 	const QStringList& domains() const;
-	
+
 	/**
 	Starts browsing. To stop destroy this object.
 	 */
 	void startBrowse() ;
-	
+
 	/**
 	Returns true when browse has already started
 	 */
@@ -88,14 +84,12 @@ Q_SIGNALS:
 	 */
 	void domainAdded(const QString&);
 
-protected:
-	virtual void virtual_hook(int,void*);
 private:
 	DomainBrowserPrivate* const d;
 private Q_SLOTS:
 	void gotNewDomain(DNSSD::RemoteService::Ptr);
 	void gotRemoveDomain(DNSSD::RemoteService::Ptr);
-	void domainListChanged(int,int);
+	void domainListChanged();
 };
 
 }
