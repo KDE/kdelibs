@@ -391,8 +391,8 @@ public:
     QWidget* cursor_icon_widget;
 
     // scrolling activated by MMB
-    int m_mouseScroll_byX : 4;
-    int m_mouseScroll_byY : 4;
+    short m_mouseScroll_byX;
+    short m_mouseScroll_byY;
     QTimer *m_mouseScrollTimer;
     QWidget *m_mouseScrollIndicator;
 };
@@ -1101,20 +1101,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         (deltaX > 0) ? d->m_mouseScroll_byX = 1 : d->m_mouseScroll_byX = -1;
         (deltaY > 0) ? d->m_mouseScroll_byY = 1 : d->m_mouseScroll_byY = -1;
 
-        int adX = abs( deltaX );
-        int adY = abs( deltaY );
+        double adX = QABS(deltaX)/30.0;
+        double adY = QABS(deltaY)/30.0;
 
-        if (adX > 100) d->m_mouseScroll_byX *= 7;
-        else if (adX > 75) d->m_mouseScroll_byX *= 4;
-        else if (adX > 50) d->m_mouseScroll_byX *= 2;
-        else if (adX > 25) d->m_mouseScroll_byX *= 1;
-        else d->m_mouseScroll_byX = 0;
-
-        if (adY > 100) d->m_mouseScroll_byY *= 7;
-        else if (adY > 75) d->m_mouseScroll_byY *= 4;
-        else if (adY > 50) d->m_mouseScroll_byY *= 2;
-        else if (adY > 25) d->m_mouseScroll_byY *= 1;
-        else d->m_mouseScroll_byY = 0;
+        d->m_mouseScroll_byX = kMax(kMin(d->m_mouseScroll_byX * int(adX*adX), SHRT_MAX), SHRT_MIN);
+        d->m_mouseScroll_byY = kMax(kMin(d->m_mouseScroll_byY * int(adY*adY), SHRT_MAX), SHRT_MIN);
 
         if (d->m_mouseScroll_byX == 0 && d->m_mouseScroll_byY == 0) {
             d->m_mouseScrollTimer->stop();
