@@ -1,6 +1,8 @@
 kde_module_LTLIBRARIES = libkatepart.la
 
-libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
+noinst_LTLIBRARIES = libkate.la
+
+libkate_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
   kateundo.cpp katecursor.cpp katedialogs.cpp katedocument.cpp \
   katefactory.cpp katehighlight.cpp katesyntaxdocument.cpp \
   katetextline.cpp kateview.cpp kateconfig.cpp kateviewhelpers.cpp \
@@ -12,7 +14,9 @@ libkatepart_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
   katetemplatehandler.cpp katejscript.cpp katespell.cpp kateindentscriptabstracts.cpp \
   kateluaindentscript.cpp
 
-libkatepart_la_LIBADD = ../interfaces/libkatepartinterfaces.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(LUA_LIBS)
+libkatepart_la_SOURCES = dummy.c
+
+libkatepart_la_LIBADD = libkate.la ../interfaces/libkatepartinterfaces.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(LUA_LIBS)
 
 libkatepart_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN)
 
@@ -24,8 +28,17 @@ LUT_FILES = katejscript.lut.h
 
 CREATE_HASH_TABLE = $(top_srcdir)/kjs/create_hash_table
 
+dummy.c: $(srcdir)/Makefile.am
+	touch $@
+
 katejscript.lut.h : $(srcdir)/katejscript.cpp $(CREATE_HASH_TABLE)
 	$(PERL) $(CREATE_HASH_TABLE) $(srcdir)/katejscript.cpp > $@
 katejscript.lo: katejscript.lut.h
 
 CLEANFILES = $(LUT_FILES)
+
+## test program
+TESTS  = testkateregression
+check_PROGRAMS = testkateregression
+testkateregression_SOURCES = test_regression.cpp
+testkateregression_LDADD = $(libkatepart_la_LIBADD)
