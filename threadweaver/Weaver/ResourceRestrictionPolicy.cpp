@@ -54,6 +54,12 @@ void ResourceRestrictionPolicy::setCap (int cap)
     d->cap = cap;
 }
 
+int ResourceRestrictionPolicy::cap() const
+{
+    QMutexLocker l ( & d->mutex );
+    return d->cap;
+}
+
 bool ResourceRestrictionPolicy::canRun( Job* job )
 {
     QMutexLocker l ( & d->mutex );

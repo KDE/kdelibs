@@ -91,7 +91,7 @@ namespace ThreadWeaver {
             Note: This will not dequeue the collection itself.
         */
         void dequeueElements();
-      
+
       class Private;
       Private* d;
 

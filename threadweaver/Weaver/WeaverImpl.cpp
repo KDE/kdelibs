@@ -202,7 +202,7 @@ void WeaverImpl::adjustInventory ( int noOfNewJobs )
 		    SIGNAL ( jobDone( Job* ) ) );
 	  connect ( th,  SIGNAL ( started ( Thread* ) ),
 		    SIGNAL ( threadStarted ( Thread* ) ) );
-	  
+
 	  th->moveToThread( th ); // be sane from the start
 	  th->start ();
 	  debug ( 2, "WeaverImpl::adjustInventory: thread created, "

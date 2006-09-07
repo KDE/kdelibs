@@ -18,7 +18,7 @@
 #define DEPENDENCYPOLICY_H
 
 template <typename T> class QList;
- 
+
 #include "QueuePolicy.h"
 
 namespace ThreadWeaver {
@@ -89,7 +89,7 @@ namespace ThreadWeaver {
         /** Query whether the job has an unresolved dependency.
             In case it does, the policy will return false from canRun().
         */
-        bool hasUnresolvedDependencies( Job* );
+        bool hasUnresolvedDependencies( Job* ) const;
 
         DependencyPolicy();
 

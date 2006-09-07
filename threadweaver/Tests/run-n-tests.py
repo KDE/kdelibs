@@ -11,8 +11,8 @@ def RunTests( Number ):
     SuccessCount = 0
     Platform = platform.platform()
     Command = "LD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests >/dev/null"
-    if re.search( "Darwin", Platform ):
-        Command = "DYLD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests.app/Contents/MacOs/JobTests >/dev/null"
+#    if re.search( "Darwin", Platform ):
+#        Command = "DYLD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests.app/Contents/MacOs/JobTests >/dev/null"
     for count in range( Number ):
 	retValue = os.system ( Command)
 	resultString = " (FAILED)"

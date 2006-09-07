@@ -128,7 +128,7 @@ QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
     return result;
 }
 
-bool DependencyPolicy::hasUnresolvedDependencies( Job* job )
+bool DependencyPolicy::hasUnresolvedDependencies( Job* job ) const
 {
     REQUIRE (job != 0);
     QMutexLocker l( & d->mutex() );
