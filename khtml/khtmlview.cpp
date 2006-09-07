@@ -1472,13 +1472,9 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
       switch(_ke->key())
         {
         case Key_Space:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                scrollBy( 0, -clipper()->height() + offs );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            scrollBy( 0, -clipper()->height() + offs );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
 
         case Key_Down:
@@ -1506,69 +1502,45 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         {
         case Key_Down:
         case Key_J:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( 0, 10 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( 0, 10 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
 
         case Key_Space:
         case Key_Next:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                scrollBy( 0, clipper()->height() - offs );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            scrollBy( 0, clipper()->height() - offs );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
 
         case Key_Up:
         case Key_K:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( 0, -10 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( 0, -10 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
 
         case Key_Prior:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                scrollBy( 0, -clipper()->height() + offs );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            scrollBy( 0, -clipper()->height() + offs );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
         case Key_Right:
         case Key_L:
-            if ( d->hmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( 10, 0 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( 10, 0 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
         case Key_Left:
         case Key_H:
-            if ( d->hmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                if (!d->scrollTimerId || d->scrollSuspended)
-                    scrollBy( -10, 0 );
-                if (d->scrollTimerId)
-                    d->newScrollTimer(this, 0);
-            }
+            if (!d->scrollTimerId || d->scrollSuspended)
+                scrollBy( -10, 0 );
+            if (d->scrollTimerId)
+                d->newScrollTimer(this, 0);
             break;
         case Key_Enter:
         case Key_Return:
@@ -1581,22 +1553,14 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    }
             break;
         case Key_Home:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                setContentsPos( 0, 0 );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            setContentsPos( 0, 0 );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
         case Key_End:
-            if ( d->vmode == QScrollView::AlwaysOff )
-                _ke->accept();
-            else {
-                setContentsPos( 0, contentsHeight() - visibleHeight() );
-                if(d->scrollSuspended)
-                    d->newScrollTimer(this, 0);
-            }
+            setContentsPos( 0, contentsHeight() - visibleHeight() );
+            if(d->scrollSuspended)
+                d->newScrollTimer(this, 0);
             break;
         case Key_Shift:
             // what are you doing here?
@@ -3238,11 +3202,6 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
         if ( m_part->parentPart()->view() )
             m_part->parentPart()->view()->wheelEvent( e );
         e->ignore();
-    }
-    else if ( (e->orientation() == Vertical && d->vmode == QScrollView::AlwaysOff) ||
-              (e->orientation() == Horizontal && d->hmode == QScrollView::AlwaysOff) )
-    {
-        e->accept();
     }
     else
     {
