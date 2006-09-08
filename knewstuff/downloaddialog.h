@@ -177,7 +177,7 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KPageDialog
     void slotInstalled(KJob *job);
     void slotTab(int tab);
     void slotSelected();
-    void slotPage(QWidget *w);
+    void slotPage(KPageWidgetItem *current);
     void slotFinish();
     void slotEmail(const QString& link);
 
@@ -193,7 +193,7 @@ class KNEWSTUFF_EXPORT DownloadDialog : public KPageDialog
     QString m_entryname;
     QTreeWidget *lv_r, *lv_d, *lv_l;
     QTextBrowser *m_rt;
-    QFrame *m_frame;
+    KPageWidgetItem *m_item;
     QTreeWidgetItem *m_entryitem;
     QList<Entry*> m_entries;
     Entry *m_entry;

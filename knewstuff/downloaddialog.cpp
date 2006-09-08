@@ -117,7 +117,8 @@ void DownloadDialog::init(Engine *engine)
   m_engine = engine;
   d->m_page = NULL;
 
-  connect(this, SIGNAL(currentPageChanged(QWidget*)), SLOT(slotPage(QWidget*)));
+  connect(this, SIGNAL(currentPageChanged(KPageWidgetItem*, KPageWidgetItem*)),
+          this, SLOT(slotPage(KPageWidgetItem*)));
 
   if(!engine)
   {
@@ -172,7 +173,7 @@ void DownloadDialog::slotProviders(Provider::List *list)
     else
       addProvider(p);
     /*if(p == list->getFirst())
-      slotPage(m_frame);*/ // only if !qtbug
+      slotPage(m_item);*/ // only if !qtbug
   }
 }
 
@@ -213,10 +214,9 @@ void DownloadDialog::addProvider(Provider *p)
   if(!ret) pix = KGlobal::iconLoader()->loadIcon("knewstuff", K3Icon::Panel);
 
   frame = new QFrame( this );
-  KPageWidgetItem *item = addPage(frame, p->name());
-  item->setHeader( p->name() );
+  m_item = addPage(frame, p->name());
+  m_item->setHeader( p->name() );
   //FIXME: set icon: item->setIcon(pix);
-  m_frame = frame;
 
   w2 = new QWidget(frame);
   w_d = new QWidget(frame);
@@ -296,7 +296,7 @@ void DownloadDialog::addProvider(Provider *p)
 
   kDebug() << "addProvider()/end; d->m_lvtmp_r = " << d->m_lvtmp_r << endl;
 
-  if(m_engine) slotPage(frame);
+  if(m_engine) slotPage(m_item);
 
   QTimer::singleShot(100, this, SLOT(slotFinish()));
 }
@@ -334,7 +334,7 @@ void DownloadDialog::slotResult(KJob *job)
         if(d->m_newproviders[p])
         {
           addProvider(p);
-          slotPage(m_frame);
+          slotPage(m_item);
           d->m_newproviders[p] = 0;
         }
       }
@@ -717,8 +717,9 @@ Entry *DownloadDialog::getEntry()
   return 0;
 }
 
-void DownloadDialog::slotPage(QWidget *w)
+void DownloadDialog::slotPage(KPageWidgetItem *current)
 {
+  QWidget* w = current->widget();
   Provider *p;
 
   kDebug() << "changed widget!!!" << endl;
@@ -771,7 +772,7 @@ void DownloadDialog::loadProvider(Provider *p)
 
   QMap<QString, QStringList> urls;
 
-  for(QStringList::Iterator it = variants.begin(); it != variants.end(); it++)
+  for(QStringList::Iterator it = variants.begin(); it != variants.end(); /*it++ already done by erase*/)
   {
     QString url = p->downloadUrlVariant((*it)).url();
     if(!urls.contains(url))
