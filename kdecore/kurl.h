@@ -737,10 +737,7 @@ public:
    */
   KUrl upUrl( ) const;
 
-#if 0
   KUrl& operator=( const KUrl& _u );
-  KUrl& operator=( const QUrl & u );
-#endif
 
   // Define those, since the constructors are explicit
   KUrl& operator=( const char * _url ) { *this = KUrl(_url); return *this; }

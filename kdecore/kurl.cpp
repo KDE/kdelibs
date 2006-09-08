@@ -444,6 +444,12 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
   }
 }
 
+KUrl& KUrl::operator=( const KUrl& _u )
+{
+  QUrl::operator=( _u );
+  return *this;
+}
+
 bool KUrl::operator==( const KUrl& _u ) const
 {
   if ( !isValid() || !_u.isValid() )
