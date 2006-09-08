@@ -14,7 +14,7 @@ libkate_la_SOURCES = katesearch.cpp katebuffer.cpp katecmds.cpp \
   katetemplatehandler.cpp katejscript.cpp katespell.cpp kateindentscriptabstracts.cpp \
   kateluaindentscript.cpp
 
-libkatepart_la_SOURCES = dummy.c
+libkatepart_la_SOURCES = dummy.cpp
 
 libkatepart_la_LIBADD = libkate.la ../interfaces/libkatepartinterfaces.la $(top_builddir)/kdeprint/libkdeprint.la $(top_builddir)/kutils/libkutils.la $(top_builddir)/kjs/libkjs.la $(LUA_LIBS)
 
@@ -28,7 +28,7 @@ LUT_FILES = katejscript.lut.h
 
 CREATE_HASH_TABLE = $(top_srcdir)/kjs/create_hash_table
 
-dummy.c: $(srcdir)/Makefile.am
+dummy.cpp: $(srcdir)/Makefile.am
 	touch $@
 
 katejscript.lut.h : $(srcdir)/katejscript.cpp $(CREATE_HASH_TABLE)
