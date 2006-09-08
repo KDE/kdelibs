@@ -80,6 +80,8 @@ void KRemoteEncoding::setEncoding(const char *name)
 
   if (name)
     codec = QTextCodec::codecForName(name);
+  else
+    codec = QTextCodec::codecForMib( 106 ); // fallback to UTF-8
 
   if (codec == 0)
     codec = QTextCodec::codecForMib(4 /* latin-1 */);
