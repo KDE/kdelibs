@@ -244,8 +244,15 @@ void KRecentFilesAction::setMaxItems( int maxItems )
         delete removeAction(selectableActionGroup()->actions().last());
 }
 
-void KRecentFilesAction::addUrl( const KUrl& url, const QString& name )
+void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
 {
+    /**
+     * Create a deep copy here, because if _url is the parameter from
+     * urlSelected() signal, we will delete it in the removeAction() call below.
+     * but access it again in the addAction call... => crash
+     */
+    const KUrl url( _url );
+
     if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
        return;
     const QString tmpName = name.isEmpty() ?  url.fileName() : name;
