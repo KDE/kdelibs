@@ -927,11 +927,14 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 {
     if ( d->clickInClear ) {
         if ( d->clearButton->underMouse() ) {
+            QString newText;
             if ( e->button() == Qt::MidButton ) {
+                QString newText = QApplication::clipboard()->text( QClipboard::Selection );
                 setText( QApplication::clipboard()->text( QClipboard::Selection ) );
             } else {
                 clear();
             }
+            emit textChanged( newText );
         }
 
         d->clickInClear = false;
