@@ -25,12 +25,19 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 {
 	m_ui.setupUi(this);
 	m_ui.Sound_play->setIcon( QIcon( SmallIcon("play")));
+	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.Sound_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.Popup_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.Logfile_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.Taskbar_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 }
 
 
 
 void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config )
 {
+	blockSignals(true); //to block the changed() signal
 	QString prstring=config->readEntry( "Action" );
 	QStringList actions=prstring.split ("|");
 
@@ -43,6 +50,7 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "sound" , true ) ) );
 	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "logfile" , true ) ) );
 	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "execute"  ) ) );
+	blockSignals(false);
 }
 
 void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
@@ -66,3 +74,4 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 	config->writeEntry( "execute" , m_ui.Execute_select->url().url() );
 }
 
+#include "knotifyconfigactionswidget.moc"

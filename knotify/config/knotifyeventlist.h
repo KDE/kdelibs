@@ -42,11 +42,13 @@ public:
 	void fill( const QString & appname , const QString & context_name=QString() , 
 			   const QString & context_value=QString());
 	void save();
-	
+	void updateCurrentItem();
 private:
 	KConfig *config;
 	KConfig *loconf;
 	QList<KNotifyEventListItem*> m_elements;
+	
+	class KNotifyEventListDelegate;
 	
 private Q_SLOTS:
 	void slotSelectionChanged(QTreeWidgetItem *current , QTreeWidgetItem *previous);

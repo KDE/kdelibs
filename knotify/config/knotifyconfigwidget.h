@@ -78,6 +78,7 @@ private:
 	Private* const d;
 private Q_SLOTS:
 	void slotEventSelected( KNotifyConfigElement *e);
+	void slotActionChanged();
 	
 };
 

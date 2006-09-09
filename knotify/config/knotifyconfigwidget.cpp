@@ -41,6 +41,7 @@ KNotifyConfigWidget::KNotifyConfigWidget( QWidget * parent )
 	d->actionsconfig->setEnabled(false);
 	connect(d->eventList , SIGNAL(eventSelected( KNotifyConfigElement* )) , 
 			this , SLOT(slotEventSelected( KNotifyConfigElement* )));
+	connect(d->actionsconfig,SIGNAL(changed()),this,SLOT(slotActionChanged()));
 }
 
 
@@ -99,6 +100,16 @@ KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QS
 	w->setApplication(appname);
 	dialog->show();
 	return w;
+}
+
+void KNotifyConfigWidget::slotActionChanged()
+{
+	emit changed( true ); //TODO
+	if(d->currentElement)
+	{
+		d->actionsconfig->save( d->currentElement );
+		d->eventList->updateCurrentItem();
+	}
 }
 
 

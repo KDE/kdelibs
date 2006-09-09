@@ -33,12 +33,15 @@ class KNotifyConfigElement;
  */
 class KNotifyConfigActionsWidget : public QWidget
 {
+	Q_OBJECT
 	public:
 		KNotifyConfigActionsWidget( QWidget *parent);
 		~KNotifyConfigActionsWidget() {}
 		
 		void setConfigElement( KNotifyConfigElement *config );
 		void save( KNotifyConfigElement *config );
+	signals:
+		void changed();
 	private:
 		Ui::KNotifyConfigActionsWidgetBase m_ui;
 };

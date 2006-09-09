@@ -20,21 +20,68 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <QItemDelegate>
+#include <QPainter>
 
+//BEGIN KNotifyEventListDelegate
+
+class KNotifyEventList::KNotifyEventListDelegate : public QItemDelegate
+{
+	public:
+		virtual void paint( QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index ) const;
+	private:
+};
+
+void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
+		 const QStyleOptionViewItem& option, const QModelIndex& index ) const
+{
+	if (index.column() != 2)
+		return QItemDelegate::paint(painter, option, index);
+
+	QVariant displayData = index.data(Qt::UserRole);
+	QString prstring=displayData.toString();
+
+	QItemDelegate::paint(painter, option, index);
+	
+	kDebug(300) << k_funcinfo << prstring << endl;
+	
+	QRect rect=option.rect;
+	
+	
+	int mc_x=0;
+	foreach(QString key , prstring.split ("|"))
+	{
+		QPixmap icon;
+		if(key == "Sound" )
+			icon = SmallIcon("sound");
+		else if(key == "Popup" )
+			icon = SmallIcon("info");
+		else if(key == "Execute" )
+			icon = SmallIcon("exec");
+		else if(key == "Taskbar" )
+			icon = SmallIcon("kicker");
+		else if(key == "Logfile" )
+			icon = SmallIcon("log");
+		else 
+			continue;
+		
+		painter->drawPixmap( rect.left() + mc_x +4, rect.top() + (rect.height() - icon.height())/2, icon );
+		mc_x += icon.width()+4;
+	} 
+
+}
+
+//END KNotifyEventListDelegate
 
 KNotifyEventList::KNotifyEventList(QWidget *parent)
  : QTreeWidget(parent)  , config(0l) , loconf(0l)
 {
   QStringList headerLabels;
-  headerLabels << i18n( "Title" ) << i18n( "Description" ) << "" << "" << "" << "" << "" ; //<< i18n( "State" );
+  headerLabels << i18n( "Title" ) << i18n( "Description" ) << i18n( "State" );
   setHeaderLabels( headerLabels );
 
-  resizeColumnToContents(2);
-  resizeColumnToContents(3);
-  resizeColumnToContents(4);
-  resizeColumnToContents(5);
-  resizeColumnToContents(6);
-
+  setItemDelegate(new KNotifyEventListDelegate);
+  
   connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
 }
 
@@ -100,6 +147,12 @@ void KNotifyEventList::slotSelectionChanged(  QTreeWidgetItem *current , QTreeWi
 		it->update();
 }
 
+void KNotifyEventList::updateCurrentItem()
+{
+	KNotifyEventListItem *it=dynamic_cast<KNotifyEventListItem *>(currentItem());
+	if(it)
+		it->update();
+}
 
 
 KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString & eventName,
@@ -128,7 +181,8 @@ void KNotifyEventListItem::save()
 
 void KNotifyEventListItem::update()
 {
-	QString prstring=m_config.readEntry( "Action" );
+	setData(2 , Qt::UserRole , m_config.readEntry( "Action" ));
+/*	QString prstring=m_config.readEntry( "Action" );
 	QStringList actions=prstring.split ("|");
 
 	QPixmap pexec = SmallIcon("exec");
@@ -142,8 +196,10 @@ void KNotifyEventListItem::update()
 	setIcon(3 , actions.contains("Popup") ? QIcon(pmessage) : QIcon() );
 	setIcon(4 , actions.contains("Execute") ? QIcon(pexec) : QIcon() );
 	setIcon(5 , actions.contains("Taskbar") ? QIcon(ptaskbar) : QIcon() );
-	setIcon(6 , actions.contains("Logfile") ? QIcon(plogfile) : QIcon() );
+	setIcon(6 , actions.contains("Logfile") ? QIcon(plogfile) : QIcon() );*/
 }
+
+
 
 
 
