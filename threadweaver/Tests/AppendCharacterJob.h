@@ -59,5 +59,23 @@ public:
     }
 };
 
+class BusyJob : public ThreadWeaver::Job
+{
+    Q_OBJECT
+
+public:
+    BusyJob( QObject* parent = 0 )
+        : ThreadWeaver::Job ( parent )
+    {
+    }
+
+    void run()
+    {
+      for (int i = 0; i < INT_MAX; ++i) {
+        int k = i << 3 + i >> 4;
+      }
+    }
+};
+
 #endif
 

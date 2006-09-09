@@ -27,3 +27,14 @@ ADD_TEST(QueueTests QueueTests)
 
 target_link_libraries(QueueTests ${QT_QTTEST_LIBRARY} ThreadWeaver)
 
+########### next target ###############
+
+set(DeleteTest_SRCS DeleteTest.cpp AppendCharacterJob.cpp)
+
+QT4_AUTOMOC(${DeleteTest_SRCS})
+
+add_executable(DeleteTest ${DeleteTest_SRCS})
+ADD_TEST(DeleteTest DeleteTest)
+
+target_link_libraries(DeleteTest ${QT_QTTEST_LIBRARY} ThreadWeaver)
+
