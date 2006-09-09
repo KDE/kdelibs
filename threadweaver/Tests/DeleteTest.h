@@ -2,6 +2,7 @@
 #define DELETETEST_H
 
 #include <QtCore/QCoreApplication>
+#include <QtCore/QMutex>
 
 namespace ThreadWeaver { class Job; }
 
@@ -16,6 +17,10 @@ public:
 
 public slots:
   void deleteSequence(Job* job);
+
+private:
+  int m_finishCount;
+  mutable QMutex m_finishMutex;
 };
 
 #endif

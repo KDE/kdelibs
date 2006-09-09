@@ -31,9 +31,11 @@ int main(int argc, char **argv)
 DeleteTest::DeleteTest(int argc, char **argv)
   : QCoreApplication(argc, argv)
 {
-  ThreadWeaver::setDebugLevel ( true,  1 );
+  ThreadWeaver::setDebugLevel ( true,  3 );
 
   ThreadWeaver::Weaver::instance()->setMaximumNumberOfThreads(4);
+
+  m_finishCount = 100;
 
   for (int i = 0; i < 100; ++i) {
     ThreadWeaver::JobSequence* jobSeq = new ThreadWeaver::JobSequence( this );
@@ -52,6 +54,11 @@ void DeleteTest::deleteSequence(Job* job)
 {
   Q_ASSERT(job);
   delete job;
+
+  QMutexLocker lock(&m_finishMutex);
+  --m_finishCount;
+  if (m_finishCount == 0)
+    exit(0);
 }
 
 QMutex s_GlobalMutex;
