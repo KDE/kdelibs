@@ -223,7 +223,7 @@ public:
 	 */
 	bool abort();
 	/**
-	 * See QPrinter::aborted(.)
+	 * See QPrinter::aborted()
 	 */
 	bool aborted() const;
 	/**
