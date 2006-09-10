@@ -42,7 +42,7 @@ class KFindDialog::KFindDialogPrivate
 public:
     KFindDialogPrivate() : m_regexpDialog(0),
         m_regexpDialogQueryDone(false),
-        m_enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | Qt::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression), m_initialShowDone(false) {}
+        m_enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression), m_initialShowDone(false) {}
     QDialog* m_regexpDialog;
     bool m_regexpDialogQueryDone;
     long m_enabled; // uses Options to define which search options are enabled
@@ -319,7 +319,7 @@ long KFindDialog::options() const
     long options = 0;
 
     if (m_caseSensitive->isChecked())
-        options |= Qt::CaseSensitive;
+        options |= KFind::CaseSensitive;
     if (m_wholeWordsOnly->isChecked())
         options |= KFind::WholeWordsOnly;
     if (m_fromCursor->isChecked())
@@ -398,10 +398,10 @@ void KFindDialog::setSupportsBackwardsFind( bool supports )
 void KFindDialog::setSupportsCaseSensitiveFind( bool supports )
 {
     // ########## This should hide the checkbox instead
-    if (supports) d->m_enabled |= Qt::CaseSensitive;
-    else d->m_enabled &= ~Qt::CaseSensitive;
+    if (supports) d->m_enabled |= KFind::CaseSensitive;
+    else d->m_enabled &= ~KFind::CaseSensitive;
     m_caseSensitive->setEnabled( supports );
-    m_caseSensitive->setChecked( supports && (options() & Qt::CaseSensitive) );
+    m_caseSensitive->setChecked( supports && (options() & KFind::CaseSensitive) );
 }
 
 void KFindDialog::setSupportsWholeWordsFind( bool supports )
@@ -424,7 +424,7 @@ void KFindDialog::setSupportsRegularExpressionFind( bool supports )
 
 void KFindDialog::setOptions(long options)
 {
-    m_caseSensitive->setChecked((d->m_enabled & Qt::CaseSensitive) && (options & Qt::CaseSensitive));
+    m_caseSensitive->setChecked((d->m_enabled & KFind::CaseSensitive) && (options & KFind::CaseSensitive));
     m_wholeWordsOnly->setChecked((d->m_enabled & KFind::WholeWordsOnly) && (options & KFind::WholeWordsOnly));
     m_fromCursor->setChecked((d->m_enabled & KFind::FromCursor) && (options & KFind::FromCursor));
     m_findBackwards->setChecked((d->m_enabled & KFind::FindBackwards) && (options & KFind::FindBackwards));
