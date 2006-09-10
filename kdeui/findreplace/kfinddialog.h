@@ -215,6 +215,13 @@ public:
      */
     QWidget *findExtension();
 
+Q_SIGNALS:
+    /**
+     * This signal is sent whenever one of the option checkboxes is toggled.
+     * Call options() to get the new state of the checkboxes.
+     */
+     void optionsChanged();
+
 protected Q_SLOTS:
 
     void slotOk();

@@ -215,6 +215,15 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 
     connect(m_find, SIGNAL(editTextChanged(const QString &)),this, SLOT(textSearchChanged(const QString &)));
 
+    connect(m_regExp, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_backRef, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_caseSensitive, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_wholeWordsOnly, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_fromCursor, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_findBackwards, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_selectedText, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+    connect(m_promptOnReplace, SIGNAL(toggled(bool)), this, SIGNAL(optionsChanged()));
+
     // tab order
     setTabOrder(m_find, m_regExp);
     setTabOrder(m_regExp, m_regExpItem);
