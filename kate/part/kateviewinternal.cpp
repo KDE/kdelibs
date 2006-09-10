@@ -1261,20 +1261,17 @@ void KateViewInternal::end( bool sel )
     m_view->m_codeCompletion->handleKey(&e);
     return;
   }
-  
-  // FIXME: Both "smart end" and "smart home" use the current range's last/first character
-  //        when jumping to the "absolute" extreme. For 4.0 and 3.5.5 (kling)
-  bool alreadyAtEndOfLine = false;
 
-  if (m_view->dynWordWrap() && currentRange().wrap) {
+  KateLineRange range = currentRange();
+
+  if (m_view->dynWordWrap() && range.wrap) {
     // Allow us to go to the real end if we're already at the end of the view line
-    if (cursor.col() < currentRange().endCol - 1) {
-      KateTextCursor c(cursor.line(), currentRange().endCol - 1);
+    if (cursor.col() < range.endCol - 1) {
+      KateTextCursor c(cursor.line(), range.endCol - 1);
       updateSelection( c, sel );
       updateCursor( c );
       return;
     }
-    alreadyAtEndOfLine = true;
   }
 
   if( !(m_doc->configFlags() & KateDocument::cfSmartHome) ) {
@@ -1289,23 +1286,16 @@ void KateViewInternal::end( bool sel )
 
   // "Smart End", as requested in bugs #78258 and #106970
   KateTextCursor c = cursor;
-  int lc = l->lastChar();
 
-  // Apparently, currentRange().endCol differs by 1 depending on m_view->dynWordWrap()...
-  int endOfLine = currentRange().endCol - (m_view->dynWordWrap() ? 1 : 0);
-
-  if (lc < 0 || c.col() == (lc + 1)) {
-    if (alreadyAtEndOfLine) {
-      moveEdge(right, sel);
-      return;
-    }
-    c.setCol(endOfLine);
+  // If the cursor is already the real end, jump to last non-space character.
+  // Otherwise, go to the real end ... obviously.
+  if (c.col() == m_doc->lineLength(c.line())) {
+    c.setCol(l->lastChar() + 1);
+    updateSelection(c, sel);
+    updateCursor(c, true);
   } else {
-    c.setCol(lc + 1);
+    moveEdge(right, sel);
   }
-
-  updateSelection( c, sel );
-  updateCursor( c, true );
 }
 
 KateLineRange KateViewInternal::range(int realLine, const KateLineRange* previous)
