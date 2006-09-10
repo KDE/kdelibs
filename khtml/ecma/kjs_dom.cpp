@@ -1198,9 +1198,9 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
     case DOMElement::GetAttributeNode:
       return getDOMNode(exec,element.getAttributeNode(args[0].toString(exec).string()));
     case DOMElement::SetAttributeNode:
-      return getDOMNode(exec,element.setAttributeNode((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
+      return getDOMNode(exec,element.setAttributeNode(KJS::toNode(args[0])));
     case DOMElement::RemoveAttributeNode:
-      return getDOMNode(exec,element.removeAttributeNode((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
+      return getDOMNode(exec,element.removeAttributeNode(KJS::toNode(args[0])));
     case DOMElement::GetElementsByTagName:
       return getDOMNodeList(exec,element.getElementsByTagName(args[0].toString(exec).string()));
     case DOMElement::HasAttribute: // DOM2
@@ -1216,7 +1216,7 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
     case DOMElement::GetAttributeNodeNS: // DOM2
       return getDOMNode(exec,element.getAttributeNodeNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
     case DOMElement::SetAttributeNodeNS: // DOM2
-      return getDOMNode(exec,element.setAttributeNodeNS((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
+      return getDOMNode(exec,element.setAttributeNodeNS(KJS::toNode(args[0])));
     case DOMElement::GetElementsByTagNameNS: // DOM2
       return getDOMNodeList(exec,element.getElementsByTagNameNS(args[0].toString(exec).string(),args[1].toString(exec).string()));
     case DOMElement::HasAttributeNS: // DOM2
@@ -1393,7 +1393,7 @@ Value DOMNamedNodeMapProtoFunc::tryCall(ExecState *exec, Object &thisObj, const 
     case DOMNamedNodeMap::GetNamedItem:
       return getDOMNode(exec, map.getNamedItem(args[0].toString(exec).string()));
     case DOMNamedNodeMap::SetNamedItem:
-      return getDOMNode(exec, map.setNamedItem((new DOMNode(exec,KJS::toNode(args[0])))->toNode()));
+      return getDOMNode(exec, map.setNamedItem(KJS::toNode(args[0])));
     case DOMNamedNodeMap::RemoveNamedItem:
       return getDOMNode(exec, map.removeNamedItem(args[0].toString(exec).string()));
     case DOMNamedNodeMap::Item:
