@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1996 Martynas Kunigelis
-   Copyright (C) 2006 Urs Wolfer <uwolfer at fwo.ch>
+   Copyright (C) 2006 Urs Wolfer <uwolfer at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,21 +16,13 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-/*****************************************************************************
-*                                                                            *
-*  KProgressDialog -- a dialog with a progress indicator                     *
-*  Original QRangeControl-based version written by Martynas Kunigelis        *
-*  QProgressBar based version by Aaron Seigo                                 *
-*  Current Qt4 QProgressBar based version by Urs Wolfer                      *
-*                                                                            *
-*****************************************************************************/
 
 #ifndef KPROGRESSDIALOG_H
 #define KPROGRESSDIALOG_H
 
 #include <kdialog.h>
 
-class KProgressBar;
+class QProgressBar;
 
 /**
  * @short A dialog with a progress bar
@@ -44,7 +36,7 @@ class KProgressBar;
  * There is a time out that can be set before showing the dialog as well
  * as an option to autohide or keep displaying the dialog once complete.
  *
- * All the functionality of KProgressBar is available through direct access
+ * All the functionality of QProgressBar is available through direct access
  * to the progress bar widget via progressBar();
  *
  * @author Aaron J. Seigo
@@ -72,18 +64,18 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         ~KProgressDialog();
 
         /**
-         * Returns the KProgressBar used in this dialog.
+         * Returns the QProgressBar used in this dialog.
          * To set the number of steps or other progress bar related
-         * settings, access the KProgressBar object directly via this method.
+         * settings, access the QProgressBar object directly via this method.
          */
-        KProgressBar* progressBar();
+        QProgressBar* progressBar();
 
         /**
-         * Returns the KProgressBar used in this dialog.
+         * Returns the QProgressBar used in this dialog.
          * To set the number of steps or other progress bar related
-         * settings, access the KProgressBar object directly via this method.
+         * settings, access the QProgressBar object directly via this method.
          */
-        const KProgressBar* progressBar() const;
+        const QProgressBar* progressBar() const;
 
         /**
          * Sets the text in the dialog
@@ -123,7 +115,7 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
 
         /**
          * Sets whether the dialog should close automagically when
-         * all the steps in the KProgressBar have been completed.
+         * all the steps in the QProgressBar have been completed.
          */
         void setAutoClose(bool close);
 
@@ -134,14 +126,14 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         bool autoClose() const;
 
         /**
-         * Sets whether the dialog should reset the KProgressBar dialog
+         * Sets whether the dialog should reset the QProgressBar dialog
          * back to 0 steps compelete when all steps have been completed.
          * This is useful for KProgressDialogs that will be reused.
          */
         void setAutoReset(bool autoReset);
 
         /**
-         * Returns true if the KProgressBar widget will be reset
+         * Returns true if the QProgressBar widget will be reset
          * upon completion, or false otherwise
          */
         bool autoReset() const;

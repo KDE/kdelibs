@@ -1,2 +1,1 @@
-kprogressbar - See if QProgressBar can't get the ability to setFormat().  Only kvoctrain, kmine & kviewshell, the rest can use QProgressBar (they don't use setFormat), kmine might be able to use it too (double check ui files)
 ksqueezedtextlabel <- add as Qt task to get QLabel to support it.

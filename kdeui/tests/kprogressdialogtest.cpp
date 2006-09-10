@@ -37,7 +37,7 @@ private:
 
 void MyWidget::timerEvent(QTimerEvent *)
 {
-    Progress->progressBar()->advance(1);
+    Progress->progressBar()->setValue(Progress->progressBar()->value()+1);
     Cancelled->setCheckState(Progress->wasCancelled() ? Qt::Checked : Qt::Unchecked);
 }
 

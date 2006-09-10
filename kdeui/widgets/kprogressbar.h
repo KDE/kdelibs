@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1996 Martynas Kunigelis
-   Copyright (C) 2006 Urs Wolfer <uwolfer at fwo.ch>
+   Copyright (C) 2006 Urs Wolfer <uwolfer at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -53,16 +53,18 @@ class KDEUI_EXPORT KProgressBar : public QProgressBar
 public:
   /**
    * Construct a progress bar.
+   * @deprecated Use QProgressBar. ( advance(int offset) -> setValue(value()+offset) )
    */
-  explicit KProgressBar(QWidget *parent=0);
+  explicit KDE_CONSTRUCTOR_DEPRECATED KProgressBar(QWidget *parent=0);
 
   /**
    * Construct a progress bar with a total number of steps.
    * The totalSteps is the total number of steps that need to be completed for the operation which this progress
    * bar represents. For example, if the operation is to examine 50 files, this value would be 50. Before examining
    * the first file, call setValue(0); call setValue(50) after examining the last file.
+   * @deprecated Use QProgressBar. ( advance(int offset) -> setValue(value()+offset) )
    */
-  explicit KProgressBar(int totalSteps, QWidget *parent=0);
+  explicit KDE_CONSTRUCTOR_DEPRECATED KProgressBar(int totalSteps, QWidget *parent=0);
 
   /**
    * Destruct the progress bar.

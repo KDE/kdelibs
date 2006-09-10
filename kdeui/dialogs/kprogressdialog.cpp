@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1996 Martynas Kunigelis
-   Copyright (C) 2006 Urs Wolfer <uwolfer at fwo.ch>
+   Copyright (C) 2006 Urs Wolfer <uwolfer at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,10 +24,10 @@
 
 #include <QLabel>
 #include <QLayout>
+#include <QProgressBar>
 #include <QTimer>
 
 #include <kguiitem.h>
-#include <kprogressbar.h>
 #include <kpushbutton.h>
 
 struct KProgressDialog::KProgressDialogPrivate
@@ -50,7 +50,7 @@ struct KProgressDialog::KProgressDialogPrivate
     bool          mShown;
     QString       mCancelText;
     QLabel*       mLabel;
-    KProgressBar* mProgressBar;
+    QProgressBar* mProgressBar;
     QTimer*       mShowTimer;
     int           mMinDuration;
 };
@@ -75,7 +75,7 @@ KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
     d->mLabel = new QLabel(text, mainWidget);
     layout->addWidget(d->mLabel);
 
-    d->mProgressBar = new KProgressBar(mainWidget);
+    d->mProgressBar = new QProgressBar(mainWidget);
     layout->addWidget(d->mProgressBar);
 
     setMainWidget(mainWidget);
@@ -150,12 +150,12 @@ bool KProgressDialog::allowCancel() const
     return d->mAllowCancel;
 }
 
-KProgressBar* KProgressDialog::progressBar()
+QProgressBar* KProgressDialog::progressBar()
 {
     return d->mProgressBar;
 }
 
-const KProgressBar* KProgressDialog::progressBar() const
+const QProgressBar* KProgressDialog::progressBar() const
 {
     return d->mProgressBar;
 }
