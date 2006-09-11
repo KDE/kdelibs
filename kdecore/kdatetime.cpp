@@ -1101,6 +1101,19 @@ KDateTime KDateTime::currentUtcDateTime()
 #endif
 }
 
+KDateTime KDateTime::currentDateTime(const Spec &spec)
+{
+    switch (spec.type())
+    {
+        case UTC:
+            return currentUtcDateTime();
+        case LocalZone:
+            return currentLocalDateTime();
+        default:
+            return currentUtcDateTime().toTimeSpec(spec);
+    }
+}
+
 KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
 {
     QDateTime start1, start2;

@@ -1082,7 +1082,7 @@ class KDECORE_EXPORT KDateTime
      * expressed in the local system time zone.
      *
      * @return current date/time
-     * @see currentUtcDateTime()
+     * @see currentUtcDateTime(), currentDateTime()
      */
     static KDateTime currentLocalDateTime();
 
@@ -1091,9 +1091,19 @@ class KDECORE_EXPORT KDateTime
      * expressed in UTC.
      *
      * @return current date/time
-     * @see currentLocalDateTime()
+     * @see currentLocalDateTime(), currentDateTime()
      */
     static KDateTime currentUtcDateTime();
+
+    /**
+     * Returns the current date and time, as reported by the system clock,
+     * expressed in a given time specification.
+     *
+     * @param spec time specification
+     * @return current date/time
+     * @see currentUtcDateTime(), currentLocalDateTime()
+     */
+    static KDateTime currentDateTime(const Spec &spec);
 
     /**
      * Returns the date/time as a string. The @p format parameter determines the
