@@ -164,8 +164,6 @@ Slave::~Slave()
     }
     unlinkSocket();
     m_pid = 99999;
-    delete d;
-    d = 0;
 }
 
 void Slave::setProtocol(const QString & protocol)
