@@ -322,27 +322,6 @@ public:
 #endif
 
   /**
-   * Adds a message type to the KIPC event mask. You can only add "system
-   * messages" to the event mask. These are the messages with id < 32.
-   * Messages with id >= 32 are user messages.
-   * @param id The message id. See KIPC::Message.
-   * @see KIPC
-   * @see removeKipcEventMask()
-   * @see kipcMessage()
-   */
-  void addKipcEventMask(int id);
-
-  /**
-   * Removes a message type from the KIPC event mask. This message will
-   * not be handled anymore.
-   * @param id The message id.
-   * @see KIPC
-   * @see addKipcEventMask()
-   * @see kipcMessage()
-   */
-  void removeKipcEventMask(int id);
-
-  /**
    * Returns the app startup notification identifier for this running
    * application.
    * @return the startup notification identifier
@@ -426,9 +405,6 @@ protected:
   bool x11EventFilter( XEvent * );
 #endif
 
-  Atom kipcCommAtom;
-  int kipcEventMask;
-
   /// Current application object.
   static KApplication *KApp;
 
@@ -478,103 +454,7 @@ public:
    */
   static void startKdeinit();
 
-  /**
-   * Valid values for the settingsChanged signal
-   */
-  enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
-         SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS };
-
-  /**
-   * Used to obtain the QPalette that will be used to set the application palette.
-   *
-   * This is only useful for configuration modules such as krdb and should not be
-   * used in normal circumstances.
-   * @return the QPalette
-   */
-  static QPalette createApplicationPalette();
-
-  /**
-   * @internal
-   * Raw access for use by KDM.
-   * note: expects config to be in the correct group already.
-   */
-  static QPalette createApplicationPalette( KConfigBase *config, int contrast );
-
 Q_SIGNALS:
-  /**
-   * Emitted when KApplication has changed its palette due to a KControl request.
-   *
-   * Normally, widgets will update their palette automatically, but you
-   * should connect to this to program special behavior.
-   */
-  void kdisplayPaletteChanged();
-
-  /**
-   * Emitted when KApplication has changed its GUI style in response to a KControl request.
-   *
-   * Normally, widgets will update their styles automatically (as they would
-   * respond to an explicit setGUIStyle() call), but you should connect to
-   * this to program special behavior.
-   */
-  void kdisplayStyleChanged();
-
-  /**
-   * Emitted when KApplication has changed its font in response to a KControl request.
-   *
-   * Normally widgets will update their fonts automatically, but you should
-   * connect to this to monitor global font changes, especially if you are
-   * using explicit fonts.
-   *
-   * Note: If you derive from a QWidget-based class, a faster method is to
-   *       reimplement QWidget::fontChange(). This is the preferred way
-   *       to get informed about font updates.
-   */
-  void kdisplayFontChanged();
-
-  /**
-   * Emitted when KApplication has changed either its GUI style, its font or its palette
-   * in response to a kdisplay request. Normally, widgets will update their styles
-   * automatically, but you should connect to this to program special
-   * behavior. */
-  void appearanceChanged();
-
-  /**
-   * Emitted when the settings for toolbars have been changed. KToolBar will know what to do.
-   */
-  void toolbarAppearanceChanged(int);
-
-  /**
-   * Emitted when the desktop background has been changed by @p kcmdisplay.
-   *
-   * @param desk The desktop whose background has changed.
-   */
-  void backgroundChanged(int desk);
-
-  /**
-   * Emitted when the global settings have been changed - see KGlobalSettings
-   * KApplication takes care of calling reparseConfiguration on KGlobal::config()
-   * so that applications/classes using this only have to re-read the configuration
-   * @param category the category among the enum above
-   */
-  void settingsChanged(int category);
-
-  /**
-   * Emitted when the global icon settings have been changed.
-   * @param group the new group
-   */
-  void iconChanged(int group);
-
-  /**
-   * Emitted when a KIPC user message has been received.
-   * @param id the message id
-   * @param data the data
-   * @see KIPC
-   * @see KIPC::Message
-   * @see addKipcEventMask
-   * @see removeKipcEventMask
-   */
-  void kipcMessage(int id, int data);
-
   /**
       Session management asks you to save the state of your application.
 
@@ -608,11 +488,6 @@ private:
 #ifndef KDE3_SUPPORT
   KConfig *config() { return KInstance::config(); }
 #endif
-  void propagateSettings(SettingsCategory category);
-  void kdisplaySetPalette();
-  void kdisplaySetStyle();
-  void kdisplaySetFont();
-  void applyGUIStyle();
 
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);

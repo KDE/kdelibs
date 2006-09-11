@@ -28,8 +28,6 @@
 #include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kipc.h>
-#include <kapplication.h>
 
 class KPushButton::KPushButtonPrivate
 {
@@ -100,12 +98,8 @@ void KPushButton::init( const KGuiItem &item )
 
     setWhatsThis(item.whatsThis());
 
-    if (kapp)
-    {
-       connect( kapp, SIGNAL( settingsChanged(int) ),
-               SLOT( slotSettingsChanged(int) ) );
-       kapp->addKipcEventMask( KIPC::SettingsChanged );
-    }
+    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ),
+             SLOT( slotSettingsChanged(int) ) );
 }
 
 void KPushButton::readSettings()

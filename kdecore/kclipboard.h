@@ -38,7 +38,7 @@ class KDECORE_EXPORT KClipboardSynchronizer : public QObject
 
 public:
     friend class KlipperWidget;
-    friend class KApplication;
+    friend class KGlobalSettings;
 
     /**
      * Returns the KClipboardSynchronizer singleton object.

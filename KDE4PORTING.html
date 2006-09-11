@@ -178,6 +178,7 @@ by QX11Info::display()</li>
 </pre></li>
 <li>caption() has moved to KInstance</li>
 <li>makeStdCaption(const QString&amp;, bool, bool) has moved to KInstance and changed signature to makeStdCaption(const QString&amp;, CaptionFlags)</li>
+<li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()</li>
 </ul>
 
 <h4>KAudioPlayer</h4>
@@ -325,6 +326,11 @@ Desktop Entry Spec</a>
 <li>Renamed and deprecated to K3Icon</li>
 <li>Replacement is KIcon - now in kdeui</li>
 </ul>
+
+<h4>KIPC</h4>
+<ul>
+<li>Removed. Use KGlobalSettings::self()->emitChange() instead of KIPC::sendMessageAll().</li>
+</h4>
 
 <h4>KKey</h4>
 <ul>

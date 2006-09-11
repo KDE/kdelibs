@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000, 2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -15,23 +15,12 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include "config.h"
-#include "kglobalsettings.h"
 
-#include <qcolor.h>
-#include <qcursor.h>
-#include <qdesktopwidget.h>
-#include <qdir.h>
-#include <qfont.h>
-#include <qfontdatabase.h>
-#include <qfontinfo.h>
-#include <qpixmap.h>
+#include <config.h>
+#include "kglobalsettings.h"
 
 #include <kconfig.h>
 #include <ksimpleconfig.h>
-#include <kapplication.h>
-
-#include <kipc.h>
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -49,13 +38,33 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kstandarddirs.h>
 #include <kcharsets.h>
 #include <klocale.h>
-#include <stdlib.h>
 #include <kprotocolinfo.h>
+#include <kinstance.h>
+#include "kclipboard.h"
+//#include "../kdeui/util/kglobalaccel.h"
+#include "kstaticdeleter.h"
+
+#include <qcolor.h>
+#include <qcursor.h>
+#include <qdesktopwidget.h>
+#include <qdir.h>
+#include <qfont.h>
+#include <qfontdatabase.h>
+#include <qfontinfo.h>
+#include <qpixmap.h>
+#include <qpixmapcache.h>
+#include <q3stylesheet.h> // no equivalent in Qt4
+#include <QApplication>
+#include <QtDBus/QtDBus>
+#include <qstylefactory.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include "fixx11h.h"
+#include <QX11Info>
 #endif
+
+#include <stdlib.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_autostartPath = 0;
@@ -78,6 +87,25 @@ QColor *KGlobalSettings::_visitedLinkColor = 0;
 QColor *KGlobalSettings::alternateColor = 0;
 
 KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
+static KGlobalSettings* s_self = 0;
+static KStaticDeleter<KGlobalSettings> s_kglobalSettingsDeleter;
+
+KGlobalSettings* KGlobalSettings::self() {
+    if (!s_self)
+        s_kglobalSettingsDeleter.setObject(s_self, new KGlobalSettings);
+    return s_self;
+}
+
+KGlobalSettings::KGlobalSettings()
+    : QObject(0)
+{
+    kdisplaySetStyle();
+    kdisplaySetFont();
+    propagateSettings(SETTINGS_QT);
+
+    QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
+                                           "notifyChange", this, SLOT(slotNotifyChange(int,int)) );
+}
 
 int KGlobalSettings::dndEventDelay()
 {
@@ -233,7 +261,7 @@ QColor KGlobalSettings::buttonTextColor()
 
 // IMPORTANT:
 //  This function should be get in sync with
-//   KApplication::kdisplaySetPalette()
+//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::baseColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
@@ -242,7 +270,7 @@ QColor KGlobalSettings::baseColor()
 
 // IMPORTANT:
 //  This function should be get in sync with
-//   KApplication::kdisplaySetPalette()
+//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::textColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
@@ -251,7 +279,7 @@ QColor KGlobalSettings::textColor()
 
 // IMPORTANT:
 //  This function should be get in sync with
-//   KApplication::kdisplaySetPalette()
+//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::highlightedTextColor()
 {
     KConfigGroup g( KGlobal::config(), "General" );
@@ -260,7 +288,7 @@ QColor KGlobalSettings::highlightedTextColor()
 
 // IMPORTANT:
 //  This function should be get in sync with
-//   KApplication::kdisplaySetPalette()
+//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::highlightColor()
 {
     initColors();
@@ -498,6 +526,8 @@ void KGlobalSettings::initPaths()
     if ( s_desktopPath != 0 )
         return;
 
+    self(); // listen to changes
+
     s_desktopPath = new QString();
     s_autostartPath = new QString();
     s_documentPath = new QString();
@@ -529,10 +559,6 @@ void KGlobalSettings::initPaths()
     *s_documentPath = QDir::cleanPath( *s_documentPath );
     if ( !s_documentPath->endsWith("/"))
       s_documentPath->append(QLatin1Char('/'));
-
-    // Make sure this app gets the notifications about those paths
-    if (kapp)
-        kapp->addKipcEventMask(KIPC::SettingsChanged);
 }
 
 void KGlobalSettings::initColors()
@@ -732,3 +758,282 @@ int KGlobalSettings::buttonLayout()
     KConfigGroup g( KGlobal::config(), "KDE" );
     return g.readEntry("ButtonLayout", KDE_DEFAULT_BUTTON_LAYOUT);
 }
+
+void KGlobalSettings::emitChange(ChangeType changeType, int arg)
+{
+    QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
+    QList<QVariant> args;
+    args.append(static_cast<int>(changeType));
+    args.append(arg);
+    message.setArguments(args);
+    QDBusConnection::sessionBus().send(message);
+}
+
+void KGlobalSettings::slotNotifyChange(int changeType, int arg)
+{
+    switch(changeType) {
+    case StyleChanged:
+        KGlobal::config()->reparseConfiguration();
+        kdisplaySetStyle();
+        break;
+
+    case ToolbarStyleChanged:
+        KGlobal::config()->reparseConfiguration();
+        emit toolbarAppearanceChanged(arg);
+        break;
+
+    case PaletteChanged:
+        KGlobal::config()->reparseConfiguration();
+        kdisplaySetPalette();
+        break;
+
+    case FontChanged:
+        KGlobal::config()->reparseConfiguration();
+        KGlobalSettings::rereadFontSettings();
+        kdisplaySetFont();
+        break;
+
+    case SettingsChanged: {
+        KGlobal::config()->reparseConfiguration();
+        SettingsCategory category = static_cast<SettingsCategory>(arg);
+        if (category == SETTINGS_PATHS) {
+            KGlobalSettings::rereadPathSettings();
+        } else if (category == SETTINGS_MOUSE) {
+            KGlobalSettings::rereadMouseSettings();
+        }
+        propagateSettings(category);
+        break;
+    }
+    case IconChanged:
+        QPixmapCache::clear();
+        KGlobal::config()->reparseConfiguration();
+        KGlobal::instance()->newIconLoader();
+        emit iconChanged(arg);
+        break;
+
+        // TODO KClipboardSynchronizer could do this with its own dbus signal
+    case ClipboardConfigChanged:
+        KClipboardSynchronizer::newConfiguration(arg);
+        break;
+
+    case BlockShortcuts:
+        // FIXME KAccel port
+        //KGlobalAccel::blockShortcuts(arg);
+        emit blockShortcuts(arg); // see kwin
+        break;
+
+    default:
+        kWarning(101) << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << changeType << endl;
+    }
+}
+
+// Set by KApplication
+QString kde_overrideStyle;
+
+void KGlobalSettings::applyGUIStyle()
+{
+    KConfigGroup pConfig (KGlobal::config(), "General");
+#ifdef Q_WS_MACX
+    QString defaultStyle = "macintosh";
+#else
+    QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
+#endif
+    QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
+
+    if (kde_overrideStyle.isEmpty()) {
+        // ### add check whether we already use the correct style to return then
+        // (workaround for Qt misbehavior to avoid double style initialization)
+
+        QStyle* sp = QStyleFactory::create( styleStr );
+
+        // If there is no default style available, try falling back any available style
+        if ( !sp && styleStr != defaultStyle)
+            sp = QStyleFactory::create( defaultStyle );
+        if ( !sp )
+            sp = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
+        qApp->setStyle(sp);
+    }
+    else
+        qApp->setStyle(kde_overrideStyle);
+    // Reread palette from config file.
+    kdisplaySetPalette();
+}
+
+QPalette KGlobalSettings::createApplicationPalette()
+{
+    KConfigGroup cg( KGlobal::config(), "General" );
+    return createApplicationPalette( &cg, KGlobalSettings::contrast() );
+}
+
+QPalette KGlobalSettings::createApplicationPalette( KConfigBase *config, int contrast_ )
+{
+    QColor kde34Background( 239, 239, 239 );
+    QColor kde34Blue( 103,141,178 );
+
+    QColor kde34Button;
+    if ( QPixmap::defaultDepth() > 8 )
+      kde34Button.setRgb( 221, 223, 228 );
+    else
+      kde34Button.setRgb( 220, 220, 220 );
+
+    QColor kde34Link( 0, 0, 238 );
+    QColor kde34VisitedLink( 82, 24, 139 );
+
+    QColor background = config->readEntry( "background", kde34Background );
+    QColor foreground = config->readEntry( "foreground", QColor(Qt::black) );
+    QColor button = config->readEntry( "buttonBackground", kde34Button );
+    QColor buttonText = config->readEntry( "buttonForeground", QColor(Qt::black) );
+    QColor highlight = config->readEntry( "selectBackground", kde34Blue );
+    QColor highlightedText = config->readEntry( "selectForeground", QColor(Qt::white) );
+    QColor base = config->readEntry( "windowBackground", QColor(Qt::white) );
+    QColor baseText = config->readEntry( "windowForeground", QColor(Qt::black) );
+    QColor link = config->readEntry( "linkColor", kde34Link );
+    QColor visitedLink = config->readEntry( "visitedLinkColor", kde34VisitedLink );
+
+    int highlightVal, lowlightVal;
+    highlightVal = 100 + (2*contrast_+4)*16/10;
+    lowlightVal = 100 + (2*contrast_+4)*10;
+
+    QColor disfg = foreground;
+
+    int h, s, v;
+    disfg.getHsv( &h, &s, &v );
+    if (v > 128)
+        // dark bg, light fg - need a darker disabled fg
+        disfg = disfg.dark(lowlightVal);
+    else if (disfg != Qt::black)
+        // light bg, dark fg - need a lighter disabled fg - but only if !black
+        disfg = disfg.light(highlightVal);
+    else
+        // black fg - use darkgray disabled fg
+        disfg = Qt::darkGray;
+
+    QPalette palette;
+    palette.setColor( QPalette::Active, QPalette::Foreground, foreground );
+    palette.setColor( QPalette::Active, QPalette::Window, background );
+    palette.setColor( QPalette::Active, QPalette::Light, background.light( highlightVal ) );
+    palette.setColor( QPalette::Active, QPalette::Dark, background.dark( lowlightVal ) );
+    palette.setColor( QPalette::Active, QPalette::Midlight, background.dark( 120 ) );
+    palette.setColor( QPalette::Active, QPalette::Text, baseText );
+    palette.setColor( QPalette::Active, QPalette::Base, base );
+
+    palette.setColor( QPalette::Active, QPalette::Highlight, highlight );
+    palette.setColor( QPalette::Active, QPalette::HighlightedText, highlightedText );
+    palette.setColor( QPalette::Active, QPalette::Button, button );
+    palette.setColor( QPalette::Active, QPalette::ButtonText, buttonText );
+    palette.setColor( QPalette::Active, QPalette::Midlight, background.light( 110 ) );
+    palette.setColor( QPalette::Active, QPalette::Link, link );
+    palette.setColor( QPalette::Active, QPalette::LinkVisited, visitedLink );
+
+    palette.setColor( QPalette::Disabled, QPalette::Foreground, disfg );
+    palette.setColor( QPalette::Disabled, QPalette::Window, background );
+    palette.setColor( QPalette::Disabled, QPalette::Light, background.light( highlightVal ) );
+    palette.setColor( QPalette::Disabled, QPalette::Dark, background.dark( lowlightVal ) );
+    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.dark( 120 ) );
+    palette.setColor( QPalette::Disabled, QPalette::Text, background.dark( 120 ) );
+    palette.setColor( QPalette::Disabled, QPalette::Base, base );
+    palette.setColor( QPalette::Disabled, QPalette::Button, button );
+
+
+    int inlowlightVal = lowlightVal-25;
+    if (inlowlightVal < 120)
+        inlowlightVal = 120;
+
+    QColor disbtntext = buttonText;
+    disbtntext.getHsv( &h, &s, &v );
+    if (v > 128)
+        // dark button, light buttonText - need a darker disabled buttonText
+        disbtntext = disbtntext.dark(lowlightVal);
+    else if (disbtntext != Qt::black)
+        // light buttonText, dark button - need a lighter disabled buttonText - but only if !black
+        disbtntext = disbtntext.light(highlightVal);
+    else
+        // black button - use darkgray disabled buttonText
+        disbtntext = Qt::darkGray;
+
+    palette.setColor( QPalette::Disabled, QPalette::Highlight, highlight.dark( 120 ) );
+    palette.setColor( QPalette::Disabled, QPalette::ButtonText, disbtntext );
+    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.light( 110 ) );
+    palette.setColor( QPalette::Disabled, QPalette::Link, link );
+    palette.setColor( QPalette::Disabled, QPalette::LinkVisited, visitedLink );
+
+    return palette;
+}
+
+
+void KGlobalSettings::kdisplaySetPalette()
+{
+    // Added by Sam/Harald (TT) for Mac OS X initially, but why?
+    KConfigGroup cg( KGlobal::config(), "General" );
+    if (cg.readEntry("nopaletteChange", false))
+        return;
+
+    QApplication::setPalette( createApplicationPalette() );
+    emit kdisplayPaletteChanged();
+    emit appearanceChanged();
+}
+
+
+void KGlobalSettings::kdisplaySetFont()
+{
+    QApplication::setFont(KGlobalSettings::generalFont());
+    QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
+    QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
+    QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
+
+    // "patch" standard QStyleSheet to follow our fonts
+    Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
+    sheet->item (QLatin1String("pre"))->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item (QLatin1String("code"))->setFontFamily (KGlobalSettings::fixedFont().family());
+    sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
+
+    emit kdisplayFontChanged();
+    emit appearanceChanged();
+}
+
+
+void KGlobalSettings::kdisplaySetStyle()
+{
+    applyGUIStyle();
+    emit kdisplayStyleChanged();
+    // already done by applyGUIStyle -> kdisplaySetPalette
+    //emit appearanceChanged();
+}
+
+
+void KGlobalSettings::propagateSettings(SettingsCategory arg)
+{
+    KConfigGroup cg( KGlobal::config(), "KDE" );
+
+    int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime());
+    if ((num != 0) && (num < 200))
+        num = 200;
+    if (num > 2000)
+        num = 2000;
+    QApplication::setCursorFlashTime(num);
+    num = cg.readEntry("DoubleClickInterval", QApplication::doubleClickInterval());
+    QApplication::setDoubleClickInterval(num);
+    num = cg.readEntry("StartDragTime", QApplication::startDragTime());
+    QApplication::setStartDragTime(num);
+    num = cg.readEntry("StartDragDist", QApplication::startDragDistance());
+    QApplication::setStartDragDistance(num);
+    num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines());
+    QApplication::setWheelScrollLines(num);
+
+    bool b = cg.readEntry("EffectAnimateMenu", false);
+    QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
+    b = cg.readEntry("EffectFadeMenu", false);
+    QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
+    b = cg.readEntry("EffectAnimateCombo", false);
+    QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
+    b = cg.readEntry("EffectAnimateTooltip", false);
+    QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
+    b = cg.readEntry("EffectFadeTooltip", false);
+    QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
+    //b = !cg.readEntry("EffectNoTooltip", false);
+    //QToolTip::setGloballyEnabled( b ); ###
+
+    emit settingsChanged(arg);
+}
+
+#include "kglobalsettings.moc"

@@ -149,7 +149,6 @@ set(kdecore_LIB_SRCS
    kmimesourcefactory.cpp
    kinstance.cpp
    kpalette.cpp
-   kipc.cpp
    klibloader.cpp
    ktempfile.cpp
    kuniqueapplication.cpp
@@ -339,7 +338,6 @@ install( FILES
    krfcdate.h
    kinstance.h
    kpalette.h
-   kipc.h
    klibloader.h
    ktempfile.h
    ksavefile.h

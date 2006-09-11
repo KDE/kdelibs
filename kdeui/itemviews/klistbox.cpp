@@ -15,18 +15,16 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include "config.h"
 
-#include <qtimer.h>
+#include "klistbox.h"
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
-#include <kapplication.h>
-#include <kipc.h>
 #include <kdebug.h>
 
-#include "klistbox.h"
+#include <qtimer.h>
 #include <QKeyEvent>
+#include <QApplication>
 
 KListBox::KListBox( QWidget *parent, const char *name, Qt::WFlags f )
     : Q3ListBox( parent, name, f ), d(0)
@@ -35,12 +33,8 @@ KListBox::KListBox( QWidget *parent, const char *name, Qt::WFlags f )
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( Q3ListBoxItem * ) ),
 	     this, SLOT( slotOnItem( Q3ListBoxItem * ) ) );
-    slotSettingsChanged(KApplication::SETTINGS_MOUSE);
-    if (kapp)
-    {
-        connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-        kapp->addKipcEventMask( KIPC::SettingsChanged );
-    }
+    slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
+    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
 
     m_pCurrentItem = 0L;
 
@@ -73,7 +67,7 @@ void KListBox::slotOnViewport()
 
 void KListBox::slotSettingsChanged(int category)
 {
-    if (category != KApplication::SETTINGS_MOUSE)
+    if (category != KGlobalSettings::SETTINGS_MOUSE)
         return;
     m_bUseSingle = KGlobalSettings::singleClick();
 

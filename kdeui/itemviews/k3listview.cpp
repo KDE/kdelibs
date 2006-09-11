@@ -20,6 +20,9 @@
 #define QT3_SUPPORT
 #include "config.h"
 
+#include "k3listview.h"
+#include "k3listviewlineedit.h"
+
 #include <q3dragobject.h>
 #include <qevent.h>
 #include <qtimer.h>
@@ -28,17 +31,13 @@
 #include <qtooltip.h>
 #include <qstyle.h>
 #include <QStyleOptionFocusRect>
+#include <QApplication>
 #include <qpainter.h>
 
 #include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kcursor.h>
-#include <kapplication.h>
-#include <kipc.h>
 #include <kdebug.h>
-
-#include "k3listview.h"
-#include "k3listviewlineedit.h"
 
 #if 0
 
@@ -429,12 +428,8 @@ K3ListView::K3ListView( QWidget *parent )
   connect (this, SIGNAL(contentsMoving(int,int)),
                    this, SLOT(cleanItemHighlighter()));
 
-  slotSettingsChanged(KApplication::SETTINGS_MOUSE);
-  if (kapp)
-  {
-    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-    kapp->addKipcEventMask( KIPC::SettingsChanged );
-  }
+  slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
+  connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
 
   d->autoSelect.setSingleShot( true );
   connect(&d->autoSelect, SIGNAL( timeout() ),
@@ -535,7 +530,7 @@ void K3ListView::slotSettingsChanged(int category)
 {
   switch (category)
   {
-  case KApplication::SETTINGS_MOUSE:
+  case KGlobalSettings::SETTINGS_MOUSE:
     d->dragDelay =  KGlobalSettings::dndEventDelay();
     d->bUseSingle = KGlobalSettings::singleClick();
 
@@ -555,7 +550,7 @@ void K3ListView::slotSettingsChanged(int category)
 
     break;
 
-  case KApplication::SETTINGS_POPUPMENU:
+  case KGlobalSettings::SETTINGS_POPUPMENU:
     d->contextMenuKey = KGlobalSettings::contextMenuKey ();
     d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
 

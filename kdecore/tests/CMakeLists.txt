@@ -220,15 +220,15 @@ target_link_libraries(dbuskonqtest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 ########### next target ###############
 
-set(kipctest_SRCS kipctest.cpp )
+set(kglobalsettingstest_SRCS kglobalsettingstest.cpp )
 
-kde4_automoc(${kipctest_SRCS})
+kde4_automoc(${kglobalsettingstest_SRCS})
 
-kde4_add_executable(kipctest NOGUI RUN_UNINSTALLED ${kipctest_SRCS})
+kde4_add_executable(kglobalsettingstest NOGUI RUN_UNINSTALLED ${kglobalsettingstest_SRCS})
 
-target_link_libraries(kipctest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kglobalsettingstest  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
-# add_test(kdecore-kipctest ${EXECUTABLE_OUTPUT_PATH}/kipctest)
+# add_test(kdecore-kglobalsettingstest ${EXECUTABLE_OUTPUT_PATH}/kglobalsettingstest)
 
 ########### next target ###############
 

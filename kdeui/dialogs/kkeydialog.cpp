@@ -34,12 +34,12 @@
 #include <QHeaderView>
 
 #include <kaction.h>
-#include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kicon.h>
+#include <kinstance.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
@@ -84,7 +84,7 @@ class KKeyChooserItem : public QTreeWidgetItem
 
 	void setLocalShortcut( const KShortcut& cut );
 	void setGlobalShortcut( const KShortcut& cut );
-	
+
 	const KShortcut& globalShortcut() const;
 	const KShortcut& defaultGlobalShortcut() const;
 
@@ -95,7 +95,7 @@ class KKeyChooserItem : public QTreeWidgetItem
  private:
 	void checkModified();
 	bool checkChanged(const KShortcut& cut1, const KShortcut& cut2, int sequence) const;
- 
+
 	KAction* m_action;
 	bool m_modified;
 	KShortcut m_newLocalShortcut, m_newGlobalShortcut;
@@ -112,7 +112,7 @@ class KKeyChooserPrivate
  		: ui(new Ui::KKeyDialog())
 	{
 	}
-	
+
 	~KKeyChooserPrivate()
 	{
 		delete ui;
@@ -122,7 +122,7 @@ class KKeyChooserPrivate
 	QList< KActionCollection* > collections;
 
 	Ui::KKeyDialog* ui;
-	
+
 	// If this is set, then shortcuts require a modifier:
 	//  so 'A' would not be valid, whereas 'Ctrl+A' would be.
 	// Note, however, that this only applies to printable characters.
@@ -174,7 +174,7 @@ bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
 	d->rgpLists.append( pColl->actions() );
 	d->collections.append( pColl );
 	buildListView(d->rgpLists.count() - 1, str);
-	
+
 	return true;
 }
 
@@ -211,7 +211,7 @@ void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcut
 	d->ui->list->header()->setStretchLastSection(false);
 	if (!(d->type & GlobalAction)) {
 		d->ui->list->header()->hideSection(3);
-	
+
 	} else if (d->type & ~GlobalAction) {
 		d->ui->list->header()->hideSection(1);
 		d->ui->list->header()->hideSection(2);
@@ -234,7 +234,7 @@ void KKeyChooser::initGUI( ActionTypes type, LetterShortcuts allowLetterShortcut
 	connect( d->ui->globalCustom, SIGNAL(clicked()), SLOT(slotGlobalCustomKey()) );
 	connect( d->ui->globalCustomSelector, SIGNAL(capturedShortcut(const KShortcut&)), SLOT(slotGlobalCapturedShortcut(const KShortcut&)) );
 
-	connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
+	connect( KGlobalSettings::self(), SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
 
 	if( allChoosers == NULL )
 		allChoosers = allChoosersDeleter.setObject( allChoosers, new QList< KKeyChooser* > );
@@ -252,7 +252,7 @@ void KKeyChooser::buildListView( uint iList, const QString &title )
 	pParentItem = pProgramItem = pItem = new QTreeWidgetItem( d->ui->list, QStringList() << str );
 	d->ui->list->expandItem(pParentItem);
 	//pParentItem->setFlags(pParentItem->flags() & !Qt::ItemIsSelectable);
-	
+
 	foreach (KAction* action, pList) {
 		ActionTypes thisType = 0;
 		switch (action->shortcutContext()) {
@@ -328,7 +328,7 @@ void KKeyChooser::updateButtons()
 
 		d->ui->localCustomSelector->setShortcut( pItem->shortcut() );
 		d->ui->globalCustomSelector->setShortcut( pItem->globalShortcut() );
-		
+
 		d->ui->localDefault->setText( i18nc("Default (default shortcut)", "De&fault (%1)", localKeyStrDef.isEmpty() ? i18n("none") : localKeyStrDef) );
 		d->ui->globalDefault->setText( i18nc("Default (default shortcut)", "De&fault (%1)" , globalKeyStrDef.isEmpty() ? i18n("none") : globalKeyStrDef) );
 
@@ -409,8 +409,8 @@ void KKeyChooser::slotGlobalCustomKey()
 
 void KKeyChooser::slotSettingsChanged( int category )
 {
-	if( category == KApplication::SETTINGS_SHORTCUTS )
-		KGlobalAccel::self()->readSettings();
+    if( category == KGlobalSettings::SETTINGS_SHORTCUTS )
+        KGlobalAccel::self()->readSettings();
 }
 
 // KDE4 IMHO this shouldn't be here at all - it cannot check whether the default
@@ -472,7 +472,7 @@ void KKeyChooser::setLocalShortcut( const KShortcut& cut )
 	foreach (const QKeySequence& seq, cut.sequences()) {
 		if (seq.isEmpty())
 			continue;
-		
+
 		int key = seq[0];
 
 		if( !d->allowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
@@ -505,7 +505,7 @@ void KKeyChooser::setGlobalShortcut( const KShortcut& cut )
 	foreach (const QKeySequence& seq, cut.sequences()) {
 		if (seq.isEmpty())
 			continue;
-		
+
 		int key = seq[0];
 
 		if( !d->allowLetterShortcuts && (key & Qt::KeyboardModifierMask) == 0
@@ -723,7 +723,7 @@ bool KKeyChooser::removeShortcut( const QString& name, const KShortcut &cut )
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -842,7 +842,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 			}
 			break;
 	}
-	
+
 	return QVariant();
 }
 

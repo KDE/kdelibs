@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2000,2006 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,8 +18,10 @@
 #ifndef _KGLOBALSETTINGS_H
 #define _KGLOBALSETTINGS_H
 
-#include <qstring.h>
 #include "kdelibs_export.h"
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtGui/QPalette>
 
 #define KDE_DEFAULT_SINGLECLICK true
 #define KDE_DEFAULT_INSERTTEAROFFHANDLES 0
@@ -34,6 +36,7 @@
 #define KDE_DEFAULT_BUTTON_LAYOUT 0
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 
+class KConfigBase;
 class KUrl;
 
 class QColor;
@@ -47,9 +50,11 @@ class QWidget;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDECORE_EXPORT KGlobalSettings
+class KDECORE_EXPORT KGlobalSettings : public QObject
 {
-  public:
+    Q_OBJECT
+
+public:
 
     /**
      * Returns a threshold in pixels for drag & drop operations.
@@ -110,9 +115,9 @@ class KDECORE_EXPORT KGlobalSettings
      * should test for Application level before calling the appropriate function in KMenu.
      **/
     enum TearOffHandle {
-      Disable = 0, ///< disable tear-off handles
-      ApplicationLevel, ///< enable on application level
-      Enable ///< enable tear-off handles
+        Disable = 0, ///< disable tear-off handles
+        ApplicationLevel, ///< enable on application level
+        Enable ///< enable tear-off handles
     };
 
     /**
@@ -169,33 +174,33 @@ class KDECORE_EXPORT KGlobalSettings
      * See <a href="http://developer.kde.org/documentation/standards/kde/style/keys/completion.html">
      * the styleguide</a>.
      **/
-   enum Completion {
-       /**
-        * No completion is used.
-        */
-       CompletionNone=1,
-       /**
-        * Text is automatically filled in whenever possible.
-        */
-       CompletionAuto,
-       /**
-        * Same as automatic except shortest match is used for completion.
-        */
-       CompletionMan,
-       /**
-        * Complete text much in the same way as a typical *nix shell would.
-        */
-       CompletionShell,
-       /**
-        * Lists all possible matches in a popup list-box to choose from.
-        */
-       CompletionPopup,
-       /**
-        * Lists all possible matches in a popup list-box to choose from, and automatically
-        * fill the result whenever possible.
-        */
-       CompletionPopupAuto
-   };
+    enum Completion {
+        /**
+         * No completion is used.
+         */
+        CompletionNone=1,
+        /**
+         * Text is automatically filled in whenever possible.
+         */
+        CompletionAuto,
+        /**
+         * Same as automatic except shortest match is used for completion.
+         */
+        CompletionMan,
+        /**
+         * Complete text much in the same way as a typical *nix shell would.
+         */
+        CompletionShell,
+        /**
+         * Lists all possible matches in a popup list-box to choose from.
+         */
+        CompletionPopup,
+        /**
+         * Lists all possible matches in a popup list-box to choose from, and automatically
+         * fill the result whenever possible.
+         */
+        CompletionPopupAuto
+    };
 
     /**
      * Returns the preferred completion mode setting.
@@ -348,10 +353,10 @@ class KDECORE_EXPORT KGlobalSettings
     static QColor calculateAlternateBackgroundColor(const QColor& base);
 
     /**
-      * Returns if the sorted column in a K3ListView shall be drawn with a
-      * shaded background color.
-      * @return true if the sorted column shall be shaded
-      */
+     * Returns if the sorted column in a K3ListView shall be drawn with a
+     * shaded background color.
+     * @return true if the sorted column shall be shaded
+     */
     static bool shadeSortColumn();
 
     /**
@@ -480,20 +485,142 @@ class KDECORE_EXPORT KGlobalSettings
     /**
      * Whether the user wishes to use opaque resizing. Primarily
      * intended for QSplitter::setOpaqueResize()
-     * 
+     *
      * @return Returns true if user wants to use opaque resizing.
      */
     static bool opaqueResize();
 
     /**
      * The layout scheme to use for dialog buttons
-     * 
+     *
      * @return Returns the number of the scheme to use.
      * @see KDialog::setButtonStyle
      */
     static int buttonLayout();
 
+    /**
+     * Used to obtain the QPalette that will be used to set the application palette.
+     *
+     * This is only useful for configuration modules such as krdb and should not be
+     * used in normal circumstances.
+     * @return the QPalette
+     */
+    static QPalette createApplicationPalette();
+
+    /**
+     * @internal
+     * Raw access for use by KDM.
+     * note: expects config to be in the correct group already.
+     */
+    static QPalette createApplicationPalette( KConfigBase *config, int contrast );
+
+    /**
+     * An identifier for change signals.
+     * \see emitChange
+     */
+    enum ChangeType { PaletteChanged = 0, FontChanged, StyleChanged,
+                      SettingsChanged, IconChanged, ToolbarStyleChanged,
+                      ClipboardConfigChanged,
+                      BlockShortcuts };
+
+    /**
+     * Notifies all KDE applications on the current display of a change.
+     *
+     * This is typically called by kcontrol modules after changing the corresponding
+     * config file. Do not call this from a normal KDE application.
+     */
+    static void emitChange(ChangeType changeType, int arg = 0);
+
+    /**
+     * Return the KGlobalSettings singleton.
+     * This is used to connect to its signals, to be notified of changes.
+     */
+    static KGlobalSettings* self();
+
+    /**
+     * Valid values for the settingsChanged signal
+     */
+    enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
+                            SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS };
+
+Q_SIGNALS:
+    /**
+     * Emitted when the application has changed its palette due to a KControl request.
+     *
+     * Normally, widgets will update their palette automatically, but you
+     * should connect to this to program special behavior.
+     */
+    void kdisplayPaletteChanged();
+
+    /**
+     * Emitted when the application has changed its GUI style in response to a KControl request.
+     *
+     * Normally, widgets will update their styles automatically (as they would
+     * respond to an explicit setGUIStyle() call), but you should connect to
+     * this to program special behavior.
+     */
+    void kdisplayStyleChanged();
+
+    /**
+     * Emitted when the application has changed its font in response to a KControl request.
+     *
+     * Normally widgets will update their fonts automatically, but you should
+     * connect to this to monitor global font changes, especially if you are
+     * using explicit fonts.
+     *
+     * Note: If you derive from a QWidget-based class, a faster method is to
+     *       reimplement QWidget::changeEvent(). This is the preferred way
+     *       to get informed about font updates.
+     */
+    void kdisplayFontChanged();
+
+    /**
+     * Emitted when the application has changed either its GUI style, its font or its palette
+     * in response to a kdisplay request. Normally, widgets will update their styles
+     * automatically, but you should connect to this to program special
+     * behavior.
+     */
+    void appearanceChanged();
+
+    /**
+     * Emitted when the settings for toolbars have been changed. KToolBar will know what to do.
+     */
+    void toolbarAppearanceChanged(int);
+
+    /**
+     * Emitted when the global settings have been changed.
+     * KGlobalSettings takes care of calling reparseConfiguration on KGlobal::config()
+     * so that applications/classes using this only have to re-read the configuration
+     * @param category the category among the SettingsCategory enum.
+     */
+    void settingsChanged(int category);
+
+    /**
+     * Emitted when the global icon settings have been changed.
+     * @param group the new group
+     */
+    void iconChanged(int group);
+
+    /**
+     * Emitted by BlockShortcuts
+     */
+    void blockShortcuts(int data);
+
+private Q_SLOTS:
+    /**
+     * Used for internal notification of changes.
+     */
+    void slotNotifyChange(int changeType, int arg);
+
 private:
+    KGlobalSettings();
+
+    void propagateSettings(SettingsCategory category);
+    void kdisplaySetPalette();
+    void kdisplaySetStyle();
+    void kdisplaySetFont();
+    void applyGUIStyle();
+
     /**
      * reads in all paths from kdeglobals
      */

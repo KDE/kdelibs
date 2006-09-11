@@ -23,7 +23,6 @@
 #undef QT_NO_TRANSLATION
 #include <qtranslator.h>
 #define QT_NO_TRANSLATION
-#include <q3stylesheet.h> // no equivilant in Qt4
 #include <qtextedit.h>
 #include <qdatetime.h>
 #include <qdir.h>
@@ -32,7 +31,6 @@
 #include <qlineedit.h>
 #include <qmessagebox.h>
 #include <qmetaobject.h>
-#include <qpixmapcache.h>
 #include <qregexp.h>
 #include <qsessionmanager.h>
 #include <qstylefactory.h>
@@ -53,7 +51,6 @@
 #include "kconfig.h"
 #include "kcmdlineargs.h"
 #include "kclipboard.h"
-#include "../kdeui/util/kglobalaccel.h"
 #include "kglobalsettings.h"
 #include "kdebug.h"
 #include "kglobal.h"
@@ -106,7 +103,6 @@
 #include <X11/SM/SMlib.h>
 #include <fixx11h.h>
 
-#include <kipc.h>
 #include <QX11Info>
 #endif
 
@@ -123,7 +119,7 @@
 #include <QMetaObject>
 
 // exported for kdm kfrontend
-KDE_EXPORT bool kde_have_kipc = true; // magic hook to disable kipc in kdm
+//KDE_EXPORT bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 bool kde_kiosk_admin = false;
 
@@ -178,7 +174,6 @@ class KApplication::Private
 public:
   Private()
     : checkAccelerators( 0 ),
-	overrideStyle( QString() ),
 	startup_id( "0" ),
 	app_started_timer( NULL ),
 	session_save( false )
@@ -195,7 +190,6 @@ public:
   }
 
   KCheckAccelerators* checkAccelerators;
-  QString overrideStyle;
   QByteArray startup_id;
   QTimer* app_started_timer;
   bool session_save;
@@ -513,7 +507,7 @@ void KApplication::init()
      fprintf(stderr, "The KDE libraries are not designed to run with suid privileges.\n");
      ::exit(127);
   }
-    
+
   if ( type() == GuiClient )
   {
     QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
@@ -524,7 +518,7 @@ void KApplication::init()
     }
   }
 
-  parseCommandLine();   
+  parseCommandLine();
 
   KProcessController::ref();
 
@@ -542,9 +536,6 @@ void KApplication::init()
       char* names[max];
       Atom atoms_return[max];
       int n = 0;
-
-      atoms[n] = &kipcCommAtom;
-      names[n++] = (char *) "KIPC_COMM_ATOM";
 
       atoms[n] = &atom_DesktopWindow;
       names[n++] = (char *) "KDE_DESKTOP_WINDOW";
@@ -593,19 +584,11 @@ void KApplication::init()
       }
   }
   QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), this,
-                                     QDBusConnection::ExportScriptableSlots |
-                                     QDBusConnection::ExportScriptableProperties |
-                                     QDBusConnection::ExportAdaptors);
+                                               QDBusConnection::ExportScriptableSlots |
+                                               QDBusConnection::ExportScriptableProperties |
+                                               QDBusConnection::ExportAdaptors);
 
   smw = 0;
-
-  // Initial KIPC event mask.
-#if defined Q_WS_X11
-  kipcEventMask = (1 << KIPC::StyleChanged) | (1 << KIPC::PaletteChanged) |
-                  (1 << KIPC::FontChanged) | (1 << KIPC::BackgroundChanged) |
-                  (1 << KIPC::ToolbarStyleChanged) | (1 << KIPC::SettingsChanged) |
-                  (1 << KIPC::ClipboardConfigChanged) | (1 << KIPC::BlockShortcuts);
-#endif
 
   // Trigger creation of locale.
   (void) KGlobal::locale();
@@ -628,9 +611,8 @@ void KApplication::init()
     d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
 
-    kdisplaySetStyle();
-    kdisplaySetFont();
-    propagateSettings(SETTINGS_QT);
+    // Trigger initial settings
+    KGlobalSettings::self();
 
     // Set default mime-source factory
     // XXX: This is a hack. Make our factory the default factory, but add the
@@ -655,7 +637,7 @@ void KApplication::init()
       QPixmap pixmap = KGlobal::iconLoader()->loadIcon( KCmdLineArgs::appName(),
               K3Icon::NoGroup, K3Icon::SizeEnormous, K3Icon::DefaultState, 0L, false );
       if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
-      {   
+      {
           trayIcon = new QSystemTrayIcon(this);
           trayIcon->setIcon(QIcon(pixmap));
           /* it's counter-intuitive, but once you do setIcon it's already set the
@@ -684,7 +666,8 @@ void KApplication::init()
 
 #ifdef Q_WS_X11
   // register a communication window for desktop changes (Matthias)
-  if (type() == GuiClient && kde_have_kipc )
+  // ### is this still needed [e.g. for session management] even now that KIPC has been removed? (David)
+  if (type() == GuiClient /*&& kde_have_kipc*/ )
   {
     smw = new QWidget();
     long data = 1;
@@ -931,19 +914,18 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("style"))
     {
+        extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
+        QStringList styles = QStyleFactory::keys();
+        QString reqStyle(QLatin1String(args->getOption("style").toLower()));
 
-       QStringList styles = QStyleFactory::keys();
-       QString reqStyle(QLatin1String(args->getOption("style").toLower()));
+        for (QStringList::ConstIterator it = styles.begin(); it != styles.end(); ++it)
+            if ((*it).toLower() == reqStyle) {
+                kde_overrideStyle = *it;
+                break;
+            }
 
-	   for (QStringList::ConstIterator it = styles.begin(); it != styles.end(); ++it)
-		   if ((*it).toLower() == reqStyle)
-		   {
-			   d->overrideStyle = *it;
-			   break;
-		   }
-
-       if (d->overrideStyle.isEmpty())
-          fprintf(stderr, "%s", i18n("The style %1 was not found\n", reqStyle).toLocal8Bit().data());
+        if (kde_overrideStyle.isEmpty())
+            fprintf(stderr, "%s", i18n("The style %1 was not found\n", reqStyle).toLocal8Bit().data());
     }
 
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
@@ -1076,75 +1058,6 @@ bool KApplication::x11EventFilter( XEvent *_event )
         }
     }
 
-    if ((_event->type == ClientMessage) &&
-            (_event->xclient.message_type == kipcCommAtom))
-    {
-        XClientMessageEvent *cme = (XClientMessageEvent *) _event;
-
-        int id = cme->data.l[0];
-        int arg = cme->data.l[1];
-        if ((id < 32) && (kipcEventMask & (1 << id)))
-        {
-            switch (id)
-            {
-            case KIPC::StyleChanged:
-                KGlobal::config()->reparseConfiguration();
-                kdisplaySetStyle();
-                break;
-
-            case KIPC::ToolbarStyleChanged:
-                KGlobal::config()->reparseConfiguration();
-                emit toolbarAppearanceChanged(arg);
-                break;
-
-            case KIPC::PaletteChanged:
-                KGlobal::config()->reparseConfiguration();
-                kdisplaySetPalette();
-                break;
-
-            case KIPC::FontChanged:
-                KGlobal::config()->reparseConfiguration();
-                KGlobalSettings::rereadFontSettings();
-                kdisplaySetFont();
-                break;
-
-            case KIPC::BackgroundChanged:
-                emit backgroundChanged(arg);
-                break;
-
-            case KIPC::SettingsChanged:
-                KGlobal::config()->reparseConfiguration();
-                if (arg == SETTINGS_PATHS)
-                    KGlobalSettings::rereadPathSettings();
-                else if (arg == SETTINGS_MOUSE)
-                    KGlobalSettings::rereadMouseSettings();
-                propagateSettings((SettingsCategory)arg);
-                break;
-
-            case KIPC::IconChanged:
-                QPixmapCache::clear();
-                KGlobal::config()->reparseConfiguration();
-                KGlobal::instance()->newIconLoader();
-                emit iconChanged(arg);
-                break;
-
-            case KIPC::ClipboardConfigChanged:
-                KClipboardSynchronizer::newConfiguration(arg);
-                break;
-
-            case KIPC::BlockShortcuts:
-                // FIXME KAccel port
-                //KGlobalAccel::blockShortcuts(arg);
-                emit kipcMessage(id, arg); // some apps may do additional things
-                break;
-            }
-        }
-        else if (id >= 32)
-        {
-            emit kipcMessage(id, arg);
-        }
-        return true;
-    }
     return false;
 }
 #endif // Q_WS_X11
@@ -1183,240 +1096,12 @@ void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 #if defined Q_WS_X11
     if( time == 0 )
         time = QX11Info::appUserTime();
-    QDBusInterface(service, QLatin1String("/MainApplication"), 
+    QDBusInterface(service, QLatin1String("/MainApplication"),
             QString(QLatin1String("org.kde.KApplication")))
         .call(QLatin1String("updateUserTimestamp"), time);
 #endif
 }
 
-void KApplication::addKipcEventMask(int id)
-{
-    if (id >= 32)
-    {
-        kDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
-        return;
-    }
-    kipcEventMask |= (1 << id);
-}
-
-void KApplication::removeKipcEventMask(int id)
-{
-    if (id >= 32)
-    {
-        kDebug(101) << "Cannot use KIPC event mask for message IDs >= 32\n";
-        return;
-    }
-    kipcEventMask &= ~(1 << id);
-}
-
-void KApplication::applyGUIStyle()
-{
-    KConfigGroup pConfig (KGlobal::config(), "General");
-#ifdef Q_WS_MACX
-    QString defaultStyle = "macintosh";
-#else
-    QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
-#endif
-    QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
-
-    if (d->overrideStyle.isEmpty()) {
-      // ### add check whether we already use the correct style to return then
-      // (workaround for Qt misbehavior to avoid double style initialization)
-
-      QStyle* sp = QStyleFactory::create( styleStr );
-
-      // If there is no default style available, try falling back any available style
-      if ( !sp && styleStr != defaultStyle)
-          sp = QStyleFactory::create( defaultStyle );
-      if ( !sp )
-          sp = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
-      setStyle(sp);
-    }
-    else
-        setStyle(d->overrideStyle);
-    // Reread palette from config file.
-    kdisplaySetPalette();
-}
-
-QPalette KApplication::createApplicationPalette()
-{
-    KConfigGroup cg( KGlobal::config(), "General" );
-    return createApplicationPalette( &cg, KGlobalSettings::contrast() );
-}
-
-QPalette KApplication::createApplicationPalette( KConfigBase *config, int contrast_ )
-{
-    QColor kde34Background( 239, 239, 239 );
-    QColor kde34Blue( 103,141,178 );
-
-    QColor kde34Button;
-    if ( QPixmap::defaultDepth() > 8 )
-      kde34Button.setRgb( 221, 223, 228 );
-    else
-      kde34Button.setRgb( 220, 220, 220 );
-
-    QColor kde34Link( 0, 0, 238 );
-    QColor kde34VisitedLink( 82, 24, 139 );
-
-    QColor background = config->readEntry( "background", kde34Background );
-    QColor foreground = config->readEntry( "foreground", QColor(Qt::black) );
-    QColor button = config->readEntry( "buttonBackground", kde34Button );
-    QColor buttonText = config->readEntry( "buttonForeground", QColor(Qt::black) );
-    QColor highlight = config->readEntry( "selectBackground", kde34Blue );
-    QColor highlightedText = config->readEntry( "selectForeground", QColor(Qt::white) );
-    QColor base = config->readEntry( "windowBackground", QColor(Qt::white) );
-    QColor baseText = config->readEntry( "windowForeground", QColor(Qt::black) );
-    QColor link = config->readEntry( "linkColor", kde34Link );
-    QColor visitedLink = config->readEntry( "visitedLinkColor", kde34VisitedLink );
-
-    int highlightVal, lowlightVal;
-    highlightVal = 100 + (2*contrast_+4)*16/10;
-    lowlightVal = 100 + (2*contrast_+4)*10;
-
-    QColor disfg = foreground;
-
-    int h, s, v;
-    disfg.getHsv( &h, &s, &v );
-    if (v > 128)
-        // dark bg, light fg - need a darker disabled fg
-        disfg = disfg.dark(lowlightVal);
-    else if (disfg != Qt::black)
-        // light bg, dark fg - need a lighter disabled fg - but only if !black
-        disfg = disfg.light(highlightVal);
-    else
-        // black fg - use darkgray disabled fg
-        disfg = Qt::darkGray;
-
-    QPalette palette;
-    palette.setColor( QPalette::Active, QPalette::Foreground, foreground );
-    palette.setColor( QPalette::Active, QPalette::Window, background );
-    palette.setColor( QPalette::Active, QPalette::Light, background.light( highlightVal ) );
-    palette.setColor( QPalette::Active, QPalette::Dark, background.dark( lowlightVal ) );
-    palette.setColor( QPalette::Active, QPalette::Midlight, background.dark( 120 ) );
-    palette.setColor( QPalette::Active, QPalette::Text, baseText );
-    palette.setColor( QPalette::Active, QPalette::Base, base );
-
-    palette.setColor( QPalette::Active, QPalette::Highlight, highlight );
-    palette.setColor( QPalette::Active, QPalette::HighlightedText, highlightedText );
-    palette.setColor( QPalette::Active, QPalette::Button, button );
-    palette.setColor( QPalette::Active, QPalette::ButtonText, buttonText );
-    palette.setColor( QPalette::Active, QPalette::Midlight, background.light( 110 ) );
-    palette.setColor( QPalette::Active, QPalette::Link, link );
-    palette.setColor( QPalette::Active, QPalette::LinkVisited, visitedLink );
-
-    palette.setColor( QPalette::Disabled, QPalette::Foreground, disfg );
-    palette.setColor( QPalette::Disabled, QPalette::Window, background );
-    palette.setColor( QPalette::Disabled, QPalette::Light, background.light( highlightVal ) );
-    palette.setColor( QPalette::Disabled, QPalette::Dark, background.dark( lowlightVal ) );
-    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.dark( 120 ) );
-    palette.setColor( QPalette::Disabled, QPalette::Text, background.dark( 120 ) );
-    palette.setColor( QPalette::Disabled, QPalette::Base, base );
-    palette.setColor( QPalette::Disabled, QPalette::Button, button );
-
-
-    int inlowlightVal = lowlightVal-25;
-    if (inlowlightVal < 120)
-        inlowlightVal = 120;
-
-    QColor disbtntext = buttonText;
-    disbtntext.getHsv( &h, &s, &v );
-    if (v > 128)
-        // dark button, light buttonText - need a darker disabled buttonText
-        disbtntext = disbtntext.dark(lowlightVal);
-    else if (disbtntext != Qt::black)
-        // light buttonText, dark button - need a lighter disabled buttonText - but only if !black
-        disbtntext = disbtntext.light(highlightVal);
-    else
-        // black button - use darkgray disabled buttonText
-        disbtntext = Qt::darkGray;
-
-    palette.setColor( QPalette::Disabled, QPalette::Highlight, highlight.dark( 120 ) );
-    palette.setColor( QPalette::Disabled, QPalette::ButtonText, disbtntext );
-    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.light( 110 ) );
-    palette.setColor( QPalette::Disabled, QPalette::Link, link );
-    palette.setColor( QPalette::Disabled, QPalette::LinkVisited, visitedLink );
-
-    return palette;
-}
-
-
-void KApplication::kdisplaySetPalette()
-{
-#ifdef Q_WS_MACX
-    //Can I have this on other platforms, please!? --Sam
-    {
-        KConfigGroup cg( KGlobal::config(), "General" );
-        bool do_not_set_palette = false;
-        if(cg.readEntry("nopaletteChange", QVariant(&do_not_set_palette)).toBool())
-            return;
-    }
-#endif
-    QApplication::setPalette( createApplicationPalette() );
-    emit kdisplayPaletteChanged();
-    emit appearanceChanged();
-}
-
-
-void KApplication::kdisplaySetFont()
-{
-    QApplication::setFont(KGlobalSettings::generalFont());
-    QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
-    QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
-    QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
-
-    // "patch" standard QStyleSheet to follow our fonts
-    Q3StyleSheet* sheet = Q3StyleSheet::defaultSheet();
-    sheet->item (QLatin1String("pre"))->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item (QLatin1String("code"))->setFontFamily (KGlobalSettings::fixedFont().family());
-    sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
-
-    emit kdisplayFontChanged();
-    emit appearanceChanged();
-}
-
-
-void KApplication::kdisplaySetStyle()
-{
-    applyGUIStyle();
-    emit kdisplayStyleChanged();
-    emit appearanceChanged();
-}
-
-
-void KApplication::propagateSettings(SettingsCategory arg)
-{
-    KConfigGroup cg( KGlobal::config(), "KDE" );
-
-    int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime());
-    if ((num != 0) && (num < 200))
-        num = 200;
-    if (num > 2000)
-        num = 2000;
-    QApplication::setCursorFlashTime(num);
-    num = cg.readEntry("DoubleClickInterval", QApplication::doubleClickInterval());
-    QApplication::setDoubleClickInterval(num);
-    num = cg.readEntry("StartDragTime", QApplication::startDragTime());
-    QApplication::setStartDragTime(num);
-    num = cg.readEntry("StartDragDist", QApplication::startDragDistance());
-    QApplication::setStartDragDistance(num);
-    num = cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines());
-    QApplication::setWheelScrollLines(num);
-
-    bool b = cg.readEntry("EffectAnimateMenu", false);
-    QApplication::setEffectEnabled( Qt::UI_AnimateMenu, b);
-    b = cg.readEntry("EffectFadeMenu", false);
-    QApplication::setEffectEnabled( Qt::UI_FadeMenu, b);
-    b = cg.readEntry("EffectAnimateCombo", false);
-    QApplication::setEffectEnabled( Qt::UI_AnimateCombo, b);
-    b = cg.readEntry("EffectAnimateTooltip", false);
-    QApplication::setEffectEnabled( Qt::UI_AnimateTooltip, b);
-    b = cg.readEntry("EffectFadeTooltip", false);
-    QApplication::setEffectEnabled( Qt::UI_FadeTooltip, b);
-    //b = !cg.readEntry("EffectNoTooltip", false);
-    //QToolTip::setGloballyEnabled( b ); ###
-
-    emit settingsChanged(arg);
-}
 
 QString KApplication::tempSaveName( const QString& pFilename )
 {

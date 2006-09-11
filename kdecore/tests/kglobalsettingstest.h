@@ -1,5 +1,5 @@
-#ifndef blah_h
-#define blah_h
+#ifndef kglobalsettingstest_h
+#define kglobalsettingstest_h
 
 #include <qobject.h>
 
@@ -13,9 +13,8 @@ public Q_SLOTS:
     void slotPaletteChanged() { printf("SIGNAL: Palette changed\n"); }
     void slotStyleChanged() { printf("SIGNAL: Style changed\n"); }
     void slotFontChanged() { printf("SIGNAL: Font changed\n"); }
-    void slotBackgroundChanged(int i) { printf("SIGNAL: Background %d changed\n", i); }
+    void slotSettingsChanged(int i) { printf("SIGNAL: Settings %d changed\n", i); }
     void slotAppearanceChanged() { printf("SIGNAL: Appearance changed\n"); }
-    void slotMessage(int id, int arg) { printf("SIGNAL: user message: %d,%d\n", id, arg); }
 };
 
 #endif

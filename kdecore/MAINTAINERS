@@ -34,7 +34,6 @@ kiconeffect.cpp
 kiconloader.cpp
 kicontheme.cpp
 kinstance.cpp 		Stephan Kulow <coolo@kde.org>
-kipc.cpp        	Lubos Lunak <l.lunak@kde.org>
 kkey_x11.cpp		Ellis Whitehead <ellis@kde.org>
 kkeynative_x11.cpp	Ellis Whitehead <ellis@kde.org>
 kkeysequence.cpp	Ellis Whitehead <ellis@kde.org>

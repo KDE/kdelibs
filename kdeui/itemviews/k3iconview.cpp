@@ -18,9 +18,7 @@
 
 #define QT3_SUPPORT
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+//#include <config.h>
 
 #include <qtimer.h>
 #include <qpainter.h>
@@ -33,11 +31,10 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kapplication.h>
-#include <kipc.h>
 
 #include <kcursor.h>
 #include <kpixmapeffect.h>
+#include <QApplication>
 
 class K3IconView::K3IconViewPrivate
 {
@@ -68,11 +65,8 @@ K3IconView::K3IconView( QWidget *parent, const char *name, Qt::WFlags f )
              this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( Q3IconViewItem * ) ),
              this, SLOT( slotOnItem( Q3IconViewItem * ) ) );
-    slotSettingsChanged( KApplication::SETTINGS_MOUSE );
-    if ( kapp ) { // maybe null when used inside designer
-        connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-        kapp->addKipcEventMask( KIPC::SettingsChanged );
-    }
+    slotSettingsChanged( KGlobalSettings::SETTINGS_MOUSE );
+    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
 
     m_pCurrentItem = 0L;
 
@@ -127,7 +121,7 @@ void K3IconView::slotOnViewport()
 
 void K3IconView::slotSettingsChanged(int category)
 {
-    if ( category != KApplication::SETTINGS_MOUSE )
+    if ( category != KGlobalSettings::SETTINGS_MOUSE )
       return;
     m_bUseSingle = KGlobalSettings::singleClick();
     //kDebug() << "K3IconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
