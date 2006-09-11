@@ -95,6 +95,47 @@ class KUrl;
 */
 class KDECORE_EXPORT KApplication : public QApplication, public KInstance
 {
+    /**
+      @port4 isRestored() should now use qApp->isSessionRestored().
+      @port4 keyboardMouseState() has been removed, its functionality is
+             now provided by QApplication::keyboardModifiers() and QApplication::mouseButtons()
+      @port4 random() has been moved to the KRandom class
+      @port4 For using the kiosk restriction/authorization system you have to use the functions provided in KAuthorized.
+      @port4 invoke* functions have been moved to ktoolinvocation. there are static methods invoke*,
+             if you want to use slots as before connect to the invoke* slots of KToolInvocation::self()
+      @port4 startService*, kdeinitExec* have been moved to KToolInvocation
+      @port4 static void addCmdLineOptions(); has moved to KCmdLineArgs::addStdCmdLineOptions
+      @port4 getDisplay() has been removed, its functionality is now provided by QX11Info::display()
+      @port4 cut(), copy(), paste(), clear() and selectAll() were moved to KStdAction.
+             Rather then creating a copy action and connecting it to kapp just use the KStdAction::copy
+      @port4 guiEnabled() was removed, use QApplication::type() instead.
+      @port4 ref()/deref() was moved to KGlobal (as static methods)
+      @port4 geometryArgument was removed, please use:
+    <pre>
+     QString geometry;
+     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
+     if (args &amp;&amp; args-&gt;isSet("geometry"))
+        geometry = args-&gt;getOption("geometry");
+    </pre>
+      @port4 installSigpipeHandler() was removed.
+      @port4 propagateSessionManager() and requestShutDown() have been moved into the kworkspace library (which is found in kdebase/workspace/lib) and are static functions in that namespace.
+      @port4 The shutDown() signal has been removed, use QApplication's signal aboutToQuit()
+      @port4 enableStyles(), disableStyles(), and the constructor argument has been removed.
+      @port4 installKDEPropertyMap has been moved into k3sqlpropertymap.h and renamed to kInstallKDEPropertyMap. It can be used to keep old code that uses the Q3Data* classes working.For new code, use User in the meta object to determine which Q_PROPERTY to use for any widget.
+    <pre>
+      const QMetaObject *metaObject = widget-&gt;metaObject();
+      for (int i = 0; i &lt; metaObject-&gt;propertyCount(); ++i) {
+        const QMetaProperty metaProperty = metaObject-&gt;property(i);
+        if (metaProperty.isUser()) {
+          QString propertyToUse = metaProperty.name();
+          break;
+        }
+      }
+    </pre>
+      @port4 caption() has moved to KInstance
+      @port4 makeStdCaption(const QString&, bool, bool) has moved to KInstance and changed signature to makeStdCaption(const QString&, CaptionFlags)
+      @port4 addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()
+    */
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.kde.KApplication")
 public:

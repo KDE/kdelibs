@@ -138,49 +138,6 @@ instead.</li>
 <li>Removed. Replaced by the new KAction/QAction framework.</li>
 </ul>
 
-<h4>KApplication</h4>
-<ul>
-<li>kapp-&gt;isRestored() is now qApp-&gt;isSessionRestored()</li>
-<li>kapp-&gt;keyboardMouseState() has been removed, its functionality is now provided
-by QApplication::keyboardModifiers() and QApplication::mouseButtons()</li>
-<li>random() has been moved to the KRandom class</li>
-<li>For using the kiosk restriction/authorization system you have to use the functions provided in KAuthorized now</li>
-<li>invoke* has been moved to ktoolinvocation. there are static methods invoke*, if you want to use slots as before connect to the invoke* slots of KToolInvocation::self()</li>
-<li>startService*, kdeinitExec* -&gt; KToolInvocation</li>
-<li> static void addCmdLineOptions(); moveto KCmdLineArgs::addStdCmdLineOptions </li>
-<li>kapp-&gt;getDisplay() has been removed, its functionality is now provided
-by QX11Info::display()</li>
-<li>cut,copy,paste, clear and selectAll were moved to KStdAction</li>
-<li>guiEnabled() was removed, QApplication::type() should be used instead.</li>
-<li>ref()/deref() was moved to KGlobal (as static methods)</li>
-<li>geometryArgument was removed, please use:
-<pre>
- QString geometry;
- KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
- if (args &amp;&amp; args-&gt;isSet("geometry"))
-    geometry = args-&gt;getOption("geometry");
-</pre>
-</li>
-<li>installSigpipeHandler() was removed.</li>
-<li>propagateSessionManager() and requestShutDown() have been moved into the kworkspace library (kdebase/workspace/lib).</li>
-<li>The shutDown() signal has been removed, use QApplication's signal aboutToQuit()</li>
-<li>enableStyles(), disableStyles(), and the constructor argument has been removed.</li>
-<li>installKDEPropertyMap has been moved into k3sqlpropertymap.h and renamed to kInstallKDEPropertyMap. It can be used to keep old code that uses the Q3Data* classes working.For new code, use User in the meta object to determine which Q_PROPERTY to use for any widget.
-<pre>
-  const QMetaObject *metaObject = widget-&gt;metaObject();
-  for (int i = 0; i &lt; metaObject-&gt;propertyCount(); ++i) {
-    const QMetaProperty metaProperty = metaObject-&gt;property(i);
-    if (metaProperty.isUser()) {
-      QString propertyToUse = metaProperty.name();
-      break;
-    }
-  }
-</pre></li>
-<li>caption() has moved to KInstance</li>
-<li>makeStdCaption(const QString&amp;, bool, bool) has moved to KInstance and changed signature to makeStdCaption(const QString&amp;, CaptionFlags)</li>
-<li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()</li>
-</ul>
-
 <h4>KAudioPlayer</h4>
 <p>Removed, use now Phonon::AudioPlayer</p>
 
