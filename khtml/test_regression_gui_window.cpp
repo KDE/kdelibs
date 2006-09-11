@@ -417,7 +417,7 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 			// Detect whether the tests has no corresponding baseline items...
 			if(!ignore && !failure)
 			{
-				if(!dom && !dump && !render && !cacheName.endsWith(".js") && !cacheName.startsWith("domts"))
+				if(!dom[0] && !dump && !render && !cacheName.endsWith(".js") && !cacheName.startsWith("domts"))
 				{
 					// See if parent directory is completely ignored...
 					if(!ignoreParent)
