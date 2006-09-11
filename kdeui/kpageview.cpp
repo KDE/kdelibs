@@ -24,6 +24,9 @@
 
 #include "kpagemodel.h"
 
+#include <kdialog.h>
+#include <kiconloader.h>
+
 #include <QAbstractItemView>
 #include <QGridLayout>
 #include <QLabel>
@@ -47,8 +50,9 @@ class KPageView::Private
 
     // gui
     QStackedWidget *stack;
+    QFrame *headerFrame;
     QLabel *headerLabel;
-    QFrame *headerSeparator;
+    QLabel *headerIcon;
     QGridLayout *layout;
 
     QAbstractItemView *view;
@@ -89,8 +93,7 @@ void KPageView::Private::rebuildGui()
       view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
   }
 
-  headerLabel->setVisible( parent->showPageHeader() );
-  headerSeparator->setVisible( parent->showHeaderSeparator() );
+  headerFrame->setVisible( parent->showPageHeader() );
 
   Qt::Alignment alignment = parent->viewPosition();
   if ( alignment & Qt::AlignTop )
@@ -198,22 +201,33 @@ KPageView::KPageView( QWidget *parent )
   d->layout = new QGridLayout( this );
   d->stack = new QStackedWidget( this );
   d->headerLabel = new QLabel( this );
+  d->headerIcon = new QLabel( this );
 
-  QFont headerFont = d->headerLabel->font();
-  headerFont.setBold( true );
-  d->headerLabel->setFont( headerFont );
+  d->headerLabel->setStyleSheet( "QLabel { font-weight: bold; }" );
 
-  d->headerSeparator = new QFrame( this );
-  d->headerSeparator->setFrameShape( QFrame::HLine );
-  d->headerSeparator->setFrameShadow( QFrame::Plain );
+  d->headerFrame = new QFrame( this );
+  d->headerFrame->setFrameShape( QFrame::StyledPanel );
+  d->headerFrame->setFrameShadow( QFrame::Plain );
 
-  d->layout->addWidget( d->headerLabel, 1, 1 );
-  d->layout->addWidget( d->headerSeparator, 2, 1 );
-  d->layout->addWidget( d->stack, 3, 1 );
+  const QString color = d->headerFrame->palette().color( QPalette::Base ).name();
+  d->headerFrame->setStyleSheet( QString( "QFrame { background-color: %1; }" ).arg( color ) );
+// use this line once it's fixed in qt
+//  d->headerFrame->setBackgroundRole( QPalette::Base );
+
+  QHBoxLayout *headerLayout = new QHBoxLayout();
+  // use spacingHint (6 pixel), looks much better than marginHint
+  headerLayout->setMargin( KDialog::spacingHint() );
+  headerLayout->addWidget( d->headerLabel );
+  headerLayout->addWidget( d->headerIcon );
+  headerLayout->setStretchFactor( d->headerLabel, 1 );
+  d->headerFrame->setLayout( headerLayout );
+
+  d->layout->addWidget( d->headerFrame, 1, 1 );
+  d->layout->addWidget( d->stack, 2, 1 );
 
   // stack should use most space
   d->layout->setColumnStretch( 1, 1 );
-  d->layout->setRowStretch( 3, 1 );
+  d->layout->setRowStretch( 2, 1 );
 }
 
 KPageView::~KPageView()
@@ -309,6 +323,8 @@ void KPageView::pageSelected( const QModelIndex &index, const QModelIndex &previ
 
   QString header = d->model->data( index, KPageModel::HeaderRole ).toString();
   d->headerLabel->setText( header );
+  const QIcon icon = d->model->data( index, Qt::DecorationRole ).value<QIcon>();
+  d->headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
 
   emit currentPageChanged( index, previous );
 }
@@ -370,19 +386,6 @@ QAbstractItemView* KPageView::createView()
 }
 
 bool KPageView::showPageHeader() const
-{
-  FaceType faceType = d->faceType;
-
-  if ( faceType == Auto )
-    faceType = d->detectAutoFace();
-
-  if ( faceType == Plain || faceType == Tabbed )
-    return false;
-  else
-    return true;
-}
-
-bool KPageView::showHeaderSeparator() const
 {
   FaceType faceType = d->faceType;
 

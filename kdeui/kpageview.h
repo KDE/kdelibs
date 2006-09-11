@@ -169,14 +169,6 @@ class KDEUI_EXPORT KPageView : public QWidget
     virtual bool showPageHeader() const;
 
     /**
-     * Returns whether the separator line should be visible.
-     *
-     * This method can be reimplemented for adapting custom
-     * views.
-     */
-    virtual bool showHeaderSeparator() const;
-
-    /**
      * Returns the position where the navigation view should be
      * located according the page stack.
      *
