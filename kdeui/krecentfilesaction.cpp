@@ -27,11 +27,12 @@
 
 #include "krecentfilesaction.h"
 
-#include <QFile>
+#include <QtCore/QFile>
 
-#include <kdebug.h>
-#include <klocale.h>
 #include <kconfig.h>
+#include <kdebug.h>
+#include <kicon.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
 
@@ -79,7 +80,7 @@ KRecentFilesAction::KRecentFilesAction( const KIcon & icon, const QString & text
 }
 
 KRecentFilesAction::KRecentFilesAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction(icon, text, parent, name)
+  : KSelectAction(KIcon(icon), text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
   init();
@@ -92,9 +93,11 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         KActionCollection* parent, const QString& name,
                                         int maxItems )
-  : KSelectAction( text, cut, parent, name)
+  : KSelectAction( text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
+  setShortcut( cut );
+
   d->m_maxItems = maxItems;
 
   init();
@@ -109,9 +112,11 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const char* slot,
                                         KActionCollection* parent, const QString& name,
                                         int maxItems )
-  : KSelectAction( text, cut, parent, name)
+  : KSelectAction( text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
+  setShortcut( cut );
+
   d->m_maxItems = maxItems;
 
   init();
@@ -129,9 +134,11 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         KActionCollection* parent, const QString& name,
                                         int maxItems )
-  : KSelectAction( text, pix, cut, parent, name)
+  : KSelectAction(KIcon(pix), text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
+  setShortcut( cut );
+
   d->m_maxItems = maxItems;
 
   init();
@@ -145,9 +152,11 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const KShortcut& cut,
                                         KActionCollection* parent, const QString& name,
                                         int maxItems )
-  : KSelectAction( text, pix, cut, parent, name)
+  : KSelectAction(KIcon(pix), text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
+  setShortcut( cut );
+
   d->m_maxItems = maxItems;
 
   init();
@@ -163,9 +172,11 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const char* slot,
                                         KActionCollection* parent, const QString& name,
                                         int maxItems )
-  : KSelectAction( text, pix, cut, parent, name)
+  : KSelectAction(KIcon(pix), text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
+  setShortcut( cut );
+
   d->m_maxItems = maxItems;
 
   init();
@@ -185,9 +196,11 @@ KRecentFilesAction::KRecentFilesAction( const QString& text,
                                         const char* slot,
                                         KActionCollection* parent, const QString& name,
                                         int maxItems )
-  : KSelectAction( text, pix, cut, parent, name)
+  : KSelectAction( KIcon(pix), text, parent, name)
   , d(new KRecentFilesActionPrivate)
 {
+  setShortcut( cut );
+
   d->m_maxItems = maxItems;
 
   init();
