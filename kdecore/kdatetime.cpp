@@ -21,15 +21,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+
 #include <QDateTime>
 #include <QRegExp>
 #include <QStringList>
+#include <QSharedData>
+
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcalendarsystemgregorian.h>
 #include <kdebug.h>
-#include <kdatetime.h>
-#include "kstaticdeleter.h"
+#include <kstaticdeleter.h>
+#include "kdatetime.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h>    // SYSTEMTIME
@@ -299,18 +302,20 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
 static KDateTime::Spec* s_fromStringDefault = 0;
 static KStaticDeleter<KDateTime::Spec> s_fromStringDefaultStaticDeleter;
 
-class KDateTimePrivate
+class KDateTimePrivate : public QSharedData
 {
   public:
     KDateTimePrivate()   // default = invalid spec value
-        : status(stValid),
+        : QSharedData(),
+          status(stValid),
           utcCached(false),
           mDateOnly(false),
           m2ndOccurrence(false)
     {}
 
    KDateTimePrivate(const QDateTime &d, const KDateTime::Spec &s, bool donly = false)
-        : mDt(d),
+        : QSharedData(),
+          mDt(d),
           specType(s.type()),
           status(stValid),
           utcCached(false),
@@ -331,7 +336,8 @@ class KDateTimePrivate
     }
 
     KDateTimePrivate(const KDateTimePrivate &rhs)
-        : mDt(rhs.mDt),
+        : QSharedData(rhs),
+          mDt(rhs.mDt),
           ut(rhs.ut),
           z(rhs.z),
           specType(rhs.specType),
@@ -342,7 +348,7 @@ class KDateTimePrivate
     {}
 
     ~KDateTimePrivate()  {}
-    KDateTimePrivate &operator=(const KDateTimePrivate&);
+//    KDateTimePrivate &operator=(const KDateTimePrivate&);
     const QDateTime& dt() const                                    { return mDt; }
     const QDate   date() const                                     { return mDt.date(); }
     KDateTime::Spec spec() const;
@@ -381,6 +387,8 @@ class KDateTimePrivate
     /* Because some applications create thousands of instances of KDateTime, this
      * data structure is designed to minimise memory usage. Ensure that all small
      * members are kept together at the end!
+     *
+     * N.B. This class does not own any KTimeZone instances pointed to by data members.
      */
 private:
     QDateTime            mDt;
@@ -390,11 +398,9 @@ public:
         QTime            time;
     } ut;
     union {
-        const KTimeZone *tz;               // if specType == TimeZone, the instance's time zone.
-                                           // N.B. the KTimeZone instance is not owned by this class.
+        const KTimeZone *tz;               // if specType == TimeZone, the instance's time zone
         int              utcOffset;        // if specType == OffsetFromUTC, the offset from UTC
-        mutable const KTimeZone *tzCached; // if specType == ClockTime, the local time zone used to calculate the cached UTC time.
-                                           // N.B. the KTimeZone instance is not owned by this class.
+        mutable const KTimeZone *tzCached; // if specType == ClockTime, the local time zone used to calculate the cached UTC time
     } z;
     KDateTime::SpecType  specType  : 3;    // time spec type
     Status               status    : 2;    // reason for invalid status
@@ -406,9 +412,10 @@ private:
 
 
 QTime KDateTimePrivate::sod(0,0,0);
-
+/*
 KDateTimePrivate &KDateTimePrivate::operator=(const KDateTimePrivate &other)
 {
+    QSharedData::operator=(other);
     mDt            = other.mDt;
     ut             = other.ut;
     z              = other.z;
@@ -418,7 +425,7 @@ KDateTimePrivate &KDateTimePrivate::operator=(const KDateTimePrivate &other)
     mDateOnly      = other.mDateOnly;
     m2ndOccurrence = other.m2ndOccurrence;
     return *this;
-}
+}*/
 
 KDateTime::Spec KDateTimePrivate::spec() const
 {
@@ -617,6 +624,12 @@ KDateTime::KDateTime()
 {
 }
 
+
+KDateTime::KDateTime(KDateTimePrivate *p)
+  : d(p)
+{
+}
+
 KDateTime::KDateTime(const QDate &date, const Spec &spec)
 : d(new KDateTimePrivate(QDateTime(date, KDateTimePrivate::sod, Qt::LocalTime), spec, true))
 {
@@ -676,18 +689,17 @@ KDateTime::KDateTime(const QDateTime &dt)
 }
 
 KDateTime::KDateTime(const KDateTime &other)
-  : d(new KDateTimePrivate(*other.d))
+  : d(other.d)
 {
 }
 
 KDateTime::~KDateTime()
 {
-  delete d;
 }
 
 KDateTime &KDateTime::operator=(const KDateTime &other)
 {
-    d->operator=(*other.d);
+    d = other.d;
     return *this;
 }
 
@@ -801,10 +813,9 @@ KDateTime KDateTime::toLocalZone() const
     switch (d->specType)
     {
         case TimeZone:
-            /* Convert the time using zone->toZoneTime(utc) rather than
-             * d->z.tz->convert(), because convert() works by converting
-             * to UTC first, and this way we can use the cached UTC time rather
-             * than having convert() recalculate it every time.
+            /* Convert the time via UTC rather than d->z.tz->convert(),
+             * because convert() works by converting to UTC first, and this way we can use
+             * the cached UTC time rather than having convert() recalculate it every time.
              */
         case OffsetFromUTC:
         case UTC:
@@ -837,8 +848,8 @@ KDateTime KDateTime::toZone(const KTimeZone *zone) const
         return *this;    // preserve UTC cache, if any
     if (d->dateOnly())
         return KDateTime(d->date(), Spec(zone));
-    /* Note: if the specType is TimeZone, convert the time using zone->toZoneTime(utc)
-     * rather than d->z.tz->convert(),
+    /* Note: if the specType is TimeZone, convert the time via UTC rather than
+     * d->z.tz->convert(),
      * because convert() works by converting to UTC first, and this way we can use
      * the cached UTC time rather than having convert() recalculate it every time.
      */
@@ -1103,15 +1114,7 @@ KDateTime KDateTime::currentUtcDateTime()
 
 KDateTime KDateTime::currentDateTime(const Spec &spec)
 {
-    switch (spec.type())
-    {
-        case UTC:
-            return currentUtcDateTime();
-        case LocalZone:
-            return currentLocalDateTime();
-        default:
-            return currentUtcDateTime().toTimeSpec(spec);
-    }
+    return currentUtcDateTime().toTimeSpec(spec);
 }
 
 KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
@@ -1178,6 +1181,8 @@ KDateTime::Comparison KDateTime::compare(const KDateTime &other) const
 
 bool KDateTime::operator==(const KDateTime &other) const
 {
+    if (d == other.d)
+        return true;   // the two instances share the same data
     bool dates = (d->dateOnly() || other.d->dateOnly());
     if (dates)
     {
@@ -1218,6 +1223,8 @@ bool KDateTime::operator==(const KDateTime &other) const
 
 bool KDateTime::operator<(const KDateTime &other) const
 {
+    if (d == other.d)
+        return false;   // the two instances share the same data
     bool dates = (d->dateOnly() || other.d->dateOnly());
     if (dates)
     {

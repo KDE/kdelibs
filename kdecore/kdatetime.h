@@ -26,6 +26,8 @@
 #ifndef _KDATETIME_H_
 #define _KDATETIME_H_
 
+#include <QtCore/QSharedDataPointer>
+
 #include <ktimezones.h>
 #include "kdelibs_export.h"
 
@@ -1499,7 +1501,9 @@ class KDECORE_EXPORT KDateTime
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
   private:
-    KDateTimePrivate* const d;
+    explicit KDateTime(KDateTimePrivate*);
+
+    QSharedDataPointer<KDateTimePrivate> d;
 };
 
 /** Write @p spec to the datastream @p out, in binary format. */
