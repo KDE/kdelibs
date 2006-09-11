@@ -677,6 +677,13 @@ public:  // yes, those signals are public; don't tell moc :)
    */
   void setPageSecurity( int );
 
+#define KPARTS_BROWSEREXTENSION_HAS_ITEMS_REMOVED
+  /**
+   * Inform the host about items that have been removed.
+   * @since 3.5.5
+   */
+  void itemsRemoved( const KFileItemList &items );
+
 private Q_SLOTS:
   void slotCompleted();
   void slotOpenUrlRequest( const KUrl &url, const KParts::URLArgs &args );
