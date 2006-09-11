@@ -587,9 +587,6 @@ protected:
   /** Reimplement to customize error handling */
   virtual void handleError( KIO::Job * );
 
-protected:
-  virtual void virtual_hook( int id, void *data );
-
 private Q_SLOTS:
   void slotInfoMessage( KJob *, const QString& );
   void slotPercent( KJob *, unsigned long );

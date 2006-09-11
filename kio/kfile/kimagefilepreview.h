@@ -68,8 +68,6 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		QCheckBox *autoPreview;
 		QPushButton *previewButton;
 		KIO::PreviewJob *m_job;
-        protected:
-                virtual void virtual_hook( int id, void* data );
         private:
                 class KImageFilePreviewPrivate;
                 KImageFilePreviewPrivate *d;

@@ -292,7 +292,4 @@ void SessionData::reset()
     KProtocolManager::reparseConfiguration();
 }
 
-void SessionData::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 }

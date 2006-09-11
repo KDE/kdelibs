@@ -521,9 +521,6 @@ void DefaultProgress::slotPauseResumeClicked()
     }
 }
 
-    void DefaultProgress::virtual_hook( int id, void* data )
-{ ProgressBase::virtual_hook( id, data ); }
-
 } /* namespace */
 
 #include "defaultprogress.moc"

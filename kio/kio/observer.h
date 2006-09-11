@@ -212,8 +212,6 @@ public:
   void stating( KIO::Job*, const KUrl& url );
   void mounting( KIO::Job*, const QString & dev, const QString & point );
   void unmounting( KIO::Job*, const QString & point );
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class ObserverPrivate* d;
 };

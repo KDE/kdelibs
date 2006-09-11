@@ -358,8 +358,6 @@ namespace KIO {
         SessionData *sessionData;
         bool checkOnHold;
         QMap<QObject *,WId> m_windowList;
-    protected:
-	virtual void virtual_hook( int id, void* data );
     private:
 	class SchedulerPrivate* d;
 };

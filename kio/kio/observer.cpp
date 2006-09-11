@@ -425,7 +425,4 @@ SkipDlg_Result Observer::open_SkipDlg( KIO::Job* job,
   return res;
 }
 
-void Observer::virtual_hook( int, void* )
-{ /* BASe::virtual_hook( id, data ); */ }
-
 #include "observer.moc"

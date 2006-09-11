@@ -332,7 +332,4 @@ void KUriFilter::loadPlugins()
     // m_lstPlugins.sort();
 }
 
-void KUriFilterPlugin::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kurifilter.moc"

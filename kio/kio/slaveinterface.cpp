@@ -468,7 +468,4 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
     }
 }
 
-void SlaveInterface::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "slaveinterface.moc"

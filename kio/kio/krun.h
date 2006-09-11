@@ -373,9 +373,6 @@ protected:
   bool m_bIsLocalFile;
   mode_t m_mode;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
-
 private:
   void init (const KUrl& url, QWidget* window, mode_t mode,
              bool isLocalFile, bool showProgressInfo);

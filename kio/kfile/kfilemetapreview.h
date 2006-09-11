@@ -33,9 +33,6 @@ public Q_SLOTS:
 protected:
     virtual KPreviewWidgetBase *previewProviderFor( const QString& mimeType );
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-
 private:
     void initPreviewProviders();
 

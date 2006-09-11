@@ -187,9 +187,6 @@ void ProgressBase::slotClean() {
   hide();
 }
 
-void ProgressBase::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 } /* namespace */
 
 #include "progressbase.moc"

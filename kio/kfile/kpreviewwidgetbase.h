@@ -77,9 +77,6 @@ public Q_SLOTS:
 protected:
     void setSupportedMimeTypes( const QStringList& mimeTypes );
 
-protected:
-    virtual void virtual_hook( int, void* ) {}
-
 private:
     class KPreviewWidgetBasePrivate;
     KPreviewWidgetBasePrivate * d() const {

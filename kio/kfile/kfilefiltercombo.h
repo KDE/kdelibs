@@ -85,7 +85,6 @@ public:
 
 protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
-    virtual void virtual_hook( int id, void* data );
 
 Q_SIGNALS:
     void filterChanged();

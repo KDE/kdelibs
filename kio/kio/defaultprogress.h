@@ -142,8 +142,6 @@ protected:
   enum ModeType { Copy, Move, Delete, Create, Done };
   ModeType mode;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   class DefaultProgressPrivate;
   DefaultProgressPrivate* const d;

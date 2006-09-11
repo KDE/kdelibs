@@ -220,8 +220,6 @@ private:
    bool                 m_recurseChildren :1;
    bool                 m_showExtensions  :1;
 
-protected:
-   virtual void virtual_hook( int id, void* data );
 private:
    class KFileTreeBranchPrivate;
    KFileTreeBranchPrivate *d;

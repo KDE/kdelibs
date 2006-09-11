@@ -181,7 +181,4 @@ void KImageFilePreview::clearPreview()
     currentURL = KUrl();
 }
 
-void KImageFilePreview::virtual_hook( int id, void* data )
-{ KPreviewWidgetBase::virtual_hook( id, data ); }
-
 #include "kimagefilepreview.moc"

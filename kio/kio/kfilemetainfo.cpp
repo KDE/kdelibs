@@ -782,10 +782,6 @@ KFileMimeTypeInfo * KFilePlugin::addMimeTypeInfo( const QString& mimeType )
     return KFileMetaInfoProvider::self()->addMimeTypeInfo( mimeType );
 }
 
-void KFilePlugin::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-
 KFileMimeTypeInfo::GroupInfo*  KFilePlugin::addGroupInfo(KFileMimeTypeInfo* info,
                   const QString& key, const QString& translatedKey) const
 {

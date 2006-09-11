@@ -277,9 +277,6 @@ private:
   bool m_bOnlyClean;
   bool m_bStopOnClose;
 
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class ProgressBasePrivate* d;
 };

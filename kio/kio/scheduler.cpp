@@ -880,9 +880,4 @@ Scheduler* Scheduler::self() {
     return instance;
 }
 
-void Scheduler::virtual_hook( int, void* )
-{ /* BASE::virtual_hook( id, data ); */ }
-
-
-
 #include "scheduler.moc"

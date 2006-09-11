@@ -1316,7 +1316,4 @@ KProcessRunner::slotProcessExited(KProcess * p)
   deleteLater();
 }
 
-void KRun::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "krun.moc"

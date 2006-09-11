@@ -200,6 +200,4 @@ KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
     return w;
 }
 
-void KFileMetaPreview::virtual_hook( int, void* ) {}
-
 #include "kfilemetapreview.moc"

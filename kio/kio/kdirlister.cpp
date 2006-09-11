@@ -2483,10 +2483,5 @@ KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
     return result;
 }
 
-// to keep BC changes
-
-void KDirLister::virtual_hook( int, void * )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kdirlister.moc"
 #include "kdirlister_p.moc"

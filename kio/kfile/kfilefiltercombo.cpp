@@ -189,7 +189,4 @@ QString KFileFilterCombo::defaultFilter() const
     return d->defaultFilter;
 }
 
-void KFileFilterCombo::virtual_hook( int id, void* data )
-{ KComboBox::virtual_hook( id, data ); }
-
 #include "kfilefiltercombo.moc"

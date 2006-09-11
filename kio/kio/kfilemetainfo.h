@@ -1605,15 +1605,6 @@ protected:
     QStringList m_preferredKeys;
     QStringList m_preferredGroups;
 
-protected:
-    /**
-     * Helper method to allow binary compatible extensions when needing
-     * "new virtual methods"
-     *
-     * @param id the identifier of the new "virtual" method
-     * @param data any parameter data the new "virtual" method needs
-     */
-    virtual void virtual_hook( int id, void* data );
 private:
     class KFilePluginPrivate;
     KFilePluginPrivate *d;

@@ -516,8 +516,5 @@ bool KFileTreeBranch::populate( const KUrl& url,  KFileTreeViewItem *currItem )
     return ret;
 }
 
-void KFileTreeBranch::virtual_hook( int id, void* data )
-{ KDirLister::virtual_hook( id, data ); }
-
 #include "kfiletreebranch.moc"
 
