@@ -110,8 +110,6 @@ namespace KIO {
 	 * queued methods.
 	 */
 	void dispatchNext();
-    protected:
-	virtual void virtual_hook( int id, void* data );
     private:
 	MetaData meta_data;
 	bool _suspended;

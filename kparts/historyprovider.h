@@ -91,8 +91,6 @@ Q_SIGNALS:
 private:
     static HistoryProvider *s_self;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class HistoryProviderPrivate;
     HistoryProviderPrivate* const d;

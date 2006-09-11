@@ -395,11 +395,6 @@ QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, QDir::SortFlag
 
 void KFileView::setDropOptions(int options)
 {
-    virtual_hook(VIRTUAL_SET_DROP_OPTIONS, &options); // Virtual call
-}
-
-void KFileView::setDropOptions_impl(int options)
-{
     d->dropOptions = options;
 }
 
@@ -411,18 +406,6 @@ int KFileView::dropOptions()
 int KFileView::autoOpenDelay()
 {
     return (QApplication::startDragTime() * 3) / 2;
-}
-
-void KFileView::virtual_hook( int id, void* data)
-{
-    switch(id) {
-      case VIRTUAL_SET_DROP_OPTIONS:
-         setDropOptions_impl(*(int *)data);
-         break;
-      default:
-         /*BASE::virtual_hook( id, data );*/
-         break;
-    }
 }
 
 #include "kfileview.moc"

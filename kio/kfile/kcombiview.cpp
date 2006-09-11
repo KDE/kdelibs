@@ -337,23 +337,12 @@ void KCombiView::setAcceptDrops(bool b)
     QSplitter::setAcceptDrops(b);
 }
 
-void KCombiView::setDropOptions_impl(int options)
+void KCombiView::setDropOptions(int options)
 {
-    KFileView::setDropOptions_impl(options);
+    KFileView::setDropOptions(options);
     left->setDropOptions(options);
     if (right)
        right->setDropOptions(options);
-}
-
-void KCombiView::virtual_hook( int id, void* data )
-{
-    switch(id) {
-      case VIRTUAL_SET_DROP_OPTIONS:
-         setDropOptions_impl(*(int *)data);
-         break;
-      default:
-         KFileView::virtual_hook( id, data );
-    }
 }
 
 bool KCombiView::eventFilter( QObject *o, QEvent *e )

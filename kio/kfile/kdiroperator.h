@@ -539,8 +539,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * Sets the options for dropping files.
      * @see KFileView::DropOptions
      */
-     // ### KDE4: make virtual
-    void setDropOptions(int options);
+    virtual void setDropOptions(int options);
 
     /**
      * Starts and returns a KIO::CopyJob to trash the given @p items.
@@ -923,8 +922,6 @@ private Q_SLOTS:
 private:
     static bool isReadable( const KUrl& url );
 
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
     class KDirOperatorPrivate;
     KDirOperatorPrivate* const d;

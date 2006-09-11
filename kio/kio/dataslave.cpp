@@ -57,7 +57,7 @@ using namespace KIO;
 
 
 DataSlave::DataSlave() :
-	Slave(true, 0, "data", QString())
+	Slave(0, "data", QString())
 {
   //kDebug() << this << k_funcinfo << endl;
   _suspended = false;
@@ -166,40 +166,6 @@ void DataSlave::setAllMetaData(const MetaData &md) {
 
 void DataSlave::sendMetaData() {
   emit metaData(meta_data);
-}
-
-void DataSlave::virtual_hook( int id, void* data ) {
-  switch (id) {
-    case VIRTUAL_SUSPEND: suspend(); return;
-    case VIRTUAL_RESUME: resume(); return;
-    case VIRTUAL_SEND: {
-      SendParams *params = reinterpret_cast<SendParams *>(data);
-      send(params->cmd, *params->arr);
-      return;
-    }
-    case VIRTUAL_HOLD: {
-      HoldParams *params = reinterpret_cast<HoldParams *>(data);
-      hold(*params->url);
-      return;
-    }
-    case VIRTUAL_SUSPENDED: {
-      SuspendedParams *params = reinterpret_cast<SuspendedParams *>(data);
-      params->retval = suspended();
-      return;
-    }
-    case VIRTUAL_SET_HOST: {
-      SetHostParams *params = reinterpret_cast<SetHostParams *>(data);
-      setHost(*params->host,params->port,*params->user,*params->passwd);
-      return;
-    }
-    case VIRTUAL_SET_CONFIG: {
-      SetConfigParams *params = reinterpret_cast<SetConfigParams *>(data);
-      setConfig(*params->config);
-      return;
-    }
-    default:
-      KIO::Slave::virtual_hook( id, data );
-  }
 }
 
 DISPATCH_IMPL1(mimeType, const QString &, s)

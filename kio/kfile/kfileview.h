@@ -427,11 +427,6 @@ private:
     mutable KFileItemList *m_selectedList;
     bool myOnlyDoubleClickSelectsFiles;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-    /* @internal for virtual_hook */
-    enum { VIRTUAL_SET_DROP_OPTIONS = 1 };
-    void setDropOptions_impl(int options);
 private:
     class KFileViewPrivate;
     KFileViewPrivate* const d;

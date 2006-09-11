@@ -82,8 +82,8 @@ namespace KIO {
          * @param user to login as
          * @param passwd to login with
          */
-        void setHost( const QString &host, int port,
-                      const QString &user, const QString &passwd); // TODO(BIC): make virtual
+        virtual void setHost( const QString &host, int port,
+                      const QString &user, const QString &passwd);
 
         /**
          * Clear host info.
@@ -93,7 +93,7 @@ namespace KIO {
         /**
          * Configure slave
          */
-        void setConfig(const MetaData &config);	// TODO(BIC): make virtual
+        virtual void setConfig(const MetaData &config);
 
         /**
 	 * The protocol this slave handles.
@@ -155,28 +155,28 @@ namespace KIO {
 	/**
 	 * Suspends the operation of the attached kioslave.
 	 */
-        void suspend();		// TODO(BIC): make virtual
+        virtual void suspend();
 	/**
 	 * Resumes the operation of the attached kioslave.
 	 */
-        void resume();		// TODO(BIC): make virtual
+        virtual void resume();
 	/**
 	 * Tells wether the kioslave is suspended.
 	 * @return true if the kioslave is suspended.
 	 */
-        bool suspended();	// TODO(BIC): make virtual
+        virtual bool suspended();
 	/**
 	 * Sends the given command to the kioslave.
 	 * @param cmd command id
 	 * @param arr byte array containing data
 	 */
-        void send(int cmd, const QByteArray &arr = QByteArray());// TODO(BIC): make virtual
+        virtual void send(int cmd, const QByteArray &arr = QByteArray());
 	// == end communication with connected kioslave ==
 
 	/**
 	 * Puts the kioslave associated with @p url at halt.
 	 */
-	void hold(const KUrl &url);	// TODO(BIC): make virtual
+	virtual void hold(const KUrl &url);
 
 	/**
 	 * @return The time this slave has been idle.
@@ -224,31 +224,6 @@ namespace KIO {
 	time_t idle_since;
 	KIO::Connection slaveconn;
 	int m_refCount;
-    protected:
-	virtual void virtual_hook( int id, void* data );
-	// grant SlaveInterface all IDs < 0x200
-	enum { VIRTUAL_SUSPEND = 0x200, VIRTUAL_RESUME, VIRTUAL_SEND,
-		VIRTUAL_HOLD, VIRTUAL_SUSPENDED,
-		VIRTUAL_SET_HOST, VIRTUAL_SET_CONFIG };
-	struct SendParams {
-	  int cmd;
-	  const QByteArray *arr;
-	};
-	struct HoldParams {
-	  const KUrl *url;
-	};
-	struct SuspendedParams {
-	  bool retval;
-	};
-	struct SetHostParams {
-	  const QString *host;
-	  int port;
-	  const QString *user;
-	  const QString *passwd;
-	};
-	struct SetConfigParams {
-	  const MetaData *config;
-	};
     private:
 	class SlavePrivate* d;
     };

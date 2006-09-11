@@ -275,6 +275,3 @@ void KFilePreview::writeConfig( KConfigGroup *configGroup)
     left->writeConfig( configGroup);
 }
 
-void KFilePreview::virtual_hook( int id, void* data )
-{ KFileView::virtual_hook( id, data ); }
-

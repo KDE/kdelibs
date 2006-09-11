@@ -694,9 +694,6 @@ private:
   static ActionNumberMap * s_actionNumberMap;
   static ActionSlotMap * s_actionSlotMap;
   static void createActionSlotMap();
-protected:
-  virtual void virtual_hook( int id, void* data );
-private:
   BrowserExtensionPrivate *d;
 };
 
@@ -731,7 +728,7 @@ public:
    * Returns the part that contains @p frame and that may be accessed
    * by @p callingPart
    */
-  BrowserHostExtension *findFrameParent(KParts::ReadOnlyPart *callingPart, const QString &frame);
+  virtual BrowserHostExtension *findFrameParent(KParts::ReadOnlyPart *callingPart, const QString &frame);
 
   /**
    * Opens the given url in a hosted child frame. The frame name is specified in the
@@ -745,21 +742,6 @@ public:
    */
   static BrowserHostExtension *childObject( QObject *obj );
 
-protected:
-  /** This 'enum' along with the structure below is NOT part of the public API.
-   * It's going to disappear in KDE 4.0 and is likely to change inbetween.
-   *
-   * @internal
-   */
-  enum { VIRTUAL_FIND_FRAME_PARENT = 0x10 };
-  struct FindFrameParentParams
-  {
-      BrowserHostExtension *parent;
-      KParts::ReadOnlyPart *callingPart;
-      QString frame;
-  };
-
-  virtual void virtual_hook( int id, void* data );
 private:
   class BrowserHostExtensionPrivate;
   BrowserHostExtensionPrivate *d;

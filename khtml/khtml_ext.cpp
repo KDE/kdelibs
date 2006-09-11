@@ -962,17 +962,13 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KUrl &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
-void KHTMLPartBrowserHostExtension::virtual_hook( int id, void *data )
+KParts::BrowserHostExtension* KHTMLPartBrowserHostExtension::findFrameParent( KParts::ReadOnlyPart
+      *callingPart, const QString &frame )
 {
-  if (id == VIRTUAL_FIND_FRAME_PARENT)
-  {
-    FindFrameParentParams *param = static_cast<FindFrameParentParams*>(data);
-    KHTMLPart *parentPart = m_part->findFrameParent(param->callingPart, param->frame);
+    KHTMLPart *parentPart = m_part->findFrameParent(callingPart, frame);
     if (parentPart)
-       param->parent = parentPart->browserHostExtension();
-    return;
-  }
-  BrowserHostExtension::virtual_hook( id, data );
+       return parentPart->browserHostExtension();
+    return 0;
 }
 
 

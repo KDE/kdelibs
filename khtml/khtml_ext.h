@@ -100,10 +100,10 @@ public:
 
   virtual const QList<KParts::ReadOnlyPart*> frames() const;
 
+  virtual BrowserHostExtension* findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &frame );
+
   virtual bool openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   KHTMLPart *m_part;
 };

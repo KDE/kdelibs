@@ -587,9 +587,6 @@ int PartManager::reason() const
   return d->m_reason;
 }
 
-void PartManager::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "partmanager.moc"
 
 // kate: space-indent on; indent-width 4; tab-width 4; replace-tabs on

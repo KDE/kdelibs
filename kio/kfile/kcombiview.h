@@ -120,9 +120,8 @@ private:
 
 protected:
     virtual bool eventFilter( QObject *o, QEvent *e );
-    void setDropOptions_impl(int options);
+    virtual void setDropOptions(int options);
 
-    virtual void virtual_hook( int id, void* data );
 private:
     class KCombiViewPrivate;
     KCombiViewPrivate *d;

@@ -1713,7 +1713,4 @@ bool KDirOperator::showHiddenFiles( ) const
     return showHiddenAction->isChecked();
 }
 
-void KDirOperator::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
 #include "kdiroperator.moc"

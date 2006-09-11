@@ -82,11 +82,6 @@ namespace KIO {
    * @internal
    */
   class SlavePrivate {
-  public:
-    bool derived;	// true if this instance of Slave is actually an
-    			// instance of a derived class.
-
-    SlavePrivate(bool derived) : derived(derived) {}
   };
 }
 
@@ -142,8 +137,7 @@ void Slave::timeout()
 }
 
 Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
-  : SlaveInterface(&slaveconn), serv(socket), contacted(false),
-  	d(new SlavePrivate(false))
+  : SlaveInterface(&slaveconn), serv(socket), contacted(false)
 {
     m_refCount = 1;
     m_protocol = protocol;
@@ -159,30 +153,6 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     connect(serv, SIGNAL(readyAccept()),
 	    SLOT(accept() ) );
 #endif
-}
-
-Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
-	const QString &socketname)
-  : SlaveInterface(&slaveconn), serv(socket), contacted(false),
-  	d(new SlavePrivate(true))
-{
-    // FIXME: hmm, duplicating code here from public ctor, no good (LS)
-    m_refCount = 1;
-    m_protocol = protocol;
-    m_slaveProtocol = protocol;
-    m_socket = socketname;
-    dead = false;
-    contact_started = time(0);
-    idle_since = contact_started;
-    m_pid = 0;
-    m_port = 0;
-    if (serv != 0) {
-#ifndef Q_WS_WIN
-      serv->setAcceptBuffered(false);
-      connect(serv, SIGNAL(readyAccept()),
-        SLOT(accept() ) );
-#endif
-    }
 }
 
 Slave::~Slave()
@@ -220,13 +190,6 @@ void Slave::setPID(pid_t pid)
 
 void Slave::hold(const KUrl &url)
 {
-   if (d->derived) {		// TODO: clean up before KDE 4
-     HoldParams params;
-     params.url = &url;
-     virtual_hook(VIRTUAL_HOLD, &params);
-     return;
-   }/*end if*/
-
    ref();
    {
       QByteArray data;
@@ -246,44 +209,20 @@ void Slave::hold(const KUrl &url)
 
 void Slave::suspend()
 {
-   if (d->derived) {		// TODO: clean up before KDE 4
-     virtual_hook(VIRTUAL_SUSPEND, 0);
-     return;
-   }/*end if*/
-
    slaveconn.suspend();
 }
 
 void Slave::resume()
 {
-   if (d->derived) {		// TODO: clean up before KDE 4
-     virtual_hook(VIRTUAL_RESUME, 0);
-     return;
-   }/*end if*/
-
    slaveconn.resume();
 }
 
 bool Slave::suspended()
 {
-   if (d->derived) {		// TODO: clean up before KDE 4
-     SuspendedParams params;
-     virtual_hook(VIRTUAL_SUSPENDED, &params);
-     return params.retval;
-   }/*end if*/
-
    return slaveconn.suspended();
 }
 
 void Slave::send(int cmd, const QByteArray &arr) {
-   if (d->derived) {		// TODO: clean up before KDE 4
-     SendParams params;
-     params.cmd = cmd;
-     params.arr = &arr;
-     virtual_hook(VIRTUAL_SEND, &params);
-     return;
-   }/*end if*/
-
    slaveconn.send(cmd, arr);
 }
 
@@ -494,10 +433,6 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
 #endif
     return slave;
-}
-
-void Slave::virtual_hook( int id, void* data ) {
-  KIO::SlaveInterface::virtual_hook( id, data );
 }
 
 #include "slave.moc"
