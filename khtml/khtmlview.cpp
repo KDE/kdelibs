@@ -66,6 +66,7 @@
 #include <kapplication.h>
 #include <kcursor.h>
 #include <kdebug.h>
+#include <kglobalsettings.h> 
 #include <kdialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
@@ -468,7 +469,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     m_part = part;
     Q3ScrollView::setVScrollBarMode(d->vmode);
     Q3ScrollView::setHScrollBarMode(d->hmode);
-    connect(kapp, SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
+    connect(KGlobalSettings::self(), SIGNAL(kdisplayPaletteChanged()), this, SLOT(slotPaletteChanged()));
     connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
 
     // initialize QScrollView

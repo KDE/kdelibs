@@ -146,7 +146,7 @@ KMenuBar::KMenuBar(QWidget *parent) : QMenuBar(parent)
 
     if ( kapp )
         // toolbarAppearanceChanged(int) is sent when changing macstyle
-        connect( kapp, SIGNAL(toolbarAppearanceChanged(int)),
+        connect( KGlobalSettings::self(), SIGNAL(toolbarAppearanceChanged(int)),
             this, SLOT(slotReadConfig()));
 
     slotReadConfig();
