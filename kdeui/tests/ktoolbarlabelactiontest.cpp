@@ -49,8 +49,7 @@ class MainWindow : public KMainWindow
       KAction* lineEditAction = new KAction( "Line Edit", actionCollection(), "lineEdit");
       lineEditAction->setDefaultWidget(lineEdit);
 
-      KToolBarLabelAction* label2 = new KToolBarLabelAction( lineEditAction, "L&abel 2",
-                                                             actionCollection(), "label2" );
+      new KToolBarLabelAction( lineEditAction, "L&abel 2", actionCollection(), "label2" );
 
       // set buddy for label1
       label1->setBuddy( lineEditAction );

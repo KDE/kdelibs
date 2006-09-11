@@ -120,8 +120,6 @@ void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
   QStyleOptionFrame opt;
   opt.initFrom(this);
 
-  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-
   opt.state = QStyle::State_Sunken;
 
   QPainter painter;

@@ -17,9 +17,9 @@ int main( int argc, char **argv )
     KAction* action1 = new KAction("test1", &coll, "test1");
     KAction* action2 = new KAction("test2", &coll, "test2");
     KAction* action3 = new KAction("test3", &coll, "test3");
-    KAction* action4 = new KAction("test4", &coll, "test4");
-    KAction* action5 = new KAction("test5", &coll, "test5");
-    KAction* action6 = new KAction("test6", &coll, "test6");
+    new KAction("test4", &coll, "test4");
+    new KAction("test5", &coll, "test5");
+    new KAction("test6", &coll, "test6");
     KAction* action7 = new KAction("test7", &coll, "test7");
 
     QMainWindow* mw = new QMainWindow();

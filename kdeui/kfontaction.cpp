@@ -27,13 +27,13 @@
 
 #include "kfontaction.h"
 
-#include <QToolBar>
-#include <QFontComboBox>
+#include <QtGui/QToolBar>
+#include <QtGui/QFontComboBox>
 
 #include <kdebug.h>
-#include <klocale.h>
-
 #include <kfontdialog.h>
+#include <kicon.h>
+#include <klocale.h>
 
 KFontAction::KFontAction( uint fontListCriteria, KActionCollection * parent, const QString& name )
   : KSelectAction( parent, name )
@@ -72,7 +72,7 @@ KFontAction::KFontAction( const KIcon & icon, const QString & text, KActionColle
 }
 
 KFontAction::KFontAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( icon, text, parent, name )
+  : KSelectAction( KIcon( icon ), text, parent, name )
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -83,8 +83,10 @@ KFontAction::KFontAction( const QString & icon, const QString & text, KActionCol
 KFontAction::KFontAction( const QString& text,
                           const KShortcut& cut, KActionCollection* parent,
                           const QString& name )
-  : KSelectAction( text, cut, parent, name )
+  : KSelectAction( text, parent, name )
 {
+    setShortcut( cut );
+
     QStringList list;
     KFontChooser::getFontList( list, 0 );
     KSelectAction::setItems( list );
@@ -94,8 +96,11 @@ KFontAction::KFontAction( const QString& text,
 KFontAction::KFontAction( const QString& text, const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           KActionCollection* parent, const QString& name )
-    : KSelectAction( text, cut, receiver, slot, parent, name )
+    : KSelectAction( text, parent, name )
 {
+    setShortcut( cut );
+    connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+
     QStringList list;
     KFontChooser::getFontList( list, 0 );
     KSelectAction::setItems( list );
@@ -105,8 +110,10 @@ KFontAction::KFontAction( const QString& text, const KShortcut& cut,
 KFontAction::KFontAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
                           KActionCollection* parent, const QString& name )
-    : KSelectAction( text, pix, cut, parent, name )
+    : KSelectAction( KIcon( pix ), text, parent, name )
 {
+    setShortcut( cut );
+
     QStringList list;
     KFontChooser::getFontList( list, 0 );
     KSelectAction::setItems( list );
@@ -116,8 +123,10 @@ KFontAction::KFontAction( const QString& text, const QIcon& pix,
 KFontAction::KFontAction( const QString& text, const QString& pix,
                           const KShortcut& cut,
                           KActionCollection* parent, const QString& name )
-    : KSelectAction( text, pix, cut, parent, name )
+    : KSelectAction( KIcon( pix ), text, parent, name )
 {
+    setShortcut( cut );
+
     QStringList list;
     KFontChooser::getFontList( list, 0 );
     KSelectAction::setItems( list );
@@ -128,8 +137,11 @@ KFontAction::KFontAction( const QString& text, const QIcon& pix,
                           const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           KActionCollection* parent, const QString& name )
-    : KSelectAction( text, pix, cut, receiver, slot, parent, name )
+    : KSelectAction( KIcon( pix ), text, parent, name )
 {
+    setShortcut( cut );
+    connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+
     QStringList list;
     KFontChooser::getFontList( list, 0 );
     KSelectAction::setItems( list );
@@ -140,8 +152,11 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
                           const KShortcut& cut,
                           const QObject* receiver, const char* slot,
                           KActionCollection* parent, const QString& name )
-    : KSelectAction( text, pix, cut, receiver, slot, parent, name )
+    : KSelectAction( KIcon( pix ), text, parent, name )
 {
+    setShortcut( cut );
+    connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+
     QStringList list;
     KFontChooser::getFontList( list, 0 );
     KSelectAction::setItems( list );
@@ -151,8 +166,10 @@ KFontAction::KFontAction( const QString& text, const QString& pix,
 KFontAction::KFontAction( uint fontListCriteria, const QString& text,
                           const KShortcut& cut, KActionCollection* parent,
                           const QString& name )
-    : KSelectAction( text, cut, parent, name )
+    : KSelectAction( text, parent, name )
 {
+    setShortcut( cut );
+
     QStringList list;
     KFontChooser::getFontList( list, fontListCriteria );
     KSelectAction::setItems( list );
@@ -162,8 +179,10 @@ KFontAction::KFontAction( uint fontListCriteria, const QString& text,
 KFontAction::KFontAction( uint fontListCriteria, const QString& text, const QString& pix,
                           const KShortcut& cut,
                           KActionCollection* parent, const QString& name )
-    : KSelectAction( text, pix, cut, parent, name )
+    : KSelectAction( KIcon( pix ), text, parent, name )
 {
+    setShortcut( cut );
+
     QStringList list;
     KFontChooser::getFontList( list, fontListCriteria );
     KSelectAction::setItems( list );

@@ -373,7 +373,7 @@ QAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
 QAction* KSelectAction::removeAction(QAction* action)
 {
   //kDebug (129) << "KSelectAction::removeAction(" << action << ")" << endl;
-  int index = selectableActionGroup()->actions().indexOf(action);
+  //int index = selectableActionGroup()->actions().indexOf(action);
   //kDebug (129) << "\tindex=" << index << endl;
 
   action->setActionGroup(0L);

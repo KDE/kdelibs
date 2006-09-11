@@ -27,11 +27,12 @@
 
 #include "kfontsizeaction.h"
 
-#include <QFontDatabase>
-#include <QToolBar>
-#include <QToolButton>
+#include <QtGui/QFontDatabase>
+#include <QtGui/QToolBar>
+#include <QtGui/QToolButton>
 
 #include <kdebug.h>
+#include <kicon.h>
 #include <klocale.h>
 
 #include "kmenu.h"
@@ -52,7 +53,7 @@ KFontSizeAction::KFontSizeAction( const QString & text, KActionCollection * pare
 }
 
 KFontSizeAction::KFontSizeAction( const QString & icon, const QString & text, KActionCollection * parent, const QString& name )
-  : KSelectAction( icon, text, parent, name )
+  : KSelectAction( KIcon( icon ), text, parent, name )
   , d(0L)
 {
   init();
@@ -68,9 +69,11 @@ KFontSizeAction::KFontSizeAction( const KIcon & icon, const QString & text, KAct
 KFontSizeAction::KFontSizeAction( const QString& text,
                                   const KShortcut& cut,
                                   KActionCollection* parent, const QString& name )
-  : KSelectAction( text, cut, parent, name )
+  : KSelectAction( text, parent, name )
   , d(0L)
 {
+  setShortcut( cut );
+
   init();
 }
 
@@ -78,27 +81,34 @@ KFontSizeAction::KFontSizeAction( const QString& text,
                                   const KShortcut& cut,
                                   const QObject* receiver, const char* slot,
                                   KActionCollection* parent, const QString& name )
-  : KSelectAction( text, cut, receiver, slot, parent, name )
+  : KSelectAction( text, parent, name )
   , d(0L)
 {
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
                                   const KShortcut& cut,
                                   KActionCollection* parent, const QString& name )
-  : KSelectAction( text, pix, cut, parent, name )
+  : KSelectAction( KIcon( pix ), text, parent, name )
   , d(0L)
 {
+  setShortcut( cut );
+
   init();
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
                                   const KShortcut& cut,
                                   KActionCollection* parent, const QString& name )
-  : KSelectAction( text, pix, cut, parent, name )
+  : KSelectAction( KIcon( pix ), text, parent, name )
   , d(0L)
 {
+  setShortcut( cut );
+
   init();
 }
 
@@ -107,9 +117,12 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIcon& pix,
                                   const QObject* receiver,
                                   const char* slot, KActionCollection* parent,
                                   const QString& name )
-  : KSelectAction( text, pix, cut, receiver, slot, parent, name )
+  : KSelectAction( KIcon( pix ), text, parent, name )
   , d(0L)
 {
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+
   init();
 }
 
@@ -118,9 +131,12 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QString& pix,
                                   const QObject* receiver,
                                   const char* slot, KActionCollection* parent,
                                   const QString& name )
-  : KSelectAction( text, pix, cut, receiver, slot, parent, name )
+  : KSelectAction( KIcon( pix ), text, parent, name )
   , d(0L)
 {
+  setShortcut( cut );
+  connect( this, SIGNAL( triggered( bool ) ), receiver, slot );
+
   init();
 }
 

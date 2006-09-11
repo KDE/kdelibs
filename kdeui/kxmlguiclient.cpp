@@ -912,7 +912,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
 
 }
 
-void KXMLGUIClient::beginXMLPlug( QWidget *w )
+void KXMLGUIClient::beginXMLPlug( QWidget* /*w*/ )
 {
   /* FIXME KAction Port
   actionCollection()->beginXMLPlug( w );
