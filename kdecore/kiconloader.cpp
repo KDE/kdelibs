@@ -26,6 +26,8 @@
 #include <qmovie.h>
 #include <qbitmap.h>
 
+#include <kapplication.h>
+#include <kipc.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
@@ -49,22 +51,9 @@
 #include "svgicons/ksvgiconpainter.h"
 #endif
 
+#include "kiconloader_p.h"
+
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
-
-class KIconThemeNode
-{
-public:
-
-    KIconThemeNode(KIconTheme *_theme);
-    ~KIconThemeNode();
-
-    void queryIcons(QStringList *lst, int size, KIcon::Context context) const;
-    void queryIconsByContext(QStringList *lst, int size, KIcon::Context context) const;
-    KIcon findIcon(const QString& name, int size, KIcon::MatchType match) const;
-    void printTree(QString& dbgString) const;
-
-    KIconTheme *theme;
-};
 
 KIconThemeNode::KIconThemeNode(KIconTheme *_theme)
 {
@@ -115,26 +104,6 @@ struct KIconGroup
     bool alphaBlending;
 };
 
-
-/*** d pointer for KIconLoader. ***/
-
-struct KIconLoaderPrivate
-{
-    QStringList mThemesInTree;
-    KIconGroup *mpGroups;
-    KIconThemeNode *mpThemeRoot;
-    KStandardDirs *mpDirs;
-    KIconEffect mpEffect;
-    QDict<QImage> imgDict;
-    QImage lastImage; // last loaded image without effect applied
-    QString lastImageKey; // key for icon without effect
-    int lastIconType; // see KIcon::type
-    int lastIconThreshold; // see KIcon::threshold
-    QPtrList<KIconThemeNode> links;
-    bool extraDesktopIconsLoaded :1;
-    bool delayedLoading :1;
-};
-
 #define KICONLOADER_CHECKS
 #ifdef KICONLOADER_CHECKS
 // Keep a list of recently created and destroyed KIconLoader instances in order
@@ -174,41 +143,56 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
         }
     kiconloaders->append( KIconLoaderDebug( this, _appname ));
 #endif
+    d = new KIconLoaderPrivate;
+    d->q = this;
+    d->mpGroups = 0L;
+    d->imgDict.setAutoDelete(true);
+    d->links.setAutoDelete(true);
+
+    if (kapp) {
+        kapp->addKipcEventMask(KIPC::IconChanged);
+        QObject::connect(kapp, SIGNAL(iconChanged(int)), d, SLOT(slotIconChanged()));
+    }
+
     init( _appname, _dirs );
 }
 
 void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
 {
-    delete d;
+    d->links.clear();
+    d->imgDict.clear();
+    d->mThemesInTree.clear();
+    d->lastImage.reset();
+    d->lastImageKey = QString::null;
+    delete d->mpGroups;
+
     init( _appname, _dirs );
 }
 
 void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
-    d = new KIconLoaderPrivate;
-    d->imgDict.setAutoDelete( true );
-    d->links.setAutoDelete(true);
-    d->extraDesktopIconsLoaded=false;
-    d->delayedLoading=false;
-
-    if (_dirs)
-	d->mpDirs = _dirs;
-    else
-	d->mpDirs = KGlobal::dirs();
-
     // If this is unequal to 0, the iconloader is initialized
     // successfully.
     d->mpThemeRoot = 0L;
 
+    d->appname = _appname;
+    d->extraDesktopIconsLoaded = false;
+    d->delayedLoading = false;
+
+    if (_dirs)
+        d->mpDirs = _dirs;
+    else
+        d->mpDirs = KGlobal::dirs();
+
     QString appname = _appname;
     if (appname.isEmpty())
-	appname = KGlobal::instance()->instanceName();
+        appname = KGlobal::instance()->instanceName();
 
     // Add the default theme and its base themes to the theme tree
     KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
     if (!def->isValid())
     {
-	delete def;
+        delete def;
         // warn, as this is actually a small penalty hit
         kdDebug(264) << "Couldn't find current icon theme, falling back to default." << endl;
 	def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
@@ -1428,4 +1412,9 @@ QPixmap KIconLoader::unknown()
     }
 
     return pix;
+}
+
+void KIconLoaderPrivate::slotIconChanged()
+{
+  q->reconfigure(appname, mpDirs);
 }

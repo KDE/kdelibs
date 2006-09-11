@@ -81,7 +81,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
 	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h \
-	kprotocolinfofactory.h kqiodevicegzip_p.h
+	kprotocolinfofactory.h kqiodevicegzip_p.h kiconloader_p.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
