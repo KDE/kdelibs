@@ -33,9 +33,6 @@
 #include <qfile.h>
 #include <qdir.h>
 #include <qregexp.h>
-#ifndef Q_OS_WIN
-#include <sys/dir.h>
-#endif
 
 #include "vfolder_menu.h"
 
