@@ -289,11 +289,6 @@ bool KTimeZone::Phase::operator==(const KTimeZone::Phase &rhs) const
     return d == rhs.d;
 }
 
-bool KTimeZone::Phase::operator!=(const KTimeZone::Phase &rhs) const
-{
-    return d != rhs.d;
-}
-
 int KTimeZone::Phase::utcOffset() const
 {
     return d->utcOffset;

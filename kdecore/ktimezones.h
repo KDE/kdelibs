@@ -453,7 +453,7 @@ public:
         ~Phase();
         Phase &operator=(const Phase &rhs);
         bool operator==(const Phase &rhs) const;
-        bool operator!=(const Phase &rhs) const;
+        bool operator!=(const Phase &rhs) const  { return !operator==(rhs); }
 
         /**
          * Return the UTC offset in seconds during this phase.
