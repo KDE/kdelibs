@@ -1421,7 +1421,7 @@ class KDECORE_EXPORT KDateTime
      * is either strictly earlier, strictly later, or overlaps.
      *
      * If both instance are date-only, they are considered simultaneous if both
-     * their start of day  and end of day times are simultaneous with each
+     * their start of day and end of day times are simultaneous with each
      * other. (Both start and end of day times need to be considered in case a
      * daylight savings change occurs during that day.) Otherwise, this instance
      * can be strictly earlier, earlier but overlapping, later but overlapping,
@@ -1444,12 +1444,6 @@ class KDECORE_EXPORT KDateTime
      * Note that if either instance is a local clock time (type @c ClockTime),
      * the result cannot be guaranteed to be correct, since by definition they
      * contain no information about time zones or daylight savings changes.
-     *
-     * If one instance is date-only and the other date/time, the comparison
-     * returns true if the date/time falls during the 24 hours of the day
-     * represented by the date-only value. The comparison is performed by
-     * converting the date/time value to the date-only value's time zone, and
-     * comparing the resultant date with that of the date-only value's date.
      *
      * If both instances are date-only, the comparison is performed between the
      * two dates, ignoring time zones.

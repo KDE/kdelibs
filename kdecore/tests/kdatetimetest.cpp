@@ -2381,8 +2381,8 @@ void KDateTimeTest::addSubtractDate()
 
     // Mixed timeSpecs
     QCOMPARE(utc1t.secsTo(offset1), 0);
-    QVERIFY(utc1t == offset1);
-    QVERIFY(offset1 == utc1t);
+    QVERIFY(utc1t != offset1);
+    QVERIFY(offset1 != utc1t);
     QVERIFY(!(utc1t < offset1));
     QVERIFY(utc1t <= offset1);
     QVERIFY(!(offset1 < utc1t));
@@ -2398,8 +2398,8 @@ void KDateTimeTest::addSubtractDate()
     QCOMPARE(utc1t.secsTo(offset2), 184 * 86400);
     QCOMPARE(offset2.secsTo(utc1t), -(184 * 86400));
     QCOMPARE(utc1t.secsTo(zone1), 0);
-    QVERIFY(utc1t == zone1);
-    QVERIFY(zone1 == utc1t);
+    QVERIFY(utc1t != zone1);
+    QVERIFY(zone1 != utc1t);
     QVERIFY(!(utc1t < zone1));
     QVERIFY(!(utc1t > zone1));
     QVERIFY(!(zone1 < utc1t));
@@ -2423,8 +2423,8 @@ void KDateTimeTest::addSubtractDate()
     QVERIFY(!(local1 <= utc1t));
     QCOMPARE(utc1.secsTo(local2t), 0);
     QCOMPARE(local2t.secsTo(utc1), 0);
-    QVERIFY(utc1 == local2t);
-    QVERIFY(local2t == utc1);
+    QVERIFY(utc1 != local2t);
+    QVERIFY(local2t != utc1);
     QVERIFY(!(utc1 < local2t));
     QVERIFY(utc1 <= local2t);
     QVERIFY(!(local2t < utc1));
@@ -2442,8 +2442,8 @@ void KDateTimeTest::addSubtractDate()
     QCOMPARE(offset1t.secsTo(zone1), 0);
     QCOMPARE(offset1t.secsTo(zone2), 184 * 86400);
     QCOMPARE(zone2.secsTo(offset1t), -(184 * 86400));
-    QVERIFY(offset1t == zone1);
-    QVERIFY(zone1 == offset1t);
+    QVERIFY(offset1t != zone1);
+    QVERIFY(zone1 != offset1t);
     QVERIFY(!(offset1t > zone1));
     QVERIFY(offset1t >= zone1);
     QVERIFY(!(zone1 > offset1t));
@@ -2489,8 +2489,8 @@ void KDateTimeTest::addSubtractDate()
     QCOMPARE(local1t.secsTo(clock1), 0);
     QCOMPARE(local1t.secsTo(clock2), 184 * 86400);
     QCOMPARE(clock2.secsTo(local1t), -(184 * 86400));
-    QVERIFY(local1t == clock1);
-    QVERIFY(local1t == clock1);
+    QVERIFY(local1t != clock1);
+    QVERIFY(local1t != clock1);
     QVERIFY(!(local1t < clock1));
     QVERIFY(local1t <= clock1);
     QVERIFY(!(local1t < clock1));
@@ -3099,7 +3099,7 @@ void KDateTimeTest::strings_qttextdate()
 
     // Check '-0000'
     KDateTime dtutc2 = KDateTime::fromString(QString("Sat Dec 11 03:45:00 1999 -0000"), KDateTime::QtTextDate, &negZero);
-    QVERIFY(dtutc1 == dtutc2);
+    QVERIFY(dtutc1 != dtutc2);
     QVERIFY(negZero);
 
     // Check erroneous strings

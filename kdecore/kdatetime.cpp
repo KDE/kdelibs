@@ -1183,41 +1183,16 @@ bool KDateTime::operator==(const KDateTime &other) const
 {
     if (d == other.d)
         return true;   // the two instances share the same data
-    bool dates = (d->dateOnly() || other.d->dateOnly());
-    if (dates)
-    {
-        if (d->dateOnly() && other.d->dateOnly())
-            return d->date() == other.d->date();
-    }
+    if (d->dateOnly() != other.d->dateOnly())
+        return false;
+    if (d->dateOnly())
+        return d->date() == other.d->date();
     if (d->equalSpec(*other.d))
     {
         // Both instances are in the same time zone, so compare directly
-        if (dates)
-            return d->date() == other.d->date();
         return d->secondOccurrence() == other.d->secondOccurrence()
            &&  d->dt() == other.d->dt();
     }
-
-    if (dates)
-    {
-        // One instance is date-only, the other is date/time
-        const KDateTime *dtime;
-        const KDateTime *donly;
-        if (d->dateOnly())
-        {
-            dtime = &other;
-            donly = this;
-        }
-        else
-        {
-            dtime = this;
-            donly = &other;
-        }
-        QDateTime dt  = dtime->d->toUtc();    // get date/time value, in UTC
-        QDateTime day = donly->d->toUtc();    // get start of date-only day, in UTC
-        return (dt >= day  &&  dt < day.addSecs(86400));
-    }
-
     return d->toUtc() == other.d->toUtc();
 }
 
