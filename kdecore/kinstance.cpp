@@ -111,12 +111,13 @@ KInstance::KInstance( const QByteArray& name) : d(new Private)
 {
     DEBUG_ADD
     Q_ASSERT(!name.isEmpty());
-    if (!KGlobal::_instance)
-      KGlobal::setMainInstance(this);
 
     _name = name;
     _aboutData = new KAboutData(name, "", 0);
     d->ownAboutdata = true;
+
+    if (!KGlobal::_instance)
+      KGlobal::setMainInstance(this);
 }
 
 KInstance::KInstance( const KAboutData * aboutData ) : d(new Private)
