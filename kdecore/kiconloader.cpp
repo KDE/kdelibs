@@ -23,7 +23,6 @@
 #include <QHash>
 #include <QPainter>
 #include <QMovie>
-#include <QSvgRenderer>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -31,6 +30,7 @@
 #include <kconfig.h>
 #include <ksimpleconfig.h>
 #include <kinstance.h>
+#include <ksvgrenderer.h>
 
 #include <kicontheme.h>
 #include <kiconloader.h>
@@ -748,12 +748,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 	else
 	{
 	    // Special stuff for SVG icons
-            img = new QImage(size, size, QImage::Format_ARGB32_Premultiplied);
-            QPainter p(img);
-            QSvgRenderer renderer(icon.path);
-            if (renderer.isValid())
+            KSvgRenderer renderer(icon.path);
+            if (renderer.isValid()) {
+                img = new QImage(size, size, QImage::Format_ARGB32_Premultiplied);
+                img->fill(0);
+                QPainter p(img);
                 renderer.render(&p);
-            p.end();
+            } else
+                return pix;
 	}
 
         iconType = icon.type;

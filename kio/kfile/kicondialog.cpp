@@ -39,8 +39,8 @@
 #include <qfileinfo.h>
 #include <qtoolbutton.h>
 #include <qprogressbar.h>
+#include <ksvgrenderer.h>
 
-#include <QSvgRenderer>
 #include <QImage>
 #include <QPainter>
 
@@ -151,11 +151,12 @@ void KIconCanvas::slotLoadFiles()
 	else {
             // Special stuff for SVG icons
             img = QImage(60, 60, QImage::Format_ARGB32_Premultiplied);
-            QPainter p(&img);
-            QSvgRenderer renderer(*it);
-            if (renderer.isValid())
+            img.fill(0);
+            KSvgRenderer renderer(*it);
+            if (renderer.isValid()) {
+                QPainter p(&img);
                 renderer.render(&p);
-            p.end();
+            }
         }
 
 	if (img.isNull())
