@@ -17,6 +17,8 @@ include(CheckCXXSourceCompiles)
 # definitions like _GNU_SOURCE that are needed on each platform.
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
+set( KDELIBSUFF ${LIB_SUFFIX} )
+
 #check for libz using the cmake supplied FindZLIB.cmake
 macro_bool_to_01(ZLIB_FOUND HAVE_LIBZ)                  # zlib is required
 
