@@ -389,21 +389,18 @@ NodeImpl *HTMLTableElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *ref
     return retval;
 }
 
-NodeImpl *HTMLTableElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
+void HTMLTableElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
     handleChildRemove( oldChild ); //Always safe.
-
-    NodeImpl* retval = HTMLElementImpl::replaceChild( newChild, oldChild, exceptioncode );
-    if (retval)
+    HTMLElementImpl::replaceChild( newChild, oldChild, exceptioncode );
+    if ( !exceptioncode )
         handleChildAdd( newChild );
-
-    return retval;
 }
 
-NodeImpl *HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
+void HTMLTableElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
     handleChildRemove( oldChild );
-    return HTMLElementImpl::removeChild( oldChild, exceptioncode);
+    HTMLElementImpl::removeChild( oldChild, exceptioncode);
 }
 
 void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)

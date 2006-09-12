@@ -1408,6 +1408,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     // The end result will be: <b>...</b><p><b>Foo</b>Goo</p>
     //
     // Step 1: Remove |blockElem| from its parent, doing a batch detach of all the kids.
+    SharedPtr<NodeImpl> guard(blockElem);
     blockElem->parentNode()->removeChild(blockElem, exceptionCode);
 
     // Step 2: Clone |residualElem|.
@@ -1419,6 +1420,7 @@ void KHTMLParser::handleResidualStyleCloseTagAcrossBlocks(HTMLStackElem* elem)
     NodeImpl* currNode = blockElem->firstChild();
     while (currNode) {
         NodeImpl* nextNode = currNode->nextSibling();
+        SharedPtr<NodeImpl> guard(currNode); //Protect from deletion while moving
         blockElem->removeChild(currNode, exceptionCode);
         newNode->appendChild(currNode, exceptionCode);
         currNode = nextNode;

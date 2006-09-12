@@ -137,16 +137,14 @@ NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl *, int &exceptioncode )
     return 0;
 }
 
-NodeImpl *NodeImpl::replaceChild( NodeImpl *, NodeImpl *, int &exceptioncode )
+void NodeImpl::replaceChild( NodeImpl *, NodeImpl *, int &exceptioncode )
 {
   exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-  return 0;
 }
 
-NodeImpl *NodeImpl::removeChild( NodeImpl *, int &exceptioncode )
+void NodeImpl::removeChild( NodeImpl *, int &exceptioncode )
 {
   exceptioncode = DOMException::NOT_FOUND_ERR;
-  return 0;
 }
 
 NodeImpl *NodeImpl::appendChild( NodeImpl *, int &exceptioncode )
@@ -1052,6 +1050,10 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 
         // If child is already present in the tree, first remove it
         NodeImpl *newParent = child->parentNode();
+
+        //...guard it in case we need to move it..
+        SharedPtr<NodeImpl> guard(child);
+
         if(newParent)
             newParent->removeChild( child, exceptioncode );
         if ( exceptioncode )
@@ -1086,22 +1088,22 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
     return newChild;
 }
 
-NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
+void NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
     exceptioncode = 0;
 
     if ( oldChild == newChild ) // nothing to do
-	return oldChild;
+	return;
 
     // Make sure adding the new child is ok
     checkAddChild(newChild, exceptioncode);
     if (exceptioncode)
-        return 0;
+        return;
 
     // NOT_FOUND_ERR: Raised if oldChild is not a child of this node.
     if (!oldChild || oldChild->parentNode() != this) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
-        return 0;
+        return;
     }
 
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
@@ -1115,7 +1117,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
     removeChild(oldChild, exceptioncode);
     if (exceptioncode)
-        return 0;
+        return;
 
     // Add the new child(ren)
     while (child) {
@@ -1127,10 +1129,12 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 	    next = child->nextSibling();
 	if ( child == prev )
 	    prev = child->previousSibling();
+        //...guard it in case we need to move it..
+        SharedPtr<NodeImpl> guard(child);
         if(newParent)
             newParent->removeChild( child, exceptioncode );
         if (exceptioncode)
-            return 0;
+            return;
 
         // Add child in the correct position
         if (prev) prev->setNextSibling(child);
@@ -1157,28 +1161,30 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 
     // ### set style in case it's attached
     dispatchSubtreeModifiedEvent();
-    return oldChild;
+    return;
 }
 
-NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
+void NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
     exceptioncode = 0;
 
     // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
     if (isReadOnly()) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-        return 0;
+        return;
     }
 
     // NOT_FOUND_ERR: Raised if oldChild is not a child of this node.
     if (!oldChild || oldChild->parentNode() != this) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
-        return 0;
+        return;
     }
 
     dispatchChildRemovalEvents(oldChild,exceptioncode);
     if (exceptioncode)
-        return 0;
+        return;
+
+    SharedPtr<NodeImpl> memManage(oldChild); //Make sure to free if needed
 
     // Remove from rendering tree
     if (oldChild->attached())
@@ -1210,8 +1216,6 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 	for (NodeImpl *c = oldChild; c; c = c->traverseNextNode(oldChild))
 	    c->removedFromDocument();
     }
-
-    return oldChild;
 }
 
 void NodeBaseImpl::removeChildren()
@@ -1266,6 +1270,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 
         // If child is already present in the tree, first remove it
         NodeImpl *oldParent = child->parentNode();
+        SharedPtr<NodeImpl> guard(child); //Guard in case we move it
         if(oldParent) {
             oldParent->removeChild( child, exceptioncode );
             if (exceptioncode)

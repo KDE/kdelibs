@@ -270,21 +270,23 @@ Node Node::replaceChild( const Node &newChild, const Node &oldChild )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    NodeImpl *r = impl->replaceChild( newChild.impl, oldChild.impl, exceptioncode );
+    impl->replaceChild( newChild.impl, oldChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
     if (newChild.impl && !newChild.impl->closed()) newChild.impl->close();
-    return r;
+    
+    return oldChild;
 }
 
 Node Node::removeChild( const Node &oldChild )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    NodeImpl *r = impl->removeChild( oldChild.impl, exceptioncode );
+    impl->removeChild( oldChild.impl, exceptioncode );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
-    return r;
+	
+    return oldChild;
 }
 
 Node Node::appendChild( const Node &newChild )

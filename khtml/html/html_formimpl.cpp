@@ -2211,20 +2211,18 @@ NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *re
     return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
+void HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl* const result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
+    HTMLGenericFormElementImpl::replaceChild(newChild,oldChild, exceptioncode);
     if( !exceptioncode )
         setRecalcListItems();
-    return result;
 }
 
-NodeImpl *HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
+void HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
-    NodeImpl* const result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
+    HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
     if( !exceptioncode )
         setRecalcListItems();
-    return result;
 }
 
 NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )

@@ -530,28 +530,26 @@ DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &htm
     // we need to pop <html> and <body> elements and remove <head> to
     // accomadate folks passing complete HTML documents to make the
     // child of an element.
-    Node n;
-
     for ( NodeImpl* node = fragment->firstChild(); node; ) {
         if (node->id() == ID_HTML || node->id() == ID_BODY) {
             NodeImpl* firstChild = node->firstChild();
             NodeImpl* child = firstChild;
             while ( child ) {
                 NodeImpl *nextChild = child->nextSibling();
-                n = fragment->insertBefore(child, node, ignoredExceptionCode);
+                fragment->insertBefore(child, node, ignoredExceptionCode);
                 child = nextChild;
             }
             if ( !firstChild ) {
                 NodeImpl *nextNode = node->nextSibling();
-                n = fragment->removeChild(node, ignoredExceptionCode);
+                fragment->removeChild(node, ignoredExceptionCode);
                 node = nextNode;
             } else {
-                n = fragment->removeChild(node, ignoredExceptionCode);
+                fragment->removeChild(node, ignoredExceptionCode);
                 node = firstChild;
             }
         } else if (node->id() == ID_HEAD) {
             NodeImpl *nextNode = node->nextSibling();
-            n = fragment->removeChild(node, ignoredExceptionCode);
+            fragment->removeChild(node, ignoredExceptionCode);
             node = nextNode;
         } else {
             node = node->nextSibling();
