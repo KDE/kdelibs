@@ -32,12 +32,14 @@ private Q_SLOTS:
     void test_block_read();
     void test_getch();
     void test_textstream();
+    void test_readall();
 
 private:
     void test_block_write( const QString & fileName );
     void test_block_read( const QString & fileName );
     void test_getch( const QString & fileName );
     void test_textstream( const QString & fileName );
+    void test_readall( const QString & fileName, const QString& mimeType );
 
     QString pathgz;
     QString pathbz2;

@@ -75,8 +75,6 @@ void KFilterTest::test_block_read( const QString & fileName )
     bool ok = dev->open( QIODevice::ReadOnly );
     QVERIFY( ok );
 
-    // This is what KGzipDev::readAll could do, if QIODevice::readAll was virtual....
-
     QByteArray array(1024,'\0');
     QByteArray read;
     int n;
@@ -148,6 +146,25 @@ void KFilterTest::test_textstream()
     test_textstream(pathgz);
     kDebug() << " -- test_textstream bzip2 -- " << endl;
     test_textstream(pathbz2);
+}
+
+void KFilterTest::test_readall( const QString & fileName, const QString& mimeType )
+{
+    QFile file(fileName);
+    QIODevice *flt = KFilterDev::device(&file, mimeType, false);
+    bool ok = flt->open( QIODevice::ReadOnly );
+    QVERIFY(ok);
+    QByteArray read = flt->readAll();
+    QCOMPARE( read.size(), testData.size() );
+    QCOMPARE( read, testData );
+}
+
+void KFilterTest::test_readall()
+{
+    kDebug() << " -- test_readall gzip -- " << endl;
+    test_readall(pathgz, QString::fromLatin1("application/x-gzip"));
+    kDebug() << " -- test_readall bzip2 -- " << endl;
+    test_readall(pathbz2, QString::fromLatin1("application/x-bzip2"));
 }
 
 #include "kfiltertest.moc"
