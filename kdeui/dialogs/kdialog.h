@@ -103,7 +103,7 @@ class QMenu;
  *   dialog->setCaption( "My title" );
  *   dialog->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Apply );
  *
- *   FooWidget widget = new FooWidget( dialog );
+ *   FooWidget *widget = new FooWidget( dialog );
  *   dialog->setMainWidget( widget );
  *   connect( dialog, SIGNAL( applyClicked() ), widget, SLOT( save() ) );
  *   connect( dialog, SIGNAL( okClicked() ), widget, SLOT( save() ) );
