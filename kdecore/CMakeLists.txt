@@ -133,6 +133,7 @@ set(kdecore_LIB_SRCS
    kiconeffect.cpp
    kicontheme.cpp
    kiconloader.cpp
+   ksvgrenderer.cpp
    kcharsets.cpp
    kckey.cpp
    kshortcut.cpp
@@ -321,6 +322,7 @@ install( FILES
    klocalizedstring.h
    kicontheme.h
    kiconloader.h
+   ksvgrenderer.h
    kdebug.h
    kwinmodule.h
    kwin.h
