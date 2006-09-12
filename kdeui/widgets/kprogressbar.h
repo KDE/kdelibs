@@ -43,17 +43,18 @@
  *
  * \image html kprogressbar.png "KDE Progress Widget"
  *
+ * @deprecated Use QProgressBar. ( advance(int offset) -> setValue(value()+offset) )
+ *
  * @author Aaron Seigo
  * @author Urs Wolfer uwolfer @ fwo.ch
  */
-class KDEUI_EXPORT KProgressBar : public QProgressBar
+class KDEUI_EXPORT_DEPRECATED KProgressBar : public QProgressBar
 {
   Q_OBJECT
 
 public:
   /**
    * Construct a progress bar.
-   * @deprecated Use QProgressBar. ( advance(int offset) -> setValue(value()+offset) )
    */
   explicit KDE_CONSTRUCTOR_DEPRECATED KProgressBar(QWidget *parent=0);
 
@@ -62,7 +63,6 @@ public:
    * The totalSteps is the total number of steps that need to be completed for the operation which this progress
    * bar represents. For example, if the operation is to examine 50 files, this value would be 50. Before examining
    * the first file, call setValue(0); call setValue(50) after examining the last file.
-   * @deprecated Use QProgressBar. ( advance(int offset) -> setValue(value()+offset) )
    */
   explicit KDE_CONSTRUCTOR_DEPRECATED KProgressBar(int totalSteps, QWidget *parent=0);
 

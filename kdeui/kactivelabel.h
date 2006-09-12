@@ -26,25 +26,23 @@ class KActiveLabelPrivate;
  /**
   * Label with support for selection and clickable links.
   *
+  * @deprecated Use QLabel. (QLabel::setOpenExternalLinks(true) for labels with hyperlinks;
+  * QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text
+  * should be selectable by user.)
+  *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KDEUI_EXPORT KActiveLabel : public KTextBrowser
+class KDEUI_EXPORT_DEPRECATED KActiveLabel : public KTextBrowser
 {
     Q_OBJECT
 public:
     /**
      * Constructor.
-     * @deprecated Use QLabel. (QLabel::setOpenExternalLinks(true) for labels with hyperlinks;
-     * QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text
-     * should be selectable by user.)
      */
     explicit KDE_CONSTRUCTOR_DEPRECATED KActiveLabel(QWidget * parent = 0);
 
     /**
      * Constructor.
-     * @deprecated Use QLabel. (QLabel::setOpenExternalLinks(true) for labels with hyperlinks;
-     * QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text
-     * should be selectable by user.)
      */
     explicit KDE_CONSTRUCTOR_DEPRECATED KActiveLabel(const QString & text, QWidget * parent = 0);
 
