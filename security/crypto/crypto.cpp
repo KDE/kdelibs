@@ -1469,7 +1469,7 @@ TryImportPassAgain:
    cert = KSSLPKCS12::loadCertFile(certFile, QString(pass));
 
    if (!cert) {
-      rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded. Try a different password?"), i18n("SSL"),i18n("Try"),i18n("Do Not Try"));
+      rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded. Try a different password?"), i18n("SSL"),KGuiItem(i18n("Try")),KGuiItem(i18n("Do Not Try")));
       if (rc == KMessageBox::Yes) goto TryImportPassAgain;
       return;
    }
@@ -1487,7 +1487,7 @@ TryImportPassAgain:
                                                             i;
              i = static_cast<YourCertItem *>(i->nextSibling())) {
       if (i->configName() == name) {
-         rc = KMessageBox::warningContinueCancel(this, i18n("A certificate with that name already exists. Are you sure that you wish to replace it?"), i18n("SSL"), i18n("Replace"));
+         rc = KMessageBox::warningContinueCancel(this, i18n("A certificate with that name already exists. Are you sure that you wish to replace it?"), i18n("SSL"), KGuiItem(i18n("Replace")));
          if (rc == KMessageBox::Cancel) {
             delete cert;
             return;
@@ -1901,7 +1901,7 @@ void KCryptoConfig::slotCAImport() {
 
 void KCryptoConfig::offerImportToKMail( const QString& certFile )
 {
-    if ( KMessageBox::questionYesNo( this, i18n( "Do you want to make this certificate available to KMail as well?" ), QString(), i18n("Make Available"), i18n("Do Not Make Available") ) == KMessageBox::Yes ) {
+    if ( KMessageBox::questionYesNo( this, i18n( "Do you want to make this certificate available to KMail as well?" ), QString(), KGuiItem(i18n("Make Available")), KGuiItem(i18n("Do Not Make Available")) ) == KMessageBox::Yes ) {
        KProcess proc;
        proc << "kleopatra";
        proc << "--import-certificate";
@@ -1925,7 +1925,7 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
 
 void KCryptoConfig::slotCARestore() {
 
- int rc = KMessageBox::warningContinueCancel(this, i18n("This will revert your certificate signers database to the KDE default.\nThis operation cannot be undone.\nAre you sure you wish to continue?"), i18n("SSL"),i18n("Revert"));
+ int rc = KMessageBox::warningContinueCancel(this, i18n("This will revert your certificate signers database to the KDE default.\nThis operation cannot be undone.\nAre you sure you wish to continue?"), i18n("SSL"),KGuiItem(i18n("Revert")));
       if (rc == KMessageBox::Cancel) {
           return;
       }
