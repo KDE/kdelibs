@@ -272,10 +272,10 @@ void KConfigSkeleton::ItemLongLong::setMaxValue(qint64 v)
 }
 
 KConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_key,
-                                     int &reference,
-                                     const QList<Choice> &choicesList,
-                                     int defaultValue )
-  : ItemInt( _group, _key, reference, defaultValue ), mChoices( choicesList )
+                                     qint32 &reference,
+                                     const QList<Choice> &choices,
+                                     qint32 defaultValue )
+  : ItemInt( _group, _key, reference, defaultValue ), mChoices( choices )
 {
 }
 

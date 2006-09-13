@@ -74,7 +74,7 @@ public:
     /**
      * That one can be quite slow, when going back. Use with care.
      */
-    virtual bool seek( qlonglong );
+    virtual bool seek( qint64 );
 
     virtual bool atEnd() const;
 
