@@ -476,7 +476,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
         name = "Google";
       }
 
-      new KAction( i18n( "Search for '%1' with %2" ).arg( selectedText ).arg( name ), icon, 0, d->m_khtml->browserExtension(),
+      // using .arg(foo, bar) instead of .arg(foo).arg(bar), as foo can contain %x
+      new KAction( i18n( "Search for '%1' with %2" ).arg( selectedText, name ), icon, 0, d->m_khtml->browserExtension(),
                      SLOT( searchProvider() ), actionCollection(), "searchProvider" );
 
       // favorite search providers
