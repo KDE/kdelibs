@@ -159,8 +159,6 @@ PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollB
     hoverWidget = 0;
     hoverTab = 0;
 
-    horizontalDots = 0;
-    verticalDots = 0;
 
     horizontalLine = 0;
     verticalLine = 0;
@@ -225,8 +223,6 @@ void PlastikStyle::updateProgressPos()
 PlastikStyle::~PlastikStyle()
 {
     delete pixmapCache;
-    delete horizontalDots;
-    delete verticalDots;
     delete horizontalLine;
     delete verticalLine;
 }

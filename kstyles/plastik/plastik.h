@@ -351,10 +351,6 @@ private:
     };
     QIntCache<CacheEntry> *pixmapCache;
     
-    // For renderFocusRect
-    mutable QBitmap *verticalDots;
-    mutable QBitmap *horizontalDots;
-
     // For KPE_ListViewBranch
     mutable QBitmap *verticalLine;
     mutable QBitmap *horizontalLine;
