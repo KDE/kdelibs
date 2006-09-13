@@ -84,10 +84,9 @@ using namespace KIO;
 class Job::JobPrivate
 {
 public:
-    JobPrivate() : m_interactive( true ), m_suspended( false ), m_parentJob( 0L ), m_extraFlags(0)
+    JobPrivate() : m_suspended( false ), m_parentJob( 0L ), m_extraFlags(0)
                    {}
 
-    bool m_interactive;
     bool m_suspended;
     // Maybe we could use the QObject parent/child mechanism instead
     // (requires a new ctor, and moving the ctor code to some init()).
