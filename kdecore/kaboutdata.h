@@ -359,6 +359,7 @@ class KDECORE_EXPORT KAboutData
      * @param programName The program name. This string should be
      *        marked for translation.
      *        Example: I18N_NOOP("Advanced Text Editor").
+     * @since 3.2
      */
     void setProgramName( const char* programName );
 
