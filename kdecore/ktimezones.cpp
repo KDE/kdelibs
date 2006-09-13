@@ -628,6 +628,8 @@ QDateTime KTimeZone::toUtc(const QDateTime &zoneDateTime) const
 
 QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime, bool *secondOccurrence) const
 {
+    if (secondOccurrence)
+        *secondOccurrence = false;
     if (!utcDateTime.isValid()  ||  utcDateTime.timeSpec() != Qt::UTC)    // check for invalid time
         return QDateTime();
 
@@ -656,8 +658,6 @@ QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime, bool *secondOccurr
     }
     else
     {
-        if (secondOccurrence)
-            *secondOccurrence = false;
         int secs = offsetAtUtc(utcDateTime);
         QDateTime dt = utcDateTime.addSecs(secs);
         dt.setTimeSpec(Qt::LocalTime);
