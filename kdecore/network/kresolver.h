@@ -459,7 +459,7 @@ public:
    * @param nodename	The host name we want resolved.
    * @param servicename	The service name associated, like "http".
    */
-  KResolver(const QString& nodename, const QString& servicename = QString(),
+  explicit KResolver(const QString& nodename, const QString& servicename = QString(),
 	    QObject * = 0L);
 
   /**

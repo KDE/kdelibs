@@ -319,7 +319,7 @@ protected:
    *
    * @param parent	the parent, if any
    */
-  KSocketDevice(bool, const KSocketBase* parent = 0L);
+  explicit KSocketDevice(bool, const KSocketBase* parent = 0L);
 
   /**
    * Creates a socket notifier of the given type.

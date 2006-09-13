@@ -87,7 +87,7 @@ public:
    * @param addr	the address to resolve
    * @param flags	the flags to use, see @ref Flags
    */
-  KReverseResolver(const KSocketAddress& addr, int flags = 0,
+  explicit KReverseResolver(const KSocketAddress& addr, int flags = 0,
 		   QObject * = 0L);
 
   /**

@@ -63,7 +63,7 @@ public:
   /**
    * Constructs the datagram with the specified content.
    */
-  KDatagramPacket(const QByteArray& content)
+  explicit KDatagramPacket(const QByteArray& content)
     : m_data(content)
   { }
 

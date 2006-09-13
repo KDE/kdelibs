@@ -51,7 +51,7 @@ public:
   /**
    * Constructor with proxy server's address.
    */
-  KHttpProxySocketDevice(const KResolverEntry& proxy);
+  explicit KHttpProxySocketDevice(const KResolverEntry& proxy);
 
   /**
    * Destructor
