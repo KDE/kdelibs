@@ -72,14 +72,14 @@ public:
 	 * @param keyQt the qt keycode
 	 * @see Qt::Key
 	 */
-	explicit KShortcut( int keyQt );
+	KShortcut( int keyQt );
 
 	/**
 	 * Creates a new shortcut that contains only the given qt key
 	 * sequence.
 	 * @param keySeq the qt key sequence to add
 	 */
-	explicit KShortcut( const QKeySequence& keySeq );
+	KShortcut( const QKeySequence& keySeq );
 
 	/**
 	 * Creates a new shortcut that contains only the given qt key
@@ -102,7 +102,7 @@ public:
 	 * @param shortcut the description of the key
 	 * @see QKeySequence::fromString(const QString&, SequenceFormat).
 	 */
-	explicit KShortcut( const QString& shortcut );
+	KShortcut( const QString& shortcut );
 	
 	/**
 	 * Destructor.
