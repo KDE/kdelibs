@@ -116,7 +116,7 @@ public:
     enum CheckResult { Failure = 0, Success = 1, Ignored = 2 };
     CheckResult checkOutput(const QString& againstFilename);
     enum FailureType { NoFailure = 0, AllFailure = 1, ResultFailure = 4 };
-    bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure, QStringList commands = QStringList());
+    bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
     bool reportResult( bool passed, const QString & description = QString::null );
     bool reportResult(CheckResult result, const QString & description = QString::null );
     void createMissingDirs(const QString &path);
@@ -162,6 +162,13 @@ private:
      * @return true if script was valid, false otherwise
      */
     bool evalJS( KJS::Interpreter &interp, const QString &filename, bool ignore = false);
+    /**
+     * concatenate contents of all list files down to but not including the
+     * tests directory.
+     * @param relPath relative path against tests-directory
+     * @param filename file name of the list files
+     */
+    QStringList concatListFiles(const QString &relPath, const QString &filename);
 
 private slots:
     void slotOpenURL(const KURL &url, const KParts::URLArgs &args);

@@ -69,6 +69,7 @@
 #include <kparts/browserextension.h>
 #include "katejscript.h"
 #include "katedocumenthelpers.h"
+#include "kateconfig.h"
 #include "../interfaces/katecmd.h"
 
 using namespace KJS;
@@ -260,31 +261,30 @@ int main(int argc, char *argv[])
     KApplication a;
     a.disableAutoDcopRegistration();
     a.setStyle("windows");
-#if 0
-    KSimpleConfig sc1( "cryptodefaults" );
-    sc1.setGroup( "Warnings" );
-    sc1.writeEntry( "OnUnencrypted",  false );
-    a.config()->setGroup( "Notification Messages" );
-    a.config()->writeEntry( "kjscupguard_alarmhandler", true );
-    a.config()->setGroup("HTML Settings");
-    a.config()->writeEntry("ReportJSErrors", false);
-    KConfig cfg( "khtmlrc" );
-    cfg.setGroup("HTML Settings");
-    cfg.writeEntry( "StandardFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
-    cfg.writeEntry( "FixedFont", HTML_DEFAULT_VIEW_FIXED_FONT );
-    cfg.writeEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT );
-    cfg.writeEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
-    cfg.writeEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT );
-    cfg.writeEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT );
-    cfg.writeEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
-    cfg.writeEntry( "MediumFontSize", 10 );
-    cfg.writeEntry( "Fonts", QStringList() );
-    cfg.writeEntry( "DefaultEncoding", "" );
-    cfg.setGroup("Java/JavaScript Settings");
-    cfg.writeEntry( "WindowOpenPolicy", KHTMLSettings::KJSWindowOpenAllow);
-
+    KConfig cfg( "testkateregressionrc" );
+    cfg.setGroup("Kate Document Defaults");
+    cfg.writeEntry("Basic Config Flags",
+      KateDocumentConfig::cfBackspaceIndents
+//       | KateDocumentConfig::cfWordWrap
+//       | KateDocumentConfig::cfRemoveSpaces
+      | KateDocumentConfig::cfWrapCursor
+//       | KateDocumentConfig::cfAutoBrackets
+//       | KateDocumentConfig::cfTabIndentsMode
+//       | KateDocumentConfig::cfOvr
+      | KateDocumentConfig::cfKeepIndentProfile
+      | KateDocumentConfig::cfKeepExtraSpaces
+      | KateDocumentConfig::cfTabIndents
+      | KateDocumentConfig::cfShowTabs
+      | KateDocumentConfig::cfSpaceIndent
+      | KateDocumentConfig::cfSmartHome
+      | KateDocumentConfig::cfTabInsertsTab
+//       | KateDocumentConfig::cfReplaceTabsDyn
+//       | KateDocumentConfig::cfRemoveTrailingDyn
+      | KateDocumentConfig::cfDoxygenAutoTyping
+//       | KateDocumentConfig::cfMixedIndent
+      | KateDocumentConfig::cfIndentPastedText
+    );
     cfg.sync();
-#endif
 
     int rv = 1;
 
@@ -296,7 +296,7 @@ int main(int argc, char *argv[])
                                13040, 13050, 13051, 7000, 7006, 170,
                                171, 7101, 7002, 7019, 7027, 7014,
                                7001, 7011, 6070, 6080, 6090, 0};
-        int channel = args->isSet( "debug" ) ? 0 : 4;
+        int channel = args->isSet( "debug" ) ? 2 : 4;
         for ( int i = 0; areas[i]; ++i ) {
             dc.setGroup( QString::number( areas[i] ) );
             dc.writeEntry( "InfoOutput", channel );
@@ -314,8 +314,11 @@ int main(int argc, char *argv[])
                                           /*bReadOnly*/false,
                                           /*parentWidget*/toplevel,
                                           /*widgetName*/"testkate");
+    part->readConfig(&cfg);
 
     toplevel->setCentralWidget( part->widget() );
+
+    Q_ASSERT(part->config()->configFlags() & KateDocumentConfig::cfDoxygenAutoTyping);
 
     bool visual = false;
     if (args->isSet("show"))
@@ -481,7 +484,17 @@ RegressionTest::~RegressionTest()
 {
 }
 
-bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure, QStringList oldCommands)
+QStringList RegressionTest::concatListFiles(const QString &relPath, const QString &filename)
+{
+    QStringList cmds;
+    int pos = relPath.findRev('/');
+    if (pos >= 0)
+        cmds += concatListFiles(relPath.left(pos), filename);
+    cmds += readListFile(m_baseDir + "/tests/" + relPath + "/" + filename);
+    return cmds;
+}
+
+bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure)
 {
     m_currentOutput = QString::null;
 
@@ -506,8 +519,6 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
     if (info.isDir()) {
         QStringList ignoreFiles = readListFile(  m_baseDir + "/tests/"+relPath+"/ignore" );
         QStringList failureFiles = readListFile(  m_baseDir + "/tests/"+relPath+"/KNOWN_FAILURES" );
-        QStringList newCommands = readListFile( m_baseDir + "/tests/"+relPath+"/.kateconfig-commands" );
-        newCommands += oldCommands;
 
 	// Run each test in this directory, recusively
 	QDir sourceDir(m_baseDir + "/tests/"+relPath);
@@ -522,7 +533,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
                 failure_type |= AllFailure;
             if ( failureFiles.contains ( filename + "-result" ) )
                 failure_type |= ResultFailure;
-            runTests(relFilename, false, failure_type, newCommands );
+            runTests(relFilename, false, failure_type);
 	}
     }
     else if (info.isFile()) {
@@ -533,6 +544,8 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
         m_known_failures = known_failure;
+        // gather commands
+        QStringList commands = concatListFiles(relPath, ".kateconfig-commands");
 	if ( filename.endsWith(".txt") ) {
 #if 0
             if ( relPath.startsWith( "domts/" ) && !m_runJS )
@@ -541,7 +554,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	        return true;
 #endif
 //             if ( m_runHTML )
-                testStaticFile(relPath, oldCommands);
+                testStaticFile(relPath, commands);
 	}
 	else if (mustExist) {
 	    fprintf(stderr,"%s: Not a valid test file (must be .txt)\n",relPath.latin1());
@@ -773,6 +786,8 @@ void RegressionTest::testStaticFile(const QString & filename, const QStringList 
     }
 
     pause(200);
+
+    Q_ASSERT(m_part->config()->configFlags() & KateDocumentConfig::cfDoxygenAutoTyping);
 
     bool script_error = false;
     {
@@ -1020,3 +1035,5 @@ void RegressionTest::resizeTopLevelWidget( int w, int h )
 }
 
 #include "test_regression.moc"
+
+// kate: indent-width 4
