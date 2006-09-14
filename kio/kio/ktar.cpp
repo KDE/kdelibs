@@ -415,8 +415,8 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                     // Let's hack around hard links. Our classes don't support that, so make them symlinks
                     if ( typeflag == '1' )
                     {
-                        size = nm.length(); // in any case, we don't want to skip the real size, hence this resetting of size
-                        kDebug(7041) << "HARD LINK, setting size to " << size << endl;
+                        kDebug(7041) << "HARD LINK, setting size to 0 instead of " << size << endl;
+                        size = 0; // no contents
                     }
 
                     //kDebug(7041) << "KTar::openArchive file " << nm << " size=" << size << endl;
