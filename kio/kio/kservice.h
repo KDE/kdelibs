@@ -278,12 +278,16 @@ public:
    *        otherwise false.
    */
   bool hasServiceType( const QString& _service ) const;
+
   /**
-   * Checks whether a service is used as a default setting, for
-   *         example as plugin in a file manager. Usually that is the
-   *         case, but some services may only be started when the user
-   *         selected them. This kind of services returns false here.
-   * @return true if the service may be used as a default setting
+   * Set to true if it is allowed to use this service as the default (main)
+   * action for the files it supports (e.g. Left Click in a file manager, or KRun in general).
+   *
+   * If not, then this service is only available in RMB popups, so it must
+   * be selected explicitely by the user in order to be used.
+   * Note that servicemenus supersede this functionality though, at least in konqueror.
+   *
+   * @return true if the service may be used as the default (main) handler
    */
   bool allowAsDefault() const { return m_bAllowAsDefault; }
 
