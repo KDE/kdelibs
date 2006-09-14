@@ -46,6 +46,7 @@ class BackendSelection : public QWidget, private Ui::BackendSelection
 		void changed();
 
 	private:
+		void loadServices( const KService::List& offers );
 		QHash<QString, KService::Ptr> m_services;
 };
 

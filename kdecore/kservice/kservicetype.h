@@ -177,7 +177,7 @@ public:
    */
   void setServiceOffersOffset( int offset );
   /**
-   * @internal  only used by kbuildsycoca
+   * @internal
    */
   int serviceOffersOffset() const;
 

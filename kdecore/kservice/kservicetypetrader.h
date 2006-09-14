@@ -112,6 +112,14 @@ public:
     KServiceOfferList weightedOffers( const QString& serviceType ) const;
 
     /**
+     * Returns all offers associated with a given servicetype, IGNORING the
+     * user preference. The sorting will be the one coming from the InitialPreference
+     * in the .desktop files, and services disabled by the user will still be listed here.
+     * This is used for "Revert to defaults" buttons in GUIs.
+     */
+    KService::List defaultOffers( const QString& serviceType,
+                                  const QString& constraint = QString() ) const;
+    /**
      * Returns the preferred service for @p serviceType.
      *
      * @param serviceType the service type (e.g. "KMyApp/Plugin")

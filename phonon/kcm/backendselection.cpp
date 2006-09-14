@@ -44,15 +44,19 @@ BackendSelection::BackendSelection( QWidget* parent )
 
 void BackendSelection::load()
 {
-	m_services.clear();
-	m_select->clear();
-	KServiceTypeProfile::clear();
-
-        const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
+	const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
 			"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
 	// the offers are already sorted for preference
-        KService::List::const_iterator it = offers.begin();
-        const KService::List::const_iterator end = offers.end();
+    loadServices(offers);
+}
+
+void BackendSelection::loadServices( const KService::List& offers )
+{
+	m_services.clear();
+	m_select->clear();
+
+    KService::List::const_iterator it = offers.begin();
+	const KService::List::const_iterator end = offers.end();
 	for( ; it != end; ++it )
 	{
 		KService::Ptr service = *it;
@@ -64,68 +68,24 @@ void BackendSelection::load()
 
 void BackendSelection::save()
 {
-	// save to profilerc
-	KSimpleConfig config( "profilerc" );
-	QStringList grouplist = config.groupList();
-	QStringList::Iterator it = grouplist.begin();
-	QStringList::Iterator end = grouplist.end();
-	for( ; it != end; ++it )
-	{
-		config.setGroup( *it );
-		if( config.readEntry( "ServiceType" ) == "PhononBackend" )
-			config.deleteGroup( *it );
-	}
+	// save to servicetype profile
+	KService::List services;
 	unsigned int count = m_select->count();
 	for( unsigned int i = 0; i < count; ++i )
 	{
 		QListWidgetItem* item = m_select->item( i );
 		KService::Ptr service = m_services[ item->text() ];
-		config.setGroup( "PhononBackend" + QString( " - %1" ).arg( i ) );
-		config.writeEntry( "AllowAsDefault", true );
-		config.writeEntry( "Application", service->storageId() );
-		config.writeEntry( "GenericServiceType", "PhononBackend" );
-		config.writeEntry( "Preference", count - i );
-		config.writeEntry( "ServiceType", "PhononBackend" );
+		services.append( service );
 	}
-	config.sync();
-	KServiceTypeProfile::clear();
+	KServiceTypeProfile::writeServiceTypeProfile( "PhononBackend", services );
 
 	QDBusMessage signal = QDBusMessage::createSignal( "/", "org.kde.Phonon.Factory", "phononBackendChanged" );
-        QDBusConnection::sessionBus().send(signal);
+	QDBusConnection::sessionBus().send(signal);
 }
 
 void BackendSelection::defaults()
 {
-	// XXX: hack, I don't know how to get the initalPreference without
-	// reading it all manually
-	KSimpleConfig config( "profilerc" );
-	QStringList grouplist = config.groupList();
-	QStringList::Iterator it = grouplist.begin();
-	QStringList::Iterator end = grouplist.end();
-	QStringList apps;
-	QList<int> pref;
-	for( ; it != end; ++it )
-	{
-		config.setGroup( *it );
-		if( config.readEntry( "ServiceType" ) == "PhononBackend" )
-		{
-			apps.append( config.readEntry( "Application" ) );
-			pref.append( config.readEntry( "Preference", int( 0 ) ) );
-			config.deleteGroup( *it );
-		}
-	}
-	config.sync();
-	load();
-	for( int i = 0; i < apps.count(); ++i )
-	{
-		config.setGroup( "PhononBackend" + QString( " - %1" ).arg( i ) );
-		config.writeEntry( "AllowAsDefault", true );
-		config.writeEntry( "Application", apps[ i ] );
-		config.writeEntry( "GenericServiceType", "PhononBackend" );
-		config.writeEntry( "Preference", pref[ i ] );
-		config.writeEntry( "ServiceType", "PhononBackend" );
-	}
-	config.sync();
+	loadServices( KServiceTypeTrader::self()->defaultOffers( "PhononBackend" ) );
 }
 
 void BackendSelection::selectionChanged()

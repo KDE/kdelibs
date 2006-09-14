@@ -113,34 +113,45 @@ KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType
     return offers;
 }
 
+KService::List KServiceTypeTrader::defaultOffers( const QString& serviceType,
+                                                  const QString& constraint ) const
+{
+    KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
+    if ( !servTypePtr ) {
+        kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
+        return KService::List();
+    }
+    if ( servTypePtr->serviceOffersOffset() == -1 )
+        return KService::List();
+
+    KService::List lst =
+        KServiceFactory::self()->serviceOffers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
+
+    applyConstraints( lst, constraint );
+
+    kDebug(7014) << "query for serviceType " << serviceType
+                 << " : returning " << lst.count() << " offers" << endl;
+    return lst;
+}
+
 KService::List KServiceTypeTrader::query( const QString& serviceType,
                                           const QString& constraint ) const
 {
-    KService::List lst;
-
-    if ( !KServiceTypeProfile::findProfile( serviceType, QString::null ) )
+    if ( !KServiceTypeProfile::hasProfile( serviceType ) )
     {
         // Fast path: skip the profile stuff if there's none (to avoid kservice->serviceoffer->kservice)
         // The ordering according to initial preferences is done by kbuildsycoca
-        KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
-        if ( !servTypePtr ) {
-            kWarning(7014) << "KServiceTypeTrader: serviceType " << serviceType << " not found" << endl;
-            return KService::List();
-        }
-        if ( servTypePtr->serviceOffersOffset() == -1 )
-            return KService::List();
-        lst = KServiceFactory::self()->serviceOffers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
+        return defaultOffers( serviceType, constraint );
     }
-    else
-    {
-        // Get all services of this service type.
-        const KServiceOfferList offers = weightedOffers( serviceType );
 
-        // Now extract only the services; the weighting was only used for sorting.
-        KServiceOfferList::const_iterator itOff = offers.begin();
-        for( ; itOff != offers.end(); ++itOff )
-            lst.append( (*itOff).service() );
-    }
+    KService::List lst;
+    // Get all services of this service type.
+    const KServiceOfferList offers = weightedOffers( serviceType );
+
+    // Now extract only the services; the weighting was only used for sorting.
+    KServiceOfferList::const_iterator itOff = offers.begin();
+    for( ; itOff != offers.end(); ++itOff )
+        lst.append( (*itOff).service() );
 
     applyConstraints( lst, constraint );
 

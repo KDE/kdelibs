@@ -26,10 +26,15 @@
 #include <kprotocolinfo.h>
 #include <kservicetypetrader.h>
 #include <kprocess.h>
+#include <kservicetypeprofile.h>
 
 void KServiceTest::initTestCase()
 {
     QString profilerc = KStandardDirs::locateLocal( "config", "profilerc" );
+    if ( !profilerc.isEmpty() )
+        QFile::remove( profilerc );
+
+    profilerc = KStandardDirs::locateLocal( "config", "servicetype_profilerc" );
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
 
@@ -140,6 +145,8 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     //foreach( KService::Ptr service, offers )
     //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->desktopEntryPath() ) );
 
+    m_firstOffer = offers[0]->desktopEntryPath();
+
     // Only test for parts provided by kdelibs:
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
     QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) );
@@ -200,4 +207,58 @@ void KServiceTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !ktexteditor_isearch->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
-// TODO tests that involve writing a profilerc and checking that the trader is obeying it
+void KServiceTest::testWriteServiceTypeProfile()
+{
+    const QString serviceType = "KParts/ReadOnlyPart";
+    KService::List services, disabledServices;
+    services.append(KService::serviceByDesktopPath("khtmlimage.desktop"));
+    services.append(KService::serviceByDesktopPath("katepart.desktop"));
+    services.append(KService::serviceByDesktopPath("kcertpart.desktop"));
+    disabledServices.append(KService::serviceByDesktopPath("khtml.desktop"));
+
+    KServiceTypeProfile::writeServiceTypeProfile( serviceType, services, disabledServices );
+
+    // Check that the file got written
+    QString profilerc = KStandardDirs::locateLocal( "config", "servicetype_profilerc" );
+    QVERIFY(!profilerc.isEmpty());
+    QVERIFY(QFile::exists(profilerc));
+
+    KService::List offers = KServiceTypeTrader::self()->query( serviceType );
+    QVERIFY( offers.count() > 0 ); // not empty
+
+    //foreach( KService::Ptr service, offers )
+    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->desktopEntryPath() ) );
+
+    QVERIFY( offers.count() >= 3 ); // at least 3, even
+    QCOMPARE( offers[0]->desktopEntryPath(), QString("khtmlimage.desktop") );
+    QCOMPARE( offers[1]->desktopEntryPath(), QString("katepart.desktop") );
+    QCOMPARE( offers[2]->desktopEntryPath(), QString("kcertpart.desktop") );
+    QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) ); // should still be somewhere in there
+    QVERIFY( !offerListHasService( offers, "khtml.desktop" ) ); // it got disabled above
+}
+
+void KServiceTest::testDefaultOffers()
+{
+    // Now that we have a user-profile, let's see if defaultOffers indeed gives us the default ordering.
+    const QString serviceType = "KParts/ReadOnlyPart";
+    KService::List offers = KServiceTypeTrader::self()->defaultOffers( serviceType );
+    QVERIFY( offers.count() > 0 ); // not empty
+    QVERIFY( offerListHasService( offers, "khtml.desktop" ) ); // it's here even though it's disabled in the profile
+    if ( m_firstOffer.isEmpty() )
+        QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
+    QCOMPARE( offers[0]->desktopEntryPath(), m_firstOffer );
+}
+
+void KServiceTest::testDeleteServiceTypeProfile()
+{
+    const QString serviceType = "KParts/ReadOnlyPart";
+    KServiceTypeProfile::deleteServiceTypeProfile( serviceType );
+
+    KService::List offers = KServiceTypeTrader::self()->query( serviceType );
+    QVERIFY( offers.count() > 0 ); // not empty
+    QVERIFY( offerListHasService( offers, "khtml.desktop" ) ); // it's back
+
+    if ( m_firstOffer.isEmpty() )
+        QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
+    QCOMPARE( offers[0]->desktopEntryPath(), m_firstOffer );
+}

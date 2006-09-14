@@ -31,6 +31,12 @@ private Q_SLOTS:
     void testServiceTypeTraderForReadOnlyPart();
     void testHasServiceType1();
     void testHasServiceType2();
+    void testWriteServiceTypeProfile();
+    void testDefaultOffers();
+    void testDeleteServiceTypeProfile();
+
+private:
+    QString m_firstOffer;
 };
 
 #endif
