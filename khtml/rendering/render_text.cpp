@@ -223,11 +223,10 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 	// ### should be at most retrieved once per render text
 	QColor bg = khtml::retrieveBackgroundColor(text);
 	// It may happen that the contrast is -- well -- virtually non existent.
-	// In this case, simply invert the colors
-	if (!khtml::hasSufficientContrast(hbg, bg)) {
-	    hc = QColor(0xff-hc.red(),0xff-hc.green(),0xff-hc.blue());
-	    hbg = QColor(0xff-hbg.red(),0xff-hbg.green(),0xff-hbg.blue());
-	}/*end if*/
+	// In this case, simply swap the colors, thus in compliance with
+	// NN4 (win32 only), IE, and Mozilla.
+	if (!khtml::hasSufficientContrast(hbg, bg))
+	    qSwap(hc, hbg);
     }
 
     p->setPen(hc);
