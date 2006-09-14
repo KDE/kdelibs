@@ -30,7 +30,9 @@ void recursive_print( const KTarDirectory * dir, const QString & path )
   for( ; it != l.end(); ++it )
   {
     const KTarEntry* entry = dir->entry( (*it) );
-    printf("mode=%07o %s %s %s%s isdir=%d\n", entry->permissions(), entry->user().latin1(), entry->group().latin1(), path.latin1(), (*it).latin1(), entry->isDirectory());
+    printf("mode=%07o %s %s %s%s %d isdir=%d\n", entry->permissions(), entry->user().latin1(), entry->group().latin1(), path.latin1(), (*it).latin1(),
+           entry->isFile() ? static_cast<const KArchiveFile *>(entry)->size() : 0,
+           entry->isDirectory());
     if (entry->isDirectory())
       recursive_print( (KTarDirectory *)entry, path+(*it)+"/" );
   }
