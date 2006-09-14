@@ -88,8 +88,8 @@ static bool needsOutlinePhaseRepaint(RenderObject* o, RenderObject::PaintInfo& i
     if (!r.intersects(i.r))
         return false;
     return true;
-}         
-          
+}
+
 void InlineBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
 {
     if ( i.phase == PaintActionOutline && !needsOutlinePhaseRepaint(object(), i, tx, ty) )
@@ -495,6 +495,8 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
         int newY = curr->yPos();
         int newHeight = curr->height();
         int newBaseline = curr->baseline();
+        int overflowTop = 0;
+        int overflowBottom = 0;
         if (curr->isInlineTextBox() || curr->isInlineFlowBox()) {
             const QFontMetrics &fm = curr->object()->fontMetrics( m_firstLine );
 #ifdef APPLE_CHANGES
@@ -510,6 +512,10 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                 newHeight = fm.lineSpacing();
             }
 #endif
+            for (ShadowData* shadow = curr->object()->style()->textShadow(); shadow; shadow = shadow->next) {
+                overflowTop = kMin(overflowTop, shadow->y - shadow->blur);
+                overflowBottom = kMax(overflowBottom, shadow->y + shadow->blur);
+            }
             if (curr->isInlineFlowBox()) {
                 newHeight += curr->object()->borderTop() + curr->object()->paddingTop() +
                             curr->object()->borderBottom() + curr->object()->paddingBottom();
@@ -519,16 +525,16 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
         } else {
             newY += curr->object()->marginTop();
             newHeight = curr->height() - (curr->object()->marginTop() + curr->object()->marginBottom());
-        }
+            overflowTop = curr->object()->overflowTop();
+            overflowBottom = curr->object()->overflowHeight() - newHeight;
+       }
         curr->setYPos(newY);
         curr->setHeight(newHeight);
         curr->setBaseline(newBaseline);
 
         if (childAffectsTopBottomPos) {
-            if (newY < topPosition)
-                topPosition = newY;
-            if (newY + newHeight > bottomPosition)
-                bottomPosition = newY + newHeight;
+            topPosition = kMin(topPosition, newY + overflowTop);
+            bottomPosition = kMax(bottomPosition, newY + newHeight + overflowBottom);
         }
     }
 
@@ -593,7 +599,7 @@ bool InlineFlowBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx,
         object()->setInnerNode(i);
         return true;
     }
-    
+
     return false;
 }
 
@@ -605,7 +611,7 @@ void InlineFlowBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
     int w = width() + 2 * object()->maximalOutlineSize(i.phase);
     if ((xPos >= i.r.x() + i.r.width()) || (xPos + w <= i.r.x()))
         intersectsDamageRect = false;
-    
+
     if (intersectsDamageRect) {
         if (i.phase == PaintActionOutline) {
             // Add ourselves to the paint info struct's list of inlines that need to paint their
@@ -737,12 +743,12 @@ void InlineFlowBox::paintDecorations(RenderObject::PaintInfo& pI, int _tx, int _
     // almost-strict mode or strict mode).
     if (object()->style()->htmlHacks() || object()->style()->visibility() != VISIBLE)
         return;
-                        
+
     _tx += m_x;
     _ty += m_y;
     RenderStyle* styleToUse = object()->style(m_firstLine);
     int deco = parent() ? styleToUse->textDecoration() : styleToUse->textDecorationsInEffect();
-    if (deco != TDNONE && 
+    if (deco != TDNONE &&
         ((!paintedChildren && ((deco & UNDERLINE) || (deco & OVERLINE))) || (paintedChildren && (deco & LINE_THROUGH))) &&
         shouldDrawDecoration(object())) {
         // We must have child boxes and have decorations defined.
