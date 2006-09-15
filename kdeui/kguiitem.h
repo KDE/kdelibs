@@ -40,14 +40,14 @@ class KDEUI_EXPORT KGuiItem
 public:
     KGuiItem();
 
-    // ### This should probably be explicit in KDE 4; it's easy to get
-    // subtle bugs otherwise - the icon name, tooltip and whatsthis text
-    // get changed behind your back if you do 'setButtonFoo( "Bar" );'
-    // It gives the wrong impression that you just change the text.
-    KGuiItem( const QString &text, 
-              const QString &iconName  = QString(),
-              const QString &toolTip   = QString(), 
-              const QString &whatsThis = QString() );
+    // This is explicit because it's easy to get subtle bugs otherwise. The 
+    // icon name, tooltip and whatsthis text get changed behind your back if 
+    // you do 'setButtonFoo( "Bar" );' It gives the wrong impression that you
+    // just change the text.
+    explicit KGuiItem( const QString &text, 
+                       const QString &iconName  = QString(),
+                       const QString &toolTip   = QString(), 
+                       const QString &whatsThis = QString() );
 
     KGuiItem( const QString &text, const QIcon &iconSet, 
               const QString &toolTip   = QString(), 
