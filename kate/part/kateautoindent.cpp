@@ -609,11 +609,11 @@ bool KateCSmartIndent::handleDoxygen (KateDocCursor &begin)
       first = textLine->firstChar();
       int indent = findOpeningComment(begin);
       QString filler = tabString (indent);
-      
+
       doc->removeText (begin.line(), 0, begin.line(), first);
       doc->insertText (begin.line(), 0, filler);
       begin.setCol(filler.length());
-      
+
       return true;
     }
   }
@@ -1192,6 +1192,26 @@ int KatePythonIndent::calcExtra (int &prevBlock, int &pos, KateDocCursor &end)
       extraIndent -= indentWidth;
     else if (c == ':')
       break;
+    else if (c == '\'')
+    {
+      cur.moveForward(1);
+      c = cur.currentChar();
+      while ( c != '\'' && cur.line() < end.line() )
+      {
+        cur.moveForward(1);
+        c = cur.currentChar();
+      }
+    }
+    else if (c == '"')
+    {
+      cur.moveForward(1);
+      c = cur.currentChar();
+      while ( c != '"' && cur.line() < end.line() )
+      {
+        cur.moveForward(1);
+        c = cur.currentChar();
+      }
+    }
 
     if (c.isNull() || c == '#')
       cur.gotoNextLine();
@@ -1584,17 +1604,17 @@ void KateCSAndSIndent::processNewline (KateDocCursor &begin, bool /*needContinue
  * Does the line @p line start with a label?
  * @note May also return @c true if the line starts in a continuation.
  */
-bool KateCSAndSIndent::startsWithLabel( int line ) 
-{ 
+bool KateCSAndSIndent::startsWithLabel( int line )
+{
   // Get the current line.
   KateTextLine::Ptr indentLine = doc->plainKateTextLine(line);
   const int indentFirst = indentLine->firstChar();
-  
+
   // Not entirely sure what this check does.
   int attrib = indentLine->attribute(indentFirst);
   if (attrib != 0 && attrib != keywordAttrib && attrib != normalAttrib && attrib != extensionAttrib)
     return false;
-  
+
   // Get the line text.
   const QString lineContents = indentLine->string();
   const int indentLast = indentLine->lastChar();
