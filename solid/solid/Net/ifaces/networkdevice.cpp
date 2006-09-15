@@ -19,13 +19,13 @@
 
 #include "networkdevice.h"
 
-Solid::Net::Ifaces::NetworkDevice::NetworkDevice( QObject *parent )
+Solid::Ifaces::NetworkDevice::NetworkDevice( QObject *parent )
     : QObject( parent )
 {
 
 }
 
-Solid::Net::Ifaces::NetworkDevice::~NetworkDevice()
+Solid::Ifaces::NetworkDevice::~NetworkDevice()
 {
 
 }

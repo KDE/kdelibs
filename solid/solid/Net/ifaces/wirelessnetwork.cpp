@@ -19,7 +19,13 @@
 
 #include "wirelessnetwork.h"
 
-Solid::Net::Ifaces::WirelessNetwork::~WirelessNetwork()
+Solid::Ifaces::WirelessNetwork::WirelessNetwork( QObject *parent )
+    : Network( parent )
+{
+
+}
+
+Solid::Ifaces::WirelessNetwork::~WirelessNetwork()
 {
 
 }

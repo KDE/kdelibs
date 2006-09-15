@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NET_IFACES_NETWORK_H
-#define SOLID_NET_IFACES_NETWORK_H
+#ifndef SOLID_IFACES_NETWORK_H
+#define SOLID_IFACES_NETWORK_H
 
 #include <kdelibs_export.h>
 
@@ -27,8 +27,6 @@
 #include <QObject>
 
 namespace Solid
-{
-namespace Net
 {
 namespace Ifaces
 {
@@ -39,26 +37,25 @@ namespace Ifaces
     class KDE_EXPORT Network : public QObject, public Enums::Network
     {
         Q_OBJECT
-        public:
-            virtual ~Network();
-            // TODO ask Thiago whether to use QHostAddress or KIPAddress for these 
-            virtual QString ipV4Address() = 0;
-            // virtual QString ipV6Address() = 0;
-            
-            virtual QString subnetMask() = 0;
-            virtual QString broadcastAddress() = 0;
-            // wtf does NM use this for?
-            virtual QString route() = 0;
-            
-            virtual QString primaryDNS() = 0;
-            virtual QString secondaryDNS() = 0;
-            
-            // signals: // we are not a qobject yet
-        signals:
+    public:
+        Network( QObject *parent = 0 );
+        virtual ~Network();
+        // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
+        virtual QString ipV4Address() = 0;
+        // virtual QString ipV6Address() = 0;
+
+        virtual QString subnetMask() = 0;
+        virtual QString broadcastAddress() = 0;
+        // wtf does NM use this for?
+        virtual QString route() = 0;
+
+        virtual QString primaryDNS() = 0;
+        virtual QString secondaryDNS() = 0;
+
+    signals:
         void ipDetailsChanged();
     };
 } //Ifaces
-} //Net
 } //Solid
 
 #endif

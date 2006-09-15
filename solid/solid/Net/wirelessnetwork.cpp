@@ -19,9 +19,9 @@
 
 #include "wirelessnetwork.h"
 
+#include <solid/Net/ifaces/wirelessnetwork.h>
+
 namespace Solid
-{
-namespace Net
 {
     class WirelessNetwork::Private
     {
@@ -29,84 +29,89 @@ namespace Net
             Ifaces::WirelessNetwork * iface;
     };
 }
-}
 
-Solid::Net::WirelessNetwork::WirelessNetwork( Ifaces::Network * networkIface, Ifaces::WirelessNetwork * wirelessNetIface, QObject * parent ) : Network( networkIface, parent ), d( new Private )
+Solid::WirelessNetwork::WirelessNetwork( Ifaces::WirelessNetwork *iface, QObject *parent )
+    : Network( iface, parent ), d( new Private )
 {
-    d->iface = wirelessNetIface;
-    connect( d->iface, SIGNAL( signalStrengthChanged( int ) ), this, SIGNAL( signalStrengthChanged( int ) ) );
-    connect( d->iface, SIGNAL( bitrateChanged( int ) ), this, SIGNAL( lbitrateChanged( int ) ) );
-    connect( d->iface, SIGNAL( associationChanged( bool ) ), this, SIGNAL( associationChanged( bool ) ) );
-    connect( d->iface, SIGNAL( activeChanged( bool ) ), this, SIGNAL( activeChanged( bool ) ) );
+    d->iface = iface;
+
+    connect( d->iface, SIGNAL( signalStrengthChanged( int ) ),
+             this, SIGNAL( signalStrengthChanged( int ) ) );
+    connect( d->iface, SIGNAL( bitrateChanged( int ) ),
+             this, SIGNAL( lbitrateChanged( int ) ) );
+    connect( d->iface, SIGNAL( associationChanged( bool ) ),
+             this, SIGNAL( associationChanged( bool ) ) );
+    connect( d->iface, SIGNAL( activeChanged( bool ) ),
+             this, SIGNAL( activeChanged( bool ) ) );
 }
 
-Solid::Net::WirelessNetwork::~WirelessNetwork()
+Solid::WirelessNetwork::~WirelessNetwork()
 {
     delete d;
 }
 
-bool Solid::Net::WirelessNetwork::isSameAs( const WirelessNetwork & other) const
+bool Solid::WirelessNetwork::isSameAs( const WirelessNetwork & other) const
 {
     return ( other.essid() == essid() &&
-        other.bssList() == /*intersects*/ bssList() );
+             other.bssList() == /*intersects*/ bssList() );
 }
 
-int Solid::Net::WirelessNetwork::signalStrength() const
+int Solid::WirelessNetwork::signalStrength() const
 {
     return d->iface->signalStrength();
 }
 
-int Solid::Net::WirelessNetwork::bitRate() const
+int Solid::WirelessNetwork::bitRate() const
 {
     return d->iface->bitRate();
 }
 
-int Solid::Net::WirelessNetwork::frequency() const
+int Solid::WirelessNetwork::frequency() const
 {
     return d->iface->frequency();
 }
 
-MacAddressList Solid::Net::WirelessNetwork::bssList() const
+Solid::MacAddressList Solid::WirelessNetwork::bssList() const
 {
     return d->iface->bssList();
 }
 
-Solid::Net::Ifaces::Authentication * Solid::Net::WirelessNetwork::authentication() const
+Solid::Ifaces::Authentication *Solid::WirelessNetwork::authentication() const
 {
     return d->iface->authentication();
 }
 
-Solid::Net::Ifaces::WirelessNetwork::Capabilities Solid::Net::WirelessNetwork::capabilities() const
+Solid::WirelessNetwork::Capabilities Solid::WirelessNetwork::capabilities() const
 {
     return d->iface->capabilities();
 }
 
-QString Solid::Net::WirelessNetwork::essid() const
+QString Solid::WirelessNetwork::essid() const
 {
     return d->iface->essid();
 }
 
-Solid::Net::Ifaces::WirelessNetwork::OperationMode Solid::Net::WirelessNetwork::mode() const
+Solid::WirelessNetwork::OperationMode Solid::WirelessNetwork::mode() const
 {
     return d->iface->mode();
 }
 
-bool Solid::Net::WirelessNetwork::isAssociated() const
+bool Solid::WirelessNetwork::isAssociated() const
 {
     return d->iface->isAssociated();
 }
 
-bool Solid::Net::WirelessNetwork::isEncrypted() const
+bool Solid::WirelessNetwork::isEncrypted() const
 {
     return d->iface->isEncrypted();
 }
 
-bool Solid::Net::WirelessNetwork::isHidden() const
+bool Solid::WirelessNetwork::isHidden() const
 {
     return d->iface->isHidden();
 }
 
-bool Solid::Net::WirelessNetwork::isActive() const
+bool Solid::WirelessNetwork::isActive() const
 {
     return d->iface->isActive();
 }

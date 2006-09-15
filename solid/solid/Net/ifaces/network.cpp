@@ -19,7 +19,13 @@
 
 #include "network.h"
 
-Solid::Net::Ifaces::Network::~Network()
+Solid::Ifaces::Network::Network( QObject *parent )
+    : QObject( parent )
+{
+
+}
+
+Solid::Ifaces::Network::~Network()
 {
 
 }

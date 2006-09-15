@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NET_NETWORKDEVICE_H
-#define SOLID_NET_NETWORKDEVICE_H
+#ifndef SOLID_NETWORKDEVICE_H
+#define SOLID_NETWORKDEVICE_H
 
 #include <QObject>
 
@@ -26,9 +26,6 @@
 
 namespace Solid
 {
-namespace Net
-{
-
     namespace Ifaces
     {
         class NetworkDevice;
@@ -66,7 +63,6 @@ namespace Net
         Private * d;
 };
 
-} //Net
 } //Solid
 
 #endif

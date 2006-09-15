@@ -19,9 +19,9 @@
 
 #include "network.h"
 
+#include <solid/Net/ifaces/network.h>
+
 namespace Solid
-{
-namespace Net
 {
     class Network::Private
     {
@@ -29,47 +29,48 @@ namespace Net
             Ifaces::Network * iface;
     };
 }
-}
 
-Solid::Net::Network::Network( Ifaces::Network * iface, QObject * parent ) : QObject( parent ), d( new Private )
+Solid::Network::Network( Ifaces::Network *iface, QObject *parent )
+    : QObject( parent ), d( new Private )
 {
     d->iface = iface;
 
-    connect( d->iface, SIGNAL( ipDetailsChanged() ), this, SIGNAL( ipDetailsChanged() ) );
+    connect( d->iface, SIGNAL( ipDetailsChanged() ),
+             this, SIGNAL( ipDetailsChanged() ) );
 }
 
-Solid::Net::Network::~Network()
+Solid::Network::~Network()
 {
     delete d;
 }
 
-QString Solid::Net::Network::ipV4Address()
+QString Solid::Network::ipV4Address()
 {
     return d->iface->ipV4Address();
 }
 
-QString Solid::Net::Network::subnetMask()
+QString Solid::Network::subnetMask()
 {
     return d->iface->subnetMask();
 
 }
 
-QString Solid::Net::Network::broadcastAddress()
+QString Solid::Network::broadcastAddress()
 {
     return d->iface->broadcastAddress();
 }
 
-QString Solid::Net::Network::route()
+QString Solid::Network::route()
 {
     return d->iface->route();
 }
 
-QString Solid::Net::Network::primaryDNS()
+QString Solid::Network::primaryDNS()
 {
     return d->iface->primaryDNS();
 }
 
-QString Solid::Net::Network::secondaryDNS()
+QString Solid::Network::secondaryDNS()
 {
     return d->iface->secondaryDNS();
 }

@@ -17,23 +17,23 @@
 
 */
 
-#ifndef SOLID_NET_AUTHENTICATION_H
-#define SOLID_NET_AUTHENTICATION_H
+#ifndef SOLID_AUTHENTICATION_H
+#define SOLID_AUTHENTICATION_H
 
-#include <solid/Net/ifaces/authentication.h>
 #include <solid/Net/ifaces/enums.h>
+
 #include <QObject>
+#include <QMap>
 
 namespace Solid
 {
-namespace Net
-{
+    typedef QMap<QString, QString> SecretMap;
 
-/**
- * Abstract base Authentication
- */
-class Authentication : public QObject
-{
+    /**
+     * Abstract base Authentication
+     */
+    class Authentication : public QObject
+    {
     public:
         Authentication();
         ~Authentication();
@@ -43,23 +43,23 @@ class Authentication : public QObject
     protected:
         class Private;
         Private * d;
-};
+    };
 
-/**
- * AuthenticationNone - an unencrypted network
- */
-class AuthenticationNone : public Authentication
-{
+    /**
+     * AuthenticationNone - an unencrypted network
+     */
+    class AuthenticationNone : public Authentication
+    {
     public:
         virtual bool isValid( const QString &essid );
         virtual void setDefaults();
-};
+    };
 
-/**
- * WEP Authentication
- */
-class AuthenticationWEP : public Authentication
-{
+    /**
+     * WEP Authentication
+     */
+    class AuthenticationWEP : public Authentication
+    {
     public:
         AuthenticationWEP( Ifaces::AuthenticationWEP::WEPMethod method );
         virtual ~AuthenticationWEP();
@@ -70,14 +70,14 @@ class AuthenticationWEP : public Authentication
     protected:
         class Private;
         Private * d;
-};
+    };
 
-/**
- * AuthenticationWPA contains functionality shared by both Personal and Enterprise
- * authentication flavours
- */
-class AuthenticationWPA : public Authentication
-{
+    /**
+     * AuthenticationWPA contains functionality shared by both Personal and Enterprise
+     * authentication flavours
+     */
+    class AuthenticationWPA : public Authentication
+    {
     public:
         AuthenticationWPA();
         virtual ~AuthenticationWPA();
@@ -89,21 +89,21 @@ class AuthenticationWPA : public Authentication
     protected:
         class Private;
         Private * d;
-};
+    };
 
-/**
- * AuthenticationWPAPersonal
- */
-class AuthenticationWPAPersonal : public AuthenticationWPA
-{
+    /**
+     * AuthenticationWPAPersonal
+     */
+    class AuthenticationWPAPersonal : public AuthenticationWPA
+    {
 
-};
+    };
 
-/**
- * AuthenticationWPAEnterprise
- */
-class AuthenticationWPAEnterprise : public AuthenticationWPA
-{
+    /**
+     * AuthenticationWPAEnterprise
+     */
+    class AuthenticationWPAEnterprise : public AuthenticationWPA
+    {
     public:
         AuthenticationWPAEnterprise();
         virtual ~AuthenticationWPAEnterprise();
@@ -127,9 +127,8 @@ class AuthenticationWPAEnterprise : public AuthenticationWPA
     private:
         class Private;
         Private * d;
-};
+    };
 
-} // Net
 } // Solid
 
-#endif /* SOLID_NET_AUTHENTICATION_H */
+#endif /* SOLID_AUTHENTICATION_H */

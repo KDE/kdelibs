@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NET_IFACES_NETWORKDEVICE_H
-#define SOLID_NET_IFACES_NETWORKDEVICE_H
+#ifndef SOLID_IFACES_NETWORKDEVICE_H
+#define SOLID_IFACES_NETWORKDEVICE_H
 
 #include <kdelibs_export.h>
 
@@ -27,8 +27,6 @@
 #include <QObject>
 
 namespace Solid
-{
-namespace Net
 {
 namespace Ifaces
 {
@@ -66,7 +64,6 @@ namespace Ifaces
         void connectionStateChanged( int /*ConnectionState*/ );
     };
 } //Ifaces
-} // Net
 } //Solid
 
 #endif

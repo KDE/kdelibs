@@ -17,19 +17,17 @@
 
 */
 
-#ifndef SOLID_NET_IFACES_AUTHENTICATION_H
-#define SOLID_NET_IFACES_AUTHENTICATION_H
+#ifndef SOLID_IFACES_AUTHENTICATION_H
+#define SOLID_IFACES_AUTHENTICATION_H
 
 #include <QMap>
 
-#include "enums.h"
+#include <solid/Net/ifaces/enums.h>
 
 //typedef QValueList<IEEE_802_11_Cipher*> CipherList;
 typedef QMap<QString, QString> SecretMap;
 
 namespace Solid
-{
-namespace Net
 {
 namespace Ifaces
 {
@@ -111,7 +109,6 @@ class AuthenticationWPAEnterprise : public AuthenticationWPA, public Enums::Auth
 };
 
 } // Ifaces
-} // Net
 } // Solid
 
-#endif /* SOLID_NET_IFACES_AUTHENTICATION_H */
+#endif /* SOLID_IFACES_AUTHENTICATION_H */

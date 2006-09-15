@@ -21,8 +21,6 @@
 
 namespace Solid
 {
-namespace Net
-{
     class Authentication::Private
     {
         public:
@@ -53,177 +51,176 @@ namespace Net
             QString certPrivatePasswordKey;
     };
 }
-}
 
-Solid::Net::Authentication::Authentication()
+Solid::Authentication::Authentication()
 {
     d = new Private();
 }
 
-Solid::Net::Authentication::~Authentication()
+Solid::Authentication::~Authentication()
 {
     delete d;
 }
 
-void Solid::Net::Authentication::setSecrets( const SecretMap& secrets )
+void Solid::Authentication::setSecrets( const SecretMap& secrets )
 {
     d->secrets = secrets;
 }
 
-SecretMap Solid::Net::Authentication::secrets() const
+SecretMap Solid::Authentication::secrets() const
 {
     return d->secrets;
 }
 
-bool Solid::Net::AuthenticationNone::isValid( const QString &essid )
+bool Solid::AuthenticationNone::isValid( const QString &essid )
 {
     return true;
 }
 
-void Solid::Net::AuthenticationNone::setDefaults()
+void Solid::AuthenticationNone::setDefaults()
 {
     return;
 }
 
-Solid::Net::AuthenticationWEP::AuthenticationWEP( Ifaces::AuthenticationWEP::WEPMethod method )
+Solid::AuthenticationWEP::AuthenticationWEP( Ifaces::AuthenticationWEP::WEPMethod method )
 {
     d = new Private;
     d->method = method;
 }
 
-Solid::Net::AuthenticationWEP::~AuthenticationWEP()
+Solid::AuthenticationWEP::~AuthenticationWEP()
 {
     delete d;
 }
 
-void Solid::Net::AuthenticationWEP::setMethod( Ifaces::AuthenticationWEP::WEPMethod method )
+void Solid::AuthenticationWEP::setMethod( Ifaces::AuthenticationWEP::WEPMethod method )
 {
     d->method = method;
 }
 
-Solid::Net::Ifaces::AuthenticationWEP::WEPMethod Solid::Net::AuthenticationWEP::method()
+Solid::Ifaces::AuthenticationWEP::WEPMethod Solid::AuthenticationWEP::method()
 {
     return d->method;
 }
 
-void Solid::Net::AuthenticationWEP::setType( Ifaces::AuthenticationWEP::WEPType type )
+void Solid::AuthenticationWEP::setType( Ifaces::AuthenticationWEP::WEPType type )
 {
     d->type = type;
 }
 
-Solid::Net::Ifaces::AuthenticationWEP::WEPType Solid::Net::AuthenticationWEP::type()
+Solid::Ifaces::AuthenticationWEP::WEPType Solid::AuthenticationWEP::type()
 {
     return d->type;
 }
 
-Solid::Net::AuthenticationWPA::AuthenticationWPA()
+Solid::AuthenticationWPA::AuthenticationWPA()
 {
     d = new Private;
 }
 
-Solid::Net::AuthenticationWPA::~AuthenticationWPA()
+Solid::AuthenticationWPA::~AuthenticationWPA()
 {
     delete d;
 }
 
-void Solid::Net::AuthenticationWPA::setProtocol( Ifaces::AuthenticationWPA::WPAProtocol protocol )
+void Solid::AuthenticationWPA::setProtocol( Ifaces::AuthenticationWPA::WPAProtocol protocol )
 {
     d->protocol = protocol;
 }
 
-Solid::Net::Ifaces::AuthenticationWPA::WPAProtocol Solid::Net::AuthenticationWPA::protocol()
+Solid::Ifaces::AuthenticationWPA::WPAProtocol Solid::AuthenticationWPA::protocol()
 {
     return d->protocol;
 }
 
-void Solid::Net::AuthenticationWPA::setVersion( Ifaces::AuthenticationWPA::WPAVersion version )
+void Solid::AuthenticationWPA::setVersion( Ifaces::AuthenticationWPA::WPAVersion version )
 {
     d->version = version;
 }
 
-Solid::Net::Ifaces::AuthenticationWPA::WPAVersion Solid::Net::AuthenticationWPA::version()
+Solid::Ifaces::AuthenticationWPA::WPAVersion Solid::AuthenticationWPA::version()
 {
     return d->version;
 }
 
-Solid::Net::AuthenticationWPAEnterprise::AuthenticationWPAEnterprise()
+Solid::AuthenticationWPAEnterprise::AuthenticationWPAEnterprise()
 {
     d = new Private;
 }
 
-Solid::Net::AuthenticationWPAEnterprise::~AuthenticationWPAEnterprise()
+Solid::AuthenticationWPAEnterprise::~AuthenticationWPAEnterprise()
 {
     delete d;
 }
 
-void Solid::Net::AuthenticationWPAEnterprise::setIdentity( const QString & identity )
+void Solid::AuthenticationWPAEnterprise::setIdentity( const QString & identity )
 {
     d->identity = identity;
 }
 
-QString Solid::Net::AuthenticationWPAEnterprise::identify() const
+QString Solid::AuthenticationWPAEnterprise::identify() const
 {
     return d->identity;
 }
 
-void Solid::Net::AuthenticationWPAEnterprise::setAnonIdentity( const QString & anonIdentity)
+void Solid::AuthenticationWPAEnterprise::setAnonIdentity( const QString & anonIdentity)
 {
     d->anonIdentity = anonIdentity;
 }
 
-QString Solid::Net::AuthenticationWPAEnterprise::anonIdentity() const
+QString Solid::AuthenticationWPAEnterprise::anonIdentity() const
 {
     return d->anonIdentity;
 }
 
-void Solid::Net::AuthenticationWPAEnterprise::setCertClient( const QString & certClient )
+void Solid::AuthenticationWPAEnterprise::setCertClient( const QString & certClient )
 {
     d->certClient = certClient;
 }
 
-QString Solid::Net::AuthenticationWPAEnterprise::certClient() const
+QString Solid::AuthenticationWPAEnterprise::certClient() const
 {
     return d->certClient;
 }
 
-void Solid::Net::AuthenticationWPAEnterprise::setCertCA( const QString & certCA)
+void Solid::AuthenticationWPAEnterprise::setCertCA( const QString & certCA)
 {
     d->certCA = certCA;
 }
 
-QString Solid::Net::AuthenticationWPAEnterprise::certCA() const
+QString Solid::AuthenticationWPAEnterprise::certCA() const
 {
     return d->certCA;
 }
 
-void Solid::Net::AuthenticationWPAEnterprise::setCertPrivate( const QString & certPrivate)
+void Solid::AuthenticationWPAEnterprise::setCertPrivate( const QString & certPrivate)
 {
     d->certPrivate = certPrivate;
 }
 
-QString Solid::Net::AuthenticationWPAEnterprise::certPrivate() const
+QString Solid::AuthenticationWPAEnterprise::certPrivate() const
 {
     return d->certPrivate;
 }
 
 
-void Solid::Net::AuthenticationWPAEnterprise::setMethod( Ifaces::AuthenticationWPAEnterprise::EAPMethod method )
+void Solid::AuthenticationWPAEnterprise::setMethod( Ifaces::AuthenticationWPAEnterprise::EAPMethod method )
 {
     d->method = method;
 }
 
-Solid::Net::Ifaces::AuthenticationWPAEnterprise::EAPMethod Solid::Net::AuthenticationWPAEnterprise::method() const
+Solid::Ifaces::AuthenticationWPAEnterprise::EAPMethod Solid::AuthenticationWPAEnterprise::method() const
 {
     return d->method;
 }
 
 
-QString Solid::Net::AuthenticationWPAEnterprise::idPasswordKey() const
+QString Solid::AuthenticationWPAEnterprise::idPasswordKey() const
 {
     return d->idPasswordKey;
 }
 
-QString Solid::Net::AuthenticationWPAEnterprise::certPrivatePasswordKey() const
+QString Solid::AuthenticationWPAEnterprise::certPrivatePasswordKey() const
 {
     return d->certPrivatePasswordKey;
 }

@@ -20,17 +20,17 @@
 #include "authentication.h"
 
 
-Solid::Net::Ifaces::AuthenticationWPAPersonal::~AuthenticationWPAPersonal()
+Solid::Ifaces::AuthenticationWPAPersonal::~AuthenticationWPAPersonal()
 {
 
 }
 
-Solid::Net::Ifaces::Authentication::~Authentication()
+Solid::Ifaces::Authentication::~Authentication()
 {
 
 }
 
-Solid::Net::Ifaces::AuthenticationNone::~AuthenticationNone()
+Solid::Ifaces::AuthenticationNone::~AuthenticationNone()
 {
 
 }

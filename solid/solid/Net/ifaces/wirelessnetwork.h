@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NET_IFACES_WIRELESSNETWORK_H
-#define SOLID_NET_IFACES_WIRELESSNETWORK_H
+#ifndef SOLID_IFACES_WIRELESSNETWORK_H
+#define SOLID_IFACES_WIRELESSNETWORK_H
 
 #include <kdelibs_export.h>
 
@@ -26,16 +26,14 @@
 
 #include <solid/Net/ifaces/enums.h>
 
-#include "authentication.h"
-#include "network.h"
+#include <solid/Net/ifaces/authentication.h>
+#include <solid/Net/ifaces/network.h>
 
 
 typedef QString MacAddress;
 typedef QStringList MacAddressList;
 
 namespace Solid
-{
-namespace Net
 {
 namespace Ifaces
 {
@@ -45,55 +43,53 @@ namespace Ifaces
     class KDE_EXPORT WirelessNetwork : public Network, public Enums::WirelessNetwork
     {
         Q_OBJECT
-        public:
-            virtual ~WirelessNetwork();
-            
-            //TODO compare method would look for identical ESSID and at least one AP in common
-            virtual bool isSameAs( const WirelessNetwork & ) const = 0;
-            
-            // PHY stuff
-            virtual int signalStrength() = 0;
-            
-            virtual int bitRate() = 0;
-            
-            virtual int frequency() = 0;
-            
-            virtual Enums::WirelessNetwork::Capabilities capabilities() = 0;
-            
-            // Service Set stuff
-            virtual QString essid() = 0;
-            
-            virtual OperationMode mode() = 0;
-            
-            virtual bool isAssociated() = 0;
-            
-            virtual bool isEncrypted() = 0;
-            
-            virtual bool isHidden() = 0;
-            
-            virtual bool isActive() = 0;
-            
-            /**
-            * List of access points making up the network,
-            * or ad hoc network nodes
-            */
-            virtual MacAddressList bssList() = 0;
-            
-            /**
-            * TODO decide how to handle these objects - pass by value
-            */
-            virtual Authentication * authentication() = 0;
-            
-            // TODO SIGNALS!!!
-            //signals:
-        protected:
-            virtual void signalStrengthChanged( int ) = 0;
-            virtual void bitrateChanged( int ) = 0;
-            virtual void associationChanged( bool ) = 0;
-            virtual void activeChanged( bool ) = 0;
+    public:
+        WirelessNetwork( QObject *parent = 0 );
+        virtual ~WirelessNetwork();
+
+        //TODO compare method would look for identical ESSID and at least one AP in common
+        virtual bool isSameAs( const WirelessNetwork & ) const = 0;
+
+        // PHY stuff
+        virtual int signalStrength() = 0;
+
+        virtual int bitRate() = 0;
+
+        virtual int frequency() = 0;
+
+        virtual Capabilities capabilities() = 0;
+
+        // Service Set stuff
+        virtual QString essid() = 0;
+
+        virtual OperationMode mode() = 0;
+
+        virtual bool isAssociated() = 0;
+
+        virtual bool isEncrypted() = 0;
+
+        virtual bool isHidden() = 0;
+
+        virtual bool isActive() = 0;
+
+        /**
+         * List of access points making up the network,
+         * or ad hoc network nodes
+         */
+        virtual MacAddressList bssList() = 0;
+
+        /**
+         * TODO decide how to handle these objects - pass by value
+         */
+        virtual Authentication * authentication() = 0;
+
+    signals:
+        void signalStrengthChanged( int );
+        void bitrateChanged( int );
+        void associationChanged( bool );
+        void activeChanged( bool );
     };
 } //Ifaces
-} //Net
 } //Solid
 
 #endif

@@ -23,17 +23,14 @@
 
 namespace Solid
 {
-namespace Net
-{
     class NetworkDevice::Private
     {
         public:
             Ifaces::NetworkDevice * iface;
     };
 }
-}
 
-Solid::Net::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface, QObject *parent )
+Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface, QObject *parent )
     : QObject( parent ), d( new Private )
 {
     d->iface = iface;
@@ -48,42 +45,42 @@ Solid::Net::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface, QObject 
              this, SIGNAL( connectionStateChanged( int ) ) );
 }
 
-Solid::Net::NetworkDevice::~NetworkDevice()
+Solid::NetworkDevice::~NetworkDevice()
 {
     delete d;
 }
 
-bool Solid::Net::NetworkDevice::isActive()
+bool Solid::NetworkDevice::isActive()
 {
     return d->iface->isActive();
 }
 
-Solid::Net::NetworkDevice::Type Solid::Net::NetworkDevice::type()
+Solid::NetworkDevice::Type Solid::NetworkDevice::type()
 {
     return d->iface->type();
 
 }
-Solid::Net::NetworkDevice::ConnectionState Solid::Net::NetworkDevice::connectionState()
+Solid::NetworkDevice::ConnectionState Solid::NetworkDevice::connectionState()
 {
     return d->iface->connectionState();
 }
 
-int Solid::Net::NetworkDevice::signalStrength()
+int Solid::NetworkDevice::signalStrength()
 {
     return d->iface->signalStrength();
 }
 
-int Solid::Net::NetworkDevice::speed()
+int Solid::NetworkDevice::speed()
 {
     return d->iface->speed();
 }
 
-bool Solid::Net::NetworkDevice::isLinkUp()
+bool Solid::NetworkDevice::isLinkUp()
 {
     return d->iface->isLinkUp();
 }
 
-Solid::Net::NetworkDevice::Capabilities Solid::Net::NetworkDevice::capabilities()
+Solid::NetworkDevice::Capabilities Solid::NetworkDevice::capabilities()
 {
     return d->iface->capabilities();
 }

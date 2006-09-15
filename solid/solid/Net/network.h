@@ -17,44 +17,46 @@
 
 */
 
-#ifndef SOLID_NET_NETWORK_H
-#define SOLID_NET_NETWORK_H
+#ifndef SOLID_NETWORK_H
+#define SOLID_NETWORK_H
 
-#include <solid/Net/ifaces/network.h>
+#include <solid/Net/ifaces/enums.h>
 
 #include <QObject>
 
 namespace Solid
 {
-namespace Net
-{
+    namespace Ifaces
+    {
+        class Network;
+    }
 
-class Network : public QObject
-{
-Q_OBJECT
+    class Network : public QObject, public Ifaces::Enums::Network
+    {
+        Q_OBJECT
     public:
-        Network( Ifaces::Network *, QObject * parent );
+        Network( Ifaces::Network *, QObject *parent );
         virtual ~Network();
-        // TODO ask Thiago whether to use QHostAddress or KIPAddress for these 
-        virtual QString ipV4Address();
-        // virtual QString ipV6Address();
-        
-        virtual QString subnetMask();
-        virtual QString broadcastAddress();
+        // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
+        QString ipV4Address();
+        // QString ipV6Address();
+
+        QString subnetMask();
+        QString broadcastAddress();
         // wtf does NM use this for?
-        virtual QString route();
-        
-        virtual QString primaryDNS();
-        virtual QString secondaryDNS();
-        
+        QString route();
+
+        QString primaryDNS();
+        QString secondaryDNS();
+
     signals:
         void ipDetailsChanged();
+
     private:
         class Private;
         Private * d;
 };
 
-} //Net
 } //Solid
 
 #endif

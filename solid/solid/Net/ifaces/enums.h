@@ -17,12 +17,10 @@
 
 */
 
-#ifndef SOLID_NET_IFACES_ENUMS_H
-#define SOLID_NET_IFACES_ENUMS_H
+#ifndef SOLID_IFACES_ENUMS_H
+#define SOLID_IFACES_ENUMS_H
 
 namespace Solid
-{
-namespace Net
 {
 namespace Ifaces
 {
@@ -103,7 +101,6 @@ namespace Enums
     };
 } // Enums
 } // Ifaces
-} // Net
 } // Solid
 
 #endif

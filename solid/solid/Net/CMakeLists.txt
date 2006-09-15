@@ -6,7 +6,7 @@ set( solidnet_LIB_SRCS
     networkdevice.cpp
     network.cpp
     wirelessnetwork.cpp
-    authentication.cpp
+#    authentication.cpp
 )
 
 kde4_automoc( ${solidnet_LIB_SRCS} )
