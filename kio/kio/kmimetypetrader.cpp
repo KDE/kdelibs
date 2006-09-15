@@ -128,6 +128,7 @@ KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
 {
     kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << ", " << genericServiceType << " )" << endl;
 
+    Q_ASSERT( !genericServiceType.isEmpty() );
     // First, get all offers known to ksycoca.
     const KServiceOfferList offers = mimeTypeSycocaOffers( mimeType );
 
