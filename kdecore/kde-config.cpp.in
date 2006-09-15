@@ -117,12 +117,12 @@ void printResult(const QString &s)
 int main(int argc, char **argv)
 {
     KLocale::setMainCatalog("kdelibs");
-    KAboutData about("kde-config", "kde-config", "1.0", description, KAboutData::License_GPL, "(C) 2000 Stephan Kulow");
+    KAboutData about("kde4-config", "kde4-config", "1.0", description, KAboutData::License_GPL, "(C) 2000 Stephan Kulow");
     KCmdLineArgs::init( argc, argv, &about);
 
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
-    KInstance a("kde-config");
+    KInstance a("kde4-config");
     (void)KGlobal::dirs(); // trigger the creation
     (void)KGlobal::config();
 

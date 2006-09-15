@@ -278,14 +278,11 @@ set(xdg_directorydir    ${XDG_DIRECTORY_DIR})
 configure_file(kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
 configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)  
 
-#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp  ${CMAKE_CURRENT_BINARY_DIR}/all_languages )
+kde4_add_executable(kde4-config NOGUI ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
 
-#change the name of kde-config to kde4-config, but we can't do this before we require at least 2.4.3
-kde4_add_executable(kde-config NOGUI ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
+target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
 
-target_link_libraries(kde-config ${KDE4_KDECORE_LIBS} )
-
-install(TARGETS kde-config DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############
