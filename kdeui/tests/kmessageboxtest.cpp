@@ -101,7 +101,7 @@ case 2:
 case 3:
   i = KMessageBox::questionYesNo(0,
                 "Does your printer support color or only black and white?",
-                "Printer setup", KGuiItem( QLatin1String("&Color") ), QString::fromLatin1("&Black & White"));
+                "Printer setup", KGuiItem( QLatin1String("&Color") ), KGuiItem(QString::fromLatin1("&Black & White")));
   break;
 
 case 4:
