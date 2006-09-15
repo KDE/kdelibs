@@ -90,7 +90,7 @@ case 1:
 		"Are you sure?",
                 "Print", KGuiItem( QLatin1String("&Print") ), "dontask", KMessageBox::AllowLink);
   i = KMessageBox::questionYesNo(0, "<p>Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.</p>",
-  	QString("Bla"), QString("Yes"), QString("No"), "bla", KMessageBox::AllowLink);
+  	QString("Bla"), KGuiItem(QString("Yes")), KGuiItem(QString("No")), "bla", KMessageBox::AllowLink);
   break;
 
 case 2:
