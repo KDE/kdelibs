@@ -67,8 +67,7 @@ void KTimeZonesTest::utc()
 {
     const KTimeZone* utc = KTimeZones::utc();
     QVERIFY((bool)utc);
-    if (utc)
-      QCOMPARE(utc->name(), QString("UTC"));
+    QCOMPARE(utc->name(), QString("UTC"));
     QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::LocalTime)), 0);
     QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,1,1), QTime(), Qt::UTC)), 0);
     QCOMPARE(utc->offsetAtUtc(QDateTime(QDate(2005,7,1), QTime(), Qt::UTC)), 0);
@@ -238,6 +237,26 @@ void KTimeZonesTest::toZoneTime()
     QCOMPARE(london->toZoneTime(summer), summerLocal.addSecs(3600));
     QCOMPARE(losAngeles->toZoneTime(winter), winterLocal.addSecs(-8*3600));
     QCOMPARE(losAngeles->toZoneTime(summer), summerLocal.addSecs(-7*3600));
+
+    QDateTime prepre(QDate(2005,10,29), QTime(23,59,59), Qt::UTC);  // before time shift (local time not repeated)
+    QDateTime pre(QDate(2005,10,30), QTime(0,0,0), Qt::UTC);  // before time shift (local time repeated afterwards)
+    QDateTime before(QDate(2005,10,30), QTime(0,59,59), Qt::UTC);  // before time shift (local time repeated afterwards)
+    QDateTime at(QDate(2005,10,30), QTime(1,0,0), Qt::UTC);   // at time shift (second occurrence of local time)
+    QDateTime last(QDate(2005,10,30), QTime(1,59,59), Qt::UTC);  // after time shift (second occurrence of local time)
+    QDateTime after(QDate(2005,10,30), QTime(2,0,0), Qt::UTC);   // after time shift (local time not repeated)
+    bool second;
+    QCOMPARE(london->toZoneTime(prepre, &second), QDateTime(QDate(2005,10,30), QTime(0,59,59), Qt::LocalTime));
+    QVERIFY(!second);
+    QCOMPARE(london->toZoneTime(pre, &second), QDateTime(QDate(2005,10,30), QTime(1,0,0), Qt::LocalTime));
+    QVERIFY(!second);
+    QCOMPARE(london->toZoneTime(before, &second), QDateTime(QDate(2005,10,30), QTime(1,59,59), Qt::LocalTime));
+    QVERIFY(!second);
+    QCOMPARE(london->toZoneTime(at, &second), QDateTime(QDate(2005,10,30), QTime(1,0,0), Qt::LocalTime));
+    QVERIFY(second);
+    QCOMPARE(london->toZoneTime(last, &second), QDateTime(QDate(2005,10,30), QTime(1,59,59), Qt::LocalTime));
+    QVERIFY(second);
+    QCOMPARE(london->toZoneTime(after, &second), QDateTime(QDate(2005,10,30), QTime(2,0,0), Qt::LocalTime));
+    QVERIFY(!second);
 }
 
 void KTimeZonesTest::convert()
@@ -278,6 +297,34 @@ void KTimeZonesTest::tzfile()
     tzcairo = new KTzfileTimeZone(&tzsource, "Africa/Cairo");
     QCOMPARE(tzcairo->offsetAtUtc(winter), 7200);
     delete tzcairo;
+}
+
+void KTimeZonesTest::tzfileToZoneTime()
+{
+    // Convert from UTC.
+    KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
+    KTimeZone *london = new KTzfileTimeZone(&tzsource, "Europe/London");
+    QVERIFY( london != 0 );
+    QDateTime prepre(QDate(2005,10,29), QTime(23,59,59), Qt::UTC);  // before time shift (local time not repeated)
+    QDateTime pre(QDate(2005,10,30), QTime(0,0,0), Qt::UTC);  // before time shift (local time repeated afterwards)
+    QDateTime before(QDate(2005,10,30), QTime(0,59,59), Qt::UTC);  // before time shift (local time repeated afterwards)
+    QDateTime at(QDate(2005,10,30), QTime(1,0,0), Qt::UTC);    // at time shift (second occurrence of local time)
+    QDateTime last(QDate(2005,10,30), QTime(1,59,59), Qt::UTC);  // after time shift (second occurrence of local time)
+    QDateTime after(QDate(2005,10,30), QTime(2,0,0), Qt::UTC);    // after time shift (local time not repeated)
+    bool second;
+    QCOMPARE(london->toZoneTime(prepre, &second), QDateTime(QDate(2005,10,30), QTime(0,59,59), Qt::LocalTime));
+    QVERIFY(!second);
+    QCOMPARE(london->toZoneTime(pre, &second), QDateTime(QDate(2005,10,30), QTime(1,0,0), Qt::LocalTime));
+    QVERIFY(!second);
+    QCOMPARE(london->toZoneTime(before, &second), QDateTime(QDate(2005,10,30), QTime(1,59,59), Qt::LocalTime));
+    QVERIFY(!second);
+    QCOMPARE(london->toZoneTime(at, &second), QDateTime(QDate(2005,10,30), QTime(1,0,0), Qt::LocalTime));
+    QVERIFY(second);
+    QCOMPARE(london->toZoneTime(last, &second), QDateTime(QDate(2005,10,30), QTime(1,59,59), Qt::LocalTime));
+    QVERIFY(second);
+    QCOMPARE(london->toZoneTime(after, &second), QDateTime(QDate(2005,10,30), QTime(2,0,0), Qt::LocalTime));
+    QVERIFY(!second);
+    delete london;
 }
 
 void KTimeZonesTest::tzfileOffsetAtZoneTime()

@@ -661,6 +661,12 @@ QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime, bool *secondOccurr
         int secs = offsetAtUtc(utcDateTime);
         QDateTime dt = utcDateTime.addSecs(secs);
         dt.setTimeSpec(Qt::LocalTime);
+        if (secondOccurrence)
+        {
+            // Check whether the local time occurs twice around a daylight savings time
+            // shift, and if so, whether it's the first or second occurrence.
+            *secondOccurrence = (secs != offsetAtZoneTime(dt));
+        }
         return dt;
     }
 }
