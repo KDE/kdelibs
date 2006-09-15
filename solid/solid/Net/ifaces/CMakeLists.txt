@@ -5,7 +5,7 @@ include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 ########### next target ###############
 
 set(solidnetifaces_LIB_SRCS
-   device.cpp
+   networkdevice.cpp
    network.cpp
    wirelessnetwork.cpp
    authentication.cpp

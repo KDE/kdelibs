@@ -28,7 +28,7 @@ namespace Ifaces
 {
 namespace Enums
 {
-    struct Device
+    struct NetworkDevice
     {
         // == NM ActivationStage
         /**

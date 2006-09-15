@@ -17,43 +17,50 @@
 
 */
 
-#ifndef SOLID_NET_DEVICE_H
-#define SOLID_NET_DEVICE_H
-
-#include <solid/Net/ifaces/device.h>
+#ifndef SOLID_NET_NETWORKDEVICE_H
+#define SOLID_NET_NETWORKDEVICE_H
 
 #include <QObject>
+
+#include <solid/Net/ifaces/enums.h>
 
 namespace Solid
 {
 namespace Net
 {
 
-class Device : public QObject
-{
-Q_OBJECT
+    namespace Ifaces
+    {
+        class NetworkDevice;
+    }
+
+    class NetworkDevice : public QObject, public Ifaces::Enums::NetworkDevice
+    {
+        Q_OBJECT
     public:
-        Device( Ifaces::Device *, QObject * parent );
-        virtual ~Device();
+        NetworkDevice( Ifaces::NetworkDevice *, QObject * parent );
+        ~NetworkDevice();
 
-        virtual bool isActive();
+        bool isActive();
 
-        virtual Ifaces::Enums::Device::Type type();
-        
-        virtual Ifaces::Enums::Device::ConnectionState connectionState();
-        
-        virtual int signalStrength();
-        
-        virtual int speed();
-        
-        virtual bool isLinkUp();
-        
-        virtual Ifaces::Device::Capabilities capabilities();
+        Type type();
+
+        ConnectionState connectionState();
+
+        int signalStrength();
+
+        int speed();
+
+        bool isLinkUp();
+
+        Capabilities capabilities();
+
     signals:
-        virtual void activeChanged( bool );
-        virtual void linkUpChanged( bool );
-        virtual void signalStrengthChanged( int );
-        virtual void connectionStateChanged( Ifaces::Enums::Device::ConnectionState );
+        void activeChanged( bool );
+        void linkUpChanged( bool );
+        void signalStrengthChanged( int );
+        void connectionStateChanged( int /* ConnectionState */ );
+
     private:
         class Private;
         Private * d;

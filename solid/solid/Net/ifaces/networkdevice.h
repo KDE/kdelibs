@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NET_IFACES_DEVICE_H
-#define SOLID_NET_IFACES_DEVICE_H
+#ifndef SOLID_NET_IFACES_NETWORKDEVICE_H
+#define SOLID_NET_IFACES_NETWORKDEVICE_H
 
 #include <kdelibs_export.h>
 
@@ -34,36 +34,36 @@ namespace Ifaces
 {
     /**
      * Represents a network device as seen by the networking subsystem.
-     * For non network specific hardware details, 
+     * For non network specific hardware details,
      * @see Solid::Ifaces::NetworkIface
      */
      // TODO talk to Ervin about how to cleanly combine this with NetworkIface, perhaps a union class elsewhere
-    class KDE_EXPORT Device : public QObject, public Enums::Device
+    class KDE_EXPORT NetworkDevice : public QObject, public Enums::NetworkDevice
     {
         Q_OBJECT
-        public:
-            virtual ~Device();
-    
-            virtual bool isActive() = 0;
-    
-            virtual Type type() = 0;
-            
-            virtual ConnectionState connectionState() = 0;
-            
-            virtual int signalStrength() = 0;
-            
-            virtual int speed() = 0;
-            
-            virtual bool isLinkUp() = 0;
-            
-            virtual Capabilities capabilities() = 0;
-            
-            // signals:
-        signals:
-            virtual void activeChanged( bool ) = 0;
-            virtual void linkUpChanged( bool ) = 0;
-            virtual void signalStrengthChanged( int ) = 0;
-            virtual void connectionStateChanged( ConnectionState ) = 0;
+    public:
+        NetworkDevice( QObject *parent = 0 );
+        virtual ~NetworkDevice();
+
+        virtual bool isActive() = 0;
+
+        virtual Type type() = 0;
+
+        virtual ConnectionState connectionState() = 0;
+
+        virtual int signalStrength() = 0;
+
+        virtual int speed() = 0;
+
+        virtual bool isLinkUp() = 0;
+
+        virtual Capabilities capabilities() = 0;
+
+    signals:
+        void activeChanged( bool );
+        void linkUpChanged( bool );
+        void signalStrengthChanged( int );
+        void connectionStateChanged( int /*ConnectionState*/ );
     };
 } //Ifaces
 } // Net
