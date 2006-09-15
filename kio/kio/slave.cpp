@@ -149,9 +149,11 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
     m_pid = 0;
     m_port = 0;
 #ifndef Q_WS_WIN
-    serv->setAcceptBuffered(false);
-    connect(serv, SIGNAL(readyAccept()),
-	    SLOT(accept() ) );
+    if (serv != 0) {
+        serv->setAcceptBuffered(false);
+        connect(serv, SIGNAL(readyAccept()),
+	        SLOT(accept() ) );
+    }
 #endif
 }
 
