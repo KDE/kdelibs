@@ -34,5 +34,3 @@ Solid::Net::Ifaces::AuthenticationNone::~AuthenticationNone()
 {
 
 }
-
-#include "device.moc"
