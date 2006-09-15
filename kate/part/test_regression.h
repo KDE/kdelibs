@@ -115,11 +115,14 @@ public:
     void testStaticFile(const QString& filename, const QStringList &commands);
     enum CheckResult { Failure = 0, Success = 1, Ignored = 2 };
     CheckResult checkOutput(const QString& againstFilename);
-    enum FailureType { NoFailure = 0, AllFailure = 1, ResultFailure = 4 };
+    enum FailureType { NoFailure = 0, AllFailure = 1, ResultFailure = 4, NewFailure = 65536 };
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
-    bool reportResult( bool passed, const QString & description = QString::null );
-    bool reportResult(CheckResult result, const QString & description = QString::null );
+    bool reportResult( bool passed, const QString & description = QString::null, bool *newfailure = 0 );
+    bool reportResult(CheckResult result, const QString & description = QString::null, bool *newfailure = 0 );
     void createMissingDirs(const QString &path);
+
+    void setFailureSnapshotConfig(KConfig *cfg, const QString &snapshotname);
+    void setFailureSnapshotSaver(KConfig *cfg, const QString &snapshotname);
 
     void createLink( const QString& test, int failures );
     void doFailureReport( const QString& test, int failures );
@@ -130,6 +133,8 @@ public:
     QString m_outputDir;
     bool m_genOutput;
     QString m_currentBase;
+    KConfig *m_failureComp;
+    KConfig *m_failureSave;
 
     QString m_currentOutput;
     QString m_currentCategory;
@@ -140,8 +145,10 @@ public:
     bool m_showGui;
     int m_passes_work;
     int m_passes_fail;
+    int m_passes_new;
     int m_failures_work;
     int m_failures_fail;
+    int m_failures_new;
     int m_errors;
     bool saw_failure;
     bool ignore_errors;

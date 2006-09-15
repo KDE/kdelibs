@@ -170,15 +170,26 @@ Value KateViewFunction::call(ExecState *exec, Object &/*thisObj*/, const List &a
 
 // -------------------------------------------------------------------------
 
+const char failureSnapshotPrefix[] = "testkateregressionrc-FS.";
+
+static QString findMostRecentFailureSnapshot() {
+    QDir dir(kapp->dirs()->saveLocation("config"),
+             QString(failureSnapshotPrefix)+"*",
+             QDir::Time, QDir::Files);
+    return dir[0].mid(sizeof failureSnapshotPrefix - 1);
+}
+
 static KCmdLineOptions options[] =
 {
     { "b", 0, 0 },
     { "base <base_dir>", "Directory containing tests, basedir and output directories.", 0},
+    { "cmp-failures <snapshot>", "Compare failures of this testrun against snapshot <snapshot>. Defaults to the most recently captured failure snapshot or none if none exists.", 0 },
     { "d", 0, 0 },
     { "debug", "Do not supress debug output", 0},
     { "g", 0, 0 } ,
     { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
     { "keep-output", "Keep output files even on success", 0 },
+    { "save-failures <snapshot>", "Save failures of this testrun as failure snapshot <snapshot>", 0 },
     { "s", 0, 0 } ,
     { "show", "Show the window while running tests", 0 } ,
     { "t", 0, 0 } ,
@@ -261,7 +272,7 @@ int main(int argc, char *argv[])
     KApplication a;
     a.disableAutoDcopRegistration();
     a.setStyle("windows");
-    KConfig cfg( "testkateregressionrc" );
+    KSimpleConfig cfg( "testkateregressionrc" );
     cfg.setGroup("Kate Document Defaults");
     cfg.writeEntry("Basic Config Flags",
       KateDocumentConfig::cfBackspaceIndents
@@ -353,6 +364,23 @@ int main(int argc, char *argv[])
     regressionTest->m_keepOutput = args->isSet("keep-output");
     regressionTest->m_showGui = args->isSet("show");
 
+    {
+        QString failureSnapshot = args->getOption("cmp-failures");
+        if (failureSnapshot.isEmpty())
+            failureSnapshot = findMostRecentFailureSnapshot();
+        if (!failureSnapshot.isEmpty())
+            regressionTest->setFailureSnapshotConfig(
+                    new KSimpleConfig(failureSnapshotPrefix + failureSnapshot, true),
+                    failureSnapshot);
+    }
+
+    if (args->isSet("save-failures")) {
+        QString failureSaver = args->getOption("save-failures");
+        regressionTest->setFailureSnapshotSaver(
+                new KSimpleConfig(failureSnapshotPrefix + failureSaver, false),
+                failureSaver);
+    }
+
     bool result = false;
     QCStringList tests = args->getOptionList("test");
     // merge testcases specified on command line
@@ -380,14 +408,16 @@ int main(int argc, char *argv[])
                    regressionTest->m_errors);
 	    printf("Passes:   %d",regressionTest->m_passes_work);
             if ( regressionTest->m_passes_fail )
-                printf( " (%d unexpected passes)\n", regressionTest->m_passes_fail );
-            else
-                printf( "\n" );
+                printf( " (%d unexpected passes)", regressionTest->m_passes_fail );
+            if (regressionTest->m_passes_new)
+                printf(" (%d new since %s)", regressionTest->m_passes_new, regressionTest->m_failureComp->group().latin1());
+            printf( "\n" );
 	    printf("Failures: %d",regressionTest->m_failures_work);
             if ( regressionTest->m_failures_fail )
-                printf( " (%d expected failures)\n", regressionTest->m_failures_fail );
-            else
-                printf( "\n" );
+                printf( " (%d expected failures)", regressionTest->m_failures_fail );
+            if ( regressionTest->m_failures_new )
+                printf(" (%d new since %s)", regressionTest->m_failures_new, regressionTest->m_failureComp->group().latin1());
+            printf( "\n" );
             if ( regressionTest->m_errors )
                 printf("Errors:   %d\n",regressionTest->m_errors);
 
@@ -397,6 +427,14 @@ int main(int argc, char *argv[])
             link = QString( "<hr>%1 failures. (%2 expected failures)" )
                    .arg(regressionTest->m_failures_work )
                    .arg( regressionTest->m_failures_fail );
+            if (regressionTest->m_failures_new)
+                link += QString(" <span style=\"color:red;font-weight:bold\">(%1 new failures since %2)</span>")
+                        .arg(regressionTest->m_failures_new)
+                        .arg(regressionTest->m_failureComp->group());
+            if (regressionTest->m_passes_new)
+                link += QString(" <p style=\"color:green;font-weight:bold\">%1 new passes since %2</p>")
+                        .arg(regressionTest->m_passes_new)
+                        .arg(regressionTest->m_failureComp->group());
             list.writeBlock( link.latin1(), link.length() );
             list.close();
 	}
@@ -436,9 +474,11 @@ RegressionTest::RegressionTest(KateDocument *part, const QString &baseDir,
     createMissingDirs(m_outputDir + "/");
     m_keepOutput = false;
     m_genOutput = _genOutput;
+    m_failureComp = 0;
+    m_failureSave = 0;
     m_showGui = false;
-    m_passes_work = m_passes_fail = 0;
-    m_failures_work = m_failures_fail = 0;
+    m_passes_work = m_passes_fail = m_passes_new = 0;
+    m_failures_work = m_failures_fail = m_failures_new = 0;
     m_errors = 0;
 
     ::unlink( QFile::encodeName( m_outputDir + "/links.html" ) );
@@ -482,6 +522,24 @@ static QStringList readListFile( const QString &filename )
 
 RegressionTest::~RegressionTest()
 {
+    // Important! Delete comparison config *first* as saver config
+    // might point to the same physical file.
+    delete m_failureComp;
+    delete m_failureSave;
+}
+
+void RegressionTest::setFailureSnapshotConfig(KConfig *cfg, const QString &sname)
+{
+    Q_ASSERT(cfg);
+    m_failureComp = cfg;
+    m_failureComp->setGroup(sname);
+}
+
+void RegressionTest::setFailureSnapshotSaver(KConfig *cfg, const QString &sname)
+{
+    Q_ASSERT(cfg);
+    m_failureSave = cfg;
+    m_failureSave->setGroup(sname);
 }
 
 QStringList RegressionTest::concatListFiles(const QString &relPath, const QString &filename)
@@ -579,10 +637,16 @@ void RegressionTest::createLink( const QString& test, int failures )
            .arg( test + "-compare.html" )
            .arg( test );
     link += m_currentTest;
-    link += "</a> [";
+    link += "</a> ";
+    if (failures & NewFailure)
+        link += "<span style=\"font-weight:bold;color:red\">";
+    link += "[";
     if ( failures & ResultFailure )
         link += "R";
-    link += "]<br>\n";
+    link += "]";
+    if (failures & NewFailure)
+        link += "</span>";
+    link += "<br>\n";
     list.writeBlock( link.latin1(), link.length() );
     list.close();
 }
@@ -811,8 +875,11 @@ void RegressionTest::testStaticFile(const QString & filename, const QStringList 
         // compare with output file
         if ( m_known_failures & ResultFailure)
             m_known_failures = AllFailure;
-        if ( !reportResult( checkOutput(filename+"-result"), "result" ) )
+        bool newfail;
+        if ( !reportResult( checkOutput(filename+"-result"), "result", &newfail ) )
             failures |= ResultFailure;
+        if (newfail)
+            failures |= NewFailure;
 
         doFailureReport(filename, failures );
     }
@@ -918,40 +985,61 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     return result;
 }
 
-bool RegressionTest::reportResult(CheckResult result, const QString & description)
+bool RegressionTest::reportResult(CheckResult result, const QString & description, bool *newfail)
 {
     if ( result == Ignored ) {
         //printf("IGNORED: ");
         //printDescription( description );
         return true; // no error
     } else
-        return reportResult( result == Success, description );
+        return reportResult( result == Success, description, newfail );
 }
 
-bool RegressionTest::reportResult(bool passed, const QString & description)
+bool RegressionTest::reportResult(bool passed, const QString & description, bool *newfail)
 {
+    if (newfail) *newfail = false;
+
     if (m_genOutput)
 	return true;
 
-   if (passed) {
+    QString filename(m_currentTest + "-" + description);
+    if (m_currentCategory.isEmpty())
+        filename = m_currentCategory + "/" + filename;
+
+    const bool oldfailed = m_failureComp && m_failureComp->readNumEntry(filename);
+    if (passed) {
         if ( m_known_failures & AllFailure ) {
-            printf("PASS (unexpected!): ");
+            printf("PASS (unexpected!)");
             m_passes_fail++;
         } else {
-            printf("PASS: ");
+            printf("PASS");
             m_passes_work++;
         }
+        if (oldfailed) {
+            printf(" (new)");
+            m_passes_new++;
+        }
+        if (m_failureSave)
+            m_failureSave->deleteEntry(filename);
     }
     else {
         if ( m_known_failures & AllFailure ) {
-            printf("FAIL (known): ");
+            printf("FAIL (known)");
             m_failures_fail++;
             passed = true; // we knew about it
         } else {
-            printf("FAIL: ");
+            printf("FAIL");
             m_failures_work++;
         }
+        if (!oldfailed && m_failureComp) {
+            printf(" (new)");
+            m_failures_new++;
+            if (newfail) *newfail = true;
+        }
+        if (m_failureSave)
+            m_failureSave->writeEntry(filename, 1);
     }
+    printf(": ");
 
     printDescription( description );
     return passed;
