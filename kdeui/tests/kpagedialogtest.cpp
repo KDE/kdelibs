@@ -45,6 +45,7 @@ KPageDialogTest::KPageDialogTest( QWidget *parent )
   layout = new QHBoxLayout( page );
 
   label = new QLabel( "second page" );
+  label->setMinimumSize( 300, 200 );
   layout->addWidget( label );
 
   addPage( page, "Second" );

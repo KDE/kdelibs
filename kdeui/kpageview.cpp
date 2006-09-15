@@ -352,7 +352,7 @@ void KPageView::modelChanged()
   for ( int i = 0; i < widgets.count(); ++i ) {
     const QWidget *widget = widgets[ i ];
     if ( widget )
-      size = size.expandedTo( widget->sizeHint() );
+      size = size.expandedTo( widget->minimumSizeHint() );
   }
   d->stack->setMinimumSize( size );
 
