@@ -77,6 +77,31 @@ KJSEMBED_EXPORT QString i18n( const char *string );
 #define i18n(x) QString(x)
 #endif // NO_I18N
 
+inline KJSEMBED_EXPORT QString i18n( const QString& string, const QString& comment ) 
+{ 
+    return i18n(string.toUtf8().data(), comment.toUtf8().data());
+}
+template <typename A1>
+inline QString i18n (const char *text, const A1 &a1)
+{
+    return i18n(text).arg(a1);
+}
+template <typename A1, typename A2>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2)
+{
+    return i18n(text).arg(a1).arg(a2);
+}
+template <typename A1, typename A2, typename A3>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3)
+{
+    return i18n(text).arg(a1).arg(a2).arg(a3);
+}
+template <typename A1, typename A2, typename A3, typename A4>
+inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4)
+{
+    return i18n(text).arg(a1).arg(a2).arg(a3).arg(a4);
+}
+
 #endif // QT_ONLY
 
 #endif // KJSEMBED_GLOBAL_H
