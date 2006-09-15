@@ -247,7 +247,7 @@ kimgio_jp2_write( QImageIO* io )
 	} else {
 		ktempf = new KTempFile;
 		ktempf->setAutoDelete( true );
-		stream = jas_stream_fdopen( ktempf->handle(), "w" );
+		stream = jas_stream_fdopen( dup( ktempf->handle()), "w" );
 	} // else
 
 
