@@ -19,7 +19,7 @@
 
 #include "network.h"
 
-#include <solid/Net/ifaces/network.h>
+#include <solid/ifaces/network.h>
 
 namespace Solid
 {

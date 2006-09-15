@@ -19,7 +19,7 @@
 
 #include "wirelessnetwork.h"
 
-#include <solid/Net/ifaces/wirelessnetwork.h>
+#include <solid/ifaces/wirelessnetwork.h>
 
 namespace Solid
 {

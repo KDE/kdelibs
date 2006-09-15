@@ -19,7 +19,7 @@
 
 #include "networkdevice.h"
 
-#include <solid/Net/ifaces/networkdevice.h>
+#include <solid/ifaces/networkdevice.h>
 
 namespace Solid
 {

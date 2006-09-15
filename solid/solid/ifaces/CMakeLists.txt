@@ -23,7 +23,11 @@ set(solidifaces_LIB_SRCS
    display.cpp 
    audioiface.cpp 
    abstractcapability.cpp
-   powermanager.cpp )
+   powermanager.cpp 
+   networkdevice.cpp
+   network.cpp
+   wirelessnetwork.cpp
+   authentication.cpp )
 
 kde4_automoc(${solidifaces_LIB_SRCS})
 
@@ -37,6 +41,6 @@ install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 ########### install files ###############
 
-install( FILES devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h abstractcapability.h powermanager.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
+install( FILES devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h abstractcapability.h powermanager.h networkdevice.h network.h wirelessnetwork.h authentication.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
 
 

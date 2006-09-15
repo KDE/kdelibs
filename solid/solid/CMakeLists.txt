@@ -1,7 +1,6 @@
 
 
 add_subdirectory( ifaces )
-add_subdirectory( Net )
 
 include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 
@@ -30,7 +29,12 @@ set(solid_LIB_SRCS
    predicateparse.cpp 
    predicate_lexer.c 
    predicate_parser.c
-   powermanager.cpp )
+   powermanager.cpp
+   networkdevice.cpp
+   network.cpp
+   wirelessnetwork.cpp
+#   authentication.cpp
+)
 
 kde4_automoc(${solid_LIB_SRCS})
 
@@ -45,7 +49,7 @@ install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES  soliddevicemanager.desktop solidpowermanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
-install( FILES device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h predicate.h powermanager.h networkdevice.h network.h wirelessnetwork.h authentication.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

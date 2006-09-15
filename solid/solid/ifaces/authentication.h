@@ -22,7 +22,7 @@
 
 #include <QMap>
 
-#include <solid/Net/ifaces/enums.h>
+#include <solid/ifaces/enums.h>
 
 //typedef QValueList<IEEE_802_11_Cipher*> CipherList;
 typedef QMap<QString, QString> SecretMap;

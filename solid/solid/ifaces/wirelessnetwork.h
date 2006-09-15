@@ -17,78 +17,79 @@
 
 */
 
-#ifndef SOLID_WIRELESSNETWORK_H
-#define SOLID_WIRELESSNETWORK_H
+#ifndef SOLID_IFACES_WIRELESSNETWORK_H
+#define SOLID_IFACES_WIRELESSNETWORK_H
 
-#include <solid/Net/network.h>
-#include <solid/Net/ifaces/enums.h>
+#include <kdelibs_export.h>
 
+#include <QStringList>
+
+#include <solid/ifaces/enums.h>
+
+#include <solid/ifaces/authentication.h>
+#include <solid/ifaces/network.h>
+
+
+typedef QString MacAddress;
+typedef QStringList MacAddressList;
 
 namespace Solid
 {
-    typedef QString MacAddress;
-    typedef QStringList MacAddressList;
-
-    namespace Ifaces
-    {
-        class WirelessNetwork;
-        class Authentication;
-    }
-
-    class WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
+namespace Ifaces
+{
+    /**
+     * A Wifi wireless network
+     */
+    class KDE_EXPORT WirelessNetwork : public Network, public Enums::WirelessNetwork
     {
         Q_OBJECT
     public:
-        WirelessNetwork( Ifaces::WirelessNetwork *, QObject * );
+        WirelessNetwork( QObject *parent = 0 );
         virtual ~WirelessNetwork();
 
         //TODO compare method would look for identical ESSID and at least one AP in common
-        bool isSameAs( const WirelessNetwork & ) const;
+        virtual bool isSameAs( const WirelessNetwork & ) const = 0;
 
         // PHY stuff
-        int signalStrength() const;
+        virtual int signalStrength() = 0;
 
-        int bitRate() const;
+        virtual int bitRate() = 0;
 
-        int frequency() const;
+        virtual int frequency() = 0;
 
-        Capabilities capabilities() const;
+        virtual Capabilities capabilities() = 0;
 
         // Service Set stuff
-        QString essid() const;
+        virtual QString essid() = 0;
 
-        OperationMode mode() const;
+        virtual OperationMode mode() = 0;
 
-        bool isAssociated() const;
+        virtual bool isAssociated() = 0;
 
-        bool isEncrypted() const;
+        virtual bool isEncrypted() = 0;
 
-        bool isHidden() const;
+        virtual bool isHidden() = 0;
 
-        bool isActive() const;
+        virtual bool isActive() = 0;
 
         /**
          * List of access points making up the network,
          * or ad hoc network nodes
          */
-        MacAddressList bssList() const;
+        virtual MacAddressList bssList() = 0;
 
         /**
-         * TODO decide how to handle these objects - pass by value with implicit sharing?
+         * TODO decide how to handle these objects - pass by value
          */
-        Ifaces::Authentication *authentication() const;
+        virtual Authentication * authentication() = 0;
 
     signals:
         void signalStrengthChanged( int );
         void bitrateChanged( int );
         void associationChanged( bool );
         void activeChanged( bool );
-
-    private:
-        class Private;
-        Private * d;
-};
-
+    };
+} //Ifaces
 } //Solid
 
 #endif

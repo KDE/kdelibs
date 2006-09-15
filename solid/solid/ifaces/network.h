@@ -22,7 +22,7 @@
 
 #include <kdelibs_export.h>
 
-#include <solid/Net/ifaces/enums.h>
+#include <solid/ifaces/enums.h>
 
 #include <QObject>
 

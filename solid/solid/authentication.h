@@ -20,7 +20,7 @@
 #ifndef SOLID_AUTHENTICATION_H
 #define SOLID_AUTHENTICATION_H
 
-#include <solid/Net/ifaces/enums.h>
+#include <solid/ifaces/enums.h>
 
 #include <QObject>
 #include <QMap>

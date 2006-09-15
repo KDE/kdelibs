@@ -17,53 +17,52 @@
 
 */
 
-#ifndef SOLID_IFACES_NETWORKDEVICE_H
-#define SOLID_IFACES_NETWORKDEVICE_H
-
-#include <kdelibs_export.h>
-
-#include <solid/Net/ifaces/enums.h>
+#ifndef SOLID_NETWORKDEVICE_H
+#define SOLID_NETWORKDEVICE_H
 
 #include <QObject>
 
+#include <solid/ifaces/enums.h>
+
 namespace Solid
 {
-namespace Ifaces
-{
-    /**
-     * Represents a network device as seen by the networking subsystem.
-     * For non network specific hardware details,
-     * @see Solid::Ifaces::NetworkIface
-     */
-     // TODO talk to Ervin about how to cleanly combine this with NetworkIface, perhaps a union class elsewhere
-    class KDE_EXPORT NetworkDevice : public QObject, public Enums::NetworkDevice
+    namespace Ifaces
+    {
+        class NetworkDevice;
+    }
+
+    class NetworkDevice : public QObject, public Ifaces::Enums::NetworkDevice
     {
         Q_OBJECT
     public:
-        NetworkDevice( QObject *parent = 0 );
-        virtual ~NetworkDevice();
+        NetworkDevice( Ifaces::NetworkDevice *, QObject * parent );
+        ~NetworkDevice();
 
-        virtual bool isActive() = 0;
+        bool isActive();
 
-        virtual Type type() = 0;
+        Type type();
 
-        virtual ConnectionState connectionState() = 0;
+        ConnectionState connectionState();
 
-        virtual int signalStrength() = 0;
+        int signalStrength();
 
-        virtual int speed() = 0;
+        int speed();
 
-        virtual bool isLinkUp() = 0;
+        bool isLinkUp();
 
-        virtual Capabilities capabilities() = 0;
+        Capabilities capabilities();
 
     signals:
         void activeChanged( bool );
         void linkUpChanged( bool );
         void signalStrengthChanged( int );
-        void connectionStateChanged( int /*ConnectionState*/ );
-    };
-} //Ifaces
+        void connectionStateChanged( int /* ConnectionState */ );
+
+    private:
+        class Private;
+        Private * d;
+};
+
 } //Solid
 
 #endif

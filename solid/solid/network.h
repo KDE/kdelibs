@@ -20,7 +20,7 @@
 #ifndef SOLID_NETWORK_H
 #define SOLID_NETWORK_H
 
-#include <solid/Net/ifaces/enums.h>
+#include <solid/ifaces/enums.h>
 
 #include <QObject>
 
