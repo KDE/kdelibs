@@ -3249,8 +3249,10 @@ void KateDocument::indent ( KateView *v, uint line, int change)
       change = -adjustedChange;
     }
 
+    const bool rts = config()->configFlags() & KateDocumentConfig::cfRemoveTrailingDyn;
     for (line = sl; (int) line <= el; line++) {
-      if (v->lineSelected(line) || v->lineHasSelected(line)) {
+      if ((v->lineSelected(line) || v->lineHasSelected(line))
+          && (!rts || lineLength(line) > 0)) {
         optimizeLeadingSpace(line, config()->configFlags(), change);
       }
     }
