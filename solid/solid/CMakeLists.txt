@@ -1,6 +1,7 @@
 
 
 add_subdirectory( ifaces )
+add_subdirectory( Net )
 
 include_directories( ${CMAKE_SOURCE_DIR} ${KDE4_INCLUDE_DIR} ${QT_INCLUDES} )
 
