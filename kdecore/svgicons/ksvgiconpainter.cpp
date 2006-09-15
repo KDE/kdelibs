@@ -106,10 +106,16 @@ public:
 
 		for(QMap<QString, ArtGradientLinear *>::Iterator it = m_linearGradientMap.begin(); it != m_linearGradientMap.end(); ++it)
 		{
+			if (!it.data())
+				continue;
+			delete [] it.data()->stops;
 			delete it.data();
 		}
 		for(QMap<QString, ArtGradientRadial *>::Iterator it = m_radialGradientMap.begin(); it != m_radialGradientMap.end(); ++it)
 		{
+			if (!it.data())
+				continue;
+			delete [] it.data()->stops;
 			delete it.data();
 		}
 	}

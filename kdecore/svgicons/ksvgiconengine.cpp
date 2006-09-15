@@ -50,7 +50,10 @@ public:
 
 	ArtGradientStop *parseGradientStops(QDomElement element, int &offsets)
 	{
-		QMemArray<ArtGradientStop> *stopArray = new QMemArray<ArtGradientStop>();
+		if (!element.hasChildNodes())
+			return 0;
+
+		QValueList<ArtGradientStop> stopList;
 
 		float oldOffset = -1, newOffset = -1;
 		for(QDomNode node = element.firstChild(); !node.isNull(); node = node.nextSibling())
@@ -73,9 +76,11 @@ public:
 				continue;
 
 			offsets++;
-			stopArray->resize(offsets + 1);
+			stopList.append(ArtGradientStop());
 
-			(*stopArray)[offsets].offset = newOffset;
+			ArtGradientStop &stop = stopList.last();
+
+			stop.offset = newOffset;
 
 			QString parseOpacity;
 			QString parseColor;
@@ -137,13 +142,24 @@ public:
 			b = ((rgba >> 8) & 0xff) * a + 0x80;
 			b = (b + (b >> 8)) >> 8;
 
-			(*stopArray)[offsets].color[0] = ART_PIX_MAX_FROM_8(r);
-			(*stopArray)[offsets].color[1] = ART_PIX_MAX_FROM_8(g);
-			(*stopArray)[offsets].color[2] = ART_PIX_MAX_FROM_8(b);
-			(*stopArray)[offsets].color[3] = ART_PIX_MAX_FROM_8(a);
+			stop.color[0] = ART_PIX_MAX_FROM_8(r);
+			stop.color[1] = ART_PIX_MAX_FROM_8(g);
+			stop.color[2] = ART_PIX_MAX_FROM_8(b);
+			stop.color[3] = ART_PIX_MAX_FROM_8(a);
 		}
 
-		return stopArray->data();
+		if (stopList.isEmpty())
+			return 0;
+
+		ArtGradientStop *stops = new ArtGradientStop[stopList.count()];
+
+		QValueList<ArtGradientStop>::iterator it = stopList.begin();
+		QValueList<ArtGradientStop>::iterator end = stopList.end();
+
+		for (int i = 0; it != end; ++i, ++it)
+			stops[i] = *it;
+
+		return stops;
 	}
 
 	QPointArray parsePoints(QString points)
