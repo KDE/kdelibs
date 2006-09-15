@@ -1003,7 +1003,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description, bool
 	return true;
 
     QString filename(m_currentTest + "-" + description);
-    if (m_currentCategory.isEmpty())
+    if (!m_currentCategory.isEmpty())
         filename = m_currentCategory + "/" + filename;
 
     const bool oldfailed = m_failureComp && m_failureComp->readNumEntry(filename);
