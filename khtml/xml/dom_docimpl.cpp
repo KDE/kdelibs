@@ -224,7 +224,9 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 
 ElementMappingCache::ElementMappingCache():m_dict(257)
-{}
+{
+    m_dict.setAutoDelete(true);
+}
 
 void ElementMappingCache::add(const QString& id, ElementImpl* nd)
 {
