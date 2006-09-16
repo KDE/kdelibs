@@ -789,7 +789,7 @@ public:
     /**
     * Constructor.
     * Note: Applications do not create instances of KSpeech.
-    * Instead create KSpeechInterface object.  See @programming above.
+    * Instead create KSpeechInterface object.  See @ref programming above.
     */
     KSpeech(QObject *parent=0);
 
@@ -1036,7 +1036,7 @@ public Q_SLOTS: // METHODS
 
     /**
     * Returns the job number of the currently speaking job (any application).
-    * @param                    Job Number
+    * @return                    Job Number
     */
     int getCurrentJob();
 
