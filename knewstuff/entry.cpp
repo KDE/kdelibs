@@ -40,18 +40,12 @@ class EntryPrivate
 
 static QPtrDict<EntryPrivate> *d_ptr = 0;
 
-static void cleanup_d_ptr()
-{
-  delete d_ptr;
-  d_ptr = 0; // not in BIC guide - add there
-}
-
 static EntryPrivate *d(const Entry *e)
 {
   if(!d_ptr)
   {
     d_ptr = new QPtrDict<EntryPrivate>();
-    qAddPostRoutine(cleanup_d_ptr);
+    d_ptr->setAutoDelete(true);
   }
   EntryPrivate *ret = d_ptr->find((void*)e);
   if(!ret)
@@ -109,6 +103,18 @@ Entry::Entry( const QDomElement &e ) :
 
 Entry::~Entry()
 {
+    if (d_ptr)
+    {
+        EntryPrivate *p = d_ptr->find(this);
+        if (p)
+            d_ptr->remove(p);
+
+        if (d_ptr->isEmpty())
+        {
+            delete d_ptr;
+            d_ptr = 0L;
+        }
+    }
 }
 
 

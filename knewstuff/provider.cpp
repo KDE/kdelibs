@@ -46,18 +46,12 @@ class ProviderPrivate
 
 static QPtrDict<ProviderPrivate> *d_ptr_prov = 0;
 
-static void cleanup_d_ptr_prov()
-{
-  delete d_ptr_prov;
-  d_ptr_prov = 0; // not in BIC guide - add there
-}
-
 static ProviderPrivate *d_prov(const Provider *p)
 {
   if(!d_ptr_prov)
   {
     d_ptr_prov = new QPtrDict<ProviderPrivate>();
-    qAddPostRoutine(cleanup_d_ptr_prov);
+    d_ptr_prov->setAutoDelete(true);
   }
   ProviderPrivate *ret = d_ptr_prov->find((void*)p);
   if(!ret)
@@ -93,6 +87,18 @@ Provider::Provider( const QDomElement &e ) : mNoUpload( false )
 
 Provider::~Provider()
 {
+    if (d_ptr_prov)
+    {
+        ProviderPrivate *p = d_ptr_prov->find(this);
+        if (p)
+            d_ptr_prov->remove(p);
+
+        if (d_ptr_prov->isEmpty())
+        {
+            delete d_ptr_prov;
+            d_ptr_prov = 0L;
+        }
+    }
 }
 
 
@@ -201,7 +207,7 @@ QDomElement Provider::createDomElement( QDomDocument &doc, QDomElement &parent )
 
 
 ProviderLoader::ProviderLoader( QWidget *parentWidget ) :
-  mParentWidget( parentWidget )
+  QObject( parentWidget )
 {
   mProviders.setAutoDelete( true );
 }
@@ -253,7 +259,7 @@ void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 void ProviderLoader::slotJobResult( KIO::Job *job )
 {
   if ( job->error() ) {
-    job->showErrorDialog( mParentWidget );
+    job->showErrorDialog( static_cast<QWidget *>(parent()) );
   }
 
   kdDebug(5850) << "--PROVIDERS-START--" << endl << mJobData << "--PROV_END--"
@@ -261,7 +267,7 @@ void ProviderLoader::slotJobResult( KIO::Job *job )
 
   QDomDocument doc;
   if ( !doc.setContent( mJobData ) ) {
-    KMessageBox::error( mParentWidget, i18n("Error parsing providers list.") );
+    KMessageBox::error( static_cast<QWidget *>(parent()), i18n("Error parsing providers list.") );
     return;
   }
 

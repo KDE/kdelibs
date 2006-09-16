@@ -149,10 +149,16 @@ void DownloadDialog::init(Engine *engine)
     m_loader = new ProviderLoader(this);
     connect(m_loader, SIGNAL(providersLoaded(Provider::List*)), SLOT(slotProviders(Provider::List*)));
   }
+
+  m_entries.setAutoDelete(true);
 }
 
 DownloadDialog::~DownloadDialog()
 {
+    for (QMap<QWidget *, QValueList<QPushButton *>* >::const_iterator it = m_buttons.constBegin(); it != m_buttons.constEnd(); ++it)
+        delete it.data();
+    for (QMap<QWidget *, QValueList<KListView *>* >::const_iterator it = m_map.constBegin(); it != m_map.constEnd(); ++it)
+        delete it.data();
     delete d;
 }
 
