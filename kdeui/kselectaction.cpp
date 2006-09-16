@@ -336,7 +336,7 @@ void KSelectAction::addAction(QAction* action)
 
   // Keep in sync with createToolBarWidget()
   foreach (QToolButton* button, d->m_buttons)
-    button->menu()->addAction(action);
+    button->addAction(action);
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     comboBox->addAction(action);
@@ -379,7 +379,7 @@ QAction* KSelectAction::removeAction(QAction* action)
   action->setActionGroup(0L);
 
   foreach (QToolButton* button, d->m_buttons)
-    button->menu()->removeAction(action);
+    button->removeAction(action);
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     comboBox->removeAction(action);
@@ -602,7 +602,8 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
 
       button->setPopupMode(toolButtonPopupMode());
 
-      button->setMenu(menu());
+      button->addActions(selectableActionGroup()->actions());
+
       d->m_buttons.append(button);
       return button;
     }
