@@ -190,12 +190,10 @@ void Dxs::slotResult(QDomNode node)
 
 			//category->setName(name);
 			//category->setIcon(icon);
+			category->categoryname = categoryname;
 			category->name = name;
 			category->icon = icon;
 			category->description = description;
-			// FIXME: we through away 'categoryname'
-			// FIXME: we don't do mappings and therefore
-			//        submit the wrong category later
 
 			categories << category;
 		}

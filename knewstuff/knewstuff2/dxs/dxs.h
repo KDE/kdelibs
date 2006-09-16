@@ -15,6 +15,7 @@ class Category
 {
 public:
 	Category(){}
+	QString categoryname;
 	QString name;
 	QString icon;
 	QString description;

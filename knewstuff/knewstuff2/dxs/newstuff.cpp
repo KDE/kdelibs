@@ -762,8 +762,9 @@ void NewStuffDialog::slotLoadProviderDXS(int index)
 	Q_UNUSED(index);
 
 	QString category = d->typeCombo->currentText();
+	QString categoryname = m_categorymap[category];
 
-	m_dxs->call_entries(category, QString::null);
+	m_dxs->call_entries(categoryname, QString::null);
 }
 
 void NewStuffDialog::slotLoadProvidersListDXS()
@@ -772,13 +773,20 @@ void NewStuffDialog::slotLoadProvidersListDXS()
 
 void NewStuffDialog::slotCategories(QValueList<KNS::Category*> categories)
 {
+	m_categorymap.clear();
+
 	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
 		kdDebug() << "Category: " << category->name << endl;
-		d->typeCombo->insertItem(category->name);
-		// FIXME: use icon
+		QPixmap icon = DesktopIcon(category->icon, 16);
+		d->typeCombo->insertItem(category->icon, category->name);
+		// FIXME: use icon from remote URLs (see non-DXS providers as well)
+		m_categorymap[category->categoryname] = category->name;
+		// FIXME: better use global id, since names are not guaranteed
+		//        to be unique
 	}
+
 	d->typeCombo->setEnabled(true);
 }
 

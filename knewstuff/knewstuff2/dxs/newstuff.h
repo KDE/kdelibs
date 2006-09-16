@@ -51,6 +51,7 @@ class NewStuffDialog : public QDialog
         class NewStuffDialogPrivate * d;
 
 	Dxs *m_dxs;
+	QMap<QString, QString> m_categorymap;
 
     private slots:
         void slotResetMessageColors();
