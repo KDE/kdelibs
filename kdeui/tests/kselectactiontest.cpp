@@ -42,6 +42,8 @@ SelectActionTest::SelectActionTest(QWidget *parent)
 
     menuBar()->addAction(m_comboSelect);
     menuBar()->addAction(m_buttonSelect);
+    menuBar()->addAction("Add an action", this, SLOT(addAction()));
+    menuBar()->addAction("Remove an action", this, SLOT(removeAction()));
 
     QToolBar* toolBar = addToolBar("Test");
     toolBar->addAction(m_comboSelect);
@@ -61,6 +63,21 @@ void SelectActionTest::triggered(int index)
 void SelectActionTest::triggered(const QString& text)
 {
   kDebug() << k_funcinfo << '"' << text << '"' << endl;
+}
+
+void SelectActionTest::addAction()
+{
+    m_comboSelect->addAction(QString ("Combo Action %1").arg(m_comboSelect->actions().count()));
+    m_buttonSelect->addAction(QString ("Action %1").arg(m_buttonSelect->actions().count()));
+}
+
+void SelectActionTest::removeAction()
+{
+    if (!m_comboSelect->actions().isEmpty())
+        m_comboSelect->removeAction(m_comboSelect->actions().last());
+
+    if (!m_buttonSelect->actions().isEmpty())
+        m_buttonSelect->removeAction(m_buttonSelect->actions().last());
 }
 
 #include "kselectactiontest.moc"

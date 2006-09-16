@@ -17,6 +17,9 @@ public Q_SLOTS:
     void triggered(int index);
     void triggered(const QString& text);
 
+    void addAction();
+    void removeAction();
+
 private:
     KSelectAction* m_comboSelect;
     KSelectAction* m_buttonSelect;
