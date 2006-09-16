@@ -407,6 +407,19 @@ target_link_libraries(kwindowtest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
+set(kselectactiontest_SRCS
+kselectactiontest.cpp
+)
+
+kde4_automoc(${kselectactiontest_SRCS})
+
+kde4_add_executable(kselectactiontest RUN_UNINSTALLED ${kselectactiontest_SRCS})
+
+target_link_libraries(kselectactiontest ${KDE4_KDEUI_LIBS})
+
+
+########### next target ###############
+
 set(itemcontainertest_SRCS
 itemcontainertest.cpp
 )
