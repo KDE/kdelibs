@@ -17,6 +17,7 @@ public:
 	Category(){}
 	QString name;
 	QString icon;
+	QString description;
 };
 
 class Dxs : public QObject

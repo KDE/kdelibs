@@ -183,13 +183,19 @@ void Dxs::slotResult(QDomNode node)
 			KNS::Category *category = new KNS::Category();
 
 			QDomNode node = catlist.item(i).toElement();
-			QString name = m_soap->xpath(node, "/category");
+			QString categoryname = m_soap->xpath(node, "/category");
 			QString icon = m_soap->xpath(node, "/icon");
+			QString name = m_soap->xpath(node, "/name");
+			QString description = m_soap->xpath(node, "/description");
 
 			//category->setName(name);
 			//category->setIcon(icon);
 			category->name = name;
 			category->icon = icon;
+			category->description = description;
+			// FIXME: we through away 'categoryname'
+			// FIXME: we don't do mappings and therefore
+			//        submit the wrong category later
 
 			categories << category;
 		}
