@@ -210,6 +210,7 @@ void DirectoryListThread::run()
 			dir = ::opendir( QFile::encodeName( *it ) );
 			if ( ! dir ) {
 				kdDebug() << "Failed to open dir: " << *it << endl;
+				done();
 				return;
 			}
 		}
