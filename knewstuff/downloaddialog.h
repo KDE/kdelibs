@@ -216,7 +216,7 @@ class KDE_EXPORT DownloadDialog : public KDialogBase
     void slotInstall();
     void slotDetails();
     void slotInstalled(KIO::Job *job);
-    void slotTab(int tab);
+    void slotTab();
     void slotSelected();
     void slotPage(QWidget *w);
     void slotFinish();

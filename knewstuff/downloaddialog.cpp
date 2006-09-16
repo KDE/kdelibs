@@ -255,7 +255,7 @@ void DownloadDialog::addProvider(Provider *p)
   ctl->addTab(w_l, i18n("Latest"));
 
   m_curtab = 0;
-  connect(ctl, SIGNAL(tabSelected(int)), SLOT(slotTab(int)));
+  connect(ctl, SIGNAL(currentChanged(QWidget *)), SLOT(slotTab()));
 
   QHBoxLayout *box = new QHBoxLayout(frame);
   box->add(ctl);
@@ -601,8 +601,9 @@ void DownloadDialog::slotInstalled(KIO::Job *job)
   delete m_s;
 }
 
-void DownloadDialog::slotTab(int tab)
+void DownloadDialog::slotTab()
 {
+  int tab = static_cast<const QTabWidget *>(sender())->currentPageIndex();
   kdDebug() << "switch tab to: " << tab << endl;
 
   Entry *eold = getEntry();
