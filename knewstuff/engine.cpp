@@ -52,6 +52,7 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
   d(new Private), mType( type )
 {
   d->mNewStuff = newStuff;
+  d->mIgnoreInstallResult = false;
   mProviderLoader = new ProviderLoader( mParentWidget );
 
   mNewStuffList.setAutoDelete( true );
