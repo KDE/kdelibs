@@ -527,7 +527,10 @@
 35001        kchart
 36000        kchart
 36001        kspread
-36002        kspread (cell)
+36002        kspread (Formula)
+36003        kspread (OpenDocument)
+36004        kspread (Painting)
+36005        kspread (UI)
 37000        kspread
 37001        graphite
 38000        karbon
