@@ -110,7 +110,7 @@
  * There is a separate GUI application, called kttsmgr, for providing %KTTSD
  * configuration and job management.
  *
- * When a request for speech is made, usally via the say method,
+ * When a request for speech is made, usually via the say method,
  * a speech job is queued.  The order by which jobs are spoken is determined
  * by their priority (in decreasing priority):
  *   - Screen Reader Output
