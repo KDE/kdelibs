@@ -164,7 +164,7 @@ void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
     d->mThemesInTree.clear();
     d->lastImage.reset();
     d->lastImageKey = QString::null;
-    delete d->mpGroups;
+    delete [] d->mpGroups;
 
     init( _appname, _dirs );
 }
