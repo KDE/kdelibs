@@ -26,8 +26,10 @@ SelectActionTest::SelectActionTest(QWidget *parent)
     , m_buttonSelect(new KSelectAction("Button Selection", actionCollection(), "button"))
 {
     for (int i = 0; i < 7; ++i) {
-      m_comboSelect->addAction(QString ("Combo Action %1").arg(i));
-      m_buttonSelect->addAction(QString ("Action %1").arg(i));
+      QAction* action = m_comboSelect->addAction(QString ("Combo Action %1").arg(i));
+      connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered(bool)));
+      action = m_buttonSelect->addAction(QString ("Action %1").arg(i));
+      connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered(bool)));
     }
 
     m_comboSelect->setToolBarMode(KSelectAction::ComboBoxMode);
@@ -67,8 +69,10 @@ void SelectActionTest::triggered(const QString& text)
 
 void SelectActionTest::addAction()
 {
-    m_comboSelect->addAction(QString ("Combo Action %1").arg(m_comboSelect->actions().count()));
-    m_buttonSelect->addAction(QString ("Action %1").arg(m_buttonSelect->actions().count()));
+    QAction* action = m_comboSelect->addAction(QString ("Combo Action %1").arg(m_comboSelect->actions().count()));
+    connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered(bool)));
+    action = m_buttonSelect->addAction(QString ("Action %1").arg(m_buttonSelect->actions().count()));
+    connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered(bool)));
 }
 
 void SelectActionTest::removeAction()
@@ -78,6 +82,11 @@ void SelectActionTest::removeAction()
 
     if (!m_buttonSelect->actions().isEmpty())
         m_buttonSelect->removeAction(m_buttonSelect->actions().last());
+}
+
+void SelectActionTest::slotActionTriggered(bool state)
+{
+    kDebug() << k_funcinfo << sender() << " state " << state << endl;
 }
 
 #include "kselectactiontest.moc"

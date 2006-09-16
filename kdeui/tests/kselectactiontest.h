@@ -17,6 +17,8 @@ public Q_SLOTS:
     void triggered(int index);
     void triggered(const QString& text);
 
+    void slotActionTriggered(bool state);
+
     void addAction();
     void removeAction();
 

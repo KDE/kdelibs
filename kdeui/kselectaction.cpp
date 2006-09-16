@@ -543,8 +543,8 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
   //kDebug (129) << "\ta=" << a << endl;
   if (a) {
     //kDebug (129) << "\t\tsetting as current action" << endl;
-    setCurrentAction(a);
-    emit actionTriggered(a);
+    a->trigger();
+
   } else if (isEditable () &&
     triggeringCombo && triggeringCombo->count () > 0 &&
     index == triggeringCombo->count () - 1) {
@@ -561,8 +561,7 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
     KAction* newAction = ::NewAction (this, newItemText);
     addAction (newAction);
 
-    setCurrentAction (newAction);
-    emit actionTriggered (newAction);
+    newAction->trigger();
   } else {
     if (selectableActionGroup()->checkedAction())
       selectableActionGroup()->checkedAction()->setChecked(false);
