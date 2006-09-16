@@ -54,8 +54,6 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
   d->mNewStuff = newStuff;
   d->mIgnoreInstallResult = false;
   mProviderLoader = new ProviderLoader( mParentWidget );
-
-  mNewStuffList.setAutoDelete( true );
 }
 
 Engine::Engine( KNewStuff *newStuff, const QString &type,
@@ -69,7 +67,6 @@ Engine::Engine( KNewStuff *newStuff, const QString &type,
   d->mNewStuff = newStuff;
   d->mIgnoreInstallResult = false;
   mProviderLoader = new ProviderLoader( mParentWidget );
-  mNewStuffList.setAutoDelete( true );
 }
 
 Engine::~Engine()
@@ -158,7 +155,6 @@ void Engine::slotNewStuffJobResult( KIO::Job *job )
           if ( stuff.attribute("type", mType) != mType ) continue;
 
           Entry *entry = new Entry( stuff );
-          mNewStuffList.append( entry );
 
           mDownloadDialog->show();
 
