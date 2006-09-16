@@ -31,7 +31,7 @@ KDXSRating::KDXSRating(QWidget *parent)
 	m_rating = new QLabel(QString("0/100"), root);
 	m_rating->setFixedWidth(100);
 
-	vbox = new QVBoxLayout(root, 5);
+	vbox = new QVBoxLayout(root, spacingHint());
 	hbox = new QHBoxLayout(vbox);
 	hbox->add(m_rating);
 	hbox->add(m_starrating);

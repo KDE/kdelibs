@@ -349,8 +349,16 @@ void KDXSButton::slotActivated(int id)
 	{
 		if(!authenticate())
 			return;
-		Form1 *f = new Form1();
-		f->show();
+		KDXSTranslation translation(this);
+		ret = translation.exec();
+		if(ret == QDialog::Accepted)
+		{
+			//QString s = comment.comment();
+			//if(!s.isEmpty())
+			//{
+			//	m_dxs->call_comment(0, s);
+			//}
+		}
 	}
 	if(id == collabremoval)
 	{
@@ -422,6 +430,8 @@ void KDXSButton::slotClicked()
 bool KDXSButton::authenticate()
 {
 	if((m_username) && (m_password)) return true;
+
+	return true; // FIXME: hack during development only
 
 	KIO::PasswordDialog dlg(i18n("This operation needs authentication"),
 		QString::null);

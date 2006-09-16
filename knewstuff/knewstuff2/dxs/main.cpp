@@ -1,4 +1,5 @@
-#include "kdxs.h"
+//#include "kdxs.h"
+#include "kdxsview.h"
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <klocale.h>
@@ -11,7 +12,7 @@ int main(int argc, char **argv)
 		"0.1",
 		I18N_NOOP("KNewstuff DXS Preview"),
 		KAboutData::License_GPL,
-		"(C) 2005 Josef Spillner",
+		"(C) 2005, 2006 Josef Spillner",
 		0,
 		0,
 		"spillner@kde.org");
@@ -19,8 +20,11 @@ int main(int argc, char **argv)
 	KCmdLineArgs::init(argc, argv, &about);
 	KApplication app;
 
-	KDXS *widget = new KDXS();
+	/*KDXS *widget = new KDXS();
 	app.setMainWidget(widget);
 	widget->show();
-	return app.exec();
+	return app.exec();*/
+
+	KDXSView view(NULL);
+	return view.exec();
 }

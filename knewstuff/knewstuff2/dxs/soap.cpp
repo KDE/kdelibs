@@ -98,8 +98,8 @@ void Soap::call_soap(QDomElement element, QString endpoint)
 	QByteArray data = s.utf8();
 	data.truncate(data.size() - 1);
 
-	kdDebug() << "HTTP-POST" << url.prettyURL() << endl;
-	kdDebug() << "HTTP-POST" << data << endl;
+	kdDebug() << "HTTP-POST " << url.prettyURL() << endl;
+	kdDebug() << "HTTP-POST " << data << endl;
 
 	KIO::Job *job;
 	job = KIO::http_post(url, data, false);

@@ -27,6 +27,8 @@ class NewStuffDialog : public QDialog
         NewStuffDialog( QWidget * parent );
         ~NewStuffDialog();
 
+	void setEngine(Dxs *engine);
+
         // show a message in the bottom bar
         enum MessageType { Normal, Info, Error };
         void displayMessage( const QString & msg,

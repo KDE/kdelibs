@@ -14,11 +14,12 @@ kdxspreview_SOURCES = main.cpp \
 	kdxschanges.cpp \
 	soap.cpp \
 	dxs.cpp \
-	kns-translation.ui \
+	kns-translation.cpp \
 	newstuff.cpp \
 	qasyncpixmap.cpp \
 	qasyncframe.cpp \
-	qstarframe.cpp
+	qstarframe.cpp \
+	qnowtooltip.cpp
 
 noinst_HEADERS = \
 	kdxs.h \
@@ -30,9 +31,11 @@ noinst_HEADERS = \
 	kdxschanges.h \
 	soap.h \
 	dxs.h \
+	kns-translation.h \
 	newstuff.h \
 	qasyncpixmap.h \
 	qasyncframe.h \
-	qstarframe.h
+	qstarframe.h \
+	qnowtooltip.h
 
 METASOURCES = AUTO

@@ -10,6 +10,8 @@ QStarFrame::QStarFrame(QWidget *parent)
 {
 	setFixedHeight(24);
 	setFrameStyle(QFrame::Sunken | QFrame::Panel);
+
+	m_rating = 0;
 }
 
 void QStarFrame::slotRating(int rating)

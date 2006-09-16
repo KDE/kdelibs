@@ -636,7 +636,7 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
 
     // start loading providers list
     //QTimer::singleShot( 100, this, SLOT( slotLoadProvidersList() ) );
-    QTimer::singleShot( 100, this, SLOT( slotLoadProvidersListDXS() ) );
+    //QTimer::singleShot( 100, this, SLOT( slotLoadProvidersListDXS() ) );
 }
 
 NewStuffDialog::~NewStuffDialog()
@@ -745,6 +745,18 @@ void NewStuffDialog::slotSortingSelected( int sortType ) // SLOT
 
 ///////////////// DXS ////////////////////
 
+void NewStuffDialog::setEngine(Dxs *engine)
+{
+	m_dxs = engine;
+
+	connect(m_dxs,
+		SIGNAL(signalCategories(QValueList<KNS::Category*>)),
+		SLOT(slotCategories(QValueList<KNS::Category*>)));
+	connect(m_dxs,
+		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
+		SLOT(slotEntries(QValueList<KNS::Entry*>)));
+}
+
 void NewStuffDialog::slotLoadProviderDXS(int index)
 {
 	Q_UNUSED(index);
@@ -756,17 +768,6 @@ void NewStuffDialog::slotLoadProviderDXS(int index)
 
 void NewStuffDialog::slotLoadProvidersListDXS()
 {
-	m_dxs = new Dxs();
-	m_dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs.pl");
-
-	connect(m_dxs,
-		SIGNAL(signalCategories(QValueList<KNS::Category*>)),
-		SLOT(slotCategories(QValueList<KNS::Category*>)));
-	connect(m_dxs,
-		SIGNAL(signalEntries(QValueList<KNS::Entry*>)),
-		SLOT(slotEntries(QValueList<KNS::Entry*>)));
-
-	m_dxs->call_categories();
 }
 
 void NewStuffDialog::slotCategories(QValueList<KNS::Category*> categories)

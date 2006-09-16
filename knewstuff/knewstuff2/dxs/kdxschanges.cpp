@@ -9,7 +9,7 @@
 
 KDXSChanges::KDXSChanges(QWidget *parent)
 : KDialogBase(parent, "changes", true, i18n("Changelog"),
-	KDialogBase::Ok, KDialogBase::Ok, true)
+	KDialogBase::Close, KDialogBase::Close, true)
 {
 	QVBoxLayout *vbox;
 
@@ -27,7 +27,7 @@ KDXSChanges::KDXSChanges(QWidget *parent)
 	m_part->write("<html>"),
 	m_part->write("<body>");
 
-	vbox = new QVBoxLayout(root, 5);
+	vbox = new QVBoxLayout(root, spacingHint());
 	vbox->add(m_part->view());
 }
 

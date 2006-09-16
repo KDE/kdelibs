@@ -1,15 +1,19 @@
 #include "kdxscomments.h"
 
+#include "qnowtooltip.h"
+
 #include <khtml_part.h>
 #include <khtmlview.h>
 #include <klocale.h>
 
 #include <qlayout.h>
 #include <qapplication.h>
+#include <qtooltip.h>
+#include <qcursor.h>
 
 KDXSComments::KDXSComments(QWidget *parent)
 : KDialogBase(parent, "comments", true, i18n("User comments"),
-	KDialogBase::Ok, KDialogBase::Ok, true)
+	KDialogBase::Close, KDialogBase::Close, true)
 {
 	QVBoxLayout *vbox;
 
@@ -27,8 +31,22 @@ KDXSComments::KDXSComments(QWidget *parent)
 	m_part->write("<html>"),
 	m_part->write("<body>");
 
-	vbox = new QVBoxLayout(root, 5);
+	vbox = new QVBoxLayout(root, spacingHint());
 	vbox->add(m_part->view());
+
+	connect(m_part, SIGNAL(onURL(const QString&)), SLOT(slotURL(const QString&)));
+}
+
+void KDXSComments::slotURL(const QString& url)
+{
+	if(!url.isEmpty())
+	{
+qDebug("SHOW %s!", url.utf8().data());
+		//QNowToolTip *t = new QNowToolTip(this);
+		//QToolTip::add(m_part->view(), url);
+		//t->display(m_part->view()->geometry(), url);
+		QNowToolTip::display(m_part->view(), QRect(QCursor::pos(), QPoint()), url);
+	}
 }
 
 void KDXSComments::addComment(QString username, QString comment)

@@ -16,7 +16,7 @@ KDXSComment::KDXSComment(QWidget *parent)
 
 	m_textbox = new QMultiLineEdit(root);
 
-	vbox = new QVBoxLayout(root, 5);
+	vbox = new QVBoxLayout(root, spacingHint());
 	vbox->add(m_textbox);
 }
 
