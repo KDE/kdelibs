@@ -8,17 +8,17 @@
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LISTAR SEUS TÍTULOS"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "a Seção Não Modificável iniciando com &FDLISTitles;">
+<!ENTITY FDLInvariantSections "a(s) Seção(ões) Não Modificável(is) sendo &FDLISTitles;">
  ]]>
 <!ENTITY FDLInvariantSections "nenhuma Seção Não Modificável">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LISTAR"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "Texto de Capa iniciando com &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "o Texto de Capa sendo &FDLFCTTitles;">
  ]]>
 <!ENTITY FDLFrontCoverText "nenhum Texto de Capa">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTAR SEUS TÍTULOS"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "o Texto de Contra-Capa iniciando com &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "o Texto de Contra-Capa sendo &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "nenhum Texto de Contra-Capa">
 
