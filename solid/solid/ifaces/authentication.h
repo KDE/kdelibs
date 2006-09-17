@@ -41,8 +41,6 @@ namespace Ifaces
         void setSecrets( const SecretMap& );
         SecretMap secrets() const;
 
-        virtual bool isValid( const QString &essid ) const = 0;
-
     private:
         class Private;
         Private *d;
@@ -53,8 +51,6 @@ namespace Ifaces
     public:
         AuthenticationNone();
         virtual ~AuthenticationNone();
-
-        virtual bool isValid( const QString &essid ) const;
     };
 
     /**
@@ -68,8 +64,6 @@ namespace Ifaces
 
         AuthenticationWep();
         virtual ~AuthenticationWep();
-
-        virtual bool isValid( const QString &essid ) const;
 
         void setMethod( WepMethod );
         WepMethod method() const;
@@ -115,8 +109,6 @@ namespace Ifaces
     public:
         AuthenticationWpaPersonal();
         virtual ~AuthenticationWpaPersonal();
-
-        virtual bool isValid( const QString &essid ) const;
     };
 
     /**
@@ -129,8 +121,6 @@ namespace Ifaces
 
         AuthenticationWpaEnterprise();
         virtual ~AuthenticationWpaEnterprise();
-
-        virtual bool isValid( const QString &essid ) const;
 
         void setIdentity( const QString & );
         QString identity() const;
@@ -161,6 +151,11 @@ namespace Ifaces
         Private *d;
     };
 
+    class KDE_EXPORT AuthenticationValidator
+    {
+        public:
+            bool validate( const Authentication * ) = 0;
+    };
 } // Ifaces
 } // Solid
 

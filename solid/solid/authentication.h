@@ -30,6 +30,17 @@ namespace Solid
     using Ifaces::AuthenticationWpa;
     using Ifaces::AuthenticationWpaPersonal;
     using Ifaces::AuthenticationWpaEnterprise;
+
+    class AuthenticationValidator
+    {
+        public:
+            AuthenticationValidator();
+            virtual ~AuthenticationValidator();
+            bool validate( const Ifaces::Authentication * );
+        private:
+            class Private;
+            Private * p;
+    };
 }
 
 #endif
