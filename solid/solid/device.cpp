@@ -369,16 +369,6 @@ QString Solid::Device::lockReason() const
     }
 }
 
-void Solid::Device::slotPropertyChanged( const QMap<QString,int> &changes )
-{
-    emit propertyChanged( changes );
-}
-
-void Solid::Device::slotConditionRaised( const QString &condition, const QString &reason )
-{
-    emit conditionRaised( condition, reason );
-}
-
 void Solid::Device::slotDestroyed( QObject *object )
 {
     if ( object == d->data )
@@ -395,9 +385,9 @@ void Solid::Device::Private::registerData( Ifaces::Device *newData )
     if ( data )
     {
         connect( data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                 q, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
+                 q, SIGNAL( propertyChanged( const QMap<QString,int>& ) ) );
         connect( data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                 q, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
+                 q, SIGNAL( conditionRaised( const QString &, const QString & ) ) );
         connect( data, SIGNAL( destroyed( QObject * ) ),
                  q, SLOT( slotDestroyed( QObject * ) ) );
     }
@@ -408,9 +398,9 @@ void Solid::Device::Private::unregisterData()
     if ( data )
     {
         disconnect( data, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                    q, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
+                    q, SIGNAL( propertyChanged( const QMap<QString,int>& ) ) );
         disconnect( data, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                    q, SLOT( slotConditionRaised( const QString &, const QString & ) ) );
+                    q, SIGNAL( conditionRaised( const QString &, const QString & ) ) );
         disconnect( data, SIGNAL( destroyed( QObject * ) ),
                     q, SLOT( slotDestroyed( QObject * ) ) );
     }

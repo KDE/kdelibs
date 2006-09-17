@@ -164,10 +164,6 @@ namespace Solid
          */
         void chargeStateChanged( int newState );
 
-    private Q_SLOTS:
-        void slotChargePercentChanged( int value );
-        void slotChargeStateChanged( int newState );
-
     private:
         class Private;
         Private *d;

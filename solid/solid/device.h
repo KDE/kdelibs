@@ -295,8 +295,6 @@ namespace Solid
         void conditionRaised( const QString &condition, const QString &reason );
 
     private Q_SLOTS:
-        void slotPropertyChanged( const QMap<QString,int> &changes );
-        void slotConditionRaised( const QString &condition, const QString &reason );
         void slotDestroyed( QObject *object );
 
     private:

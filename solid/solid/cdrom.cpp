@@ -38,7 +38,7 @@ Solid::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
     d->iface = iface;
 
     connect( d->iface->qobject(), SIGNAL( ejectPressed() ),
-             this, SLOT( ejectPressed() ) );
+             this, SIGNAL( ejectPressed() ) );
 }
 
 Solid::Cdrom::~Cdrom()
@@ -64,11 +64,6 @@ int Solid::Cdrom::writeSpeed() const
 QList<int> Solid::Cdrom::writeSpeeds() const
 {
     return d->iface->writeSpeeds();
-}
-
-void Solid::Cdrom::slotEjectPressed()
-{
-    emit ejectPressed();
 }
 
 #include "cdrom.moc"

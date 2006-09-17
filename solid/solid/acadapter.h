@@ -78,9 +78,6 @@ namespace Solid
          */
         void plugStateChanged( bool newState );
 
-    private Q_SLOTS:
-        void slotPlugStateChanged( bool newState );
-
     private:
         class Private;
         Private *d;

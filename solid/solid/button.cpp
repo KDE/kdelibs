@@ -37,8 +37,8 @@ Solid::Button::Button( Ifaces::Button *iface, QObject *parent )
 {
     d->iface = iface;
 
-    connect( d->iface->qobject(), SIGNAL( pressed( ButtonType ) ),
-             this, SLOT( slotPressed( ButtonType ) ) );
+    connect( d->iface->qobject(), SIGNAL( pressed( int ) ),
+             this, SIGNAL( pressed( int ) ) );
 }
 
 Solid::Button::~Button()
@@ -61,9 +61,5 @@ bool Solid::Button::stateValue() const
     return d->iface->stateValue();
 }
 
-void Solid::Button::slotPressed( int type )
-{
-    emit pressed( type );
-}
 
 #include "button.moc"

@@ -240,12 +240,6 @@ namespace Solid
         PowerManager( Ifaces::PowerManager *backend );
         ~PowerManager();
 
-    private Q_SLOTS:
-        void slotSchemeChanged( QString newScheme );
-        void slotAcAdapterStateChanged( int newState );
-        void slotBatteryStateChanged( int newState );
-        void slotButtonPressed( int buttonType );
-
     private:
         static PowerManager *s_self;
         class Private;

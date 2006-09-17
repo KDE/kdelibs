@@ -38,10 +38,10 @@ Solid::Battery::Battery( Ifaces::Battery *iface, QObject *parent )
     d->iface = iface;
 
     connect( d->iface->qobject(), SIGNAL( chargePercentChanged( int ) ),
-             this, SLOT( slotChargePercentChanged( int ) ) );
+             this, SIGNAL( chargePercentChanged( int ) ) );
 
     connect( d->iface->qobject(), SIGNAL( chargeStateChanged( int ) ),
-             this, SLOT( slotChargeStateChanged( int ) ) );
+             this, SIGNAL( chargeStateChanged( int ) ) );
 
 }
 
@@ -93,16 +93,6 @@ bool Solid::Battery::isRechargeable() const
 Solid::Battery::ChargeState Solid::Battery::chargeState() const
 {
     return d->iface->chargeState();
-}
-
-void Solid::Battery::slotChargePercentChanged( int value )
-{
-    emit chargePercentChanged( value );
-}
-
-void Solid::Battery::slotChargeStateChanged( int newState )
-{
-    emit chargeStateChanged( newState );
 }
 
 #include "battery.moc"

@@ -38,7 +38,7 @@ Solid::AcAdapter::AcAdapter( Ifaces::AcAdapter *iface, QObject *parent )
     d->iface = iface;
 
     connect( d->iface->qobject(), SIGNAL( plugStateChanged( bool ) ),
-             this, SLOT( slotPlugStateChanged( bool ) ) );
+             this, SIGNAL( plugStateChanged( bool ) ) );
 }
 
 Solid::AcAdapter::~AcAdapter()
@@ -49,11 +49,6 @@ Solid::AcAdapter::~AcAdapter()
 bool Solid::AcAdapter::isPlugged() const
 {
     return d->iface->isPlugged();
-}
-
-void Solid::AcAdapter::slotPlugStateChanged( bool newState )
-{
-    emit plugStateChanged( newState );
 }
 
 #include "acadapter.moc"

@@ -103,9 +103,6 @@ namespace Solid
          */
         void pressed( int type );
 
-    private Q_SLOTS:
-        void slotPressed( int type );
-
     private:
         class Private;
         Private *d;

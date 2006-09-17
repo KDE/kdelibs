@@ -249,39 +249,19 @@ const Solid::Ifaces::PowerManager *Solid::PowerManager::backend() const
     return d->backend;
 }
 
-void Solid::PowerManager::slotSchemeChanged( QString newScheme )
-{
-    emit schemeChanged( newScheme );
-}
-
-void Solid::PowerManager::slotAcAdapterStateChanged( int newState )
-{
-    emit acAdapterStateChanged( newState );
-}
-
-void Solid::PowerManager::slotBatteryStateChanged( int newState )
-{
-    emit batteryStateChanged( newState );
-}
-
-void Solid::PowerManager::slotButtonPressed( int buttonType )
-{
-    emit buttonPressed( buttonType );
-}
-
 void Solid::PowerManager::Private::registerBackend( Ifaces::PowerManager *newBackend )
 {
     unregisterBackend();
     backend = newBackend;
 
     QObject::connect( backend, SIGNAL( schemeChanged( QString ) ),
-                      q, SLOT( slotSchemeChanged( QString ) ) );
+                      q, SIGNAL( schemeChanged( QString ) ) );
     QObject::connect( backend, SIGNAL( acAdapterStateChanged( int ) ),
-                      q, SLOT( slotAcAdapterStateChanged( int ) ) );
+                      q, SIGNAL( acAdapterStateChanged( int ) ) );
     QObject::connect( backend, SIGNAL( batteryStateChanged( int ) ),
-                      q, SLOT( slotBatteryStateChanged( int ) ) );
+                      q, SIGNAL( batteryStateChanged( int ) ) );
     QObject::connect( backend, SIGNAL( buttonPressed( int ) ),
-                      q, SLOT( slotButtonPressed( int ) ) );
+                      q, SIGNAL( buttonPressed( int ) ) );
 }
 
 void Solid::PowerManager::Private::unregisterBackend()

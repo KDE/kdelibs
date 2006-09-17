@@ -38,7 +38,7 @@ Solid::Volume::Volume( Ifaces::Volume *iface, QObject *parent )
     d->iface = iface;
 
     connect( d->iface->qobject(), SIGNAL( mountStateChanged( bool ) ),
-             this, SLOT( slotMountStateChanged( bool ) ) );
+             this, SIGNAL( mountStateChanged( bool ) ) );
 }
 
 Solid::Volume::~Volume()
@@ -99,11 +99,6 @@ KJob *Solid::Volume::unmount()
 KJob *Solid::Volume::eject()
 {
     return d->iface->eject();
-}
-
-void Solid::Volume::slotMountStateChanged( bool newState )
-{
-    emit mountStateChanged( newState );
 }
 
 #include "volume.moc"

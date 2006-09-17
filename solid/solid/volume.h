@@ -171,9 +171,6 @@ namespace Solid
          */
         void mountStateChanged( bool newState );
 
-    private Q_SLOTS:
-        void slotMountStateChanged( bool newState );
-
     private:
         class Private;
         Private *d;

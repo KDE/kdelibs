@@ -106,9 +106,6 @@ namespace Solid
          */
         void ejectPressed();
 
-    private Q_SLOTS:
-        void slotEjectPressed();
-
     private:
         class Private;
         Private *d;
