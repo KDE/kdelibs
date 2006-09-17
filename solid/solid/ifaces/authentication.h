@@ -21,92 +21,145 @@
 #define SOLID_IFACES_AUTHENTICATION_H
 
 #include <QMap>
-
-#include <solid/ifaces/enums.h>
-
-//typedef QValueList<IEEE_802_11_Cipher*> CipherList;
-typedef QMap<QString, QString> SecretMap;
+#include <QString>
 
 namespace Solid
 {
 namespace Ifaces
 {
 
-class Authentication : public Enums::Authentication
-{
+    class Authentication
+    {
     public:
+        //typedef QValueList<IEEE_802_11_Cipher*> CipherList;
+        typedef QMap<QString, QString> SecretMap;
+
+        Authentication();
         virtual ~Authentication();
+
         /* hashed credentials, cert passwords, etc */
-        virtual void setSecrets( const SecretMap& ) = 0;
-        virtual SecretMap getSecrets() const = 0;
-        virtual bool isValid( const QString &essid ) = 0;
-        virtual void setDefaults() = 0;
-};
+        void setSecrets( const SecretMap& );
+        SecretMap secrets() const;
 
-/* AuthenticationNone */
+        virtual bool isValid( const QString &essid ) const = 0;
 
-class AuthenticationNone : public Authentication
-{
+    private:
+        class Private;
+        Private *d;
+    };
+
+    class AuthenticationNone : public Authentication
+    {
     public:
+        AuthenticationNone();
         virtual ~AuthenticationNone();
-};
 
-/**
- * WEP Authentication
- */
-class AuthenticationWEP : public Authentication, public Enums::AuthenticationWEP
-{
+        virtual bool isValid( const QString &essid ) const;
+    };
+
+    /**
+     * WEP Authentication
+     */
+    class AuthenticationWep : public Authentication
+    {
     public:
-        virtual void setMethod( WEPMethod ) = 0;
-        virtual WEPMethod getMethod() = 0;
-        virtual void setType( WEPType ) = 0;
-};
+        enum WepType { WepAscii, WepHex, WepPassphrase };
+        enum WepMethod { WepOpenSystem, WepSharedKey };
 
-/**
- * AuthenticationWPA contains functionality shared by both Personal and Enterprise
- * authentication flavours
- */
-class AuthenticationWPA : public Authentication, public Enums::AuthenticationWPA
-{
+        AuthenticationWep();
+        virtual ~AuthenticationWep();
+
+        virtual bool isValid( const QString &essid ) const;
+
+        void setMethod( WepMethod );
+        WepMethod method() const;
+
+        void setType( WepType );
+        WepType type() const;
+
+    private:
+        class Private;
+        Private *d;
+    };
+
+    /**
+     * AuthenticationWpa contains functionality shared by both Personal and Enterprise
+     * authentication flavours
+     */
+    class AuthenticationWpa : public Authentication
+    {
     public:
-        virtual void setProtocol( WPAProtocol ) = 0;
-        virtual WPAProtocol getProtocol() = 0;
-        virtual void setVersion( WPAVersion ) = 0;
-        virtual WPAVersion getVersion() = 0;
-};
+        enum WpaProtocol { WpaAuto, WpaTkip, WpaCcmpAes, // WPA Personal only
+                           WpaEap /* WPA Enterprise only */ };
+        enum WpaVersion { Wpa1, Wpa2 };
 
-/**
- * AuthenticationWPAPersonal
- */
-class AuthenticationWPAPersonal : public AuthenticationWPA, public Enums::AuthenticationWPAPersonal
-{
+        AuthenticationWpa();
+        virtual ~AuthenticationWpa();
+
+        void setProtocol( WpaProtocol );
+        WpaProtocol protocol() const;
+
+        void setVersion( WpaVersion );
+        WpaVersion version() const;
+
+    private:
+        class Private;
+        Private *d;
+    };
+
+    /**
+     * AuthenticationWpaPersonal
+     */
+    class AuthenticationWpaPersonal : public AuthenticationWpa
+    {
     public:
-        virtual ~AuthenticationWPAPersonal();
-};
+        AuthenticationWpaPersonal();
+        virtual ~AuthenticationWpaPersonal();
 
-/**
- * AuthenticationWPAEnterprise
- */
-class AuthenticationWPAEnterprise : public AuthenticationWPA, public Enums::AuthenticationWPAEnterprise
-{
+        virtual bool isValid( const QString &essid ) const;
+    };
+
+    /**
+     * AuthenticationWpaEnterprise
+     */
+    class AuthenticationWpaEnterprise : public AuthenticationWpa
+    {
     public:
-        virtual void setIdentity( const QString & ) = 0;
-        virtual QString getIdentify() const = 0;
-        virtual void setAnonIdentity( const QString & ) = 0;
-        virtual QString getAnonIdentity() const = 0;
-        virtual void setCertClient( const QString & ) = 0;
-        virtual QString getCertClient() const = 0;
-        virtual void setCertCA( const QString & ) = 0;
-        virtual QString getCertCA() const = 0;
-        virtual void setCertPrivate( const QString & ) = 0;
-        virtual QString getCertPrivate() const = 0;
+        enum EapMethod { EapPeap, EapTls, EapTtls };
 
-        virtual void setMethod( EAPMethod ) = 0;
-        virtual EAPMethod getMethod() const = 0;
+        AuthenticationWpaEnterprise();
+        virtual ~AuthenticationWpaEnterprise();
 
-        virtual QString getIdPasswordKey() const = 0;
-        virtual QString getCertPrivatePasswordKey() const = 0;
-};
+        virtual bool isValid( const QString &essid ) const;
+
+        void setIdentity( const QString & );
+        QString identity() const;
+
+        void setAnonIdentity( const QString & );
+        QString anonIdentity() const;
+
+        void setCertClient( const QString & );
+        QString certClient() const;
+
+        void setCertCA( const QString & );
+        QString certCA() const;
+
+        void setCertPrivate( const QString & );
+        QString certPrivate() const;
+
+        void setMethod( EapMethod );
+        EapMethod method() const;
+
+        void setIdPasswordKey( const QString & );
+        QString idPasswordKey() const;
+
+        void setCertPrivatePasswordKey( const QString & );
+        QString certPrivatePasswordKey() const;
+
+    private:
+        class Private;
+        Private *d;
+    };
 
 } // Ifaces
 } // Solid

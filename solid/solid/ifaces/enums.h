@@ -460,54 +460,6 @@ namespace Enums
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( WirelessNetwork::Capabilities )
 
-    struct Authentication
-    {
-
-    };
-    struct AuthenticationNone
-    {
-
-    };
-    struct AuthenticationWEP
-    {
-        enum WEPType {
-            WEP_ASCII,
-            WEP_HEX,
-            WEP_PASSPHRASE
-        };
-
-        enum WEPMethod {
-            WEP_OPEN_SYSTEM,
-            WEP_SHARED_KEY
-        };
-
-    };
-    struct AuthenticationWPA
-    {
-        enum WPAProtocol {
-            WPA_AUTO, /* WPA Personal */
-            WPA_TKIP, /* WPA Personal */
-            WPA_CCMP_AES, /* WPA Personal */
-            WPA_EAP /* WPA Enterprise */
-        };
-
-        enum WPAVersion {
-            WPA1, /* WPA Personal and Enterprise */
-            WPA2 /* WPA Personal and Enterprise */
-        };
-    };
-    struct AuthenticationWPAPersonal
-    {
-
-    };
-    struct AuthenticationWPAEnterprise
-    {
-        enum EAPMethod {
-            EAP_PEAP,
-            EAP_TLS,
-            EAP_TTLS,
-        };
-    };
 }
 }
 }

@@ -33,7 +33,6 @@ set(solid_LIB_SRCS
    networkdevice.cpp
    network.cpp
    wirelessnetwork.cpp
-#   authentication.cpp
 )
 
 kde4_automoc(${solid_LIB_SRCS})
