@@ -101,6 +101,18 @@ void KURIFilterData::init( const QString& url )
     d->typedString = url;
 }
 
+void KURIFilterData::reinit(const KURL &url)
+{
+    delete d;
+    init(url);
+}
+
+void KURIFilterData::reinit(const QString &url)
+{
+    delete d;
+    init(url);
+}
+
 QString KURIFilterData::typedString() const
 {
     return d->typedString;

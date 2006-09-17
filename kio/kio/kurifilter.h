@@ -185,7 +185,7 @@ public:
      *
      * @param url the string to be filtered.
      */
-    void setData( const QString& url ) { init( url ); }
+    void setData( const QString& url ) { reinit( url ); }
 
     /**
      * Same as above except the argument is a URL.
@@ -196,7 +196,7 @@ public:
      *
      * @param url the URL to be filtered.
      */
-    void setData( const KURL& url ) { init( url ); }
+    void setData( const KURL& url ) { reinit( url ); }
 
     /**
      * Sets the absolute path to be used whenever the supplied
@@ -290,7 +290,7 @@ public:
      *
      * @return an instance of a KURIFilterData object.
      */
-    KURIFilterData& operator=( const KURL& url ) { init( url ); return *this; }
+    KURIFilterData& operator=( const KURL& url ) { reinit( url ); return *this; }
 
     /**
      * Overloaded assigenment operator.
@@ -300,7 +300,7 @@ public:
      *
      * @return an instance of a KURIFilterData object.
      */
-    KURIFilterData& operator=( const QString& url ) { init( url ); return *this; }
+    KURIFilterData& operator=( const QString& url ) { reinit( url ); return *this; }
 
 protected:
 
@@ -317,6 +317,12 @@ protected:
     void init( const QString& url = QString::null );
 
 private:
+
+    // BC hack to avoid leaking KURIFilterDataPrivate objects.
+    // setData() and operator= used to call init() without deleting `d'
+    void reinit(const KURL& url);
+    void reinit(const QString& url = QString::null);
+
     bool m_bCheckForExecutables;
     bool m_bChanged;
 
