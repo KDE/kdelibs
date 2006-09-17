@@ -23,6 +23,8 @@
 #include <QMap>
 #include <QString>
 
+#include <kdelibs_export.h>
+
 namespace Solid
 {
 namespace Ifaces
@@ -154,7 +156,8 @@ namespace Ifaces
     class KDE_EXPORT AuthenticationValidator
     {
         public:
-            bool validate( const Authentication * ) = 0;
+            virtual ~AuthenticationValidator();
+            virtual bool validate( const Authentication * ) = 0;
     };
 } // Ifaces
 } // Solid

@@ -98,11 +98,6 @@ Solid::Ifaces::AuthenticationNone::~AuthenticationNone()
 
 }
 
-bool Solid::Ifaces::AuthenticationNone::isValid( const QString &essid ) const
-{
-    return true;
-}
-
 
 
 /******************************************************************************/
@@ -116,12 +111,6 @@ Solid::Ifaces::AuthenticationWep::AuthenticationWep()
 Solid::Ifaces::AuthenticationWep::~AuthenticationWep()
 {
     delete d;
-}
-
-bool Solid::Ifaces::AuthenticationWep::isValid( const QString &essid ) const
-{
-    // TODO implement this
-    return false;
 }
 
 void Solid::Ifaces::AuthenticationWep::setMethod( WepMethod method )
@@ -193,12 +182,6 @@ Solid::Ifaces::AuthenticationWpaPersonal::~AuthenticationWpaPersonal()
 
 }
 
-bool Solid::Ifaces::AuthenticationWpaPersonal::isValid( const QString &essid ) const
-{
-    // TODO implement this
-    return false;
-}
-
 
 
 /******************************************************************************/
@@ -212,12 +195,6 @@ Solid::Ifaces::AuthenticationWpaEnterprise::AuthenticationWpaEnterprise()
 Solid::Ifaces::AuthenticationWpaEnterprise::~AuthenticationWpaEnterprise()
 {
     delete d;
-}
-
-bool Solid::Ifaces::AuthenticationWpaEnterprise::isValid( const QString &essid ) const
-{
-    // TODO implement this
-    return false;
 }
 
 void Solid::Ifaces::AuthenticationWpaEnterprise::setIdentity( const QString &identity )
@@ -299,4 +276,11 @@ void Solid::Ifaces::AuthenticationWpaEnterprise::setCertPrivatePasswordKey( cons
 QString Solid::Ifaces::AuthenticationWpaEnterprise::certPrivatePasswordKey() const
 {
     return d->certPrivatePasswordKey;
+}
+
+
+/******************************************************************************/
+
+Solid::Ifaces::AuthenticationValidator::~AuthenticationValidator()
+{
 }
