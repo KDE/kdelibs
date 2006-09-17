@@ -13,14 +13,14 @@
  *
  * @section kspeech_intro Introduction to the KSpeech D-Bus Interface
  *
- * KSpeech is a D-Bus interface for applications desiring to speak text.
+ * %KSpeech is a D-Bus interface for applications desiring to speak text.
  * Applications may speak text by sending D-Bus messages to application
  * "org.kde.kttsd", object path "/KSpeech", interface "org.kde.KSpeech".
  *
  * %KTTSD -- the KDE Text-to-Speech Daemon -- is the program that supplies the services
  * in the KDE Text-to-Speech API.
  *
- * @warning The KSpeech interface is still being developed and is likely to change in the future.
+ * @warning The %KSpeech interface is still being developed and is likely to change in the future.
  *
  * @section kspeech_apiref API Reference
  *
@@ -44,7 +44,7 @@
  *
  * @section Requirements
  *
- * You may build any KDE application to use KSpeech, since the interface is in kdelibs, but
+ * You may build any KDE application to use %KSpeech, since the interface is in kdelibs, but
  * the kdeaccessibility package must be installed for KTTS to function.
  *
  * You will need a speech synthesis engine, such as Festival.  See the KTTS Handbook
@@ -93,7 +93,9 @@
  * There is a separate GUI application, called kttsmgr, for providing %KTTSD
  * configuration and job management.
  *
- * When a request for speech is made, usually via the say method,
+ * @section jobsandpriorities Speech Jobs and Priorities
+ *
+ * When a request for speech is made, usually via the @ref OrgKdeKSpeechInterface::say method,
  * a speech job is queued.  The order by which jobs are spoken is determined
  * by their priority (in decreasing priority):
  *   - Screen Reader Output
@@ -101,7 +103,7 @@
  *   - Messages
  *   - Text Jobs
  *
- * Screen Reader output.pre-empts any other speech in progress,
+ * Screen Reader output pre-empts any other speech in progress,
  * including other Screen Reader outputs, i.e., it is not a queue.
  * This is reserved for use by Screen Readers.
  *
@@ -112,26 +114,26 @@
  * Text Jobs are the lowest priority are used for long text or general
  * TTS.
  *
- * The priority of jobs is determined by the @ref KSpeech::setDefaultPriority method.
+ * The priority of jobs is determined by the @ref OrgKdeKSpeechInterface::setDefaultPriority method.
  * After setting the priority, all subsequent say commands are queued
  * at that priority.
  *
  * Within a job, the application (and user
  * via the kttsmgr GUI), may back up or advance by sentence, or rewind
  * to the beginning.
- * @see KSpeech::moveRelSentence.
+ * @see OrgKdeKSpeechInterface::moveRelSentence.
  
  * All jobs may be paused, resumed or deleted (stopped) from the queue.
- * @see KSpeech::pause, KSpeech::resume, KSpeech::removeJob, and KSpeech::removeAllJobs.
+ * @see OrgKdeKSpeechInterface::pause, OrgKdeKSpeechInterface::resume, OrgKdeKSpeechInterface::removeJob, and OrgKdeKSpeechInterface::removeAllJobs.
  *
  * @section cmdline D-Bus Command-line Interface
  *
- * Examples of using the KSpeech interface via command-line D-Bus follow.
+ * Examples of using the %KSpeech interface via command-line D-Bus follow.
  *
  * To create a text job to be spoken
  *
    @verbatim
-     dbus org.kde.kttsd "/KSpeech" say <text> <options>
+     qdbus org.kde.kttsd "/KSpeech" say <text> <options>
    @endverbatim
  *
  * where \<text\> is the text to be spoken, and \<options\> is one of the
@@ -141,13 +143,13 @@
  * Example.
  *
    @verbatim
-     dbus org.kde.kttsd "/KSpeech" say "Hello World." 0
+     qdbus org.kde.kttsd "/KSpeech" say "Hello World." 0
    @endverbatim
  *
  * To stop speaking and delete the last queued job.
  *
    @verbatim
-     dbus org.kde.kttsd "/KSpeech" removeJob 0
+     qdbus org.kde.kttsd "/KSpeech" removeJob 0
    @endverbatim
  *
  * Depending upon the speech plugin used, speaking may not immediately stop.
@@ -166,7 +168,7 @@
  *
  * @subsection manual_code Manual code
  *
- * Sending a text job to KSpeech is very simple.  Sample code:
+ * Sending a text job to %KSpeech is very simple.  Sample code:
  *
     @verbatim
        #include <QtCore/QtDBus>
@@ -177,7 +179,7 @@
        QDBusReply<int> reply = kspeech.call("say", "Hello World.", 0);
     @endverbatim
  *
- * Notice the call to @ref KSpeech::setApplicationName.  All applications should
+ * Notice the call to @ref OrgKdeKSpeechInterface::setApplicationName.  All applications should
  * do this before submitting any jobs so that a friendly name will appear
  * in kttsmgr.
  *
@@ -293,7 +295,7 @@
         m_kspeech->setDefaultTalker("de");
    @endverbatim
  *
- * All subsequent calls to say will use this talker.  See @ref talkers.
+ * All subsequent calls to say will use this talker.  See @ref OrgKdeKSpeechInterface::getTalkerCodes.
  *
  * If you want to detect if %KTTSD is installed without starting it,
  * use this code.
@@ -312,7 +314,7 @@
  *
  * // TODO: Use D-Bus start service or KTrader?
  *
- * To detect if %KTTSD has exited, you can use the @ref KSpeech::kttsdExiting signal, or you
+ * To detect if %KTTSD has exited, you can use the @ref OrgKdeKSpeechInterface::kttsdExiting signal, or you
  * connect the D-Bus serviceUnregistered signal, like this:
  *
    @verbatim
@@ -346,9 +348,9 @@
 
    @endverbatim
  *
- * @see KSpeech::jobStateChanged
- * @see KSpeech::marker
- * @see KSpeech::kttsdExiting
+ * @see OrgKdeKSpeechInterface::jobStateChanged
+ * @see OrgKdeKSpeechInterface::marker
+ * @see OrgKdeKSpeechInterface::kttsdExiting
  *
  * @section talkers Talkers, Talker Codes, and Plugins
  *
@@ -430,7 +432,7 @@
  *
  *   lang="en"
  *
- * When a program requests a talker code in calls to @ref KSpeech::setDefaultTalker,
+ * When a program requests a talker code in calls to @ref OrgKdeKSpeechInterface::setDefaultTalker,
  * %KTTSD tries to match the requested talker code to the closest matching
  * configured talker.
  *
@@ -503,11 +505,11 @@
  * it sounds terrible, user will change his configuration.)
  * If an attribute is absolutely mandatory -- in other words the application
  * must speak with the attribute or not at all -- the application can determine if
- * there are any talkers configured with the attribute by calling @ref KSpeech::getTalkerCodes,
+ * there are any talkers configured with the attribute by calling @ref OrgKdeKSpeechInterface::getTalkerCodes,
  * and if there are none, display an error message to the user.
  *
  * Applications can implement their own talker-matching algorithm by
- * calling @ref KSpeech::getTalkerCodes, then finding the desired talker from the returned
+ * calling getTalkerCodes, then finding the desired talker from the returned
  * list.  When the full talker code is passed in, %KKTSD will find an exact
  * match and use the specified talker.
  *
@@ -522,7 +524,7 @@
  * If you are an application author, the above discussion might seem overly
  * complicated.  It isn't really all that complicated.  Here are rules of thumb:
  *
- *   - It is legitimate to not call @ref KSpeech::setDefaultTalker, in which case, the user's default
+ *   - It is legitimate to not call @ref OrgKdeKSpeechInterface::setDefaultTalker, in which case, the user's default
  *     talker will be used.
  *   - If you know the language code, give that in the talker code, otherwise
  *     leave it out.
@@ -547,7 +549,7 @@
  *
  * Note: %Speech Markup is not yet fully implemented in %KTTSD.
  *
- * The text passed in a call to @ref KSpeech::say may contain speech markup,
+ * The text passed in a call to @ref OrgKdeKSpeechInterface::say may contain speech markup,
  * provided that the plugin the user has configured supports that markup.  The markup
  * languages and plugins currently supported are:
  *
@@ -557,7 +559,7 @@
  *
  * Before including markup in the text sent to kttsd, the application should
  * query whether the currently-configured plugin
- * supports the markup language by calling @ref KSpeech::getTalkerCapabilities1.
+ * supports the markup language by calling @ref OrgKdeKSpeechInterface::getTalkerCapabilities1.
  *
  * It it does not support the markup, it will be stripped out of the text.
  *
@@ -568,16 +570,16 @@
  *
  * When using a speech markup language, such as SSML, the application may embed
  * named markers into the text.  If the user's chosen speech plugin supports markers, %KTTSD
- * will emit @ref KSpeech::marker signals when the speech engine encounters the marker.
+ * will emit @ref OrgKdeKSpeechInterface::marker signals when the speech engine encounters the marker.
  * Depending upon the speech engine and plugin, this may occur either when the speech engine
  * encounters the marker during synthesis from text to speech, or when the speech is actually
- * spoken on the audio device.  The calling application can call the @ref KSpeech::getTalkerCapabilities1
+ * spoken on the audio device.  The calling application can call the @ref OrgKdeKSpeechInterface::getTalkerCapabilities1
  * method to determine if the currently configured plugin supports markers or not.
  *
  * @section sentenceparsing Sentence Parsing
  *
  * Not all speech engines provide robust capabilities for stopping synthesis that is in progress.
- * To compensate for this, %KTTSD parses jobs given to it by the @ref KSpeech::say
+ * To compensate for this, %KTTSD parses jobs given to it by the @ref OrgKdeKSpeechInterface::say
  * method into sentences and sends the sentences to the speech
  * plugin one at a time.  In this way, should the user wish to stop the speech
  * output, they can do so, and the worst that will happen is that the last sentence
@@ -595,13 +597,13 @@
  * When given text containing speech markup, %KTTSD automatically determines the markup type
  * and parses based on the sentence semantics of the markup language.
  *
- * An application may change the sentence delimiter by calling @ref KSpeech::setSentenceDelimiter
- * prior to calling @ref KSpeech::say.  Changing the delimiter does not affect other
+ * An application may change the sentence delimiter by calling @ref OrgKdeKSpeechInterface::setSentenceDelimiter
+ * prior to calling @ref OrgKdeKSpeechInterface::say.  Changing the delimiter does not affect other
  * applications.
  *
  * Jobs of priority Screen Reader Output are not split into sentences.
  * For this reason, applicatons should avoid sending long messages
- * of priority jpScreenReaderOutput.
+ * of priority KSpeech::jpScreenReaderOutput.
  *
  * Sentence Boundary Detection is implemented as a plugin SBD filter.  See
  * filters for more information.
@@ -625,7 +627,7 @@
  * In additional to these regular filters, KTTS also implements Sentence Boundary Detection (SBD)
  * as a plugin filter.  See @ref sentenceparsing for more information.
  *
- * Applications may control filtering by calling @ref KSpeech::setFilteringOn.
+ * Applications may control filtering by calling @ref OrgKdeKSpeechInterface::setFilteringOn.
  *
  * Note: SBD filters are never applied to Screen Reader jobs.
  *
@@ -638,4 +640,661 @@
  * Gary Cramblitt <garycramblitt@comcast.net>
  */
 
-// DOXYGEN_EXCLUDE = kspeechadaptor.*
+/**
+* @class KSpeech
+* @brief Constants and Enums for the %KSpeech D-Bus interface.
+*
+* \#include "kspeech.h"
+*
+* Note: Applications do not use this class directly.  Instead,
+* use the @ref OrgKdeKSpeechInterface object as described in
+* @ref programming.
+*
+* See also @ref kspeech_intro
+*/ 
+class KSpeech : public QObject
+{
+Q_OBJECT
+
+public:
+    /**
+    * @enum JobPriority
+    * The priority of jobs submitted by @ref OrgKdeKSpeechInterface::say.
+    */
+    enum JobPriority
+    {
+        jpAll                = 0,    /**< All priorities.  Used for information retrieval only. */
+        jpScreenReaderOutput = 1,    /**< Screen Reader job. */
+        jpWarning            = 2,    /**< Warning job. */
+        jpMessage            = 3,    /**< Message job.*/
+        jpText               = 4     /**< Text job. */
+    };
+    
+    /**
+    * @enum JobState
+    * Job states returned by method @ref OrgKdeKSpeechInterface::getJobState.
+    */
+    enum JobState
+    {
+        jsQueued      = 0,  /**< Job has been queued but is not yet speakable. */
+        jsFiltering   = 1,  /**< Job is being filtered. */
+        jsSpeakable   = 2,  /**< Job is speakable, but is not speaking. */
+        jsSpeaking    = 3,  /**< Job is currently speaking. */
+        jsPaused      = 4,  /**< Job is paused. */
+        jsInterrupted = 5,  /**< Job is paused because it has been interrupted by another job. */
+        jsFinished    = 6,  /**< Job is finished and is deleteable. */
+        jsDeleted     = 7   /**< Job is deleted from the queue. */
+    };
+    
+    /**
+    * @enum SayOptions
+    * Hints about text content when sending via @ref OrgKdeKSpeechInterface::say.
+    */
+    enum SayOptions
+    {
+        soNone      = 0x0000,   /**< No options specified.  Autodetected. */
+        soPlainText = 0x0001,   /**< The text contains plain text. */
+        soHtml      = 0x0002,   /**< The text contains HTML markup. */
+        soSsml      = 0x0004,   /**< The text contains SSML markup. */
+        // FUTURE:
+        soChar      = 0x0008,   /**< The text should be spoken as individual characters. */
+        soKey       = 0x0010,   /**< The text contains a keyboard symbolic key name. */
+        soSoundIcon = 0x0020    /**< The text is the name of a sound icon. */
+    };
+    
+    /**
+    * @enum TalkerCapabilities1
+    * Flags for synthesizer/talker capabilities returned
+    * by @ref OrgKdeKSpeechInterface::getTalkerCapabilities1.
+    * All items marked FALSE are hard-coded off at this time.
+    */
+    enum TalkerCapabilities1
+    {
+        tcCanListVoices                         = 0x00000001,
+        tcCanSetVoiceByProperties               = 0x00000002,
+        tcCanGetCurrentVoice                    = 0x00000004,
+        tcCanSetRateRelative                    = 0x00000008, /**< FALSE */
+        tcCanSetRateAbsolute                    = 0x00000010,
+        tcCanGetRateDefault                     = 0x00000020,
+        tcCanSetPitchRelative                   = 0x00000040, /**< FALSE */
+        tcCanSetPitchAbsolute                   = 0x00000080,
+        tcCanGetPitchDefault                    = 0x00000100,
+        tcCanSetPitchRangeRelative              = 0x00000200, /**< FALSE */
+        tcCanSetPitchRangeAbsolute              = 0x00000400, /**< FALSE */
+        tcCanGetPitchRangeDefault               = 0x00000800, /**< FALSE */
+        tcCanSetVolumeRelative                  = 0x00001000, /**< FALSE */
+        tcCanSetVolumeAbsolute                  = 0x00002000,
+        tcCanGetVolumeDefault                   = 0x00004000,
+        tcCanSetPunctuationModeAll              = 0x00008000, /**< FALSE */
+        tcCanSetPunctuationModeNone             = 0x00010000, /**< FALSE */
+        tcCanSetPunctuationModeSome             = 0x00020000, /**< FALSE */
+        tcCanSetPunctuationDetail               = 0x00040000, /**< FALSE */
+        tcCanSetCapitalLettersModeSpelling      = 0x00080000, /**< FALSE */
+        tcCanSetCapitalLettersModeIcon          = 0x00100000, /**< FALSE */
+        tcCanSetCapitalLettersModePitch         = 0x00200000, /**< FALSE */
+        tcCanSetNumberGrouping                  = 0x00400000, /**< FALSE */
+        tcCanSayTextFromPosition                = 0x00800000, /**< FALSE */
+        tcCanSayChar                            = 0x01000000, /**< FALSE */
+        tcCanSayKey                             = 0x02000000, /**< FALSE */
+        tcCanSayIcon                            = 0x04000000, /**< FALSE */
+        tcCanSetDictionary                      = 0x08000000, /**< FALSE */
+        tcCanRetrieveAudio                      = 0x10000000, /**< FALSE */
+        tcCanPlayAudio                          = 0x20000000  /**< FALSE */
+    };
+    
+    /**
+    * @enum TalkerCapabilities2
+    * All items marked FALSE are hard-coded off at this time.
+    */
+    enum TalkerCapabilities2
+    {
+        tcCanReportEventsBySentences            = 0x00000001,
+        tcCanReportEventsByWords                = 0x00000002, /**< FALSE */
+        tcCanReportCustomIndexMarks             = 0x00000004, /**< FALSE */
+        tcHonorsPerformanceGuidelines1          = 0x00000008, /**< FALSE */
+        tcHonorsPerformanceGuidelines2          = 0x00000010, /**< FALSE */
+        tcHonorsPerformanceGuidelines           = 0x00000018, /**< FALSE */
+        tcCanDeferMessage                       = 0x00000020, /**< FALSE */
+        tcCanParseSsml                          = 0x00000040,
+        tcSupportsMultilingualUtterances        = 0x00000080, /**< FALSE */
+        tcCanParseHtml                          = 0x00000100
+    };
+
+    /**
+    * @enum MarkerType
+    * Types of markers emitted by @ref OrgKdeKSpeechInterface::marker signal.
+    */
+    enum MarkerType
+    {
+        mtSentenceBegin = 0,
+        mtSentenceEnd   = 1,
+        mtWordBegin     = 2,
+        mtPhonemeBegin  = 3,
+        mtCustom        = 4
+    };
+};
+
+/**
+* @class OrgKdeKSpeechInterface
+* @brief D-Bus Interface to %KSpeech
+*
+* \#include "kspeechinterface.h"
+*
+* The D-Bus interface to %KSpeech.
+* Applications may speak text using this class, 
+* or by sending D-Bus messages to application
+* "org.kde.kttsd", object path "/KSpeech", interface "org.kde.KSpeech".
+*
+* You must generate the kspeechinterface.h file using the
+* qdbusxml2cpp utility.  See @ref kspeechinterface for more information.
+*/
+class OrgKdeKSpeechInterface : public QDBusAbstractInterface
+{
+
+public: // PROPERTIES
+    Q_PROPERTY(bool isSpeaking READ isSpeaking)
+    Q_PROPERTY(QString version READ version)
+
+public Q_SLOTS: // METHODS
+    /**
+    * Returns true if KTTSD is currently speaking.
+    * @return               True if currently speaking.
+    */
+    bool isSpeaking() const;
+
+    /**
+    * Returns the version number of KTTSD.
+    * @return               Version number string.
+    */
+    QString version() const;
+
+    /**
+    * Returns the friendly display name for the application.
+    * @return               Application display name.
+    *
+    * If application has not provided a friendly name, the D-Bus connection name is returned.
+    */
+    QString applicationName();
+
+    /**
+    * Sets a friendly display name for the application.
+    * @param applicationName    Friendly name for the application.
+    */    
+    void setApplicationName(const QString &applicationName);
+
+    /**
+    * Returns the default talker for the application.
+    * @return                   Talker.
+    *
+    * The default is "", which uses the default talker configured by user.
+    *
+    * @see @ref talkers
+    */
+    QString defaultTalker();
+
+    /**
+    * Sets the default talker for the application.
+    * @param defaultTalker      Default talker.  Example: "en".
+    * 
+    * @see @ref talkers
+    */
+    void setDefaultTalker(const QString &defaultTalker);
+
+    /**
+    * Returns the default priority for speech jobs submitted by the application.
+    * @return                   Default job priority.  See KSpeech::JobPriority.
+    *
+    * @see @ref jobsandpriorities
+    */
+    int defaultPriority();
+
+    /**
+    * Sets the default priority for speech jobs submitted by the application.
+    * @param defaultPriority    Default job priority.  See KSpeech::JobPriority.
+    *
+    * @see @ref jobsandpriorities
+    */
+    void setDefaultPriority(int defaultPriority);
+
+    /**
+    * Returns the regular expression used to perform Sentence Boundary
+    * Detection (SBD) for the application.
+    * @return               Sentence delimiter regular expression.
+    *
+    * The default sentence delimiter is
+      @verbatim
+          ([\\.\\?\\!\\:\\;])(\\s|$|(\\n *\\n))
+      @endverbatim
+    *
+    * Note that backward slashes must be escaped.
+    *
+    * @see @ref sentenceparsing
+    */
+    QString sentenceDelimiter();
+
+    /**
+    * Sets the regular expression used to perform Sentence Boundary
+    * Detection (SBD) for the application.
+    * @param sentenceDelimiter  Sentence delimiter regular expression.
+    *
+    * @see @ref sentenceparsing
+    */
+    void setSentenceDelimiter(const QString &sentenceDelimiter);
+
+    /**
+    * Returns whether speech jobs for this application are filtered using configured
+    * filter plugins.
+    * @return               True if filtering is on.
+    *
+    * Filtering is on by default.
+    *
+    * @see @ref filters
+    */
+    bool filteringOn();
+
+    /**
+    * Sets whether speech jobs for this application are filtered using configured
+    * filter plugins.
+    * @param filteringOn    True to set filtering on.
+    *
+    * @see @ref filters
+    */
+    void setFilteringOn(bool filteringOn);
+
+    /**
+    * Returns whether KTTSD will automatically attempt to configure new
+    * talkers to meet required talker attributes.
+    * @return               True if KTTSD will autoconfigure talkers.
+    *
+    * @see defaultTalker
+    * @see @ref talkers
+    */
+    bool autoConfigureTalkersOn();
+    
+    /**
+    * Sets whether KTTSD will automatically attempt to configure new
+    * talkers to meet required talker attributes.
+    * @param autoConfigureTalkersOn True to enable auto configuration.
+    *
+    * @see @ref talkers
+    */
+    void setAutoConfigureTalkersOn(bool autoConfigureTalkersOn);
+
+    /**
+    * Returns whether application is paused.
+    * @return               True if application is paused.
+    */
+    bool isApplicationPaused();
+    
+    /**
+    * Returns the full path name to XSLT file used to convert HTML
+    * markup to speakable form.
+    * @return               XSLT filename.
+    *
+    * @see @ref filters
+    */
+    QString htmlFilterXsltFile();
+
+    /**
+    * Sets the full path name to an XSLT file used to convert HTML
+    * markup to speakable form.
+    * @param htmlFilterXsltFile XSLT filename.
+    *
+    * @see @ref filters
+    */
+    void setHtmlFilterXsltFile(const QString &htmlFilterXsltFile);
+
+    /**
+    * Returns the full path name to XSLT file used to convert SSML
+    * markup to a speakable form.
+    * @return                   XSLT filename.
+    *
+    * @see @ref filters
+    */
+    QString ssmlFilterXsltFile();
+
+    /**
+    * Sets the full path name to XSLT file used to convert SSML
+    * markup to a speakable form.
+    * @param ssmlFilterXsltFile XSLT filename.
+    *
+    * @see @ref filters
+    */
+    void setSsmlFilterXsltFile(const QString &ssmlFilterXsltFile);
+
+    /**
+    * Returns whether this is a System Manager application.
+    * @return                   True if the application is a System Manager.
+    */
+    bool isSystemManager();
+
+    /**
+    * Sets whether this is a System Manager application.
+    * @param isSystemManager    True if this is a System Manager.
+    *
+    * System Managers are used to control and configure overall TTS output.
+    * When True, many of the KSpeech methods alter their behavior.
+    */
+    void setIsSystemManager(bool isSystemManager);
+
+    /**
+    * Creates and starts a speech job.  The job is created at the application's
+    * default job priority using the default talker.
+    * @param text               The text to be spoken.
+    * @param options            Speech options.  See KSpeech::SayOptions.
+    * @return                   Job Number for the new job.
+    *
+    * @see @ref jobsandpriorities
+    */
+    int say(const QString &text, int options);
+
+    /**
+    * Creates and starts a speech job from a specified file.
+    * @param filename           Full path name of the file.
+    * @param encoding           The encoding of the file.  Default UTF-8.
+    * @return                   Job Number for the new job.
+    *
+    * The job is spoken using application's default talker.
+    * @see defaultTalker
+    *
+    * Plain text is parsed into individual sentences using the current sentence delimiter.
+    * Call @ref setSentenceDelimiter to change the sentence delimiter prior to calling sayFile.
+    * Call @ref getSentenceCount to retrieve the sentence count after calling sayFile.
+    *
+    * The text may contain speech mark language, such as SMML,
+    * provided that the speech plugin/engine support it.  In this case,
+    * sentence parsing follows the semantics of the markup language.
+    *
+    * @see @ref jobsandpriorities
+    */
+    int sayFile(const QString &filename, const QString &encoding);
+
+    /**
+    * Submits a speech job from the contents of the clipboard.
+    * The job is spoken using application's default talker.
+    * @return                   Job Number for the new job.
+    *
+    * @see defaultTalker
+    * @see @ref jobsandpriorities
+    */
+    int sayClipboard();
+
+    /**
+    * Pauses speech jobs belonging to the application.
+    * When called by a System Manager, pauses all jobs of all applications.
+    */
+    void pause();
+
+    /**
+    * Resumes speech jobs belonging to the application.
+    * When called by a System Manager, resumes all jobs of all applications.
+    */
+    void resume();
+
+    /**
+    * Removes the specified job.  If the job is speaking, it is stopped.
+    * @param jobNum             Job Number.  If 0, the last job submitted by
+    *                           the application.
+    */
+    void removeJob(int jobNum);
+
+    /**
+    * Removes all jobs belonging to the application.
+    * When called from a System Manager, removes all jobs of all applications.
+    */
+    void removeAllJobs();
+
+    /**
+    * Returns the number of sentences in a job.
+    * @param jobNum             Job Number.  If 0, the last job submitted by
+    *                           the application.
+    * @return                   Number of sentences in the job.
+    */
+    int getSentenceCount(int jobNum);
+
+    /**
+    * Returns the job number of the currently speaking job (any application).
+    * @return                    Job Number
+    */
+    int getCurrentJob();
+
+    /**
+    * Returns the number of jobs belonging to the application
+    * with the specified job priority.
+    * @param priority           Job Priority.  See KSpeech::JobPriority.
+    * @return                   Number of jobs.
+    *
+    * If priority is KSpeech::jpAll, returns the number of jobs belonging
+    * to the application (all priorities).
+    *
+    * When called from a System Manager, returns count of all jobs of the
+    * specified priority for all applications.
+    *
+    * @see @ref jobsandpriorities
+    */
+    int getJobCount(int priority);
+
+    /**
+    * Returns a list job numbers for the jobs belonging to the
+    * application with the specified priority.
+    * @param priority           Job Priority.  See KSpeech::JobPriority.
+    * @return                   List of job numbers.  Note that the numbers
+    *                           are strings.
+    *
+    * If priority is KSpeech::jpAll, returns the job numbers belonging
+    * to the application (all priorities).
+    *
+    * When called from a System Manager, returns job numbers of the
+    * specified priority for all applications.
+    *
+    * @see @ref jobsandpriorities
+    */
+    QStringList getJobNumbers(int priority);
+
+    /**
+    * Returns the state of a job.
+    * @param jobNum             Job Number.  If 0, the last job submitted by
+    *                           the application.
+    * @return                   Job state.  See KSpeech::JobState.
+    */
+    int getJobState(int jobNum);
+
+    /**
+    * Get information about a job.
+    * @param jobNum         Job Number.  If 0, the last job submitted by
+    *                       the application.
+    * @return               A QDataStream containing information about the job.
+    *                       Blank if no such job.
+    *
+    * The stream contains the following elements:
+    *   - int priority      Job Type.
+    *   - int state         Job state.
+    *   - QString appId     D-Bus senderId of the application that requested the speech job.
+    *   - QString talker    Talker code as requested by application.
+    *   - int sentenceNum   Current sentence being spoken.  Sentences are numbered starting at 1.
+    *   - int sentenceCount Total number of sentences in the job.
+    *   - QString applicationName Application's friendly name (if provided by app)
+    *
+    * If the job is currently filtering, waits for that to finish before returning.
+    *
+    * The following sample code will decode the stream:
+            @verbatim
+                QByteArray jobInfo = m_kspeech->getJobInfo(jobNum);
+                if (jobInfo != QByteArray()) {
+                    QDataStream stream(&jobInfo, QIODevice::ReadOnly);
+                    qint32 priority;
+                    qint32 state;
+                    QString talker;
+                    qint32 sentenceNum;
+                    qint32 sentenceCount;
+                    QString applicationName;
+                    stream >> priority;
+                    stream >> state;
+                    stream >> appId;
+                    stream >> talker;
+                    stream >> sentenceNum;
+                    stream >> sentenceCount;
+                    stream >> applicationName;
+                };
+            @endverbatim
+    */
+    QByteArray getJobInfo(int jobNum);
+
+    /**
+    * Return a sentence of a job.
+    * @param jobNum         Job Number.  If 0, the last job submitted by
+    *                       the application.
+    * @param sentenceNum    Sentence Number.  Sentence numbers start at 1.
+    * @return               The specified sentence in the specified job.  If no such
+    *                       job or sentence, returns "".
+    */
+    QString getJobSentence(int jobNum, int sentenceNum);
+
+    /**
+    * Return a list of full Talker Codes for configured talkers.
+    * @return               List of Talker codes.
+    *
+    * @see @ref talkers
+    */
+    QStringList getTalkerCodes();
+
+    /**
+    * Given a talker, returns the Talker ID for the talker.
+    * that will speak the job.
+    * @param talker         Talker.  Example: "en".
+    * @return               Talker ID.  A Talker ID is an internally-assigned
+    *                       identifier for a talker.
+    *
+    * This method is normally used only by System Managers.
+    */
+    QString talkerToTalkerId(const QString &talker);
+
+    /**
+    * Returns a bitarray giving the capabilities of a talker.
+    * @param talker         Talker.  Example: "en".
+    * @return               A word with bits set according to the capabilities
+    *                       of the talker.
+    *
+    * @see getTalkerCapabilities2
+    */
+    int getTalkerCapabilities1(const QString &talker);
+
+    /**
+    * Returns a bitarray giving the capabilities of a talker.
+    * @param talker         Talker.  Example: "en".
+    * @return               A word with bits set according to the capabilities
+    *                       of the talker.
+    *
+    * @see getTalkerCapabilities1
+    */
+    int getTalkerCapabilities2(const QString &talker);
+
+    /**
+    * Return a list of the voice codes of voices available in the synthesizer
+    * corresponding to a talker.
+    * @param talker         Talker.  Example: "synthesizer='Festival'"
+    * @return               List of voice codes.
+    *
+    * Voice codes are synthesizer specific.
+    * @see @ref talkers
+    */
+    QStringList getTalkerVoices(const QString &talker);
+
+    /**
+    * Change the talker of an already-submitted job.
+    * @param jobNum             Job Number.  If 0, the last job submitted by
+    *                           the application.
+    * @param talker             Desired new talker.
+    *
+    * @see @ref talkers
+    */
+    void changeJobTalker(int jobNum, const QString &talker);
+
+    /**
+    * Move a job one position down in the queue so that it is spoken later.
+    * If the job is already speaking, it is stopped and will resume
+    * when processing next gets to it.
+    * @param jobNum             Job Number.  If 0, the last job submitted by
+    *                           the application.
+    *
+    * Since there is only one ScreenReaderOutput, this method is meaningless
+    * for ScreenReaderOutput jobs.
+    */    
+    void moveJobLater(int jobNum);
+
+    /**
+    * Advance or rewind N sentences in a job.
+    * @param jobNum             Job Number.  If 0, the last job submitted by
+    *                           the application.
+    * @param n                  Number of sentences to advance (positive) or rewind (negative)
+    *                           in the job.
+    * @return                   Number of the sentence actually moved to.  Sentence numbers
+    *                           are numbered starting at 1.
+    *
+    * If no such job, does nothing and returns 0.
+    * If n is zero, returns the current sentence number of the job.
+    * Does not affect the current speaking/not-speaking state of the job.
+    *
+    * Since ScreenReaderOutput jobs are not split into sentences, this method
+    * is meaningless for ScreenReaderOutput jobs.
+    */    
+    int moveRelSentence(int jobNum, int n);
+
+    /**
+    * Display the KttsMgr program so that user can configure KTTS options.
+    * Only one instance of KttsMgr is displayed.
+    */
+    void showManagerDialog();
+
+    /**
+    * Shuts down KTTSD.  Do not call this!
+    */
+    void kttsdExit();
+    
+    /**
+    * Cause KTTSD to re-read its configuration.
+    */
+    void reinit();
+    
+    /** Called by DBusAdaptor so that KTTSD knows the application that
+    * called it.
+    * @param appId              D-Bus connection name that called %KSpeech.
+    */
+    void setCallingAppId(const QString& appId);
+        
+Q_SIGNALS: // SIGNALS
+    /**
+    * This signal is emitted when KTTSD starts.
+    */
+    void kttsdStarted();
+    
+    /**
+    * This signal is emitted just before KTTS exits.
+    */
+    void kttsdExiting();
+
+    /**
+    * This signal is emitted each time the state of a job changes.
+    * @param appId              The D-Bus connection name of the application that
+    *                           submitted the job.
+    * @param jobNum             Job Number.
+    * @param state              Job state.  @ref KSpeech::JobState.
+    */
+    void jobStateChanged(const QString &appId, int jobNum, int state);
+
+    /**
+    * This signal is emitted when a marker is processed.
+    * Currently only emits mtSentenceBegin and mtSentenceEnd.
+    * @param appId         The D-Bus connection name of the application that submitted the job.
+    * @param jobNum        Job Number of the job emitting the marker.
+    * @param markerType    The type of marker.  See @ref KSpeech::MarkerType.
+    *                      Currently either mtSentenceBegin or mtSentenceEnd.
+    * @param markerData    Data for the marker.
+    *                      Currently, this is the sentence number of the sentence
+    *                      begun or ended.  Sentence numbers begin at 1.
+    */
+    void marker(const QString &appId, int jobNum, int markerType, const QString &markerData);
+
+};
+
+// DOXYGEN_EXCLUDE = kspeechadaptor.* kspeechinterface.* kspeech.*
