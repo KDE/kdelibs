@@ -76,7 +76,7 @@ Solid::MacAddressList Solid::WirelessNetwork::bssList() const
     return d->iface->bssList();
 }
 
-Solid::Ifaces::Authentication *Solid::WirelessNetwork::authentication() const
+Solid::Authentication *Solid::WirelessNetwork::authentication() const
 {
     return d->iface->authentication();
 }

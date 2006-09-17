@@ -21,6 +21,7 @@
 #define SOLID_WIRELESSNETWORK_H
 
 #include <solid/network.h>
+#include <solid/authentication.h>
 #include <solid/ifaces/enums.h>
 
 
@@ -32,7 +33,6 @@ namespace Solid
     namespace Ifaces
     {
         class WirelessNetwork;
-        class Authentication;
     }
 
     class WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
@@ -76,7 +76,7 @@ namespace Solid
         /**
          * TODO decide how to handle these objects - pass by value with implicit sharing?
          */
-        Ifaces::Authentication *authentication() const;
+        Authentication *authentication() const;
 
     signals:
         void signalStrengthChanged( int );
