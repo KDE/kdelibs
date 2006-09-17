@@ -79,15 +79,23 @@ namespace Ifaces
         virtual MacAddressList bssList() = 0;
 
         /**
-         * TODO decide how to handle these objects - pass by value
+         * TODO decide how to handle these objects - pass by value?
          */
         virtual Authentication * authentication() = 0;
-
+        /**
+         * set the authentication currently in use on this network
+         */
+        virtual void setAuthentication( Authentication * ) = 0;
     signals:
         void signalStrengthChanged( int );
         void bitrateChanged( int );
         void associationChanged( bool );
         void activeChanged( bool );
+        /**
+         * Emitted when the network requires authentication data in order to be able to connect.
+         * Respond to this by calling setAuthentication.
+         */
+        void authenticationNeeded();
     };
 } //Ifaces
 } //Solid
