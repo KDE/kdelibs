@@ -759,8 +759,6 @@ KDateTime::KDateTime()
 {
 }
 
-KDateTime::KDateTime(KDateTimePrivate*) {}
-
 KDateTime::KDateTime(const QDate &date, const Spec &spec)
 : d(new KDateTimePrivate(QDateTime(date, KDateTimePrivate::sod, Qt::LocalTime), spec, true))
 {
@@ -808,6 +806,7 @@ KDateTime &KDateTime::operator=(const KDateTime &other)
     return *this;
 }
 
+void      KDateTime::detach()                   { d.detach(); }
 bool      KDateTime::isNull() const             { return d->dt().isNull(); }
 bool      KDateTime::isValid() const            { return d->specType != Invalid  &&  d->dt().isValid(); }
 bool      KDateTime::outOfRange() const         { return d->status == stTooEarly; }

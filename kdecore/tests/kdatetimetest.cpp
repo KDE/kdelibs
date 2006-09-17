@@ -3341,7 +3341,15 @@ void KDateTimeTest::cache()
     ++zoneHit;
     QCOMPARE(KDateTime_utcCacheHit, utcHit);
     QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt4a = dt3.toZone(losAngeles);
+    ++zoneHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
     KDateTime dt5 = dt2.toZone(losAngeles);
+    ++zoneHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt5a = dt3.toZone(losAngeles);
     ++zoneHit;
     QCOMPARE(KDateTime_utcCacheHit, utcHit);
     QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
@@ -3349,7 +3357,15 @@ void KDateTimeTest::cache()
     ++utcHit;
     QCOMPARE(KDateTime_utcCacheHit, utcHit);
     QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt6a = dt3.toZone(cairo);
+    ++zoneHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    dt3.detach();
     KDateTime dt7 = dt2.toZone(london);
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt7a = dt3.toZone(london);
     QCOMPARE(KDateTime_utcCacheHit, utcHit);
     QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
 

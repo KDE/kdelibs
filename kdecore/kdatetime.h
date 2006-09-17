@@ -121,7 +121,9 @@ class KDateTimeSpecPrivate;
  * KDateTime uses Qt's facilities to implicitly share data. Copying instances
  * is very efficient, and copied instances share cached UTC and time zone
  * conversions even after the copy is performed. A separate copy of the data is
- * created whenever a non-const method is called. 
+ * created whenever a non-const method is called. If you want to force the
+ * creation of a separate copy of the data (e.g. if you want two copies to
+ * cache different time zone conversions), call detach(). 
  *
  * @section compatibility QDateTime Considerations
  *
@@ -1497,14 +1499,25 @@ class KDECORE_EXPORT KDateTime
     bool operator>(const KDateTime &other) const { return other < *this; }
     bool operator>=(const KDateTime &other) const { return !(*this < other); }
 
+    /**
+     * Create a separate copy of this instance's data if it is implicitly shared
+     * with another instance.
+     *
+     * You would normally only call this if you want different copies of the
+     * same date/time value to cache conversions to different time zones. Because
+     * only the last conversion to another time zone is cached, and the cached
+     * value is implicitly shared, judicious use of detach() could improve
+     * efficiency when handling several time zones. But take care: if used
+     * inappropriately, it will reduce efficiency!
+     */
+    void detach();
+
     /** Write @p dateTime to the datastream @p out, in binary format. */
     friend QDataStream &operator<<(QDataStream &out, const KDateTime &dateTime);
     /** Read a KDateTime object into @p dateTime from @p in, in binary format. */
     friend QDataStream &operator>>(QDataStream &in, KDateTime &dateTime);
 
   private:
-    explicit KDateTime(KDateTimePrivate*);
-
     QSharedDataPointer<KDateTimePrivate> d;
 };
 
