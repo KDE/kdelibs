@@ -505,7 +505,7 @@ Q_SIGNALS:
 
   /**
    * Progress signal showing the overall progress of the KDirLister.
-   * This allows using a progress bar very easily. (see KProgressBar)
+   * This allows using a progress bar very easily. (see QProgressBar)
    * @param percent the progress in percent
    */
   void percent( int percent );
