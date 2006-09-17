@@ -20,6 +20,7 @@
 #ifndef SOLID_IFACES_NETWORKDEVICE_H
 #define SOLID_IFACES_NETWORKDEVICE_H
 
+#include <QList>
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/enums.h>
@@ -63,6 +64,8 @@ namespace Ifaces
         void signalStrengthChanged( int );
         void connectionStateChanged( int /*ConnectionState*/ );
     };
+
+    typedef QList<NetworkDevice> NetworkDeviceList;
 } //Ifaces
 } //Solid
 
