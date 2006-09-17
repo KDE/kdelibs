@@ -38,7 +38,7 @@ class KSpeechPrivate;
 * KSpeech -- the KDE Text-to-Speech API.
 *
 * Note: Applications do not use this class directly.  Instead,
-* use the @ref KSpeechInterface object as described in
+* use the @ref OrgKdeKSpeechInterface object as described in
 * @ref programming.
 *
 * See also @ref kspeech_intro
