@@ -2,6 +2,7 @@ install( FILES
  x-c++src.desktop
  x-c++hdr.desktop
  x-csrc.desktop
+ x-csharp.desktop
  x-java.desktop
  x-makefile.desktop
  x-moc.desktop
