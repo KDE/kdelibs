@@ -288,7 +288,6 @@ Desktop Entry Spec</a>
 <ul>
 <li>Removed. Use KGlobalSettings::self()-&gt;emitChange() instead of KIPC::sendMessageAll().</li>
 </ul>
-</h4>
 
 <h4>KKey</h4>
 <ul>
@@ -946,14 +945,12 @@ if needed (see the KURLDrag section)</li>
 
 <h4>KProgress</h4>
 <ul>
-<li>Use QProgressBar instead. This class will probably move to kde3support.
+<li>Removed. Use QProgressBar instead.
 <ul>
 <li>advance(int offset) -&gt; setValue(value()+offset)</li>
+<li>QProgressBar has changed a lot in Qt4 ( setTotalSteps(totalSteps) -&gt; setRange(0, totalSteps), setProgress -&gt; setValue, percentageChanged -&gt; valueChanged ). For more details see QProgressBar class reference.</li>
 </ul>
 </li>
-<li>KProgress has been renamed to KProgressBar (#include &lt;kprogressbar.h&gt; instead of #include &lt;kprogress.h&gt;)</li>
-<li>QProgressBar is mostly enough. KProgressBar only necessary if setFormat(const QString &amp; format) or advance(int offset) is needed.</li>
-<li>KProgressBar inherits from QProgressBar. QProgressBar has changed a lot in Qt4 ( setTotalSteps(totalSteps) -&gt; setRange(0, totalSteps), setProgress -&gt; setValue, percentageChanged -&gt; valueChanged ). For more details see QProgressBar class reference.</li>
 </ul>
 
 <h4>KProgressDialog</h4>

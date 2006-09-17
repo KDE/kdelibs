@@ -132,7 +132,6 @@ set(kdeui_LIB_SRCS
  widgets/klineedit.cpp
  widgets/kmenu.cpp
  widgets/knuminput.cpp
- widgets/kprogressbar.cpp
  widgets/kpushbutton.cpp
  widgets/kselector.cpp
  widgets/ksqueezedtextlabel.cpp

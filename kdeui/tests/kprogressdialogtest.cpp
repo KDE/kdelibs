@@ -5,7 +5,6 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 
-#include "kprogressbar.h"
 #include "kprogressdialog.h"
 
 class MyWidget : public QWidget {

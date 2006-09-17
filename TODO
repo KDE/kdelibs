@@ -316,9 +316,6 @@ informations
 
 - Prevent re-entering event loop in kded to avoid reentrancy problems like with kwallet in KDE3 (Lubos).
 
-- Port applicationt that use KProgressBar to use QProgressBar.  KProgressBar is going away now that
-  QProgressBar has setFormat() (Benjamin)
-
 - Customizable KToolTip/KWhatsThis widgets|Jaroslaw Staniek (kdelibs4 TODO/KToolTip|Details)
 
 - Additional (automatic) shortcuts for KMessageBox (Jaroslaw Staniek) Seehttp://lists.kde.org/?l=kde-usability&m=109688936328920&w=2

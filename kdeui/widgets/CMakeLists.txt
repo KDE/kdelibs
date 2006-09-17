@@ -1,5 +1,4 @@
 install( FILES
- kprogressbar.h
  kdatepicker.h
  kmenu.h
  kfontrequester.h

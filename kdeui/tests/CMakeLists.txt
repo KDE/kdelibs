@@ -304,19 +304,6 @@ target_link_libraries(kpopuptest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
-set(kprogressbartest_SRCS
-kprogressbartest.cpp
-)
-
-kde4_automoc(${kprogressbartest_SRCS})
-
-kde4_add_executable(kprogressbartest RUN_UNINSTALLED ${kprogressbartest_SRCS})
-
-target_link_libraries(kprogressbartest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
 set(kprogressdialogtest_SRCS
 kprogressdialogtest.cpp
 )
