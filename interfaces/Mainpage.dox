@@ -7,12 +7,12 @@
 *
 * Documented interfaces are:
 *
-* - KSpeech - The KDE Text-to-Speech API.
+* - <a href="../kspeech/html/index.html"><b>KSpeech</b></a> - <i>The KDE Text-to-Speech D-Bus API.</i>
 * - Terminal
 * - <a href="../ktexteditor/html/index.html"><b>KTextEditor</b></a> (<a href="../ktexteditor/html/classes.html">classes</a>)\n
 *   <i>Interface to plain text editing services in KDE.</i>
 *
 */
 // DOXYGEN_REFERENCES = kdecore kdefx kdeui kparts dcop
-// DOXYGEN_EXCLUDE = kspeech ktexteditor
+// DOXYGEN_EXCLUDE = kspeech ktexteditor kdocument
 // DOXYGEN_SET_RECURSIVE = YES

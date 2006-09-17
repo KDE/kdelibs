@@ -169,7 +169,7 @@
  * Sending a text job to KSpeech is very simple.  Sample code:
  *
     @verbatim
-       #include <QtDBus>
+       #include <QtCore/QtDBus>
        
        QDBusInterface kspeech("org.kde.kttsd", "/KSpeech", "org.kde.KSpeech");
        // Send a string to KTTS and get back a job number.
@@ -185,7 +185,7 @@
  * to Message and specifies a language code ("en" or "de", for example):
  *
    @verbatim
-     #include <QtDBus>
+     #include <QtCore/QtDBus>
      #include <kspeech>
 
      bool kttsdSay (const QString &text, const QString &language) {
