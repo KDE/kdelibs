@@ -28,6 +28,9 @@
 
 QTEST_KDEMAIN(KDateTimeTest, NoGUI)
 
+extern int KDateTime_utcCacheHit;
+extern int KDateTime_zoneCacheHit;
+
 
 ////////////////////////////////////////////////////////////////////////
 // KDateTime::Spec constructors and basic property information methods,
@@ -778,6 +781,8 @@ void KDateTimeTest::constructors()
     QVERIFY(!dateTime_TimeZone.isValid());
     KDateTime datetime_TimeZone(dtLocal, KDateTime::TimeZone);
     QVERIFY(!datetime_TimeZone.isValid());
+    KDateTime datetime_Invalid(dtLocal, KDateTime::Invalid);
+    QVERIFY(!datetime_Invalid.isValid());
 
     // Restore the original local time zone
     if (!originalZone)
@@ -3286,6 +3291,67 @@ void KDateTimeTest::strings_format()
     QVERIFY(!dt.isValid());    // too early
     QVERIFY(dt.outOfRange());
 
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
+}
+
+void KDateTimeTest::cache()
+{
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
+    const KTimeZone *cairo = KSystemTimeZones::zone("Africa/Cairo");
+
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", ":Europe/London", 1);
+    ::tzset();
+
+    // Ensure that local time is different from UTC and different from 'london'
+    ::setenv("TZ", ":America/Los_Angeles", 1);
+    ::tzset();
+
+    int utcHit  = KDateTime_utcCacheHit;
+    int zoneHit = KDateTime_zoneCacheHit;
+    KDateTime local(QDate(2005,6,1), QTime(12,0,0), KDateTime::LocalZone);
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt1 = local.toZone(london);
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime cai = local.toZone(cairo);
+    ++utcHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt2a = local.toZone(london);
+    ++utcHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt2 = local.toZone(london);
+    ++zoneHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt3 = dt2;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt4 = dt2.toZone(losAngeles);
+    ++zoneHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt5 = dt2.toZone(losAngeles);
+    ++zoneHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt6 = dt2.toZone(cairo);
+    ++utcHit;
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
+    KDateTime dt7 = dt2.toZone(london);
+    QCOMPARE(KDateTime_utcCacheHit, utcHit);
+    QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
 
     // Restore the original local time zone
     if (!originalZone)

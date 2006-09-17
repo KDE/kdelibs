@@ -77,7 +77,8 @@ class KDateTimeSpecPrivate;
  * To set the time specification, use one of the setTimeSpec() methods, to get
  * the time specification, call timeSpec(), isUtc(), isLocalZone(),
  * isOffsetFromUtc() or isClockTime(). To determine whether two KDateTime
- * instances have the same time specification, use compareTimeSpec().
+ * instances have the same time specification, call timeSpec() on each and
+ * compare the returned values using KDateTime::Spec::operator==().
  *
  * @section manipulation Date and Time Manipulation
  *
@@ -90,7 +91,10 @@ class KDateTimeSpecPrivate;
  * A KDateTime object can be converted to a different time specification by
  * using toUtc(), toLocalZone() or toClockTime(). It can be converted to a
  * specific time zone by toZone(). To return the time as an elapsed time since
- * 1 January 1970 (as used by time(2)), use toTime_t().
+ * 1 January 1970 (as used by time(2)), use toTime_t(). The results of time
+ * zone conversions are cached to minimize the need for recalculation. Each
+ * KDateTime object caches its UTC equivalent and the last time zone
+ * conversion performed.
  *
  * The date and time can be set either in the constructor, or afterwards by
  * calling setDate(), setTime() or setDateTime(). To return the date and/or
@@ -114,6 +118,11 @@ class KDateTimeSpecPrivate;
  * the toString() and fromString() methods. These handle a variety of text
  * formats including ISO 8601 and RFC 2822.
  *
+ * KDateTime uses Qt's facilities to implicitly share data. Copying instances
+ * is very efficient, and copied instances share cached UTC and time zone
+ * conversions even after the copy is performed. A separate copy of the data is
+ * created whenever a non-const method is called. 
+ *
  * @section compatibility QDateTime Considerations
  *
  * KDateTime's interface is designed to be as compatible as possible with that
@@ -133,7 +142,8 @@ class KDateTimeSpecPrivate;
  *   systems for scientific applications can be much simpler, but may differ
  *   from historical records.
  *
- * - time zones were not invented until the middle of the 19th century.
+ * - time zones were not invented until the middle of the 19th century. Before
+ *   that, solar time was used.
  *
  * Because of these issues, together with the fact that KDateTime's aim is to
  * provide automatic time zone handling for date/time values, QDateTime was
@@ -799,7 +809,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param spec new time specification
      * @return converted time
-     * @see toLocalZone(), toUtc(), toOffsetFromUtc(), toZone(), compareTimeSpec(), KTimeZone::convert()
+     * @see toLocalZone(), toUtc(), toOffsetFromUtc(), toZone(), KTimeZone::convert()
      */
     KDateTime toTimeSpec(const Spec &spec) const;
 
@@ -812,7 +822,7 @@ class KDECORE_EXPORT KDateTime
      *
      * @param dt instance providing the new time specification
      * @return converted time
-     * @see toLocalZone(), toUtc(), toOffsetFromUtc(), toZone(), compareTimeSpec(), KTimeZone::convert()
+     * @see toLocalZone(), toUtc(), toOffsetFromUtc(), toZone(), KTimeZone::convert()
      */
     KDateTime toTimeSpec(const KDateTime &dt) const;
 
@@ -868,9 +878,7 @@ class KDECORE_EXPORT KDateTime
      *
      * If @p dt is a local time (\code dt.timeSpec() == Qt::LocalTime \endcode)
      * and the instance is UTC, @p dt is first converted from the current
-     * system time zone to UTC before being stored. If @p dt is UTC and the
-     * instance is not UTC, @p dt is first converted to the current system time
-     * zone before being stored.
+     * system time zone to UTC before being stored.
      *
      * If the instance was date-only, it is changed to being a date and time
      * value.

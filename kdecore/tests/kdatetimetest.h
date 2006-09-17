@@ -44,6 +44,7 @@ private Q_SLOTS:
     void strings_rfc2822();
     void strings_qttextdate();
     void strings_format();
+    void cache();
     void misc();
 };
 
