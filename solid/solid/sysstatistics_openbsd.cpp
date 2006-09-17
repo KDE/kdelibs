@@ -67,7 +67,7 @@ Solid::SysStatistics::~SysStatistics()
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad()
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad()
 {
     register short i;
     QMap<ProcessorLoadType, float> map_to_fill;
@@ -96,7 +96,7 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getPr
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad( short cpuNumber )
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( short cpuNumber )
 {
     QMap<ProcessorLoadType, float> map_to_fill;
     int name_levels[] = { CTL_KERN, KERN_CPTIME2, cpuNumber };

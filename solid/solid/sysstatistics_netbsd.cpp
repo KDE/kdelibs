@@ -40,7 +40,7 @@ namespace Solid
          * retrive the average of the averall cpus and 3 for a specific
          * cpu. The third level specifies a cpu.
          */
-        bool __getProcessorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int levelsLength );
+        bool processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int levelsLength );
 
         /**
          * Calculates the processor usage percentages
@@ -83,14 +83,14 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getPr
 {
     QMap<ProcessorLoadType, float> map_to_fill;
 
-    d->__getProcessorLoad( &map_to_fill, 2 );
+    d->processorLoad( &map_to_fill, 2 );
 
     return map_to_fill;
 }
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad( short cpuNumber )
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( short cpuNumber )
 {
     QMap<ProcessorLoadType, float> map_to_fill;
 
@@ -98,14 +98,14 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getPr
         return map_to_fill;
 
     d->name_levels[2] = cpuNumber;
-    d->__getProcessorLoad( &map_to_fill, 3 );
+    d->processorLoad( &map_to_fill, 3 );
 
     return map_to_fill;
 }
 
 
 
-bool Solid::SysStatistics::Private::__getProcessorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int levelsLength )
+bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int levelsLength )
 {
     static size_t length = CPUSTATES * sizeof(int64_t);
 

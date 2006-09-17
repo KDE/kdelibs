@@ -69,7 +69,7 @@ Solid::SysStatistics::~SysStatistics()
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad()
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad()
 {
     QMap<ProcessorLoadType, float> map_to_fill;
     static size_t length = sizeof(d->processor_time);
@@ -90,7 +90,7 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getPr
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad( short processorNumber )
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( short processorNumber )
 {
     return getProcessorLoad();
 }

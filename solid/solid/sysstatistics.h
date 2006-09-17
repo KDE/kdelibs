@@ -66,7 +66,7 @@ namespace Solid
          * Key values are listed on the enum ProcessorLoadType.
          * If occurs an error the container will be empty.
          */
-        QMap<ProcessorLoadType, float> getProcessorLoad();
+        QMap<ProcessorLoadType, float> processorLoad();
 
         /**
          * Retrieves the time that the chosen processor spends in each state, 
@@ -76,7 +76,7 @@ namespace Solid
          * Key values are listed on the enum ProcessorLoadType.
          * If occurs an error the container will be empty.
          */
-        QMap<ProcessorLoadType, float> getProcessorLoad( short processorNumber );
+        QMap<ProcessorLoadType, float> processorLoad( short processorNumber );
 
     private:
         class Private;

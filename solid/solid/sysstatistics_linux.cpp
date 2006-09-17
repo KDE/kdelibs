@@ -49,7 +49,7 @@ namespace Solid
          * @param processorNumber Index of cpu to retrieve the info (0..n).
          * @return false if occurs an error, true otherwise.
          */
-        bool __getProcessorLoad( QMap<ProcessorLoadType, float> * mapToFill, short processorNumber );
+        bool processorLoad( QMap<ProcessorLoadType, float> * mapToFill, short processorNumber );
 
         /**
          * Parses a line of /proc/stat and calculates the percentages
@@ -84,28 +84,28 @@ Solid::SysStatistics::~SysStatistics()
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad()
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad()
 {
     QMap<ProcessorLoadType, float> map_to_fill;
 
-    d->__getProcessorLoad( &map_to_fill, -1 );
+    d->processorLoad( &map_to_fill, -1 );
     return map_to_fill;
 }
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::getProcessorLoad( short processorNumber )
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( short processorNumber )
 {
     QMap<ProcessorLoadType, float> map_to_fill;
 
     if ( processorNumber >= 0 )
-        d->__getProcessorLoad( &map_to_fill, processorNumber );
+        d->processorLoad( &map_to_fill, processorNumber );
     return map_to_fill;
 }
 
 
 
-bool Solid::SysStatistics::Private::__getProcessorLoad( QMap<ProcessorLoadType, float> * mapToFill, short processorNumber )
+bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, short processorNumber )
 {
     register short i;
 
