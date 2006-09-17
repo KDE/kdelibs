@@ -20,9 +20,9 @@
 #ifndef KPROGRESSDIALOG_H
 #define KPROGRESSDIALOG_H
 
-#include <kdialog.h>
+#include <QProgressBar>
 
-class QProgressBar;
+#include <kdialog.h>
 
 /**
  * @short A dialog with a progress bar
