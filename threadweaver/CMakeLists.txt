@@ -34,7 +34,7 @@ install(TARGETS threadweaver DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES
     WeaverInterface.h
-    ThreadWeaver .h
+    ThreadWeaver.h
     WeaverImpl.h
     DebuggingAids.h
     Thread.h
