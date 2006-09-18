@@ -118,8 +118,6 @@
 #include <QDesktopWidget>
 #include <QMetaObject>
 
-// exported for kdm kfrontend
-//KDE_EXPORT bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 bool kde_kiosk_admin = false;
 
@@ -588,8 +586,6 @@ void KApplication::init()
                                                QDBusConnection::ExportScriptableProperties |
                                                QDBusConnection::ExportAdaptors);
 
-  smw = 0;
-
   // Trigger creation of locale.
   (void) KGlobal::locale();
 
@@ -664,22 +660,8 @@ void KApplication::init()
   pSessionConfig = 0L;
   bSessionManagement = true;
 
-#ifdef Q_WS_X11
-  // register a communication window for desktop changes (Matthias)
-  // ### is this still needed [e.g. for session management] even now that KIPC has been removed? (David)
-  if (type() == GuiClient /*&& kde_have_kipc*/ )
-  {
-    smw = new QWidget();
-    long data = 1;
-    XChangeProperty(QX11Info::display(), smw->winId(),
-		    atom_DesktopWindow, atom_DesktopWindow,
-		    32, PropModeReplace, (unsigned char *)&data, 1);
-  }
-  d->oldIceIOErrorHandler = IceSetIOErrorHandler( kde_ice_ioerrorhandler );
-#elif defined(Q_WS_WIN)
+#ifdef Q_WS_WIN
   KApplication_init_windows();
-#else
-  // FIXME(E): Implement for Qt Embedded
 #endif
 }
 
@@ -976,8 +958,6 @@ KApplication::~KApplication()
   // KLibLoader will take care of the remaining ones.
   KGlobal::deleteStaticDeleters();
   KLibLoader::cleanUp();
-
-  delete smw;
 
   KProcessController::deref();
 

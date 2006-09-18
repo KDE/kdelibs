@@ -458,7 +458,6 @@ private:
 
   KConfig* pSessionConfig; //instance specific application config object
   bool bSessionManagement;
-  QWidget *smw;
 
   void init();
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
