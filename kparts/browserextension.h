@@ -472,7 +472,7 @@ public:
   static BrowserExtension *childObject( QObject *obj );
 
   /**
-   * Asks the hosting browser to perform a paste (using openURLRequestDelayed())
+   * Asks the hosting browser to perform a paste (using openUrlRequestDelayed())
    */
   void pasteRequest();
 
@@ -499,12 +499,12 @@ public:  // yes, those signals are public; don't tell moc :)
    * Asks the host (browser) to open @p url.
    * To set a reload, the x and y offsets, the service type etc., fill in the
    * appropriate fields in the @p args structure.
-   * Hosts should not connect to this signal but to openURLRequestDelayed().
+   * Hosts should not connect to this signal but to openUrlRequestDelayed().
    */
   void openUrlRequest( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
-   * This signal is emitted when openURLRequest() is called, after a 0-seconds timer.
+   * This signal is emitted when openUrlRequest() is called, after a 0-seconds timer.
    * This allows the caller to terminate what it's doing first, before (usually)
    * being destroyed. Parts should never use this signal, hosts should only connect
    * to this signal.

@@ -4401,7 +4401,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   //kDebug( 6050 ) << "KHTMLPart::processObjectRequest trying to create part for " << mimetype << endl;
 
   // IMPORTANT: create a copy of the url here, because it is just a reference, which was likely to be given
-  // by an emitting frame part (emit openURLRequest( blahurl, ... ) . A few lines below we delete the part
+  // by an emitting frame part (emit openUrlRequest( blahurl, ... ) . A few lines below we delete the part
   // though -> the reference becomes invalid -> crash is likely
   KUrl url( _url );
 
