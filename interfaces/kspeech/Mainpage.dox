@@ -809,12 +809,16 @@ public Q_SLOTS: // METHODS
     * @return               Application display name.
     *
     * If application has not provided a friendly name, the D-Bus connection name is returned.
+    *
+    * @see setApplicationName
     */
     QString applicationName();
 
     /**
     * Sets a friendly display name for the application.
     * @param applicationName    Friendly name for the application.
+    *
+    * @see applicationName
     */    
     void setApplicationName(const QString &applicationName);
 
@@ -824,6 +828,7 @@ public Q_SLOTS: // METHODS
     *
     * The default is "", which uses the default talker configured by user.
     *
+    * @see setDefaultTalker
     * @see @ref talkers
     */
     QString defaultTalker();
@@ -831,7 +836,8 @@ public Q_SLOTS: // METHODS
     /**
     * Sets the default talker for the application.
     * @param defaultTalker      Default talker.  Example: "en".
-    * 
+    *
+    * @see defaultTalker
     * @see @ref talkers
     */
     void setDefaultTalker(const QString &defaultTalker);
@@ -840,6 +846,7 @@ public Q_SLOTS: // METHODS
     * Returns the default priority for speech jobs submitted by the application.
     * @return                   Default job priority.  See KSpeech::JobPriority.
     *
+    * @see setDefaultPriority
     * @see @ref jobsandpriorities
     */
     int defaultPriority();
@@ -848,6 +855,7 @@ public Q_SLOTS: // METHODS
     * Sets the default priority for speech jobs submitted by the application.
     * @param defaultPriority    Default job priority.  See KSpeech::JobPriority.
     *
+    * @see defaultPriority
     * @see @ref jobsandpriorities
     */
     void setDefaultPriority(int defaultPriority);
@@ -864,6 +872,7 @@ public Q_SLOTS: // METHODS
     *
     * Note that backward slashes must be escaped.
     *
+    * @see setSentenceDelimiter
     * @see @ref sentenceparsing
     */
     QString sentenceDelimiter();
@@ -873,6 +882,7 @@ public Q_SLOTS: // METHODS
     * Detection (SBD) for the application.
     * @param sentenceDelimiter  Sentence delimiter regular expression.
     *
+    * @see sentenceDelimiter
     * @see @ref sentenceparsing
     */
     void setSentenceDelimiter(const QString &sentenceDelimiter);
@@ -884,6 +894,7 @@ public Q_SLOTS: // METHODS
     *
     * Filtering is on by default.
     *
+    * @see setFilteringOn
     * @see @ref filters
     */
     bool filteringOn();
@@ -893,6 +904,7 @@ public Q_SLOTS: // METHODS
     * filter plugins.
     * @param filteringOn    True to set filtering on.
     *
+    * @see filteringOn
     * @see @ref filters
     */
     void setFilteringOn(bool filteringOn);
@@ -902,6 +914,7 @@ public Q_SLOTS: // METHODS
     * talkers to meet required talker attributes.
     * @return               True if KTTSD will autoconfigure talkers.
     *
+    * @see setAutoConfigureTalkersOn
     * @see defaultTalker
     * @see @ref talkers
     */
@@ -912,6 +925,7 @@ public Q_SLOTS: // METHODS
     * talkers to meet required talker attributes.
     * @param autoConfigureTalkersOn True to enable auto configuration.
     *
+    * @see autoConfigureTalkersOn
     * @see @ref talkers
     */
     void setAutoConfigureTalkersOn(bool autoConfigureTalkersOn);
@@ -919,6 +933,8 @@ public Q_SLOTS: // METHODS
     /**
     * Returns whether application is paused.
     * @return               True if application is paused.
+    *
+    * @see pause
     */
     bool isApplicationPaused();
     
@@ -927,6 +943,7 @@ public Q_SLOTS: // METHODS
     * markup to speakable form.
     * @return               XSLT filename.
     *
+    * @see setHtmlFilterXsltFile
     * @see @ref filters
     */
     QString htmlFilterXsltFile();
@@ -936,6 +953,7 @@ public Q_SLOTS: // METHODS
     * markup to speakable form.
     * @param htmlFilterXsltFile XSLT filename.
     *
+    * @see htmlFilterXsltFile
     * @see @ref filters
     */
     void setHtmlFilterXsltFile(const QString &htmlFilterXsltFile);
@@ -945,6 +963,7 @@ public Q_SLOTS: // METHODS
     * markup to a speakable form.
     * @return                   XSLT filename.
     *
+    * @see setSsmlFilterXsltFile
     * @see @ref filters
     */
     QString ssmlFilterXsltFile();
@@ -954,6 +973,7 @@ public Q_SLOTS: // METHODS
     * markup to a speakable form.
     * @param ssmlFilterXsltFile XSLT filename.
     *
+    * @see ssmlFilterXsltFile
     * @see @ref filters
     */
     void setSsmlFilterXsltFile(const QString &ssmlFilterXsltFile);
@@ -961,6 +981,8 @@ public Q_SLOTS: // METHODS
     /**
     * Returns whether this is a System Manager application.
     * @return                   True if the application is a System Manager.
+    *
+    * @see setIsSystemManager
     */
     bool isSystemManager();
 
@@ -970,6 +992,8 @@ public Q_SLOTS: // METHODS
     *
     * System Managers are used to control and configure overall TTS output.
     * When True, many of the KSpeech methods alter their behavior.
+    *
+    * @see isSystemManager
     */
     void setIsSystemManager(bool isSystemManager);
 
@@ -1018,6 +1042,8 @@ public Q_SLOTS: // METHODS
     /**
     * Pauses speech jobs belonging to the application.
     * When called by a System Manager, pauses all jobs of all applications.
+    *
+    * @see isApplicationPaused
     */
     void pause();
 
@@ -1031,12 +1057,16 @@ public Q_SLOTS: // METHODS
     * Removes the specified job.  If the job is speaking, it is stopped.
     * @param jobNum             Job Number.  If 0, the last job submitted by
     *                           the application.
+    *
+    * @see removeAllJobs
     */
     void removeJob(int jobNum);
 
     /**
     * Removes all jobs belonging to the application.
     * When called from a System Manager, removes all jobs of all applications.
+    *
+    * @see removeJob
     */
     void removeAllJobs();
 
