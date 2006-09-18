@@ -88,7 +88,6 @@ if (UNIX)
 endif (UNIX)
 
 
-add_subdirectory( malloc )
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( network )
@@ -229,7 +228,6 @@ set(kdecore_LIB_SRCS
    kservice/yacc.c
    kservice/lex.c
    kservice/kplugininfo.cpp
-   malloc/malloc.c
    ${CMAKE_SOURCE_DIR}/libltdl/ltdl.c
 )
 
