@@ -104,6 +104,7 @@ KCMultiDialog::~KCMultiDialog()
     OrphanMap::Iterator end2 = m_orphanModules.end();
     for( OrphanMap::Iterator it = m_orphanModules.begin(); it != end2; ++it )
         delete ( *it );
+    delete d;
 }
 
 void KCMultiDialog::slotDefault()
