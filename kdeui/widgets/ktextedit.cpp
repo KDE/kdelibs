@@ -319,6 +319,8 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
     }
   }
 
+  if( !isReadOnly() ) 
+  {
   popup->addSeparator();
   d->spellCheckAction = popup->addAction( SmallIconSet( "spellcheck" ), i18n( "Check Spelling..." ) );
 
@@ -333,6 +335,7 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
   d->allowTab = popup->addAction( i18n("Allow Tabulations") );
   d->allowTab->setCheckable( true );
   d->allowTab->setChecked( !tabChangesFocus() );
+  }
   popup->exec( event->globalPos() );
 
   delete popup;
