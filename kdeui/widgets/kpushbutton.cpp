@@ -21,6 +21,9 @@
 
 #include <qdrag.h>
 #include <qevent.h>
+#include <qpointer.h>
+#include <qstyle.h>
+#include <qtimer.h>
 
 #include "config.h"
 
@@ -28,12 +31,15 @@
 #include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <qmenu.h>
 
 class KPushButton::KPushButtonPrivate
 {
 public:
     KGuiItem item;
     KStdGuiItem::StdItem itemType;
+    QPointer<QMenu> delayedMenu;
+    QTimer * delayedMenuTimer;
 };
 
 bool KPushButton::s_useIcons = false;
@@ -79,7 +85,10 @@ void KPushButton::init( const KGuiItem &item )
     d = new KPushButtonPrivate;
     d->item = item;
     d->itemType = (KStdGuiItem::StdItem) 0;
+    d->delayedMenuTimer=0;
 
+    connect(this,SIGNAL(pressed()),this, SLOT(slotPressedInternal()));
+    connect(this,SIGNAL(clicked()),this, SLOT(slotClickedInternal()));
     // call QPushButton's implementation since we don't need to
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
@@ -197,6 +206,45 @@ void KPushButton::startDrag()
     QDrag *d = dragObject();
     if ( d )
 	d->start();
+}
+
+void KPushButton::setDelayedMenu(QMenu *delayedMenu)
+{
+    d->delayedMenu=delayedMenu;
+}
+
+QMenu* KPushButton::delayedMenu()
+{
+    return d->delayedMenu;
+}
+
+
+void KPushButton::slotPressedInternal()
+{
+    if (!d->delayedMenu.isNull()) {
+	if (d->delayedMenuTimer==0) {
+		d->delayedMenuTimer=new QTimer(this);
+		d->delayedMenuTimer->setSingleShot(true);
+		connect(d->delayedMenuTimer,SIGNAL(timeout()),this,SLOT(slotDelayedMenuTimeout()));
+	}
+	int delay=style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, this);
+	d->delayedMenuTimer->start((delay<=0) ? 150:delay);
+    }
+}
+
+void KPushButton::slotClickedInternal()
+{
+    if (d->delayedMenuTimer)
+	d->delayedMenuTimer->stop();
+}
+
+void KPushButton::slotDelayedMenuTimeout() {
+    d->delayedMenuTimer->stop();
+    if (!d->delayedMenu.isNull()) {
+    	setMenu(d->delayedMenu);
+    	showMenu();
+    	setMenu(0);
+    }
 }
 
 #include "kpushbutton.moc"

@@ -25,6 +25,7 @@
 #include <kstdguiitem.h>
 
 class QDrag;
+class QMenu;
 
 /**
  * This is nothing but a QPushButton with drag-support and KGuiItem support.
@@ -109,6 +110,18 @@ public:
     */
     void setText( const QString &text );
 
+    /**
+     * Sets a delayed popup menu
+     * for consistency, since menu() isn't virtual
+     */
+     void setDelayedMenu(QMenu *delayed_menu);
+
+    /**
+     * returns a delayed popup menu
+     * since menu() isn't virtual
+     */
+     QMenu *delayedMenu();
+   
 protected:
     /**
      * Reimplement this and return the QDrag object that should be used
@@ -138,7 +151,9 @@ private:
 
 private Q_SLOTS:
     void slotSettingsChanged( int category );
-
+    void slotPressedInternal();
+    void slotClickedInternal();
+    void slotDelayedMenuTimeout();
 private:
     /**
      * Internal.

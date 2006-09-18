@@ -152,6 +152,13 @@ class KDEUI_EXPORT KDialog : public QDialog
     };
     Q_DECLARE_FLAGS(ButtonCodes, ButtonCode)
 
+    enum ButtonPopupMode
+    {
+      InstantPopup = 0,
+      DelayedPopup = 1
+    };
+    Q_DECLARE_FLAGS(ButtonPopupModes, ButtonPopupMode) 
+
   public:
     /**
      * Creates a dialog.
@@ -300,8 +307,9 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * @param id The button identifier.
      * @param menu The menu.
+     * @param popupmode Choose if KPushButton setMenu or setDelayedMenu is used
      */
-    void setButtonMenu( ButtonCode id, QMenu *menu );
+    void setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode=InstantPopup);
 
     /**
      * Sets the focus to the button of the passed @param id.
