@@ -1,8 +1,4 @@
 /**
- * @file Mainpage.dox
- *
- * @brief Introduction to the KSpeech D-Bus Interface
- * 
  * @mainpage Introduction to the KSpeech D-Bus Interface
  *
  * kspeech - the KDE Text-to-Speech API.
