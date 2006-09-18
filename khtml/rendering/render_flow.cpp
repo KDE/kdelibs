@@ -128,6 +128,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 void RenderFlow::deleteInlineBoxes(RenderArena* arena)
 {
+    RenderBox::deleteInlineBoxes(arena); //In case we upcalled
+                                         //during construction
     if (m_firstLineBox) {
         if (!arena)
             arena = renderArena();
