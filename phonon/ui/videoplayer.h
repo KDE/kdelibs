@@ -41,9 +41,9 @@ namespace Phonon
  *
  * A play and forget code example:
  * \code
- * VideoPlayer* player = new VideoPlayer( Phonon::NotificationCategory );
- * connect( player, SIGNAL( finished() ), player, SLOT( deleteLater() ) );
- * player->play( url );
+ * VideoPlayer *player = new VideoPlayer(Phonon::NotificationCategory, parentWidget);
+ * connect(player, SIGNAL(finished()), player, SLOT(deleteLater()));
+ * player->play(url);
  * \endcode
  *
  * \author Matthias Kretz <kretz@kde.org>
