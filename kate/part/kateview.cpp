@@ -173,7 +173,6 @@ KateView::~KateView()
   m_doc->removeView( this );
 
   delete m_viewInternal;
-  delete m_codeCompletion;
 
   delete m_renderer;
 
