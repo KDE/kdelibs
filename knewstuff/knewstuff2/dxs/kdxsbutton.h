@@ -3,7 +3,7 @@
 
 #include <qtoolbutton.h>
 
-#include <knewstuff/entry.h>
+//#include <knewstuff2/entry.h>
 
 namespace KNS
 {

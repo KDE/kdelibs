@@ -37,8 +37,11 @@
 #include <khtmlview.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
-#include <knewstuff/provider.h>
-#include <knewstuff/entry.h>
+
+#include <knewstuff2/provider.h>
+#include <knewstuff2/entry.h>
+#include <knewstuff2/entryhandler.h>
+#include <knewstuff2/category.h>
 
 // local includes
 #include "newstuff.h"
@@ -112,12 +115,10 @@ class AvailableItem : public Entry
 	AvailableItem(Entry *e)
 	: m_state(Normal), m_progress(0)
 	{
-		setPayload(e->payload());
 		setName(e->name());
 		setAuthor(e->author());
-		setAuthorEmail(e->authorEmail());
 		setType(e->type());
-		setLicence(e->license());
+		setLicense(e->license());
 		setSummary(e->summary());
 		setVersion(e->version());
 		setRelease(e->release());
@@ -129,10 +130,10 @@ class AvailableItem : public Entry
 	}
 	/// END DXS
 
-        AvailableItem( const QDomElement & element )
-            : Entry( element ), m_state( Normal ), m_progress( 0 )
+        AvailableItem()
+            : Entry(), m_state( Normal ), m_progress( 0 )
         {
-            QString remoteUrl = payload().url();
+            QString remoteUrl = payload().representation();
             QString fileName = remoteUrl.section( '/', -1, -1 );
             QString extension = fileName.lower().section( '.', -1, -1 );
             QString typeString = type();
@@ -148,7 +149,7 @@ class AvailableItem : public Entry
         }
 
         // returns the source url
-        QString url() const { return payload().url(); }
+        QString url() const { return payload().representation(); }
 
         // returns local destination path for the item
         const QString & destinationPath() { return m_destinationFile; }
@@ -240,9 +241,6 @@ class ItemsViewPart : public KHTMLPart
         // generate the HTML contents to be displayed by the class itself
         void buildContents()
         {
-            // try to get informations in current locale
-            QString preferredLanguage = KGlobal::locale()->language();
-
             begin();
             setTheAaronnesqueStyle();
             // write the html header and contents manipulation scripts
@@ -254,12 +252,12 @@ class ItemsViewPart : public KHTMLPart
             AvailableItem * item = m_item;
 
             // precalc the image string
-            QString imageString = item->preview( preferredLanguage ).url();
+            QString imageString = item->preview().representation();
             if ( imageString.length() > 1 )
                 imageString = "<div class='leftImage'><img src='" + imageString + "' border='0'></div>";
 
             // precalc the title string
-            QString titleString = item->name();
+            QString titleString = item->name().representation();
             if ( item->version().length() > 0 )
                 titleString += " v." + item->version();
 
@@ -277,12 +275,11 @@ class ItemsViewPart : public KHTMLPart
             starsString = "<div class='starbg' style='width: " + QString::number( grayPixels ) + "px;'>" + starsString + "</div>";
 
             // precalc the string for displaying author (parsing email)
-            QString authorString = item->author();
-            QString emailString = authorString.section( '(', 1, 1 );
-            if ( emailString.contains( '@' ) && emailString.contains( ')' ) )
+	    KNS::Author author = item->author();
+            QString authorString = author.name();
+            QString emailString = author.email();
+            if (!emailString.isEmpty())
             {
-                emailString = emailString.remove( ')' ).stripWhiteSpace();
-                authorString = authorString.section( '(', 0, 0 ).stripWhiteSpace();
                 authorString = "<a href='mailto:" + emailString + "'>" + authorString + "</a>";
             }
 
@@ -310,7 +307,7 @@ class ItemsViewPart : public KHTMLPart
                         "</tr></table>"
                         // contents body: item description
                         "<div class='contentsBody'>"
-                          + item->summary( preferredLanguage ) +
+                          + item->summary().representation() +
                         "</div>"
                         // contents footer: author's name/date
                         "<div class='contentsFooter'>"
@@ -471,8 +468,7 @@ class ItemsView : public QScrollView
                 QAsyncFrame *f = new QAsyncFrame(nav);
 // XXX ???
                 f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-                QString preferredLanguage = KGlobal::locale()->language();
-                QString imageurl = item->preview( preferredLanguage ).url();
+                QString imageurl = item->preview().representation();
                 QAsyncPixmap *pix = new QAsyncPixmap(imageurl);
                 f->setFixedSize(64, 64);
                 connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
@@ -720,10 +716,10 @@ void NewStuffDialog::removeItem( AvailableItem * item )
     d->itemsView->updateItem( item );
 
     // inform the user ...
-    displayMessage( i18n("%1 is no more installed.").arg( item->name() ) );
+    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
 
     // ... and any listening object
-    emit removedFile( item->name() );
+    emit removedFile( item->name().representation() );
 }
 
 void NewStuffDialog::slotResetMessageColors() // SLOT
@@ -778,11 +774,11 @@ void NewStuffDialog::slotCategories(QValueList<KNS::Category*> categories)
 	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
-		kdDebug() << "Category: " << category->name << endl;
-		QPixmap icon = DesktopIcon(category->icon, 16);
-		d->typeCombo->insertItem(category->icon, category->name);
+		kdDebug() << "Category: " << category->name().representation() << endl;
+		QPixmap icon = DesktopIcon(category->icon().url(), 16);
 		// FIXME: use icon from remote URLs (see non-DXS providers as well)
-		m_categorymap[category->categoryname] = category->name;
+		d->typeCombo->insertItem(icon, category->name().representation());
+		m_categorymap[category->name().representation()] = category->id();
 		// FIXME: better use global id, since names are not guaranteed
 		//        to be unique
 	}
@@ -797,7 +793,7 @@ void NewStuffDialog::slotEntries(QValueList<KNS::Entry*> entries)
 	for(QValueList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
-		kdDebug() << "Entry: " << entry->name() << endl;
+		kdDebug() << "Entry: " << entry->name().representation() << endl;
 		itemList.append(new AvailableItem(entry));
 	}
 
@@ -1002,7 +998,12 @@ void NewStuffDialog::slotProviderInfoResult( KIO::Job * job )
         stuffNode = stuffNode.nextSibling();
         // WARNING: disabled the stuff type checking (use only in kate afaik)
         if ( elem.tagName() == "stuff" /*&& elem.attribute( "type", RES_TYPE ) == RES_TYPE*/ )
-            itemList.append( new AvailableItem( elem ) );
+        {
+	    KNS::EntryHandler handler(elem);
+            KNS::Entry entry = handler.entry();
+            AvailableItem *item = new AvailableItem(&entry);
+            itemList.append(item);
+        }
     }
 
     // update the control widget and inform user about the current operation
@@ -1038,7 +1039,7 @@ void NewStuffDialog::slotDownloadItem( AvailableItem * item )
     d->itemsView->updateItem( item );
 
     // inform the user
-    displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name() ) );
+    displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ) );
 }
 
 void NewStuffDialog::slotItemMessage( KIO::Job * job, const QString & message )
@@ -1049,7 +1050,7 @@ void NewStuffDialog::slotItemMessage( KIO::Job * job, const QString & message )
 
     // update item state
     AvailableItem * item = d->transferJobs[ job ].item;
-    kdDebug() << "Name: " << item->name() << " msg: '" << message << "'." << endl;
+    kdDebug() << "Name: " << item->name().representation() << " msg: '" << message << "'." << endl;
     d->itemsView->updateItem( item );
 }
 
@@ -1078,7 +1079,7 @@ void NewStuffDialog::slotItemResult( KIO::Job * job )
     // error handling
     if ( job->error() )
     {
-        displayMessage( i18n("Network error while retrieving %1. Installation cancelled.").arg( item->name() ), Error );
+        displayMessage( i18n("Network error while retrieving %1. Installation cancelled.").arg( item->name().representation() ), Error );
         return;
     }
 
@@ -1107,10 +1108,10 @@ void NewStuffDialog::slotItemResult( KIO::Job * job )
     */
 
     // inform the user ...
-    displayMessage( i18n("Installed! %1 is yours now.").arg( item->name() ), Info );
+    displayMessage( i18n("Installed! %1 is yours now.").arg( item->name().representation() ), Info );
 
     // ... and any listening object
-    emit installedFile( item->name(), item->type() );
+    emit installedFile( item->name().representation(), item->type() );
 }
 //END File(s) Transferring
 

@@ -3,7 +3,6 @@
 
 #include <kdialogbase.h>
 
-//class QLineEdit;
 class QComboBox;
 
 class KDXSView : public KDialogBase
@@ -20,7 +19,6 @@ private:
 		access_http,
 		access_webservice
 	};
-	//QLineEdit *m_url;
 	QComboBox *m_url;
 	QComboBox *m_type;
 };

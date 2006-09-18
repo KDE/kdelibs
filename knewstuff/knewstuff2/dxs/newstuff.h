@@ -11,12 +11,13 @@
 #define _KPDF_NEWSTUFF_H_
 
 #include <qdialog.h>
-#include <knewstuff/provider.h>
+//#include <knewstuff2/provider.h>
+//#include <kio/job.h>
 
 #include "dxs.h"
 
 using namespace KNS;
-namespace KIO { class JOB; }
+namespace KIO { class Job; }
 
 class AvailableItem;
 

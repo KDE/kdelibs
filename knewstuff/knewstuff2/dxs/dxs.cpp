@@ -4,7 +4,9 @@
 
 #include <kdebug.h>
 
-#include <knewstuff/entry.h>
+#include <knewstuff2/entry.h>
+#include <knewstuff2/entryhandler.h>
+#include <knewstuff2/category.h>
 
 #include <qdom.h>
 #include <qstringlist.h>
@@ -188,12 +190,10 @@ void Dxs::slotResult(QDomNode node)
 			QString name = m_soap->xpath(node, "/name");
 			QString description = m_soap->xpath(node, "/description");
 
-			//category->setName(name);
-			//category->setIcon(icon);
-			category->categoryname = categoryname;
-			category->name = name;
-			category->icon = icon;
-			category->description = description;
+			category->setId(categoryname);
+			category->setName(name);
+			category->setIcon(icon);
+			category->setDescription(description);
 
 			categories << category;
 		}
@@ -212,7 +212,8 @@ void Dxs::slotResult(QDomNode node)
 
 			QDomElement element = entrylist.item(i).toElement();
 			element.setTagName("stuff");
-			KNS::Entry *entry = new KNS::Entry(element);
+			KNS::EntryHandler handler(element);
+			KNS::Entry *entry = handler.entryptr();
 
 //			QString name = m_soap->xpath(node, "/name");
 //			QString author = m_soap->xpath(node, "/author");
@@ -242,7 +243,7 @@ void Dxs::slotResult(QDomNode node)
 
 			entries << entry;
 
-			kdDebug() << "ENTRY: " << entry->name() << " by " << entry->author() << endl;
+			kdDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name() << endl;
 		}
 
 		emit signalEntries(entries);

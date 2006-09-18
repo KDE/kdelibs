@@ -1,6 +1,5 @@
 #include "kdxsview.h"
 
-#include "kdxsbutton.h"
 #include "newstuff.h"
 
 #include <klocale.h>
@@ -8,7 +7,6 @@
 
 #include <qlayout.h>
 #include <qlabel.h>
-//#include <qlineedit.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
@@ -20,16 +18,17 @@ KDXSView::KDXSView(QWidget *parent)
 	QWidget *root = new QWidget(this);
 	setMainWidget(root);
 
-	KDXSButton *b = new KDXSButton(root);
-	b->setEnabled(false);
-
 	QPushButton *button = new QPushButton(i18n("Get Hot New Stuff!"), root);
 
 	KIconLoader *il = KGlobal::iconLoader();
 	QPixmap pix = il->loadIcon("knewstuff", KIcon::Small);
 	button->setIconSet(pix);
 
-	//m_url = new QLineEdit(root);
+	QLabel *dxslabel = new QLabel(i18n(
+		"Please select the <b>Get Hot New Stuff</b> "
+		"provider and method for exploring it. "
+		"Feel the power of the <b>Desktop eXchange Service</b>!"), root);
+
 	m_url = new QComboBox(root);
 	m_url->setEditable(true);
 	// FIXME: first two are DXS urls, only third is GHNS providers file
@@ -50,7 +49,7 @@ KDXSView::KDXSView(QWidget *parent)
 	top_layout->addStretch(1);
 	QVBoxLayout *v_layout = new QVBoxLayout(top_layout, spacingHint());
 	v_layout->addStretch(1);
-	v_layout->add(b);
+	v_layout->add(dxslabel);
 	v_layout->addStretch(1);
 	v_layout->add(typelabel);
 	v_layout->add(m_type);
@@ -62,7 +61,7 @@ KDXSView::KDXSView(QWidget *parent)
 
 	connect(button, SIGNAL(clicked()), SLOT(slotRun()));
 
-	resize(500, 300);
+	root->resize(500, 300);
 }
 
 void KDXSView::slotRun()
@@ -76,7 +75,6 @@ void KDXSView::slotRun()
 	}
 
 	Dxs *dxs = new Dxs();
-	//dxs->setEndpoint("http://localhost/cgi-bin/hotstuff-dxs.pl");
 	dxs->setEndpoint(m_url->currentText());
 	//dxs->setMethod(m_type->currentItem());
 

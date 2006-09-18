@@ -1,9 +1,11 @@
+SUBDIRS = knewstuff2
+
 bin_PROGRAMS = kdxspreview
 
 AM_CPPFLAGS = $(all_includes)
 
 kdxspreview_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-kdxspreview_LDADD = $(LIB_KFILE) $(LIB_KHTML) $(LIB_KNEWSTUFF)
+kdxspreview_LDADD = $(LIB_KFILE) $(LIB_KHTML) knewstuff2/libknewstuff2.la
 kdxspreview_SOURCES = main.cpp \
 	kdxs.cpp \
 	kdxsview.cpp \
@@ -12,9 +14,9 @@ kdxspreview_SOURCES = main.cpp \
 	kdxscomment.cpp \
 	kdxscomments.cpp \
 	kdxschanges.cpp \
+	kdxstranslation.cpp \
 	soap.cpp \
 	dxs.cpp \
-	kns-translation.cpp \
 	newstuff.cpp \
 	qasyncpixmap.cpp \
 	qasyncframe.cpp \
@@ -29,9 +31,9 @@ noinst_HEADERS = \
 	kdxscomment.h \
 	kdxscomments.h \
 	kdxschanges.h \
+	kdxstranslation.h \
 	soap.h \
 	dxs.h \
-	kns-translation.h \
 	newstuff.h \
 	qasyncpixmap.h \
 	qasyncframe.h \

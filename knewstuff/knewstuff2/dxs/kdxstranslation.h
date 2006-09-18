@@ -1,5 +1,5 @@
-#ifndef KNEWSTUFF_TRANSLATION_H
-#define KNEWSTUFF_TRANSLATION_H
+#ifndef KDXS_TRANSLATION_H
+#define KDXS_TRANSLATION_H
 
 #include <kdialogbase.h>
 

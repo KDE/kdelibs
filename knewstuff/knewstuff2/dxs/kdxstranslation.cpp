@@ -1,4 +1,4 @@
-#include "kns-translation.h"
+#include "kdxstranslation.h"
 
 #include <qlayout.h>
 #include <qlabel.h>
@@ -10,7 +10,7 @@
 #include <klocale.h>
 
 KDXSTranslation::KDXSTranslation(QWidget *parent)
-: KDialogBase(parent, "comment", true, i18n("Translate this entry"),
+: KDialogBase(parent, "translation", true, i18n("Translate this entry"),
 	KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok, true)
 {
 	QWidget *root = new QWidget(this);
@@ -52,4 +52,4 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
 	grid->addWidget(m_payload, 2, 2);
 }
 
-#include "kns-translation.moc"
+#include "kdxstranslation.moc"

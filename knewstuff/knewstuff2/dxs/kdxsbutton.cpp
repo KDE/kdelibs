@@ -2,12 +2,15 @@
 
 #include "dxs.h"
 
-#include "kns-translation.h"
+#include <knewstuff2/entry.h>
+#include <knewstuff2/category.h>
+
 #include "newstuff.h"
 #include "kdxsrating.h"
 #include "kdxscomment.h"
 #include "kdxscomments.h"
 #include "kdxschanges.h"
+#include "kdxstranslation.h"
 
 #include <qlayout.h>
 #include <qdom.h>
@@ -168,7 +171,7 @@ void KDXSButton::slotCategories(QValueList<KNS::Category*> categories)
 	for(QValueList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
-		kdDebug() << "Category: " << category->name << endl;
+		kdDebug() << "Category: " << category->name().representation() << endl;
 	}
 }
 
@@ -177,7 +180,7 @@ void KDXSButton::slotEntries(QValueList<KNS::Entry*> entries)
 	for(QValueList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
-		kdDebug() << "Entry: " << entry->name() << endl;
+		kdDebug() << "Entry: " << entry->name().representation() << endl;
 	}
 }
 

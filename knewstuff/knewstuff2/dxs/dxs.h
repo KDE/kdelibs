@@ -10,16 +10,7 @@ namespace KNS
 
 class Soap;
 class Entry;
-
-class Category
-{
-public:
-	Category(){}
-	QString categoryname;
-	QString name;
-	QString icon;
-	QString description;
-};
+class Category;
 
 class Dxs : public QObject
 {
