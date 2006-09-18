@@ -18,4 +18,4 @@ add_executable(Example ${Example_SRCS})
 
 target_link_libraries(Example ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} ThreadWeaver ThreadWeaverAction)
 
-install(TARGETS Example DESTINATION bin )
+install(TARGETS Example DESTINATION ${BIN_INSTALL_DIR} )
