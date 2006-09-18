@@ -1,17 +1,17 @@
 /* -*- C++ -*-
 
-   This file implements the JobCollection class.
+This file implements the JobCollection class.
 
-   $ Author: Mirko Boehm $
-   $ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
-   $ Contact: mirko@kde.org
-         http://www.kde.org
-         http://www.hackerbuero.org $
-   $ License: LGPL with the following explicit clarification:
-         This code may be linked against any version of the Qt toolkit
-         from Trolltech, Norway. $
+$ Author: Mirko Boehm $
+$ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+$ Contact: mirko@kde.org
+http://www.kde.org
+http://www.hackerbuero.org $
+$ License: LGPL with the following explicit clarification:
+This code may be linked against any version of the Qt toolkit
+from Trolltech, Norway. $
 
-   $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
+$Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 */
 
 #include <WeaverInterface.h>
@@ -89,28 +89,30 @@ class JobCollection::Private
 {
 public:
 
-  Private()
-    : elements ( new JobList() )
-    , weaver ( 0 )
-    , jobCounter (0)
+    Private()
+        : elements ( new JobList() )
+        , weaver ( 0 )
+        , jobCounter (0)
     {}
 
-  ~Private()
+    ~Private()
     {
-      delete elements;
+        delete elements;
     }
 
-  /* The elements of the collection. */
-  JobList* elements;
+    /* The elements of the collection. */
+    JobList* elements;
 
-  /* The Weaver interface this collection is queued in. */
-  WeaverInterface *weaver;
+    /* The Weaver interface this collection is queued in. */
+    WeaverInterface *weaver;
 
-  /* Counter for the finished jobs.
-     Set to the number of elements when started.
-     When zero, all elements are done.
-  */
-  int jobCounter;
+    /* Counter for the finished jobs.
+       Set to the number of elements when started.
+       When zero, all elements are done.
+    */
+    int jobCounter;
+
+    QMutex mutex;
 };
 
 JobCollection::JobCollection ( QObject *parent )
@@ -180,13 +182,20 @@ void JobCollection::execute ( Thread *t )
 {
     REQUIRE ( d->weaver != 0);
 
-    // FIXME (after 0.6) make sure this is async:
+    // this is async,
+    // JobTests::JobSignalsAreEmittedAsynchronouslyTest() proves it
     emit (started (this));
 
-    if ( ! d->elements->isEmpty() )
-    { // d->elements is supposedly constant at this time, since we are
-      // already queued
-      // set job counter:
+    if ( d->elements->isEmpty() )
+    {   // we are just a regular, empty job (sob...):
+        Job::execute( t );
+        return;
+    }
+
+    {   // d->elements is supposedly constant at this time, since we are
+        // already queued
+        // set job counter:
+        QMutexLocker l ( & d->mutex );
         d->jobCounter = d->elements->size();
 
         // queue elements:
@@ -194,17 +203,13 @@ void JobCollection::execute ( Thread *t )
 	{
             d->weaver->enqueue (d->elements->at(index));
 	}
-
-        // this is a hack (but a good one): instead of queueing (this), we
-        // execute the last job, to avoid to have (this) wait for an
-        // available thread (the last operation does not get queued in
-        // aboutToBeQueued() )
-        // NOTE: this also calls internalJobDone()
-        d->elements->at( 0 )->execute ( t );
-    } else {
-        // otherwise, we are just a regular, empty job (sob...):
-        Job::execute( t );
     }
+    // this is a hack (but a good one): instead of queueing (this), we
+    // execute the last job, to avoid to have (this) wait for an
+    // available thread (the last operation does not get queued in
+    // aboutToBeQueued() )
+    // NOTE: this also calls internalJobDone()
+    d->elements->at( 0 )->execute ( t );
 
     // do not emit done, done is emitted when the last job called
     // internalJobDone()
@@ -214,18 +219,22 @@ void JobCollection::execute ( Thread *t )
 
 Job* JobCollection::jobAt( int i )
 {
+    QMutexLocker l( &d->mutex );
     REQUIRE ( i >= 0 && i < d->elements->size() );
     return d->elements->at( i )->payload();
 }
 
 const int JobCollection::jobListLength()
 {
+    QMutexLocker l( &d->mutex );
     return d->elements->size();
 }
 
 bool JobCollection::canBeExecuted()
 {
     bool inheritedCanRun = true;
+
+    QMutexLocker l( &d->mutex );
 
     if ( d->elements->size() > 0 )
     {
@@ -238,6 +247,9 @@ bool JobCollection::canBeExecuted()
 void JobCollection::internalJobDone ( Job* job )
 {
     REQUIRE (job != 0);
+    Q_UNUSED (job);
+
+    QMutexLocker l( &d->mutex );
 
     if ( d->jobCounter == 0 )
     {   // there is a small chance that (this) has been dequeued in the
@@ -246,17 +258,16 @@ void JobCollection::internalJobDone ( Job* job )
         return;
     }
 
-    Q_UNUSED (job);
     --d->jobCounter;
 
     if (d->jobCounter == 0)
     {
-        finalCleanup();
-
         if (! success())
 	{
             emit failed(this);
 	}
+
+        finalCleanup();
     }
     ENSURE (d->jobCounter >= 0);
 }
@@ -265,12 +276,14 @@ void JobCollection::finalCleanup()
 {
     freeQueuePolicyResources();
     setFinished(true);
-    emit done(this);
     d->weaver = 0;
+    emit done(this);
 }
 
 void JobCollection::dequeueElements()
 {   // dequeue everything:
+    QMutexLocker l( &d->mutex );
+
     if ( d->weaver != 0 )
     {
         for ( int index = 1; index < d->elements->size(); ++index )

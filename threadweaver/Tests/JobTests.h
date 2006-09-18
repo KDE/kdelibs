@@ -3,6 +3,12 @@
 
 #include <QObject>
 
+namespace ThreadWeaver{
+    class Job;
+}
+
+using ThreadWeaver::Job;
+
 class JobTests : public QObject
 {
     Q_OBJECT
@@ -13,17 +19,17 @@ private slots:
 
     // call finish() before leave a test to make sure the queue is empty
 
-  void WeaverLazyThreadCreationTest();
+    void WeaverLazyThreadCreationTest();
 
     void SimpleJobTest();
 
     void SimpleJobCollectionTest();
 
-  void EmptyJobCollectionTest();
+    void EmptyJobCollectionTest();
 
     void ShortJobSequenceTest();
 
-  void EmptyJobSequenceTest();
+    void EmptyJobSequenceTest();
 
     void QueueAndDequeueSequenceTest();
 
@@ -45,6 +51,12 @@ private slots:
     void QueueAndStopTest();
 
     void ResourceRestrictionPolicyBasicsTest ();
+
+    void JobSignalsAreEmittedAsynchronouslyTest();
+
+public slots: // slots used during tests that are not test cases
+    void jobStarted( Job* );
+    void jobDone( Job* );
 };
 
 #endif

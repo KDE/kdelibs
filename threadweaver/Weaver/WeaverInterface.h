@@ -64,9 +64,9 @@ namespace ThreadWeaver {
 
       /** Returns the current number of threads in the inventory. */
       virtual int currentNumberOfThreads () const = 0;
-      
+
         /** Register an observer.
-	    
+
             Observers provides signals on different weaver events that are
             otherwise only available through objects of different classes
             (threads, jobs). Usually, access to the signals of those objects
@@ -171,6 +171,9 @@ namespace ThreadWeaver {
 	    programmer to decide if this signal or the done signal of the job
 	    is more handy. */
         void jobDone (Job*);
+        // FIXME (0.7) test if signal is emitted properly
+        // FIXME (0.7) provide jobStarted and jobFailed signals
+        // FIXME (0.7) or remove all these, and add them to WeaverObserver
 
         /** The Weaver's state has changed. */
         void stateChanged ( State* );

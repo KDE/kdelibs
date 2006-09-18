@@ -62,6 +62,7 @@ void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
 {
     // jobA depends on jobB
     REQUIRE ( jobA != 0 && jobB != 0 && jobA != jobB );
+
     jobA->assignQueuePolicy( this );
     jobB->assignQueuePolicy( this );
     QMutexLocker l( & d->mutex() );

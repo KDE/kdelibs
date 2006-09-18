@@ -112,6 +112,7 @@ namespace ThreadWeaver {
         /** The thread is busy executing job j. */
         void threadBusy ( Thread*,  Job* j);
 
+        // FIXME (0.7) this seems to be unnecessary
         // some more private signals: There are situations where other threads
         // call functions of (this). In this case, there may be confusion
         // about whether to handle th signals synchroneously or not. The

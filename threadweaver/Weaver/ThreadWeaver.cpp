@@ -1,17 +1,17 @@
 /* -*- C++ -*-
 
-   This file implements the Weaver class.
+This file implements the Weaver class.
 
-   $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, 2006 Mirko Boehm $
-   $ Contact: mirko@kde.org
-         http://www.kde.org
-         http://www.hackerbuero.org $
-   $ License: LGPL with the following explicit clarification:
-         This code may be linked against any version of the Qt toolkit
-         from Trolltech, Norway. $
+$ Author: Mirko Boehm $
+$ Copyright: (C) 2005, 2006 Mirko Boehm $
+$ Contact: mirko@kde.org
+http://www.kde.org
+http://www.hackerbuero.org $
+$ License: LGPL with the following explicit clarification:
+This code may be linked against any version of the Qt toolkit
+from Trolltech, Norway. $
 
-   $Id: ThreadWeaver.cpp 30 2005-08-16 16:16:04Z mirko $
+$Id: ThreadWeaver.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
 #include <QMutex>
@@ -248,27 +248,27 @@ dependencies.</p>
 class Weaver::Private
 {
 public:
-  Private ()
-    : weaverinterface ( 0)
-  {}
+    Private ()
+        : weaverinterface ( 0)
+    {}
 
-  WeaverInterface* weaverinterface;
+    WeaverInterface* weaverinterface;
 };
 
 Weaver::Weaver ( QObject* parent )
     : WeaverInterface( parent )
     , d (new Private)
 {
-  d->weaverinterface = makeWeaverImpl();
-  connect ( d->weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
-  connect ( d->weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
-  connect ( d->weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
+    d->weaverinterface = makeWeaverImpl();
+    connect ( d->weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
+    connect ( d->weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
+    connect ( d->weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
 }
 
 Weaver::~Weaver()
 {
-  delete d->weaverinterface;
-  delete d;
+    delete d->weaverinterface;
+    delete d;
 }
 
 WeaverInterface* Weaver::makeWeaverImpl()
@@ -356,7 +356,7 @@ void Weaver::setMaximumNumberOfThreads( int cap )
     d->weaverinterface->setMaximumNumberOfThreads( cap );
 }
 
-int Weaver::currentNumberOfThreads() const 
+int Weaver::currentNumberOfThreads() const
 {
     return d->weaverinterface->currentNumberOfThreads();
 }

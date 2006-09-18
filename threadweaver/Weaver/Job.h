@@ -104,7 +104,7 @@ namespace ThreadWeaver {
             Call this method to ask the Job to abort if it is currently executed.
             Please note that the default implementation of the method does
             nothing (!). This is due to the fact that there is no generic
-            method to abort a Job processing. Not even a default boolean flag
+            method to abort a processing Job. Not even a default boolean flag
             makes sense, as Job could, for example, be in an event loop and
             will need to create an exit event.
             You have to reimplement the method to actually initiate an abort
@@ -134,7 +134,7 @@ namespace ThreadWeaver {
         /** This Job is about the be dequeued from the weaver's job queue.
             The job will be removed from the queue right after this method
             returns.
-            Use this method to dequeue, if necessary,  sub-operations (joobs) that this job
+            Use this method to dequeue, if necessary,  sub-operations (jobs) that this job
             has enqueued.
 
             Note: When this method is called, the associated Weaver object's

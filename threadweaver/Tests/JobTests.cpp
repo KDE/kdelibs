@@ -21,18 +21,18 @@ void JobTests::initTestCase ()
     ThreadWeaver::setDebugLevel ( true,  1 );
 }
 
-  // call finish() before leave a test to make sure the queue is empty
+// call finish() before leave a test to make sure the queue is empty
 
 void JobTests::WeaverLazyThreadCreationTest()
 {
-  ThreadWeaver::Weaver weaver;
-  QString sequence;
-  QCOMPARE (weaver.currentNumberOfThreads(), 0);
-  AppendCharacterJob a( QChar('a'), &sequence, this);
-  weaver.enqueue( & a);
-  weaver.finish();
-  QVERIFY(a.isFinished());
-  QCOMPARE (weaver.currentNumberOfThreads(), 1);
+    ThreadWeaver::Weaver weaver;
+    QString sequence;
+    QCOMPARE (weaver.currentNumberOfThreads(), 0);
+    AppendCharacterJob a( QChar('a'), &sequence, this);
+    weaver.enqueue( & a);
+    weaver.finish();
+    QVERIFY(a.isFinished());
+    QCOMPARE (weaver.currentNumberOfThreads(), 1);
 }
 
 void JobTests::SimpleJobTest() {
@@ -64,10 +64,10 @@ void JobTests::SimpleJobCollectionTest() {
 }
 
 void JobTests::EmptyJobCollectionTest() {
-  ThreadWeaver::JobCollection collection;
-  ThreadWeaver::Weaver::instance()->enqueue ( &collection );
-  ThreadWeaver::Weaver::instance()->finish();
-  QVERIFY(collection.isFinished());
+    ThreadWeaver::JobCollection collection;
+    ThreadWeaver::Weaver::instance()->enqueue ( &collection );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(collection.isFinished());
 }
 
 void JobTests::ShortJobSequenceTest() {
@@ -87,10 +87,10 @@ void JobTests::ShortJobSequenceTest() {
 }
 
 void JobTests::EmptyJobSequenceTest() {
-  ThreadWeaver::JobSequence sequence;
-  ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
-  ThreadWeaver::Weaver::instance()->finish();
-  QVERIFY(sequence.isFinished());
+    ThreadWeaver::JobSequence sequence;
+    ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(sequence.isFinished());
 }
 
 void JobTests::QueueAndDequeueSequenceTest() {
@@ -347,36 +347,74 @@ void JobTests::QueueAndStopTest() {
 }
 
 void JobTests::ResourceRestrictionPolicyBasicsTest () {
-  // this test tests that with resource restrictions assigned, jobs
-  // still get executed as expected
-  QString sequence;
-  ThreadWeaver::ResourceRestrictionPolicy restriction (2);
-  AppendCharacterJob a( 'a', &sequence );
-  AppendCharacterJob b( 'b', &sequence );
-  AppendCharacterJob c( 'c', &sequence );
-  AppendCharacterJob d( 'd', &sequence );
-  AppendCharacterJob e( 'e', &sequence );
-  AppendCharacterJob f( 'f', &sequence );
-  AppendCharacterJob g( 'g', &sequence );
-  ThreadWeaver::JobCollection collection;
-  collection.addJob( &a );
-  a.assignQueuePolicy ( &restriction);
-  collection.addJob( &b );
-  b.assignQueuePolicy ( &restriction);
-  collection.addJob( &c );
-  c.assignQueuePolicy ( &restriction);
-  collection.addJob( &d );
-  d.assignQueuePolicy ( &restriction);
-  collection.addJob( &e );
-  e.assignQueuePolicy ( &restriction);
-  collection.addJob( &f );
-  f.assignQueuePolicy ( &restriction);
-  collection.addJob( &g );
-  g.assignQueuePolicy ( &restriction);
+    // this test tests that with resource restrictions assigned, jobs
+    // still get executed as expected
+    QString sequence;
+    ThreadWeaver::ResourceRestrictionPolicy restriction (2);
+    AppendCharacterJob a( 'a', &sequence );
+    AppendCharacterJob b( 'b', &sequence );
+    AppendCharacterJob c( 'c', &sequence );
+    AppendCharacterJob d( 'd', &sequence );
+    AppendCharacterJob e( 'e', &sequence );
+    AppendCharacterJob f( 'f', &sequence );
+    AppendCharacterJob g( 'g', &sequence );
+    ThreadWeaver::JobCollection collection;
+    collection.addJob( &a );
+    a.assignQueuePolicy ( &restriction);
+    collection.addJob( &b );
+    b.assignQueuePolicy ( &restriction);
+    collection.addJob( &c );
+    c.assignQueuePolicy ( &restriction);
+    collection.addJob( &d );
+    d.assignQueuePolicy ( &restriction);
+    collection.addJob( &e );
+    e.assignQueuePolicy ( &restriction);
+    collection.addJob( &f );
+    f.assignQueuePolicy ( &restriction);
+    collection.addJob( &g );
+    g.assignQueuePolicy ( &restriction);
 
-  ThreadWeaver::Weaver::instance()->enqueue ( &collection );
-  ThreadWeaver::Weaver::instance()->finish();
-  QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
+    ThreadWeaver::Weaver::instance()->enqueue ( &collection );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
+}
+
+void JobTests::jobStarted( Job* )
+{
+    // qDebug() << "jobStarted";
+    QVERIFY( thread() == QThread::currentThread() );
+}
+
+void JobTests::jobDone( Job* )
+{
+    // qDebug() << "jobDone";
+    QVERIFY( thread() == QThread::currentThread() );
+}
+
+void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
+{
+    char bits[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
+    const int NumberOfBits = sizeof bits / sizeof bits[0];
+    QString sequence;
+    QList<Job*> jobs;
+    ThreadWeaver::JobCollection collection;
+    connect( &collection, SIGNAL( started( Job* ) ), SLOT( jobStarted( Job* ) ) );
+    connect( &collection, SIGNAL( done( Job* ) ), SLOT( jobDone( Job* ) ) );
+    for ( int counter = 0; counter < NumberOfBits; ++counter )
+    {
+        Job* job = new AppendCharacterJob( bits[counter], &sequence, this );
+
+        connect ( job, SIGNAL( started( Job* ) ), SLOT( jobStarted(Job* ) ) );
+        connect ( job, SIGNAL( done( Job* ) ), SLOT( jobDone( Job* ) ) );
+
+        jobs.append( job );
+        collection.addJob( job );
+    }
+
+    ThreadWeaver::Weaver::instance()->enqueue ( &collection );
+    QTest::qWait( 100 );
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY( sequence.length() == NumberOfBits );
 }
 
 QTEST_MAIN ( JobTests )

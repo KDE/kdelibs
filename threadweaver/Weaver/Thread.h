@@ -54,6 +54,7 @@ namespace ThreadWeaver {
 	*/
         void run();
 
+        // FIXME (0.7) provide usleep and sleep, too
 	/** Provide the msleep() method (protected in QThread) to be
 	    available  for executed jobs.
 	    @param msec amount of milliseconds
@@ -63,7 +64,12 @@ namespace ThreadWeaver {
 	/** Returns the thread id.
 	    This id marks the respective Thread object, and must
 	    therefore not be confused with, e.g., the pthread thread
-	    ID. */
+	    ID.
+
+	    Generally, the way threads are implemented is not
+	    specified. id() is the only way to uniquely identify a
+	    thread within ThreadWeaver.
+	    */
 	const unsigned int id();
 
         /** Request the abortion of the current job.

@@ -54,6 +54,7 @@ WeaverImpl::WeaverImpl( QObject* parent )
     m_states[ShuttingDown] = new ShuttingDownState( this );
     m_states[Destructed] = new DestructedState( this );
 
+    // FIXME (0.7) this is supposedly unnecessary
     connect ( this, SIGNAL ( asyncThreadSuspended( Thread* ) ), SIGNAL ( threadSuspended( Thread* ) ),
               Qt::QueuedConnection );
     setState(  WorkingHard );
@@ -168,7 +169,7 @@ void WeaverImpl::enqueue(Job* job)
         QMutexLocker l (m_mutex);
         job->aboutToBeQueued ( this );
         // find positiEon for insertion:;
-        // FIXME (after 0.6) optimize: factor out queue nanagement into own class,
+        // FIXME (after 0.6) optimize: factor out queue management into own class,
         // and use binary search for insertion (not done yet because
         // refactoring already planned):
         int i = m_assignments.size();
@@ -183,30 +184,30 @@ void WeaverImpl::enqueue(Job* job)
     }
 }
 
-void WeaverImpl::adjustInventory ( int noOfNewJobs )
+void WeaverImpl::adjustInventory ( int numberOfNewJobs )
 {
-  QMutexLocker l (m_mutex);
+    QMutexLocker l (m_mutex);
 
-  // no of threads that can be created:
-  const int reserve = m_inventoryMax - m_inventory.count();
+    // no of threads that can be created:
+    const int reserve = m_inventoryMax - m_inventory.count();
 
     if ( reserve > 0 )
     {
-      for ( int i = 0; i < qMin ( reserve,  noOfNewJobs ); ++i )
+        for ( int i = 0; i < qMin ( reserve,  numberOfNewJobs ); ++i )
 	{
-	  Thread *th = createThread();
-	  m_inventory.append(th);
-	  connect ( th,  SIGNAL ( jobStarted ( Thread*,  Job* ) ),
-		    SIGNAL ( threadBusy ( Thread*,  Job* ) ) );
-	  connect ( th,  SIGNAL ( jobDone( Job* ) ),
-		    SIGNAL ( jobDone( Job* ) ) );
-	  connect ( th,  SIGNAL ( started ( Thread* ) ),
-		    SIGNAL ( threadStarted ( Thread* ) ) );
+            Thread *th = createThread();
+            th->moveToThread( th ); // be sane from the start
+            m_inventory.append(th);
+            connect ( th,  SIGNAL ( jobStarted ( Thread*,  Job* ) ),
+                      SIGNAL ( threadBusy ( Thread*,  Job* ) ) );
+            connect ( th,  SIGNAL ( jobDone( Job* ) ),
+                      SIGNAL ( jobDone( Job* ) ) );
+            connect ( th,  SIGNAL ( started ( Thread* ) ),
+                      SIGNAL ( threadStarted ( Thread* ) ) );
 
-	  th->moveToThread( th ); // be sane from the start
-	  th->start ();
-	  debug ( 2, "WeaverImpl::adjustInventory: thread created, "
-		  "%i threads in inventory.\n", currentNumberOfThreads() );
+            th->start ();
+            debug ( 2, "WeaverImpl::adjustInventory: thread created, "
+                    "%i threads in inventory.\n", currentNumberOfThreads() );
 	}
     }
 }
@@ -253,7 +254,7 @@ void WeaverImpl::dequeue ()
     }
     m_assignments.clear();
 
-    Q_ASSERT ( m_assignments.isEmpty() );
+    ENSURE ( m_assignments.isEmpty() );
 }
 
 void WeaverImpl::suspend ()
@@ -307,6 +308,7 @@ void WeaverImpl::adjustActiveThreadCount( int diff )
 
 const int WeaverImpl::activeThreadCount()
 {
+    QMutexLocker l (m_mutex);
     return m_active;
 }
 
@@ -341,7 +343,7 @@ void WeaverImpl::waitForAvailableJob(Thread* th)
 }
 
 void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
-{
+{   // th is the thread that calls this method:
     Q_UNUSED ( th );
     debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
     emit asyncThreadSuspended ( th );
@@ -386,6 +388,7 @@ void WeaverImpl::finish()
 
 void WeaverImpl::requestAbort()
 {
+    QMutexLocker l (m_mutex);
     for ( int i = 0; i<m_inventory.size(); ++i )
     {
         m_inventory[i]->requestAbort();

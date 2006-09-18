@@ -49,7 +49,7 @@ namespace ThreadWeaver {
         derived WeaverImpl objects.
 
     */
-  // Note: All member documentation is in the WeaverInterface class. 
+  // Note: All member documentation is in the WeaverInterface class.
     class Weaver : public WeaverInterface
     {
         Q_OBJECT
@@ -76,6 +76,7 @@ namespace ThreadWeaver {
 	    If instance is never called, a global Weaver object will not be
 	    created.
 	*/
+        // FIXME (0.7) this should be a WeaverInterface pointer
 	static ThreadWeaver::Weaver* instance();
         virtual void enqueue (Job*);
         virtual bool dequeue (Job*);

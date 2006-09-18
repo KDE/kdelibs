@@ -5,3 +5,9 @@
 - (DONE) add test for enqueue-and-stop
 - (DONE) remove enqueue(QList<Job*>)
 - (DONE) add more complicated test for recursive job collections
+
+- (0.7) add JobDecorator base class
+- (0.7) port JobCollection to use the decorator base class
+- (0.7) add test for async emits from Thread
+- (0.7) add test for requestAbort
+- (0.7) add tutorial for ThreadWeaver programming
