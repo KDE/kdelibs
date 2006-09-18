@@ -1316,9 +1316,11 @@ bool CSSParser::parseContent( int propId, bool important )
 {
     CSSValueListImpl* values = new CSSValueListImpl();
 
+    bool isValid = true;
     Value *val;
     CSSValueImpl *parsedValue = 0;
     while ( (val = valueList->current()) ) {
+        parsedValue = 0;
         if ( val->unit == CSSPrimitiveValue::CSS_URI ) {
             // url
             DOMString value = khtml::parseURL(domString(val->string));
@@ -1361,18 +1363,22 @@ bool CSSParser::parseContent( int propId, bool important )
         } else if ( val->unit == CSSPrimitiveValue::CSS_STRING ) {
             parsedValue = new CSSPrimitiveValueImpl(domString(val->string), CSSPrimitiveValue::CSS_STRING);
         }
+
         if (parsedValue)
             values->append(parsedValue);
-        else
+        else {
+            isValid = false;
             break;
+        }
         valueList->next();
     }
-    if ( values->length() ) {
+    if ( isValid && values->length() ) {
         addProperty( propId, values, important );
         valueList->next();
         return true;
     }
-    delete values;
+
+    delete values;  // also frees any content by deref
     return false;
 }
 
