@@ -48,9 +48,11 @@ class KSaveFile;
  *
  * See also KStandardDirs
  *
+ * @deprecated Use KTemporaryFile instead.
+ *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KTempFile
+class KDECORE_EXPORT_DEPRECATED KTempFile
 {
    friend class KSaveFile;
 public:

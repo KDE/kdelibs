@@ -151,6 +151,7 @@ set(kdecore_LIB_SRCS
    kpalette.cpp
    klibloader.cpp
    ktempfile.cpp
+   ktemporaryfile.cpp
    kuniqueapplication.cpp
    kacceleratormanager.cpp
    ksavefile.cpp
@@ -337,6 +338,7 @@ install( FILES
    kpalette.h
    klibloader.h
    ktempfile.h
+   ktemporaryfile.h
    ksavefile.h
    krandomsequence.h
    knotifyclient.h
