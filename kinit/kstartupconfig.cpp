@@ -53,8 +53,6 @@ files.
 Since the checking is timestamp-based, config files that are frequently updated
 should not be used.
 
-It is required to pass $KDEHOME from startkde as the argument for kstartupconfig.
-
 Kstartupconfig works by storing every line from startupconfigkeys in file startupconfigfiles
 followed by paths of all files that are relevant to the option. Non-existent files
 have '!' prepended (for the case they'll be later created), the list of files is
