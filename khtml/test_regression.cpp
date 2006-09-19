@@ -107,8 +107,8 @@ using namespace khtml;
 using namespace DOM;
 using namespace KJS;
 
-bool visual = false;
-pid_t xvfb;
+static bool visual = false;
+static pid_t xvfb;
 
 // -------------------------------------------------------------------------
 
@@ -177,7 +177,7 @@ void PartMonitor::partCompleted()
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
 }
 
-void signal_handler( int )
+static void signal_handler( int )
 {
     printf( "timeout\n" );
     abort();
@@ -445,6 +445,9 @@ int main(int argc, char *argv[])
     setenv( "LANG", "C", 1 );
 
     signal( SIGALRM, signal_handler );
+
+    // workaround various Qt crashes by always enforcing a TrueColor visual
+    QApplication::setColorSpec( QApplication::ManyColor );
 
     KCmdLineArgs::init(argc, argv, "testregression", "TestRegression",
                        "Regression tester for khtml", "1.0");
