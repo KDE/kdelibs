@@ -225,6 +225,7 @@ informations
   (George Staikos)
 
 - KDE 4: Check if QTemporaryFile is good enough to dump KTempFile
+    * In progress (Jaison Lee)
   (Albert Astals Cid)
 
 - Make KLibLoader default to RTLD_GLOBAL and make necessary changes to make KDE namespace clean.
