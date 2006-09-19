@@ -189,6 +189,11 @@ class PHONONCORE_EXPORT Factory : public QObject
 		 */
 		void backendChanged();
 
+		/**
+		 * Emitted immediately when the dtor is called.
+		 */
+		void aboutToBeDestroyed();
+
 	protected:
 		/**
 		 * \internal

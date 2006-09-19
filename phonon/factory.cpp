@@ -145,6 +145,8 @@ Factory::Factory()
 Factory::~Factory()
 {
 	//kDebug( 600 ) << k_funcinfo << endl;
+	emit aboutToBeDestroyed();
+
 	foreach( BasePrivate* bp, d->basePrivateList )
 		bp->deleteIface();
 	qDeleteAll(d->objects);

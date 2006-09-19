@@ -106,7 +106,7 @@ UiFactory* UiFactory::self()
 		m_self = new UiFactory();
 		Phonon::Factory* f = Phonon::Factory::self();
 		connect( f, SIGNAL( backendChanged() ), m_self, SIGNAL( backendChanged() ) );
-		connect( Phonon::Factory::self(), SIGNAL( destroyed( QObject* ) ), m_self, SLOT( deleteNow() ) );
+		connect( Phonon::Factory::self(), SIGNAL( aboutToBeDestroyed() ), m_self, SLOT( deleteNow() ) );
 	}
 	return m_self;
 }
