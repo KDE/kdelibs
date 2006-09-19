@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006 Kévin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,3 +17,171 @@
     Boston, MA 02110-1301, USA.
 
 */
+
+#ifndef SOLID_NETWORKMANAGER
+#define SOLID_NETWORKMANAGER
+
+#include <QObject>
+#include <kdelibs_export.h>
+#include <kstaticdeleter.h>
+
+#include "network.h"
+#include "networkdevice.h"
+#include "authentication.h"
+
+namespace Solid
+{
+    namespace Ifaces
+    {
+        class NetworkManager;
+    }
+    class Network;
+    class NetworkDevice;
+    typedef QStringList NetworkDeviceList;
+
+/**
+ * Main class for listing and activating network devices and controlling the backend's network status
+ */
+class KDE_EXPORT NetworkManager : public QObject
+{
+Q_OBJECT
+    public:
+         /**
+         * Retrieves the unique instance of this class.
+         *
+         * @return unique instance of the class
+         */
+        static NetworkManager &self();
+        /**
+         * Retrieves the unique instance of this class and forces the registration of
+         * the given backend.
+         * The NetworkManager will use this backend. The parameter will be ignored if an
+         * instance of NetworkManager already exists.
+         *
+         * Use this method at your own risks. It's primarily available to easier tests
+         * writing. If you need to test the NetworkManager, use a call to this method, and
+         * then use self() as usual.
+         *
+         * @param backend the in the application
+         * @return unique instance of the class
+         * @see self()
+         */
+        static NetworkManager &selfForceBackend( Ifaces::NetworkManager *backend );
+        /**
+         * Get a list of all network devices in the system
+         * Note: includes getDeviceList and getDialupList from knm
+         */
+        NetworkDeviceList networkDevices() const;
+        /**
+         * Get the active devices (all types)
+         * TODO: NM only supports 1 active device at present
+         */
+        NetworkDeviceList activeNetworkDevices() const;
+
+        /**
+         * Access a given device instance
+         */
+        NetworkDevice findNetworkDevice( const QString & udi );
+    public slots:
+        /**
+         * Tell the backend to activate a network
+         * TODO: Also dialup, VPN?
+         */
+        void activate( const QString & );
+        /**
+         * Tell the backend to activate a network
+         * TODO: Also dialup, VPN?
+         */
+        void deactivate( const QString & );
+        /**
+         * disable wireless networking
+         */
+        void enableWireless( bool enabled );
+        /**
+         * disable all networking - go to passive mode
+         */
+        void enableNetworking( bool enabled );
+        /**
+         * Inform the backend of hidden wireless networks
+         */
+        void notifyHiddenNetwork( const QString & essid );
+    signals:
+        /**
+         * Emitted when the system notices a new device was added
+         */
+        void added( const QString & );
+        /**
+         * Emitted when the system notices a device was removed
+         */
+        void removed( const QString & );
+    private:
+        NetworkManager();
+        NetworkManager( Ifaces::NetworkManager *backend );
+        virtual ~NetworkManager();
+
+        static NetworkManager * s_self;
+        class Private;
+        Private * d;
+        friend void ::KStaticDeleter<NetworkManager>::destructObject();
+};
+
+/**
+ * Read only system connection status oracle.  Intended for light weight usage in applications which want to read connection state but are not interested in details or control
+ */
+class KDE_EXPORT NetworkStatus : public QObject
+{
+Q_OBJECT
+    public:
+        /**
+         * NetworkStatus is a singleton
+         */
+        static NetworkStatus &self();
+        /**
+         * Retrieves the unique instance of this class and forces the registration of
+         * the given backend.
+         * The NetworkManager will use this backend. The parameter will be ignored if an
+         * instance of NetworkManager already exists.
+         *
+         * Use this method at your own risks. It's primarily available to easier tests
+         * writing. If you need to test the NetworkManager, use a call to this method, and
+         * then use self() as usual.
+         *
+         * @param backend the in the application
+         * @return unique instance of the class
+         * @see self()
+         */
+        static NetworkStatus &selfForceBackend( Ifaces::NetworkStatus *backend );
+        /**
+         * Possible states for the network status object
+         * TODO: fix doxygen
+         * - Unknown = the system has no knowledge of the actual network status. Perhaps the backend daemon is not running.
+         * - Disconnected = The system is not connected to any network, but will connect if the possibility arises
+         * - Connecting = The only network connection is currently being connected
+         * - Connected = At least one network connection is active
+         * - Passive = The system is disconnected and not attempting to make a connection
+         */
+        enum ConnectionState { Unknown, Disconnected, Connecting, Connected, Passive };
+
+        virtual ~NetworkStatus();
+
+       /**
+         * Access the current connection state of the system
+         */
+        ConnectionState connectionState() const;
+        /**
+         * Check connection state for a given host
+         * TODO KUrl?
+         */
+        ConnectionState connectionState( const QString & host ) const;
+   signals:
+        /**
+         * Emitted when the connection state changed
+         */
+        void connectionStateChanged( ConnectionState );
+   private:
+        NetworkStatus( QObject * );
+};
+
+} // Solid
+
+#endif

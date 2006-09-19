@@ -39,7 +39,7 @@ class KDE_EXPORT NetworkManager : public QObject
 {
 Q_OBJECT
     public:
-        NetworkManager( QObject * parent );
+        NetworkManager( QObject * parent = 0 );
         virtual ~NetworkManager();
 
         /**
@@ -53,17 +53,21 @@ Q_OBJECT
          */
         virtual NetworkDeviceList activeNetworkDevices() const =0;
 
+        /**
+         * Create a backend specific device instance
+         */
+        virtual NetworkDevice * createNetworkDevice( const QString & ) = 0;
     public slots:
         /**
          * Tell the backend to activate a network
          * TODO: Also dialup, VPN?
          */
-        virtual void activate( Ifaces::Network * ) = 0;
+        virtual void activate( const QString & ) = 0;
         /**
          * Tell the backend to activate a network
          * TODO: Also dialup, VPN?
          */
-        virtual void deactivate( Ifaces::Network * ) = 0;
+        virtual void deactivate( const QString & ) = 0;
         /**
          * disable wireless networking
          */
@@ -75,16 +79,16 @@ Q_OBJECT
         /**
          * Inform the backend of hidden wireless networks
          */
-        virtual void notifyHiddenNetworks( const QString & essid ) = 0;
+        virtual void notifyHiddenNetwork( const QString & essid ) = 0;
     signals:
         /**
          * Emitted when the system notices a new device was added
          */
-        void added( Ifaces::NetworkDevice * );
+        void added( const QString & udi );
         /**
          * Emitted when the system notices a device was removed
          */
-        void removed( Ifaces::NetworkDevice * );
+        void removed( const QString & udi );
 };
 
 /**

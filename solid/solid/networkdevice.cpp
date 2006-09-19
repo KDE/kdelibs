@@ -26,12 +26,19 @@ namespace Solid
     class NetworkDevice::Private
     {
         public:
+            Private() : iface( 0 ) {}
             Ifaces::NetworkDevice * iface;
     };
 }
 
-Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface, QObject *parent )
-    : QObject( parent ), d( new Private )
+
+Solid::NetworkDevice::NetworkDevice()
+    : QObject( ), d( new Private )
+{
+}
+
+Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface )
+    : QObject( ), d( new Private )
 {
     d->iface = iface;
 
@@ -43,6 +50,12 @@ Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface, QObject *pare
              this, SIGNAL( signalStrengthChanged( int ) ) );
     connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
              this, SIGNAL( connectionStateChanged( int ) ) );
+}
+
+Solid::NetworkDevice::NetworkDevice( const NetworkDevice &device )
+    : QObject(), d( new Private )
+{
+    d->iface = device.d->iface;
 }
 
 Solid::NetworkDevice::~NetworkDevice()

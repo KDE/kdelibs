@@ -35,7 +35,12 @@ namespace Solid
     {
         Q_OBJECT
     public:
-        NetworkDevice( Ifaces::NetworkDevice *, QObject * parent );
+        /**
+         * Invalid device
+         */
+        NetworkDevice();
+        NetworkDevice( Ifaces::NetworkDevice * );
+        NetworkDevice( const NetworkDevice & );
         ~NetworkDevice();
 
         bool isActive();

@@ -65,7 +65,7 @@ namespace Ifaces
         void connectionStateChanged( int /*ConnectionState*/ );
     };
 
-    typedef QList<NetworkDevice> NetworkDeviceList;
+    typedef QStringList NetworkDeviceList;
 } //Ifaces
 } //Solid
 
