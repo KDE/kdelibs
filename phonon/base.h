@@ -71,6 +71,15 @@ namespace Phonon
 			 */
 			void removeDestructionHandler( BaseDestructionHandler* handler );
 
+			/**
+			 * Tells whether the backend provides an implementation of this
+			 * class.
+			 *
+			 * \return \c true if backend provides an implementation
+			 * \return \c false if the object is not implemented by the backend
+			 */
+			bool isValid();
+
 		protected:
 			/**
 			 * \internal

@@ -61,5 +61,10 @@ namespace Phonon
 			d->createIface();
 		return d->backendObject;
 	}
+
+	bool Base::isValid()
+	{
+		return( iface() != 0 );
+	}
 } //namespace Phonon
 // vim: sw=4 ts=4 noet
