@@ -90,8 +90,6 @@
 #include <netwm.h>
 #endif
 
-#include "kprocctrl.h"
-
 #ifdef HAVE_PATHS_H
 #include <paths.h>
 #endif
@@ -148,15 +146,6 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
   return kapp->xErrhandler( dpy, err );
 }
 
-}
-
-extern "C" {
-static void kde_ice_ioerrorhandler( IceConn conn )
-{
-    if(kapp)
-        kapp->iceIOErrorHandler( conn );
-    // else ignore the error for now
-}
 }
 #endif
 
@@ -517,8 +506,6 @@ void KApplication::init()
   }
 
   parseCommandLine();
-
-  KProcessController::ref();
 
   (void) KClipboardSynchronizer::self();
 
@@ -958,8 +945,6 @@ KApplication::~KApplication()
   // KLibLoader will take care of the remaining ones.
   KGlobal::deleteStaticDeleters();
   KLibLoader::cleanUp();
-
-  KProcessController::deref();
 
 #ifdef Q_WS_X11
   if ( d->oldXErrorHandler != NULL )
