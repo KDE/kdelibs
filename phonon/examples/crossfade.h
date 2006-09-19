@@ -17,12 +17,14 @@
 
 */
 
+#ifndef CROSSFADE_H
+#define CROSSFADE_H
+
 #include <QObject>
 
 namespace Phonon {
-	class MediaObject;
+	class MediaQueue;
 	class AudioPath;
-	class VolumeFaderEffect;
 	class AudioOutput;
 }
 class KUrl;
@@ -32,22 +34,14 @@ class Crossfader : public QObject
 {
 	Q_OBJECT
 	public:
-		Crossfader( QObject* parent = 0 );
-
-	signals:
-		void needNextUrl( KUrl& nextUrl );
-
-	public slots:
-		void start( const KUrl& firstUrl );
-		void stop();
+		Crossfader( const KUrl& url1, const KUrl& url2, QObject* parent = 0 );
 
 	private slots:
-		void crossfade( long );
-		void setupNext();
+		void finished();
 
 	private:
-		MediaObject *m1, *m2;
-		AudioPath *a1, *a2;
-		VolumeFaderEffect *f1, *f2;
+		MediaQueue *media;
+		AudioPath *path;
 		AudioOutput *output;
 };
+#endif // CROSSFADE_H
