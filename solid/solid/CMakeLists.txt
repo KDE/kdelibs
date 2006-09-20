@@ -33,6 +33,7 @@ set(solid_LIB_SRCS
    networkdevice.cpp
    network.cpp
    wirelessnetwork.cpp
+   networkmanager.cpp
    sysstatistics.cpp
 )
 

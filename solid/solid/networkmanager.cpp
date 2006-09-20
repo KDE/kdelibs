@@ -40,15 +40,27 @@ namespace Solid
     public:
         Private( NetworkManager *manager ) : q( manager ), backend( 0 ) {}
 
-
         Ifaces::NetworkDevice *findRegisteredNetworkDevice( const QString &udi );
-        void registerBackend( Ifaces::NetworkManager *newBackend );
+        void registerBackend( Ifaces::NetworkManager * newBackend );
         void unregisterBackend();
 
         NetworkManager *q;
         Ifaces::NetworkManager *backend;
         QMap<QString, Ifaces::NetworkDevice*> networkDeviceMap;
 
+        QString errorText;
+    };
+
+    class NetworkStatus::Private
+    {
+    public:
+        Private( NetworkStatus *status ) : q( status ), backend( 0 ) {}
+
+        void registerBackend( Ifaces::NetworkStatus * newBackend );
+        void unregisterBackend();
+
+        NetworkStatus *q;
+        Ifaces::NetworkStatus *backend;
         QString errorText;
     };
 }
@@ -271,4 +283,131 @@ Solid::Ifaces::NetworkDevice *Solid::NetworkManager::Private::findRegisteredNetw
 }
 
 /***************************************************************************/
+
+static ::KStaticDeleter<Solid::NetworkStatus> statusSd;
+
+Solid::NetworkStatus *Solid::NetworkStatus::s_self = 0;
+
+Solid::NetworkStatus &Solid::NetworkStatus::self()
+{
+    if( !s_self )
+    {
+        s_self = new Solid::NetworkStatus();
+        statusSd.setObject( s_self, s_self );
+    }
+
+    return *s_self;
+}
+
+Solid::NetworkStatus &Solid::NetworkStatus::selfForceBackend( Ifaces::NetworkStatus *backend )
+{
+    if( !s_self )
+    {
+        s_self = new Solid::NetworkStatus( backend );
+        statusSd.setObject( s_self, s_self );
+    }
+
+    return *s_self;
+}
+
+Solid::NetworkStatus::NetworkStatus()
+    : QObject(), d( new Private( this ) )
+{
+    QStringList error_msg;
+
+    Ifaces::NetworkStatus *backend = 0;
+
+    KService::List offers = KServiceTypeTrader::self()->query( "SolidNetworkManager", "(Type == 'Service')" );
+
+    foreach ( KService::Ptr ptr, offers )
+    {
+        KLibFactory * factory = KLibLoader::self()->factory( QFile::encodeName( ptr->library() ) );
+
+        if ( factory )
+        {
+            backend = (Ifaces::NetworkStatus*)factory->create( 0, "Solid::Ifaces::NetworkStatus" );
+
+            if( backend != 0 )
+            {
+                d->registerBackend( backend );
+                kDebug() << "Using network management backend: " << ptr->name() << endl;
+            }
+            else
+            {
+                kDebug() << "Error loading network management backend'" << ptr->name() << "', factory's create method returned 0" << endl;
+                error_msg.append( i18n("Factory's create method failed") );
+            }
+        }
+        else
+        {
+            kDebug() << "Error loading network management backend'" << ptr->name() << "', factory creation failed" << endl;
+            error_msg.append( i18n("Factory creation failed") );
+        }
+    }
+
+    if ( backend == 0 )
+    {
+        if ( offers.size() == 0 )
+        {
+            d->errorText = i18n( "No Network Management Backend found" );
+        }
+        else
+        {
+            d->errorText = "<qt>";
+            d->errorText+= i18n( "Unable to use any of the Network Management Backends" );
+            d->errorText+= "<table>";
+
+            QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";
+
+            for ( int i = 0; i< offers.size(); i++ )
+            {
+                d->errorText+= line.arg( offers[i]->name() ).arg( error_msg[i] );
+            }
+
+            d->errorText+= "</table></qt>";
+        }
+    }
+}
+
+Solid::NetworkStatus::NetworkStatus( Ifaces::NetworkStatus *backend )
+    : QObject(), d( new Private( this ) )
+{
+    if ( backend != 0 )
+    {
+        d->registerBackend( backend );
+    }
+}
+
+Solid::NetworkStatus::~NetworkStatus()
+{
+    d->unregisterBackend();
+}
+
+Solid::Ifaces::NetworkStatus::ConnectionState Solid::NetworkStatus::connectionState() const
+{
+    return d->backend->connectionState();
+}
+
+Solid::Ifaces::NetworkStatus::ConnectionState Solid::NetworkStatus::connectionState( const QString & host) const
+{
+    return d->backend->connectionState( host );
+}
+
+void Solid::NetworkStatus::Private::registerBackend( Ifaces::NetworkStatus *newBackend )
+{
+    // clear any existing backend
+    unregisterBackend();
+    // store the new one
+    backend = newBackend;
+    // make the connections
+    QObject::connect( backend, SIGNAL( connectionStateChanged( Solid::Ifaces::NetworkStatus::ConnectionState ) ),
+                      q, SIGNAL( added( const QString & ) ) );
+}
+
+void Solid::NetworkStatus::Private::unregisterBackend()
+{
+    delete backend;
+}
+
+
 #include "networkmanager.moc"

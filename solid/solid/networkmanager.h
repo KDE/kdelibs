@@ -152,35 +152,28 @@ Q_OBJECT
          * @see self()
          */
         static NetworkStatus &selfForceBackend( Ifaces::NetworkStatus *backend );
-        /**
-         * Possible states for the network status object
-         * TODO: fix doxygen
-         * - Unknown = the system has no knowledge of the actual network status. Perhaps the backend daemon is not running.
-         * - Disconnected = The system is not connected to any network, but will connect if the possibility arises
-         * - Connecting = The only network connection is currently being connected
-         * - Connected = At least one network connection is active
-         * - Passive = The system is disconnected and not attempting to make a connection
-         */
-        enum ConnectionState { Unknown, Disconnected, Connecting, Connected, Passive };
-
         virtual ~NetworkStatus();
 
        /**
          * Access the current connection state of the system
          */
-        ConnectionState connectionState() const;
+        Ifaces::NetworkStatus::ConnectionState connectionState() const;
         /**
          * Check connection state for a given host
          * TODO KUrl?
          */
-        ConnectionState connectionState( const QString & host ) const;
+        Ifaces::NetworkStatus::ConnectionState connectionState( const QString & host ) const;
    signals:
         /**
          * Emitted when the connection state changed
          */
-        void connectionStateChanged( ConnectionState );
+        void connectionStateChanged( Ifaces::NetworkStatus::ConnectionState );
    private:
-        NetworkStatus( QObject * );
+        class Private;
+        Private * d;
+        static NetworkStatus * s_self;
+        NetworkStatus();
+        NetworkStatus( Ifaces::NetworkStatus *backend );
 };
 
 } // Solid
