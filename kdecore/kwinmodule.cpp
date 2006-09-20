@@ -191,7 +191,7 @@ int KWinModulePrivate::currentViewport(int desktop) const
 {
     NETPoint netviewport = desktopViewport(desktop);
 
-    return netviewport.x / QApplication::desktop()->screenGeometry().width();
+    return 1+(netviewport.x / QApplication::desktop()->screenGeometry().width());
 }
 
 bool KWinModulePrivate::x11Event( XEvent * ev )
