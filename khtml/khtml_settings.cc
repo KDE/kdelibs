@@ -731,8 +731,9 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
     {
         if (!url.startsWith("data:"))
         {
-	  QVector<QRegExp>::iterator it;
-	  for (it=d->adFilters.begin(); it != d->adFilters.end(); ++it)
+            QVector<QRegExp>::const_iterator it(d->adFilters.constBegin());
+            QVector<QRegExp>::const_iterator end(d->adFilters.constEnd());
+            for (; it != end; ++it)
             {
                 if ((*it).indexIn(url) != -1)
                 {
