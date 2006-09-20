@@ -391,6 +391,14 @@ public:
     static void setCurrentDesktop( int desktop );
 
     /**
+     * Convenience function to set the current viewport to @p viewport.
+     * See NETRootInfo.
+     * @param desktop the number of the new desktop
+     * @param desktop the number of the new viewport
+     */
+    static void setCurrentDesktopViewport( int desktop, QPoint viewport );
+
+    /**
      * Iconifies a window. Compatible to XIconifyWindow but has an
      * additional parameter @p animation.
      *

@@ -39,6 +39,7 @@ static KWinModulePrivate* static_d = 0;
 static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientListStacking |
 				     NET::NumberOfDesktops |
 				     NET::DesktopGeometry |
+                                     NET::DesktopViewport |
 				     NET::CurrentDesktop |
 				     NET::DesktopNames |
 				     NET::ActiveWindow |
@@ -49,6 +50,7 @@ static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientLi
 static unsigned long desktop_properties[ 2 ] = { 
 				     NET::NumberOfDesktops |
 				     NET::DesktopGeometry |
+                                     NET::DesktopViewport |
 				     NET::CurrentDesktop |
 				     NET::DesktopNames |
 				     NET::ActiveWindow |
@@ -106,8 +108,10 @@ public:
 
     void updateStackingOrder();
     bool removeStrutWindow( WId );
-};
 
+    int numberOfViewports(int desktop) const;
+    int currentViewport(int desktop) const;
+};
 
 KWinModule::KWinModule( QObject* parent )
     : QObject( parent, "kwin_module" )
@@ -176,6 +180,20 @@ const QValueList<WId>& KWinModule::systemTrayWindows() const
     return d->systemTrayWindows;
 }
 
+int KWinModulePrivate::numberOfViewports(int desktop) const
+{
+    NETSize netdesktop = desktopGeometry(desktop);
+
+    return netdesktop.width / QApplication::desktop()->screenGeometry().width();
+}
+
+int KWinModulePrivate::currentViewport(int desktop) const
+{
+    NETPoint netviewport = desktopViewport(desktop);
+
+    return netviewport.x / QApplication::desktop()->screenGeometry().width();
+}
+
 bool KWinModulePrivate::x11Event( XEvent * ev )
 {
     if ( ev->xany.window == qt_xrootwin() ) {
@@ -192,6 +210,11 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->activeWindowChanged( activeWindow() );
+	if ( m[ PROTOCOLS ] & DesktopViewport ) {
+	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
+		emit (*mit)->currentDesktopViewportChanged(currentDesktop(),
+                        currentViewport(currentDesktop()));
+        }
 	if ( m[ PROTOCOLS ] & DesktopNames )
 	    for ( QPtrListIterator<KWinModule> mit( modules ); mit.current(); ++mit )
 		emit (*mit)->desktopNamesChanged();
@@ -323,6 +346,16 @@ int KWinModule::currentDesktop() const
 int KWinModule::numberOfDesktops() const
 {
     return d->numberOfDesktops();
+}
+
+int KWinModule::numberOfViewports(int desktop) const
+{
+    return d->numberOfViewports(desktop);
+}
+
+int KWinModule::currentViewport(int desktop) const
+{
+    return d->currentViewport(desktop);
 }
 
 WId KWinModule::activeWindow() const

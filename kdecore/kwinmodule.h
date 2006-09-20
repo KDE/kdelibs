@@ -152,6 +152,20 @@ public:
     int numberOfDesktops() const;
 
     /**
+     * Returns the number of viewports on the virtual desktop
+     * @return the number of virtual desktops
+     * @since 3.5
+     **/
+    int numberOfViewports(int desktop) const;
+
+    /**
+     * Returns the number of viewports on the virtual desktop
+     * @return the number of virtual desktops
+     * @since 3.5
+     **/
+    int currentViewport(int desktop) const;
+
+    /**
      * Returns the currently active window, or 0 if no window is active.
      * @return the window id of the active window, or 0 if no window is 
      *  active
@@ -308,16 +322,22 @@ signals:
      * @param id the id of the window
      */
     void windowChanged(WId id);
-    
+
     /**
      * The state of showing the desktop has changed.
      * @since 3.5
      */
     void showingDesktopChanged( bool showing );
 
+    /**
+     * The viewport position has changed
+     * @since 3.5
+     */
+    void currentDesktopViewportChanged(int desktop, int viewport);
+
 protected:
     virtual void connectNotify( const char* signal );
-        
+
 private:
     void init(int);
 
