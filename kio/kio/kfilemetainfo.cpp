@@ -329,11 +329,15 @@ void KFileMetaInfo::init( const KUrl& url, const QString& mimeType,
         KFilePlugin *p = plugin();
         Q_ASSERT( p );
         if ( p && !p->readInfo( item, what) )
+        {
+            deref();
             d = Data::makeNull();
+        }
     }
     else
     {
 //        kDebug(7033) << "No mimetype info for " << mimeType << endl;
+        deref();
         d = Data::makeNull();
     }
 }
