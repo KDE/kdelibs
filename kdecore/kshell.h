@@ -123,6 +123,19 @@ namespace KShell {
     KDECORE_EXPORT QString joinArgs( const char * const *argv, int argc = -1 );
 
     /**
+     * Quotes @p arg according to POSIX shell rules.
+     *
+     * This function can be used to quote an argument string such that
+     * the shell processes it properly. This is e.g. necessary for
+     * user-provided file names which may contain spaces or quotes.
+     * It also prevents expansion of wild cards and environment variables.
+     *
+     * @param arg the argument to quote
+     * @return the quoted argument
+     */
+    KDECORE_EXPORT QString quoteArg( const QString &arg );
+
+    /**
      * Performs tilde expansion on @p path. Interprets "~/path" and
      * "~user/path".
      *

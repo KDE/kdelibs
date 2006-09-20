@@ -370,6 +370,18 @@ QString KShell::joinArgsDQ( const QStringList &args )
     return ret;
 }
 
+QString KShell::quoteArg( const QString &arg )
+{
+    if (!arg.length())
+        return QString::fromLatin1("''");
+    for (int i = 0; i < arg.length(); i++)
+        if (isSpecial( arg.unicode()[i] )) {
+            QChar q( QLatin1Char('\'') );
+            return QString( arg ).replace( q, QLatin1String("'\\''") ).prepend( q ).append( q );
+        }
+    return arg;
+}
+
 QString KShell::tildeExpand( const QString &fname )
 {
     if (fname.length() && fname[0] == QLatin1Char('~')) {
