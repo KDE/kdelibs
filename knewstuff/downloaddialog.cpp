@@ -180,7 +180,7 @@ void DownloadDialog::slotProviders(Provider::List *list)
 void DownloadDialog::addProvider(Provider *p)
 {
   QFrame *frame;
-  KTabCtl *ctl;
+  QTabWidget *ctl;
   QWidget *w_d, *w_r, *w_l;
   QWidget *w2;
   QTextBrowser *rt;
@@ -223,13 +223,13 @@ void DownloadDialog::addProvider(Provider *p)
   w_r = new QWidget(frame);
   w_l = new QWidget(frame);
 
-  ctl = new KTabCtl(frame);
+  ctl = new QTabWidget(frame);
   ctl->addTab(w_r, i18n("Highest Rated"));
   ctl->addTab(w_d, i18n("Most Downloads"));
   ctl->addTab(w_l, i18n("Latest"));
 
   m_curtab = 0;
-  connect(ctl, SIGNAL(tabSelected(int)), SLOT(slotTab(int)));
+  connect(ctl, SIGNAL(currentChanged(int)), SLOT(slotTab(int)));
 
   QHBoxLayout *box = new QHBoxLayout(frame);
   box->addWidget(ctl);
