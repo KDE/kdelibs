@@ -4,6 +4,9 @@ dnl	Based on the lua check used by yzis-M3
 
 	HAVE_LUA=""
 
+	AC_ARG_WITH([lua],
+		AC_HELP_STRING([--without-lua], [Build without Lua libraries (default: check)]))
+
         AC_ARG_WITH(lua-dir,
                 AC_HELP_STRING([--with-lua-dir=DIR],[where the root of Lua 5.x is installed]),
                 [
@@ -21,6 +24,9 @@ dnl	Based on the lua check used by yzis-M3
                 LUA_LIBS="-L$withval" ])
 
 
+    if test "x$with_lua" = "xno"; then
+	AC_MSG_RESULT([Not using Lua])
+    else
         if ! test "x$LUA" = "x"; then
                 AC_MSG_RESULT(using Lua from $LUA)
         fi
@@ -76,6 +82,7 @@ dnl	Based on the lua check used by yzis-M3
         AC_SUBST(LUA)
         AC_SUBST(LUA_INCLUDES)
         AC_SUBST(LUA_LIBS)
+    fi
 
 ])
 
