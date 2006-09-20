@@ -45,6 +45,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
+#include <kbufferedsocket.h>
 #include <klibloader.h>
 #include <kactioncollection.h>
 #include <kbufferedsocket.h>
@@ -60,9 +61,9 @@ using namespace KNetwork;
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).toUtf8())
 
-void extractMaticData(QString& buf, const QString& filename);
-QString printerURI(KMPrinter *p, bool useExistingURI = false);
-QString downloadDriver(KMPrinter *p);
+static void extractMaticData(QString& buf, const QString& filename);
+static QString printerURI(KMPrinter *p, bool useExistingURI = false);
+static QString downloadDriver(KMPrinter *p);
 
 static int trials = 5;
 
@@ -89,6 +90,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const QStringList & /*args*/)
 
 KMCupsManager::~KMCupsManager()
 {
+       delete m_socket;
 }
 
 QString KMCupsManager::driverDbCreationProgram()
@@ -888,6 +890,12 @@ QString KMCupsManager::testPage()
 void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kDebug(500) << "Checking for update possible" << endl;
+	m_socket = new KNetwork::KBufferedSocket;
+	m_socket->setTimeout( 1 );
+	connect( m_socket, SIGNAL( connected(const KResolverEntry&) ),
+                SLOT( slotConnectionSuccess() ) );
+	connect( m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
+	trials = 5;
 	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
 }
 
@@ -920,16 +928,13 @@ void KMCupsManager::slotConnectionSuccess()
 void KMCupsManager::slotAsyncConnect()
 {
 	kDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
-	http_t	*HTTP = httpConnect(CupsInfos::self()->host().toLatin1(), CupsInfos::self()->port());
-	if(!HTTP)
-		slotConnectionFailed(0);
-	else {
-		slotConnectionSuccess();
-		httpClose(HTTP);
-	}
+        if (CupsInfos::self()->host().startsWith("/"))
+            m_socket->connect( QString(), CupsInfos::self()->host());
+        else
+            m_socket->connect( CupsInfos::self()->host(), QString::number(CupsInfos::self()->port()) );
 }
 
-void KMCupsManager::slotConnectionFailed( int )
+void KMCupsManager::slotConnectionFailed( int errcode )
 {
 	kDebug(500) << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )
@@ -939,7 +944,23 @@ void KMCupsManager::slotConnectionFailed( int )
 		return;
 	}
 
-	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. " ) );
+	QString einfo;
+	switch (errcode) {
+	    case KNetwork::KSocketBase::ConnectionRefused:
+	    case KNetwork::KSocketBase::ConnectionTimedOut:
+		einfo = i18n("connection refused") + QString(" (%1)").arg(errcode);
+		break;
+	    case KNetwork::KSocketBase::LookupFailure:
+		einfo = i18n("host not found") + QString(" (%1)").arg(errcode);
+		break;
+	    case KNetwork::KSocketBase::WouldBlock:
+	    default:
+		einfo = i18n("read failed (%1)").arg(errcode);
+		break;
+	}
+
+	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
+        "Error: %2: %1" ).arg(einfo).arg(CupsInfos::self()->hostaddr()) );
 	setUpdatePossible( false );
 }
 
@@ -955,7 +976,7 @@ void KMCupsManager::hostPingFailedSlot() {
 
 //*****************************************************************************************************
 
-void extractMaticData(QString& buf, const QString& filename)
+static void extractMaticData(QString& buf, const QString& filename)
 {
 	QFile	f(filename);
 	if (f.exists() && f.open(QIODevice::ReadOnly))
@@ -971,7 +992,7 @@ void extractMaticData(QString& buf, const QString& filename)
 	}
 }
 
-QString printerURI(KMPrinter *p, bool use)
+static QString printerURI(KMPrinter *p, bool use)
 {
 	QString	uri;
 	if (use && !p->uri().isEmpty())
@@ -984,7 +1005,7 @@ QString printerURI(KMPrinter *p, bool use)
 	return uri;
 }
 
-QString downloadDriver(KMPrinter *p)
+static QString downloadDriver(KMPrinter *p)
 {
 	QString	driverfile, prname = p->printerName();
 	bool	changed(false);

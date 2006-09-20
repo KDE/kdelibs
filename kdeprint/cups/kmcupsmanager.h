@@ -26,6 +26,10 @@
 class IppRequest;
 class KLibrary;
 
+namespace KNetwork {
+    class KStreamSocket;
+}
+
 class KMCupsManager : public KMManager
 {
 	friend class KMWIppPrinter;
@@ -95,6 +99,7 @@ protected:
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
+        KNetwork::KStreamSocket   *m_socket;
 	bool m_hostSuccess;
 	bool m_lookupDone;
 };
