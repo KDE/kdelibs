@@ -489,7 +489,7 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject
 		 *  @internal
 		 *  Used to detect when the wallet service dies.
 		 */
-		void slotAppUnregistered(const QString&);
+		void slotAppUnregistered(const QString&,const QString&,const QString&);
 
 	private:
 		class WalletPrivate;

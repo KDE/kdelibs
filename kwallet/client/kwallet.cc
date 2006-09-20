@@ -600,7 +600,7 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 }
 
 
-void Wallet::slotAppUnregistered(const QString& app) {
+void Wallet::slotAppUnregistered(const QString& app,const QString&,const QString&) {
 	if (_handle >= 0 && app == "org.kde.kded") {
 		slotWalletClosed(_handle);
 	}
