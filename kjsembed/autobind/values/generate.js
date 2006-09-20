@@ -20,6 +20,7 @@ function process_class( compound_elem )
     // Find the class description file
     var fileName = intermediate_dir + compound_elem.attribute( 'refid' ) + '.xml';
 
+    println( "Loading class file: " + fileName);
     var classInfo = new File( fileName );
     if ( !classInfo.open( File.ReadOnly ) )
         throw "Could not open class info file" + fileName;

@@ -105,7 +105,7 @@ function write_method_lut( compoundDef )
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
     var lut_template =
         '\n' +
-        'const Method ' + compoundName + '::p_methods[] = \n' +
+        'const Method ' + compoundData + '::p_methods[] = \n' +
         '{\n';
 
     // Generate the binding for each method
@@ -143,7 +143,7 @@ function write_method_lut( compoundDef )
 function write_binding_new( class_doc )
 {
     // This is just looking at brush.cpp and determining the order of the source..
-    var includes = '<QtGui>';
+    var includes = '';
     var bindingCtor = '';
     var methods = '';
     var enums = '';
@@ -156,21 +156,26 @@ function write_binding_new( class_doc )
 
     // These are vars we need for all of this to work correctly
     var compoundDef = class_doc.firstChild().toElement();
-    var compounIncludes = compoundDef.firstChildElement('includes').toElement().toString();
+    var compoundIncludes = compoundDef.firstChildElement('includes').toElement().toString();
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+
+    compoundData = compoundName + "Data";
+
+    println ( "compoundIncludes: " + compoundIncludes );
+    includes += '#include "' + compoundName + '_bind.h"\n';
+    includes += "#include <" + compoundIncludes + ">\n";
+    includes += "#include <object_binding.h>\n";
 
     // Binding Ctor
     bindingCtor +=
         '\n' +
-        '#include <' + compoundName + '_bind.h>\n' +
-        '\n' +
         'using namespace KJSEmbed;\n' +
         '\n' +
         "const KJS::ClassInfo " + compoundName + "Binding::info = { \""+ compoundName + "\", &ValueBinding::info, 0, 0 };\n" +
-        compoundName + 'Binding::' + compoundName + '( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
+        compoundName + 'Binding::' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
         '   : ValueBinding(exec, value)\n' +
         '{\n' +
-        '   StaticBinding::publish(exec, this, ' + compoundName + '::methods() );\n' +
+        '   StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
         '   StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
         '}\n\n';
 
@@ -181,7 +186,7 @@ function write_binding_new( class_doc )
 
     enums +=
 	'\n' +
-	'const Enumerator ' + compoundName + '::p_enums[] = {\n';
+	'const Enumerator ' + compoundData + '::p_enums[] = {\n';
 
     var hasEnums = false;
     var memberList = class_doc.elementsByTagName( "memberdef" );
@@ -210,7 +215,7 @@ function write_binding_new( class_doc )
                             '   KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
                             '   if( imp ) \n' +
                             '   { \n' +
-                            '       ' + methodType + ' value = imp->value<' + methodType + '>();\n';
+                            '       ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
 
                         // Handle arguments
                         var methodArgList = memberElement.elementsByTagName('param');
@@ -287,7 +292,7 @@ function write_binding_new( class_doc )
 	    '};\n';
     }
     else {
-	enums = 'const Enumerator ' + compoundName + '::p_enums[] = {{0, 0 }};\n';
+	enums = 'const Enumerator ' + compoundData + '::p_enums[] = {{0, 0 }};\n';
     }
 
 
@@ -321,7 +326,7 @@ function write_binding_new( class_doc )
 var variant_types = [
     'QBitArray', 'QBitmap', 'bool', 'QBrush',
     'QByteArray', 'QChar', 'QColor', 'QCursor',
-    'QDate', 'QDateTime', 'double', 'QFont',
+    'QDate', 'QDateTime', 'double', 'qreal', 'QFont',
     'QIcon', 'QImage', 'int', 'QKeySequence',
     'QLine', 'QLineF', 'QVariantList', 'QLocale',
     'qlonglong', 'QVariantMap', 'QPalette', 'QPen',

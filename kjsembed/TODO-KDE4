@@ -15,11 +15,6 @@ Ian's List:
 
 Rich's List:
 
-* Automatic binding generator.
-
-  This is needed at the very least to make it easy for people to be
-  able to bind their own classes into the interpreter when embedding.
-
 * A good example of how to embed the interpreter.
 
   The editor example is a good start for this.
@@ -67,3 +62,20 @@ Comments from pmax:
 <richmoore> the facilities the wrapper would need are quite simple
 <richmoore> even now, we don't really do much with the internals of kjs - we just use a small number of bits of the api
 
+Erik's List:
+* Load sub-sets of the built-in bindings
+  - core, file access, gui, etc.
+
+* Automatic binding generator.
+
+  This is needed at the very least to make it easy for people to be
+  able to bind their own classes into the interpreter when embedding.
+
+* Add seperate QApplication binding
+
+* Add support for loadable bindings (like lua require) from:
+  * built-ins
+  * Qt style Plugin
+  * js file 
+  * KPart (someone else can do this part)
+  * Loadable support will include optional support for 'require' syntax (like in lua)

@@ -7,6 +7,7 @@ function write_header( classDoc )
     var includes = compounddef.firstChildElement('includes').toElement().toString();
     var compoundName = compounddef.firstChildElement('compoundname').toElement().toString();
 
+    
     var template =
         '#ifndef BIND_' + compoundName + '_H\n' +
         '#define BIND_' + compoundName + '_H\n' +
@@ -26,7 +27,7 @@ function write_header( classDoc )
         '           static const KJS::ClassInfo info;\n' +
         '           virtual const KJS::ClassInfo* classInfo() const { return &info; }\n' +
         '   };\n\n' +
-        '   class ' + compoundName + ' \n' +
+        '   class ' + compoundName + 'Data \n' +
         '   { \n' +
         '       public: \n' + 
         '           static const KJSEmbed::Method p_methods[]; \n' +
