@@ -711,8 +711,13 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     calcHeight();
     if (oldHeight != m_height) {
         // If the block got expanded in size, then increase our overflowheight to match.
-        if (m_overflowHeight > m_height)
-            m_overflowHeight -= (borderBottom()+paddingBottom());
+        if (m_overflowHeight > m_height) {
+            if (style()->scrollsOverflow())
+                // overflow-height only includes padding-bottom when it scrolls
+                m_overflowHeight -= borderBottom();
+            else
+                m_overflowHeight -= (borderBottom()+paddingBottom());
+        }
         if (m_overflowHeight < m_height)
             m_overflowHeight = m_height;
     }
@@ -1633,7 +1638,7 @@ void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintO
 
     if (childrenInline())
         paintLines(pI, scrolledX, scrolledY);
-    else {            
+    else {
         for(RenderObject *child = firstChild(); child; child = child->nextSibling())
             if(!child->layer() && !child->isFloating())
                 child->paint(pI, scrolledX, scrolledY);
