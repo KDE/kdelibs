@@ -33,7 +33,6 @@
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <kpassivepopup.h>
-#include <kprocess.h>
 #include <kdialog.h>
 #include <kmacroexpander.h>
 #include <kwin.h>

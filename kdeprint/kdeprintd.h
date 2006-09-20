@@ -28,7 +28,6 @@
 #include <QtDBus/QtDBus>
 
 class KPrintProcess;
-class KProcess;
 class StatusWindow;
 
 class KDEPrintd : public KDEDModule

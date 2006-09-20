@@ -31,7 +31,6 @@
 class KAboutData;
 class KCModuleInfo;
 class KInstance;
-class KProcess;
 
 /**
  *

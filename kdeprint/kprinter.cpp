@@ -42,7 +42,6 @@
 #include <knotification.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
 

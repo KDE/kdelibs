@@ -42,7 +42,6 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <kprocess.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>

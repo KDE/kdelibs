@@ -22,8 +22,6 @@
 
 #include "kprinterimpl.h"
 
-class KProcess;
-
 class KRlprPrinterImpl : public KPrinterImpl
 {
 public:

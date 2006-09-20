@@ -26,7 +26,6 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <ksimpleconfig.h>
 
 static const KCmdLineOptions options[] =

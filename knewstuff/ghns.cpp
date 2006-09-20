@@ -30,7 +30,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
-#include <kprocess.h>
 #include <kdialog.h>
 
 #include "knewstuffgeneric.h"

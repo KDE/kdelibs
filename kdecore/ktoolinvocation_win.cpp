@@ -57,8 +57,6 @@
 #include <string.h>
 #include <netdb.h>
 
-#include "kprocctrl.h"
-
 #ifdef HAVE_PATHS_H
 #include <paths.h>
 #endif

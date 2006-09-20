@@ -40,7 +40,6 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <kservice.h>
 #include <kstandarddirs.h>
 #include <kuser.h>

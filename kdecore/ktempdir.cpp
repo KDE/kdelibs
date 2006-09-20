@@ -49,7 +49,6 @@
 #include "kinstance.h"
 #include "ktempdir.h"
 #include "kstandarddirs.h"
-#include "kprocess.h"
 #include <kdebug.h>
 #include "kde_file.h"
 

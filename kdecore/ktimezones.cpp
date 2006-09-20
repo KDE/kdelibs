@@ -36,7 +36,6 @@
 #include <QSharedData>
 
 #include <kcodecs.h>
-#include <kprocess.h>
 #include <kstringhandler.h>
 #include <ktempfile.h>
 #include <kdebug.h>
