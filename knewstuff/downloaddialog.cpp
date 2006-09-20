@@ -22,7 +22,6 @@
 #include "downloaddialog.moc"
 
 #include <klocale.h>
-#include <ktabctl.h>
 #include <kdebug.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
@@ -45,7 +44,7 @@
 #include <QTextBrowser>
 #include <QTimer> // hack
 #include <QTreeWidget>
-
+#include <QTabWidget>
 
 using namespace KNS;
 
