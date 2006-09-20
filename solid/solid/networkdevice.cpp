@@ -36,7 +36,7 @@ namespace Solid
             Private() : iface( 0 ) {}
             ~Private();
             Ifaces::NetworkDevice * iface;
-            Ifaces::Network *findRegisteredNetwork( const QString &udi );
+            Ifaces::Network *findRegisteredNetwork( const QString &uni );
             QMap<QString, Ifaces::Network*> networkMap;
     };
 }
@@ -126,11 +126,11 @@ Solid::NetworkDevice::Capabilities Solid::NetworkDevice::capabilities()
     return d->iface->capabilities();
 }
 
-Solid::Network * Solid::NetworkDevice::findNetwork( const QString & udi )
+Solid::Network * Solid::NetworkDevice::createNetwork( const QString & uni )
 {
     if ( d->iface == 0 ) return 0;
 
-    return new Network( d->findRegisteredNetwork( udi ) );
+    return new Network( d->findRegisteredNetwork( uni ) );
 }
 
 Solid::NetworkList Solid::NetworkDevice::networks()
@@ -139,11 +139,11 @@ Solid::NetworkList Solid::NetworkDevice::networks()
 
     if ( d->iface == 0 ) return list;
 
-    QStringList udiList = d->iface->networks();
+    QStringList uniList = d->iface->networks();
 
-    foreach( QString udi, udiList )
+    foreach( QString uni, uniList )
     {
-        Ifaces::Network *network = d->findRegisteredNetwork( udi );
+        Ifaces::Network *network = d->findRegisteredNetwork( uni );
         if ( Ifaces::WirelessNetwork * wlan = dynamic_cast<Ifaces::WirelessNetwork *>( network ) )
             list.append( new Solid::WirelessNetwork( wlan ) );
         else
@@ -163,21 +163,21 @@ Solid::NetworkDevice::Private::~Private()
     }
 }
 
-Solid::Ifaces::Network *Solid::NetworkDevice::Private::findRegisteredNetwork( const QString &udi )
+Solid::Ifaces::Network *Solid::NetworkDevice::Private::findRegisteredNetwork( const QString &uni )
 {
     Ifaces::Network *network;
 
-    if ( networkMap.contains( udi ) )
+    if ( networkMap.contains( uni ) )
     {
-        network = networkMap[udi];
+        network = networkMap[uni];
     }
     else
     {
-        network = iface->findNetwork( udi );
+        network = iface->findNetwork( uni );
 
         if ( network != 0 )
         {
-            networkMap[udi] = network;
+            networkMap[uni] = network;
         }
     }
 
