@@ -49,7 +49,7 @@ namespace Solid
 
         QString primaryDNS();
         QString secondaryDNS();
-
+        void activate( bool active );
     signals:
         void ipDetailsChanged();
 

@@ -75,4 +75,8 @@ QString Solid::Network::secondaryDNS()
     return d->iface->secondaryDNS();
 }
 
+void Solid::Network::activate( bool active )
+{
+    d->iface->activate( active );
+}
 #include "network.moc"

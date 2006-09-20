@@ -51,6 +51,11 @@ namespace Ifaces
 
         virtual QString primaryDNS() = 0;
         virtual QString secondaryDNS() = 0;
+        /**
+         * Activate this network
+         * TODO add status change signals?
+         */
+        virtual void activate( bool ) = 0;
 
     signals:
         void ipDetailsChanged();
