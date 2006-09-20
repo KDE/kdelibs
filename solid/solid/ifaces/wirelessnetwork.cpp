@@ -19,8 +19,8 @@
 
 #include "wirelessnetwork.h"
 
-Solid::Ifaces::WirelessNetwork::WirelessNetwork( QObject *parent )
-    : Network( parent )
+Solid::Ifaces::WirelessNetwork::WirelessNetwork( const QString & uni, QObject *parent )
+    : Network( uni, parent )
 {
 
 }

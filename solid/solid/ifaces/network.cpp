@@ -19,7 +19,7 @@
 
 #include "network.h"
 
-Solid::Ifaces::Network::Network( QObject *parent )
+Solid::Ifaces::Network::Network( const QString & uni, QObject *parent )
     : QObject( parent )
 {
 

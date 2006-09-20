@@ -38,7 +38,7 @@ namespace Ifaces
     {
         Q_OBJECT
     public:
-        Network( QObject *parent = 0 );
+        Network( const QString & uni, QObject *parent = 0 );
         virtual ~Network();
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         virtual QString ipV4Address() = 0;
@@ -52,10 +52,14 @@ namespace Ifaces
         virtual QString primaryDNS() = 0;
         virtual QString secondaryDNS() = 0;
         /**
-         * Activate this network
+         * Activate or deactivate this network
          * TODO add status change signals?
          */
-        virtual void activate( bool ) = 0;
+        virtual void setActivated( bool ) = 0;
+        /**
+         * The Unique Network Identifier for this network
+         */
+        virtual QString uni() = 0;
 
     signals:
         void ipDetailsChanged();

@@ -44,7 +44,7 @@ namespace Ifaces
     {
         Q_OBJECT
     public:
-        WirelessNetwork( QObject *parent = 0 );
+        WirelessNetwork( const QString & uni, QObject *parent = 0 );
         virtual ~WirelessNetwork();
 
         //TODO compare method would look for identical ESSID and at least one AP in common

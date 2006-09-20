@@ -61,9 +61,9 @@ namespace Ifaces
         virtual Capabilities capabilities() = 0;
 
         /**
-         * Get the Network object corresponding to the given UDI
+         * Get the Network object corresponding to the given UNI
          */
-        virtual Network * createNetwork( const QString & udi )= 0;
+        virtual Network * createNetwork( const QString & uni )= 0;
 
         /**
          * Access the networks available via this network devices
