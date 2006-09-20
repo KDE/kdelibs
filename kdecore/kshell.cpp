@@ -276,11 +276,11 @@ inline static bool isSpecial( QChar cUnicode )
 
 QString KShell::joinArgs( const QStringList &args )
 {
-    QLatin1Char q( '\'' );
+    QChar q( QLatin1Char('\'') ), sp( QLatin1Char(' ') );
     QString ret;
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
         if (!ret.isEmpty())
-            ret += QLatin1Char(' ');
+            ret += sp;
         if (!(*it).length())
             ret.append( q ).append( q );
         else {
@@ -304,11 +304,11 @@ QString KShell::joinArgs( const char * const *args, int nargs )
 {
     if (!args)
         return QString(); // well, QString::empty, in fact. qt sucks ;)
-    QLatin1Char q( '\'' );
+    QChar q( QLatin1Char('\'') ), sp( QLatin1Char(' ') );
     QString ret;
     for (const char * const *argp = args; nargs && *argp; argp++, nargs--) {
         if (!ret.isEmpty())
-            ret += QLatin1Char(' ');
+            ret += sp;
         if (!**argp)
             ret.append( q ).append( q );
         else {
@@ -318,11 +318,9 @@ QString KShell::joinArgs( const char * const *args, int nargs )
                     tmp.replace( q, QLatin1String("'\\''" ));
                     ret += q;
                     tmp += q;
-                    ret += tmp;
-                    goto ex;
+                    break;
                 }
             ret += tmp;
-          ex: ;
        }
     }
     return ret;
@@ -330,7 +328,7 @@ QString KShell::joinArgs( const char * const *args, int nargs )
 
 QString KShell::joinArgsDQ( const QStringList &args )
 {
-    QLatin1Char q( '\'' ), sp( ' ' ), bs( '\\' );
+    QChar q( QLatin1Char('\'') ), sp( QLatin1Char(' ') ), bs( QLatin1Char('\\') );
     QString ret;
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
         if (!ret.isEmpty())
