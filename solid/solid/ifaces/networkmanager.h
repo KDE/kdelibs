@@ -43,15 +43,15 @@ Q_OBJECT
         virtual ~NetworkManager();
 
         /**
-         * Get a list of all network devices in the system
+         * Get a list of all network device UDIs in the system
          * Note: includes getDeviceList and getDialupList from knm
          */
-        virtual NetworkDeviceList networkDevices() const = 0;
+        virtual QStringList networkDevices() const = 0;
         /**
-         * Get the active devices (all types)
+         * Get the active device UDIs (all types)
          * TODO: NM only supports 1 active device at present
          */
-        virtual NetworkDeviceList activeNetworkDevices() const =0;
+        virtual QStringList activeNetworkDevices() const =0;
 
         /**
          * Create a backend specific device instance

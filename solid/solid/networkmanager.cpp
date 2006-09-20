@@ -153,14 +153,29 @@ Solid::NetworkManager::~NetworkManager()
     d->unregisterBackend();
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::networkDevices() const
+Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringList & udiList )
 {
-    return d->backend->networkDevices();
+    NetworkDeviceList list;
+
+    if ( d->backend == 0 ) return list;
+
+    foreach( QString udi, udiList )
+    {
+        Ifaces::NetworkDevice *device = d->findRegisteredNetworkDevice( udi );
+        list.append( NetworkDevice( device ) );
+    }
+
+    return list;
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices() const
+Solid::NetworkDeviceList Solid::NetworkManager::networkDevices()
 {
-    return d->backend->activeNetworkDevices();
+    return buildDeviceList( d->backend->networkDevices() );
+}
+
+Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices()
+{
+    return buildDeviceList( d->backend->activeNetworkDevices() );
 }
 
 void Solid::NetworkManager::activate( const QString & net )

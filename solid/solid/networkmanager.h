@@ -37,7 +37,7 @@ namespace Solid
     }
     class Network;
     class NetworkDevice;
-    typedef QStringList NetworkDeviceList;
+    typedef QList<NetworkDevice> NetworkDeviceList;
 
 /**
  * Main class for listing and activating network devices and controlling the backend's network status
@@ -71,12 +71,12 @@ Q_OBJECT
          * Get a list of all network devices in the system
          * Note: includes getDeviceList and getDialupList from knm
          */
-        NetworkDeviceList networkDevices() const;
+        NetworkDeviceList networkDevices();
         /**
          * Get the active devices (all types)
          * TODO: NM only supports 1 active device at present
          */
-        NetworkDeviceList activeNetworkDevices() const;
+        NetworkDeviceList activeNetworkDevices();
 
         /**
          * Access a given device instance
@@ -118,6 +118,7 @@ Q_OBJECT
         NetworkManager();
         NetworkManager( Ifaces::NetworkManager *backend );
         virtual ~NetworkManager();
+        NetworkDeviceList buildDeviceList( const QStringList & udiList );
 
         static NetworkManager * s_self;
         class Private;

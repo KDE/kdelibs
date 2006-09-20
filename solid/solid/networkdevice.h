@@ -43,6 +43,7 @@ namespace Solid
         NetworkDevice( const NetworkDevice & );
         ~NetworkDevice();
 
+        NetworkDevice &operator=( const NetworkDevice & );
         bool isActive();
 
         Type type();

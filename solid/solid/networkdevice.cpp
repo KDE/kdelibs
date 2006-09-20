@@ -63,6 +63,24 @@ Solid::NetworkDevice::~NetworkDevice()
     delete d;
 }
 
+Solid::NetworkDevice &Solid::NetworkDevice::operator=( const Solid::NetworkDevice & dev )
+{
+    disconnect( d->iface );
+    delete d->iface;
+    d->iface = dev.d->iface;
+
+    connect( d->iface, SIGNAL( activeChanged( bool ) ),
+             this, SIGNAL( activeChanged( bool ) ) );
+    connect( d->iface, SIGNAL( linkUpChanged( bool ) ),
+             this, SIGNAL( linkUpChanged( bool ) ) );
+    connect( d->iface, SIGNAL( signalStrengthChanged( int ) ),
+             this, SIGNAL( signalStrengthChanged( int ) ) );
+    connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
+             this, SIGNAL( connectionStateChanged( int ) ) );
+
+    return *this;
+}
+
 bool Solid::NetworkDevice::isActive()
 {
     return d->iface->isActive();
