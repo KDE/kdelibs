@@ -59,7 +59,7 @@ namespace Solid
 
         Capabilities capabilities();
 
-        Network * createNetwork( const QString & uni );
+        Network * findNetwork( const QString & uni );
         /**
          * Access the networks available via this network devices
          * For wired network devices, this will probably be a single network,

@@ -126,7 +126,7 @@ Solid::NetworkDevice::Capabilities Solid::NetworkDevice::capabilities()
     return d->iface->capabilities();
 }
 
-Solid::Network * Solid::NetworkDevice::createNetwork( const QString & uni )
+Solid::Network * Solid::NetworkDevice::findNetwork( const QString & uni )
 {
     if ( d->iface == 0 ) return 0;
 
@@ -173,7 +173,7 @@ Solid::Ifaces::Network *Solid::NetworkDevice::Private::findRegisteredNetwork( co
     }
     else
     {
-        network = iface->findNetwork( uni );
+        network = iface->createNetwork( uni );
 
         if ( network != 0 )
         {

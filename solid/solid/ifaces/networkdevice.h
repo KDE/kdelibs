@@ -63,7 +63,7 @@ namespace Ifaces
         /**
          * Get the Network object corresponding to the given UDI
          */
-        virtual Network * findNetwork( const QString & udi )= 0;
+        virtual Network * createNetwork( const QString & udi )= 0;
 
         /**
          * Access the networks available via this network devices
