@@ -606,6 +606,16 @@ void KWin::setCurrentDesktop( int desktop )
 #endif
 }
 
+void KWin::setCurrentDesktopViewport( int desktop, QPoint viewport )
+{
+#ifdef Q_WS_X11
+    NETRootInfo info( QX11Info::display(), NET::CurrentDesktop );
+    NETPoint netview;
+    netview.x = viewport.x();
+    netview.y = viewport.y();
+    info.setDesktopViewport( desktop, netview );
+#endif
+}
 
 void KWin::iconifyWindow( WId win, bool animation)
 {
