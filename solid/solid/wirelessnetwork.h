@@ -39,7 +39,7 @@ namespace Solid
     {
         Q_OBJECT
     public:
-        WirelessNetwork( Ifaces::WirelessNetwork *, QObject * );
+        WirelessNetwork( Ifaces::WirelessNetwork * iface);
         virtual ~WirelessNetwork();
 
         //TODO compare method would look for identical ESSID and at least one AP in common

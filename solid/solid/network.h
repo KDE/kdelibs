@@ -22,6 +22,7 @@
 
 #include <solid/ifaces/enums.h>
 
+#include <QList>
 #include <QObject>
 
 namespace Solid
@@ -35,7 +36,7 @@ namespace Solid
     {
         Q_OBJECT
     public:
-        Network( Ifaces::Network *, QObject *parent );
+        Network( Ifaces::Network * );
         virtual ~Network();
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         QString ipV4Address();
@@ -55,7 +56,11 @@ namespace Solid
     private:
         class Private;
         Private * d;
-};
+
+    //HACK: to make NetworkList polymorphic (containing both wired and wireless networks, I used Network * here - Will.
+    };
+    typedef QList<Network*> NetworkList;
+
 
 } //Solid
 

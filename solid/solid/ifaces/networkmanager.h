@@ -24,7 +24,7 @@
 #include <kdelibs_export.h>
 
 #include "network.h"
-#include "networkdevice.h"
+#include <solid/ifaces/networkdevice.h>
 #include "authentication.h"
 
 namespace Solid
@@ -51,12 +51,12 @@ Q_OBJECT
          * Get the active device UDIs (all types)
          * TODO: NM only supports 1 active device at present
          */
-        virtual QStringList activeNetworkDevices() const =0;
-
+        virtual QStringList activeNetworkDevices() const = 0;
         /**
          * Create a backend specific device instance
          */
         virtual NetworkDevice * createNetworkDevice( const QString & ) = 0;
+        
     public slots:
         /**
          * Tell the backend to activate a network

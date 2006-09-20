@@ -23,6 +23,7 @@
 #include <QObject>
 
 #include <solid/ifaces/enums.h>
+#include <solid/network.h>
 
 namespace Solid
 {
@@ -58,6 +59,14 @@ namespace Solid
 
         Capabilities capabilities();
 
+        Network * findNetwork( const QString & udi );
+        /**
+         * Access the networks available via this network devices
+         * For wired network devices, this will probably be a single network,
+         * but with wireless, multiple networks may be accessible.
+         * @return A list of Network objects.
+         */
+        NetworkList networks();
     signals:
         void activeChanged( bool );
         void linkUpChanged( bool );

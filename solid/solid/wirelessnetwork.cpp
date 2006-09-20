@@ -30,8 +30,8 @@ namespace Solid
     };
 }
 
-Solid::WirelessNetwork::WirelessNetwork( Ifaces::WirelessNetwork *iface, QObject *parent )
-    : Network( iface, parent ), d( new Private )
+Solid::WirelessNetwork::WirelessNetwork( Ifaces::WirelessNetwork *iface )
+    : Network( iface ), d( new Private )
 {
     d->iface = iface;
 

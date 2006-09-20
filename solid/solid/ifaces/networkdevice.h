@@ -24,6 +24,7 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/enums.h>
+//#include <solid/ifaces/networkmanager.h>
 
 #include <QObject>
 
@@ -31,6 +32,7 @@ namespace Solid
 {
 namespace Ifaces
 {
+    class Network;
     /**
      * Represents a network device as seen by the networking subsystem.
      * For non network specific hardware details,
@@ -58,11 +60,23 @@ namespace Ifaces
 
         virtual Capabilities capabilities() = 0;
 
+        /**
+         * Get the Network object corresponding to the given UDI
+         */
+        virtual Network * findNetwork( const QString & udi )= 0;
+
+        /**
+         * Access the networks available via this network devices
+         * For wired network devices, this will probably be a single network,
+         * but with wireless, multiple networks may be accessible.
+         * @return A list of network UDIs.
+         */
+        virtual QStringList networks() = 0;
     signals:
         void activeChanged( bool );
         void linkUpChanged( bool );
         void signalStrengthChanged( int );
-        void connectionStateChanged( int /*ConnectionState*/ );
+        void connectionStateChanged( int /*NetworkStatus::ConnectionState*/ );
     };
 
     typedef QStringList NetworkDeviceList;

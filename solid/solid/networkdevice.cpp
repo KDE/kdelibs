@@ -17,9 +17,16 @@
 
 */
 
-#include "networkdevice.h"
+#include <QMap>
+#include <QStringList>
 
+#include <solid/ifaces/network.h>
 #include <solid/ifaces/networkdevice.h>
+#include <solid/ifaces/wirelessnetwork.h>
+
+#include "network.h"
+#include "networkdevice.h"
+#include "wirelessnetwork.h"
 
 namespace Solid
 {
@@ -27,7 +34,10 @@ namespace Solid
     {
         public:
             Private() : iface( 0 ) {}
+            ~Private();
             Ifaces::NetworkDevice * iface;
+            Ifaces::Network *findRegisteredNetwork( const QString &udi );
+            QMap<QString, Ifaces::Network*> networkMap;
     };
 }
 
@@ -116,5 +126,62 @@ Solid::NetworkDevice::Capabilities Solid::NetworkDevice::capabilities()
     return d->iface->capabilities();
 }
 
-#include "networkdevice.moc"
+Solid::Network * Solid::NetworkDevice::findNetwork( const QString & udi )
+{
+    if ( d->iface == 0 ) return 0;
 
+    return new Network( d->findRegisteredNetwork( udi ) );
+}
+
+Solid::NetworkList Solid::NetworkDevice::networks()
+{
+    Solid::NetworkList list;
+
+    if ( d->iface == 0 ) return list;
+
+    QStringList udiList = d->iface->networks();
+
+    foreach( QString udi, udiList )
+    {
+        Ifaces::Network *network = d->findRegisteredNetwork( udi );
+        if ( Ifaces::WirelessNetwork * wlan = dynamic_cast<Ifaces::WirelessNetwork *>( network ) )
+            list.append( new Solid::WirelessNetwork( wlan ) );
+        else
+            list.append( new Network( network ) );
+    }
+
+    return list;
+}
+
+/***************************************************************************/
+
+Solid::NetworkDevice::Private::~Private()
+{
+    foreach( Ifaces::Network * network, networkMap )
+    {
+        delete network;
+    }
+}
+
+Solid::Ifaces::Network *Solid::NetworkDevice::Private::findRegisteredNetwork( const QString &udi )
+{
+    Ifaces::Network *network;
+
+    if ( networkMap.contains( udi ) )
+    {
+        network = networkMap[udi];
+    }
+    else
+    {
+        network = iface->findNetwork( udi );
+
+        if ( network != 0 )
+        {
+            networkMap[udi] = network;
+        }
+    }
+
+    return network;
+}
+
+#include "networkdevice.moc"

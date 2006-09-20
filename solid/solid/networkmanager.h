@@ -87,12 +87,12 @@ Q_OBJECT
          * Tell the backend to activate a network
          * TODO: Also dialup, VPN?
          */
-        void activate( const QString & );
+        void activate( const QString & uid );
         /**
          * Tell the backend to activate a network
          * TODO: Also dialup, VPN?
          */
-        void deactivate( const QString & );
+        void deactivate( const QString & uid );
         /**
          * disable wireless networking
          */

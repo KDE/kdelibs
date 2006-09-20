@@ -30,8 +30,8 @@ namespace Solid
     };
 }
 
-Solid::Network::Network( Ifaces::Network *iface, QObject *parent )
-    : QObject( parent ), d( new Private )
+Solid::Network::Network( Ifaces::Network *iface )
+    : QObject(), d( new Private )
 {
     d->iface = iface;
 
