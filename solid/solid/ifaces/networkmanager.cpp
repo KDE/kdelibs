@@ -24,14 +24,4 @@ Solid::Ifaces::NetworkManager::~NetworkManager()
 
 }
 
-Solid::Ifaces::NetworkStatus::NetworkStatus( QObject * parent) : QObject( parent )
-{
-
-}
-
-Solid::Ifaces::NetworkStatus::~NetworkStatus()
-{
-
-}
-
 #include "networkmanager.moc"

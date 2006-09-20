@@ -126,56 +126,6 @@ Q_OBJECT
         friend void ::KStaticDeleter<NetworkManager>::destructObject();
 };
 
-/**
- * Read only system connection status oracle.  Intended for light weight usage in applications which want to read connection state but are not interested in details or control
- */
-class KDE_EXPORT NetworkStatus : public QObject
-{
-Q_OBJECT
-    public:
-        /**
-         * NetworkStatus is a singleton
-         */
-        static NetworkStatus &self();
-        /**
-         * Retrieves the unique instance of this class and forces the registration of
-         * the given backend.
-         * The NetworkManager will use this backend. The parameter will be ignored if an
-         * instance of NetworkManager already exists.
-         *
-         * Use this method at your own risks. It's primarily available to easier tests
-         * writing. If you need to test the NetworkManager, use a call to this method, and
-         * then use self() as usual.
-         *
-         * @param backend the in the application
-         * @return unique instance of the class
-         * @see self()
-         */
-        static NetworkStatus &selfForceBackend( Ifaces::NetworkStatus *backend );
-        virtual ~NetworkStatus();
-
-       /**
-         * Access the current connection state of the system
-         */
-        Ifaces::NetworkStatus::ConnectionState connectionState() const;
-        /**
-         * Check connection state for a given host
-         * TODO KUrl?
-         */
-        Ifaces::NetworkStatus::ConnectionState connectionState( const QString & host ) const;
-   signals:
-        /**
-         * Emitted when the connection state changed
-         */
-        void connectionStateChanged( Ifaces::NetworkStatus::ConnectionState );
-   private:
-        class Private;
-        Private * d;
-        static NetworkStatus * s_self;
-        NetworkStatus();
-        NetworkStatus( Ifaces::NetworkStatus *backend );
-};
-
 } // Solid
 
 #endif

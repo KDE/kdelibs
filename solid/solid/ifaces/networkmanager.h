@@ -91,44 +91,6 @@ Q_OBJECT
         void removed( const QString & udi );
 };
 
-/**
- * Read only system connection status oracle.  Intended for light weight usage in applications which want to read connection state but are not interested in details or control
- */
-class KDE_EXPORT NetworkStatus : public QObject
-{
-Q_OBJECT
-    public:
-        /**
-         * Possible states for the network status object
-         * TODO: fix doxygen
-         * - Unknown = the system has no knowledge of the actual network status. Perhaps the backend daemon is not running.
-         * - Disconnected = The system is not connected to any network, but will connect if the possibility arises
-         * - Connecting = The only network connection is currently being connected
-         * - Connected = At least one network connection is active
-         * - Passive = The system is disconnected and not attempting to make a connection
-         */
-        enum ConnectionState { Unknown, Disconnected, Connecting, Connected, Passive };
-
-        virtual ~NetworkStatus();
-
-       /**
-         * Access the current connection state of the system
-         */
-        virtual ConnectionState connectionState() const = 0;
-        /**
-         * Check connection state for a given host
-         * TODO KUrl?
-         */
-        virtual ConnectionState connectionState( const QString & host ) const = 0;
-   signals:
-        /**
-         * Emitted when the connection state changed
-         */
-        void connectionStateChanged( ConnectionState );
-   private:
-        NetworkStatus( QObject * );
-};
-
 } // Ifaces
 
 } // Solid
