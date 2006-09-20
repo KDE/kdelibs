@@ -437,8 +437,14 @@ namespace Enums
         enum ConnectionState{ Unknown, Prepare, Configure, NeedUserKey,
                               IPStart, IPGet, IPCommit, Activated, Failed,
                               Cancelled };
-        enum Capability { NetworkManager = 0x1, CarrierDetect = 0x2,
-                          WirelessScan = 0x4 };
+        /**
+         * Possible Device capabilities
+         * - IsManageable: denotes that the device can be controlled by this API
+         * - SupportsCarrierDetect: the device informs us when it is plugged in to the medium
+         * - SupportsWirelessScan: the device can scan for wireless networks
+         */ 
+        enum Capability { IsManageable = 0x1, SupportsCarrierDetect = 0x2,
+                          SupportsWirelessScan = 0x4 };
         enum Type { IEEE802_3, IEEE802_11 };
 
         Q_DECLARE_FLAGS( Capabilities, Capability )
