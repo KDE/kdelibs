@@ -45,12 +45,14 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
+#include <ksocketbase.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kdialogbase.h>
 #include <kextendedsocket.h>
 #include <kprocess.h>
+#include <kbufferedsocket.h>
 #include <kfilterdev.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
@@ -88,7 +90,7 @@ static int trials = 5;
 
 KMCupsManager::~KMCupsManager()
 {
-	//delete m_socket;
+	delete m_socket;
 }
 
 QString KMCupsManager::driverDbCreationProgram()
@@ -135,7 +137,8 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 	{
 		req.setOperation(CUPS_ADD_CLASS);
 		QStringList	members = p->members(), uris;
-		QString		s = QString::fromLocal8Bit("ipp://%1:%2/printers/").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port());
+		QString		s;
+                s = QString::fromLocal8Bit("ipp://%1/printers/").arg(CupsInfos::self()->hostaddr());
 		for (QStringList::ConstIterator it=members.begin(); it!=members.end(); ++it)
 			uris.append(s+(*it));
 		req.addURI(IPP_TAG_PRINTER,"member-uris",uris);
@@ -907,25 +910,23 @@ void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption
 
 QString KMCupsManager::stateInformation()
 {
-	return QString("%1: %2:%3")
+	return QString("%1: %2")
 		.arg(i18n("Server"))
-		.arg(CupsInfos::self()->host())
-		.arg(CupsInfos::self()->port());
+		.arg(CupsInfos::self()->hostaddr());
 }
 
 void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kdDebug(500) << "Checking for update possible" << endl;
 	delete m_socket;
-	/*m_socket = new KExtendedSocket( CupsInfos::self()->host(), CupsInfos::self()->port() );
-	connect( m_socket, SIGNAL( connectionSuccess() ), SLOT( slotConnectionSuccess() ) );
-	connect( m_socket, SIGNAL( connectionFailed( int ) ), SLOT( slotConnectionFailed( int ) ) );
-	m_socket->setTimeout( 1 );*/
-	m_socket = new QSocket( this );
-	connect( m_socket, SIGNAL( connected() ), SLOT( slotConnectionSuccess() ) );
-	connect( m_socket, SIGNAL( error( int ) ), SLOT( slotConnectionFailed( int ) ) );
-	trials = 5;
-	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
+        m_socket = new KNetwork::KBufferedSocket;
+	m_socket->setTimeout( 1 );
+	connect( m_socket, SIGNAL( connected(const KResolverEntry&) ), 
+                SLOT( slotConnectionSuccess() ) );
+	connect( m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
+
+        trials = 5;
+        QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
 }
 
 void KMCupsManager::slotConnectionSuccess()
@@ -959,7 +960,10 @@ void KMCupsManager::slotAsyncConnect()
 {
 	kdDebug(500) << "Starting async connect" << endl;
 	//m_socket->startAsyncConnect();
-	m_socket->connectToHost( CupsInfos::self()->host(), CupsInfos::self()->port() );
+        if (CupsInfos::self()->host().startsWith("/"))
+            m_socket->connect( QString(), CupsInfos::self()->host());
+        else
+            m_socket->connectToHost( CupsInfos::self()->host(), CupsInfos::self()->port() );
 }
 
 void KMCupsManager::slotConnectionFailed( int errcode )
@@ -975,9 +979,25 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 		return;
 	}
 
-	setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
-				"Error: %1." ).arg( errcode == QSocket::ErrConnectionRefused ? i18n( "connection refused" ) : i18n( "host not found" ) ) );
-	setUpdatePossible( false );
+    QString einfo;
+
+    switch (errcode) {
+    case KNetwork::KSocketBase::ConnectionRefused:
+    case KNetwork::KSocketBase::ConnectionTimedOut:
+        einfo = i18n("connection refused") + QString(" (%1)").arg(errcode);
+        break;
+    case KNetwork::KSocketBase::LookupFailure:
+        einfo = i18n("host not found") + QString(" (%1)").arg(errcode);
+        break;
+    case KNetwork::KSocketBase::WouldBlock:
+    default:
+        einfo = i18n("read failed (%1)").arg(errcode);
+        break;
+    }
+
+    setErrorMsg( i18n( "Connection to CUPS server failed. Check that the CUPS server is correctly installed and running. "
+                "Error: %2: %1." ).arg( einfo, CupsInfos::self()->host()));
+    setUpdatePossible( false );
 }
 
 void KMCupsManager::hostPingSlot() {
@@ -1014,7 +1034,7 @@ QString printerURI(KMPrinter *p, bool use)
 	if (use && !p->uri().isEmpty())
 		uri = p->uri().prettyURL();
 	else
-		uri = QString("ipp://%1:%2/%4/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));
+		uri = QString("ipp://%1/%3/%2").arg(CupsInfos::self()->hostaddr()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));
 	return uri;
 }
 
