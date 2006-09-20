@@ -41,7 +41,7 @@ FILE	*debugF = NULL;
 #endif
 
 /* utility functions */
-void error(const char* msg)
+static void error(const char* msg)
 {
 	fprintf(stderr, "%s\n", msg);
 #if USE_LOG
@@ -50,7 +50,7 @@ void error(const char* msg)
 	exit(-1);
 }
 
-void usage()
+static void usage()
 {
 	error("usage: cupsdoprint [-H host[:port]][-P dest][-J name][-o opt=value[,...]][-U login[:password]] files...");
 }
@@ -81,7 +81,7 @@ static char * shell_quote(const char *s)
    return result;
 }
 
-const char* getPasswordCB(const char* prompt)
+static const char* getPasswordCB(const char* prompt)
 {
 	char buf[ 256 ] = {0}, *c;
 	char *_user = shell_quote( cupsUser() ), *_passwd = NULL;
