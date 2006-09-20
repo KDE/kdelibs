@@ -151,7 +151,7 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 
     if (kapp) {
         kapp->addKipcEventMask(KIPC::IconChanged);
-        QObject::connect(kapp, SIGNAL(iconChanged(int)), d, SLOT(slotIconChanged()));
+        QObject::connect(kapp, SIGNAL(updateIconLoaders()), d, SLOT(reconfigure()));
     }
 
     init( _appname, _dirs );
@@ -1414,7 +1414,7 @@ QPixmap KIconLoader::unknown()
     return pix;
 }
 
-void KIconLoaderPrivate::slotIconChanged()
+void KIconLoaderPrivate::reconfigure()
 {
   q->reconfigure(appname, mpDirs);
 }

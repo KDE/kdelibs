@@ -1376,6 +1376,12 @@ signals:
    */
   void shutDown();
 
+  /**
+   * @internal
+   * Used to notify KIconLoader objects that they need to reload.
+   */
+  void updateIconLoaders();
+
 private:
   void propagateSettings(SettingsCategory category);
   void kdisplaySetPalette();

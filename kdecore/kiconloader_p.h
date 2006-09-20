@@ -54,7 +54,7 @@ public:
     bool delayedLoading;
 
 public slots:
-    void slotIconChanged();
+    void reconfigure();
 };
 
 #endif // __KIconLoader_p_h_Included__

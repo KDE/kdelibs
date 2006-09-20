@@ -1773,6 +1773,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
                 QPixmapCache::clear();
                 KGlobal::config()->reparseConfiguration();
                 KGlobal::instance()->newIconLoader();
+                emit updateIconLoaders();
                 emit iconChanged(arg);
                 break;
 
