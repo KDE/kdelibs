@@ -395,6 +395,7 @@ public:
      * See NETRootInfo.
      * @param desktop the number of the new desktop
      * @param desktop the number of the new viewport
+     * @since 3.5.5
      */
     static void setCurrentDesktopViewport( int desktop, QPoint viewport );
 

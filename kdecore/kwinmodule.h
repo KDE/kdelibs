@@ -154,14 +154,14 @@ public:
     /**
      * Returns the number of viewports on the virtual desktop
      * @return the number of virtual desktops
-     * @since 3.5
+     * @since 3.5.5
      **/
     int numberOfViewports(int desktop) const;
 
     /**
      * Returns the number of viewports on the virtual desktop
      * @return the number of virtual desktops
-     * @since 3.5
+     * @since 3.5.5
      **/
     int currentViewport(int desktop) const;
 
@@ -207,7 +207,7 @@ public:
      * @param name the new name for the desktop
      **/
     void setDesktopName( int desktop, const QString& name );
-    
+
     /**
      * Returns the state of showing the desktop.
      * @since 3.5
