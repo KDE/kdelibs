@@ -296,14 +296,7 @@ int KTimeZone::Phase::utcOffset() const
 
 QList<QByteArray> KTimeZone::Phase::abbreviations() const
 {
-    QList<QByteArray> abbs = d->abbreviations.split('0');
-    // Remove trailing nulls to make the list elements standard QByteArray strings
-    for (int i = 0, end = abbs.count();  i < end;  ++i)
-    {
-        if (abbs[i].endsWith('\0'))
-            abbs[i].chop(1);
-    }
-    return abbs;
+    return d->abbreviations.split('\0');
 }
 
 bool KTimeZone::Phase::isDst() const
@@ -984,7 +977,7 @@ QList<QByteArray> KTimeZoneData::abbreviations() const
         {
             QList<QByteArray> abbrevs = d->phases[i].abbreviations();
             for (int j = 0, jend = abbrevs.count();  j < jend;  ++j)
-                if (d->abbreviations.indexOf(abbrevs[j]) < 0)
+                if (!d->abbreviations.contains(abbrevs[j]))
                     d->abbreviations.append(abbrevs[j]);
         }
         if (d->abbreviations.isEmpty())
@@ -1013,7 +1006,7 @@ QList<int> KTimeZoneData::utcOffsets() const
         for (int i = 0, end = d->phases.count();  i < end;  ++i)
         {
             int offset = d->phases[i].utcOffset();
-            if (d->utcOffsets.indexOf(offset) < 0)
+            if (!d->utcOffsets.contains(offset))
                 d->utcOffsets.append(offset);
         }
         if (d->utcOffsets.isEmpty())
