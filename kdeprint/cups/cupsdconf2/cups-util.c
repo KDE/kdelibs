@@ -14,7 +14,7 @@ static char		pwdstring[33];
 static int cups_local_auth(http_t *http);
 
 const char *				/* O - Filename for PPD file */
-cupsGetConf()
+cupsGetConf(void)
 {
   int		fd;			/* PPD file */
   int		bytes;			/* Number of bytes read */
@@ -142,7 +142,11 @@ cupsGetConf()
 	*/
 
 	snprintf(plain, sizeof(plain), "%s:%s", cupsUser(), pwdstring);
-	httpEncode64(encode, plain);
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
+       httpEncode64_2(encode, sizeof(encode), plain, sizeof(plain));
+#else
+       httpEncode64(encode, plain);
+#endif
 	snprintf(authstring, sizeof(authstring), "Basic %s", encode);
       }
       else
@@ -364,7 +368,11 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
 	*/
 
 	snprintf(plain, sizeof(plain), "%s:%s", cupsUser(), pwdstring);
-	httpEncode64(encode, plain);
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
+       httpEncode64_2(encode, sizeof(encode), plain, sizeof(plain));
+#else
+       httpEncode64(encode, plain);
+#endif
 	snprintf(authstring, sizeof(authstring), "Basic %s", encode);
       }
       else
