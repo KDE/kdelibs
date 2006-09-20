@@ -503,37 +503,32 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
             calculateBackgroundSize(bgLayer, scaledImageWidth, scaledImageHeight);
 
             EBackgroundRepeat bgr = bgLayer->backgroundRepeat();
-            if ((bgr == NO_REPEAT || bgr == REPEAT_Y) && w > scaledImageWidth) {
+            if (bgr == NO_REPEAT || bgr == REPEAT_Y) {
                 cw = scaledImageWidth;
                 int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
                 if ( xPosition >= 0 ) {
                     cx = _tx + xPosition;
-                    cw = kMin(cw, pw - xPosition);
+                    cw = kMin(scaledImageWidth, pw - xPosition);
                 }
                 else {
                     cx = _tx;
                     if (scaledImageWidth > 0) {
                         sx = -xPosition;
-                        cw += xPosition;
+                        cw = kMin(scaledImageWidth+xPosition, pw);
                     }
                 }
                 cx += left;
             } else {
-                // repeat over x or background is wider than box
+                // repeat over x
                 cw = w;
                 cx = _tx;
                 if (scaledImageWidth > 0) {
                     int xPosition = bgLayer->backgroundXPosition().minWidth(pw-scaledImageWidth);
-                    if ((xPosition > 0) && (bgr == NO_REPEAT)) {
-                        cx += xPosition;
-                        cw -= xPosition;
-                    } else {
-                        sx = scaledImageWidth - (xPosition % scaledImageWidth);
-                        sx -= left % scaledImageWidth;
-                    }
+                    sx = scaledImageWidth - (xPosition % scaledImageWidth);
+                    sx -= left % scaledImageWidth;
                 }
             }
-            if( (bgr == NO_REPEAT || bgr == REPEAT_X) && ph > scaledImageHeight ) {
+            if (bgr == NO_REPEAT || bgr == REPEAT_X) {
                 ch = scaledImageHeight;
                 int yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
                 if ( yPosition >= 0 ) {
@@ -544,24 +539,19 @@ void RenderBox::paintBackgroundExtended(QPainter *p, const QColor &c, const Back
                     cy = _ty;
                     if (scaledImageHeight > 0) {
                         sy = -yPosition;
-                        ch += yPosition;
+                        ch = kMin(scaledImageHeight+yPosition, ph);
                     }
                 }
 
                 cy += top;
             } else {
-                // repeat over y or background is taller than box
+                // repeat over y
                 ch = h;
                 cy = _ty;
                 if (scaledImageHeight > 0) {
                     int yPosition = bgLayer->backgroundYPosition().minWidth(ph - scaledImageHeight);
-                    if ((yPosition > 0) && (bgr == NO_REPEAT)) {
-                        cy += yPosition;
-                        ch -= yPosition;
-                    } else {
-                        sy = scaledImageHeight - (yPosition % scaledImageHeight);
-                        sy -= top % scaledImageHeight;
-                    }
+                    sy = scaledImageHeight - (yPosition % scaledImageHeight);
+                    sy -= top % scaledImageHeight;
                 }
             }
 	    if (layer())
