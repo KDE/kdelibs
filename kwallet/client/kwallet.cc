@@ -106,7 +106,7 @@ Wallet::Wallet(int handle, const QString& name)
 	connect(_wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
 	connect(_wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
 	connect(_wallet, SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
-	connect(_wallet, SIGNAL(applicationDisconnected(QString, QCString)), SLOT(slotApplicationDisconnected(QString, QCString)));
+	connect(_wallet, SIGNAL(applicationDisconnected(QString, QString)), SLOT(slotApplicationDisconnected(QString, QString)));
 
 	// Verify that the wallet is still open
 	if (_handle != -1) {
