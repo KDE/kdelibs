@@ -127,7 +127,7 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 		{
 			QString	s;
 			for (QStringList::ConstIterator it=p->members().begin(); it!=p->members().end(); ++it)
-				s.append((*it) + ", ");
+				s.append(KURL(*it).prettyURL() + ", ");
 			s.truncate(s.length()-2);
 			m_device->setText(s);
 		}
