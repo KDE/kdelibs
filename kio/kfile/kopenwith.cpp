@@ -415,6 +415,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   topLayout->setMargin( KDialog::marginHint() );
   topLayout->setSpacing( KDialog::spacingHint() );
   label = new QLabel( _text, this );
+  label->setWordWrap(true);
   topLayout->addWidget(label);
 
   QHBoxLayout* hbox = new QHBoxLayout();
