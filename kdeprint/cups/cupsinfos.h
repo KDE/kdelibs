@@ -32,6 +32,7 @@ public:
 	~CupsInfos();
 
 	const QString& host() const;
+        QString  hostaddr() const;
 	int port() const;
 	const QString& login() const;
 	const QString& password() const;

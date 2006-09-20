@@ -69,6 +69,13 @@ CupsInfos::~CupsInfos()
 {
 }
 
+QString CupsInfos::hostaddr() const
+{
+    if (host_[0] != '/')
+        return host_ + ":" + port_;
+    return host_;
+}
+
 void CupsInfos::setHost(const QString& s)
 {
 	host_ = s;
