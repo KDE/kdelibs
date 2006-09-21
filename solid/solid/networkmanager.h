@@ -25,10 +25,6 @@
 #include <kdelibs_export.h>
 #include <kstaticdeleter.h>
 
-#include "network.h"
-#include "networkdevice.h"
-#include "authentication.h"
-
 namespace Solid
 {
     namespace Ifaces

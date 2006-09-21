@@ -27,10 +27,10 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include "device.h"
 #include "ifaces/networkmanager.h"
-#include "ifaces/device.h"
+#include "ifaces/networkdevice.h"
 
+#include "networkdevice.h"
 #include "networkmanager.h"
 
 namespace Solid

@@ -26,7 +26,6 @@
 
 #include <solid/ifaces/enums.h>
 
-#include <solid/ifaces/authentication.h>
 #include <solid/ifaces/network.h>
 
 
@@ -37,6 +36,8 @@ namespace Solid
 {
 namespace Ifaces
 {
+    class Authentication;
+
     /**
      * A Wifi wireless network
      */
