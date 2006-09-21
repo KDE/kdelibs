@@ -445,6 +445,11 @@ namespace Enums
          */ 
         enum Capability { IsManageable = 0x1, SupportsCarrierDetect = 0x2,
                           SupportsWirelessScan = 0x4 };
+        /**
+         * Device medium types
+         * - IEEE802_3: wired ethernet
+         * - IEEE802_11: the popular family of wireless networks
+         */
         enum Type { IEEE802_3, IEEE802_11 };
 
         Q_DECLARE_FLAGS( Capabilities, Capability )
@@ -457,11 +462,11 @@ namespace Enums
 
     struct WirelessNetwork
     {
-        enum OperationMode { Adhoc, Managed };
+        enum OperationMode { Unassociated, Adhoc, Managed, Master, Repeater };
         // corresponding to 802.11 capabilities defined in NetworkManager.h
         enum Capability { WEP = 0x1, WPA = 0x2, WPA2 = 0x4, PSK = 0x8,
-                          IEEE8021X = 0x10, WEP40 = 0x20, WEP104 = 0x40,
-                          TKIP = 0x80, CCMP = 0x100 };
+                          IEEE8021X = 0x10, WEP40 = 0x20, WEP104 = 0x40, WEP192 = 0x80, WEP256 = 0x100,
+                          WEP_OTHER = 0x200, TKIP = 0x400, CCMP = 0x800 };
         Q_DECLARE_FLAGS( Capabilities, Capability )
     };
     Q_DECLARE_OPERATORS_FOR_FLAGS( WirelessNetwork::Capabilities )

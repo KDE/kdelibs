@@ -22,8 +22,8 @@
 
 #include <solid/ifaces/enums.h>
 
-#include <QList>
 #include <QObject>
+#include <QStringList>
 
 namespace Solid
 {
@@ -39,8 +39,8 @@ namespace Solid
         Network( Ifaces::Network * );
         virtual ~Network();
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
-        QString ipV4Address();
-        // QString ipV6Address();
+        QStringList ipV4Addresses();
+        QStringList ipV6Addresses();
 
         QString subnetMask();
         QString broadcastAddress();

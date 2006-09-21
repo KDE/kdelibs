@@ -35,6 +35,7 @@ namespace Ifaces
     public:
         WepMethod method;
         WepType type;
+        int keyLength;
     };
 
     class AuthenticationWpa::Private
@@ -133,7 +134,15 @@ Solid::Ifaces::AuthenticationWep::WepType Solid::Ifaces::AuthenticationWep::type
     return d->type;
 }
 
+void Solid::Ifaces::AuthenticationWep::setKeyLength( int length )
+{
+    d->keyLength = length;
+}
 
+int Solid::Ifaces::AuthenticationWep::keyLength() const
+{
+    return d->keyLength;
+}
 
 /******************************************************************************/
 

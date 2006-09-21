@@ -44,9 +44,14 @@ Solid::Network::~Network()
     delete d;
 }
 
-QString Solid::Network::ipV4Address()
+QStringList Solid::Network::ipV4Addresses()
 {
-    return d->iface->ipV4Address();
+    return d->iface->ipV4Addresses();
+}
+
+QStringList Solid::Network::ipV6Addresses()
+{
+    return d->iface->ipV6Addresses();
 }
 
 QString Solid::Network::subnetMask()

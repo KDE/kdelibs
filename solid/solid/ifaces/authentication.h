@@ -73,6 +73,9 @@ namespace Ifaces
         void setType( WepType );
         WepType type() const;
 
+        void setKeyLength( int );
+        int keyLength() const;
+
     private:
         class Private;
         Private *d;

@@ -73,8 +73,8 @@ namespace Ifaces
         virtual bool isActive() = 0;
 
         /**
-         * List of access points making up the network,
-         * or ad hoc network nodes
+         * List of access points or ad hoc network nodes making up the
+         * network that are currently visible to the card.
          */
         virtual MacAddressList bssList() = 0;
 
