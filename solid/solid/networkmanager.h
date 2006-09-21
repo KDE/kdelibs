@@ -82,6 +82,14 @@ Q_OBJECT
          * Access a given device instance
          */
         NetworkDevice findNetworkDevice( const QString & udi );
+
+        /**
+         * Retrieves a reference to the loaded backend.
+         *
+         * @return a pointer to the backend, or 0 if no backend is loaded
+         */
+        Ifaces::NetworkManager *backend() const;
+
     public slots:
         /**
          * Tell the backend to activate a network

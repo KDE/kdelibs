@@ -34,6 +34,7 @@ set(solid_LIB_SRCS
    network.cpp
    wirelessnetwork.cpp
    networkmanager.cpp
+   authentication.cpp
    sysstatistics.cpp
 )
 

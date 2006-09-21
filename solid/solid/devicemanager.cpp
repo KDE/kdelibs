@@ -255,7 +255,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &par
     return list;
 }
 
-const Solid::Ifaces::DeviceManager *Solid::DeviceManager::backend() const
+Solid::Ifaces::DeviceManager *Solid::DeviceManager::backend() const
 {
     return d->backend;
 }

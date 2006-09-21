@@ -177,6 +177,11 @@ Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices()
     return buildDeviceList( d->backend->activeNetworkDevices() );
 }
 
+Solid::Ifaces::NetworkManager * Solid::NetworkManager::backend() const
+{
+    return d->backend;
+}
+
 void Solid::NetworkManager::activate( const QString & net )
 {
     d->backend->activate( net );

@@ -143,7 +143,7 @@ namespace Solid
          *
          * @return a pointer to the backend, or 0 if no backend is loaded
          */
-        const Ifaces::DeviceManager *backend() const;
+        Ifaces::DeviceManager *backend() const;
 
     Q_SIGNALS:
         /**

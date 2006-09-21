@@ -23,14 +23,13 @@
 #include <QObject>
 #include <kdelibs_export.h>
 
-#include "network.h"
-#include <solid/ifaces/networkdevice.h>
-#include "authentication.h"
-
 namespace Solid
 {
 namespace Ifaces
 {
+
+class NetworkDevice;
+class AuthenticationValidator;
 
 /**
  * Main class for listing and activating network devices and controlling the backend's network status
@@ -56,7 +55,11 @@ Q_OBJECT
          * Create a backend specific device instance
          */
         virtual NetworkDevice * createNetworkDevice( const QString & ) = 0;
-        
+
+        /**
+         * Create a backend specific authentication validator
+         */
+        virtual AuthenticationValidator *createAuthenticationValidator() = 0;
     public slots:
         /**
          * Tell the backend to activate a network

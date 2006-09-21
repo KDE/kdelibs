@@ -39,7 +39,7 @@ namespace Solid
             bool validate( const Ifaces::Authentication * );
         private:
             class Private;
-            Private * p;
+            Private * d;
     };
 }
 
