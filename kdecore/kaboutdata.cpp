@@ -136,6 +136,8 @@ QString KAboutTranslator::emailAddress() const
     return d->_email;
 }
 
+#define NAME_OF_TRANSLATORS I18N_NOOP2("NAME OF TRANSLATORS", "Your names")
+#define EMAIL_OF_TRANSLATORS I18N_NOOP2("EMAIL OF TRANSLATORS", "Your emails")
 class KAboutData::Private
 {
 public:
@@ -480,13 +482,13 @@ KAboutData::translators() const
 {
     QList<KAboutTranslator> personList;
 
-    if ( d->mTranslatorName.isEmpty() )
+    if ( d->mTranslatorName.isEmpty() || d->mTranslatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
         return personList;
 
     const QStringList nameList ( d->mTranslatorName.split( ',' ) );
 
     QStringList emailList;
-    if( !d->mTranslatorEmail.isEmpty() )
+    if( !d->mTranslatorEmail.isEmpty() && d->mTranslatorEmail != QString::fromUtf8( EMAIL_OF_TRANSLATORS ) )
     {
        emailList = d->mTranslatorName.split( ',', QString::KeepEmptyParts );
     }
