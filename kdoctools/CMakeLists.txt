@@ -1,4 +1,4 @@
-
+project(kdoctools)
 find_package(LibXml2 REQUIRED)
 find_package(LibXslt REQUIRED)
 
