@@ -439,12 +439,12 @@ public:
         int              utcOffset;        // if specType == OffsetFromUTC, the offset from UTC
         mutable const KTimeZone *tzCached; // if specType == ClockTime, the local time zone used to calculate the cached UTC time
     } z;
-    mutable struct {                       // cached UTC equivalent of 'mDt'. Saves space compared to storing QDateTime.
+    mutable struct ut {                    // cached UTC equivalent of 'mDt'. Saves space compared to storing QDateTime.
         QDate            date;
         QTime            time;
     } ut;
 private:
-    mutable struct {                       // Cached conversion to another time zone.
+    mutable struct converted {             // Cached conversion to another time zone.
                                            // Only valid if 'utcCached' is true, or if specType == UTC.
         QDate            date;
         QTime            time;
