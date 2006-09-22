@@ -4021,6 +4021,7 @@ void KHTMLPart::slotViewPageInfo()
 
   ui._close->setGuiItem(KStdGuiItem::close());
 
+  connect(ui._close, SIGNAL(clicked()), dlg, SLOT(accept()));
   if (d->m_doc)
      ui._title->setHtml(d->m_doc->title().string());
 
