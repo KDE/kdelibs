@@ -22,10 +22,10 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
+#include <qprocess.h>
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kmessagebox.h>
@@ -68,13 +68,13 @@ bool KNewStuffGeneric::install( const QString &fileName )
   QString cmd = mConfig->readEntry( "InstallationCommand" );
   if ( !cmd.isEmpty() ) {
     kDebug(5850) << "InstallationCommand: " << cmd << endl;
+    // XXX use KMacroExpander && KShell
     list = cmd.split( " " );
     for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
         list2 << (*it).replace("%f", fileName);
     }
-    KProcess proc;
-    proc << list2;
-    proc.start( KProcess::Block );
+    QString exe( list2.takeFirst() );
+    QProcess::execute( exe, list2 );
   }
 
   return true;

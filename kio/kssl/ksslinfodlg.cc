@@ -29,6 +29,7 @@
 #include <qfile.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qprocess.h>
 
 #include <kapplication.h>
 #include <kcombobox.h>
@@ -37,7 +38,6 @@
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <kpushbutton.h>
 #include <ksqueezedtextlabel.h>
 #include <kstdguiitem.h>
@@ -137,9 +137,7 @@ KSSLInfoDlg::~KSSLInfoDlg() {
 }
 
 void KSSLInfoDlg::launchConfig() {
-    KProcess p;
-    p << "kcmshell" << "crypto";
-    p.start(KProcess::DontCare);
+    QProcess::startDetached("kcmshell", QStringList() << "crypto");
 }
 
 

@@ -25,7 +25,7 @@ class QTextEdit;
 class QLabel;
 class QLineEdit;
 class QGroupBox;
-class KProcess;
+class QProcess;
 class KAboutData;
 class KBugReportPrivate;
 
@@ -92,7 +92,7 @@ protected:
    */
   bool sendBugReport();
 
-  KProcess * m_process;
+  QProcess * m_process;
   const KAboutData * m_aboutData;
 
   QTextEdit * m_lineedit;

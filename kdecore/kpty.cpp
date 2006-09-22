@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include "kpty.h"
-#include "kprocess.h"
 
 #ifdef __sgi
 #define __svr4__
@@ -127,6 +126,8 @@ extern "C" {
 #include <kdebug.h>
 #include <kstandarddirs.h>	// locate
 
+#include <qprocess.h>
+
 // not defined on HP-UX for example
 #ifndef CTRL
 # define CTRL(x) ((x) & 037)
@@ -139,15 +140,14 @@ extern "C" {
 ///////////////////////
 
 #ifdef HAVE_UTEMPTER
-class KProcess_Utmp : public KProcess
+class KProcess_Utmp : public QProcess
 {
 public:
-   int commSetupDoneC()
+   virtual void setupChildProcess()
    {
      dup2(cmdFd, 0);
      dup2(cmdFd, 1);
      dup2(cmdFd, 3);
-     return 1;
    }
    int cmdFd;
 };
@@ -401,8 +401,9 @@ void KPty::login(const char *user, const char *remotehost)
 #ifdef HAVE_UTEMPTER
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
-    utmp << "/usr/sbin/utempter" << "-a" << d->ttyName << "";
-    utmp.start(KProcess::Block);
+    utmp.setProcessChannelMode(QProcess::ForwardedChannels);
+    utmp.start("/usr/sbin/utempter", QStringList() << "-a" << d->ttyName << "");
+    utmp.waitForFinished();
     Q_UNUSED(user);
     Q_UNUSED(remotehost);
 #elif defined(USE_LOGIN)
@@ -444,8 +445,9 @@ void KPty::logout()
 #ifdef HAVE_UTEMPTER
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
-    utmp << "/usr/sbin/utempter" << "-d" << d->ttyName;
-    utmp.start(KProcess::Block);
+    utmp.setProcessChannelMode(QProcess::ForwardedChannels);
+    utmp.start("/usr/sbin/utempter", QStringList() << "-d" << d->ttyName);
+    utmp.waitForFinished();
 #elif defined(USE_LOGIN)
     const char *str_ptr = d->ttyName.data();
     if (!memcmp(str_ptr, "/dev/", 5))
@@ -529,8 +531,7 @@ int KPty::slaveFd() const
 // private
 bool KPty::chownpty(bool grant)
 {
-  KProcess proc;
-  proc << KStandardDirs::locate("exe", BASE_CHOWN) << (grant?"--grant":"--revoke") << QString::number(d->masterFd);
-  return proc.start(KProcess::Block) && proc.normalExit() && !proc.exitStatus();
+  return !QProcess::execute( KStandardDirs::locate("exe", BASE_CHOWN),
+    QStringList() << (grant?"--grant":"--revoke") << QString::number(d->masterFd) );
 }
 

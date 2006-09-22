@@ -23,13 +23,13 @@
 */
 
 #include <QStringList>
+#include <QProcess>
 
 #include <kauthorized.h>
 #include <kguiitem.h>
 #include <khbox.h>
 #include <kicon.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
 #include <krun.h>
@@ -245,10 +245,7 @@ void KCMultiDialog::slotHelpClicked()
 
   KUrl docUrl( KUrl( "help:/" ), docPath );
   if ( docUrl.protocol() == "help" || docUrl.protocol() == "man" || docUrl.protocol() == "info" ) {
-    KProcess process;
-
-    process << "khelpcenter" << docUrl.url();
-    process.start( KProcess::DontCare );
+    QProcess::startDetached("khelpcenter", QStringList() << docUrl.url());
   } else {
     new KRun( docUrl, this );
   }

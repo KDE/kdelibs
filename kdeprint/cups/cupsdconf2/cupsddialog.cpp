@@ -48,7 +48,7 @@
 #include <qstringlist.h>
 #include <kio/passdlg.h>
 #include <kguiitem.h>
-#include <kprocess.h>
+#include <qprocess.h>
 
 #include <signal.h>
 #include <cups/cups.h>
@@ -221,9 +221,8 @@ bool CupsdDialog::restartServer(QString& msg)
                         success = (::kill(serverPid, SIGHUP) == 0);
                 else
                 {
-                        KProcess proc;
-                        proc << "kdesu" << "-c" << "kill -SIGHUP " + QString::number( serverPid );
-                        success = proc.start( KProcess::Block ) && proc.normalExit();
+                        success = !QProcess::execute("kdesu",
+                            QStringList() << "-c" << ("kill -SIGHUP " + QString::number( serverPid )));
                 }
                 if( !success )    
 			msg = i18n("Unable to restart CUPS server (pid = %1)", serverPid);

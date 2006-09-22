@@ -27,6 +27,7 @@
 #include <QHBoxLayout>
 #include <QCloseEvent>
 #include <QTextCodec>
+#include <QProcess>
 
 #include <kaboutdata.h>
 #include "ktoolinvocation.h"
@@ -36,7 +37,6 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
 #include <kinstance.h>
@@ -54,8 +54,6 @@
 #include "kdepackages.h"
 #include <kcombobox.h>
 #include <config.h>
-#include <ktempfile.h>
-#include <qtextstream.h>
 #include <qfile.h>
 
 #include <config-compiler.h>
@@ -331,10 +329,10 @@ void KBugReport::appChanged(int i)
 void KBugReport::slotConfigureEmail()
 {
   if (m_process) return;
-  m_process = new KProcess;
-  *m_process << QString::fromLatin1("kcmshell") << QString::fromLatin1("kcm_useraccount");
-  connect(m_process, SIGNAL(processExited(KProcess *)), SLOT(slotSetFrom()));
-  if (!m_process->start())
+  m_process = new QProcess;
+  connect( m_process, SIGNAL(finished( int, QProcess::ExitStatus )), SLOT(slotSetFrom()) );
+  m_process->start( QString::fromLatin1("kcmshell"), QStringList() << QString::fromLatin1("kcm_useraccount") );
+  if ( !m_process->waitForStarted() )
   {
     kDebug() << "Couldn't start kcmshell.." << endl;
     delete m_process;
@@ -501,51 +499,26 @@ bool KBugReport::sendBugReport()
   if (command.isEmpty())
       command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") );
 
-  KTempFile outputfile;
-  outputfile.close();
-
-  QString subject = m_subject->text();
-  command += " --subject ";
-  command += KProcess::quote(subject);
-  command += " --recipient ";
-  command += KProcess::quote(recipient);
-  command += " > ";
-  command += KProcess::quote(outputfile.name());
-
-  fflush(stdin);
-  fflush(stderr);
-
-  FILE * fd = popen(QFile::encodeName(command), "w");
-  if (!fd)
+  QProcess proc;
+  proc.start( command, QStringList() << " --subject " << m_subject->text() << " --recipient " << recipient );
+  if (!proc.waitForStarted())
   {
     kError() << "Unable to open a pipe to " << command << endl;
     return false;
   }
+  proc.write( text().toAscii() );
 
-  QByteArray btext = text().toAscii();
-  fwrite(btext.data(),btext.length(),1,fd);
-  fflush(fd);
+  proc.waitForFinished();
+  kDebug() << "kbugreport: sendbugmail exit, status " << proc.exitStatus() << " code " << proc.exitCode() << endl;
 
-  int error = pclose(fd);
-  kDebug() << "exit status1 " << error << " " << (WIFEXITED(error)) << " " <<  WEXITSTATUS(error) << endl;
-
-  if ((WIFEXITED(error)) && WEXITSTATUS(error) == 1) {
-      QFile of(outputfile.name());
-      if (of.open(QIODevice::ReadOnly )) {
-          QTextStream is(&of);
-          //is.setEncoding(QTextStream::UnicodeUTF8);
-          is.setCodec(QTextCodec::codecForName("UTF-8"));
-          QString line;
-          while (!is.atEnd())
-              line = is.readLine();
-          d->lastError = line;
-      } else {
-          d->lastError.clear();
-      }
-      outputfile.unlink();
+  QByteArray line;
+  if (proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 1) { // XXX too restrictive?
+      // XXX not stderr?
+      while (!proc.atEnd())
+          line = proc.readLine();
+      d->lastError = QString::fromUtf8( line );
       return false;
   }
-  outputfile.unlink();
   return true;
 }
 

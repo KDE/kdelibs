@@ -28,7 +28,7 @@
 #include <ksavefile.h>
 #include <qregexp.h>
 #include <kmessagebox.h>
-#include <kprocess.h>
+#include <qprocess.h>
 #include <klocale.h>
 #include <kapplication.h>
 #include <qdatetime.h>
@@ -601,24 +601,22 @@ void KBookmarkManager::setEditorOptions( const QString& caption, bool browser )
 
 void KBookmarkManager::slotEditBookmarks()
 {
-    KProcess proc;
-    proc << QLatin1String("keditbookmarks");
+    QStringList args;
     if (!m_editorCaption.isNull())
-       proc << QLatin1String("--customcaption") << m_editorCaption;
+       args << QLatin1String("--customcaption") << m_editorCaption;
     if (!m_browserEditor)
-       proc << QLatin1String("--nobrowser");
-    proc << m_bookmarksFile;
-    proc.start(KProcess::DontCare);
+       args << QLatin1String("--nobrowser");
+    args << m_bookmarksFile;
+    QProcess::startDetached("keditbookmarks", args);
 }
 
 void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 {
-    KProcess proc;
+    QStringList args;
     //TODO shouldn't we pass --customcaption and --nobrowser too?
-    proc << QLatin1String("keditbookmarks")
-         << QLatin1String("--address") << address
+    args << QLatin1String("--address") << address
          << m_bookmarksFile;
-    proc.start(KProcess::DontCare);
+    QProcess::startDetached("keditbookmarks", args);
 }
 
 ///////

@@ -39,9 +39,6 @@ private:
     void getXCookie();
     void getICECookie();
 
-    void blockSigChild();
-    void unblockSigChild();
-
     bool m_bHaveICECookies;
 
     QByteArray m_Display;

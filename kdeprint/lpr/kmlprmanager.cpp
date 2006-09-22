@@ -34,7 +34,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kprinter.h>
-#include <kprocess.h>
+#include <qprocess.h>
 #include <kaction.h>
 #include <kmessagebox.h>
 #include <klibloader.h>
@@ -417,7 +417,7 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 			{
 				// printcap file saved, entry can be deleted now
 				delete entry;
-				status =  (::system(QFile::encodeName("rm -rf " + KProcess::quote(sd))) == 0);
+				status = QProcess::execute("rm", QStringList() << "-rf" << sd) == 0;
 				if (!status)
 					setErrorMsg(i18n("Unable to remove spool directory %1. "
 					                 "Check that you have write permissions "

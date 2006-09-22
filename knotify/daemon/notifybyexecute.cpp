@@ -20,12 +20,12 @@
 
 #include <QString>
 #include <QHash>
+#include <QProcess>
 
 #include "notifybyexecute.h"
 #include "knotifyconfig.h"
 
 #include <kdebug.h>
-#include <kprocess.h>
 #include <kmacroexpander.h>
 
 
@@ -60,10 +60,7 @@ void NotifyByExecute::notify( int id, KNotifyConfig * config )
 		if ( execLine.isEmpty() )
 			execLine = command; // fallback
 
-		KProcess p;
-		p.setUseShell(true);
-		p << execLine;
-		p.start(KProcess::DontCare);
+		QProcess::startDetached( "/bin/sh", QStringList() << "-c" << execLine );
 	}
 	
 	finish( id );

@@ -27,16 +27,13 @@
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
-#include <kprocess.h>
+#include <qprocess.h>
 
 void KMimeTypeTest::initTestCase()
 {
     if ( !KSycoca::isAvailable() ) {
         // Create ksycoca in ~/.kde-unit-test
-        KProcess proc;
-        proc.setEnvironment( "KDEHOME", QFile::decodeName( getenv( "KDEHOME" ) ) );
-        proc << "kbuildsycoca" << "--noincremental";
-        proc.start( KProcess::Block );
+        QProcess::execute( "kbuildsycoca", QStringList() << "--noincremental" );
     }
 }
 

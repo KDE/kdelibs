@@ -30,7 +30,7 @@
 #include <kguiitem.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <kprocess.h>
+#include <qprocess.h>
 #include <kpushbutton.h>
 #include <kstandarddirs.h>
 #include <kstdguiitem.h>
@@ -495,17 +495,13 @@ void DefaultProgress::checkDestination(const KUrl& dest) {
 
 void DefaultProgress::slotOpenFile()
 {
-  KProcess proc;
-  proc << "konqueror" << d->location.prettyUrl();
-  proc.start(KProcess::DontCare);
+  QProcess::startDetached("konqueror", QStringList() << d->location.prettyUrl());
 }
 
 void DefaultProgress::slotOpenLocation()
 {
-  KProcess proc;
   d->location.setFileName("");
-  proc << "konqueror" << d->location.prettyUrl();
-  proc.start(KProcess::DontCare);
+  slotOpenFile();
 }
 
 void DefaultProgress::slotPauseResumeClicked()

@@ -23,13 +23,13 @@
 #include <qlayout.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qprocess.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
-#include <kprocess.h>
 #include <kdialog.h>
 
 #include "testnewstuff.h"
@@ -54,9 +54,7 @@ bool TestNewStuff::install( const QString &fileName )
 
 bool TestNewStuff::createUploadFile( const QString &fileName )
 {
-  KProcess p;
-  p << "touch" << fileName;
-  p.start(KProcess::Block);
+  QProcess::execute("touch", QStringList() << fileName);
   kDebug(5850) << "TestNewStuff::createUploadFile(): " << fileName << endl;
   return true;
 }

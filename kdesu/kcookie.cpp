@@ -10,20 +10,14 @@
  * kcookie.cpp: KDE authentication cookies.
  */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <signal.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qglobal.h>
-#include <qfile.h>
+#include <qprocess.h>
 
 #include <kdebug.h>
-#include <kprocess.h>
 #include "kcookie.h"
 
 
@@ -34,27 +28,8 @@ KCookie::KCookie()
 #endif
 }
 
-void KCookie::blockSigChild()
-{
-    sigset_t sset;
-    sigemptyset(&sset);
-    sigaddset(&sset, SIGCHLD);
-    sigprocmask(SIG_BLOCK, &sset, 0L);
-}
-
-void KCookie::unblockSigChild()
-{
-    sigset_t sset;
-    sigemptyset(&sset);
-    sigaddset(&sset, SIGCHLD);
-    sigprocmask(SIG_UNBLOCK, &sset, 0L);
-}
-
 void KCookie::getXCookie()
 {
-    char buf[1024];
-    FILE *f;
-
 #ifdef Q_WS_X11
     m_Display = getenv("DISPLAY");
 #else
@@ -67,26 +42,17 @@ void KCookie::getXCookie()
     }
 #ifdef Q_WS_X11 // No need to mess with X Auth stuff
     QByteArray disp = m_Display;
-    if (!memcmp(disp.data(), "localhost:", 10))
+    if (disp.startsWith("localhost:"))
        disp.remove(0, 9);
 
-    QString cmd = "xauth list "+KProcess::quote(disp);
-    blockSigChild(); // pclose uses waitpid()
-    if (!(f = popen(QFile::encodeName(cmd), "r")))
-    {
-	kError(900) << k_lineinfo << "popen(): " << perror << "\n";
-	unblockSigChild();
-	return;
-    }
-    QByteArray output = fgets(buf, 1024, f);
-    if (pclose(f) < 0)
+    QProcess proc;
+    proc.start("xauth", QStringList() << "list" << disp);
+    if (!proc.waitForStarted())
     {
 	kError(900) << k_lineinfo << "Could not run xauth.\n";
-	unblockSigChild();
 	return;
     }
-    unblockSigChild();
-    output = output.simplified();
+    QByteArray output = proc.readLine().simplified();
     if (output.isEmpty())
     {
        kWarning(900) << "No X authentication info set for display " <<

@@ -25,6 +25,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qprocess.h>
 
 #include <kcmdlineargs.h>
 #include <kapplication.h>
@@ -32,7 +33,6 @@
 #include <kaboutdata.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <kprocess.h>
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
 #include <kde_file.h>
@@ -113,26 +113,24 @@ static QList<QByteArray> split(const QByteArray &str)
 
 void KHostName::changeX()
 {
-   QString cmd = "xauth -n list";
-   FILE *xFile = popen(QFile::encodeName(cmd), "r");
-   if (!xFile)
+   QProcess proc;
+   proc.start("xauth", QStringList() << "-n" << "list");
+   if (!proc.waitForFinished())
    {
       fprintf(stderr, "Warning: Can't run xauth.\n");
       return;
    }
    QList<QByteArray> lines;
    {
-      char buf[1024+1];
-      while (!feof(xFile))
+      while (!proc.atEnd())
       {
-         QByteArray line = fgets(buf, 1024, xFile);
+         QByteArray line = proc.readLine();
          if (line.length())
             line.truncate(line.length()-1); // Strip LF.
          if (!line.isEmpty())
             lines.append(line);
       }
    }
-   pclose(xFile);
 
    foreach ( QByteArray it, lines )
    {
@@ -161,15 +159,8 @@ void KHostName::changeX()
       if (oldNetId != oldName)
 	continue;
 
-      cmd = "xauth -n remove "+KProcess::quote(netId);
-      system(QFile::encodeName(cmd));
-      cmd = "xauth -n add ";
-      cmd += KProcess::quote(newNetId);
-      cmd += ' ';
-      cmd += KProcess::quote(authName);
-      cmd += ' ';
-      cmd += KProcess::quote(authKey);
-      system(QFile::encodeName(cmd));
+      QProcess::execute("xauth", QStringList() << "-n" << "remove" << netId);
+      QProcess::execute("xauth", QStringList() << "-n" << "add" << newNetId << authName << authKey);
    }
 }
 

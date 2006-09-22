@@ -35,7 +35,7 @@
 #include <kopenssl.h>
 #include <ksslpemcallback.h>
 #include <kfiledialog.h>
-#include <kprocess.h>
+#include <qprocess.h>
 #include <qtabwidget.h>
 #include <kseparator.h>
 #include <k3listview.h>
@@ -781,9 +781,7 @@ void KCertPart::slotDone() {
 
 
 void KCertPart::slotLaunch() {
-	KShellProcess p;
-	p << "kcmshell" << "crypto";
-	p.start(KProcess::DontCare);
+	QProcess::startDetached("kcmshell", QStringList() << "crypto");
 }
 
 

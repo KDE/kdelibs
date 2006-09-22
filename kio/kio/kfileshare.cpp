@@ -20,8 +20,7 @@
 #include "kfileshare.h"
 #include <qdir.h>
 #include <qfile.h>
-#include <kprocess.h>
-#include <kprocio.h>
+#include <qprocess.h>
 #include <klocale.h>
 #include <kstaticdeleter.h>
 #include <kstandarddirs.h>
@@ -175,19 +174,18 @@ void KFileShare::readShareList()
         s_authorization = ErrorNotFound;
         return;
     }
-    KProcIO proc;
-    proc << exe;
-    if ( !proc.start( KProcess::Block ) ) {
+    QProcess proc;
+    proc.start( exe, QStringList() );
+    if ( !proc.waitForFinished() ) {
         kError() << "Can't run " << exe << endl;
         s_authorization = ErrorNotFound;
         return;
     }
 
     // Reading code shamelessly stolen from khostname.cpp ;)
-    QString line;
-    int length;
-    do {
-        length = proc.readln(line, true);
+    while (!proc.atEnd()) {
+        QString line = proc.readLine();
+        int length = line.length();
 	if ( length > 0 )
 	{
             if ( line[length-1] != '/' )
@@ -195,7 +193,7 @@ void KFileShare::readShareList()
             s_shareList->append(line);
             kDebug(7000) << "Shared dir:" << line << endl;
         }
-    } while (length > -1);
+    }
 }
 
 
@@ -239,21 +237,15 @@ bool KFileShare::setShared( const QString& path, bool shared )
     if (exe.isEmpty())
         return false;
 
-    KProcess proc;
-    proc << exe;
+    QStringList args;
     if ( shared )
-        proc << "--add";
+        args << "--add";
     else
-        proc << "--remove";
-    proc << path;
-    proc.start( KProcess::Block ); // should be ok, the perl script terminates fast
-    bool ok = proc.normalExit() && (proc.exitStatus() == 0);
-    kDebug(7000) << "KFileSharePropsPlugin::setShared normalExit="
-                  << proc.normalExit() << endl;
-    kDebug(7000) << "KFileSharePropsPlugin::setShared exitStatus="
-                  << proc.exitStatus() << endl;
-    if ( proc.normalExit() ) {
-      switch( proc.exitStatus() ) {
+        args << "--remove";
+    int ec = QProcess::execute( exe, args ); // should be ok, the perl script terminates fast
+    kDebug(7000) << "KFileSharePropsPlugin::setShared exitCode=" << ec << endl;
+    bool ok = !ec;
+    switch (ec) {
         case 1:
           // User is not authorized
           break;
@@ -284,7 +276,6 @@ bool KFileShare::setShared( const QString& path, bool shared )
         case 255:
           // Abitrary error
           break;
-      }
     }
 
     return ok;

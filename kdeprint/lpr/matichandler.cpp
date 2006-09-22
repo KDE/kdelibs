@@ -34,6 +34,7 @@
 #include <krandom.h>
 #include <kdebug.h>
 #include <kprocess.h>
+#include <qprocess.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
@@ -225,7 +226,7 @@ DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry, bool)
 	// changing printer name), the template would be also removed
 	QString	origfilename = maticFile(entry);
 	QString	filename = KStandardDirs::locateLocal("tmp", "foomatic_" + KRandom::randomString(8));
-	::system(QFile::encodeName("cp " + KProcess::quote(origfilename) + " " + KProcess::quote(filename)));
+	QProcess::execute("cp", QStringList() << origfilename << filename);
 	DrMain	*driver = Foomatic2Loader::loadDriver(filename);
 	if (driver)
 	{

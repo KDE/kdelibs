@@ -40,6 +40,7 @@
 #include <kmimemagic.h>
 #include <kmessagebox.h>
 #include <kprocess.h>
+#include <qprocess.h>
 #include <kconfig.h>
 #include <kapplication.h>
 
@@ -158,9 +159,7 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 				}
 				else
 				{
-					KProcess proc;
-					proc << (flag?"mv":"cp") << f[0] << p->outputFileName();
-					if (!proc.start(KProcess::Block) || !proc.normalExit() || proc.exitStatus() != 0)
+					if (QProcess::execute(flag?"mv":"cp", QStringList() << f[0] << p->outputFileName()) != 0)
 					{
 						p->setErrorMessage(i18n("Cannot save print file to %1. Check that you have write access to it.", p->outputFileName()));
 						return false;
@@ -534,6 +533,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 	s = KMFactory::self()->specialManager()->setupCommand(s, p->options());
 
 	QString	ps = pageSizeToPageName( p->option( "kde-printsize" ).isEmpty() ? p->pageSize() : ( KPrinter::PageSize )p->option( "kde-printsize" ).toInt() );
+	// XXX use KMacroExpander
 	s.replace("%psl", ps.toLower());
 	s.replace("%psu", ps);
 	s.replace("%out", "$out{" + p->outputFileName() + "}"); // Replace as last

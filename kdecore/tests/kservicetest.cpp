@@ -25,8 +25,9 @@
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
 #include <kservicetypetrader.h>
-#include <kprocess.h>
 #include <kservicetypeprofile.h>
+
+#include <qprocess.h>
 
 void KServiceTest::initTestCase()
 {
@@ -40,10 +41,7 @@ void KServiceTest::initTestCase()
 
     if ( !KSycoca::isAvailable() ) {
         // Create ksycoca in ~/.kde-unit-test
-        KProcess proc;
-        proc.setEnvironment( "KDEHOME", QFile::decodeName( getenv( "KDEHOME" ) ) );
-        proc << "kbuildsycoca" << "--noincremental";
-        proc.start( KProcess::Block );
+        QProcess::execute( "kbuildsycoca", QStringList() << "--noincremental" );
     }
 }
 
