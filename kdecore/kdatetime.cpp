@@ -83,8 +83,8 @@ static const int MIN_YEAR = -4712;        // minimum year which QDate allows
 static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functinos
 
 #ifndef NDEBUG
-int KDateTime_utcCacheHit  = 0;
-int KDateTime_zoneCacheHit = 0;
+KDE_EXPORT int KDateTime_utcCacheHit  = 0;
+KDE_EXPORT int KDateTime_zoneCacheHit = 0;
 #endif
 
 /*----------------------------------------------------------------------------*/

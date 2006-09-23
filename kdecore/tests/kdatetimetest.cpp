@@ -28,8 +28,8 @@
 
 QTEST_KDEMAIN(KDateTimeTest, NoGUI)
 
-extern int KDateTime_utcCacheHit;
-extern int KDateTime_zoneCacheHit;
+KDE_IMPORT extern int KDateTime_utcCacheHit;
+KDE_IMPORT extern int KDateTime_zoneCacheHit;
 
 
 ////////////////////////////////////////////////////////////////////////
