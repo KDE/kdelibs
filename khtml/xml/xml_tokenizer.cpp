@@ -135,6 +135,34 @@ bool XMLHandler::startDocument()
     return true;
 }
 
+bool XMLHandler::startPrefixMapping(const QString& prefix, const QString& uri)
+{
+    namespaceInfo[prefix].push(uri);
+    return true;
+}
+
+bool XMLHandler::endPrefixMapping(const QString& prefix)
+{
+    QValueStack<QString>& stack = namespaceInfo[prefix];
+    stack.pop();
+    if (stack.isEmpty())
+        namespaceInfo.remove(prefix);
+    return true;
+}
+
+void XMLHandler::fixUpNSURI(QString& uri, const QString& qname)
+{
+    /* QXml does not resolve the namespaces of attributes in the same 
+       tag that preceed the xmlns declaration. This fixes up that case */
+    if (uri.isEmpty() && qname.find(':') != -1) {
+        QXmlNamespaceSupport ns;
+        QString localName, prefix;
+        ns.splitName(qname, prefix, localName);
+        if (namespaceInfo.contains(prefix)) {
+            uri = namespaceInfo[prefix].top();
+        }
+    }
+}
 
 bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*localName*/,
                                const QString& qName, const QXmlAttributes& atts )
@@ -154,8 +182,11 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     int i;
     for (i = 0; i < atts.length(); i++) {
         int exceptioncode = 0;
-        DOMString uri(atts.uri(i));
-        DOMString qn(atts.qName(i));
+        QString uriString = atts.uri(i);
+        QString qnString  = atts.qName(i);
+        fixUpNSURI(uriString, qnString);
+        DOMString uri(uriString);
+        DOMString qn(qnString);
         DOMString val(atts.value(i));
         newElement->setAttributeNS(uri, qn, val, exceptioncode);
         if (exceptioncode) // exception setting attributes
