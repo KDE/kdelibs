@@ -2460,15 +2460,15 @@ KFileItemList KDirLister::items( WhichItems which ) const
 
 KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
 {
-    KFileItemList result;
     KFileItemList *allItems = s_pCache->itemsForDir( dir );
     if ( !allItems )
-        return result;
+        return KFileItemList();
 
     if ( which == AllItems )
-        result = *allItems; // shallow copy
+        return *allItems;
     else // only items passing the filters
     {
+        KFileItemList result;
         KFileItemList::const_iterator kit = allItems->begin();
         const KFileItemList::const_iterator kend = allItems->end();
         for ( ; kit != kend; ++kit )
@@ -2478,9 +2478,8 @@ KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
             if ( !isExcluded && matchesMimeFilter( item ) )
                 result.append( item );
         }
+        return result;
     }
-
-    return result;
 }
 
 #include "kdirlister.moc"
