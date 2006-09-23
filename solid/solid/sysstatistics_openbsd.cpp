@@ -23,6 +23,8 @@
 #include <sys/dkstat.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
+#include <unistd.h>
+#include <sys/swap.h>
 
 
 
@@ -42,12 +44,22 @@ namespace Solid
          * @param diff an array with the difference between the old and 
          * newe values
          */
-        void processorPercentages(short cnt, int64_t *out, int64_t *newe, int64_t *old, int64_t *diffs);
-    
+        void processorPercentages( short cnt, int64_t * out, int64_t * newe );
+
+        /**
+         * Initialices the memory resources.
+         * @return True if successful, false otherwise.
+         */
+        bool initializeMemory();
+
         int64_t processor_time[CPUSTATES];
-        int64_t processor_old[CPUSTATES];
-        int64_t processor_diff[CPUSTATES];
         int64_t processor_states[CPUSTATES];
+        
+        bool memory_initialized;
+        int pagesize;
+        size_t total_ram;
+        int n_swap_devs;
+        struct swapent * swap_devs;
     };
 }
 
@@ -56,12 +68,16 @@ namespace Solid
 Solid::SysStatistics::SysStatistics()
     : d( new Private() )
 {
+    d->memory_initialized = false;
+    d->swap_devs = NULL;
 }
 
 
 
 Solid::SysStatistics::~SysStatistics()
 {
+	if ( d->swap_devs != NULL )
+	    free( d->swap_devs );
     delete d;
 }
 
@@ -69,7 +85,7 @@ Solid::SysStatistics::~SysStatistics()
 
 QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad()
 {
-    register short i;
+    register quint8 i;
     QMap<ProcessorLoadType, float> map_to_fill;
     static int name_levels[] = { CTL_KERN, KERN_CPTIME };
     static long tmp_processor_time[CPUSTATES];
@@ -83,7 +99,7 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::proce
         d->processor_time[i] = tmp_processor_time[i];
     }
 
-    d->processorPercentages( CPUSTATES, d->processor_states, d->processor_time, d->processor_old, d->processor_diff );
+    d->processorPercentages( CPUSTATES, d->processor_states, d->processor_time );
 
     map_to_fill.insert( User, (float) d->processor_states[CP_USER] / 10.0 );
     map_to_fill.insert( System, (float) d->processor_states[CP_SYS] / 10.0 );
@@ -96,22 +112,72 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::proce
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( short cpuNumber )
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( qint16 processorNumber )
 {
     QMap<ProcessorLoadType, float> map_to_fill;
-    int name_levels[] = { CTL_KERN, KERN_CPTIME2, cpuNumber };
+    static int name_levels[3] = { CTL_KERN, KERN_CPTIME2 };
     static size_t length = CPUSTATES * sizeof(int64_t);
 
+    if ( processorNumber < 0 )
+        return map_to_fill;
+
+    name_levels[2] = processorNumber;
     if ( sysctl( name_levels, 3, &d->processor_time, &length, NULL, 0 ) == -1 )
         return map_to_fill;
 
-    d->processorPercentages( CPUSTATES, d->processor_states, d->processor_time, d->processor_old, d->processor_diff );
+    d->processorPercentages( CPUSTATES, d->processor_states, d->processor_time );
 
     map_to_fill.insert( User, (float) d->processor_states[CP_USER] / 10.0 );
     map_to_fill.insert( System, (float) d->processor_states[CP_SYS] / 10.0 );
     map_to_fill.insert( Nice, (float) d->processor_states[CP_NICE] / 10.0 );
     map_to_fill.insert( Idle, (float) d->processor_states[CP_IDLE] / 10.0 );
     map_to_fill.insert( Interrupt, (float) d->processor_states[CP_INTR] / 10.0 );
+
+    return map_to_fill;
+}
+
+
+
+QMap<Solid::SysStatistics::MemoryLoadType, qint64> Solid::SysStatistics::memoryLoad()
+{
+    QMap<MemoryLoadType, qint64> map_to_fill;
+    static struct vmtotal vm_stats;
+    static int n_swap_devs_tmp, name_levels[2] = { CTL_VM, VM_METER };
+    static size_t length = sizeof(vm_stats);
+    static qint64 swap_used, swap_total;
+    static qint16 i;
+
+    if ( !d->memory_initialized )
+    {
+        if ( d->initializeMemory() )
+            d->memory_initialized = true;
+        else
+            return map_to_fill;
+    }
+
+    map_to_fill.insert( TotalRam, d->total_ram );
+
+    if ( sysctl( name_levels, 2, &vm_stats, &length, NULL, 0 ) != -1 )
+    {
+        map_to_fill.insert( SharedRam, (qint64) vm_stats.t_rmshr * d->pagesize );
+        map_to_fill.insert( FreeRam, (qint64) vm_stats.t_free * d->pagesize );
+    }
+
+    n_swap_devs_tmp = swapctl( SWAP_STATS, d->swap_devs, d->n_swap_devs );
+    if ( n_swap_devs_tmp != -1 && n_swap_devs_tmp == d->n_swap_devs )
+    {
+        swap_used = swap_total = 0;
+        for ( i = 0; i < n_swap_devs_tmp; i++ )
+        {
+            if ( d->swap_devs[i].se_flags & SWF_ENABLE )
+            {
+                swap_used += (qint64) d->swap_devs[i].se_inuse * DEV_BSIZE;
+                swap_total += (qint64) d->swap_devs[i].se_nblks * DEV_BSIZE;
+            }
+        }
+        map_to_fill.insert( TotalSwap, swap_total );
+        map_to_fill.insert( FreeSwap, swap_total - swap_used );
+    }
 
     return map_to_fill;
 }
@@ -148,14 +214,18 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::proce
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t *out, int64_t *newe, int64_t *old, int64_t *diffs )
+void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t * out, int64_t * newe )
 {
-    int64_t change, total_change, *dp, half_total;
-    register short i;
+    static int64_t change, total_change, half_total;
+    static int64_t processor_old[CPUSTATES];
+    static int64_t processor_diff[CPUSTATES];
+    static int64_t * old, * diffs;
+    register quint8 i;
 
     // initialization
+    old = processor_old;
+    diffs = processor_diff;
     total_change = 0;
-    dp = diffs;
 
     // calculate changes for each state and the overall change
     for ( i = 0; i < cnt; i++ )
@@ -165,9 +235,10 @@ void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t *ou
             // this only happens when the counter wraps
             change = ( *newe - *old );
         }
-        total_change += ( *dp++ = change );
+        total_change += ( *diffs++ = change );
         *old++ = *newe++;
     }
+    diffs = processor_diff;
 
     // avoid divide by zero potential
     if ( total_change == 0 )
@@ -177,4 +248,31 @@ void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t *ou
     half_total = total_change / 2l;
     for ( i = 0; i < cnt; i++ )
         *out++ = ( ( *diffs++ * 1000 + half_total ) / total_change );
+}
+
+
+
+bool Solid::SysStatistics::Private::initializeMemory()
+{
+    size_t length = sizeof(total_ram);
+    int name_levels[2] = { CTL_HW, HW_PHYSMEM };
+
+    pagesize = getpagesize();
+
+    if ( sysctl( name_levels, 2, &total_ram, &length, NULL, 0 ) == -1 )
+        return false;
+
+    n_swap_devs = swapctl( SWAP_NSWAP, 0, 0 );
+    if ( n_swap_devs == -1 )
+        return false;
+
+    if ( n_swap_devs > 0 )
+    {
+// allocing swap_devs if pointer is NULL (on first time) or reallocing if initializeMemory is called again (if n_swap_devs has changed)
+        swap_devs = (struct swapent *) realloc( swap_devs, n_swap_devs * sizeof(struct swapent) );
+        if ( swap_devs == NULL )
+            return false;
+    }
+
+    return true;
 }

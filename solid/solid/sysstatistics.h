@@ -21,6 +21,8 @@
 
 #include <QMap>
 
+
+
 namespace Solid
 {
 
@@ -50,6 +52,19 @@ namespace Solid
                              HwIrq, SwInterrupt, Interrupt };
 
         /**
+         * This enum type lists the kinds of memories.
+         *
+         * - TotalRam : Total amount of ram.
+         * - FreeRam : Size of available ram.
+         * - SharedRam : Amount of ram shared.
+         * - BufferRam : Ram used in buffers.
+         * - TotalSwap : Total amount of swap.
+         * - FreeSwap : Swap space available.
+         */
+        enum MemoryLoadType { TotalRam, FreeRam, SharedRam, BufferRam, 
+                             TotalSwap, FreeSwap };
+
+        /**
          * Constructs a SysStatistics object.
          */
         SysStatistics();
@@ -76,7 +91,16 @@ namespace Solid
          * Key values are listed on the enum ProcessorLoadType.
          * If occurs an error the container will be empty.
          */
-        QMap<ProcessorLoadType, float> processorLoad( short processorNumber );
+        QMap<ProcessorLoadType, float> processorLoad( qint16 processorNumber );
+
+        /**
+         * Retrieves the amount of memory associated with each value of the
+         * MemoryLoadType enum.
+         * @return The associative container where the data is stored.
+         * Key values are listed on the enum MemoryLoadType.
+         * If occurs an error the container will be empty.
+         */
+        QMap<MemoryLoadType, qint64> memoryLoad();
 
     private:
         class Private;

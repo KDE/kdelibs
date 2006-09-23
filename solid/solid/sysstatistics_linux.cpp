@@ -22,6 +22,7 @@
 #include <QMap>
 
 #include <stdio.h>
+#include <sys/sysinfo.h>
 
 #define MAX_SIZE_OF_LINE 100
 #define CPU_STATES 7
@@ -94,7 +95,7 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::proce
 
 
 
-QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( short processorNumber )
+QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::processorLoad( qint16 processorNumber )
 {
     QMap<ProcessorLoadType, float> map_to_fill;
 
@@ -105,9 +106,29 @@ QMap<Solid::SysStatistics::ProcessorLoadType, float> Solid::SysStatistics::proce
 
 
 
-bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, short processorNumber )
+QMap<Solid::SysStatistics::MemoryLoadType, qint64> Solid::SysStatistics::memoryLoad()
 {
-    register short i;
+    QMap<MemoryLoadType, qint64> map_to_fill;
+    static struct sysinfo mem_stats;
+
+    if ( sysinfo( &mem_stats ) == -1 )
+        return map_to_fill;
+
+    map_to_fill.insert( TotalRam, (qint64) mem_stats.totalram * mem_stats.mem_unit );
+    map_to_fill.insert( FreeRam, (qint64) mem_stats.freeram * mem_stats.mem_unit );
+    map_to_fill.insert( SharedRam, (qint64) mem_stats.sharedram * mem_stats.mem_unit );
+    map_to_fill.insert( BufferRam, (qint64) mem_stats.bufferram * mem_stats.mem_unit );
+    map_to_fill.insert( TotalSwap, (qint64) mem_stats.totalswap * mem_stats.mem_unit );
+    map_to_fill.insert( FreeSwap, (qint64) mem_stats.freeswap * mem_stats.mem_unit );
+
+    return map_to_fill;
+}
+
+
+
+bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, qint16 processorNumber )
+{
+    register qint16 i;
 
 // Buffering this file is nonsense because its already in memory and its data is valid only once
     if ( file_proc_stat.isOpen() )
@@ -140,10 +161,10 @@ bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float
 
 bool Solid::SysStatistics::Private::processorParseLine()
 {
-    register short i;
     static char cpu_name[10];
-    static unsigned long long saved_processor_times[CPU_STATES];
-    static unsigned long long current_processor_times[CPU_STATES];
+    static quint64 saved_processor_times[CPU_STATES];
+    static quint64 current_processor_times[CPU_STATES];
+    register qint8 i;
 
     if ( strncmp( buffer, "cpu", sizeof("cpu") - 1 ) )
         return false;
