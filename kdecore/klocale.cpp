@@ -1738,7 +1738,7 @@ QString KLocale::formatDateTime(const KDateTime &pDateTime,
   if (pDateTime.isDateOnly())
     dt = formatDate( pDateTime.date(), shortFormat );
   else
-    dt = formatDateTime( pDateTime, shortFormat, includeSeconds );
+    dt = formatDateTime( pDateTime.dateTime(), shortFormat, includeSeconds );
   if (includeTimeZone)
   {
     QString tz;
