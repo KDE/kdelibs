@@ -620,14 +620,16 @@ KPropsDlgPlugin::~KPropsDlgPlugin()
 bool KPropsDlgPlugin::isDesktopFile( KFileItem * _item )
 {
   // only local files
-  if ( !_item->isLocalFile() )
+  bool isLocal;
+  KURL url = _item->mostLocalURL( isLocal );
+  if ( !isLocal )
     return false;
 
   // only regular files
   if ( !S_ISREG( _item->mode() ) )
     return false;
 
-  QString t( _item->url().path() );
+  QString t( url.path() );
 
   // only if readable
   FILE *f = fopen( QFile::encodeName(t), "r" );
@@ -701,13 +703,16 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   // We set this data from the first item, and we'll
   // check that the other items match against it, resetting when not.
-  bool isLocal = properties->kurl().isLocalFile();
+  bool isLocal;
   KFileItem * item = properties->item();
+  KURL url = item->mostLocalURL( isLocal );
+  bool isReallyLocal = item->url().isLocalFile();
   bool bDesktopFile = isDesktopFile(item);
+  kdDebug() << "url=" << url << " bDesktopFile=" << bDesktopFile << " isLocal=" << isLocal << " isReallyLocal=" << isReallyLocal << endl;
   mode_t mode = item->mode();
   bool hasDirs = item->isDir() && !item->isLink();
-  bool hasRoot = properties->kurl().path() == QString::fromLatin1("/");
-  QString iconStr = KMimeType::iconForURL(properties->kurl(), mode);
+  bool hasRoot = url.path() == QString::fromLatin1("/");
+  QString iconStr = KMimeType::iconForURL(url, mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
@@ -716,7 +721,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   KIO::filesize_t totalSize = item->size(hasTotalSize);
   QString magicMimeComment;
   if ( isLocal ) {
-      KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( properties->kurl().path() );
+      KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
       if ( magicMimeType->name() != KMimeType::defaultMimeType() )
           magicMimeComment = magicMimeType->comment();
   }
@@ -751,7 +756,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       if ( properties->kurl().protocol().find("device", 0, false)==0)
             isDevice = true;
       // Extract the full name, but without file: for local files
-      if ( isLocal )
+      if ( isReallyLocal )
         path = properties->kurl().path();
       else
         path = properties->kurl().prettyURL();
@@ -769,10 +774,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // Extract the file name only
     filename = properties->defaultName();
     if ( filename.isEmpty() ) { // no template
-        if ( isTrash || isDevice || hasRoot ) // the cases where the filename won't be renameable
-            filename = item->name(); // this gives support for UDS_NAME, e.g. for kio_trash
-        else
-            filename = properties->kurl().fileName();
+      filename = item->name(); // this gives support for UDS_NAME, e.g. for kio_trash or kio_system
     } else {
       m_bFromTemplate = true;
       setDirty(); // to enforce that the copy happens
@@ -783,7 +785,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     filename = nameFromFileName( filename );
 
     if ( d->bKDesktopMode && d->bDesktopFile ) {
-        KDesktopFile config( properties->kurl().path(), true /* readonly */ );
+        KDesktopFile config( url.path(), true /* readonly */ );
         if ( config.hasKey( "Name" ) ) {
             filename = config.readName();
         }
@@ -839,7 +841,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
   }
 
-  if (!isLocal && !protocol.isEmpty())
+  if (!isReallyLocal && !protocol.isEmpty())
   {
     directory += ' ';
     directory += '(';
@@ -856,12 +858,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
-    QString iconStr = KMimeType::findByURL( properties->kurl(),
-                                            mode )->icon( properties->kurl(),
-                                                          isLocal );
+    QString iconStr = KMimeType::findByURL( url, mode )->icon( url, isLocal );
     if ( bDesktopFile && isLocal )
     {
-      KDesktopFile config( properties->kurl().path(), true );
+      KDesktopFile config( url.path(), true );
       config.setDesktopGroup();
       iconStr = config.readEntry( "Icon" );
       if ( config.hasDeviceType() )
@@ -987,7 +987,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if(hasTotalSize) {
       m_sizeLabel->setText(KIO::convertSizeWithBytes(totalSize));
     }
-    
+
     m_sizeDetermineButton = 0L;
     m_sizeStopButton = 0L;
   }
@@ -1067,7 +1067,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
     ++curRow;
 
-    QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
+    QString mountPoint = KIO::findPathMountPoint( url.path() );
 
     if (mountPoint != "/")
     {
@@ -1404,23 +1404,27 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
 void KFilePropsPlugin::applyIconChanges()
 {
-  // handle icon changes - only local files for now
+  KIconButton *iconButton = ::qt_cast<KIconButton *>( iconArea );
+  if ( !iconButton )
+    return;
+  // handle icon changes - only local files (or pseudo-local) for now
   // TODO: Use KTempFile and KIO::file_copy with overwrite = true
-  if (iconArea->isA("KIconButton") && properties->kurl().isLocalFile()) {
-    KIconButton *iconButton = (KIconButton *) iconArea;
+  KURL url = properties->kurl();
+  url = KIO::NetAccess::mostLocalURL( url, properties );
+  if (url.isLocalFile()) {
     QString path;
 
     if (S_ISDIR(properties->item()->mode()))
     {
-      path = properties->kurl().path(1) + QString::fromLatin1(".directory");
+      path = url.path(1) + QString::fromLatin1(".directory");
       // don't call updateUrl because the other tabs (i.e. permissions)
       // apply to the directory, not the .directory file.
     }
     else
-      path = properties->kurl().path();
+      path = url.path();
 
     // Get the default image
-    QString str = KMimeType::findByURL( properties->kurl(),
+    QString str = KMimeType::findByURL( url,
                                         properties->item()->mode(),
                                         true )->KServiceType::icon();
     // Is it another one than the default ?
@@ -2297,7 +2301,7 @@ void KFilePermissionsPropsPlugin::updateAccessControls() {
     break;
   case PermissionsOnlyDirs:
     enableAccessControls(d->canChangePermissions && !d->isIrregular && !d->hasExtendedACL);
-    // if this is a dir, and we can change permissions, don't dis-allow 
+    // if this is a dir, and we can change permissions, don't dis-allow
     // recursive, we can do that for ACL setting.
     if ( d->cbRecursive )
        d->cbRecursive->setEnabled( d->canChangePermissions && !d->isIrregular );
@@ -2468,7 +2472,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
   const bool ACLChange = ( d->extendedACL !=  properties->item()->ACL() );
   const bool defaultACLChange = ( d->defaultACL != properties->item()->defaultACL() );
 
-  if ( owner.isEmpty() && group.isEmpty() && !recursive 
+  if ( owner.isEmpty() && group.isEmpty() && !recursive
       && !permissionChange && !ACLChange && !defaultACLChange )
     return;
 
