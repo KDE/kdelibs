@@ -82,6 +82,8 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		if (QApplication::reverseLayout()){
 			if (id == Prior) iconName = "forward";
 			if (id == Next ) iconName = "back";
+			if (id == FirstPage) iconName = "finish";
+			if (id == LastPage) iconName = "start";
 		}
 
 		KShortcut cut = KStdAccel::shortcut(pInfo->idAccel);
