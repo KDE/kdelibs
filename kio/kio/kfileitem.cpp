@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
                  2001 Carsten Pfeiffer <pfeiffer@kde.org>
@@ -870,41 +869,63 @@ QString KFileItem::permissionsString() const
 
 QString KFileItem::parsePermissions(mode_t perm) const
 {
-    char p[] = "---------- ";
+    static char buffer[ 12 ];
 
+    char uxbit,gxbit,oxbit;
+
+    if ( (perm & (S_IXUSR|S_ISUID)) == (S_IXUSR|S_ISUID) )
+        uxbit = 's';
+    else if ( (perm & (S_IXUSR|S_ISUID)) == S_ISUID )
+        uxbit = 'S';
+    else if ( (perm & (S_IXUSR|S_ISUID)) == S_IXUSR )
+        uxbit = 'x';
+    else
+        uxbit = '-';
+
+    if ( (perm & (S_IXGRP|S_ISGID)) == (S_IXGRP|S_ISGID) )
+        gxbit = 's';
+    else if ( (perm & (S_IXGRP|S_ISGID)) == S_ISGID )
+        gxbit = 'S';
+    else if ( (perm & (S_IXGRP|S_ISGID)) == S_IXGRP )
+        gxbit = 'x';
+    else
+        gxbit = '-';
+
+    if ( (perm & (S_IXOTH|S_ISVTX)) == (S_IXOTH|S_ISVTX) )
+        oxbit = 't';
+    else if ( (perm & (S_IXOTH|S_ISVTX)) == S_ISVTX )
+        oxbit = 'T';
+    else if ( (perm & (S_IXOTH|S_ISVTX)) == S_IXOTH )
+        oxbit = 'x';
+    else
+        oxbit = '-';
+
+    // Include the type in the first char like kde3 did; people are more used to seeing it,
+    // even though it's not really part of the permissions per se.
     if (isDir())
-	p[0]='d';
+        buffer[0] = 'd';
     else if (isLink())
-	p[0]='l';
+        buffer[0] = 'l';
+    else
+        buffer[0] = '-';
 
-    if (perm & QFile::ReadUser)
-	p[1]='r';
-    if (perm & QFile::WriteUser)
-	p[2]='w';
-    if ((perm & QFile::ExeUser) && !(perm & S_ISUID)) p[3]='x';
-    else if ((perm & QFile::ExeUser) && (perm & S_ISUID)) p[3]='s';
-    else if (!(perm & QFile::ExeUser) && (perm & S_ISUID)) p[3]='S';
+    buffer[1] = ((( perm & S_IRUSR ) == S_IRUSR ) ? 'r' : '-' );
+    buffer[2] = ((( perm & S_IWUSR ) == S_IWUSR ) ? 'w' : '-' );
+    buffer[3] = uxbit;
+    buffer[4] = ((( perm & S_IRGRP ) == S_IRGRP ) ? 'r' : '-' );
+    buffer[5] = ((( perm & S_IWGRP ) == S_IWGRP ) ? 'w' : '-' );
+    buffer[6] = gxbit;
+    buffer[7] = ((( perm & S_IROTH ) == S_IROTH ) ? 'r' : '-' );
+    buffer[8] = ((( perm & S_IWOTH ) == S_IWOTH ) ? 'w' : '-' );
+    buffer[9] = oxbit;
+    if (hasExtendedACL()) {
+        buffer[10] = '+';
+        buffer[11] = 0;
+    } else {
+        buffer[10] = 0;
+    }
 
-    if (perm & QFile::ReadGroup)
-	p[4]='r';
-    if (perm & QFile::WriteGroup)
-	p[5]='w';
-    if ((perm & QFile::ExeGroup) && !(perm & S_ISGID)) p[6]='x';
-    else if ((perm & QFile::ExeGroup) && (perm & S_ISGID)) p[6]='s';
-    else if (!(perm & QFile::ExeGroup) && (perm & S_ISGID)) p[6]='S';
-
-    if (perm & QFile::ReadOther)
-	p[7]='r';
-    if (perm & QFile::WriteOther)
-	p[8]='w';
-    if ((perm & QFile::ExeOther) && !(perm & S_ISVTX)) p[9]='x';
-    else if ((perm & QFile::ExeOther) && (perm & S_ISVTX)) p[9]='t';
-    else if (!(perm & QFile::ExeOther) && (perm & S_ISVTX)) p[9]='T';
-
-    if (hasExtendedACL())
-        p[10]='+';
-
-    return QLatin1String(p);
+    return QString::fromLatin1(buffer);
 }
 
 // check if we need to cache this
