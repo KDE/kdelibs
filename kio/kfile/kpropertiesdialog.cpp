@@ -632,14 +632,16 @@ KPropsDlgPlugin::~KPropsDlgPlugin()
 bool KPropsDlgPlugin::isDesktopFile( KFileItem * _item )
 {
   // only local files
-  if ( !_item->isLocalFile() )
+  bool isLocal;
+  const KUrl url = _item->mostLocalUrl( isLocal );
+  if ( !isLocal )
     return false;
 
   // only regular files
   if ( !S_ISREG( _item->mode() ) )
     return false;
 
-  QString t( _item->url().path() );
+  QString t( url.path() );
 
   // only if readable
   FILE *f = fopen( QFile::encodeName(t), "r" );
@@ -712,13 +714,15 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   // We set this data from the first item, and we'll
   // check that the other items match against it, resetting when not.
-  bool isLocal = properties->kurl().isLocalFile();
+  bool isLocal;
   KFileItem * item = properties->item();
+  KUrl url = item->mostLocalUrl( isLocal );
+  bool isReallyLocal = item->url().isLocalFile();
   bool bDesktopFile = isDesktopFile(item);
   mode_t mode = item->mode();
   bool hasDirs = item->isDir() && !item->isLink();
-  bool hasRoot = isLocal && properties->kurl().path() == QString::fromLatin1("/");
-  QString iconStr = KMimeType::iconNameForUrl(properties->kurl(), mode);
+  bool hasRoot = url.path() == QString::fromLatin1("/");
+  QString iconStr = KMimeType::iconNameForUrl(url, mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
@@ -726,7 +730,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   KIO::filesize_t totalSize = item->size();
   QString magicMimeComment;
   if ( isLocal ) {
-      KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( properties->kurl().path() );
+      KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
       if ( magicMimeType->name() != KMimeType::defaultMimeType() )
           magicMimeComment = magicMimeType->comment();
   }
@@ -763,7 +767,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       isTrash = ( properties->kurl().protocol().toLower() == "trash" );
       isDevice = ( properties->kurl().protocol().toLower() == "device" );
       // Extract the full name, but without file: for local files
-      if ( isLocal )
+      if ( isReallyLocal )
         path = properties->kurl().path();
       else
         path = properties->kurl().prettyUrl();
@@ -781,10 +785,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // Extract the file name only
     filename = properties->defaultName();
     if ( filename.isEmpty() ) { // no template
-        if ( isTrash || isDevice || hasRoot ) // the cases where the filename won't be renameable
-            filename = item->name(); // this gives support for UDS_NAME, e.g. for kio_trash
-        else
-            filename = properties->kurl().fileName();
+      filename = item->name(); // this gives support for UDS_NAME, e.g. for kio_trash or kio_system
     } else {
       m_bFromTemplate = true;
       setDirty(); // to enforce that the copy happens
@@ -795,7 +796,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     filename = nameFromFileName( filename );
 
     if ( d->bKDesktopMode && d->bDesktopFile ) {
-        KDesktopFile config( properties->kurl().path(), true /* readonly */ );
+        KDesktopFile config( url.path(), true /* readonly */ );
         if ( config.hasKey( "Name" ) ) {
             filename = config.readName();
         }
@@ -850,7 +851,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     }
   }
 
-  if (!isLocal && !protocol.isEmpty())
+  if (!isReallyLocal && !protocol.isEmpty())
   {
     directory += ' ';
     directory += '(';
@@ -867,11 +868,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     iconButton->setStrictIconSize(false);
     // This works for everything except Device icons on unmounted devices
     // So we have to really open .desktop files
-    QString iconStr = KMimeType::findByUrl( properties->kurl(),
-                                            mode )->iconName( properties->kurl() );
+    QString iconStr = KMimeType::findByUrl( url, mode )->iconName( url );
     if ( bDesktopFile && isLocal )
     {
-      KDesktopFile config( properties->kurl().path(), true );
+      KDesktopFile config( url.path(), true );
       config.setDesktopGroup();
       iconStr = config.readEntry( "Icon" );
       if ( config.hasDeviceType() )
@@ -1070,7 +1070,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(sep, curRow, 0, 1, 3);
     ++curRow;
 
-    QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
+    QString mountPoint = KIO::findPathMountPoint( url.path() );
 
     if (mountPoint != "/")
     {
@@ -1399,23 +1399,27 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
 void KFilePropsPlugin::applyIconChanges()
 {
-  // handle icon changes - only local files for now
+  KIconButton *iconButton = qobject_cast<KIconButton*>(iconArea);
+  if ( !iconButton )
+    return;
+  // handle icon changes - only local files (or pseudo-local) for now
   // TODO: Use KTempFile and KIO::file_copy with overwrite = true
-  if (qobject_cast<KIconButton*>(iconArea) && properties->kurl().isLocalFile()) {
-    KIconButton *iconButton = (KIconButton *) iconArea;
+  KUrl url = properties->kurl();
+  url = KIO::NetAccess::mostLocalUrl( url, properties );
+  if ( url.isLocalFile()) {
     QString path;
 
     if (S_ISDIR(properties->item()->mode()))
     {
-      path = properties->kurl().path(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
+      path = url.path(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
       // don't call updateUrl because the other tabs (i.e. permissions)
       // apply to the directory, not the .directory file.
     }
     else
-      path = properties->kurl().path();
+      path = url.path();
 
     // Get the default image
-    QString str = KMimeType::findByUrl( properties->kurl(),
+    QString str = KMimeType::findByUrl( url,
                                         properties->item()->mode(),
                                         true )->iconName();
     // Is it another one than the default ?
