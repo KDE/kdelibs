@@ -301,8 +301,6 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
     QLabel *titlePane = new QLabel( this );
 
-//  neither gcc 3.2 nor 3.3 are able to compile this line:, Alex
-//    QBrush brush( QPixmap(locate("data", "kdeui/pics/ktip-background.png")) );
     QBrush brush;
     brush.setTexture( QPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-background.png" ) ) );
 
@@ -340,32 +338,23 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   d->tipText = new KTextBrowser( topLeft );
 
-  d->tipText->setWordWrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere );
-#if 0
-    d->tipText->mimeSourceFactory()->addFilePath(
-      KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/");
-#endif
-    d->tipText->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
-    d->tipText->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-#if 0
-    d->tipText->setLinkUnderline( false );
+  d->tipText->setOpenExternalLinks( true );
 
-    Q3StyleSheet *sheet = d->tipText->styleSheet();
-    Q3StyleSheetItem *item = sheet->item( "a" );
-    item->setFontWeight( QFont::Bold );
-    d->tipText->setStyleSheet( sheet );
-#endif
+  d->tipText->setWordWrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere );
+
+  QStringList paths;
+  paths << KGlobal::dirs()->resourceDirs("icon")
+        << KGlobal::dirs()->findResourceDir("data", "kdewizard/pics")+"kdewizard/pics/";
+
+  d->tipText->setSearchPaths( paths );
+
+  d->tipText->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
+  d->tipText->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+
   palette = d->tipText->palette();
   palette.setColor( QPalette::Active, QPalette::Link, d->blendedColor );
   palette.setColor( QPalette::Inactive, QPalette::Link, d->blendedColor );
   d->tipText->setPalette( palette );
-
-#if 0
-    QStringList icons = KGlobal::dirs()->resourceDirs("icon");
-    QStringList::Iterator it;
-    for (it = icons.begin(); it != icons.end(); ++it)
-        d->tipText->mimeSourceFactory()->addFilePath(*it);
-#endif
 
   if ( !isTipDialog ) {
     QLabel *label = new QLabel( hbox );
