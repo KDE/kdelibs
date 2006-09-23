@@ -1628,10 +1628,7 @@ void RenderBox::calcAbsoluteVertical()
 
     // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
     const RenderObject* containerBlock = container();
-
-    // Even in strict mode (where we don't grow the root to fill the viewport) other browsers
-    // position as though the root fills the viewport.
-    const int containerHeight = containerBlock->isRoot() ? containerBlock->availableHeight() : (containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom());
+    const int containerHeight = containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom();
 
     const int bordersPlusPadding = borderTop() + borderBottom() + paddingTop() + paddingBottom();
     const Length marginTop = style()->marginTop();
@@ -2031,10 +2028,7 @@ void RenderBox::calcAbsoluteVerticalReplaced()
 
     // We don't use containingBlock(), since we may be positioned by an enclosing relpositioned inline.
     const RenderObject* containerBlock = container();
-
-    // Even in strict mode (where we don't grow the root to fill the viewport)
-    // other browsers position as though the root fills the viewport.
-    const int containerHeight = containerBlock->isRoot() ? containerBlock->availableHeight() : (containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom());
+    const int containerHeight = containerBlock->height() - containerBlock->borderTop() - containerBlock->borderBottom();
 
     // Variables to solve.
     Length top = style()->top();
