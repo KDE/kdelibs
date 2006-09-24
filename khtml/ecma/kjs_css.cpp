@@ -74,7 +74,7 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
     QString prop = p.qstring();
     int i = prop.length();
     while ( --i ) {
-        char c = prop[i].latin1();
+        char c = prop[i].toLatin1();
         if ( c >= 'A' && c <= 'Z' )
             prop.insert( i, '-' );
     }

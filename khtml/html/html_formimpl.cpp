@@ -237,7 +237,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     QString str = m_acceptcharset.string();
     const QChar space(' ');
     const unsigned int strLength = str.length();
-    for(unsigned int i=0; i < strLength; ++i) if(str[i].latin1() == ',') str[i] = space;
+    for(unsigned int i=0; i < strLength; ++i) if(str[i].toLatin1() == ',') str[i] = space;
     const QStringList charsets = str.split(' ');
     QTextCodec* codec = 0;
     KHTMLView *view = getDocument()->view();
@@ -270,7 +270,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     m_encCharset = codec->name();
     const unsigned int m_encCharsetLength = m_encCharset.length();
     for(unsigned int i=0; i < m_encCharsetLength; ++i)
-        m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].toLower();
+        m_encCharset[i] = m_encCharset[i].toLatin1() == ' ' ? QChar('-') : m_encCharset[i].toLower();
 
     QStringList fileUploads, fileNotUploads;
 

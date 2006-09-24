@@ -139,7 +139,7 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 			// double decoding in case printer name contains
 			// annoying chars like '#'
                         KUrl dev(p->device());
-			m_device->setText(KUrl::fromPercentEncoding(dev.prettyUrl().latin1()));
+			m_device->setText(KUrl::fromPercentEncoding(dev.prettyUrl().toLatin1()));
 		}
 		m_model->setText(p->driverInfo());
 	}
