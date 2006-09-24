@@ -106,7 +106,7 @@ JSValue *FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
 
   Completion comp = execute(&newExec);
 
-  // if an exception occured, propogate it back to the previous execution object
+  // if an exception occurred, propogate it back to the previous execution object
   if (newExec.hadException())
     comp = Completion(Throw, newExec.exception());
 
@@ -827,7 +827,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
         progNode->processVarDecls(&newExec);
         Completion c = progNode->execute(&newExec);
 
-        // if an exception occured, propogate it back to the previous execution object
+        // if an exception occurred, propogate it back to the previous execution object
         if (newExec.hadException())
           exec->setException(newExec.exception());
 
