@@ -77,7 +77,7 @@ bool DependencyPolicy::removeDependency( Job* jobA, Job* jobB )
     bool result = false;
     QMutexLocker l( & d->mutex() );
 
-    // there may be only one (!) occurence of [this, dep]:
+    // there may be only one (!) occurrence of [this, dep]:
     QMutableMapIterator<Job*, Job*> it( d->dependencies () );
     while ( it.hasNext() )
     {
