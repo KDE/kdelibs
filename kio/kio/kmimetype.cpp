@@ -214,11 +214,16 @@ KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
                     KMimeMagicResult* result =
                             KMimeMagic::self()->findFileType( path );
 
-                    if ( result && result->isValid() )
-                        return mimeType( result->mimeType() );
+                    if ( result && result->isValid() ) {
+                        mime = mimeType( result->mimeType() );
+                        if (!mime) {
+                            kWarning() << "KMimeMagic returned unknown mimetype " << result->mimeType() << endl;
+                            return defaultMimeTypePtr();
+                        }
+                        return mime;
+                    }
                 }
             }
-
             return mime;
         }
       }
@@ -277,7 +282,12 @@ KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
     return defaultMimeTypePtr();
 
   // The mimemagic stuff was successful
-  return mimeType( result->mimeType() );
+  KMimeType::Ptr mime = mimeType( result->mimeType() );
+  if (!mime) {
+      kWarning() << "KMimeMagic returned unknown mimetype " << result->mimeType() << endl;
+      return defaultMimeTypePtr();
+  }
+  return mime;
 }
 
 KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
