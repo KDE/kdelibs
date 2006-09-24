@@ -191,7 +191,7 @@ KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UStri
         while( !ts.atEnd() )
         {
             line = ts.readLine();
-            if( line[0] != '#' ) code += line + "\n";
+            if( line[0] != '#' ) code += line + '\n';
         }
         file.close();
     }
