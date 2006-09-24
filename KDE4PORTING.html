@@ -405,6 +405,9 @@ Desktop Entry Spec</a>
 <li>matchFilename -&gt; matchFileName</li>
 <li>static QString word( const QString &amp;text , int pos ) -&gt; QString::section </li>
 <li>::randomString() has been moved to KRandom::randomString()</li>
+<li>::lPixelSqueeze( text, fm, width ) -&gt; fm.elidedText( text, Qt::ElideLeft, width )</li>
+<li>::cPixelSqueeze( text, fm, width ) -&gt; fm.elidedText( text, Qt::ElideMiddle, width )</li>
+<li>::rPixelSqueeze( text, fm, width ) -&gt; fm.elidedText( text, Qt::ElideRight, width )</li>
 </ul>
 
 <h4>KStyle</h4>
