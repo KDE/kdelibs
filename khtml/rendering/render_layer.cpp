@@ -902,9 +902,9 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
         setClip(p, paintDirtyRect, clipRectToApply);
 
         RenderObject::PaintInfo paintInfo(p, clipRectToApply, PaintActionSelection);
-        
+
         int tx = x - renderer()->xPos();
-        int ty = y - renderer()->yPos() + renderer()->borderTopExtra();               
+        int ty = y - renderer()->yPos() + renderer()->borderTopExtra();
 
         if (selectionOnly)
             renderer()->paint(paintInfo, tx, ty);
@@ -1039,8 +1039,8 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
     // Next we want to see if the mouse pos is inside the child RenderObjects of the layer.
     if (containsPoint(xMousePos, yMousePos, fgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
-                            layerBounds.x() - renderer()->xPos() + m_object->borderLeft(), 
-                            layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra() - m_object->borderBottom(),
+                            layerBounds.x() - renderer()->xPos(),
+                            layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra(),
                                 HitTestChildrenOnly)) {
 	if (info.innerNode() != m_object->element())
 	    return this;
@@ -1060,8 +1060,8 @@ RenderLayer* RenderLayer::nodeAtPointForLayer(RenderLayer* rootLayer, RenderObje
     // Next we want to see if the mouse pos is inside this layer but not any of its children.
     if (containsPoint(xMousePos, yMousePos, bgRect) &&
         renderer()->nodeAtPoint(info, xMousePos, yMousePos,
-                                layerBounds.x() - renderer()->xPos() + m_object->borderLeft(), 
-                                layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra() - m_object->borderBottom(),
+                                layerBounds.x() - renderer()->xPos(),
+                                layerBounds.y() - renderer()->yPos() + m_object->borderTopExtra(),
                                 HitTestSelfOnly))
         return this;
 
@@ -1352,7 +1352,7 @@ void RenderLayer::updateOverflowList()
 {
     if (!m_overflowListDirty)
         return;
-        
+
     for (RenderLayer* child = firstChild(); child; child = child->nextSibling()) {
         if (child->isOverflowOnly()) {
             if (!m_overflowList)
@@ -1488,8 +1488,8 @@ void RenderLayer::dump(QTextStream &ts, const QString &ind)
 
 bool RenderLayer::shouldBeOverflowOnly() const
 {
-    return renderer()->style() && renderer()->hasOverflowClip() && 
-           !renderer()->isPositioned() &&  !renderer()->isRelPositioned(); 
+    return renderer()->style() && renderer()->hasOverflowClip() &&
+           !renderer()->isPositioned() &&  !renderer()->isRelPositioned();
            /* && !isTransparent(); */
 }
 
