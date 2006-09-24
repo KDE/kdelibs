@@ -38,8 +38,9 @@ namespace Solid
          * @param levelsLength the length of the array of levels. 2 for 
          * retrive the average of the averall cpus and 3 for a specific
          * cpu. The third level specifies a cpu.
+         * @return True if successful, false otherwise.
          */
-        bool processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int numberOfLevels, int * processor_name_levels );
+        bool processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int numberOfLevels, int * processorNameLevels );
 
         /**
          * Calculates the processor usage percentages
@@ -119,7 +120,7 @@ QMap<Solid::SysStatistics::MemoryLoadType, qint64> Solid::SysStatistics::memoryL
     static struct vmtotal vm_stats;
     static int n_swap_devs_tmp, mem_name_levels[2] = { CTL_VM, VM_METER };
     static size_t length = sizeof(vm_stats);
-    static qint64 swap_used, swap_total;
+    static qint64 used_swap, total_swap;
     static qint16 i;
 
     if ( !d->memory_initialized )
@@ -139,19 +140,24 @@ QMap<Solid::SysStatistics::MemoryLoadType, qint64> Solid::SysStatistics::memoryL
     }
 
     n_swap_devs_tmp = swapctl( SWAP_STATS, d->swap_devs, d->n_swap_devs );
-    if ( n_swap_devs_tmp != -1 && n_swap_devs_tmp == d->n_swap_devs )
+    if ( n_swap_devs_tmp == -1 )
+        return map_to_fill;
+
+    if ( n_swap_devs_tmp != d->n_swap_devs )
+        d->memory_initialized = false;    // Swap stuff should be re-initialized
+    else
     {
-        swap_used = swap_total = 0;
+        used_swap = total_swap = 0;
         for ( i = 0; i < n_swap_devs_tmp; i++ )
         {
             if ( d->swap_devs[i].se_flags & SWF_ENABLE )
             {
-                swap_used += (qint64) d->swap_devs[i].se_inuse * DEV_BSIZE;
-                swap_total += (qint64) d->swap_devs[i].se_nblks * DEV_BSIZE;
+                used_swap += (qint64) d->swap_devs[i].se_inuse * DEV_BSIZE;
+                total_swap += (qint64) d->swap_devs[i].se_nblks * DEV_BSIZE;
             }
         }
-        map_to_fill.insert( TotalSwap, swap_total );
-        map_to_fill.insert( FreeSwap, swap_total - swap_used );
+        map_to_fill.insert( TotalSwap, total_swap );
+        map_to_fill.insert( FreeSwap, total_swap - used_swap );
     }
 
     return map_to_fill;
@@ -159,11 +165,11 @@ QMap<Solid::SysStatistics::MemoryLoadType, qint64> Solid::SysStatistics::memoryL
 
 
 
-bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int numberOfLevels, int * processor_name_levels )
+bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int numberOfLevels, int * processorNameLevels )
 {
     static size_t length = CPUSTATES * sizeof(int64_t);
 
-    if ( sysctl( processor_name_levels, numberOfLevels, &processor_time, &length, NULL, 0 ) == -1 )
+    if ( sysctl( processorNameLevels, numberOfLevels, &processor_time, &length, NULL, 0 ) == -1 )
         return false;
 
     processorPercentages( CPUSTATES, processor_states, processor_time );
