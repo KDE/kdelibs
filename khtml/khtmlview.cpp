@@ -3334,6 +3334,9 @@ void KHTMLView::slotScrollBarMoved()
         // ensure quick reset of contentsMoving flag
         scheduleRepaint(0, 0, 0, 0);
     }
+    
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->documentElement())
+        m_part->xmlDocImpl()->documentElement()->dispatchHTMLEvent(EventImpl::SCROLL_EVENT, true, false);
 }
 
 void KHTMLView::timerEvent ( QTimerEvent *e )
