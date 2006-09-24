@@ -50,6 +50,7 @@ KNotify::KNotify( QObject *parent )
 
 KNotify::~KNotify()
 {
+	qDeleteAll(m_notifications);
 }
 
 
@@ -83,43 +84,47 @@ void KNotify::closeNotification(int id)
 {
 	if(!m_notifications.contains(id))
 		return;
-	Event &e=m_notifications[id];
-	if(e.ref>0)
+	Event *e=m_notifications[id];
+	
+	kDebug(300) << k_funcinfo << e->id << " ref=" << e->ref << endl;
+	
+	//this has to be called before  plugin->close or we will get double deletion because of slotPluginFinished
+	m_notifications.remove(id);
+	
+	if(e->ref>0)
 	{
-		e.ref++;
+		e->ref++;
 		KNotifyPlugin *plugin;
 		foreach(plugin , m_plugins)
 		{
 			plugin->close( id );
 		}
 	}
-	
 	notificationClosed(id);
-	m_notifications.remove(id);
-
+	delete e;
 }
 
 int KNotify::event( const QString & event, const QString & appname, const ContextList & contexts, const QString & text, const QPixmap & pixmap, const QStringList & actions, WId winId )
 {
 	m_counter++;
-	Event e(appname , contexts , event );
-	e.id = m_counter;
-	e.ref = 1;
+	Event *e=new Event(appname , contexts , event );
+	e->id = m_counter;
+	e->ref = 1;
 
-	e.config.text=text;
-	e.config.actions=actions;
-	e.config.pix=pixmap;
-	e.config.winId=(WId)winId;
+	e->config.text=text;
+	e->config.actions=actions;
+	e->config.pix=pixmap;
+	e->config.winId=(WId)winId;
 	
 	m_notifications.insert(m_counter,e);
-	
 	emitEvent(e);
 	
-	e.ref--;
-//	kDebug(300) << k_funcinfo << e.id << " ref=" << e.ref << endl;
-	if(e.ref==0)
+	e->ref--;
+	kDebug(300) << k_funcinfo << e->id << " ref=" << e->ref << endl;
+	if(e->ref==0)
 	{
-		m_notifications.remove(e.id);
+		m_notifications.remove(e->id);
+		delete e;
 		return 0;
 	}
 	return m_counter;
@@ -130,30 +135,30 @@ void KNotify::update(int id, const QString &text, const QPixmap& pixmap,  const 
 	if(!m_notifications.contains(id))
 		return;
 
-	Event &e=m_notifications[id];
+	Event *e=m_notifications[id];
 	
-	e.config.text=text;
-	e.config.pix = pixmap;
-	e.config.actions = actions;
+	e->config.text=text;
+	e->config.pix = pixmap;
+	e->config.actions = actions;
 	
 	foreach(KNotifyPlugin *p, m_plugins)
 	{
-		p->update(id, &e.config);
+		p->update(id, &e->config);
 	}
 }
 void KNotify::reemit(int id, const ContextList& contexts)
 {
 	if(!m_notifications.contains(id))
 		return;
-	Event &e=m_notifications[id];
-	e.config.contexts=contexts;
+	Event *e=m_notifications[id];
+	e->config.contexts=contexts;
 	
 	emitEvent(e);
 }
 
-void KNotify::emitEvent(Event &e)
+void KNotify::emitEvent(Event *e)
 {
-	QString presentstring=e.config.readEntry("Action");
+	QString presentstring=e->config.readEntry("Action");
 	QStringList presents=presentstring.split ("|");
 	
 	foreach(const QString & action , presents)
@@ -161,8 +166,8 @@ void KNotify::emitEvent(Event &e)
 		if(!m_plugins.contains(action))
 			continue;
 		KNotifyPlugin *p=m_plugins[action];
-		e.ref++;
-		p->notify(e.id,&e.config);
+		e->ref++;
+		p->notify(e->id,&e->config);
 	}
 }
 
@@ -170,9 +175,10 @@ void KNotify::slotPluginFinished( int id )
 {
 	if(!m_notifications.contains(id))
 		return;
-	Event &e=m_notifications[id];
-	e.ref--;
-	if(e.ref==0)
+	Event *e=m_notifications[id];
+	kDebug(300) << k_funcinfo << e->id << " ref=" << e->ref  << endl;
+	e->ref--;
+	if(e->ref==0)
 		closeNotification( id );
 }
 

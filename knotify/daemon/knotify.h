@@ -71,8 +71,6 @@ class KNotify : public QObject
 		{
 			Event(const QString &appname, const ContextList &contexts , const QString &eventid)
 				: config(appname, contexts , eventid) {} 
-			//required by QHash
-			Event() : config(QString(), ContextList() , QString()) {Q_ASSERT(false);}
 			int id;
 			int ref;
 			KNotifyConfig config;
@@ -80,9 +78,9 @@ class KNotify : public QObject
 		
 		int m_counter;
 		QHash<QString, KNotifyPlugin *> m_plugins;
-		QHash<int , Event > m_notifications;
+		QHash<int , Event* > m_notifications;
 		void loadConfig();
-		void emitEvent(Event &e);
+		void emitEvent(Event *e);
 };
 
 class KNotifyAdaptor : public QDBusAbstractAdaptor
