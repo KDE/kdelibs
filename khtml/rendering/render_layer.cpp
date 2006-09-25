@@ -1452,11 +1452,13 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
     QRect layerBounds, damageRect, clipRectToApply;
     l->calculateRects(rootLayer, paintDirtyRect, layerBounds, damageRect, clipRectToApply);
 
-    // Ensure our z-order lists are up-to-date.
+    // Ensure our lists are up-to-date.
     l->updateZOrderLists();
+    l->updateOverflowList();
 
     bool shouldPaint = l->intersectsDamageRect(layerBounds, damageRect);
     QPtrVector<RenderLayer>* negList = l->negZOrderList();
+    QValueList<RenderLayer*>* ovfList = l->overflowList();
     if (shouldPaint && negList && negList->count() > 0)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, -1, indent);
 
@@ -1467,6 +1469,11 @@ static void writeLayers(QTextStream &ts, const RenderLayer* rootLayer, RenderLay
 
     if (shouldPaint)
         write(ts, *l, layerBounds, damageRect, clipRectToApply, negList && negList->count() > 0, indent);
+        
+    if (ovfList) {
+        for (QValueList<RenderLayer*>::iterator it = ovfList->begin(); it != ovfList->end(); ++it)
+            writeLayers(ts, rootLayer, *it, paintDirtyRect, indent);
+    }
 
     QPtrVector<RenderLayer>* posList = l->posZOrderList();
     if (posList) {
