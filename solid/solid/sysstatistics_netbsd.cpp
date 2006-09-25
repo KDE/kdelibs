@@ -44,14 +44,10 @@ namespace Solid
 
         /**
          * Calculates the processor usage percentages
-         * @param cnt the number of percentages
          * @param out an array with the calculated percentages
          * @param newe an array of values obtained from sysctlbyname
-         * @param old and array of values obtained from a previous call
-         * @param diff an array with the difference between the old and 
-         * newe values
          */
-        void processorPercentages( short cnt, int64_t * out, int64_t * newe );
+        void processorPercentages( int64_t * out, int64_t * newe );
 
         /**
          * Initialices the memory resources.
@@ -172,7 +168,7 @@ bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float
     if ( sysctl( processorNameLevels, numberOfLevels, &processor_time, &length, NULL, 0 ) == -1 )
         return false;
 
-    processorPercentages( CPUSTATES, processor_states, processor_time );
+    processorPercentages( processor_states, processor_time );
 
     mapToFill->insert( User, (float) processor_states[CP_USER] / 10.0 );
     mapToFill->insert( System, (float) processor_states[CP_SYS] / 10.0 );
@@ -215,7 +211,7 @@ bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t * out, int64_t * newe )
+void Solid::SysStatistics::Private::processorPercentages( int64_t * out, int64_t * newe )
 {
     static int64_t processor_old[CPUSTATES];
     static int64_t processor_diff[CPUSTATES];
@@ -229,7 +225,7 @@ void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t * o
     diffs = processor_diff;
 
     // calculate changes for each state and the overall change
-    for ( i = 0; i < cnt; i++ )
+    for ( i = 0; i < CPUSTATES; i++ )
     {
         if ( ( change = *newe - *old ) < 0 )
         {
@@ -247,7 +243,7 @@ void Solid::SysStatistics::Private::processorPercentages( short cnt, int64_t * o
 
     // calculate percentages based on overall change, rounding up
     half_total = total_change / 2l;
-    for ( i = 0; i < cnt; i++ )
+    for ( i = 0; i < CPUSTATES; i++ )
         *out++ = ( ( *diffs++ * 1000 + half_total ) / total_change );
 }
 
