@@ -562,6 +562,19 @@ target_link_libraries(kdatetimewidgettest ${KDE4_KDEUI_LIBS})
 
 ########### next target ###############
 
+set(kdatetabletest_SRCS
+kdatetabletest.cpp
+)
+
+kde4_automoc(${kdatetabletest_SRCS})
+
+kde4_add_executable(kdatetabletest RUN_UNINSTALLED ${kdatetabletest_SRCS})
+
+target_link_libraries(kdatetabletest ${KDE4_KDEUI_LIBS})
+
+
+########### next target ###############
+
 set(kinputdialogtest_SRCS
 kinputdialogtest.cpp
 )
