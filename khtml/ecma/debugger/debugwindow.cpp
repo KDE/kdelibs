@@ -497,23 +497,7 @@ void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
     if (!highlightingInterface)
         return;
 
-    if (!m_highlightingMode)
-    {
-        int count = highlightingInterface->hlModeCount();
-        for (int i=0; i<count; i++)
-        {
-            QString modeName = highlightingInterface->hlModeName(i);
-            QString sectionName = highlightingInterface->hlModeSectionName(i);
-            if (modeName == "JavaScript")
-            {
-                m_highlightingMode = i;
-                break;
-            }
-        }
-    }
-
-    if (m_highlightingMode)
-        highlightingInterface->setHlMode(m_highlightingMode);
+    highlightingInterface->setHighlighting("JavaScript");
 }
 
 void DebugWindow::displayScript(KJS::DebugDocument *document)

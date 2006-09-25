@@ -148,7 +148,6 @@ private:
 
     // Text editing stuff
     KTextEditor::Editor *m_editor;
-    int m_highlightingMode;
 
     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
