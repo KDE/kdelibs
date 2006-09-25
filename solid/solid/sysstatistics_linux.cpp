@@ -54,14 +54,14 @@ namespace Solid
 
         /**
          * Parses a line of /proc/stat and calculates the percentages
+         * @param buffer The line to parse.
          * @return false if occurs an error, true otherwise.
          */
-        bool processorParseLine();
+        bool processorParseLine( char * buffer );
 
         QFile file_proc_stat;
-        unsigned long long real_processor_times[CPU_STATES];
-        unsigned long long processor_total_time;
-        char buffer[MAX_SIZE_OF_LINE];
+        quint64 real_processor_times[CPU_STATES];
+        quint64 processor_total_time;
     };
 }
 
@@ -128,6 +128,7 @@ QMap<Solid::SysStatistics::MemoryLoadType, qint64> Solid::SysStatistics::memoryL
 
 bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float> * mapToFill, qint16 processorNumber )
 {
+    static char buffer[MAX_SIZE_OF_LINE];
     register qint16 i;
 
 // Buffering this file is nonsense because its already in memory and its data is valid only once
@@ -143,7 +144,7 @@ bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float
             return false;
     }
 
-    if ( processorParseLine() == false )
+    if ( processorParseLine( buffer ) == false )
         return false;
 
     mapToFill->insert( User, (float) ( real_processor_times[CPU_USER] * 100.0 ) / (float) processor_total_time );
@@ -159,7 +160,7 @@ bool Solid::SysStatistics::Private::processorLoad( QMap<ProcessorLoadType, float
 
 
 
-bool Solid::SysStatistics::Private::processorParseLine()
+bool Solid::SysStatistics::Private::processorParseLine( char * buffer )
 {
     static char cpu_name[10];
     static quint64 saved_processor_times[CPU_STATES];
