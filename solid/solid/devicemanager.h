@@ -108,7 +108,7 @@ namespace Solid
          * @return a device that has the given UDI in the system if possible, an
          * invalid device otherwise
          */
-        Device findDevice( const QString &udi );
+        const Device &findDevice( const QString &udi );
 
         /**
          * Retrieves a list of devices of the system given matching the given

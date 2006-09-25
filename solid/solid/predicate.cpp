@@ -169,11 +169,13 @@ bool Solid::Predicate::matches( Ifaces::Device *device ) const
             && d->operand2->matches( device );
     case Private::AtomType:
     {
-        Ifaces::Capability *iface = device->asCapability( d->capability );
+        Ifaces::Capability *iface = device->createCapability( d->capability );
 
         if ( iface!=0 && ( iface->qobject()!=0 ) )
         {
             QVariant value = iface->qobject()->property( d->property.toLatin1() );
+            // TODO: Avoid this extra object, use the frontend map
+            delete iface;
             return ( value == d->value );
         }
         break;

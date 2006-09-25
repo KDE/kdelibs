@@ -66,6 +66,13 @@ namespace Solid
         Device();
 
         /**
+         * Constructs a device for a given Universal Device Identifier (UDI).
+         *
+         * @param udi the udi of the device to create
+         */
+        Device( const QString &udi );
+
+        /**
          * Constructs a copy of a device.
          *
          * @param device the device to copy

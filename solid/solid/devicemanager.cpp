@@ -20,6 +20,7 @@
 #include "devicemanager.h"
 
 #include <QFile>
+#include <QPair>
 
 #include <kservicetypetrader.h>
 #include <kservice.h>
@@ -40,13 +41,14 @@ namespace Solid
     public:
         Private( DeviceManager *manager ) : q( manager ), backend( 0 ) {}
 
-        Ifaces::Device *findRegisteredDevice( const QString &udi );
+        QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi );
         void registerBackend( Ifaces::DeviceManager *newBackend );
         void unregisterBackend();
 
         DeviceManager *q;
         Ifaces::DeviceManager *backend;
-        QMap<QString, Ifaces::Device*> devicesMap;
+        QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
+        Device invalidDevice;
 
         QString errorText;
     };
@@ -167,11 +169,11 @@ Solid::DeviceList Solid::DeviceManager::allDevices()
 
     foreach( QString udi, udis )
     {
-        Ifaces::Device *device = d->findRegisteredDevice( udi );
+        QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
 
-        if ( device!=0 )
+        if ( pair.first!=0 )
         {
-            list.append( Device( device ) );
+            list.append( *pair.first );
         }
     }
 
@@ -192,19 +194,19 @@ bool Solid::DeviceManager::deviceExists( const QString &udi )
     }
 }
 
-Solid::Device Solid::DeviceManager::findDevice( const QString &udi )
+const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi )
 {
-    if ( d->backend == 0 ) return Device();
+    if ( d->backend == 0 ) return d->invalidDevice;
 
-    Ifaces::Device *device = d->findRegisteredDevice( udi );
+    QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
 
-    if ( device!=0 )
+    if ( pair.first!=0 )
     {
-        return Device( device );
+        return *pair.first;
     }
     else
     {
-        return Device();
+        return d->invalidDevice;
     }
 }
 
@@ -236,19 +238,20 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &par
 
     foreach( QString udi, udis )
     {
-        Ifaces::Device *device = d->findRegisteredDevice( udi );
+        QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
+
         bool matches = false;
-        if ( device )
+        if ( pair.first )
         {
             if( !predicate.isValid() )
                matches = true;
             else
-               matches = predicate.matches( device );
+               matches = predicate.matches( pair.second );
         }
 
         if ( matches )
         {
-            list.append( Device( device ) );
+            list.append( *pair.first );
         }
     }
 
@@ -262,14 +265,15 @@ Solid::Ifaces::DeviceManager *Solid::DeviceManager::backend() const
 
 void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
 {
-    Ifaces::Device *device = d->devicesMap.take( udi );
+    QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
 
-    if ( device!= 0 )
+    if ( pair.first!= 0 )
     {
         // Oops, I'm not sure it should happen...
         // But well in this case we'd better kill the old device we got, it's probably outdated
 
-        delete device;
+        delete pair.first;
+        delete pair.second;
     }
 
     emit deviceAdded( udi );
@@ -277,11 +281,12 @@ void Solid::DeviceManager::slotDeviceAdded( const QString &udi )
 
 void Solid::DeviceManager::slotDeviceRemoved( const QString &udi )
 {
-    Ifaces::Device *device = d->devicesMap.take( udi );
+    QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
 
-    if ( device!= 0 )
+    if ( pair.first!= 0 )
     {
-        delete device;
+        delete pair.first;
+        delete pair.second;
     }
 
     emit deviceRemoved( udi );
@@ -299,29 +304,33 @@ void Solid::DeviceManager::slotDestroyed( QObject *object )
     if ( device!=0 )
     {
         QString udi = device->udi();
-        d->devicesMap.remove( udi );
+        QPair<Device*, Ifaces::Device*> pair = d->devicesMap.take( udi );
+        delete pair.first;
     }
 }
 
-Solid::Ifaces::Device *Solid::DeviceManager::Private::findRegisteredDevice( const QString &udi )
+QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::findRegisteredDevice( const QString &udi )
 {
-    Ifaces::Device *device;
-
     if ( devicesMap.contains( udi ) )
     {
-        device = devicesMap[udi];
+        return devicesMap[udi];
     }
     else
     {
-        device = backend->createDevice( udi );
+        Ifaces::Device *iface = backend->createDevice( udi );
 
-        if ( device!=0 )
+        if ( iface!=0 )
         {
-            devicesMap[udi] = device;
+            Device *device = new Device( iface );
+            QPair<Device*, Ifaces::Device*> pair( device, iface );
+            devicesMap[udi] = pair;
+            return pair;
+        }
+        else
+        {
+            return QPair<Device*, Ifaces::Device*>( 0, 0 );
         }
     }
-
-    return device;
 }
 
 void Solid::DeviceManager::Private::registerBackend( Ifaces::DeviceManager *newBackend )
@@ -341,10 +350,13 @@ void Solid::DeviceManager::Private::unregisterBackend()
 {
     if ( backend!=0 )
     {
+        typedef QPair<Device*, Ifaces::Device*> DeviceIfacePair;
+
         // Delete all the devices, they are now outdated
-        foreach( Ifaces::Device *device, devicesMap.values() )
+        foreach( DeviceIfacePair pair, devicesMap.values() )
         {
-            delete device;
+            delete pair.first;
+            delete pair.second;
         }
 
         devicesMap.clear();

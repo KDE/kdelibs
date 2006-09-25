@@ -72,6 +72,13 @@ Solid::Device::Device()
 {
 }
 
+Solid::Device::Device( const QString &udi )
+    : QObject(), d( new Private( this ) )
+{
+    const Device &device = DeviceManager::self().findDevice( udi );
+    d->registerData( device.d->data );
+}
+
 Solid::Device::Device( const Device &device )
     : QObject(), d( new Private( this ) )
 {
@@ -253,7 +260,7 @@ Solid::Capability *Solid::Device::asCapability( const Capability::Type &capabili
             return d->ifaces.value( capability );
         }
 
-        Ifaces::Capability *cap_iface = d->data->asCapability( capability );
+        Ifaces::Capability *cap_iface = d->data->createCapability( capability );
 
         Capability *iface = 0;
 

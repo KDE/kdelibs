@@ -82,13 +82,13 @@ void SolidTest::testDeviceBasicFeatures()
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     // Retrieve a valid Device object
-    Solid::Device valid_dev = manager.findDevice( "/org/kde/solid/fake/storage_model_solid_writer" );
+    Solid::Device valid_dev( "/org/kde/solid/fake/storage_model_solid_writer" );
 
     QCOMPARE( valid_dev.isValid(), true );
 
 
     // A few attempts at creating invalid Device objects
-    Solid::Device invalid_dev = manager.findDevice( "uhoh? doesn't exist, I guess" );
+    Solid::Device invalid_dev( "uhoh? doesn't exist, I guess" );
     QCOMPARE( invalid_dev.isValid(), false );
     invalid_dev = manager.findDevice( QString() );
     QCOMPARE( invalid_dev.isValid(), false );
@@ -130,7 +130,7 @@ void SolidTest::testDeviceBasicFeatures()
 
     // Query parent
     QCOMPARE( valid_dev.parentUdi(), QString( "/org/kde/solid/fake/pci_002_ide_1_0" ) );
-    QCOMPARE( valid_dev.parent().udi(), manager.findDevice( "/org/kde/solid/fake/pci_002_ide_1_0" ).udi() );
+    QCOMPARE( valid_dev.parent().udi(), Solid::Device( "/org/kde/solid/fake/pci_002_ide_1_0" ).udi() );
 
     QVERIFY( !invalid_dev.parent().isValid() );
     QVERIFY( invalid_dev.parentUdi().isEmpty() );
@@ -146,9 +146,7 @@ void SolidTest::testDeviceBasicFeatures()
 
 void SolidTest::testDeviceLocking()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
-    Solid::Device device = manager.findDevice( "/org/kde/solid/fake/computer" );
+    Solid::Device device( "/org/kde/solid/fake/computer" );
 
     // Test locking on a device that refuses it
     fakeManager->findDevice( "/org/kde/solid/fake/computer" )->setBroken( true );
@@ -203,7 +201,7 @@ void SolidTest::testManagerSignals()
     QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fake/acpi_CPU0" ) );
 
     // Moreover we check that the device is really available
-    Solid::Device cpu = manager.findDevice( "/org/kde/solid/fake/acpi_CPU0" );
+    Solid::Device cpu( "/org/kde/solid/fake/acpi_CPU0" );
     QVERIFY( cpu.isValid() );
 
 
@@ -230,12 +228,9 @@ void SolidTest::testManagerSignals()
 
 void SolidTest::testDeviceSignals()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
-
     // A button is a nice device for testing state changes, isn't it?
     FakeDevice *fake = fakeManager->findDevice( "/org/kde/solid/fake/acpi_LID0" );
-    Solid::Device device = manager.findDevice( "/org/kde/solid/fake/acpi_LID0" );
+    Solid::Device device( "/org/kde/solid/fake/acpi_LID0" );
 
     // We'll spy our button
     connect( &device, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
@@ -282,8 +277,7 @@ void SolidTest::testDeviceSignals()
 
 void SolidTest::testDeviceCapabilities()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-    Solid::Device cpu = manager.findDevice( "/org/kde/solid/fake/acpi_CPU0" );
+    Solid::Device cpu( "/org/kde/solid/fake/acpi_CPU0" );
 
     Solid::Capability *iface = cpu.asCapability( Solid::Capability::Processor );
     Solid::Processor *processor = cpu.as<Solid::Processor>();

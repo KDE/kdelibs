@@ -147,13 +147,13 @@ namespace Ifaces
         virtual bool queryCapability( const Capability::Type &capability ) const = 0;
 
         /**
-         * Retrieves a specialized interface to interact with the device corresponding to
+         * Create a specialized interface to interact with the device corresponding to
          * a particular capability.
          *
          * @param capability the capability type
-         * @returns a pointer to the capability interfaces if it exists, 0 otherwise
+         * @returns a pointer to the capability interfaces if supported by the device, 0 otherwise
          */
-        virtual Capability *asCapability( const Capability::Type &capability ) = 0;
+        virtual Capability *createCapability( const Capability::Type &capability ) = 0;
 
         /**
          * Locks a device, giving a reason for such a lock.
