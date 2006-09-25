@@ -21,16 +21,16 @@
 #define QT3_SUPPORT
 #define QT3_SUPPORT_WARNINGS
 
-#include <QCheckBox>
-#include <QLabel>
-#include <QLayout>
-#include <QMessageBox>
-#include <QPointer>
-#include <QStringList>
-#include <QTextEdit>
-#include <QStyle>
-#include <Q3GroupBox>
-#include <Q3SimpleRichText>
+#include <QtCore/QPointer>
+#include <QtCore/QStringList>
+#include <QtGui/QCheckBox>
+#include <QtGui/QGroupBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QMessageBox>
+#include <QtGui/QStyle>
+#include <QtGui/QTextEdit>
+#include <QtGui/QTextDocument>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -183,33 +183,36 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
     int pref_height = 0;
     // Calculate a proper size for the text.
     {
-       Q3SimpleRichText rt(qt_text, dialog->font());
+       QTextDocument document;
+       document.setHtml( qt_text );
+       document.setDefaultFont( dialog->font() );
+
        QRect d = KGlobalSettings::desktopGeometry(dialog);
 
        pref_width = d.width() / 3;
        pref_height = label2->heightForWidth(pref_width);
 
-       rt.setWidth(pref_width);
-       int used_width = rt.widthUsed();
-       pref_height = rt.height();
+       document.setTextWidth(pref_width);
+       int used_width = document.idealWidth();
+       pref_height = document.size().height();
        if (3*pref_height > 2*d.height())
        {
           // Very high dialog.. make it wider
           pref_width = d.width() / 2;
-          rt.setWidth(pref_width);
-          used_width = rt.widthUsed();
-          pref_height = rt.height();
+          document.setTextWidth(pref_width);
+          used_width = document.idealWidth();
+          pref_height = document.size().height();
        }
        if (used_width <= pref_width)
        {
           while(true)
           {
              int new_width = (used_width * 9) / 10;
-             rt.setWidth(new_width);
-             int new_height = rt.height();
+             document.setTextWidth(new_width);
+             int new_height = document.size().height();
              if (new_height > pref_height)
                 break;
-             used_width = rt.widthUsed();
+             used_width = document.idealWidth();
              if (used_width > new_width)
                 break;
           }
@@ -252,21 +255,22 @@ int KMessageBox::createKMessageBox(KDialog *dialog, QPixmap icon,
 
     if (!details.isEmpty())
     {
-       Q3GroupBox *detailsGroup = new Q3GroupBox( i18n("Details"), dialog);
-       detailsGroup->setOrientation(Qt::Vertical);
+       QGroupBox *detailsGroup = new QGroupBox( i18n("Details"), dialog);
+       QVBoxLayout *layout = new QVBoxLayout;
        if ( details.length() < 512 ) {
-         QLabel *label3 = new QLabel(qrichtextify(details), detailsGroup);
+         QLabel *label3 = new QLabel(qrichtextify(details));
          label3->setOpenExternalLinks(options & KMessageBox::AllowLink);
          label3->setTextInteractionFlags(Qt::TextInteractionFlags(label3->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
          //label3->setMinimumSize(label3->sizeHint());
          label3->setWordWrap(true);
-         detailsGroup->layout()->addWidget(label3);
+         layout->addWidget( label3 );
        } else {
-         QTextEdit* te = new QTextEdit(details, detailsGroup);
+         QTextEdit* te = new QTextEdit(details);
          te->setReadOnly( true );
          te->setMinimumHeight( te->fontMetrics().lineSpacing() * 11 );
-         detailsGroup->layout()->addWidget(te);
+         layout->addWidget( te );
        }
+       detailsGroup->setLayout( layout );
        dialog->setDetailsWidget(detailsGroup);
     }
 
