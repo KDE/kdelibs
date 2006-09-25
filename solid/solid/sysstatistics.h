@@ -96,7 +96,8 @@ namespace Solid
         /**
          * Retrieves the amount of memory associated with each value of the
          * MemoryLoadType enum.
-         * @return The associative container where the data is stored.
+         * @return The associative container where the memory statistic is
+         * stored in bytes.
          * Key values are listed on the enum MemoryLoadType.
          * If occurs an error the container will be empty.
          */
