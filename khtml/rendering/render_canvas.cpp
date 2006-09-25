@@ -109,9 +109,7 @@ void RenderCanvas::calcWidth()
         return;
     }
 
-    m_width = m_view ?
-                m_view->frameWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight()
-                : m_minWidth;
+    m_width = m_view ? m_view->frameWidth() : m_minWidth;
 
     if (style()->marginLeft().isFixed())
         m_marginLeft = style()->marginLeft().value();
@@ -720,7 +718,7 @@ int RenderCanvas::docWidth() const
     RenderObject *fc = firstChild();
     if(fc) {
         // ow: like effectiveWidth() but without the negative
-        const int ow = hasOverflowClip() ? width() : overflowWidth();
+        const int ow = fc->hasOverflowClip() ? fc->width() : fc->overflowWidth();
         int dw = ow + fc->marginLeft() + fc->marginRight();
         int rightmostPos = fc->rightmostPosition(false);
 // kdDebug(6040) << "w " << w << " rightmostPos " << rightmostPos << " dw " << dw << " fc->rw " << fc->effectiveWidth() << " fc->width() " << fc->width() << endl;

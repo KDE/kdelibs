@@ -696,7 +696,7 @@ void RenderBox::close()
 
 short RenderBox::containingBlockWidth() const
 {
-    if ((isCanvas()||isRoot()) && canvas()->view())
+    if (isCanvas() && canvas()->view())
     {
         if (canvas()->pagedMode())
             return canvas()->width();
