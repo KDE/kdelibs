@@ -250,7 +250,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
 QStringList KCompletion::substringCompletion( const QString& string ) const
 {
-    // get all items in the tree, eventually in sorted order
+    // get all items in the tree, possibly in sorted order
     bool sorted = (myOrder == Weighted);
     KCompletionMatchesWrapper allItems( sorted );
     extractStringsFromNode( myTreeRoot, QString::null, &allItems, false );
@@ -275,10 +275,11 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
     for( ; it != list.end(); ++it ) {
         QString item = *it;
         if ( item.find( string, 0, false ) != -1 ) { // always case insensitive
-            postProcessMatch( &item );
             matches.append( item );
         }
     }
+
+    postProcessMatches( &matches );
 
     if ( matches.isEmpty() )
         doBeep( NoMatch );
