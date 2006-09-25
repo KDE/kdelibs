@@ -1283,50 +1283,61 @@ void KURLCompletion::postProcessMatch( QString *match ) const
 
 		// Add '/' to directories in file completion mode
 		// unless it has already been done
-		if ( d->last_compl_type == CTFile
-		       && (*match).at( (*match).length()-1 ) != '/' )
-		{
-			QString copy;
+		if ( d->last_compl_type == CTFile )
+			adjustMatch( *match );
+	}
+}
 
-			if ( (*match).startsWith( QString("file:") ) )
-				copy = KURL(*match).path();
-			else
-				copy = *match;
+void KURLCompletion::adjustMatch( QString& match ) const
+{
+	if ( match.at( match.length()-1 ) != '/' )
+	{
+		QString copy;
 
-			expandTilde( copy );
-			expandEnv( copy );
-			if ( QDir::isRelativePath(copy) )
-				copy.prepend( d->cwd + '/' );
+		if ( match.startsWith( QString("file:") ) )
+			copy = KURL(match).path();
+		else
+			copy = match;
 
-//			kdDebug() << "postProcess: stating " << copy << endl;
+		expandTilde( copy );
+		expandEnv( copy );
+		if ( QDir::isRelativePath(copy) )
+			copy.prepend( d->cwd + '/' );
 
-			KDE_struct_stat sbuff;
+//		kdDebug() << "postProcess: stating " << copy << endl;
 
-			QCString file = QFile::encodeName( copy );
+		KDE_struct_stat sbuff;
 
-			if ( KDE_stat( (const char*)file, &sbuff ) == 0 ) {
-				if ( S_ISDIR ( sbuff.st_mode ) )
-					match->append( '/' );
-			}
-			else {
-				kdDebug() << "Could not stat file " << copy << endl;
-			}
+		QCString file = QFile::encodeName( copy );
+
+		if ( KDE_stat( (const char*)file, &sbuff ) == 0 ) {
+			if ( S_ISDIR ( sbuff.st_mode ) )
+				match.append( '/' );
+		}
+		else {
+			kdDebug() << "Could not stat file " << copy << endl;
 		}
 	}
 }
 
-void KURLCompletion::postProcessMatches( QStringList * /*matches*/ ) const
+void KURLCompletion::postProcessMatches( QStringList * matches ) const
 {
-	// Maybe '/' should be added to directories here as in
-	// postProcessMatch() but it would slow things down
-	// when there are a lot of matches...
+	if ( !matches->isEmpty() && d->last_compl_type == CTFile ) {
+		QStringList::Iterator it = matches->begin();
+		for (; it != matches->end(); ++it ) {
+			adjustMatch( (*it) );
+		}
+	}
 }
 
-void KURLCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) const
+void KURLCompletion::postProcessMatches( KCompletionMatches * matches ) const
 {
-	// Maybe '/' should be added to directories here as in
-	// postProcessMatch() but it would slow things down
-	// when there are a lot of matches...
+	if ( !matches->isEmpty() && d->last_compl_type == CTFile ) {
+		KCompletionMatches::Iterator it = matches->begin();
+		for (; it != matches->end(); ++it ) {
+			adjustMatch( (*it).value() );
+		}
+	}
 }
 
 void KURLCompletion::customEvent(QCustomEvent *e)

@@ -224,6 +224,8 @@ private:
 	                  const QString& filter = QString::null,
 	                  bool no_hidden = false );
 
+	void adjustMatch( QString& match ) const;
+
 protected:
 	virtual void virtual_hook( int id, void* data );
 private:
