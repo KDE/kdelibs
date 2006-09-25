@@ -39,7 +39,6 @@ public:
         }
 	bool operator<(const RLEData&) const;
 	void write(QDataStream& s);
-	void print(QString) const;				// TODO remove
 	uint offset() const { return m_offset; }
 private:
 	uint			m_offset;

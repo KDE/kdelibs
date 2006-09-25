@@ -250,17 +250,6 @@ bool SGIImage::readImage(QImage& img)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-// TODO remove; for debugging purposes only
-void RLEData::print(QString desc) const
-{
-	QString s = desc + ": ";
-	for (int i = 0; i < size(); i++)
-		s += QString::number(at(i)) + ",";
-	kDebug() << "--- " << s << endl;
-}
-
-
 void RLEData::write(QDataStream& s)
 {
 	for (int i = 0; i < size(); i++)
