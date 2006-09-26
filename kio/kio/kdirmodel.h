@@ -100,10 +100,10 @@ private slots:
 
 private:
     // Make those private, they shouldn't be called by applications
-    virtual bool insertRows(int , int, const QModelIndex & = QModelIndex()) {}
-    virtual bool insertColumns(int, int, const QModelIndex & = QModelIndex()) {}
-    virtual bool removeRows(int, int, const QModelIndex & = QModelIndex()) {}
-    virtual bool removeColumns(int, int, const QModelIndex & = QModelIndex()) {}
+    virtual bool insertRows(int , int, const QModelIndex & = QModelIndex()) { return false; }
+    virtual bool insertColumns(int, int, const QModelIndex & = QModelIndex()) { return false; }
+    virtual bool removeRows(int, int, const QModelIndex & = QModelIndex()) { return false; }
+    virtual bool removeColumns(int, int, const QModelIndex & = QModelIndex()) { return false; }
 
 private:
     friend class KDirModelPrivate;
