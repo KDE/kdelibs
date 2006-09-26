@@ -153,7 +153,7 @@ namespace Ifaces
          * @param capability the capability type
          * @returns a pointer to the capability interfaces if supported by the device, 0 otherwise
          */
-        virtual Capability *createCapability( const Capability::Type &capability ) = 0;
+        virtual QObject *createCapability( const Capability::Type &capability ) = 0;
 
         /**
          * Locks a device, giving a reason for such a lock.

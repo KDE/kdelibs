@@ -237,9 +237,9 @@ bool Solid::Device::queryCapability( const Capability::Type &capability ) const
 }
 
 template<typename IfaceType, typename CapType>
-inline CapType* capability_cast( Solid::Ifaces::Capability *cap_iface )
+inline CapType* capability_cast( QObject *cap_iface )
 {
-    IfaceType *iface = dynamic_cast<IfaceType*>( cap_iface );
+    IfaceType *iface = qobject_cast<IfaceType*>( cap_iface );
 
     if ( iface )
     {
@@ -260,7 +260,7 @@ Solid::Capability *Solid::Device::asCapability( const Capability::Type &capabili
             return d->ifaces.value( capability );
         }
 
-        Ifaces::Capability *cap_iface = d->data->createCapability( capability );
+        QObject *cap_iface = d->data->createCapability( capability );
 
         Capability *iface = 0;
 

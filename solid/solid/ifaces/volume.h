@@ -158,4 +158,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Volume, "org.kde.Solid.Ifaces.Volume/0.1" )
+
 #endif

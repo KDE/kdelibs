@@ -76,4 +76,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Capability, "org.kde.Solid.Ifaces.Capability/0.1" )
+
 #endif

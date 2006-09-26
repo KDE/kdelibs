@@ -20,6 +20,7 @@
 #ifndef SOLID_IFACES_AUTHENTICATION_H
 #define SOLID_IFACES_AUTHENTICATION_H
 
+#include <QObject>
 #include <QMap>
 #include <QString>
 
@@ -164,5 +165,7 @@ namespace Ifaces
     };
 } // Ifaces
 } // Solid
+
+Q_DECLARE_INTERFACE( Solid::Ifaces::AuthenticationValidator, "org.kde.Solid.Ifaces.AuthenticationValidator/0.1" )
 
 #endif /* SOLID_IFACES_AUTHENTICATION_H */

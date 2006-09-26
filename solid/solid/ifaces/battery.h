@@ -156,4 +156,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Battery, "org.kde.Solid.Ifaces.Battery/0.1" )
+
 #endif

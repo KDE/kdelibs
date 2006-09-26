@@ -70,4 +70,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Processor, "org.kde.Solid.Ifaces.Processor/0.1" )
+
 #endif

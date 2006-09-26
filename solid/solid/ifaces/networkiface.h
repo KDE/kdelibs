@@ -79,4 +79,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::NetworkIface, "org.kde.Solid.Ifaces.NetworkIface/0.1" )
+
 #endif

@@ -126,4 +126,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Storage, "org.kde.Solid.Ifaces.Storage/0.1" )
+
 #endif

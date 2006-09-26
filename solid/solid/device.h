@@ -238,7 +238,7 @@ namespace Solid
         {
             Capability::Type type = Cap::capabilityType();
             Capability *iface = asCapability( type );
-            return dynamic_cast<Cap*>( iface );
+            return qobject_cast<Cap*>( iface );
         }
 
         /**

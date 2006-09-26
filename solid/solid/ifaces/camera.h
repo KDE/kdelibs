@@ -71,4 +71,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Camera, "org.kde.Solid.Ifaces.Camera/0.1" )
+
 #endif

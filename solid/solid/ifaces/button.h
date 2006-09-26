@@ -89,4 +89,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Button, "org.kde.Solid.Ifaces.Button/0.1" )
+
 #endif

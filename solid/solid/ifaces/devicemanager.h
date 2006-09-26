@@ -33,8 +33,6 @@ namespace Solid
 {
 namespace Ifaces
 {
-    class Device;
-
     /**
      * This class specifies the interface a backend will have to implement in
      * order to be used in the system.
@@ -95,7 +93,7 @@ namespace Ifaces
          * @param udi the identifier of the device instantiated
          * @returns a new Device object if there's a device having the given UDI, 0 otherwise
          */
-        virtual Device *createDevice( const QString &udi ) = 0;
+        virtual QObject *createDevice( const QString &udi ) = 0;
 
     Q_SIGNALS:
         /**

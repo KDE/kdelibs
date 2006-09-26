@@ -20,6 +20,7 @@
 #include "predicate.h"
 
 #include <solid/ifaces/device.h>
+#include <solid/ifaces/abstractcapability.h>
 #include <QStringList>
 
 namespace Solid
@@ -169,7 +170,7 @@ bool Solid::Predicate::matches( Ifaces::Device *device ) const
             && d->operand2->matches( device );
     case Private::AtomType:
     {
-        Ifaces::Capability *iface = device->createCapability( d->capability );
+        Ifaces::Capability *iface = qobject_cast<Ifaces::AbstractCapability*>( device->createCapability( d->capability ) );
 
         if ( iface!=0 && ( iface->qobject()!=0 ) )
         {

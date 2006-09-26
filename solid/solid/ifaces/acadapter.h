@@ -61,4 +61,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::AcAdapter, "org.kde.Solid.Ifaces.AcAdapter/0.1" )
+
 #endif

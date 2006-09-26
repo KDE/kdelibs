@@ -317,7 +317,7 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::fin
     }
     else
     {
-        Ifaces::Device *iface = backend->createDevice( udi );
+        Ifaces::Device *iface = qobject_cast<Ifaces::Device*>( backend->createDevice( udi ) );
 
         if ( iface!=0 )
         {

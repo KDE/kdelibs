@@ -66,4 +66,6 @@ namespace Ifaces
 }
 }
 
+Q_DECLARE_INTERFACE( Solid::Ifaces::Display, "org.kde.Solid.Ifaces.Display/0.1" )
+
 #endif
