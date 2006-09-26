@@ -336,6 +336,17 @@ target_link_libraries(kmimetypetest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
 
 add_test(kio-kmimetypetest ${EXECUTABLE_OUTPUT_PATH}/kmimetypetest)
 
+########### next target ###############
+
+set(kfileitemtest_SRCS kfileitemtest.cpp)
+
+kde4_automoc(${kfileitemtest_SRCS})
+
+kde4_add_executable(kfileitemtest NOGUI RUN_UNINSTALLED ${kfileitemtest_SRCS})
+
+target_link_libraries(kfileitemtest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
+
+add_test(kio-kfileitemtest ${EXECUTABLE_OUTPUT_PATH}/kfileitemtest)
 
 ########### next target ###############
 
@@ -369,6 +380,28 @@ kde4_automoc(${kdirwatchtest_gui_SRCS})
 kde4_add_executable(kdirwatchtest_gui RUN_UNINSTALLED ${kdirwatchtest_gui_SRCS})
 
 target_link_libraries(kdirwatchtest_gui ${KDE4_KIO_LIBS})
+
+########### next target ###############
+
+set(kdirmodeltest_SRCS kdirmodeltest.cpp)
+
+kde4_automoc(${kdirmodeltest_SRCS})
+
+kde4_add_executable(kdirmodeltest RUN_UNINSTALLED ${kdirmodeltest_SRCS})
+
+target_link_libraries(kdirmodeltest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
+
+add_test(kio-kdirmodeltest ${EXECUTABLE_OUTPUT_PATH}/kdirmodeltest)
+
+########### next target ###############
+
+set(kdirmodeltest_gui_SRCS kdirmodeltest_gui.cpp)
+
+kde4_automoc(${kdirmodeltest_gui_SRCS})
+
+kde4_add_executable(kdirmodeltest_gui RUN_UNINSTALLED ${kdirmodeltest_gui_SRCS})
+
+target_link_libraries(kdirmodeltest_gui ${KDE4_KIO_LIBS})
 
 
 endif(KDE4_BUILD_TESTS)

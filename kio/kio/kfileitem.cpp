@@ -434,6 +434,7 @@ KMimeType::Ptr KFileItem::determineMimeType()
     KUrl url = mostLocalUrl(isLocalUrl);
 
     m_pMimeType = KMimeType::findByUrl( url, m_fileMode, isLocalUrl );
+    Q_ASSERT(m_pMimeType);
     //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
     m_bMimeTypeKnown = true;
   }
@@ -498,7 +499,7 @@ int KFileItem::overlays() const
     }
   }
 
-  if ( m_pMimeType->name() == "application/x-gzip" && m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
+  if ( mimetype() == "application/x-gzip" && m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
      _state |= K3Icon::ZipOverlay;
   return _state;
 }

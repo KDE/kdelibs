@@ -121,6 +121,7 @@ set(kiocore_STAT_SRCS
   kio/kmimetypechooser.cpp
   kio/kbuildsycocaprogressdialog.cpp
   kio/safesite.cpp
+  kio/kdirmodel.cpp
 )
 
 set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_SOURCE_DIR}/kio/misc/uiserveriface.cpp)
@@ -260,8 +261,8 @@ if(ACL_FOUND)
 endif(ACL_FOUND)
 
 set_target_properties(kio PROPERTIES VERSION 5.0.0 SOVERSION 5 )
-########### install files ###############
 
+########### install files ###############
 install(TARGETS kio  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
