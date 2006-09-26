@@ -1360,7 +1360,7 @@ bool RenderObject::attemptDirectLayerTranslation()
     // When the difference between two successive styles is only 'Position'
     // we may attempt to save a layout by directly updating the object position.
 
-    KHTMLAssert( m_style->position() == RELATIVE || m_style->position() == ABSOLUTE );
+    KHTMLAssert( m_style->position() != STATIC );
     if (!layer())
         return false;
     setInline(m_style->isDisplayInlineType());
@@ -1377,7 +1377,7 @@ bool RenderObject::attemptDirectLayerTranslation()
         // we'll need a layout.
         setWidth(oldWidth);
         setHeight(oldHeight);
-        kdDebug() << "Layer translation failed for " << information() << endl;
+        // kdDebug() << "Layer translation failed for " << information() << endl;
         return false;
     }
     layer()->updateLayerPosition();
