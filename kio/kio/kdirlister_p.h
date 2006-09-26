@@ -254,10 +254,15 @@ private:
 
     void sendSignal( bool entering, const KUrl& url )
     {
+      // DF: this doesn't make sense. This is a cache, we delete items when deleting the cache,
+      // and maybe in other cases, but not when "leaving a directory". This needs to be rethought.
+      // It's not even much used, only kdnssd seems to use it, says lxr.
+#if 0
       if (entering)
         org::kde::KDirNotify::emitEnteredDirectory( url.url() );
       else
         org::kde::KDirNotify::emitLeftDirectory( url.url() );
+#endif
     }
 
     void redirect( const KUrl& newUrl )
