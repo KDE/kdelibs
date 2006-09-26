@@ -55,11 +55,6 @@ class KDE_EXPORT Provider
     Provider();
 
     /**
-     * Constructor with XML feed.
-     */
-    Provider( const QDomElement & );
-
-    /**
      * Destructor.
      */
     ~Provider();
@@ -150,11 +145,6 @@ class KDE_EXPORT Provider
      */
     KURL icon() const;
 
-  protected:
-    void parseDomElement( const QDomElement & );
-
-    QDomElement createDomElement( QDomDocument &, QDomElement &parent );
-
   private:
     QString mName;
     KURL mDownloadUrl;
@@ -162,52 +152,11 @@ class KDE_EXPORT Provider
     KURL mNoUploadUrl;
     KURL mIcon;
     bool mNoUpload;
-};
+    KURL mDownloadUrlLatest;
+    KURL mDownloadUrlScore;
+    KURL mDownloadUrlDownloads;
 
-/**
- * KNewStuff provider loader.
- * This class sets up a list of all possible providers by querying
- * the main provider database for this specific application.
- * It should probably not be used directly by the application.
- */
-class KDE_EXPORT ProviderLoader : public QObject
-{
-    Q_OBJECT
-  public:
-    /**
-     * Constructor.
-     *
-     * @param parentWidget the parent widget
-     */
-    ProviderLoader( QWidget *parentWidget );
-
-    /**
-     * Starts asynchronously loading the list of providers of the
-     * specified type.
-     *
-     * @param type data type such as 'kdesktop/wallpaper'.
-     * @param providerList the URl to the list of providers; if empty
-     *    we first try the ProvidersUrl from KGlobal::config, then we
-     *    fall back to a hardcoded value.
-     */
-    void load( const QString &type, const QString &providerList = QString::null );
-
-  signals:
-    /**
-     * Indicates that the list of providers has been successfully loaded.
-     */
-    void providersLoaded( Provider::List * );
-
-  protected slots:
-    void slotJobData( KIO::Job *, const QByteArray & );
-    void slotJobResult( KIO::Job * );
-
-  private:
-    QWidget *mParentWidget;
-
-    QString mJobData;
-
-    Provider::List mProviders;
+    class ProviderPrivate *d;
 };
 
 }

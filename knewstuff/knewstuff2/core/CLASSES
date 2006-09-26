@@ -1,0 +1,15 @@
+Base classes:
+ KTranslatable
+
+Container classes:
+ Author
+ Entry
+ Provider
+ Category
+
+Parser/dumper classes:
+ EntryHandler
+
+Engine classes (asynchronous, therefore qobjects):
+ ProviderLoader
+
