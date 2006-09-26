@@ -138,7 +138,7 @@ QImage KImageEffect::gradient(const QSize &size, const QColor &ca,
       return image;
     }
 
-    register int x, y;
+    int x, y;
 
     rDiff = (rcb = cb.red())   - (rca = ca.red());
     gDiff = (gcb = cb.green()) - (gca = ca.green());
