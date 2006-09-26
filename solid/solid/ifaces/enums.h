@@ -316,7 +316,7 @@ namespace Enums
          * - TvOut: A TV Out port
          * - UnknowDisplayType: An undetermined display type
          */
-        enum DisplayType{ Lcd, Crt, TvOut, UnknowDisplayType };
+        enum DisplayType{ Lcd, Crt, TvOut, UnknownDisplayType };
     };
 
     /**
