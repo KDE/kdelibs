@@ -50,8 +50,20 @@ class KIcon;
 class KDEUI_EXPORT KPageWidgetItem : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY( QString name READ name WRITE setName )
+  Q_PROPERTY( QString header READ header WRITE setHeader )
+  Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
+  Q_PROPERTY( bool checkable READ isCheckable WRITE setCheckable )
+  Q_PROPERTY( bool checked READ isChecked WRITE setChecked )
 
   public:
+    /**
+     * Creates a new page widget item.
+     *
+     * @param widget The widget that is shown as page in the KPageWidget.
+     */
+    KPageWidgetItem( QWidget *widget );
+
     /**
      * Creates a new page widget item.
      *
@@ -70,6 +82,12 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
      * Returns the widget of the page widget item.
      */
     QWidget* widget() const;
+
+    /**
+     * Sets the name of the item as shown in the navigation view of the page
+     * widget.
+     */
+    void setName( const QString &name );
 
     /**
      * Returns the name of the page widget item.

@@ -58,6 +58,8 @@ class QModelIndex;
 class KDEUI_EXPORT KPageView : public QWidget
 {
   Q_OBJECT
+  Q_ENUMS( FaceType )
+  Q_PROPERTY( FaceType faceType READ faceType WRITE setFaceType )
 
   public:
     /**

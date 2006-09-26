@@ -48,6 +48,20 @@ class KPageWidgetItem::Private
     bool checked;
 };
 
+KPageWidgetItem::KPageWidgetItem( QWidget *widget )
+  : QObject( 0 ), d( new Private )
+{
+  d->widget = widget;
+
+  /**
+   * Hide the widget, otherwise when the widget has this KPageView as
+   * parent the widget is shown outside the QStackedWidget if the page
+   * was not selected ( and reparented ) yet.
+   */
+  if ( d->widget )
+    d->widget->hide();
+}
+
 KPageWidgetItem::KPageWidgetItem( QWidget *widget, const QString &name )
   : QObject( 0 ), d( new Private )
 {
@@ -71,6 +85,11 @@ KPageWidgetItem::~KPageWidgetItem()
 QWidget* KPageWidgetItem::widget() const
 {
   return d->widget;
+}
+
+void KPageWidgetItem::setName( const QString &name )
+{
+  d->name = name;
 }
 
 QString KPageWidgetItem::name() const

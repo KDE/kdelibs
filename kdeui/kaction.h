@@ -187,6 +187,11 @@ class KDEUI_EXPORT KAction : public QWidgetAction
   Q_PROPERTY( KShortcut customGlobalShortcut READ customGlobalShortcut WRITE setCustomGlobalShortcut )
   Q_PROPERTY( KShortcut defaultGlobalShortcut READ defaultGlobalShortcut WRITE setDefaultGlobalShortcut )
   Q_PROPERTY( bool globalShortcutAllowed READ globalShortcutAllowed WRITE setGlobalShortcutAllowed )
+  Q_PROPERTY( QString shortcutText READ shortcutText WRITE setShortcutText )
+  Q_PROPERTY( bool hasIcon READ hasIcon )
+  Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
+  Q_PROPERTY( bool plugged READ isPlugged )
+  Q_FLAGS( ShortcutType )
 
 public:
     /**

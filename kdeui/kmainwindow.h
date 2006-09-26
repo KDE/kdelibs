@@ -102,6 +102,12 @@ class KDEUI_EXPORT KMainWindow : public QMainWindow, public KXMLGUIBuilder, virt
 {
     friend class KMWSessionManaged;
     Q_OBJECT
+    Q_PROPERTY( bool hasMenuBar READ hasMenuBar )
+    Q_PROPERTY( bool autoSaveSettings READ autoSaveSettings )
+    Q_PROPERTY( QString autoSaveGroup READ autoSaveGroup )
+    Q_PROPERTY( bool standardToolBarMenuEnabled READ isStandardToolBarMenuEnabled WRITE setStandardToolBarMenuEnabled )
+    Q_FLAGS( StandardWindowOption )
+    Q_PROPERTY( bool initialGeometrySet READ initialGeometrySet )
 
 public:
     /**

@@ -57,6 +57,8 @@ class KDEUI_EXPORT KActionCollection : public QObject
   Q_OBJECT
 
   Q_PROPERTY( bool enabled READ isEnabled WRITE setEnabled RESET forgetEnabled )
+  Q_PROPERTY( QString configGroup READ configGroup WRITE setConfigGroup )
+  Q_PROPERTY( bool configIsGlobal READ configIsGlobal WRITE setConfigGlobal )
 
 public:
   /**

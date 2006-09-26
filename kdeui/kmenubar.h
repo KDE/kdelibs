@@ -38,6 +38,7 @@
 class KDEUI_EXPORT KMenuBar : public QMenuBar
 {
     Q_OBJECT
+    Q_PROPERTY( bool topLevelMenu READ isTopLevelMenu WRITE setTopLevelMenu )
 
 public:
 
