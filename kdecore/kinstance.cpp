@@ -161,9 +161,11 @@ KStandardDirs *KInstance::dirs() const
     DEBUG_CHECK_ALIVE
     if( _dirs == 0 ) {
 	_dirs = new KStandardDirs( );
-        if (_config)
+        if (_config) {
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
+	} else
+            config(); // trigger adding of possible customized dirs
     }
 
     return _dirs;
