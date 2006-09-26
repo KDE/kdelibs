@@ -29,10 +29,7 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Capability;
-    }
+    class Predicate;
 
     /**
      * Base class of all the capabilities.
@@ -63,6 +60,8 @@ namespace Solid
     private:
         class Private;
         Private *d;
+
+        friend class Predicate;
     };
 }
 

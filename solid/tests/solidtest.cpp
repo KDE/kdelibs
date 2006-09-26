@@ -289,8 +289,7 @@ void SolidTest::testDeviceCapabilities()
 
 void SolidTest::testPredicate()
 {
-
-    FakeDevice *fake = fakeManager->findDevice( "/org/kde/solid/fake/acpi_CPU0" );
+    Solid::Device dev( "/org/kde/solid/fake/acpi_CPU0" );
 
     Solid::Predicate p1 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3200 )
                         & Solid::Predicate( Solid::Capability::Processor, "canThrottle", true );
@@ -302,10 +301,10 @@ void SolidTest::testPredicate()
                         | Solid::Predicate( Solid::Capability::Processor, "canThrottle", false );
     Solid::Predicate p5 = Solid::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
 
-    QVERIFY( p1.matches( fake ) );
-    QVERIFY( !p2.matches( fake ) );
-    QVERIFY( p3.matches( fake ) );
-    QVERIFY( !p4.matches( fake ) );
+    QVERIFY( p1.matches( &dev ) );
+    QVERIFY( !p2.matches( &dev ) );
+    QVERIFY( p3.matches( &dev ) );
+    QVERIFY( !p4.matches( &dev ) );
 
 
 

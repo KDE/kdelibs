@@ -28,10 +28,7 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Device;
-    }
+    class Device;
 
     /**
      * This class implements predicates for devices.
@@ -126,7 +123,7 @@ namespace Solid
          * @param device the device to match against the predicate
          * @return true if the given device matches the predicate, false otherwise
          */
-        bool matches( Ifaces::Device *device ) const;
+        bool matches( Device *device ) const;
 
         /**
          * Converts the predicate to its string form.
