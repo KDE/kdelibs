@@ -56,7 +56,7 @@ You probably also want to add $KDEDIR/bin and $QTDIR/bin to your path.
 
 For configuring Qt, the magic sequence is:
 
-./configure -system-zlib -qt-gif -system-libjpeg -system-libpng -no-exceptions -debug -fast
+./configure -system-zlib -qt-gif -system-libjpeg -system-libpng -no-exceptions -debug -fast -qdbus
 make
 
 Installing CMake:
