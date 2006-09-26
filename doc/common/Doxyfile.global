@@ -170,6 +170,7 @@ ALIASES = \
 	"authors=\xrefitem authors \"Author(s)\" \"Authors\"" \
 	"maintainers=\xrefitem maintainers \"Maintainer(s)\" \"Maintainers\"" \
 	"port4=\xrefitem port4 \"KDE 4 Porting Guide\" \"KDE 4 Porting Guide\"" \
+	"glossary=\xrefitem glossary \"KDE 4 Glossary\" \"KDE 4 Glossary\"" \
 	"acronym=\b "\
 	"licenses=\xrefitem licenses \"License(s)\" \"Licenses\"" \
 	"FIXME=\xrefitem fixme \"Fixme\" \"Fixme\"" \
