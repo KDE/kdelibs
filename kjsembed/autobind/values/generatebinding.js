@@ -349,6 +349,9 @@ function isVariant( variable )
 //     return isVariantType( variable );
 }
 
+
+const_ref_rx = /const\s+(\w+)\s+&/;
+
 function extract_parameter( parameter, paramIdx )
 {
     var extracted = '';
@@ -359,6 +362,13 @@ function extract_parameter( parameter, paramIdx )
 
     if (paramVarElement.isNull())
         paramVar = 'arg' + paramIdx;
+
+    var coreParamTypeMatch = const_ref_rx.exec(paramType);
+    var coreParamType;
+    if (coreParamTypeMatch == null)
+	coreParamType = paramType;
+    else
+	coreParamType = coreParamTypeMatch[1];
 
     if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
     {
@@ -376,13 +386,13 @@ function extract_parameter( parameter, paramIdx )
     {
         //extracted += 'if(args['+paramIdx+'].getObject() != 0 && QByteArray(args['+paramIdx+'].getObject()->classInfo()->className) == "'+paramType+'");\n';
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + paramType + '>(exec, args, ' + paramIdx + ');\n';
+            '       ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
     else    // It's an object, or something else?
     {
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + paramType + '>(exec, args, ' + paramIdx + ', ';
+            '       ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + coreParamType + '>(exec, args, ' + paramIdx + ', ';
     }
 
     if (!paramDefault.isNull())
