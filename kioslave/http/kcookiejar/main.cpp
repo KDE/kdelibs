@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
    KCmdLineArgs::addCmdLineOptions( options );
 
    KInstance a("kcookiejar");
-   
+
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
    org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
    }
    if (args->isSet("shutdown"))
    {
-      QDBusInterface("org.kded.kded", "/kded", "org.kde.kded").call("unloadModule", QByteArray("kcookiejar"));
+      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("unloadModule", QByteArray("kcookiejar"));
    }
    else if(args->isSet("reload-config"))
    {
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
    }
    else
    {
-      QDBusInterface("org.kded.kded", "/kded", "org.kde.kded").call("loadModule", QByteArray("kcookiejar"));
+      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("loadModule", QByteArray("kcookiejar"));
    }
    delete kcookiejar;
 
