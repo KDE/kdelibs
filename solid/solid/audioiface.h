@@ -27,11 +27,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class AudioIface;
-    }
-
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
