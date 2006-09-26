@@ -79,4 +79,5 @@ install( FILES
   kacl.h
   kdedesktopmimetype.h 
   kbuildsycocaprogressdialog.h
+  kdirmodel.h
   DESTINATION ${INCLUDE_INSTALL_DIR}) 
