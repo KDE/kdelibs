@@ -112,19 +112,24 @@ QObject* KLibFactory::create( QObject* _parent, const char* classname, const QSt
 class KLibraryPrivate
 {
 public:
+    inline KLibraryPrivate(KLibrary *_q) : q(_q) {}
+    KLibrary *q;
     QString libname;
     QString filename;
     QHash<QByteArray, KLibFactory*> factories;
     void* handle;
     QList<QObject*> objs;
     QTimer* timer;
+
+    KLibFactory *kde3Factory(const QByteArray &factoryname);
+    KLibFactory *kde4Factory();
 };
 
 KLibrary::KLibrary( const QString& libname, const QString& filename, void * handle )
 {
     /* Make sure, we have a KLibLoader */
     (void) KLibLoader::self();
-    d = new KLibraryPrivate;
+    d = new KLibraryPrivate(this);
     d->libname = libname;
     d->filename = filename;
     d->handle = handle;
@@ -166,21 +171,22 @@ QString KLibrary::fileName() const
     return d->filename;
 }
 
-KLibFactory* KLibrary::factory( const char* factoryname )
+KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
 {
     QByteArray symname = "init_";
-    if( factoryname )
+    if(!factoryname.isEmpty()) {
         symname += factoryname;
-    else
-        symname += name().toLatin1();
+    } else {
+        symname += libname.toLatin1();
+    }
 
-    if ( d->factories.contains( symname ) )
-        return d->factories[ symname ];
+    if ( factories.contains( symname ) )
+        return factories[ symname ];
 
-    void* sym = symbol( symname );
+    void* sym = q->symbol( symname );
     if ( !sym )
     {
-        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function.", name(), QLatin1String("init_") + name() );
+        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function.", libname, QLatin1String("init_") + libname );
         kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
@@ -191,14 +197,57 @@ KLibFactory* KLibrary::factory( const char* factoryname )
 
     if( !factory )
     {
-        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer a KDE compatible factory." ,  name() );
+        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer a KDE compatible factory." , libname);
         kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
         return 0;
     }
-    d->factories.insert( symname, factory );
+    factories.insert( symname, factory );
 
-    connect( factory, SIGNAL( objectCreated( QObject * ) ),
-             this, SLOT( slotObjectCreated( QObject * ) ) );
+    return factory;
+}
+
+KLibFactory *KLibraryPrivate::kde4Factory()
+{
+    const QByteArray symname("qt_plugin_instance");
+    if ( factories.contains( symname ) )
+        return factories[ symname ];
+
+    void* sym = q->symbol( symname );
+    if ( !sym )
+    {
+        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
+        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+        return 0;
+    }
+
+    typedef QObject* (*t_func)();
+    t_func func = (t_func)sym;
+    QObject* instance = func();
+    KLibFactory *factory = qobject_cast<KLibFactory *>(instance);
+
+    if( !factory )
+    {
+        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer a KDE 4 compatible factory." , libname);
+        kWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+        return 0;
+    }
+    factories.insert( symname, factory );
+
+    return factory;
+
+}
+
+KLibFactory* KLibrary::factory(const char* factoryname)
+{
+    KLibFactory *factory = d->kde4Factory();
+    if (!factory)
+        factory = d->kde3Factory(factoryname);
+
+    if (!factory)
+        return 0;
+
+    connect(factory, SIGNAL(objectCreated(QObject *)),
+             this, SLOT(slotObjectCreated(QObject * )));
 
     return factory;
 }

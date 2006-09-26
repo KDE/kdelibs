@@ -22,6 +22,7 @@
 #include <qstringlist.h>
 #include <qhash.h>
 #include <kglobal.h>
+#include <qplugin.h>
 
 #include <stdlib.h> // For backwards compatibility
 
@@ -35,6 +36,20 @@ class KLibraryPrivate;
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
     extern "C" { KDE_EXPORT void *init_##libname() { return new factory; } }
 
+// identical to Q_EXPORT_PLUGIN but supports arguments for the constructor
+// ### get rid with Qt 4.3
+#define K_EXPORT_PLUGIN( plugin ) \
+            Q_PLUGIN_VERIFICATION_DATA \
+            Q_EXTERN_C Q_DECL_EXPORT \
+            const char * Q_STANDARD_CALL qt_plugin_query_verification_data() \
+            { return qt_plugin_verification_data; } \
+            Q_EXTERN_C Q_DECL_EXPORT QObject * Q_STANDARD_CALL qt_plugin_instance() { \
+                static QPointer<QObject> instance; \
+                if (!instance) \
+                    instance = new plugin; \
+                return instance; \
+            }
+
 /**
  * @short Represents a dynamically loaded library.
  *
@@ -47,6 +62,7 @@ class KLibraryPrivate;
 class KDECORE_EXPORT KLibrary : public QObject
 {
     friend class KLibLoader;
+    friend class KLibraryPrivate;
 
     Q_OBJECT
 public:
@@ -269,6 +285,7 @@ private:
 class KDECORE_EXPORT KLibLoader : public QObject
 {
     friend class KLibrary;
+    friend class KLibraryPrivate;
 
     Q_OBJECT
 public:
