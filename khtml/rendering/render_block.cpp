@@ -916,6 +916,18 @@ RenderObject* RenderBlock::handleCompactChild(RenderObject* child, CompactInfo& 
     return 0;
 }
 
+void RenderBlock::adjustSizeForCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo)
+{
+    // if the compact is bigger than the block it was run into
+    // then "this" block should take the height of the compact
+    if (compactInfo.matches(child)) {
+        // We have a compact child to squeeze in.
+        RenderObject* compactChild = compactInfo.compact();
+        if (compactChild->height() > child->height())
+            m_height += compactChild->height() - child->height();
+    } 
+}
+
 void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo)
 {
     if (compactInfo.matches(child)) {
@@ -949,6 +961,7 @@ void RenderBlock::insertCompactIfNeeded(RenderObject* child, CompactInfo& compac
         child->style()->setLineHeight( newLineHeight );
         child->setNeedsLayout( true, false );
         child->layout();
+
         compactChild->setPos(compactXPos, compactYPos); // Set the x position.
         compactInfo.clear();
     }
@@ -1417,6 +1430,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // Now place the child in the correct horizontal position
         determineHorizontalPosition(child);
 
+        adjustSizeForCompactIfNeeded(child, compactInfo);
         // Update our height now that the child has been placed in the correct position.
         m_height += child->height();
 

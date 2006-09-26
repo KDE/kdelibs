@@ -330,6 +330,7 @@ protected:
     RenderObject* handleRunInChild(RenderObject* child, bool& handled);
     void collapseMargins(RenderObject* child, MarginInfo& marginInfo, int yPosEstimate);
     void clearFloatsIfNeeded(RenderObject* child, MarginInfo& marginInfo, int oldTopPosMargin, int oldTopNegMargin);
+    void adjustSizeForCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo);
     void insertCompactIfNeeded(RenderObject* child, CompactInfo& compactInfo);
     int estimateVerticalPosition(RenderObject* child, const MarginInfo& info);
     void determineHorizontalPosition(RenderObject* child);
