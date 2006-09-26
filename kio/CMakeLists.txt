@@ -115,6 +115,7 @@ set(kiocore_STAT_SRCS
   kio/observer.cpp
   kio/kemailsettings.cpp
   kio/renamedlg.cpp
+  kio/renamedlgplugin.cpp
   kio/skipdlg.cpp
   kio/kremoteencoding.cpp
   kio/kmimetypechooser.cpp

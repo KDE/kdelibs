@@ -38,6 +38,7 @@ install(  FILES
   metainfojob.h
   davjob.h
   renamedlg.h
+  renamedlgplugin.h
   skipdlg.h
   safesite.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
@@ -71,7 +72,6 @@ install( FILES
   karchive.h
   kfilefilter.h
   kfilemetainfo.h
-  renamedlgplugin.h
   kmimetyperesolver.h
   kdbusservicestarter.h
   kremoteencoding.h

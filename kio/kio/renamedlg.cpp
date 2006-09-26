@@ -160,45 +160,25 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             plugin_offers = KMimeTypeTrader::self()->query(d->mimeDest, "RenameDlg/Plugin");
         }
         if(!plugin_offers.isEmpty() ){
+            RenameDlgPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
+            RenameDlgPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
             kDebug(7024) << "Offers" << endl;
             KService::List::ConstIterator it = plugin_offers.begin();
             const KService::List::ConstIterator end = plugin_offers.end();
             for( ; it != end; ++it ){
-                QString libName = (*it)->library();
-                if( libName.isEmpty() ){
-                    kDebug(7024) << "lib is empty" << endl;
+                RenameDlgPlugin *plugin = KLibLoader::createInstance<RenameDlgPlugin>( (*it)->library().toLocal8Bit(), this );
+                if( !plugin )
                     continue;
-                }
-                KLibrary *lib = KLibLoader::self()->library(libName.toLocal8Bit() );
-                if(!lib) {
-                    continue;
-                }
-                KLibFactory *factory = lib->factory();
-                if(!factory){
-                    lib->unload();
-                    continue;
-                }
-                QObject *obj = factory->create( this );
-                if(!obj) {
-                    lib->unload();
-                    continue;
-                }
-                obj->setObjectName( (*it)->name() );
-                RenameDlgPlugin *plugin = static_cast<RenameDlgPlugin *>(obj);
-                if(!plugin ){
-                    delete obj;
-                    continue;
-                }
-                if( plugin->initialize( _mode, _src, _dest, d->mimeSrc,
-                                        d->mimeDest, sizeSrc, sizeDest,
-                                        ctimeSrc, ctimeDest,
-                                        mtimeSrc, mtimeDest ) ) {
+
+                plugin->setObjectName( (*it)->name() );
+                if( plugin->wantToHandle( _mode, src, dst ) ) {
                     d->plugin = true;
+                    plugin->handle( _mode, src, dst );
                     pLayout->addWidget(plugin );
                     kDebug(7024) << "RenameDlgPlugin" << endl;
                     break;
                 } else {
-                    delete obj;
+                    delete plugin;
                 }
             }
 
