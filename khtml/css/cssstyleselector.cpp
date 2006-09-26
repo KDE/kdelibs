@@ -1116,7 +1116,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // Be smart compare on length first
             if (sel_len > val_len) return false;
             // Selector string may not contain spaces
-            if (e->hasClassList() && sel->value.find(' ') != -1) return false;
+            if ((sel->attr != ATTR_CLASS || e->hasClassList()) && sel->value.find(' ') != -1) return false;
             if (sel_len == val_len)
                 return (strictParsing && !strcmp(sel->value, value)) ||
 		       (!strictParsing && !strcasecmp(sel->value, value));
