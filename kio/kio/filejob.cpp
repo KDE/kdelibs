@@ -33,6 +33,7 @@
 using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
+#define KIO_FILESIZE_T(x) qulonglong(x)
 
 FileJob::FileJob( const KUrl& url, const QByteArray &packedArgs  )
         : SimpleJob(url, CMD_OPEN, packedArgs, false), m_open(false), m_size(0)
@@ -59,11 +60,11 @@ void FileJob::write(const QByteArray &_data)
     m_slave->send( CMD_WRITE, _data );
 }
 
-void FileJob::seek(int offset)
+void FileJob::seek(KIO::filesize_t offset)
 {
     if (!m_open) return;
 
-    KIO_ARGS << offset;
+    KIO_ARGS << KIO_FILESIZE_T(offset);
     m_slave->send( CMD_SEEK, packedArgs) ;
 }
 

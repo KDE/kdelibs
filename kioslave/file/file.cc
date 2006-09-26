@@ -108,7 +108,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
   KLocale::setMainCatalog("kdelibs");
-  
+
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
   KInstance instance( "kio_file" );
   ( void ) KGlobal::locale();
@@ -419,7 +419,6 @@ void FileProtocol::open( const KUrl& url, int access )
     // Command-loop:
     int cmd = CMD_NONE;
     while (true) {
-        kDebug( 7101 ) << "File::open -- loop" << endl;
         QByteArray args;
         int stat = appconn->read(&cmd, args);
         if ( stat == -1 )
@@ -473,7 +472,7 @@ void FileProtocol::open( const KUrl& url, int access )
         }
         case CMD_SEEK: {
             kDebug( 7101 ) << "File::open -- seek" << endl;
-            int offset;
+            qulonglong offset;
             stream >> offset;
             int res = KDE_lseek(fd, offset, SEEK_SET);
             if (res != -1) {
@@ -497,6 +496,7 @@ void FileProtocol::open( const KUrl& url, int access )
         }
         break;
     }
+    kDebug( 7101 ) << "File::open -- done " << endl;
     ::close( fd );
     finished();
 }

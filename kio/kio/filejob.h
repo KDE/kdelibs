@@ -72,7 +72,7 @@ public:
      * The slave emits position()
      * @param offset the position from start to go to
      */
-    void seek( int offset );
+    void seek( KIO::filesize_t offset );
 
     /**
      * Size
