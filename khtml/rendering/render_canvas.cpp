@@ -54,6 +54,7 @@ RenderCanvas::RenderCanvas(DOM::NodeImpl* node, KHTMLView *view)
 
     m_rootWidth = m_rootHeight = 0;
     m_viewportWidth = m_viewportHeight = 0;
+    m_cachedDocWidth = m_cachedDocHeight = -1;
 
     setPositioned(true); // to 0,0 :)
 
@@ -152,6 +153,8 @@ void RenderCanvas::layout()
     int oldWidth = m_width;
     int oldHeight = m_height;
 
+    m_cachedDocWidth = m_cachedDocHeight = -1;
+
     if (m_pagedMode || !m_view) {
         m_width = m_rootWidth;
         m_height = m_rootHeight;
@@ -184,51 +187,8 @@ void RenderCanvas::layout()
     qt.start();
 #endif
 
-    int docW = docWidth();
-    int docH = docHeight();
+    updateDocumentSize();
 
-    if (!m_pagedMode) {
-        bool vss = m_view->verticalScrollBar()->isShown();
-        bool hss = m_view->horizontalScrollBar()->isShown();
-        QSize s = m_view->viewportSize(docW, docH);
-
-        // content size, with scrollbar hysteresis
-        int hDocH = docH;
-        int hDocW = docW;
-
-        // if we are about to show a scrollbar, and the document is sized to the viewport w or h,
-        // then reserve the scrollbar space so that it doesn't trigger the _other_ scrollbar
-
-        if (!vss && m_width - m_view->verticalScrollBar()->sizeHint().width() == s.width() &&
-            docW <= m_width)
-            hDocW = kMin( docW, s.width() );
-
-        if (!hss && m_height - m_view->horizontalScrollBar()->sizeHint().height() == s.height() &&
-            docH <= m_height)
-            hDocH = kMin( docH, s.height() );
-
-        // likewise, if a scrollbar is shown, and we have a cunning plan to turn it off,
-        // think again if we are falling downright in the hysteresis zone
-
-        if (vss && s.width() > docW && docW > m_view->visibleWidth())
-            hDocW = s.width()+1;
-
-        if (hss && s.height() > docH && docH > m_view->visibleHeight())
-            hDocH = s.height()+1;
-
-        m_view->resizeContents(hDocW, hDocH);
-
-        setWidth( m_viewportWidth = s.width() );
-        setHeight( m_viewportHeight = s.height() );
-    }
-
-#ifdef SPEED_DEBUG
-    kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
-#endif
-
-//     kdDebug(6040) << "RenderCanvas::resize layer to " << kMax( docW,int( m_width ) ) << "x"  << kMax( docH,m_height ) << endl;
-
-    layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
     layer()->updateLayerPositions( layer(), needsFullRepaint(), true );
 
     if (!m_pagedMode && m_needsWidgetMasks)
@@ -236,6 +196,72 @@ void RenderCanvas::layout()
 
     scheduleDeferredRepaints();
     setNeedsLayout(false);
+
+#ifdef SPEED_DEBUG
+    kdDebug() << "RenderCanvas::end time used=" << qt.elapsed() << endl;
+#endif
+}
+
+void RenderCanvas::updateDocumentSize()
+{
+     // update our cached document size
+    int hDocH = m_cachedDocHeight = docHeight();
+    int hDocW = m_cachedDocWidth = docWidth();
+
+    if (!m_pagedMode && m_view) {
+
+        bool vss = m_view->verticalScrollBar()->isShown();
+        bool hss = m_view->horizontalScrollBar()->isShown();
+        QSize s = m_view->viewportSize(m_cachedDocWidth, m_cachedDocHeight);
+
+        // if we are about to show a scrollbar, and the document is sized to the viewport w or h,
+        // then reserve the scrollbar space so that it doesn't trigger the _other_ scrollbar
+
+        if (!vss && m_width - m_view->verticalScrollBar()->sizeHint().width() == s.width() &&
+            m_cachedDocWidth <= m_width)
+            hDocW = kMin( m_cachedDocWidth, s.width() );
+
+        if (!hss && m_height - m_view->horizontalScrollBar()->sizeHint().height() == s.height() &&
+            m_cachedDocHeight <= m_height)
+            hDocH = kMin( m_cachedDocHeight, s.height() );
+
+        // likewise, if a scrollbar is shown, and we have a cunning plan to turn it off,
+        // think again if we are falling downright in the hysteresis zone
+
+        if (vss && s.width() > m_cachedDocWidth && m_cachedDocWidth > m_view->visibleWidth())
+            hDocW = s.width()+1;
+
+        if (hss && s.height() > m_cachedDocHeight && m_cachedDocHeight > m_view->visibleHeight())
+            hDocH = s.height()+1;
+
+        m_view->resizeContents(hDocW, hDocH);
+
+        setWidth( m_viewportWidth = s.width() );
+        setHeight( m_viewportHeight = s.height() );
+    }
+    layer()->resize( kMax( m_cachedDocWidth,int( m_width ) ), kMax( m_cachedDocHeight,m_height ) );
+}
+
+void RenderCanvas::updateDocSizeAfterLayerTranslation( RenderObject* o, bool posXOffset, bool posYOffset )
+{
+    if (needsLayout())
+        return;
+    int rightmost, lowest;
+    o->absolutePosition( rightmost, lowest );
+    if (posXOffset) {
+        rightmost += o->rightmostPosition(false, true);
+        setCachedDocWidth( kMax(docWidth(), rightmost) );
+    } else {
+        setCachedDocWidth( -1 );
+    }
+    if (posYOffset) {
+        lowest += o->lowestPosition(false, true);
+        setCachedDocHeight( kMax(docHeight(), lowest) );
+    } else {
+        setCachedDocHeight( -1 );
+    }
+//    kdDebug() << " posXOffset: " << posXOffset << " posYOffset " << posYOffset << " m_cachedDocWidth  " <<  m_cachedDocWidth << " m_cachedDocHeight  " << m_cachedDocHeight << endl;
+    updateDocumentSize();
 }
 
 bool RenderCanvas::needsFullRepaint() const
@@ -243,10 +269,10 @@ bool RenderCanvas::needsFullRepaint() const
     return m_needsFullRepaint || m_pagedMode;
 }
 
-void RenderCanvas::repaintViewRectangle(int x, int y, int w, int h)
+void RenderCanvas::repaintViewRectangle(int x, int y, int w, int h, bool asap)
 {
   KHTMLAssert( view() );
-  view()->scheduleRepaint( x, y, w, h );
+  view()->scheduleRepaint( x, y, w, h, asap );
 }
 
 bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f) const
@@ -306,7 +332,7 @@ void RenderCanvas::paintBoxDecorations(PaintInfo& paintInfo, int /*_tx*/, int /*
     paintInfo.p->fillRect(paintInfo.r, view()->palette().active().color(QColorGroup::Base));
 }
 
-void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
+void RenderCanvas::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 {
     if (m_staticMode) return;
 //    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
@@ -324,11 +350,13 @@ void RenderCanvas::repaintRectangle(int x, int y, int w, int h, bool immediate, 
 
     if (m_view && ur.intersects(vr)) {
 
-        if (immediate)
+        if (p == RealtimePriority)
 	// ### KWQ's updateContents has an additional parameter "now".
 	// It's not clear what the difference between updateContents(...,true)
 	// and repaintContents(...) is. As Qt doesn't have this, I'm leaving it out. (LS)
             m_view->updateContents(ur/*, true*/);
+        else if (p == HighPriority)
+            m_view->scheduleRepaint(x, y, w, h, true /*asap*/);
         else
             m_view->scheduleRepaint(x, y, w, h);
     }
@@ -350,10 +378,10 @@ void RenderCanvas::scheduleDeferredRepaints()
     m_dirtyChildren.clear();
 }
 
-void RenderCanvas::repaint(bool immediate)
+void RenderCanvas::repaint(Priority p)
 {
     if (m_view && !m_staticMode) {
-        if (immediate) {
+        if (p == RealtimePriority) {
             //m_view->resizeContents(docWidth(), docHeight());
             m_view->unscheduleRepaint();
             if (needsLayout()) {
@@ -364,6 +392,9 @@ void RenderCanvas::repaint(bool immediate)
             m_view->updateContents(m_view->contentsX(), m_view->contentsY(),
                                    m_view->visibleWidth(), m_view->visibleHeight()/*, true*/);
         }
+        else if (p == HighPriority)
+            m_view->scheduleRepaint(m_view->contentsX(), m_view->contentsY(),
+                                    m_view->visibleWidth(), m_view->visibleHeight(), true /*asap*/);
         else
             m_view->scheduleRepaint(m_view->contentsX(), m_view->contentsY(),
                                     m_view->visibleWidth(), m_view->visibleHeight());
@@ -681,6 +712,9 @@ QRect RenderCanvas::viewRect() const
 
 int RenderCanvas::docHeight() const
 {
+    if (m_cachedDocHeight != -1)
+        return m_cachedDocHeight;
+
     int h;
     if (m_pagedMode || !m_view)
         h = m_height;
@@ -709,6 +743,9 @@ int RenderCanvas::docHeight() const
 
 int RenderCanvas::docWidth() const
 {
+    if (m_cachedDocWidth != -1)
+        return m_cachedDocWidth;
+
     int w;
     if (m_pagedMode || !m_view)
         w = m_width;

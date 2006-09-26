@@ -194,17 +194,17 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
     return r;
 }
 
-void RenderLayer::repaint( bool markForRepaint )
+void RenderLayer::repaint( Priority p, bool markForRepaint )
 {
     if (markForRepaint && m_markedForRepaint)
         return;
     for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
-        child->repaint( markForRepaint );
+        child->repaint( p, markForRepaint );
     QRect layerBounds, damageRect, fgrect;
     calculateRects(renderer()->canvas()->layer(), renderer()->viewRect(), layerBounds, damageRect, fgrect);
     m_visibleRect = damageRect.intersect( layerBounds );
     if (m_visibleRect.isValid())
-        renderer()->canvas()->repaintViewRectangle( m_visibleRect.x(), m_visibleRect.y(), m_visibleRect.width(), m_visibleRect.height() );
+        renderer()->canvas()->repaintViewRectangle( m_visibleRect.x(), m_visibleRect.y(), m_visibleRect.width(), m_visibleRect.height(), (p > NormalPriority) );
     if (markForRepaint)
         m_markedForRepaint = true;
 }
@@ -570,7 +570,7 @@ void RenderLayer::scrollToOffset(int x, int y, bool updateScrollbars, bool repai
 
     // Just schedule a full repaint of our object.
     if (repaint)
-        m_object->repaint(true);
+        m_object->repaint(RealtimePriority);
 
     if (updateScrollbars) {
         if (m_hBar)
@@ -720,8 +720,13 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
 
 void RenderLayer::checkScrollbarsAfterLayout()
 {
-    int rightPos = m_object->overflowWidth();
-    int bottomPos = m_object->overflowHeight();
+    int rightPos = m_object->rightmostPosition(true, false);
+    int bottomPos = m_object->lowestPosition(true, false);
+    
+/*  TODO
+    m_scrollLeft = m_object->leftmostPosition(true, false);
+    m_scrollTop = m_object->highestPosition(true, false);
+*/
 
     int clientWidth = m_object->clientWidth();
     int clientHeight = m_object->clientHeight();

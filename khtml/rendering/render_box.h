@@ -82,13 +82,14 @@ public:
 
     virtual void position(InlineBox* box, int from, int len, bool reverse);
 
+    virtual int highestPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int lowestPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int rightmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
     virtual int leftmostPosition(bool includeOverflowInterior=true, bool includeSelf=true) const;
 
-    virtual void repaint(bool immediate=false);
+    virtual void repaint(Priority p=NormalPriority);
 
-    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
+    virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
 
     virtual short containingBlockWidth() const;
     void relativePositionOffset(int &tx, int &ty) const;

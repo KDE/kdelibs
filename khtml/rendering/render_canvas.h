@@ -61,12 +61,13 @@ public:
 
     KHTMLView *view() const { return m_view; }
 
-    virtual void repaint(bool immediate=false);
-    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate=false, bool f=false);
-    void repaintViewRectangle(int x, int y, int w, int h);
+    virtual void repaint(Priority p=NormalPriority);
+    virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
+    void repaintViewRectangle(int x, int y, int w, int h, bool asap=false);
     bool needsFullRepaint() const;
     void deferredRepaint( RenderObject* o );
     void scheduleDeferredRepaints();
+
     virtual void paint(PaintInfo&, int tx, int ty);
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
@@ -130,7 +131,15 @@ public:
     void setNeedsWidgetMasks( bool b=true) { m_needsWidgetMasks = b; }
     bool needsWidgetMasks() const { return m_needsWidgetMasks; }
 
+    void updateDocSizeAfterLayerTranslation( RenderObject* o, bool posXOffset, bool posYOffset );
 protected:
+    // makes sure document, scrollbars and viewport size are accurate
+    void updateDocumentSize();
+
+    // internal setters for cached values of document width/height
+    // Setting to -1/-1 invalidates the cache.
+    void setCachedDocWidth(int w ) { m_cachedDocWidth = w; }
+    void setCachedDocHeight(int h) { m_cachedDocHeight = h; }
 
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -150,6 +159,9 @@ protected:
 
     int m_viewportWidth;
     int m_viewportHeight;
+    
+    int m_cachedDocWidth;
+    int m_cachedDocHeight;
 
     bool m_printImages;
     bool m_needsFullRepaint;

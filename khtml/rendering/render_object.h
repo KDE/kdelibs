@@ -88,6 +88,13 @@ typedef enum {
     PageBreakForced = 2  // page-break-after/before: avoid, orphans and widows ignored
 } PageBreakLevel;
 
+typedef enum {
+    LowPriority = 0,
+    NormalPriority = 1,
+    HighPriority = 2,
+    RealtimePriority = 3
+} Priority;
+
 inline PageBreakLevel operator| (PageBreakLevel a, PageBreakLevel b) {
     if (a == PageBreakForced || b == PageBreakForced)
         return PageBreakForced;
@@ -591,7 +598,7 @@ public:
     // how much goes over the left hand side (0 or a negative number)
     virtual int overflowTop() const { return 0; }
     virtual int overflowLeft() const { return 0; }
-
+    
     /**
      * Returns the height that is effectively considered when contemplating the
      * object as a whole -- usually the overflow height, or the height if clipped.
@@ -669,8 +676,8 @@ public:
     virtual void collectBorders(QValueList<CollapsedBorderValue>& borderStyles);
 
     // force a complete repaint
-    virtual void repaint(bool immediate = false) { if(m_parent) m_parent->repaint(immediate); }
-    virtual void repaintRectangle(int x, int y, int w, int h, bool immediate = false, bool f=false);
+    virtual void repaint(Priority p = NormalPriority) { if(m_parent) m_parent->repaint(p); }
+    virtual void repaintRectangle(int x, int y, int w, int h, Priority p=NormalPriority, bool f=false);
 
     virtual unsigned int length() const { return 1; }
 
@@ -732,6 +739,7 @@ public:
     virtual int lowestPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
     virtual int rightmostPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
     virtual int leftmostPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
+    virtual int highestPosition(bool /*includeOverflowInterior*/=true, bool /*includeSelf*/=true) const { return 0; }
 
     // recursively invalidate current layout
     // unused: void invalidateLayout();
@@ -774,6 +782,7 @@ protected:
     virtual QRect viewRect() const;
     void remove();
     void invalidateVerticalPositions();
+    bool attemptDirectLayerTranslation();
     void updateWidgetMasks();
 
     virtual void removeLeftoverAnonymousBoxes();

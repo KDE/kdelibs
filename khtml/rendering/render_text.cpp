@@ -1274,11 +1274,11 @@ short RenderText::width() const
     return w;
 }
 
-void RenderText::repaint(bool immediate)
+void RenderText::repaint(Priority p)
 {
     RenderObject *cb = containingBlock();
     if(cb)
-        cb->repaint(immediate);
+        cb->repaint(p);
 }
 
 bool RenderText::isFixedWidthFont() const

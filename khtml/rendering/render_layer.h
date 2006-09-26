@@ -203,7 +203,7 @@ public:
     void paintScrollbars(RenderObject::PaintInfo& pI);
     void checkScrollbarsAfterLayout();
     void slotValueChanged(int);
-    void repaint( bool markForRepaint = false );
+    void repaint(Priority p=NormalPriority, bool markForRepaint = false);
     void updateScrollPositionFromScrollbars();
 
     void updateLayerPosition();

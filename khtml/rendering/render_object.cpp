@@ -1096,9 +1096,9 @@ void RenderObject::paint( PaintInfo&, int /*tx*/, int /*ty*/)
 {
 }
 
-void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
+void RenderObject::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 {
-    if(parent()) parent()->repaintRectangle(x, y, w, h, immediate, f);
+    if(parent()) parent()->repaintRectangle(x, y, w, h, p, f);
 }
 
 #ifdef ENABLE_DUMP
@@ -1266,18 +1266,20 @@ void RenderObject::setStyle(RenderStyle *style)
         return;
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
-
     //qDebug("m_style: %p new style, diff=%d", m_style,  d);
 
+    Priority pri = NormalPriority;
     if (m_style) {
+        pri = HighPriority;
         if ( d >= RenderStyle::Visible && !isText() && m_parent &&
-             ( m_style->outlineWidth() > style->outlineWidth() ||
+             ( d == RenderStyle::Position ||
+               m_style->outlineWidth() > style->outlineWidth() ||
                ( m_style->hasClip() && !(m_style->clip() == style->clip()) ) ) ) {
             // schedule a repaint with the old style
             if (layer() && !isInlineFlow())
-                layer()->repaint();
+                layer()->repaint(pri);
             else
-                repaint();
+                repaint(pri);
         }
 
         if ( ( isFloating() && m_style->floating() != style->floating() ) ||
@@ -1324,25 +1326,80 @@ void RenderObject::setStyle(RenderStyle *style)
 
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
     if (m_parent) {
-        if ( d >= RenderStyle::Position ) {
+        if (d == RenderStyle::Position && !attemptDirectLayerTranslation())
+            d = RenderStyle::Layout;
+
+        if ( d > RenderStyle::Position) {
+            // we must perform a full layout
             if (!isText() && d == RenderStyle::CbLayout) {
                 dirtyFormattingContext( true );
             }
             setNeedsLayoutAndMinMaxRecalc();
-        } else if (!isText() && d == RenderStyle::Visible) {
-            if (layer() && !isInlineFlow()) {
-                layer()->repaint();
+        } else if (!isText() && d >= RenderStyle::Visible) {
+            // a repaint is enough
+            if (layer()) {
                 if (canvas() && canvas()->needsWidgetMasks()) {
+                    // update our widget masks
                     RenderLayer *p, *d = 0;
                     for (p=layer()->parent();p;p=p->parent())
                         if (p->hasOverlaidWidgets()) d=p;
                     if (d) // deepest
                         d->updateWidgetMasks( canvas()->layer() );
                 }
-            } else
-                repaint();
+            }
+            if (layer() && !isInlineFlow())
+                layer()->repaint(pri);
+            else
+                repaint(pri);
         }
     }
+}
+
+bool RenderObject::attemptDirectLayerTranslation()
+{
+    // When the difference between two successive styles is only 'Position'
+    // we may attempt to save a layout by directly updating the object position.
+
+    KHTMLAssert( m_style->position() == RELATIVE || m_style->position() == ABSOLUTE );
+    if (!layer())
+        return false;
+    setInline(m_style->isDisplayInlineType());
+    setPositioned(m_style->position() != RELATIVE);
+    setRelPositioned(m_style->position() == RELATIVE);
+    int oldXPos = xPos();
+    int oldYPos = yPos();
+    int oldWidth = width();
+    int oldHeight = height();
+    calcWidth();
+    calcHeight();
+    if (oldWidth != width() || oldHeight != height()) {
+        // implicit size change or overconstrained dimensions:
+        // we'll need a layout.
+        setWidth(oldWidth);
+        setHeight(oldHeight);
+        kdDebug() << "Layer translation failed for " << information() << endl;
+        return false;
+    }
+    layer()->updateLayerPosition();
+    if (m_style->position() != FIXED) {
+        bool needsDocSizeUpdate = true;
+        RenderObject *cb = container();
+        while (cb) {
+            if (cb->hasOverflowClip() && cb->layer()) {
+                cb->layer()->checkScrollbarsAfterLayout();
+                needsDocSizeUpdate = false;
+                break;
+            }
+            cb = cb->container();
+        }
+        if (needsDocSizeUpdate && canvas()) {
+            bool posXOffset = (xPos()-oldXPos >= 0);
+            bool posYOffset = (yPos()-oldYPos >= 0);                         
+            canvas()->updateDocSizeAfterLayerTranslation(this, posXOffset, posYOffset);
+        }
+    }
+    // success
+    return true;
 }
 
 void RenderObject::dirtyFormattingContext( bool checkContainer )
@@ -1362,7 +1419,7 @@ void RenderObject::repaintDuringLayout()
     if (canvas()->needsFullRepaint() || isText())
         return;
     if (layer() && !isInlineFlow()) {
-        layer()->repaint( true );
+        layer()->repaint( NormalPriority, true );
     } else {
        repaint();
        canvas()->deferredRepaint( this );

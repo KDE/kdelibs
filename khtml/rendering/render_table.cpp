@@ -1540,7 +1540,7 @@ inline static RenderTableRow *nextTableRow(RenderObject *row)
 
 int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int bottom = RenderContainer::lowestPosition(includeOverflowInterior, includeSelf);
+    int bottom = RenderBox::lowestPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return bottom;
 
@@ -1557,7 +1557,7 @@ int RenderTableSection::lowestPosition(bool includeOverflowInterior, bool includ
 
 int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int right = RenderContainer::rightmostPosition(includeOverflowInterior, includeSelf);
+    int right = RenderBox::rightmostPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return right;
 
@@ -1574,7 +1574,7 @@ int RenderTableSection::rightmostPosition(bool includeOverflowInterior, bool inc
 
 int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int left = RenderContainer::leftmostPosition(includeOverflowInterior, includeSelf);
+    int left = RenderBox::leftmostPosition(includeOverflowInterior, includeSelf);
     if (!includeOverflowInterior && hasOverflowClip())
         return left;
 
@@ -1587,6 +1587,23 @@ int RenderTableSection::leftmostPosition(bool includeOverflowInterior, bool incl
     }
 
     return left;
+}
+
+int RenderTableSection::highestPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int top = RenderBox::highestPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && hasOverflowClip())
+        return top;
+
+    for (RenderObject *row = firstChild(); row; row = row->nextSibling()) {
+        for (RenderObject *cell = row->firstChild(); cell; cell = cell->nextSibling())
+            if (cell->isTableCell()) {
+                int hp = cell->yPos() + cell->highestPosition(false);
+                top = kMin(top, hp);
+        }
+    }
+
+    return top;
 }
 
 // Search from first_row to last_row for the row containing y
@@ -2301,9 +2318,9 @@ bool RenderTableCell::requiresLayer() const {
     return /* style()->opacity() < 1.0f || */ hasOverflowClip() || isRelPositioned();
 }
 
-void RenderTableCell::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
+void RenderTableCell::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 {
-    RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, immediate, f);
+    RenderBlock::repaintRectangle(x, y, w, h + _topExtra + _bottomExtra, p, f);
 }
 
 bool RenderTableCell::absolutePosition(int &xPos, int &yPos, bool f) const

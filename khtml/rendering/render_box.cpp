@@ -766,7 +766,7 @@ void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*rever
         setPos( box->xPos(), box->yPos() );
 }
 
-void RenderBox::repaint(bool immediate)
+void RenderBox::repaint(Priority prior)
 {
     int ow = style() ? style()->outlineSize() : 0;
     if( isInline() && !isReplaced() )
@@ -777,17 +777,17 @@ void RenderBox::repaint(bool immediate)
             p = p->parent();
         int xoff = p->hasOverflowClip() ? 0 : p->overflowLeft();
         int yoff = p->hasOverflowClip() ? 0 : p->overflowTop();
-        p->repaintRectangle( -ow + xoff, -ow + yoff, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, immediate);
+        p->repaintRectangle( -ow + xoff, -ow + yoff, p->effectiveWidth()+ow*2, p->effectiveHeight()+ow*2, prior);
     }
     else
     {
         int xoff = hasOverflowClip() ? 0 : overflowLeft();
         int yoff = hasOverflowClip() ? 0 : overflowTop();
-        repaintRectangle( -ow + xoff, -ow + yoff, effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
+        repaintRectangle( -ow + xoff, -ow + yoff, effectiveWidth()+ow*2, effectiveHeight()+ow*2, prior);
     }
 }
 
-void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, bool f)
+void RenderBox::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 {
     x += m_x;
     y += m_y;
@@ -810,7 +810,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool immediate, boo
              if (style()->position() == ABSOLUTE)
                  o->layer()->checkInlineRelOffset(this,x,y);
         }
-        o->repaintRectangle(x, y, w, h, immediate, f);
+        o->repaintRectangle(x, y, w, h, p, f);
     }
 }
 
@@ -1329,11 +1329,7 @@ void RenderBox::calcAbsoluteHorizontal()
     // and calcHorizontalMargins()). For now we are using the parent for quirks
     // mode and the containing block for strict mode.
 
-    // FIXME 2: Should we still deal with these the cases of 'left' or 'right' having
-    // the type 'static' in determining whether to calculate the static distance?
-    // NOTE: 'static' is not a legal value for 'left' or 'right' as of CSS 2.1.
-
-    // FIXME 3: Can perhaps optimize out cases when max-width/min-width are greater
+    // FIXME 2: Can perhaps optimize out cases when max-width/min-width are greater
     // than or less than the computed m_width.  Be careful of box-sizing and
     // percentage issues.
 
@@ -1386,7 +1382,6 @@ void RenderBox::calcAbsoluteHorizontal()
      * origin.
     \*---------------------------------------------------------------------------*/
 
-    // see FIXME 2
     // Calculate the static distance if needed.
     if (left.isVariable() && right.isVariable()) {
         if (containerDirection == LTR) {
@@ -1653,7 +1648,6 @@ void RenderBox::calcAbsoluteVertical()
      * the viewport.
     \*---------------------------------------------------------------------------*/
 
-    // see FIXME 2
     // Calculate the static distance if needed.
     if (top.isVariable() && bottom.isVariable()) {
         // m_staticY should already have been set through layout of the parent()
@@ -1673,7 +1667,7 @@ void RenderBox::calcAbsoluteVertical()
                                height, m_marginTop, m_marginBottom, m_y);
 
     // Avoid doing any work in the common case (where the values of min-height and max-height are their defaults).
-    // see FIXME 3
+    // see FIXME 2
 
     // Calculate constraint equation values for 'max-height' case.
     if (style()->maxHeight().value() != UNDEFINED) {
@@ -1894,7 +1888,6 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
      *    of the containing block is 'ltr', set 'left' to the static position;
      *    else if 'direction' is 'rtl', set 'right' to the static position.
     \*-----------------------------------------------------------------------*/
-    // see FIXME 2
     if (left.isVariable() && right.isVariable()) {
         // see FIXME 1
         if (containerDirection == LTR) {
@@ -2051,7 +2044,6 @@ void RenderBox::calcAbsoluteVerticalReplaced()
      * 2. If both 'top' and 'bottom' have the value 'auto', replace 'top'
      *    with the element's static position.
     \*-----------------------------------------------------------------------*/
-    // see FIXME 2
     if (top.isVariable() && bottom.isVariable()) {
         // m_staticY should already have been set through layout of the parent().
         int staticTop = m_staticY - containerBlock->borderTop();
@@ -2147,6 +2139,10 @@ void RenderBox::calcAbsoluteVerticalReplaced()
     m_y = topValue + m_marginTop + containerBlock->borderTop();
 }
 
+int RenderBox::highestPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
+{
+    return includeSelf ? 0 : m_height;
+}
 
 int RenderBox::lowestPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {

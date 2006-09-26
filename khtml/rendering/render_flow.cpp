@@ -265,7 +265,7 @@ bool RenderFlow::hitTestLines(NodeInfo& i, int x, int y, int tx, int ty, HitTest
 }
 
 
-void RenderFlow::repaint(bool immediate)
+void RenderFlow::repaint(Priority prior)
 {
     if (isInlineFlow()) {
         // Find our leftmost position.
@@ -295,17 +295,16 @@ void RenderFlow::repaint(bool immediate)
         RootInlineBox *lastRoot = lastLineBox() && !needsLayout() ? lastLineBox()->root() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2,
-					    (lastRoot ? lastRoot->bottomOverflow() - top : height())+ow*2,
-					    immediate);
+					    (lastRoot ? lastRoot->bottomOverflow() - top : height())+ow*2, prior);
     }
     else {
         if (firstLineBox() && firstLineBox()->topOverflow() < 0) {
             int ow = style() ? style()->outlineSize() : 0;
             repaintRectangle(-ow, -ow+firstLineBox()->topOverflow(),
-                             effectiveWidth()+ow*2, effectiveHeight()+ow*2, immediate);
+                             effectiveWidth()+ow*2, effectiveHeight()+ow*2, prior);
         }
         else
-            return RenderBox::repaint(immediate);
+            return RenderBox::repaint(prior);
     }
 }
 
@@ -325,6 +324,11 @@ RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
             int lp = c->yPos() + c->lowestPosition(false);
             bottom = kMax(bottom, lp);
         }
+    }
+
+    if (isRelPositioned()) {
+        int x;
+        relativePositionOffset(x, bottom);
     }
 
     return bottom;
@@ -347,6 +351,11 @@ int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf
         }
     }
 
+    if (isRelPositioned()) {
+        int y;
+        relativePositionOffset(right, y);
+    }
+
     return right;
 }
 
@@ -367,5 +376,35 @@ int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf)
         }
     }
 
+    if (isRelPositioned()) {
+        int y;
+        relativePositionOffset(left, y);
+    }
+
     return left;
+}
+
+int RenderFlow::highestPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int top = RenderBox::highestPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && style()->hidesOverflow())
+        return top;
+
+    // FIXME: Come up with a way to use the layer tree to avoid visiting all the kids.
+    // For now, we have to descend into all the children, since we may have a huge abs div inside
+    // a tiny rel div buried somewhere deep in our child tree.  In this case we have to get to
+    // the abs div.
+    for (RenderObject *c = firstChild(); c; c = c->nextSibling()) {
+        if (!c->isFloatingOrPositioned() && !c->isText()) {
+            int hp = c->yPos() + c->highestPosition(false);
+            top = kMin(top, hp);
+        }
+    }
+
+    if (isRelPositioned()) {
+        int x;
+        relativePositionOffset(x, top);
+    }
+
+    return top;
 }

@@ -1440,13 +1440,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // See if this child has made our overflow need to grow.
         int effX = child->effectiveXPos();
         int effY = child->effectiveYPos();
-        if (child->isRelPositioned() && (hasOverflowClip() || !isTableCell())) {
-            // CSS 2.1-9.4.3 - allow access to relatively positioned content
-            static_cast<RenderBox*>(child)->relativePositionOffset(effX, effY);
-        }
         m_overflowWidth = kMax(effX + child->effectiveWidth(), m_overflowWidth);
         m_overflowLeft = kMin(effX, m_overflowLeft);
-
         m_overflowHeight = kMax(effY + child->effectiveHeight(), m_overflowHeight);
         m_overflowTop = kMin(effY, m_overflowTop);
 
@@ -1562,7 +1557,6 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
         //kdDebug( 6040 ) << renderName() << " " << this << "::layoutPositionedObjects() start" << endl;
         RenderObject* r;
         QPtrListIterator<RenderObject> it(*m_positionedObjects);
-        bool adjOverflow = !(style()->position() == FIXED) && style()->hidesOverflow();
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
             if (r->markedForRepaint()) {
@@ -1575,14 +1569,6 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->dirtyFormattingContext(false);
             }
             r->layoutIfNeeded();
-
-            // Update overflow
-            if (adjOverflow && r->style()->position() == ABSOLUTE) {
-                m_overflowWidth = kMax(r->xPos() + r->overflowWidth(), m_overflowWidth);
-                m_overflowLeft = kMin(r->effectiveXPos(), m_overflowLeft);
-                m_overflowHeight = kMax(r->yPos() + r->overflowHeight(), m_overflowHeight);
-                m_overflowTop = kMin(r->effectiveYPos(), m_overflowTop);
-            }
         }
     }
 }
@@ -2220,6 +2206,50 @@ int RenderBlock::leftmostAbsolutePosition() const
         left = kMin(left, lp);
     }
     return left;
+}
+
+int RenderBlock::highestPosition(bool includeOverflowInterior, bool includeSelf) const
+{
+    int top = RenderFlow::highestPosition(includeOverflowInterior, includeSelf);
+    if (!includeOverflowInterior && style()->hidesOverflow())
+        return top;
+
+    if (includeSelf && m_overflowTop < top)
+        top = m_overflowTop;
+
+    if (m_floatingObjects) {
+        FloatingObject* r;
+        QPtrListIterator<FloatingObject> it(*m_floatingObjects);
+        for ( ; (r = it.current()); ++it ) {
+            if (!r->noPaint) {
+                int hp = r->startY + r->node->marginTop() + r->node->highestPosition(false);
+                top = kMin(top, hp);
+            }
+        }
+    }
+    top = kMin(top, highestAbsolutePosition());
+
+    if (!includeSelf && firstLineBox()) {
+        top = kMin(top, (int)firstLineBox()->yPos());
+    }
+
+    return top;
+}
+
+int RenderBlock::highestAbsolutePosition() const
+{
+    if (!m_positionedObjects)
+        return 0;
+    int  top = 0;
+    RenderObject* r;
+    QPtrListIterator<RenderObject> it(*m_positionedObjects);
+    for ( ; (r = it.current()); ++it ) {
+        if (r->style()->position() == FIXED)
+            continue;
+        int hp = r->yPos() + r->highestPosition(false);
+        hp = kMin(top, hp);
+    }
+    return top;
 }
 
 int
