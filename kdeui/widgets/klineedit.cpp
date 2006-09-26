@@ -180,10 +180,12 @@ void KLineEdit::setClearButtonShown(bool show)
         }
 
         updateClearButton();
+        d->clearButton->show();
     } else {
         delete d->clearButton;
         d->clearButton = 0;
         d->clickInClear = false;
+        setStyleSheet(QString());
     }
 }
 
@@ -1473,6 +1475,6 @@ void KLineEdit::setClickMessage( const QString &msg )
 {
     d->enableClickMsg = true;
     d->clickMessage = msg;
-	d->drawClickMsg = text().isEmpty();
+    d->drawClickMsg = text().isEmpty();
     update();
 }
