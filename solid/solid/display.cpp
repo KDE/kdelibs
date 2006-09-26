@@ -19,38 +19,26 @@
 
 #include "display.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/display.h>
 
-namespace Solid
+Solid::Display::Display( QObject *backendObject )
+    : Capability( backendObject )
 {
-    class Display::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Display *iface;
-    };
-}
-
-Solid::Display::Display( Ifaces::Display *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
-{
-    d->iface = iface;
 }
 
 Solid::Display::~Display()
 {
-    delete d;
 }
 
 Solid::Display::DisplayType Solid::Display::type() const
 {
-    return d->iface->type();
+    return_SOLID_CALL( Ifaces::Display*, backendObject(), UnknownDisplayType, type() );
 }
 
 int Solid::Display::lcdBrightness() const
 {
-    return d->iface->lcdBrightness();
+    return_SOLID_CALL( Ifaces::Display*, backendObject(), 100, lcdBrightness() );
 }
 
 #include "display.moc"

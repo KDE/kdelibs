@@ -19,51 +19,38 @@
 
 #include "cdrom.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/cdrom.h>
 
-namespace Solid
+Solid::Cdrom::Cdrom( QObject *backendObject )
+    : Storage( backendObject )
 {
-    class Cdrom::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Cdrom *iface;
-    };
-}
-
-Solid::Cdrom::Cdrom( Ifaces::Cdrom *iface, QObject *parent )
-    : Storage( iface, parent ), d( new Private() )
-{
-    d->iface = iface;
-
-    connect( d->iface->qobject(), SIGNAL( ejectPressed() ),
+    connect( backendObject, SIGNAL( ejectPressed() ),
              this, SIGNAL( ejectPressed() ) );
 }
 
 Solid::Cdrom::~Cdrom()
 {
-    delete d;
 }
 
 Solid::Cdrom::MediumTypes Solid::Cdrom::supportedMedia() const
 {
-    return d->iface->supportedMedia();
+    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), MediumTypes(), supportedMedia() );
 }
 
 int Solid::Cdrom::readSpeed() const
 {
-    return d->iface->readSpeed();
+    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), 0, readSpeed() );
 }
 
 int Solid::Cdrom::writeSpeed() const
 {
-    return d->iface->writeSpeed();
+    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), 0, writeSpeed() );
 }
 
 QList<int> Solid::Cdrom::writeSpeeds() const
 {
-    return d->iface->writeSpeeds();
+    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), QList<int>(), writeSpeeds() );
 }
 
 #include "cdrom.moc"

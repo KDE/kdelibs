@@ -19,49 +19,38 @@
 
 #include "audioiface.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/audioiface.h>
 
-namespace Solid
-{
-    class AudioIface::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
 
-        Ifaces::AudioIface *iface;
-    };
-}
-
-Solid::AudioIface::AudioIface( Ifaces::AudioIface *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
+Solid::AudioIface::AudioIface( QObject *backendObject )
+    : Capability( backendObject )
 {
-    d->iface = iface;
 }
 
 Solid::AudioIface::~AudioIface()
 {
-    delete d;
 }
 
 
 Solid::AudioIface::AudioDriver Solid::AudioIface::driver()
 {
-    return d->iface->driver();
+    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), UnknownAudioDriver, driver() );
 }
 
 QString Solid::AudioIface::driverHandler()
 {
-    return d->iface->driverHandler();
+    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), QString(), driverHandler() );
 }
 
 QString Solid::AudioIface::name()
 {
-    return d->iface->name();
+    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), QString(), name() );
 }
 
 Solid::AudioIface::AudioIfaceTypes Solid::AudioIface::type()
 {
-    return d->iface->type();
+    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), UnknownAudioIfaceType, type() );
 }
 
 #include "audioiface.moc"

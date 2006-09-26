@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Processor;
-    }
-
     /**
      * This capability is available on processors.
      */
@@ -43,11 +38,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Processor( Ifaces::Processor *iface, QObject *parent = 0 );
+        Processor( QObject *backendObject );
 
         /**
          * Destroys a Processor object.
@@ -86,10 +80,6 @@ namespace Solid
          * @return true if the processor can throttle, false otherwise
          */
         bool canThrottle() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

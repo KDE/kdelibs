@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Display;
-    }
-
     /**
      * This capability is available on display devices.
      *
@@ -47,11 +42,11 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
+         * @param backendObject the capability object provided by the backend
          * @param parent the parent QObject
          * @see Solid::Device::as()
          */
-        Display( Ifaces::Display *iface, QObject *parent = 0 );
+        Display( QObject *backendObject );
 
         /**
          * Destroys a Display object.
@@ -81,10 +76,6 @@ namespace Solid
          * @return the brightness level in percent. If displayType is different from lcd, return 100.
          */
         int lcdBrightness() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

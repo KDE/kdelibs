@@ -29,11 +29,6 @@ class KJob;
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Volume;
-    }
-
     /**
      * This capability is available on volume devices.
      *
@@ -49,11 +44,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Volume( Ifaces::Volume *iface, QObject *parent = 0 );
+        Volume( QObject *backendObject );
 
         /**
          * Destroys a Volume object.
@@ -170,10 +164,6 @@ namespace Solid
          * @param newState true if the volume is mounted, false otherwise
          */
         void mountStateChanged( bool newState );
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

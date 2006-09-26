@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class NetworkIface;
-    }
-
     /**
      * This capability is available on network interfaces.
      */
@@ -43,11 +38,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        NetworkIface( Ifaces::NetworkIface *iface, QObject *parent = 0 );
+        NetworkIface( QObject *backendObject );
 
         /**
          * Destroys a NetworkIface object.
@@ -94,10 +88,6 @@ namespace Solid
          * @return the MAC address
          */
         qulonglong macAddress() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

@@ -19,86 +19,73 @@
 
 #include "volume.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/volume.h>
 
-namespace Solid
+Solid::Volume::Volume( QObject *backendObject )
+    : Block( backendObject )
 {
-    class Volume::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Volume *iface;
-    };
-}
-
-Solid::Volume::Volume( Ifaces::Volume *iface, QObject *parent )
-    : Block( iface, parent ), d( new Private() )
-{
-    d->iface = iface;
-
-    connect( d->iface->qobject(), SIGNAL( mountStateChanged( bool ) ),
+    connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );
 }
 
 Solid::Volume::~Volume()
 {
-    delete d;
 }
 
 bool Solid::Volume::isIgnored() const
 {
-    return d->iface->isIgnored();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), true, isIgnored() );
 }
 
 bool Solid::Volume::isMounted() const
 {
-    return d->iface->isMounted();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), false, isMounted() );
 }
 
 QString Solid::Volume::mountPoint() const
 {
-    return d->iface->mountPoint();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), mountPoint() );
 }
 
 Solid::Volume::UsageType Solid::Volume::usage() const
 {
-    return d->iface->usage();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), Unused, usage() );
 }
 
 QString Solid::Volume::fsType() const
 {
-    return d->iface->fsType();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), fsType() );
 }
 
 QString Solid::Volume::label() const
 {
-    return d->iface->label();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), label() );
 }
 
 QString Solid::Volume::uuid() const
 {
-    return d->iface->uuid();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), uuid() );
 }
 
 qulonglong Solid::Volume::size() const
 {
-    return d->iface->size();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, size() );
 }
 
 KJob *Solid::Volume::mount()
 {
-    return d->iface->mount();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, mount() );
 }
 
 KJob *Solid::Volume::unmount()
 {
-    return d->iface->unmount();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, unmount() );
 }
 
 KJob *Solid::Volume::eject()
 {
-    return d->iface->eject();
+    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, eject() );
 }
 
 #include "volume.moc"

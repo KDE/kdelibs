@@ -27,11 +27,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Battery;
-    }
-
     /**
      * This capability is available on batteries.
      */
@@ -44,11 +39,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Battery( Ifaces::Battery *iface, QObject *parent = 0 );
+        Battery( QObject *backendObject );
 
         /**
          * Destroys a Battery object.
@@ -163,10 +157,6 @@ namespace Solid
          * @see Solid::Ifaces::Enums::ChargeState
          */
         void chargeStateChanged( int newState );
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

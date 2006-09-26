@@ -29,6 +29,11 @@
 
 namespace Solid
 {
+    namespace Ifaces
+    {
+        class Capability;
+    }
+
     /**
      * Base class of all the capabilities.
      *
@@ -42,14 +47,22 @@ namespace Solid
         /**
          * Creates a new Capability object.
          *
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          */
-        Capability( QObject *parent = 0 );
+        Capability( QObject *backendObject );
 
         /**
          * Destroys a Capability object.
          */
         virtual ~Capability();
+
+    protected:
+        QObject *backendObject();
+        const QObject *backendObject() const;
+
+    private:
+        class Private;
+        Private *d;
     };
 }
 

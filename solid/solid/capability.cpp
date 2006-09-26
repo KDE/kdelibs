@@ -19,15 +19,36 @@
 
 #include "capability.h"
 
-Solid::Capability::Capability( QObject *parent )
-    : QObject( parent )
-{
+#include <solid/ifaces/capability.h>
 
+namespace Solid
+{
+    class Capability::Private
+    {
+    public:
+        QObject *backendObject;
+    };
+}
+
+Solid::Capability::Capability( QObject *backendObject )
+    : QObject(), d( new Private )
+{
+    d->backendObject = backendObject;
 }
 
 Solid::Capability::~Capability()
 {
 
+}
+
+QObject *Solid::Capability::backendObject()
+{
+    return d->backendObject;
+}
+
+const QObject *Solid::Capability::backendObject() const
+{
+    return d->backendObject;
 }
 
 #include "capability.moc"

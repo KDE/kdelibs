@@ -19,43 +19,31 @@
 
 #include "processor.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/processor.h>
 
-namespace Solid
+Solid::Processor::Processor( QObject *backendObject )
+    : Capability( backendObject )
 {
-    class Processor::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Processor *iface;
-    };
-}
-
-Solid::Processor::Processor( Ifaces::Processor *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
-{
-    d->iface = iface;
 }
 
 Solid::Processor::~Processor()
 {
-    delete d;
 }
 
 int Solid::Processor::number() const
 {
-    return d->iface->number();
+    return_SOLID_CALL( Ifaces::Processor*, backendObject(), 0, number() );
 }
 
 qulonglong Solid::Processor::maxSpeed() const
 {
-    return d->iface->maxSpeed();
+    return_SOLID_CALL( Ifaces::Processor*, backendObject(), 0, maxSpeed() );
 }
 
 bool Solid::Processor::canThrottle() const
 {
-    return d->iface->canThrottle();
+    return_SOLID_CALL( Ifaces::Processor*, backendObject(), false, canThrottle() );
 }
 
 #include "processor.moc"

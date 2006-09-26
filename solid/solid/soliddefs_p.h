@@ -17,33 +17,33 @@
 
 */
 
-#include "block.h"
+#ifndef SOLID_CAPABILITY_P_H
+#define SOLID_CAPABILITY_P_H
 
-#include "soliddefs_p.h"
-#include <solid/ifaces/block.h>
+#include <QObject>
 
-Solid::Block::Block( QObject *backendObject )
-    : Capability( backendObject )
-{
-}
 
-Solid::Block::~Block()
-{
-}
 
-int Solid::Block::major() const
-{
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, major() );
-}
+#define return_SOLID_CALL( Type, Object, Default, Method ) \
+    Type t = qobject_cast<Type>( Object ); \
+    if ( t!=0 ) \
+    { \
+         return t->Method; \
+    } \
+    else \
+    { \
+         return Default; \
+    }
 
-int Solid::Block::minor() const
-{
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, minor() );
-}
 
-QString Solid::Block::device() const
-{
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), QString(), device() );
-}
 
-#include "block.moc"
+#define SOLID_CALL( Type, Object, Method ) \
+    Type t = qobject_cast<Type>( Object ); \
+    if ( t!=0 ) \
+    { \
+         t->Method; \
+    }
+
+
+
+#endif

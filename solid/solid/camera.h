@@ -27,11 +27,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Camera;
-    }
-
     /**
      * This capability is available on digital camera devices.
      *
@@ -51,11 +46,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Camera( Ifaces::Camera *iface, QObject *parent = 0 );
+        Camera( QObject *backendObject );
 
         /**
          * Destroys a Camera object.
@@ -87,10 +81,6 @@ namespace Solid
          * @return true if the camera is supported by libgphoto2, false otherwise.
          */
         bool isGphotoSupported() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

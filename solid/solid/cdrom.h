@@ -28,11 +28,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Cdrom;
-    }
-
     /**
      * This capability is available on CD-ROM drives.
      *
@@ -47,11 +42,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Cdrom( Ifaces::Cdrom *iface, QObject *parent = 0 );
+        Cdrom( QObject *backendObject );
 
         /**
          * Destroys a Cdrom object.
@@ -105,10 +99,6 @@ namespace Solid
          * Please note that some (broken) drives doesn't report this event.
          */
         void ejectPressed();
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

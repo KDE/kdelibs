@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class OpticalDisc;
-    }
-
     /**
      * This capability is available on optical discs.
      *
@@ -45,11 +40,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        OpticalDisc( Ifaces::OpticalDisc *iface, QObject *parent = 0 );
+        OpticalDisc( QObject *backendObject );
 
         /**
          * Destroys an OpticalDisc object.
@@ -111,10 +105,6 @@ namespace Solid
          * @return the capacity of the disc in bytes
          */
         qulonglong capacity() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

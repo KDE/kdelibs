@@ -19,48 +19,37 @@
 
 #include "portablemediaplayer.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/portablemediaplayer.h>
 
-namespace Solid
-{
-    class PortableMediaPlayer::Private
-    {
-    public:
-        Private() : iface( 0 ) {};
 
-        Ifaces::PortableMediaPlayer *iface;
-    };
-}
-
-Solid::PortableMediaPlayer::PortableMediaPlayer( Ifaces::PortableMediaPlayer *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
+Solid::PortableMediaPlayer::PortableMediaPlayer( QObject *backendObject )
+    : Capability( backendObject )
 {
-    d->iface = iface;
 }
 
 Solid::PortableMediaPlayer::~PortableMediaPlayer()
 {
-    delete d;
 }
 
 Solid::PortableMediaPlayer::AccessType Solid::PortableMediaPlayer::accessMethod() const
 {
-    return d->iface->accessMethod();
+    return_SOLID_CALL( Ifaces::PortableMediaPlayer*, backendObject(), Proprietary, accessMethod() );
 }
 
 QStringList Solid::PortableMediaPlayer::outputFormats() const
 {
-    return d->iface->outputFormats();
+    return_SOLID_CALL( Ifaces::PortableMediaPlayer*, backendObject(), QStringList(), outputFormats() );
 }
 
 QStringList Solid::PortableMediaPlayer::inputFormats() const
 {
-    return d->iface->inputFormats();
+    return_SOLID_CALL( Ifaces::PortableMediaPlayer*, backendObject(), QStringList(), inputFormats() );
 }
 
 QStringList Solid::PortableMediaPlayer::playlistFormats() const
 {
-    return d->iface->playlistFormats();
+    return_SOLID_CALL( Ifaces::PortableMediaPlayer*, backendObject(), QStringList(), playlistFormats() );
 }
 
 #include "portablemediaplayer.moc"

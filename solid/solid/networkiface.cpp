@@ -19,48 +19,37 @@
 
 #include "networkiface.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/networkiface.h>
 
-namespace Solid
-{
-    class NetworkIface::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
 
-        Ifaces::NetworkIface *iface;
-    };
-}
-
-Solid::NetworkIface::NetworkIface( Ifaces::NetworkIface *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
+Solid::NetworkIface::NetworkIface( QObject *backendObject )
+    : Capability( backendObject )
 {
-    d->iface = iface;
 }
 
 Solid::NetworkIface::~NetworkIface()
 {
-    delete d;
 }
 
 QString Solid::NetworkIface::ifaceName() const
 {
-    return d->iface->ifaceName();
+    return_SOLID_CALL( Ifaces::NetworkIface*, backendObject(), QString(), ifaceName() );
 }
 
 bool Solid::NetworkIface::isWireless() const
 {
-    return d->iface->isWireless();
+    return_SOLID_CALL( Ifaces::NetworkIface*, backendObject(), false, isWireless() );
 }
 
 QString Solid::NetworkIface::hwAddress() const
 {
-    return d->iface->hwAddress();
+    return_SOLID_CALL( Ifaces::NetworkIface*, backendObject(), QString(), hwAddress() );
 }
 
 qulonglong Solid::NetworkIface::macAddress() const
 {
-    return d->iface->macAddress();
+    return_SOLID_CALL( Ifaces::NetworkIface*, backendObject(), 0, macAddress() );
 }
 
 #include "networkiface.moc"

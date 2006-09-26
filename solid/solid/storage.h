@@ -27,11 +27,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Storage;
-    }
-
     /**
      * This capability is available on storage devices.
      *
@@ -47,11 +42,11 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
+         * @param backendObject the capability object provided by the backend
          * @param parent the parent QObject
          * @see Solid::Device::as()
          */
-        Storage( Ifaces::Storage *iface, QObject *parent = 0 );
+        Storage( QObject *backendObject );
 
         /**
          * Destroys a Storage object.
@@ -135,10 +130,6 @@ namespace Solid
          * @return the product name
          */
         QString product() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

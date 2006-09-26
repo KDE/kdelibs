@@ -19,58 +19,47 @@
 
 #include "opticaldisc.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/opticaldisc.h>
 
-namespace Solid
-{
-    class OpticalDisc::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
 
-        Ifaces::OpticalDisc *iface;
-    };
-}
-
-Solid::OpticalDisc::OpticalDisc( Ifaces::OpticalDisc *iface, QObject *parent )
-    : Volume( iface, parent ), d( new Private() )
+Solid::OpticalDisc::OpticalDisc( QObject *backendObject )
+    : Volume( backendObject )
 {
-    d->iface = iface;
 }
 
 Solid::OpticalDisc::~OpticalDisc()
 {
-    delete d;
 }
 
 Solid::OpticalDisc::ContentTypes Solid::OpticalDisc::availableContent() const
 {
-    return d->iface->availableContent();
+    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), ContentTypes(), availableContent() );
 }
 
 Solid::OpticalDisc::DiscType Solid::OpticalDisc::discType() const
 {
-    return d->iface->discType();
+    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), UnknownDiscType, discType() );
 }
 
 bool Solid::OpticalDisc::isAppendable() const
 {
-    return d->iface->isAppendable();
+    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), false, isAppendable() );
 }
 
 bool Solid::OpticalDisc::isBlank() const
 {
-    return d->iface->isBlank();
+    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), false, isBlank() );
 }
 
 bool Solid::OpticalDisc::isRewritable() const
 {
-    return d->iface->isRewritable();
+    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), false, isRewritable() );
 }
 
 qulonglong Solid::OpticalDisc::capacity() const
 {
-    return d->iface->capacity();
+    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), 0, capacity() );
 }
 
 #include "opticaldisc.moc"

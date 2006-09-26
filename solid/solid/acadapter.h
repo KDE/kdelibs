@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class AcAdapter;
-    }
-
     /**
      * This capability is available on A/C adapters.
      */
@@ -43,11 +38,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        AcAdapter( Ifaces::AcAdapter *iface, QObject *parent = 0 );
+        AcAdapter( QObject *backendObject );
 
         /**
          * Destroys an AcAdapter object.
@@ -77,10 +71,6 @@ namespace Solid
          * @param newState true if the A/C adapter is plugged is mounted, false otherwise
          */
         void plugStateChanged( bool newState );
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

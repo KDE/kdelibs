@@ -19,68 +19,56 @@
 
 #include "storage.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/storage.h>
 
-namespace Solid
+Solid::Storage::Storage( QObject *backendObject )
+    : Block( backendObject )
 {
-    class Storage::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Storage *iface;
-    };
-}
-
-Solid::Storage::Storage( Ifaces::Storage *iface, QObject *parent )
-    : Block( iface, parent ), d( new Private() )
-{
-    d->iface = iface;
 }
 
 Solid::Storage::~Storage()
 {
-    delete d;
 }
 
 Solid::Storage::Bus Solid::Storage::bus() const
 {
-    return d->iface->bus();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), Platform, bus() );
 }
 
 Solid::Storage::DriveType Solid::Storage::driveType() const
 {
-    return d->iface->driveType();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), HardDisk, driveType() );
 }
 
 bool Solid::Storage::isRemovable() const
 {
-    return d->iface->isRemovable();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isRemovable() );
 }
 
 bool Solid::Storage::isEjectRequired() const
 {
-    return d->iface->isEjectRequired();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isEjectRequired() );
 }
 
 bool Solid::Storage::isHotpluggable() const
 {
-    return d->iface->isHotpluggable();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isHotpluggable() );
 }
 
 bool Solid::Storage::isMediaCheckEnabled() const
 {
-    return d->iface->isMediaCheckEnabled();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isMediaCheckEnabled() );
 }
 
 QString Solid::Storage::vendor() const
 {
-    return d->iface->vendor();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), QString(), vendor() );
 }
 
 QString Solid::Storage::product() const
 {
-    return d->iface->product();
+    return_SOLID_CALL( Ifaces::Storage*, backendObject(), QString(), product() );
 }
 
 #include "storage.moc"

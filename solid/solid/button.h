@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Button;
-    }
-
     /**
      * This capability is available on button devices.
      *
@@ -48,11 +43,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Button( Ifaces::Button *iface, QObject *parent = 0 );
+        Button( QObject *backendObject );
 
         /**
          * Destroys a Button object.
@@ -102,10 +96,6 @@ namespace Solid
          * @see Solid::Ifaces::Enums::Button::ButtonType
          */
         void pressed( int type );
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

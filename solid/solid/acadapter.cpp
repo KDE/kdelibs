@@ -19,36 +19,23 @@
 
 #include "acadapter.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/acadapter.h>
 
-namespace Solid
+Solid::AcAdapter::AcAdapter( QObject *backendObject )
+    : Capability( backendObject )
 {
-    class AcAdapter::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::AcAdapter *iface;
-    };
-}
-
-Solid::AcAdapter::AcAdapter( Ifaces::AcAdapter *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
-{
-    d->iface = iface;
-
-    connect( d->iface->qobject(), SIGNAL( plugStateChanged( bool ) ),
+    connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
              this, SIGNAL( plugStateChanged( bool ) ) );
 }
 
 Solid::AcAdapter::~AcAdapter()
 {
-    delete d;
 }
 
 bool Solid::AcAdapter::isPlugged() const
 {
-    return d->iface->isPlugged();
+    return_SOLID_CALL( Ifaces::AcAdapter*, backendObject(), false, isPlugged() );
 }
 
 #include "acadapter.moc"

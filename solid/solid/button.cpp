@@ -19,46 +19,34 @@
 
 #include "button.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/button.h>
 
-namespace Solid
+
+Solid::Button::Button( QObject *backendObject )
+    : Capability( backendObject )
 {
-    class Button::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Button *iface;
-    };
-}
-
-Solid::Button::Button( Ifaces::Button *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
-{
-    d->iface = iface;
-
-    connect( d->iface->qobject(), SIGNAL( pressed( int ) ),
+    connect( backendObject, SIGNAL( pressed( int ) ),
              this, SIGNAL( pressed( int ) ) );
 }
 
 Solid::Button::~Button()
 {
-    delete d;
 }
 
 Solid::Button::ButtonType Solid::Button::type() const
 {
-    return d->iface->type();
+    return_SOLID_CALL( Ifaces::Button*, backendObject(), UnknownButtonType, type() );
 }
 
 bool Solid::Button::hasState() const
 {
-    return d->iface->hasState();
+    return_SOLID_CALL( Ifaces::Button*, backendObject(), UnknownButtonType, type() );
 }
 
 bool Solid::Button::stateValue() const
 {
-    return d->iface->stateValue();
+    return_SOLID_CALL( Ifaces::Button*, backendObject(), UnknownButtonType, type() );
 }
 
 

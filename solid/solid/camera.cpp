@@ -19,39 +19,28 @@
 
 #include "camera.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/camera.h>
 
-namespace Solid
-{
-    class Camera::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
 
-        Ifaces::Camera *iface;
-    };
-}
-
-Solid::Camera::Camera( Ifaces::Camera *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
+Solid::Camera::Camera( QObject *backendObject )
+    : Capability( backendObject )
 {
-    d->iface = iface;
 }
 
 Solid::Camera::~Camera()
 {
-    delete d;
 }
 
 
 Solid::Camera::AccessType Solid::Camera::accessMethod() const
 {
-    return d->iface->accessMethod();
+    return_SOLID_CALL( Ifaces::Camera*, backendObject(), Proprietary, accessMethod() );
 }
 
 bool Solid::Camera::isGphotoSupported() const
 {
-    return d->iface->isGphotoSupported();
+    return_SOLID_CALL( Ifaces::Camera*, backendObject(), false, isGphotoSupported() );
 }
 
 #include "camera.moc"

@@ -237,13 +237,13 @@ bool Solid::Device::queryCapability( const Capability::Type &capability ) const
 }
 
 template<typename IfaceType, typename CapType>
-inline CapType* capability_cast( QObject *cap_iface )
+inline CapType* capability_cast( QObject *backendObject )
 {
-    IfaceType *iface = qobject_cast<IfaceType*>( cap_iface );
+    IfaceType *iface = qobject_cast<IfaceType*>( backendObject );
 
     if ( iface )
     {
-        return new CapType( iface );
+        return new CapType( backendObject );
     }
     else
     {

@@ -26,11 +26,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Block;
-    }
-
     /**
      * This capability is available on block devices.
      *
@@ -47,11 +42,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        Block( Ifaces::Block *iface, QObject *parent = 0 );
+        Block( QObject *backendObject );
 
         /**
          * Destroys a Block object.
@@ -92,10 +86,6 @@ namespace Solid
          * the device
          */
         QString device() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

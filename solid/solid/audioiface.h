@@ -44,11 +44,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        AudioIface( Ifaces::AudioIface *iface, QObject *parent = 0 );
+        AudioIface( QObject *backendObject );
 
         /**
          * Destroys an AudioIface object.
@@ -100,10 +99,6 @@ namespace Solid
          * @see Solid::Ifaces::Enums::AudioIfaceTypes
          */
         AudioIfaceTypes type();
-
-    private:
-        class Private;
-        Private *d;
     };
 }
 

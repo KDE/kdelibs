@@ -29,11 +29,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class PortableMediaPlayer;
-    }
-
     /**
      * This class implement Portable Media Player capability interface and represent
      * a portable media player attached to the system.
@@ -50,11 +45,10 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param iface the capability interface provided by the backend
-         * @param parent the parent QObject
+         * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        PortableMediaPlayer( Ifaces::PortableMediaPlayer *iface, QObject *parent = 0 );
+        PortableMediaPlayer( QObject *backendObject );
 
         /**
          * Destroys a portable media player object.
@@ -102,10 +96,6 @@ namespace Solid
          * @return a MIME-type list of the supported playlist formats
          */
         QStringList playlistFormats() const;
-
-    private:
-        class Private;
-        Private *d;
     };
 };
 

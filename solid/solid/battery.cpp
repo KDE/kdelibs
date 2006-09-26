@@ -19,80 +19,67 @@
 
 #include "battery.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/battery.h>
 
-namespace Solid
+Solid::Battery::Battery( QObject *backendObject )
+    : Capability( backendObject )
 {
-    class Battery::Private
-    {
-    public:
-        Private() : iface( 0 ) {}
-
-        Ifaces::Battery *iface;
-    };
-}
-
-Solid::Battery::Battery( Ifaces::Battery *iface, QObject *parent )
-    : Capability( parent ), d( new Private() )
-{
-    d->iface = iface;
-
-    connect( d->iface->qobject(), SIGNAL( chargePercentChanged( int ) ),
+    connect( backendObject, SIGNAL( chargePercentChanged( int ) ),
              this, SIGNAL( chargePercentChanged( int ) ) );
 
-    connect( d->iface->qobject(), SIGNAL( chargeStateChanged( int ) ),
+    connect( backendObject, SIGNAL( chargeStateChanged( int ) ),
              this, SIGNAL( chargeStateChanged( int ) ) );
 
 }
 
 Solid::Battery::~Battery()
 {
-    delete d;
 }
 
 bool Solid::Battery::isPlugged() const
 {
-    return d->iface->isPlugged();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), false, isPlugged() );
 }
 
 Solid::Battery::BatteryType Solid::Battery::type() const
 {
-    return d->iface->type();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), UnknownBattery, type() );
 }
 
 QString Solid::Battery::chargeLevelUnit() const
 {
-    return d->iface->chargeLevelUnit();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), QString(), chargeLevelUnit() );
 }
 
 int Solid::Battery::charge( LevelType type ) const
 {
-    return d->iface->charge( type );
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), 0, charge(type) );
 }
 
 int Solid::Battery::chargePercent() const
 {
-    return d->iface->chargePercent();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), 0, chargePercent() );
 }
 
 QString Solid::Battery::voltageUnit() const
 {
-    return d->iface->voltageUnit();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), QString(), voltageUnit() );
 }
 
 int Solid::Battery::voltage() const
 {
-    return d->iface->voltage();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), 0, voltage() );
 }
 
 bool Solid::Battery::isRechargeable() const
 {
-    return d->iface->isRechargeable();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), false, isRechargeable() );
 }
 
 Solid::Battery::ChargeState Solid::Battery::chargeState() const
 {
-    return d->iface->chargeState();
+    return_SOLID_CALL( Ifaces::Battery*, backendObject(), NoCharge, chargeState() );
 }
 
 #include "battery.moc"
