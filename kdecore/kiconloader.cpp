@@ -439,7 +439,7 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
     K3Icon icon;
 
-    const char * const ext[4] = { ".png", "svgz", ".svg", ".xpm" };
+    const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 
     /* antlarr: Multiple inheritance is a broken concept on icon themes, so
        the next code doesn't support it on purpose because in fact, it was
