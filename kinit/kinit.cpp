@@ -1703,13 +1703,15 @@ int main(int argc, char **argv, char **envp)
 
    /** Create our instance **/
    s_instance = new KInstance("kdeinit");
-   // Don't make it the global instance
-   KGlobal::_instance = 0L;
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
    kdeinit_setproctitle("kdeinit Starting up...");
    kdeinit_library_path();
+   // Don't make our instance the global instance
+   // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
+   // which seems to be buggy and always use KGlobal instead of the maching KInstance)
+   KGlobal::_instance = 0L;
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");

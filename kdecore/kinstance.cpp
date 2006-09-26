@@ -170,9 +170,11 @@ KStandardDirs *KInstance::dirs() const
         _dirs->addResourceType("appdata", KStandardDirs::kde_default("data")
                                + _name + '/');
 
-        if (_config)
+        if (_config) {
             if (_dirs->addCustomized(_config))
                 _config->reparseConfiguration();
+        } else
+            config(); // trigger adding of possible customized dirs
     }
 
     return _dirs;
