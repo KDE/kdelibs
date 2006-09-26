@@ -1,5 +1,6 @@
 #include <QVBoxLayout>
-#include <QTreeView>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QStandardItemModel>
 #include <QHeaderView>
 
@@ -15,15 +16,12 @@ using namespace KJS;
 ScriptsDock::ScriptsDock(QWidget *parent)
     : QDockWidget("Loaded Scripts", parent)
 {
-    m_view = new QTreeView;
-    m_view->header()->hide();
-    m_model = new QStandardItemModel;
-    m_view->setModel(m_model);
+    m_widget = new QTreeWidget;
 
-    connect(m_view, SIGNAL(clicked(const QModelIndex &)),
-            this, SLOT(scriptSelected(const QModelIndex &)));
+    connect(m_widget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+            this, SLOT(scriptSelected(QTreeWidgetItem *, int)));
 
-    setWidget(m_view);
+    setWidget(m_widget);
 }
 
 ScriptsDock::~ScriptsDock()
@@ -32,30 +30,60 @@ ScriptsDock::~ScriptsDock()
 
 void ScriptsDock::documentDestroyed(KJS::DebugDocument *document)
 {
-    m_documents.removeAll(document);
-    updateModel();
+    if (!m_documents.contains(document))
+        return;
+
+    QTreeWidgetItem *child = m_documents[document];
+    QTreeWidgetItem *parent = child->parent();
+
+    int childIdx = parent->indexOfChild(child);
+    parent->takeChild(childIdx);
+
+    if (parent->childCount() == 0)
+    {
+        int parentIdx = m_widget->indexOfTopLevelItem(parent);
+        parent = m_widget->takeTopLevelItem(parentIdx);
+        m_headers[parent->text(0)];
+    }
+
+    m_documents[document] = 0;
+
 }
 
 void ScriptsDock::addDocument(KJS::DebugDocument *document)
 {
-    m_documents.append(document);
-    updateModel();
-}
-
-void ScriptsDock::scriptSelected(const QModelIndex &idx)
-{
-    if (!idx.isValid())
+    if (m_documents.contains(document))
         return;
 
-    QVariant var = idx.data(Qt::UserRole);
-    KJS::DebugDocument *doc = var.value<DebugDocument*>();
+    QString name = document->name();
+    QString domain = QUrl(document->url()).host();
+    if (domain.isEmpty())
+        domain = "unknown";
+
+    QTreeWidgetItem *parent = 0;
+    if (m_headers.contains(domain))
+        parent = m_headers[domain];
+    else
+    {
+        parent = new QTreeWidgetItem(QStringList() << domain);
+        m_headers[domain] = parent;
+    }
+
+    QTreeWidgetItem *child = new QTreeWidgetItem(parent, QStringList() << name);
+    m_documents[document] = child;
+    m_widget->invisibleRootItem()->addChild(parent);
+}
+
+void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int column)
+{
+    KJS::DebugDocument *doc = m_documents.key(item);
     if (doc)
         emit displayScript(doc);
 }
 
 void ScriptsDock::updateModel()
 {
-    m_model->clear();
+/*    m_model->clear();
 
     QHash<QString, QStandardItem*> parents;
 
@@ -88,6 +116,6 @@ void ScriptsDock::updateModel()
         parent->appendRow(item);
     }
 
-    m_view->expandAll();
+    m_view->expandAll();*/
 }
 

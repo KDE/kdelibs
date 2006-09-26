@@ -3,7 +3,8 @@
 
 #include <QDockWidget>
 
-class QTreeView;
+class QTreeWidget;
+class QTreeWidgetItem;
 class QStandardItemModel;
 class QModelIndex;
 
@@ -28,17 +29,13 @@ signals:
      void displayScript(KJS::DebugDocument *document);
 
 private slots:
-    void scriptSelected(const QModelIndex &idx);
+    void scriptSelected(QTreeWidgetItem *item, int column);
 
 private:
     void updateModel();
-//     QTreeWidget *m_widget;
-//     QHash<KJS::DebugDocument*, QTreeWidgetItem*> m_documents;
-
-    QHash<QString, KJS::DebugDocument*> m_urlDocLut;
-    QList<KJS::DebugDocument*> m_documents;
-    QTreeView *m_view;
-    QStandardItemModel *m_model;
+    QTreeWidget *m_widget;
+    QHash<KJS::DebugDocument*, QTreeWidgetItem*> m_documents;
+    QHash<QString, QTreeWidgetItem*> m_headers;
 };
 
 #endif

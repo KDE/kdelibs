@@ -165,36 +165,35 @@ DebugWindow::DebugWindow(QWidget *parent)
 
 void DebugWindow::createActions()
 {
-    // Standard actions
-    m_exitAct = new KAction(i18n("E&xit"), actionCollection(), "exit");
-    m_exitAct->setShortcut(i18n("Ctrl+Q"));
-    m_exitAct->setStatusTip(i18n("Exit the application"));
-    connect(m_exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
     // Flow control actions
     m_continueAct = new KAction(KIcon(":/images/continue.png"), i18n("Continue"), actionCollection(), "continue");
     m_continueAct->setStatusTip(i18n("Continue script execution"));
     m_continueAct->setToolTip(i18n("Continue script execution"));
+    m_continueAct->setEnabled(false);
     connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));
 
     m_stopAct = new KAction(KIcon(":/images/stop.png"), i18n("Stop"), actionCollection(), "stop");
     m_stopAct->setStatusTip(i18n("Stop script execution"));
     m_stopAct->setToolTip(i18n("Stop script execution"));
+    m_stopAct->setEnabled(false);
     connect(m_stopAct, SIGNAL(triggered(bool)), this, SLOT(stopExecution()));
 
     m_stepIntoAct = new KAction(KIcon(":/images/step-into.png"), i18n("Step Into"), actionCollection(), "stepInto");
     m_stepIntoAct->setStatusTip(i18n("Step Into"));
     m_stepIntoAct->setToolTip(i18n("Step Into"));
+    m_stepIntoAct->setEnabled(false);
     connect(m_stepIntoAct, SIGNAL(triggered(bool)), this, SLOT(stepInto()));
 
     m_stepOutAct = new KAction(KIcon(":/images/step-out.png"), i18n("Step Out"), actionCollection(), "stepOut");
     m_stepOutAct->setStatusTip(i18n("Step Out"));
     m_stepOutAct->setToolTip(i18n("Step Out"));
+    m_stepOutAct->setEnabled(false);
     connect(m_stepOutAct, SIGNAL(triggered(bool)), this, SLOT(stepOut()) );
 
     m_stepOverAct = new KAction(KIcon(":/images/step-over.png"), i18n("Step Over"), actionCollection(), "stepOver");
     m_stepOverAct->setStatusTip(i18n("Step Over"));
     m_stepOverAct->setToolTip(i18n("Step Over"));
+    m_stepOverAct->setEnabled(false);
     connect(m_stepOverAct, SIGNAL(triggered(bool)), this, SLOT(stepOver()) );
 }
 
@@ -210,7 +209,6 @@ void DebugWindow::createMenus()
     menuBar()->insertItem("&Debug", debugMenu);
 */
     KMenu *fileMenu = new KMenu("F&ile", this);
-    fileMenu->addAction(m_exitAct);
     menuBar()->addMenu(fileMenu);
 }
 
@@ -228,15 +226,7 @@ void DebugWindow::createTabWidget()
 {
     QVBoxLayout *layout = new QVBoxLayout(m_docFrame);
     m_tabWidget = new QTabWidget;
-/*
-    QToolButton *newTabButton = new QToolButton(this);
-    m_tabWidget->setCornerWidget(newTabButton, Qt::TopLeftCorner);
-    newTabButton->setCursor(Qt::ArrowCursor);
-    newTabButton->setAutoRaise(true);
-    newTabButton->setIcon(QIcon(ImageLocation + QLatin1String("addtab.png")));
-    QObject::connect(newTabButton, SIGNAL(clicked()), this, SLOT(newTab()));
-    newTabButton->setToolTip(tr("Add page"));
-*/
+
     QToolButton *closeTabButton = new QToolButton(m_tabWidget);
     m_tabWidget->setCornerWidget(closeTabButton, Qt::TopRightCorner);
     closeTabButton->setCursor(Qt::ArrowCursor);
@@ -257,13 +247,16 @@ void DebugWindow::createStatusBar()
 void DebugWindow::stopExecution()
 {
     m_mode = Stop;
-
-//    while (!m_execStates.isEmpty())
-//        leaveSession();
 }
 
 void DebugWindow::continueExecution()
 {
+    m_continueAct->setEnabled(false);
+    m_stopAct->setEnabled(false);
+    m_stepIntoAct->setEnabled(false);
+    m_stepOutAct->setEnabled(false);
+    m_stepOverAct->setEnabled(false);
+
     exitLoop();
     m_mode = Continue;
 }
