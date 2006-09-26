@@ -866,6 +866,13 @@ static int findMonth(const char *monthStr)
   return -1;
 }
 
+// maybe this should be more often than just isspace() but beware of
+// conflicts with : in time strings.
+static bool isSpaceLike(char c)
+{
+    return isspace(c) || c == ',' || c == ':' || c == '-';
+}
+
 double KJS::KRFCDate_parseDate(const UString &_date)
 {
      // This parse a date in the form:
@@ -896,17 +903,17 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      bool have_time = false;
 
      // Skip leading space
-     while(*dateString && isspace(*dateString))
+     while(*dateString && isSpaceLike(*dateString))
      	dateString++;
 
      const char *wordStart = dateString;
      // Check contents of first words if not number
      while(*dateString && !isdigit(*dateString))
      {
-        if ( isspace(*dateString) && dateString - wordStart >= 3 )
+        if (isSpaceLike(*dateString) && dateString - wordStart >= 3)
         {
           month = findMonth(wordStart);
-          while(*dateString && isspace(*dateString))
+          while(*dateString && isSpaceLike(*dateString))
              dateString++;
           wordStart = dateString;
         }
@@ -919,7 +926,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        // TODO: emit warning about dubious format found
      }
 
-     while(*dateString && isspace(*dateString))
+     while(*dateString && isSpaceLike(*dateString))
      	dateString++;
 
      if (!*dateString)
@@ -977,7 +984,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        if (*dateString == '-')
          dateString++;
 
-       while(*dateString && isspace(*dateString))
+       while(*dateString && isSpaceLike(*dateString))
          dateString++;
 
        if (*dateString == ',')
@@ -989,7 +996,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          if (month == -1)
            return invalidDate;
 
-         while(*dateString && (*dateString != '-') && !isspace(*dateString))
+         while(*dateString && (*dateString != '-') && !isSpaceLike(*dateString))
            dateString++;
 
          if (!*dateString)
@@ -1016,13 +1023,12 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      if (*newPosStr)
      {
         // ' 23:12:40 GMT'
-        if (!isspace(*newPosStr)) {
-           if ( *newPosStr == ':' ) // Ah, so there was no year, but the number was the hour
-               year = -1;
-           else
-               return invalidDate;
-        } else // in the normal case (we parsed the year), advance to the next number
+	if (*newPosStr == ':') // Ah, so there was no year, but the number was the hour
+	    year = -1;
+        else if (isSpaceLike(*newPosStr)) // we parsed the year
             dateString = ++newPosStr;
+	else
+	    return invalidDate;
 
         hour = strtol(dateString, &newPosStr, 10);
 
@@ -1067,6 +1073,10 @@ double KJS::KRFCDate_parseDate(const UString &_date)
 
             if ((second < 0) || (second > 59))
               return invalidDate;
+
+	    // disallow trailing colon seconds
+	    if (*dateString == ':')
+		return invalidDate;
           }
 
           while(*dateString && isspace(*dateString))
