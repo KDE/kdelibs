@@ -216,7 +216,7 @@ public:
                                         T::staticMetaObject.className(),
                                         args );
 
-        T *result = dynamic_cast<T *>( object );
+        T *result = qobject_cast<T *>( object );
         if ( !result )
             delete object;
         return result;
@@ -468,7 +468,7 @@ public:
             return 0;
         }
         QObject *object = factory->create( parent, T::staticMetaObject.className(), args );
-        T *res = dynamic_cast<T *>( object );
+        T *res = qobject_cast<T *>( object );
         if ( !res )
         {
             delete object;
