@@ -491,7 +491,7 @@ int main(int argc, char *argv[])
 
         const char* const fontdirs[] = { "75dpi", "misc", "Type1" };
         const char* const fontpaths[] =  {"/usr/share/fonts/", "/usr/X11/lib/X11/fonts/",
-            "/usr/lib/X11/fonts" };
+            "/usr/lib/X11/fonts/", "/usr/share/fonts/X11/" };
 
         for (size_t fp=0; fp < sizeof(fontpaths)/sizeof(*fontpaths); ++fp)
             for (size_t fd=0; fd < sizeof(fontdirs)/sizeof(*fontdirs); ++fd)
