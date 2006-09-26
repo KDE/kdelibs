@@ -38,6 +38,8 @@ namespace Solid
          * @param levelsLength the length of the array of levels. 2 for 
          * retrive the average of the averall cpus and 3 for a specific
          * cpu. The third level specifies a cpu.
+         * @param processorNameLevels the array used as parameter for 
+         * sysctl.
          * @return True if successful, false otherwise.
          */
         bool processorLoad( QMap<ProcessorLoadType, float> * mapToFill, u_int numberOfLevels, int * processorNameLevels );
@@ -71,12 +73,16 @@ namespace Solid
 Solid::SysStatistics::SysStatistics()
     : d( new Private() )
 {
+    d->swap_devs = NULL;
 }
 
 
 
 Solid::SysStatistics::~SysStatistics()
 {
+    if ( d->swap_devs != NULL )
+        free( d->swap_devs );
+
     delete d;
 }
 
