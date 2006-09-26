@@ -20,6 +20,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kinstance.h>
 #include <kiconloader.h>
 
 #include "kmimesourcefactory.h"
@@ -27,11 +28,20 @@
 class KMimeSourceFactoryPrivate
 {
 public:
-  inline KMimeSourceFactoryPrivate (KIconLoader* loader)
-	: kil (loader)
-  {}
-  
-  KIconLoader* kil;
+  inline KMimeSourceFactoryPrivate (KIconLoader* loader) : m_iconLoader(loader), m_instance(0L) {}
+  inline KIconLoader *iconLoader()
+  {
+    // If we don't have either of these, things are looking grim.
+    Q_ASSERT(m_instance || m_iconLoader);
+
+    if (m_iconLoader)
+      return m_iconLoader;
+
+    return m_instance->iconLoader();
+  }
+
+  KIconLoader *m_iconLoader;
+  KInstance *m_instance;
 };
 
 KMimeSourceFactory::KMimeSourceFactory (KIconLoader* loader)
@@ -61,29 +71,34 @@ QString KMimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QSt
 
   if (myContext == "desktop")
 	{
-	  result = d->kil->iconPath (myName, KIcon::Desktop);
+	  result = d->iconLoader()->iconPath (myName, KIcon::Desktop);
 	}
   else if (myContext == "toolbar")
 	{	 
-	  result = d->kil->iconPath (myName, KIcon::Toolbar);
+	  result = d->iconLoader()->iconPath (myName, KIcon::Toolbar);
 	}
   else if (myContext == "maintoolbar")
 	{
-	  result = d->kil->iconPath (myName, KIcon::MainToolbar);
+	  result = d->iconLoader()->iconPath (myName, KIcon::MainToolbar);
 	}
   else if (myContext == "small")
 	{
-	  result = d->kil->iconPath (myName, KIcon::Small);
+	  result = d->iconLoader()->iconPath (myName, KIcon::Small);
 	}
   else if (myContext == "user")
 	{	  
-	  result = d->kil->iconPath (myName, KIcon::User);
+	  result = d->iconLoader()->iconPath (myName, KIcon::User);
 	}
 
   if (result.isEmpty())
 	result = QMimeSourceFactory::makeAbsolute (absOrRelName, context);
   
   return result;
+}
+
+void KMimeSourceFactory::setInstance(KInstance *instance)
+{
+  d->m_instance = instance;
 }
 
 void KMimeSourceFactory::virtual_hook( int, void* )

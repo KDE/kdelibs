@@ -26,6 +26,8 @@
 #include <kglobal.h>
 
 class KMimeSourceFactoryPrivate;
+class KInstance;
+
 /**
  * An extension to QMimeSourceFactory that uses KIconLoader to
  * find images.
@@ -70,6 +72,13 @@ public:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
+  /**
+   * @internal
+   * Associate with a KInstance so we can pull its iconLoader() when need arises.
+   */
+  friend class KInstance;
+  void setInstance(KInstance *);
+
   KMimeSourceFactoryPrivate* d;
 };
 

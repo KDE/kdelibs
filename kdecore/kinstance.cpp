@@ -271,7 +271,8 @@ KMimeSourceFactory* KInstance::mimeSourceFactory () const
   DEBUG_CHECK_ALIVE
   if (!d->mimeSourceFactory)
   {
-    d->mimeSourceFactory = new KMimeSourceFactory(iconLoader());
+    d->mimeSourceFactory = new KMimeSourceFactory(_iconLoader);
+    d->mimeSourceFactory->setInstance(const_cast<KInstance *>(this));
   }
 
   return d->mimeSourceFactory;
