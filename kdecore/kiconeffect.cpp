@@ -611,7 +611,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 {
     if (src.depth() != overlay.depth())
     {
-	kDebug(265) << "Image depth src != overlay!\n";
+	kDebug(265) << "Image depth src (" << src.depth() << ") != overlay " << "(" << overlay.depth() << ")!\n";
 	return;
     }
     if (src.size() != overlay.size())
