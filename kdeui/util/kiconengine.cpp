@@ -27,114 +27,96 @@
 
 class KIconEnginePrivate
 {
-  public:
+public:
     QString iconName;
+    int overlays;
     KIconLoader* iconLoader;
 };
 
-KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader)
-  : d(new KIconEnginePrivate)
+KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, int overlays)
+    : d(new KIconEnginePrivate)
 {
-  d->iconName = iconName;
-  d->iconLoader = iconLoader;
+    d->iconName = iconName;
+    d->iconLoader = iconLoader;
+    d->overlays = overlays;
 }
 
 KIconEngine::~KIconEngine()
 {
-  delete d;
+    delete d;
+}
+
+static int qIconModeToKIconState( QIcon::Mode mode )
+{
+    int kstate;
+    switch (mode) {
+    default:
+    case QIcon::Normal:
+        kstate = K3Icon::DefaultState;
+        break;
+    case QIcon::Active:
+        kstate = K3Icon::ActiveState;
+        break;
+    case QIcon::Disabled:
+        kstate = K3Icon::DisabledState;
+        break;
+    }
+    return kstate;
 }
 
 QSize KIconEngine::actualSize( const QSize & size, QIcon::Mode mode, QIcon::State state )
 {
-  Q_UNUSED(state)
+    Q_UNUSED(state)
 
-  K3Icon::States kstate;
-  switch (mode) {
-    default:
-    case QIcon::Normal:
-      kstate = K3Icon::DefaultState;
-      break;
-    case QIcon::Active:
-      kstate = K3Icon::ActiveState;
-      break;
-    case QIcon::Disabled:
-      kstate = K3Icon::DisabledState;
-      break;
-  }
+    const int kstate = qIconModeToKIconState(mode);
+    // We ignore overlays here
 
-  QPixmap pix = iconLoader()->loadIcon(d->iconName, K3Icon::Desktop, qMin(size.width(), size.height()), kstate);
-  return pix.size();
+    QPixmap pix = iconLoader()->loadIcon(d->iconName, K3Icon::Desktop, qMin(size.width(), size.height()), kstate);
+    return pix.size();
 }
 
 void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state )
 {
-  Q_UNUSED(state)
+    Q_UNUSED(state)
 
-  K3Icon::States kstate;
-  switch (mode) {
-    default:
-    case QIcon::Normal:
-      kstate = K3Icon::DefaultState;
-      break;
-    case QIcon::Active:
-      kstate = K3Icon::ActiveState;
-      break;
-    case QIcon::Disabled:
-      kstate = K3Icon::DisabledState;
-      break;
-  }
+    const int kstate = qIconModeToKIconState(mode) | d->overlays;
+    K3Icon::Group group = K3Icon::Desktop;
 
-  K3Icon::Group group = K3Icon::Desktop;
+    if (QWidget* targetWidget = dynamic_cast<QWidget*>(painter->device())) {
+        if (qobject_cast<QMenu*>(targetWidget))
+            group = K3Icon::Small;
+        else if (qobject_cast<QToolBar*>(targetWidget->parent()))
+            group = K3Icon::Toolbar;
+    }
 
-  if (QWidget* targetWidget = dynamic_cast<QWidget*>(painter->device())) {
-    if (qobject_cast<QMenu*>(targetWidget))
-      group = K3Icon::Small;
-    else if (qobject_cast<QToolBar*>(targetWidget->parent()))
-      group = K3Icon::Toolbar;
-  }
+    QPixmap pix = iconLoader()->loadIcon(d->iconName, group, qMin(rect.width(), rect.height()), kstate);
 
-  QPixmap pix = iconLoader()->loadIcon(d->iconName, group, qMin(rect.width(), rect.height()), kstate);
-
-  painter->drawPixmap(rect, pix);
+    painter->drawPixmap(rect, pix);
 }
 
 const QString & KIconEngine::iconName( ) const
 {
-  return d->iconName;
+    return d->iconName;
 }
 
 KIconLoader * KIconEngine::iconLoader( ) const
 {
-  return d->iconLoader;
+    return d->iconLoader;
 }
 
 QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State state )
 {
-  Q_UNUSED(state)
+    Q_UNUSED(state)
 
-  QPixmap pix(size);
-  {
+    QPixmap pix(size);
     pix.fill(QColor(0,0,0,0));
 
     QPainter painter(&pix);
 
-    K3Icon::States kstate;
-    switch (mode) {
-      default:
-      case QIcon::Normal:
-        kstate = K3Icon::DefaultState;
-        break;
-      case QIcon::Active:
-        kstate = K3Icon::ActiveState;
-        break;
-      case QIcon::Disabled:
-        kstate = K3Icon::DisabledState;
-        break;
-    }
+    const int kstate = qIconModeToKIconState(mode) | d->overlays;
 
     painter.drawPixmap(QPoint(), iconLoader()->loadIcon(d->iconName, K3Icon::Desktop,
                                                         qMin(size.width(), size.height()), kstate));
-  }
 
-  return pix;
+    return pix;
 }

@@ -22,8 +22,13 @@
 
 #include "kiconengine.h"
 
+KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader, int overlays)
+  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KGlobal::iconLoader(), overlays))
+{
+}
+
 KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader)
-  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KGlobal::iconLoader()))
+  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KGlobal::iconLoader(), 0))
 {
 }
 

@@ -42,10 +42,11 @@ class KDEUI_EXPORT KIconEngine : public QIconEngine
      *
      * @param iconName the name of the icon to load
      * @param iconLoader The KDE icon loader that this engine is to use.
+     * @param overlays Add one or more overlays to the icon. See K3Icon::Overlays.
      *
      * @sa KIconLoader
      */
-    KIconEngine(const QString& iconName, KIconLoader* iconLoader);
+    KIconEngine(const QString& iconName, KIconLoader* iconLoader, int overlays = 0);
 
     /**
      * Destructor.
