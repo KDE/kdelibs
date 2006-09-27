@@ -217,6 +217,12 @@ public:
      * @since 3.2
      */
     static KBookmarkManager* userBookmarksManager();
+    
+    /**
+     * Returns the path to the user's main bookmark collection file.
+     * @since 3.5.5
+     */
+    static QString userBookmarksFile();
 
     /**
      * @internal

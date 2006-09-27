@@ -597,7 +597,7 @@ bool KBookmarkManager::showNSBookmarks() const
 void KBookmarkManager::setShowNSBookmarks( bool show )
 {
     m_showNSBookmarks = show;
-    if (this != userBookmarksManager())
+    if (this->path() != userBookmarksFile())
        return;
     KBookmarkMenu::DynMenuInfo info
        = KBookmarkMenu::showDynamicBookmarks("netscape");
@@ -688,10 +688,14 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
     }
 }
 
+QString KBookmarkManager::userBookmarksFile()
+{
+    return locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
+}
+
 KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
-   QString bookmarksFile = locateLocal("data", QString::fromLatin1("konqueror/bookmarks.xml"));
-   return KBookmarkManager::managerForFile( bookmarksFile );
+   return KBookmarkManager::managerForFile( userBookmarksFile() );
 }
 
 KBookmarkSettings* KBookmarkSettings::s_self = 0;

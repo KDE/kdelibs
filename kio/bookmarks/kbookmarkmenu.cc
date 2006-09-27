@@ -574,7 +574,7 @@ void KBookmarkMenu::fillBookmarkMenu()
   }
 
   if ( m_bIsRoot
-    && KBookmarkManager::userBookmarksManager()->path() == m_pManager->path() )
+    && KBookmarkManager::userBookmarksFile() == m_pManager->path() )
   {
     bool haveSep = false;
 
