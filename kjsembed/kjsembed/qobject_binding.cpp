@@ -329,6 +329,8 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                 return new Scalar<float>( args[idx]->toNumber(exec) );
             else if ( types[idx] == "qreal" )
                 return new Scalar<qreal>( args[idx]->toNumber(exec) );
+            else if ( types[idx] == "uint" )
+                return new Scalar<uint>( args[idx]->toNumber(exec) );
             else
                 return new NullPtr();
             break;
