@@ -247,7 +247,7 @@ void Plugin::loadPlugins( QObject *parent, KXMLGUIClient* parentGUIClient, KInst
         }
         else
         { // no user-setting, load plugin default setting
-            QString relPath = QString( instance->instanceName() ) + "/" + (*pIt).m_relXMLFileName;
+            QString relPath = QString( instance->instanceName() ) + '/' + (*pIt).m_relXMLFileName;
             relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
             //kDebug(1000) << "looking for " << relPath << endl;
