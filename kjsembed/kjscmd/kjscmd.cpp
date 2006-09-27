@@ -18,11 +18,18 @@
     Boston, MA 02110-1301, USA.
 */
 
+#define KJSEMBED_WITH_KDE
 
 #include <QString>
 #include <QApplication>
 #include <QDebug>
 #include <QStringList>
+
+#ifdef KJSEMBED_WITH_KDE
+#include <kapplication.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
+#endif // KJSEMBED_WITH_KDE
 
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
@@ -43,6 +50,15 @@ void printUsage(QString appName)
                           << endl;
 }
 
+#ifdef KJSEMBED_WITH_KDE
+
+static KCmdLineOptions options[] =
+{
+    { "!+command", I18N_NOOP("Script to execute"), 0 },
+    KCmdLineLastOption
+};
+
+#endif // KJSEMBED_WITH_KDE
 
 int main( int argc, char **argv )
 {
@@ -99,6 +115,20 @@ int main( int argc, char **argv )
         return 0;
     }
 
+#ifdef KJSEMBED_WITH_KDE
+#warning "KDE Support enabled"
+  KAboutData aboutData( "kjscmd", I18N_NOOP("KJSCmd"), "0.2",
+      I18N_NOOP(""
+       "Utility for running KJSEmbed scripts \n" ),
+      KAboutData::License_LGPL,
+       "(C) 2005-2006 The KJSEmbed Authors" );
+
+  KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
+  KCmdLineArgs::init( argc, argv, &aboutData );
+
+  KApplication *app = new KApplication();
+#else
+#warning "KDE Support disabled"
     // Setup QApplication
     QCoreApplication *app;
     if (gui)
@@ -111,6 +141,7 @@ int main( int argc, char **argv )
         app = new QCoreApplication(argc, argv);
     }
     qDebug(" New QApplication %dms", time.elapsed());
+#endif
     app->setApplicationName( appName );
     
     // Setup Interpreter

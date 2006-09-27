@@ -10,6 +10,8 @@ include_directories(
 
 ########### next target ###############
 
+add_definitions(-DKJSEMBED_WITH_KDE)
+
 set(kjsembed_LIB_SRCS
    global.cpp
    binding_support.cpp

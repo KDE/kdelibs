@@ -1,3 +1,11 @@
+Missing Stuff
+=============
+
+- Extract functions for Dates and Times
+- Ability to have a 'standard library of js'
+
+--------------------------------
+
 Ian's List:
 * Slot return types should use the value factories so all
   bound types are supported.

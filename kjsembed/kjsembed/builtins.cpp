@@ -25,6 +25,11 @@
 #include <QDebug>
 #include <QMetaType>
 
+#ifndef QT_ONLY
+#include <kstandarddirs.h>
+#endif // QT_ONLY
+
+
 #include "value_binding.h"
 #include "object_binding.h"
 
@@ -36,6 +41,9 @@ using namespace KJSEmbed;
 
 KJS::JSValue *callExec( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
+    Q_UNUSED(exec);
+    Q_UNUSED(self);
+    Q_UNUSED(args);
     return KJS::Boolean( QApplication::exec() );
 }
 
@@ -59,6 +67,26 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     }
     return KJS::Null();
 }
+
+#ifdef KJSEMBED_WITH_KDE
+
+KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
+{
+    Q_UNUSED(self);
+    if( args.size() == 1)
+    {
+        KJS::UString filename = args[0]->toString(exec);
+	QString qualifiedFilename = KStandardDirs::locate( "scripts", filename.qstring() );
+	if ( !qualifiedFilename.isEmpty() )
+	    Engine::runFile( exec->dynamicInterpreter(), qualifiedFilename );
+	else {
+	    // Throw file not found exception
+	}
+    }
+    return KJS::Null();
+}
+
+#endif // KJSEMBED_WITH_KDE
 
 KJS::JSValue *callAlert( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
@@ -129,6 +157,9 @@ const Method BuiltinsFactory::BuiltinMethods[] =
     {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec},
     {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump},
     {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude},
+#ifdef KJSEMBED_WITH_KDE
+    {"library", 1, KJS::DontDelete|KJS::ReadOnly, &callLibrary},
+#endif // KJSEMBED_WITH_KDE
     {"alert", 1, KJS::DontDelete|KJS::ReadOnly, &callAlert},
     {"confirm", 1, KJS::DontDelete|KJS::ReadOnly, &callConfirm},
     {"isVariantType", 1, KJS::DontDelete|KJS::ReadOnly, &callIsVariantType},
