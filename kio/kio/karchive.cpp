@@ -30,7 +30,6 @@
 #include <ksavefile.h>
 #include <kde_file.h>
 
-#include <q3ptrlist.h>
 #include <QStack>
 #include <qmap.h>
 #include <qdir.h>
@@ -62,21 +61,6 @@ public:
     QString fileName;
     QIODevice::OpenMode mode;
     bool deviceOwned; // if true, we (KArchive) own m_dev and must delete it
-};
-
-#ifdef __GNUC__
-#warning KDE4 TODO port this Q3PtrList and add unit test copyTo()
-#endif
-// ### KDE4 TODO port me and add unit test
-class PosSortedPtrList : public Q3PtrList<KArchiveFile> {
-protected:
-    int compareItems( Q3PtrCollection::Item i1,
-                      Q3PtrCollection::Item i2 )
-    {
-        int pos1 = static_cast<KArchiveFile*>( i1 )->position();
-        int pos2 = static_cast<KArchiveFile*>( i2 )->position();
-        return ( pos1 - pos2 );
-    }
 };
 
 
@@ -629,11 +613,15 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
   m_entries.insert( entry->name(), entry );
 }
 
+static int sortByPosition( const KArchiveFile* file1, const KArchiveFile* file2 ) {
+    return file1->position() - file2->position();
+}
+
 void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
 {
   QDir root;
 
-  PosSortedPtrList fileList;
+  QList<const KArchiveFile*> fileList;
   QMap<qint64, QString> fileToDir;
 
   QStringList::Iterator it;
@@ -672,12 +660,13 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     }
   } while (!dirStack.isEmpty());
 
-  fileList.sort();  // sort on m_pos, so we have a linear access
+  qSort( fileList.begin(), fileList.end(), sortByPosition );  // sort on m_pos, so we have a linear access
 
-  KArchiveFile* f;
-  for ( f = fileList.first(); f; f = fileList.next() ) {
-    qint64 pos = f->position();
-    f->copyTo( fileToDir[pos] );
+  for ( QList<const KArchiveFile*>::const_iterator it = fileList.begin(), end = fileList.end() ;
+        it != end ; ++it ) {
+      const KArchiveFile* f = *it;
+      qint64 pos = f->position();
+      f->copyTo( fileToDir[pos] );
   }
 }
 
