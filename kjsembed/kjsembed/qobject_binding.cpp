@@ -131,17 +131,6 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
                     KJS::Number(enumerator.value(key)), KJS::DontDelete|KJS::ReadOnly);
         }
     }
-
-#if 0
-    // Add properties.
-    int props = metaObject->propertyCount();
-    for( int idx = 0; idx < props; ++idx )
-    {
-        QMetaProperty property = metaObject->property(idx);
-	// Now add the propertyslots
-        target->put(exec, KJS::Identifier( property.name() ), KJS::Number(0), KJS::DontDelete|KJS::GetterSetter);
-    }
-#endif
 }
 
 QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
@@ -201,7 +190,7 @@ bool QObjectBinding::getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identi
     QObject *obj = object<QObject>();
     const QMetaObject *meta = obj->metaObject();
     if ( meta->indexOfProperty( propertyName.ascii() ) != -1 ) {
-	qDebug() << "getOwnPropertySlot found the property " << propertyName.ascii();
+	// qDebug() << "getOwnPropertySlot found the property " << propertyName.ascii();
 	slot.setCustom( this, propertyGetter );
 	return true;
     }
