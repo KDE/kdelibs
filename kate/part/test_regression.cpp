@@ -87,14 +87,23 @@ TestJScriptEnv::TestJScriptEnv(KateDocument *part) {
 
   *m_view = KJS::Object(wv);
   *m_document = KJS::Object(wd);
+  m_output = new OutputObject(exec, part, v);
+  m_output->ref();
 
+  // recreate properties
+  m_interpreter->globalObject().put(exec, "document", *m_document);
+  m_interpreter->globalObject().put(exec, "view", *m_view);
+  // create new properties
+  m_interpreter->globalObject().put(exec, "output", KJS::Object(m_output));
   // add convenience shortcuts
   m_interpreter->globalObject().put(exec, "d", *m_document);
   m_interpreter->globalObject().put(exec, "v", *m_view);
-
+  m_interpreter->globalObject().put(exec, "out", KJS::Object(m_output));
+  m_interpreter->globalObject().put(exec, "o", KJS::Object(m_output));
 }
 
 TestJScriptEnv::~TestJScriptEnv() {
+    m_output->deref();
 }
 
 //END TestJScriptEnv
@@ -104,11 +113,66 @@ TestJScriptEnv::~TestJScriptEnv() {
 KateViewObject::KateViewObject(ExecState *exec, KateView *v, ObjectImp *fallback)
   : view(v), fallback(fallback)
 {
+// put a function
+#define PUT_FUNC(name, enumval) \
+    putDirect(#name, new KateViewFunction(exec,v,KateViewFunction::enumval,1), DontEnum)
     fallback->ref();
 
-    putDirect("keyReturn", new KateViewFunction(exec,v,KateViewFunction::KeyReturn,0), DontEnum);
-    putDirect("enter", new KateViewFunction(exec,v,KateViewFunction::KeyReturn,0), DontEnum);
-    putDirect("type", new KateViewFunction(exec,v,KateViewFunction::Type,1), DontEnum);
+    PUT_FUNC(keyReturn, KeyReturn);
+    PUT_FUNC(enter, KeyReturn);
+    PUT_FUNC(type, Type);
+    PUT_FUNC(keyDelete, KeyDelete);
+    PUT_FUNC(deleteWordRight, DeleteWordRight);
+    PUT_FUNC(transpose, Transpose);
+    PUT_FUNC(cursorLeft, CursorLeft);
+    PUT_FUNC(cursorPrev, CursorLeft);
+    PUT_FUNC(left, CursorLeft);
+    PUT_FUNC(prev, CursorLeft);
+    PUT_FUNC(shiftCursorLeft, ShiftCursorLeft);
+    PUT_FUNC(shiftCursorPrev, ShiftCursorLeft);
+    PUT_FUNC(shiftLeft, ShiftCursorLeft);
+    PUT_FUNC(shiftPrev, ShiftCursorLeft);
+    PUT_FUNC(cursorRight, CursorRight);
+    PUT_FUNC(cursorNext, CursorRight);
+    PUT_FUNC(right, CursorRight);
+    PUT_FUNC(next, CursorRight);
+    PUT_FUNC(shiftCursorRight, ShiftCursorRight);
+    PUT_FUNC(shiftCursorNext, ShiftCursorRight);
+    PUT_FUNC(shiftRight, ShiftCursorRight);
+    PUT_FUNC(shiftNext, ShiftCursorRight);
+    PUT_FUNC(wordLeft, WordLeft);
+    PUT_FUNC(wordPrev, WordLeft);
+    PUT_FUNC(shiftWordLeft, ShiftWordLeft);
+    PUT_FUNC(shiftWordPrev, ShiftWordLeft);
+    PUT_FUNC(wordRight, WordRight);
+    PUT_FUNC(wordNext, WordRight);
+    PUT_FUNC(shiftWordRight, ShiftWordRight);
+    PUT_FUNC(shiftWordNext, ShiftWordRight);
+    PUT_FUNC(home, Home);
+    PUT_FUNC(shiftHome, ShiftHome);
+    PUT_FUNC(end, End);
+    PUT_FUNC(shiftEnd, ShiftEnd);
+    PUT_FUNC(up, Up);
+    PUT_FUNC(shiftUp, ShiftUp);
+    PUT_FUNC(down, Down);
+    PUT_FUNC(shiftDown, ShiftDown);
+    PUT_FUNC(scrollUp, ScrollUp);
+    PUT_FUNC(scrollDown, ScrollDown);
+    PUT_FUNC(topOfView, TopOfView);
+    PUT_FUNC(shiftTopOfView, ShiftTopOfView);
+    PUT_FUNC(bottomOfView, BottomOfView);
+    PUT_FUNC(shiftBottomOfView, ShiftBottomOfView);
+    PUT_FUNC(pageUp, PageUp);
+    PUT_FUNC(shiftPageUp, ShiftPageUp);
+    PUT_FUNC(pageDown, PageDown);
+    PUT_FUNC(shiftPageDown, ShiftPageDown);
+    PUT_FUNC(top, Top);
+    PUT_FUNC(shiftTop, ShiftTop);
+    PUT_FUNC(bottom, Bottom);
+    PUT_FUNC(shiftBottom, ShiftBottom);
+    PUT_FUNC(toMatchingBracket, ToMatchingBracket);
+    PUT_FUNC(shiftToMatchingBracket, ShiftToMatchingBracket);
+#undef PUT_FUNC
 }
 
 KateViewObject::~KateViewObject()
@@ -148,25 +212,163 @@ bool KateViewFunction::implementsCall() const
 
 Value KateViewFunction::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
-    Value result = Undefined();
-
-    switch (id) {
-        case KeyReturn: {
-            m_view->keyReturn();
-            break;
+    // calls a function repeatedly as specified by its first parameter (once
+    // if not specified).
+#define REP_CALL(enumval, func) \
+        case enumval: {\
+            int cnt = 1;\
+            if (args.size() > 0) cnt = args[0].toInt32(exec);\
+            while (cnt-- > 0) { m_view->func(); }\
+            return Undefined();\
         }
+    switch (id) {
+        REP_CALL(KeyReturn, keyReturn);
+        REP_CALL(KeyDelete, keyDelete);
+        REP_CALL(DeleteWordRight, deleteWordRight);
+        REP_CALL(Transpose, transpose);
+        REP_CALL(CursorLeft, cursorLeft);
+        REP_CALL(ShiftCursorLeft, shiftCursorLeft);
+        REP_CALL(CursorRight, cursorRight);
+        REP_CALL(ShiftCursorRight, shiftCursorRight);
+        REP_CALL(WordLeft, wordLeft);
+        REP_CALL(ShiftWordLeft, shiftWordLeft);
+        REP_CALL(WordRight, wordRight);
+        REP_CALL(ShiftWordRight, shiftWordRight);
+        REP_CALL(Home, home);
+        REP_CALL(ShiftHome, shiftHome);
+        REP_CALL(End, end);
+        REP_CALL(ShiftEnd, shiftEnd);
+        REP_CALL(Up, up);
+        REP_CALL(ShiftUp, shiftUp);
+        REP_CALL(Down, down);
+        REP_CALL(ShiftDown, shiftDown);
+        REP_CALL(ScrollUp, scrollUp);
+        REP_CALL(ScrollDown, scrollDown);
+        REP_CALL(TopOfView, topOfView);
+        REP_CALL(ShiftTopOfView, shiftTopOfView);
+        REP_CALL(BottomOfView, bottomOfView);
+        REP_CALL(ShiftBottomOfView, shiftBottomOfView);
+        REP_CALL(PageUp, pageUp);
+        REP_CALL(ShiftPageUp, shiftPageUp);
+        REP_CALL(PageDown, pageDown);
+        REP_CALL(ShiftPageDown, shiftPageDown);
+        REP_CALL(Top, top);
+        REP_CALL(ShiftTop, shiftTop);
+        REP_CALL(Bottom, bottom);
+        REP_CALL(ShiftBottom, shiftBottom);
+        REP_CALL(ToMatchingBracket, toMatchingBracket);
+        REP_CALL(ShiftToMatchingBracket, shiftToMatchingBracket);
         case Type: {
             UString str = args[0].toString(exec);
             QString res = str.qstring();
-            result = Boolean(m_view->doc()->typeChars(m_view, res));
+            return Boolean(m_view->doc()->typeChars(m_view, res));
+        }
+    }
+
+    return Undefined();
+#undef REP_CALL
+}
+
+//END KateViewFunction
+
+//BEGIN OutputObject
+
+OutputObject::OutputObject(KJS::ExecState *exec, KateDocument *d, KateView *v) : doc(d), view(v), changed(0) {
+    putDirect("write", new OutputFunction(exec,this,OutputFunction::Write,-1), DontEnum);
+    putDirect("print", new OutputFunction(exec,this,OutputFunction::Write,-1), DontEnum);
+    putDirect("writeln", new OutputFunction(exec,this,OutputFunction::Writeln,-1), DontEnum);
+    putDirect("println", new OutputFunction(exec,this,OutputFunction::Writeln,-1), DontEnum);
+    putDirect("writeLn", new OutputFunction(exec,this,OutputFunction::Writeln,-1), DontEnum);
+    putDirect("printLn", new OutputFunction(exec,this,OutputFunction::Writeln,-1), DontEnum);
+
+    putDirect("writeCursorPosition", new OutputFunction(exec,this,OutputFunction::WriteCursorPosition,-1), DontEnum);
+    putDirect("cursorPosition", new OutputFunction(exec,this,OutputFunction::WriteCursorPosition,-1), DontEnum);
+    putDirect("pos", new OutputFunction(exec,this,OutputFunction::WriteCursorPosition,-1), DontEnum);
+    putDirect("writeCursorPositionln", new OutputFunction(exec,this,OutputFunction::WriteCursorPositionln,-1), DontEnum);
+    putDirect("cursorPositionln", new OutputFunction(exec,this,OutputFunction::WriteCursorPositionln,-1), DontEnum);
+    putDirect("posln", new OutputFunction(exec,this,OutputFunction::WriteCursorPositionln,-1), DontEnum);
+
+}
+
+OutputObject::~OutputObject() {
+}
+
+KJS::UString OutputObject::className() const {
+    return UString("OutputObject");
+}
+
+//END OutputObject
+
+//BEGIN OutputFunction
+
+OutputFunction::OutputFunction(KJS::ExecState *exec, OutputObject *output, int _id, int length)
+    : o(output)
+{
+    id = _id;
+    if (length >= 0)
+        putDirect("length",length);
+}
+
+bool OutputFunction::implementsCall() const
+{
+    return true;
+}
+
+KJS::Value OutputFunction::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
+{
+    QCString buffer;
+
+    RegressionTest::createMissingDirs(o->filename);
+    QFile out(o->filename);
+//     kDebug() << "$$$$$$$$$ outfile " << o->filename << " changed " << *o->changed << endl;
+    int mode = IO_WriteOnly;
+    mode |= *o->changed ? IO_Append : IO_Truncate;
+    if (!out.open(mode)) {
+        fprintf(stderr, "ERROR: Could not append to %s\n", o->filename.latin1());
+    }
+
+    switch (id) {
+        case Write:
+        case Writeln: {
+            // Gather all parameters and concatenate to string
+            QString res;
+            for (int i = 0; i < args.size(); i++) {
+                res += args[i].toString(exec).qstring();
+            }
+
+            if (id == Writeln)
+                res += "\n";
+
+            buffer = res.utf8();
+            break;
+        }
+        case WriteCursorPositionln:
+        case WriteCursorPosition: {
+            // Gather all parameters and concatenate to string
+            QString res;
+            for (int i = 0; i < args.size(); i++) {
+                res += args[i].toString(exec).qstring();
+            }
+
+            // Append cursor position
+            uint l, c;
+            o->view->cursorPosition(&l, &c);
+            res += "(" + QString::number(l) + "," + QString::number(c) + ")";
+
+            if (id == WriteCursorPositionln)
+                res += "\n";
+
+            buffer = res.utf8();
             break;
         }
     }
 
-    return result;
+    out.writeBlock(buffer, buffer.length());
+    *o->changed = true;
+    return Undefined();
 }
 
-//END KateViewFunction
+//END OutputFunction
 
 // -------------------------------------------------------------------------
 
@@ -353,6 +555,7 @@ int main(int argc, char *argv[])
 
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
+                                                        &cfg,
                                                         baseDir,
                                                         args->getOption("output"),
                                                         args->isSet("genoutput"));
@@ -457,12 +660,14 @@ int main(int argc, char *argv[])
 
 RegressionTest *RegressionTest::curr = 0;
 
-RegressionTest::RegressionTest(KateDocument *part, const QString &baseDir,
+RegressionTest::RegressionTest(KateDocument *part, KConfig *baseConfig,
+                               const QString &baseDir,
                                const QString &outputDir, bool _genOutput)
   : QObject(part)
 {
     m_part = part;
     m_view = static_cast<KateView *>(m_part->widget());
+    m_baseConfig = baseConfig;
     m_baseDir = baseDir;
     m_baseDir = m_baseDir.replace( "//", "/" );
     if ( m_baseDir.endsWith( "/" ) )
@@ -602,8 +807,14 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
         m_known_failures = known_failure;
+        m_outputCustomised = false;
         // gather commands
+        // directory-specific commands
         QStringList commands = concatListFiles(relPath, ".kateconfig-commands");
+        // testcase-specific commands
+        commands += readListFile(m_currentBase + "/" + filename + "-commands");
+
+        rereadConfig(); // reset options to default
 	if ( filename.endsWith(".txt") ) {
 #if 0
             if ( relPath.startsWith( "domts/" ) && !m_runJS )
@@ -857,6 +1068,8 @@ void RegressionTest::testStaticFile(const QString & filename, const QStringList 
     {
         // Execute script
         TestJScriptEnv jsenv(m_part);
+        jsenv.output()->setChangedFlag(&m_outputCustomised);
+        jsenv.output()->setOutputFile((m_genOutput ? m_baseDir + "/baseline/" : m_outputDir + "/")+filename+"-result");
         script_error = evalJS(jsenv.interpreter(), m_baseDir + "/tests/"+QFileInfo(filename).dirPath()+"/.kateconfig-script", true)
             && evalJS(jsenv.interpreter(), m_baseDir + "/tests/"+filename+"-script");
     }
@@ -936,8 +1149,6 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
         return Ignored;
     }
 
-    QString data = m_part->text();
-
     CheckResult result = Success;
 
     // compare result to existing file
@@ -950,6 +1161,19 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
 
     if ( m_genOutput )
         outputFilename = absFilename;
+
+    // get existing content
+    QString data;
+    if (m_outputCustomised) {
+        QFile file2(outputFilename);
+        if (!file2.open(IO_ReadOnly)) {
+            fprintf(stderr,"Error reading file %s\n",outputFilename.latin1());
+            exit(1);
+        }
+        data = QString::fromUtf8(file2.readAll());
+    } else {
+        data = m_part->text();
+    }
 
     QFile file(absFilename);
     if (file.open(IO_ReadOnly)) {
@@ -983,6 +1207,14 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
         printf("Generated %s\n", outputFilename.latin1());
 
     return result;
+}
+
+void RegressionTest::rereadConfig()
+{
+    m_baseConfig->setGroup("Kate Document Defaults");
+    m_part->config()->readConfig(m_baseConfig);
+    m_baseConfig->setGroup("Kate View Defaults");
+    m_view->config()->readConfig(m_baseConfig);
 }
 
 bool RegressionTest::reportResult(CheckResult result, const QString & description, bool *newfail)
