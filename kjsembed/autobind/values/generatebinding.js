@@ -1,11 +1,11 @@
-function write_ctor( compoundDef )
+function write_ctor( compoundDef, compoundEnums )
 {
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
     var ctor =
-        'const Constructor ' + compoundName + '::p_constructor = \n' +
+        'const Constructor ' + compoundData + '::p_constructor = \n' +
         '{'+
-        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundName + '::ctorMethod, p_statics, p_enums, p_methods };\n' +
-        'KJS::JSObject *' + compoundName + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
+        '"' + compoundName + '", 0, KJS::DontDelete|KJS::ReadOnly, &' + compoundData + '::ctorMethod, p_statics, p_enums, p_methods };\n' +
+        'KJS::JSObject *' + compoundData + '::ctorMethod( KJS::ExecState *exec, const KJS::List &args )\n' +
         '{\n';
 
     // Generate the ctor bindings
@@ -53,10 +53,10 @@ function write_ctor( compoundDef )
         {
             var param = memberArgList.item(argIdx).toElement();
             var paramVar = param.firstChildElement('declname').toElement().toString();
-//             ctor += extract_parameter(param, argIdx);
+//             ctor += extract_parameter(param, argIdx, compoundEnums);
             tmpArgs += paramVar + ', ';
         }
-        ctor += extract_parameter_const(methodListList[idx], idx);
+        ctor += extract_parameter_const(methodListList[idx], idx, compoundEnums);
 
         var tmpIdx = tmpArgs.lastIndexOf(',');
         tmpArgs = tmpArgs.substr(0, tmpIdx);
@@ -68,7 +68,7 @@ function write_ctor( compoundDef )
     return ctor;
 }
 
-function extract_parameter_const(methodList, numArgs)
+function extract_parameter_const(methodList, numArgs, compoundEnums)
 {
     var params = '';
     for(var argIdx = 0; argIdx < numArgs; ++argIdx)
@@ -85,13 +85,14 @@ function extract_parameter_const(methodList, numArgs)
         {
             var parameter = memberArgList.item(argIdx).toElement();
             var paramType = parameter.firstChildElement('type').toElement().toString();
+debug(paramType);
             if(isVariant(paramType))
                 params += 'object'+argIdx+' && object'+argIdx+'->inherits(&ColorBinding::info)';
             else
                 params += 'isBasic(value'+argIdx+')';
             if(argIdx < numArgs-1)
                 params += '&& ';
-            variables += '    ' + extract_parameter(parameter, argIdx);
+            variables += '    ' + extract_parameter(parameter, argIdx, compoundEnums);
         }
         params += ')\n';
         params += '        {\n';
@@ -159,6 +160,7 @@ function write_binding_new( class_doc )
     var compoundDef = class_doc.firstChild().toElement();
     var compoundIncludes = compoundDef.firstChildElement('includes').toElement().toString();
     var compoundName = compoundDef.firstChildElement('compoundname').toElement().toString();
+    var compoundEnums = {};
 
     compoundData = compoundName + "Data";
 
@@ -222,27 +224,40 @@ function write_binding_new( class_doc )
                         var methodArgList = memberElement.elementsByTagName('param');
                         if ( methodArgList.count() == 0 )
                         {
-                            methods +=
-                            '        ' + methodType + ' tmp = value.' + memberName + '();\n';
-
-                            if ( methodType.indexOf('Qt::') != -1 )  // Enum Value
+                            if (methodType == "void")
                             {
+                            }
+                            else if (compoundEnums[methodType]) 
+                            {
+                                methods +=
+                                '       ' + compoundEnums[methodType] + '::' + methodType + ' tmp = value.' + memberName + '();\n';
                                 methods += 
                                 '        result = KJS::Number( tmp );\n';
                             }
                             else
                             {
                                 methods +=
-                                "       result = KJSEmbed::createValue( exec, \"" + methodType + "\", tmp );\n";
+                                '        ' + methodType + ' tmp = value.' + memberName + '();\n';
+                                if ( methodType.indexOf('Qt::') != -1 ) // Enum Value
+                                {
+                                    methods += 
+                                    '       result = KJS::Number( tmp );\n';
+                                }
+                                else
+                                {
+                                    methods +=
+                                    "       result = KJSEmbed::createValue( exec, \"" + methodType + "\", tmp );\n";
+                                }
                             }
                         }
+
                         for ( paramIdx = 0; paramIdx < methodArgList.count(); ++paramIdx )
                         {
                             var param = methodArgList.item(paramIdx).toElement();
                             var paramVar = param.firstChildElement('declname').toElement().toString();
                             var paramVarElement = param.firstChildElement('declname').toElement();
                             var paramDefault = param.firstChildElement('defval').toElement();
-                            methods += extract_parameter(param, paramIdx);
+                            methods += extract_parameter(param, paramIdx, compoundEnums);
                         }
                         if ( memberName.indexOf('set') != -1 )
                         {   // setter, we can handle this for now
@@ -271,6 +286,7 @@ function write_binding_new( class_doc )
             {
                 println( '      Processing enum ' + memberName );
                 hasEnums = true;
+                compoundEnums[memberName] = compoundName;
                 var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
                 for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
                 {
@@ -297,10 +313,10 @@ function write_binding_new( class_doc )
 
 
     // Statics
-    statics += 'NO_STATICS( ' + compoundName + ' )';
+    statics += 'NO_STATICS( ' + compoundData + ' )';
 
     // Ctor
-    ctor = write_ctor( compoundDef );
+    ctor = write_ctor( compoundDef, compoundEnums );
 
     // Method LUT
     methodLut += write_method_lut( compoundDef );
@@ -323,36 +339,42 @@ function write_binding_new( class_doc )
 }
 
 // An array of primitive Qt types, this is annoying but seems to be necessary
-var variant_types = [
-    'QBitArray', 'QBitmap', 'bool', 'QBrush',
-    'QByteArray', 'QChar', 'QColor', 'QCursor',
-    'QDate', 'QDateTime', 'double', 'qreal', 'QFont',
-    'QIcon', 'QImage', 'int', 'QKeySequence',
-    'QLine', 'QLineF', 'QVariantList', 'QLocale',
-    'qlonglong', 'QVariantMap', 'QPalette', 'QPen',
-    'QPixmap', 'QPoint', 'QPointArray', 'QPointF',
-    'QPolygon', 'QRect', 'QRectF', 'QRegExp',
-    'QRegion', 'QSize', 'QSizeF', 'QSizePolicy',
-    'QString', 'QStringList', 'QTextFormat',
-    'QTextLength', 'QTime', 'uint', 'qulonglong',
-    'QUrl'
-];
+var variant_types = {
+    // Actual variant types
+    "QBitArray" : 1, "QBitmap" : 1, "bool" : 1, "QBrush" : 1,
+    "QByteArray" : 1, "QChar" : 1, "QColor" : 1, "QCursor" : 1,
+    "QDate" : 1, "QDateTime" : 1, "double" : 1, "QFont" : 1,
+    "QIcon" : 1, "QImage" : 1, "int" : 1, "QKeySequence" : 1,
+    "QLine" : 1, "QLineF" : 1, "QVariantList" : 1, "QLocale" : 1,
+    "qlonglong" : 1, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
+    "QPixmap" : 1, "QPoint" : 1, "QPointArray" : 1, "QPointF" : 1,
+    "QPolygon" : 1, "QRect" : 1, "QRectF" : 1, "QRegExp" : 1,
+    "QRegion" : 1, "QSize" : 1, "QSizeF" : 1, "QSizePolicy" : 1,
+    "QString" : 1, "QStringList" : 1, "QTextFormat" : 1,
+    "QTextLength" : 1, "QTime" : 1, "uint" : 1, "qulonglong" : 1,
+    "QUrl" : 1, 
+
+     // Other necessary qglobal.h types.
+     "qreal" : 1, "qint8" : 1, "quint8" : 1, "qint16" : 1, "quint16" : 1, 
+     "qint32" : 1, "quint32" : 1, "qint64" : 1, "quint64" : 1, 
+     "qlonglong" : 1, "qulonglong" : 1,
+     "uchar" : 1, "ushort" : 1, "uint" : 1, "ulong" : 1
+    
+};
 
 function isVariant( variable )
 {
-    for (var i in variant_types)
-    {
-        if (variable.indexOf(variant_types[i]) != -1)
-            return true;
-    }
-    return false;
-//     return isVariantType( variable );
+//    debug(variable + " isVariant " + variant_types[variable]);
+    if (variant_types[variable] == 1)
+      return true;
+    else
+      return false;
 }
 
+// Regular expression used to spot const & type args (i.e. 'const QString &').
+const_ref_rx = /const\s+(\w+)\s*&/;
 
-const_ref_rx = /const\s+(\w+)\s+&/;
-
-function extract_parameter( parameter, paramIdx )
+function extract_parameter( parameter, paramIdx, compoundEnums )
 {
     var extracted = '';
     var paramType = parameter.firstChildElement('type').toElement().toString();
@@ -364,6 +386,8 @@ function extract_parameter( parameter, paramIdx )
         paramVar = 'arg' + paramIdx;
 
     var coreParamTypeMatch = const_ref_rx.exec(paramType);
+
+    // We want the core parameter type
     var coreParamType;
     if (coreParamTypeMatch == null)
         coreParamType = paramType;
@@ -382,7 +406,19 @@ function extract_parameter( parameter, paramIdx )
 
         return extracted;
     }
-    else if ( isVariant(paramType) )
+    else if ( compoundEnums[paramType] )  // Enum Value
+    {
+        extracted +=
+            '       ' + compoundEnums[paramType] + '::' + paramType + ' ' + paramVar + ' = static_cast<' + compoundEnums[paramType] + '::' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+
+        if (!paramDefault.isNull())
+            extracted += compoundEnums[paramType] + '::' + paramDefault.toString() + '));\n';
+        else
+            extracted += '0));\n';
+
+        return extracted;
+    }
+    else if ( isVariant(coreParamType) )
     {
         //extracted += 'if(args['+paramIdx+'].getObject() != 0 && QByteArray(args['+paramIdx+'].getObject()->classInfo()->className) == "'+paramType+'");\n';
         extracted +=
