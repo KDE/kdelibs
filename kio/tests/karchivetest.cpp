@@ -1,20 +1,22 @@
-/*
- *  Copyright (C) 2006 David Faure   <faure@kde.org>
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Library General Public
- *  License version 2 as published by the Free Software Foundation;
- *
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Library General Public License for more details.
- *
- *  You should have received a copy of the GNU Library General Public License
- *  along with this library; see the file COPYING.LIB.  If not, write to
- *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- *  Boston, MA 02110-1301, USA.
- */
+/* This file is part of the KDE project
+   Copyright (C) 2006 David Faure <faure@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
 
 #include "karchivetest.h"
 #include "karchivetest.moc"
@@ -25,6 +27,7 @@
 #include <qfileinfo.h>
 #include <kdebug.h>
 #include <kfilterdev.h>
+#include <ktempdir.h>
 
 QTEST_KDEMAIN( KArchiveTest, NoGUI )
 
@@ -136,7 +139,39 @@ static void testFileData( KArchive* archive )
     QVERIFY( e && e->isFile() );
     f = (KArchiveFile*)e;
     QCOMPARE( f->data().size(), 20000   );
+}
 
+static void testCopyTo( KArchive* archive )
+{
+    const KArchiveDirectory* dir = archive->directory();
+    KTempDir tmpDir;
+    tmpDir.setAutoDelete(true);
+    const QString dirName = tmpDir.name();
+
+    dir->copyTo( dirName );
+
+    QVERIFY(QFile::exists(dirName+"dir"));
+    QVERIFY(QFileInfo(dirName+"dir").isDir());
+
+    QFileInfo fileInfo1(dirName+"dir/subdir/mediumfile2");
+    QVERIFY(fileInfo1.exists());
+    QVERIFY(fileInfo1.isFile());
+    QCOMPARE(fileInfo1.size(), Q_INT64_C(100));
+
+    QFileInfo fileInfo2(dirName+"hugefile");
+    QVERIFY(fileInfo2.exists());
+    QVERIFY(fileInfo2.isFile());
+    QCOMPARE(fileInfo2.size(), Q_INT64_C(20000));
+
+    QFileInfo fileInfo3(dirName+"mediumfile");
+    QVERIFY(fileInfo3.exists());
+    QVERIFY(fileInfo3.isFile());
+    QCOMPARE(fileInfo3.size(), Q_INT64_C(100));
+
+    QFileInfo fileInfo4(dirName+"my/dir/test3");
+    QVERIFY(fileInfo4.exists());
+    QVERIFY(fileInfo4.isFile());
+    QCOMPARE(fileInfo4.size(), Q_INT64_C(29));
 }
 
 static const char* s_tarFileName = "karchivetest.tar.gz";
@@ -235,6 +270,19 @@ void KArchiveTest::testTarFileData()
     QVERIFY( ok );
 
     testFileData( &tar );
+
+    ok = tar.close();
+    QVERIFY( ok );
+}
+
+void KArchiveTest::testTarCopyTo()
+{
+    // testCreateTar must have been run first.
+    KTar tar( s_tarFileName );
+    bool ok = tar.open( QIODevice::ReadOnly );
+    QVERIFY( ok );
+
+    testCopyTo( &tar );
 
     ok = tar.close();
     QVERIFY( ok );
@@ -376,6 +424,19 @@ void KArchiveTest::testZipFileData()
     QVERIFY( ok );
 }
 
+void KArchiveTest::testZipCopyTo()
+{
+    // testCreateZip must have been run first.
+    KZip zip( s_zipFileName );
+    bool ok = zip.open( QIODevice::ReadOnly );
+    QVERIFY( ok );
+
+    testCopyTo( &zip );
+
+    ok = zip.close();
+    QVERIFY( ok );
+}
+
 void KArchiveTest::testZipMaxLength()
 {
     KZip zip( s_zipMaxLengthFileName );
@@ -420,4 +481,3 @@ void KArchiveTest::cleanupTestCase()
     QVERIFY( QFile::remove("karchivetest.tar.gz") );
     QVERIFY( QFile::remove("karchivetest.zip") );
 }
-  

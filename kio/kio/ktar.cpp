@@ -127,6 +127,7 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         // has to walk through the decompression filter each time.
         // Which is in fact nearly as slow as a complete decompression for each file.
 
+        Q_ASSERT(!d->tmpFile);
         d->tmpFile = new KTempFile( KStandardDirs::locateLocal("tmp", "ktar-"),".tar");
         kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->name() << endl;
         d->tmpFile->setAutoDelete(true);
@@ -514,13 +515,19 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
 bool KTar::closeArchive() {
     d->dirList.clear();
 
+    bool ok = true;
+
     // If we are in write mode and had created
     // a temporary tar file, we have to write
     // back the changes to the original file
-    if( mode() == QIODevice::WriteOnly)
-        return d->writeBackTempFile( fileName() );
+    if( mode() == QIODevice::WriteOnly) {
+        ok = d->writeBackTempFile( fileName() );
+        delete d->tmpFile;
+        d->tmpFile = 0;
+        setDevice(0);
+    }
 
-    return true;
+    return ok;
 }
 
 bool KTar::doFinishWriting( qint64 size ) {
