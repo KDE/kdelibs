@@ -934,7 +934,7 @@ protected:
         /**
          * Relevant elements:
          * - @c Generic::Text for the TabBar labels
-         * - @c Generic::FocusIndicator for focussed tabs
+         * - @c Generic::FocusIndicator for focused tabs
          * - @c Generic::Icon for icons associated to tabs
          * - @c ToolButton::Panel paints the scroll button (when the tabs don't fit the tab bar)
          */
