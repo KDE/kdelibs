@@ -48,8 +48,15 @@ public:
      */
     enum ExitStatus { Success = 0, Failure = 1 };
 
-    /** Constructs an embedded JS engine. */
-    Engine();
+    /** 
+     * Constructs an embedded JS engine.
+     *
+     * @param enableBindings If true then the bindings will be added to the interpreter
+     * created. Otherwise a plain interpreter with nothing beyond the JS built in functions
+     * and objects is created. This allows users who want to run untrusted scripts to choose
+     * exactly which bindings they offer.
+     */
+    Engine( bool enableBindings = true);
     /** Clean up. */
     virtual ~Engine();
 

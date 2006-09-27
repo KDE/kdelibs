@@ -143,10 +143,11 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
     StaticConstructor::add( exec, parent, CoreApplication::constructor() );
 }
 
-Engine::Engine()
+Engine::Engine( bool enableBindings )
 {
     dptr = new EnginePrivate( );
-    setup( dptr->m_interpreter->globalExec(), dptr->m_interpreter->globalObject() );
+    if ( enableBindings )
+	setup( dptr->m_interpreter->globalExec(), dptr->m_interpreter->globalObject() );
 }
 
 Engine::~Engine()
