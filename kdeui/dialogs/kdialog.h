@@ -24,6 +24,7 @@
 #ifndef KDIALOG_H
 #define KDIALOG_H
 
+class KPushButton;
 class QMenu;
 
 #include <QtGui/QDialog>
@@ -157,7 +158,7 @@ class KDEUI_EXPORT KDialog : public QDialog
       InstantPopup = 0,
       DelayedPopup = 1
     };
-    Q_DECLARE_FLAGS(ButtonPopupModes, ButtonPopupMode) 
+    Q_DECLARE_FLAGS(ButtonPopupModes, ButtonPopupMode)
 
   public:
     /**
@@ -372,6 +373,19 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Returns whether any button is enabled.
      */
     bool isButtonEnabled( ButtonCode id ) const;
+
+    /**
+     * Returns the button that corresponds to the @p id.
+     *
+     * Normally you should not use this function.
+     * @em Never delete the object returned by this function.
+     * See also enableButton(), showButton(),
+     * setButtonTip(), setButtonWhatsThis(), and setButtonText().
+     *
+     * @param id Integer identifier of the button.
+     * @return The button or 0 if the button does not exists.
+     */
+    KPushButton* button( ButtonCode id ) const;
 
     /**
      * Return the number of pixels you shall use between a

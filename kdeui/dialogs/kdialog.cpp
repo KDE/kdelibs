@@ -20,9 +20,9 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+
+#include "kdialog.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -54,8 +54,6 @@
 #include <qx11info_x11.h>
 #include <netwm.h>
 #endif
-
-#include "kdialog.h"
 
 struct KDialog::Private
 {
@@ -187,12 +185,6 @@ void KDialog::Private::appendButton( ButtonCode key, const KGuiItem &item )
            &mButtonSignalMapper, SLOT( map() ) );
 }
 
-KPushButton *KDialog::Private::button( ButtonCode id ) const
-{
-  return mButtonList.contains( id ) ? mButtonList[ id ] : 0;
-}
-
-
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
   : QDialog( parent, flags | Qt::MSWindowsFixedSizeDialogHint ),
     d( new Private( this ) )
@@ -293,7 +285,7 @@ void KDialog::setEscapeButton( ButtonCode id )
 void KDialog::setDefaultButton( ButtonCode defaultButton )
 {
   if ( defaultButton != NoDefault ) {
-    KPushButton *button = d->button( defaultButton );
+    KPushButton *button = this->button( defaultButton );
     if ( button )
       d->setButtonFocus( button, true, false );
   }
@@ -407,7 +399,7 @@ void KDialog::keyPressEvent( QKeyEvent *event )
 {
   if ( event->modifiers() == 0 ) {
     if ( event->key() == Qt::Key_F1 ) {
-      KPushButton *button = d->button( Help );
+      KPushButton *button = this->button( Help );
 
       if ( button ) {
         button->animateClick();
@@ -417,7 +409,7 @@ void KDialog::keyPressEvent( QKeyEvent *event )
     }
 
     if ( event->key() == Qt::Key_Escape ) {
-      KPushButton *button = d->button( d->mEscapeButton );
+      KPushButton *button = this->button( d->mEscapeButton );
 
       if ( button ) {
         button->animateClick();
@@ -433,7 +425,7 @@ void KDialog::keyPressEvent( QKeyEvent *event )
   } else if ( event->modifiers() == Qt::ControlModifier &&
             ( event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter ) ) {
     // accept the dialog when Ctrl-Return is pressed
-    KPushButton *button = d->button( Ok );
+    KPushButton *button = this->button( Ok );
 
     if ( button ) {
       button->animateClick();
@@ -622,17 +614,21 @@ void KDialog::incrementInitialSize( const QSize &size )
   adjustSize();
 }
 
+KPushButton *KDialog::button( ButtonCode id ) const
+{
+  return d->mButtonList.contains( id ) ? d->mButtonList[ id ] : 0;
+}
 
 void KDialog::enableButton( ButtonCode id, bool state )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     button->setEnabled( state );
 }
 
 bool KDialog::isButtonEnabled( ButtonCode id ) const
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     return button->isEnabled();
 
@@ -656,14 +652,14 @@ void KDialog::enableButtonCancel( bool state )
 
 void KDialog::showButton( ButtonCode id, bool state )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     state ? button->show() : button->hide();
 }
 
 void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( !button )
     return;
 
@@ -672,7 +668,7 @@ void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
 
 void KDialog::setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode)
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     if (popupmode==InstantPopup)
       button->setMenu( menu );
@@ -688,14 +684,14 @@ void KDialog::setButtonText( ButtonCode id, const QString &text )
     return;
   }
 
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     button->setText( text );
 }
 
 QString KDialog::buttonText( ButtonCode id ) const
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     return button->text();
   else
@@ -704,14 +700,14 @@ QString KDialog::buttonText( ButtonCode id ) const
 
 void KDialog::setButtonIcon( ButtonCode id, const QIcon &icon )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     button->setIcon( icon );
 }
 
 QIcon KDialog::buttonIcon( ButtonCode id ) const
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     return button->icon();
   else
@@ -720,7 +716,7 @@ QIcon KDialog::buttonIcon( ButtonCode id ) const
 
 void KDialog::setButtonToolTip( ButtonCode id, const QString &text )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button ) {
     if ( text.isEmpty() )
       button->setToolTip( QString() );
@@ -731,7 +727,7 @@ void KDialog::setButtonToolTip( ButtonCode id, const QString &text )
 
 QString KDialog::buttonToolTip( ButtonCode id ) const
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     return button->toolTip();
   else
@@ -740,7 +736,7 @@ QString KDialog::buttonToolTip( ButtonCode id ) const
 
 void KDialog::setButtonWhatsThis( ButtonCode id, const QString &text )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button ) {
     if ( text.isEmpty() )
       button->setWhatsThis( QString() );
@@ -751,7 +747,7 @@ void KDialog::setButtonWhatsThis( ButtonCode id, const QString &text )
 
 QString KDialog::buttonWhatsThis( ButtonCode id ) const
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     return button->whatsThis();
   else
@@ -760,7 +756,7 @@ QString KDialog::buttonWhatsThis( ButtonCode id ) const
 
 void KDialog::setButtonFocus( ButtonCode id )
 {
-  KPushButton *button = d->button( id );
+  KPushButton *button = this->button( id );
   if ( button )
     d->setButtonFocus( button, false, true );
 }
@@ -944,7 +940,7 @@ void KDialog::hideEvent( QHideEvent *event )
 
 void KDialog::closeEvent( QCloseEvent *event )
 {
-  KPushButton *button = d->button( d->mEscapeButton );
+  KPushButton *button = this->button( d->mEscapeButton );
   if ( button && !isHidden() )
     button->animateClick();
   else
