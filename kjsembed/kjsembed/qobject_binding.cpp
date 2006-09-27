@@ -33,6 +33,7 @@
 #include "qobject_binding.h"
 
 #include <kjs/function_object.h>
+#include <kjs/property_slot.h>
 
 using namespace KJSEmbed;
 
@@ -107,7 +108,8 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
             target->put(exec, KJS::Identifier(objectName), KJSEmbed::createQObject(exec,(*child) ));
         }
     }
-            // Add slots of the current object
+
+    // Add slots of the current object
     const QMetaObject *metaObject = object->metaObject();
     int methods = metaObject->methodCount();
     for( int idx = 0; idx < methods; ++idx )
@@ -130,13 +132,16 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
         }
     }
 
-//         // Add properties.
+#if 0
+    // Add properties.
     int props = metaObject->propertyCount();
     for( int idx = 0; idx < props; ++idx )
     {
         QMetaProperty property = metaObject->property(idx);
-//          target->put(exec, KJS::Identifier( property.name() ), KJS::Number(0), KJS::DontDelete|KJS::GetterSetter);
+	// Now add the propertyslots
+        target->put(exec, KJS::Identifier( property.name() ), KJS::Number(0), KJS::DontDelete|KJS::GetterSetter);
     }
+#endif
 }
 
 QObjectBinding::QObjectBinding( KJS::ExecState *exec, QObject *object )
@@ -190,23 +195,34 @@ void QObjectBinding::watchObject( QObject *object )
     m_cleanupHandler->add( object );
 }
 
-KJS::JSValue *QObjectBinding::get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const
+bool QObjectBinding::getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::PropertySlot &slot )
 {
+    //    qDebug() << "getOwnPropertySlot called";
     QObject *obj = object<QObject>();
-    if ( obj && !m_cleanupHandler->isEmpty() )
-    {
-        // Properties
-        //QString prop = propertyName.qstring();
-        const QMetaObject *meta = obj->metaObject();
-
-        if ( meta->indexOfProperty( propertyName.ascii() ) != -1 )
-        {
-            QVariant val = obj->property( propertyName.ascii() );
-            return convertToValue( exec, val );
-        }
+    const QMetaObject *meta = obj->metaObject();
+    if ( meta->indexOfProperty( propertyName.ascii() ) != -1 ) {
+	qDebug() << "getOwnPropertySlot found the property " << propertyName.ascii();
+	slot.setCustom( this, propertyGetter );
+	return true;
     }
-    // Get a property value
-    return ObjectBinding::get(exec,propertyName);
+    return ObjectBinding::getOwnPropertySlot( exec, propertyName, slot );
+}
+
+KJS::JSValue *QObjectBinding::propertyGetter( KJS::ExecState *exec, KJS::JSObject*,
+					      const KJS::Identifier &propertyName, const KJS::PropertySlot&slot )
+{
+    // qDebug() << "Getter was called";
+    QObjectBinding *self = static_cast<QObjectBinding *>(slot.slotBase());
+    QObject *obj =  self->object<QObject>();
+
+    QVariant val = obj->property( propertyName.ascii() );
+    if ( val.isValid() ) {
+	return convertToValue( exec, val );
+    }
+    else {
+	qDebug() << "propertyGetter called but no property, name was" << propertyName.ascii();
+	return 0; // ERROR
+    }
 }
 
 void QObjectBinding::put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value, int attr )
@@ -274,12 +290,6 @@ bool QObjectBinding::canPut(KJS::ExecState *exec, const KJS::Identifier &propert
         }
     }
     return ObjectBinding::canPut(exec,propertyName);
-}
-
-bool QObjectBinding::hasProperty(KJS::ExecState *exec, const KJS::Identifier &propertyName) const
-{
-    Q_UNUSED( exec );
-    return ( object<QObject>()->metaObject()->indexOfProperty( propertyName.ascii() ) != -1 );
 }
 
 KJS::UString QObjectBinding::className() const

@@ -66,6 +66,9 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 class QObject;
 class QMetaMethod;
 
+namespace KJS {
+}
+
 namespace KJSEmbed {
 
 KJS_BINDING( QObjectFactory )
@@ -79,10 +82,19 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
 
         static void publishQObject( KJS::ExecState *exec, KJS::JSObject *target, QObject *object);
 
-        KJS::JSValue *get(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
         void put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value, int attr=KJS::None);
         bool canPut(KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
-        bool hasProperty (KJS::ExecState *exec, const KJS::Identifier &propertyName) const;
+
+	/**
+	 * Called to ask if we have a callback for the named property.
+	 * We return the callback in the property slot.
+	 */
+	bool getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::PropertySlot &slot );
+
+	/**
+	 * Callback used to get properties.
+	 */
+	static KJS::JSValue *propertyGetter( KJS::ExecState *exec, KJS::JSObject*, const KJS::Identifier& name, const KJS::PropertySlot& );
 
         KJS::UString toString(KJS::ExecState *exec) const;
         KJS::UString className() const;
