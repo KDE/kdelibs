@@ -75,7 +75,7 @@ namespace KJS {
     void setException(JSValue* e) { m_exception = e; }
 
     /**
-     * Clears the exception set on this exection state.
+     * Clears the exception set on this execution state.
      */
     void clearException() { m_exception = 0; }
 
