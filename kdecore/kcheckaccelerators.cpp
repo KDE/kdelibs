@@ -133,9 +133,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
 
 void KCheckAccelerators::autoCheckSlot()
 {
-    if( block || QWidget::mouseGrabber() ||
-        QWidget::keyboardGrabber() ||
-        QApplication::activePopupWidget())
+    if( block )
     {
         autoCheckTimer.setSingleShot( true );
         autoCheckTimer.start( 20 );
