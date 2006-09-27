@@ -82,7 +82,6 @@ class KStandardDirsPrivate;
  * @li @c qtplugins - Qt plugins (dynamically loaded objects for Qt)
  * @li @c services - Services.
  * @li @c servicetypes - Service types.
- * @li @c scripts - Application scripting additions.
  * @li @c sound - Application sounds.
  * @li @c templates - Templates
  * @li @c wallpaper - Wallpapers.
