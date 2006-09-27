@@ -348,12 +348,12 @@ public:
 
 
   /**
-   * This function returns wheter the owner supports tabs. 
+   * This function returns whether the owner supports tabs.
    */
   virtual bool supportsTabs() const { return false; }
 
   /**
-   * Returns a list of title, URL pairs of the open tabs. 
+   * Returns a list of title, URL pairs of the open tabs.
    */
   virtual QList<QPair<QString, QString> > currentBookmarkList() const { return QList<QPair<QString, QString> >(); }
 

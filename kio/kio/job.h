@@ -193,7 +193,7 @@ namespace KIO {
      *
      * The file-job emits open() when opened
      * @param url the URL of the file
-     * @param access the access priveleges (1 - ReadOnly, 2 - WriteOnly, 3 - Read/Write)
+     * @param access the access privileges (1 - ReadOnly, 2 - WriteOnly, 3 - Read/Write)
      * @return the file-handling job
      */
     KIO_EXPORT FileJob *open( const KUrl& url, int access );
