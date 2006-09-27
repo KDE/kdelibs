@@ -299,7 +299,7 @@ public:
    * action for the files it supports (e.g. Left Click in a file manager, or KRun in general).
    *
    * If not, then this service is only available in RMB popups, so it must
-   * be selected explicitely by the user in order to be used.
+   * be selected explicitly by the user in order to be used.
    * Note that servicemenus supersede this functionality though, at least in konqueror.
    *
    * @return true if the service may be used as the default (main) handler

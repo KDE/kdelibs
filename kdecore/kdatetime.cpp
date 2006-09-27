@@ -426,7 +426,7 @@ class KDateTimePrivate : public QSharedData
     static QTime        sod;               // start of day (00:00:00)
 
     /* Because some applications create thousands of instances of KDateTime, this
-     * data structure is designed to minimise memory usage. Ensure that all small
+     * data structure is designed to minimize memory usage. Ensure that all small
      * members are kept together at the end!
      *
      * N.B. This class does not own any KTimeZone instances pointed to by data members.
