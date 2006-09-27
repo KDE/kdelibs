@@ -61,7 +61,7 @@ namespace Ifaces
         virtual QString uni() = 0;
 
     protected:
-    //signals:
+    //Q_SIGNALS:
         virtual void ipDetailsChanged() = 0;
     };
 } //Ifaces

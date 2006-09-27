@@ -86,7 +86,7 @@ namespace Ifaces
          */
         virtual void setAuthentication( Authentication * ) = 0;
     protected:
-    //signals:
+    //Q_SIGNALS:
         virtual void signalStrengthChanged( int ) = 0;
         virtual void bitrateChanged( int ) = 0;
         virtual void associationChanged( bool ) = 0;

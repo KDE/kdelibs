@@ -70,7 +70,7 @@ namespace Ifaces
          * @return A list of network UDIs.
          */
         virtual QStringList networks() = 0;
-    signals:
+    Q_SIGNALS:
         void activeChanged( bool );
         void linkUpChanged( bool );
         void signalStrengthChanged( int );

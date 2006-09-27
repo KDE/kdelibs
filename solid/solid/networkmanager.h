@@ -86,7 +86,7 @@ Q_OBJECT
          */
         Ifaces::NetworkManager *backend() const;
 
-    public slots:
+    public Q_SLOTS:
         /**
          * Tell the backend to activate a network
          * TODO: Also dialup, VPN?
@@ -109,7 +109,7 @@ Q_OBJECT
          * Inform the backend of hidden wireless networks
          */
         void notifyHiddenNetwork( const QString & essid );
-    signals:
+    Q_SIGNALS:
         /**
          * Emitted when the system notices a new device was added
          */

@@ -62,7 +62,7 @@ namespace Solid
          * @return A list of Network objects.
          */
         NetworkList networks();
-    signals:
+    Q_SIGNALS:
         void activeChanged( bool );
         void linkUpChanged( bool );
         void signalStrengthChanged( int );

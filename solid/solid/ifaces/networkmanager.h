@@ -58,7 +58,7 @@ namespace Ifaces
          */
         virtual QObject *createAuthenticationValidator() = 0;
 
-    public slots:
+    public Q_SLOTS:
         /**
          * Tell the backend to activate a network
          * TODO: Also dialup, VPN?
@@ -81,7 +81,7 @@ namespace Ifaces
          * Inform the backend of hidden wireless networks
          */
         virtual void notifyHiddenNetwork( const QString & essid ) = 0;
-    signals:
+    Q_SIGNALS:
         /**
          * Emitted when the system notices a new device was added
          */

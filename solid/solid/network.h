@@ -46,7 +46,7 @@ namespace Solid
         QString secondaryDNS();
         QString uni();
         void setActivated( bool active );
-    signals:
+    Q_SIGNALS:
         void ipDetailsChanged();
 
     protected:

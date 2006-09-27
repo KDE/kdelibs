@@ -73,7 +73,7 @@ namespace Solid
          */
         Authentication *authentication() const;
 
-    signals:
+    Q_SIGNALS:
         void signalStrengthChanged( int );
         void bitrateChanged( int );
         void associationChanged( bool );
