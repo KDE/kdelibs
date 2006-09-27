@@ -41,6 +41,8 @@ namespace Solid
         ~NetworkDevice();
 
         NetworkDevice &operator=( const NetworkDevice & );
+        bool isValid();
+        QString uni();
         bool isActive();
 
         Type type();
@@ -55,7 +57,7 @@ namespace Solid
 
         Capabilities capabilities();
 
-        Network * findNetwork( const QString & uni );
+        Network *findNetwork( const QString & uni );
         /**
          * Access the networks available via this network devices
          * For wired network devices, this will probably be a single network,
@@ -68,6 +70,9 @@ namespace Solid
         void linkUpChanged( bool );
         void signalStrengthChanged( int );
         void connectionStateChanged( int /* ConnectionState */ );
+
+    private Q_SLOTS:
+        void slotDestroyed( QObject *object );
 
     private:
         class Private;

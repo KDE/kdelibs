@@ -44,6 +44,8 @@ namespace Ifaces
         NetworkDevice( QObject *parent = 0 );
         virtual ~NetworkDevice();
 
+        virtual QString uni() const = 0;
+
         virtual bool isActive() = 0;
 
         virtual Type type() = 0;

@@ -63,6 +63,8 @@ Solid::NetworkDevice::NetworkDevice( const QString &uni )
              this, SIGNAL( signalStrengthChanged( int ) ) );
     connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
              this, SIGNAL( connectionStateChanged( int ) ) );
+    connect( d->iface, SIGNAL( destroyed( QObject * ) ),
+             this, SLOT( slotDestroyed( QObject * ) ) );
 }
 
 Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface )
@@ -78,6 +80,8 @@ Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface )
              this, SIGNAL( signalStrengthChanged( int ) ) );
     connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
              this, SIGNAL( connectionStateChanged( int ) ) );
+    connect( d->iface, SIGNAL( destroyed( QObject * ) ),
+             this, SLOT( slotDestroyed( QObject * ) ) );
 }
 
 Solid::NetworkDevice::NetworkDevice( const NetworkDevice &device )
@@ -93,6 +97,8 @@ Solid::NetworkDevice::NetworkDevice( const NetworkDevice &device )
              this, SIGNAL( signalStrengthChanged( int ) ) );
     connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
              this, SIGNAL( connectionStateChanged( int ) ) );
+    connect( d->iface, SIGNAL( destroyed( QObject * ) ),
+             this, SLOT( slotDestroyed( QObject * ) ) );
 }
 
 Solid::NetworkDevice::~NetworkDevice()
@@ -116,6 +122,16 @@ Solid::NetworkDevice &Solid::NetworkDevice::operator=( const Solid::NetworkDevic
              this, SIGNAL( connectionStateChanged( int ) ) );
 
     return *this;
+}
+
+bool Solid::NetworkDevice::isValid()
+{
+    return d->iface!=0;
+}
+
+QString Solid::NetworkDevice::uni()
+{
+    return d->iface->uni();
 }
 
 bool Solid::NetworkDevice::isActive()
@@ -178,6 +194,19 @@ Solid::NetworkList Solid::NetworkDevice::networks()
     }
 
     return list;
+}
+
+void Solid::NetworkDevice::slotDestroyed( QObject *object )
+{
+    if ( object == d->iface )
+    {
+        d->iface = 0;
+
+        foreach( QObject *network, d->networkMap )
+        {
+            delete network;
+        }
+    }
 }
 
 /***************************************************************************/

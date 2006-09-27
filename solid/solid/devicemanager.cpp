@@ -299,7 +299,7 @@ void Solid::DeviceManager::slotNewCapability( const QString &udi, int capability
 
 void Solid::DeviceManager::slotDestroyed( QObject *object )
 {
-    Ifaces::Device *device = dynamic_cast<Ifaces::Device*>( object );
+    Ifaces::Device *device = qobject_cast<Ifaces::Device*>( object );
 
     if ( device!=0 )
     {

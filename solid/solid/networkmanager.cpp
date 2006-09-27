@@ -229,6 +229,47 @@ const Solid::NetworkDevice &Solid::NetworkManager::findNetworkDevice( const QStr
     }
 }
 
+void Solid::NetworkManager::slotAdded( const QString &uni )
+{
+    QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair = d->networkDeviceMap.take( uni );
+
+    if ( pair.first!= 0 )
+    {
+        // Oops, I'm not sure it should happen...
+        // But well in this case we'd better kill the old device we got, it's probably outdated
+
+        delete pair.first;
+        delete pair.second;
+    }
+
+    emit added( uni );
+}
+
+void Solid::NetworkManager::slotRemoved( const QString &uni )
+{
+    QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair = d->networkDeviceMap.take( uni );
+
+    if ( pair.first!= 0 )
+    {
+        delete pair.first;
+        delete pair.second;
+    }
+
+    emit removed( uni );
+}
+
+void Solid::NetworkManager::slotDestroyed( QObject *object )
+{
+    Ifaces::NetworkDevice *device = qobject_cast<Ifaces::NetworkDevice*>( object );
+
+    if ( device!=0 )
+    {
+        QString uni = device->uni();
+        QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair = d->networkDeviceMap.take( uni );
+        delete pair.first;
+    }
+}
+
 /***************************************************************************/
 
 void Solid::NetworkManager::Private::registerBackend( Ifaces::NetworkManager *newBackend )
@@ -237,9 +278,9 @@ void Solid::NetworkManager::Private::registerBackend( Ifaces::NetworkManager *ne
     backend = newBackend;
 
     QObject::connect( backend, SIGNAL( added( const QString & ) ),
-                      q, SIGNAL( added( const QString & ) ) );
+                      q, SLOT( slotAdded( const QString & ) ) );
     QObject::connect( backend, SIGNAL( removed( const QString & ) ),
-                      q, SLOT( removed( const QString & ) ) );
+                      q, SLOT( slotRemoved( const QString & ) ) );
 }
 
 void Solid::NetworkManager::Private::unregisterBackend()

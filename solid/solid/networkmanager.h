@@ -124,6 +124,12 @@ Q_OBJECT
         virtual ~NetworkManager();
         NetworkDeviceList buildDeviceList( const QStringList & udiList );
 
+    private Q_SLOTS:
+        void slotAdded( const QString &uni );
+        void slotRemoved( const QString &uni );
+        void slotDestroyed( QObject *object );
+
+    private:
         static NetworkManager * s_self;
         class Private;
         Private * d;
