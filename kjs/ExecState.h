@@ -30,8 +30,6 @@
 namespace KJS {
     class Context;
     class Interpreter;
-    
-    class Interpreter;
     class FunctionImp;
     class RuntimeMethodImp;
     class GlobalFuncImp;
@@ -69,10 +67,37 @@ namespace KJS {
      */
     Context* context() const { return m_context; }
 
+
+    /**
+     * Set the exception associated with this execution state
+     * @param e The JSValue of the exception being set
+     */
     void setException(JSValue* e) { m_exception = e; }
+
+    /**
+     * Clears the exception set on this exection state.
+     */
     void clearException() { m_exception = 0; }
+
+    /**
+     * Returns the exception associated with this execution state.
+     * @return The current execution state exception
+     */
     JSValue* exception() const { return m_exception; }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     JSValue** exceptionSlot() { return &m_exception; }
+
+    /**
+     * Use this to check if an exception was thrown in the current
+     * execution state.
+     *
+     * @return Whether an exception was thrown
+     */
     bool hadException() const { return (m_exception != 0); }
 
   private:

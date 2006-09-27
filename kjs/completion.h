@@ -50,9 +50,31 @@ namespace KJS {
     Completion(ComplType c = Normal, JSValue *v = NULL, const Identifier &t = Identifier::null())
         : comp(c), val(v), tar(t) { }
 
+    /**
+     *
+     * @return
+     */
     ComplType complType() const { return comp; }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     JSValue *value() const { return val; }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     Identifier target() const { return tar; }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     bool isValueCompletion() const { return (val != NULL); }
   private:
     ComplType comp;
