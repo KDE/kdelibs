@@ -16,22 +16,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KLIBLOADERTEST_H
-#define KLIBLOADERTEST_H
+#include <kgenericfactory.h>
+#include "klibloadertest_module.h"
 
-#include <QObject>
+typedef KGenericFactory<KLibLoaderTestObject> KLibLoaderTestFactory;
+K_EXPORT_PLUGIN( KLibLoaderTestFactory("klibloader4testfactory") )
 
-class KLibLoaderTest : public QObject
+KLibLoaderTestObject::KLibLoaderTestObject( QObject* parent, const QStringList& )
+    : QObject( parent )
 {
-    Q_OBJECT
-private Q_SLOTS:
-    void initTestCase();
-    void testNonWorking();
-    void testFindLibrary();
-    void testWorking();
-    void testWorking4();
-    void testWrongClass();
-};
-
-
-#endif
+    qDebug( "KLibLoaderTestObject created" );
+}

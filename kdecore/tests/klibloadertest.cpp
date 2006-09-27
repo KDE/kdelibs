@@ -66,6 +66,15 @@ void KLibLoaderTest::testWorking()
     QVERIFY( obj != 0 );
 }
 
+void KLibLoaderTest::testWorking4()
+{
+    int error = 0;
+    QObject* obj = KLibLoader::createInstance<QObject>( "libklibloadertestmodule4", 0, QStringList(), &error );
+    if ( error )
+        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
+    QVERIFY( obj != 0 );
+}
+
 void KLibLoaderTest::testWrongClass()
 {
     int error = 0;
