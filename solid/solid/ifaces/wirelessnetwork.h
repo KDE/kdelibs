@@ -41,11 +41,9 @@ namespace Ifaces
     /**
      * A Wifi wireless network
      */
-    class KDE_EXPORT WirelessNetwork : public Network, public Enums::WirelessNetwork
+    class KDE_EXPORT WirelessNetwork : virtual public Network, public Enums::WirelessNetwork
     {
-        Q_OBJECT
     public:
-        WirelessNetwork( const QString & uni, QObject *parent = 0 );
         virtual ~WirelessNetwork();
 
         //TODO compare method would look for identical ESSID and at least one AP in common
@@ -87,18 +85,21 @@ namespace Ifaces
          * set the authentication currently in use on this network
          */
         virtual void setAuthentication( Authentication * ) = 0;
-    signals:
-        void signalStrengthChanged( int );
-        void bitrateChanged( int );
-        void associationChanged( bool );
-        void activeChanged( bool );
+    protected:
+    //signals:
+        virtual void signalStrengthChanged( int ) = 0;
+        virtual void bitrateChanged( int ) = 0;
+        virtual void associationChanged( bool ) = 0;
+        virtual void activeChanged( bool ) = 0;
         /**
          * Emitted when the network requires authentication data in order to be able to connect.
          * Respond to this by calling setAuthentication.
          */
-        void authenticationNeeded();
+        virtual void authenticationNeeded() = 0;
     };
 } //Ifaces
 } //Solid
+
+Q_DECLARE_INTERFACE( Solid::Ifaces::WirelessNetwork, "org.kde.Solid.Ifaces.WirelessNetwork/0.1" )
 
 #endif

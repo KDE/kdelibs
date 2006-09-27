@@ -27,11 +27,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class NetworkDevice;
-    }
-
     class NetworkDevice : public QObject, public Ifaces::Enums::NetworkDevice
     {
         Q_OBJECT

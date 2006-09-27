@@ -35,11 +35,9 @@ namespace Ifaces
      * Represents a generic IP network which we may be connected to
      * TODO what about QNetworkAddressEntry
      */
-    class KDE_EXPORT Network : public QObject, public Enums::Network
+    class KDE_EXPORT Network : public Enums::Network
     {
-        Q_OBJECT
     public:
-        Network( const QString & uni, QObject *parent = 0 );
         virtual ~Network();
         // TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
         virtual QStringList ipV4Addresses() = 0;
@@ -62,10 +60,13 @@ namespace Ifaces
          */
         virtual QString uni() = 0;
 
-    signals:
-        void ipDetailsChanged();
+    protected:
+    //signals:
+        virtual void ipDetailsChanged() = 0;
     };
 } //Ifaces
 } //Solid
+
+Q_DECLARE_INTERFACE( Solid::Ifaces::Network, "org.kde.Solid.Ifaces.Network/0.1" )
 
 #endif

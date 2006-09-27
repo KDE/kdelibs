@@ -19,23 +19,24 @@
 
 #include "network.h"
 
+#include "soliddefs_p.h"
 #include <solid/ifaces/network.h>
 
 namespace Solid
 {
     class Network::Private
     {
-        public:
-            Ifaces::Network * iface;
+    public:
+        QObject *backendObject;
     };
 }
 
-Solid::Network::Network( Ifaces::Network *iface )
+Solid::Network::Network( QObject *backendObject )
     : QObject(), d( new Private )
 {
-    d->iface = iface;
+    d->backendObject = backendObject;
 
-    connect( d->iface, SIGNAL( ipDetailsChanged() ),
+    connect( backendObject, SIGNAL( ipDetailsChanged() ),
              this, SIGNAL( ipDetailsChanged() ) );
 }
 
@@ -46,48 +47,57 @@ Solid::Network::~Network()
 
 QStringList Solid::Network::ipV4Addresses()
 {
-    return d->iface->ipV4Addresses();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), ipV4Addresses() );
 }
 
 QStringList Solid::Network::ipV6Addresses()
 {
-    return d->iface->ipV6Addresses();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), ipV6Addresses() );
 }
 
 QString Solid::Network::subnetMask()
 {
-    return d->iface->subnetMask();
-
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), subnetMask() );
 }
 
 QString Solid::Network::broadcastAddress()
 {
-    return d->iface->broadcastAddress();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), broadcastAddress() );
 }
 
 QString Solid::Network::route()
 {
-    return d->iface->route();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), route() );
 }
 
 QString Solid::Network::primaryDNS()
 {
-    return d->iface->primaryDNS();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), primaryDNS() );
 }
 
 QString Solid::Network::secondaryDNS()
 {
-    return d->iface->secondaryDNS();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), secondaryDNS() );
 }
 
 void Solid::Network::setActivated( bool active )
 {
-    d->iface->setActivated( active );
+    SOLID_CALL( Ifaces::Network*, backendObject(), setActivated(active) );
 }
 
 QString Solid::Network::uni()
 {
-    return d->iface->uni();
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), uni() );
+}
+
+QObject *Solid::Network::backendObject()
+{
+    return d->backendObject;
+}
+
+const QObject *Solid::Network::backendObject() const
+{
+    return d->backendObject;
 }
 
 #include "network.moc"

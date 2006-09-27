@@ -19,15 +19,8 @@
 
 #include "network.h"
 
-Solid::Ifaces::Network::Network( const QString & uni, QObject *parent )
-    : QObject( parent )
-{
-
-}
-
 Solid::Ifaces::Network::~Network()
 {
 
 }
 
-#include "network.moc"

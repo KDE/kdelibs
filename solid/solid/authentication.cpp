@@ -1,3 +1,4 @@
+#include "soliddefs_p.h"
 #include "authentication.h"
 #include <solid/networkmanager.h>
 #include <solid/ifaces/networkmanager.h>
@@ -5,29 +6,27 @@
 
 namespace Solid
 {
-
-class AuthenticationValidator::Private
-{
+    class AuthenticationValidator::Private
+    {
     public:
-        Ifaces::AuthenticationValidator *iface;
-};
-
+        QObject *backendObject;
+    };
 }
 
 Solid::AuthenticationValidator::AuthenticationValidator()
     : d( new Private )
 {
-    d->iface = NetworkManager::self().backend()->createAuthenticationValidator();
+    d->backendObject = NetworkManager::self().backend()->createAuthenticationValidator();
 }
 
 Solid::AuthenticationValidator::~AuthenticationValidator()
 {
-    delete d->iface;
+    delete d->backendObject;
     delete d;
 }
 
-bool Solid::AuthenticationValidator::validate( const Ifaces::Authentication * authentication )
+bool Solid::AuthenticationValidator::validate( const Ifaces::Authentication *authentication )
 {
-    return d->iface->validate( authentication );
+    return_SOLID_CALL( Ifaces::AuthenticationValidator*, d->backendObject, false, validate(authentication) );
 }
 

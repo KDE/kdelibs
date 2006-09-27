@@ -38,7 +38,7 @@ Solid::Capability::Capability( QObject *backendObject )
 
 Solid::Capability::~Capability()
 {
-
+    delete d;
 }
 
 QObject *Solid::Capability::backendObject()

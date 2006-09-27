@@ -40,13 +40,13 @@ namespace Solid
     public:
         Private( NetworkManager *manager ) : q( manager ), backend( 0 ) {}
 
-        Ifaces::NetworkDevice *findRegisteredNetworkDevice( const QString &udi );
+        QObject *findRegisteredNetworkDevice( const QString &uni );
         void registerBackend( Ifaces::NetworkManager * newBackend );
         void unregisterBackend();
 
         NetworkManager *q;
         Ifaces::NetworkManager *backend;
-        QMap<QString, Ifaces::NetworkDevice*> networkDeviceMap;
+        QMap<QString, QObject*> networkDeviceMap;
 
         QString errorText;
     };
@@ -152,16 +152,20 @@ Solid::NetworkManager::~NetworkManager()
     d->unregisterBackend();
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringList & udiList )
+Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringList & uniList )
 {
     NetworkDeviceList list;
 
     if ( d->backend == 0 ) return list;
 
-    foreach( QString udi, udiList )
+    foreach( QString uni, uniList )
     {
-        Ifaces::NetworkDevice *device = d->findRegisteredNetworkDevice( udi );
-        list.append( NetworkDevice( device ) );
+        Ifaces::NetworkDevice *device = qobject_cast<Ifaces::NetworkDevice*>( d->findRegisteredNetworkDevice( uni ) );
+
+        if ( device!= 0 )
+        {
+            list.append( NetworkDevice( device ) );
+        }
     }
 
     return list;
@@ -177,7 +181,7 @@ Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices()
     return buildDeviceList( d->backend->activeNetworkDevices() );
 }
 
-Solid::Ifaces::NetworkManager * Solid::NetworkManager::backend() const
+Solid::Ifaces::NetworkManager *Solid::NetworkManager::backend() const
 {
     return d->backend;
 }
@@ -207,11 +211,11 @@ void Solid::NetworkManager::notifyHiddenNetwork( const QString & essid )
     d->backend->notifyHiddenNetwork( essid );
 }
 
-Solid::NetworkDevice Solid::NetworkManager::findNetworkDevice( const QString &udi )
+Solid::NetworkDevice Solid::NetworkManager::findNetworkDevice( const QString &uni )
 {
     if ( d->backend == 0 ) return NetworkDevice();
 
-    Ifaces::NetworkDevice *device = d->findRegisteredNetworkDevice( udi );
+    Ifaces::NetworkDevice *device = qobject_cast<Ifaces::NetworkDevice*>( d->findRegisteredNetworkDevice( uni ) );
 
     if ( device != 0 )
     {
@@ -241,7 +245,7 @@ void Solid::NetworkManager::Private::unregisterBackend()
     if ( backend != 0 )
     {
         // Delete all the devices, they are now outdated
-        foreach( Ifaces::NetworkDevice *device, networkDeviceMap.values() )
+        foreach( QObject *device, networkDeviceMap.values() )
         {
             delete device;
         }
@@ -253,21 +257,21 @@ void Solid::NetworkManager::Private::unregisterBackend()
     }
 }
 
-Solid::Ifaces::NetworkDevice *Solid::NetworkManager::Private::findRegisteredNetworkDevice( const QString &udi )
+QObject *Solid::NetworkManager::Private::findRegisteredNetworkDevice( const QString &uni )
 {
-    Ifaces::NetworkDevice *device;
+    QObject *device;
 
-    if ( networkDeviceMap.contains( udi ) )
+    if ( networkDeviceMap.contains( uni ) )
     {
-        device = networkDeviceMap[udi];
+        device = networkDeviceMap[uni];
     }
     else
     {
-        device = backend->createNetworkDevice( udi );
+        device = backend->createNetworkDevice( uni );
 
         if ( device != 0 )
         {
-            networkDeviceMap[udi] = device;
+            networkDeviceMap[uni] = device;
         }
     }
 

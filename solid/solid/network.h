@@ -27,16 +27,11 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Network;
-    }
-
     class Network : public QObject, public Ifaces::Enums::Network
     {
         Q_OBJECT
     public:
-        Network( Ifaces::Network * );
+        Network( QObject * );
         virtual ~Network();
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         QStringList ipV4Addresses();
@@ -53,6 +48,10 @@ namespace Solid
         void setActivated( bool active );
     signals:
         void ipDetailsChanged();
+
+    protected:
+        QObject *backendObject();
+        const QObject *backendObject() const;
 
     private:
         class Private;

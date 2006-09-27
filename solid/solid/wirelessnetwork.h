@@ -30,16 +30,11 @@ namespace Solid
     typedef QString MacAddress;
     typedef QStringList MacAddressList;
 
-    namespace Ifaces
-    {
-        class WirelessNetwork;
-    }
-
     class WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
     {
         Q_OBJECT
     public:
-        WirelessNetwork( Ifaces::WirelessNetwork * iface);
+        WirelessNetwork( QObject *backendObject );
         virtual ~WirelessNetwork();
 
         //TODO compare method would look for identical ESSID and at least one AP in common
@@ -83,10 +78,6 @@ namespace Solid
         void bitrateChanged( int );
         void associationChanged( bool );
         void activeChanged( bool );
-
-    private:
-        class Private;
-        Private * d;
 };
 
 } //Solid

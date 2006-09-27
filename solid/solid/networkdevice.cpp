@@ -36,8 +36,8 @@ namespace Solid
             Private() : iface( 0 ) {}
             ~Private();
             Ifaces::NetworkDevice * iface;
-            Ifaces::Network *findRegisteredNetwork( const QString &uni );
-            QMap<QString, Ifaces::Network*> networkMap;
+            QObject *findRegisteredNetwork( const QString &uni );
+            QMap<QString, QObject*> networkMap;
     };
 }
 
@@ -143,9 +143,9 @@ Solid::NetworkList Solid::NetworkDevice::networks()
 
     foreach( QString uni, uniList )
     {
-        Ifaces::Network *network = d->findRegisteredNetwork( uni );
-        if ( Ifaces::WirelessNetwork * wlan = dynamic_cast<Ifaces::WirelessNetwork *>( network ) )
-            list.append( new Solid::WirelessNetwork( wlan ) );
+        QObject *network = d->findRegisteredNetwork( uni );
+        if ( qobject_cast<Ifaces::WirelessNetwork *>( network )!=0 )
+            list.append( new Solid::WirelessNetwork( network ) );
         else
             list.append( new Network( network ) );
     }
@@ -157,15 +157,15 @@ Solid::NetworkList Solid::NetworkDevice::networks()
 
 Solid::NetworkDevice::Private::~Private()
 {
-    foreach( Ifaces::Network * network, networkMap )
+    foreach( QObject *network, networkMap )
     {
         delete network;
     }
 }
 
-Solid::Ifaces::Network *Solid::NetworkDevice::Private::findRegisteredNetwork( const QString &uni )
+QObject *Solid::NetworkDevice::Private::findRegisteredNetwork( const QString &uni )
 {
-    Ifaces::Network *network;
+    QObject *network;
 
     if ( networkMap.contains( uni ) )
     {

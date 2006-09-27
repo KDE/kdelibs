@@ -19,19 +19,10 @@
 
 #include "wirelessnetwork.h"
 
-#include "authentication.h"
-
-Solid::Ifaces::WirelessNetwork::WirelessNetwork( const QString & uni, QObject *parent )
-    : Network( uni, parent )
-{
-
-}
-
 Solid::Ifaces::WirelessNetwork::~WirelessNetwork()
 {
 
 }
 
-#include "wirelessnetwork.moc"
 
 

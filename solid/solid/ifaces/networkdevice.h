@@ -24,7 +24,6 @@
 #include <kdelibs_export.h>
 
 #include <solid/ifaces/enums.h>
-//#include <solid/ifaces/networkmanager.h>
 
 #include <QObject>
 
@@ -32,7 +31,6 @@ namespace Solid
 {
 namespace Ifaces
 {
-    class Network;
     /**
      * Represents a network device as seen by the networking subsystem.
      * For non network specific hardware details,
@@ -63,7 +61,7 @@ namespace Ifaces
         /**
          * Get the Network object corresponding to the given UNI
          */
-        virtual Network * createNetwork( const QString & uni )= 0;
+        virtual QObject * createNetwork( const QString & uni )= 0;
 
         /**
          * Access the networks available via this network devices
