@@ -24,6 +24,7 @@
 #include <solid/ifaces/networkdevice.h>
 #include <solid/ifaces/wirelessnetwork.h>
 
+#include "networkmanager.h"
 #include "network.h"
 #include "networkdevice.h"
 #include "wirelessnetwork.h"
@@ -47,6 +48,23 @@ Solid::NetworkDevice::NetworkDevice()
 {
 }
 
+Solid::NetworkDevice::NetworkDevice( const QString &uni )
+    : QObject(), d( new Private )
+{
+    const NetworkDevice &device = NetworkManager::self().findNetworkDevice( uni );
+
+    d->iface = device.d->iface;
+
+    connect( d->iface, SIGNAL( activeChanged( bool ) ),
+             this, SIGNAL( activeChanged( bool ) ) );
+    connect( d->iface, SIGNAL( linkUpChanged( bool ) ),
+             this, SIGNAL( linkUpChanged( bool ) ) );
+    connect( d->iface, SIGNAL( signalStrengthChanged( int ) ),
+             this, SIGNAL( signalStrengthChanged( int ) ) );
+    connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
+             this, SIGNAL( connectionStateChanged( int ) ) );
+}
+
 Solid::NetworkDevice::NetworkDevice( Ifaces::NetworkDevice *iface )
     : QObject( ), d( new Private )
 {
@@ -66,6 +84,15 @@ Solid::NetworkDevice::NetworkDevice( const NetworkDevice &device )
     : QObject(), d( new Private )
 {
     d->iface = device.d->iface;
+
+    connect( d->iface, SIGNAL( activeChanged( bool ) ),
+             this, SIGNAL( activeChanged( bool ) ) );
+    connect( d->iface, SIGNAL( linkUpChanged( bool ) ),
+             this, SIGNAL( linkUpChanged( bool ) ) );
+    connect( d->iface, SIGNAL( signalStrengthChanged( int ) ),
+             this, SIGNAL( signalStrengthChanged( int ) ) );
+    connect( d->iface, SIGNAL( connectionStateChanged( int ) ),
+             this, SIGNAL( connectionStateChanged( int ) ) );
 }
 
 Solid::NetworkDevice::~NetworkDevice()

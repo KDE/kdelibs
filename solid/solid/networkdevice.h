@@ -35,6 +35,7 @@ namespace Solid
          * Invalid device
          */
         NetworkDevice();
+        NetworkDevice( const QString &uni );
         NetworkDevice( Ifaces::NetworkDevice * );
         NetworkDevice( const NetworkDevice & );
         ~NetworkDevice();

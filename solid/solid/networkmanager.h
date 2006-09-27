@@ -77,7 +77,7 @@ Q_OBJECT
         /**
          * Access a given device instance
          */
-        NetworkDevice findNetworkDevice( const QString & udi );
+        const NetworkDevice &findNetworkDevice( const QString & udi );
 
         /**
          * Retrieves a reference to the loaded backend.
