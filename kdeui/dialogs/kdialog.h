@@ -379,11 +379,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * Normally you should not use this function.
      * @em Never delete the object returned by this function.
-     * See also enableButton(), showButton(),
-     * setButtonTip(), setButtonWhatsThis(), and setButtonText().
+     * See also enableButton(), showButton(), setButtonGuiItem().
      *
-     * @param id Integer identifier of the button.
-     * @return The button or 0 if the button does not exists.
+     * @param id Identifier of the button.
+     * @return The button or 0 if the button does not exist.
      */
     KPushButton* button( ButtonCode id ) const;
 
