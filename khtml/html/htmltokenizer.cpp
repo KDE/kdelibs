@@ -395,7 +395,7 @@ void HTMLTokenizer::scriptHandler()
         CachedScript* cs = 0;
 
         // forget what we just got, load from src url instead
-        if ( !currentScriptSrc.isEmpty() &&
+        if ( !currentScriptSrc.isEmpty() && javascript && 
              (cs = parser->doc()->docLoader()->requestScript(currentScriptSrc, scriptSrcCharset) )) {
             cachedScript.enqueue(cs);
         }
@@ -1153,6 +1153,8 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         type.compare("text/ecmascript") != 0 &&
                         type.compare("text/livescript") != 0 &&
 			type.compare("application/x-javascript") != 0 &&
+			type.compare("application/x-ecmascript") != 0 &&
+			type.compare("application/javascript") != 0 && 
 			type.compare("application/ecmascript") != 0 )
                         javascript = false;
                 } else if( a ) {
