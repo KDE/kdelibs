@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=MimeType
+Encoding=UTF-8
+MimeType=application/x-openraster
+Icon=krita_kra
+Patterns=*.odr;
+X-KDE-AutoEmbed=false
+Comment=OpenRaster Document
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.odr
