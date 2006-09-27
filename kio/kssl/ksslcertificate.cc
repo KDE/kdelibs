@@ -201,13 +201,13 @@ int n, i;
 	rc = i18n("Signature Algorithm: ");
 	rc += (i == NID_undef)?i18n("Unknown"):QString(d->kossl->OBJ_nid2ln(i));
 
-	rc += "\n";
+	rc += '\n';
 	rc += i18n("Signature Contents:");
 	n = d->m_cert->signature->length;
 	s = (char *)d->m_cert->signature->data;
 	for (i = 0; i < n; i++) {
 		if (i%20 != 0) rc += ':';
-		else rc += "\n";
+		else rc += '\n';
 		rc.append(QChar(hv[(s[i]&0xf0)>>4]));
 		rc.append(QChar(hv[s[i]&0x0f]));
 	}
@@ -338,17 +338,17 @@ char *x = NULL;
 		#ifndef NO_RSA
 			if (pkey->type == EVP_PKEY_RSA) {
 				x = d->kossl->BN_bn2hex(pkey->pkey.rsa->n);
-                                rc = i18n("Key type: RSA (%1 bit)", strlen(x)*4) + "\n";
+                                rc = i18n("Key type: RSA (%1 bit)", strlen(x)*4) + '\n';
 
 				rc += i18n("Modulus: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
 						rc += ':';
 					else if (i%40 == 0)
-						rc += "\n";
+						rc += '\n';
 					rc += x[i];
 				}
-				rc += "\n";
+				rc += '\n';
 				d->kossl->OPENSSL_free(x);
 
 				x = d->kossl->BN_bn2hex(pkey->pkey.rsa->e);
@@ -361,17 +361,17 @@ char *x = NULL;
 			if (pkey->type == EVP_PKEY_DSA) {
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->p);
 				// hack - this may not be always accurate
-                                rc = i18n("Key type: DSA (%1 bit)", strlen(x)*4) + "\n";
+                                rc = i18n("Key type: DSA (%1 bit)", strlen(x)*4) + '\n';
 
 				rc += i18n("Prime: ");
 				for (unsigned int i = 0; i < strlen(x); i++) {
 					if (i%40 != 0 && i%2 == 0)
 						rc += ':';
 					else if (i%40 == 0)
-						rc += "\n";
+						rc += '\n';
 					rc += x[i];
 				}
-				rc += "\n";
+				rc += '\n';
 				d->kossl->OPENSSL_free(x);
 
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->q);
@@ -380,10 +380,10 @@ char *x = NULL;
 					if (i%40 != 0 && i%2 == 0)
 						rc += ':';
 					else if (i%40 == 0)
-						rc += "\n";
+						rc += '\n';
 					rc += x[i];
 				}
-				rc += "\n";
+				rc += '\n';
 				d->kossl->OPENSSL_free(x);
 
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->g);
@@ -392,10 +392,10 @@ char *x = NULL;
 					if (i%40 != 0 && i%2 == 0)
 						rc += ':';
 					else if (i%40 == 0)
-						rc += "\n";
+						rc += '\n';
 					rc += x[i];
 				}
-				rc += "\n";
+				rc += '\n';
 				d->kossl->OPENSSL_free(x);
 
 				x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
@@ -404,10 +404,10 @@ char *x = NULL;
 					if (i%40 != 0 && i%2 == 0)
 						rc += ':';
 					else if (i%40 == 0)
-						rc += "\n";
+						rc += '\n';
 					rc += x[i];
 				}
-				rc += "\n";
+				rc += '\n';
 				d->kossl->OPENSSL_free(x);
 			}
 		#endif
@@ -990,7 +990,7 @@ const char *footer = "-----END CERTIFICATE-----\n";
 	thecert.prepend(header);
 
 	if (thecert[thecert.length()-1] != '\n')
-		thecert += "\n";
+		thecert += '\n';
 
 	thecert.append(footer);
 

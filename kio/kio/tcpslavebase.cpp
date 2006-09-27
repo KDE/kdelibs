@@ -795,7 +795,7 @@ int TCPSlaveBase::verifyCertificate()
        Q3PtrList<KSSLCertificate> chain = pc.chain().getChain();
        for (KSSLCertificate *c = chain.first(); c; c = chain.next()) {
           theChain += c->toString();
-          theChain += "\n";
+          theChain += '\n';
        }
        setMetaData("ssl_peer_chain", theChain);
     } else setMetaData("ssl_peer_chain", "");

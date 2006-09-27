@@ -258,7 +258,7 @@ void KDirWatchPrivate::slotActivated()
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
             Entry* sub_entry = 0;
             Q_FOREACH(sub_entry, e->m_entries)
-              if (sub_entry->path == e->path + "/" + path) break;
+              if (sub_entry->path == e->path + '/' + path) break;
 
             if (sub_entry /*&& sub_entry->isDir*/) {
               removeEntry(0,e->path, sub_entry);

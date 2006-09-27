@@ -87,7 +87,7 @@ QStringList vl = tokenizeBy(name, QRegExp("/[A-Za-z]+="), false);
 		QStringList apair = tokenizeBy(*j, QRegExp("="), false);
 		if (m_pairs.contains(apair[0])) {
 			QString oldValue = m_pairs[apair[0]];
-			oldValue += "\n";
+			oldValue += '\n';
 			oldValue += apair[1];
 			m_pairs.insert(apair[0], oldValue);
 		} else {
