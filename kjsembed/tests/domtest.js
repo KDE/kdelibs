@@ -44,8 +44,8 @@ var nodeList = root.elementsByTagName( "Greeting" );
 for( x = 0; x < nodeList.length(); ++x)
 {
 	var elem =  nodeList.item(x).toElement();
-	elem.setAttribute("New Property", 100 );
-	elem.setAttribute("Next Property", new QColor("blue") );
+	elem.setAttribute("New-Property", 100 );
+	elem.setAttribute("Next-Property", new QColor("blue") );
 }
 
 println("Modified doc:" + doc );
