@@ -167,7 +167,7 @@ KJS::JSObject *createQObject(KJS::ExecState *exec, T *value, KJSEmbed::ObjectBin
         }
         else
         {
-            qDebug("%s not a bound type, move up the chain", meta->className() );
+            // qDebug("%s not a bound type, move up the chain", meta->className() );
             meta = meta->superClass();
         }
 
