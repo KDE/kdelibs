@@ -538,8 +538,8 @@ void RenderLineEdit::calcMinMaxWidth()
 void RenderLineEdit::updateFromElement()
 {
     int ml = element()->maxLength();
-    if ( ml < 0 || ml > 1024 )
-        ml = 1024;
+    if ( ml < 0 )
+        ml = 32767;
 
     if ( widget()->maxLength() != ml )  {
         widget()->setMaxLength( ml );
