@@ -46,24 +46,24 @@ namespace Ifaces
 
         virtual QString uni() const = 0;
 
-        virtual bool isActive() = 0;
+        virtual bool isActive() const = 0;
 
-        virtual Type type() = 0;
+        virtual Type type() const = 0;
 
-        virtual ConnectionState connectionState() = 0;
+        virtual ConnectionState connectionState() const = 0;
 
-        virtual int signalStrength() = 0;
+        virtual int signalStrength() const = 0;
 
-        virtual int speed() = 0;
+        virtual int speed() const = 0;
 
-        virtual bool isLinkUp() = 0;
+        virtual bool isLinkUp() const = 0;
 
-        virtual Capabilities capabilities() = 0;
+        virtual Capabilities capabilities() const = 0;
 
         /**
          * Get the Network object corresponding to the given UNI
          */
-        virtual QObject * createNetwork( const QString & uni )= 0;
+        virtual QObject * createNetwork( const QString & uni ) = 0;
 
         /**
          * Access the networks available via this network devices
@@ -71,7 +71,7 @@ namespace Ifaces
          * but with wireless, multiple networks may be accessible.
          * @return A list of network UDIs.
          */
-        virtual QStringList networks() = 0;
+        virtual QStringList networks() const = 0;
     Q_SIGNALS:
         void activeChanged( bool );
         void linkUpChanged( bool );

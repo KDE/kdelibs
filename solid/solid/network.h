@@ -34,17 +34,17 @@ namespace Solid
         Network( QObject * );
         virtual ~Network();
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
-        QStringList ipV4Addresses();
-        QStringList ipV6Addresses();
+        QStringList ipV4Addresses() const;
+        QStringList ipV6Addresses() const;
 
-        QString subnetMask();
-        QString broadcastAddress();
+        QString subnetMask() const;
+        QString broadcastAddress() const;
         // wtf does NM use this for?
-        QString route();
+        QString route() const;
 
-        QString primaryDNS();
-        QString secondaryDNS();
-        QString uni();
+        QString primaryDNS() const;
+        QString secondaryDNS() const;
+        QString uni() const;
         void setActivated( bool active );
         bool isActive() const;
     Q_SIGNALS:

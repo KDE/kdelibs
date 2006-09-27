@@ -45,37 +45,37 @@ Solid::Network::~Network()
     delete d;
 }
 
-QStringList Solid::Network::ipV4Addresses()
+QStringList Solid::Network::ipV4Addresses() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), ipV4Addresses() );
 }
 
-QStringList Solid::Network::ipV6Addresses()
+QStringList Solid::Network::ipV6Addresses() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), ipV6Addresses() );
 }
 
-QString Solid::Network::subnetMask()
+QString Solid::Network::subnetMask() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), subnetMask() );
 }
 
-QString Solid::Network::broadcastAddress()
+QString Solid::Network::broadcastAddress() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), broadcastAddress() );
 }
 
-QString Solid::Network::route()
+QString Solid::Network::route() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), route() );
 }
 
-QString Solid::Network::primaryDNS()
+QString Solid::Network::primaryDNS() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), primaryDNS() );
 }
 
-QString Solid::Network::secondaryDNS()
+QString Solid::Network::secondaryDNS() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), secondaryDNS() );
 }
@@ -90,7 +90,7 @@ bool Solid::Network::isActive() const
     return_SOLID_CALL( Ifaces::Network*, backendObject(), false, isActive() );
 }
 
-QString Solid::Network::uni()
+QString Solid::Network::uni() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), uni() );
 }

@@ -40,20 +40,20 @@ namespace Ifaces
     public:
         virtual ~Network();
         // TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
-        virtual QStringList ipV4Addresses() = 0;
-        virtual QStringList ipV6Addresses() = 0;
+        virtual QStringList ipV4Addresses() const = 0;
+        virtual QStringList ipV6Addresses() const = 0;
 
-        virtual QString subnetMask() = 0;
-        virtual QString broadcastAddress() = 0;
+        virtual QString subnetMask() const = 0;
+        virtual QString broadcastAddress() const = 0;
         // wtf does NM use this for?
-        virtual QString route() = 0;
+        virtual QString route() const = 0;
 
-        virtual QString primaryDNS() = 0;
-        virtual QString secondaryDNS() = 0;
+        virtual QString primaryDNS() const = 0;
+        virtual QString secondaryDNS() const = 0;
         /**
          * Get the activation status of this network.  For ethernets, this will always be true
          */
-        virtual bool isActive() = 0;
+        virtual bool isActive() const = 0;
         /**
          * Activate or deactivate this network
          * TODO add status change signals?
@@ -62,7 +62,7 @@ namespace Ifaces
         /**
          * The Unique Network Identifier for this network
          */
-        virtual QString uni() = 0;
+        virtual QString uni() const = 0;
 
     protected:
     //Q_SIGNALS:

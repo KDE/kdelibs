@@ -159,7 +159,7 @@ const QString &Solid::DeviceManager::errorText() const
     return d->errorText;
 }
 
-Solid::DeviceList Solid::DeviceManager::allDevices()
+Solid::DeviceList Solid::DeviceManager::allDevices() const
 {
     DeviceList list;
 
@@ -180,7 +180,7 @@ Solid::DeviceList Solid::DeviceManager::allDevices()
     return list;
 }
 
-bool Solid::DeviceManager::deviceExists( const QString &udi )
+bool Solid::DeviceManager::deviceExists( const QString &udi ) const
 {
     if ( d->backend == 0 ) return false;
 
@@ -194,7 +194,7 @@ bool Solid::DeviceManager::deviceExists( const QString &udi )
     }
 }
 
-const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi )
+const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi ) const
 {
     if ( d->backend == 0 ) return d->invalidDevice;
 
@@ -212,7 +212,7 @@ const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi )
 
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
                                                               const Capability::Type &capability,
-                                                              const QString &predicate )
+                                                              const QString &predicate ) const
 {
     Predicate p = Predicate::fromString( predicate );
 
@@ -228,7 +228,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &par
 
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &parentUdi,
                                                               const Capability::Type &capability,
-                                                              const Predicate &predicate )
+                                                              const Predicate &predicate ) const
 {
     DeviceList list;
 

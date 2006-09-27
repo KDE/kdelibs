@@ -41,30 +41,30 @@ namespace Solid
         ~NetworkDevice();
 
         NetworkDevice &operator=( const NetworkDevice & );
-        bool isValid();
-        QString uni();
-        bool isActive();
+        bool isValid() const;
+        QString uni() const;
+        bool isActive() const;
 
-        Type type();
+        Type type() const;
 
-        ConnectionState connectionState();
+        ConnectionState connectionState() const;
 
-        int signalStrength();
+        int signalStrength() const;
 
-        int speed();
+        int speed() const;
 
-        bool isLinkUp();
+        bool isLinkUp() const;
 
-        Capabilities capabilities();
+        Capabilities capabilities() const;
 
-        Network *findNetwork( const QString & uni );
+        Network *findNetwork( const QString & uni ) const;
         /**
          * Access the networks available via this network devices
          * For wired network devices, this will probably be a single network,
          * but with wireless, multiple networks may be accessible.
          * @return A list of Network objects.
          */
-        NetworkList networks();
+        NetworkList networks() const;
     Q_SIGNALS:
         void activeChanged( bool );
         void linkUpChanged( bool );

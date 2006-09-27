@@ -90,7 +90,7 @@ namespace Solid
          *
          * @return the list of the devices available
          */
-        DeviceList allDevices();
+        DeviceList allDevices() const;
 
         /**
          * Tests if a device exists in the underlying system given its
@@ -99,7 +99,7 @@ namespace Solid
          * @param udi the identifier of the device to check
          * @return true if a device has the given udi in the system, false otherwise
          */
-        bool deviceExists( const QString &udi );
+        bool deviceExists( const QString &udi ) const;
 
         /**
          * Retrieves a device of the system given it's UDI.
@@ -108,7 +108,7 @@ namespace Solid
          * @return a device that has the given UDI in the system if possible, an
          * invalid device otherwise
          */
-        const Device &findDevice( const QString &udi );
+        const Device &findDevice( const QString &udi ) const;
 
         /**
          * Retrieves a list of devices of the system given matching the given
@@ -124,7 +124,7 @@ namespace Solid
          */
         DeviceList findDevicesFromQuery( const QString &parentUdi,
                                          const Capability::Type &capability = Capability::Unknown,
-                                         const Predicate &predicate = Predicate() );
+                                         const Predicate &predicate = Predicate() ) const;
 
         /**
          * Convenience function see above.
@@ -136,7 +136,7 @@ namespace Solid
          */
         DeviceList findDevicesFromQuery( const QString &parentUdi,
                                          const Capability::Type &capability,
-                                         const QString &predicate );
+                                         const QString &predicate ) const;
 
         /**
          * Retrieves a reference to the loaded backend.

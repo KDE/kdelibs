@@ -67,17 +67,17 @@ Q_OBJECT
          * Get a list of all network devices in the system
          * Note: includes getDeviceList and getDialupList from knm
          */
-        NetworkDeviceList networkDevices();
+        NetworkDeviceList networkDevices() const;
         /**
          * Get the active devices (all types)
          * TODO: NM only supports 1 active device at present
          */
-        NetworkDeviceList activeNetworkDevices();
+        NetworkDeviceList activeNetworkDevices() const;
 
         /**
          * Access a given device instance
          */
-        const NetworkDevice &findNetworkDevice( const QString & udi );
+        const NetworkDevice &findNetworkDevice( const QString & udi ) const;
 
         /**
          * Retrieves a reference to the loaded backend.
@@ -122,7 +122,7 @@ Q_OBJECT
         NetworkManager();
         NetworkManager( Ifaces::NetworkManager *backend );
         virtual ~NetworkManager();
-        NetworkDeviceList buildDeviceList( const QStringList & udiList );
+        NetworkDeviceList buildDeviceList( const QStringList & udiList ) const;
 
     private Q_SLOTS:
         void slotAdded( const QString &uni );

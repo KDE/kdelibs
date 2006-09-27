@@ -50,37 +50,37 @@ namespace Ifaces
         virtual bool isSameAs( const WirelessNetwork & ) const = 0;
 
         // PHY stuff
-        virtual int signalStrength() = 0;
+        virtual int signalStrength() const = 0;
 
-        virtual int bitRate() = 0;
+        virtual int bitRate() const = 0;
 
-        virtual int frequency() = 0;
+        virtual int frequency() const = 0;
 
-        virtual Capabilities capabilities() = 0;
+        virtual Capabilities capabilities() const = 0;
 
         // Service Set stuff
-        virtual QString essid() = 0;
+        virtual QString essid() const = 0;
 
-        virtual OperationMode mode() = 0;
+        virtual OperationMode mode() const = 0;
 
-        virtual bool isAssociated() = 0;
+        virtual bool isAssociated() const = 0;
 
-        virtual bool isEncrypted() = 0;
+        virtual bool isEncrypted() const = 0;
 
-        virtual bool isHidden() = 0;
+        virtual bool isHidden() const = 0;
 
-        virtual bool isActive() = 0;
+        virtual bool isActive() const = 0;
 
         /**
          * List of access points or ad hoc network nodes making up the
          * network that are currently visible to the card.
          */
-        virtual MacAddressList bssList() = 0;
+        virtual MacAddressList bssList() const = 0;
 
         /**
          * TODO decide how to handle these objects - pass by value?
          */
-        virtual Authentication * authentication() = 0;
+        virtual Authentication *authentication() const = 0;
         /**
          * set the authentication currently in use on this network
          */

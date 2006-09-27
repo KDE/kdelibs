@@ -124,59 +124,59 @@ Solid::NetworkDevice &Solid::NetworkDevice::operator=( const Solid::NetworkDevic
     return *this;
 }
 
-bool Solid::NetworkDevice::isValid()
+bool Solid::NetworkDevice::isValid() const
 {
     return d->iface!=0;
 }
 
-QString Solid::NetworkDevice::uni()
+QString Solid::NetworkDevice::uni() const
 {
     return d->iface->uni();
 }
 
-bool Solid::NetworkDevice::isActive()
+bool Solid::NetworkDevice::isActive() const
 {
     return d->iface->isActive();
 }
 
-Solid::NetworkDevice::Type Solid::NetworkDevice::type()
+Solid::NetworkDevice::Type Solid::NetworkDevice::type() const
 {
     return d->iface->type();
 
 }
-Solid::NetworkDevice::ConnectionState Solid::NetworkDevice::connectionState()
+Solid::NetworkDevice::ConnectionState Solid::NetworkDevice::connectionState() const
 {
     return d->iface->connectionState();
 }
 
-int Solid::NetworkDevice::signalStrength()
+int Solid::NetworkDevice::signalStrength() const
 {
     return d->iface->signalStrength();
 }
 
-int Solid::NetworkDevice::speed()
+int Solid::NetworkDevice::speed() const
 {
     return d->iface->speed();
 }
 
-bool Solid::NetworkDevice::isLinkUp()
+bool Solid::NetworkDevice::isLinkUp() const
 {
     return d->iface->isLinkUp();
 }
 
-Solid::NetworkDevice::Capabilities Solid::NetworkDevice::capabilities()
+Solid::NetworkDevice::Capabilities Solid::NetworkDevice::capabilities() const
 {
     return d->iface->capabilities();
 }
 
-Solid::Network * Solid::NetworkDevice::findNetwork( const QString & uni )
+Solid::Network * Solid::NetworkDevice::findNetwork( const QString & uni ) const
 {
     if ( d->iface == 0 ) return 0;
 
     return new Network( d->findRegisteredNetwork( uni ) );
 }
 
-Solid::NetworkList Solid::NetworkDevice::networks()
+Solid::NetworkList Solid::NetworkDevice::networks() const
 {
     Solid::NetworkList list;
 

@@ -154,7 +154,7 @@ Solid::NetworkManager::~NetworkManager()
     d->unregisterBackend();
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringList & uniList )
+Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringList & uniList ) const
 {
     NetworkDeviceList list;
 
@@ -173,12 +173,12 @@ Solid::NetworkDeviceList Solid::NetworkManager::buildDeviceList( const QStringLi
     return list;
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::networkDevices()
+Solid::NetworkDeviceList Solid::NetworkManager::networkDevices() const
 {
     return buildDeviceList( d->backend->networkDevices() );
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices()
+Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices() const
 {
     return buildDeviceList( d->backend->activeNetworkDevices() );
 }
@@ -213,7 +213,7 @@ void Solid::NetworkManager::notifyHiddenNetwork( const QString & essid )
     d->backend->notifyHiddenNetwork( essid );
 }
 
-const Solid::NetworkDevice &Solid::NetworkManager::findNetworkDevice( const QString &uni )
+const Solid::NetworkDevice &Solid::NetworkManager::findNetworkDevice( const QString &uni ) const
 {
     if ( d->backend == 0 ) return d->invalidDevice;
 
