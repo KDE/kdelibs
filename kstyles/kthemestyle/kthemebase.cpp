@@ -537,7 +537,7 @@ KThemeBase::KThemeBase( const QString& dir, const QString & configFile )
     //else SCREAM!!
 
 
-    configFileName = "/" + configFileName + "/";
+    configFileName = '/' + configFileName + '/';
 
     readConfig( Qt::WindowsStyle );
     cache = new KThemeCache( cacheSize );
@@ -1201,7 +1201,7 @@ void KThemeBase::applyResourceGroup( QSettings *config, int i )
     // clear the old property
     d->props.erase( widgetEntries[ i ] );
 
-    QString base = configFileName + widgetEntries[ i ] + "/";
+    QString base = configFileName + widgetEntries[ i ] + '/';
 
     Prop& prop = d->props[ widgetEntries[ i ] ];
 
