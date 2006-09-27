@@ -23,7 +23,7 @@ function write_ctor( compoundDef )
             {
                 if ( memberName.indexOf(compoundName) != -1 ) // This _is_ a ctor
                 {
-                    if ( memberName.indexOf('~') == -1 )
+                    if ( memberName.indexOf('~') == -1 ) // This is _not_ a dtor
                     {
                         var args = memberArgList.count();
                         if(!methodListList[args]) {
@@ -40,8 +40,8 @@ function write_ctor( compoundDef )
         if(!methodListList[idx]) continue;
         var memberElement = methodListList[idx][0];
         var memberArgList = memberElement.elementsByTagName('param');
-        ctor += '   if (args.size() == ' + memberArgList.count() + ' )\n' +
-        '   {\n';
+        ctor += '    if (args.size() == ' + memberArgList.count() + ' )\n' +
+        '    {\n';
 
         var tmpArgs = '';
         if ( memberArgList.count() == 0 )
@@ -61,8 +61,8 @@ function write_ctor( compoundDef )
         var tmpIdx = tmpArgs.lastIndexOf(',');
         tmpArgs = tmpArgs.substr(0, tmpIdx);
         ctor +=
-        '       return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
-        '   }\n';
+        '        return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
+        '    }\n';
     }
     ctor += '}';
     return ctor;
@@ -86,16 +86,17 @@ function extract_parameter_const(methodList, numArgs)
             var parameter = memberArgList.item(argIdx).toElement();
             var paramType = parameter.firstChildElement('type').toElement().toString();
             if(isVariant(paramType))
-                params += 'object'+argIdx+' && object'+argIdx+'->inherits(&ColorBinding::info) ';
+                params += 'object'+argIdx+' && object'+argIdx+'->inherits(&ColorBinding::info)';
             else
-                params += 'isBasic(value'+argIdx+') ';
+                params += 'isBasic(value'+argIdx+')';
             if(argIdx < numArgs-1)
                 params += '&& ';
-            variables += extract_parameter(parameter, argIdx);
+            variables += '    ' + extract_parameter(parameter, argIdx);
         }
-        params += '){\n';
+        params += ')\n';
+        params += '        {\n';
         params += variables;
-        params += '        }\n'
+        params += '        }\n';
     }
     return params;
 }
@@ -161,7 +162,7 @@ function write_binding_new( class_doc )
 
     compoundData = compoundName + "Data";
 
-    println ( "compoundIncludes: " + compoundIncludes );
+//    println ( "compoundIncludes: " + compoundIncludes );
     includes += '#include "' + compoundName + '_bind.h"\n';
     includes += "#include <" + compoundIncludes + ">\n";
     includes += "#include <object_binding.h>\n";
@@ -175,8 +176,8 @@ function write_binding_new( class_doc )
         compoundName + 'Binding::' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName +' &value )\n' +
         '   : ValueBinding(exec, value)\n' +
         '{\n' +
-        '   StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
-        '   StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
+        '    StaticBinding::publish(exec, this, ' + compoundData + '::methods() );\n' +
+        '    StaticBinding::publish(exec, this, ValueFactory::methods() );\n' +
         '}\n\n';
 
     // Methods
@@ -185,8 +186,8 @@ function write_binding_new( class_doc )
         '{\n';
 
     enums +=
-	'\n' +
-	'const Enumerator ' + compoundData + '::p_enums[] = {\n';
+        '\n' +
+        'const Enumerator ' + compoundData + '::p_enums[] = {\n';
 
     var hasEnums = false;
     var memberList = class_doc.elementsByTagName( "memberdef" );
@@ -211,23 +212,23 @@ function write_binding_new( class_doc )
                             '// ' + methodType + ' ' + memberName + methodArgs + '\n' +
                             'KJS::JSValue *'+ memberName + '( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) \n' +
                             '{ \n' +
-                            '   KJS::JSValue *result = KJS::Null(); \n' +
-                            '   KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
-                            '   if( imp ) \n' +
-                            '   { \n' +
-                            '       ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
+                            '    KJS::JSValue *result = KJS::Null(); \n' +
+                            '    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); \n' +
+                            '    if( imp ) \n' +
+                            '    { \n' +
+                            '        ' + compoundName + ' value = imp->value<' + compoundName + '>();\n';
 
                         // Handle arguments
                         var methodArgList = memberElement.elementsByTagName('param');
                         if ( methodArgList.count() == 0 )
                         {
                             methods +=
-                            '       ' + methodType + ' tmp = value.' + memberName + '();\n';
+                            '        ' + methodType + ' tmp = value.' + memberName + '();\n';
 
                             if ( methodType.indexOf('Qt::') != -1 )  // Enum Value
                             {
                                 methods += 
-                                '       result = KJS::Number( tmp );\n';
+                                '        result = KJS::Number( tmp );\n';
                             }
                             else
                             {
@@ -252,34 +253,33 @@ function write_binding_new( class_doc )
                         }
 
                         methods +=
-                        '       imp->setValue(qVariantFromValue(value)); \n' +
-                        '   }\n' +
-                        '   else \n' +
-                        '   {\n' +
-                        "       KJS::throwError(exec, KJS::GeneralError, \"We have a problem baby\");\n" +
-                        '   }\n\n' +
-                        '   return result; \n' +
+                        '        imp->setValue(qVariantFromValue(value)); \n' +
+                        '    }\n' +
+                        '    else \n' +
+                        '    {\n' +
+                        "        KJS::throwError(exec, KJS::GeneralError, \"We have a problem baby\");\n" +
+                        '    }\n\n' +
+                        '    return result; \n' +
                         '}\n\n';
                     }
                 }
             }
         }
-	else if ( memberKind == 'enum' )
-	{
-	    if ( memberProt == 'public' )
+        else if ( memberKind == 'enum' )
+        {
+            if ( memberProt == 'public' )
             {
-		println( '      Processing enum ' + memberName );
-		hasEnums = true;
-		var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
-		for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
-		{
-		    var valueName = enumValueList.item( enumidx ).toElement().firstChildElement('name').toElement().toString();
-		    println( '         ' + valueName );
-		    enums += '   {"' + valueName + '", ' + compoundName + '::' + valueName + ' },\n';
-		}
-
-	    }
-	}
+                println( '      Processing enum ' + memberName );
+                hasEnums = true;
+                var enumValueList = memberElement.elementsByTagName( 'enumvalue' );
+                for( enumidx = 0; enumidx < enumValueList.length(); ++enumidx )
+                {
+                    var valueName = enumValueList.item( enumidx ).toElement().firstChildElement('name').toElement().toString();
+                    println( '        ' + valueName );
+                    enums += '    {"' + valueName + '", ' + compoundName + '::' + valueName + ' },\n';
+                }
+            }
+        }
     }
 
     methods +=
@@ -287,12 +287,12 @@ function write_binding_new( class_doc )
 
     if ( hasEnums )
     {
-	enums +=
-	    '   {0, 0}\n' +
-	    '};\n';
+        enums +=
+            '    {0, 0}\n' +
+            '};\n';
     }
     else {
-	enums = 'const Enumerator ' + compoundData + '::p_enums[] = {{0, 0 }};\n';
+        enums = 'const Enumerator ' + compoundData + '::p_enums[] = {{0, 0 }};\n';
     }
 
 
@@ -366,14 +366,14 @@ function extract_parameter( parameter, paramIdx )
     var coreParamTypeMatch = const_ref_rx.exec(paramType);
     var coreParamType;
     if (coreParamTypeMatch == null)
-	coreParamType = paramType;
+        coreParamType = paramType;
     else
-	coreParamType = coreParamTypeMatch[1];
+        coreParamType = coreParamTypeMatch[1];
 
     if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
     {
         extracted +=
-            '       ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
+            '        ' + paramType + ' ' + paramVar + ' = static_cast<' + paramType + '>(KJSEmbed::extractInt(exec, args, ' + paramIdx + ', ';
 
         if (!paramDefault.isNull())
             extracted += paramDefault.toString() + '));\n';
@@ -386,13 +386,13 @@ function extract_parameter( parameter, paramIdx )
     {
         //extracted += 'if(args['+paramIdx+'].getObject() != 0 && QByteArray(args['+paramIdx+'].getObject()->classInfo()->className) == "'+paramType+'");\n';
         extracted +=
-            '       ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
     }
     else    // It's an object, or something else?
     {
         extracted +=
-            '       ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + coreParamType + '>(exec, args, ' + paramIdx + ', ';
+            '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractObject<' + coreParamType + '>(exec, args, ' + paramIdx + ', ';
     }
 
     if (!paramDefault.isNull())
