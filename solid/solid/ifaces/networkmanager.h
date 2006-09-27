@@ -49,10 +49,10 @@ namespace Ifaces
          */
         virtual QStringList activeNetworkDevices() const = 0;
         /**
-         * Create a backend specific device instance
+         * Create a backend specific device instance for the device with the
+         * given UNI
          */
         virtual QObject *createNetworkDevice( const QString & ) = 0;
-
         /**
          * Create a backend specific authentication validator
          */
