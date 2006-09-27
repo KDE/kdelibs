@@ -85,6 +85,11 @@ void Solid::Network::setActivated( bool active )
     SOLID_CALL( Ifaces::Network*, backendObject(), setActivated(active) );
 }
 
+bool Solid::Network::isActive() const
+{
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), false, isActive() );
+}
+
 QString Solid::Network::uni()
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), uni() );

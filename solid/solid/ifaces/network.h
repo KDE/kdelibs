@@ -51,6 +51,10 @@ namespace Ifaces
         virtual QString primaryDNS() = 0;
         virtual QString secondaryDNS() = 0;
         /**
+         * Get the activation status of this network.  For ethernets, this will always be true
+         */
+        virtual bool isActive() = 0;
+        /**
          * Activate or deactivate this network
          * TODO add status change signals?
          */
