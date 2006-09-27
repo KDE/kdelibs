@@ -82,7 +82,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
         /**
          * Specify weither a page is appropriate.
          *
-         * A page is not appropriate if it should not be showed because the contents of others page make it unapropriate.
+         * A page is not appropriate if it should not be showed, because the contents of others page make it unappropriate.
          *
          * A page which is not apropriate will not be shown.
          *

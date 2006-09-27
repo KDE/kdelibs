@@ -33,7 +33,7 @@ class KDialogButtonBoxPrivate;
 /**
  * Container widget for buttons.
  *
- * An extention of QDialogButtonBox which allow the use of KGuiItem and 
+ * An extension of QDialogButtonBox which allow the use of KGuiItem and
  * conveniance slot connection.
  *
  * @author Mario Weilguni <mweilguni@sime.com>
