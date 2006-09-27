@@ -184,7 +184,7 @@ bool EPSHandler::read(QImage *image)
     tmp.setNum( wantedWidth );
     cmdBuf += tmp;
     tmp.setNum( wantedHeight );
-    cmdBuf += "x";
+    cmdBuf += 'x';
     cmdBuf += tmp;
     cmdBuf += " -dSAFER -dPARANOIDSAFER -dNOPAUSE -sDEVICE=ppm -c "
               "0 0 moveto "
