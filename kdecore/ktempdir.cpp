@@ -174,21 +174,21 @@ KTempDir::unlink()
 static bool
 rmtree(const QByteArray& name)
 {
-    kDebug() << "Checking directory for remove " << name << endl;
+    //kDebug(180) << "Checking directory for remove " << name << endl;
     KDE_struct_stat st;
     if ( KDE_lstat( name.data(), &st ) == -1 ) // Do not dereference symlink!
         return false;
     if ( S_ISDIR( st.st_mode ) )
     {
         // This is a directory, so process it
-        kDebug() << "File " << name << " is DIRECTORY!" << endl;
+        //kDebug(180) << "File " << name << " is DIRECTORY!" << endl;
         KDE_struct_dirent* ep;
         DIR* dp = ::opendir( name.data() );
         if ( !dp )
             return false;
         while ( ( ep = KDE_readdir( dp ) ) )
         {
-            kDebug() << "CHECKING " << name << "/" << ep->d_name << endl;
+            //kDebug(180) << "CHECKING " << name << "/" << ep->d_name << endl;
             if ( !qstrcmp( ep->d_name, "." ) || !qstrcmp( ep->d_name, ".." ) )
                 continue;
             QByteArray newName( name );
@@ -205,7 +205,7 @@ rmtree(const QByteArray& name)
             if ( ::closedir( dp ) )
                 return false;
             // Recurse!
-            kDebug() << "RECURSE: " << newName << endl;
+            //kDebug(180) << "RECURSE: " << newName << endl;
             if ( ! rmtree( newName ) )
                 return false;
             // We have to re-open the directory before continuing
@@ -215,20 +215,20 @@ rmtree(const QByteArray& name)
         }
         if ( ::closedir( dp ) )
             return false;
-        kDebug() << "RMDIR dir " << name << endl;
+        //kDebug(180) << "RMDIR dir " << name << endl;
         return ! ::rmdir( name );
     }
     else
     {
          // This is a non-directory file, so remove it
-         kDebug() << "UNLINKING file " << name << endl;
+         kDebug(180) << "KTempDir: unlinking file " << name << endl;
          return ! ::unlink( name );
     }
 }
 
 bool KTempDir::removeDir( const QString& path )
 {
-    kDebug() << k_funcinfo << " " << path << endl;
+    kDebug(180) << k_funcinfo << " " << path << endl;
     if ( !QFile::exists( path ) )
         return true; // The goal is that there is no directory
 
