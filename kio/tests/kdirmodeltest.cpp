@@ -20,6 +20,7 @@
 #include "kdirmodeltest.h"
 #include "kdirmodeltest.moc"
 #include <kdirmodel.h>
+#include <kdirlister.h>
 
 #include <qtest_kde.h>
 #include <kdebug.h>

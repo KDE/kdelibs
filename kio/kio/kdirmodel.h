@@ -36,7 +36,7 @@ class KDirModelPrivate;
  * @author David Faure
  * Based on work by Hamish Rodda and Pascal Letourneau
  */
-class KDirModel : public QAbstractItemModel
+class KIO_EXPORT KDirModel : public QAbstractItemModel
 {
     Q_OBJECT
 
