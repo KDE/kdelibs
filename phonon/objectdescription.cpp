@@ -108,36 +108,28 @@ ObjectDescription<T> ObjectDescription<T>::fromIndex( int index )
 }
 
 #define PHONON_INSTANCIATE_ALL_FUNCTIONS( T ) \
-do { \
-	ObjectDescription<T> a = ObjectDescription<T>::fromIndex( 0 ); \
-	ObjectDescription<T> b; \
-	b = a; \
-	ObjectDescription<T> c( b ); \
-	if( a == b ) \
-	{ \
-		return; \
-	} \
-	a.name(); \
-	a.description(); \
-	a.index(); \
-	a.isValid(); \
-} while( false )
-
-namespace {
-	void _k_instanciateAllTemplateFunctions()
-	{
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioOutputDeviceType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCaptureDeviceType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoOutputDeviceType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCaptureDeviceType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioEffectType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoEffectType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCodecType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCodecType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( ContainerFormatType );
-		PHONON_INSTANCIATE_ALL_FUNCTIONS( VisualizationType );
-	}
-}
+	template ObjectDescription<T> ObjectDescription<T>::fromIndex(int); \
+	template int ObjectDescription<T>::index() const; \
+	template QString const & ObjectDescription<T>::name() const; \
+	template ObjectDescription<T>::~ObjectDescription() ; \
+    template ObjectDescription<T>& ObjectDescription<T>::operator=( const ObjectDescription<T>& ); \
+    template ObjectDescription<T>::ObjectDescription(); \
+    template ObjectDescription<T>::ObjectDescription(const ObjectDescription<T>& ); \
+    template ObjectDescription<T>::ObjectDescription( int, const QString&, const QString&  ); \
+    template bool ObjectDescription<T>::operator==( const ObjectDescription<T>& ) const; \
+	template const QString& ObjectDescription<T>::description() const; \
+    template bool ObjectDescription<T>::isValid() const;
+	
+PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioOutputDeviceType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCaptureDeviceType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoOutputDeviceType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCaptureDeviceType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioEffectType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoEffectType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( AudioCodecType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( VideoCodecType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( ContainerFormatType );
+PHONON_INSTANCIATE_ALL_FUNCTIONS( VisualizationType );
 
 #undef PHONON_INSTANCIATE_ALL_FUNCTIONS
 
