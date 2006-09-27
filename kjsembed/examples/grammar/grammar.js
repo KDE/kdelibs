@@ -1,4 +1,4 @@
-#!/usr/bin/env kjs
+#!/usr/bin/env kjscmd
 
 var failures = 0;
 var total = 0;

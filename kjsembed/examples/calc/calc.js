@@ -1,4 +1,4 @@
-#!/usr/bin/env kjs
+#!/usr/bin/env kjscmd
 
 
 function Calculator(ui)
