@@ -119,7 +119,7 @@ static void sendNotification( QString message,
     if ( !strlist.isEmpty() )
     {
         for ( QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); ++it )
-            message += "\n" + *it;
+            message += '\n' + *it;
     }
 
     if ( !message.isEmpty() )

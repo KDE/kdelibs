@@ -107,7 +107,7 @@ void KTipDatabase::Private::addTips( const QString &tipFile )
            .replace( rx, "\n" );
 
     if ( !tip.endsWith( "\n" ) )
-      tip += "\n";
+      tip += '\n';
 
     if ( tip.startsWith( "\n" ) )
       tip = tip.mid( 1 );

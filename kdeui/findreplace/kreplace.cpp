@@ -313,7 +313,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
             message = i18n( "End of document reached." );
     }
 
-    message += "\n";
+    message += '\n';
     // Hope this word puzzle is ok, it's a different sentence
     message +=
         ( m_options & KFind::FindBackwards ) ?

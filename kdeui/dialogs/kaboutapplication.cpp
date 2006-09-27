@@ -63,13 +63,13 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
   if (!aboutData->programLogo().isNull())
     setProgramLogo( QPixmap::fromImage(aboutData->programLogo()) );
 
-  QString appPageText = aboutData->shortDescription() + "\n";
+  QString appPageText = aboutData->shortDescription() + '\n';
 
   if (!aboutData->otherText().isEmpty())
-    appPageText += "\n" + aboutData->otherText()+"\n";
+    appPageText += "\n" + aboutData->otherText()+'\n';
 
   if (!aboutData->copyrightStatement().isEmpty())
-    appPageText += "\n" + aboutData->copyrightStatement()+"\n";
+    appPageText += "\n" + aboutData->copyrightStatement()+'\n';
 
   KAboutContainer *appPage = addContainerPage( i18n("&About"));
 

@@ -465,7 +465,7 @@ QString KBugReport::text() const
 */
   bodyText=m_lineedit->toPlainText();
   if (bodyText.length()>0)
-        if (bodyText[bodyText.length()-1]!='\n') bodyText+="\n";
+        if (bodyText[bodyText.length()-1]!='\n') bodyText+='\n';
   if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());

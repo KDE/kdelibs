@@ -565,7 +565,7 @@ KPaletteTable::slotShowNamedColorReadError( void )
     for( int i=0; path[i]; ++i )
     {
       msg += path[i];
-      msg += "\n";
+      msg += '\n';
     }
     KMessageBox::sorry( this, msg );
   }
