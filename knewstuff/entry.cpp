@@ -274,7 +274,7 @@ int Entry::downloads()
 
 QString Entry::fullName()
 {
-  return name() + "-" + version() + "-" + QString::number( release() );
+  return name() + '-' + version() + '-' + QString::number( release() );
 }
 
 QStringList Entry::langs()

@@ -178,7 +178,7 @@ void KNewStuffSecure::uploadResource(const QString& fileName)
   m_tempDir = new KTempDir();
   m_tempDir->setAutoDelete(true);
   QFileInfo f(fileName);
-  m_signedFileName = m_tempDir->name() + "/" + f.fileName();
+  m_signedFileName = m_tempDir->name() + '/' + f.fileName();
   KIO::NetAccess::file_copy(KUrl(fileName), KUrl(m_signedFileName), -1, true);
   Security::ref()->signFile(m_signedFileName);
 }

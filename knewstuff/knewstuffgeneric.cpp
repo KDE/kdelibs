@@ -100,7 +100,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
     if ( !target.isEmpty())
     {
       res = "data";
-      if ( entry ) target.append("/" + entry->fullName());
+      if ( entry ) target.append('/' + entry->fullName());
       else target.append("/");
     }
   }
@@ -116,7 +116,7 @@ QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
 
   if ( !path.isEmpty() )
   {
-    file = QDir::home().path() + "/" + path + "/";
+    file = QDir::home().path() + '/' + path + '/';
     if ( entry ) file += entry->fullName();
   }
   else file = KStandardDirs::locateLocal( res.toUtf8() , target );
