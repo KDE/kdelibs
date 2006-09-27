@@ -808,7 +808,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 						return parentFont;
 					}
 					break;
-				case Qt::TextColorRole:
+				case Qt::ForegroundRole:
 					if (checkChanged(m_newLocalShortcut, m_action->shortcut(), column - 1))
 						return QColor(Qt::blue);
 				default:
@@ -829,11 +829,11 @@ QVariant KKeyChooserItem::data(int column, int role) const
 						return parentFont;
 					}
 					break;
-				case Qt::TextColorRole:
+				case Qt::ForegroundRole:
 					if (checkChanged(m_newGlobalShortcut, m_action->globalShortcut(), 0))
 						return QColor(Qt::blue);
 					break;
-				case Qt::BackgroundColorRole:
+				case Qt::BackgroundRole:
 					if (!m_action->globalShortcutAllowed())
 						return QColor(Qt::gray);
 					break;

@@ -255,17 +255,17 @@ void ObjectModel::setupModelData(KJS::ExecState *exec, KJS::JSObject *scope, Obj
             if(tmpObject->implementsConstruct())
             {
                 item->setIcon(QIcon(":/images/class.png"));
-                item->setData(Qt::TextColorRole, "blue");
+                item->setData(Qt::ForegroundRole, "blue");
             }
             else if(tmpObject->implementsCall())
             {
                 item->setIcon(QIcon(":/images/method.png"));
-                item->setData(Qt::TextColorRole, "green");
+                item->setData(Qt::ForegroundRole, "green");
             }
             else
             {
                 item->setIcon(QIcon(":/images/property.png"));
-                item->setData(Qt::TextColorRole, "black");
+                item->setData(Qt::ForegroundRole, "black");
             }
 */
         }
