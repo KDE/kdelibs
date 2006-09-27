@@ -96,21 +96,21 @@ QString keyAsMarkup( const QString &key )
 {
 	if ( key == "Alt" || key == "Ctrl" || key == "Enter" || key == "Esc" ||
 	     key == "Shift" || key == "Tab" ) {
-		return QString() + "&" + key + ";";
+		return QString('&' + key + ';');
 	}
 	if ( key == "Left" || key == "Right" || key == "Up" || key == "Down" ) {
-		return QString() + "<keysym>" + key + " Arrow</keysym>";
+		return QString("<keysym>" + key + " Arrow</keysym>");
 	}
 	if ( key == "Backspace" || key == "Menu" ) {
-		return QString() + "<keysym>" + key + "</keysym>";
+		return QString("<keysym>" + key + "</keysym>");
 	}
 	if ( key == "Plus" ) {
-		return "<keycap>+</keycap>";
+		return QString("<keycap>+</keycap>");
 	}
 	if ( key == "Minus" ) {
-		return "<keycap>-</keycap>";
+		return QString("<keycap>-</keycap>");
 	}
-	return QString() + "<keycap>" + key + "</keycap>";
+	return QString("<keycap>" + key + "</keycap>");
 }
 
 QString entityForAccel( KStdAccel::StdAccel accel )
