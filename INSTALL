@@ -73,6 +73,7 @@ Use a separate builddir to build KDE modules, not the sourcedir (example below).
 
 To get regular debugging, pass -DCMAKE_BUILD_TYPE=debug
 To get full debugging, pass -DCMAKE_BUILD_TYPE=debugfull
+To get full debugging with test coverage (gcc), pass -DCMAKE_BUILD_TYPE=profile
 
 If something hasn't been found, use "cd builddir; ccmake sourcedir" to set the
 missing (or wrong) things manually.
