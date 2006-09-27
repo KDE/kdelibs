@@ -318,6 +318,8 @@ QPair<Solid::NetworkDevice*, Solid::Ifaces::NetworkDevice*> Solid::NetworkManage
         {
             NetworkDevice *device = new NetworkDevice( iface );
             QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair( device, iface );
+            connect( iface, SIGNAL( destroyed( QObject* ) ),
+                     q, SLOT( slotDestroyed( QObject* ) ) );
             networkDeviceMap[uni] = pair;
             return pair;
         }

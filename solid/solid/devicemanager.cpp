@@ -324,6 +324,8 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManager::Private::fin
             Device *device = new Device( iface );
             QPair<Device*, Ifaces::Device*> pair( device, iface );
             devicesMap[udi] = pair;
+            connect( iface, SIGNAL( destroyed( QObject* ) ),
+                     q, SLOT( slotDestroyed( QObject* ) ) );
             return pair;
         }
         else
