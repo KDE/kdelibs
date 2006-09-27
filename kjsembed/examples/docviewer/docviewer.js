@@ -1,3 +1,4 @@
+#!/usr/bin/env kjs
 
 // Load the view
 var viewer = new Form('docviewer.ui', this);

@@ -1,3 +1,5 @@
+#!/usr/bin/env kjs
+
 var failures = 0;
 var total = 0;
 

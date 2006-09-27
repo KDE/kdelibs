@@ -1,3 +1,4 @@
+#!/home/kde4/kde/bin/kjscmd -e
 var intermediate_dir = 'intermediate/';
 var output_dir = 'output/';
 

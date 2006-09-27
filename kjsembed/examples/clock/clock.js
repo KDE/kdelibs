@@ -1,4 +1,4 @@
-
+#!/usr/bin/env kjs
 
 function updateTime() {
     now = new Date();

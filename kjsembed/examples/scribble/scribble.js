@@ -1,3 +1,4 @@
+#!/usr/bin/env kjs
 
 function scribble() {
 
