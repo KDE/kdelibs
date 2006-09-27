@@ -68,7 +68,7 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     return KJS::Null();
 }
 
-#ifdef KJSEMBED_WITH_KDE
+#ifndef QT_ONLY
 
 KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
@@ -86,7 +86,7 @@ KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     return KJS::Null();
 }
 
-#endif // KJSEMBED_WITH_KDE
+#endif // QT_ONLY
 
 KJS::JSValue *callAlert( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
@@ -157,9 +157,9 @@ const Method BuiltinsFactory::BuiltinMethods[] =
     {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec},
     {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump},
     {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude},
-#ifdef KJSEMBED_WITH_KDE
+#ifndef QT_ONLY
     {"library", 1, KJS::DontDelete|KJS::ReadOnly, &callLibrary},
-#endif // KJSEMBED_WITH_KDE
+#endif // QT_ONLY
     {"alert", 1, KJS::DontDelete|KJS::ReadOnly, &callAlert},
     {"confirm", 1, KJS::DontDelete|KJS::ReadOnly, &callConfirm},
     {"isVariantType", 1, KJS::DontDelete|KJS::ReadOnly, &callIsVariantType},
