@@ -91,7 +91,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 			QString desc = *( ++it );
 			QString prt = *( ++it );
 			if ( !prt.isEmpty() )
-				desc.append( " [" + prt + "]" );
+				desc.append( " [" + prt + ']' );
 			Q3ListViewItem *parent = parents.value( cl );
 			if ( !parent )
 			{

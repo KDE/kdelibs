@@ -222,9 +222,9 @@ bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 {
 	KPipeProcess	proc;
 	QString		cmd = programName(0);
-	cmd += " ";
+	cmd += ' ';
 	cmd += state ? "up" : "down";
-	cmd += " ";
+	cmd += ' ';
 	cmd += KProcess::quote(printer->printerName());
 	if (proc.open(cmd))
 	{
@@ -495,7 +495,7 @@ bool KMLpdManager::savePrinttoolCfgFile(const QString& templatefile, const QStri
 	QString	fname = QFileInfo(templatefile).fileName();
 	fname.replace(QRegExp("\\.in$"),QLatin1String(""));
 	QFile	fin(templatefile);
-	QFile	fout(dirname + "/" + fname);
+	QFile	fout(dirname + '/' + fname);
 	if (fin.exists() && fin.open(QIODevice::ReadOnly) && fout.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&fin), tout(&fout);
@@ -554,7 +554,7 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 		// write various driver files using templates
 		QByteArray cmd = "cp ";
 		cmd += QFile::encodeName(KProcess::quote(driverDirectory()+"/master-filter"));
-		cmd += " ";
+		cmd += ' ';
 		cmd += QFile::encodeName(KProcess::quote(spooldir + "/filter"));
 		if (system(cmd.data()) == 0 &&
 		    savePrinttoolCfgFile(driverDirectory()+"/general.cfg.in",spooldir,options) &&

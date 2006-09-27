@@ -192,7 +192,7 @@ bool LpcHelper::start(KMPrinter *prt, bool state, QString& msg)
 //    1 : unknown error
 int LpcHelper::parseStateChangeLPR(const QString& result, const QString& printer)
 {
-	if (result.startsWith(printer + ":"))
+	if (result.startsWith(printer + ':'))
 		return 0;
 	else if (result.startsWith("?Privileged"))
 		return -1;

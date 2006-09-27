@@ -315,7 +315,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 
 	if (dump_ > 0)
 	{
-		dumpRequest(request_, false, "Request to "+myHost+":"+QString::number(myPort));
+		dumpRequest(request_, false, "Request to "+myHost+':'+QString::number(myPort));
 	}
 
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : qPrintable(res)), (filename.isEmpty() ? NULL : qPrintable(filename)));
