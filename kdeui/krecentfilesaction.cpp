@@ -28,6 +28,7 @@
 #include "krecentfilesaction.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QPointer>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -44,11 +45,13 @@ public:
   KRecentFilesActionPrivate()
   {
     m_maxItems = 10;
+    m_noEntriesAction=0;
   }
 
   int m_maxItems;
   QMap<QAction*, QString> m_shortNames;
   QMap<QAction*, KUrl> m_urls;
+  QPointer<QAction> m_noEntriesAction;
 };
 
 
@@ -227,7 +230,9 @@ void KRecentFilesAction::init()
 {
   setMenu(new KMenu());
   setToolBarMode(MenuMode);
-
+  d->m_noEntriesAction=new QAction(i18n("No entries"),selectableActionGroup());
+  d->m_noEntriesAction->setEnabled(false);
+  KSelectAction::addAction(d->m_noEntriesAction);
   connect(this, SIGNAL(triggered(QAction*)), SLOT(urlSelected(QAction*)));
 }
 
@@ -287,6 +292,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
         delete removeAction(selectableActionGroup()->actions().last());
     }
 
+    if (d->m_noEntriesAction) removeAction(d->m_noEntriesAction)->deleteLater();
     // add file to list
     const QString title = tmpName + " [" + file + ']';
     QAction* action = new QAction(title, selectableActionGroup());
@@ -325,6 +331,10 @@ void KRecentFilesAction::clear()
     KSelectAction::clear();
     d->m_shortNames.clear();
     d->m_urls.clear();
+    if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
+    d->m_noEntriesAction=new QAction(i18n("No entries"),selectableActionGroup());
+    d->m_noEntriesAction->setEnabled(false);
+    KSelectAction::addAction(d->m_noEntriesAction);
 }
 
 void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
@@ -347,11 +357,13 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
     else
       config->setGroup( groupname );
 
+    bool thereAreEntries=false;
     // read file list
     for( int i = 1 ; i <= d->m_maxItems ; i++ )
     {
         key = QString( "File%1" ).arg( i );
         value = config->readPathEntry( key );
+	if (value.isEmpty()) continue;
         url = KUrl( value );
 
         // Don't restore if file doesn't exist anymore
@@ -367,10 +379,14 @@ void KRecentFilesAction::loadEntries( KConfig* config, const QString &groupname)
         title = nameValue + " [" + value + ']';
         if (!value.isNull())
         {
+	  thereAreEntries=true;
           addAction(new QAction(title, selectableActionGroup()), url, nameValue);
         }
     }
-
+    if (thereAreEntries)
+    {
+	if (d->m_noEntriesAction) KSelectAction::removeAction(d->m_noEntriesAction)->deleteLater();
+    }
     config->setGroup( oldGroup );
 }
 
@@ -390,8 +406,10 @@ void KRecentFilesAction::saveEntries( KConfig* config, const QString &groupname 
     config->setGroup( group );
 
     // write file list
+    if ( (selectableActionGroup()->actions().count()>1) ||
+	( (selectableActionGroup()->actions().count()==1) && (selectableActionGroup()->actions()[0]!=d->m_noEntriesAction) ) )
     for ( int i = 1 ; i <= selectableActionGroup()->actions().count() ; i++ )
-    {
+    {	
         key = QString( "File%1" ).arg( i );
         // i - 1 because we started from 1
         value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].pathOrUrl();
