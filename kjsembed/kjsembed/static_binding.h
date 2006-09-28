@@ -32,7 +32,7 @@
 namespace KJSEmbed
 {
 /**
-* A binding method that is used in ValueBinding and ObjectBinding
+* A binding method that is used in VariantBinding and ObjectBinding
 */
 class KJSEMBED_EXPORT StaticBinding : public KJS::InternalFunctionImp
 {

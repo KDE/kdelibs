@@ -25,7 +25,7 @@
 #include <kdemacros.h>
 
 #include "static_binding.h"
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "pointer.h"
 #include "global.h"
 
@@ -249,21 +249,19 @@ namespace KJSEmbed
                     break; 
             }
 
-	    KJS::JSObject* object = arg->toObject(exec);
-	    if(object->inherits(&ValueBinding::info))
-	    {
-		return extractValue<T>(exec, arg, defaultValue);
-	    }
-	    else if(object->inherits(&ObjectBinding::info))
-	    {
-		return extractObject<T>(exec, arg, defaultValue);
-	    }
-	    else
-		return defaultValue;
-	}
+            KJS::JSObject* object = arg->toObject(exec);
+            if(object->inherits(&VariantBinding::info))
+            {
+                return extractValue<T>(exec, arg, defaultValue);
+            }
+            else if(object->inherits(&ObjectBinding::info))
+            {
+                return extractObject<T>(exec, arg, defaultValue);
+            }
+            else
+                return defaultValue;
+        }
     }
-    
-
 }
 #endif
 

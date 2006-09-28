@@ -30,9 +30,9 @@
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo BrushBinding::info = { "QBrush", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo BrushBinding::info = { "QBrush", &VariantBinding::info, 0, 0 };
 BrushBinding::BrushBinding( KJS::ExecState *exec, const QBrush &value )
-    : ValueBinding(exec, value )
+    : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Brush::methods() );
     StaticBinding::publish( exec, this, ValueFactory::methods() );

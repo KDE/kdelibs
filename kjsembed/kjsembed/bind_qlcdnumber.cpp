@@ -20,7 +20,7 @@
 #include <QDebug>
 
 #include "object_binding.h"
-#include "value_binding.h"
+#include "variant_binding.h"
 #include <kjs/object.h>
 
 #include <bind_qlcdnumber.h>

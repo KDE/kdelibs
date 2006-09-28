@@ -21,7 +21,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "static_binding.h"
 
 class QColor;
@@ -29,7 +29,7 @@ class QColor;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QColor. */
-    class ColorBinding : public ValueBinding
+    class ColorBinding : public VariantBinding
     {
         public:
             ColorBinding( KJS::ExecState *exec, const QColor &value );

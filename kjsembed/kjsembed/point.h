@@ -22,7 +22,7 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include <value_binding.h>
+#include <variant_binding.h>
 #include <static_binding.h>
 
 class QPoint;
@@ -30,11 +30,10 @@ class QPoint;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QPoint. */
-    class PointBinding : public ValueBinding
+    class PointBinding : public VariantBinding
     {
         public:
             PointBinding( KJS::ExecState *exec, const QPoint &value );
-        private:
             virtual const KJS::ClassInfo* classInfo() const { return &info; }
             static const KJS::ClassInfo info;
     };

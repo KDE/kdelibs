@@ -21,7 +21,7 @@
 #include "binding_support.h"
 
 #include "qobject_binding.h"
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "static_binding.h"
 
 #include "iosupport.h"

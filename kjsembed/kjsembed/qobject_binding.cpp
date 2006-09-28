@@ -343,7 +343,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                 {
                     return new Scalar<void*>(objImp->voidStar());
                 }
-                else if(ValueBinding *valImp = KJSEmbed::extractBindingImp<ValueBinding>(exec,args[idx]))
+                else if(VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]))
                 {
                     return new Scalar<void*>(valImp->variant().data());
                 }

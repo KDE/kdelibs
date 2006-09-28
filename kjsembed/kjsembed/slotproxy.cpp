@@ -23,7 +23,7 @@
 #include <kjs/interpreter.h>
 
 #include "slotproxy.h"
-#include "value_binding.h"
+#include "variant_binding.h"
 
 using namespace KJSEmbed;
 using namespace KJS;

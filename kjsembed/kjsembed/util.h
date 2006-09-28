@@ -21,7 +21,7 @@ namespace KJSEmbed
 
     bool isVariant(KJS::JSObject *object)
     {
-        return object->inherits(&ValueBinding::info);
+        return object->inherits(&VariantBinding::info);
     }
 
     /*bool isScalar(KJS::JSObject *object)

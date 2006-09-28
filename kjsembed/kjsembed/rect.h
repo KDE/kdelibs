@@ -22,7 +22,7 @@
 #ifndef RECT_H
 #define RECT_H
 
-#include <value_binding.h>
+#include <variant_binding.h>
 #include <static_binding.h>
 
 class QRect;
@@ -30,7 +30,7 @@ class QRect;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QRect. */
-    class RectBinding : public ValueBinding
+    class RectBinding : public VariantBinding
     {
         public:
             RectBinding( KJS::ExecState *exec, const QRect &value );

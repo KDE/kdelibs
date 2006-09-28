@@ -22,7 +22,7 @@
 #include <kjs/object.h>
 
 #include <kjsembed/object_binding.h>
-#include <kjsembed/value_binding.h>
+#include <kjsembed/variant_binding.h>
 
 #include "test_pointer.h"
 

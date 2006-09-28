@@ -24,9 +24,9 @@
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo PointBinding::info = { "QPoint", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo PointBinding::info = { "QPoint", &VariantBinding::info, 0, 0 };
 PointBinding::PointBinding( KJS::ExecState *exec, const QPoint &value )
-    : ValueBinding(exec, value )
+    : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Point::methods() );
     StaticBinding::publish( exec, this, ValueFactory::methods() );

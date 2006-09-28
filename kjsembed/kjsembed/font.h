@@ -22,7 +22,7 @@
 #ifndef FONT_H
 #define FONT_H
 
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "static_binding.h"
 
 class QFont;
@@ -30,11 +30,10 @@ class QFont;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QFont. */
-    class FontBinding : public ValueBinding
+    class FontBinding : public VariantBinding
     {
         public:
             FontBinding( KJS::ExecState *exec, const QFont &value );
-        private:
             virtual const KJS::ClassInfo* classInfo() const { return &info; }
             static const KJS::ClassInfo info;
     };

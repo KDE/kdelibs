@@ -17,12 +17,13 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include "object_binding.h"
-#include "value_binding.h"
 
-#include "static_binding.h"
 #include <qobjectdefs.h>
 #include <QDebug>
+
+#include "static_binding.h"
+#include "variant_binding.h"
+#include "object_binding.h"
 
 using namespace KJSEmbed;
 

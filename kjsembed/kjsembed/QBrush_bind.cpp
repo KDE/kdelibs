@@ -10,14 +10,14 @@ class QColorBinding { public: static const KJS::ClassInfo info; };
 class QPixmapBinding { public: static const KJS::ClassInfo info; };
 class QGradientBinding { public: static const KJS::ClassInfo info; };
 
-const KJS::ClassInfo QColorBinding::info = { "QColor", &ValueBinding::info, 0, 0 };
-const KJS::ClassInfo QPixmapBinding::info = { "QPixmap", &ValueBinding::info, 0, 0 };
-const KJS::ClassInfo QGradientBinding::info = { "QGradient", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo QColorBinding::info = { "QColor", &VariantBinding::info, 0, 0 };
+const KJS::ClassInfo QPixmapBinding::info = { "QPixmap", &VariantBinding::info, 0, 0 };
+const KJS::ClassInfo QGradientBinding::info = { "QGradient", &VariantBinding::info, 0, 0 };
 
-const KJS::ClassInfo QBrushBinding::info = { "QBrush", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo QBrushBinding::info = { "QBrush", &VariantBinding::info, 0, 0 };
 
 QBrushBinding::QBrushBinding( KJS::ExecState *exec, const QBrush &value )
-    : ValueBinding(exec, value)
+    : VariantBinding(exec, value)
 {
     StaticBinding::publish(exec, this, QBrushData::methods() );
     StaticBinding::publish(exec, this, ValueFactory::methods() );
@@ -30,7 +30,7 @@ namespace QBrushNS
 KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 {
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); 
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -48,7 +48,7 @@ KJS::JSValue *style( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
 KJS::JSValue *setStyle( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); 
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -66,7 +66,7 @@ KJS::JSValue *setStyle( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *texture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); 
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -84,7 +84,7 @@ KJS::JSValue *texture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Lis
 KJS::JSValue *setTexture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); 
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -102,7 +102,7 @@ KJS::JSValue *setTexture( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 KJS::JSValue *color( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); 
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -119,7 +119,7 @@ KJS::JSValue *color( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List 
 KJS::JSValue *setColor( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self); 
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self); 
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -152,7 +152,7 @@ KJS::JSValue *setColor( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *gradient( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 { 
     KJS::JSValue *result = KJS::Null();
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self);
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self);
     if( imp )
     {
         QBrush value = imp->value<QBrush>();
@@ -171,7 +171,7 @@ KJS::JSValue *gradient( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 KJS::JSValue *isOpaque( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args ) 
 {
     KJS::JSValue *result = KJS::Null(); 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self);
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self);
     if( imp )
     {
         QBrush value = imp->value<QBrush>();

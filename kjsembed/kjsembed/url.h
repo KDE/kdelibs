@@ -22,7 +22,7 @@
 #ifndef URL_H
 #define URL_H
 
-#include <value_binding.h>
+#include <variant_binding.h>
 #include <static_binding.h>
 
 class QUrl;
@@ -30,11 +30,10 @@ class QUrl;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QUrl. */
-    class UrlBinding : public ValueBinding
+    class UrlBinding : public VariantBinding
     {
         public:
             UrlBinding( KJS::ExecState *exec, const QUrl &value );
-        private:
             virtual const KJS::ClassInfo* classInfo() const { return &info; }
             static const KJS::ClassInfo info;
     };

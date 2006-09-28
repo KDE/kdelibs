@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 #include "image.h"
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "object_binding.h"
 
 #include <QDebug>
@@ -28,9 +28,9 @@
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo ImageBinding::info = { "QImage", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo ImageBinding::info = { "QImage", &VariantBinding::info, 0, 0 };
 ImageBinding::ImageBinding( KJS::ExecState *exec, const QImage &value )
-    : ValueBinding(exec, value )
+    : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, ValueFactory::methods() );
     StaticBinding::publish( exec, this, Image::methods() );

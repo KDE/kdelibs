@@ -27,7 +27,7 @@
 using namespace KJSEmbed;
 
 RectBinding::RectBinding( KJS::ExecState *exec, const QRect &value )
-    : ValueBinding(exec, value )
+    : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Rect::methods() );
     StaticBinding::publish( exec, this, ValueFactory::methods() );

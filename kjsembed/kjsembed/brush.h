@@ -21,7 +21,7 @@
 #ifndef BRUSH_H
 #define BRUSH_H
 
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "object_binding.h"
 #include "static_binding.h"
 
@@ -30,7 +30,7 @@ class QBrush;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QBrush. */
-    class BrushBinding : public ValueBinding
+    class BrushBinding : public VariantBinding
     {
         public:
             BrushBinding( KJS::ExecState *exec, const QBrush &value );

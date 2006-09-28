@@ -21,7 +21,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "static_binding.h"
 
 class QImage;
@@ -29,11 +29,10 @@ class QImage;
 namespace KJSEmbed
 {
     /** @internal Implements the bniding for QImage. */
-    class ImageBinding : public ValueBinding
+    class ImageBinding : public VariantBinding
     {
         public:
             ImageBinding( KJS::ExecState *exec, const QImage &value );
-        private:
             virtual const KJS::ClassInfo* classInfo() const { return &info; }
             static const KJS::ClassInfo info;
     };

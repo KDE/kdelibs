@@ -21,7 +21,7 @@
 #ifndef PIXMAP_H
 #define PIXMAP_H
 
-#include <value_binding.h>
+#include <variant_binding.h>
 #include <static_binding.h>
 
 class QPixmap;
@@ -29,7 +29,7 @@ class QPixmap;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QPixmap. */
-    class PixmapBinding : public ValueBinding
+    class PixmapBinding : public VariantBinding
     {
         public:
             PixmapBinding( KJS::ExecState *exec, const QPixmap &value );

@@ -30,9 +30,8 @@
 #endif // QT_ONLY
 
 
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "object_binding.h"
-
 #include "static_binding.h"
 #include "kjsembed.h"
 #include "builtins.h"
@@ -135,7 +134,7 @@ KJS::JSValue *callIsVariant( KJS::ExecState *exec, KJS::JSObject *self, const KJ
     if (args.size() == 1)
     {
         KJS::JSObject *obj = args[0]->toObject(exec);
-        if (obj->inherits(&ValueBinding::info))
+        if (obj->inherits(&VariantBinding::info))
         {
             return KJS::Boolean(true);
         }

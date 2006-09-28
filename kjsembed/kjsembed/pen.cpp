@@ -26,9 +26,9 @@
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo PenBinding::info = { "QPen", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo PenBinding::info = { "QPen", &VariantBinding::info, 0, 0 };
 PenBinding::PenBinding( KJS::ExecState *exec, const QPen &value )
-    : ValueBinding(exec, value )
+    : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Pen::methods() );
     StaticBinding::publish( exec, this, ValueFactory::methods() );

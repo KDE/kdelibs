@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 #include "test_object.h"
-#include <kjsembed/value_binding.h>
+#include <kjsembed/variant_binding.h>
 
 #include <kjs/object.h>
 #include <qdebug.h>
@@ -45,7 +45,7 @@ START_CTOR( TestObject, TestObject, 1 )
     value.index = 1;
     if( args.size() == 1 )
         value.index = args[0]->toNumber(exec);
-    KJS::JSObject *object = new KJSEmbed::ValueBinding(exec, qVariantFromValue(value) ); // For custom variants you must use qVariantFromValue
+    KJS::JSObject *object = new KJSEmbed::VariantBinding(exec, qVariantFromValue(value) ); // For custom variants you must use qVariantFromValue
     StaticBinding::publish( exec, object, TestObject::methods() );
     return object;
 END_CTOR

@@ -24,14 +24,14 @@
 #include <QBitmap>
 #include <QWidget>
 
-#include <value_binding.h>
+#include <variant_binding.h>
 #include <object_binding.h>
 
 using namespace KJSEmbed;
 
-const KJS::ClassInfo PixmapBinding::info = { "QPixmap", &ValueBinding::info, 0, 0 };
+const KJS::ClassInfo PixmapBinding::info = { "QPixmap", &VariantBinding::info, 0, 0 };
 PixmapBinding::PixmapBinding( KJS::ExecState *exec, const QPixmap &value )
-    : ValueBinding(exec, value )
+    : VariantBinding(exec, value )
 {
     StaticBinding::publish( exec, this, Pixmap::methods() );
     StaticBinding::publish( exec, this, ValueFactory::methods() );

@@ -22,7 +22,7 @@
 #ifndef PEN_H
 #define PEN_H
 
-#include "value_binding.h"
+#include "variant_binding.h"
 #include "static_binding.h"
 
 class QPen;
@@ -30,7 +30,7 @@ class QPen;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QPen. */
-    class PenBinding : public ValueBinding
+    class PenBinding : public VariantBinding
     {
         public:
             PenBinding( KJS::ExecState *exec, const QPen &value );

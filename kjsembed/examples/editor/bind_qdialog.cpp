@@ -20,7 +20,7 @@
 #include <QDebug>
 
 #include <kjsembed/object_binding.h>
-#include <kjsembed/value_binding.h>
+#include <kjsembed/variant_binding.h>
 #include <kjs/object.h>
 
 #include "bind_qdialog.h"

@@ -20,7 +20,7 @@
 #ifndef SIZE_H
 #define SIZE_H
 
-#include <value_binding.h>
+#include <variant_binding.h>
 #include <static_binding.h>
 
 class QSize;
@@ -28,11 +28,10 @@ class QSize;
 namespace KJSEmbed
 {
     /** @internal Implements the binding for QSize. */
-    class SizeBinding : public ValueBinding
+    class SizeBinding : public VariantBinding
     {
         public:
             SizeBinding( KJS::ExecState *exec, const QSize &value );
-        private:
             virtual const KJS::ClassInfo* classInfo() const { return &info; }
             static const KJS::ClassInfo info;
     };

@@ -19,7 +19,7 @@
 */
 #include <QDebug>
 
-#include <kjsembed/value_binding.h>
+#include <kjsembed/variant_binding.h>
 #include <kjs/object.h>
 
 #include "bind_qicon.h"
