@@ -42,29 +42,38 @@ function write_ctor( compoundDef, compoundEnums )
         var tmpArgs = '';
         if ( memberArgList.count() == 0 )
         {
-            tmpArgs = compoundName + '()';
+            tmpArgs =  + '()';
+            ctor += 
+            '        return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '());\n';
         }
-
-        for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
+        else
         {
-            var param = memberArgList.item(argIdx).toElement();
-            var paramVar = param.firstChildElement('declname').toElement().toString();
-//             ctor += extract_parameter(param, argIdx, compoundEnums);
-            tmpArgs += paramVar + ', ';
-        }
-        ctor += extract_parameter_const(methodListList[idx], idx, compoundEnums);
+            for ( argIdx = 0; argIdx < memberArgList.count(); ++argIdx )
+            {
+                var param = memberArgList.item(argIdx).toElement();
+                var paramVarElement = param.firstChildElement('declname').toElement();
+                var paramVar = paramVarElement.toString();
+                if (paramVarElement.isNull())
+                    paramVar = 'arg' + paramIdx;
 
-        var tmpIdx = tmpArgs.lastIndexOf(',');
-        tmpArgs = tmpArgs.substr(0, tmpIdx);
-        ctor +=
-        '        return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '))\n' +
-        '    }\n';
+                tmpArgs += paramVar + ', ';
+            }
+
+            var tmpIdx = tmpArgs.lastIndexOf(',');
+            tmpArgs = tmpArgs.substr(0, tmpIdx);
+            var funcCall =
+            'return new KJSEmbed::' + compoundName + 'Binding(exec, ' + compoundName + '(' + tmpArgs + '));\n';
+
+            ctor += construct_parameters(methodListList[idx], idx, funcCall, compoundEnums);
+        }
+
+        ctor += '    }\n';
     }
     ctor += '}';
     return ctor;
 }
 
-function extract_parameter_const(methodList, numArgs, compoundEnums)
+function construct_parameters(methodList, numArgs, funcCall, compoundEnums)
 {
     var params = '';
     for(var argIdx = 0; argIdx < numArgs; ++argIdx)
@@ -81,18 +90,27 @@ function extract_parameter_const(methodList, numArgs, compoundEnums)
         {
             var parameter = memberArgList.item(argIdx).toElement();
             var paramType = parameter.firstChildElement('type').toElement().toString();
-debug(paramType);
-            if(isVariant(paramType))
-                params += 'object'+argIdx+' && object'+argIdx+'->inherits(&ColorBinding::info)';
-            else
-                params += 'isBasic(value'+argIdx+')';
+	    var coreParamType = findCoreParamType(paramType);
+debug('paramType: "' + paramType + '" coreParamType = "' + coreParamType + '"');
+            if (isBool(coreParamType))
+                params += 'object'+argIdx+' && object'+argIdx+'->isBoolean()';
+            else if ( isNumber(coreParamType) || 
+                 isEnum(coreParamType, compoundEnums ) )
+                params += 'object'+argIdx+' && object'+argIdx+'->isNumber()';
+            else if (coreParamType == 'QString')
+                params += 'object'+argIdx+' && object'+argIdx+'->isString()';
+           else //if(isVariant(paramType))
+                params += 'object'+argIdx+' && object'+argIdx+'->inherits(&' + coreParamType + 'Binding::info)';
+//            else
+//                params += 'isBasic(value'+argIdx+')';
             if(argIdx < numArgs-1)
-                params += '&& ';
+                params += ' && ';
             variables += '    ' + extract_parameter(parameter, argIdx, compoundEnums);
         }
         params += ')\n';
         params += '        {\n';
         params += variables;
+	params += '            ' + funcCall;
         params += '        }\n';
     }
     return params;
@@ -334,34 +352,51 @@ function write_binding_new( class_doc )
     bindingFile.close();
 }
 
+// Regular expression used to spot const & type args (i.e. 'const QString &').
+const_ref_rx = /const\s+(\w+)\s*&/;
+
+function findCoreParamType(paramType)
+{
+    var coreParamTypeMatch = const_ref_rx.exec(paramType);
+
+    // We want the core parameter type
+    var coreParamType;
+    if (coreParamTypeMatch == null)
+        coreParamType = paramType;
+    else
+        coreParamType = coreParamTypeMatch[1];
+
+    return coreParamType;
+}
+
 // An array of primitive Qt types, this is annoying but seems to be necessary
 var data_types = {
     // Actual variant types
-    "QBitArray" : 1, "QBitmap" : 1, "bool" : 1, "QBrush" : 1,
+    "QBitArray" : 1, "QBitmap" : 1, "bool" : 2, "QBrush" : 1,
     "QByteArray" : 1, "QChar" : 1, "QColor" : 1, "QCursor" : 1,
-    "QDate" : 1, "QDateTime" : 1, "double" : 1, "QFont" : 1,
-    "QIcon" : 1, "QImage" : 1, "int" : 2, "QKeySequence" : 1,
+    "QDate" : 1, "QDateTime" : 1, "double" : 3, "QFont" : 1,
+    "QIcon" : 1, "QImage" : 1, "int" : 3, "QKeySequence" : 1,
     "QLine" : 1, "QLineF" : 1, "QVariantList" : 1, "QLocale" : 1,
-    "qlonglong" : 2, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
+    "qlonglong" : 3, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
     "QPixmap" : 1, "QPoint" : 1, "QPointArray" : 1, "QPointF" : 1,
     "QPolygon" : 1, "QRect" : 1, "QRectF" : 1, "QRegExp" : 1,
     "QRegion" : 1, "QSize" : 1, "QSizeF" : 1, "QSizePolicy" : 1,
     "QString" : 1, "QStringList" : 1, "QTextFormat" : 1,
-    "QTextLength" : 1, "QTime" : 1, "uint" : 2, "qulonglong" : 2,
+    "QTextLength" : 1, "QTime" : 1, "uint" : 3, "qulonglong" : 3,
     "QUrl" : 1, 
 
      // Other necessary qglobal.h types.
-     "qreal" : 2, "qint8" : 3, "quint8" : 3, "qint16" : 3, "quint16" : 3, 
-     "qint32" : 3, "quint32" : 3, "qint64" : 3, "quint64" : 3, 
-     "qulonglong" : 3,
-     "uchar" : 3, "ushort" : 3, "ulong" : 3
+     "qreal" : 3, "qint8" : 4, "quint8" : 4, "qint16" : 4, "quint16" : 4, 
+     "qint32" : 4, "quint32" : 4, "qint64" : 4, "quint64" : 4, 
+     "qulonglong" : 4,
+     "uchar" : 4, "ushort" : 4, "ulong" : 4
     
 };
 
 function isVariant( variable )
 {
 //    debug(variable + " isVariant " + data_types[variable]);
-    if ((data_types[variable] == 1) || (data_types[variable] == 2))
+    if ((data_types[variable] >= 1) || (data_types[variable] <= 3))
       return true;
     else
       return false;
@@ -370,14 +405,36 @@ function isVariant( variable )
 function isNumber( variable )
 {
 //    debug(variable + " isNumber " + data_types[variable]);
-    if ((data_types[variable] > 1) && data_types[variable] < 4)
+    if ((data_types[variable] > 2) && data_types[variable] < 5)
       return true;
     else
       return false;
 }
 
-// Regular expression used to spot const & type args (i.e. 'const QString &').
-const_ref_rx = /const\s+(\w+)\s*&/;
+function isBool( variable )
+{
+//    debug(variable + " isBool " + data_types[variable]);
+    if (data_types[variable] == 2)
+      return true;
+    else
+      return false;
+}
+
+function isQtEnum( variable )
+{
+    return methodType.indexOf('Qt::') != -1;
+}
+
+function isCompoundEnum( variable, compoundEnums )
+{
+    return (compoundEnums[variable]);
+}
+
+function isEnum( variable, compoundEnums )
+{
+    return ((variable.indexOf('Qt::') != -1) || // it is a Qt enum
+            (compoundEnums[variable]));
+}
 
 function extract_parameter( parameter, paramIdx, compoundEnums )
 {
@@ -390,14 +447,7 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
     if (paramVarElement.isNull())
         paramVar = 'arg' + paramIdx;
 
-    var coreParamTypeMatch = const_ref_rx.exec(paramType);
-
-    // We want the core parameter type
-    var coreParamType;
-    if (coreParamTypeMatch == null)
-        coreParamType = paramType;
-    else
-        coreParamType = coreParamTypeMatch[1];
+    coreParamType = findCoreParamType(paramType);
 
     if ( paramType.indexOf('Qt::') != -1 )  // Enum Value
     {
@@ -425,7 +475,6 @@ function extract_parameter( parameter, paramIdx, compoundEnums )
     }
     else if ( isVariant(coreParamType) )
     {
-        //extracted += 'if(args['+paramIdx+'].getObject() != 0 && QByteArray(args['+paramIdx+'].getObject()->classInfo()->className) == "'+paramType+'");\n';
         extracted +=
             '        ' + coreParamType + ' ' + paramVar + ' = KJSEmbed::extractValue<' + coreParamType + '>(exec, args, ' + paramIdx + ');\n';
         return extracted;
