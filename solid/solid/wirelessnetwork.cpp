@@ -25,14 +25,17 @@
 Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
     : Network( backendObject )
 {
-    connect( backendObject, SIGNAL( signalStrengthChanged( int ) ),
-             this, SIGNAL( signalStrengthChanged( int ) ) );
-    connect( backendObject, SIGNAL( bitrateChanged( int ) ),
-             this, SIGNAL( lbitrateChanged( int ) ) );
-    connect( backendObject, SIGNAL( associationChanged( bool ) ),
-             this, SIGNAL( associationChanged( bool ) ) );
-    connect( backendObject, SIGNAL( activeChanged( bool ) ),
-             this, SIGNAL( activeChanged( bool ) ) );
+    if ( backendObject )
+    {
+        connect( backendObject, SIGNAL( signalStrengthChanged( int ) ),
+                 this, SIGNAL( signalStrengthChanged( int ) ) );
+        connect( backendObject, SIGNAL( bitrateChanged( int ) ),
+                 this, SIGNAL( lbitrateChanged( int ) ) );
+        connect( backendObject, SIGNAL( associationChanged( bool ) ),
+                 this, SIGNAL( associationChanged( bool ) ) );
+        connect( backendObject, SIGNAL( activeChanged( bool ) ),
+                 this, SIGNAL( activeChanged( bool ) ) );
+    }
 }
 
 Solid::WirelessNetwork::~WirelessNetwork()

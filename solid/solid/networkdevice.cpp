@@ -35,7 +35,8 @@ namespace Solid
     class NetworkDevice::Private
     {
     public:
-        QMap<QString, QObject*> networkMap;
+        QMap<QString, Network*> networkMap;
+        Network invalidNetwork;
     };
 }
 
@@ -125,7 +126,16 @@ Solid::Network * Solid::NetworkDevice::findNetwork( const QString & uni ) const
 {
     if ( !isValid() ) return 0;
 
-    return new Network( findRegisteredNetwork( uni ) );
+    Network *network = findRegisteredNetwork( uni );
+
+    if ( network!=0 )
+    {
+        return network;
+    }
+    else
+    {
+        return &( d->invalidNetwork );
+    }
 }
 
 Solid::NetworkList Solid::NetworkDevice::networks() const
@@ -139,11 +149,11 @@ Solid::NetworkList Solid::NetworkDevice::networks() const
 
     foreach( QString uni, uniList )
     {
-        QObject *network = findRegisteredNetwork( uni );
-        if ( qobject_cast<Ifaces::WirelessNetwork *>( network )!=0 )
-            list.append( new WirelessNetwork( network ) );
-        else
-            list.append( new Network( network ) );
+        Network *network = findRegisteredNetwork( uni );
+        if ( network!=0 )
+        {
+            list.append( network );
+        }
     }
 
     return list;
@@ -155,8 +165,9 @@ void Solid::NetworkDevice::slotDestroyed( QObject *object )
     {
         FrontendObject::slotDestroyed(object);
 
-        foreach( QObject *network, d->networkMap )
+        foreach( Network *network, d->networkMap )
         {
+            delete network->backendObject();
             delete network;
         }
 
@@ -193,9 +204,9 @@ void Solid::NetworkDevice::unregisterBackendObject()
     d->networkMap.clear();
 }
 
-QObject *Solid::NetworkDevice::findRegisteredNetwork( const QString &uni ) const
+Solid::Network *Solid::NetworkDevice::findRegisteredNetwork( const QString &uni ) const
 {
-    QObject *network = 0;
+    Network *network = 0;
 
     if ( d->networkMap.contains( uni ) )
     {
@@ -207,7 +218,16 @@ QObject *Solid::NetworkDevice::findRegisteredNetwork( const QString &uni ) const
 
         if ( device!=0 )
         {
-            network = device->createNetwork( uni );
+            QObject *iface = device->createNetwork( uni );
+
+            if ( qobject_cast<Ifaces::WirelessNetwork *>( iface )!=0 )
+            {
+                network = new WirelessNetwork( network );
+            }
+            else if ( qobject_cast<Ifaces::Network *>( iface )!=0 )
+            {
+                network = new Network( network );
+            }
 
             if ( network != 0 )
             {

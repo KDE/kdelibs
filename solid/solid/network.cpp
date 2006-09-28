@@ -28,8 +28,11 @@ Solid::Network::Network( QObject *backendObject )
 {
     setBackendObject( backendObject );
 
-    connect( backendObject, SIGNAL( ipDetailsChanged() ),
-             this, SIGNAL( ipDetailsChanged() ) );
+    if ( backendObject )
+    {
+        connect( backendObject, SIGNAL( ipDetailsChanged() ),
+                 this, SIGNAL( ipDetailsChanged() ) );
+    }
 }
 
 Solid::Network::~Network()

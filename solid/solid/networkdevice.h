@@ -76,7 +76,7 @@ namespace Solid
         void registerBackendObject( QObject *backendObject );
         void unregisterBackendObject();
 
-        QObject *findRegisteredNetwork( const QString &uni ) const;
+        Network *findRegisteredNetwork( const QString &uni ) const;
 
         class Private;
         Private * d;

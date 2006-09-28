@@ -33,7 +33,7 @@ namespace Solid
     {
         Q_OBJECT
     public:
-        Network( QObject * );
+        Network( QObject *backendObject = 0 );
         virtual ~Network();
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         QStringList ipV4Addresses() const;
