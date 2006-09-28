@@ -35,7 +35,14 @@ namespace Solid
     typedef QList<NetworkDevice> NetworkDeviceList;
 
     /**
-     * Main class for listing and activating network devices and controlling the backend's network status
+     * This class allow to query the underlying system to discover the available
+     * network devices and reachable network.It has also the
+     * responsibility to notify when a network device or a network appear or disappear.
+     *
+     * It's the unique entry point for network management. Applications should use
+     * it to find network devices, or to be notified about network related changes.
+     *
+     * Note that it's implemented as a singleton and encapsulates the backend logic.
      */
     class KDE_EXPORT NetworkManager : public ManagerBase
     {
@@ -44,13 +51,18 @@ namespace Solid
 
     public:
         /**
-         * Get a list of all network devices in the system
-         * Note: includes getDeviceList and getDialupList from knm
+         * Retrieves the list of all the network devices in the system.
+         * It includes both hardware and virtual devices.
+         *
+         * @return the list of network devices available in this system
          */
         NetworkDeviceList networkDevices() const;
 
         /**
-         * Access a given device instance
+         * Find a new NetworkDevice object given its UNI.
+         *
+         * @param uni the identifier of the network device to find
+         * @returns a valid NetworkDevice object if there's a device having the given UNI, an invalid one otherwise
          */
         const NetworkDevice &findNetworkDevice( const QString & udi ) const;
 

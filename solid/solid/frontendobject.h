@@ -28,20 +28,61 @@ namespace Solid
 {
     class ManagerBase;
 
+    /**
+     * Base classes for all the frontend objects in the Solid namespace.
+     *
+     * Provides the needed logic to keep a reference on a backend object,
+     * and be notified when it got deleted.
+     */
     class KDE_EXPORT FrontendObject : public QObject
     {
         Q_OBJECT
     public:
+        /**
+         * Constructs a FrontendObject
+         *
+         * @param parent the parent of this object
+         */
         FrontendObject( QObject *parent = 0 );
+
+        /**
+         * Destroys a FrontendObject
+         */
         virtual ~FrontendObject();
 
+        /**
+         * Indicates if this frontend object is valid.
+         * A frontend object is considered valid if it holds a backend object.
+         *
+         * @return true if this frontend object holds a backend object, false otherwise
+         */
         bool isValid() const;
 
     protected:
+        /**
+         * Retrieves the backend object currently used.
+         *
+         * @return the backend object
+         */
         QObject *backendObject() const;
+
+        /**
+         * Changes the backend object used.
+         *
+         * All the connections between the old backend object and the frontend object
+         * are properly removed. The new backend object is then connected to the
+         * slotDestroyed() slot.
+         *
+         * @param backendObject the new backend object
+         */
         void setBackendObject( QObject *backendObject );
 
     protected Q_SLOTS:
+        /**
+         * Notifies when the backend object disappears.
+         *
+         * @param object the backend object destroyed
+         */
         virtual void slotDestroyed( QObject *object );
 
     private:

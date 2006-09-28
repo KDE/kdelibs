@@ -29,28 +29,113 @@ namespace Solid
 {
     class NetworkDevice;
 
+    /**
+     * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
+     *
+     * TODO what about QNetworkAddressEntry
+     */
     class KDE_EXPORT Network : public FrontendObject, public Ifaces::Enums::Network
     {
         Q_OBJECT
     public:
+        /**
+         * Creates a new Network object.
+         *
+         * @param backendObject the network object provided by the backend
+         */
         Network( QObject *backendObject = 0 );
+
+        /**
+         * Destroys a Network object.
+         */
         virtual ~Network();
+
+        /**
+         * Retrieves the Universal Network Identifier (UNI) of the Network.
+         * This identifier is unique for each network and network device in the system.
+         *
+         * @returns the Universal Network Identifier of the current network
+         */
+        QString uni() const;
+
+
+
+        /**
+         * Retrieves the IP version 4 addresses the device has on this network.
+         *
+         * TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
+         *
+         * @return the list of IP version 4 addresses
+         */
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         QStringList ipV4Addresses() const;
+
+        /**
+         * Retrieves the IP version 6 addresses the device has on this network.
+         *
+         * TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
+         *
+         * @return the list of IP version 6 addresses
+         */
+        // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         QStringList ipV6Addresses() const;
 
+        /**
+         * Retrieves the IP version 4 subnetwork mask of this network.
+         *
+         * @return the subnetwork mask
+         */
         QString subnetMask() const;
+
+        /**
+         * Retrieves the IP version 4 broadcast address of this network.
+         *
+         * @return the broadcast address
+         */
         QString broadcastAddress() const;
-        // wtf does NM use this for?
+
+        /**
+         * Retrieves the route we must follow when using this network. It's
+         * in particular used for VPN.
+         *
+         * @return the route address is available, QString() otherwise
+         */
         QString route() const;
 
+        /**
+         * Retrieves the list of DNS servers to use on this network.
+         *
+         * @return the dns servers
+         */
         QStringList dnsServers() const;
-        QString uni() const;
-        void setActivated( bool active );
+
+        /**
+         * Retrieves the activation status of this network. For ethernets, this will always be true.
+         *
+         * @return true if this network is active, false otherwise
+         */
         bool isActive() const;
+
+        /**
+         * Activates or deactivates this network. For ethernets, this has no effect.
+         *
+         * @param activated true to activate this network, false otherwise
+         */
+        void setActivated( bool activated );
+
     Q_SIGNALS:
+        /**
+         * This signal is emitted when the settings of this network have changed.
+         */
         void ipDetailsChanged();
-        void activationStateChanged( bool );
+
+        /**
+         * This signal is emitted when the activation state of this network
+         * has changed.
+         *
+         * @param activated true if the network is activated, false otherwise
+         */
+        void activationStateChanged( bool activated );
 
     private:
         friend class NetworkDevice;

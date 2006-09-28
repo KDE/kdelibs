@@ -51,11 +51,46 @@ namespace Solid
         QObject *managerBackend() const;
 
     protected:
+        /**
+         * Constructs a new manager, loading the backend from a plugin.
+         *
+         * @param description the description of the manager (used in error messages)
+         * @param serviceName the name of the service type we're looking for
+         * @param backendClassName the fully qualified name of the type of the backend
+         */
         ManagerBase( QString description, const char *serviceName, const char *backendClassName );
+
+        /**
+         * Constructs a new manager from an already loaded backend.
+         *
+         * @param backend the backend object to use
+         */
         ManagerBase( QObject *backend );
+
+        /**
+         * Destroys a ManagerBase object.
+         */
         virtual ~ManagerBase();
 
+        /**
+         * Changes the backend used.
+         *
+         * All the connections between the old backend object and the frontend object
+         * are properly removed.
+         *
+         * @param backend the new backend
+         */
         void setManagerBackend( QObject *backend );
+
+        /**
+         * Load a backend from a plugin and set the error message if everything went wrong.
+         * @see errorText()
+         *
+         * @param description the description of the manager (used in error messages)
+         * @param serviceName the name of the service type we're looking for
+         * @param backendClassName the fully qualified name of the type of the backend
+         * @return the loaded backend
+         */
         QObject *loadBackend( QString description, const char *serviceName, const char *backendClassName );
 
     private:

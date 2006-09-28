@@ -109,7 +109,7 @@ namespace Ifaces
         /**
          * Activates or deactivates this network. For ethernets, this has no effect.
          *
-         * @param true to activate this network, false otherwise
+         * @param activated true to activate this network, false otherwise
          */
         virtual void setActivated( bool activated ) = 0;
 
@@ -124,7 +124,7 @@ namespace Ifaces
          * This signal is emitted when the activation state of this network
          * has changed.
          *
-         * @param activated true if the volume is mounted, false otherwise
+         * @param activated true if the network is activated, false otherwise
          */
         virtual void activationStateChanged( bool activated ) = 0;
     };

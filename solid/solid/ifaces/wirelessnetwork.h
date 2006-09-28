@@ -154,7 +154,7 @@ namespace Ifaces
         /**
          * This signal is emitted when the bitrate of this network has changed.
          *
-         * @param strength the new bitrate value for this network
+         * @param bitrate the new bitrate value for this network
          */
         virtual void bitrateChanged( int bitrate ) = 0;
 

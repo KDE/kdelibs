@@ -33,6 +33,8 @@ Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
                  this, SIGNAL( lbitrateChanged( int ) ) );
         connect( backendObject, SIGNAL( associationChanged( bool ) ),
                  this, SIGNAL( associationChanged( bool ) ) );
+        connect( backendObject, SIGNAL( authenticationNeeded() ),
+                 this, SIGNAL( authenticationNeeded() ) );
     }
 }
 
@@ -114,9 +116,9 @@ bool Solid::WirelessNetwork::isHidden() const
     return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), false, isHidden() );
 }
 
-bool Solid::WirelessNetwork::isActive() const
+void Solid::WirelessNetwork::setAuthentication( Authentication *authentication )
 {
-    return_SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), false, isActive() );
+    SOLID_CALL( Ifaces::WirelessNetwork*, backendObject(), setAuthentication( authentication ) );
 }
 
 #include "wirelessnetwork.moc"
