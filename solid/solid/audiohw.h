@@ -17,34 +17,46 @@
 
 */
 
-#ifndef SOLID_IFACES_AUDIOIFACE_H
-#define SOLID_IFACES_AUDIOIFACE_H
+#ifndef SOLID_AUDIOHW_H
+#define SOLID_AUDIOHW_H
 
 #include <kdelibs_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/capability.h>
 #include <solid/ifaces/enums.h>
 
 namespace Solid
 {
-namespace Ifaces
-{
     /**
      * This capability is available on interfaces exposed by sound cards.
      */
-    class KDE_EXPORT AudioIface : virtual public Capability, public Enums::AudioIface
+    class KDE_EXPORT AudioHw : public Capability, public Ifaces::Enums::AudioHw
     {
-//         Q_PROPERTY( AudioDriver driver READ driver )
-//         Q_PROPERTY( QString driverHandler READ driverHandler )
-//         Q_PROPERTY( QString name READ name )
-//         Q_PROPERTY( AudioIfaceTypes type READ type )
-//         Q_ENUMS( AudioDriver AudioIfaceType )
-
+        Q_OBJECT
     public:
         /**
-         * Destroys an AudioIface object.
+         * Creates a new AudioHw object.
+         * You generally won't need this. It's created when necessary using
+         * Device::as().
+         *
+         * @param backendObject the capability object provided by the backend
+         * @see Solid::Device::as()
          */
-        virtual ~AudioIface();
+        AudioHw( QObject *backendObject );
+
+        /**
+         * Destroys an AudioHw object.
+         */
+        virtual ~AudioHw();
+
+
+        /**
+         * Get the Solid::Capability::Type of the AudioHw capability.
+         *
+         * @return the AudioHw capability type
+         * @see Solid::Ifaces::Enums::Capability::Type
+         */
+        static Type capabilityType() { return Capability::AudioHw; }
 
 
 
@@ -54,7 +66,7 @@ namespace Ifaces
          * @return the driver needed to access the device
          * @see Solid::Ifaces::Enums::AudioDriver
          */
-        virtual AudioDriver driver() = 0;
+        AudioDriver driver();
 
         /**
          * Retrieves a driver specific string allowing to access the device.
@@ -64,7 +76,7 @@ namespace Ifaces
          *
          * @return the driver specific string to handle this device
          */
-        virtual QString driverHandler() = 0;
+        QString driverHandler();
 
 
 
@@ -73,19 +85,16 @@ namespace Ifaces
          *
          * @return the name of the audio interface if available, QString() otherwise
          */
-        virtual QString name() = 0;
+        QString name();
 
         /**
          * Retrieves the type of this audio interface.
          *
          * @return the type of this audio interface
-         * @see Solid::Ifaces::Enums::AudioIfaceTypes
+         * @see Solid::Ifaces::Enums::AudioHwTypes
          */
-        virtual AudioIfaceTypes type() = 0;
+        AudioHwTypes type();
     };
 }
-}
-
-Q_DECLARE_INTERFACE( Solid::Ifaces::AudioIface, "org.kde.Solid.Ifaces.AudioIface/0.1" )
 
 #endif

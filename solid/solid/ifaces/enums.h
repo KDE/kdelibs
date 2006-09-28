@@ -66,16 +66,16 @@ namespace Enums
          * - OpticalDisc : An optical disc
          * - Camera : A digital camera
          * - PortableMediaPlayer: A portable media player
-         * - NetworkIface: A network interface
+         * - NetworkHw: A network interface
          * - Display : A video display
          */
         enum Type { Unknown = 0, Processor = 1, Block = 2,
                     Storage = 4, Cdrom = 8,
                     Volume = 16, OpticalDisc = 32,
                     Camera = 64, PortableMediaPlayer = 128,
-                    NetworkIface = 256, AcAdapter = 512,
+                    NetworkHw = 256, AcAdapter = 512,
                     Battery = 1024, Button = 2048,
-                    Display = 4096, AudioIface = 8192 };
+                    Display = 4096, AudioHw = 8192 };
 
         /**
          * This type stores an OR combination of Type values.
@@ -320,10 +320,10 @@ namespace Enums
     };
 
     /**
-     * This struct holds the enumerations used by Solid::AudioIface
-     * and Solid::Ifaces::AudioIface. You shouldn't use it directly.
+     * This struct holds the enumerations used by Solid::AudioHw
+     * and Solid::Ifaces::AudioHw. You shouldn't use it directly.
      */
-    struct AudioIface
+    struct AudioHw
     {
         /**
          * This enum type defines the type of driver required to
@@ -342,16 +342,16 @@ namespace Enums
          * - AudioControl: A control/mixer interface
          * - AudioInput: An audio source
          * - AudioOutput: An audio sink
-         * - UnknownAudioIfaceType: An unknown audio interface
+         * - UnknownAudioHwType: An unknown audio interface
          */
-        enum AudioIfaceType{ UnknownAudioIfaceType, AudioControl, AudioInput, AudioOutput };
+        enum AudioHwType{ UnknownAudioHwType, AudioControl, AudioInput, AudioOutput };
 
         /**
-         * This type stores an OR combination of AudioIfaceType values.
+         * This type stores an OR combination of AudioHwType values.
          */
-        Q_DECLARE_FLAGS( AudioIfaceTypes, AudioIfaceType )
+        Q_DECLARE_FLAGS( AudioHwTypes, AudioHwType )
     };
-    Q_DECLARE_OPERATORS_FOR_FLAGS( AudioIface::AudioIfaceTypes )
+    Q_DECLARE_OPERATORS_FOR_FLAGS( AudioHw::AudioHwTypes )
 
 
     /**

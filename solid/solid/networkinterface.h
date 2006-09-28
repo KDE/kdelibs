@@ -30,7 +30,7 @@ namespace Solid
      * Represents a network interface as seen by the networking subsystem.
      *
      * For non network specific hardware details,
-     * @see Solid::NetworkIface
+     * @see Solid::NetworkHw
      */
     class KDE_EXPORT NetworkInterface : public FrontendObject, public Ifaces::Enums::NetworkInterface
     {

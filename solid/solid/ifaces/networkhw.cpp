@@ -17,9 +17,9 @@
 
 */
 
-#include "audioiface.h"
+#include "networkhw.h"
 
-Solid::Ifaces::AudioIface::~AudioIface()
+Solid::Ifaces::NetworkHw::~NetworkHw()
 {
 }
 

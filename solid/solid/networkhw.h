@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NETWORKIFACE_H
-#define SOLID_NETWORKIFACE_H
+#ifndef SOLID_NETWORKHW_H
+#define SOLID_NETWORKHW_H
 
 #include <kdelibs_export.h>
 
@@ -29,33 +29,33 @@ namespace Solid
     /**
      * This capability is available on network interfaces.
      */
-    class KDE_EXPORT NetworkIface : public Capability
+    class KDE_EXPORT NetworkHw : public Capability
     {
         Q_OBJECT
     public:
         /**
-         * Creates a new NetworkIface object.
+         * Creates a new NetworkHw object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
          * @param backendObject the capability object provided by the backend
          * @see Solid::Device::as()
          */
-        NetworkIface( QObject *backendObject );
+        NetworkHw( QObject *backendObject );
 
         /**
-         * Destroys a NetworkIface object.
+         * Destroys a NetworkHw object.
          */
-        virtual ~NetworkIface();
+        virtual ~NetworkHw();
 
 
         /**
-         * Get the Solid::Capability::Type of the NetworkIface capability.
+         * Get the Solid::Capability::Type of the NetworkHw capability.
          *
-         * @return the NetworkIface capability type
+         * @return the NetworkHw capability type
          * @see Solid::Ifaces::Enums::Capability::Type
          */
-        static Type capabilityType() { return Capability::NetworkIface; }
+        static Type capabilityType() { return Capability::NetworkHw; }
 
 
         /**

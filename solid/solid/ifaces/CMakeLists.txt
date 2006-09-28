@@ -16,12 +16,12 @@ set(solidifaces_LIB_SRCS
    opticaldisc.cpp 
    camera.cpp 
    portablemediaplayer.cpp 
-   networkiface.cpp 
+   networkhw.cpp 
    acadapter.cpp 
    battery.cpp 
    button.cpp
    display.cpp 
-   audioiface.cpp 
+   audiohw.cpp 
    powermanager.cpp 
    networkinterface.cpp
    network.cpp
@@ -41,6 +41,6 @@ install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 ########### install files ###############
 
-install( FILES devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkiface.h acadapter.h battery.h button.h display.h audioiface.h powermanager.h networkinterface.h network.h wirelessnetwork.h authentication.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
+install( FILES devicemanager.h device.h enums.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h powermanager.h networkinterface.h network.h wirelessnetwork.h authentication.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
 
 

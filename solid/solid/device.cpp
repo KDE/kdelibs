@@ -40,8 +40,8 @@
 #include <solid/ifaces/camera.h>
 #include <solid/portablemediaplayer.h>
 #include <solid/ifaces/portablemediaplayer.h>
-#include <solid/networkiface.h>
-#include <solid/ifaces/networkiface.h>
+#include <solid/networkhw.h>
+#include <solid/ifaces/networkhw.h>
 #include <solid/acadapter.h>
 #include <solid/ifaces/acadapter.h>
 #include <solid/battery.h>
@@ -50,8 +50,8 @@
 #include <solid/ifaces/button.h>
 #include <solid/display.h>
 #include <solid/ifaces/display.h>
-#include <solid/audioiface.h>
-#include <solid/ifaces/audioiface.h>
+#include <solid/audiohw.h>
+#include <solid/ifaces/audiohw.h>
 
 namespace Solid
 {
@@ -221,8 +221,8 @@ Solid::Capability *Solid::Device::asCapability( const Capability::Type &capabili
             case Capability::PortableMediaPlayer:
                 iface = capability_cast<Ifaces::PortableMediaPlayer, PortableMediaPlayer>( cap_iface );
                 break;
-            case Capability::NetworkIface:
-                iface = capability_cast<Ifaces::NetworkIface, NetworkIface>( cap_iface );
+            case Capability::NetworkHw:
+                iface = capability_cast<Ifaces::NetworkHw, NetworkHw>( cap_iface );
                 break;
             case Capability::AcAdapter:
                 iface = capability_cast<Ifaces::AcAdapter, AcAdapter>( cap_iface );
@@ -236,8 +236,8 @@ Solid::Capability *Solid::Device::asCapability( const Capability::Type &capabili
             case Capability::Display:
                 iface = capability_cast<Ifaces::Display, Display>( cap_iface );
                 break;
-            case Capability::AudioIface:
-                iface = capability_cast<Ifaces::AudioIface, AudioIface>( cap_iface );
+            case Capability::AudioHw:
+                iface = capability_cast<Ifaces::AudioHw, AudioHw>( cap_iface );
                 break;
             case Capability::Unknown:
                 break;

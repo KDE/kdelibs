@@ -17,40 +17,39 @@
 
 */
 
-#include "audioiface.h"
+#include "networkhw.h"
 
 #include "soliddefs_p.h"
-#include <solid/ifaces/audioiface.h>
+#include <solid/ifaces/networkhw.h>
 
 
-Solid::AudioIface::AudioIface( QObject *backendObject )
+Solid::NetworkHw::NetworkHw( QObject *backendObject )
     : Capability( backendObject )
 {
 }
 
-Solid::AudioIface::~AudioIface()
+Solid::NetworkHw::~NetworkHw()
 {
 }
 
-
-Solid::AudioIface::AudioDriver Solid::AudioIface::driver()
+QString Solid::NetworkHw::ifaceName() const
 {
-    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), UnknownAudioDriver, driver() );
+    return_SOLID_CALL( Ifaces::NetworkHw*, backendObject(), QString(), ifaceName() );
 }
 
-QString Solid::AudioIface::driverHandler()
+bool Solid::NetworkHw::isWireless() const
 {
-    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), QString(), driverHandler() );
+    return_SOLID_CALL( Ifaces::NetworkHw*, backendObject(), false, isWireless() );
 }
 
-QString Solid::AudioIface::name()
+QString Solid::NetworkHw::hwAddress() const
 {
-    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), QString(), name() );
+    return_SOLID_CALL( Ifaces::NetworkHw*, backendObject(), QString(), hwAddress() );
 }
 
-Solid::AudioIface::AudioIfaceTypes Solid::AudioIface::type()
+qulonglong Solid::NetworkHw::macAddress() const
 {
-    return_SOLID_CALL( Ifaces::AudioIface*, backendObject(), UnknownAudioIfaceType, type() );
+    return_SOLID_CALL( Ifaces::NetworkHw*, backendObject(), 0, macAddress() );
 }
 
-#include "audioiface.moc"
+#include "networkhw.moc"

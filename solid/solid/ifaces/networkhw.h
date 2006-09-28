@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_IFACES_NETWORKIFACE_H
-#define SOLID_IFACES_NETWORKIFACE_H
+#ifndef SOLID_IFACES_NETWORKHW_H
+#define SOLID_IFACES_NETWORKHW_H
 
 #include <kdelibs_export.h>
 
@@ -31,7 +31,7 @@ namespace Ifaces
     /**
      * This capability is available on network interfaces.
      */
-    class KDE_EXPORT NetworkIface : virtual public Capability
+    class KDE_EXPORT NetworkHw : virtual public Capability
     {
 //         Q_PROPERTY( QString ifaceName READ ifaceName )
 //         Q_PROPERTY( bool wireless READ isWireless )
@@ -40,9 +40,9 @@ namespace Ifaces
 
     public:
         /**
-         * Destroys a NetworkIface object.
+         * Destroys a NetworkHw object.
          */
-        virtual ~NetworkIface();
+        virtual ~NetworkHw();
 
 
         /**
@@ -79,6 +79,6 @@ namespace Ifaces
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::NetworkIface, "org.kde.Solid.Ifaces.NetworkIface/0.1" )
+Q_DECLARE_INTERFACE( Solid::Ifaces::NetworkHw, "org.kde.Solid.Ifaces.NetworkHw/0.1" )
 
 #endif

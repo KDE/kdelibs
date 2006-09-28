@@ -35,9 +35,9 @@ namespace Ifaces
      * Represents a network interface as seen by the networking subsystem.
      *
      * For non network specific hardware details,
-     * @see Solid::Ifaces::NetworkIface
+     * @see Solid::Ifaces::NetworkHw
      */
-     // TODO talk to Ervin about how to cleanly combine this with NetworkIface, perhaps a union class elsewhere
+     // TODO talk to Ervin about how to cleanly combine this with NetworkHw, perhaps a union class elsewhere
     class KDE_EXPORT NetworkInterface : public QObject, public Enums::NetworkInterface
     {
         Q_OBJECT

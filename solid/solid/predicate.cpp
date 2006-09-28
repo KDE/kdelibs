@@ -80,12 +80,12 @@ Solid::Predicate::Predicate( const QString &capability,
     map["OpticalDisc"] = Capability::OpticalDisc;
     map["Camera"] = Capability::Camera;
     map["PortableMediaPlayer"] = Capability::PortableMediaPlayer;
-    map["NetworkIface"] = Capability::NetworkIface;
+    map["NetworkHw"] = Capability::NetworkHw;
     map["AcAdapter"] = Capability::AcAdapter;
     map["Battery"] = Capability::Battery;
     map["Button"] = Capability::Button;
     map["Display"] = Capability::Display;
-    map["AudioIface"] = Capability::AudioIface;
+    map["AudioHw"] = Capability::AudioHw;
 
     if ( map.contains( capability ) )
     {
@@ -231,8 +231,8 @@ QString Solid::Predicate::toString() const
         case Capability::PortableMediaPlayer:
             capability = "PortableMediaPlayer";
             break;
-        case Capability::NetworkIface:
-            capability = "NetworkIface";
+        case Capability::NetworkHw:
+            capability = "NetworkHw";
             break;
         case Capability::AcAdapter:
             capability = "AcAdapter";
@@ -246,8 +246,8 @@ QString Solid::Predicate::toString() const
         case Capability::Display:
             capability = "Display";
             break;
-        case Capability::AudioIface:
-            capability = "AudioIface";
+        case Capability::AudioHw:
+            capability = "AudioHw";
             break;
         case Capability::Unknown:
             break;
