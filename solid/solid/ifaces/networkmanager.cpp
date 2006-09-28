@@ -19,6 +19,11 @@
 
 #include "networkmanager.h"
 
+Solid::Ifaces::NetworkManager::NetworkManager( QObject * parent ) : QObject( parent )
+{
+
+}
+
 Solid::Ifaces::NetworkManager::~NetworkManager()
 {
 
