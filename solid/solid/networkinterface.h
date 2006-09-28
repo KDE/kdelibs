@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NETWORKDEVICE_H
-#define SOLID_NETWORKDEVICE_H
+#ifndef SOLID_NETWORKINTERFACE_H
+#define SOLID_NETWORKINTERFACE_H
 
 #include <solid/frontendobject.h>
 #include <solid/ifaces/enums.h>
@@ -32,40 +32,40 @@ namespace Solid
      * For non network specific hardware details,
      * @see Solid::NetworkIface
      */
-    class KDE_EXPORT NetworkDevice : public FrontendObject, public Ifaces::Enums::NetworkDevice
+    class KDE_EXPORT NetworkInterface : public FrontendObject, public Ifaces::Enums::NetworkInterface
     {
         Q_OBJECT
     public:
         /**
          * Constructs an invalid network device
          */
-        NetworkDevice();
+        NetworkInterface();
 
         /**
          * Constructs a network device for a given Universal Network Identifier (UNI).
          *
          * @param uni the uni of the network device to create
          */
-        NetworkDevice( const QString &uni );
+        NetworkInterface( const QString &uni );
 
         /**
          * Constructs a new network device taking its data from a backend.
          *
          * @param backendObject the object given by the backend
          */
-        NetworkDevice( QObject *backendObject );
+        NetworkInterface( QObject *backendObject );
 
         /**
          * Constructs a copy of a network device.
          *
          * @param device the network device to copy
          */
-        NetworkDevice( const NetworkDevice &device );
+        NetworkInterface( const NetworkInterface &device );
 
         /**
          * Destroys the device.
          */
-        ~NetworkDevice();
+        ~NetworkInterface();
 
 
 
@@ -75,12 +75,12 @@ namespace Solid
          * @param device the network device to assign
          * @return a reference to the network device
          */
-        NetworkDevice &operator=( const NetworkDevice &device );
+        NetworkInterface &operator=( const NetworkInterface &device );
 
 
 
         /**
-         * Retrieves the Universal Network Identifier (UNI) of the NetworkDevice.
+         * Retrieves the Universal Network Identifier (UNI) of the NetworkInterface.
          * This identifier is unique for each network and network device in the system.
          *
          * @returns the Universal Network Identifier of the current network device
@@ -99,7 +99,7 @@ namespace Solid
          * if a device is wired or wireless.
          *
          * @return this network device type
-         * @see Solid::Ifaces::Enums::NetworkDevice::Type
+         * @see Solid::Ifaces::Enums::NetworkInterface::Type
          */
         Type type() const;
 
@@ -109,7 +109,7 @@ namespace Solid
          * it provides states coming from different layers.
          *
          * @return the current connection state
-         * @see Solid::Ifaces::Enums::NetworkDevice::ConnectionState
+         * @see Solid::Ifaces::Enums::NetworkInterface::ConnectionState
          */
         ConnectionState connectionState() const;
 
@@ -139,7 +139,7 @@ namespace Solid
          * Retrieves the capabilities supported by this device.
          *
          * @return the capabilities of the device
-         * @param Solid::Ifaces::Enums::NetworkDevice
+         * @param Solid::Ifaces::Enums::NetworkInterface
          */
         Capabilities capabilities() const;
 
@@ -190,7 +190,7 @@ namespace Solid
          * is no carrier anymore.
          *
          * @param state the new state of the connection
-         * @see Solid::Ifaces::NetworkDevice::ConnectionState
+         * @see Solid::Ifaces::NetworkInterface::ConnectionState
          */
         void connectionStateChanged( int state );
 

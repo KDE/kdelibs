@@ -17,18 +17,17 @@
 
 */
 
-#include "networkdevice.h"
+#include "networkinterface.h"
 
-Solid::Ifaces::NetworkDevice::NetworkDevice( QObject *parent )
+Solid::Ifaces::NetworkInterface::NetworkInterface( QObject *parent )
     : QObject( parent )
 {
 
 }
 
-Solid::Ifaces::NetworkDevice::~NetworkDevice()
+Solid::Ifaces::NetworkInterface::~NetworkInterface()
 {
 
 }
 
-
-#include "networkdevice.moc"
+#include "networkinterface.moc"

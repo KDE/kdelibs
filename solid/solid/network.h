@@ -27,7 +27,7 @@
 
 namespace Solid
 {
-    class NetworkDevice;
+    class NetworkInterface;
 
     /**
      * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
@@ -138,7 +138,7 @@ namespace Solid
         void activationStateChanged( bool activated );
 
     private:
-        friend class NetworkDevice;
+        friend class NetworkInterface;
     //HACK: to make NetworkList polymorphic (containing both wired and wireless networks, I used Network * here - Will.
     };
     typedef QList<Network*> NetworkList;

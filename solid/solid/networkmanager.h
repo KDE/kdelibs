@@ -31,8 +31,8 @@ namespace Solid
         class NetworkManager;
     }
     class Network;
-    class NetworkDevice;
-    typedef QList<NetworkDevice> NetworkDeviceList;
+    class NetworkInterface;
+    typedef QList<NetworkInterface> NetworkInterfaceList;
 
     /**
      * This class allow to query the underlying system to discover the available
@@ -56,15 +56,15 @@ namespace Solid
          *
          * @return the list of network devices available in this system
          */
-        NetworkDeviceList networkDevices() const;
+        NetworkInterfaceList networkInterfaces() const;
 
         /**
-         * Find a new NetworkDevice object given its UNI.
+         * Find a new NetworkInterface object given its UNI.
          *
          * @param uni the identifier of the network device to find
-         * @returns a valid NetworkDevice object if there's a device having the given UNI, an invalid one otherwise
+         * @returns a valid NetworkInterface object if there's a device having the given UNI, an invalid one otherwise
          */
-        const NetworkDevice &findNetworkDevice( const QString & udi ) const;
+        const NetworkInterface &findNetworkInterface( const QString & udi ) const;
 
         /**
          * Retrieves the activation status of networking (as a whole) in the system.
@@ -109,24 +109,24 @@ namespace Solid
          *
          * @param uni the network device identifier
          */
-        void networkDeviceAdded( const QString & uni );
+        void networkInterfaceAdded( const QString & uni );
 
         /**
          * This signal is emitted when a network device is not available anymore.
          *
          * @param uni the network device identifier
          */
-        void networkDeviceRemoved( const QString & uni );
+        void networkInterfaceRemoved( const QString & uni );
 
     private:
         NetworkManager();
         NetworkManager( QObject *backend );
         virtual ~NetworkManager();
-        NetworkDeviceList buildDeviceList( const QStringList & udiList ) const;
+        NetworkInterfaceList buildDeviceList( const QStringList & udiList ) const;
 
     private Q_SLOTS:
-        void slotNetworkDeviceAdded( const QString &uni );
-        void slotNetworkDeviceRemoved( const QString &uni );
+        void slotNetworkInterfaceAdded( const QString &uni );
+        void slotNetworkInterfaceRemoved( const QString &uni );
         void slotDestroyed( QObject *object );
 
     private:

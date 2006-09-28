@@ -57,15 +57,15 @@ namespace Ifaces
          *
          * @return the list of network devices available in this system
          */
-        virtual QStringList networkDevices() const = 0;
+        virtual QStringList networkInterfaces() const = 0;
 
         /**
-         * Instantiates a new NetworkDevice object from this backend given its UNI.
+         * Instantiates a new NetworkInterface object from this backend given its UNI.
          *
          * @param uni the identifier of the network device instantiated
-         * @returns a new NetworkDevice object if there's a device having the given UNI, 0 otherwise
+         * @returns a new NetworkInterface object if there's a device having the given UNI, 0 otherwise
          */
-        virtual QObject *createNetworkDevice( const QString &uni ) = 0;
+        virtual QObject *createNetworkInterface( const QString &uni ) = 0;
 
         /**
          * Instantiates a new AuthenticationValidator object.
@@ -118,14 +118,14 @@ namespace Ifaces
          *
          * @param uni the network device identifier
          */
-        void networkDeviceAdded( const QString & uni );
+        void networkInterfaceAdded( const QString & uni );
 
         /**
          * This signal is emitted when a network device is not available anymore.
          *
          * @param uni the network device identifier
          */
-        void networkDeviceRemoved( const QString & uni );
+        void networkInterfaceRemoved( const QString & uni );
     };
 
 } // Ifaces

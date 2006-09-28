@@ -425,7 +425,7 @@ namespace Enums
     Q_DECLARE_OPERATORS_FOR_FLAGS( PowerManager::CpuFreqPolicies )
 
 
-    struct NetworkDevice
+    struct NetworkInterface
     {
         // == NM ActivationStage
         /**
@@ -442,7 +442,7 @@ namespace Enums
          * - IsManageable: denotes that the device can be controlled by this API
          * - SupportsCarrierDetect: the device informs us when it is plugged in to the medium
          * - SupportsWirelessScan: the device can scan for wireless networks
-         */ 
+         */
         enum Capability { IsManageable = 0x1, SupportsCarrierDetect = 0x2,
                           SupportsWirelessScan = 0x4 };
         /**
@@ -454,7 +454,7 @@ namespace Enums
 
         Q_DECLARE_FLAGS( Capabilities, Capability )
     };
-    Q_DECLARE_OPERATORS_FOR_FLAGS( NetworkDevice::Capabilities )
+    Q_DECLARE_OPERATORS_FOR_FLAGS( NetworkInterface::Capabilities )
 
     struct Network
     {

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_IFACES_NETWORKDEVICE_H
-#define SOLID_IFACES_NETWORKDEVICE_H
+#ifndef SOLID_IFACES_NETWORKINTERFACE_H
+#define SOLID_IFACES_NETWORKINTERFACE_H
 
 #include <QList>
 #include <kdelibs_export.h>
@@ -38,24 +38,24 @@ namespace Ifaces
      * @see Solid::Ifaces::NetworkIface
      */
      // TODO talk to Ervin about how to cleanly combine this with NetworkIface, perhaps a union class elsewhere
-    class KDE_EXPORT NetworkDevice : public QObject, public Enums::NetworkDevice
+    class KDE_EXPORT NetworkInterface : public QObject, public Enums::NetworkInterface
     {
         Q_OBJECT
     public:
         /**
-         * Create a NetworkDevice.
+         * Create a NetworkInterface.
          *
          * @param parent the parent object
          */
-        NetworkDevice( QObject *parent = 0 );
+        NetworkInterface( QObject *parent = 0 );
 
         /**
-         * Destructs a NetworkDevice object.
+         * Destructs a NetworkInterface object.
          */
-        virtual ~NetworkDevice();
+        virtual ~NetworkInterface();
 
         /**
-         * Retrieves the Universal Network Identifier (UNI) of the NetworkDevice.
+         * Retrieves the Universal Network Identifier (UNI) of the NetworkInterface.
          * This identifier is unique for each network and network device in the system.
          *
          * @returns the Universal Network Identifier of the current network device
@@ -74,7 +74,7 @@ namespace Ifaces
          * if a device is wired or wireless.
          *
          * @return this network device type
-         * @see Solid::Ifaces::Enums::NetworkDevice::Type
+         * @see Solid::Ifaces::Enums::NetworkInterface::Type
          */
         virtual Type type() const = 0;
 
@@ -84,7 +84,7 @@ namespace Ifaces
          * it provides states coming from different layers.
          *
          * @return the current connection state
-         * @see Solid::Ifaces::Enums::NetworkDevice::ConnectionState
+         * @see Solid::Ifaces::Enums::NetworkInterface::ConnectionState
          */
         virtual ConnectionState connectionState() const = 0;
 
@@ -114,7 +114,7 @@ namespace Ifaces
          * Retrieves the capabilities supported by this device.
          *
          * @return the capabilities of the device
-         * @param Solid::Ifaces::Enums::NetworkDevice
+         * @param Solid::Ifaces::Enums::NetworkInterface
          */
         virtual Capabilities capabilities() const = 0;
 
@@ -167,7 +167,7 @@ namespace Ifaces
          * is no carrier anymore.
          *
          * @param state the new state of the connection
-         * @see Solid::Ifaces::NetworkDevice::ConnectionState
+         * @see Solid::Ifaces::NetworkInterface::ConnectionState
          */
         void connectionStateChanged( int state );
 
@@ -188,6 +188,6 @@ namespace Ifaces
 } //Ifaces
 } //Solid
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::NetworkDevice, "org.kde.Solid.Ifaces.NetworkDevice/0.1" )
+Q_DECLARE_INTERFACE( Solid::Ifaces::NetworkInterface, "org.kde.Solid.Ifaces.NetworkInterface/0.1" )
 
 #endif
