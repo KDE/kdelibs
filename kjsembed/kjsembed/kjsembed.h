@@ -60,6 +60,9 @@ public:
     /** Clean up. */
     virtual ~Engine();
 
+    /** Returns true if the Engine was created with the bindings enabled. */
+    bool isBindingsEnabled() const;
+
     /**
      * Execute the file with the specified name using the current interpreter.
      * @param file Filename to execute.

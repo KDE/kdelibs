@@ -103,6 +103,7 @@ public:
     }
     KJS::Interpreter *m_interpreter;
     KJS::Completion m_currentResult;
+    bool m_bindingsEnabled;
 };
 
 void setup( KJS::ExecState *exec, KJS::JSObject *parent )
@@ -148,11 +149,17 @@ Engine::Engine( bool enableBindings )
     dptr = new EnginePrivate( );
     if ( enableBindings )
 	setup( dptr->m_interpreter->globalExec(), dptr->m_interpreter->globalObject() );
+    dptr->m_bindingsEnabled =  enableBindings;
 }
 
 Engine::~Engine()
 {
     delete dptr;
+}
+
+bool Engine::isBindingsEnabled() const
+{
+    return dptr->m_bindingsEnabled;
 }
 
 KJS::JSObject *Engine::addObject( QObject *obj, KJS::JSObject *parent, const KJS::UString &name ) const
