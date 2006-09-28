@@ -37,7 +37,6 @@ namespace Solid
         WirelessNetwork( QObject *backendObject );
         virtual ~WirelessNetwork();
 
-        //TODO compare method would look for identical ESSID and at least one AP in common
         bool isSameAs( const WirelessNetwork & ) const;
 
         // PHY stuff

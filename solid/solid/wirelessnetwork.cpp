@@ -42,8 +42,21 @@ Solid::WirelessNetwork::~WirelessNetwork()
 
 bool Solid::WirelessNetwork::isSameAs( const WirelessNetwork & other) const
 {
-    return ( other.essid() == essid() &&
-             other.bssList() == /*intersects*/ bssList() );
+    if ( other.essid() == essid() )
+    {
+        QStringList intersection;
+        QStringListIterator it( bssList() );
+        const QStringList otherBSSList = other.bssList();
+        while ( it.hasNext() )
+        {
+            QString bss = it.next();
+            if ( other.bssList().contains( bss ) )
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 int Solid::WirelessNetwork::signalStrength() const
