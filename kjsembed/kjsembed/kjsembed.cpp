@@ -234,6 +234,52 @@ KJS::JSObject *Engine::construct( const KJS::UString &className, const KJS::List
     KJS::ExecState *exec = dptr->m_interpreter->globalExec();
     return StaticConstructor::construct( exec, global, className, args );
 }
+
+KJS::JSValue *Engine::callMethod( const KJS::UString &methodName, const KJS::List &args )
+{
+    KJS::JSObject *global = dptr->m_interpreter->globalObject();
+    KJS::ExecState *exec = dptr->m_interpreter->globalExec();
+
+    KJS::Identifier id = KJS::Identifier( KJS::UString( methodName.qstring() ) );
+    KJS::JSObject *fun = global->get( exec, id )->toObject( exec );
+    KJS::JSValue *retValue;
+
+    if ( !fun->implementsCall() ) {
+	QString msg = i18n( "%1 is not a function and cannot be called." ).arg( methodName.qstring() );
+	return throwError( exec, KJS::TypeError, msg );
+    }
+
+    retValue = fun->call( exec, global, args );
+
+    if( exec->hadException() )
+	return exec->exception();
+
+    return retValue;
 }
+
+KJS::JSValue *Engine::callMethod(  KJS::JSObject *parent,
+				   const KJS::UString &methodName, const KJS::List &args )
+{
+    KJS::ExecState *exec = dptr->m_interpreter->globalExec();
+
+    KJS::Identifier id = KJS::Identifier( KJS::UString( methodName.qstring() ) );
+    KJS::JSObject *fun = parent->get( exec, id )->toObject( exec );
+    KJS::JSValue *retValue;
+
+    if ( !fun->implementsCall() ) {
+	QString msg = i18n( "%1 is not a function and cannot be called." ).arg( methodName.qstring() );
+	return throwError( exec, KJS::TypeError, msg );
+    }
+
+    retValue = fun->call( exec, parent, args );
+
+    if( exec->hadException() )
+	return exec->exception();
+
+    return retValue;
+}
+
+
+} // namespace KJS
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

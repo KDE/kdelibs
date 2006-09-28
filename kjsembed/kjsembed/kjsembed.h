@@ -108,12 +108,12 @@ public:
     /**
     * Execute a method at the global scope of the javascript interperter.
     */
-    KJS::JSObject *callMethod( const KJS::UString &methodName, const KJS::List &args = KJS::List() );
+    KJS::JSValue *callMethod( const KJS::UString &methodName, const KJS::List &args = KJS::List() );
 
     /**
     * Execute a method on an object.
     */
-    KJS::JSObject *callMethod( const KJS::JSObject *parent, const KJS::UString &methodName, const KJS::List &args = KJS::List() );
+    KJS::JSValue *callMethod( KJS::JSObject *parent, const KJS::UString &methodName, const KJS::List &args = KJS::List() );
 
 private:
     class EnginePrivate *dptr;
