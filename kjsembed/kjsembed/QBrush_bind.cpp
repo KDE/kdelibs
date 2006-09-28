@@ -257,6 +257,7 @@ KJS::JSObject *KJSEmbed::QBrushData::ctorMethod( KJS::ExecState *exec, const KJS
             return new KJSEmbed::QBrushBinding(exec, QBrush(color, pixmap));
         }
     }
+    return 0;
 }
 
 const Method KJSEmbed::QBrushData::p_methods[] =
