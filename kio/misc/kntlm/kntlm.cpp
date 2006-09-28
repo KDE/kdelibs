@@ -158,16 +158,10 @@ bool KNTLM::getAuth( QByteArray &auth, const QByteArray &challenge, const QStrin
 //    }
 //  } else { //if no targetinfo structure and NTLMv2 or LMv2 not forced, try the older methods
 
-    if ( KFromToLittleEndian(ch->flags) & Negotiate_NTLM ) {
-      response = getNTLMResponse( password, ch->challengeData );
-      addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
-    } else {
-      if ( !forceNTLM ) {
-        response = getLMResponse( password, ch->challengeData );
-        addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
-      } else
-        return false;
-    }
+    response = getNTLMResponse( password, ch->challengeData );
+    addBuf( rbuf, ((Auth*) rbuf.data())->ntResponse, response );
+    response = getLMResponse( password, ch->challengeData );
+    addBuf( rbuf, ((Auth*) rbuf.data())->lmResponse, response );
 //  }
   if ( !dom.isEmpty() )
     addString( rbuf, ((Auth*) rbuf.data())->domain, dom, unicode );
