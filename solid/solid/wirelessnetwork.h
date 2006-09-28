@@ -31,7 +31,7 @@ namespace Solid
     typedef QStringList MacAddressList;
 
     /**
-     * This type of networks is used by wifi network devices.
+     * This type of networks is used by wifi network interfaces.
      */
     class KDE_EXPORT WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
     {
@@ -106,7 +106,7 @@ namespace Solid
         OperationMode mode() const;
 
         /**
-         * Indicates if the network device is associated to this network.
+         * Indicates if the network interface is associated to this network.
          *
          * @return true if the device is associated, false otherwise
          */

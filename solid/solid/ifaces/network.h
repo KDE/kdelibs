@@ -46,7 +46,7 @@ namespace Ifaces
 
         /**
          * Retrieves the Universal Network Identifier (UNI) of the Network.
-         * This identifier is unique for each network and network device in the system.
+         * This identifier is unique for each network and network interface in the system.
          *
          * @returns the Universal Network Identifier of the current network
          */

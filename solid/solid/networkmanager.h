@@ -36,11 +36,11 @@ namespace Solid
 
     /**
      * This class allow to query the underlying system to discover the available
-     * network devices and reachable network.It has also the
-     * responsibility to notify when a network device or a network appear or disappear.
+     * network interfaces and reachable network.It has also the
+     * responsibility to notify when a network interface or a network appear or disappear.
      *
      * It's the unique entry point for network management. Applications should use
-     * it to find network devices, or to be notified about network related changes.
+     * it to find network interfaces, or to be notified about network related changes.
      *
      * Note that it's implemented as a singleton and encapsulates the backend logic.
      */
@@ -51,17 +51,17 @@ namespace Solid
 
     public:
         /**
-         * Retrieves the list of all the network devices in the system.
+         * Retrieves the list of all the network interfaces in the system.
          * It includes both hardware and virtual devices.
          *
-         * @return the list of network devices available in this system
+         * @return the list of network interfaces available in this system
          */
         NetworkInterfaceList networkInterfaces() const;
 
         /**
          * Find a new NetworkInterface object given its UNI.
          *
-         * @param uni the identifier of the network device to find
+         * @param uni the identifier of the network interface to find
          * @returns a valid NetworkInterface object if there's a device having the given UNI, an invalid one otherwise
          */
         const NetworkInterface &findNetworkInterface( const QString & udi ) const;
@@ -105,16 +105,16 @@ namespace Solid
 
     Q_SIGNALS:
         /**
-         * This signal is emitted when a new network device is available.
+         * This signal is emitted when a new network interface is available.
          *
-         * @param uni the network device identifier
+         * @param uni the network interface identifier
          */
         void networkInterfaceAdded( const QString & uni );
 
         /**
-         * This signal is emitted when a network device is not available anymore.
+         * This signal is emitted when a network interface is not available anymore.
          *
-         * @param uni the network device identifier
+         * @param uni the network interface identifier
          */
         void networkInterfaceRemoved( const QString & uni );
 

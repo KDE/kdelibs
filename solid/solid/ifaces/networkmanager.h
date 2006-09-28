@@ -32,8 +32,8 @@ namespace Ifaces
      * order to be used in the system.
      *
      * A network manager allow to query the underlying platform to discover the
-     * available network devices and reachable network. It has also the
-     * responsibility to notify when a network device or a network appear or disappear.
+     * available network interfaces and reachable network. It has also the
+     * responsibility to notify when a network interface or a network appear or disappear.
      */
     class KDE_EXPORT NetworkManager : public QObject
     {
@@ -52,17 +52,17 @@ namespace Ifaces
 
 
         /**
-         * Retrieves the list of all the network devices Universal Network Identifiers (UNIs)
+         * Retrieves the list of all the network interfaces Universal Network Identifiers (UNIs)
          * in the system. It includes both hardware and virtual devices.
          *
-         * @return the list of network devices available in this system
+         * @return the list of network interfaces available in this system
          */
         virtual QStringList networkInterfaces() const = 0;
 
         /**
          * Instantiates a new NetworkInterface object from this backend given its UNI.
          *
-         * @param uni the identifier of the network device instantiated
+         * @param uni the identifier of the network interface instantiated
          * @returns a new NetworkInterface object if there's a device having the given UNI, 0 otherwise
          */
         virtual QObject *createNetworkInterface( const QString &uni ) = 0;
@@ -114,16 +114,16 @@ namespace Ifaces
 
     Q_SIGNALS:
         /**
-         * This signal is emitted when a new network device is available.
+         * This signal is emitted when a new network interface is available.
          *
-         * @param uni the network device identifier
+         * @param uni the network interface identifier
          */
         void networkInterfaceAdded( const QString & uni );
 
         /**
-         * This signal is emitted when a network device is not available anymore.
+         * This signal is emitted when a network interface is not available anymore.
          *
-         * @param uni the network device identifier
+         * @param uni the network interface identifier
          */
         void networkInterfaceRemoved( const QString & uni );
     };

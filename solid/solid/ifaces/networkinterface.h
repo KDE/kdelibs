@@ -32,7 +32,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * Represents a network device as seen by the networking subsystem.
+     * Represents a network interface as seen by the networking subsystem.
      *
      * For non network specific hardware details,
      * @see Solid::Ifaces::NetworkIface
@@ -56,24 +56,24 @@ namespace Ifaces
 
         /**
          * Retrieves the Universal Network Identifier (UNI) of the NetworkInterface.
-         * This identifier is unique for each network and network device in the system.
+         * This identifier is unique for each network and network interface in the system.
          *
-         * @returns the Universal Network Identifier of the current network device
+         * @returns the Universal Network Identifier of the current network interface
          */
         virtual QString uni() const = 0;
 
         /**
-         * Retrieves the activation status of this network device.
+         * Retrieves the activation status of this network interface.
          *
-         * @return true if this network device is active, false otherwise
+         * @return true if this network interface is active, false otherwise
          */
         virtual bool isActive() const = 0;
 
         /**
-         * Retrieves the type of this network device. For example it allows to check
+         * Retrieves the type of this network interface. For example it allows to check
          * if a device is wired or wireless.
          *
-         * @return this network device type
+         * @return this network interface type
          * @see Solid::Ifaces::Enums::NetworkInterface::Type
          */
         virtual Type type() const = 0;
@@ -89,7 +89,7 @@ namespace Ifaces
         virtual ConnectionState connectionState() const = 0;
 
         /**
-         * Retrieves the current signal strength of this network device. It ranges from 0 to 100.
+         * Retrieves the current signal strength of this network interface. It ranges from 0 to 100.
          *
          * @return the signal strength as a percentage, for ethernet device it reports 100
          */
@@ -104,7 +104,7 @@ namespace Ifaces
         virtual int designSpeed() const = 0;
 
         /**
-         * Indicates if the network devices sees a carrier.
+         * Indicates if the network interfaces sees a carrier.
          *
          * @return true if there's a carrier, false otherwise
          */
@@ -127,9 +127,9 @@ namespace Ifaces
         virtual QObject *createNetwork( const QString & uni ) = 0;
 
         /**
-         * Retrieves the networks available via this network devices.
+         * Retrieves the networks available via this network interfaces.
          *
-         * For wired network devices, this will probably be a single network,
+         * For wired network interfaces, this will probably be a single network,
          * but with wireless, multiple networks may be accessible.
          *
          * @return a list of network UNIs.
@@ -140,7 +140,7 @@ namespace Ifaces
 
         /**
          * This signal is emitted when the device's activation status changed.
-         * This may be emitted if the user turns off the network device via a physical switch.
+         * This may be emitted if the user turns off the network interface via a physical switch.
          *
          * @param activated true if the device is active, false otherwise
          */
