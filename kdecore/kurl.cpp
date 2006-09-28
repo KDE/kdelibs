@@ -931,6 +931,7 @@ KUrl KUrl::join( const KUrl::List & lst )
 
 QString KUrl::fileName( const DirectoryOptions& options ) const
 {
+  Q_ASSERT( options != 0 ); //Disallow options == false
   QString fname;
   if (hasSubUrl()) { // If we have a suburl, then return the filename from there
     KUrl::List list = KUrl::split(*this);
