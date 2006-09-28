@@ -15,24 +15,20 @@ function write_ctor( compoundDef, compoundEnums )
     {
         var memberElement = methodList.item(idx).toElement();
         var memberKind = memberElement.attribute( 'kind' );
+        var memberProt = memberElement.attribute('prot');
         var memberName = memberElement.firstChildElement('name').toElement().toString();
         var memberArgList = memberElement.elementsByTagName('param');
-        if ( memberKind == 'function' )
+        if (( memberKind == 'function' ) && // Constructor is a function
+            ( memberProt == 'public' ) && // Make sure it is public
+            ( memberName.indexOf('operator') == -1 ) && // Make sure this is not an operator.
+            ( memberName.indexOf(compoundName) != -1 ) && // This _is_ a ctor
+            ( memberName.indexOf('~') == -1 )) // This is _not_ a dtor
         {
-            if ( memberName.indexOf('operator') == -1 ) // Make sure this is not an operator.
-            {
-                if ( memberName.indexOf(compoundName) != -1 ) // This _is_ a ctor
-                {
-                    if ( memberName.indexOf('~') == -1 ) // This is _not_ a dtor
-                    {
-                        var args = memberArgList.count();
-                        if(!methodListList[args]) {
-                            methodListList[args] = new Array;
-                        }
-                        methodListList[args].push( memberElement );
-                    }
-                }
+            var args = memberArgList.count();
+            if(!methodListList[args]) {
+                methodListList[args] = new Array;
             }
+            methodListList[args].push( memberElement );
         }
     }
     for(var idx = 0; idx < methodListList.length; ++idx)
@@ -128,7 +124,7 @@ function write_method_lut( compoundDef )
                 {
                     if ( memberName.indexOf(compoundName) == -1 ) // Make sure this is not a ctor or dtor
                     {
-                    lut_template += '    { '+ memberName +', '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
+                    lut_template += '    { "'+ memberName +'", '+ numParams +', KJS::DontDelete|KJS::ReadOnly, &' + compoundName + 'NS::' + memberName + ' },\n';
                     }
                 }
             }
@@ -339,33 +335,42 @@ function write_binding_new( class_doc )
 }
 
 // An array of primitive Qt types, this is annoying but seems to be necessary
-var variant_types = {
+var data_types = {
     // Actual variant types
     "QBitArray" : 1, "QBitmap" : 1, "bool" : 1, "QBrush" : 1,
     "QByteArray" : 1, "QChar" : 1, "QColor" : 1, "QCursor" : 1,
     "QDate" : 1, "QDateTime" : 1, "double" : 1, "QFont" : 1,
-    "QIcon" : 1, "QImage" : 1, "int" : 1, "QKeySequence" : 1,
+    "QIcon" : 1, "QImage" : 1, "int" : 2, "QKeySequence" : 1,
     "QLine" : 1, "QLineF" : 1, "QVariantList" : 1, "QLocale" : 1,
-    "qlonglong" : 1, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
+    "qlonglong" : 2, "QVariantMap" : 1, "QPalette" : 1, "QPen" : 1,
     "QPixmap" : 1, "QPoint" : 1, "QPointArray" : 1, "QPointF" : 1,
     "QPolygon" : 1, "QRect" : 1, "QRectF" : 1, "QRegExp" : 1,
     "QRegion" : 1, "QSize" : 1, "QSizeF" : 1, "QSizePolicy" : 1,
     "QString" : 1, "QStringList" : 1, "QTextFormat" : 1,
-    "QTextLength" : 1, "QTime" : 1, "uint" : 1, "qulonglong" : 1,
+    "QTextLength" : 1, "QTime" : 1, "uint" : 2, "qulonglong" : 2,
     "QUrl" : 1, 
 
      // Other necessary qglobal.h types.
-     "qreal" : 1, "qint8" : 1, "quint8" : 1, "qint16" : 1, "quint16" : 1, 
-     "qint32" : 1, "quint32" : 1, "qint64" : 1, "quint64" : 1, 
-     "qlonglong" : 1, "qulonglong" : 1,
-     "uchar" : 1, "ushort" : 1, "uint" : 1, "ulong" : 1
+     "qreal" : 2, "qint8" : 3, "quint8" : 3, "qint16" : 3, "quint16" : 3, 
+     "qint32" : 3, "quint32" : 3, "qint64" : 3, "quint64" : 3, 
+     "qulonglong" : 3,
+     "uchar" : 3, "ushort" : 3, "ulong" : 3
     
 };
 
 function isVariant( variable )
 {
-//    debug(variable + " isVariant " + variant_types[variable]);
-    if (variant_types[variable] == 1)
+//    debug(variable + " isVariant " + data_types[variable]);
+    if ((data_types[variable] == 1) || (data_types[variable] == 2))
+      return true;
+    else
+      return false;
+}
+
+function isNumber( variable )
+{
+//    debug(variable + " isNumber " + data_types[variable]);
+    if ((data_types[variable] > 1) && data_types[variable] < 4)
       return true;
     else
       return false;
