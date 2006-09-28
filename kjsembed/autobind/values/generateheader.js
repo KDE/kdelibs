@@ -23,7 +23,6 @@ function write_header( classDoc )
         '   {\n' +
         '       public:\n' +
         '           ' + compoundName + 'Binding( KJS::ExecState *exec, const ' + compoundName + ' &value );\n' +
-        '       private:\n' +
         '           static const KJS::ClassInfo info;\n' +
         '           virtual const KJS::ClassInfo* classInfo() const { return &info; }\n' +
         '   };\n\n' +
