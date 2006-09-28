@@ -29,67 +29,102 @@ namespace Ifaces
 {
 
     /**
-     * Main class for listing and activating network devices and controlling the backend's network status
+     * This class specifies the interface a backend will have to implement in
+     * order to be used in the system.
+     *
+     * A network manager allow to query the underlying platform to discover the
+     * available network devices and reachable network. It has also the
+     * responsibility to notify when a network device or a network appear or disappear.
      */
     class KDE_EXPORT NetworkManager : public QObject
     {
         Q_OBJECT
     public:
+        /**
+         * Constructs a NetworkManager.
+         */
         NetworkManager( QObject * parent = 0 );
+        /**
+         * Destructs a NetworkManager object.
+         */
         virtual ~NetworkManager();
 
+
         /**
-         * Get a list of all network device UDIs in the system
-         * Note: includes getDeviceList and getDialupList from knm
+         * Retrieves the list of all the network devices Universal Network Identifiers (UNIs)
+         * in the system. It includes both hardware and virtual devices.
+         *
+         * @return the list of network devices available in this system
          */
         virtual QStringList networkDevices() const = 0;
+
         /**
-         * Get the active device UDIs (all types)
-         * TODO: NM only supports 1 active device at present
+         * Instantiates a new NetworkDevice object from this backend given its UNI.
+         *
+         * @param uni the identifier of the network device instantiated
+         * @returns a new NetworkDevice object if there's a device having the given UNI, 0 otherwise
          */
-        virtual QStringList activeNetworkDevices() const = 0;
+        virtual QObject *createNetworkDevice( const QString &uni ) = 0;
+
         /**
-         * Create a backend specific device instance for the device with the
-         * given UNI
-         */
-        virtual QObject *createNetworkDevice( const QString & ) = 0;
-        /**
-         * Create a backend specific authentication validator
+         * Instantiates a new AuthenticationValidator object.
+         *
+         * @returns a new AuthenticationValidator object, or 0 on failure
          */
         virtual QObject *createAuthenticationValidator() = 0;
 
+
+        /**
+         * Retrieves the activation status of networking (as a whole) in the system.
+         *
+         * @return true if this networking is enabled, false otherwise
+         */
+        virtual bool isNetworkingEnabled() const = 0;
+
+        /**
+         * Retrieves the activation status of wireless networking in the system.
+         *
+         * @return true if this wireless networking is enabled, false otherwise
+         */
+        virtual bool isWirelessEnabled() const = 0;
+
+
     public Q_SLOTS:
         /**
-         * Tell the backend to activate a network
-         * TODO: Also dialup, VPN?
+         * Activates or deactivates networking (as a whole).
+         *
+         * @param true to activate networking, false otherwise
          */
-        virtual void activate( const QString & ) = 0;
+        virtual void setNetworkingEnabled( bool enabled ) = 0;
+
         /**
-         * Tell the backend to activate a network
-         * TODO: Also dialup, VPN?
+         * Activates or deactivates wireless networking.
+         *
+         * @param true to activate wireless networking, false otherwise
          */
-        virtual void deactivate( const QString & ) = 0;
+        virtual void setWirelessEnabled( bool enabled ) = 0;
+
         /**
-         * disable wireless networking
+         * Informs the system of hidden networks.
+         *
+         * @param networkName the name of the hidden network that could be discovered
          */
-        virtual void enableWireless( bool enabled ) = 0;
-        /**
-         * disable all networking - go to passive mode
-         */
-        virtual void enableNetworking( bool enabled ) = 0;
-        /**
-         * Inform the backend of hidden wireless networks
-         */
-        virtual void notifyHiddenNetwork( const QString & essid ) = 0;
+        virtual void notifyHiddenNetwork( const QString &networkName ) = 0;
+
     Q_SIGNALS:
         /**
-         * Emitted when the system notices a new device was added
+         * This signal is emitted when a new network device is available.
+         *
+         * @param uni the network device identifier
          */
-        void added( const QString & udi );
+        void networkDeviceAdded( const QString & uni );
+
         /**
-         * Emitted when the system notices a device was removed
+         * This signal is emitted when a network device is not available anymore.
+         *
+         * @param uni the network device identifier
          */
-        void removed( const QString & udi );
+        void networkDeviceRemoved( const QString & uni );
     };
 
 } // Ifaces

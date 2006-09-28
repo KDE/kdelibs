@@ -48,49 +48,63 @@ namespace Solid
          * Note: includes getDeviceList and getDialupList from knm
          */
         NetworkDeviceList networkDevices() const;
-        /**
-         * Get the active devices (all types)
-         * TODO: NM only supports 1 active device at present
-         */
-        NetworkDeviceList activeNetworkDevices() const;
 
         /**
          * Access a given device instance
          */
         const NetworkDevice &findNetworkDevice( const QString & udi ) const;
 
+        /**
+         * Retrieves the activation status of networking (as a whole) in the system.
+         *
+         * @return true if this networking is enabled, false otherwise
+         */
+        bool isNetworkingEnabled() const;
+
+        /**
+         * Retrieves the activation status of wireless networking in the system.
+         *
+         * @return true if this wireless networking is enabled, false otherwise
+         */
+        bool isWirelessEnabled() const;
+
+
     public Q_SLOTS:
         /**
-         * Tell the backend to activate a network
-         * TODO: Also dialup, VPN?
+         * Activates or deactivates networking (as a whole).
+         *
+         * @param true to activate networking, false otherwise
          */
-        void activate( const QString & uid );
+        void setNetworkingEnabled( bool enabled );
+
         /**
-         * Tell the backend to activate a network
-         * TODO: Also dialup, VPN?
+         * Activates or deactivates wireless networking.
+         *
+         * @param true to activate wireless networking, false otherwise
          */
-        void deactivate( const QString & uid );
+        void setWirelessEnabled( bool enabled );
+
         /**
-         * disable wireless networking
+         * Informs the system of hidden networks.
+         *
+         * @param networkName the name of the hidden network that could be discovered
          */
-        void enableWireless( bool enabled );
-        /**
-         * disable all networking - go to passive mode
-         */
-        void enableNetworking( bool enabled );
-        /**
-         * Inform the backend of hidden wireless networks
-         */
-        void notifyHiddenNetwork( const QString & essid );
+        void notifyHiddenNetwork( const QString &networkName );
+
     Q_SIGNALS:
         /**
-         * Emitted when the system notices a new device was added
+         * This signal is emitted when a new network device is available.
+         *
+         * @param uni the network device identifier
          */
-        void added( const QString & );
+        void networkDeviceAdded( const QString & uni );
+
         /**
-         * Emitted when the system notices a device was removed
+         * This signal is emitted when a network device is not available anymore.
+         *
+         * @param uni the network device identifier
          */
-        void removed( const QString & );
+        void networkDeviceRemoved( const QString & uni );
 
     private:
         NetworkManager();
@@ -99,8 +113,8 @@ namespace Solid
         NetworkDeviceList buildDeviceList( const QStringList & udiList ) const;
 
     private Q_SLOTS:
-        void slotAdded( const QString &uni );
-        void slotRemoved( const QString &uni );
+        void slotNetworkDeviceAdded( const QString &uni );
+        void slotNetworkDeviceRemoved( const QString &uni );
         void slotDestroyed( QObject *object );
 
     private:

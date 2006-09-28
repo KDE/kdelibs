@@ -107,7 +107,7 @@ namespace Ifaces
         virtual bool isActive() const = 0;
 
         /**
-         * Activate or deactivate this network. For ethernets, this has no effect.
+         * Activates or deactivates this network. For ethernets, this has no effect.
          *
          * @param true to activate this network, false otherwise
          */

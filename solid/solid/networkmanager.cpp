@@ -120,43 +120,29 @@ Solid::NetworkDeviceList Solid::NetworkManager::networkDevices() const
     }
 }
 
-Solid::NetworkDeviceList Solid::NetworkManager::activeNetworkDevices() const
+bool Solid::NetworkManager::isNetworkingEnabled() const
 {
-    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( managerBackend() );
-
-    if ( backend!= 0 )
-    {
-        return buildDeviceList( backend->activeNetworkDevices() );
-    }
-    else
-    {
-        return NetworkDeviceList();
-    }
+    return_SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), false, isNetworkingEnabled() );
 }
 
-void Solid::NetworkManager::activate( const QString & net )
+bool Solid::NetworkManager::isWirelessEnabled() const
 {
-    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), activate( net ) );
+    return_SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), false, isWirelessEnabled() );
 }
 
-void Solid::NetworkManager::deactivate( const QString & net )
+void Solid::NetworkManager::setNetworkingEnabled( bool enabled )
 {
-    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), deactivate( net ) );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), setNetworkingEnabled( enabled ) );
 }
 
-void Solid::NetworkManager::enableWireless( bool enabled )
+void Solid::NetworkManager::setWirelessEnabled( bool enabled )
 {
-    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), enableWireless( enabled ) );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), setWirelessEnabled( enabled ) );
 }
 
-void Solid::NetworkManager::enableNetworking( bool enabled )
+void Solid::NetworkManager::notifyHiddenNetwork( const QString &networkName )
 {
-    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), enableNetworking( enabled ) );
-}
-
-void Solid::NetworkManager::notifyHiddenNetwork( const QString & essid )
-{
-    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), notifyHiddenNetwork( essid ) );
+    SOLID_CALL( Ifaces::NetworkManager*, managerBackend(), notifyHiddenNetwork( networkName ) );
 }
 
 const Solid::NetworkDevice &Solid::NetworkManager::findNetworkDevice( const QString &uni ) const
@@ -177,7 +163,7 @@ const Solid::NetworkDevice &Solid::NetworkManager::findNetworkDevice( const QStr
     }
 }
 
-void Solid::NetworkManager::slotAdded( const QString &uni )
+void Solid::NetworkManager::slotNetworkDeviceAdded( const QString &uni )
 {
     QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair = d->networkDeviceMap.take( uni );
 
@@ -190,10 +176,10 @@ void Solid::NetworkManager::slotAdded( const QString &uni )
         delete pair.second;
     }
 
-    emit added( uni );
+    emit networkDeviceAdded( uni );
 }
 
-void Solid::NetworkManager::slotRemoved( const QString &uni )
+void Solid::NetworkManager::slotNetworkDeviceRemoved( const QString &uni )
 {
     QPair<NetworkDevice*, Ifaces::NetworkDevice*> pair = d->networkDeviceMap.take( uni );
 
@@ -203,7 +189,7 @@ void Solid::NetworkManager::slotRemoved( const QString &uni )
         delete pair.second;
     }
 
-    emit removed( uni );
+    emit networkDeviceRemoved( uni );
 }
 
 void Solid::NetworkManager::slotDestroyed( QObject *object )
@@ -224,10 +210,10 @@ void Solid::NetworkManager::Private::registerBackend( QObject *newBackend )
 {
     q->setManagerBackend( newBackend );
 
-    QObject::connect( newBackend, SIGNAL( added( const QString & ) ),
-                      q, SLOT( slotAdded( const QString & ) ) );
-    QObject::connect( newBackend, SIGNAL( removed( const QString & ) ),
-                      q, SLOT( slotRemoved( const QString & ) ) );
+    QObject::connect( newBackend, SIGNAL( networkDeviceAdded( const QString & ) ),
+                      q, SLOT( slotNetworkDeviceAdded( const QString & ) ) );
+    QObject::connect( newBackend, SIGNAL( networkDeviceRemoved( const QString & ) ),
+                      q, SLOT( slotNetworkDeviceRemoved( const QString & ) ) );
 }
 
 QPair<Solid::NetworkDevice*, Solid::Ifaces::NetworkDevice*> Solid::NetworkManager::Private::findRegisteredNetworkDevice( const QString &uni )
