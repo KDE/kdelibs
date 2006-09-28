@@ -6,7 +6,7 @@
 		Added alternative syntax control structures and named logical operators (and or xor)
 -->
 <!DOCTYPE language SYSTEM "language.dtd">
-<language name="PHP/PHP" version="1.26" kateversion="2.4" section="Scripts" extensions="" priority="5" mimetype="" hidden="true">
+<language name="PHP/PHP" version="1.27" kateversion="2.4" section="Scripts" extensions="" priority="5" mimetype="" hidden="true">
   <highlighting>
     <list name="control structures">
       <item>as</item>
@@ -6453,9 +6453,9 @@
         <HlCHex attribute="Hex" context="#stay" />
         <Float attribute="Float" context="#stay" />
         <Int attribute="Decimal" context="#stay" />
-        <DetectChar attribute="Normal Text" context="#stay" char="{" beginRegion="Brace1" />
-        <DetectChar attribute="Normal Text" context="#stay" char="}" endRegion="Brace1" />
-        <AnyChar attribute="Other" context="#stay" String=";()}{:,[]" />
+        <DetectChar attribute="Symbol" context="#stay" char="{" beginRegion="Brace1" />
+        <DetectChar attribute="Symbol" context="#stay" char="}" endRegion="Brace1" />
+        <AnyChar attribute="Symbol" context="#stay" String=";()}{:,[]" />
       </context>
       <context name="onelinecomment" attribute="Comment" lineEndContext="#pop">
         <StringDetect attribute="Keyword" context="#pop" lookAhead="true" String="?&gt;" />
@@ -6492,6 +6492,7 @@
     </contexts>
     <itemDatas>
       <itemData name="Normal Text" defStyleNum="dsNormal" />
+      <itemData name="Symbol" defStyleNum="dsNormal" />
       <itemData name="PHP Text" defStyleNum="dsNormal" />
       <itemData name="Keyword" defStyleNum="dsKeyword" />
       <itemData name="Function" defStyleNum="dsFunction" />
