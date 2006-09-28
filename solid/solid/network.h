@@ -44,8 +44,7 @@ namespace Solid
         // wtf does NM use this for?
         QString route() const;
 
-        QString primaryDNS() const;
-        QString secondaryDNS() const;
+        QStringList dnsServers() const;
         QString uni() const;
         void setActivated( bool active );
         bool isActive() const;

@@ -64,14 +64,9 @@ QString Solid::Network::route() const
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), route() );
 }
 
-QString Solid::Network::primaryDNS() const
+QStringList Solid::Network::dnsServers() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), primaryDNS() );
-}
-
-QString Solid::Network::secondaryDNS() const
-{
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), secondaryDNS() );
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QStringList(), dnsServers() );
 }
 
 void Solid::Network::setActivated( bool active )

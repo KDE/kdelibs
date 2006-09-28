@@ -48,8 +48,7 @@ namespace Ifaces
         // wtf does NM use this for?
         virtual QString route() const = 0;
 
-        virtual QString primaryDNS() const = 0;
-        virtual QString secondaryDNS() const = 0;
+        virtual QStringList dnsServers() const = 0;
         /**
          * Get the activation status of this network.  For ethernets, this will always be true
          */
