@@ -20,7 +20,6 @@
 #ifndef SOLID_DEVICE_H
 #define SOLID_DEVICE_H
 
-#include <QObject>
 #include <QVariant>
 #include <QString>
 #include <QMap>
@@ -28,15 +27,12 @@
 
 #include <kdelibs_export.h>
 
+#include <solid/frontendobject.h>
 #include <solid/capability.h>
 #include <solid/ifaces/enums.h>
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Device;
-    }
     class DeviceManager;
 
     /**
@@ -56,7 +52,7 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class KDE_EXPORT Device : public QObject, public Ifaces::Enums::Device
+    class KDE_EXPORT Device : public FrontendObject, public Ifaces::Enums::Device
     {
         Q_OBJECT
     public:
@@ -82,9 +78,9 @@ namespace Solid
         /**
          * Constructs a new device taking its data from a backend.
          *
-         * @param data the data given by the backend
+         * @param backendObject the object given by the backend
          */
-        Device( Ifaces::Device *data );
+        Device( QObject *backendObject );
 
         /**
          * Destroys the device.
@@ -101,16 +97,6 @@ namespace Solid
          */
         Device &operator=( const Device &device );
 
-
-
-        /**
-         * Indicates if a device is valid. A device is considered valid if it
-         * refers to a udi corresponding to a known device in the underlying
-         * system.
-         *
-         * @return true if the device is valid, false otherwise
-         */
-        bool isValid() const;
 
 
         /**
@@ -301,10 +287,13 @@ namespace Solid
          */
         void conditionRaised( const QString &condition, const QString &reason );
 
-    private Q_SLOTS:
+    protected Q_SLOTS:
         void slotDestroyed( QObject *object );
 
     private:
+        void registerBackendObject( QObject *backendObject );
+        void unregisterBackendObject();
+
         class Private;
         Private *d;
     };

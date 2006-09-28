@@ -20,14 +20,13 @@
 #ifndef SOLID_NETWORKDEVICE_H
 #define SOLID_NETWORKDEVICE_H
 
-#include <QObject>
-
+#include <solid/frontendobject.h>
 #include <solid/ifaces/enums.h>
 #include <solid/network.h>
 
 namespace Solid
 {
-    class NetworkDevice : public QObject, public Ifaces::Enums::NetworkDevice
+    class KDE_EXPORT NetworkDevice : public FrontendObject, public Ifaces::Enums::NetworkDevice
     {
         Q_OBJECT
     public:
@@ -36,12 +35,11 @@ namespace Solid
          */
         NetworkDevice();
         NetworkDevice( const QString &uni );
-        NetworkDevice( Ifaces::NetworkDevice * );
+        NetworkDevice( QObject * );
         NetworkDevice( const NetworkDevice & );
         ~NetworkDevice();
 
         NetworkDevice &operator=( const NetworkDevice & );
-        bool isValid() const;
         QString uni() const;
         bool isActive() const;
 
@@ -71,10 +69,15 @@ namespace Solid
         void signalStrengthChanged( int );
         void connectionStateChanged( int /* ConnectionState */ );
 
-    private Q_SLOTS:
+    protected Q_SLOTS:
         void slotDestroyed( QObject *object );
 
     private:
+        void registerBackendObject( QObject *backendObject );
+        void unregisterBackendObject();
+
+        QObject *findRegisteredNetwork( const QString &uni ) const;
+
         class Private;
         Private * d;
 };

@@ -30,7 +30,7 @@ namespace Solid
     typedef QString MacAddress;
     typedef QStringList MacAddressList;
 
-    class WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
+    class KDE_EXPORT WirelessNetwork : public Network, public Ifaces::Enums::WirelessNetwork
     {
         Q_OBJECT
     public:

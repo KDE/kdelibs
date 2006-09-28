@@ -20,14 +20,16 @@
 #ifndef SOLID_NETWORK_H
 #define SOLID_NETWORK_H
 
+#include <solid/frontendobject.h>
 #include <solid/ifaces/enums.h>
 
-#include <QObject>
 #include <QStringList>
 
 namespace Solid
 {
-    class Network : public QObject, public Ifaces::Enums::Network
+    class NetworkDevice;
+
+    class KDE_EXPORT Network : public FrontendObject, public Ifaces::Enums::Network
     {
         Q_OBJECT
     public:
@@ -50,14 +52,8 @@ namespace Solid
     Q_SIGNALS:
         void ipDetailsChanged();
 
-    protected:
-        QObject *backendObject();
-        const QObject *backendObject() const;
-
     private:
-        class Private;
-        Private * d;
-
+        friend class NetworkDevice;
     //HACK: to make NetworkList polymorphic (containing both wired and wireless networks, I used Network * here - Will.
     };
     typedef QList<Network*> NetworkList;

@@ -22,19 +22,11 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/network.h>
 
-namespace Solid
-{
-    class Network::Private
-    {
-    public:
-        QObject *backendObject;
-    };
-}
 
 Solid::Network::Network( QObject *backendObject )
-    : QObject(), d( new Private )
+    : FrontendObject()
 {
-    d->backendObject = backendObject;
+    setBackendObject( backendObject );
 
     connect( backendObject, SIGNAL( ipDetailsChanged() ),
              this, SIGNAL( ipDetailsChanged() ) );
@@ -42,7 +34,6 @@ Solid::Network::Network( QObject *backendObject )
 
 Solid::Network::~Network()
 {
-    delete d;
 }
 
 QStringList Solid::Network::ipV4Addresses() const
@@ -93,16 +84,6 @@ bool Solid::Network::isActive() const
 QString Solid::Network::uni() const
 {
     return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), uni() );
-}
-
-QObject *Solid::Network::backendObject()
-{
-    return d->backendObject;
-}
-
-const QObject *Solid::Network::backendObject() const
-{
-    return d->backendObject;
 }
 
 #include "network.moc"

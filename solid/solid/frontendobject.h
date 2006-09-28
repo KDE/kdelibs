@@ -17,47 +17,34 @@
 
 */
 
-#ifndef SOLID_CAPABILITY_H
-#define SOLID_CAPABILITY_H
+#ifndef SOLID_FRONTENDOBJECT_H
+#define SOLID_FRONTENDOBJECT_H
 
 #include <QObject>
-#include <QFlags>
 
 #include <kdelibs_export.h>
 
-#include <solid/frontendobject.h>
-#include <solid/ifaces/enums.h>
-
 namespace Solid
 {
-    class Device;
-    class Predicate;
-
-    /**
-     * Base class of all the capabilities.
-     *
-     * A capability describes what a device can do. A device generally has
-     * a set of capabilities.
-     */
-    class KDE_EXPORT Capability : public FrontendObject, public Ifaces::Enums::Capability
+    class KDE_EXPORT FrontendObject : public QObject
     {
         Q_OBJECT
     public:
-        /**
-         * Creates a new Capability object.
-         *
-         * @param backendObject the capability object provided by the backend
-         */
-        Capability( QObject *backendObject );
+        FrontendObject( QObject *parent = 0 );
+        virtual ~FrontendObject();
 
-        /**
-         * Destroys a Capability object.
-         */
-        virtual ~Capability();
+        bool isValid() const;
+
+    protected:
+        QObject *backendObject() const;
+        void setBackendObject( QObject *backendObject );
+
+    protected Q_SLOTS:
+        virtual void slotDestroyed( QObject *object );
 
     private:
-        friend class Device;
-        friend class Predicate;
+        class Private;
+        Private *d;
     };
 }
 

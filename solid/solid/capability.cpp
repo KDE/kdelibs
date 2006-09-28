@@ -21,34 +21,14 @@
 
 #include <solid/ifaces/capability.h>
 
-namespace Solid
-{
-    class Capability::Private
-    {
-    public:
-        QObject *backendObject;
-    };
-}
-
 Solid::Capability::Capability( QObject *backendObject )
-    : QObject(), d( new Private )
+    : FrontendObject()
 {
-    d->backendObject = backendObject;
+    setBackendObject( backendObject );
 }
 
 Solid::Capability::~Capability()
 {
-    delete d;
-}
-
-QObject *Solid::Capability::backendObject()
-{
-    return d->backendObject;
-}
-
-const QObject *Solid::Capability::backendObject() const
-{
-    return d->backendObject;
 }
 
 #include "capability.moc"

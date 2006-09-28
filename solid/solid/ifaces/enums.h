@@ -434,7 +434,7 @@ namespace Enums
          * simplicity, states from several different layers are present -
          * this is a high level view
          */
-        enum ConnectionState{ Unknown, Prepare, Configure, NeedUserKey,
+        enum ConnectionState{ UnknownState, Prepare, Configure, NeedUserKey,
                               IPStart, IPGet, IPCommit, Activated, Failed,
                               Cancelled };
         /**
@@ -450,7 +450,7 @@ namespace Enums
          * - IEEE802_3: wired ethernet
          * - IEEE802_11: the popular family of wireless networks
          */
-        enum Type { IEEE802_3, IEEE802_11 };
+        enum Type { UnknownType, IEEE802_3, IEEE802_11 };
 
         Q_DECLARE_FLAGS( Capabilities, Capability )
     };
