@@ -49,7 +49,7 @@ namespace Solid
 
         int signalStrength() const;
 
-        int speed() const;
+        int designSpeed() const;
 
         bool isLinkUp() const;
 

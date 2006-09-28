@@ -41,6 +41,8 @@ namespace Ifaces
     public:
         /**
          * Constructs a NetworkManager.
+         *
+         * @param parent the parent object
          */
         NetworkManager( QObject * parent = 0 );
         /**

@@ -107,9 +107,9 @@ int Solid::NetworkDevice::signalStrength() const
     return_SOLID_CALL( Ifaces::NetworkDevice*, backendObject(), 0, signalStrength() );
 }
 
-int Solid::NetworkDevice::speed() const
+int Solid::NetworkDevice::designSpeed() const
 {
-    return_SOLID_CALL( Ifaces::NetworkDevice*, backendObject(), 0, speed() );
+    return_SOLID_CALL( Ifaces::NetworkDevice*, backendObject(), 0, designSpeed() );
 }
 
 bool Solid::NetworkDevice::isLinkUp() const
