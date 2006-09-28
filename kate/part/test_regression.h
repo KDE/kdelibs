@@ -128,13 +128,13 @@ class OutputObject : public KJS::ObjectImp
     virtual KJS::UString className() const;
 
     void setChangedFlag(bool *flag) { changed = flag; }
-    void setOutputFile(const QString &filename) { this->filename = filename; }
+    void setOutputString(QString *s) { outstr = s; }
 
   private:
     KateDocument *doc;
     KateView *view;
     bool *changed;
-    QString filename;
+    QString *outstr;
 
     friend class OutputFunction;
 };
@@ -215,6 +215,7 @@ public:
     bool ignore_errors;
     int m_known_failures;
     bool m_outputCustomised;
+    QString m_outputString;
 
     static RegressionTest *curr;
 

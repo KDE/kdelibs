@@ -273,7 +273,7 @@ Value KateViewFunction::call(ExecState *exec, Object &/*thisObj*/, const List &a
 
 //BEGIN OutputObject
 
-OutputObject::OutputObject(KJS::ExecState *exec, KateDocument *d, KateView *v) : doc(d), view(v), changed(0) {
+OutputObject::OutputObject(KJS::ExecState *exec, KateDocument *d, KateView *v) : doc(d), view(v), changed(0), outstr(0) {
     putDirect("write", new OutputFunction(exec,this,OutputFunction::Write,-1), DontEnum);
     putDirect("print", new OutputFunction(exec,this,OutputFunction::Write,-1), DontEnum);
     putDirect("writeln", new OutputFunction(exec,this,OutputFunction::Writeln,-1), DontEnum);
@@ -316,16 +316,7 @@ bool OutputFunction::implementsCall() const
 
 KJS::Value OutputFunction::call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args)
 {
-    QCString buffer;
-
-    RegressionTest::createMissingDirs(o->filename);
-    QFile out(o->filename);
-//     kDebug() << "$$$$$$$$$ outfile " << o->filename << " changed " << *o->changed << endl;
-    int mode = IO_WriteOnly;
-    mode |= *o->changed ? IO_Append : IO_Truncate;
-    if (!out.open(mode)) {
-        fprintf(stderr, "ERROR: Could not append to %s\n", o->filename.latin1());
-    }
+    if (!*o->changed) *o->outstr = QString();
 
     switch (id) {
         case Write:
@@ -339,7 +330,7 @@ KJS::Value OutputFunction::call(KJS::ExecState *exec, KJS::Object &thisObj, cons
             if (id == Writeln)
                 res += "\n";
 
-            buffer = res.utf8();
+            *o->outstr += res;
             break;
         }
         case WriteCursorPositionln:
@@ -358,12 +349,11 @@ KJS::Value OutputFunction::call(KJS::ExecState *exec, KJS::Object &thisObj, cons
             if (id == WriteCursorPositionln)
                 res += "\n";
 
-            buffer = res.utf8();
+            *o->outstr += res;
             break;
         }
     }
 
-    out.writeBlock(buffer, buffer.length());
     *o->changed = true;
     return Undefined();
 }
@@ -1069,7 +1059,7 @@ void RegressionTest::testStaticFile(const QString & filename, const QStringList 
         // Execute script
         TestJScriptEnv jsenv(m_part);
         jsenv.output()->setChangedFlag(&m_outputCustomised);
-        jsenv.output()->setOutputFile((m_genOutput ? m_baseDir + "/baseline/" : m_outputDir + "/")+filename+"-result");
+        jsenv.output()->setOutputString(&m_outputString);
         script_error = evalJS(jsenv.interpreter(), m_baseDir + "/tests/"+QFileInfo(filename).dirPath()+"/.kateconfig-script", true)
             && evalJS(jsenv.interpreter(), m_baseDir + "/tests/"+filename+"-script");
     }
@@ -1165,12 +1155,7 @@ RegressionTest::CheckResult RegressionTest::checkOutput(const QString &againstFi
     // get existing content
     QString data;
     if (m_outputCustomised) {
-        QFile file2(outputFilename);
-        if (!file2.open(IO_ReadOnly)) {
-            fprintf(stderr,"Error reading file %s\n",outputFilename.latin1());
-            exit(1);
-        }
-        data = QString::fromUtf8(file2.readAll());
+        data = m_outputString;
     } else {
         data = m_part->text();
     }
