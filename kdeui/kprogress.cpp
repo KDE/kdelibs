@@ -233,6 +233,11 @@ bool KProgressDialog::wasCancelled()
     return mCancelled;
 }
 
+void KProgressDialog::ignoreCancel()
+{
+    mCancelled = false;
+}
+
 bool KProgressDialog::wasCancelled() const
 {
     return mCancelled;

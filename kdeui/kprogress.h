@@ -327,6 +327,14 @@ class KDEUI_EXPORT KProgressDialog : public KDialogBase
         bool wasCancelled() const;
 
         /**
+         * Ignores the last cancel action if the cancel button was 
+         * pressed. Useful for kdialog when combined with a KMessageBox
+         * to display a message like "Are you sure you want to cancel?" 
+	 * @since 3.5.5
+         */
+        void ignoreCancel();
+
+        /**
          * Sets the text to appear on the cancel button.
          */
         void setButtonText(const QString&);
