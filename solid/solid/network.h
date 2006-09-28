@@ -79,14 +79,13 @@ namespace Solid
          */
         // TODO ask Thiago whether to use QHostAddress or KIPAddress for these
         QStringList ipV6Addresses() const;
-
+        // TODO check with ipv6 guy about this
         /**
          * Retrieves the IP version 4 subnetwork mask of this network.
          *
          * @return the subnetwork mask
          */
         QString subnetMask() const;
-
         /**
          * Retrieves the IP version 4 broadcast address of this network.
          *
