@@ -403,12 +403,18 @@ kde4_add_executable(kdirmodeltest_gui RUN_UNINSTALLED ${kdirmodeltest_gui_SRCS})
 
 target_link_libraries(kdirmodeltest_gui ${KDE4_KIO_LIBS})
 
+########### next target ###############
+
+set(kmimetypechoosertest_gui_SRCS kmimetypechoosertest_gui.cpp)
+
+kde4_automoc(${kmimetypechoosertest_gui_SRCS})
+
+kde4_add_executable(kmimetypechoosertest_gui RUN_UNINSTALLED ${kmimetypechoosertest_gui_SRCS})
+
+target_link_libraries(kmimetypechoosertest_gui ${KDE4_KIO_LIBS})
+
+
+
+###########  ###############
 
 endif(KDE4_BUILD_TESTS)
-
-########### install files ###############
-
-
-
-
-

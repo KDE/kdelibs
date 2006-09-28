@@ -22,7 +22,7 @@
 #include <kdialog.h>
 #include <kvbox.h>
 
-class Q3ListViewItem;
+class QTreeWidgetItem;
 
 /**
  * This widget provides a checkable list of all available mimetypes,
@@ -76,7 +76,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      */
     QStringList patterns() const;
 
-  public Q_SLOTS:
+  private Q_SLOTS:
     /**
      * @short edit the current mimetype
      * Uses KRun to start the KDE mimetype editor for editing the currently
@@ -84,11 +84,10 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      */
     void editMimeType();
 
-  private Q_SLOTS:
     /**
      * @internal disables the "edit" button for groups
      */
-    void slotCurrentChanged(Q3ListViewItem* i);
+    void slotCurrentChanged(QTreeWidgetItem* i);
 
     /**
      *  @internal called when the sycoca database has changed after
@@ -118,11 +117,10 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
   * @code
   *    QString text = i18n("Select the MimeTypes you want for this file type.");
   *    QStringList list = QStringList::split( QRegExp("\\s*;\\s*"), leMimetypes->text() );
-  *    KMimeTypeChooserDialog *d = new KMimeTypeChooserDialog( this, 0,
-  *                  i18n("Select Mime Types"), text, list, "text" );
-  *    if ( d->exec() == KDialog::Accepted ) {
-  *      leWildcards->setText( d->chooser()->patterns().join(";") );
-  *      leMimetypes->setText( d->chooser()->mimeTypes().join(";") );
+  *    KMimeTypeChooserDialog dlg( i18n("Select Mime Types"), text, list, "text", this );
+  *    if ( dlg.exec() == KDialog::Accepted ) {
+  *      leWildcards->setText( dlg.chooser()->patterns().join(";") );
+  *      leMimetypes->setText( dlg.chooser()->mimeTypes().join(";") );
   *    }
   * @endcode
   *
