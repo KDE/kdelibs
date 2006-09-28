@@ -73,10 +73,25 @@ namespace Ifaces
          */
         virtual QStringList networks() const = 0;
     Q_SIGNALS:
+        /**
+         * The device's active status changed.  This may be emitted if the user turns off the network
+         * device via a physical switch
+         */
         void activeChanged( bool );
+        /**
+         * The device's link status changed.  For example, if there is no carrier
+         */
         void linkUpChanged( bool );
         void signalStrengthChanged( int );
         void connectionStateChanged( int /*NetworkStatus::ConnectionState*/ );
+        /**
+         * Emitted when the backend detects a new wireless network within range
+         */
+        void networkAppeared( const QString & uni );
+        /**
+         * Emitted when the backend decides that a wireless network is no longer within range
+         */
+        void networkDisappeared( const QString & uni );
     };
 
     typedef QStringList NetworkDeviceList;

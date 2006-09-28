@@ -68,6 +68,14 @@ namespace Solid
         void linkUpChanged( bool );
         void signalStrengthChanged( int );
         void connectionStateChanged( int /* ConnectionState */ );
+        /**
+         * Emitted when the backend detects a new network on the medium
+         */
+        void networkAppeared( const QString & uni );
+        /**
+         * Emitted when the backend decides that a network is no longer available
+         */
+        void networkDisappeared( const QString & uni );
 
     protected Q_SLOTS:
         void slotDestroyed( QObject *object );

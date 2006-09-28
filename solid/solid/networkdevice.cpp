@@ -189,6 +189,10 @@ void Solid::NetworkDevice::registerBackendObject( QObject *backendObject )
                  this, SIGNAL( signalStrengthChanged( int ) ) );
         connect( backendObject, SIGNAL( connectionStateChanged( int ) ),
                  this, SIGNAL( connectionStateChanged( int ) ) );
+        connect( backendObject, SIGNAL( networkAppeared( const QString & ) ),
+                 this, SIGNAL( networkAppeared( const QString & ) ) );
+        connect( backendObject, SIGNAL( networkDisappeared( const QString & ) ),
+                 this, SIGNAL( networkDisappeared( const QString & ) ) );
     }
 }
 
