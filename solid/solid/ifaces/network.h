@@ -32,40 +32,101 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * Represents a generic IP network which we may be connected to
+     * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
+     *
      * TODO what about QNetworkAddressEntry
      */
     class KDE_EXPORT Network : public Enums::Network
     {
     public:
+        /**
+         * Destroys a Network object.
+         */
         virtual ~Network();
-        // TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
-        virtual QStringList ipV4Addresses() const = 0;
-        virtual QStringList ipV6Addresses() const = 0;
 
-        virtual QString subnetMask() const = 0;
-        virtual QString broadcastAddress() const = 0;
-        // wtf does NM use this for?
-        virtual QString route() const = 0;
-
-        virtual QStringList dnsServers() const = 0;
         /**
-         * Get the activation status of this network.  For ethernets, this will always be true
-         */
-        virtual bool isActive() const = 0;
-        /**
-         * Activate or deactivate this network
-         * TODO add status change signals?
-         */
-        virtual void setActivated( bool ) = 0;
-        /**
-         * The Unique Network Identifier for this network
+         * Retrieves the Universal Network Identifier (UNI) of the Network.
+         * This identifier is unique for each network and network device in the system.
+         *
+         * @returns the Universal Network Identifier of the current network
          */
         virtual QString uni() const = 0;
 
+        /**
+         * Retrieves the IP version 4 addresses the device has on this network.
+         *
+         * TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
+         *
+         * @return the list of IP version 4 addresses
+         */
+        virtual QStringList ipV4Addresses() const = 0;
+
+        /**
+         * Retrieves the IP version 6 addresses the device has on this network.
+         *
+         * TODO Decide if QList<KNetwork::KSocketAddress> is preferred here
+         *
+         * @return the list of IP version 6 addresses
+         */
+        virtual QStringList ipV6Addresses() const = 0;
+
+        /**
+         * Retrieves the IP version 4 subnetwork mask of this network.
+         *
+         * @return the subnetwork mask
+         */
+        virtual QString subnetMask() const = 0;
+
+        /**
+         * Retrieves the IP version 4 broadcast address of this network.
+         *
+         * @return the broadcast address
+         */
+        virtual QString broadcastAddress() const = 0;
+
+        /**
+         * Retrieves the route we must follow when using this network. It's
+         * in particular used for VPN.
+         *
+         * @return the route address is available, QString() otherwise
+         */
+        virtual QString route() const = 0;
+
+        /**
+         * Retrieves the list of DNS servers to use on this network.
+         *
+         * @return the dns servers
+         */
+        virtual QStringList dnsServers() const = 0;
+
+        /**
+         * Retrieves the activation status of this network. For ethernets, this will always be true.
+         *
+         * @return true if this network is active, false otherwise
+         */
+        virtual bool isActive() const = 0;
+
+        /**
+         * Activate or deactivate this network. For ethernets, this has no effect.
+         *
+         * @param true to activate this network, false otherwise
+         */
+        virtual void setActivated( bool activated ) = 0;
+
     protected:
     //Q_SIGNALS:
+        /**
+         * This signal is emitted when the settings of this network have changed.
+         */
         virtual void ipDetailsChanged() = 0;
+
+        /**
+         * This signal is emitted when the activation state of this network
+         * has changed.
+         *
+         * @param activated true if the volume is mounted, false otherwise
+         */
+        virtual void activationStateChanged( bool activated ) = 0;
     };
 } //Ifaces
 } //Solid

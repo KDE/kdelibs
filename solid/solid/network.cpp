@@ -32,6 +32,8 @@ Solid::Network::Network( QObject *backendObject )
     {
         connect( backendObject, SIGNAL( ipDetailsChanged() ),
                  this, SIGNAL( ipDetailsChanged() ) );
+        connect( backendObject, SIGNAL( activationStateChanged( bool ) ),
+                 this, SIGNAL( activationStateChanged( bool ) ) );
     }
 }
 

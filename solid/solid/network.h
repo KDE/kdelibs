@@ -50,6 +50,7 @@ namespace Solid
         bool isActive() const;
     Q_SIGNALS:
         void ipDetailsChanged();
+        void activationStateChanged( bool );
 
     private:
         friend class NetworkDevice;

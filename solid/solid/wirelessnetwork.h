@@ -77,7 +77,6 @@ namespace Solid
         void signalStrengthChanged( int );
         void bitrateChanged( int );
         void associationChanged( bool );
-        void activeChanged( bool );
 };
 
 } //Solid

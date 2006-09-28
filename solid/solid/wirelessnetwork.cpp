@@ -33,8 +33,6 @@ Solid::WirelessNetwork::WirelessNetwork( QObject *backendObject )
                  this, SIGNAL( lbitrateChanged( int ) ) );
         connect( backendObject, SIGNAL( associationChanged( bool ) ),
                  this, SIGNAL( associationChanged( bool ) ) );
-        connect( backendObject, SIGNAL( activeChanged( bool ) ),
-                 this, SIGNAL( activeChanged( bool ) ) );
     }
 }
 

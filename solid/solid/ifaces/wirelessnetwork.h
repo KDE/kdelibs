@@ -39,61 +39,139 @@ namespace Ifaces
     class Authentication;
 
     /**
-     * A Wifi wireless network
+     * This type of networks is used by wifi network devices.
      */
     class KDE_EXPORT WirelessNetwork : virtual public Network, public Enums::WirelessNetwork
     {
     public:
+        /**
+         * Destroys a WirelessNetwork object
+         */
         virtual ~WirelessNetwork();
 
-        //TODO compare method would look for identical ESSID and at least one AP in common
-        virtual bool isSameAs( const WirelessNetwork & ) const = 0;
-
-        // PHY stuff
+        /**
+         * Retrieves the current signal strength of this wifi network.
+         *
+         * @return the signal strength as a percentage
+         */
         virtual int signalStrength() const = 0;
 
+        /**
+         * Retrieves the announced bitrate of this wifi network.
+         *
+         * @return the bitrate in bit/s
+         */
         virtual int bitRate() const = 0;
 
+        /**
+         * Retrieves the frequency of this wifi network.
+         *
+         * @return the frequency
+         */
         virtual int frequency() const = 0;
 
+        /**
+         * Retrieves the capabilities of this wifi network.
+         *
+         * @return the flag set describing the capabilities
+         * @see Solid::Ifaces::Enums::WirelessNetwork::Capability
+         */
         virtual Capabilities capabilities() const = 0;
 
-        // Service Set stuff
-        virtual QString essid() const = 0;
 
-        virtual OperationMode mode() const = 0;
 
-        virtual bool isAssociated() const = 0;
-
-        virtual bool isEncrypted() const = 0;
-
-        virtual bool isHidden() const = 0;
-
-        virtual bool isActive() const = 0;
 
         /**
-         * List of access points or ad hoc network nodes making up the
-         * network that are currently visible to the card.
+         * Retrieves the Extended Service Set Identifier (ESSID) of this wifi network.
+         *
+         * @return the network essid
+         */
+        virtual QString essid() const = 0;
+
+        /**
+         * Retrieves the operation mode of this network.
+         *
+         * @return the current mode
+         * @see Solid::Ifaces::Enums::WirelessNetwork::OperationMode
+         */
+        virtual OperationMode mode() const = 0;
+
+        /**
+         * Indicates if the network device is associated to this network.
+         *
+         * @return true if the device is associated, false otherwise
+         */
+        virtual bool isAssociated() const = 0;
+
+        /**
+         * Indicates if this network uses an encryption scheme.
+         *
+         * @return true if the network is encrypted, false otherwise
+         */
+        virtual bool isEncrypted() const = 0;
+
+        /**
+         * Indicates if the network is hidden and doesn't announce its ESSID.
+         *
+         * @return true if the network is hidden, false otherwise
+         */
+        virtual bool isHidden() const = 0;
+
+        /**
+         * Retrieves the list of access points or ad hoc network nodes making up the
+         * network that are currently visible to the device.
+         *
+         * @return the list of MAC address of the currently visible nodes
          */
         virtual MacAddressList bssList() const = 0;
 
         /**
+         * Retrieves the current authentication scheme used by this network.
+         *
          * TODO decide how to handle these objects - pass by value?
+         *
+         * @return the current authentication object, or 0 if none is used for now
          */
         virtual Authentication *authentication() const = 0;
+
         /**
-         * set the authentication currently in use on this network
+         * Sets the authentication object to with this network.
+         *
+         * @param authentication the new authentication scheme to use
          */
-        virtual void setAuthentication( Authentication * ) = 0;
+        virtual void setAuthentication( Authentication *authentication ) = 0;
+
     protected:
     //Q_SIGNALS:
-        virtual void signalStrengthChanged( int ) = 0;
-        virtual void bitrateChanged( int ) = 0;
-        virtual void associationChanged( bool ) = 0;
-        virtual void activeChanged( bool ) = 0;
+
+        /**
+         * This signal is emitted when the signal strength of this network has changed.
+         *
+         * @param strength the new signal strength value for this network
+         */
+        virtual void signalStrengthChanged( int strength ) = 0;
+
+        /**
+         * This signal is emitted when the bitrate of this network has changed.
+         *
+         * @param strength the new bitrate value for this network
+         */
+        virtual void bitrateChanged( int bitrate ) = 0;
+
+        /**
+         * This signal is emitted when the association state of this device
+         * has changed.
+         *
+         * @param associated true if the network is associated, false otherwise
+         */
+        virtual void associationChanged( bool associated ) = 0;
+
         /**
          * Emitted when the network requires authentication data in order to be able to connect.
          * Respond to this by calling setAuthentication.
+         *
+         * This signal is emitted when the network requires authentication data in order
+         * to be able to connect. Respond to this by calling setAuthentication().
          */
         virtual void authenticationNeeded() = 0;
     };
