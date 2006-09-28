@@ -35,10 +35,12 @@ set(kjsembed_LIB_SRCS
    svg_binding.cpp
    filedialog_binding.cpp
    application.cpp
-   brush.cpp color.cpp dom.cpp font.cpp image.cpp pen.cpp
+   color.cpp dom.cpp font.cpp image.cpp pen.cpp
    pixmap.cpp point.cpp rect.cpp size.cpp url.cpp
    bind_qlcdnumber.cpp 
    bind_qtimer.cpp
+   brush.cpp
+   QBrush_bind.cpp
    )
 
 kde4_automoc(${kjsembed_LIB_SRCS})
