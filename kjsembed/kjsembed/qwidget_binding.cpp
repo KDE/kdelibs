@@ -65,13 +65,13 @@ START_QOBJECT_METHOD( releaseKeyboard, QWidget )
     object->releaseKeyboard();
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( childAt, QWidget )
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 0);
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 0);
     int x,y;
     QWidget *child = 0;
     if( pt.isNull())
     {
-        x = KJSEmbed::extractValue<int>(exec, args, 0);
-        y = KJSEmbed::extractValue<int>(exec, args, 1);
+        x = KJSEmbed::extractVariant<int>(exec, args, 0);
+        y = KJSEmbed::extractVariant<int>(exec, args, 1);
         child = object->childAt(x,y);
     }
     else
@@ -84,34 +84,34 @@ START_QOBJECT_METHOD( focusWidget, QWidget )
     result = KJSEmbed::createQObject(exec, object->focusWidget() );
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( heightForWidth, QWidget )
-    int width = KJSEmbed::extractValue<int>(exec, args, 0);
+    int width = KJSEmbed::extractVariant<int>(exec, args, 0);
     result = KJS::Number( object->heightForWidth(width));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapFrom, QWidget )
     QWidget *w = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 1);
-    result = KJSEmbed::createValue(exec, "QPoint", object->mapFrom(w, pt));
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 1);
+    result = KJSEmbed::createVariant(exec, "QPoint", object->mapFrom(w, pt));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapFromGlobal, QWidget )
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 0);
-    result = KJSEmbed::createValue(exec, "QPoint", object->mapFromGlobal(pt));
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 0);
+    result = KJSEmbed::createVariant(exec, "QPoint", object->mapFromGlobal(pt));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapFromParent, QWidget )
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 0);
-    result = KJSEmbed::createValue(exec, "QPoint", object->mapFromParent(pt));
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 0);
+    result = KJSEmbed::createVariant(exec, "QPoint", object->mapFromParent(pt));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapTo, QWidget )
     QWidget *w = KJSEmbed::extractObject<QWidget>(exec, args, 0, 0);
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 1);
-    result = KJSEmbed::createValue(exec, "QPoint", object->mapTo(w, pt));
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 1);
+    result = KJSEmbed::createVariant(exec, "QPoint", object->mapTo(w, pt));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapToParent, QWidget )
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 0);
-    result = KJSEmbed::createValue(exec, "QPoint", object->mapToParent(pt));
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 0);
+    result = KJSEmbed::createVariant(exec, "QPoint", object->mapToParent(pt));
 END_QOBJECT_METHOD
 START_QOBJECT_METHOD( mapToGlobal, QWidget )
-    QPoint pt = KJSEmbed::extractValue<QPoint>(exec, args, 0);
-    result = KJSEmbed::createValue(exec, "QPoint", object->mapToGlobal(pt));
+    QPoint pt = KJSEmbed::extractVariant<QPoint>(exec, args, 0);
+    result = KJSEmbed::createVariant(exec, "QPoint", object->mapToGlobal(pt));
 END_QOBJECT_METHOD
 
 }

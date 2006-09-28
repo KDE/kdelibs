@@ -36,15 +36,15 @@ namespace SizeNS
 {
 
 START_VARIANT_METHOD( callboundedTo, QSize )
-    QSize arg0 = KJSEmbed::extractValue<QSize>(exec,args, 0);
+    QSize arg0 = KJSEmbed::extractVariant<QSize>(exec,args, 0);
     QSize cppValue = value.boundedTo(arg0);
-    result = KJSEmbed::createValue(exec, "QSize", cppValue );
+    result = KJSEmbed::createVariant(exec, "QSize", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callexpandedTo, QSize )
-    QSize arg0 = KJSEmbed::extractValue<QSize>(exec,args, 0);
+    QSize arg0 = KJSEmbed::extractVariant<QSize>(exec,args, 0);
     QSize cppValue = value.expandedTo(arg0);
-    result = KJSEmbed::createValue(exec, "QSize", cppValue );
+    result = KJSEmbed::createVariant(exec, "QSize", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callheight, QSize )
@@ -80,7 +80,7 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( callscale, QSize )
     if( args.size() == 2 )
     {
-        QSize arg0 = KJSEmbed::extractValue<QSize>(exec,args, 0);
+        QSize arg0 = KJSEmbed::extractVariant<QSize>(exec,args, 0);
         Qt::AspectRatioMode arg1 = (Qt::AspectRatioMode)KJSEmbed::extractInt(exec, args, 1);
         value.scale(arg0, arg1);
     }

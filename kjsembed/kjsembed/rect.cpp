@@ -50,7 +50,7 @@ START_VARIANT_METHOD( calladjusted, QRect )
     int arg2 = KJSEmbed::extractInt(exec, args, 2);
     int arg3 = KJSEmbed::extractInt(exec, args, 3);
     QRect cppValue = value.adjusted(arg0, arg1, arg2, arg3);
-    result = KJSEmbed::createValue(exec, "QRect", cppValue );
+    result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callbottom, QRect )
@@ -60,24 +60,24 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callbottomLeft, QRect )
     QPoint cppValue = value.bottomLeft();
-    result = KJSEmbed::createValue(exec, "QPoint", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPoint", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callbottomRight, QRect )
     QPoint cppValue = value.bottomRight();
-    result = KJSEmbed::createValue(exec, "QPoint", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPoint", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcenter, QRect )
     QPoint cppValue = value.center();
-    result = KJSEmbed::createValue(exec, "QPoint", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPoint", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcontains, QRect )
     // 1
-    if( args.size() == 2 /* &&  !KJSEmbed::extractValue<QPoint>(exec,args, 0).isNull() */)
+    if( args.size() == 2 /* &&  !KJSEmbed::extractVariant<QPoint>(exec,args, 0).isNull() */)
     {
-        QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+        QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
         bool arg1 = KJSEmbed::extractBool(exec, args, 1);
         bool cppValue = value.contains(arg0, arg1);
         result = KJS::Boolean(cppValue);
@@ -107,13 +107,13 @@ START_VARIANT_METHOD( callheight, QRect )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callintersect, QRect )
-    QRect arg0 = KJSEmbed::extractValue<QRect>(exec,args, 0);
+    QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
     QRect cppValue = value.intersect(arg0);
-    result = KJSEmbed::createValue(exec, "QRect", cppValue );
+    result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callintersects, QRect )
-    QRect arg0 = KJSEmbed::extractValue<QRect>(exec,args, 0);
+    QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
     bool cppValue = value.intersects(arg0);
     result = KJS::Boolean(cppValue);
 END_VARIANT_METHOD
@@ -144,17 +144,17 @@ START_VARIANT_METHOD( callmoveBottom, QRect )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmoveBottomLeft, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.moveBottomLeft(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmoveBottomRight, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.moveBottomRight(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmoveCenter, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.moveCenter(arg0);
 END_VARIANT_METHOD
 
@@ -171,7 +171,7 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( callmoveTo, QRect )
     if( args.size() == 1)
     {
-        QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+        QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
         value.moveTo(arg0);
     }
     else
@@ -188,18 +188,18 @@ START_VARIANT_METHOD( callmoveTop, QRect )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmoveTopLeft, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.moveTopLeft(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmoveTopRight, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.moveTopRight(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callnormalized, QRect )
     QRect cppValue = value.normalized();
-    result = KJSEmbed::createValue(exec, "QRect", cppValue );
+    result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callright, QRect )
@@ -213,12 +213,12 @@ START_VARIANT_METHOD( callsetBottom, QRect )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetBottomLeft, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.setBottomLeft(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetBottomRight, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.setBottomRight(arg0);
 END_VARIANT_METHOD
 
@@ -254,7 +254,7 @@ START_VARIANT_METHOD( callsetRight, QRect )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetSize, QRect )
-    QSize arg0 = KJSEmbed::extractValue<QSize>(exec,args, 0);
+    QSize arg0 = KJSEmbed::extractVariant<QSize>(exec,args, 0);
     value.setSize(arg0);
 END_VARIANT_METHOD
 
@@ -264,12 +264,12 @@ START_VARIANT_METHOD( callsetTop, QRect )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetTopLeft, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.setTopLeft(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetTopRight, QRect )
-    QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+    QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
     value.setTopRight(arg0);
 END_VARIANT_METHOD
 
@@ -290,7 +290,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsize, QRect )
     QSize cppValue = value.size();
-    result = KJSEmbed::createValue(exec, "QSize", cppValue );
+    result = KJSEmbed::createVariant(exec, "QSize", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltop, QRect )
@@ -300,18 +300,18 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltopLeft, QRect )
     QPoint cppValue = value.topLeft();
-    result = KJSEmbed::createValue(exec, "QPoint", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPoint", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltopRight, QRect )
     QPoint cppValue = value.topRight();
-    result = KJSEmbed::createValue(exec, "QPoint", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPoint", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltranslate, QRect )
     if( args.size() == 1)
     {
-        QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+        QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
         value.translate(arg0);
     }
     else
@@ -325,23 +325,23 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( calltranslated, QRect )
     if( args.size() == 1 )
     {
-        QPoint arg0 = KJSEmbed::extractValue<QPoint>(exec,args, 0);
+        QPoint arg0 = KJSEmbed::extractVariant<QPoint>(exec,args, 0);
         QRect cppValue = value.translated(arg0);
-        result = KJSEmbed::createValue(exec, "QRect", cppValue );
+        result = KJSEmbed::createVariant(exec, "QRect", cppValue );
     }
     else
     {
         int arg0 = KJSEmbed::extractInt(exec, args, 0);
         int arg1 = KJSEmbed::extractInt(exec, args, 1);
         QRect cppValue = value.translated(arg0, arg1);
-        result = KJSEmbed::createValue(exec, "QRect", cppValue );
+        result = KJSEmbed::createVariant(exec, "QRect", cppValue );
     }
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callunite, QRect )
-    QRect arg0 = KJSEmbed::extractValue<QRect>(exec,args, 0);
+    QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
     QRect cppValue = value.unite(arg0);
-    result = KJSEmbed::createValue(exec, "QRect", cppValue );
+    result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QRect )

@@ -252,7 +252,7 @@ namespace KJSEmbed
             KJS::JSObject* object = arg->toObject(exec);
             if(object->inherits(&VariantBinding::info))
             {
-                return extractValue<T>(exec, arg, defaultValue);
+                return extractVariant<T>(exec, arg, defaultValue);
             }
             else if(object->inherits(&ObjectBinding::info))
             {

@@ -36,7 +36,7 @@ START_QOBJECT_METHOD( animationDuration, QSvgRenderer )
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( defaultSize, QSvgRenderer )
-    result = KJSEmbed::createValue(exec, "QSize", object->defaultSize() );
+    result = KJSEmbed::createVariant(exec, "QSize", object->defaultSize() );
 END_QOBJECT_METHOD
 
 START_QOBJECT_METHOD( isValid, QSvgRenderer )
@@ -67,7 +67,7 @@ START_CTOR( SvgRenderer, QSvgRenderer, 0 )
     }
     else if( args.size() == 2 )
     {
-        QString arg0 = KJSEmbed::extractValue<QString>(exec, args, 0 );
+        QString arg0 = KJSEmbed::extractVariant<QString>(exec, args, 0 );
         QObject *arg1 = KJSEmbed::extractObject<QObject>(exec, args, 1, 0);
         renderer = new QSvgRenderer(arg0,arg1);
     }
@@ -104,7 +104,7 @@ START_CTOR( SvgWidget, QSvgWidget, 0 )
     }
     else if( args.size() == 2 )
     {
-        QString arg0 = KJSEmbed::extractValue<QString>(exec, args, 0 );
+        QString arg0 = KJSEmbed::extractVariant<QString>(exec, args, 0 );
         QWidget *arg1 = KJSEmbed::extractObject<QWidget>(exec, args, 1, 0);
         widget = new QSvgWidget(arg0,arg1);
     }

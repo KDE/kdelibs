@@ -19,8 +19,8 @@
 */
 
 
-#ifndef VALUE_BINDING_H
-#define VALUE_BINDING_H
+#ifndef VARIANT_BINDING_H
+#define VARIANT_BINDING_H
 
 #include <QVariant>
 
@@ -43,7 +43,7 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         Q_UNUSED(self);\
         Q_UNUSED(args);\
         KJS::JSValue *result = KJS::Null(); \
-        KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec, self ); \
+        KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec, self ); \
         if( imp ) \
         { \
                 TYPE value = imp->value<TYPE>();
@@ -64,53 +64,52 @@ namespace KJSEmbed
 {
     /**
     * QVariant based binding.  This class wraps the implementation.
-    * You should never have to use this class directly instead use KJSEmbed::createValue.
+    * You should never have to use this class directly instead use KJSEmbed::createVariant.
     */
 
     /**
     * QVariant bindinging implementation.
     */
-    class KJSEMBED_EXPORT ValueBinding : public ProxyBinding
+    class KJSEMBED_EXPORT VariantBinding : public ProxyBinding
     {
         public:
             /**
             * Create a new binding implementation with a QVariant to wrap
             */
-            ValueBinding( KJS::ExecState *exec, const QVariant &value );
-            virtual ~ValueBinding() {}
+            VariantBinding( KJS::ExecState *exec, const QVariant &value );
+            virtual ~VariantBinding() {}
 
-            void *pointer() { return m_value.data(); }
+            void *pointer();
 
-            KJS::UString toString(KJS::ExecState *) const { return m_value.toString(); }
-            KJS::UString className() const { return m_value.typeName(); }
+            KJS::UString toString(KJS::ExecState *) const;
+            KJS::UString className() const;
 
             /**
             * Return the wrapped QVariant
             */
-            QVariant variant() const { return m_value; }
+            QVariant variant() const;
 
             /**
             * Extract the actual value from the wrapper.  This method wraps QVariant::value, so it will support
             * some aspects of casting.  If the cast fails a default value of T will be returned.
             */
-            template< typename T>
+            template<typename T>
             T value() const { return qVariantValue<T>(m_value); }
             /**
             * Set the internal value of the QVariant.
             */
-            void setValue( const QVariant &val ) { m_value = val; }
+            void setValue( const QVariant &val );
 
             /**
             * Constructs a QGenericArgument that is used with QMetaObject::invokeMember
             */
-            QGenericArgument arg( const char *type) const;
+            QGenericArgument arg(const char *type) const;
 
             static const KJS::ClassInfo info;
 
-        protected:
-            QVariant m_value;
         private:
             virtual const KJS::ClassInfo* classInfo() const { return &info; }
+            QVariant m_value;
 
     };
 
@@ -120,12 +119,12 @@ namespace KJSEmbed
     QVariant KJSEMBED_EXPORT extractVariant( KJS::ExecState *exec, KJS::JSValue *value );
 
     /**
-    * Extracts a value based type from a ValueBinding object.  This method calls @ref extractVariant so if
+    * Extracts a value based type from a VariantBinding object.  This method calls @ref extractVariant so if
     * the conversions fails then the default value will be returned.  Care should be taken that this method
     * is not used with KJSEmbed::ObjectBinding objects because the cast will fail.
     */
     template< typename T>
-    T extractValue( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
+    T extractVariant( KJS::ExecState *exec, KJS::JSValue *arg, const T &defaultValue )
     {
         if( !arg )
             return defaultValue;
@@ -152,23 +151,23 @@ namespace KJSEmbed
     * is returned.
     */
     template< typename T>
-    T extractValue( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
+    T extractVariant( KJS::ExecState *exec, const KJS::List &args, int idx, const T &defaultValue = T())
     {
         if( args.size() >= idx )
         {
-            return extractValue<T>( exec, args[idx], defaultValue );
+            return extractVariant<T>( exec, args[idx], defaultValue );
         }
         else
             return defaultValue;
     }
 
     /**
-    * Can create any known KJSEmbed::ValueBinding object and set the value.
+    * Can create any known KJSEmbed::VariantBinding object and set the value.
     * On failure a KJS::Null will be returned and the exception set. Only values
     * that are supported by QVariant will work.
     */
     template< typename T>
-    KJS::JSValue* createValue(KJS::ExecState *exec, const KJS::UString &className, const T &value)
+    KJS::JSValue* createVariant(KJS::ExecState *exec, const KJS::UString &className, const T &value)
     {
         KJS::JSObject *parent;
         parent = exec->dynamicInterpreter()->globalObject();
@@ -176,7 +175,7 @@ namespace KJSEmbed
         if( returnValue )
         {
             // If its a value type setValue
-            KJSEmbed::ValueBinding *imp = extractBindingImp<KJSEmbed::ValueBinding>(exec, returnValue );
+            KJSEmbed::VariantBinding *imp = extractBindingImp<KJSEmbed::VariantBinding>(exec, returnValue );
             if( imp )
                 imp->setValue( qVariantFromValue( value ) );
             else
@@ -227,7 +226,7 @@ namespace KJSEmbed
     KJS::JSValue* convertToValue( KJS::ExecState *exec, const QVariant &value );
 
     /**
-    * The Bindings for the KJSEmbed::ValueBinding
+    * The Bindings for the KJSEmbed::VariantBinding
     */
     struct Method;
     class KJSEMBED_EXPORT ValueFactory

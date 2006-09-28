@@ -41,15 +41,15 @@ namespace PixmapNS
 {
 START_VARIANT_METHOD( callalphaChannel, QPixmap )
     QPixmap cppValue = value.alphaChannel();
-    result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcopy, QPixmap )
     if( args.size() == 1)
     {
-        QRect arg0 = KJSEmbed::extractValue<QRect>(exec,args, 0);
+        QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
         QPixmap cppValue = value.copy(arg0);
-        result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+        result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
     }
     else if( args.size() == 4)
     {
@@ -58,20 +58,20 @@ START_VARIANT_METHOD( callcopy, QPixmap )
         int arg2 = KJSEmbed::extractInt(exec, args, 2);
         int arg3 = KJSEmbed::extractInt(exec, args, 3);
         QPixmap cppValue = value.copy(arg0, arg1, arg2, arg3);
-        result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+        result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
     }
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcreateHeuristicMask, QPixmap )
     bool arg0 = KJSEmbed::extractBool(exec, args, 0);
     QBitmap cppValue = value.createHeuristicMask(arg0);
-    result = KJSEmbed::createValue(exec, "QBitmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QBitmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcreateMaskFromColor, QPixmap )
-    QColor arg0 = KJSEmbed::extractValue<QColor>(exec,args, 0);
+    QColor arg0 = KJSEmbed::extractVariant<QColor>(exec,args, 0);
     QBitmap cppValue = value.createMaskFromColor(arg0);
-    result = KJSEmbed::createValue(exec, "QBitmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QBitmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calldefaultDepth, QPixmap )
@@ -94,31 +94,31 @@ START_VARIANT_METHOD( callfill, QPixmap )
     }
     else if( args.size() == 1)
     {
-        QColor arg0 = KJSEmbed::extractValue<QColor>(exec,args, 0);
+        QColor arg0 = KJSEmbed::extractVariant<QColor>(exec,args, 0);
         value.fill(arg0);
     }
     else if( args.size() == 2)
     {
         QWidget* arg0 = KJSEmbed::extractObject<QWidget>(exec,args, 0);
-        QPoint arg1 = KJSEmbed::extractValue<QPoint>(exec,args, 1);
+        QPoint arg1 = KJSEmbed::extractVariant<QPoint>(exec,args, 1);
         value.fill(arg0, arg1);
     }
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callfromImage, QPixmap )
-    QImage arg0 = KJSEmbed::extractValue<QImage>(exec,args, 0);
+    QImage arg0 = KJSEmbed::extractVariant<QImage>(exec,args, 0);
     Qt::ImageConversionFlags arg1 = (Qt::ImageConversionFlags)KJSEmbed::extractInt(exec, args, 1);
     QPixmap cppValue = QPixmap::fromImage(arg0, arg1);
-    result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callgrabWidget, QPixmap )
     if( args.size() == 2)
     {
         QWidget* arg0 = KJSEmbed::extractObject<QWidget>(exec,args, 0);
-        QRect arg1 = KJSEmbed::extractValue<QRect>(exec,args, 1);
+        QRect arg1 = KJSEmbed::extractVariant<QRect>(exec,args, 1);
         QPixmap cppValue = value.grabWidget(arg0, arg1);
-        result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+        result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
     }
     else if( args.size() == 5)
     {
@@ -128,7 +128,7 @@ START_VARIANT_METHOD( callgrabWidget, QPixmap )
         int arg3 = KJSEmbed::extractInt(exec, args, 3);
         int arg4 = KJSEmbed::extractInt(exec, args, 4);
         QPixmap cppValue = value.grabWidget(arg0, arg1, arg2, arg3, arg4);
-        result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+        result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
     }
 END_VARIANT_METHOD
 
@@ -167,12 +167,12 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callmask, QPixmap )
     QBitmap cppValue = value.mask();
-    result = KJSEmbed::createValue(exec, "QBitmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QBitmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callrect, QPixmap )
     QRect cppValue = value.rect();
-    result = KJSEmbed::createValue(exec, "QRect", cppValue );
+    result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsave, QPixmap )
@@ -186,11 +186,11 @@ END_VARIANT_METHOD
 START_VARIANT_METHOD( callscaled, QPixmap )
     if( args.size() == 3 )
     {
-        QSize arg0 = KJSEmbed::extractValue<QSize>(exec,args, 0);
+        QSize arg0 = KJSEmbed::extractVariant<QSize>(exec,args, 0);
         Qt::AspectRatioMode arg1 = (Qt::AspectRatioMode) KJSEmbed::extractInt(exec, args, 1);
         Qt::TransformationMode arg2 = (Qt::TransformationMode) KJSEmbed::extractInt(exec, args, 3);
         QPixmap cppValue = value.scaled(arg0, arg1, arg2);
-        result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+        result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
     }
     else if ( args.size() == 4)
     {
@@ -199,7 +199,7 @@ START_VARIANT_METHOD( callscaled, QPixmap )
         Qt::AspectRatioMode arg2 = (Qt::AspectRatioMode) KJSEmbed::extractInt(exec, args, 2);
         Qt::TransformationMode arg3 = (Qt::TransformationMode) KJSEmbed::extractInt(exec, args, 3);
         QPixmap cppValue = value.scaled(arg0, arg1, arg2, arg3);
-        result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+        result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
     }
 END_VARIANT_METHOD
 
@@ -207,14 +207,14 @@ START_VARIANT_METHOD( callscaledToHeight, QPixmap )
     int arg0 = KJSEmbed::extractInt(exec, args, 0);
     Qt::TransformationMode arg1  = (Qt::TransformationMode) KJSEmbed::extractInt(exec, args, 1);
     QPixmap cppValue = value.scaledToHeight(arg0, arg1);
-    result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callscaledToWidth, QPixmap )
     int arg0 = KJSEmbed::extractInt(exec, args, 0);
     Qt::TransformationMode arg1  = (Qt::TransformationMode) KJSEmbed::extractInt(exec, args, 1);
     QPixmap cppValue = value.scaledToWidth(arg0, arg1);
-    result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callserialNumber, QPixmap )
@@ -223,23 +223,23 @@ START_VARIANT_METHOD( callserialNumber, QPixmap )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetAlphaChannel, QPixmap )
-    QPixmap arg0 = KJSEmbed::extractValue<QPixmap>(exec,args, 0);
+    QPixmap arg0 = KJSEmbed::extractVariant<QPixmap>(exec,args, 0);
     value.setAlphaChannel(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetMask, QPixmap )
-    QBitmap arg0 = KJSEmbed::extractValue<QBitmap>(exec,args, 0);
+    QBitmap arg0 = KJSEmbed::extractVariant<QBitmap>(exec,args, 0);
     value.setMask(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsize, QPixmap )
     QSize cppValue = value.size();
-    result = KJSEmbed::createValue(exec, "QSize", cppValue );
+    result = KJSEmbed::createVariant(exec, "QSize", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltoImage, QPixmap )
     QImage cppValue = value.toImage();
-    result = KJSEmbed::createValue(exec, "QImage", cppValue );
+    result = KJSEmbed::createVariant(exec, "QImage", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callwidth, QPixmap )
@@ -305,7 +305,7 @@ START_CTOR( Pixmap, QPixmap, 0)
 
         return new KJSEmbed::PixmapBinding(exec,
                                 QPixmap( KJSEmbed::extractQString( exec, args, 0 ),
-                                                KJSEmbed::extractValue<QByteArray>( exec, args, 1 ).constData(),
+                                                KJSEmbed::extractVariant<QByteArray>( exec, args, 1 ).constData(),
                                                 (Qt::ImageConversionFlags)KJSEmbed::extractInt( exec, args, 2 )
                                         ) );
     }

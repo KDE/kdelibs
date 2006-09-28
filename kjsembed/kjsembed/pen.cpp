@@ -39,7 +39,7 @@ namespace PenNS
 
 START_VARIANT_METHOD( callbrush, QPen )
     QBrush cppValue = value.brush();
-    result = KJSEmbed::createValue(exec, "QBrush", cppValue );
+    result = KJSEmbed::createVariant(exec, "QBrush", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcapStyle, QPen )
@@ -49,7 +49,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callcolor, QPen )
     QColor cppValue = value.color();
-    result = KJSEmbed::createValue(exec, "QColor", cppValue );
+    result = KJSEmbed::createVariant(exec, "QColor", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisSolid, QPen )
@@ -63,7 +63,7 @@ START_VARIANT_METHOD( calljoinStyle, QPen )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetBrush, QPen )
-    QBrush arg0 = KJSEmbed::extractValue<QBrush>(exec,args, 0);
+    QBrush arg0 = KJSEmbed::extractVariant<QBrush>(exec,args, 0);
     value.setBrush(arg0);
 END_VARIANT_METHOD
 
@@ -73,7 +73,7 @@ START_VARIANT_METHOD( callsetCapStyle, QPen )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetColor, QPen )
-    QColor arg0 = KJSEmbed::extractValue<QColor>(exec,args, 0);
+    QColor arg0 = KJSEmbed::extractVariant<QColor>(exec,args, 0);
     value.setColor(arg0);
 END_VARIANT_METHOD
 
@@ -128,13 +128,13 @@ START_CTOR( Pen, QPen, 0)
     if( args.size() == 1 )
     {
         return new KJSEmbed::PenBinding(exec,
-                                    QPen( KJSEmbed::extractValue<QColor>( exec, args, 0 )
+                                    QPen( KJSEmbed::extractVariant<QColor>( exec, args, 0 )
                                             ) );
     }
     else if (args.size() >= 2)
     {
         return new KJSEmbed::PenBinding(exec,
-                                QPen( KJSEmbed::extractValue<QBrush>( exec, args, 0 ),
+                                QPen( KJSEmbed::extractVariant<QBrush>( exec, args, 0 ),
                                         KJSEmbed::extractInt( exec, args, 1 ),
                                         (Qt::PenStyle)KJSEmbed::extractInt( exec, args, 2, Qt::SolidLine ),
                                         (Qt::PenCapStyle)KJSEmbed::extractInt( exec, args, 3, Qt::SquareCap ),

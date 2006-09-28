@@ -17,34 +17,59 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include "value_binding.h"
-#include "static_binding.h"
-#include <qdebug.h>
-
-// QVariant includes
-#include <QBitArray>
-#include <QByteArray>
 
 #include <stdlib.h>
-#include "global.h"
 
 #include <kjs/PropertyNameArray.h>
 
+#include <QBitArray>
+#include <QByteArray>
+#include <QDebug>
+
+#include "global.h"
+#include "static_binding.h"
+#include "variant_binding.h"
+
 using namespace KJSEmbed;
 
-const KJS::ClassInfo ValueBinding::info = { "ValueBinding", 0, 0, 0 };
+const KJS::ClassInfo VariantBinding::info = { "VariantBinding", 0, 0, 0 };
 
-ValueBinding::ValueBinding( KJS::ExecState *exec, const QVariant &value )
+VariantBinding::VariantBinding( KJS::ExecState *exec, const QVariant &value )
     : ProxyBinding(exec), m_value(value)
 {
     StaticBinding::publish( exec, this, ValueFactory::methods() );
 }
 
-QGenericArgument ValueBinding::arg(const char *type) const
+void *VariantBinding::pointer()
+{
+    return m_value.data();
+}
+
+KJS::UString VariantBinding::toString(KJS::ExecState *) const
+{
+    return m_value.toString();
+}
+
+KJS::UString VariantBinding::className() const
+{
+    return m_value.typeName();
+}
+
+QVariant VariantBinding::variant() const
+{
+    return m_value;
+}
+
+void VariantBinding::setValue( const QVariant &val )
+{
+    m_value = val;
+}
+
+QGenericArgument VariantBinding::arg(const char *type) const
 {
     const void *p = m_value.constData();
     //qDebug("Ptr %0x", p );
-    qDebug() << p;
+    //qDebug() << p;
 
     return QGenericArgument( type, p );
 }
@@ -53,7 +78,7 @@ KJS::JSValue *callName( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 {
     Q_UNUSED( args );
 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  self );
     if( imp )
     {
         QVariant val = imp->variant();
@@ -64,7 +89,7 @@ KJS::JSValue *callName( KJS::ExecState *exec, KJS::JSObject *self, const KJS::Li
 
 KJS::JSValue *callCast( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  self );
     if( imp )
     {
         QVariant val = imp->variant();
@@ -80,7 +105,7 @@ KJS::JSValue *callToString( KJS::ExecState *exec, KJS::JSObject *self, const KJS
 {
     Q_UNUSED( args );
 
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  self );
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  self );
     if( imp )
     {
 //        qDebug("Call value to string");
@@ -352,7 +377,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         }
         default:
         {
-            returnValue = createValue(exec, value.typeName(), value );
+            returnValue = createVariant(exec, value.typeName(), value );
             if( returnValue->isNull() )
                 returnValue = KJS::String( value.value<QString>() );
             break;
@@ -363,7 +388,7 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
 
 QVariant KJSEmbed::extractVariant( KJS::ExecState *exec, KJS::JSValue *value )
 {
-    KJSEmbed::ValueBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::ValueBinding>(exec,  value );
+    KJSEmbed::VariantBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::VariantBinding>(exec,  value );
     if( imp )
         return imp->variant();
     else if( value->type() == KJS::StringType)

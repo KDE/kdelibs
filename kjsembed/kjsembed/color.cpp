@@ -113,17 +113,17 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callDark, QColor )
     QColor darkColor = value.dark( KJSEmbed::extractInt( exec, args, 0, 200));
-    result = KJSEmbed::createValue(exec, "QColor", darkColor);
+    result = KJSEmbed::createVariant(exec, "QColor", darkColor);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callLight, QColor )
     QColor darkColor = value.light( KJSEmbed::extractInt( exec, args, 0, 200));
-    result = KJSEmbed::createValue(exec, "QColor", darkColor);
+    result = KJSEmbed::createVariant(exec, "QColor", darkColor);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callConvertTo, QColor )
     QColor otherColor = value.convertTo( (QColor::Spec)KJSEmbed::extractInt( exec, args, 0));
-    result = KJSEmbed::createValue(exec, "QColor", otherColor);
+    result = KJSEmbed::createVariant(exec, "QColor", otherColor);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callSpec, QColor )

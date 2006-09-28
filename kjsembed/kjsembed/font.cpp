@@ -74,7 +74,7 @@ START_VARIANT_METHOD( callinsertSubstitutions, QFont )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callisCopyOf, QFont )
-    QFont arg0 = KJSEmbed::extractValue<QFont>(exec,args, 0);
+    QFont arg0 = KJSEmbed::extractVariant<QFont>(exec,args, 0);
     bool cppValue = value.isCopyOf(arg0);
     result = KJS::Boolean(cppValue);
 END_VARIANT_METHOD
@@ -135,9 +135,9 @@ START_VARIANT_METHOD( callremoveSubstitution, QFont )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callresolve, QFont )
-    QFont arg0 = KJSEmbed::extractValue<QFont>(exec,args, 0);
+    QFont arg0 = KJSEmbed::extractVariant<QFont>(exec,args, 0);
     QFont cppValue = value.resolve(arg0);
-    result = KJSEmbed::createValue(exec, "QFont", cppValue );
+    result = KJSEmbed::createVariant(exec, "QFont", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetBold, QFont )

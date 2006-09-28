@@ -43,7 +43,7 @@ namespace BrushNS
 
 START_VARIANT_METHOD( callcolor, QBrush )
     QColor cppValue = value.color();
-    result = KJSEmbed::createValue(exec, "QColor", cppValue );
+    result = KJSEmbed::createVariant(exec, "QColor", cppValue );
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callgradient, QBrush )
@@ -57,7 +57,7 @@ START_VARIANT_METHOD( callisOpaque, QBrush )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetColor, QBrush )
-    QColor arg0 = KJSEmbed::extractValue<QColor>(exec,args, 0);
+    QColor arg0 = KJSEmbed::extractVariant<QColor>(exec,args, 0);
     value.setColor(arg0);
 END_VARIANT_METHOD
 
@@ -67,7 +67,7 @@ START_VARIANT_METHOD( callsetStyle, QBrush )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetTexture, QBrush )
-    QPixmap arg0 = KJSEmbed::extractValue<QPixmap>(exec,args, 0);
+    QPixmap arg0 = KJSEmbed::extractVariant<QPixmap>(exec,args, 0);
     value.setTexture(arg0);
 END_VARIANT_METHOD
 
@@ -78,7 +78,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( calltexture, QBrush )
     QPixmap cppValue = value.texture();
-    result = KJSEmbed::createValue(exec, "QPixmap", cppValue );
+    result = KJSEmbed::createVariant(exec, "QPixmap", cppValue );
 END_VARIANT_METHOD
 
 }
@@ -110,17 +110,17 @@ START_CTOR( Brush, QBrush, 0)
         {
             if(obj0->inherits(&PixmapBinding::info))
             {
-                QPixmap arg0 = KJSEmbed::extractValue<QPixmap>(exec, args, 0);
+                QPixmap arg0 = KJSEmbed::extractVariant<QPixmap>(exec, args, 0);
                 return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
             }
             if(obj0->inherits(&BrushBinding::info))
             {
-                QBrush arg0 = KJSEmbed::extractValue<QBrush>(exec, args, 0);
+                QBrush arg0 = KJSEmbed::extractVariant<QBrush>(exec, args, 0);
                 return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
             }
 //             if(obj0->inherits(&GradientBinding::info))
 //             {
-//                 QGradient arg0 = KJSEmbed::extractValue<QGradient>(exec, args, 0);
+//                 QGradient arg0 = KJSEmbed::extractVariant<QGradient>(exec, args, 0);
 //                 return new KJSEmbed::BrushBinding(exec, QBrush(arg0));
 //             }
         }
@@ -139,19 +139,19 @@ START_CTOR( Brush, QBrush, 0)
 
         if(obj0 && obj1 && obj0->inherits(&ColorBinding::info) && obj1->inherits(&PixmapBinding::info))
         {
-            QColor arg0 = KJSEmbed::extractValue<QColor>(exec, args, 0);
-            QPixmap arg1 = KJSEmbed::extractValue<QPixmap>(exec, args, 1);
+            QColor arg0 = KJSEmbed::extractVariant<QColor>(exec, args, 0);
+            QPixmap arg1 = KJSEmbed::extractVariant<QPixmap>(exec, args, 1);
             return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
         }
         if(obj1 && isBasic(value0) && obj1->inherits(&PixmapBinding::info))
         {
             Qt::GlobalColor arg0 = (Qt::GlobalColor)KJSEmbed::extractInt(exec, args, 0);
-            QPixmap arg1 = KJSEmbed::extractValue<QPixmap>(exec, args, 1);
+            QPixmap arg1 = KJSEmbed::extractVariant<QPixmap>(exec, args, 1);
             return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
         }
         if(obj0 && obj0->inherits(&ColorBinding::info) && isBasic(value1))
         {
-            QColor arg0 = KJSEmbed::extractValue<QColor>(exec, args, 0);
+            QColor arg0 = KJSEmbed::extractVariant<QColor>(exec, args, 0);
             Qt::BrushStyle arg1 = (Qt::BrushStyle)KJSEmbed::extractInt(exec, args, 1);
             return new KJSEmbed::BrushBinding(exec, QBrush(arg0, arg1));
         }

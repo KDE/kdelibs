@@ -65,8 +65,8 @@ START_QOBJECT_METHOD( callRemove, QSettings )
 END_QOBJECT_METHOD
 
 START_STATIC_OBJECT_METHOD( callSetPath )
-    // QSettings::Format format = (QSettings::Format) KJSEmbed::extractValue<uint>(exec, args, 0);
-    // QSettings::Scope scope = (QSettings::Scope) KJSEmbed::extractValue<uint>(exec, args, 1);
+    // QSettings::Format format = (QSettings::Format) KJSEmbed::extractVariant<uint>(exec, args, 0);
+    // QSettings::Scope scope = (QSettings::Scope) KJSEmbed::extractVariant<uint>(exec, args, 1);
     QString path = KJSEmbed::extractQString(exec, args, 2);
     //QSettings::setSystemIniPath(format,scope,path);
     return KJS::Null();
@@ -103,13 +103,13 @@ START_CTOR( Settings, QSettings, 1 )
     else if ( args.size() == 3 )
     {
         QString fileName = KJSEmbed::extractQString(exec, args, 0);
-        QSettings::Format format = (QSettings::Format) KJSEmbed::extractValue<uint>(exec, args, 1);
+        QSettings::Format format = (QSettings::Format) KJSEmbed::extractVariant<uint>(exec, args, 1);
         QObject *parent = KJSEmbed::extractObject<QObject>(exec,args,2);
         settings = new QSettings(fileName,format,parent);
     }
     else if( args.size() == 4 )
     {
-        QSettings::Scope scope = (QSettings::Scope) KJSEmbed::extractValue<uint>(exec, args, 0);
+        QSettings::Scope scope = (QSettings::Scope) KJSEmbed::extractVariant<uint>(exec, args, 0);
         QString organization = KJSEmbed::extractQString(exec, args, 1);
         QString application = KJSEmbed::extractQString(exec, args, 2);
         QObject *parent = KJSEmbed::extractObject<QObject>(exec,args,3);
